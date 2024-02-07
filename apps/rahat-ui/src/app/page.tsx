@@ -1,17 +1,11 @@
 'use client';
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { paths } from '../routes/paths';
 
-import { Button } from '@rahat-ui/shadcn/components/button';
-
-export default function Page() {
-  return (
-    <main>
-      <Button
-        onClick={() => {
-          console.log('clicked');
-        }}
-      >
-        Click me
-      </Button>
-    </main>
-  );
+export default function Home() {
+  const router = useRouter();
+  useEffect(() => {
+    router.push(paths.dashboard.root);
+  }, []);
 }

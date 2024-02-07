@@ -3,6 +3,7 @@ const { join } = require('path');
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  ...require('@rahat-ui/shadcn/tailwind.config.js'),
   content: [
     join(
       __dirname,

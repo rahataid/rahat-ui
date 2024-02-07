@@ -75,5 +75,10 @@
     "@nx/react": {
       "library": {}
     }
+  },
+  "projects": {
+    "shadcn": {
+      "tags": []
+    }
   }
 }

@@ -15,8 +15,9 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@rahat-ui/shadecn": ["libs/shadecn/src/index.ts"],
-      "@rahat-ui/shadecn/server": ["libs/shadecn/src/server.ts"]
+      "@rahat-ui/shadcn": ["libs/shadcn/src/index.ts"],
+      "@rahat-ui/shadcn/components/*": ["libs/shadcn/src/components/ui/*"],
+      "@rahat-ui/shadcn/utils": ["libs/shadcn/src/utils/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

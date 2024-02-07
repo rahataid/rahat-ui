@@ -1,0 +1,8 @@
+{
+  "name": "rahat-ui",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/rahat-ui",
+  "projectType": "application",
+  "targets": {},
+  "tags": []
+}

@@ -1,11 +1,14 @@
-"use client";
+'use client';
 
-import { usePathname } from "next/navigation";
-import Link from "next/link";
-import { ModeToggle } from "@/components/dropdown";
-import Image from "next/image";
-import { Avatar } from "@radix-ui/react-avatar";
-import { AvatarFallback, AvatarImage } from "./ui/avatar";
+import { usePathname } from 'next/navigation';
+import Link from 'next/link';
+import Image from 'next/image';
+import { ModeToggle } from './dropdown';
+import {
+  Avatar,
+  AvatarImage,
+  AvatarFallback,
+} from '@rahat-ui/shadcn/components/avatar';
 
 export function Nav() {
   const pathname = usePathname();

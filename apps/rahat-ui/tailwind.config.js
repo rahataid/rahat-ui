@@ -14,4 +14,5 @@ module.exports = {
     extend: {},
   },
   plugins: [],
+  // ...require('@rahat-ui/shadcn/tailwind.config.js'),
 };

@@ -1,13 +1,13 @@
-import { ResizablePanel } from '@/components/ui/resizable';
+import { ResizablePanel } from '@rahat-ui/shadcn/components/resizable';
 import type { Metadata } from 'next';
-import { DashBoardCarousel } from '@/components/dashboardCarousel';
+import { Carousel } from '@rahat-ui/shadcn/components/carousel';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Button } from '@/components/ui/button';
+} from '@rahat-ui/shadcn/components/dropdown-menu';
+import { Button } from '@rahat-ui/shadcn/components/button';
 
 export const metadata: Metadata = {
   title: 'DashBoard',
@@ -19,7 +19,7 @@ export default function DashBoardPage() {
       <div className="p-4">
         <div className="grid sm:grid-cols-4 gap-4">
           <div className="grid grid-cols-subgrid gap-4 col-span-3">
-            <DashBoardCarousel />
+            <Carousel />
           </div>
           <div className="grid grid-rows-3 grid-flow-col gap-4">
             <div className="border rounded-lg h-16 flex justify-around items-center">

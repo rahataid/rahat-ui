@@ -1,12 +1,11 @@
 'use client';
-import * as React from 'react';
-
-import SideNav from '@/components/side-nav';
 import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
-} from '@/components/ui/resizable';
+} from '@rahat-ui/shadcn/components/resizable';
+import * as React from 'react';
+import SideNav from '../../components/side-nav';
 
 export default function DashboardLayout({
   children,

@@ -1,0 +1,19 @@
+{
+  "name": "query",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/query/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:swc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/query",
+        "main": "libs/query/src/index.ts",
+        "tsConfig": "libs/query/tsconfig.lib.json",
+        "assets": ["libs/query/*.md"]
+      }
+    }
+  },
+  "tags": []
+}

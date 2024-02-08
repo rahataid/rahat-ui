@@ -12,4 +12,5 @@ module.exports = {
     },
     autoprefixer: {},
   },
+  // ...require('@rahat-ui/shadcn/postcss.config.js'),
 };

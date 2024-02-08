@@ -1,9 +1,11 @@
 const { createGlobPatternsForDependencies } = require('@nx/react/tailwind');
 const { join } = require('path');
+const _ = require('lodash');
+// const libConfig = require('../../libs/shadcn/tailwind.config');
 
 /** @type {import('tailwindcss').Config} */
-module.exports = {
-  ...require('@rahat-ui/shadcn/tailwind.config.js'),
+
+const config = {
   content: [
     join(
       __dirname,
@@ -16,3 +18,5 @@ module.exports = {
   },
   plugins: [],
 };
+
+module.exports = _.merge(config);

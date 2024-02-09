@@ -5,10 +5,13 @@
   "scripts": {},
   "private": true,
   "dependencies": {
+    "@tanstack/react-query": "^5.18.1",
     "next": "14.0.4",
+    "query-string": "^8.2.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "tslib": "^2.3.0"
+    "tslib": "^2.3.0",
+    "zustand": "^4.5.0"
   },
   "devDependencies": {
     "@nx/cypress": "18.0.2",

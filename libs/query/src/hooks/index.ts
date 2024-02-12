@@ -1,0 +1,1 @@
+export {useGet} from './useGet'

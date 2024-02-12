@@ -18,7 +18,8 @@
       "@rahat-ui/query": ["libs/query/src/index.ts"],
       "@rahat-ui/shadcn/*": ["libs/shadcn/*"],
       "@rahat-ui/shadcn/components/*": ["libs/shadcn/src/components/ui/*"],
-      "@rahat-ui/shadcn/utils": ["libs/shadcn/src/utils/index.ts"]
+      "@rahat-ui/shadcn/utils": ["libs/shadcn/src/utils/index.ts"],
+    "@rahat-ui/query/hooks":["libs/query/src/hooks/index.ts"],
     }
   },
   "exclude": ["node_modules", "tmp"]

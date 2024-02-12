@@ -5,6 +5,7 @@ import api from '../../../utils/api';
 import { TAGS } from '../../const/const';
 import {
   CreateNewUserPayload,
+  DeleteUserPayload,
   EditUserPayload,
   GetUsers,
 } from '../../../types/users.types';
@@ -71,4 +72,26 @@ const userEditMutation = (payload: EditUserPayload) => {
   });
 };
 
-export { useUserListQuery, userCreateMutation, userQuery, userEditMutation };
+const deleteUser = async (payload: DeleteUserPayload) => {
+  const response = await api.patch(`/users/${payload.uuid}`);
+  return response.data;
+};
+
+const userDeleteMutation = (payload: DeleteUserPayload) => {
+  const qc = useQueryClient();
+
+  return useMutation({
+    mutationFn: () => deleteUser(payload),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: [TAGS.GET_USER] });
+    },
+  });
+};
+
+export {
+  useUserListQuery,
+  userCreateMutation,
+  userQuery,
+  userEditMutation,
+  userDeleteMutation,
+};

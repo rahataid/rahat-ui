@@ -14,6 +14,10 @@ export interface EditUserPayload {
   wallet?: string;
 }
 
+export interface DeleteUserPayload{
+  uuid:string
+}
+
 export interface GetUsers {
   page?: number | null;
   perPage?: number | null;

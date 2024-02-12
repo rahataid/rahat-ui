@@ -1,7 +1,8 @@
-import { useQuery, UseQueryOptions, QueryKey, DefaultError, QueryClient, UseQueryResult } from "@tanstack/react-query";
+import { QueryClient, QueryKey, UseQueryOptions, UseQueryResult, useQuery } from "@tanstack/react-query";
 
 interface ErrorType extends Error {
     message: string;
+    group: string;
 }
 
 interface HookOptions<TQueryFnData = unknown, TError = ErrorType, TData = TQueryFnData, TQueryKey extends QueryKey = QueryKey> extends UseQueryOptions<TQueryFnData, TError, TData, TQueryKey> {
@@ -10,12 +11,6 @@ interface HookOptions<TQueryFnData = unknown, TError = ErrorType, TData = TQuery
 }
 
 export function useGet<TQueryFnData = unknown, TError = ErrorType, TData = TQueryFnData, TQueryKey extends QueryKey = QueryKey>(options: HookOptions<TQueryFnData, TError, TData, TQueryKey>, queryClient?: QueryClient): UseQueryResult<TData, TError> {
-    const result = useQuery<TQueryFnData, TError, TData, TQueryKey>(options, queryClient);
-
-    // Handle error with default error handler if provided
-    if (result.error && options.defaultErrorHandler) {
-        options.defaultErrorHandler(result.error);
-    }
-
-    return result;
+    console.log('options.store', options.store)
+    return useQuery<TQueryFnData, TError, TData, TQueryKey>(options, queryClient);
 }

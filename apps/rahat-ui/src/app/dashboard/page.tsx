@@ -8,12 +8,29 @@ import {
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/components/dropdown-menu';
 import { Button } from '@rahat-ui/shadcn/components/button';
+import { useGet } from '@rahat-ui/query/hooks';
+import useError from '../../store/error';
 
 export const metadata: Metadata = {
   title: 'DashBoard',
 };
 
 export default function DashBoardPage() {
+  console.log(process.env.NEXT_PUBLIC_HOST_API);
+  const { data, error, isLoading } = useGet({
+    store:{useError},
+    queryKey: ['myData', { param1: 'value1' }], // replace with your query key and parameters
+    queryFn: async () => {
+      const response = await fetch('https://localhost:5500/v1/users'); // replace with your API endpoint
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.json();
+
+    },
+  });
+
+  console.log('error', error)
   return (
     <ResizablePanel minSize={30}>
       <div className="p-4">

@@ -1,21 +1,21 @@
 const ROOTS = {
-  DASHBOARD: "/dashboard",
-  BENEFICIARY: "/beneficiaries",
-  USER: "/users",
-  PROJECT: "/projects",
-  TRANSACTION: "/transactions",
-  REPORTING: "reporting",
+  AUTH: '/auth',
+  PROJECT: '/projects',
+  DASHBOARD: '/dashboard',
+  BENEFICIARY: '/beneficiary',
+  USER: '/user',
+  TRANSACTIONS: '/transactions',
 };
 
 export const paths = {
+  auth: {
+    login: `${ROOTS.AUTH}/login`,
+  },
   dashboard: {
+    project: ROOTS.PROJECT,
     root: ROOTS.DASHBOARD,
-    general: {
-      beneficiary: ROOTS.BENEFICIARY,
-      user: ROOTS.USER,
-      project: ROOTS.PROJECT,
-      transaction: ROOTS.TRANSACTION,
-      reporting: ROOTS.REPORTING,
-    },
+    beneficiary: ROOTS.BENEFICIARY,
+    transactions: ROOTS.TRANSACTIONS,
+    user: ROOTS.USER,
   },
 };

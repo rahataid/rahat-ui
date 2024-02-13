@@ -1,46 +1,55 @@
-'use client';
+import projectsData from './projectsData.json';
+import ProjectNav from '../../components/projects/nav';
+import ProjectCards from '../../components/projects/projectCard';
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from '@rahat-ui/shadcn/components/resizable';
+import { Tabs } from '@rahat-ui/shadcn/components//tabs';
 
-import CommonCard from '@/components/Card';
-import { Input } from '@/components/ui/input';
-import { ResizablePanel } from '@/components/ui/resizable';
-import { Search } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+type CardProps = {
+  id: number;
+  title: string;
+  subTitle: string;
+  handleClick: VoidFunction;
+};
 
-const cardData = [
-  { id: 1, title: 'Project 1', subTile: 'subTitle' },
-  { id: 2, title: 'Project 2', subTile: 'subTitle' },
-  { id: 3, title: 'Project 3', subTile: 'subTitle' },
-];
-
-export default function ProjectPage() {
-  const route = useRouter();
-
-  const handleProjectCardClick = (id: number) => {
-    route.push(`/projects/${id}`);
-  };
-
+export default function ProjectPage({ handleClick }: CardProps) {
   return (
-    <>
-      <ResizablePanel minSize={30}>
-        <div className="bg-background/95 p-4 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-          <form>
-            <div className="relative">
-              <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input placeholder="Search projects" className="pl-8" />
-            </div>
-          </form>
-          <div className="mt-10 flex gap-4">
-            {cardData.map((item) => (
-              <CommonCard
-                key={item.title}
-                title={item.title}
-                subTitle={item.subTile}
-                handleClick={() => handleProjectCardClick(item.id)}
-              />
-            ))}
-          </div>
+    <div className="mb-5">
+      <Tabs defaultValue="grid">
+        <div className="flex items-center justify-between mb-9 mt-8">
+          <h1 className="text-3xl font-semibold">Projects List</h1>
         </div>
-      </ResizablePanel>
-    </>
+        <ResizablePanelGroup
+          direction="horizontal"
+          className="min-h-max border"
+        >
+          <ResizablePanel
+            minSize={20}
+            defaultSize={20}
+            maxSize={20}
+            className="h-full"
+          >
+            <ProjectNav />
+          </ResizablePanel>
+          <ResizableHandle />
+          <ResizablePanel>
+            <div className="sm:flex gap-4 p-4">
+              {projectsData.map((project) => (
+                <ProjectCards
+                  id={project.id}
+                  key={project.id}
+                  title={project.title}
+                  subTitle={project.subTitle}
+                  handleClick={handleClick}
+                />
+              ))}
+            </div>
+          </ResizablePanel>
+        </ResizablePanelGroup>
+      </Tabs>
+    </div>
   );
 }

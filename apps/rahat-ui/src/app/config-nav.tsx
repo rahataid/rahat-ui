@@ -1,49 +1,35 @@
 import { useMemo } from 'react';
-import {
-  Newspaper,
-  UsersRound,
-  UserRound,
-  LayoutDashboard,
-  GanttChartSquare,
-  BadgeDollarSign,
-} from 'lucide-react';
-import { paths } from '../routes/paths';
+import { Newspaper, UsersRound, UserRound } from 'lucide-react';
+import { paths } from '@/routes/paths';
 
 export function useNavData() {
   const data = useMemo(
     () => [
       {
         title: 'Dashboard',
-        icon: <LayoutDashboard />,
+        icon: <Newspape../../routes/paths
+
         path: paths.dashboard.root,
       },
       {
-        title: 'Projects',
-        icon: <GanttChartSquare />,
-
-        path: paths.dashboard.general.project,
-      },
-      {
-        title: 'Transaction',
-        icon: <BadgeDollarSign />,
-
-        path: paths.dashboard.general.transaction,
-      },
-      {
-        title: 'Reporting',
-        icon: <Newspaper />,
-
-        path: paths.dashboard.general.reporting,
-      },
-      {
-        title: 'Beneficiaries List',
+        title: 'Project',
         icon: <UsersRound />,
-        path: paths.dashboard.general.beneficiary,
+        path: paths.dashboard.project,
+      },
+      {
+        title: 'Beneficiaries',
+        icon: <UsersRound />,
+        path: paths.dashboard.beneficiary,
+      },
+      {
+        title: 'Transactions',
+        icon: <UsersRound />,
+        path: paths.dashboard.transactions,
       },
       {
         title: 'Users',
         icon: <UserRound />,
-        path: paths.dashboard.general.user,
+        path: paths.dashboard.user,
       },
     ],
     []

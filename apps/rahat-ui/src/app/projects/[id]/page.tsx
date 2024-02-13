@@ -1,65 +1,73 @@
-import { ResizablePanel } from '@/components/ui/resizable';
-import type { Metadata } from 'next';
-import { DashBoardCarousel } from '@/components/dashboardCarousel';
+import ProjectNav from '../../../components/projects/nav'
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from '@rahat-ui/shadcn/components/resizable';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Button } from '@/components/ui/button';
+} from '@rahat-ui/shadcn/components/dropdown-menu';
+import { Badge } from '@rahat-ui/shadcn/components/badge';
+import { Button } from '@rahat-ui/shadcn/components/button';
+import { Tabs } from '@rahat-ui/shadcn/components/tabs';
+import ProjectDetails from './projectDetails';
 
-export const metadata: Metadata = {
-  title: 'DashBoard',
-};
-
-export default function DashBoardPage() {
+export default function ProjectPage() {
   return (
-    <ResizablePanel>
-      <div className="p-4">
-        <div className="grid sm:grid-cols-4 gap-4">
-          <div className="grid grid-cols-subgrid gap-4 col-span-3">
-            <DashBoardCarousel />
+    <div className="mb-5">
+      <Tabs defaultValue="grid">
+        <div className="flex items-center justify-between mb-9 mt-8">
+          <div className="flex items-center gap-2">
+            <h1 className="text-3xl font-semibold">Project Details</h1>
+            <Badge variant={'outline'} className="border-red-400 bg-red-50">
+              Locked
+            </Badge>
           </div>
-          <div className="grid grid-rows-3 grid-flow-col gap-4">
-            <div className="border rounded-lg h-16 flex justify-around items-center">
-              <div>
-                <DropdownMenu>
-                  <DropdownMenuTrigger>
-                    <Button variant={'outline'}>Associates List</Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent>
-                    <DropdownMenuItem>Beneficiaries</DropdownMenuItem>
-                    <DropdownMenuItem>Vendors</DropdownMenuItem>
-                    <DropdownMenuItem>Campaigns</DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-              <div>
-                <DropdownMenu>
-                  <DropdownMenuTrigger>
-                    <Button variant={'outline'}>Actions</Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent>
-                    <DropdownMenuItem>Create Tokens</DropdownMenuItem>
-                    <DropdownMenuItem>Lock Project</DropdownMenuItem>
-                    <DropdownMenuItem>Edit Project</DropdownMenuItem>
-                    <DropdownMenuItem>
-                      Set Offline Beneficiaries
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-            </div>
-            <div className="grid grid-rows-subgrid gap-4 row-span-2">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit.
-              Accusantium eos repellat qui? Neque at assumenda, quam quaerat
-              aliquid unde ut voluptate suscipit iure aliquam. Fugit modi
-              voluptatem mollitia est saepe.
-            </div>
+          <div className="flex gap-2">
+            <DropdownMenu>
+              <DropdownMenuTrigger>
+                <Button variant={'outline'}>Associates List</Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem>Beneficiaries</DropdownMenuItem>
+                <DropdownMenuItem>Vendors</DropdownMenuItem>
+                <DropdownMenuItem>Campaigns</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <DropdownMenu>
+              <DropdownMenuTrigger>
+                <Button variant={'outline'}>Actions</Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="mx-8">
+                <DropdownMenuItem>Create Tokens</DropdownMenuItem>
+                <DropdownMenuItem>Lock Project</DropdownMenuItem>
+                <DropdownMenuItem>Edit Project</DropdownMenuItem>
+                <DropdownMenuItem>Set Offline Beneficiaries</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>{' '}
           </div>
         </div>
-      </div>
-    </ResizablePanel>
+        <ResizablePanelGroup
+          direction="horizontal"
+          className="min-h-max border"
+        >
+          <ResizablePanel
+            minSize={20}
+            defaultSize={20}
+            maxSize={20}
+            className="h-full"
+          >
+            <ProjectNav />
+          </ResizablePanel>
+          <ResizableHandle />
+          <ResizablePanel>
+            <ProjectDetails />
+          </ResizablePanel>
+        </ResizablePanelGroup>
+      </Tabs>
+    </div>
   );
 }

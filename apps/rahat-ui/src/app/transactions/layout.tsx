@@ -1,9 +1,8 @@
 'use client';
 
 import { Nav } from '../../components/nav';
-import * as React from 'react';
 
-export default function ProjectLayout({
+export default function TransactionsLayout({
   children,
 }: {
   children: React.ReactNode;

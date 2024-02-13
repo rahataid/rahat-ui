@@ -3,34 +3,52 @@
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ModeToggle } from './dropdown';
-import {
-  Avatar,
-  AvatarImage,
-  AvatarFallback,
-} from '@rahat-ui/shadcn/components/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@rahat-ui/shadcn/components/avatar';
+import { useNavData } from '../app/config-nav';
+import { Input } from '@rahat-ui/shadcn/components/input';
+import { paths } from '../routes/paths';
 
 export function Nav() {
-  const pathname = usePathname();
+  const currentPath = usePathname();
+  const navData = useNavData();
 
   return (
-    <nav className="border-b flex items-center px-2">
-      <div className="py-3 flex flex-1 items-center ">
-        <Image src="/rahat-logo.png" alt="rahat-logo" height={50} width={50} />
-        <Link href="/" className="mr-5 flex items-center">
-          <p className={` mr-4 text-lg font-[500]`}>Rahat</p>
-        </Link>
-      </div>
-      <div className="flex items-center py-3">
-        <Avatar>
-          <AvatarImage
-            className="h-9 w-9 rounded-2xl mr-3"
-            src="https://github.com/shadcn.png"
+    <div className="flex justify-between px-8 py-4 border-b sticky top-0 bg-white z-50">
+      <div className="flex gap-12">
+        <Link href={paths.dashboard.root} className="flex items-center">
+          <Image
+            src="/rahat-logo.png"
+            alt="rahat-logo"
+            height={50}
+            width={50}
           />
+          <p className="font-medium text-slate-500">Rahat</p>
+        </Link>
+        <nav className="flex items-center">
+          {navData.map((item) => (
+            <Link key={item.title} href={item.path}>
+              <p
+                className={`py-2 px-4 font-medium rounded ${
+                  currentPath === item.path && 'bg-slate-100'
+                }`}
+              >
+                {item.title}
+              </p>
+            </Link>
+          ))}
+        </nav>
+      </div>
+      <div className="flex gap-8">
+        <Input
+          className="text-slate-500 font-medium w-96"
+          type="text"
+          placeholder="Search..."
+        />
+        <Avatar>
+          <AvatarImage src="https://github.com/shadcn.png" />
           <AvatarFallback>CN</AvatarFallback>
         </Avatar>
-        <ModeToggle />
       </div>
-    </nav>
+    </div>
   );
 }

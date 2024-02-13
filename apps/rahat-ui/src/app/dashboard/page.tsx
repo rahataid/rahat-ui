@@ -1,82 +1,56 @@
-import { ResizablePanel } from '@rahat-ui/shadcn/components/resizable';
-import type { Metadata } from 'next';
-import { Carousel } from '@rahat-ui/shadcn/components/carousel';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@rahat-ui/shadcn/components/dropdown-menu';
+import ChartsCard from '../../components/chartsCard';
+import DataCard from '../../components/dataCard';
 import { Button } from '@rahat-ui/shadcn/components/button';
-import { useGet } from '@rahat-ui/query/hooks';
-import useError from '../../store/error';
+import { Input } from '@rahat-ui/shadcn/components/input';
+import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'DashBoard',
 };
 
 export default function DashBoardPage() {
-  console.log(process.env.NEXT_PUBLIC_HOST_API);
-  const { data, error, isLoading } = useGet({
-    store:{useError},
-    queryKey: ['myData', { param1: 'value1' }], // replace with your query key and parameters
-    queryFn: async () => {
-      const response = await fetch('https://localhost:5500/v1/users'); // replace with your API endpoint
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      return response.json();
-
-    },
-  });
-
-  console.log('error', error)
   return (
-    <ResizablePanel minSize={30}>
-      <div className="p-4">
-        <div className="grid sm:grid-cols-4 gap-4">
-          <div className="grid grid-cols-subgrid gap-4 col-span-3">
-            <Carousel />
-          </div>
-          <div className="grid grid-rows-3 grid-flow-col gap-4">
-            <div className="border rounded-lg h-16 flex justify-around items-center">
-              <div>
-                <DropdownMenu>
-                  <DropdownMenuTrigger>
-                    <Button variant={'outline'}>Associates List</Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent>
-                    <DropdownMenuItem>Beneficiaries</DropdownMenuItem>
-                    <DropdownMenuItem>Vendors</DropdownMenuItem>
-                    <DropdownMenuItem>Campaigns</DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-              <div>
-                <DropdownMenu>
-                  <DropdownMenuTrigger>
-                    <Button variant={'outline'}>Actions</Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent>
-                    <DropdownMenuItem>Create Tokens</DropdownMenuItem>
-                    <DropdownMenuItem>Lock Project</DropdownMenuItem>
-                    <DropdownMenuItem>Edit Project</DropdownMenuItem>
-                    <DropdownMenuItem>
-                      Set Offline Beneficiaries
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-            </div>
-            <div className="grid grid-rows-subgrid gap-4 row-span-2">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit.
-              Accusantium eos repellat qui? Neque at assumenda, quam quaerat
-              aliquid unde ut voluptate suscipit iure aliquam. Fugit modi
-              voluptatem mollitia est saepe.
-            </div>
-          </div>
+    <div className="max-h-mx">
+      <div className="flex items-center justify-between mb-9 mt-8">
+        <h1 className="text-3xl font-semibold">Dashboard</h1>
+        <div className="flex w-full max-w-sm items-center space-x-2">
+          <Input disabled placeholder="21 Jan 2024, 07 Feb 2024" />
+          <Button type="submit">Download</Button>
         </div>
       </div>
-    </ResizablePanel>
+      <div className=" grid md:grid-cols-4 gap-4">
+        <DataCard
+          className=""
+          title="Total No. Of Beneficiaries"
+          number={'12'}
+          subTitle="+20% from last month"
+        />
+        <DataCard
+          className=""
+          title="Total No. Of Community"
+          number={'12'}
+          subTitle="+60% from last month"
+        />
+        <DataCard
+          className=""
+          title="Area Covered"
+          number={'12'}
+          subTitle="+40% from last month"
+        />
+        <DataCard
+          className=""
+          title="Total Donations"
+          number={'$' + 12}
+          subTitle="$35% from last month"
+        />
+      </div>
+      <div className=" grid md:grid-cols-4 gap-4 mt-4">
+        <ChartsCard className="" title="Beneficiaries" image="/charts.png" />
+        <ChartsCard className="" title="Beneficiaries" image="/charts.png" />
+
+        <ChartsCard className="" title="Beneficiaries" image="/charts.png" />
+        <ChartsCard className="" title="Beneficiaries" image="/charts.png" />
+      </div>
+    </div>
   );
 }

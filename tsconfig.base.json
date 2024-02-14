@@ -19,8 +19,7 @@
       "@rahat-ui/shadcn/*": ["libs/shadcn/*"],
       "@rahat-ui/shadcn/components/*": ["libs/shadcn/src/components/ui/*"],
       "@rahat-ui/shadcn/utils": ["libs/shadcn/src/utils/index.ts"],
-      "@rahat-ui/types": ["libs/types/src/index.ts"],
-      "@rahat-ui/types/*": ["libs/types/*"]
+      "@rahat-ui/types": ["libs/types/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

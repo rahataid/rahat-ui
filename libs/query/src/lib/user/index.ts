@@ -1,13 +1,3 @@
-import queryString from 'query-string';
-import {
-  UseQueryResult,
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from '@tanstack/react-query';
-
-import api from '@/libs/utils/api';
-import { TAGS } from '@/libs/state/const/const';
 import {
   CreateNewUserPayload,
   DeleteUserPayload,
@@ -15,7 +5,16 @@ import {
   GetUsers,
   ListUserResponse,
   User,
-} from '@/libs/types/users.types';
+} from '@rahat-ui/types';
+import {
+  UseQueryResult,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
+import queryString from 'query-string';
+import { TAGS } from '../../config';
+import api from '../../utils/api';
 
 const createNewUser = async (payload: CreateNewUserPayload) => {
   const res = await api.post('/users', payload);
@@ -113,9 +112,9 @@ const userDeleteMutation = () => {
 
 export {
   useUserListQuery,
-  userCreateMutation,
-  userQuery,
-  userEditMutation,
-  userDeleteMutation,
   userByUuidQuery,
+  userCreateMutation,
+  userDeleteMutation,
+  userEditMutation,
+  userQuery,
 };

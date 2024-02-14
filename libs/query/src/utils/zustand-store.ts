@@ -1,11 +1,6 @@
 //store-tools
 import { create, StateCreator, StoreApi, UseBoundStore } from 'zustand';
-import {
-  devtools,
-  persist,
-  PersistOptions,
-  PersistStorage,
-} from 'zustand/middleware';
+import { devtools, persist, PersistOptions } from 'zustand/middleware';
 
 interface ICreateStoreOptions<T, U> {
   persistOptions?: PersistOptions<T, U>;
@@ -35,14 +30,14 @@ export function createStore<T extends object>(
 
 //localpersiststorage, ps, you can use any storage you want, not just localstorage, but for this example, we will use localstorage
 
-export const localPersistStorage: PersistStorage<T> = {
-  getItem: (name) => {
+export const localPersistStorage = {
+  getItem: (name: string) => {
     const str = localStorage.getItem(name);
     if (!str) return null;
     return JSON.parse(str);
   },
-  setItem: (name, value) => {
+  setItem: (name: string, value: any) => {
     localStorage.setItem(name, JSON.stringify(value));
   },
-  removeItem: (name) => localStorage.removeItem(name),
+  removeItem: (name: string) => localStorage.removeItem(name),
 };

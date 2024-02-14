@@ -1,10 +1,13 @@
-import { useAuthStore } from "../store/auth"
+import { useAuthStore } from "@rahat-ui/query/auth"
 
 
+interface AuthGuardProps {
+  children: React.ReactNode
+}
 
-
-const AuthGuard = ({children}) => {
+const AuthGuard = ({children}:AuthGuardProps) => {
   const {token} = useAuthStore()
+  console.log('token', token)
 
 
   if(token){

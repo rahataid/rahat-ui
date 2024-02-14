@@ -1,18 +1,24 @@
 'use client';
 
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { Label } from '@rahat-ui/shadcn/components/label';
+import { useLogin, useSendOtp } from '@rahat-ui/query/auth';
+import { Button, buttonVariants } from '@rahat-ui/shadcn/components/button';
 import { Input } from '@rahat-ui/shadcn/components/input';
-import { Button } from '@rahat-ui/shadcn/components/button';
-import { buttonVariants } from '@rahat-ui/shadcn/components/button';
+import { Label } from '@rahat-ui/shadcn/components/label';
 import { cn } from '@rahat-ui/shadcn/utils';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import React, { useState } from 'react';
 import { paths } from '../../../routes/paths';
 
 export default function AuthPage() {
   const router = useRouter();
   const [otpSent, setOtpSent] = useState(false);
+
+  const otpSend = useSendOtp()
+  const login = useLogin()
+
+  console.log('otpSend', otpSend,login)
+
 
   const onSendOtpFormSubmit = (e: React.SyntheticEvent) => {
     e.preventDefault();

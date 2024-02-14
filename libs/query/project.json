@@ -1,19 +1,35 @@
 {
-  "name": "query",
-  "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "libs/query/src",
-  "projectType": "library",
-  "targets": {
-    "build": {
-      "executor": "@nx/js:swc",
-      "outputs": ["{options.outputPath}"],
-      "options": {
-        "outputPath": "dist/libs/query",
-        "main": "libs/query/src/index.ts",
-        "tsConfig": "libs/query/tsconfig.lib.json",
-        "assets": ["libs/query/*.md"]
-      }
+    "name": "query",
+    "$schema": "../../node_modules/nx/schemas/project-schema.json",
+    "sourceRoot": "libs/query",
+    "projectType": "library",
+    "tags": [],
+    "targets": {
+        "build": {
+            "executor": "@nx/rollup:rollup",
+            "outputs": [
+                "{options.outputPath}"
+            ],
+            "options": {
+                "outputPath": "dist/libs/query",
+                "tsConfig": "libs/query/tsconfig.lib.json",
+                "project": "libs/query/package.json",
+                "entryFile": "libs/query/index.ts",
+                "external": [
+                    "react",
+                    "react-dom",
+                    "react/jsx-runtime"
+                ],
+                "rollupConfig": "@nx/react/plugins/bundle-rollup",
+                "compiler": "swc",
+                "assets": [
+                    {
+                        "glob": "libs/query/README.md",
+                        "input": ".",
+                        "output": "."
+                    }
+                ]
+            }
+        }
     }
-  },
-  "tags": []
 }

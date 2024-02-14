@@ -1,15 +1,19 @@
 import { useMutation } from '@tanstack/react-query';
 
-import { LoginPayload, OTPPayload } from '@/libs/types/auth.types';
-import api from '@/libs/utils/api';
-import { accessToken } from '@/libs/utils/tokens';
+import { LoginPayload, OTPPayload } from '@rahat-ui/types/auth.types';
+import api from '../../utils/api';
+import { accessToken } from '../../utils/tokens';
+import { useAuthStore } from './auth-store';
 
 const userLogin = async (payload: LoginPayload) => {
   const res = await api.post('/auth/login', payload);
   return res.data;
 };
 
-const userLoginMutation = (options: any) => {
+const useLogin = (options?: any) => {
+  const token = useAuthStore((state) => state.token);
+  console.log('token', token);
+
   return useMutation({
     mutationFn: (payload: LoginPayload) => userLogin(payload),
     onSuccess: ({ data }) => {
@@ -24,7 +28,7 @@ const createOtp = async (payload: OTPPayload) => {
   return res.data;
 };
 
-const otpMutation = () => {
+const useSendOtp = () => {
   return useMutation({
     mutationFn: (payload: OTPPayload) => createOtp(payload),
 
@@ -33,5 +37,4 @@ const otpMutation = () => {
   });
 };
 
-export { otpMutation, userLoginMutation };
-
+export { useLogin, useSendOtp };

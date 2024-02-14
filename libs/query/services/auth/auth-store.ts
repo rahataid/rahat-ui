@@ -1,4 +1,4 @@
-import { createStore } from '../utils/zustand-store';
+import { createStore } from '../../utils/zustand-store';
 
 const initialStore = {
   token: '',

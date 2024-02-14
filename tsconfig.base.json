@@ -15,11 +15,15 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@rahat-ui/query": ["libs/query/src/index.ts"],
+      "@rahat-ui/query": ["libs/query/index.ts"],
       "@rahat-ui/shadcn/*": ["libs/shadcn/*"],
       "@rahat-ui/shadcn/components/*": ["libs/shadcn/src/components/ui/*"],
       "@rahat-ui/shadcn/utils": ["libs/shadcn/src/utils/index.ts"],
-    "@rahat-ui/query/hooks":["libs/query/src/hooks/index.ts"],
+      "@rahat-ui/query/utils": ["libs/query/utils/index.ts"],
+      "@rahat-ui/query/store": ["libs/query/store/index.ts"],
+      "@rahat-ui/query/auth": ["libs/query/services/auth/index.ts"],
+      "@rahat-ui/query/user": ["libs/query/services/user/index.ts"],
+      "@rahat-ui/types/*": ["libs/types/*"]
     }
   },
   "exclude": ["node_modules", "tmp"]

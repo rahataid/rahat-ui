@@ -1,4 +1,4 @@
-import { useAuthStore } from "@rahat-ui/query/auth"
+import { useAuthStore } from "@rahat-ui/query"
 
 
 interface AuthGuardProps {

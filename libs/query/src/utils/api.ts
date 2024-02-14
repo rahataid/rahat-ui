@@ -1,7 +1,7 @@
 import axios from 'axios';
-import { accessToken } from './tokens';
+import { useAuthStore } from '../lib/auth';
 
-const baseURL = process.env.API_URL;
+const baseURL = process.env['NEXT_PUBLIC_API_HOST_URL'];
 
 const api = axios.create({
   baseURL,
@@ -14,7 +14,7 @@ const api = axios.create({
 // set bearer token
 api.interceptors.request.use(
   (config) => {
-    const token = accessToken.get(); //for local testing paste token from swagger here
+    const token = useAuthStore.getState().token;
     if (token) {
       config.headers['Authorization'] = 'Bearer ' + token;
     }

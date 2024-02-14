@@ -1,6 +1,6 @@
 import { useMutation } from '@tanstack/react-query';
 
-import { LoginPayload, OTPPayload } from '@rahat-ui/types/auth.types';
+import { LoginPayload, OTPPayload } from '@rahat-ui/types';
 import api from '../../utils/api';
 import { accessToken } from '../../utils/tokens';
 import { useAuthStore } from './auth-store';

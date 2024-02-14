@@ -1,6 +1,6 @@
 'use client';
 
-import { useLogin, useSendOtp } from '@rahat-ui/query/auth';
+import { useLogin, useSendOtp } from '@rahat-ui/query';
 import { Button, buttonVariants } from '@rahat-ui/shadcn/components/button';
 import { Input } from '@rahat-ui/shadcn/components/input';
 import { Label } from '@rahat-ui/shadcn/components/label';

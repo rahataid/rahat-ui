@@ -1,14 +1,13 @@
 import { useMemo } from 'react';
 import { Newspaper, UsersRound, UserRound } from 'lucide-react';
-import { paths } from '@/routes/paths';
+import { paths } from '../routes/paths';
 
 export function useNavData() {
   const data = useMemo(
     () => [
       {
         title: 'Dashboard',
-        icon: <Newspape../../routes/paths
-
+        icon: <Newspaper />,
         path: paths.dashboard.root,
       },
       {

@@ -1,11 +1,13 @@
 import { createStore, localPersistStorage } from '../../utils/zustand-store';
 
-const initialStore = {
-  token: '',
-};
+
 
 type AuthState = {
   token: string;
+  isAuthenticated: boolean;
+  isInitialized: boolean;
+  user: any;
+  error: any;
 };
 
 type AuthStateAction = {
@@ -13,6 +15,14 @@ type AuthStateAction = {
 };
 
 type AuthStore = AuthState & AuthStateAction;
+
+const initialStore = {
+  token: '',
+  isAuthenticated: false,
+  isInitialized: false,
+  user: null,
+  error: null,
+};
 
 export const useAuthStore = createStore<AuthStore>(
   (set) => ({

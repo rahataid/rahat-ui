@@ -1,6 +1,5 @@
 'use client';
 
-import { useLogin, useSendOtp } from '@rahat-ui/query';
 import { Button, buttonVariants } from '@rahat-ui/shadcn/components/button';
 import { Input } from '@rahat-ui/shadcn/components/input';
 import { Label } from '@rahat-ui/shadcn/components/label';
@@ -14,10 +13,9 @@ export default function AuthPage() {
   const router = useRouter();
   const [otpSent, setOtpSent] = useState(false);
 
-  const otpSend = useSendOtp()
-  const login = useLogin()
+  // const otpSend = useSendOtp()
+  // const login = useLogin()
 
-  console.log('otpSend', otpSend,login)
 
 
   const onSendOtpFormSubmit = (e: React.SyntheticEvent) => {

@@ -1,5 +1,6 @@
 import { QueryProvider } from '../providers/query-provider';
 import { ThemeProvider } from '../providers/theme-provider';
+import Web3Provider from '../providers/web3-provider';
 import './globals.css';
 
 export default function RootLayout({
@@ -10,16 +11,18 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <QueryProvider>
-          <ThemeProvider
-            attribute="class"
-            // defaultTheme="system"
-            // enableSystem
-            disableTransitionOnChange
-          >
-            <main>{children}</main>
-          </ThemeProvider>
-        </QueryProvider>
+        <Web3Provider>
+          <QueryProvider>
+            <ThemeProvider
+              attribute="class"
+              // defaultTheme="system"
+              // enableSystem
+              disableTransitionOnChange
+            >
+              <main>{children}</main>
+            </ThemeProvider>
+          </QueryProvider>
+        </Web3Provider>
       </body>
     </html>
   );

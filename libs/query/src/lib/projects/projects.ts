@@ -8,7 +8,7 @@ const createProject = async (payload: CreateProjectPayload) => {
   return res.data;
 };
 
-const projectCreateMutation = () => {
+const useProjectCreateMutation = () => {
   const qc = useQueryClient();
 
   return useMutation({
@@ -19,4 +19,4 @@ const projectCreateMutation = () => {
   });
 };
 
-export { projectCreateMutation };
+export { useProjectCreateMutation };

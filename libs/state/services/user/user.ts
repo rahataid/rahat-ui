@@ -1,5 +1,10 @@
 import queryString from 'query-string';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  UseQueryResult,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
 
 import api from '@/libs/utils/api';
 import { TAGS } from '@/libs/state/const/const';
@@ -8,6 +13,8 @@ import {
   DeleteUserPayload,
   EditUserPayload,
   GetUsers,
+  ListUserResponse,
+  User,
 } from '@/libs/types/users.types';
 
 const createNewUser = async (payload: CreateNewUserPayload) => {
@@ -37,7 +44,9 @@ const userListQuery = async (payload: GetUsers) => {
   return response.data;
 };
 
-const useUserListQuery = (payload: GetUsers) => {
+const useUserListQuery = (
+  payload: GetUsers
+): UseQueryResult<ListUserResponse, Error> => {
   return useQuery({
     queryKey: [TAGS.GET_ALL_USER],
     queryFn: () => userListQuery(payload),
@@ -46,22 +55,24 @@ const useUserListQuery = (payload: GetUsers) => {
 
 const getUser = async () => {
   const response = await api.get('/users/me');
-  return response.data;
+  return response.data as User;
 };
 
-const userQuery = () => {
+const userQuery = (): UseQueryResult<User, Error> => {
   return useQuery({
     queryKey: [TAGS.GET_USER],
     queryFn: () => getUser(),
   });
 };
 
-const getUserByUuid = async (payload: { uuid: string }) => {
+const getUserByUuid = async (payload: { uuid: string }): Promise<User> => {
   const response = await api.get(`/users/${payload.uuid}`);
-  return response.data;
+  return response.data as User;
 };
 
-const userByUuidQuery = (payload: { uuid: string }) => {
+const userByUuidQuery = (payload: {
+  uuid: string;
+}): UseQueryResult<User, Error> => {
   return useQuery({
     queryKey: [TAGS.GET_USER],
     queryFn: () => getUserByUuid(payload),

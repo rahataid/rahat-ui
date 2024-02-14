@@ -33,7 +33,7 @@ export const UserForm: React.FC<IProps> = ({ onSubmit, title, uuid }) => {
 
   let response: any;
   if (uuid) {
-    const { data, isSuccess } = userByUuidQuery({ uuid });
+    const { data } = userByUuidQuery({ uuid });
     response = data;
   }
 

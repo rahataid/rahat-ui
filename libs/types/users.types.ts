@@ -25,3 +25,47 @@ export interface GetUsers {
   sort?: string | null;
   order?: string | null;
 }
+
+export interface User {
+  id: number;
+  uuid: string;
+  name: string;
+  gender: Gender;
+  email: string;
+  phone?: any;
+  wallet?: string;
+  extras?: any;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt?: Date;
+  createdBy?: Number;
+  updatedBy?: Number;
+  permissions: Permission[];
+  roles: string[];
+}
+interface Permission {
+  action: string;
+  subject: string;
+  inverted: boolean;
+  conditions?: any;
+}
+
+export interface ListUserResponse {
+  data: User[];
+  meta: Meta;
+}
+interface Meta {
+  total: number;
+  lastPage: number;
+  currentPage: number;
+  perPage: number;
+  prev?: any;
+  next?: any;
+}
+
+enum Gender {
+  MALE,
+  FEMALE,
+  OTHER,
+  UNKNOWN,
+}

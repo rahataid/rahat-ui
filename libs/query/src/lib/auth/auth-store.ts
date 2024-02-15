@@ -6,7 +6,6 @@ type AuthState = {
   token: string;
   isAuthenticated: boolean;
   isInitialized: boolean;
-  user: any;
   error: any;
   challenge: string;
   service: string;
@@ -29,7 +28,6 @@ const initialStore = {
   token: '',
   isAuthenticated: false,
   isInitialized: false,
-  user: null,
   error: null,
   challenge: '',
   service: 'EMAIL',

@@ -2,8 +2,9 @@
 
 import { useEffect } from 'react';
 import { useAuthStore } from '../lib/auth';
+import { useGetCurrentUser, useUserStore } from '../lib/user';
 
-export type UseAuthInitializationReturn = [boolean, boolean];
+export type UseAuthInitializationReturn = [boolean, boolean, any];
 
 export const useAuthInitialization = (): UseAuthInitializationReturn => {
   const { isAuthenticated, isInitialized, token, setInitialization } =
@@ -13,6 +14,10 @@ export const useAuthInitialization = (): UseAuthInitializationReturn => {
       isInitialized: state.isInitialized,
       setInitialization: state.setInitialization,
     }));
+
+  const currentUser = useGetCurrentUser(!!token);
+
+  const setUser = useUserStore((state) => state.setUser);
 
   useEffect(() => {
     if (token) {
@@ -25,8 +30,9 @@ export const useAuthInitialization = (): UseAuthInitializationReturn => {
         isInitialized: true,
         isAuthenticated: false,
       });
+      setUser(null);
     }
   }, [token, setInitialization]);
 
-  return [isAuthenticated, isInitialized];
+  return [isAuthenticated, isInitialized, currentUser];
 };

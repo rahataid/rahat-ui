@@ -1,6 +1,6 @@
 'use client';
 
-import { useAuthInitialization, useGetCurrentUser } from '@rahat-ui/query';
+import { useAuthInitialization } from '@rahat-ui/query';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 import { paths } from '../routes/paths';
@@ -21,9 +21,9 @@ type Props = {
 
 export default function AuthGuard({ children }: Props) {
   const router = useRouter();
-  const [authenticated, initialized] = useAuthInitialization();
+  const [authenticated, initialized, user] = useAuthInitialization();
 
-  const currentUser = useGetCurrentUser();
+  console.log('user', user);
 
   const [checked, setChecked] = useState(false);
 

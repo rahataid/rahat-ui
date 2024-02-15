@@ -59,23 +59,25 @@ const getUser = async () => {
   return response.data as User;
 };
 
-export const useGetCurrentUser = (): UseQueryResult<User, Error> => {
+export const useGetCurrentUser = (
+  enabled: boolean
+): UseQueryResult<User, Error> => {
   const userStore = useUserStore();
 
   const userQuery = useQuery({
     queryKey: [TAGS.GET_USER],
     queryFn: () => getUser(),
-    // enabled: !!userStore.user,
+    enabled,
     initialData: userStore.user,
   });
 
   useEffect(() => {
     if (userQuery.data) {
-      userStore.setUser(userQuery.data);
+      userStore.setUser(userQuery.data.data);
     }
   }, [userQuery.data]);
 
-  return userQuery.data;
+  return userQuery.data.data;
 };
 
 const getUserByUuid = async (payload: { uuid: string }): Promise<User> => {
@@ -131,3 +133,4 @@ export {
   userDeleteMutation,
   userEditMutation,
 };
+

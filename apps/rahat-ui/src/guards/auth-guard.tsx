@@ -21,9 +21,8 @@ type Props = {
 
 export default function AuthGuard({ children }: Props) {
   const router = useRouter();
-  const [authenticated, initialized, user] = useAuthInitialization();
+  const [authenticated, initialized] = useAuthInitialization();
 
-  console.log('user', user);
 
   const [checked, setChecked] = useState(false);
 

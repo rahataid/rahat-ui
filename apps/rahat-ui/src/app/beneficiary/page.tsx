@@ -2,7 +2,12 @@
 
 import { useState } from 'react';
 import { LayoutGrid, AlignJustify } from 'lucide-react';
-import { TabsList, TabsTrigger, Tabs, TabsContent } from '@rahat-ui/shadcn/components/tabs';
+import {
+  TabsList,
+  TabsTrigger,
+  Tabs,
+  TabsContent,
+} from '@rahat-ui/shadcn/components/tabs';
 import {
   ResizablePanelGroup,
   ResizableHandle,
@@ -60,11 +65,13 @@ export default function BeneficiaryPage() {
               <BeneficiaryGridView handleClick={handleBeneficiaryCardClick} />
             </TabsContent>
           </ResizablePanel>
-          <ResizableHandle />
           {selectedData && (
-            <ResizablePanel minSize={24}>
-              <BeneficiaryDetail data={selectedData} />
-            </ResizablePanel>
+            <>
+              <ResizableHandle />
+              <ResizablePanel minSize={24}>
+                <BeneficiaryDetail data={selectedData} />
+              </ResizablePanel>
+            </>
           )}
         </ResizablePanelGroup>
       </Tabs>

@@ -3,7 +3,7 @@
 import { Button, buttonVariants } from '@rahat-ui/shadcn/components/button';
 import { Input } from '@rahat-ui/shadcn/components/input';
 import { Label } from '@rahat-ui/shadcn/components/label';
-import { cn } from '@rahat-ui/shadcn/utils';
+import { cn } from '@rahat-ui/shadcn/src/utils';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';

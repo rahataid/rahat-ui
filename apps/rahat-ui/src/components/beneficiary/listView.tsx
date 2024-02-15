@@ -27,14 +27,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/components/dropdown-menu';
-// import {
-//   Select,
-//   SelectContent,
-//   SelectItem,
-//   SelectTrigger,
-//   SelectValue,
-//   SelectGroup,
-// } from '@rahat-ui/shadcn/components/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  SelectGroup,
+} from '@rahat-ui/shadcn/components/select';
 import { Input } from '@rahat-ui/shadcn/components/input';
 import {
   Table,
@@ -271,7 +271,7 @@ export default function ListView() {
         </div>
         <div className="flex items-center gap-2">
           <div className="text-sm font-medium">Rows per page</div>
-          {/* <Select
+          <Select
             defaultValue="10"
             onValueChange={(value) => table.setPageSize(Number(value))}
           >
@@ -288,7 +288,7 @@ export default function ListView() {
                 <SelectItem value="50">50</SelectItem>
               </SelectGroup>
             </SelectContent>
-          </Select> */}
+          </Select>
         </div>
         <div>
           Page {table.getState().pagination.pageIndex + 1} of{' '}

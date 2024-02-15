@@ -1,4 +1,4 @@
-import { cn } from '@rahat-ui/shadcn/utils';
+import { cn } from '@rahat-ui/shadcn/src/utils';
 import { Card, CardContent, CardHeader, CardTitle } from '@rahat-ui/shadcn/components/card';
 import Image from 'next/image';
 

@@ -1,7 +1,7 @@
 'use client';
 
-import { useAuthStore } from '@rahat-ui/query';
-import { useRouter } from 'next/router';
+import { useAuthInitialization } from '@rahat-ui/query';
+import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 import { paths } from '../routes/paths';
 // routes
@@ -21,14 +21,15 @@ type Props = {
 
 export default function AuthGuard({ children }: Props) {
   const router = useRouter();
-  const authenticated = useAuthStore((state) => state.isAuthenticated);
-  const initialized = useAuthStore((state) => state.isInitialized);
+  const [authenticated, initialized] = useAuthInitialization();
 
   const [checked, setChecked] = useState(false);
 
   const check = useCallback(() => {
     if (!authenticated) {
-      const searchParams = new URLSearchParams({ returnTo: window.location.pathname }).toString();
+      const searchParams = new URLSearchParams({
+        returnTo: window.location.pathname,
+      }).toString();
 
       const loginPath = loginPaths.jwt;
 
@@ -49,7 +50,7 @@ export default function AuthGuard({ children }: Props) {
     return null;
   }
   if (!initialized) {
-    return "Loading"
+    return 'Loading';
   }
 
   return <>{children}</>;

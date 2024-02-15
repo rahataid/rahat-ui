@@ -1,7 +1,8 @@
 'use client';
 
-import { Nav } from '../../components/nav';
 import * as React from 'react';
+import { Nav } from '../../components/nav';
+import AuthGuard from '../../guards/auth-guard';
 
 export default function DashboardLayout({
   children,
@@ -9,9 +10,9 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <>
+    <AuthGuard>
       <Nav />
       <div className="mx-8">{children}</div>
-    </>
+    </AuthGuard>
   );
 }

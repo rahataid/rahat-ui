@@ -26,6 +26,11 @@ export function useNavData() {
         path: paths.dashboard.transactions,
       },
       {
+        title: 'Vendors',
+        icon: <UsersRound />,
+        path: paths.dashboard.vendor,
+      },
+      {
         title: 'Users',
         icon: <UserRound />,
         path: paths.dashboard.user,

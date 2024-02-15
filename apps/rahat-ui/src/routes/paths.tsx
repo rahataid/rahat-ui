@@ -5,6 +5,7 @@ const ROOTS = {
   BENEFICIARY: '/beneficiary',
   USER: '/user',
   TRANSACTIONS: '/transactions',
+  VENDOR: '/vendors',
 };
 
 export const paths = {
@@ -17,5 +18,6 @@ export const paths = {
     beneficiary: ROOTS.BENEFICIARY,
     transactions: ROOTS.TRANSACTIONS,
     user: ROOTS.USER,
+    vendor: ROOTS.VENDOR,
   },
 };

@@ -1,7 +1,5 @@
 import { createStore, localPersistStorage } from '../../utils/zustand-store';
 
-
-
 type AuthState = {
   token: string;
   isAuthenticated: boolean;

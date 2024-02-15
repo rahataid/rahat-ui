@@ -1,5 +1,6 @@
 'use client';
 
+import jwt from 'jsonwebtoken';
 import { useEffect } from 'react';
 import { useAuthStore } from '../lib/auth';
 import { useGetCurrentUser, useUserStore } from '../lib/user';
@@ -21,10 +22,28 @@ export const useAuthInitialization = (): UseAuthInitializationReturn => {
 
   useEffect(() => {
     if (token) {
-      setInitialization({
-        isInitialized: true,
-        isAuthenticated: true,
-      });
+      try {
+        const decodedToken = jwt.decode(token);
+        const currentTime = Date.now() / 1000;
+
+        if (decodedToken && decodedToken.exp > currentTime) {
+          setInitialization({
+            isInitialized: true,
+            isAuthenticated: true,
+          });
+        } else {
+          alert('Token is expired');
+          throw new Error('Token is expired');
+        }
+      } catch (error) {
+        console.error('Invalid token:', error);
+        setInitialization({
+          isInitialized: true,
+          isAuthenticated: false,
+          token: '',
+        });
+        setUser(null);
+      }
     } else {
       setInitialization({
         isInitialized: true,

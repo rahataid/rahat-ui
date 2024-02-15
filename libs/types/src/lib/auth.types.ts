@@ -9,3 +9,13 @@ export interface OTPPayload {
   clientId: string;
   service: string;
 }
+
+export interface OTPResponse {
+  clientId: string;
+  challenge: string;
+  ip: string;
+}
+
+export interface LoginResponse {
+  accessToken: string;
+}

@@ -14,9 +14,7 @@ export default function AuthPage() {
   const [otpSent, setOtpSent] = useState(false);
 
   // const otpSend = useSendOtp()
-  // const login = useLogin()
-
-
+  // const login = useLogin();
 
   const onSendOtpFormSubmit = (e: React.SyntheticEvent) => {
     e.preventDefault();

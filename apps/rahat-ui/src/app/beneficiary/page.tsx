@@ -2,7 +2,12 @@
 
 import { useState } from 'react';
 import { LayoutGrid, AlignJustify } from 'lucide-react';
-import { TabsList, TabsTrigger, Tabs, TabsContent } from '@rahat-ui/shadcn/components/tabs';
+import {
+  TabsList,
+  TabsTrigger,
+  Tabs,
+  TabsContent,
+} from '@rahat-ui/shadcn/components/tabs';
 import {
   ResizablePanelGroup,
   ResizableHandle,

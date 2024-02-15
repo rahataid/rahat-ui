@@ -2,7 +2,9 @@
   "name": "@rahat-ui/source",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "rahat-serve": "npx nx run rahat-ui:dev"
+  },
   "private": true,
   "dependencies": {
     "@hookform/resolvers": "^3.3.4",

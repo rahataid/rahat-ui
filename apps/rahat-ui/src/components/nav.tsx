@@ -3,10 +3,15 @@
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Avatar, AvatarFallback, AvatarImage } from '@rahat-ui/shadcn/components/avatar';
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from '@rahat-ui/shadcn/components/avatar';
 import { useNavData } from '../app/config-nav';
 import { Input } from '@rahat-ui/shadcn/components/input';
 import { paths } from '../routes/paths';
+import { ModeToggle } from './dropdown';
 
 export function Nav() {
   const currentPath = usePathname();
@@ -44,6 +49,7 @@ export function Nav() {
           type="text"
           placeholder="Search..."
         />
+        <ModeToggle />
         <Avatar>
           <AvatarImage src="https://github.com/shadcn.png" />
           <AvatarFallback>CN</AvatarFallback>

@@ -10,7 +10,7 @@ export default function AuthLayout({
 }) {
   return (
     <div className="h-screen p-2 flex">
-      <div className="w-1/2 bg-black rounded p-8 flex flex-col justify-between">
+      <div className="w-1/2 bg-primary rounded p-8 flex flex-col justify-between">
         <div className="flex items-center gap-2">
           <Image
             src="/svg/rahat-logo-white.svg"

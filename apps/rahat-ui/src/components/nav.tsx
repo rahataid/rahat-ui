@@ -72,11 +72,11 @@ export function Nav() {
         </nav>
       </div>
       <div className="flex gap-8">
-        <Input
+        {/* <Input
           className="text-slate-500 font-medium w-96"
           type="text"
           placeholder="Search..."
-        />
+        /> */}
         <ModeToggle />
         <Avatar>
           <AvatarImage src="https://github.com/shadcn.png" />

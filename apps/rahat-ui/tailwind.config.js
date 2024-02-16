@@ -21,6 +21,9 @@ module.exports = {
       },
     },
     extend: {
+      height: {
+        custom: 'calc(100vh - 230px)',
+      },
       colors: {
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',

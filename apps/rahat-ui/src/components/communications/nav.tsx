@@ -15,14 +15,14 @@ export default function Nav() {
               <div className="flex justify-between p-4 rounded-md cursor-pointer hover:bg-primary hover:text-white">
                 <div className="flex gap-3">
                   <Eye />
-                  <p>Active beneficiaries</p>
+                  <p>Active</p>
                 </div>
                 <p>128</p>
               </div>
               <div className="flex justify-between p-4 rounded-md cursor-pointer hover:bg-primary hover:text-white">
                 <div className="flex gap-3">
                   <EyeOff />
-                  <p>Inactive beneficiaries</p>
+                  <p>Inactive</p>
                 </div>
                 <p>32</p>
               </div>
@@ -35,14 +35,14 @@ export default function Nav() {
               <div className="flex justify-between p-4 rounded-md cursor-pointer hover:bg-primary hover:text-white">
                 <div className="flex gap-3">
                   <Eye />
-                  <p>Active beneficiaries</p>
+                  <p>Active</p>
                 </div>
                 <p>128</p>
               </div>
               <div className="flex justify-between p-4 rounded-md cursor-pointer hover:bg-primary hover:text-white">
                 <div className="flex gap-3">
                   <EyeOff />
-                  <p>Inactive beneficiaries</p>
+                  <p>Inactive</p>
                 </div>
                 <p>32</p>
               </div>
@@ -64,11 +64,11 @@ export default function Nav() {
           </h1>
           <nav>
             <div className="flex p-4 gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white">
-              <PlusSquare /> <p>Add beneficiaries</p>
+              <PlusSquare /> <p>Add</p>
             </div>
             <div className="flex p-4 gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white">
               <Import />
-              <p>Import beneficiaries</p>
+              <p>Import</p>
             </div>
           </nav>
         </div>

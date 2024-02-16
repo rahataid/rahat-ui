@@ -77,7 +77,7 @@ export const useGetCurrentUser = (
     }
   }, [userQuery.data]);
 
-  return userQuery.data.data;
+  return userQuery?.data?.data;
 };
 
 const getUserByUuid = async (payload: { uuid: string }): Promise<User> => {

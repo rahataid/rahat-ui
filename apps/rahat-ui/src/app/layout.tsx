@@ -2,6 +2,13 @@ import { QueryProvider } from '../providers/query-provider';
 import { ThemeProvider } from '../providers/theme-provider';
 import './globals.css';
 
+export const metadata = {
+  title: 'Welcome to Rahat',
+  icons: {
+    icon: '/svg/rahat-logo.png',
+  },
+};
+
 export default function RootLayout({
   children,
 }: {

@@ -25,7 +25,7 @@ export function Nav() {
   const navData = useNavData();
 
   return (
-    <div className="flex justify-between px-8 py-4 border-b sticky top-0 bg-white z-50">
+    <div className="flex justify-between px-8 py-4 border-b sticky top-0 z-50">
       <div className="flex gap-12">
         <Link href={paths.dashboard.root} className="flex items-center">
           <Image
@@ -61,7 +61,7 @@ export function Nav() {
               <Link key={item.title} href={item.path}>
                 <p
                   className={`py-2 px-4 font-medium rounded ${
-                    currentPath === item.path && 'bg-slate-100'
+                    currentPath === item.path && 'border'
                   }`}
                 >
                   {item.title}

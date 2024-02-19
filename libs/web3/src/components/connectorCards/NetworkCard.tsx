@@ -1,31 +1,38 @@
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react';
 
-import { URLS } from '../../chains'
-import { hooks, network } from '../../connectors/network'
-import { Card } from '../Card'
+import { URLS } from '../../chains';
+import { hooks, network } from '../../connectors/network';
+import { Card } from '../Card';
 
-const { useChainId, useAccounts, useIsActivating, useIsActive, useProvider, useENSNames } = hooks
+const {
+  useChainId,
+  useAccounts,
+  useIsActivating,
+  useIsActive,
+  useProvider,
+  useENSNames,
+} = hooks;
 
-const CHAIN_IDS = Object.keys(URLS).map(Number)
+const CHAIN_IDS = Object.keys(URLS).map(Number);
 
 export default function NetworkCard() {
-  const chainId = useChainId()
-  const accounts = useAccounts()
-  const isActivating = useIsActivating()
+  const chainId = useChainId();
+  const accounts = useAccounts();
+  const isActivating = useIsActivating();
 
-  const isActive = useIsActive()
+  const isActive = useIsActive();
 
-  const provider = useProvider()
-  const ENSNames = useENSNames(provider)
+  const provider = useProvider();
+  const ENSNames = useENSNames(provider);
 
-  const [error, setError] = useState(undefined)
+  const [error, setError] = useState(undefined);
 
   // attempt to connect eagerly on mount
   useEffect(() => {
     void network.activate().catch(() => {
-      console.debug('Failed to connect to network')
-    })
-  }, [])
+      console.debug('Failed to connect to network');
+    });
+  }, []);
 
   return (
     <Card
@@ -40,5 +47,5 @@ export default function NetworkCard() {
       provider={provider}
       ENSNames={ENSNames}
     />
-  )
+  );
 }

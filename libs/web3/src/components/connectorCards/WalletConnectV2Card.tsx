@@ -1,39 +1,46 @@
-import { URI_AVAILABLE } from '@web3-react/walletconnect-v2'
-import { useEffect, useState } from 'react'
+import { URI_AVAILABLE } from '@web3-react/walletconnect-v2';
+import React, { useEffect, useState } from 'react';
 
-import { MAINNET_CHAINS } from '../../chains'
-import { hooks, walletConnectV2 } from '../../connectors/walletConnectV2'
-import { Card } from '../Card'
+import { MAINNET_CHAINS } from '../../chains';
+import { hooks, walletConnectV2 } from '../../connectors/walletConnectV2';
+import { Card } from '../Card';
 
-const CHAIN_IDS = Object.keys(MAINNET_CHAINS).map(Number)
+const CHAIN_IDS = Object.keys(MAINNET_CHAINS).map(Number);
 
-const { useChainId, useAccounts, useIsActivating, useIsActive, useProvider, useENSNames } = hooks
+const {
+  useChainId,
+  useAccounts,
+  useIsActivating,
+  useIsActive,
+  useProvider,
+  useENSNames,
+} = hooks;
 
 export default function WalletConnectV2Card() {
-  const chainId = useChainId()
-  const accounts = useAccounts()
-  const isActivating = useIsActivating()
+  const chainId = useChainId();
+  const accounts = useAccounts();
+  const isActivating = useIsActivating();
 
-  const isActive = useIsActive()
+  const isActive = useIsActive();
 
-  const provider = useProvider()
-  const ENSNames = useENSNames(provider)
+  const provider = useProvider();
+  const ENSNames = useENSNames(provider);
 
-  const [error, setError] = useState(undefined)
+  const [error, setError] = useState(undefined);
 
   // log URI when available
   useEffect(() => {
     walletConnectV2.events.on(URI_AVAILABLE, (uri: string) => {
-      console.log(`uri: ${uri}`)
-    })
-  }, [])
+      console.log(`uri: ${uri}`);
+    });
+  }, []);
 
   // attempt to connect eagerly on mount
   useEffect(() => {
     walletConnectV2.connectEagerly().catch((error) => {
-      console.debug('Failed to connect eagerly to walletconnect', error)
-    })
-  }, [])
+      console.debug('Failed to connect eagerly to walletconnect', error);
+    });
+  }, []);
 
   return (
     <Card
@@ -48,5 +55,5 @@ export default function WalletConnectV2Card() {
       provider={provider}
       ENSNames={ENSNames}
     />
-  )
+  );
 }

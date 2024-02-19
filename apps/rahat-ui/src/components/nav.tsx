@@ -13,12 +13,13 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from '@rahat-ui/shadcn/components/hover-card';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, Wallet2 } from 'lucide-react';
 
 import { useNavData } from '../app/config-nav';
-import { Input } from '@rahat-ui/shadcn/components/input';
 import { paths } from '../routes/paths';
 import { ModeToggle } from './dropdown';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { WalletConnect } from './connectWallet';
 
 export function Nav() {
   const currentPath = usePathname();
@@ -71,13 +72,9 @@ export function Nav() {
           )}
         </nav>
       </div>
-      <div className="flex gap-8">
-        {/* <Input
-          className="text-slate-500 font-medium w-96"
-          type="text"
-          placeholder="Search..."
-        /> */}
+      <div className="flex gap-4">
         <ModeToggle />
+        <WalletConnect />
         <Avatar>
           <AvatarImage src="https://github.com/shadcn.png" />
           <AvatarFallback>CN</AvatarFallback>

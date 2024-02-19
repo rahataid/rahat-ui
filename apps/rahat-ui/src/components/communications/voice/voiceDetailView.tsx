@@ -19,7 +19,7 @@ export default function VoiceDetailView() {
       <div className="mt-5">
         <Card>
           <CardContent>
-            <div className="flex justify-between gap-4 flex-wrap mt-8 mb-4">
+            <div className="grid grid-cols-3 gap-5 mt-8">
               {logCardData.map((item) => (
                 <LogCard title={item.title} total={item.total} />
               ))}

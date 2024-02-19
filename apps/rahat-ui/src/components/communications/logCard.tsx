@@ -13,7 +13,7 @@ type IProps = {
 
 export default function LogCard({ total, title }: IProps) {
   return (
-    <Card className='w-96 bg-secondary'>
+    <Card className="bg-secondary">
       <CardHeader>
         <CardTitle className="flex justify-between">
           <p>{total}</p>

@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useRouter } from 'next/navigation';
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -45,10 +46,12 @@ import {
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
 import TextTableData from '../../../app/communications/text/textData.json';
+import { paths } from 'apps/rahat-ui/src/routes/paths';
 
 const data: Text[] = TextTableData;
 
 export type Text = {
+  id: number;
   campaign: string;
   startTime: string;
   status: string;
@@ -117,7 +120,8 @@ export const columns: ColumnDef<Text>[] = [
   {
     id: 'actions',
     enableHiding: false,
-    cell: () => {
+    cell: ({ row }) => {
+      const router = useRouter();
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -127,7 +131,15 @@ export const columns: ColumnDef<Text>[] = [
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem>View Details</DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() =>
+                router.push(
+                  paths.dashboard.communication.textDetail(row.original.id)
+                )
+              }
+            >
+              View Details
+            </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem>Edit</DropdownMenuItem>
           </DropdownMenuContent>

@@ -45,9 +45,6 @@ export default function AuthPage() {
     setChallenge,
   ]);
 
-  console.log('challenge', challenge);
-
-  console.log('sendOtpMutation', sendOtpMutation?.data);
 
   const onVerifyOtpFormSubmit = async (e: React.SyntheticEvent) => {
     e.preventDefault();
@@ -59,7 +56,6 @@ export default function AuthPage() {
     }
   };
 
-  console.log('error', error);
 
   return (
     <div className="h-full grid place-items-center relative">

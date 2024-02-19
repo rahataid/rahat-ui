@@ -1,4 +1,4 @@
-import TextView from 'apps/rahat-ui/src/components/communications/textView';
+import TextView from 'apps/rahat-ui/src/components/communications/text/textView';
 
 export const metadata = {
   title: 'Text',

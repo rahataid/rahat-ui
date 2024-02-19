@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useRouter } from 'next/navigation';
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -44,11 +45,13 @@ import {
   TableHeader,
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
-import VoiceTableData from '../../app/communications/voice/voiceData.json';
+import TextTableData from '../../../app/communications/text/textData.json';
+import { paths } from 'apps/rahat-ui/src/routes/paths';
 
-const data: Voice[] = VoiceTableData;
+const data: Text[] = TextTableData;
 
-export type Voice = {
+export type Text = {
+  id: number;
   campaign: string;
   startTime: string;
   status: string;
@@ -56,7 +59,7 @@ export type Voice = {
   totalAudiences: number;
 };
 
-export const columns: ColumnDef<Voice>[] = [
+export const columns: ColumnDef<Text>[] = [
   {
     id: 'select',
     header: ({ table }) => (
@@ -117,7 +120,8 @@ export const columns: ColumnDef<Voice>[] = [
   {
     id: 'actions',
     enableHiding: false,
-    cell: () => {
+    cell: ({ row }) => {
+      const router = useRouter();
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -127,7 +131,15 @@ export const columns: ColumnDef<Voice>[] = [
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem>View Details</DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() =>
+                router.push(
+                  paths.dashboard.communication.textDetail(row.original.id)
+                )
+              }
+            >
+              View Details
+            </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem>Edit</DropdownMenuItem>
           </DropdownMenuContent>
@@ -137,7 +149,7 @@ export const columns: ColumnDef<Voice>[] = [
   },
 ];
 
-export default function VoiceTableView() {
+export default function TextTableView() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []

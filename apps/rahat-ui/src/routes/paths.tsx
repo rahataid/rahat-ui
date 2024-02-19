@@ -7,11 +7,15 @@ const ROOTS = {
   TRANSACTIONS: '/transactions',
   VENDOR: '/vendors',
   COMMUNICATION: '/communications',
+  PROFILE: '/profile',
 };
 
 export const paths = {
   auth: {
     login: `${ROOTS.AUTH}/login`,
+  },
+  profile: {
+    root: ROOTS.PROFILE,
   },
   dashboard: {
     project: ROOTS.PROJECT,
@@ -22,7 +26,9 @@ export const paths = {
     vendor: ROOTS.VENDOR,
     communication: {
       voice: `${ROOTS.COMMUNICATION}/voice`,
+      voiceDetail: (id: number) => `${ROOTS.COMMUNICATION}/voice/${id}`,
       text: `${ROOTS.COMMUNICATION}/text`,
+      textDetail: (id: number) => `${ROOTS.COMMUNICATION}/text/${id}`,
     },
   },
 };

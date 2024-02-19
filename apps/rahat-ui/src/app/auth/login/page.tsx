@@ -126,7 +126,11 @@ export default function AuthPage() {
           )}
           <p className="px-8 text-center text-sm text-muted-foreground">
             {!challenge.length ? "Don't have an account" : "Didn't get one"}?{' '}
-            <Button onClick={onSendOtpFormSubmit} className="font-medium">
+            <Button
+              disabled={sendOtpMutation.isPending}
+              onClick={onSendOtpFormSubmit}
+              className="font-medium"
+            >
               {!challenge.length ? 'Get Started' : 'Resend'}
             </Button>
           </p>

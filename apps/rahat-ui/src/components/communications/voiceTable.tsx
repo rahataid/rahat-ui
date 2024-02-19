@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useRouter } from 'next/navigation';
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -45,10 +46,12 @@ import {
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
 import VoiceTableData from '../../app/communications/voice/voiceData.json';
+import { paths } from '../../routes/paths';
 
 const data: Voice[] = VoiceTableData;
 
 export type Voice = {
+  id: number;
   campaign: string;
   startTime: string;
   status: string;
@@ -117,7 +120,8 @@ export const columns: ColumnDef<Voice>[] = [
   {
     id: 'actions',
     enableHiding: false,
-    cell: () => {
+    cell: ({ row }) => {
+      const router = useRouter();
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -127,7 +131,15 @@ export const columns: ColumnDef<Voice>[] = [
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem>View Details</DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() =>
+                router.push(
+                  paths.dashboard.communication.voiceDetail(row.original.id)
+                )
+              }
+            >
+              View Details
+            </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem>Edit</DropdownMenuItem>
           </DropdownMenuContent>

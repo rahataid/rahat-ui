@@ -22,6 +22,7 @@ export const paths = {
     vendor: ROOTS.VENDOR,
     communication: {
       voice: `${ROOTS.COMMUNICATION}/voice`,
+      voiceDetail: (id: number) => `${ROOTS.COMMUNICATION}/voice/${id}`,
       text: `${ROOTS.COMMUNICATION}/text`,
     },
   },

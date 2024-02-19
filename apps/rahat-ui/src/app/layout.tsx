@@ -3,6 +3,13 @@ import { ThemeProvider } from '../providers/theme-provider';
 import Web3Provider from '../providers/web3-provider';
 import './globals.css';
 
+export const metadata = {
+  title: 'Welcome to Rahat',
+  icons: {
+    icon: '/svg/rahat-logo.png',
+  },
+};
+
 export default function RootLayout({
   children,
 }: {

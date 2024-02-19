@@ -11,41 +11,41 @@ export default function Nav() {
       <ScrollArea className="h-72">
         <div>
           <nav>
-            <div className="flex justify-between p-4 rounded-md cursor-pointer hover:bg-black hover:text-white">
+            <div className="flex justify-between p-4 rounded-md cursor-pointer hover:bg-primary hover:text-white">
               <div className="flex gap-3">
                 <Eye />
                 <p>Active Projects</p>
               </div>
               <p className="text-sm">128</p>
             </div>
-            <div className="flex justify-between p-4 rounded-md cursor-pointer hover:bg-black hover:text-white">
+            <div className="flex justify-between p-4 rounded-md cursor-pointer hover:bg-primary hover:text-white">
               <div className="flex gap-3">
                 <EyeOff />
                 <p>Inactive projects</p>
               </div>
               <p className="text-sm">32</p>
             </div>
-            <div className="flex justify-between p-4 rounded-md cursor-pointer hover:bg-black hover:text-white">
+            <div className="flex justify-between p-4 rounded-md cursor-pointer hover:bg-primary hover:text-white">
               <div className="flex gap-3">
                 <ScreenShareOff /> <p>Disabled/ Deleted</p>
               </div>
               <p className="text-sm">9</p>
             </div>
-            <div className="flex justify-between p-4 rounded-md cursor-pointer hover:bg-black hover:text-white">
+            <div className="flex justify-between p-4 rounded-md cursor-pointer hover:bg-primary hover:text-white">
               <div className="flex gap-3">
                 <Eye />
                 <p>Active Projects</p>
               </div>
               <p className="text-sm">128</p>
             </div>
-            <div className="flex justify-between p-4 rounded-md cursor-pointer hover:bg-black hover:text-white">
+            <div className="flex justify-between p-4 rounded-md cursor-pointer hover:bg-primary hover:text-white">
               <div className="flex gap-3">
                 <EyeOff />
                 <p>Inactive projects</p>
               </div>
               <p className="text-sm">32</p>
             </div>
-            <div className="flex justify-between p-4 rounded-md cursor-pointer hover:bg-black hover:text-white">
+            <div className="flex justify-between p-4 rounded-md cursor-pointer hover:bg-primary hover:text-white">
               <div className="flex gap-3">
                 <ScreenShareOff /> <p>Disabled/ Deleted</p>
               </div>
@@ -59,10 +59,10 @@ export default function Nav() {
       <ScrollArea className="h-72">
         <div>
           <nav>
-            <div className="flex p-4 gap-3 rounded-md cursor-pointer hover:bg-black hover:text-white">
+            <div className="flex p-4 gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white">
               <PlusSquare /> <p>Add projects</p>
             </div>
-            <div className="flex p-4 gap-3 rounded-md cursor-pointer hover:bg-black hover:text-white">
+            <div className="flex p-4 gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white">
               <Import />
               <p>Import projects</p>
             </div>

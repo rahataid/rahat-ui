@@ -1,16 +1,11 @@
 'use client';
 
-import { Nav } from '../../components/nav';
+import DashboardLayout from '../dashboard/layout';
 
 export default function VendorsLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return (
-    <>
-      <Nav />
-      <div className="mx-8">{children}</div>
-    </>
-  );
+  return <DashboardLayout>{children}</DashboardLayout>;
 }

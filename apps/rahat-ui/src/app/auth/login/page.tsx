@@ -13,13 +13,14 @@ import { paths } from '../../../routes/paths';
 export default function AuthPage() {
   const router = useRouter();
   const [otp, setOtp] = useState('');
-  const { address, challenge, service, setAddress, setChallenge } =
+  const { address, challenge, service, setAddress, setChallenge, error } =
     useAuthStore((state) => ({
       challenge: state.challenge,
       service: state.service,
       address: state.address,
       setAddress: state.setAddress,
       setChallenge: state.setChallenge,
+      error: state.error,
     }));
 
   const sendOtpMutation = useSendOtp();
@@ -58,6 +59,8 @@ export default function AuthPage() {
     }
   };
 
+  console.log('error', error);
+
   return (
     <div className="h-full grid place-items-center relative">
       <Link
@@ -81,6 +84,11 @@ export default function AuthPage() {
                 : 'Please enter the OTP sent to your email address.'}
             </p>
           </div>
+          {error && (
+            <p className="text-red-500 text-center">
+              {error?.response?.data?.message}
+            </p>
+          )}
           {!challenge.length ? (
             <form onSubmit={onSendOtpFormSubmit}>
               <div className="grid gap-2">

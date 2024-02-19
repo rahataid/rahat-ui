@@ -25,7 +25,7 @@ export function Nav() {
   const navData = useNavData();
 
   return (
-    <div className="flex justify-between px-8 py-4 border-b sticky top-0 z-50">
+    <div className="flex justify-between px-8 py-4 border-b sticky top-0 z-50 w-full border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="flex gap-12">
         <Link href={paths.dashboard.root} className="flex items-center">
           <Image

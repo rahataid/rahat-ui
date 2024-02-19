@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useRouter } from 'next/navigation';
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -44,20 +45,21 @@ import {
   TableHeader,
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
-import VoiceDetailTableData from '../../app/communications/voice/[id]/voiceDetailData.json';
+import VoiceTableData from '../../../app/communications/voice/voiceData.json';
+import { paths } from '../../../routes/paths';
 
-const data: VoiceDetail[] = VoiceDetailTableData;
+const data: Voice[] = VoiceTableData;
 
-export type VoiceDetail = {
-  _id: string;
-  to: string;
-  date: string;
-  duration: number;
+export type Voice = {
+  id: number;
+  campaign: string;
+  startTime: string;
   status: string;
-  attempts: number;
+  transport: string;
+  totalAudiences: number;
 };
 
-export const columns: ColumnDef<VoiceDetail>[] = [
+export const columns: ColumnDef<Voice>[] = [
   {
     id: 'select',
     header: ({ table }) => (
@@ -81,20 +83,15 @@ export const columns: ColumnDef<VoiceDetail>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: 'to',
-    header: 'To',
-    cell: ({ row }) => <div>{row.getValue('to')}</div>,
+    accessorKey: 'campaign',
+    header: 'Campaigns',
+    cell: ({ row }) => <div>{row.getValue('campaign')}</div>,
   },
   {
-    accessorKey: 'date',
-    header: 'Date',
-    cell: ({ row }) => <div className="capitalize">{row.getValue('date')}</div>,
-  },
-  {
-    accessorKey: 'duration',
-    header: 'Duration',
+    accessorKey: 'startTime',
+    header: 'Start Time',
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue('duration')}</div>
+      <div className="capitalize">{row.getValue('startTime')}</div>
     ),
   },
   {
@@ -107,16 +104,24 @@ export const columns: ColumnDef<VoiceDetail>[] = [
     ),
   },
   {
-    accessorKey: 'attempts',
-    header: 'Attempts',
+    accessorKey: 'transport',
+    header: 'Transport',
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue('attempts')}</div>
+      <div className="capitalize">{row.getValue('transport')}</div>
+    ),
+  },
+  {
+    accessorKey: 'totalAudiences',
+    header: 'Total Audiences',
+    cell: ({ row }) => (
+      <div className="capitalize">{row.getValue('totalAudiences')}</div>
     ),
   },
   {
     id: 'actions',
     enableHiding: false,
-    cell: () => {
+    cell: ({ row }) => {
+      const router = useRouter();
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -126,7 +131,15 @@ export const columns: ColumnDef<VoiceDetail>[] = [
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem>View Details</DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() =>
+                router.push(
+                  paths.dashboard.communication.voiceDetail(row.original.id)
+                )
+              }
+            >
+              View Details
+            </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem>Edit</DropdownMenuItem>
           </DropdownMenuContent>
@@ -136,7 +149,7 @@ export const columns: ColumnDef<VoiceDetail>[] = [
   },
 ];
 
-export default function VoiceDetailTableView() {
+export default function VoiceTableView() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -165,13 +178,15 @@ export default function VoiceDetailTableView() {
   });
 
   return (
-    <div>
+    <div className="w-full p-4">
       <div className="flex items-center py-4">
         <Input
-          placeholder="Filter Logs..."
-          value={(table.getColumn('to')?.getFilterValue() as string) ?? ''}
+          placeholder="Filter campaigns..."
+          value={
+            (table.getColumn('campaign')?.getFilterValue() as string) ?? ''
+          }
           onChange={(event) =>
-            table.getColumn('to')?.setFilterValue(event.target.value)
+            table.getColumn('campaign')?.setFilterValue(event.target.value)
           }
           className="max-w-sm mr-3"
         />

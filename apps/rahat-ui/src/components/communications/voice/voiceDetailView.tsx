@@ -1,7 +1,7 @@
 'use client';
 
 import VoiceDetailTable from './voiceDetailTable';
-import VoiceInfoCard from './infoCard';
+import VoiceInfoCard from '../infoCard';
 import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
 
 export default function VoiceDetailView() {

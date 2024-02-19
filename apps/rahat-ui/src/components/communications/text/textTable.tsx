@@ -44,7 +44,7 @@ import {
   TableHeader,
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
-import TextTableData from '../../app/communications/text/textData.json';
+import TextTableData from '../../../app/communications/text/textData.json';
 
 const data: Text[] = TextTableData;
 

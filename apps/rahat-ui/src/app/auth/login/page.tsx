@@ -125,10 +125,10 @@ export default function AuthPage() {
             </form>
           )}
           <p className="px-8 text-center text-sm text-muted-foreground">
-            {!challenge.length ? "Don't have an accoun" : "Didn't get one"}?{' '}
-            <Link href="/" className="font-medium">
+            {!challenge.length ? "Don't have an account" : "Didn't get one"}?{' '}
+            <Button onClick={onSendOtpFormSubmit} className="font-medium">
               {!challenge.length ? 'Get Started' : 'Resend'}
-            </Link>
+            </Button>
           </p>
         </div>
       </div>

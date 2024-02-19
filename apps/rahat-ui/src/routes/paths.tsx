@@ -7,11 +7,15 @@ const ROOTS = {
   TRANSACTIONS: '/transactions',
   VENDOR: '/vendors',
   COMMUNICATION: '/communications',
+  PROFILE: '/profile',
 };
 
 export const paths = {
   auth: {
     login: `${ROOTS.AUTH}/login`,
+  },
+  profile: {
+    root: ROOTS.PROFILE,
   },
   dashboard: {
     project: ROOTS.PROJECT,

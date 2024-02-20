@@ -1,0 +1,28 @@
+{
+  "name": "@rahat-ui/web3",
+  "version": "0.0.1",
+  "dependencies": {
+    "@swc/helpers": "~0.5.2",
+    "@ethersproject/bignumber": "^5.6.0",
+    "@ethersproject/experimental": "^5.6.0",
+    "@ethersproject/providers": "^5.6.0",
+    "@ethersproject/units": "^5.6.0",
+    "@web3-react/coinbase-wallet": "^8.2.2",
+    "@web3-react/core": "^8.2.2",
+    "@web3-react/eip1193": "^8.2.2",
+    "@web3-react/empty": "^8.2.2",
+    "@web3-react/gnosis-safe": "^8.2.3",
+    "@web3-react/metamask": "^8.2.3",
+    "@web3-react/network": "^8.2.2",
+    "@web3-react/types": "^8.2.2",
+    "@web3-react/url": "^8.2.2",
+    "@web3-react/walletconnect": "^8.2.2",
+    "@web3-react/walletconnect-v2": "^8.5.0",
+    "@coinbase/wallet-sdk": "^3.3.0",
+    "react": "18.2.0",
+    "pino-pretty": "^10.3.1"
+  },
+  "type": "commonjs",
+  "main": "./src/index.js",
+  "typings": "./src/index.d.ts"
+}

@@ -1,8 +1,13 @@
 export interface LoginPayload {
-  challenge: string;
   otp: string;
+  challenge: string;
   service: string;
 }
+
+export interface LoginResponse {
+  accessToken: string;
+}
+
 
 export interface OTPPayload {
   address: string;

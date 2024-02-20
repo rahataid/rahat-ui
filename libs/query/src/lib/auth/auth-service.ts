@@ -1,45 +1,54 @@
 import { useMutation } from '@tanstack/react-query';
 
 import {
+  ApiResponse,
   LoginPayload,
-  OTPPayload,
   LoginResponse,
-  OTPResponse,
+  OTPPayload,
 } from '@rahat-ui/types';
 import api from '../../utils/api';
-import { accessToken } from '../../utils/tokens';
 import { useAuthStore } from './auth-store';
 
-const userLogin = async (payload: LoginPayload) => {
-  const res = await api.post('/auth/login', payload);
-  return res.data as LoginResponse;
-};
+export const useLogin = () => {
+  const setError = useAuthStore((state) => state.setError);
+  const setToken = useAuthStore((state) => state.setToken);
 
-const useLogin = (options?: any) => {
-  const token = useAuthStore((state) => state.token);
-  console.log('token', token);
+  const userLogin = async (
+    payload: LoginPayload
+  ): Promise<ApiResponse<LoginResponse>> => {
+    const res = await api.post('/auth/login', payload);
+    return res.data;
+  };
 
   return useMutation({
-    mutationFn: (payload: LoginPayload) => userLogin(payload),
+    mutationFn: userLogin,
     onSuccess: (data) => {
-      accessToken.set(data.accessToken);
+      setToken(data?.data?.accessToken);
+      return data.data;
     },
-    onError: () => {},
+    onError: (err) => {
+      setError(err);
+    },
   });
 };
 
 const createOtp = async (payload: OTPPayload) => {
   const res = await api.post('/auth/otp', payload);
-  return res.data as OTPResponse;
+  return res.data;
 };
 
-const useSendOtp = () => {
-  return useMutation({
-    mutationFn: (payload: OTPPayload) => createOtp(payload),
+export const useSendOtp = () => {
+  const setError = useAuthStore((state) => state.setError);
+  const setChallenge = useAuthStore((state) => state.setChallenge);
 
-    onSuccess: () => {},
-    onError: () => {},
+  return useMutation<any, unknown, ApiResponse<OTPPayload>>({
+    mutationFn: (payload) => createOtp(payload),
+    onSuccess: (data) => {
+      setChallenge(data?.data?.challenge);
+      return data.data;
+    },
+    onError: (err) => {
+      setError(err);
+    },
   });
 };
-
-export { useLogin, useSendOtp };

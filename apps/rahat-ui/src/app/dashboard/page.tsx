@@ -1,12 +1,14 @@
-import ChartsCard from '../../components/chartsCard';
-import DataCard from '../../components/dataCard';
+'use client';
+
 import { Button } from '@rahat-ui/shadcn/components/button';
 import { Input } from '@rahat-ui/shadcn/components/input';
-import type { Metadata } from 'next';
+import { MetamaskCard } from '@rahat-ui/web3';
+import ChartsCard from '../../components/chartsCard';
+import DataCard from '../../components/dataCard';
 
-export const metadata: Metadata = {
-  title: 'DashBoard',
-};
+// export const metadata: Metadata = {
+//   title: 'DashBoard',
+// };
 
 export default function DashBoardPage() {
   return (
@@ -51,6 +53,8 @@ export default function DashBoardPage() {
         <ChartsCard className="" title="Beneficiaries" image="/charts.png" />
         <ChartsCard className="" title="Beneficiaries" image="/charts.png" />
       </div>
+
+      <MetamaskCard />
     </div>
   );
 }

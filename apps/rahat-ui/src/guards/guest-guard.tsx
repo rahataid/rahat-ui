@@ -1,8 +1,7 @@
 'use client';
 
-import { useAuthStore } from '@rahat-ui/query';
-import { useSearchParams } from 'next/navigation';
-import { useRouter } from 'next/router';
+import { useAuthInitialization } from '@rahat-ui/query';
+import { useRouter, useSearchParams } from 'next/navigation';
 // routes
 import { useCallback, useEffect } from 'react';
 import { paths } from '../routes/paths';
@@ -18,7 +17,8 @@ export default function GuestGuard({ children }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const authenticated = useAuthStore((state) => state.isAuthenticated);
+  const [authenticated, initialized] = useAuthInitialization();
+
   const returnTo = searchParams.get('returnTo');
 
   // const { isActive } = useWeb3React();
@@ -32,6 +32,10 @@ export default function GuestGuard({ children }: Props) {
   useEffect(() => {
     check();
   }, [check]);
+
+  if (!initialized) {
+    return 'Loading';
+  }
 
   return <>{children}</>;
 }

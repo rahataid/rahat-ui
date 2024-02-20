@@ -10,12 +10,19 @@ import UsersTable from '../../components/users/usersTable';
 import UserDetails from '../../components/users/viewUser';
 import { IUserItem } from '../../types/user';
 import { useState } from 'react';
+import { USER_NAV_ROUTE } from '../../const/user.const';
+import RoleTable from '../../components/users/role/roleTable';
+import AddRole from '../../components/users/role/addRole';
 
 export default function UsersPage() {
   const [selectedData, setSelectedData] = useState<IUserItem>();
-
+  const [activeTab, setActiveTab] = useState<string>(USER_NAV_ROUTE.DEFAULT);
   const handleUserClick = (item: IUserItem) => {
     setSelectedData(item);
+  };
+
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab);
   };
 
   return (
@@ -34,12 +41,25 @@ export default function UsersPage() {
             maxSize={20}
             className="h-full"
           >
-            <UserNav />
+            <UserNav onTabChange={handleTabChange} />
           </ResizablePanel>
           <ResizableHandle />
           <ResizablePanel>
             <div className="p-2">
-              <UsersTable handleClick={handleUserClick} />
+              {activeTab === USER_NAV_ROUTE.DEFAULT && (
+                <UsersTable handleClick={handleUserClick} />
+              )}
+              {activeTab === USER_NAV_ROUTE.LIST_ROLE && (
+                <RoleTable
+                // handleClick={handleUserClick}
+                />
+              )}
+
+              {activeTab === USER_NAV_ROUTE.ADD_ROLE && (
+                <AddRole
+                // handleClick={handleUserClick}
+                />
+              )}
             </div>
           </ResizablePanel>
           {selectedData && (

@@ -1,30 +1,61 @@
 'use client';
 
+import { useAuthStore, useLogin, useSendOtp } from '@rahat-ui/query';
 import { Button, buttonVariants } from '@rahat-ui/shadcn/components/button';
 import { Input } from '@rahat-ui/shadcn/components/input';
 import { Label } from '@rahat-ui/shadcn/components/label';
 import { cn } from '@rahat-ui/shadcn/src/utils';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { paths } from '../../../routes/paths';
 
 export default function AuthPage() {
   const router = useRouter();
-  const [otpSent, setOtpSent] = useState(false);
+  const [otp, setOtp] = useState('');
+  const { address, challenge, service, setAddress, setChallenge } =
+    useAuthStore((state) => ({
+      challenge: state.challenge,
+      service: state.service,
+      address: state.address,
+      setAddress: state.setAddress,
+      setChallenge: state.setChallenge,
+    }));
 
-  // const otpSend = useSendOtp()
-  // const login = useLogin();
+  const sendOtpMutation = useSendOtp();
+  const loginMutation = useLogin();
 
-  const onSendOtpFormSubmit = (e: React.SyntheticEvent) => {
+  const onSendOtpFormSubmit = async (e: React.SyntheticEvent) => {
     e.preventDefault();
-    setOtpSent(true);
+    await sendOtpMutation.mutateAsync({
+      address,
+      service,
+      clientId: '105cd449-53f6-44e4-85f3-feaa7d762ffa',
+    });
   };
 
-  const onVerifyOtpFormSubmit = (e: React.SyntheticEvent) => {
+  useEffect(() => {
+    if (sendOtpMutation.isSuccess) {
+      console.log(sendOtpMutation.data);
+
+      setChallenge(sendOtpMutation.data?.data?.challenge ?? '');
+    }
+  }, [
+    sendOtpMutation.data?.challenge,
+    sendOtpMutation.isSuccess,
+    setChallenge,
+  ]);
+
+  const onVerifyOtpFormSubmit = async (e: React.SyntheticEvent) => {
     e.preventDefault();
-    router.push(paths.dashboard.root);
+    try {
+      await loginMutation.mutateAsync({ otp, challenge, service });
+      router.push(paths.dashboard.root);
+    } catch (error) {
+      console.error('Failed to verify OTP:', error);
+    }
   };
+
   return (
     <div className="h-full grid place-items-center relative">
       <Link
@@ -40,15 +71,15 @@ export default function AuthPage() {
         <div className="flex flex-col gap-4 w-96">
           <div className="flex flex-col space-y-2 text-center">
             <h1 className="text-2xl font-semibold tracking-tight">
-              {!otpSent ? 'Sign in' : 'OTP has been sent'}
+              {!challenge.length ? 'Sign in' : 'OTP has been sent'}
             </h1>
             <p className="text-sm text-muted-foreground">
-              {!otpSent
+              {!challenge.length
                 ? 'Enter your email below to Sign in.'
                 : 'Please enter the OTP sent to your email address.'}
             </p>
           </div>
-          {!otpSent ? (
+          {!challenge.length ? (
             <form onSubmit={onSendOtpFormSubmit}>
               <div className="grid gap-2">
                 <div className="grid gap-1">
@@ -62,6 +93,8 @@ export default function AuthPage() {
                     autoCapitalize="none"
                     autoComplete="email"
                     autoCorrect="off"
+                    value={address}
+                    onChange={(e) => setAddress(e.target.value)}
                   />
                 </div>
                 <Button type="submit">Send OTP</Button>
@@ -81,17 +114,18 @@ export default function AuthPage() {
                     autoCapitalize="none"
                     autoComplete="otp"
                     autoCorrect="off"
+                    value={otp}
+                    onChange={(e) => setOtp(e.target.value)}
                   />
                 </div>
                 <Button type="submit">Verify</Button>
               </div>
             </form>
           )}
-
           <p className="px-8 text-center text-sm text-muted-foreground">
-            {!otpSent ? "Don't have an accoun" : "Didn't get one"}?{' '}
+            {!challenge.length ? "Don't have an accoun" : "Didn't get one"}?{' '}
             <Link href="/" className="font-medium">
-              {!otpSent ? 'Get Started' : 'Resend'}
+              {!challenge.length ? 'Get Started' : 'Resend'}
             </Link>
           </p>
         </div>

@@ -1,0 +1,23 @@
+{
+  "name": "web3",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/web3/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:swc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/web3",
+        "main": "libs/web3/src/index.ts",
+        "tsConfig": "libs/web3/tsconfig.lib.json",
+        "assets": ["libs/web3/*.md"]
+      }
+    },
+    "publish": {
+      "command": "node tools/scripts/publish.mjs web3 {args.ver} {args.tag}",
+      "dependsOn": ["build"]
+    }
+  },
+  "tags": ["rahat-ui"]
+}

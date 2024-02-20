@@ -1,10 +1,10 @@
-import ProjectNav from '../../components/projects/nav';
+import { Tabs } from '@rahat-ui/shadcn/components//tabs';
 import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
 } from '@rahat-ui/shadcn/components/resizable';
-import { Tabs } from '@rahat-ui/shadcn/components//tabs';
+import ProjectNav from '../../components/projects/nav';
 import VendorsTable from '../../components/vendors/vendorsTable';
 
 export default function VendorsPage() {

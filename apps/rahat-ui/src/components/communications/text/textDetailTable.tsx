@@ -17,7 +17,6 @@ import { MoreHorizontal, Settings2 } from 'lucide-react';
 
 import { Button } from '@rahat-ui/shadcn/components/button';
 import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
-import { Badge } from '@rahat-ui/shadcn/components/badge';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -44,19 +43,17 @@ import {
   TableHeader,
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
-import TextTableData from '../../app/communications/text/textData.json';
+import TextDetailTableData from '../../../app/communications/text/[id]/textDetailData.json';
 
-const data: Text[] = TextTableData;
+const data: TextDetail[] = TextDetailTableData;
 
-export type Text = {
-  campaign: string;
-  startTime: string;
-  status: string;
-  transport: string;
-  totalAudiences: number;
+export type TextDetail = {
+  _id: string;
+  to: string;
+  date: string;
 };
 
-export const columns: ColumnDef<Text>[] = [
+export const columns: ColumnDef<TextDetail>[] = [
   {
     id: 'select',
     header: ({ table }) => (
@@ -80,39 +77,14 @@ export const columns: ColumnDef<Text>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: 'campaign',
-    header: 'Campaigns',
-    cell: ({ row }) => <div>{row.getValue('campaign')}</div>,
+    accessorKey: 'to',
+    header: 'To',
+    cell: ({ row }) => <div>{row.getValue('to')}</div>,
   },
   {
-    accessorKey: 'startTime',
-    header: 'Start Time',
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue('startTime')}</div>
-    ),
-  },
-  {
-    accessorKey: 'status',
-    header: 'Status',
-    cell: ({ row }) => (
-      <Badge variant="secondary" className="rounded-md capitalize">
-        {row.getValue('status')}
-      </Badge>
-    ),
-  },
-  {
-    accessorKey: 'transport',
-    header: 'Transport',
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue('transport')}</div>
-    ),
-  },
-  {
-    accessorKey: 'totalAudiences',
-    header: 'Total Audiences',
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue('totalAudiences')}</div>
-    ),
+    accessorKey: 'date',
+    header: 'Date',
+    cell: ({ row }) => <div className="capitalize">{row.getValue('date')}</div>,
   },
   {
     id: 'actions',
@@ -137,7 +109,7 @@ export const columns: ColumnDef<Text>[] = [
   },
 ];
 
-export default function TextTableView() {
+export default function TextDetailTableView() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -166,15 +138,13 @@ export default function TextTableView() {
   });
 
   return (
-    <div className="w-full p-4">
+    <div>
       <div className="flex items-center py-4">
         <Input
-          placeholder="Filter campaigns..."
-          value={
-            (table.getColumn('campaign')?.getFilterValue() as string) ?? ''
-          }
+          placeholder="Filter Logs..."
+          value={(table.getColumn('to')?.getFilterValue() as string) ?? ''}
           onChange={(event) =>
-            table.getColumn('campaign')?.setFilterValue(event.target.value)
+            table.getColumn('to')?.setFilterValue(event.target.value)
           }
           className="max-w-sm mr-3"
         />

@@ -13,19 +13,26 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from '@rahat-ui/shadcn/components/hover-card';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, Wallet2 } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+  DropdownMenuGroup,
+} from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
 
 import { useNavData } from '../app/config-nav';
-import { Input } from '@rahat-ui/shadcn/components/input';
 import { paths } from '../routes/paths';
 import { ModeToggle } from './dropdown';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { WalletConnect } from './connectWallet';
 
 export function Nav() {
   const currentPath = usePathname();
   const navData = useNavData();
 
   return (
-    <div className="flex justify-between px-8 py-4 border-b sticky top-0 z-50">
+    <div className="flex justify-between px-8 py-4 border-b sticky top-0 z-50 bg-white">
       <div className="flex gap-12">
         <Link href={paths.dashboard.root} className="flex items-center">
           <Image
@@ -61,7 +68,7 @@ export function Nav() {
               <Link key={item.title} href={item.path}>
                 <p
                   className={`py-2 px-4 font-medium rounded ${
-                    currentPath === item.path && 'border'
+                    currentPath === item.path && 'bg-secondary'
                   }`}
                 >
                   {item.title}
@@ -71,17 +78,46 @@ export function Nav() {
           )}
         </nav>
       </div>
-      <div className="flex gap-8">
-        {/* <Input
-          className="text-slate-500 font-medium w-96"
-          type="text"
-          placeholder="Search..."
-        /> */}
+      <div className="flex gap-4 items-center">
         <ModeToggle />
-        <Avatar>
-          <AvatarImage src="https://github.com/shadcn.png" />
-          <AvatarFallback>CN</AvatarFallback>
-        </Avatar>
+        <WalletConnect />
+        <DropdownMenu>
+          <DropdownMenuTrigger>
+            <Avatar>
+              <AvatarImage
+                src="https://github.com/shadcn.png"
+                alt="profile-icon"
+              />
+              <AvatarFallback>CN</AvatarFallback>
+            </Avatar>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="mr-5" side="bottom">
+            <DropdownMenuGroup className="p-2 flex flex-col">
+              <div className="p-2 flex flex-col">
+                <span className="font-bold">John Doe</span>
+                <span>john.doe@rahat.io</span>
+              </div>
+              <Link
+                className="p-2 hover:bg-secondary"
+                href={paths.profile.root}
+              >
+                Profile
+              </Link>
+              <Link
+                className="p-2 hover:bg-secondary"
+                href={paths.dashboard.root}
+              >
+                Home
+              </Link>
+              <Link
+                className="text-red-500 p-2 hover:bg-secondary w-full"
+                href={paths.auth.login}
+              >
+                Logout
+              </Link>
+            </DropdownMenuGroup>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </div>
   );

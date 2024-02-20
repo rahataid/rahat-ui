@@ -5,7 +5,7 @@ import {
   ResizableHandle,
   ResizablePanel,
 } from '@rahat-ui/shadcn/components/resizable';
-import CommunicationNav from './nav';
+import CommunicationNav from '../nav';
 import VoiceTableView from './voiceTable';
 
 export default function VoiceView() {

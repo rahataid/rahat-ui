@@ -13,13 +13,14 @@ import { paths } from '../../../routes/paths';
 export default function AuthPage() {
   const router = useRouter();
   const [otp, setOtp] = useState('');
-  const { address, challenge, service, setAddress, setChallenge } =
+  const { address, challenge, service, setAddress, setChallenge, error } =
     useAuthStore((state) => ({
       challenge: state.challenge,
       service: state.service,
       address: state.address,
       setAddress: state.setAddress,
       setChallenge: state.setChallenge,
+      error: state.error,
     }));
 
   const sendOtpMutation = useSendOtp();
@@ -36,12 +37,10 @@ export default function AuthPage() {
 
   useEffect(() => {
     if (sendOtpMutation.isSuccess) {
-      console.log(sendOtpMutation.data);
-
       setChallenge(sendOtpMutation.data?.data?.challenge ?? '');
     }
   }, [
-    sendOtpMutation.data?.challenge,
+    sendOtpMutation.data?.data?.challenge,
     sendOtpMutation.isSuccess,
     setChallenge,
   ]);
@@ -79,6 +78,11 @@ export default function AuthPage() {
                 : 'Please enter the OTP sent to your email address.'}
             </p>
           </div>
+          {error && (
+            <p className="text-red-500 text-center">
+              {error?.response?.data?.message}
+            </p>
+          )}
           {!challenge.length ? (
             <form onSubmit={onSendOtpFormSubmit}>
               <div className="grid gap-2">
@@ -123,10 +127,14 @@ export default function AuthPage() {
             </form>
           )}
           <p className="px-8 text-center text-sm text-muted-foreground">
-            {!challenge.length ? "Don't have an accoun" : "Didn't get one"}?{' '}
-            <Link href="/" className="font-medium">
+            {!challenge.length ? "Don't have an account" : "Didn't get one"}?{' '}
+            <Button
+              disabled={sendOtpMutation.isPending}
+              onClick={onSendOtpFormSubmit}
+              className="font-medium"
+            >
               {!challenge.length ? 'Get Started' : 'Resend'}
-            </Link>
+            </Button>
           </p>
         </div>
       </div>

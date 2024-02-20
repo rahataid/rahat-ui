@@ -7,10 +7,12 @@ import {
   OTPPayload,
 } from '@rahat-ui/types';
 import api from '../../utils/api';
+import useErrorStore from '../../utils/error-store';
 import { useAuthStore } from './auth-store';
 
 export const useLogin = () => {
-  const setError = useAuthStore((state) => state.setError);
+  const setError = useErrorStore((state) => state.setError);
+  // const setError = useAuthStore((state) => state.setError);
   const setToken = useAuthStore((state) => state.setToken);
 
   const userLogin = async (
@@ -38,7 +40,7 @@ const createOtp = async (payload: OTPPayload) => {
 };
 
 export const useSendOtp = () => {
-  const setError = useAuthStore((state) => state.setError);
+  const setError = useErrorStore((state) => state.setError);
   const setChallenge = useAuthStore((state) => state.setChallenge);
 
   return useMutation<any, unknown, ApiResponse<OTPPayload>>({
@@ -48,7 +50,7 @@ export const useSendOtp = () => {
       return data.data;
     },
     onError: (err) => {
-      setError(err);
+      setError(err as any);
     },
   });
 };

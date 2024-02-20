@@ -4,4 +4,5 @@ export * from './lib/auth';
 export * from './lib/user';
 
 export { useAuthInitialization } from './hooks/use-auth-init';
+export { default as useErrorStore } from './utils/error-store';
 

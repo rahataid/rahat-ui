@@ -1,3 +1,4 @@
+import { Toaster } from '@rahat-ui/shadcn/components/toaster';
 import { QueryProvider } from '../providers/query-provider';
 import { ThemeProvider } from '../providers/theme-provider';
 import Web3Provider from '../providers/web3-provider';
@@ -27,6 +28,7 @@ export default function RootLayout({
               disableTransitionOnChange
             >
               <main>{children}</main>
+              <Toaster />
             </ThemeProvider>
           </QueryProvider>
         </Web3Provider>

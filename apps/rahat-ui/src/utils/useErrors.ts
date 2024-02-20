@@ -24,5 +24,5 @@ export const useError = () => {
     return () => {
       unsub3();
     };
-  }, []);
+  }, [toast]);
 };

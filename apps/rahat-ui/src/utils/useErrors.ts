@@ -9,8 +9,11 @@ export const useError = () => {
     const unsub3 = useErrorStore.subscribe((state, prevState) => {
       if (state.error !== prevState.error && state.error !== null) {
         // Extract error name and message
+
         const errorName = state.error?.response.data.name;
         const errorMessage = state.error?.response.data.message;
+
+        console.log('state.error', state.error);
 
         // Show alert with error name and message
         toast({

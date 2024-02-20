@@ -53,12 +53,9 @@ export default function AuthPage() {
 
   const onVerifyOtpFormSubmit = async (e: React.SyntheticEvent) => {
     e.preventDefault();
-    try {
-      await loginMutation.mutateAsync({ otp, challenge, service });
-      router.push(paths.dashboard.root);
-    } catch (error) {
-      console.error('Failed to verify OTP:', error);
-    }
+    await loginMutation.mutateAsync({ otp, challenge, service });
+    //await sendOtp({ otp, challenge, service });
+    router.push(paths.dashboard.root);
   };
 
   return (

@@ -29,7 +29,7 @@ export const useLogin = () => {
       return data.data;
     },
     onError: (err) => {
-      setError(err);
+      setError(err as any);
     },
   });
 };

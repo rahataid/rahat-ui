@@ -15,11 +15,17 @@ type ErrorActions = {
 
 export type ErrorStore = ErrorState & ErrorActions;
 
-const useErrorStore = createStore<ErrorStore>((set) => ({
-  error: null,
-  setError(error) {
-    set({ error });
-  },
-}));
+const useErrorStore = createStore<ErrorStore>(
+  (set) => ({
+    error: null,
+    setError(error) {
+      console.log('error', error);
+      set({ error });
+    },
+  }),
+  {
+    devtoolsEnabled: true,
+  }
+);
 
 export default useErrorStore;

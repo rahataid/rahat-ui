@@ -33,7 +33,7 @@ export default function BeneficiaryView() {
   return (
     <div>
       <Tabs defaultValue="grid">
-        <div className="flex items-center justify-between mb-9 mt-8">
+        <div className="flex items-center justify-between my-4">
           <h1 className="text-3xl font-semibold">Beneficiaries List</h1>
           <TabsList>
             <TabsTrigger value="list" onClick={handleView}>

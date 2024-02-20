@@ -1,4 +1,4 @@
-import ProjectNav from '../../../components/projects/nav'
+import ProjectNav from '../../../components/projects/nav';
 import {
   ResizableHandle,
   ResizablePanel,
@@ -19,7 +19,7 @@ export default function ProjectPage() {
   return (
     <div className="mb-5">
       <Tabs defaultValue="grid">
-        <div className="flex items-center justify-between mb-9 mt-8">
+        <div className="flex items-center justify-between my-4">
           <div className="flex items-center gap-2">
             <h1 className="text-3xl font-semibold">Project Details</h1>
             <Badge variant={'outline'} className="border-red-400 bg-red-50">

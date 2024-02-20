@@ -11,7 +11,7 @@ export default function VendorsPage() {
   return (
     <div className="mb-5">
       <Tabs defaultValue="grid">
-        <div className="flex items-center justify-between mb-9 mt-8">
+        <div className="flex items-center justify-between my-4">
           <h1 className="text-3xl font-semibold">Vendors List</h1>
         </div>
         <ResizablePanelGroup

@@ -18,6 +18,7 @@ type AuthStateAction = {
   setAddress: (address: string) => void;
   setToken: (token: string) => void;
   setInitialization: (d: any) => void;
+  clearAuth: () => void;
 };
 
 type AuthStore = AuthState & AuthStateAction;
@@ -63,6 +64,9 @@ export const useAuthStore = createStore<AuthStore>(
       set({
         ...d,
       });
+    },
+    clearAuth: () => {
+      set(initialStore);
     },
   }),
   {

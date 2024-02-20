@@ -26,13 +26,24 @@ import { paths } from '../routes/paths';
 import { ModeToggle } from './dropdown';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { WalletConnect } from './connectWallet';
+import { useAuthStore, useUserStore } from '@rahat-ui/query';
 
 export function Nav() {
   const currentPath = usePathname();
   const navData = useNavData();
+  const { user, clearUser } = useUserStore((state) => ({
+    user: state.user,
+    clearUser: state.clearUser,
+  }));
+  const clearAuth = useAuthStore((state) => state.clearAuth);
+  const handleLogout = () => {
+    clearUser();
+    clearAuth();
+    window.location.reload();
+  };
 
   return (
-    <div className="flex justify-between px-8 py-4 border-b sticky top-0 z-50 bg-white">
+    <div className="flex justify-between px-8 py-4 border-b sticky top-0 z-50 bg-blur">
       <div className="flex gap-12">
         <Link href={paths.dashboard.root} className="flex items-center">
           <Image
@@ -94,8 +105,8 @@ export function Nav() {
           <DropdownMenuContent className="mr-5" side="bottom">
             <DropdownMenuGroup className="p-2 flex flex-col">
               <div className="p-2 flex flex-col">
-                <span className="font-bold">John Doe</span>
-                <span>john.doe@rahat.io</span>
+                <span className="font-bold">{user?.name}</span>
+                <span>{user?.email}</span>
               </div>
               <Link
                 className="p-2 hover:bg-secondary"
@@ -109,12 +120,12 @@ export function Nav() {
               >
                 Home
               </Link>
-              <Link
+              <Button
                 className="text-red-500 p-2 hover:bg-secondary w-full"
-                href={paths.auth.login}
+                onClick={handleLogout}
               >
                 Logout
-              </Link>
+              </Button>
             </DropdownMenuGroup>
           </DropdownMenuContent>
         </DropdownMenu>

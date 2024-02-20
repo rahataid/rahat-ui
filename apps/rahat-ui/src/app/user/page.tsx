@@ -37,7 +37,7 @@ export default function UsersPage() {
             <UserNav />
           </ResizablePanel>
           <ResizableHandle />
-          <ResizablePanel>
+          <ResizablePanel className="min-h-screen">
             <div className="p-2">
               <UsersTable handleClick={handleUserClick} />
             </div>

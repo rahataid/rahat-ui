@@ -30,11 +30,11 @@ import {
 } from '@tanstack/react-table';
 import { ArrowUpDown, ArrowUpRightFromSquare, ChevronDown } from 'lucide-react';
 import React from 'react';
-// import { IUserItem } from '../../types/user';
-import { useLisRoleQuery } from '@rahat-ui/query';
+import { useListRoleQuery } from '@rahat-ui/query';
+import { IRoleItem } from 'apps/rahat-ui/src/types/user';
 
 type IProps = {
-  handleClick: (item: Role) => void;
+  handleClick: (item: IRoleItem) => void;
 };
 
 export type Role = {
@@ -104,7 +104,7 @@ export const columns: ColumnDef<Role, any>[] = [
     },
   },
 ];
-export default function RoleTable() {
+export default function RoleTable({ handleClick }: IProps) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
 
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -114,7 +114,7 @@ export default function RoleTable() {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
-  const { data, isLoading, isError, isSuccess, isFetched } = useLisRoleQuery(
+  const { data, isLoading, isError, isSuccess, isFetched } = useListRoleQuery(
     {}
   );
 
@@ -209,7 +209,7 @@ export default function RoleTable() {
                       className="cursor-pointer"
                       data-state={row.getIsSelected() && 'selected'}
                       onClick={() => {
-                        // handleClick(row.original);
+                        handleClick(row.original);
                       }}
                     >
                       {row.getVisibleCells().map((cell) => (

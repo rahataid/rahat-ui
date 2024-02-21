@@ -8,17 +8,24 @@ import { Tabs } from '@rahat-ui/shadcn/components/tabs';
 import UserNav from '../../components/users/nav';
 import UsersTable from '../../components/users/usersTable';
 import UserDetails from '../../components/users/viewUser';
-import { IUserItem } from '../../types/user';
+import RoleDetails from '../../components/users/role/roleDetail';
+import { IRoleItem, IUserItem } from '../../types/user';
 import { useState } from 'react';
 import { USER_NAV_ROUTE } from '../../const/user.const';
 import RoleTable from '../../components/users/role/roleTable';
 import AddRole from '../../components/users/role/addRole';
 
 export default function UsersPage() {
-  const [selectedData, setSelectedData] = useState<IUserItem>();
+  const [selectedUserData, setSelectedUserData] = useState<IUserItem>();
+  const [selectedRoleData, setSelectedRoleData] = useState<IRoleItem>();
+
   const [activeTab, setActiveTab] = useState<string>(USER_NAV_ROUTE.DEFAULT);
   const handleUserClick = (item: IUserItem) => {
-    setSelectedData(item);
+    setSelectedUserData(item);
+  };
+
+  const handleRoleClick = (item: IRoleItem) => {
+    setSelectedRoleData(item);
   };
 
   const handleTabChange = (tab: string) => {
@@ -50,23 +57,25 @@ export default function UsersPage() {
                 <UsersTable handleClick={handleUserClick} />
               )}
               {activeTab === USER_NAV_ROUTE.LIST_ROLE && (
-                <RoleTable
-                // handleClick={handleUserClick}
-                />
+                <RoleTable handleClick={handleRoleClick} />
               )}
 
-              {activeTab === USER_NAV_ROUTE.ADD_ROLE && (
-                <AddRole
-                // handleClick={handleUserClick}
-                />
-              )}
+              {activeTab === USER_NAV_ROUTE.ADD_ROLE && <AddRole />}
             </div>
           </ResizablePanel>
-          {selectedData && (
+          {selectedUserData && (
             <>
               <ResizableHandle />
               <ResizablePanel minSize={24}>
-                <UserDetails data={selectedData} />
+                <UserDetails data={selectedUserData} />
+              </ResizablePanel>
+            </>
+          )}
+          {selectedRoleData && (
+            <>
+              <ResizableHandle />
+              <ResizablePanel minSize={24}>
+                <RoleDetails data={selectedRoleData} />
               </ResizablePanel>
             </>
           )}

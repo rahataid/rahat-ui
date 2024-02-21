@@ -41,7 +41,7 @@ const listRole = async (payload: PaginatedRequestPayload) => {
   return response.data;
 };
 
-const useLisRoleQuery = (
+const useListRoleQuery = (
   payload: PaginatedRequestPayload
 ): UseQueryResult<any, Error> => {
   return useQuery({
@@ -84,7 +84,7 @@ const useDeleteRoleMutation = () => {
 
 export {
   useCreateRoleMutation,
-  useLisRoleQuery,
+  useListRoleQuery,
   useDeleteRoleMutation,
   useEditRoleMutation,
 };

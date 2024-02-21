@@ -54,9 +54,16 @@ export default function UserDetail({ data }: IProps) {
               <Label htmlFor="airplane-mode">User</Label>
             </div>
             <div className="flex items-center gap-2">
-              <Switch id="admin" checked />
+              <Switch id="admin" />
               <Label htmlFor="airplane-mode">Admin</Label>
             </div>
+          </div>
+          <div className="p-4 border-t flex justify-between">
+            <div className="flex items-center space-x-2">
+              <Switch id="disable-user" />
+              <Label htmlFor="disable-user">Add as owner</Label>
+            </div>
+            <Button>Confirm</Button>
           </div>
         </TabsContent>
         <TabsContent value="edit-user">
@@ -75,18 +82,18 @@ export default function UserDetail({ data }: IProps) {
               <Label htmlFor="airplane-mode">Approve</Label>
             </div>
             <div className="flex items-center gap-2">
-              <Switch id="disable" checked />
+              <Switch id="disable" />
               <Label htmlFor="airplane-mode">Disable</Label>
             </div>
           </div>
-        </TabsContent>
-        <div className="p-4 border-t flex justify-between">
-          <div className="flex items-center space-x-2">
-            <Switch id="disable-user" />
-            <Label htmlFor="disable-user">Add as owner</Label>
+          <div className="p-4 border-t flex justify-between">
+            <div className="flex items-center space-x-2">
+              <Switch id="disable-user" />
+              <Label htmlFor="disable-user">Add as owner</Label>
+            </div>
+            <Button>Confirm</Button>
           </div>
-          <Button>Confirm</Button>
-        </div>
+        </TabsContent>
       </Tabs>
     </>
   );

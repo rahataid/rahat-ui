@@ -2,7 +2,7 @@ import {
   CreateNewUserPayload,
   DeleteUserPayload,
   EditUserPayload,
-  GetUsers,
+  PaginatedRequestPayload,
   ListUserResponse,
   User,
 } from '@rahat-ui/types';
@@ -34,7 +34,7 @@ const userCreateMutation = () => {
   });
 };
 
-const userListQuery = async (payload: GetUsers) => {
+const userListQuery = async (payload: PaginatedRequestPayload) => {
   const searchParams = queryString.stringify({
     page: payload.page,
     perPage: payload.perPage,
@@ -46,7 +46,7 @@ const userListQuery = async (payload: GetUsers) => {
 };
 
 const useUserListQuery = (
-  payload: GetUsers
+  payload: PaginatedRequestPayload
 ): UseQueryResult<ListUserResponse, Error> => {
   return useQuery({
     queryKey: [TAGS.GET_ALL_USER],
@@ -133,4 +133,3 @@ export {
   userDeleteMutation,
   userEditMutation,
 };
-

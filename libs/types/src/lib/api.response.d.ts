@@ -5,3 +5,9 @@ export interface ApiResponse<T> {
   status: number;
   success: boolean;
 }
+export interface PaginatedRequestPayload {
+  page?: number | null;
+  perPage?: number | null;
+  sort?: string | null;
+  order?: string | null;
+}

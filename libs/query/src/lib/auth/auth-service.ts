@@ -23,7 +23,7 @@ export const useLogin = () => {
   return useMutation({
     mutationFn: userLogin,
     onSuccess: (data) => {
-      setToken(data?.data.accessToken);
+      setToken(data?.data?.accessToken);
       return data.data;
     },
     onError: (err) => {
@@ -52,4 +52,3 @@ export const useSendOtp = () => {
     },
   });
 };
-

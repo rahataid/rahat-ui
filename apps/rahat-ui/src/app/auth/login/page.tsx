@@ -45,7 +45,6 @@ export default function AuthPage() {
     setChallenge,
   ]);
 
-
   const onVerifyOtpFormSubmit = async (e: React.SyntheticEvent) => {
     e.preventDefault();
     try {
@@ -55,7 +54,6 @@ export default function AuthPage() {
       console.error('Failed to verify OTP:', error);
     }
   };
-
 
   return (
     <div className="h-full grid place-items-center relative">

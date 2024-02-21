@@ -19,13 +19,6 @@ export interface DeleteUserPayload {
   uuid: string;
 }
 
-export interface GetUsers {
-  page?: number | null;
-  perPage?: number | null;
-  sort?: string | null;
-  order?: string | null;
-}
-
 export interface User {
   id: number;
   uuid: string;

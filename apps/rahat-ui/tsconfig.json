@@ -26,7 +26,8 @@
     "../../apps/rahat-ui/.next/types/**/*.ts",
     "../../dist/apps/rahat-ui/.next/types/**/*.ts",
     "next-env.d.ts",
-    ".next/types/**/*.ts"
+    ".next/types/**/*.ts",
+    "../../abi.ts"
   ],
   "exclude": ["node_modules", "jest.config.ts", "**/*.spec.ts", "**/*.test.ts"]
 }

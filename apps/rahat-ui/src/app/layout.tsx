@@ -1,7 +1,7 @@
 import { Toaster } from '@rahat-ui/shadcn/components/toaster';
 import { QueryProvider } from '../providers/query-provider';
 import { ThemeProvider } from '../providers/theme-provider';
-import Web3Provider from '../providers/web3-provider';
+import { Wagmi } from '../providers/wagmi.provider';
 import './globals.css';
 
 export const metadata = {
@@ -19,7 +19,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <Web3Provider>
+        <Wagmi>
           <QueryProvider>
             <ThemeProvider
               attribute="class"
@@ -31,7 +31,7 @@ export default function RootLayout({
               <Toaster />
             </ThemeProvider>
           </QueryProvider>
-        </Web3Provider>
+        </Wagmi>
       </body>
     </html>
   );

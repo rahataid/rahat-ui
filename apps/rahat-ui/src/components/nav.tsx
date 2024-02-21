@@ -1,8 +1,5 @@
 'use client';
 
-import { usePathname } from 'next/navigation';
-import Link from 'next/link';
-import Image from 'next/image';
 import {
   Avatar,
   AvatarFallback,
@@ -13,20 +10,23 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from '@rahat-ui/shadcn/components/hover-card';
-import { ChevronDown, Wallet2 } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuTrigger,
   DropdownMenuGroup,
+  DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
+import { ChevronDown } from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
+import { useAuthStore, useUserStore } from '@rahat-ui/query';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { useNavData } from '../app/config-nav';
 import { paths } from '../routes/paths';
-import { ModeToggle } from './dropdown';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { WalletConnect } from './connectWallet';
-import { useAuthStore, useUserStore } from '@rahat-ui/query';
+import { ModeToggle } from './dropdown';
 
 export function Nav() {
   const currentPath = usePathname();
@@ -43,7 +43,7 @@ export function Nav() {
   };
 
   return (
-    <div className="flex justify-between px-8 py-4 border-b sticky top-0 z-50 bg-blur">
+    <div className="flex justify-between px-8 py-4 border-b sticky top-0 z-50 bg-blur backdrop-blur">
       <div className="flex gap-12">
         <Link href={paths.dashboard.root} className="flex items-center">
           <Image
@@ -121,7 +121,7 @@ export function Nav() {
                 Home
               </Link>
               <Button
-                className="text-red-500 p-2 hover:bg-secondary w-full"
+                className="mt-2 p-2 hover:border w-full"
                 onClick={handleLogout}
               >
                 Logout

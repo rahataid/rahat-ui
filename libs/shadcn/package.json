@@ -11,6 +11,7 @@
     "embla-carousel-react": "^8.0.0-rc22",
     "react-resizable-panels": "^2.0.3",
     "tailwind-merge": "^2.2.1",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "@radix-ui/react-toast": "^1.1.5"
   }
 }

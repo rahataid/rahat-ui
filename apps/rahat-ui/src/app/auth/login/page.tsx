@@ -5,10 +5,11 @@ import { Button, buttonVariants } from '@rahat-ui/shadcn/components/button';
 import { Input } from '@rahat-ui/shadcn/components/input';
 import { Label } from '@rahat-ui/shadcn/components/label';
 import { cn } from '@rahat-ui/shadcn/src/utils';
+import { paths } from 'apps/rahat-ui/src/routes/paths';
+import { useError } from 'apps/rahat-ui/src/utils/useErrors';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
-import { paths } from '../../../routes/paths';
 
 export default function AuthPage() {
   const router = useRouter();
@@ -22,6 +23,9 @@ export default function AuthPage() {
       setChallenge: state.setChallenge,
       error: state.error,
     }));
+
+  const err = useError();
+  console.log('err', err);
 
   const sendOtpMutation = useSendOtp();
   const loginMutation = useLogin();
@@ -41,18 +45,17 @@ export default function AuthPage() {
     }
   }, [
     sendOtpMutation.data?.data?.challenge,
+    sendOtpMutation.error,
+    sendOtpMutation.isError,
     sendOtpMutation.isSuccess,
     setChallenge,
   ]);
 
   const onVerifyOtpFormSubmit = async (e: React.SyntheticEvent) => {
     e.preventDefault();
-    try {
-      await loginMutation.mutateAsync({ otp, challenge, service });
-      router.push(paths.dashboard.root);
-    } catch (error) {
-      console.error('Failed to verify OTP:', error);
-    }
+    await loginMutation.mutateAsync({ otp, challenge, service });
+    //await sendOtp({ otp, challenge, service });
+    router.push(paths.dashboard.root);
   };
 
   return (

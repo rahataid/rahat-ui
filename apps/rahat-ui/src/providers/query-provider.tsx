@@ -5,6 +5,7 @@ import {
   QueryClientProvider,
   ReactQueryDevtools,
 } from '@rahat-ui/query';
+import { ConnectKitProvider } from 'connectkit';
 
 interface QueryProviderProps {
   children: React.ReactNode;
@@ -20,13 +21,12 @@ export const QueryProvider = ({ children }: QueryProviderProps) => {
       mutations: {
         retry: false,
       },
-      
     },
   });
 
   return (
     <QueryClientProvider client={queryClient}>
-      {children}
+      <ConnectKitProvider>{children}</ConnectKitProvider>
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   );

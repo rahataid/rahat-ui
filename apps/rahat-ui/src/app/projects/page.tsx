@@ -20,9 +20,7 @@ export default function ProjectPage({ handleClick }: CardProps) {
   return (
     <div className="mb-5">
       <Tabs defaultValue="grid">
-        <div className="flex items-center justify-between my-4">
-          <h1 className="text-3xl font-semibold">Projects List</h1>
-        </div>
+        <div className="flex items-center justify-between my-2"></div>
         <ResizablePanelGroup
           direction="horizontal"
           className="min-h-max border"

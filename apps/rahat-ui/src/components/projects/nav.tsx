@@ -6,7 +6,7 @@ export default function Nav() {
   return (
     <>
       <h1 className="p-4 font-semibold text-xl text-slate-600">
-        Navigation Items
+        Project Lists
       </h1>
       <ScrollArea className="h-72">
         <div>

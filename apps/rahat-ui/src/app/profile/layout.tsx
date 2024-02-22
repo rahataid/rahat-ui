@@ -1,6 +1,6 @@
 'use client';
 
-import { Nav } from '../../components/nav';
+import Nav from '../../components/projects/nav';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (

@@ -23,11 +23,11 @@ import { usePathname } from 'next/navigation';
 
 import { useAuthStore, useUserStore } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { useNavData } from '../app/config-nav';
-import { paths } from '../routes/paths';
-import { WalletConnect } from './connectWallet';
-import { ModeToggle } from './dropdown';
-import MobileNav from './mobileNav';
+import { useNavData } from '../../app/config-nav';
+import { paths } from '../../routes/paths';
+import { WalletConnect } from '../connectWallet';
+import { ModeToggle } from '../dropdown';
+import MobileNav from '../mobileNav';
 
 export function Nav() {
   const currentPath = usePathname();
@@ -44,7 +44,7 @@ export function Nav() {
   };
 
   return (
-    <div className="flex justify-between px-8 py-2 sticky top-0 z-50 bg-blur backdrop-blur">
+    <div className="flex justify-between px-8 py-4 border-b sticky top-0 z-50 bg-blur backdrop-blur">
       <div className="flex gap-12">
         <Link href={paths.dashboard.root} className="flex items-center">
           <Image

@@ -5,8 +5,8 @@ export function Account() {
   const { disconnect } = useDisconnect();
   const { data: ensName } = useEnsName({ address });
   const { data: ensAvatar } = useEnsAvatar({ name: ensName! });
-
   const formattedAddress = formatAddress(address);
+
 
   return (
     <div className="flex items-center space-x-4">

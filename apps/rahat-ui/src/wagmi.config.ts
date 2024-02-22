@@ -34,6 +34,7 @@ export const config = createConfig(
     transports: {
       [mainnet.id]: http(),
       [sepolia.id]: http(),
+      [arbitrumSepolia.id]: http(),
     },
     walletConnectProjectId: '',
     // Required App Info
@@ -46,3 +47,9 @@ export const config = createConfig(
     appIcon: 'https://family.co/logo.png', // your app's icon, no bigger than 1024x1024px (max. 1MB)
   })
 );
+
+// export default defineConfig({
+//   out: 'src/generated.ts',
+//   contracts: [],
+//   plugins: [],
+// });

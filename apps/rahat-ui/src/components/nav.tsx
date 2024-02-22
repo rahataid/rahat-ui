@@ -16,7 +16,7 @@ import {
   DropdownMenuGroup,
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, Menu } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -27,6 +27,7 @@ import { useNavData } from '../app/config-nav';
 import { paths } from '../routes/paths';
 import { WalletConnect } from './connectWallet';
 import { ModeToggle } from './dropdown';
+import MobileNav from './mobileNav';
 
 export function Nav() {
   const currentPath = usePathname();
@@ -54,7 +55,7 @@ export function Nav() {
           />
           <p className="font-medium text-slate-500">Rahat</p>
         </Link>
-        <nav className="flex items-center">
+        <nav className="hidden md:flex items-center">
           {navData.map((item) =>
             item.children ? (
               <HoverCard openDelay={0} closeDelay={100}>
@@ -92,6 +93,7 @@ export function Nav() {
       <div className="flex gap-4 items-center">
         <ModeToggle />
         <WalletConnect />
+        <MobileNav />
         <DropdownMenu>
           <DropdownMenuTrigger>
             <Avatar>

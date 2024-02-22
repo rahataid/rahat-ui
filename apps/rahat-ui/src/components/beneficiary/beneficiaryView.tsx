@@ -18,6 +18,10 @@ import BeneficiaryListView from '../../components/beneficiary/listView';
 import BeneficiaryGridView from '../../components/beneficiary/gridView';
 import BeneficiaryDetail from '../../components/beneficiary/beneficiaryDetail';
 import { IBeneficiaryItem } from '../../types/beneficiary';
+import {
+  useListBeneficiaryStatus,
+  usebeneficiaryListQuery,
+} from '@rahat-ui/query';
 
 export default function BeneficiaryView() {
   const [selectedData, setSelectedData] = useState<IBeneficiaryItem>();
@@ -29,7 +33,8 @@ export default function BeneficiaryView() {
   const handleView = () => {
     setSelectedData(undefined);
   };
-
+  const { data } = useListBeneficiaryStatus();
+  console.log('beneficiarylist', data);
   return (
     <div>
       <Tabs defaultValue="grid">

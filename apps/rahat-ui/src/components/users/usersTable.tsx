@@ -150,7 +150,7 @@ export default function UserTable({ handleClick }: IProps) {
   });
 
   return (
-    <div className="w-full">
+    <div className="w-full p-2">
       <div className="flex items-center py-2">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

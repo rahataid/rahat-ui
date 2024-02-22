@@ -23,6 +23,8 @@ module.exports = {
     extend: {
       height: {
         custom: 'calc(100vh - 230px)',
+        custom1: 'calc(100vh - 300px)',
+
       },
       colors: {
         border: 'hsl(var(--border))',

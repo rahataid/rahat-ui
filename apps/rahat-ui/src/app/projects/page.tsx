@@ -7,6 +7,7 @@ import {
   ResizablePanelGroup,
 } from '@rahat-ui/shadcn/components/resizable';
 import { Tabs } from '@rahat-ui/shadcn/components//tabs';
+import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 
 type CardProps = {
   id: number;
@@ -36,17 +37,19 @@ export default function ProjectPage({ handleClick }: CardProps) {
           </ResizablePanel>
           <ResizableHandle />
           <ResizablePanel>
-            <div className="sm:flex gap-4 p-4">
-              {projectsData.map((project) => (
-                <ProjectCards
-                  id={project.id}
-                  key={project.id}
-                  title={project.title}
-                  subTitle={project.subTitle}
-                  handleClick={handleClick}
-                />
-              ))}
-            </div>
+            <ScrollArea className="h-custom">
+              <div className="grid grid-cols-4 gap-8 p-4">
+                {projectsData.map((project) => (
+                  <ProjectCards
+                    id={project.id}
+                    key={project.id}
+                    title={project.title}
+                    subTitle={project.subTitle}
+                    handleClick={handleClick}
+                  />
+                ))}
+              </div>
+            </ScrollArea>
           </ResizablePanel>
         </ResizablePanelGroup>
       </Tabs>

@@ -6,6 +6,7 @@ import {
 } from '@rahat-ui/shadcn/components/resizable';
 import ProjectNav from '../../components/projects/nav';
 import VendorsTable from '../../components/vendors/vendorsTable';
+import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 
 export default function VendorsPage() {
   return (
@@ -28,9 +29,9 @@ export default function VendorsPage() {
           </ResizablePanel>
           <ResizableHandle />
           <ResizablePanel>
-            <div className="p-4">
+            <ScrollArea className="h-custom">
               <VendorsTable />
-            </div>
+            </ScrollArea>
           </ResizablePanel>
         </ResizablePanelGroup>
       </Tabs>

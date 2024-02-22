@@ -14,7 +14,7 @@ import {
 
 import { Label } from '@rahat-ui/shadcn/components/label';
 import { Switch } from '@rahat-ui/shadcn/components/switch';
-import { Share, Archive, Trash2 } from 'lucide-react';
+import { Share, Archive, Trash2, FilePenLine } from 'lucide-react';
 import { IBeneficiaryItem } from '../../types/beneficiary';
 import { Button } from '@rahat-ui/shadcn/components/button';
 
@@ -41,6 +41,16 @@ export default function BeneficiaryDetail({ data }: IProps) {
                 </TooltipTrigger>
                 <TooltipContent className="bg-secondary ">
                   <p className="text-xs font-medium">Export</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+            <TooltipProvider delayDuration={100}>
+              <Tooltip>
+                <TooltipTrigger>
+                  <FilePenLine />
+                </TooltipTrigger>
+                <TooltipContent className="bg-secondary ">
+                  <p className="text-xs font-medium">Edit</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>

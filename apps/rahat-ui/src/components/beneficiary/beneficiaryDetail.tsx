@@ -1,8 +1,20 @@
 import Image from 'next/image';
-import { Tabs, TabsTrigger, TabsList, TabsContent } from '@rahat-ui/shadcn/components/tabs';
+import {
+  Tabs,
+  TabsTrigger,
+  TabsList,
+  TabsContent,
+} from '@rahat-ui/shadcn/components/tabs';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@rahat-ui/shadcn/components/tooltip';
+
 import { Label } from '@rahat-ui/shadcn/components/label';
 import { Switch } from '@rahat-ui/shadcn/components/switch';
-import { Share } from 'lucide-react';
+import { Share, Archive, Trash2 } from 'lucide-react';
 import { IBeneficiaryItem } from '../../types/beneficiary';
 import { Button } from '@rahat-ui/shadcn/components/button';
 
@@ -21,9 +33,37 @@ export default function BeneficiaryDetail({ data }: IProps) {
               Transaction History
             </TabsTrigger>
           </TabsList>
-          <div className="flex gap-2">
-            <Share />
-            <p>Export Data</p>
+          <div className="flex gap-4">
+            <TooltipProvider delayDuration={100}>
+              <Tooltip>
+                <TooltipTrigger>
+                  <Share />
+                </TooltipTrigger>
+                <TooltipContent className="bg-secondary ">
+                  <p className="text-xs font-medium">Export</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+            <TooltipProvider delayDuration={100}>
+              <Tooltip>
+                <TooltipTrigger>
+                  <Archive />
+                </TooltipTrigger>
+                <TooltipContent className="bg-secondary ">
+                  <p className="text-xs font-medium">Archive</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+            <TooltipProvider delayDuration={100}>
+              <Tooltip>
+                <TooltipTrigger>
+                  <Trash2 />
+                </TooltipTrigger>
+                <TooltipContent className="bg-secondary ">
+                  <p className="text-xs font-medium">Delete</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </div>
         </div>
         <div className="flex justify-between items-center p-4">

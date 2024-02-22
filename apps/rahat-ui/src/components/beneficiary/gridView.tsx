@@ -1,28 +1,79 @@
 'use client';
 
+import { useState } from 'react';
 import { Input } from '@rahat-ui/shadcn/components/input';
 import { Search, Filter } from 'lucide-react';
 import BeneficiaryCard from '../../components/beneficiary/card';
 import BeneficiaryData from '../../app/beneficiary/beneficiaryData.json';
 import { IBeneficiaryItem } from '../../types/beneficiary';
 import { ScrollArea } from '@rahat-ui/shadcn/components/scroll-area';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationNext,
+  PaginationPrevious,
+} from '@rahat-ui/shadcn/components/pagination';
 
 type IProps = {
   handleClick: (item: IBeneficiaryItem) => void;
 };
 
 export default function GridView({ handleClick }: IProps) {
+  const itemsPerPage = 4;
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const totalItems = BeneficiaryData.length;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const displayedItems = BeneficiaryData.slice(startIndex, endIndex);
+
+  const handlePaginationClick = (page: number) => {
+    setCurrentPage(page);
+  };
   return (
     <ScrollArea className="p-4 h-custom">
-      <div className="flex justify-between items-center gap-2 mb-8">
-        <div className="relative w-full">
-          <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input placeholder="Search" className="pl-8" />
+      <div className="grid 2xl:grid-cols-2 gap-2 2xl:mb-8">
+        <div className="flex items-center gap-2">
+          <div className="relative w-full">
+            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input placeholder="Search" className="pl-8" />
+          </div>
+          <Filter />
         </div>
-        <Filter />
+        <Pagination className="flex flex-row justify-end">
+          <PaginationContent>
+            <PaginationItem
+              className={currentPage === 1 ? '' : 'cursor-pointer'}
+            >
+              <PaginationPrevious
+                onClick={() =>
+                  handlePaginationClick(currentPage === 1 ? 1 : currentPage - 1)
+                }
+              />
+            </PaginationItem>
+            <p className="text-sm font-medium mx-2">
+              Page {currentPage} of {totalPages}
+            </p>
+            <PaginationItem
+              className={currentPage === totalPages ? '' : 'cursor-pointer'}
+            >
+              <PaginationNext
+                onClick={() =>
+                  handlePaginationClick(
+                    currentPage === totalPages ? totalPages : currentPage + 1
+                  )
+                }
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
       </div>
+
       <div className="flex flex-col gap-3">
-        {BeneficiaryData.map((data: IBeneficiaryItem) => (
+        {displayedItems.map((data: IBeneficiaryItem) => (
           <BeneficiaryCard
             key={data.name}
             name={data.name}

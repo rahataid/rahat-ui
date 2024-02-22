@@ -14,6 +14,7 @@ import { Badge } from '@rahat-ui/shadcn/components/badge';
 import { Button } from '@rahat-ui/shadcn/components/button';
 import { Tabs } from '@rahat-ui/shadcn/components/tabs';
 import ProjectDetails from './projectDetails';
+import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 
 export default function ProjectPage() {
   return (
@@ -64,7 +65,9 @@ export default function ProjectPage() {
           </ResizablePanel>
           <ResizableHandle />
           <ResizablePanel>
-            <ProjectDetails />
+            <ScrollArea className="h-custom">
+              <ProjectDetails />
+            </ScrollArea>
           </ResizablePanel>
         </ResizablePanelGroup>
       </Tabs>

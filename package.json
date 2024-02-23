@@ -5,7 +5,9 @@
   "scripts": {
     "rahat:dev": "npx nx run rahat-ui:dev",
     "rahat:build": "npx nx run rahat-ui:build ",
-    "rahat:serve": "npx nx run rahat-ui:start"
+    "rahat:serve": "npx nx run rahat-ui:start",
+    "build:all": "npx nx run-many --target=build --all",
+    "postbuild": "cp -R apps/rahat-ui/public dist/apps/rahat-ui"
   },
   "private": true,
   "dependencies": {

@@ -180,7 +180,7 @@ export default function VoiceTableView() {
 
   return (
     <>
-      <ScrollArea className="w-full h-custom p-4">
+      <ScrollArea className="w-full h-withPage p-4">
         <div className="flex items-center py-4">
           <Input
             placeholder="Filter campaigns..."
@@ -273,7 +273,7 @@ export default function VoiceTableView() {
           </Table>
         </div>
       </ScrollArea>
-      <div className="flex items-center justify-end space-x-8 p-4">
+      <div className="flex items-center justify-end space-x-8 p-2 border-t">
         <div className="flex-1 text-sm text-muted-foreground">
           {table.getFilteredSelectedRowModel().rows.length} of{' '}
           {table.getFilteredRowModel().rows.length} row(s) selected.

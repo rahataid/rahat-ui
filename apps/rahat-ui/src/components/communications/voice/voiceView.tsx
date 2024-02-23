@@ -10,7 +10,7 @@ import VoiceTableView from './voiceTable';
 
 export default function VoiceView() {
   return (
-    <div className="mt-4">
+    <div className="mt-2">
       <ResizablePanelGroup direction="horizontal" className="min-h-max border">
         <ResizablePanel
           minSize={17}

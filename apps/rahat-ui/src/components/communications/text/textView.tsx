@@ -10,7 +10,7 @@ import TextTableView from './textTable';
 
 export default function TextView() {
   return (
-    <div className='mt-4'>
+    <div className='mt-2'>
       <ResizablePanelGroup direction="horizontal" className="min-h-max border">
         <ResizablePanel
           minSize={17}

@@ -236,7 +236,7 @@ export default function UserTable({ handleClick }: IProps) {
           </Table>
         </div>
       </ScrollArea>
-      <div className="flex items-center justify-end space-x-2 p-2 border-y">
+      <div className="flex items-center justify-end space-x-2 p-2 border-t">
         <div className="flex-1 text-sm text-muted-foreground">
           {table.getFilteredSelectedRowModel().rows.length} of{' '}
           {table.getFilteredRowModel().rows.length} row(s) selected.

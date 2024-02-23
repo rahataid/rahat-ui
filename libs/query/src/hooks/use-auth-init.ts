@@ -1,6 +1,6 @@
 'use client';
 
-import jwt from 'jsonwebtoken';
+import { JwtPayload, decode } from 'jsonwebtoken';
 import { useEffect } from 'react';
 import { useAuthStore } from '../lib/auth';
 import { useGetCurrentUser, useUserStore } from '../lib/user';
@@ -23,10 +23,14 @@ export const useAuthInitialization = (): UseAuthInitializationReturn => {
   useEffect(() => {
     if (token) {
       try {
-        const decodedToken = jwt.decode(token);
+        const decodedToken = decode(token) as JwtPayload;
         const currentTime = Date.now() / 1000;
 
-        if (decodedToken && decodedToken.exp > currentTime) {
+        if (
+          decodedToken &&
+          decodedToken.exp !== undefined &&
+          decodedToken.exp > currentTime
+        ) {
           setInitialization({
             isInitialized: true,
             isAuthenticated: true,

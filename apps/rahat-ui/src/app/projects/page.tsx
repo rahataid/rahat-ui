@@ -1,19 +1,19 @@
-import projectsData from './projectsData.json';
-import ProjectNav from '../../components/projects/nav';
-import ProjectCards from '../../components/projects/projectCard';
+import { Tabs } from '@rahat-ui/shadcn/components//tabs';
 import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
 } from '@rahat-ui/shadcn/components/resizable';
-import { Tabs } from '@rahat-ui/shadcn/components//tabs';
+import ProjectNav from '../../components/projects/nav';
+import ProjectCards from '../../components/projects/projectCard';
+import projectsData from './projectsData.json';
 
-type CardProps = {
+interface CardProps {
   id: number;
   title: string;
   subTitle: string;
   handleClick: VoidFunction;
-};
+}
 
 export default function ProjectPage({ handleClick }: CardProps) {
   return (

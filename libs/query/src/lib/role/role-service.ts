@@ -1,10 +1,4 @@
 import {
-  PaginatedRequestPayload,
-  CreateRolePayload,
-  EditRolePayload,
-  DeleteRolePayload,
-} from '@rahat-ui/types';
-import {
   UseQueryResult,
   useMutation,
   useQuery,
@@ -14,7 +8,7 @@ import queryString from 'query-string';
 import { TAGS } from '../../config';
 import api from '../../utils/api';
 
-const createNewRole = async (payload: CreateRolePayload) => {
+const createNewRole = async (payload: any) => {
   const res = await api.post('/roles', payload);
   return res.data;
 };
@@ -23,14 +17,14 @@ const useCreateRoleMutation = () => {
   const qc = useQueryClient();
 
   return useMutation({
-    mutationFn: (payload: CreateRolePayload) => createNewRole(payload),
+    mutationFn: (payload: any) => createNewRole(payload),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: [TAGS.GET_ALL_ROLES] });
     },
   });
 };
 
-const listRole = async (payload: PaginatedRequestPayload) => {
+const listRole = async (payload: any) => {
   const searchParams = queryString.stringify({
     page: payload.page,
     perPage: payload.perPage,
@@ -41,16 +35,14 @@ const listRole = async (payload: PaginatedRequestPayload) => {
   return response.data;
 };
 
-const useListRoleQuery = (
-  payload: PaginatedRequestPayload
-): UseQueryResult<any, Error> => {
+const useListRoleQuery = (payload: any): UseQueryResult<any, Error> => {
   return useQuery({
     queryKey: [TAGS.GET_ALL_ROLES],
     queryFn: () => listRole(payload),
   });
 };
 
-const editRole = async (payload: EditRolePayload) => {
+const editRole = async (payload: any) => {
   const response = await api.patch(`/roles/${payload.name}`, payload);
   return response.data;
 };
@@ -59,14 +51,14 @@ const useEditRoleMutation = () => {
   const qc = useQueryClient();
 
   return useMutation({
-    mutationFn: (payload: EditRolePayload) => editRole(payload),
+    mutationFn: (payload: any) => editRole(payload),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: [TAGS.GET_ALL_ROLES] });
     },
   });
 };
 
-const deleteRole = async (payload: DeleteRolePayload) => {
+const deleteRole = async (payload: any) => {
   const response = await api.delete(`/roles/${payload.name}`);
   return response.data;
 };
@@ -75,7 +67,7 @@ const useDeleteRoleMutation = () => {
   const qc = useQueryClient();
 
   return useMutation({
-    mutationFn: (payload: DeleteRolePayload) => deleteRole(payload),
+    mutationFn: (payload: any) => deleteRole(payload),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: [TAGS.GET_ALL_ROLES] });
     },
@@ -84,7 +76,7 @@ const useDeleteRoleMutation = () => {
 
 export {
   useCreateRoleMutation,
-  useListRoleQuery,
   useDeleteRoleMutation,
   useEditRoleMutation,
+  useListRoleQuery,
 };

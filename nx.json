@@ -20,10 +20,12 @@
   "plugins": [
     {
       "plugin": "@nx/next/plugin",
+
       "options": {
         "buildTargetName": "build",
         "devTargetName": "dev",
-        "startTargetName": "start"
+        "startTargetName": "start",
+        "serveStaticTargetName": "serve-static"
       }
     },
     {

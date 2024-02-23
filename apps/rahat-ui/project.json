@@ -3,6 +3,27 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/rahat-ui",
   "projectType": "application",
-  "targets": {},
+  "targets": {
+    "targets": {
+      "build": {
+        "executor": "@nx/next:build",
+        "outputs": [
+          "{options.outputPath}"
+        ],
+        "defaultConfiguration": "production",
+        "options": {
+          "outputPath": "dist/apps/rahat-ui"
+        },
+        "configurations": {
+          "development": {
+            "outputPath": "."
+          },
+          "production": {
+            "outputPath": "dist/apps/rahat-ui"
+          }
+        }
+      }
+    }
+  },
   "tags": []
 }

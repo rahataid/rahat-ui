@@ -1,14 +1,30 @@
 import { Eye, EyeOff, ScreenShareOff, PlusSquare, Import } from 'lucide-react';
 import { Separator } from '@rahat-ui/shadcn/components/separator';
 import { ScrollArea } from '@rahat-ui/shadcn/components/scroll-area';
+import { TabsList, TabsTrigger } from '@rahat-ui/shadcn/src/components/ui/tabs';
+import { LayoutGrid, AlignJustify } from 'lucide-react';
 
-export default function Nav() {
+type IProps = {
+  handleView: VoidFunction;
+};
+
+export default function Nav({ handleView }: IProps) {
   return (
     <>
       <div>
-        <h1 className="p-4 font-semibold text-xl text-slate-600">
-          Navigation Items
-        </h1>
+        <div className="flex justify-between items-center p-4">
+          <h1 className="font-semibold text-xl text-slate-600">
+            Beneficiaries List
+          </h1>
+          <TabsList>
+            <TabsTrigger value="list" onClick={handleView}>
+              <AlignJustify />
+            </TabsTrigger>
+            <TabsTrigger value="grid" onClick={handleView}>
+              <LayoutGrid />
+            </TabsTrigger>
+          </TabsList>
+        </div>
         <ScrollArea className="h-44">
           <div className="px-4 pb-4">
             <nav>

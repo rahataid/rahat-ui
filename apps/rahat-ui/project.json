@@ -4,24 +4,31 @@
   "sourceRoot": "apps/rahat-ui",
   "projectType": "application",
   "targets": {
-    "targets": {
-      "build": {
-        "executor": "@nx/next:build",
-        "outputs": [
-          "{options.outputPath}"
-        ],
-        "defaultConfiguration": "production",
-        "options": {
-          "outputPath": "dist/apps/rahat-ui"
+    "build": {
+      "executor": "@nx/next:build",
+      "outputs": [
+        "{options.outputPath}"
+      ],
+      "defaultConfiguration": "production",
+      "options": {
+        "outputPath": "dist/apps/rahat-ui",
+        "generatePackageJson": true,
+        "root": "apps/rahat-ui",
+        "tsconfig": "apps/rahat-ui/tsconfig.app.json"
+      },
+      "configurations": {
+        "development": {
+          "dev": true
         },
-        "configurations": {
-          "development": {
-            "outputPath": "."
-          },
-          "production": {
-            "outputPath": "dist/apps/rahat-ui"
-          }
+        "production": {
         }
+      }
+    },
+    "serve": {
+      "executor": "@nrwl/next:server",
+      "options": {
+        "buildTarget": "rahat-ui:build",
+        "dev": false
       }
     }
   },

@@ -48,7 +48,7 @@ export default function ProjectPage({ handleClick }: CardProps) {
             maxSize={20}
             className="h-full"
           >
-            <ProjectNav />
+            <ProjectNav title="Projects" />
           </ResizablePanel>
           <ResizableHandle />
           <ResizablePanel>

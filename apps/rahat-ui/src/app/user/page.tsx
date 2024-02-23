@@ -10,7 +10,6 @@ import UsersTable from '../../components/users/usersTable';
 import UserDetails from '../../components/users/viewUser';
 import { IUserItem } from '../../types/user';
 import { useState } from 'react';
-import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 
 export default function UsersPage() {
   const [selectedData, setSelectedData] = useState<IUserItem>();
@@ -20,7 +19,7 @@ export default function UsersPage() {
   };
 
   return (
-    <div className="mb-5">
+    <div className="mt-2">
       <Tabs defaultValue="grid">
         <ResizablePanelGroup
           direction="horizontal"
@@ -36,9 +35,7 @@ export default function UsersPage() {
           </ResizablePanel>
           <ResizableHandle />
           <ResizablePanel>
-            <ScrollArea className="h-custom">
-              <UsersTable handleClick={handleUserClick} />
-            </ScrollArea>
+            <UsersTable handleClick={handleUserClick} />
           </ResizablePanel>
           {selectedData && (
             <>

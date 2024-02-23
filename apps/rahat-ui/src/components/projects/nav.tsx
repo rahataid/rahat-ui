@@ -2,12 +2,14 @@ import { Eye, EyeOff, ScreenShareOff, PlusSquare, Import } from 'lucide-react';
 import { Separator } from '@rahat-ui/shadcn/components/separator';
 import { ScrollArea } from '@rahat-ui/shadcn/components/scroll-area';
 
-export default function Nav() {
+type IProps = {
+  title: string;
+};
+
+export default function Nav({ title }: IProps) {
   return (
     <>
-      <h1 className="p-4 font-semibold text-xl text-slate-600">
-        Project Lists
-      </h1>
+      <h1 className="p-4 font-semibold text-xl text-slate-600">{title}</h1>
       <ScrollArea className="h-72">
         <div>
           <nav>

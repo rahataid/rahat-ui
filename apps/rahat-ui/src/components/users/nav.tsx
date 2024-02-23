@@ -7,9 +7,7 @@ export default function Nav() {
     <>
       <ScrollArea>
         <div className="p-4">
-          <h1 className="font-semibold text-xl text-slate-600 mb-4">
-            Navigation Items
-          </h1>
+          <h1 className="font-semibold text-xl text-slate-600 mb-4">Users</h1>
           <nav>
             <div className="flex justify-between p-4 rounded-md cursor-pointer hover:bg-primary hover:text-white">
               <div className="flex gap-3">

@@ -14,14 +14,14 @@ export default function Nav({ handleView }: IProps) {
       <div>
         <div className="flex justify-between items-center p-4">
           <h1 className="font-semibold text-xl text-slate-600">
-            Beneficiaries List
+            Beneficiaries
           </h1>
           <TabsList>
             <TabsTrigger value="list" onClick={handleView}>
-              <AlignJustify />
+              <AlignJustify size={18} strokeWidth={1.5} />
             </TabsTrigger>
             <TabsTrigger value="grid" onClick={handleView}>
-              <LayoutGrid />
+              <LayoutGrid size={18} strokeWidth={1.5} />
             </TabsTrigger>
           </TabsList>
         </div>
@@ -30,41 +30,43 @@ export default function Nav({ handleView }: IProps) {
             <nav>
               <div className="flex justify-between p-4 rounded-md cursor-pointer hover:bg-primary hover:text-white">
                 <div className="flex gap-3">
-                  <Eye />
+                  <Eye size={18} strokeWidth={1.5} />
                   <p>Active beneficiaries</p>
                 </div>
                 <p>128</p>
               </div>
               <div className="flex justify-between p-4 rounded-md cursor-pointer hover:bg-primary hover:text-white">
                 <div className="flex gap-3">
-                  <EyeOff />
+                  <EyeOff size={18} strokeWidth={1.5} />
                   <p>Inactive beneficiaries</p>
                 </div>
                 <p>32</p>
               </div>
               <div className="flex justify-between p-4 rounded-md cursor-pointer hover:bg-primary hover:text-white">
                 <div className="flex gap-3">
-                  <ScreenShareOff /> <p>Disabled/ Deleted</p>
+                  <ScreenShareOff size={18} strokeWidth={1.5} />{' '}
+                  <p>Disabled/ Deleted</p>
                 </div>
                 <p>9</p>
               </div>
               <div className="flex justify-between p-4 rounded-md cursor-pointer hover:bg-primary hover:text-white">
                 <div className="flex gap-3">
-                  <Eye />
+                  <Eye size={18} strokeWidth={1.5} />
                   <p>Active beneficiaries</p>
                 </div>
                 <p>128</p>
               </div>
               <div className="flex justify-between p-4 rounded-md cursor-pointer hover:bg-primary hover:text-white">
                 <div className="flex gap-3">
-                  <EyeOff />
+                  <EyeOff size={18} strokeWidth={1.5} />
                   <p>Inactive beneficiaries</p>
                 </div>
                 <p>32</p>
               </div>
               <div className="flex justify-between p-4 rounded-md cursor-pointer hover:bg-primary hover:text-white">
                 <div className="flex gap-3">
-                  <ScreenShareOff /> <p>Disabled/ Deleted</p>
+                  <ScreenShareOff size={18} strokeWidth={1.5} />{' '}
+                  <p>Disabled/ Deleted</p>
                 </div>
                 <p>9</p>
               </div>
@@ -80,10 +82,11 @@ export default function Nav({ handleView }: IProps) {
           </h1>
           <nav>
             <div className="flex p-4 gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white">
-              <PlusSquare /> <p>Add beneficiaries</p>
+              <PlusSquare size={18} strokeWidth={1.5} />{' '}
+              <p>Add beneficiaries</p>
             </div>
             <div className="flex p-4 gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white">
-              <Import />
+              <Import size={18} strokeWidth={1.5} />
               <p>Import beneficiaries</p>
             </div>
           </nav>

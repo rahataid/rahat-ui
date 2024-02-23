@@ -22,8 +22,8 @@ module.exports = {
     },
     extend: {
       height: {
-        custom: 'calc(100vh - 230px)',
-        custom1: 'calc(100vh - 300px)',
+        custom: 'calc(100vh - 180px)',
+        custom1: 'calc(100vh - 290px)',
 
       },
       colors: {

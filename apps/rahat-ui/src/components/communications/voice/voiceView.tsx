@@ -10,10 +10,7 @@ import VoiceTableView from './voiceTable';
 
 export default function VoiceView() {
   return (
-    <div>
-      <div className="my-4">
-        <h1 className="text-3xl font-semibold">Communication: Voice</h1>
-      </div>
+    <div className="mt-4">
       <ResizablePanelGroup direction="horizontal" className="min-h-max border">
         <ResizablePanel
           minSize={17}
@@ -21,7 +18,7 @@ export default function VoiceView() {
           maxSize={17}
           className="h-full"
         >
-          <CommunicationNav />
+          <CommunicationNav title="Voice" />
         </ResizablePanel>
         <ResizableHandle />
         <ResizablePanel minSize={28}>

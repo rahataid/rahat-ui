@@ -10,10 +10,7 @@ import TextTableView from './textTable';
 
 export default function TextView() {
   return (
-    <div>
-      <div className="my-4">
-        <h1 className="text-3xl font-semibold">Communication: Text</h1>
-      </div>
+    <div className='mt-4'>
       <ResizablePanelGroup direction="horizontal" className="min-h-max border">
         <ResizablePanel
           minSize={17}
@@ -21,7 +18,7 @@ export default function TextView() {
           maxSize={17}
           className="h-full"
         >
-          <CommunicationNav />
+          <CommunicationNav title='Text' />
         </ResizablePanel>
         <ResizableHandle />
         <ResizablePanel minSize={28}>

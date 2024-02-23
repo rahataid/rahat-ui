@@ -30,7 +30,7 @@ export default function GridView({ handleClick }: IProps) {
   };
   return (
     <>
-      <ScrollArea className="p-4 h-custom">
+      <ScrollArea className="p-4 h-withPage">
         <div className="grid 2xl:grid-cols-2 gap-2 2xl:mb-8">
           <div className="flex items-center gap-2">
             <div className="relative w-full">

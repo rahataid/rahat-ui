@@ -18,7 +18,7 @@ export default function CustomPagination({
   handlePaginationClick,
 }: IProps) {
   return (
-    <Pagination className="flex flex-row justify-end border-y">
+    <Pagination className="flex flex-row justify-end border-y p-2">
       <PaginationContent>
         <PaginationItem className={currentPage === 1 ? '' : 'cursor-pointer'}>
           <PaginationPrevious

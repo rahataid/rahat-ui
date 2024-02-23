@@ -22,7 +22,8 @@ module.exports = {
     },
     extend: {
       height: {
-        custom: 'calc(100vh - 180px)',
+        custom: 'calc(100vh - 92px)',
+        withPage: 'calc(100vh - 150px)',
         custom1: 'calc(100vh - 290px)',
 
       },

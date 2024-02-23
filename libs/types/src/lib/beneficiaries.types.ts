@@ -65,6 +65,18 @@ export type TPIIData = {
   extras?: Record<string, any>;
 };
 
+export interface UploadedFile {
+  fieldname: string;
+  originalname: string;
+  encoding: string;
+  mimetype: string;
+  size: number;
+  destination: string;
+  filename: string;
+  path: string;
+  buffer: Buffer;
+}
+
 export enum Gender {
   MALE,
   FEMALE,

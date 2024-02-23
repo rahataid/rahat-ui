@@ -6,6 +6,7 @@ import {
   CreateNewBeneficiaryPayload,
   ApiResponse,
   UpdateBeneficiaryPayload,
+  UploadedFile,
 } from '@rahat-ui/types';
 import {
   UseQueryResult,
@@ -67,6 +68,7 @@ const updateBeneficiary = async (payload: UpdateBeneficiaryPayload) => {
   const response = await api.patch(`/beneficiaries/${payload.uuid}`, payload);
   return response?.data;
 };
+
 const useUpdateBeneficiaryMutation = () => {
   const qc = useQueryClient();
   return useMutation({
@@ -77,9 +79,44 @@ const useUpdateBeneficiaryMutation = () => {
     },
   });
 };
+
+const createBulkBeneficiary = async (
+  payload: CreateNewBeneficiaryPayload[]
+) => {
+  const response = await api.post('/beneficiaries/bulk', payload);
+  return response?.data;
+};
+
+const useBulkBeneficiaryMutation = () => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (payload: CreateNewBeneficiaryPayload[]) =>
+      createBulkBeneficiary(payload),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: [TAGS.GET_BENEFICIARIES] });
+    },
+  });
+};
+
+const uploadBeneficiary = async (file: UploadedFile) => {
+  const response = await api.post('/beneficiaries/upload', file);
+  return response?.data;
+};
+
+const useUploadBeneficiaryMutation = () => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (file: UploadedFile) => uploadBeneficiary(file),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: [TAGS.GET_BENEFICIARIES] });
+    },
+  });
+};
 export {
   usebeneficiaryListQuery,
   useCreateBeneficiaryMutation,
   useListBeneficiaryStatus,
   useUpdateBeneficiaryMutation,
+  useBulkBeneficiaryMutation,
+  useUploadBeneficiaryMutation,
 };

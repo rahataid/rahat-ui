@@ -60,9 +60,9 @@ export function Nav() {
             item.children ? (
               <HoverCard openDelay={0} closeDelay={100}>
                 <HoverCardTrigger>
-                  <div className="py-2 px-4 font-medium rounded cursor-pointer flex gap-1">
+                  <div className="py-2 px-4 font-light rounded cursor-pointer flex gap-1 items-center">
                     <p>{item.title}</p>
-                    <ChevronDown />
+                    <ChevronDown size={16} strokeWidth={1.5} />
                   </div>
                 </HoverCardTrigger>
                 <HoverCardContent className="w-44">
@@ -70,7 +70,7 @@ export function Nav() {
                     <Link key={child.title} href={child.path}>
                       <div className="p-2 hover:bg-secondary rounded-sm flex gap-3">
                         <span className="text-primary">{child.icon}</span>
-                        <p className="font-medium">{child.title}</p>
+                        <p className="font-light">{child.title}</p>
                       </div>
                     </Link>
                   ))}
@@ -79,7 +79,7 @@ export function Nav() {
             ) : (
               <Link key={item.title} href={item.path}>
                 <p
-                  className={`py-2 px-4 font-medium rounded ${
+                  className={`py-2 px-4 font-light rounded ${
                     currentPath === item.path && 'bg-secondary'
                   }`}
                 >

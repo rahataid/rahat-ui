@@ -3,9 +3,9 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "rahat-dev": "npx nx run rahat-ui:dev",
-    "rahat-build": "npx nx run rahat-ui:build ",
-    "rahat-serve": "npx nx run rahat-ui:start"
+    "rahat:dev": "npx nx run rahat-ui:dev",
+    "rahat:build": "npx nx run rahat-ui:build ",
+    "rahat:serve": "npx nx run rahat-ui:start"
   },
   "private": true,
   "dependencies": {

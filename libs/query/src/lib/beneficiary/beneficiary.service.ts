@@ -40,7 +40,7 @@ const beneficiaryListQuery = async (payload: PaginatedRequestPayload) => {
     order: payload.order,
   });
   const response = await api.get(`/beneficiaries?${searchParams}`);
-  return response.data;
+  return response?.data;
 };
 
 const usebeneficiaryListQuery = (
@@ -80,18 +80,16 @@ const useUpdateBeneficiaryMutation = () => {
   });
 };
 
-const createBulkBeneficiary = async (
-  payload: CreateNewBeneficiaryPayload[]
-) => {
+const addBulkBeneficiary = async (payload: CreateNewBeneficiaryPayload[]) => {
   const response = await api.post('/beneficiaries/bulk', payload);
   return response?.data;
 };
 
-const useBulkBeneficiaryMutation = () => {
+const useAddBulkBeneficiaryMutation = () => {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (payload: CreateNewBeneficiaryPayload[]) =>
-      createBulkBeneficiary(payload),
+      addBulkBeneficiary(payload),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: [TAGS.GET_BENEFICIARIES] });
     },
@@ -117,6 +115,6 @@ export {
   useCreateBeneficiaryMutation,
   useListBeneficiaryStatus,
   useUpdateBeneficiaryMutation,
-  useBulkBeneficiaryMutation,
+  useAddBulkBeneficiaryMutation,
   useUploadBeneficiaryMutation,
 };

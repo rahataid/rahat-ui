@@ -1,11 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
 
-import {
-  ApiResponse,
-  LoginPayload,
-  LoginResponse,
-  OTPPayload,
-} from '@rahat-ui/types';
 import api from '../../utils/api';
 import useErrorStore from '../../utils/error-store';
 import { useAuthStore } from './auth-store';
@@ -15,9 +9,7 @@ export const useLogin = () => {
   // const setError = useAuthStore((state) => state.setError);
   const setToken = useAuthStore((state) => state.setToken);
 
-  const userLogin = async (
-    payload: LoginPayload
-  ): Promise<ApiResponse<LoginResponse>> => {
+  const userLogin = async (payload: any): Promise<any> => {
     const res = await api.post('/auth/login', payload);
     return res.data;
   };
@@ -34,7 +26,7 @@ export const useLogin = () => {
   });
 };
 
-const createOtp = async (payload: OTPPayload) => {
+const createOtp = async (payload: any) => {
   const res = await api.post('/auth/otp', payload);
   return res.data;
 };
@@ -43,7 +35,7 @@ export const useSendOtp = () => {
   const setError = useErrorStore((state) => state.setError);
   const setChallenge = useAuthStore((state) => state.setChallenge);
 
-  return useMutation<any, unknown, ApiResponse<OTPPayload>>({
+  return useMutation<any, unknown, any>({
     mutationFn: (payload) => createOtp(payload),
     onSuccess: (data) => {
       setChallenge(data?.data?.challenge);

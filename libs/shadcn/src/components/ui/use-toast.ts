@@ -1,10 +1,8 @@
 // Inspired by react-hot-toast library
 import * as React from "react"
+import { ToastActionElement, ToastProps } from './toast';
 
-import type {
-  ToastActionElement,
-  ToastProps,
-} from "@/libs/shadcn/src/components/ui/toast"
+
 
 const TOAST_LIMIT = 1
 const TOAST_REMOVE_DELAY = 1000000
@@ -189,4 +187,5 @@ function useToast() {
   }
 }
 
-export { useToast, toast }
+export { toast, useToast };
+

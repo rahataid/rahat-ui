@@ -110,6 +110,7 @@ const useUploadBeneficiaryMutation = () => {
     },
   });
 };
+
 export {
   usebeneficiaryListQuery,
   useCreateBeneficiaryMutation,

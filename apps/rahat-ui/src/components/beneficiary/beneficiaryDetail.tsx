@@ -1,5 +1,10 @@
 import Image from 'next/image';
-import { Tabs, TabsTrigger, TabsList, TabsContent } from '@rahat-ui/shadcn/components/tabs';
+import {
+  Tabs,
+  TabsTrigger,
+  TabsList,
+  TabsContent,
+} from '@rahat-ui/shadcn/components/tabs';
 import { Label } from '@rahat-ui/shadcn/components/label';
 import { Switch } from '@rahat-ui/shadcn/components/switch';
 import { Share } from 'lucide-react';
@@ -11,6 +16,12 @@ type IProps = {
 };
 
 export default function BeneficiaryDetail({ data }: IProps) {
+  const changedDate = new Date(data?.updatedAt);
+  const formattedDate = changedDate.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
   return (
     <>
       <Tabs defaultValue="detail">
@@ -36,7 +47,9 @@ export default function BeneficiaryDetail({ data }: IProps) {
               width={80}
             />
             <div className="my-auto">
-              <h1 className="font-semibold text-xl mb-2">{data.name}</h1>
+              <h1 className="font-semibold text-xl mb-2">
+                {data.walletAddress}
+              </h1>
               <div className="flex justify-between">
                 <p>Edit</p>
                 <p>Delete</p>
@@ -45,7 +58,7 @@ export default function BeneficiaryDetail({ data }: IProps) {
           </div>
           <div>
             <p className="text-slate-500">
-              {data.updatedDate}
+              {formattedDate}
               <br />
               Last updated
             </p>
@@ -55,15 +68,13 @@ export default function BeneficiaryDetail({ data }: IProps) {
           <div className="grid grid-cols-2 border-y">
             <div className="border-r p-4 flex flex-col gap-2">
               <p>Name</p>
-              <p>No. of Transaction</p>
               <p>Verified</p>
               <p>Updated Date</p>
             </div>
             <div className="p-4 flex flex-col gap-2">
-              <p>{data.name}</p>
-              <p>{data.transactionNumber}</p>
+              <p>{data.walletAddress}</p>
               <p>{data.verified ? 'True' : 'False'}</p>
-              <p>{data.updatedDate}</p>
+              <p>{formattedDate}</p>
             </div>
           </div>
         </TabsContent>

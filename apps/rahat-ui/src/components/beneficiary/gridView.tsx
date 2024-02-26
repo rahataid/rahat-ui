@@ -3,15 +3,16 @@
 import { Input } from '@rahat-ui/shadcn/components/input';
 import { Search, Filter } from 'lucide-react';
 import BeneficiaryCard from '../../components/beneficiary/card';
-import BeneficiaryData from '../../app/beneficiary/beneficiaryData.json';
 import { IBeneficiaryItem } from '../../types/beneficiary';
 import { ScrollArea } from '@rahat-ui/shadcn/components/scroll-area';
+import { ListBeneficiary } from '@rahat-ui/types';
 
 type IProps = {
   handleClick: (item: IBeneficiaryItem) => void;
+  data: ListBeneficiary[];
 };
 
-export default function GridView({ handleClick }: IProps) {
+export default function GridView({ handleClick, data }: IProps) {
   return (
     <ScrollArea className="p-4 h-custom">
       <div className="flex justify-between items-center gap-2 mb-8">
@@ -22,14 +23,13 @@ export default function GridView({ handleClick }: IProps) {
         <Filter />
       </div>
       <div className="flex flex-col gap-3">
-        {BeneficiaryData.map((data: IBeneficiaryItem) => (
+        {data?.map((data: IBeneficiaryItem) => (
           <BeneficiaryCard
-            key={data.name}
-            name={data.name}
-            transactionNumber={data.transactionNumber}
-            updatedDate={data.updatedDate}
-            verified={data.verified}
+            key={data.uuid}
+            walletAddress={data.walletAddress}
+            updatedAt={data.updatedAt}
             handleClick={() => handleClick(data)}
+            verified={false}
           />
         ))}
       </div>

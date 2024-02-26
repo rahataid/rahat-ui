@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { LayoutGrid, AlignJustify } from 'lucide-react';
 import {
   TabsList,
@@ -18,10 +18,8 @@ import BeneficiaryListView from '../../components/beneficiary/listView';
 import BeneficiaryGridView from '../../components/beneficiary/gridView';
 import BeneficiaryDetail from '../../components/beneficiary/beneficiaryDetail';
 import { IBeneficiaryItem } from '../../types/beneficiary';
-import {
-  useListBeneficiaryStatus,
-  usebeneficiaryListQuery,
-} from '@rahat-ui/query';
+import { usebeneficiaryListQuery } from '@rahat-ui/query';
+import { ListBeneficiary } from '@rahat-ui/types';
 
 export default function BeneficiaryView() {
   const [selectedData, setSelectedData] = useState<IBeneficiaryItem>();
@@ -33,8 +31,15 @@ export default function BeneficiaryView() {
   const handleView = () => {
     setSelectedData(undefined);
   };
-  const { data } = useListBeneficiaryStatus();
-  console.log('beneficiarylist', data);
+  const { data } = usebeneficiaryListQuery({});
+  const tableData: ListBeneficiary[] = React.useMemo(
+    () => data?.data || [],
+    [data?.data]
+  );
+
+  const meta = React.useMemo(() => data?.meta && data?.meta, [data?.meta]);
+
+  console.log(selectedData);
   return (
     <div>
       <Tabs defaultValue="grid">
@@ -64,10 +69,13 @@ export default function BeneficiaryView() {
           <ResizableHandle />
           <ResizablePanel minSize={28}>
             <TabsContent value="list">
-              <BeneficiaryListView />
+              <BeneficiaryListView data={tableData} meta={meta} />
             </TabsContent>
             <TabsContent value="grid">
-              <BeneficiaryGridView handleClick={handleBeneficiaryCardClick} />
+              <BeneficiaryGridView
+                handleClick={handleBeneficiaryCardClick}
+                data={tableData}
+              />
             </TabsContent>
           </ResizablePanel>
           {selectedData && (

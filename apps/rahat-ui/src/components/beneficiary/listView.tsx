@@ -44,19 +44,10 @@ import {
   TableHeader,
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
-import BeneficiaryTableData from '../../app/beneficiary/beneficiaryData.json';
+import { ListBeneficiary } from '@rahat-ui/types';
+import { IBeneficiaryTableData } from '../../types/beneficiary';
 
-const data: Beneficiary[] = BeneficiaryTableData;
-
-export type Beneficiary = {
-  name: string;
-  projectsInvolved: string;
-  internetAccess: string;
-  phone: string;
-  bank: string;
-};
-
-export const columns: ColumnDef<Beneficiary>[] = [
+export const columns: ColumnDef<ListBeneficiary>[] = [
   {
     id: 'select',
     header: ({ table }) => (
@@ -80,45 +71,43 @@ export const columns: ColumnDef<Beneficiary>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: 'name',
-    header: 'Name',
-    cell: ({ row }) => <div>{row.getValue('name')}</div>,
+    accessorKey: 'walletAddress',
+    header: 'Wallet Address',
+    cell: ({ row }) => <div>{row.getValue('walletAddress')}</div>,
   },
   {
-    accessorKey: 'projectsInvolved',
-    header: 'Projects Involved',
+    accessorKey: 'location',
+    header: 'Location',
     cell: ({ row }) => (
       <div className="capitalize">
-        {row.getValue('projectsInvolved')
-          ? row.getValue('projectsInvolved')
-          : 'N/A'}
+        {row.getValue('location') ? row.getValue('location') : 'N/A'}
       </div>
     ),
   },
   {
-    accessorKey: 'internetAccess',
-    header: 'Internet Access',
+    accessorKey: 'internetStatus',
+    header: 'Internet Status',
     cell: ({ row }) => (
       <Badge variant="secondary" className="rounded-md capitalize">
-        {row.getValue('internetAccess')}
+        {row.getValue('internetStatus')}
       </Badge>
     ),
   },
   {
-    accessorKey: 'phone',
-    header: 'Phone',
+    accessorKey: 'phoneStatus',
+    header: 'Phone Status',
     cell: ({ row }) => (
       <Badge variant="secondary" className="rounded-md capitalize">
-        {row.getValue('phone')}
+        {row.getValue('phoneStatus')}
       </Badge>
     ),
   },
   {
-    accessorKey: 'bank',
-    header: 'Bank',
+    accessorKey: 'bankedStatus',
+    header: 'Bank Status',
     cell: ({ row }) => (
       <Badge variant="secondary" className="rounded-md capitalize">
-        {row.getValue('bank')}
+        {row.getValue('bankedStatus')}
       </Badge>
     ),
   },
@@ -145,7 +134,7 @@ export const columns: ColumnDef<Beneficiary>[] = [
   },
 ];
 
-export default function ListView() {
+export default function ListView({ data, meta }: IBeneficiaryTableData) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -178,9 +167,11 @@ export default function ListView() {
       <div className="flex items-center py-4">
         <Input
           placeholder="Filter beneficiary..."
-          value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
+          value={
+            (table.getColumn('walletAddress')?.getFilterValue() as string) ?? ''
+          }
           onChange={(event) =>
-            table.getColumn('name')?.setFilterValue(event.target.value)
+            table.getColumn('walletAddress')?.setFilterValue(event.target.value)
           }
           className="max-w-sm mr-3"
         />

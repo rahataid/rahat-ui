@@ -9,19 +9,30 @@ interface IAdditionalBeneficiaryItem extends IBeneficiaryItem {
 }
 
 export default function Card({
-  name,
-  transactionNumber,
-  updatedDate,
+  walletAddress,
+  updatedAt,
   verified,
   handleClick,
+  transactionNumber,
 }: IAdditionalBeneficiaryItem) {
+  const transactionNumbers =
+    !transactionNumber && Math.floor(Math.random() * 10);
+
+  const changedDate = new Date(updatedAt);
+  const formattedDate = changedDate.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+
   return (
     <div className="p-5 border rounded-md" onClick={handleClick}>
       <div className="flex justify-between mb-5">
         <div>
-          <h1 className="font-semibold mb-2">{name}</h1>
+          <h1 className="font-semibold mb-2">{walletAddress}</h1>
           <p className="text-slate-500">
-            Total transaction made : {transactionNumber} transactions
+            Total transaction made :{' '}
+            {!transactionNumber && Math.floor(Math.random() * 10)} transactions
           </p>
         </div>
         <div className="flex gap-4">
@@ -30,7 +41,7 @@ export default function Card({
         </div>
       </div>
       <div className="flex justify-between items-center flex-wrap gap-4">
-        <p className="text-slate-400">Last updated: {updatedDate}</p>
+        <p className="text-slate-400">Last updated: {formattedDate}</p>
         <div className="flex gap-2 ">
           <Badge
             className="px-4 py-1.5 rounded-md"

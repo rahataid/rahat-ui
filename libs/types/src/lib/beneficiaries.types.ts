@@ -26,6 +26,8 @@ export interface ListBeneficiary {
   bankedStatus: string;
   internetStatus: string;
   phoneStatus: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface UpdateBeneficiaryPayload {
@@ -45,11 +47,12 @@ export interface UpdateBeneficiaryPayload {
 }
 
 export interface ListBeneficiariesResponse {
+  success: true;
   data: ListBeneficiary[];
   meta: Meta;
 }
 
-interface Meta {
+export interface Meta {
   total: number;
   lastPage: number;
   currentPage: number;

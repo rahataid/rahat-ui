@@ -75,7 +75,7 @@ export default function AuthPage() {
             <p className="text-sm text-muted-foreground">
               {!challenge.length
                 ? 'Enter your email below to Sign in.'
-                : 'Please enter the OTP sent to your email address.'}
+                : `OTP has been sent to ${address}`}
             </p>
           </div>
           {error && (

@@ -12,7 +12,12 @@ function ConnectWallet() {
             return <Account />;
           }
           return (
-            <Button variant="outline" size="icon" onClick={show}>
+            <Button
+              className="flex items-center"
+              variant="outline"
+              size="icon"
+              onClick={show}
+            >
               <Wallet2 size={20} strokeWidth={1.5} />
             </Button>
           );

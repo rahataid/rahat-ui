@@ -113,10 +113,11 @@ export function Nav() {
 
         <DropdownMenu>
           <DropdownMenuTrigger>
-            <Avatar>
+            <Avatar className="h-10 w-10">
               <AvatarImage
                 src="https://github.com/shadcn.png"
                 alt="profile-icon"
+                className="rounded-3xl"
               />
               <AvatarFallback>CN</AvatarFallback>
             </Avatar>

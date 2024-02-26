@@ -45,7 +45,6 @@ export default function AuthPage() {
     setChallenge,
   ]);
 
-
   const onVerifyOtpFormSubmit = async (e: React.SyntheticEvent) => {
     e.preventDefault();
     try {
@@ -55,7 +54,6 @@ export default function AuthPage() {
       console.error('Failed to verify OTP:', error);
     }
   };
-
 
   return (
     <div className="h-full grid place-items-center relative">
@@ -129,14 +127,25 @@ export default function AuthPage() {
             </form>
           )}
           <p className="px-8 text-center text-sm text-muted-foreground">
-            {!challenge.length ? "Don't have an account" : "Didn't get one"}?{' '}
+            {!challenge.length ? "Don't have an account" : "Didn't get one"}?
             <Button
               disabled={sendOtpMutation.isPending}
               onClick={onSendOtpFormSubmit}
-              className="font-medium"
+              className="font-medium ml-2"
             >
               {!challenge.length ? 'Get Started' : 'Resend'}
             </Button>
+            {challenge.length ? (
+              <Button
+                className="ml-2"
+                onClick={() => {
+                  setChallenge('');
+                  router.back();
+                }}
+              >
+                Go Back
+              </Button>
+            ) : null}
           </p>
         </div>
       </div>

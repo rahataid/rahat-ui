@@ -1,3 +1,4 @@
+'use client';
 import { Tabs } from '@rahat-ui/shadcn/components//tabs';
 import {
   ResizableHandle,

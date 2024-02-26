@@ -8,22 +8,32 @@ import { Tabs } from '@rahat-ui/shadcn/components/tabs';
 import UserNav from '../../components/users/nav';
 import UsersTable from '../../components/users/usersTable';
 import UserDetails from '../../components/users/viewUser';
-import { IUserItem } from '../../types/user';
+import RoleDetails from '../../components/users/role/roleDetail';
+import { IRoleItem, IUserItem } from '../../types/user';
 import { useState } from 'react';
-import AddUser from '../../components/users/addUser';
+import { USER_NAV_ROUTE } from '../../const/user.const';
+import RoleTable from '../../components/users/role/roleTable';
+import AddRole from '../../components/users/role/addRole';
 
-export default function UsersPage() {
-  const [selectedData, setSelectedData] = useState<IUserItem>();
-  const [addUser, setAddUser] = useState<boolean>(false);
+type IProps = {
+  onTabChange: VoidFunction;
+};
 
+export default function UsersPage({ onTabChange }: IProps) {
+  const [selectedUserData, setSelectedUserData] = useState<IUserItem>();
+  const [selectedRoleData, setSelectedRoleData] = useState<IRoleItem>();
+
+  const [activeTab, setActiveTab] = useState<string>(USER_NAV_ROUTE.DEFAULT);
   const handleUserClick = (item: IUserItem) => {
-    setSelectedData(item);
-    setAddUser(false);
+    setSelectedUserData(item);
   };
 
-  const handleAddUser = () => {
-    setAddUser(true);
-    setSelectedData(undefined);
+  const handleRoleClick = (item: IRoleItem) => {
+    setSelectedRoleData(item);
+  };
+
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab);
   };
 
   return (
@@ -39,18 +49,34 @@ export default function UsersPage() {
             maxSize={20}
             className="h-full"
           >
-            <UserNav onAddUsersClick={handleAddUser} />
+            <UserNav onTabChange={handleTabChange} />
           </ResizablePanel>
           <ResizableHandle />
           <ResizablePanel>
-            <UsersTable handleClick={handleUserClick} />
+            <div className="p-2">
+              {activeTab === USER_NAV_ROUTE.DEFAULT && (
+                <UsersTable handleClick={handleUserClick} />
+              )}
+              {activeTab === USER_NAV_ROUTE.LIST_ROLE && (
+                <RoleTable handleClick={handleRoleClick} />
+              )}
+
+              {activeTab === USER_NAV_ROUTE.ADD_ROLE && <AddRole />}
+            </div>
           </ResizablePanel>
-          {selectedData || addUser ? (
+          {selectedUserData && (
             <>
               <ResizableHandle />
               <ResizablePanel minSize={24}>
-                {selectedData && <UserDetails data={selectedData} />}
-                {addUser && <AddUser />}
+                <UserDetails data={selectedUserData} />
+              </ResizablePanel>
+            </>
+          )}
+          {selectedRoleData ? (
+            <>
+              <ResizableHandle />
+              <ResizablePanel minSize={24}>
+                <RoleDetails data={selectedRoleData} />
               </ResizablePanel>
             </>
           ) : null}

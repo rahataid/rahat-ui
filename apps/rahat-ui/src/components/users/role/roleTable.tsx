@@ -1,6 +1,5 @@
 'use client';
 
-import { useUserListQuery } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/components/button';
 import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
 import {
@@ -31,23 +30,20 @@ import {
 } from '@tanstack/react-table';
 import { ArrowUpDown, ArrowUpRightFromSquare, ChevronDown } from 'lucide-react';
 import React from 'react';
-import { IUserItem } from '../../types/user';
+import { useListRoleQuery } from '@rahat-ui/query';
+import { IRoleItem } from 'apps/rahat-ui/src/types/user';
 
 type IProps = {
-  handleClick: (item: IUserItem) => void;
+  handleClick: (item: IRoleItem) => void;
 };
 
-// const data: User[] = UserTableData;
-
-export type User = {
+export type Role = {
   name: string;
-  email: string;
-  wallet: string;
-  role: string;
-  status: string;
+  createdBy: string;
+  createdAt: string;
 };
 
-export const columns: ColumnDef<any, any>[] = [
+export const columns: ColumnDef<Role, any>[] = [
   {
     id: 'select',
     header: ({ table }) => (
@@ -77,38 +73,26 @@ export const columns: ColumnDef<any, any>[] = [
     header: 'Name',
     cell: ({ row }) => <div className="capitalize">{row.getValue('name')}</div>,
   },
+
   {
-    accessorKey: 'wallet',
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-        >
-          Walletaddress
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
-    cell: ({ row }) => (
-      <div className="lowercase">{row.getValue('wallet')}</div>
-    ),
-  },
-  {
-    accessorKey: 'role',
-    header: () => <div className="text-right">Role</div>,
+    accessorKey: 'createdBy',
+    header: () => <div className="text-right">Created By</div>,
     cell: ({ row }) => {
       return (
-        <div className="text-right font-medium">{row.getValue('role')}</div>
+        <div className="text-right font-medium">
+          {row.getValue('createdBy')}
+        </div>
       );
     },
   },
   {
-    accessorKey: 'status',
-    header: () => <div className="text-right">Status</div>,
+    accessorKey: 'createdAt',
+    header: () => <div className="text-right">Created At</div>,
     cell: ({ row }) => {
       return (
-        <div className="text-right font-medium">{row.getValue('status')}</div>
+        <div className="text-right font-medium">
+          {row.getValue('createdAt')}
+        </div>
       );
     },
   },
@@ -120,8 +104,7 @@ export const columns: ColumnDef<any, any>[] = [
     },
   },
 ];
-
-export default function UserTable({ handleClick }: IProps) {
+export default function RoleTable({ handleClick }: IProps) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
 
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -131,7 +114,7 @@ export default function UserTable({ handleClick }: IProps) {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
-  const { data, isLoading, isError, isSuccess, isFetched } = useUserListQuery(
+  const { data, isLoading, isError, isSuccess, isFetched } = useListRoleQuery(
     {}
   );
 

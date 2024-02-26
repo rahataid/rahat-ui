@@ -1,24 +1,22 @@
-'use client';
-
-import { useState } from 'react';
-import projectsData from './projectsData.json';
-import ProjectNav from '../../components/projects/nav';
-import ProjectCards from '../../components/projects/projectCard';
+import { Tabs } from '@rahat-ui/shadcn/components//tabs';
 import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
 } from '@rahat-ui/shadcn/components/resizable';
-import { Tabs } from '@rahat-ui/shadcn/components//tabs';
-import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import ProjectNav from '../../components/projects/nav';
+import ProjectCards from '../../components/projects/projectCard';
+import projectsData from './projectsData.json';
+import { useState } from 'react';
+import { ScrollArea } from '@radix-ui/react-scroll-area';
 import CustomPagination from '../../components/customPagination';
 
-type CardProps = {
+interface CardProps {
   id: number;
   title: string;
   subTitle: string;
   handleClick: VoidFunction;
-};
+}
 
 export default function ProjectPage({ handleClick }: CardProps) {
   const itemsPerPage = 12;

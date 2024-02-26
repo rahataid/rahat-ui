@@ -6,6 +6,11 @@ import {
   AvatarImage,
 } from '@rahat-ui/shadcn/components/avatar';
 import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from '@rahat-ui/shadcn/components/hover-card';
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuGroup,
@@ -16,6 +21,7 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuSubContent,
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
+import { ChevronDown } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -24,9 +30,9 @@ import { useAuthStore, useUserStore } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { useNavData } from '../app/config-nav';
 import { paths } from '../routes/paths';
-import { WalletConnect } from './connectWallet';
-import { ModeToggle } from './dropdown';
 import MobileNav from './mobileNav';
+import { ModeToggle } from './dropdown';
+import ConnectWallet from './wallet/connect-wallet';
 
 export function Nav() {
   const currentPath = usePathname();
@@ -70,7 +76,7 @@ export function Nav() {
             <DropdownMenuTrigger className="py-2 px-4 font-light rounded">
               More...
             </DropdownMenuTrigger>
-            <DropdownMenuContent className='ml-12'>
+            <DropdownMenuContent className="ml-12">
               {subData.map((item) =>
                 item.children ? (
                   <DropdownMenuSub key={item.title}>
@@ -103,8 +109,8 @@ export function Nav() {
       </div>
       <div className="flex gap-4 items-center">
         <ModeToggle />
-        <WalletConnect />
-        <MobileNav />
+        <ConnectWallet />
+
         <DropdownMenu>
           <DropdownMenuTrigger>
             <Avatar>

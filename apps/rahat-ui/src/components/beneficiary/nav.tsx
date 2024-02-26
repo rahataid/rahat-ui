@@ -6,9 +6,10 @@ import { LayoutGrid, AlignJustify } from 'lucide-react';
 
 type IProps = {
   handleView: VoidFunction;
+  onAddBenficiaryclick: VoidFunction;
 };
 
-export default function Nav({ handleView }: IProps) {
+export default function Nav({ handleView, onAddBenficiaryclick }: IProps) {
   return (
     <>
       <div>
@@ -81,7 +82,10 @@ export default function Nav({ handleView }: IProps) {
             Action Items
           </h1>
           <nav>
-            <div className="flex p-4 gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white">
+            <div
+              onClick={onAddBenficiaryclick}
+              className="flex p-4 gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white"
+            >
               <PlusSquare size={18} strokeWidth={1.5} />{' '}
               <p>Add beneficiaries</p>
             </div>

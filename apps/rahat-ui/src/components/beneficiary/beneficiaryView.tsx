@@ -12,12 +12,20 @@ import BeneficiaryListView from '../../components/beneficiary/listView';
 import BeneficiaryGridView from '../../components/beneficiary/gridView';
 import BeneficiaryDetail from '../../components/beneficiary/beneficiaryDetail';
 import { IBeneficiaryItem } from '../../types/beneficiary';
+import AddBeneficiary from './addBeneficiary';
 
 export default function BeneficiaryView() {
   const [selectedData, setSelectedData] = useState<IBeneficiaryItem>();
+  const [addBeneficiary, setAddBeneficiary] = useState<Boolean>(false);
 
   const handleBeneficiaryCardClick = (item: IBeneficiaryItem) => {
     setSelectedData(item);
+    setAddBeneficiary(false);
+  };
+
+  const handleBeneficiaryAdd = () => {
+    setAddBeneficiary(true);
+    setSelectedData(undefined);
   };
 
   const handleView = () => {
@@ -37,7 +45,10 @@ export default function BeneficiaryView() {
             maxSize={20}
             className="h-full"
           >
-            <BeneficiaryNav handleView={handleView} />
+            <BeneficiaryNav
+              handleView={handleView}
+              onAddBenficiaryclick={handleBeneficiaryAdd}
+            />
           </ResizablePanel>
           <ResizableHandle />
           <ResizablePanel minSize={28}>
@@ -48,14 +59,15 @@ export default function BeneficiaryView() {
               <BeneficiaryGridView handleClick={handleBeneficiaryCardClick} />
             </TabsContent>
           </ResizablePanel>
-          {selectedData && (
+          {selectedData || addBeneficiary ? (
             <>
               <ResizableHandle />
               <ResizablePanel minSize={24}>
-                <BeneficiaryDetail data={selectedData} />
+                {selectedData && <BeneficiaryDetail data={selectedData} />}
+                {addBeneficiary && <AddBeneficiary />}
               </ResizablePanel>
             </>
-          )}
+          ) : null}
         </ResizablePanelGroup>
       </Tabs>
     </div>

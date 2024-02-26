@@ -6,17 +6,16 @@ import {
   AvatarImage,
 } from '@rahat-ui/shadcn/components/avatar';
 import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from '@rahat-ui/shadcn/components/hover-card';
-import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuTrigger,
+  DropdownMenuItem,
+  DropdownMenuPortal,
+  DropdownMenuSub,
+  DropdownMenuSubTrigger,
+  DropdownMenuSubContent,
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
-import { ChevronDown, Menu } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -31,7 +30,7 @@ import MobileNav from './mobileNav';
 
 export function Nav() {
   const currentPath = usePathname();
-  const navData = useNavData();
+  const { data, subData } = useNavData();
   const { user, clearUser } = useUserStore((state) => ({
     user: state.user,
     clearUser: state.clearUser,
@@ -56,38 +55,50 @@ export function Nav() {
           <p className="font-medium text-slate-500">Rahat</p>
         </Link>
         <nav className="hidden md:flex items-center">
-          {navData.map((item) =>
-            item.children ? (
-              <HoverCard openDelay={0} closeDelay={100}>
-                <HoverCardTrigger>
-                  <div className="py-2 px-4 font-light rounded cursor-pointer flex gap-1 items-center">
-                    <p>{item.title}</p>
-                    <ChevronDown size={16} strokeWidth={1.5} />
-                  </div>
-                </HoverCardTrigger>
-                <HoverCardContent className="w-44">
-                  {item.children.map((child) => (
-                    <Link key={child.title} href={child.path}>
-                      <div className="p-2 hover:bg-secondary rounded-sm flex gap-3">
-                        <span className="text-primary">{child.icon}</span>
-                        <p className="font-light">{child.title}</p>
-                      </div>
-                    </Link>
-                  ))}
-                </HoverCardContent>
-              </HoverCard>
-            ) : (
-              <Link key={item.title} href={item.path}>
-                <p
-                  className={`py-2 px-4 font-light rounded ${
-                    currentPath === item.path && 'bg-secondary'
-                  }`}
-                >
-                  {item.title}
-                </p>
-              </Link>
-            )
-          )}
+          {data.map((item) => (
+            <Link key={item.title} href={item.path}>
+              <p
+                className={`py-2 px-4 font-light rounded ${
+                  currentPath === item.path && 'bg-secondary'
+                }`}
+              >
+                {item.title}
+              </p>
+            </Link>
+          ))}
+          <DropdownMenu>
+            <DropdownMenuTrigger className="py-2 px-4 font-light rounded">
+              More...
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className='ml-12'>
+              {subData.map((item) =>
+                item.children ? (
+                  <DropdownMenuSub key={item.title}>
+                    <DropdownMenuSubTrigger>
+                      {item.title}
+                    </DropdownMenuSubTrigger>
+                    <DropdownMenuPortal>
+                      <DropdownMenuSubContent>
+                        {item.children.map((child) => (
+                          <Link key={child.title} href={child.path}>
+                            <DropdownMenuItem className="cursor-pointer">
+                              {child.title}
+                            </DropdownMenuItem>
+                          </Link>
+                        ))}
+                      </DropdownMenuSubContent>
+                    </DropdownMenuPortal>
+                  </DropdownMenuSub>
+                ) : (
+                  <Link key={item.title} href={item.path}>
+                    <DropdownMenuItem className="cursor-pointer">
+                      {item.title}
+                    </DropdownMenuItem>
+                  </Link>
+                )
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </nav>
       </div>
       <div className="flex gap-4 items-center">

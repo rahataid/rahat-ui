@@ -10,7 +10,7 @@ on:
 env:
   CI: false
   env_dev: ${{ secrets.ENV_DEV }}
-  IMAGE_TAG: esatya/rahat-ui:dev
+  # IMAGE_TAG: esatya/rahat-ui:dev
 
 jobs:
   deploy:
@@ -41,7 +41,7 @@ jobs:
           file: Dockerfile
           push: ${{ github.event_name == 'push' && 'true' || 'false' }}
           # push: false
-          tags: $IMAGE_TAG
+          tags: esatya/rahat-ui:dev
 
       # - name: Deploy Image to CapRrover
       #   uses: caprover/deploy-from-github@v1.1.2

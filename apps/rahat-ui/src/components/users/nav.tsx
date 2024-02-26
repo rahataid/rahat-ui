@@ -55,14 +55,6 @@ export default function Nav({ onAddUsersClick, onTabChange }: IProps) {
             >
               <PlusSquare /> <p>Add users</p>
             </div>
-            <div
-              className="flex p-4 gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white"
-              onClick={() => handleTabClick('others')}
-            >
-              <Import />
-              <p>Import users</p>
-              <PlusSquare /> <p>Add User</p>
-            </div>
             <div className="flex p-4 gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white">
               <Import />
               <p>Import Users</p>

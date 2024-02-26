@@ -9,7 +9,7 @@ import ProjectNav from '../../components/projects/nav';
 import ProjectCards from '../../components/projects/projectCard';
 import projectsData from './projectsData.json';
 import { useState } from 'react';
-import { ScrollArea } from '@radix-ui/react-scroll-area';
+import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import CustomPagination from '../../components/customPagination';
 
 interface CardProps {

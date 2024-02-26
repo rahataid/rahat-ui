@@ -10,12 +10,20 @@ import UsersTable from '../../components/users/usersTable';
 import UserDetails from '../../components/users/viewUser';
 import { IUserItem } from '../../types/user';
 import { useState } from 'react';
+import AddUser from '../../components/users/addUser';
 
 export default function UsersPage() {
   const [selectedData, setSelectedData] = useState<IUserItem>();
+  const [addUser, setAddUser] = useState<boolean>(false);
 
   const handleUserClick = (item: IUserItem) => {
     setSelectedData(item);
+    setAddUser(false);
+  };
+
+  const handleAddUser = () => {
+    setAddUser(true);
+    setSelectedData(undefined);
   };
 
   return (
@@ -31,20 +39,21 @@ export default function UsersPage() {
             maxSize={20}
             className="h-full"
           >
-            <UserNav />
+            <UserNav onAddUsersClick={handleAddUser} />
           </ResizablePanel>
           <ResizableHandle />
           <ResizablePanel>
             <UsersTable handleClick={handleUserClick} />
           </ResizablePanel>
-          {selectedData && (
+          {selectedData || addUser ? (
             <>
               <ResizableHandle />
               <ResizablePanel minSize={24}>
-                <UserDetails data={selectedData} />
+                {selectedData && <UserDetails data={selectedData} />}
+                {addUser && <AddUser />}
               </ResizablePanel>
             </>
-          )}
+          ) : null}
         </ResizablePanelGroup>
       </Tabs>
     </div>

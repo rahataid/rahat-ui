@@ -1,14 +1,25 @@
 'use client';
-
+import { useState } from 'react';
 import {
   ResizablePanelGroup,
   ResizableHandle,
   ResizablePanel,
 } from '@rahat-ui/shadcn/components/resizable';
-import CommunicationNav from '../nav';
+
+import { Nav } from '../nav';
 import TextTableView from './textTable';
+import AddCampaign from './addCampaign';
+
+import { COMMUNICATION_NAV_ROUTE } from 'apps/rahat-ui/src/const/communication.const';
 
 export default function TextView() {
+  const [activeTab, setActiveTab] = useState<string>(
+    COMMUNICATION_NAV_ROUTE.DEFAULT
+  );
+
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab);
+  };
   return (
     <div>
       <div className="mb-9 mt-8">
@@ -21,11 +32,15 @@ export default function TextView() {
           maxSize={17}
           className="h-full"
         >
-          <CommunicationNav />
+          <Nav onTabChange={handleTabChange} />
         </ResizablePanel>
         <ResizableHandle />
         <ResizablePanel minSize={28}>
-          <TextTableView />
+          {/* show tableview by default  */}
+          {activeTab === COMMUNICATION_NAV_ROUTE.DEFAULT && <TextTableView />}
+          {activeTab === COMMUNICATION_NAV_ROUTE.ADD_TEXT_CAMPAIGN && (
+            <AddCampaign />
+          )}
         </ResizablePanel>
       </ResizablePanelGroup>
     </div>

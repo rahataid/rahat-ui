@@ -5,7 +5,7 @@ import {
   ResizablePanelGroup,
 } from '@rahat-ui/shadcn/components/resizable';
 import { Tabs } from '@rahat-ui/shadcn/components/tabs';
-import UserNav from '../../components/users/nav';
+import { Nav } from '../../components/users/nav';
 import UsersTable from '../../components/users/usersTable';
 import UserDetails from '../../components/users/viewUser';
 import RoleDetails from '../../components/users/role/roleDetail';
@@ -48,7 +48,7 @@ export default function UsersPage() {
             maxSize={20}
             className="h-full"
           >
-            <UserNav onTabChange={handleTabChange} />
+            <Nav onTabChange={handleTabChange} />
           </ResizablePanel>
           <ResizableHandle />
           <ResizablePanel>

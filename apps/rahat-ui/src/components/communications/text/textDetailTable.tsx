@@ -45,7 +45,7 @@ import {
 } from '@rahat-ui/shadcn/components/table';
 import TextDetailTableData from '../../../app/communications/text/[id]/textDetailData.json';
 
-const data: TextDetail[] = TextDetailTableData;
+// const data: TextDetail[] = TextDetailTableData;
 
 export type TextDetail = {
   _id: string;
@@ -82,9 +82,11 @@ export const columns: ColumnDef<TextDetail>[] = [
     cell: ({ row }) => <div>{row.getValue('to')}</div>,
   },
   {
-    accessorKey: 'date',
+    accessorKey: 'createdAt',
     header: 'Date',
-    cell: ({ row }) => <div className="capitalize">{row.getValue('date')}</div>,
+    cell: ({ row }) => (
+      <div className="capitalize">{row.getValue('createdAt')}</div>
+    ),
   },
   {
     id: 'actions',
@@ -109,7 +111,7 @@ export const columns: ColumnDef<TextDetail>[] = [
   },
 ];
 
-export default function TextDetailTableView() {
+export default function TextDetailTableView(data: any) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -118,8 +120,15 @@ export default function TextDetailTableView() {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
+  const tableData = data?.data?.map((item: any) => {
+    return {
+      createdAt: new Date(item.createdAt).toLocaleString(),
+      to: item.details.to,
+    };
+  });
+
   const table = useReactTable({
-    data,
+    data: tableData,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -136,6 +145,7 @@ export default function TextDetailTableView() {
       rowSelection,
     },
   });
+  console.log(data);
 
   return (
     <div>

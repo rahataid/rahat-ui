@@ -47,6 +47,7 @@ import {
 } from '@rahat-ui/shadcn/components/table';
 import TextTableData from '../../../app/communications/text/textData.json';
 import { paths } from 'apps/rahat-ui/src/routes/paths';
+import { useListCampaignQuery } from '@rahat-ui/query';
 
 const data: Text[] = TextTableData;
 
@@ -83,9 +84,9 @@ export const columns: ColumnDef<Text>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: 'campaign',
+    accessorKey: 'name',
     header: 'Campaigns',
-    cell: ({ row }) => <div>{row.getValue('campaign')}</div>,
+    cell: ({ row }) => <div>{row.getValue('name')}</div>,
   },
   {
     accessorKey: 'startTime',
@@ -158,8 +159,15 @@ export default function TextTableView() {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
+  const { data, isLoading, isError, isSuccess, isFetched } =
+    useListCampaignQuery({});
+
+  const tableData = React.useMemo(() => {
+    return Array.isArray(data?.rows) ? data?.rows : [];
+  }, [isSuccess]);
+
   const table = useReactTable({
-    data,
+    data: tableData,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -182,9 +190,7 @@ export default function TextTableView() {
       <div className="flex items-center py-4">
         <Input
           placeholder="Filter campaigns..."
-          value={
-            (table.getColumn('campaign')?.getFilterValue() as string) ?? ''
-          }
+          value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
           onChange={(event) =>
             table.getColumn('campaign')?.setFilterValue(event.target.value)
           }

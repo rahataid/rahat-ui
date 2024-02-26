@@ -3,8 +3,11 @@ import { Separator } from '@rahat-ui/shadcn/components/separator';
 import { ScrollArea } from '@rahat-ui/shadcn/components/scroll-area';
 import { USER_NAV_ROUTE } from '../../const/user.const';
 
-export default function Nav({ onTabChange }) {
-  const handleTabClick = (tab) => {
+type IProps = {
+  onTabChange: (tab: string) => void;
+};
+export const Nav: React.FC<IProps> = ({ onTabChange }) => {
+  const handleTabClick = (tab: string) => {
     // Notify the parent component about the tab change
     onTabChange(tab);
   };
@@ -74,4 +77,4 @@ export default function Nav({ onTabChange }) {
       </ScrollArea>
     </>
   );
-}
+};

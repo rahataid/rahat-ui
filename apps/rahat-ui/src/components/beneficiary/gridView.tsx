@@ -8,22 +8,23 @@ import { ScrollArea } from '@rahat-ui/shadcn/components/scroll-area';
 import CustomPagination from '../customPagination';
 import BeneficiaryCard from '../../components/beneficiary/card';
 import { IBeneficiaryItem } from '../../types/beneficiary';
+import { ListBeneficiary } from '@rahat-ui/types';
 
 type IProps = {
   handleClick: (item: IBeneficiaryItem) => void;
   data: ListBeneficiary[];
 };
 
-export default function GridView({ handleClick }: IProps) {
+export default function GridView({ handleClick, data }: IProps) {
   const itemsPerPage = 4;
   const [currentPage, setCurrentPage] = useState(1);
 
-  const totalItems = BeneficiaryData.length;
+  const totalItems = data.length;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const displayedItems = BeneficiaryData.slice(startIndex, endIndex);
+  const displayedItems = data.slice(startIndex, endIndex);
 
   const handlePaginationClick = (page: number) => {
     setCurrentPage(page);
@@ -44,10 +45,9 @@ export default function GridView({ handleClick }: IProps) {
         <div className="flex flex-col gap-3">
           {displayedItems.map((data: IBeneficiaryItem) => (
             <BeneficiaryCard
-              key={data.name}
-              name={data.name}
-              transactionNumber={data.transactionNumber}
-              updatedDate={data.updatedDate}
+              key={data.uuid}
+              walletAddress={data.walletAddress}
+              updatedAt={data.updatedAt}
               verified={data.verified}
               handleClick={() => handleClick(data)}
             />

@@ -13,11 +13,7 @@ export default function Card({
   updatedAt,
   verified,
   handleClick,
-  transactionNumber,
 }: IAdditionalBeneficiaryItem) {
-  const transactionNumbers =
-    !transactionNumber && Math.floor(Math.random() * 10);
-
   const changedDate = new Date(updatedAt);
   const formattedDate = changedDate.toLocaleDateString('en-US', {
     year: 'numeric',
@@ -31,8 +27,8 @@ export default function Card({
         <div>
           <h1 className="font-semibold mb-2">{walletAddress}</h1>
           <p className="text-slate-500">
-            Total transaction made :{' '}
-            {!transactionNumber && Math.floor(Math.random() * 10)} transactions
+            Total transaction made : {Math.floor(Math.random() * 10)}{' '}
+            transactions
           </p>
         </div>
         <div className="flex gap-4">
@@ -41,7 +37,7 @@ export default function Card({
         </div>
       </div>
       <div className="flex justify-between items-center flex-wrap gap-4">
-        <p className="text-slate-400">Last updated: {updatedDate}</p>
+        <p className="text-slate-400">Last updated: {formattedDate}</p>
         <div className="flex gap-2 cursor-auto ">
           <Badge
             className="px-4 py-1.5 rounded-md"

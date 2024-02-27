@@ -55,7 +55,6 @@ export default function BeneficiaryView() {
             className="h-full"
           >
             <BeneficiaryNav
-              handleView={handleView}
               onAddBenficiaryclick={handleBeneficiaryAdd}
               meta={meta}
             />

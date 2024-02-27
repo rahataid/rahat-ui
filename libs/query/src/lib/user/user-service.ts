@@ -7,7 +7,7 @@ import {
 import queryString from 'query-string';
 import { useEffect } from 'react';
 import { TAGS } from '../../config';
-import api from '../../utils/api';
+import { api } from '../../utils/api';
 import { useUserStore } from './user-store';
 
 // TODO: Add types

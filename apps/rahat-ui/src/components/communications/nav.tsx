@@ -1,12 +1,18 @@
 import { Eye, EyeOff, ScreenShareOff, PlusSquare, Import } from 'lucide-react';
 import { Separator } from '@rahat-ui/shadcn/components/separator';
 import { ScrollArea } from '@rahat-ui/shadcn/components/scroll-area';
+import { COMMUNICATION_NAV_ROUTE } from '../../const/communication.const';
 
 type IProps = {
+  onTabChange: (tab: string) => void;
   title: string;
 };
 
-export default function Nav({ title }: IProps) {
+export default function Nav({ onTabChange, title }: IProps) {
+  const handleTabClick = (tab: string) => {
+    // Notify the parent component about the tab change
+    onTabChange(tab);
+  };
   return (
     <>
       <div>
@@ -16,26 +22,6 @@ export default function Nav({ title }: IProps) {
         <ScrollArea className="h-44">
           <div className="px-4 pb-4">
             <nav>
-              <div className="flex justify-between p-4 rounded-md cursor-pointer hover:bg-primary hover:text-white">
-                <div className="flex gap-3">
-                  <Eye />
-                  <p>Active</p>
-                </div>
-                <p>128</p>
-              </div>
-              <div className="flex justify-between p-4 rounded-md cursor-pointer hover:bg-primary hover:text-white">
-                <div className="flex gap-3">
-                  <EyeOff />
-                  <p>Inactive</p>
-                </div>
-                <p>32</p>
-              </div>
-              <div className="flex justify-between p-4 rounded-md cursor-pointer hover:bg-primary hover:text-white">
-                <div className="flex gap-3">
-                  <ScreenShareOff /> <p>Disabled/ Deleted</p>
-                </div>
-                <p>9</p>
-              </div>
               <div className="flex justify-between p-4 rounded-md cursor-pointer hover:bg-primary hover:text-white">
                 <div className="flex gap-3">
                   <Eye />
@@ -67,7 +53,12 @@ export default function Nav({ title }: IProps) {
             Action Items
           </h1>
           <nav>
-            <div className="flex p-4 gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white">
+            <div
+              onClick={() =>
+                handleTabClick(COMMUNICATION_NAV_ROUTE.ADD_TEXT_CAMPAIGN)
+              }
+              className="flex p-4 gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white"
+            >
               <PlusSquare /> <p>Add</p>
             </div>
             <div className="flex p-4 gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white">

@@ -4,4 +4,9 @@ export const TAGS = {
   GET_ALL_PROJECTS: 'get_all_projects',
   GET_ALL_ROLES: 'get_all_roles',
   GET_ROLE: 'get_role',
+  GET_ALL_CAMPAIGNS: 'get_all_campaign',
+  GET_CAMPAIGNS: 'get_campaign',
+  GET_CAMPAIGNS_AUDIO: 'get_campaign_audio',
+  GET_ALL_TRANSPORT: 'get_all_transport',
+  GET_ALL_AUDIENCE: 'get_all_audience',
 };

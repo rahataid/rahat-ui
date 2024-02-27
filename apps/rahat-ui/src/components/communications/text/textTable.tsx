@@ -45,11 +45,9 @@ import {
   TableHeader,
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
-import TextTableData from '../../../app/communications/text/textData.json';
 import { paths } from 'apps/rahat-ui/src/routes/paths';
+import { useListCampaignQuery } from '@rahat-ui/query';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-
-const data: Text[] = TextTableData;
 
 export type Text = {
   id: number;
@@ -84,15 +82,17 @@ export const columns: ColumnDef<Text>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: 'campaign',
+    accessorKey: 'name',
     header: 'Campaigns',
-    cell: ({ row }) => <div>{row.getValue('campaign')}</div>,
+    cell: ({ row }) => <div>{row.getValue('name')}</div>,
   },
   {
     accessorKey: 'startTime',
     header: 'Start Time',
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue('startTime')}</div>
+      <div className="capitalize">
+        {new Date(row.getValue('startTime')).toLocaleString()}
+      </div>
     ),
   },
   {
@@ -142,7 +142,17 @@ export const columns: ColumnDef<Text>[] = [
               View Details
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>Edit</DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() =>
+                router.push(
+                  paths.dashboard.communication.editTextCampaign(
+                    row.original.id
+                  )
+                )
+              }
+            >
+              Edit
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );
@@ -159,8 +169,15 @@ export default function TextTableView() {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
+  const { data, isLoading, isError, isSuccess, isFetched } =
+    useListCampaignQuery({});
+
+  const tableData = React.useMemo(() => {
+    return Array.isArray(data?.rows) ? data?.rows : [];
+  }, [isSuccess]);
+
   const table = useReactTable({
-    data,
+    data: tableData,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,

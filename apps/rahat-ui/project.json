@@ -6,22 +6,19 @@
   "targets": {
     "build": {
       "executor": "@nx/next:build",
-      "outputs": [
-        "{options.outputPath}"
-      ],
+      "outputs": ["{options.outputPath}"],
       "defaultConfiguration": "production",
       "options": {
         "outputPath": "dist/apps/rahat-ui",
         "generatePackageJson": true,
         "root": "apps/rahat-ui",
-        "tsconfig": "apps/rahat-ui/tsconfig.app.json"
+        "tsconfig": "apps/rahat-ui/tsconfig.spec.json"
       },
       "configurations": {
         "development": {
           "dev": true
         },
-        "production": {
-        }
+        "production": {}
       }
     },
     "serve": {

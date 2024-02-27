@@ -1,39 +1,49 @@
 'use client';
+import { useState } from 'react';
+
 import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
 } from '@rahat-ui/shadcn/components/resizable';
 import { Tabs } from '@rahat-ui/shadcn/components/tabs';
+
 import UserNav from '../../components/users/nav';
-import UsersTable from '../../components/users/usersTable';
-import UserDetails from '../../components/users/viewUser';
-import RoleDetails from '../../components/users/role/roleDetail';
+import AddUser from '../../components/users/addUser';
 import { IRoleItem, IUserItem } from '../../types/user';
-import { useState } from 'react';
 import { USER_NAV_ROUTE } from '../../const/user.const';
-import RoleTable from '../../components/users/role/roleTable';
+import UserDetails from '../../components/users/viewUser';
 import AddRole from '../../components/users/role/addRole';
+import UsersTable from '../../components/users/usersTable';
+import RoleTable from '../../components/users/role/roleTable';
+import RoleDetails from '../../components/users/role/roleDetail';
 
-type IProps = {
-  onTabChange: VoidFunction;
-};
-
-export default function UsersPage({ onTabChange }: IProps) {
+export default function UsersPage() {
   const [selectedUserData, setSelectedUserData] = useState<IUserItem>();
   const [selectedRoleData, setSelectedRoleData] = useState<IRoleItem>();
+  const [addUser, setAddUser] = useState<boolean>(false);
 
   const [activeTab, setActiveTab] = useState<string>(USER_NAV_ROUTE.DEFAULT);
   const handleUserClick = (item: IUserItem) => {
+    setAddUser(false);
+    setSelectedRoleData(undefined);
     setSelectedUserData(item);
   };
 
   const handleRoleClick = (item: IRoleItem) => {
+    setAddUser(false);
+    setSelectedUserData(undefined);
     setSelectedRoleData(item);
   };
 
   const handleTabChange = (tab: string) => {
     setActiveTab(tab);
+  };
+
+  const handleAddUser = () => {
+    setSelectedUserData(undefined);
+    setSelectedRoleData(undefined);
+    setAddUser(true);
   };
 
   return (
@@ -49,7 +59,10 @@ export default function UsersPage({ onTabChange }: IProps) {
             maxSize={20}
             className="h-full"
           >
-            <UserNav onTabChange={handleTabChange} />
+            <UserNav
+              onTabChange={handleTabChange}
+              onAddUsersClick={handleAddUser}
+            />
           </ResizablePanel>
           <ResizableHandle />
           <ResizablePanel>
@@ -64,19 +77,13 @@ export default function UsersPage({ onTabChange }: IProps) {
               {activeTab === USER_NAV_ROUTE.ADD_ROLE && <AddRole />}
             </div>
           </ResizablePanel>
-          {selectedUserData && (
+          {selectedUserData || addUser || selectedRoleData ? (
             <>
               <ResizableHandle />
               <ResizablePanel minSize={24}>
-                <UserDetails data={selectedUserData} />
-              </ResizablePanel>
-            </>
-          )}
-          {selectedRoleData ? (
-            <>
-              <ResizableHandle />
-              <ResizablePanel minSize={24}>
-                <RoleDetails data={selectedRoleData} />
+                {selectedUserData && <UserDetails data={selectedUserData} />}
+                {addUser && <AddUser />}
+                {selectedRoleData && <RoleDetails data={selectedRoleData} />}
               </ResizablePanel>
             </>
           ) : null}

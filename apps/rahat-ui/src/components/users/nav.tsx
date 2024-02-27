@@ -5,11 +5,11 @@ import { USER_NAV_ROUTE } from '../../const/user.const';
 
 type IProps = {
   onAddUsersClick: VoidFunction;
-  onTabChange: VoidFunction;
+  onTabChange: (tab: string) => void;
 };
 
 export default function Nav({ onAddUsersClick, onTabChange }: IProps) {
-  const handleTabClick = (tab) => {
+  const handleTabClick = (tab: string) => {
     // Notify the parent component about the tab change
     onTabChange(tab);
   };
@@ -54,14 +54,6 @@ export default function Nav({ onAddUsersClick, onTabChange }: IProps) {
               onClick={onAddUsersClick}
             >
               <PlusSquare /> <p>Add users</p>
-            </div>
-            <div
-              className="flex p-4 gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white"
-              onClick={() => handleTabClick('others')}
-            >
-              <Import />
-              <p>Import users</p>
-              <PlusSquare /> <p>Add User</p>
             </div>
             <div className="flex p-4 gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white">
               <Import />

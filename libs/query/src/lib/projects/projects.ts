@@ -1,7 +1,7 @@
 import { CreateProjectPayload } from '@rahat-ui/types';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { TAGS } from '../../config';
-import api from '../../utils/api';
+import { api } from '../../utils/api';
 
 const createProject = async (payload: CreateProjectPayload) => {
   const res = await api.post('/projects', payload);

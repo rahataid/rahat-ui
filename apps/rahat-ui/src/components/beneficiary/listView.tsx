@@ -57,7 +57,7 @@ export type Beneficiary = {
   bank: string;
 };
 
-export const columns: ColumnDef<Beneficiary>[] = [
+export const columns: ColumnDef<ListBeneficiary>[] = [
   {
     id: 'select',
     header: ({ table }) => (
@@ -81,45 +81,43 @@ export const columns: ColumnDef<Beneficiary>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: 'name',
-    header: 'Name',
-    cell: ({ row }) => <div>{row.getValue('name')}</div>,
+    accessorKey: 'walletAddress',
+    header: 'Wallet Address',
+    cell: ({ row }) => <div>{row.getValue('walletAddress')}</div>,
   },
   {
-    accessorKey: 'projectsInvolved',
-    header: 'Projects Involved',
+    accessorKey: 'location',
+    header: 'Location',
     cell: ({ row }) => (
       <div className="capitalize">
-        {row.getValue('projectsInvolved')
-          ? row.getValue('projectsInvolved')
-          : 'N/A'}
+        {row.getValue('location') ? row.getValue('location') : 'N/A'}
       </div>
     ),
   },
   {
-    accessorKey: 'internetAccess',
-    header: 'Internet Access',
+    accessorKey: 'internetStatus',
+    header: 'Internet Status',
     cell: ({ row }) => (
       <Badge variant="secondary" className="rounded-md capitalize">
-        {row.getValue('internetAccess')}
+        {row.getValue('internetStatus')}
       </Badge>
     ),
   },
   {
-    accessorKey: 'phone',
-    header: 'Phone',
+    accessorKey: 'phoneStatus',
+    header: 'Phone Status',
     cell: ({ row }) => (
       <Badge variant="secondary" className="rounded-md capitalize">
-        {row.getValue('phone')}
+        {row.getValue('phoneStatus')}
       </Badge>
     ),
   },
   {
-    accessorKey: 'bank',
-    header: 'Bank',
+    accessorKey: 'bankedStatus',
+    header: 'Bank Status',
     cell: ({ row }) => (
       <Badge variant="secondary" className="rounded-md capitalize">
-        {row.getValue('bank')}
+        {row.getValue('bankedStatus')}
       </Badge>
     ),
   },
@@ -146,7 +144,7 @@ export const columns: ColumnDef<Beneficiary>[] = [
   },
 ];
 
-export default function ListView() {
+export default function ListView({ data, meta }: IBeneficiaryTableData) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []

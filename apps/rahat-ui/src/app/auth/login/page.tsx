@@ -25,8 +25,6 @@ export default function AuthPage() {
     }));
 
   const err = useError();
-  console.log('err', err);
-
   const sendOtpMutation = useSendOtp();
   const loginMutation = useLogin();
 
@@ -60,7 +58,7 @@ export default function AuthPage() {
 
   return (
     <div className="h-full grid place-items-center relative">
-      <Link
+      {/* <Link
         href="/"
         className={cn(
           buttonVariants({ variant: 'ghost' }),
@@ -68,7 +66,7 @@ export default function AuthPage() {
         )}
       >
         Get Started
-      </Link>
+      </Link> */}
       <div className="w-full flex justify-center">
         <div className="flex flex-col gap-4 w-96">
           <div className="flex flex-col space-y-2 text-center">
@@ -81,11 +79,7 @@ export default function AuthPage() {
                 : `OTP has been sent to ${address}`}
             </p>
           </div>
-          {error && (
-            <p className="text-red-500 text-center">
-              {error?.response?.data?.message}
-            </p>
-          )}
+
           {!challenge.length ? (
             <form onSubmit={onSendOtpFormSubmit}>
               <div className="grid gap-2">
@@ -104,7 +98,17 @@ export default function AuthPage() {
                     onChange={(e) => setAddress(e.target.value)}
                   />
                 </div>
-                <Button type="submit">Send OTP</Button>
+                {error && (
+                  <p className="text-red-500 text-center">
+                    {error?.response?.data?.message}
+                  </p>
+                )}
+                <Button
+                  className="inline-flex items-center justify-center whitespace-nowrap rounded-sm text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground shadow hover:bg-primary/90 h-9 px-4 py-2"
+                  type="submit"
+                >
+                  Send OTP
+                </Button>
               </div>
             </form>
           ) : (

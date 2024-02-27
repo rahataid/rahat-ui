@@ -6,7 +6,7 @@ import {
 } from '@tanstack/react-query';
 import queryString from 'query-string';
 import { TAGS } from '../../config';
-import api from '../../utils/api';
+import { api } from '../../utils/api';
 
 const createNewRole = async (payload: any) => {
   const res = await api.post('/roles', payload);

@@ -1,4 +1,4 @@
-import BeneficiaryView from '../../components/beneficiary/beneficiaryView';
+import BeneficiaryView from '../../sections/beneficiary/beneficiaryView';
 
 export const metadata = {
   title: 'Beneficiaries',

@@ -1,4 +1,4 @@
-import VoiceView from 'apps/rahat-ui/src/components/communications/voice/voiceView';
+import VoiceView from 'apps/rahat-ui/src/sections/communications/voice/voiceView';
 
 export const metadata = {
   title: 'Voice',

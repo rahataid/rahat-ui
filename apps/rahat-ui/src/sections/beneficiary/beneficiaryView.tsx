@@ -7,10 +7,10 @@ import {
   ResizableHandle,
   ResizablePanel,
 } from '@rahat-ui/shadcn/components/resizable';
-import BeneficiaryNav from '../../components/beneficiary/nav';
-import BeneficiaryListView from '../../components/beneficiary/listView';
-import BeneficiaryGridView from '../../components/beneficiary/gridView';
-import BeneficiaryDetail from '../../components/beneficiary/beneficiaryDetail';
+import BeneficiaryNav from '../../sections/beneficiary/nav';
+import BeneficiaryListView from '../../sections/beneficiary/listView';
+import BeneficiaryGridView from '../../sections/beneficiary/gridView';
+import BeneficiaryDetail from '../../sections/beneficiary/beneficiaryDetail';
 import { IBeneficiaryItem } from '../../types/beneficiary';
 import AddBeneficiary from './addBeneficiary';
 import { usebeneficiaryListQuery } from '@rahat-ui/query';

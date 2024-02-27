@@ -6,22 +6,16 @@ import {
   AvatarImage,
 } from '@rahat-ui/shadcn/components/avatar';
 import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from '@rahat-ui/shadcn/components/hover-card';
-import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuGroup,
-  DropdownMenuTrigger,
   DropdownMenuItem,
   DropdownMenuPortal,
   DropdownMenuSub,
-  DropdownMenuSubTrigger,
   DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
-import { ChevronDown } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -30,9 +24,8 @@ import { useAuthStore, useUserStore } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { useNavData } from '../app/config-nav';
 import { paths } from '../routes/paths';
-import MobileNav from './mobileNav';
 import { ModeToggle } from './dropdown';
-import ConnectWallet from './wallet/connect-wallet';
+import ConnectWallet from '../sections/wallet/connect-wallet';
 
 export function Nav() {
   const currentPath = usePathname();

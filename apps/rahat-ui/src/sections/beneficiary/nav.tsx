@@ -6,7 +6,6 @@ import { LayoutGrid, AlignJustify } from 'lucide-react';
 import { Meta } from '@rahat-ui/types';
 
 type IProps = {
-  handleView: VoidFunction;
   onAddBenficiaryclick: VoidFunction;
   meta: Meta | undefined;
 };

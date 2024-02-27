@@ -5,7 +5,7 @@ import {
 } from '@rahat-ui/shadcn/components/resizable';
 import { Tabs } from '@rahat-ui/shadcn/components/tabs';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import ProjectDetailsNav from '../../../components/projects/prjectDetailsNav';
+import ProjectDetailsNav from '../../../sections/projects/prjectDetailsNav';
 import ProjectDetails from './projectDetails';
 
 export default function ProjectPage() {

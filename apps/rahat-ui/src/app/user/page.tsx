@@ -8,15 +8,15 @@ import {
 } from '@rahat-ui/shadcn/components/resizable';
 import { Tabs } from '@rahat-ui/shadcn/components/tabs';
 
-import UserNav from '../../components/users/nav';
-import AddUser from '../../components/users/addUser';
+import UserNav from '../../sections/users/nav';
+import AddUser from '../../sections/users/addUser';
 import { IRoleItem, IUserItem } from '../../types/user';
 import { USER_NAV_ROUTE } from '../../const/user.const';
-import UserDetails from '../../components/users/viewUser';
-import AddRole from '../../components/users/role/addRole';
-import UsersTable from '../../components/users/usersTable';
-import RoleTable from '../../components/users/role/roleTable';
-import RoleDetails from '../../components/users/role/roleDetail';
+import UserDetails from '../../sections/users/viewUser';
+import AddRole from '../../sections/users/role/addRole';
+import UsersTable from '../../sections/users/usersTable';
+import RoleTable from '../../sections/users/role/roleTable';
+import RoleDetails from '../../sections/users/role/roleDetail';
 
 export default function UsersPage() {
   const [selectedUserData, setSelectedUserData] = useState<IUserItem>();

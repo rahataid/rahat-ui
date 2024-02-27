@@ -29,6 +29,8 @@ export const paths = {
       voiceDetail: (id: number) => `${ROOTS.COMMUNICATION}/voice/${id}`,
       text: `${ROOTS.COMMUNICATION}/text`,
       textDetail: (id: number) => `${ROOTS.COMMUNICATION}/text/${id}`,
+      editTextCampaign: (id: number) =>
+        `${ROOTS.COMMUNICATION}/text/edit/${id}`,
     },
   },
 };

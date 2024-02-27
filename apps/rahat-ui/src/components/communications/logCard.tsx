@@ -7,8 +7,8 @@ import {
 import { Phone } from 'lucide-react';
 
 type IProps = {
-  title: string;
-  total: number;
+  title?: string;
+  total?: number;
 };
 
 export default function LogCard({ total, title }: IProps) {

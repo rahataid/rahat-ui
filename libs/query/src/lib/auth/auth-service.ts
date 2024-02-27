@@ -1,6 +1,6 @@
 import { useMutation } from '@tanstack/react-query';
 
-import api from '../../utils/api';
+import { api } from '../../utils/api';
 import useErrorStore from '../../utils/error-store';
 import { useAuthStore } from './auth-store';
 

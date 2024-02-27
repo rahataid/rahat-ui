@@ -162,7 +162,6 @@ export default function UserTable({ handleClick }: IProps) {
       },
     },
   });
-  console.log(data?.data);
 
   return (
     <div>

@@ -4,6 +4,7 @@ import VoiceDetailTable from './voiceDetailTable';
 import VoiceInfoCard from '../infoCard';
 import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
 import LogCard from '../logCard';
+import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 
 export default function VoiceDetailView() {
   const logCardData = [
@@ -18,14 +19,16 @@ export default function VoiceDetailView() {
       </div>
       <div className="mt-5">
         <Card>
-          <CardContent>
-            <div className="grid grid-cols-3 gap-5 mt-8">
-              {logCardData.map((item) => (
-                <LogCard title={item.title} total={item.total} />
-              ))}
-            </div>
-            <VoiceDetailTable />
-          </CardContent>
+          <ScrollArea className="h-custom1">
+            <CardContent>
+              <div className="grid grid-cols-3 gap-5 mt-8">
+                {logCardData.map((item) => (
+                  <LogCard title={item.title} total={item.total} />
+                ))}
+              </div>
+              <VoiceDetailTable />
+            </CardContent>
+          </ScrollArea>
         </Card>
       </div>
     </>

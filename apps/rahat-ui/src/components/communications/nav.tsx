@@ -1,14 +1,14 @@
 import { Eye, EyeOff, ScreenShareOff, PlusSquare, Import } from 'lucide-react';
 import { Separator } from '@rahat-ui/shadcn/components/separator';
 import { ScrollArea } from '@rahat-ui/shadcn/components/scroll-area';
-import React from 'react';
 import { COMMUNICATION_NAV_ROUTE } from '../../const/communication.const';
 
 type IProps = {
   onTabChange: (tab: string) => void;
+  title: string;
 };
 
-export const Nav: React.FC<IProps> = ({ onTabChange }) => {
+export default function Nav({ onTabChange, title }: IProps) {
   const handleTabClick = (tab: string) => {
     // Notify the parent component about the tab change
     onTabChange(tab);
@@ -17,7 +17,7 @@ export const Nav: React.FC<IProps> = ({ onTabChange }) => {
     <>
       <div>
         <h1 className="p-4 font-semibold text-xl text-slate-600">
-          Navigation Items
+          Communication: {title}
         </h1>
         <ScrollArea className="h-44">
           <div className="px-4 pb-4">
@@ -70,4 +70,4 @@ export const Nav: React.FC<IProps> = ({ onTabChange }) => {
       </ScrollArea>
     </>
   );
-};
+}

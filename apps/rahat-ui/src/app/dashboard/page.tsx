@@ -2,18 +2,30 @@
 
 import { Button } from '@rahat-ui/shadcn/components/button';
 import { Input } from '@rahat-ui/shadcn/components/input';
-import { MetamaskCard } from '@rahat-ui/web3';
+import { useAccount, useReadContract } from 'wagmi';
 import ChartsCard from '../../components/chartsCard';
 import DataCard from '../../components/dataCard';
+import { abi } from './storage-abi';
 
 // export const metadata: Metadata = {
 //   title: 'DashBoard',
 // };
 
 export default function DashBoardPage() {
+  const account = useAccount();
+  const { data, error, isLoading, isPending } = useReadContract({
+    abi,
+    address: '0xDeB7d3EA2e3fA3bC5CA00c76997B907b800F83F6',
+    functionName: 'getRoleAdmin',
+    args: ['0xAC6bFaf10e89202c293dD795eCe180BBf1430d7B'],
+    account: account.address,
+  });
+
+  console.log('{data,error,isLoading} ', { data, error, isLoading, isPending });
+
   return (
     <div className="max-h-mx">
-      <div className="flex items-center justify-between mb-9 mt-8">
+      <div className="flex items-center justify-between my-4">
         <h1 className="text-3xl font-semibold">Dashboard</h1>
         <div className="flex w-full max-w-sm items-center space-x-2">
           <Input disabled placeholder="21 Jan 2024, 07 Feb 2024" />
@@ -53,8 +65,6 @@ export default function DashBoardPage() {
         <ChartsCard className="" title="Beneficiaries" image="/charts.png" />
         <ChartsCard className="" title="Beneficiaries" image="/charts.png" />
       </div>
-
-      <MetamaskCard />
     </div>
   );
 }

@@ -1,54 +1,73 @@
 import { Eye, EyeOff, ScreenShareOff, PlusSquare, Import } from 'lucide-react';
 import { Separator } from '@rahat-ui/shadcn/components/separator';
 import { ScrollArea } from '@rahat-ui/shadcn/components/scroll-area';
+import { TabsList, TabsTrigger } from '@rahat-ui/shadcn/src/components/ui/tabs';
+import { LayoutGrid, AlignJustify } from 'lucide-react';
 
-export default function Nav() {
+type IProps = {
+  handleView: VoidFunction;
+  onAddBenficiaryclick: VoidFunction;
+};
+
+export default function Nav({ handleView, onAddBenficiaryclick }: IProps) {
   return (
     <>
       <div>
-        <h1 className="p-4 font-semibold text-xl text-slate-600">
-          Navigation Items
-        </h1>
+        <div className="flex justify-between items-center p-4">
+          <h1 className="font-semibold text-xl text-slate-600">
+            Beneficiaries
+          </h1>
+          <TabsList>
+            <TabsTrigger value="list" onClick={handleView}>
+              <AlignJustify size={18} strokeWidth={1.5} />
+            </TabsTrigger>
+            <TabsTrigger value="grid" onClick={handleView}>
+              <LayoutGrid size={18} strokeWidth={1.5} />
+            </TabsTrigger>
+          </TabsList>
+        </div>
         <ScrollArea className="h-44">
           <div className="px-4 pb-4">
             <nav>
               <div className="flex justify-between p-4 rounded-md cursor-pointer hover:bg-primary hover:text-white">
                 <div className="flex gap-3">
-                  <Eye />
+                  <Eye size={18} strokeWidth={1.5} />
                   <p>Active beneficiaries</p>
                 </div>
                 <p>128</p>
               </div>
               <div className="flex justify-between p-4 rounded-md cursor-pointer hover:bg-primary hover:text-white">
                 <div className="flex gap-3">
-                  <EyeOff />
+                  <EyeOff size={18} strokeWidth={1.5} />
                   <p>Inactive beneficiaries</p>
                 </div>
                 <p>32</p>
               </div>
               <div className="flex justify-between p-4 rounded-md cursor-pointer hover:bg-primary hover:text-white">
                 <div className="flex gap-3">
-                  <ScreenShareOff /> <p>Disabled/ Deleted</p>
+                  <ScreenShareOff size={18} strokeWidth={1.5} />{' '}
+                  <p>Disabled/ Deleted</p>
                 </div>
                 <p>9</p>
               </div>
               <div className="flex justify-between p-4 rounded-md cursor-pointer hover:bg-primary hover:text-white">
                 <div className="flex gap-3">
-                  <Eye />
+                  <Eye size={18} strokeWidth={1.5} />
                   <p>Active beneficiaries</p>
                 </div>
                 <p>128</p>
               </div>
               <div className="flex justify-between p-4 rounded-md cursor-pointer hover:bg-primary hover:text-white">
                 <div className="flex gap-3">
-                  <EyeOff />
+                  <EyeOff size={18} strokeWidth={1.5} />
                   <p>Inactive beneficiaries</p>
                 </div>
                 <p>32</p>
               </div>
               <div className="flex justify-between p-4 rounded-md cursor-pointer hover:bg-primary hover:text-white">
                 <div className="flex gap-3">
-                  <ScreenShareOff /> <p>Disabled/ Deleted</p>
+                  <ScreenShareOff size={18} strokeWidth={1.5} />{' '}
+                  <p>Disabled/ Deleted</p>
                 </div>
                 <p>9</p>
               </div>
@@ -63,11 +82,15 @@ export default function Nav() {
             Action Items
           </h1>
           <nav>
-            <div className="flex p-4 gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white">
-              <PlusSquare /> <p>Add beneficiaries</p>
+            <div
+              onClick={onAddBenficiaryclick}
+              className="flex p-4 gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white"
+            >
+              <PlusSquare size={18} strokeWidth={1.5} />{' '}
+              <p>Add beneficiaries</p>
             </div>
             <div className="flex p-4 gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white">
-              <Import />
+              <Import size={18} strokeWidth={1.5} />
               <p>Import beneficiaries</p>
             </div>
           </nav>

@@ -5,7 +5,7 @@ import {
   ResizablePanelGroup,
 } from '@rahat-ui/shadcn/components/resizable';
 import { Tabs } from '@rahat-ui/shadcn/components/tabs';
-import { Nav } from '../../components/users/nav';
+import UserNav from '../../components/users/nav';
 import UsersTable from '../../components/users/usersTable';
 import UserDetails from '../../components/users/viewUser';
 import RoleDetails from '../../components/users/role/roleDetail';
@@ -14,17 +14,27 @@ import { useState } from 'react';
 import { USER_NAV_ROUTE } from '../../const/user.const';
 import RoleTable from '../../components/users/role/roleTable';
 import AddRole from '../../components/users/role/addRole';
+import AddUser from '../../components/users/addUser';
 
-export default function UsersPage() {
+type IProps = {
+  onTabChange: (tab: string) => void;
+};
+
+export default function UsersPage({ onTabChange }: IProps) {
   const [selectedUserData, setSelectedUserData] = useState<IUserItem>();
   const [selectedRoleData, setSelectedRoleData] = useState<IRoleItem>();
+  const [addUser, setAddUser] = useState<boolean>(false);
 
   const [activeTab, setActiveTab] = useState<string>(USER_NAV_ROUTE.DEFAULT);
   const handleUserClick = (item: IUserItem) => {
+    setAddUser(false);
+    setSelectedRoleData(undefined);
     setSelectedUserData(item);
   };
 
   const handleRoleClick = (item: IRoleItem) => {
+    setAddUser(false);
+    setSelectedUserData(undefined);
     setSelectedRoleData(item);
   };
 
@@ -32,12 +42,15 @@ export default function UsersPage() {
     setActiveTab(tab);
   };
 
+  const handleAddUser = () => {
+    setSelectedUserData(undefined);
+    setSelectedRoleData(undefined);
+    setAddUser(true);
+  };
+
   return (
-    <div className="mb-5">
+    <div className="mt-2">
       <Tabs defaultValue="grid">
-        <div className="flex items-center justify-between my-4">
-          <h1 className="text-3xl font-semibold">Users List</h1>
-        </div>
         <ResizablePanelGroup
           direction="horizontal"
           className="min-h-max border"
@@ -48,7 +61,10 @@ export default function UsersPage() {
             maxSize={20}
             className="h-full"
           >
-            <Nav onTabChange={handleTabChange} />
+            <UserNav
+              onTabChange={handleTabChange}
+              onAddUsersClick={handleAddUser}
+            />
           </ResizablePanel>
           <ResizableHandle />
           <ResizablePanel>
@@ -63,22 +79,16 @@ export default function UsersPage() {
               {activeTab === USER_NAV_ROUTE.ADD_ROLE && <AddRole />}
             </div>
           </ResizablePanel>
-          {selectedUserData && (
+          {selectedUserData || addUser || selectedRoleData ? (
             <>
               <ResizableHandle />
               <ResizablePanel minSize={24}>
-                <UserDetails data={selectedUserData} />
+                {selectedUserData && <UserDetails data={selectedUserData} />}
+                {addUser && <AddUser />}
+                {selectedRoleData && <RoleDetails data={selectedRoleData} />}
               </ResizablePanel>
             </>
-          )}
-          {selectedRoleData && (
-            <>
-              <ResizableHandle />
-              <ResizablePanel minSize={24}>
-                <RoleDetails data={selectedRoleData} />
-              </ResizablePanel>
-            </>
-          )}
+          ) : null}
         </ResizablePanelGroup>
       </Tabs>
     </div>

@@ -5,6 +5,8 @@ dist
 tmp
 /out-tsc
 .env
+.env.*
+!.env.example
 .npmrc
 
 # dependencies

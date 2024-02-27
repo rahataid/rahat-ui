@@ -23,6 +23,7 @@ import {
 } from '@rahat-ui/query';
 import { useParams } from 'next/navigation';
 import { toast } from 'react-toastify';
+import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 
 export default function TextDetailView() {
   const triggerCampaign = useTriggerCampaignMutation();
@@ -48,7 +49,6 @@ export default function TextDetailView() {
         });
     }
   };
-  console.log('rerender');
 
   return (
     <>

@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 export default function TransactionsPage() {
   return (
     <div className="max-h-mx">
-      <div className="flex items-center justify-between mb-9 mt-8">
+      <div className="flex items-center justify-between my-4">
         <h1 className="text-3xl font-semibold">Transactions</h1>
       </div>
       <div className=" grid md:grid-cols-4 gap-4">

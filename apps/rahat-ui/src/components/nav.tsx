@@ -1,8 +1,5 @@
 'use client';
 
-import { usePathname } from 'next/navigation';
-import Link from 'next/link';
-import Image from 'next/image';
 import {
   Avatar,
   AvatarFallback,
@@ -13,26 +10,46 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from '@rahat-ui/shadcn/components/hover-card';
-import { ChevronDown, Wallet2 } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuTrigger,
   DropdownMenuGroup,
+  DropdownMenuTrigger,
+  DropdownMenuItem,
+  DropdownMenuPortal,
+  DropdownMenuSub,
+  DropdownMenuSubTrigger,
+  DropdownMenuSubContent,
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
+import { ChevronDown } from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
+import { useAuthStore, useUserStore } from '@rahat-ui/query';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { useNavData } from '../app/config-nav';
 import { paths } from '../routes/paths';
+import MobileNav from './mobileNav';
 import { ModeToggle } from './dropdown';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { WalletConnect } from './connectWallet';
+import ConnectWallet from './wallet/connect-wallet';
 
 export function Nav() {
   const currentPath = usePathname();
-  const navData = useNavData();
+  const { data, subData } = useNavData();
+  const { user, clearUser } = useUserStore((state) => ({
+    user: state.user,
+    clearUser: state.clearUser,
+  }));
+  const clearAuth = useAuthStore((state) => state.clearAuth);
+  const handleLogout = () => {
+    clearUser();
+    clearAuth();
+    window.location.reload();
+  };
 
   return (
-    <div className="flex justify-between px-8 py-4 border-b sticky top-0 z-50 bg-white">
+    <div className="flex justify-between px-8 py-2 sticky top-0 z-50 bg-blur backdrop-blur">
       <div className="flex gap-12">
         <Link href={paths.dashboard.root} className="flex items-center">
           <Image
@@ -43,50 +60,64 @@ export function Nav() {
           />
           <p className="font-medium text-slate-500">Rahat</p>
         </Link>
-        <nav className="flex items-center">
-          {navData.map((item) =>
-            item.children ? (
-              <HoverCard openDelay={0} closeDelay={100}>
-                <HoverCardTrigger>
-                  <div className="py-2 px-4 font-medium rounded cursor-pointer flex gap-1">
-                    <p>{item.title}</p>
-                    <ChevronDown />
-                  </div>
-                </HoverCardTrigger>
-                <HoverCardContent className="w-44">
-                  {item.children.map((child) => (
-                    <Link key={child.title} href={child.path}>
-                      <div className="p-2 hover:bg-secondary rounded-sm flex gap-3">
-                        <span className="text-primary">{child.icon}</span>
-                        <p className="font-medium">{child.title}</p>
-                      </div>
-                    </Link>
-                  ))}
-                </HoverCardContent>
-              </HoverCard>
-            ) : (
-              <Link key={item.title} href={item.path}>
-                <p
-                  className={`py-2 px-4 font-medium rounded ${
-                    currentPath === item.path && 'bg-secondary'
-                  }`}
-                >
-                  {item.title}
-                </p>
-              </Link>
-            )
-          )}
+        <nav className="hidden md:flex items-center">
+          {data.map((item) => (
+            <Link key={item.title} href={item.path}>
+              <p
+                className={`py-2 px-4 font-light rounded ${
+                  currentPath === item.path && 'bg-secondary'
+                }`}
+              >
+                {item.title}
+              </p>
+            </Link>
+          ))}
+          <DropdownMenu>
+            <DropdownMenuTrigger className="py-2 px-4 font-light rounded">
+              More...
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="ml-12">
+              {subData.map((item) =>
+                item.children ? (
+                  <DropdownMenuSub key={item.title}>
+                    <DropdownMenuSubTrigger>
+                      {item.title}
+                    </DropdownMenuSubTrigger>
+                    <DropdownMenuPortal>
+                      <DropdownMenuSubContent>
+                        {item.children.map((child) => (
+                          <Link key={child.title} href={child.path}>
+                            <DropdownMenuItem className="cursor-pointer">
+                              {child.title}
+                            </DropdownMenuItem>
+                          </Link>
+                        ))}
+                      </DropdownMenuSubContent>
+                    </DropdownMenuPortal>
+                  </DropdownMenuSub>
+                ) : (
+                  <Link key={item.title} href={item.path}>
+                    <DropdownMenuItem className="cursor-pointer">
+                      {item.title}
+                    </DropdownMenuItem>
+                  </Link>
+                )
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </nav>
       </div>
       <div className="flex gap-4 items-center">
         <ModeToggle />
-        <WalletConnect />
+        <ConnectWallet />
+
         <DropdownMenu>
           <DropdownMenuTrigger>
-            <Avatar>
+            <Avatar className="h-10 w-10">
               <AvatarImage
                 src="https://github.com/shadcn.png"
                 alt="profile-icon"
+                className="rounded-3xl"
               />
               <AvatarFallback>CN</AvatarFallback>
             </Avatar>
@@ -94,8 +125,8 @@ export function Nav() {
           <DropdownMenuContent className="mr-5" side="bottom">
             <DropdownMenuGroup className="p-2 flex flex-col">
               <div className="p-2 flex flex-col">
-                <span className="font-bold">John Doe</span>
-                <span>john.doe@rahat.io</span>
+                <span className="font-bold">{user?.name}</span>
+                <span>{user?.email}</span>
               </div>
               <Link
                 className="p-2 hover:bg-secondary"
@@ -109,12 +140,12 @@ export function Nav() {
               >
                 Home
               </Link>
-              <Link
-                className="text-red-500 p-2 hover:bg-secondary w-full"
-                href={paths.auth.login}
+              <Button
+                className="mt-2 p-2 hover:border w-full"
+                onClick={handleLogout}
               >
                 Logout
-              </Link>
+              </Button>
             </DropdownMenuGroup>
           </DropdownMenuContent>
         </DropdownMenu>

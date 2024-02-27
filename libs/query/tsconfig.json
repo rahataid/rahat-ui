@@ -8,11 +8,15 @@
     "noPropertyAccessFromIndexSignature": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
-    "rootDir": "./" // Set this to the root of your project
+    "rootDir": "./", // Set this to the root of your project
     // other options...
+    "paths": {
+      "@routes/paths": ["apps/rahat-ui/src/routes/paths.ts"]
+    }
   },
   "files": [],
   "include": [],
+
   "references": [
     {
       "path": "./tsconfig.lib.json"

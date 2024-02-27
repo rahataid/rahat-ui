@@ -2,13 +2,16 @@ import { Eye, EyeOff, ScreenShareOff, PlusSquare, Import } from 'lucide-react';
 import { Separator } from '@rahat-ui/shadcn/components/separator';
 import { ScrollArea } from '@rahat-ui/shadcn/components/scroll-area';
 import { USER_NAV_ROUTE } from '../../const/user.const';
+import { useUserStore } from '@rahat-ui/query';
 
 type IProps = {
-  onAddUsersClick: VoidFunction;
+  // onAddUsersClick: VoidFunction;
   onTabChange: (tab: string) => void;
 };
 
-export default function Nav({ onAddUsersClick, onTabChange }: IProps) {
+export default function Nav({ onTabChange }: IProps) {
+  const totalUser = useUserStore.getState().totalUser;
+
   const handleTabClick = (tab: string) => {
     // Notify the parent component about the tab change
     onTabChange(tab);
@@ -19,25 +22,15 @@ export default function Nav({ onAddUsersClick, onTabChange }: IProps) {
         <div className="p-4">
           <h1 className="font-semibold text-xl text-slate-600 mb-4">Users</h1>
           <nav>
-            <div className="flex justify-between p-4 rounded-md cursor-pointer hover:bg-primary hover:text-white">
+            <div
+              onClick={() => handleTabClick(USER_NAV_ROUTE.DEFAULT)}
+              className="flex justify-between p-4 rounded-md cursor-pointer hover:bg-primary hover:text-white"
+            >
               <div className="flex gap-3">
                 <Eye />
-                <p>Active User</p>
+                <p>Users </p>
               </div>
-              <p>128</p>
-            </div>
-            <div className="flex justify-between p-4 rounded-md cursor-pointer hover:bg-primary hover:text-white">
-              <div className="flex gap-3">
-                <EyeOff />
-                <p>Inactive User</p>
-              </div>
-              <p>32</p>
-            </div>
-            <div className="flex justify-between p-4 rounded-md cursor-pointer hover:bg-primary hover:text-white">
-              <div className="flex gap-3">
-                <ScreenShareOff /> <p>Disabled/ Deleted</p>
-              </div>
-              <p>9</p>
+              <p>{totalUser || 0}</p>
             </div>
           </nav>
         </div>
@@ -51,7 +44,7 @@ export default function Nav({ onAddUsersClick, onTabChange }: IProps) {
           <nav>
             <div
               className="flex p-4 gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white"
-              onClick={onAddUsersClick}
+              onClick={() => handleTabClick(USER_NAV_ROUTE.ADD_USER)}
             >
               <PlusSquare /> <p>Add users</p>
             </div>

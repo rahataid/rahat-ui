@@ -40,10 +40,19 @@ const userListQuery = async (payload: any) => {
 };
 
 const useUserListQuery = (payload: any): UseQueryResult<any, Error> => {
-  return useQuery({
+  const userListQueryResult: any = useQuery({
     queryKey: [TAGS.GET_ALL_USER],
     queryFn: () => userListQuery(payload),
   });
+  const userStore = useUserStore();
+
+  useEffect(() => {
+    if (userListQueryResult.data) {
+      userStore.setTotalUser(userListQueryResult.data?.data?.length);
+    }
+  }, [userListQueryResult.data]);
+
+  return userListQueryResult;
 };
 
 const getUser = async () => {

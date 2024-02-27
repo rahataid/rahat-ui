@@ -21,17 +21,17 @@ import RoleDetails from '../../components/users/role/roleDetail';
 export default function UsersPage() {
   const [selectedUserData, setSelectedUserData] = useState<IUserItem>();
   const [selectedRoleData, setSelectedRoleData] = useState<IRoleItem>();
-  const [addUser, setAddUser] = useState<boolean>(false);
+  // const [addUser, setAddUser] = useState<boolean>(false);
 
   const [activeTab, setActiveTab] = useState<string>(USER_NAV_ROUTE.DEFAULT);
   const handleUserClick = (item: IUserItem) => {
-    setAddUser(false);
+    // setAddUser(false);
     setSelectedRoleData(undefined);
     setSelectedUserData(item);
   };
 
   const handleRoleClick = (item: IRoleItem) => {
-    setAddUser(false);
+    // setAddUser(false);
     setSelectedUserData(undefined);
     setSelectedRoleData(item);
   };
@@ -40,11 +40,11 @@ export default function UsersPage() {
     setActiveTab(tab);
   };
 
-  const handleAddUser = () => {
-    setSelectedUserData(undefined);
-    setSelectedRoleData(undefined);
-    setAddUser(true);
-  };
+  // const handleAddUser = () => {
+  //   setSelectedUserData(undefined);
+  //   setSelectedRoleData(undefined);
+  //   setAddUser(true);
+  // };
 
   return (
     <div className="mt-2">
@@ -61,7 +61,7 @@ export default function UsersPage() {
           >
             <UserNav
               onTabChange={handleTabChange}
-              onAddUsersClick={handleAddUser}
+              // onAddUsersClick={handleAddUser}
             />
           </ResizablePanel>
           <ResizableHandle />
@@ -75,14 +75,15 @@ export default function UsersPage() {
               )}
 
               {activeTab === USER_NAV_ROUTE.ADD_ROLE && <AddRole />}
+              {activeTab === USER_NAV_ROUTE.ADD_USER && <AddUser />}
             </div>
           </ResizablePanel>
-          {selectedUserData || addUser || selectedRoleData ? (
+          {selectedUserData || selectedRoleData ? (
             <>
               <ResizableHandle />
               <ResizablePanel minSize={24}>
                 {selectedUserData && <UserDetails data={selectedUserData} />}
-                {addUser && <AddUser />}
+                {/* {addUser && <AddUser />} */}
                 {selectedRoleData && <RoleDetails data={selectedRoleData} />}
               </ResizablePanel>
             </>

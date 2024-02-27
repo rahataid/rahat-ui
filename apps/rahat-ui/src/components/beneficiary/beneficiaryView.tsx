@@ -1,6 +1,6 @@
 'use client';
+import React, { useState } from 'react';
 
-import { useState } from 'react';
 import { Tabs, TabsContent } from '@rahat-ui/shadcn/components/tabs';
 import {
   ResizablePanelGroup,
@@ -13,6 +13,8 @@ import BeneficiaryGridView from '../../components/beneficiary/gridView';
 import BeneficiaryDetail from '../../components/beneficiary/beneficiaryDetail';
 import { IBeneficiaryItem } from '../../types/beneficiary';
 import AddBeneficiary from './addBeneficiary';
+import { usebeneficiaryListQuery } from '@rahat-ui/query';
+import { ListBeneficiary, Meta } from '@rahat-ui/types';
 
 export default function BeneficiaryView() {
   const [selectedData, setSelectedData] = useState<IBeneficiaryItem>();
@@ -31,6 +33,13 @@ export default function BeneficiaryView() {
   const handleView = () => {
     setSelectedData(undefined);
   };
+  const { data } = usebeneficiaryListQuery({});
+  const tableData: ListBeneficiary[] = React.useMemo(
+    () => data?.data || [],
+    [data?.data]
+  );
+
+  const meta: Meta | undefined = React.useMemo(() => data?.meta, [data?.meta]);
 
   return (
     <div className="mt-2">
@@ -48,15 +57,19 @@ export default function BeneficiaryView() {
             <BeneficiaryNav
               handleView={handleView}
               onAddBenficiaryclick={handleBeneficiaryAdd}
+              meta={meta}
             />
           </ResizablePanel>
           <ResizableHandle />
           <ResizablePanel minSize={28}>
             <TabsContent value="list">
-              <BeneficiaryListView />
+              <BeneficiaryListView data={tableData} meta={meta} />
             </TabsContent>
             <TabsContent value="grid">
-              <BeneficiaryGridView handleClick={handleBeneficiaryCardClick} />
+              <BeneficiaryGridView
+                handleClick={handleBeneficiaryCardClick}
+                data={tableData}
+              />
             </TabsContent>
           </ResizablePanel>
           {selectedData || addBeneficiary ? (

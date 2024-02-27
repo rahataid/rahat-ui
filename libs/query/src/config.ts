@@ -9,4 +9,6 @@ export const TAGS = {
   GET_CAMPAIGNS_AUDIO: 'get_campaign_audio',
   GET_ALL_TRANSPORT: 'get_all_transport',
   GET_ALL_AUDIENCE: 'get_all_audience',
+  GET_BENEFICIARIES: 'get_beneficiaries',
+  GET_BENEFICIARIES_STATUS: 'get_beneficiaries_status',
 };

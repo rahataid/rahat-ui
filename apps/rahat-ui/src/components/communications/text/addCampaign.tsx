@@ -78,7 +78,6 @@ export default function AddCampaign() {
   });
 
   const handleCreateCampaign = async (data: z.infer<typeof FormSchema>) => {
-
     const audiences = data.audiences.map((data) => Number(data));
     type AdditionalData = {
       audio?: any;
@@ -285,7 +284,6 @@ export default function AddCampaign() {
                     <FormLabel>Transport</FormLabel>
                     <Select
                       onValueChange={field.onChange}
-                      // defaultValue={field.value.toString()}
                     >
                       <FormControl>
                         <SelectTrigger>

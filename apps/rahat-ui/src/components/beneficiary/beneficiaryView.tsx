@@ -1,13 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { LayoutGrid, AlignJustify } from 'lucide-react';
-import {
-  TabsList,
-  TabsTrigger,
-  Tabs,
-  TabsContent,
-} from '@rahat-ui/shadcn/components/tabs';
+import { Tabs, TabsContent } from '@rahat-ui/shadcn/components/tabs';
 import {
   ResizablePanelGroup,
   ResizableHandle,
@@ -18,12 +12,20 @@ import BeneficiaryListView from '../../components/beneficiary/listView';
 import BeneficiaryGridView from '../../components/beneficiary/gridView';
 import BeneficiaryDetail from '../../components/beneficiary/beneficiaryDetail';
 import { IBeneficiaryItem } from '../../types/beneficiary';
+import AddBeneficiary from './addBeneficiary';
 
 export default function BeneficiaryView() {
   const [selectedData, setSelectedData] = useState<IBeneficiaryItem>();
+  const [addBeneficiary, setAddBeneficiary] = useState<Boolean>(false);
 
   const handleBeneficiaryCardClick = (item: IBeneficiaryItem) => {
     setSelectedData(item);
+    setAddBeneficiary(false);
+  };
+
+  const handleBeneficiaryAdd = () => {
+    setAddBeneficiary(true);
+    setSelectedData(undefined);
   };
 
   const handleView = () => {
@@ -31,30 +33,22 @@ export default function BeneficiaryView() {
   };
 
   return (
-    <div>
+    <div className="mt-2">
       <Tabs defaultValue="grid">
-        <div className="flex items-center justify-between mb-9 mt-8">
-          <h1 className="text-3xl font-semibold">Beneficiaries List</h1>
-          <TabsList>
-            <TabsTrigger value="list" onClick={handleView}>
-              <AlignJustify />
-            </TabsTrigger>
-            <TabsTrigger value="grid" onClick={handleView}>
-              <LayoutGrid />
-            </TabsTrigger>
-          </TabsList>
-        </div>
         <ResizablePanelGroup
           direction="horizontal"
           className="min-h-max border"
         >
           <ResizablePanel
-            minSize={17}
-            defaultSize={17}
-            maxSize={17}
+            minSize={20}
+            defaultSize={20}
+            maxSize={20}
             className="h-full"
           >
-            <BeneficiaryNav />
+            <BeneficiaryNav
+              handleView={handleView}
+              onAddBenficiaryclick={handleBeneficiaryAdd}
+            />
           </ResizablePanel>
           <ResizableHandle />
           <ResizablePanel minSize={28}>
@@ -65,14 +59,15 @@ export default function BeneficiaryView() {
               <BeneficiaryGridView handleClick={handleBeneficiaryCardClick} />
             </TabsContent>
           </ResizablePanel>
-          {selectedData && (
+          {selectedData || addBeneficiary ? (
             <>
               <ResizableHandle />
               <ResizablePanel minSize={24}>
-                <BeneficiaryDetail data={selectedData} />
+                {selectedData && <BeneficiaryDetail data={selectedData} />}
+                {addBeneficiary && <AddBeneficiary />}
               </ResizablePanel>
             </>
-          )}
+          ) : null}
         </ResizablePanelGroup>
       </Tabs>
     </div>

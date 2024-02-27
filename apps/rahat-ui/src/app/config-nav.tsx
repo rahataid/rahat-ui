@@ -18,6 +18,15 @@ export function useNavData() {
         path: paths.dashboard.beneficiary,
       },
       {
+        title: 'Users',
+        path: paths.dashboard.user,
+      },
+    ],
+    []
+  );
+  const subData = useMemo(
+    () => [
+      {
         title: 'Transactions',
         path: paths.dashboard.transactions,
       },
@@ -41,12 +50,8 @@ export function useNavData() {
           },
         ],
       },
-      {
-        title: 'Users',
-        path: paths.dashboard.user,
-      },
     ],
     []
   );
-  return data;
+  return { data, subData };
 }

@@ -1,5 +1,6 @@
 'use client';
 
+import { useUserListQuery } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/components/button';
 import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
 import {
@@ -30,9 +31,7 @@ import {
 } from '@tanstack/react-table';
 import { ArrowUpDown, ArrowUpRightFromSquare, ChevronDown } from 'lucide-react';
 import React from 'react';
-import UserTableData from '../../app/user/userData.json';
 import { IUserItem } from '../../types/user';
-import { useUserListQuery } from '@rahat-ui/query';
 
 type IProps = {
   handleClick: (item: IUserItem) => void;

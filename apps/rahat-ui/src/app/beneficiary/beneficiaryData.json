@@ -48,5 +48,105 @@
     "phone": "NO_PHONE",
     "bank": "UNKNOWN",
     "verified": true
+  },
+  {
+    "name": "Beneficiary 1",
+    "transactionNumber": 5,
+    "updatedDate": "9th April, 2023",
+    "projectsInvolved": "project 1",
+    "internetAccess": "NO_INTERNET",
+    "phone": "NO_PHONE",
+    "bank": "BANKED",
+    "verified": true
+  },
+  {
+    "name": "Beneficiary 2",
+    "transactionNumber": 7,
+    "updatedDate": "2nd Feb, 2023",
+    "projectsInvolved": "",
+    "internetAccess": "UNKNOWN",
+    "phone": "SMART",
+    "bank": "UNBANKED",
+    "verified": true
+  },
+  {
+    "name": "Beneficiary 3",
+    "transactionNumber": 0,
+    "updatedDate": "7th Jan, 2024",
+    "projectsInvolved": "project 3",
+    "internetAccess": "PHONE_INTERNET",
+    "phone": "FEATURE",
+    "bank": "BANKED",
+    "verified": false
+  },
+  {
+    "name": "Beneficiary 4",
+    "transactionNumber": 4,
+    "updatedDate": "3rd Sep, 2023",
+    "projectsInvolved": "",
+    "internetAccess": "HOME_INTERNET",
+    "phone": "UNKNOWN",
+    "bank": "UNKNOWN",
+    "verified": true
+  },
+  {
+    "name": "Beneficiary 5",
+    "transactionNumber": 4,
+    "updatedDate": "3rd Sep, 2023",
+    "projectsInvolved": "project 5",
+    "internetAccess": "NO_INTERNET",
+    "phone": "NO_PHONE",
+    "bank": "UNKNOWN",
+    "verified": true
+  },
+  {
+    "name": "Beneficiary 1",
+    "transactionNumber": 5,
+    "updatedDate": "9th April, 2023",
+    "projectsInvolved": "project 1",
+    "internetAccess": "NO_INTERNET",
+    "phone": "NO_PHONE",
+    "bank": "BANKED",
+    "verified": true
+  },
+  {
+    "name": "Beneficiary 2",
+    "transactionNumber": 7,
+    "updatedDate": "2nd Feb, 2023",
+    "projectsInvolved": "",
+    "internetAccess": "UNKNOWN",
+    "phone": "SMART",
+    "bank": "UNBANKED",
+    "verified": true
+  },
+  {
+    "name": "Beneficiary 3",
+    "transactionNumber": 0,
+    "updatedDate": "7th Jan, 2024",
+    "projectsInvolved": "project 3",
+    "internetAccess": "PHONE_INTERNET",
+    "phone": "FEATURE",
+    "bank": "BANKED",
+    "verified": false
+  },
+  {
+    "name": "Beneficiary 4",
+    "transactionNumber": 4,
+    "updatedDate": "3rd Sep, 2023",
+    "projectsInvolved": "",
+    "internetAccess": "HOME_INTERNET",
+    "phone": "UNKNOWN",
+    "bank": "UNKNOWN",
+    "verified": true
+  },
+  {
+    "name": "Beneficiary 5",
+    "transactionNumber": 4,
+    "updatedDate": "3rd Sep, 2023",
+    "projectsInvolved": "project 5",
+    "internetAccess": "NO_INTERNET",
+    "phone": "NO_PHONE",
+    "bank": "UNKNOWN",
+    "verified": true
   }
 ]

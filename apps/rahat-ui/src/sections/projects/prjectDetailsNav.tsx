@@ -9,6 +9,7 @@ import {
   Store,
   ToggleLeft,
   UsersRound,
+  XCircle,
 } from 'lucide-react';
 
 type IProps = {
@@ -20,9 +21,6 @@ export default function Nav({ title }: IProps) {
     <>
       <div className="flex items-center justify-between">
         <h1 className="p-4 font-semibold text-xl text-slate-600">{title}</h1>
-        <Badge variant={'outline'} className="border-red-400 bg-red-50 mr-4">
-          Locked
-        </Badge>
       </div>
       <ScrollArea className="h-48">
         <div>
@@ -56,19 +54,15 @@ export default function Nav({ title }: IProps) {
         <div>
           <nav>
             <div className="flex p-4 items-center gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white">
-              <PlusSquare size={18} strokeWidth={1.5} /> <p>Create Tokens</p>
+              <PlusSquare size={18} strokeWidth={1.5} /> <p>Create Voucher</p>
             </div>
             <div className="flex p-4 items-center gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white">
-              <Lock size={18} strokeWidth={1.5} />
-              <p>Lock projects</p>
+              <XCircle size={18} strokeWidth={1.5} />
+              <p>Close Project</p>
             </div>
             <div className="flex p-4 items-center gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white">
               <Pencil size={18} strokeWidth={1.5} />
-              <p>Edit projects</p>
-            </div>
-            <div className="flex p-4 items-center gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white">
-              <ToggleLeft size={18} strokeWidth={1.5} />
-              <p>Set Offline Benficiaries</p>
+              <p>Edit Project</p>
             </div>
           </nav>
         </div>

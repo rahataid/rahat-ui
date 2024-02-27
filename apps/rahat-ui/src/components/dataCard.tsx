@@ -1,18 +1,27 @@
 import { cn } from '@rahat-ui/shadcn/src/utils';
-import { Card, CardContent, CardHeader, CardTitle } from '@rahat-ui/shadcn/components/card';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@rahat-ui/shadcn/components/card';
 
 type CardProps = {
   title: string;
-  number: string;
-  subTitle: string;
+  number1: string;
+  number2: string;
+  subTitle1: string;
+  subTitle2: string;
   className: string;
   //   icon: string;
 };
 
 export default function DataCard({
   title,
-  number,
-  subTitle,
+  number1,
+  number2,
+  subTitle1,
+  subTitle2,
   className,
 }: CardProps) {
   return (
@@ -32,11 +41,19 @@ export default function DataCard({
           <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
         </svg>
       </CardHeader>
-      <CardContent>
-        <div className="text-4xl font-semibold">{number}</div>
-        <p className="text-xs text-muted-foreground space-y-0 pt-2">
-          {subTitle}
-        </p>
+      <CardContent className="flex items-center justify-between">
+        <div className="flex flex-col items-center">
+          <div className="text-4xl font-semibold">{number1}</div>
+          <p className="text-xs text-muted-foreground space-y-0 pt-2">
+            {subTitle1}
+          </p>
+        </div>
+        <div>
+          <div className="text-4xl font-semibold">{number2}</div>
+          <p className="text-xs text-muted-foreground space-y-0 pt-2">
+            {subTitle2}
+          </p>
+        </div>
       </CardContent>
     </Card>
   );

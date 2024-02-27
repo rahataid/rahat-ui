@@ -9,19 +9,46 @@ export const metadata: Metadata = {
 export default function ProjectDetails() {
   return (
     <div className="p-4">
-      <div className="mb-4 grid md:grid-cols-3 gap-4">
+      <div className="mb-4 grid md:grid-cols-5 gap-4">
         <DataCard
-          className="h-40"
+          className=" border-green-500"
           title="Beneficiaries"
-          number={'12'}
-          subTitle="Total"
+          number1={'12'}
+          subTitle1="Registered"
+          number2={'12'}
+          subTitle2="Referred"
         />
-        <DataCard className="" title="Balance" number={'12'} subTitle="Nrs" />
         <DataCard
-          className=""
-          title="Distributed"
-          number={'12'}
-          subTitle="Nrs"
+          className="border-green-500"
+          title="Voucher Details"
+          number1={'12'}
+          subTitle1="Discount"
+          number2={'12'}
+          subTitle2="Free"
+        />
+        <DataCard
+          className="border-yellow-500"
+          title="Redemmed"
+          number1={'12'}
+          subTitle1="Free"
+          number2={'12'}
+          subTitle2="Discount"
+        />
+        <DataCard
+          className="border-red-500"
+          title="Discount Voucher Details"
+          number1={'12'}
+          subTitle1="Bought"
+          number2={'12'}
+          subTitle2="Not Bought"
+        />
+        <DataCard
+          className="border-red-500"
+          title="Eye Checkup Details"
+          number1={'12'}
+          subTitle1="Required Glasses"
+          number2={'12'}
+          subTitle2="Not Required"
         />
       </div>
       <div className="grid grid-cols-1 border rounded-lg p-4">
@@ -44,12 +71,7 @@ export default function ProjectDetails() {
           </div>
         </div>
         <div>
-          <p className="mt-4 sm:mt-8 sm:w-2/3">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quidem
-            nihil eligendi possimus accusantium explicabo error aliquam fugiat
-            voluptas ab enim aspernatur adipisci, non id ullam blanditiis
-            nesciunt, dolores sit odio.
-          </p>
+          <p className="mt-4 sm:mt-8 sm:w-2/3">Janaki Rural Municiplality.</p>
         </div>
       </div>
       <div className="mt-4 grid md:grid-cols-4 gap-4">

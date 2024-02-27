@@ -26,7 +26,7 @@ export default function Card({
   });
 
   return (
-    <div className="p-5 border rounded-md" onClick={handleClick}>
+    <div className="p-5 border rounded-md cursor-pointer" onClick={handleClick}>
       <div className="flex justify-between mb-5">
         <div>
           <h1 className="font-semibold mb-2">{walletAddress}</h1>
@@ -41,8 +41,8 @@ export default function Card({
         </div>
       </div>
       <div className="flex justify-between items-center flex-wrap gap-4">
-        <p className="text-slate-400">Last updated: {formattedDate}</p>
-        <div className="flex gap-2 ">
+        <p className="text-slate-400">Last updated: {updatedDate}</p>
+        <div className="flex gap-2 cursor-auto ">
           <Badge
             className="px-4 py-1.5 rounded-md"
             variant={verified ? 'default' : 'secondary'}

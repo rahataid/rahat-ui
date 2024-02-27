@@ -9,6 +9,7 @@ import { Label } from '@rahat-ui/shadcn/components/label';
 import { Switch } from '@rahat-ui/shadcn/components/switch';
 import { IUserItem } from '../../types/user';
 import { Button } from '@rahat-ui/shadcn/components/button';
+import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 
 type IProps = {
   data: IUserItem;
@@ -53,21 +54,46 @@ export default function UserDetail({ data }: IProps) {
               <Label htmlFor="airplane-mode">User</Label>
             </div>
             <div className="flex items-center gap-2">
-              <Switch id="admin" checked />
+              <Switch id="admin" />
               <Label htmlFor="airplane-mode">Admin</Label>
             </div>
           </div>
+          <div className="p-4 border-t flex justify-between">
+            <div className="flex items-center space-x-2">
+              <Switch id="disable-user" />
+              <Label htmlFor="disable-user">Add as owner</Label>
+            </div>
+            <Button>Confirm</Button>
+          </div>
         </TabsContent>
         <TabsContent value="edit-user">
-          <div className="p-4 border-y">Edit User View</div>
-        </TabsContent>
-        <div className="p-4 border-t flex justify-between">
-          <div className="flex items-center space-x-2">
-            <Switch id="disable-user" />
-            <Label htmlFor="disable-user">Add as owner</Label>
+          <div className="p-4 border-y">
+            <Input className="mt-1" type="name" placeholder="Name" />
+            <Input className="mt-3" type="email" placeholder="Email" />
+            <Input
+              className="mt-3"
+              type="walletaddress"
+              placeholder="Walletaddress"
+            />
           </div>
-          <Button>Confirm</Button>
-        </div>
+          <div className="p-4 border-y flex items-center justify-start gap-24">
+            <div className="flex items-center gap-2">
+              <Switch id="approve" />
+              <Label htmlFor="airplane-mode">Approve</Label>
+            </div>
+            <div className="flex items-center gap-2">
+              <Switch id="disable" />
+              <Label htmlFor="airplane-mode">Disable</Label>
+            </div>
+          </div>
+          <div className="p-4 border-t flex justify-between">
+            <div className="flex items-center space-x-2">
+              <Switch id="disable-user" />
+              <Label htmlFor="disable-user">Add as owner</Label>
+            </div>
+            <Button>Confirm</Button>
+          </div>
+        </TabsContent>
       </Tabs>
     </>
   );

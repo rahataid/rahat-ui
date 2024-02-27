@@ -1,5 +1,6 @@
 import { ScrollArea } from '@rahat-ui/shadcn/components/scroll-area';
 import { Separator } from '@rahat-ui/shadcn/components/separator';
+import { Badge } from '@rahat-ui/shadcn/components/badge';
 import {
   Lock,
   Pencil,
@@ -17,7 +18,12 @@ type IProps = {
 export default function Nav({ title }: IProps) {
   return (
     <>
-      <h1 className="p-4 font-semibold text-xl text-slate-600">{title}</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="p-4 font-semibold text-xl text-slate-600">{title}</h1>
+        <Badge variant={'outline'} className="border-red-400 bg-red-50 mr-4">
+          Locked
+        </Badge>
+      </div>
       <ScrollArea className="h-48">
         <div>
           <nav>

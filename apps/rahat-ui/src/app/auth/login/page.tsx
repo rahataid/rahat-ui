@@ -78,7 +78,7 @@ export default function AuthPage() {
             <p className="text-sm text-muted-foreground">
               {!challenge.length
                 ? 'Enter your email below to Sign in.'
-                : 'Please enter the OTP sent to your email address.'}
+                : `OTP has been sent to ${address}`}
             </p>
           </div>
           {error && (
@@ -130,14 +130,25 @@ export default function AuthPage() {
             </form>
           )}
           <p className="px-8 text-center text-sm text-muted-foreground">
-            {!challenge.length ? "Don't have an account" : "Didn't get one"}?{' '}
+            {!challenge.length ? "Don't have an account" : "Didn't get one"}?
             <Button
               disabled={sendOtpMutation.isPending}
               onClick={onSendOtpFormSubmit}
-              className="font-medium"
+              className="font-medium ml-2"
             >
               {!challenge.length ? 'Get Started' : 'Resend'}
             </Button>
+            {challenge.length ? (
+              <Button
+                className="ml-2"
+                onClick={() => {
+                  setChallenge('');
+                  router.back();
+                }}
+              >
+                Go Back
+              </Button>
+            ) : null}
           </p>
         </div>
       </div>

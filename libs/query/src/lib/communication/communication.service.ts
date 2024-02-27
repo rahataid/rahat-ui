@@ -15,17 +15,10 @@ import {
 } from '@tanstack/react-query';
 import queryString from 'query-string';
 import { TAGS } from '../../config';
-import { createApiInstance } from '../../utils/api';
-
-const baseURL = process.env['NEXT_PUBLIC_API_CAMPAIGN_URL'];
-
-const api = createApiInstance(
-  baseURL || '',
-  'd8e29ab6-6876-43e4-9de1-e2e0d49d32cf'
-);
+import { communicationApi } from '../../utils/api';
 
 const createCampaign = async (payload: CreateCampaignPayload) => {
-  const res = await api.post('/campaigns', payload);
+  const res = await communicationApi.post('/campaigns', payload);
   return res.data;
 };
 
@@ -47,7 +40,7 @@ const listCampaign = async (payload: PaginatedRequestPayload) => {
     sort: payload.sort,
     order: payload.order,
   });
-  const response = await api.get('/campaigns?' + searchParams);
+  const response = await communicationApi.get('/campaigns?' + searchParams);
   return response.data;
 };
 
@@ -61,7 +54,7 @@ const useListCampaignQuery = (
 };
 
 const getCampaign = async (payload: { id: number }) => {
-  const response = await api.get(`/campaigns/${payload.id}`);
+  const response = await communicationApi.get(`/campaigns/${payload.id}`);
   return response.data;
 };
 
@@ -75,7 +68,10 @@ const useGetCampaignQuery = (payload: {
 };
 
 const editCampaign = async (payload: EditCampaignPayload) => {
-  const response = await api.patch(`/campaigns/${payload.id}`, payload);
+  const response = await communicationApi.patch(
+    `/campaigns/${payload.id}`,
+    payload
+  );
   return response.data;
 };
 
@@ -91,7 +87,7 @@ const useEditCampaignsMutation = () => {
 };
 
 const deleteCampaign = async (payload: DeleteCampaignPayload) => {
-  const response = await api.delete(`/campaigns/${payload.id}`);
+  const response = await communicationApi.delete(`/campaigns/${payload.id}`);
   return response.data;
 };
 
@@ -107,7 +103,7 @@ const useDeleteCampaignMutation = () => {
 };
 
 const listTransport = async () => {
-  const response = await api.get('/transports');
+  const response = await communicationApi.get('/transports');
   return response.data;
 };
 
@@ -119,7 +115,7 @@ const useListTransportQuery = (): UseQueryResult<Transport[], Error> => {
 };
 
 const listAudiences = async () => {
-  const response = await api.get('/audiences');
+  const response = await communicationApi.get('/audiences');
   return response.data;
 };
 
@@ -131,13 +127,25 @@ const useListAudienceQuery = (): UseQueryResult<Audience[], Error> => {
 };
 
 const triggerCampaign = async (id: number) => {
-  const response = await api.get(`/campaigns/${id}/trigger`);
+  const response = await communicationApi.get(`/campaigns/${id}/trigger`);
   return response.data;
 };
 
 const useTriggerCampaignMutation = () => {
   return useMutation({
     mutationFn: (id: number) => triggerCampaign(id),
+  });
+};
+
+const getAudio = async () => {
+  const response = await communicationApi.get(`/campaigns/audio`);
+  return response.data;
+};
+
+const useGetAudioQuery = (): UseQueryResult<any, Error> => {
+  return useQuery({
+    queryKey: [TAGS.GET_CAMPAIGNS_AUDIO],
+    queryFn: () => getAudio(),
   });
 };
 
@@ -150,4 +158,5 @@ export {
   useListAudienceQuery,
   useTriggerCampaignMutation,
   useGetCampaignQuery,
+  useGetAudioQuery,
 };

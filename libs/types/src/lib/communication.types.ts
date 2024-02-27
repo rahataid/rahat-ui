@@ -10,6 +10,13 @@ export interface CreateCampaignPayload {
 
 export interface EditCampaignPayload {
   id: string;
+  name?: string;
+  type?: string;
+  startTime?: any;
+  status?: string;
+  details?: any;
+  audienceIds?: number[];
+  transportId?: number;
 }
 
 export interface DeleteCampaignPayload {

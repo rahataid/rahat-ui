@@ -6,12 +6,8 @@ import {
   LoginResponse,
   OTPPayload,
 } from '@rahat-ui/types';
-import { createApiInstance } from '../../utils/api';
+import { api } from '../../utils/api';
 import { useAuthStore } from './auth-store';
-
-const baseURL = process.env['NEXT_PUBLIC_API_HOST_URL'];
-
-const api = createApiInstance(baseURL || '');
 
 export const useLogin = () => {
   const setError = useAuthStore((state) => state.setError);

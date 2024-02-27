@@ -15,12 +15,8 @@ import {
 import queryString from 'query-string';
 import { useEffect } from 'react';
 import { TAGS } from '../../config';
-import { createApiInstance } from '../../utils/api';
+import { api } from '../../utils/api';
 import { useUserStore } from './user-store';
-
-const baseURL = process.env['NEXT_PUBLIC_API_HOST_URL'];
-
-const api = createApiInstance(baseURL || '');
 
 const createNewUser = async (payload: CreateNewUserPayload) => {
   const res = await api.post('/users', payload);

@@ -14,7 +14,7 @@ import { COMMUNICATION_NAV_ROUTE } from 'apps/rahat-ui/src/const/communication.c
 
 export default function TextView() {
   const [activeTab, setActiveTab] = useState<string>(
-    COMMUNICATION_NAV_ROUTE.DEFAULT
+    COMMUNICATION_NAV_ROUTE.DEFAULT_TEXT
   );
 
   const handleTabChange = (tab: string) => {
@@ -37,7 +37,9 @@ export default function TextView() {
         <ResizableHandle />
         <ResizablePanel minSize={28}>
           {/* show tableview by default  */}
-          {activeTab === COMMUNICATION_NAV_ROUTE.DEFAULT && <TextTableView />}
+          {activeTab === COMMUNICATION_NAV_ROUTE.DEFAULT_TEXT && (
+            <TextTableView />
+          )}
           {activeTab === COMMUNICATION_NAV_ROUTE.ADD_TEXT_CAMPAIGN && (
             <AddCampaign />
           )}

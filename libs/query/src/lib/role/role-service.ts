@@ -12,11 +12,7 @@ import {
 } from '@tanstack/react-query';
 import queryString from 'query-string';
 import { TAGS } from '../../config';
-import { createApiInstance } from '../../utils/api';
-
-const baseURL = process.env['NEXT_PUBLIC_API_HOST_URL'];
-
-const api = createApiInstance(baseURL || '');
+import { api } from '../../utils/api';
 
 const createNewRole = async (payload: CreateRolePayload) => {
   const res = await api.post('/roles', payload);

@@ -45,11 +45,8 @@ import {
   TableHeader,
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
-import TextTableData from '../../../app/communications/text/textData.json';
 import { paths } from 'apps/rahat-ui/src/routes/paths';
 import { useListCampaignQuery } from '@rahat-ui/query';
-
-const data: Text[] = TextTableData;
 
 export type Text = {
   id: number;
@@ -92,7 +89,9 @@ export const columns: ColumnDef<Text>[] = [
     accessorKey: 'startTime',
     header: 'Start Time',
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue('startTime')}</div>
+      <div className="capitalize">
+        {new Date(row.getValue('startTime')).toLocaleString()}
+      </div>
     ),
   },
   {
@@ -142,7 +141,17 @@ export const columns: ColumnDef<Text>[] = [
               View Details
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>Edit</DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() =>
+                router.push(
+                  paths.dashboard.communication.editTextCampaign(
+                    row.original.id
+                  )
+                )
+              }
+            >
+              Edit
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );

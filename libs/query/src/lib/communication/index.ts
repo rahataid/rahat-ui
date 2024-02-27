@@ -1,2 +1,2 @@
-export * from './communication-service';
-export * from './communication-store';
+export * from './communication.service';
+export * from './communication.store';

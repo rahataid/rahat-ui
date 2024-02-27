@@ -48,6 +48,8 @@ export default function TextDetailView() {
         });
     }
   };
+  console.log('rerender');
+
   return (
     <>
       {isLoading ? (
@@ -82,7 +84,11 @@ export default function TextDetailView() {
                 <CardTitle>Message</CardTitle>
               </CardHeader>
               <CardContent>
-                <p>{data?.details?.body}</p>
+                <p>
+                  {data?.details?.body
+                    ? data?.details?.body
+                    : data?.details?.message}
+                </p>
               </CardContent>
             </Card>
           </div>

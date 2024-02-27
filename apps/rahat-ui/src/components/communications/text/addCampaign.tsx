@@ -1,20 +1,20 @@
 'use client';
 
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
 import { z } from 'zod';
+import { useState } from 'react';
 import { format } from 'date-fns';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import {
   useCreateCampaignMutation,
   useCreateRoleMutation,
+  useGetAudioQuery,
   useListAudienceQuery,
   useListTransportQuery,
 } from '@rahat-ui/query';
-import { Button, buttonVariants } from '@rahat-ui/shadcn/components/button';
 import { Input } from '@rahat-ui/shadcn/components/input';
-
-import { Label } from '@rahat-ui/shadcn/components/label';
 import { Calendar } from '@rahat-ui/shadcn/components/calendar';
+import { Button } from '@rahat-ui/shadcn/components/button';
 
 import {
   Popover,
@@ -25,13 +25,11 @@ import {
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from '@rahat-ui/shadcn/components/form';
-import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { cn } from '@rahat-ui/shadcn/src/utils';
 import { CalendarIcon } from 'lucide-react';
@@ -46,10 +44,12 @@ import { CAMPAIGN_TYPES } from '@rahat-ui/types';
 import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
 
 export default function AddCampaign() {
-  const createRole = useCreateRoleMutation();
   const { data: transportData } = useListTransportQuery();
   const { data: audienceData } = useListAudienceQuery();
+  const { data: audioData } = useGetAudioQuery();
+
   const createCampaign = useCreateCampaignMutation();
+  const [showSelectAudio, setShowSelectAudio] = useState(false);
 
   const FormSchema = z.object({
     campaignName: z.string().min(2, {
@@ -64,8 +64,9 @@ export default function AddCampaign() {
     transport: z.string({
       required_error: 'Transport is required.',
     }),
-    message: z.string({}),
+    message: z.string().optional(),
     audiences: z.array(z.number()),
+    file: z.string().optional(),
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -77,6 +78,7 @@ export default function AddCampaign() {
   });
 
   const handleCreateCampaign = async (data: z.infer<typeof FormSchema>) => {
+
     const audiences = data.audiences.map((data) => Number(data));
     type AdditionalData = {
       audio?: any;
@@ -86,9 +88,9 @@ export default function AddCampaign() {
 
     const additionalData: AdditionalData = {};
 
-    // if (data?.campaignType === 'PHONE' && data?.file) {
-    //   additionalData.audio = data.file;
-    // }
+    if (data?.campaignType === 'PHONE' && data?.file) {
+      additionalData.audio = data.file;
+    }
 
     if (data?.campaignType === 'SMS' && data?.message) {
       additionalData.message = data?.message;
@@ -117,6 +119,11 @@ export default function AddCampaign() {
       });
   };
 
+  const handleTypeChange = (type: string) => {
+    const requiresAudioField = type === CAMPAIGN_TYPES.PHONE;
+    setShowSelectAudio(requiresAudioField);
+  };
+
   return (
     <Form {...form}>
       <form
@@ -126,7 +133,7 @@ export default function AddCampaign() {
         <div className=" w-full mt-4 p-6 bg-white ">
           <h2 className="text-2xl font-bold mb-4">Campaign: Add</h2>
           <div className="mb-4 w-full grid grid-cols-3 gap-5 ">
-            <div className="">
+            <div>
               <FormField
                 control={form.control}
                 name="campaignName"
@@ -143,7 +150,7 @@ export default function AddCampaign() {
               />
             </div>
 
-            <div className="">
+            <div>
               <FormField
                 control={form.control}
                 name="startTime"
@@ -188,7 +195,7 @@ export default function AddCampaign() {
               />
             </div>
 
-            <div className="">
+            <div>
               <FormField
                 control={form.control}
                 name="campaignType"
@@ -196,7 +203,10 @@ export default function AddCampaign() {
                   <FormItem>
                     <FormLabel>Campaign Type</FormLabel>
                     <Select
-                      onValueChange={field.onChange}
+                      onValueChange={(e) => {
+                        field.onChange(e);
+                        handleTypeChange(e);
+                      }}
                       defaultValue={field.value}
                     >
                       <FormControl>
@@ -217,24 +227,56 @@ export default function AddCampaign() {
               />
             </div>
             {/* show only if selected is sms */}
-            <div className="w-full">
-              <FormField
-                control={form.control}
-                name="message"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Message</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Message" {...field} />
-                    </FormControl>
+            {!showSelectAudio ? (
+              <div className="w-full">
+                <FormField
+                  control={form.control}
+                  name="message"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Message</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Message" {...field} />
+                      </FormControl>
 
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            ) : (
+              <div>
+                <FormField
+                  control={form.control}
+                  name="file"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Audio</FormLabel>
+                      <Select onValueChange={field.onChange}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select audio" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {audioData?.map((mp3: any, index: number) => {
+                            return (
+                              <SelectItem key={index} value={mp3?.url}>
+                                {mp3?.filename}
+                              </SelectItem>
+                            );
+                          })}
+                        </SelectContent>
+                      </Select>
 
-            <div className="w-[50%]">
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            )}
+
+            <div>
               <FormField
                 control={form.control}
                 name="transport"
@@ -266,7 +308,7 @@ export default function AddCampaign() {
                 )}
               />
             </div>
-            <div className="w-[50%]">
+            <div>
               <FormField
                 control={form.control}
                 name="audiences"

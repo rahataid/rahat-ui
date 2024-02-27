@@ -1,11 +1,7 @@
 import { CreateProjectPayload } from '@rahat-ui/types';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { TAGS } from '../../config';
-import { createApiInstance } from '../../utils/api';
-
-const baseURL = process.env['NEXT_PUBLIC_API_HOST_URL'];
-
-const api = createApiInstance(baseURL || '');
+import { api } from '../../utils/api';
 
 const createProject = async (payload: CreateProjectPayload) => {
   const res = await api.post('/projects', payload);

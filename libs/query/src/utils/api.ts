@@ -2,31 +2,53 @@ import axios from 'axios';
 import { useAuthStore } from '../lib/auth';
 
 const baseURL = process.env['NEXT_PUBLIC_API_HOST_URL'];
+const communicationURL = process.env['NEXT_PUBLIC_API_CAMPAIGN_URL'];
+const appId = process.env['NEXT_PUBLIC_APP_ID'];
 
-export const createApiInstance = (baseURL: string, appId?: string) => {
-  const apiInstance = axios.create({
-    baseURL,
-    headers: {
-      Accept: 'application/json',
-      'Access-Control-Allow-Origin': '*',
-      appId,
-    },
-  });
-  // d8e29ab6-6876-43e4-9de1-e2e0d49d32cf
+const api = axios.create({
+  baseURL,
+  headers: {
+    Accept: 'application/json',
+    'Access-Control-Allow-Origin': '*',
+  },
+});
 
-  // Set bearer token using interceptors
-  apiInstance.interceptors.request.use(
-    (config) => {
-      const token = useAuthStore.getState().token;
-      if (token) {
-        config.headers['Authorization'] = 'Bearer ' + token;
-      }
-      return config;
-    },
-    (error) => {
-      return Promise.reject(error);
+// set bearer token
+api.interceptors.request.use(
+  (config) => {
+    const token = useAuthStore.getState().token;
+    if (token) {
+      config.headers['Authorization'] = 'Bearer ' + token;
     }
-  );
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
 
-  return apiInstance;
-};
+//api instance for communication
+const communicationApi = axios.create({
+  baseURL: communicationURL,
+  headers: {
+    Accept: 'application/json',
+    'Access-Control-Allow-Origin': '*',
+    appId,
+  },
+});
+
+// Set bearer token using interceptors
+communicationApi.interceptors.request.use(
+  (config) => {
+    const token = useAuthStore.getState().token;
+    if (token) {
+      config.headers['Authorization'] = 'Bearer ' + token;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+export { api, communicationApi };

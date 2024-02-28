@@ -4,10 +4,10 @@ import { useAuthStore, useLogin, useSendOtp } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/components/button';
 import { Input } from '@rahat-ui/shadcn/components/input';
 import { Label } from '@rahat-ui/shadcn/components/label';
-import { paths } from 'apps/rahat-ui/src/routes/paths';
-import { useError } from 'apps/rahat-ui/src/utils/useErrors';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
+import { paths } from '../../../routes/paths';
+import { useError } from '../../../utils/useErrors';
 
 export default function AuthPage() {
   const router = useRouter();

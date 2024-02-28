@@ -48,6 +48,8 @@ import {
 import VoiceTableData from '../../../app/communications/voice/voiceData.json';
 import { paths } from '../../../routes/paths';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import { useCampaignStore, useListCampaignQuery } from '@rahat-ui/query';
+import { CAMPAIGN_TYPES } from '@rahat-ui/types';
 
 const data: Voice[] = VoiceTableData;
 
@@ -84,15 +86,17 @@ export const columns: ColumnDef<Voice>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: 'campaign',
+    accessorKey: 'name',
     header: 'Campaigns',
-    cell: ({ row }) => <div>{row.getValue('campaign')}</div>,
+    cell: ({ row }) => <div>{row.getValue('name')}</div>,
   },
   {
     accessorKey: 'startTime',
     header: 'Start Time',
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue('startTime')}</div>
+      <div className="capitalize">
+        {new Date(row.getValue('startTime')).toLocaleString()}
+      </div>
     ),
   },
   {
@@ -151,6 +155,8 @@ export const columns: ColumnDef<Voice>[] = [
 ];
 
 export default function VoiceTableView() {
+  const campaignStore = useCampaignStore();
+
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -159,8 +165,22 @@ export default function VoiceTableView() {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
+  const { data, isLoading, isError, isSuccess, isFetched } =
+    useListCampaignQuery({});
+
+  const tableData = React.useMemo(() => {
+    const result = Array.isArray(data?.rows)
+      ? data?.rows.filter(
+          (campaign: any) => campaign.type === CAMPAIGN_TYPES.PHONE
+        )
+      : [];
+    campaignStore.setTotalVoiceCampaign(result?.length);
+
+    return result;
+  }, [isSuccess]);
+
   const table = useReactTable({
-    data,
+    data: tableData,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,

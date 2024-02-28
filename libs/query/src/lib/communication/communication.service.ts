@@ -18,7 +18,6 @@ import {
 import queryString from 'query-string';
 import { TAGS } from '../../config';
 import { communicationApi } from '../../utils/api';
-import { useCampaignStore } from './communication.store';
 
 const createCampaign = async (payload: CreateCampaignPayload) => {
   const res = await communicationApi.post('/campaigns', payload);
@@ -55,17 +54,6 @@ const useListCampaignQuery = (
     queryFn: () => listCampaign(payload),
   });
 
-  const campaignStore = useCampaignStore();
-
-  useEffect(() => {
-    if (listCampaignQueryResult.data) {
-      console.log(listCampaignQueryResult.data.rows.length);
-
-      campaignStore.setTotalCampaign(
-        listCampaignQueryResult.data?.rows?.length
-      );
-    }
-  }, [listCampaignQueryResult.data]);
   return listCampaignQueryResult;
 };
 

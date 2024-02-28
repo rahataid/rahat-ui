@@ -1,13 +1,11 @@
 'use client';
 
 import { useAuthStore, useLogin, useSendOtp } from '@rahat-ui/query';
-import { Button, buttonVariants } from '@rahat-ui/shadcn/components/button';
+import { Button } from '@rahat-ui/shadcn/components/button';
 import { Input } from '@rahat-ui/shadcn/components/input';
 import { Label } from '@rahat-ui/shadcn/components/label';
-import { cn } from '@rahat-ui/shadcn/src/utils';
 import { paths } from 'apps/rahat-ui/src/routes/paths';
 import { useError } from 'apps/rahat-ui/src/utils/useErrors';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 

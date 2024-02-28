@@ -14,7 +14,7 @@ type IProps = {
   title: string;
 };
 
-export default function Nav({ title }: IProps) {
+const Nav = ({ title }: IProps) => {
   return (
     <>
       <h1 className="p-4 font-semibold text-xl text-slate-600">{title}</h1>
@@ -69,4 +69,5 @@ export default function Nav({ title }: IProps) {
       </ScrollArea>
     </>
   );
-}
+};
+export default Nav;

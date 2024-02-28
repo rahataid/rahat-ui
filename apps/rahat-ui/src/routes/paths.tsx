@@ -20,7 +20,10 @@ export const paths = {
   dashboard: {
     project: ROOTS.PROJECT,
     root: ROOTS.DASHBOARD,
-    beneficiary: ROOTS.BENEFICIARY,
+    beneficiary: {
+      root: ROOTS.BENEFICIARY,
+      detail: (id: string) => `${ROOTS.BENEFICIARY}/${id}`,
+    },
     transactions: ROOTS.TRANSACTIONS,
     user: ROOTS.USER,
     vendor: ROOTS.VENDOR,

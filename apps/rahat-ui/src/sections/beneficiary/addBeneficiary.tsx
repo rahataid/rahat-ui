@@ -1,7 +1,7 @@
 'use-client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useCreateBeneficiaryMutation } from '@rahat-ui/query';
+import { useCreateBeneficiary } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   Form,
@@ -23,7 +23,7 @@ import { toast } from 'react-toastify';
 import { z } from 'zod';
 
 export default function AddBeneficiary() {
-  const addBeneficiary = useCreateBeneficiaryMutation();
+  const addBeneficiary = useCreateBeneficiary();
 
   const FormSchema = z.object({
     name: z.string().min(2, { message: 'Name must be at least 4 character' }),

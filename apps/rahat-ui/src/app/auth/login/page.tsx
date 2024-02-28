@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useAuthStore, useLogin, useSendOtp } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/components/button';
 import { Input } from '@rahat-ui/shadcn/components/input';

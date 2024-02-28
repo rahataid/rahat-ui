@@ -1,5 +1,5 @@
 import queryString from 'query-string';
-import api from '../../utils/api';
+import { api } from '../../utils/api';
 import {
   PaginatedRequestPayload,
   ListBeneficiariesResponse,
@@ -26,8 +26,9 @@ const useCreateBeneficiaryMutation = () => {
   return useMutation({
     mutationFn: (payload: CreateNewBeneficiaryPayload) =>
       createNewBeneficiary(payload),
-    onSuccess: () => {
+    onSuccess: (data) => {
       qc.invalidateQueries({ queryKey: [TAGS.GET_BENEFICIARIES] });
+      return data;
     },
   });
 };

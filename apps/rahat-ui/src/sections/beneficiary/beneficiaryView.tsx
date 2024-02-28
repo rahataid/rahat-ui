@@ -13,11 +13,11 @@ import BeneficiaryGridView from '../../sections/beneficiary/gridView';
 import BeneficiaryDetail from '../../sections/beneficiary/beneficiaryDetail';
 import { IBeneficiaryItem } from '../../types/beneficiary';
 import AddBeneficiary from './addBeneficiary';
-import { usebeneficiaryListQuery } from '@rahat-ui/query';
+import { usebeneficiaryList } from '@rahat-ui/query';
 
 export default function BeneficiaryView() {
   const [selectedData, setSelectedData] = useState<IBeneficiaryItem>();
-  const [addBeneficiary, setAddBeneficiary] = useState<Boolean>(false);
+  const [addBeneficiary, setAddBeneficiary] = useState<boolean>(false);
 
   const handleBeneficiaryCardClick = (item: IBeneficiaryItem) => {
     setSelectedData(item);
@@ -32,7 +32,7 @@ export default function BeneficiaryView() {
   const handleView = () => {
     setSelectedData(undefined);
   };
-  const { data } = usebeneficiaryListQuery({});
+  const { data } = usebeneficiaryList({});
 
   if (!data) return <div>No Data available</div>;
   return (

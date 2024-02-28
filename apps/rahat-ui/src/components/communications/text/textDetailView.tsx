@@ -100,7 +100,10 @@ export default function TextDetailView() {
                     <LogCard title={item.title} total={item?.total} />
                   ))}
                 </div>
-                <TextDetailTable data={data?.communicationLogs} />
+                <TextDetailTable
+                  data={data?.communicationLogs}
+                  type={data?.type || ''}
+                />
               </CardContent>
             </Card>
           </div>

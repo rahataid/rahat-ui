@@ -2,6 +2,7 @@ import { Eye, EyeOff, ScreenShareOff, PlusSquare, Import } from 'lucide-react';
 import { Separator } from '@rahat-ui/shadcn/components/separator';
 import { ScrollArea } from '@rahat-ui/shadcn/components/scroll-area';
 import { COMMUNICATION_NAV_ROUTE } from '../../const/communication.const';
+import { useCampaignStore } from '@rahat-ui/query';
 
 type IProps = {
   onTabChange: (tab: string) => void;
@@ -9,6 +10,8 @@ type IProps = {
 };
 
 export default function Nav({ onTabChange, title }: IProps) {
+  const totalCampaign = useCampaignStore.getState().totalCampaign;
+
   const handleTabClick = (tab: string) => {
     // Notify the parent component about the tab change
     onTabChange(tab);
@@ -22,25 +25,17 @@ export default function Nav({ onTabChange, title }: IProps) {
         <ScrollArea className="h-44">
           <div className="px-4 pb-4">
             <nav>
-              <div className="flex justify-between p-4 rounded-md cursor-pointer hover:bg-primary hover:text-white">
+              <div
+                onClick={() =>
+                  handleTabClick(COMMUNICATION_NAV_ROUTE.DEFAULT_TEXT)
+                }
+                className="flex justify-between p-4 rounded-md cursor-pointer hover:bg-primary hover:text-white"
+              >
                 <div className="flex gap-3">
                   <Eye />
-                  <p>Active</p>
+                  <p>Campaign</p>
                 </div>
-                <p>128</p>
-              </div>
-              <div className="flex justify-between p-4 rounded-md cursor-pointer hover:bg-primary hover:text-white">
-                <div className="flex gap-3">
-                  <EyeOff />
-                  <p>Inactive</p>
-                </div>
-                <p>32</p>
-              </div>
-              <div className="flex justify-between p-4 rounded-md cursor-pointer hover:bg-primary hover:text-white">
-                <div className="flex gap-3">
-                  <ScreenShareOff /> <p>Disabled/ Deleted</p>
-                </div>
-                <p>9</p>
+                <p>{totalCampaign || 0}</p>
               </div>
             </nav>
           </div>

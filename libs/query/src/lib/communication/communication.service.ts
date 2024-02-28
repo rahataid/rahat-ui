@@ -1,3 +1,5 @@
+import { useEffect } from 'react';
+
 import {
   PaginatedRequestPayload,
   CreateCampaignPayload,
@@ -16,6 +18,7 @@ import {
 import queryString from 'query-string';
 import { TAGS } from '../../config';
 import { communicationApi } from '../../utils/api';
+import { useCampaignStore } from './communication.store';
 
 const createCampaign = async (payload: CreateCampaignPayload) => {
   const res = await communicationApi.post('/campaigns', payload);
@@ -47,10 +50,23 @@ const listCampaign = async (payload: PaginatedRequestPayload) => {
 const useListCampaignQuery = (
   payload: PaginatedRequestPayload
 ): UseQueryResult<any, Error> => {
-  return useQuery({
+  const listCampaignQueryResult = useQuery({
     queryKey: [TAGS.GET_ALL_CAMPAIGNS],
     queryFn: () => listCampaign(payload),
   });
+
+  const campaignStore = useCampaignStore();
+
+  useEffect(() => {
+    if (listCampaignQueryResult.data) {
+      console.log(listCampaignQueryResult.data.rows.length);
+
+      campaignStore.setTotalCampaign(
+        listCampaignQueryResult.data?.rows?.length
+      );
+    }
+  }, [listCampaignQueryResult.data]);
+  return listCampaignQueryResult;
 };
 
 const getCampaign = async (payload: { id: number }) => {

@@ -43,6 +43,7 @@ import {
   TableHeader,
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
+import { CAMPAIGN_TYPES } from '@rahat-ui/types';
 
 export type TextDetail = {
   _id: string;
@@ -108,7 +109,11 @@ export const columns: ColumnDef<TextDetail>[] = [
   },
 ];
 
-export default function TextDetailTableView(data: any) {
+type IProps = {
+  data: any;
+  type: string;
+};
+export default function TextDetailTableView({ data, type }: IProps) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -117,17 +122,13 @@ export default function TextDetailTableView(data: any) {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
-  // const tableData = data?.data?.map((item: any) => {
-  //   return {
-  //     createdAt: new Date(item.createdAt).toLocaleString(),
-  //     to: item.details.to,
-  //   };
-  // });
-
   const tableData = React.useMemo(() => {
-    return data?.data?.map((item: any) => ({
+    return data?.map((item: any) => ({
       createdAt: new Date(item.createdAt).toLocaleString(),
-      to: item.details.to,
+      to:
+        type === CAMPAIGN_TYPES.EMAIL
+          ? item.details.envelope.to
+          : item.details.to,
     }));
   }, [data]);
 
@@ -149,11 +150,10 @@ export default function TextDetailTableView(data: any) {
       rowSelection,
     },
   });
-  console.log(data);
 
   return (
     <div>
-      {data?.data?.length > 0 && (
+      {data?.length > 0 && (
         <>
           <div className="flex items-center py-4">
             <Input

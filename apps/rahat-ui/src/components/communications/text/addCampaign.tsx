@@ -87,16 +87,12 @@ export default function AddCampaign() {
 
     const additionalData: AdditionalData = {};
 
-    if (data?.campaignType === 'PHONE' && data?.file) {
+    if (data?.campaignType === CAMPAIGN_TYPES.PHONE && data?.file) {
       additionalData.audio = data.file;
-    }
-
-    if (data?.campaignType === 'SMS' && data?.message) {
-      additionalData.message = data?.message;
-    }
-
-    if (data?.campaignType === 'WHATSAPP' && data?.message) {
+    } else if (data?.campaignType === CAMPAIGN_TYPES.WHATSAPP && data?.message) {
       additionalData.body = data?.message;
+    } else {
+      additionalData.message = data?.message;
     }
     createCampaign
       .mutateAsync({
@@ -282,9 +278,7 @@ export default function AddCampaign() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Transport</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                    >
+                    <Select onValueChange={field.onChange}>
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Select transport" />

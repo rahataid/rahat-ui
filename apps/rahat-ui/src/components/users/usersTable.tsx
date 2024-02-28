@@ -158,7 +158,7 @@ export default function UserTable({ handleClick }: IProps) {
     },
     initialState: {
       pagination: {
-        pageSize: 2,
+        pageSize: 10,
       },
     },
   });

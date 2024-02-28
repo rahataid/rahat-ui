@@ -16,10 +16,12 @@ type IProps = {
 
 const Nav = ({ title }: IProps) => {
   return (
-    <>
-      <h1 className="p-4 font-semibold text-xl text-slate-600">{title}</h1>
+    <div>
+      <div className="flex items-center justify-between">
+        <h1 className="p-4 font-semibold text-xl text-slate-600">{title}</h1>
+      </div>
       <ScrollArea className="h-48">
-        <div>
+        <div className="px-2 pb-4">
           <nav>
             <div className="flex justify-between p-4 items-center rounded-md cursor-pointer hover:bg-primary hover:text-white">
               <div className="flex items-center gap-3">
@@ -45,10 +47,10 @@ const Nav = ({ title }: IProps) => {
         </div>
       </ScrollArea>
       <Separator />
-      <h1 className="p-4 font-semibold text-xl text-slate-600">Actions</h1>
       <ScrollArea className="h-72">
         <div>
-          <nav>
+          <h1 className="p-4 font-semibold text-xl text-slate-600">Actions</h1>
+          <nav className="px-2">
             <div className="flex p-4 items-center gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white">
               <PlusSquare size={18} strokeWidth={1.5} /> <p>Create Tokens</p>
             </div>
@@ -67,7 +69,7 @@ const Nav = ({ title }: IProps) => {
           </nav>
         </div>
       </ScrollArea>
-    </>
+    </div>
   );
 };
 export default Nav;

@@ -42,13 +42,13 @@ export default function DataCard({
         </svg>
       </CardHeader>
       <CardContent className="flex items-center justify-between">
-        <div className="flex flex-col items-center">
+        <div className="">
           <div className="text-4xl font-semibold">{number1}</div>
           <p className="text-xs text-muted-foreground space-y-0 pt-2">
             {subTitle1}
           </p>
         </div>
-        <div>
+        <div className="">
           <div className="text-4xl font-semibold">{number2}</div>
           <p className="text-xs text-muted-foreground space-y-0 pt-2">
             {subTitle2}

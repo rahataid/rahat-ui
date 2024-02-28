@@ -46,6 +46,8 @@ import {
 } from '@rahat-ui/shadcn/components/table';
 import BeneficiaryTableData from '../../app/beneficiary/beneficiaryData.json';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import { IBeneficiaryTableData } from '../../types/beneficiary';
+import { ListBeneficiary } from '@rahat-ui/types';
 
 const data: Beneficiary[] = BeneficiaryTableData;
 
@@ -178,9 +180,14 @@ export default function ListView({ data, meta }: IBeneficiaryTableData) {
         <div className="flex items-center py-4">
           <Input
             placeholder="Filter beneficiary..."
-            value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
+            value={
+              (table.getColumn('walletAddress')?.getFilterValue() as string) ??
+              ''
+            }
             onChange={(event) =>
-              table.getColumn('name')?.setFilterValue(event.target.value)
+              table
+                .getColumn('walletAddress')
+                ?.setFilterValue(event.target.value)
             }
             className="max-w-sm mr-3"
           />

@@ -19,7 +19,7 @@ export default function GridView({ handleClick, data }: IProps) {
   const itemsPerPage = 4;
   const [currentPage, setCurrentPage] = useState(1);
 
-  const totalItems = data.length;
+  const totalItems = data?.length;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
   const startIndex = (currentPage - 1) * itemsPerPage;

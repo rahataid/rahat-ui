@@ -5,7 +5,7 @@ import {
   DashboardCharts,
   DashboardHeader,
   DashboardSummary,
-} from '../sections/dashboard';
+} from '../../sections/dashboard';
 import { abi } from './storage-abi';
 
 // export const metadata: Metadata = {

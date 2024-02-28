@@ -13,7 +13,7 @@ type IProps = {
   totalAudience?: number;
 };
 
-export const InfoCard: React.FC<IProps> = ({
+const InfoCard: React.FC<IProps> = ({
   name,
   type,
   startTime,
@@ -48,3 +48,5 @@ export const InfoCard: React.FC<IProps> = ({
     </Card>
   );
 };
+
+export default InfoCard;

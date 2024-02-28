@@ -5,8 +5,8 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from '@rahat-ui/shadcn/components/resizable';
-import ProjectNav from '../../components/projects/nav';
-import ProjectCards from '../../components/projects/projectCard';
+import ProjectNav from '../../sections/projects/nav';
+import ProjectCards from '../../sections/projects/projectCard';
 import projectsData from './projectsData.json';
 import { useState } from 'react';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';

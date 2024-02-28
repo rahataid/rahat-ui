@@ -5,8 +5,8 @@ import { Input } from '@rahat-ui/shadcn/components/input';
 import { Search, Filter } from 'lucide-react';
 import { ScrollArea } from '@rahat-ui/shadcn/components/scroll-area';
 
-import CustomPagination from '../customPagination';
-import BeneficiaryCard from '../../components/beneficiary/card';
+import CustomPagination from '../../components/customPagination';
+import BeneficiaryCard from '../../sections/beneficiary/card';
 import { IBeneficiaryItem } from '../../types/beneficiary';
 import { ListBeneficiary } from '@rahat-ui/types';
 

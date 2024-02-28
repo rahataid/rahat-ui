@@ -1,4 +1,4 @@
-import TextDetailView from 'apps/rahat-ui/src/sections/communications/text/textDetailView';
+import TextDetailView from '../../../../sections/communications/text/textDetailTable';
 
 export const metadata = {
   title: 'Text: Detail',

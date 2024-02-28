@@ -9,7 +9,7 @@
 
 To start the development server run `nx serve rahat-ui`. Open your browser and navigate to http://localhost:4200/. Happy coding!
 
-
+ 
 ## Generate code
 
 If you happen to use Nx plugins, you can leverage code generators that might come with it.

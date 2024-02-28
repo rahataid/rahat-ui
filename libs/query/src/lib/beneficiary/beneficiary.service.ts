@@ -1,13 +1,3 @@
-import queryString from 'query-string';
-import api from '../../utils/api';
-import {
-  PaginatedRequestPayload,
-  ListBeneficiariesResponse,
-  CreateNewBeneficiaryPayload,
-  ApiResponse,
-  UpdateBeneficiaryPayload,
-  UploadedFile,
-} from '@rahat-ui/types';
 import {
   UseQueryResult,
   useMutation,
@@ -15,8 +5,9 @@ import {
   useQueryClient,
 } from '@tanstack/react-query';
 import { TAGS } from '../../config';
+import { api } from '../../utils/api';
 
-const createNewBeneficiary = async (payload: CreateNewBeneficiaryPayload) => {
+const createNewBeneficiary = async (payload: any) => {
   const response = await api.post('/beneficiaries', payload);
   return response?.data;
 };
@@ -24,28 +15,25 @@ const createNewBeneficiary = async (payload: CreateNewBeneficiaryPayload) => {
 const useCreateBeneficiaryMutation = () => {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (payload: CreateNewBeneficiaryPayload) =>
-      createNewBeneficiary(payload),
+    mutationFn: (payload: any) => createNewBeneficiary(payload),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: [TAGS.GET_BENEFICIARIES] });
     },
   });
 };
 
-const beneficiaryListQuery = async (payload: PaginatedRequestPayload) => {
-  const searchParams = queryString.stringify({
+const beneficiaryListQuery = async (payload: any) => {
+  const searchParams = {
     page: payload.page,
     perPage: payload.perPage,
     sort: payload.sort,
     order: payload.order,
-  });
-  const response = await api.get(`/beneficiaries?${searchParams}`);
+  };
+  const response = await api.get(`/beneficiaries`, { params: searchParams });
   return response?.data;
 };
 
-const usebeneficiaryListQuery = (
-  payload: PaginatedRequestPayload
-): UseQueryResult<ListBeneficiariesResponse, Error> => {
+const usebeneficiaryListQuery = (payload: any): UseQueryResult<any, Error> => {
   return useQuery({
     queryKey: [TAGS.GET_BENEFICIARIES],
     queryFn: () => beneficiaryListQuery(payload),
@@ -57,14 +45,14 @@ const listBeneficiaryStatus = async () => {
   return response?.data;
 };
 
-const useListBeneficiaryStatus = (): UseQueryResult<ApiResponse, Error> => {
+const useListBeneficiaryStatus = (): UseQueryResult<any, Error> => {
   return useQuery({
     queryKey: [TAGS.GET_BENEFICIARIES_STATUS],
     queryFn: () => listBeneficiaryStatus(),
   });
 };
 
-const updateBeneficiary = async (payload: UpdateBeneficiaryPayload) => {
+const updateBeneficiary = async (payload: any) => {
   const response = await api.patch(`/beneficiaries/${payload.uuid}`, payload);
   return response?.data;
 };
@@ -72,15 +60,14 @@ const updateBeneficiary = async (payload: UpdateBeneficiaryPayload) => {
 const useUpdateBeneficiaryMutation = () => {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (payload: UpdateBeneficiaryPayload) =>
-      updateBeneficiary(payload),
+    mutationFn: (payload: any) => updateBeneficiary(payload),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: [TAGS.GET_BENEFICIARIES] });
     },
   });
 };
 
-const addBulkBeneficiary = async (payload: CreateNewBeneficiaryPayload[]) => {
+const addBulkBeneficiary = async (payload: any[]) => {
   const response = await api.post('/beneficiaries/bulk', payload);
   return response?.data;
 };
@@ -88,15 +75,14 @@ const addBulkBeneficiary = async (payload: CreateNewBeneficiaryPayload[]) => {
 const useAddBulkBeneficiaryMutation = () => {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (payload: CreateNewBeneficiaryPayload[]) =>
-      addBulkBeneficiary(payload),
+    mutationFn: (payload: any[]) => addBulkBeneficiary(payload),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: [TAGS.GET_BENEFICIARIES] });
     },
   });
 };
 
-const uploadBeneficiary = async (file: UploadedFile) => {
+const uploadBeneficiary = async (file: any) => {
   const response = await api.post('/beneficiaries/upload', file);
   return response?.data;
 };
@@ -104,7 +90,7 @@ const uploadBeneficiary = async (file: UploadedFile) => {
 const useUploadBeneficiaryMutation = () => {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (file: UploadedFile) => uploadBeneficiary(file),
+    mutationFn: (file: any) => uploadBeneficiary(file),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: [TAGS.GET_BENEFICIARIES] });
     },
@@ -112,10 +98,10 @@ const useUploadBeneficiaryMutation = () => {
 };
 
 export {
-  usebeneficiaryListQuery,
+  useAddBulkBeneficiaryMutation,
   useCreateBeneficiaryMutation,
   useListBeneficiaryStatus,
   useUpdateBeneficiaryMutation,
-  useAddBulkBeneficiaryMutation,
   useUploadBeneficiaryMutation,
+  usebeneficiaryListQuery,
 };

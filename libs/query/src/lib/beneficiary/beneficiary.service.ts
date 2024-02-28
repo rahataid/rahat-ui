@@ -18,7 +18,6 @@ const useCreateBeneficiaryMutation = () => {
     mutationFn: (payload: any) => createNewBeneficiary(payload),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: [TAGS.GET_BENEFICIARIES] });
-      return data;
     },
   });
 };

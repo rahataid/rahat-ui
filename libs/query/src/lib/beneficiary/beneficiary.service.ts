@@ -1,5 +1,3 @@
-import queryString from 'query-string';
-
 import {
   UseQueryResult,
   useMutation,
@@ -25,13 +23,13 @@ const useCreateBeneficiaryMutation = () => {
 };
 
 const beneficiaryListQuery = async (payload: any) => {
-  const searchParams = queryString.stringify({
+  const searchParams = {
     page: payload.page,
     perPage: payload.perPage,
     sort: payload.sort,
     order: payload.order,
-  });
-  const response = await api.get(`/beneficiaries?${searchParams}`);
+  };
+  const response = await api.get(`/beneficiaries`, { params: searchParams });
   return response?.data;
 };
 
@@ -107,4 +105,3 @@ export {
   useUploadBeneficiaryMutation,
   usebeneficiaryListQuery,
 };
-

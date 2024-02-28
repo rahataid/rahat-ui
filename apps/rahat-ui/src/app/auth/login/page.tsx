@@ -5,9 +5,8 @@ import { Button } from '@rahat-ui/shadcn/components/button';
 import { Input } from '@rahat-ui/shadcn/components/input';
 import { Label } from '@rahat-ui/shadcn/components/label';
 import { useRouter } from 'next/navigation';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { paths } from '../../../routes/paths';
-import { useError } from '../../../utils/useErrors';
 
 export default function AuthPage() {
   const router = useRouter();
@@ -22,7 +21,6 @@ export default function AuthPage() {
       error: state.error,
     }));
 
-  const err = useError();
   const sendOtpMutation = useSendOtp();
   const loginMutation = useLogin();
 
@@ -34,18 +32,6 @@ export default function AuthPage() {
       clientId: '105cd449-53f6-44e4-85f3-feaa7d762ffa',
     });
   };
-
-  useEffect(() => {
-    if (sendOtpMutation.isSuccess) {
-      setChallenge(sendOtpMutation.data?.data?.challenge ?? '');
-    }
-  }, [
-    sendOtpMutation.data?.data?.challenge,
-    sendOtpMutation.error,
-    sendOtpMutation.isError,
-    sendOtpMutation.isSuccess,
-    setChallenge,
-  ]);
 
   const onVerifyOtpFormSubmit = async (e: React.SyntheticEvent) => {
     e.preventDefault();

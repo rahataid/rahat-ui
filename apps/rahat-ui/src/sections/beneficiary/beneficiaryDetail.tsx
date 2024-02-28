@@ -1,3 +1,5 @@
+import { useRouter } from 'next/navigation';
+
 import Image from 'next/image';
 import {
   Tabs,
@@ -14,15 +16,18 @@ import {
 
 import { Label } from '@rahat-ui/shadcn/components/label';
 import { Switch } from '@rahat-ui/shadcn/components/switch';
-import { Share, Archive, Trash2, FilePenLine } from 'lucide-react';
+import { Archive, Trash2, FilePenLine, Expand } from 'lucide-react';
 import { IBeneficiaryItem } from '../../types/beneficiary';
 import { Button } from '@rahat-ui/shadcn/components/button';
+import { paths } from '../../routes/paths';
 
 type IProps = {
   data: IBeneficiaryItem;
 };
 
 export default function BeneficiaryDetail({ data }: IProps) {
+  const router = useRouter();
+
   const changedDate = new Date(data?.updatedAt);
   const formattedDate = changedDate.toLocaleDateString('en-US', {
     year: 'numeric',
@@ -42,11 +47,17 @@ export default function BeneficiaryDetail({ data }: IProps) {
           <div className="flex gap-4">
             <TooltipProvider delayDuration={100}>
               <Tooltip>
-                <TooltipTrigger>
-                  <Share />
+                <TooltipTrigger
+                  onClick={() => {
+                    router.push(
+                      paths.dashboard.beneficiary.detail(data.walletAddress)
+                    );
+                  }}
+                >
+                  <Expand />
                 </TooltipTrigger>
                 <TooltipContent className="bg-secondary ">
-                  <p className="text-xs font-medium">Export</p>
+                  <p className="text-xs font-medium">Expand</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>

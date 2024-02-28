@@ -198,7 +198,7 @@ export default function UserTable({ handleClick }: IProps) {
               </DropdownMenuContent>
             </DropdownMenu>
           </div> */}
-            <div className="rounded-md border">
+            <div className="rounded-md border h-full">
               <Table>
                 <TableHeader>
                   {table.getHeaderGroups().map((headerGroup) => (

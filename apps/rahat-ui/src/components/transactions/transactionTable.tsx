@@ -40,7 +40,7 @@ const data: Transaction[] = [
   {
     id: 'm5gr84i9',
     topic: 'Claim Processed',
-    beneficiary: 1234,
+    beneficiary: 1234567890,
     voucherId: 'ABC123',
     timestamp: '2024-02-27T08:00:00Z',
     txHash: '0x123456789abcdef',
@@ -48,7 +48,7 @@ const data: Transaction[] = [
   {
     id: '3u1reuv4',
     topic: 'Claim Approved',
-    beneficiary: 5678,
+    beneficiary: 5678234324,
     voucherId: 'DEF456',
     timestamp: '2024-02-27T09:00:00Z',
     txHash: '0x987654321abcdef',
@@ -56,7 +56,7 @@ const data: Transaction[] = [
   {
     id: 'derv1ws0',
     topic: 'Claim Rejected',
-    beneficiary: 9012,
+    beneficiary: 90124353534,
     voucherId: 'GHI789',
     timestamp: '2024-02-27T10:00:00Z',
     txHash: '0xfedcba9876543210',
@@ -64,7 +64,7 @@ const data: Transaction[] = [
   {
     id: '5kma53ae',
     topic: 'Payment Processed',
-    beneficiary: 3456,
+    beneficiary: 34563453534,
     voucherId: 'JKL012',
     timestamp: '2024-02-27T11:00:00Z',
     txHash: '0xabcdef1234567890',
@@ -72,7 +72,7 @@ const data: Transaction[] = [
   {
     id: 'bhqecj4p',
     topic: 'Payment Failed',
-    beneficiary: 7890,
+    beneficiary: 7890345345,
     voucherId: 'MNO345',
     timestamp: '2024-02-27T12:00:00Z',
     txHash: '0x0123456789abcdef',
@@ -80,7 +80,7 @@ const data: Transaction[] = [
   {
     id: 'p9o8i7u6',
     topic: 'Claim Approved',
-    beneficiary: 1234,
+    beneficiary: 1234567567,
     voucherId: 'PQR678',
     timestamp: '2024-02-27T13:00:00Z',
     txHash: '0xfedcba9876543210',
@@ -88,7 +88,7 @@ const data: Transaction[] = [
   {
     id: '3v4b5n6m',
     topic: 'Payment Processed',
-    beneficiary: 5678,
+    beneficiary: 5678456456,
     voucherId: 'STU901',
     timestamp: '2024-02-27T14:00:00Z',
     txHash: '0xabcdef0123456789',
@@ -96,7 +96,7 @@ const data: Transaction[] = [
   {
     id: 'a1s2d3f4',
     topic: 'Claim Processed',
-    beneficiary: 9012,
+    beneficiary: 9012456456,
     voucherId: 'VWX234',
     timestamp: '2024-02-27T15:00:00Z',
     txHash: '0x0123456789abcdef',
@@ -104,7 +104,7 @@ const data: Transaction[] = [
   {
     id: 'q2w3e4r5',
     topic: 'Claim Rejected',
-    beneficiary: 3456,
+    beneficiary: 3456456456,
     voucherId: 'YZA567',
     timestamp: '2024-02-27T16:00:00Z',
     txHash: '0xabcdef0123456789',
@@ -112,7 +112,7 @@ const data: Transaction[] = [
   {
     id: 'zxcvbnml',
     topic: 'Payment Failed',
-    beneficiary: 7890,
+    beneficiary: 7890345345,
     voucherId: 'BCD890',
     timestamp: '2024-02-27T17:00:00Z',
     txHash: '0x0123456789abcdef',
@@ -120,7 +120,7 @@ const data: Transaction[] = [
   {
     id: 'qwertyui',
     topic: 'Payment Processed',
-    beneficiary: 1234,
+    beneficiary: 1234345456,
     voucherId: 'EFG901',
     timestamp: '2024-02-27T18:00:00Z',
     txHash: '0xfedcba9876543210',
@@ -128,7 +128,7 @@ const data: Transaction[] = [
   {
     id: 'asdfghjk',
     topic: 'Claim Approved',
-    beneficiary: 5678,
+    beneficiary: 5678456345,
     voucherId: 'HIJ234',
     timestamp: '2024-02-27T19:00:00Z',
     txHash: '0xabcdef0123456789',
@@ -136,7 +136,7 @@ const data: Transaction[] = [
   {
     id: 'poiuytre',
     topic: 'Claim Processed',
-    beneficiary: 9012,
+    beneficiary: 9012345345,
     voucherId: 'KLM567',
     timestamp: '2028-02-27T20:00:00Z',
     txHash: '0x0123456789abcdef',
@@ -144,7 +144,7 @@ const data: Transaction[] = [
   {
     id: 'lkjhgfds',
     topic: 'Payment Failed',
-    beneficiary: 3456,
+    beneficiary: 3456345345,
     voucherId: 'NOP890',
     timestamp: '2024-02-27T21:00:00Z',
     txHash: '0xabcdef0123456789',
@@ -152,7 +152,7 @@ const data: Transaction[] = [
   {
     id: 'mnbvcxz1',
     topic: 'Payment Processed',
-    beneficiary: 7890,
+    beneficiary: 78902343456,
     voucherId: 'QRS234',
     timestamp: '2024-02-27T22:00:00Z',
     txHash: '0x0123456789abcdef',

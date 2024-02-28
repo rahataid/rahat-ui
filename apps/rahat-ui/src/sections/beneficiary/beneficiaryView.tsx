@@ -34,7 +34,6 @@ export default function BeneficiaryView() {
   };
   const { data } = usebeneficiaryList({});
 
-  if (!data) return <div>No Data available</div>;
   return (
     <div className="mt-2">
       <Tabs defaultValue="grid">

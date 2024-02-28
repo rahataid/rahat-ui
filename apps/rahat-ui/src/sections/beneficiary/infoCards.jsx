@@ -2,19 +2,21 @@ import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardFooter,
   CardHeader,
-  CardTitle,
 } from '@rahat-ui/shadcn/src/components/ui/card';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@rahat-ui/shadcn/components/tooltip';
 
 import { MoreVertical } from 'lucide-react';
 import data from '../../app/beneficiary/beneficiaryData.json';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 
 export default function InfoCards() {
   return (
-    <div className="grid gap-4 p-4">
+    <div className="grid gap-4 p-2">
       <Card className="shadow-md">
         <CardHeader>
           <div className="flex justify-between">
@@ -84,7 +86,16 @@ export default function InfoCards() {
             </div>
             <div className="flex justify-between items-center">
               <p>Wallet Address</p>
-              <p className="text-sm font-medium">87654eu87654edgh76</p>
+              <TooltipProvider delayDuration={100}>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <p className="text-sm font-medium">87654eu87654edgh76</p>
+                  </TooltipTrigger>
+                  <TooltipContent className="bg-secondary ">
+                    <p className="text-xs font-medium">click to copy</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </div>
           </div>
         </CardContent>

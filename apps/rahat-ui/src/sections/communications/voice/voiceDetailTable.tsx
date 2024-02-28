@@ -44,9 +44,6 @@ import {
   TableHeader,
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
-import VoiceDetailTableData from '../../../app/communications/voice/[id]/voiceDetailData.json';
-
-const data: VoiceDetail[] = VoiceDetailTableData;
 
 export type VoiceDetail = {
   _id: string;
@@ -56,7 +53,9 @@ export type VoiceDetail = {
   status: string;
   attempts: number;
 };
-
+type IProps = {
+  data: any;
+};
 export const columns: ColumnDef<VoiceDetail>[] = [
   {
     id: 'select',
@@ -136,7 +135,7 @@ export const columns: ColumnDef<VoiceDetail>[] = [
   },
 ];
 
-export default function VoiceDetailTableView() {
+export default function VoiceDetailTableView({ data }: IProps) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -145,8 +144,17 @@ export default function VoiceDetailTableView() {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
+  const tableData = React.useMemo(() => {
+    return data?.map((item: any) => ({
+      date: new Date(item.createdAt).toLocaleString(),
+      to: item.details.to,
+      status: item.status,
+      duration: item.details.duration,
+    }));
+  }, [data]);
+
   const table = useReactTable({
-    data,
+    data: tableData,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,

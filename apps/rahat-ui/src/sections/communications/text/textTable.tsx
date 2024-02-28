@@ -46,8 +46,9 @@ import {
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
 import { paths } from 'apps/rahat-ui/src/routes/paths';
-import { useListCampaignQuery } from '@rahat-ui/query';
+import { useCampaignStore, useListCampaignQuery } from '@rahat-ui/query';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import { CAMPAIGN_TYPES } from '@rahat-ui/types';
 
 export type Text = {
   id: number;
@@ -161,6 +162,8 @@ export const columns: ColumnDef<Text>[] = [
 ];
 
 export default function TextTableView() {
+  const campaignStore = useCampaignStore();
+
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -173,7 +176,14 @@ export default function TextTableView() {
     useListCampaignQuery({});
 
   const tableData = React.useMemo(() => {
-    return Array.isArray(data?.rows) ? data?.rows : [];
+    const result = Array.isArray(data?.rows)
+      ? data?.rows.filter(
+          (campaign: any) => campaign.type !== CAMPAIGN_TYPES.PHONE
+        )
+      : [];
+
+    campaignStore.setTotalTextCampaign(result?.length);
+    return result;
   }, [isSuccess]);
 
   const table = useReactTable({

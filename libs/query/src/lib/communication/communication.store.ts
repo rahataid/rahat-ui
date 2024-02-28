@@ -2,12 +2,14 @@ import { createStore, localPersistStorage } from '../../utils/zustand-store';
 
 type CampaignState = {
   campaign: any;
-  totalCampaign: number;
+  totalTextCampaign: number;
+  totalVoiceCampaign: number;
 };
 
 type CampaignStateAction = {
   setCampaign: (campaign: any) => void;
-  setTotalCampaign: (totalCampaign: number) => void;
+  setTotalTextCampaign: (totalTextCampaign: number) => void;
+  setTotalVoiceCampaign: (totalVoiceCampaign: number) => void;
   clearCampaign: () => void;
 };
 
@@ -16,12 +18,17 @@ type CampaignStore = CampaignState & CampaignStateAction;
 export const useCampaignStore = createStore<CampaignStore>(
   (set) => ({
     campaign: null,
-    totalCampaign: 0,
+    totalTextCampaign: 0,
+    totalVoiceCampaign: 0,
     setCampaign: (campaign) => set({ campaign }),
     clearCampaign: () => set({ campaign: null }),
-    setTotalCampaign: (totalCampaign: number) =>
+    setTotalTextCampaign: (totalTextCampaign: number) =>
       set({
-        totalCampaign,
+        totalTextCampaign,
+      }),
+    setTotalVoiceCampaign: (totalVoiceCampaign: number) =>
+      set({
+        totalVoiceCampaign,
       }),
   }),
   {

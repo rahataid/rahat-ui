@@ -1,3 +1,5 @@
+import { usePathname } from 'next/navigation';
+
 import { Eye, EyeOff, ScreenShareOff, PlusSquare, Import } from 'lucide-react';
 import { Separator } from '@rahat-ui/shadcn/components/separator';
 import { ScrollArea } from '@rahat-ui/shadcn/components/scroll-area';
@@ -10,7 +12,10 @@ type IProps = {
 };
 
 export default function Nav({ onTabChange, title }: IProps) {
-  const totalCampaign = useCampaignStore.getState().totalCampaign;
+  const totalTextCampaign = useCampaignStore.getState().totalTextCampaign;
+  const totalVoiceCampaign = useCampaignStore.getState().totalVoiceCampaign;
+
+  const path = usePathname().split('/');
 
   const handleTabClick = (tab: string) => {
     // Notify the parent component about the tab change
@@ -26,16 +31,24 @@ export default function Nav({ onTabChange, title }: IProps) {
           <div className="px-4 pb-4">
             <nav>
               <div
-                onClick={() =>
-                  handleTabClick(COMMUNICATION_NAV_ROUTE.DEFAULT_TEXT)
-                }
+                onClick={() => {
+                  if (path[path.length - 1] === 'text') {
+                    handleTabClick(COMMUNICATION_NAV_ROUTE.DEFAULT_TEXT);
+                  } else {
+                    handleTabClick(COMMUNICATION_NAV_ROUTE.DEFAULT_VOICE);
+                  }
+                }}
                 className="flex justify-between p-4 rounded-md cursor-pointer hover:bg-primary hover:text-white"
               >
                 <div className="flex gap-3">
                   <Eye />
                   <p>Campaign</p>
                 </div>
-                <p>{totalCampaign || 0}</p>
+                <p>
+                  {path[path.length - 1] === 'text'
+                    ? totalTextCampaign
+                    : totalVoiceCampaign}
+                </p>
               </div>
             </nav>
           </div>

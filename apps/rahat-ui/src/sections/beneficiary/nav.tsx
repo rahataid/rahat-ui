@@ -6,16 +6,11 @@ import { LayoutGrid, AlignJustify } from 'lucide-react';
 import { Meta } from '@rahat-ui/types';
 
 type IProps = {
-  handleView: VoidFunction;
   onAddBenficiaryclick: VoidFunction;
   meta: Meta | undefined;
 };
 
-export default function Nav({
-  handleView,
-  onAddBenficiaryclick,
-  meta,
-}: IProps) {
+export default function Nav({ onAddBenficiaryclick, meta }: IProps) {
   return (
     <>
       <div>
@@ -24,10 +19,10 @@ export default function Nav({
             Beneficiaries
           </h1>
           <TabsList>
-            <TabsTrigger value="list" onClick={handleView}>
+            <TabsTrigger value="list">
               <AlignJustify size={18} strokeWidth={1.5} />
             </TabsTrigger>
-            <TabsTrigger value="grid" onClick={handleView}>
+            <TabsTrigger value="grid">
               <LayoutGrid size={18} strokeWidth={1.5} />
             </TabsTrigger>
           </TabsList>

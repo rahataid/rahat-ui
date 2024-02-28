@@ -1,15 +1,15 @@
 'use client';
 
-import TextDetailTable from './textDetailTable';
-import { InfoCard } from '../infoCard';
+import {
+  useGetCampaignQuery,
+  useTriggerCampaignMutation,
+} from '@rahat-ui/query';
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
 } from '@rahat-ui/shadcn/src/components/ui/card';
-import LogCard from '../logCard';
-import { FormField, FormItem } from '@rahat-ui/shadcn/src/components/ui/form';
 import {
   Select,
   SelectContent,
@@ -17,13 +17,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
-import {
-  useGetCampaignQuery,
-  useTriggerCampaignMutation,
-} from '@rahat-ui/query';
 import { useParams } from 'next/navigation';
 import { toast } from 'react-toastify';
-import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import InfoCard from '../infoCard';
+import LogCard from '../logCard';
+import TextDetailTable from './textDetailTable';
 
 export default function TextDetailView() {
   const triggerCampaign = useTriggerCampaignMutation();

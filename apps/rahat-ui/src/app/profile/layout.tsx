@@ -1,11 +1,11 @@
 'use client';
 
-import Nav from '../../components/projects/nav';
+import { Nav } from '../../components/nav';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <>
-      <Nav title={'Profile'} />
+      <Nav />
       <div className="mx-8">{children}</div>
     </>
   );

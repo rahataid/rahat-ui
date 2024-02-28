@@ -11,7 +11,7 @@ export default function ProjectDetails() {
     <div className="p-4">
       <div className="mb-4 grid md:grid-cols-3 gap-4">
         <DataCard
-          className=" border-green-500"
+          className="border-green-500"
           title="Beneficiaries"
           number1={'12'}
           subTitle1="Enrolled"

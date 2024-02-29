@@ -13,6 +13,8 @@ import BeneficiaryGridView from '../../sections/beneficiary/gridView';
 import BeneficiaryDetail from '../../sections/beneficiary/beneficiaryDetail';
 import { IBeneficiaryItem } from '../../types/beneficiary';
 import AddBeneficiary from './addBeneficiary';
+import { BENEFICIARY_NAV_ROUTE } from '../../const/beneficiary.const';
+import ImportBeneficiary from './importBeneficiary';
 import {
   ServiceContext,
   ServiceContextType,
@@ -23,7 +25,8 @@ export default function BeneficiaryView() {
     ServiceContext
   ) as ServiceContextType;
   const [selectedData, setSelectedData] = useState<IBeneficiaryItem>();
-  const [addBeneficiary, setAddBeneficiary] = useState<boolean>(false);
+  const [addBeneficiary, setAddBeneficiary] = useState<Boolean>(false);
+  const [active, setActive] = useState<string>(BENEFICIARY_NAV_ROUTE.DEFAULT);
 
   const handleBeneficiaryCardClick = (item: IBeneficiaryItem) => {
     setSelectedData(item);
@@ -38,6 +41,11 @@ export default function BeneficiaryView() {
   const handleView = () => {
     setSelectedData(undefined);
   };
+
+  const handleImport = (item: string) => {
+    setActive(item);
+  };
+
   const { data } = beneficiaryQuery.usebeneficiaryList({ order: 'createdAt' });
 
   return (
@@ -54,12 +62,16 @@ export default function BeneficiaryView() {
             className="h-full"
           >
             <BeneficiaryNav
+              handleImport={handleImport}
               onAddBenficiaryclick={handleBeneficiaryAdd}
               meta={data?.meta}
             />
           </ResizablePanel>
           <ResizableHandle />
           <ResizablePanel minSize={28}>
+            {active === BENEFICIARY_NAV_ROUTE.IMPORT_BENEFICIARY && (
+              <ImportBeneficiary />
+            )}
             <TabsContent value="list">
               <BeneficiaryListView data={data?.data} meta={data?.meta} />
             </TabsContent>

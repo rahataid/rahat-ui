@@ -25,8 +25,8 @@ import { useAuthStore } from '@rumsan/react-query/auth';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { useNavData } from '../app/config-nav';
 import { paths } from '../routes/paths';
-import { ModeToggle } from './dropdown';
 import ConnectWallet from '../sections/wallet/connect-wallet';
+import ThemeSwitch from './themeToggleSwitch';
 
 export function Nav() {
   const currentPath = usePathname();
@@ -102,7 +102,6 @@ export function Nav() {
         </nav>
       </div>
       <div className="flex gap-4 items-center">
-        <ModeToggle />
         <ConnectWallet />
 
         <DropdownMenu>
@@ -134,6 +133,7 @@ export function Nav() {
               >
                 Home
               </Link>
+              <ThemeSwitch />
               <Button
                 className="mt-2 p-2 hover:border w-full"
                 onClick={handleLogout}

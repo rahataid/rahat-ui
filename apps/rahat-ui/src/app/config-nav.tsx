@@ -15,7 +15,7 @@ export function useNavData() {
       },
       {
         title: 'Beneficiaries',
-        path: paths.dashboard.beneficiary,
+        path: paths.dashboard.beneficiary.root,
       },
       {
         title: 'Users',

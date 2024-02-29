@@ -84,7 +84,10 @@ export default function EditCampaign() {
     const audienceIds = data?.audiences?.map((audience) => audience?.id) || [];
 
     form.setValue('campaignName', data.name);
-    form.setValue('message', data.details.body || '');
+    form.setValue(
+      'message',
+      data.details.body ? data.details.body : data.details.message || ''
+    );
     form.setValue('campaignType', data.type);
     form.setValue('startTime', new Date(data.startTime));
     form.setValue('transport', data?.transport?.id.toString());

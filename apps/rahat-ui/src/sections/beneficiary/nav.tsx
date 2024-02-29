@@ -4,13 +4,19 @@ import { ScrollArea } from '@rahat-ui/shadcn/components/scroll-area';
 import { TabsList, TabsTrigger } from '@rahat-ui/shadcn/src/components/ui/tabs';
 import { LayoutGrid, AlignJustify } from 'lucide-react';
 import { Meta } from '@rahat-ui/types';
+import { BENEFICIARY_NAV_ROUTE } from '../../const/beneficiary.const';
 
 type IProps = {
   onAddBenficiaryclick: VoidFunction;
   meta: Meta | undefined;
+  handleImport: (item: string) => void;
 };
 
-export default function Nav({ onAddBenficiaryclick, meta }: IProps) {
+export default function Nav({
+  onAddBenficiaryclick,
+  meta,
+  handleImport,
+}: IProps) {
   return (
     <>
       <div>
@@ -74,7 +80,7 @@ export default function Nav({ onAddBenficiaryclick, meta }: IProps) {
                 <p>9</p>
               </div> */}
               <div className="flex justify-between p-4 rounded-md cursor-pointer hover:bg-primary hover:text-white">
-                <div className="flex gap-3">
+                <div className="flex items-center gap-3">
                   <Eye size={18} strokeWidth={1.5} />
                   <p>Beneficiaries</p>
                 </div>
@@ -93,12 +99,17 @@ export default function Nav({ onAddBenficiaryclick, meta }: IProps) {
           <nav>
             <div
               onClick={onAddBenficiaryclick}
-              className="flex p-4 gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white"
+              className="flex items-center p-4 gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white"
             >
               <PlusSquare size={18} strokeWidth={1.5} />{' '}
               <p>Add beneficiaries</p>
             </div>
-            <div className="flex p-4 gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white">
+            <div
+              className="flex items-center p-4 gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white"
+              onClick={() =>
+                handleImport(BENEFICIARY_NAV_ROUTE.IMPORT_BENEFICIARY)
+              }
+            >
               <Import size={18} strokeWidth={1.5} />
               <p>Import beneficiaries</p>
             </div>

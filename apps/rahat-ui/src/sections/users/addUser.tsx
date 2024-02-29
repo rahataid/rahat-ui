@@ -1,5 +1,13 @@
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@rahat-ui/shadcn/components/select';
 
 export default function AddUser() {
   return (
@@ -8,7 +16,17 @@ export default function AddUser() {
       <div className="grid grid-cols-2 gap-4 mb-4">
         <Input type="text" placeholder="Name" />
         <Input type="email" placeholder="Email" />
-        <Input type="select" placeholder="Select role" />
+        <Select>
+          <SelectTrigger>
+            <SelectValue placeholder="Select role" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectItem value="user">USER</SelectItem>
+              <SelectItem value="admin">ADMIN</SelectItem>
+            </SelectGroup>
+          </SelectContent>
+        </Select>
         <Input type="text" placeholder="Wallet Address" />
       </div>
       <div className="flex justify-end">

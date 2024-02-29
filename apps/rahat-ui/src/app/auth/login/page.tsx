@@ -143,19 +143,15 @@ export default function AuthPage() {
             >
               {!challenge.length ? 'Get Started' : 'Resend'}
             </Button> */}
-            {!challenge.length ? (
-              <span
-                className="underline font-medium ml-2 cursor-pointer"
-                onClick={onSendOtpFormSubmit}
-              >
-                Get Started
-              </span>
-            ) : (
-              <span>Resend</span>
-            )}
+            <span
+              className="underline font-medium ml-2 cursor-pointer"
+              onClick={onSendOtpFormSubmit}
+            >
+              {!challenge.length ? 'Get Started' : 'Resend'}
+            </span>
             {challenge.length ? (
               <Button
-                className="ml-2"
+                className="ml-2 rounded"
                 onClick={() => {
                   setChallenge('');
                   router.back();

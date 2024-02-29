@@ -15,7 +15,6 @@ import { IBeneficiaryItem } from '../../types/beneficiary';
 import AddBeneficiary from './addBeneficiary';
 import { BENEFICIARY_NAV_ROUTE } from '../../const/beneficiary.const';
 import ImportBeneficiary from './importBeneficiary';
-import { usebeneficiaryList } from '@rahat-ui/query';
 import {
   ServiceContext,
   ServiceContextType,

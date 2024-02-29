@@ -8,6 +8,6 @@ export interface IBeneficiaryItem {
 }
 
 export interface IBeneficiaryTableData {
-  data: ListBeneficiary[];
+  data: ListBeneficiary[] | [];
   meta?: Meta;
 }

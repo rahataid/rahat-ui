@@ -8,13 +8,13 @@ import { BENEFICIARY_NAV_ROUTE } from '../../const/beneficiary.const';
 
 type IProps = {
   onAddBenficiaryclick: VoidFunction;
-  meta: Meta | undefined;
+  data: [] | null;
   handleImport: (item: string) => void;
 };
 
 export default function Nav({
   onAddBenficiaryclick,
-  meta,
+  data,
   handleImport,
 }: IProps) {
   return (
@@ -84,7 +84,7 @@ export default function Nav({
                   <Eye size={18} strokeWidth={1.5} />
                   <p>Beneficiaries</p>
                 </div>
-                <p>{meta?.total}</p>
+                <p>{data?.length}</p>
               </div>
             </nav>
           </div>

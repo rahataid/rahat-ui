@@ -25,7 +25,7 @@ export default function BeneficiaryView() {
     ServiceContext
   ) as ServiceContextType;
   const [selectedData, setSelectedData] = useState<IBeneficiaryItem>();
-  const [addBeneficiary, setAddBeneficiary] = useState<Boolean>(false);
+  const [addBeneficiary, setAddBeneficiary] = useState<boolean>(false);
   const [active, setActive] = useState<string>(BENEFICIARY_NAV_ROUTE.DEFAULT);
 
   const handleBeneficiaryCardClick = (item: IBeneficiaryItem) => {
@@ -46,7 +46,7 @@ export default function BeneficiaryView() {
     setActive(item);
   };
 
-  const { data } = beneficiaryQuery.usebeneficiaryList({ order: 'createdAt' });
+  const { data } = beneficiaryQuery.useListBeneficiary({ order: 'createdAt' });
 
   return (
     <div className="mt-2">
@@ -64,7 +64,7 @@ export default function BeneficiaryView() {
             <BeneficiaryNav
               handleImport={handleImport}
               onAddBenficiaryclick={handleBeneficiaryAdd}
-              meta={data?.meta}
+              data={data?.data}
             />
           </ResizablePanel>
           <ResizableHandle />

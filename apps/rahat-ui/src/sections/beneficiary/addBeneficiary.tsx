@@ -18,18 +18,27 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
+import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import { z } from 'zod';
+import {
+  ServiceContext,
+  ServiceContextType,
+} from '../../providers/service.provider';
 
 export default function AddBeneficiary() {
-  const addBeneficiary = useCreateBeneficiary();
+  const { beneficiaryQuery } = React.useContext(
+    ServiceContext
+  ) as ServiceContextType;
+  const createBeneficiary = beneficiaryQuery.useCreateBeneficiary();
 
   const FormSchema = z.object({
     name: z.string().min(2, { message: 'Name must be at least 4 character' }),
-    walletAddress: z
-      .string()
-      .min(42, { message: 'The Ethereum address must be 42 characters long' }),
+    walletAddress: z.string().min(40, {
+      message:
+        'The Ethereum address must be 42 characters long. It should start with "0x" and followed by 40 hexadecimal characters',
+    }),
     phone: z.string(),
     gender: z.string().toUpperCase(),
     bankedStatus: z.string().toUpperCase(),
@@ -50,27 +59,21 @@ export default function AddBeneficiary() {
     },
   });
 
-  const handleCreateBeneficiary = async (data: z.infer<typeof FormSchema>) => {
-    try {
-      const result = await addBeneficiary.mutateAsync({
-        gender: data.gender,
-        bankedStatus: data.bankedStatus,
-        internetStatus: data.internetStatus,
-        phoneStatus: data.phoneStatus,
-        piiData: {
-          name: data.name,
-        },
-        walletAddress: data.walletAddress,
-        phone: data.phone,
-      });
-      if (result) {
-        toast.success('Benificiary Added');
-        form.reset();
-      }
-    } catch (e) {
-      toast.error(e);
-    }
+  const handleCreateBeneficiary = (data: z.infer<typeof FormSchema>) => {
+    createBeneficiary.mutate({
+      gender: data.gender,
+      bankedStatus: data.bankedStatus,
+      internetStatus: data.internetStatus,
+      phoneStatus: data.phoneStatus,
+      piiData: {
+        name: data.name,
+      },
+      walletAddress: data.walletAddress,
+      phone: data.phone,
+    });
+    console.log(createBeneficiary);
   };
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleCreateBeneficiary)}>
@@ -244,7 +247,9 @@ export default function AddBeneficiary() {
             />
           </div>
           <div className="flex justify-end">
-            <Button>Create Beneficiary</Button>
+            <Button>
+              {createBeneficiary.isPending ? 'Loading' : 'Upload'}
+            </Button>
           </div>
         </div>
       </form>

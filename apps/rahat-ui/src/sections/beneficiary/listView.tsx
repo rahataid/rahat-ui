@@ -65,17 +65,17 @@ export const columns: ColumnDef<ListBeneficiary>[] = [
     header: ({ table }) => (
       <Checkbox
         checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && 'indeterminate')
+          table?.getIsAllPageRowsSelected() ||
+          (table?.getIsSomePageRowsSelected() && 'indeterminate')
         }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        onCheckedChange={(value) => table?.toggleAllPageRowsSelected(!!value)}
         aria-label="Select all"
       />
     ),
     cell: ({ row }) => (
       <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
+        checked={row?.getIsSelected()}
+        onCheckedChange={(value) => row?.toggleSelected(!!value)}
         aria-label="Select row"
       />
     ),
@@ -92,7 +92,7 @@ export const columns: ColumnDef<ListBeneficiary>[] = [
     header: 'Location',
     cell: ({ row }) => (
       <div className="capitalize">
-        {row.getValue('location') ? row.getValue('location') : 'N/A'}
+        {row?.getValue('location') ? row?.getValue('location') : 'N/A'}
       </div>
     ),
   },
@@ -101,7 +101,7 @@ export const columns: ColumnDef<ListBeneficiary>[] = [
     header: 'Internet Status',
     cell: ({ row }) => (
       <Badge variant="secondary" className="rounded-md capitalize">
-        {row.getValue('internetStatus')}
+        {row?.getValue('internetStatus')}
       </Badge>
     ),
   },
@@ -110,7 +110,7 @@ export const columns: ColumnDef<ListBeneficiary>[] = [
     header: 'Phone Status',
     cell: ({ row }) => (
       <Badge variant="secondary" className="rounded-md capitalize">
-        {row.getValue('phoneStatus')}
+        {row?.getValue('phoneStatus')}
       </Badge>
     ),
   },
@@ -119,7 +119,7 @@ export const columns: ColumnDef<ListBeneficiary>[] = [
     header: 'Bank Status',
     cell: ({ row }) => (
       <Badge variant="secondary" className="rounded-md capitalize">
-        {row.getValue('bankedStatus')}
+        {row?.getValue('bankedStatus')}
       </Badge>
     ),
   },
@@ -146,7 +146,7 @@ export const columns: ColumnDef<ListBeneficiary>[] = [
   },
 ];
 
-export default function ListView({ data, meta }: IBeneficiaryTableData) {
+export default function ListView({ data }: IBeneficiaryTableData) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -181,12 +181,12 @@ export default function ListView({ data, meta }: IBeneficiaryTableData) {
           <Input
             placeholder="Filter beneficiary..."
             value={
-              (table.getColumn('walletAddress')?.getFilterValue() as string) ??
+              (table?.getColumn('walletAddress')?.getFilterValue() as string) ??
               ''
             }
             onChange={(event) =>
               table
-                .getColumn('walletAddress')
+                ?.getColumn('walletAddress')
                 ?.setFilterValue(event.target.value)
             }
             className="max-w-sm mr-3"
@@ -202,19 +202,19 @@ export default function ListView({ data, meta }: IBeneficiaryTableData) {
               <DropdownMenuLabel>Toggle Columns</DropdownMenuLabel>
               <DropdownMenuSeparator />
               {table
-                .getAllColumns()
-                .filter((column) => column.getCanHide())
-                .map((column) => {
+                ?.getAllColumns()
+                ?.filter((column) => column.getCanHide())
+                ?.map((column) => {
                   return (
                     <DropdownMenuCheckboxItem
                       key={column.id}
                       className="capitalize"
-                      checked={column.getIsVisible()}
+                      checked={column?.getIsVisible()}
                       onCheckedChange={(value) =>
-                        column.toggleVisibility(!!value)
+                        column?.toggleVisibility(!!value)
                       }
                     >
-                      {column.id}
+                      {column?.id}
                     </DropdownMenuCheckboxItem>
                   );
                 })}
@@ -225,16 +225,16 @@ export default function ListView({ data, meta }: IBeneficiaryTableData) {
           <Table>
             <ScrollArea className="h-table">
               <TableHeader>
-                {table.getHeaderGroups().map((headerGroup) => (
-                  <TableRow key={headerGroup.id}>
-                    {headerGroup.headers.map((header) => {
+                {table?.getHeaderGroups()?.map((headerGroup) => (
+                  <TableRow key={headerGroup?.id}>
+                    {headerGroup.headers?.map((header) => {
                       return (
-                        <TableHead key={header.id}>
+                        <TableHead key={header?.id}>
                           {header.isPlaceholder
                             ? null
                             : flexRender(
                                 header.column.columnDef.header,
-                                header.getContext()
+                                header?.getContext()
                               )}
                         </TableHead>
                       );
@@ -243,17 +243,17 @@ export default function ListView({ data, meta }: IBeneficiaryTableData) {
                 ))}
               </TableHeader>
               <TableBody>
-                {table.getRowModel().rows?.length ? (
-                  table.getRowModel().rows.map((row) => (
+                {table?.getRowModel()?.rows?.length ? (
+                  table?.getRowModel()?.rows?.map((row) => (
                     <TableRow
-                      key={row.id}
-                      data-state={row.getIsSelected() && 'selected'}
+                      key={row?.id}
+                      data-state={row?.getIsSelected() && 'selected'}
                     >
-                      {row.getVisibleCells().map((cell) => (
-                        <TableCell key={cell.id}>
+                      {row?.getVisibleCells()?.map((cell) => (
+                        <TableCell key={cell?.id}>
                           {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext()
+                            cell?.column?.columnDef?.cell,
+                            cell?.getContext()
                           )}
                         </TableCell>
                       ))}
@@ -262,7 +262,7 @@ export default function ListView({ data, meta }: IBeneficiaryTableData) {
                 ) : (
                   <TableRow>
                     <TableCell
-                      colSpan={columns.length}
+                      colSpan={columns?.length}
                       className="h-24 text-center"
                     >
                       No results.

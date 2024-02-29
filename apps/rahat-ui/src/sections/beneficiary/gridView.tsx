@@ -12,7 +12,7 @@ import { ListBeneficiary } from '@rahat-ui/types';
 
 type IProps = {
   handleClick: (item: IBeneficiaryItem) => void;
-  data: ListBeneficiary[];
+  data: ListBeneficiary[] | [];
 };
 
 export default function GridView({ handleClick, data }: IProps) {
@@ -25,7 +25,6 @@ export default function GridView({ handleClick, data }: IProps) {
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const displayedItems = data?.slice(startIndex, endIndex);
-
   const handlePaginationClick = (page: number) => {
     setCurrentPage(page);
   };
@@ -43,15 +42,21 @@ export default function GridView({ handleClick, data }: IProps) {
         </div>
 
         <div className="flex flex-col gap-3">
-          {displayedItems?.map((data: IBeneficiaryItem) => (
-            <BeneficiaryCard
-              key={data.uuid}
-              walletAddress={data.walletAddress}
-              updatedAt={data.updatedAt}
-              verified={data.verified}
-              handleClick={() => handleClick(data)}
-            />
-          ))}
+          {displayedItems?.length > 0 ? (
+            displayedItems?.map((data: IBeneficiaryItem) => (
+              <BeneficiaryCard
+                key={data.uuid}
+                walletAddress={data.walletAddress}
+                updatedAt={data.updatedAt}
+                verified={data.verified}
+                handleClick={() => handleClick(data)}
+              />
+            ))
+          ) : (
+            <div className="mt-2 p-5">
+              <h6 className="text-center">No Data Available</h6>
+            </div>
+          )}
         </div>
       </ScrollArea>
       <CustomPagination

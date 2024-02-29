@@ -1,14 +1,14 @@
 {
-    "name": "@rahat-ui/query",
-    "version": "0.0.1",
-    "dependencies": {
-        "@swc/helpers": "~0.5.2",
-        "@tanstack/react-query-devtools": "^5.18.1",
-        "@tanstack/react-query": "^5.18.1",
-        "zustand": "^4.5.0",
-        "jsonwebtoken": "^9.0.2"
-    },
-    "type": "commonjs",
-    "main": "./src/index.js",
-    "typings": "./src/index.d.ts"
+  "name": "@rahat-ui/query",
+  "version": "0.0.1",
+  "dependencies": {
+    "@swc/helpers": "~0.5.2",
+    "@tanstack/react-query-devtools": "^5.18.1",
+    "@tanstack/react-query": "^5.18.1",
+    "zustand": "^4.5.0",
+    "jsonwebtoken": "^9.0.2"
+  },
+  "type": "commonjs",
+  "main": "./src/index.js",
+  "typings": "./src/index.d.ts"
 }

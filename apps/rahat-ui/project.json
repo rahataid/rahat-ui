@@ -5,29 +5,57 @@
   "projectType": "application",
   "targets": {
     "build": {
-      "executor": "@nx/next:build",
+      "executor": "nx:noop",
+      "dependsOn": ["mainBuild"]
+    },
+    "mainBuild": {
+      "executor": "@nrwl/next:build",
       "outputs": ["{options.outputPath}"],
       "defaultConfiguration": "production",
       "options": {
-        "outputPath": "dist/apps/rahat-ui",
-        "generatePackageJson": true,
         "root": "apps/rahat-ui",
-        "tsconfig": "apps/rahat-ui/tsconfig.spec.json"
+        "outputPath": "dist/apps/rahat-ui",
+        "tsConfig": "apps/rahat-ui/tsconfig.json"
       },
       "configurations": {
         "development": {
-          "dev": true
+          "outputPath": "apps/rahat-ui"
         },
         "production": {}
       }
     },
     "serve": {
       "executor": "@nrwl/next:server",
+      "defaultConfiguration": "development",
       "options": {
-        "buildTarget": "rahat-ui:build",
-        "dev": false
+        "port": 3000,
+        "buildTarget": "rahat-ui:mainBuild",
+        "dev": true
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "rahat-ui:mainBuild:development",
+          "dev": true
+        },
+        "production": {
+          "buildTarget": "rahat-ui:mainBuild:production",
+          "dev": false
+        }
+      }
+    },
+    "export": {
+      "executor": "@nrwl/next:export",
+      "options": {
+        "buildTarget": "rahat-ui:mainBuild:production"
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["apps/rahat-ui/**/*.{ts,tsx,js,jsx}"]
       }
     }
   },
-  "tags": []
+  "tags": ["scope:rahat-ui"]
 }

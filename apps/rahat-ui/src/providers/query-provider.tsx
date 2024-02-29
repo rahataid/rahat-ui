@@ -1,10 +1,7 @@
 'use client';
 
-import {
-  QueryClient,
-  QueryClientProvider,
-  ReactQueryDevtools,
-} from '@rahat-ui/query';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { ConnectKitProvider } from 'connectkit';
 
 interface QueryProviderProps {

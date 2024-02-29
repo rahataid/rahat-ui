@@ -1,16 +1,19 @@
 'use client';
 
-import Link from 'next/link';
-import { useAuthStore, useLogin, useSendOtp } from '@rahat-ui/query';
+import { useAuthStore } from '@rumsan/react-query/auth';
 import { Button } from '@rahat-ui/shadcn/components/button';
 import { Input } from '@rahat-ui/shadcn/components/input';
 import { Label } from '@rahat-ui/shadcn/components/label';
-import { paths } from 'apps/rahat-ui/src/routes/paths';
-import { useError } from 'apps/rahat-ui/src/utils/useErrors';
 import { useRouter } from 'next/navigation';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
+import { paths } from '../../../routes/paths';
+import {
+  ServiceContext,
+  ServiceContextType,
+} from '../../../providers/service.provider';
 
 export default function AuthPage() {
+  const { authQuery } = React.useContext(ServiceContext) as ServiceContextType;
   const router = useRouter();
   const [otp, setOtp] = useState('');
   const { address, challenge, service, setAddress, setChallenge, error } =
@@ -23,9 +26,8 @@ export default function AuthPage() {
       error: state.error,
     }));
 
-  const err = useError();
-  const sendOtpMutation = useSendOtp();
-  const loginMutation = useLogin();
+  const sendOtpMutation = authQuery.useSendOtp();
+  const loginMutation = authQuery.useLogin();
 
   const onSendOtpFormSubmit = async (e: React.SyntheticEvent) => {
     e.preventDefault();
@@ -35,18 +37,6 @@ export default function AuthPage() {
       clientId: '105cd449-53f6-44e4-85f3-feaa7d762ffa',
     });
   };
-
-  useEffect(() => {
-    if (sendOtpMutation.isSuccess) {
-      setChallenge(sendOtpMutation.data?.data?.challenge ?? '');
-    }
-  }, [
-    sendOtpMutation.data?.data?.challenge,
-    sendOtpMutation.error,
-    sendOtpMutation.isError,
-    sendOtpMutation.isSuccess,
-    setChallenge,
-  ]);
 
   const onVerifyOtpFormSubmit = async (e: React.SyntheticEvent) => {
     e.preventDefault();

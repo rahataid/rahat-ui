@@ -1,5 +1,5 @@
 export interface CreateNewBeneficiaryPayload {
-  gender?: Gender;
+  gender?: string;
   walletAddress?: string;
   birthDate?: Date;
   location?: string;
@@ -7,9 +7,10 @@ export interface CreateNewBeneficiaryPayload {
   longitude?: number;
   extras?: Record<string, any>;
   notes?: string;
-  bankedStatus?: BankedStatus;
-  internetStatus?: InternetStatus;
-  phoneStatus?: PhoneStatus;
+  phone: string;
+  bankedStatus?: string;
+  internetStatus?: string;
+  phoneStatus?: string;
   piiData?: TPIIData;
 }
 

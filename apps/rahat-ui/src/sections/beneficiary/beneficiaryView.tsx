@@ -13,12 +13,18 @@ import BeneficiaryGridView from '../../sections/beneficiary/gridView';
 import BeneficiaryDetail from '../../sections/beneficiary/beneficiaryDetail';
 import { IBeneficiaryItem } from '../../types/beneficiary';
 import AddBeneficiary from './addBeneficiary';
-import { usebeneficiaryListQuery } from '@rahat-ui/query';
-import { ListBeneficiary, Meta } from '@rahat-ui/types';
 import { BENEFICIARY_NAV_ROUTE } from '../../const/beneficiary.const';
 import ImportBeneficiary from './importBeneficiary';
+import { usebeneficiaryList } from '@rahat-ui/query';
+import {
+  ServiceContext,
+  ServiceContextType,
+} from '../../providers/service.provider';
 
 export default function BeneficiaryView() {
+  const { beneficiaryQuery } = React.useContext(
+    ServiceContext
+  ) as ServiceContextType;
   const [selectedData, setSelectedData] = useState<IBeneficiaryItem>();
   const [addBeneficiary, setAddBeneficiary] = useState<Boolean>(false);
   const [active, setActive] = useState<string>(BENEFICIARY_NAV_ROUTE.DEFAULT);
@@ -40,13 +46,8 @@ export default function BeneficiaryView() {
   const handleImport = (item: string) => {
     setActive(item);
   };
-  const { data } = usebeneficiaryListQuery({});
-  const tableData: ListBeneficiary[] = React.useMemo(
-    () => data?.data || [],
-    [data?.data]
-  );
 
-  const meta: Meta | undefined = React.useMemo(() => data?.meta, [data?.meta]);
+  const { data } = beneficiaryQuery.usebeneficiaryList({ order: 'createdAt' });
 
   return (
     <div className="mt-2">
@@ -64,7 +65,7 @@ export default function BeneficiaryView() {
             <BeneficiaryNav
               handleImport={handleImport}
               onAddBenficiaryclick={handleBeneficiaryAdd}
-              meta={meta}
+              meta={data?.meta}
             />
           </ResizablePanel>
           <ResizableHandle />
@@ -73,12 +74,12 @@ export default function BeneficiaryView() {
               <ImportBeneficiary />
             )}
             <TabsContent value="list">
-              <BeneficiaryListView data={tableData} meta={meta} />
+              <BeneficiaryListView data={data?.data} meta={data?.meta} />
             </TabsContent>
             <TabsContent value="grid">
               <BeneficiaryGridView
                 handleClick={handleBeneficiaryCardClick}
-                data={tableData}
+                data={data?.data}
               />
             </TabsContent>
           </ResizablePanel>

@@ -6,23 +6,28 @@ import {
 } from '@rahat-ui/shadcn/components/tabs';
 import { IRoleItem } from '../../../types/user';
 import { Button } from '@rahat-ui/shadcn/components/button';
-import { useDeleteRoleMutation } from '@rahat-ui/query';
 import { toast } from 'react-toastify';
+import React from 'react';
+import {
+  ServiceContext,
+  ServiceContextType,
+} from '../../../providers/service.provider';
 
 type IProps = {
   data: IRoleItem;
 };
 
 export default function RoleDetail({ data }: IProps) {
-  const deleteRole = useDeleteRoleMutation();
+  const { roleQuery } = React.useContext(ServiceContext) as ServiceContextType;
+  const deleteRole = roleQuery.delete();
   const handleDelete = (roleName: string) => {
-    deleteRole
-      .mutateAsync({
-        name: roleName,
-      })
-      .then(() => {
-        toast.success('Role Delete Success');
-      });
+    // deleteRole
+    //   .mutateAsync({
+    //     name: roleName,
+    //   })
+    //   .then(() => {
+    //     toast.success('Role Delete Success');
+    //   });
   };
   return (
     <>

@@ -3,6 +3,7 @@ import { QueryProvider } from '../providers/query-provider';
 import { ThemeProvider } from '../providers/theme-provider';
 import { Wagmi } from '../providers/wagmi.provider';
 import './globals.css';
+import { ServiceProvider } from '../providers/service.provider';
 
 export const metadata = {
   title: 'Welcome to Rahat',
@@ -21,15 +22,17 @@ export default function RootLayout({
       <body>
         <Wagmi>
           <QueryProvider>
-            <ThemeProvider
-              attribute="class"
-              // defaultTheme="system"
-              // enableSystem
-              disableTransitionOnChange
-            >
-              <main>{children}</main>
-              <Toaster />
-            </ThemeProvider>
+            <ServiceProvider>
+              <ThemeProvider
+                attribute="class"
+                // defaultTheme="system"
+                // enableSystem
+                disableTransitionOnChange
+              >
+                <main>{children}</main>
+                <Toaster />
+              </ThemeProvider>
+            </ServiceProvider>
           </QueryProvider>
         </Wagmi>
       </body>

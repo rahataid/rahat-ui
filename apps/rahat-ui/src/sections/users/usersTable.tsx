@@ -136,7 +136,7 @@ export default function UserTable({ handleClick }: IProps) {
   const [rowSelection, setRowSelection] = React.useState({});
 
   const { data, isLoading, isError, isSuccess, isFetched } =
-    userQuery.useUserListQuery({});
+    userQuery.useUserList();
 
   const tableData = React.useMemo(() => {
     return Array.isArray(data?.data) ? data?.data : [];

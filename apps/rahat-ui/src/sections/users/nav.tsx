@@ -26,8 +26,8 @@ export default function Nav({ onTabChange }: IProps) {
               onClick={() => handleTabClick(USER_NAV_ROUTE.DEFAULT)}
               className="flex justify-between p-4 rounded-md cursor-pointer hover:bg-primary hover:text-white"
             >
-              <div className="flex gap-3">
-                <Eye />
+              <div className="flex items-center gap-3">
+                <Eye size={20} strokeWidth={1.5} />
                 <p>Users </p>
               </div>
               <p>{totalUser || 0}</p>
@@ -43,26 +43,26 @@ export default function Nav({ onTabChange }: IProps) {
           </h1>
           <nav>
             <div
-              className="flex p-4 gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white"
+              className="flex items-center p-4 gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white"
               onClick={() => handleTabClick(USER_NAV_ROUTE.ADD_USER)}
             >
-              <PlusSquare /> <p>Add users</p>
+              <PlusSquare size={20} strokeWidth={1.5} /> <p>Add users</p>
             </div>
-            <div className="flex p-4 gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white">
-              <Import />
+            <div className="flex items-center p-4 gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white">
+              <Import size={20} strokeWidth={1.5} />
               <p>Import Users</p>
             </div>
             <div
-              className="flex p-4 gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white"
+              className="flex items-center p-4 gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white"
               onClick={() => handleTabClick(USER_NAV_ROUTE.ADD_ROLE)}
             >
-              <PlusSquare /> <p>Add Role</p>
+              <PlusSquare size={20} strokeWidth={1.5} /> <p>Add Role</p>
             </div>
             <div
-              className="flex p-4 gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white"
+              className="flex items-center p-4 gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white"
               onClick={() => handleTabClick(USER_NAV_ROUTE.LIST_ROLE)}
             >
-              <Import />
+              <Import size={20} strokeWidth={1.5} />
               <p>List Role</p>
             </div>
           </nav>

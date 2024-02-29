@@ -21,11 +21,14 @@ module.exports = {
       },
     },
     extend: {
+      backgroundImage: {
+        login: "url('/bg/rahat-login-bg.png')",
+      },
       height: {
         custom: 'calc(100vh - 92px)',
         withPage: 'calc(100vh - 150px)',
         custom1: 'calc(100vh - 290px)',
-
+        table: 'calc(100vh - 255px)',
       },
       colors: {
         border: 'hsl(var(--border))',

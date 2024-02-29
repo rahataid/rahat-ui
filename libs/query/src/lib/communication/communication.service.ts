@@ -1,3 +1,5 @@
+import { useEffect } from 'react';
+
 import {
   PaginatedRequestPayload,
   CreateCampaignPayload,
@@ -47,10 +49,12 @@ const listCampaign = async (payload: PaginatedRequestPayload) => {
 const useListCampaignQuery = (
   payload: PaginatedRequestPayload
 ): UseQueryResult<any, Error> => {
-  return useQuery({
+  const listCampaignQueryResult = useQuery({
     queryKey: [TAGS.GET_ALL_CAMPAIGNS],
     queryFn: () => listCampaign(payload),
   });
+
+  return listCampaignQueryResult;
 };
 
 const getCampaign = async (payload: { id: number }) => {

@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useAuthStore } from '@rumsan/react-query/auth';
 import { Button } from '@rahat-ui/shadcn/components/button';
 import { Input } from '@rahat-ui/shadcn/components/input';
@@ -64,7 +65,7 @@ export default function AuthPage() {
             </h1>
             <p className="text-sm text-muted-foreground">
               {!challenge.length
-                ? 'Enter your email below to Sign in.'
+                ? 'Enter your email address.'
                 : `OTP has been sent to ${address}`}
             </p>
           </div>
@@ -93,7 +94,7 @@ export default function AuthPage() {
                   </p>
                 )}
                 <Button
-                  className="inline-flex items-center justify-center whitespace-nowrap rounded-sm text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground shadow hover:bg-primary/90 h-9 px-4 py-2"
+                  className="inline-flex items-center justify-center whitespace-nowrap rounded text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground shadow hover:bg-primary/90 h-9 px-4 py-2"
                   type="submit"
                 >
                   Send OTP
@@ -118,22 +119,30 @@ export default function AuthPage() {
                     onChange={(e) => setOtp(e.target.value)}
                   />
                 </div>
-                <Button type="submit">Verify</Button>
+                <Button className="rounded" type="submit">
+                  Verify
+                </Button>
               </div>
             </form>
           )}
           <p className="px-8 text-center text-sm text-muted-foreground">
             {!challenge.length ? "Don't have an account" : "Didn't get one"}?
-            <Button
+            {/* <Button
               disabled={sendOtpMutation.isPending}
               onClick={onSendOtpFormSubmit}
               className="font-medium ml-2"
             >
               {!challenge.length ? 'Get Started' : 'Resend'}
-            </Button>
+            </Button> */}
+            <span
+              className="underline font-medium ml-2 cursor-pointer"
+              onClick={onSendOtpFormSubmit}
+            >
+              {!challenge.length ? 'Get Started' : 'Resend'}
+            </span>
             {challenge.length ? (
               <Button
-                className="ml-2"
+                className="ml-2 rounded"
                 onClick={() => {
                   setChallenge('');
                   router.back();
@@ -143,6 +152,23 @@ export default function AuthPage() {
               </Button>
             ) : null}
           </p>
+          {!challenge.length && (
+            <p className="text-muted-foreground">
+              By clicking continue, you agree to our{' '}
+              <span className="underline font-medium">Terms of Service</span>{' '}
+              and{' '}
+              <Link
+                target="_blank"
+                href={
+                  'https://docs.google.com/document/d/1pWc5apsDdVDQvQXIaIMckGXfQo4YHs5ZoXMrKxIvdNQ/edit'
+                }
+                className="underline font-medium"
+              >
+                Privacy Policy
+              </Link>
+              .
+            </p>
+          )}
         </div>
       </div>
     </div>

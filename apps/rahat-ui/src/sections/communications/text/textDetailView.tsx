@@ -69,8 +69,7 @@ export default function TextDetailView() {
               <InfoCard
                 name={data?.name}
                 startTime={
-                  data?.startTime &&
-                  new Date(data?.startTime).toLocaleDateString()
+                  data?.startTime && new Date(data?.startTime).toLocaleString()
                 }
                 status={data?.status}
                 totalAudience={data?.audiences.length}
@@ -98,7 +97,10 @@ export default function TextDetailView() {
                     <LogCard title={item.title} total={item?.total} />
                   ))}
                 </div>
-                <TextDetailTable data={data?.communicationLogs} />
+                <TextDetailTable
+                  data={data?.communicationLogs}
+                  type={data?.type || ''}
+                />
               </CardContent>
             </Card>
           </div>

@@ -13,7 +13,6 @@ import BeneficiaryGridView from '../../sections/beneficiary/gridView';
 import BeneficiaryDetail from '../../sections/beneficiary/beneficiaryDetail';
 import { IBeneficiaryItem } from '../../types/beneficiary';
 import AddBeneficiary from './addBeneficiary';
-import { usebeneficiaryList } from '@rahat-ui/query';
 import {
   ServiceContext,
   ServiceContextType,

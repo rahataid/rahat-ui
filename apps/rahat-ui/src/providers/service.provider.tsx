@@ -27,7 +27,7 @@ interface ServiceProviderProps {
 export function ServiceProvider({ children }: ServiceProviderProps) {
   const queryClient = useQueryClient();
   const rumsanService = new RumsanService({
-    baseURL: 'http://localhost:5500/v1',
+    baseURL: process.env.NEXT_PUBLIC_API_HOST_URL,
   });
 
   // set bearer token
@@ -48,6 +48,7 @@ export function ServiceProvider({ children }: ServiceProviderProps) {
   const userQuery = new UserQuery(rumsanService, queryClient);
   const beneficiaryQuery = new BeneficiaryQuery(rumsanService, queryClient);
   const roleQuery = new RoleQuery(rumsanService, queryClient);
+
   return (
     <ServiceContext.Provider
       value={{

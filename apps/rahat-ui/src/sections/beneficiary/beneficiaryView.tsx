@@ -14,8 +14,15 @@ import BeneficiaryDetail from '../../sections/beneficiary/beneficiaryDetail';
 import { IBeneficiaryItem } from '../../types/beneficiary';
 import AddBeneficiary from './addBeneficiary';
 import { usebeneficiaryList } from '@rahat-ui/query';
+import {
+  ServiceContext,
+  ServiceContextType,
+} from '../../providers/service.provider';
 
 export default function BeneficiaryView() {
+  const { beneficiaryQuery } = React.useContext(
+    ServiceContext
+  ) as ServiceContextType;
   const [selectedData, setSelectedData] = useState<IBeneficiaryItem>();
   const [addBeneficiary, setAddBeneficiary] = useState<boolean>(false);
 
@@ -32,7 +39,7 @@ export default function BeneficiaryView() {
   const handleView = () => {
     setSelectedData(undefined);
   };
-  const { data } = usebeneficiaryList({});
+  const { data } = beneficiaryQuery.usebeneficiaryList({ order: 'createdAt' });
 
   return (
     <div className="mt-2">

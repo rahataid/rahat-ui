@@ -1,6 +1,5 @@
 'use client';
 
-import { useUserListQuery } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/components/button';
 import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
 import {
@@ -32,6 +31,10 @@ import {
 import { ArrowUpDown, ArrowUpRightFromSquare, ChevronDown } from 'lucide-react';
 import React from 'react';
 import { IUserItem } from '../../types/user';
+import {
+  ServiceContext,
+  ServiceContextType,
+} from '../../providers/service.provider';
 
 type IProps = {
   handleClick: (item: IUserItem) => void;
@@ -122,6 +125,7 @@ export const columns: ColumnDef<any, any>[] = [
 ];
 
 export default function UserTable({ handleClick }: IProps) {
+  const { userQuery } = React.useContext(ServiceContext) as ServiceContextType;
   const [sorting, setSorting] = React.useState<SortingState>([]);
 
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -131,9 +135,8 @@ export default function UserTable({ handleClick }: IProps) {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
-  const { data, isLoading, isError, isSuccess, isFetched } = useUserListQuery(
-    {}
-  );
+  const { data, isLoading, isError, isSuccess, isFetched } =
+    userQuery.useUserListQuery({});
 
   const tableData = React.useMemo(() => {
     return Array.isArray(data?.data) ? data?.data : [];

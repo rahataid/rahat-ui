@@ -30,8 +30,11 @@ import {
 } from '@tanstack/react-table';
 import { ArrowUpDown, ArrowUpRightFromSquare, ChevronDown } from 'lucide-react';
 import React from 'react';
-import { useListRoleQuery } from '@rahat-ui/query';
-import { IRoleItem } from 'apps/rahat-ui/src/types/user';
+import { IRoleItem } from '../../.../../../types/user';
+import {
+  ServiceContext,
+  ServiceContextType,
+} from '../../../providers/service.provider';
 
 type IProps = {
   handleClick: (item: IRoleItem) => void;
@@ -105,6 +108,7 @@ export const columns: ColumnDef<Role, any>[] = [
   },
 ];
 export default function RoleTable({ handleClick }: IProps) {
+  const { roleQuery } = React.useContext(ServiceContext) as ServiceContextType;
   const [sorting, setSorting] = React.useState<SortingState>([]);
 
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -114,9 +118,7 @@ export default function RoleTable({ handleClick }: IProps) {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
-  const { data, isLoading, isError, isSuccess, isFetched } = useListRoleQuery(
-    {}
-  );
+  const { data, isLoading, isError, isSuccess, isFetched } = roleQuery.list({});
 
   const tableData = React.useMemo(() => {
     return Array.isArray(data?.data) ? data?.data : [];

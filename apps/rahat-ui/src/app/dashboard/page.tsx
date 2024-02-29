@@ -22,8 +22,6 @@ export default function DashBoardPage() {
     account: account.address,
   });
 
-  console.log('{data,error,isLoading} ', { data, error, isLoading, isPending });
-
   return (
     <div className="max-h-mx">
       <DashboardHeader />

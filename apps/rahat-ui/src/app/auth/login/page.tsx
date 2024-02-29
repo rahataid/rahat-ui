@@ -1,14 +1,19 @@
 'use client';
 
-import { useAuthStore, useLogin, useSendOtp } from '@rahat-ui/query';
+import { useAuthStore } from '@rumsan/react-query/auth';
 import { Button } from '@rahat-ui/shadcn/components/button';
 import { Input } from '@rahat-ui/shadcn/components/input';
 import { Label } from '@rahat-ui/shadcn/components/label';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import { paths } from '../../../routes/paths';
+import {
+  ServiceContext,
+  ServiceContextType,
+} from '../../../providers/service.provider';
 
 export default function AuthPage() {
+  const { authQuery } = React.useContext(ServiceContext) as ServiceContextType;
   const router = useRouter();
   const [otp, setOtp] = useState('');
   const { address, challenge, service, setAddress, setChallenge, error } =
@@ -21,8 +26,8 @@ export default function AuthPage() {
       error: state.error,
     }));
 
-  const sendOtpMutation = useSendOtp();
-  const loginMutation = useLogin();
+  const sendOtpMutation = authQuery.useSendOtp();
+  const loginMutation = authQuery.useLogin();
 
   const onSendOtpFormSubmit = async (e: React.SyntheticEvent) => {
     e.preventDefault();

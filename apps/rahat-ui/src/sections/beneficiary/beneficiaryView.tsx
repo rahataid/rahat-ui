@@ -28,7 +28,7 @@ export default function BeneficiaryView() {
   const [addBeneficiary, setAddBeneficiary] = useState<Boolean>(false);
   const [active, setActive] = useState<string>(BENEFICIARY_NAV_ROUTE.DEFAULT);
 
-  const handleBeneficiaryCardClick = (item: IBeneficiaryItem) => {
+  const handleBeneficiaryClick = (item: IBeneficiaryItem) => {
     setSelectedData(item);
     setAddBeneficiary(false);
   };
@@ -69,11 +69,15 @@ export default function BeneficiaryView() {
             {active === BENEFICIARY_NAV_ROUTE.DEFAULT && (
               <>
                 <TabsContent value="list">
-                  <BeneficiaryListView data={data?.data} meta={data?.meta} />
+                  <BeneficiaryListView
+                    data={data?.data}
+                    meta={data?.meta}
+                    handleClick={handleBeneficiaryClick}
+                  />
                 </TabsContent>
                 <TabsContent value="grid">
                   <BeneficiaryGridView
-                    handleClick={handleBeneficiaryCardClick}
+                    handleClick={handleBeneficiaryClick}
                     data={data?.data}
                   />
                 </TabsContent>

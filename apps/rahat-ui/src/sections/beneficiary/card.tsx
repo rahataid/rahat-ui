@@ -38,19 +38,16 @@ export default function Card({
       </div>
       <div className="flex justify-between items-center flex-wrap gap-4">
         <p className="text-slate-400">Last updated: {formattedDate}</p>
-        <div className="flex gap-2 cursor-auto ">
-          <Badge
-            className="px-4 py-1.5 rounded-md"
-            variant={verified ? 'default' : 'secondary'}
-          >
-            Verified
+        <div className="cursor-auto ">
+          <Badge className="px-2 py-1.5 rounded-md">
+            {verified ? 'Verified' : 'Unverified'}
           </Badge>
-          <Badge
+          {/* <Badge
             className="px-4 py-1.5 rounded-md"
             variant={!verified ? 'default' : 'secondary'}
           >
             Unverified
-          </Badge>
+          </Badge> */}
         </div>
       </div>
     </div>

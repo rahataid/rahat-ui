@@ -33,16 +33,11 @@ export default function BeneficiaryView() {
     setAddBeneficiary(false);
   };
 
-  const handleBeneficiaryAdd = () => {
-    setAddBeneficiary(true);
-    setSelectedData(undefined);
-  };
-
   const handleView = () => {
     setSelectedData(undefined);
   };
 
-  const handleImport = (item: string) => {
+  const handleNav = (item: string) => {
     setActive(item);
   };
 
@@ -61,33 +56,36 @@ export default function BeneficiaryView() {
             maxSize={20}
             className="h-full"
           >
-            <BeneficiaryNav
-              handleImport={handleImport}
-              onAddBenficiaryclick={handleBeneficiaryAdd}
-              meta={data?.meta}
-            />
+            <BeneficiaryNav handleNav={handleNav} meta={data?.meta} />
           </ResizablePanel>
           <ResizableHandle />
           <ResizablePanel minSize={28}>
-            {active === BENEFICIARY_NAV_ROUTE.IMPORT_BENEFICIARY && (
+            {active === BENEFICIARY_NAV_ROUTE.ADD_BENEFICIARY ? (
+              <AddBeneficiary />
+            ) : active === BENEFICIARY_NAV_ROUTE.IMPORT_BENEFICIARY ? (
               <ImportBeneficiary />
+            ) : null}
+
+            {active === BENEFICIARY_NAV_ROUTE.DEFAULT && (
+              <>
+                <TabsContent value="list">
+                  <BeneficiaryListView data={data?.data} meta={data?.meta} />
+                </TabsContent>
+                <TabsContent value="grid">
+                  <BeneficiaryGridView
+                    handleClick={handleBeneficiaryCardClick}
+                    data={data?.data}
+                  />
+                </TabsContent>
+              </>
             )}
-            <TabsContent value="list">
-              <BeneficiaryListView data={data?.data} meta={data?.meta} />
-            </TabsContent>
-            <TabsContent value="grid">
-              <BeneficiaryGridView
-                handleClick={handleBeneficiaryCardClick}
-                data={data?.data}
-              />
-            </TabsContent>
           </ResizablePanel>
           {selectedData || addBeneficiary ? (
             <>
               <ResizableHandle />
               <ResizablePanel minSize={24}>
                 {selectedData && <BeneficiaryDetail data={selectedData} />}
-                {addBeneficiary && <AddBeneficiary />}
+                {/* {addBeneficiary && <AddBeneficiary />} */}
               </ResizablePanel>
             </>
           ) : null}

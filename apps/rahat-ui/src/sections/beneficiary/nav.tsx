@@ -1,4 +1,12 @@
-import { Eye, EyeOff, ScreenShareOff, PlusSquare, Import } from 'lucide-react';
+import {
+  Users,
+  Eye,
+  EyeOff,
+  ScreenShareOff,
+  PlusSquare,
+  Plus,
+  Import,
+} from 'lucide-react';
 import { Separator } from '@rahat-ui/shadcn/components/separator';
 import { ScrollArea } from '@rahat-ui/shadcn/components/scroll-area';
 import { TabsList, TabsTrigger } from '@rahat-ui/shadcn/src/components/ui/tabs';
@@ -7,16 +15,11 @@ import { Meta } from '@rahat-ui/types';
 import { BENEFICIARY_NAV_ROUTE } from '../../const/beneficiary.const';
 
 type IProps = {
-  onAddBenficiaryclick: VoidFunction;
   meta: Meta | undefined;
-  handleImport: (item: string) => void;
+  handleNav: (item: string) => void;
 };
 
-export default function Nav({
-  onAddBenficiaryclick,
-  meta,
-  handleImport,
-}: IProps) {
+export default function Nav({ meta, handleNav }: IProps) {
   return (
     <>
       <div>
@@ -75,13 +78,17 @@ export default function Nav({
               <div className="flex justify-between p-4 rounded-md cursor-pointer hover:bg-primary hover:text-white">
                 <div className="flex gap-3">
                   <ScreenShareOff size={18} strokeWidth={1.5} />{' '}
-                  <p>Disabled/ Deleted</p>
+                  <p>Archived</p>
                 </div>
                 <p>9</p>
               </div> */}
               <div className="flex justify-between p-4 rounded-md cursor-pointer hover:bg-primary hover:text-white">
-                <div className="flex items-center gap-3">
-                  <Eye size={18} strokeWidth={1.5} />
+                <div
+                  className="flex items-center gap-3"
+                  onClick={() => handleNav(BENEFICIARY_NAV_ROUTE.DEFAULT)}
+                >
+                  <Users size={18} strokeWidth={1.5} />
+                  {/* <Eye size={18} strokeWidth={1.5} /> */}
                   <p>Beneficiaries</p>
                 </div>
                 <p>{meta?.total}</p>
@@ -98,16 +105,17 @@ export default function Nav({
           </h1>
           <nav>
             <div
-              onClick={onAddBenficiaryclick}
+              onClick={() => handleNav(BENEFICIARY_NAV_ROUTE.ADD_BENEFICIARY)}
               className="flex items-center p-4 gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white"
             >
-              <PlusSquare size={18} strokeWidth={1.5} />{' '}
+              <Plus size={18} strokeWidth={1.5} />
+              {/* <PlusSquare size={18} strokeWidth={1.5} /> */}
               <p>Add beneficiaries</p>
             </div>
             <div
               className="flex items-center p-4 gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white"
               onClick={() =>
-                handleImport(BENEFICIARY_NAV_ROUTE.IMPORT_BENEFICIARY)
+                handleNav(BENEFICIARY_NAV_ROUTE.IMPORT_BENEFICIARY)
               }
             >
               <Import size={18} strokeWidth={1.5} />

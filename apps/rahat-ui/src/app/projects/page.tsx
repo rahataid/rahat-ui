@@ -11,6 +11,8 @@ import projectsData from './projectsData.json';
 import { useState } from 'react';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import CustomPagination from '../../components/customPagination';
+import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
+import { Search } from 'lucide-react';
 
 interface CardProps {
   id: number;
@@ -53,8 +55,14 @@ export default function ProjectPage({ handleClick }: CardProps) {
           </ResizablePanel>
           <ResizableHandle />
           <ResizablePanel>
-            <ScrollArea className="h-full bg-slate-50">
-              <div className="grid grid-cols-3 gap-4 p-4">
+            <div className='p-4'>
+              <div className="relative w-full">
+                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input placeholder="Search" className="pl-8 rounded" />
+              </div>
+            </div>
+            <ScrollArea className="px-4 h-withPage bg-slate-50">
+              <div className="grid grid-cols-3 gap-4">
                 {displayedItems.map((project) => (
                   <ProjectCards
                     id={project.id}

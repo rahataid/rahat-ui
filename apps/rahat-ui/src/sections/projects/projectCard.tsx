@@ -26,7 +26,7 @@ export default function CommonCard({ id, title, subTitle, image }: CardProps) {
     >
       {' '}
       <Image
-        className="object-cover h-48 w-96 rounded-t"
+        className="object-cover h-48 w-full rounded-t"
         src={image}
         alt="project"
         height={200}

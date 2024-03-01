@@ -31,14 +31,14 @@ export default function GridView({ handleClick, data }: IProps) {
   };
   return (
     <>
-      <ScrollArea className="p-4 h-withPage">
-        <div className="grid 2xl:grid-cols-1 gap-2 2xl:mb-8">
+      <ScrollArea className="px-4 pt-2 h-withPage">
+        <div className="grid 2xl:grid-cols-1 gap-2 mb-3">
           <div className="flex items-center gap-2">
             <div className="relative w-full">
               <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input placeholder="Search" className="pl-8 rounded" />
             </div>
-            <Filter />
+            {/* <Filter /> */}
           </div>
         </div>
 

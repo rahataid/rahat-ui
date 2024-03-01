@@ -2,7 +2,7 @@ import { Eye, EyeOff, ScreenShareOff, PlusSquare, Import } from 'lucide-react';
 import { Separator } from '@rahat-ui/shadcn/components/separator';
 import { ScrollArea } from '@rahat-ui/shadcn/components/scroll-area';
 import { USER_NAV_ROUTE } from '../../const/user.const';
-import { useUserStore } from '@rahat-ui/query';
+import { useUserStore } from '@rumsan/react-query';
 
 type IProps = {
   // onAddUsersClick: VoidFunction;
@@ -57,6 +57,13 @@ export default function Nav({ onTabChange }: IProps) {
               onClick={() => handleTabClick(USER_NAV_ROUTE.ADD_ROLE)}
             >
               <PlusSquare size={20} strokeWidth={1.5} /> <p>Add Role</p>
+            </div>
+            <div
+              className="flex items-center p-4 gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white"
+              onClick={() => handleTabClick(USER_NAV_ROUTE.LIST_ROLE)}
+            >
+              <Import size={20} strokeWidth={1.5} />
+              <p>List Role</p>
             </div>
             <div
               className="flex items-center p-4 gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white"

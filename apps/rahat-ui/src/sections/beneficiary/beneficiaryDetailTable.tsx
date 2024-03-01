@@ -97,29 +97,17 @@ export const columns: ColumnDef<Transaction>[] = [
   {
     accessorKey: 'timeStamp',
     header: 'Time Stamp',
-    cell: ({ row }) => (
-      <Badge variant="secondary" className="rounded-md capitalize">
-        {row.getValue('timeStamp')}
-      </Badge>
-    ),
+    cell: ({ row }) => <div> {row.getValue('timeStamp')}</div>,
   },
   {
     accessorKey: 'transactionHash',
     header: 'Transaction Hash',
-    cell: ({ row }) => (
-      <Badge variant="secondary" className="rounded-md capitalize">
-        {row.getValue('transactionHash')}
-      </Badge>
-    ),
+    cell: ({ row }) => <div> {row.getValue('transactionHash')}</div>,
   },
   {
     accessorKey: 'amount',
     header: 'Amount',
-    cell: ({ row }) => (
-      <Badge variant="secondary" className="rounded-md capitalize">
-        {row.getValue('amount')}
-      </Badge>
-    ),
+    cell: ({ row }) => <div> {row.getValue('amount')}</div>,
   },
   {
     id: 'actions',

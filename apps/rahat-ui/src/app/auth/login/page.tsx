@@ -119,9 +119,7 @@ export default function AuthPage() {
                     onChange={(e) => setOtp(e.target.value)}
                   />
                 </div>
-                <Button className="rounded" type="submit">
-                  Verify
-                </Button>
+                <Button type="submit">Verify</Button>
               </div>
             </form>
           )}
@@ -142,7 +140,7 @@ export default function AuthPage() {
             </span>
             {challenge.length ? (
               <Button
-                className="ml-2 rounded"
+                className="ml-2"
                 onClick={() => {
                   setChallenge('');
                   router.back();

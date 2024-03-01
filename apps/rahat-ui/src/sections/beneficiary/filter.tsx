@@ -9,6 +9,7 @@ import {
   RadioGroup,
   RadioGroupItem,
 } from '@rahat-ui/shadcn/components/radio-group';
+import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 
 export default function Filter() {
   return (
@@ -24,8 +25,9 @@ export default function Filter() {
               className="p-4 flex flex-col gap-4 "
             >
               <div className="flex items-center space-x-2">
-                <RadioGroupItem value="location" id="r1" />
-                <Label htmlFor="r1">Location</Label>
+                {/* <RadioGroupItem value="location" id="r1" /> */}
+                <Input type="text" id="search" placeholder="Search Location" />
+                {/* <Label htmlFor="search">Location</Label> */}
               </div>
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="internetStatus" id="r2" />

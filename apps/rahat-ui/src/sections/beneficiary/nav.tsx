@@ -13,6 +13,7 @@ import { TabsList, TabsTrigger } from '@rahat-ui/shadcn/src/components/ui/tabs';
 import { LayoutGrid, AlignJustify } from 'lucide-react';
 import { Meta } from '@rahat-ui/types';
 import { BENEFICIARY_NAV_ROUTE } from '../../const/beneficiary.const';
+import Filter from './filter';
 
 type IProps = {
   meta: Meta | undefined;
@@ -82,7 +83,7 @@ export default function Nav({ meta, handleNav }: IProps) {
                 </div>
                 <p>9</p>
               </div> */}
-              <div className="flex justify-between p-4 rounded-md cursor-pointer hover:bg-primary hover:text-white">
+              <div className="flex justify-between p-4 rounded-md cursor-pointer bg-muted hover:bg-primary hover:text-white">
                 <div
                   className="flex items-center gap-3"
                   onClick={() => handleNav(BENEFICIARY_NAV_ROUTE.DEFAULT)}
@@ -97,6 +98,7 @@ export default function Nav({ meta, handleNav }: IProps) {
           </div>
         </ScrollArea>
       </div>
+      <Filter />
       <Separator />
       <ScrollArea>
         <div className="p-4">

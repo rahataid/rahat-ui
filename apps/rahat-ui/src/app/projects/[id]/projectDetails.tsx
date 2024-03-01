@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 
 export default function ProjectDetails() {
   return (
-    <div className="p-4">
+    <div className="p-4 bg-slate-100">
       <div className="mb-4 grid md:grid-cols-3 gap-4">
         <DataCard
           className="h-40"
@@ -24,7 +24,7 @@ export default function ProjectDetails() {
           subTitle="Nrs"
         />
       </div>
-      <div className="grid grid-cols-1 border rounded-lg p-4">
+      <div className="grid grid-cols-1 border rounded-lg p-4 border-none shadow-sm bg-white">
         <div className="flex items-center flex-wrap mt-4 sm:mt-6 gap-10 md:gap-32">
           <div>
             <p className="font-medium">Achyut</p>

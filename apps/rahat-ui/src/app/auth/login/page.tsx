@@ -92,12 +92,7 @@ export default function AuthPage() {
                     {error?.response?.data?.message}
                   </p>
                 )}
-                <Button
-                  className="inline-flex items-center justify-center whitespace-nowrap rounded text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground shadow hover:bg-primary/90 h-9 px-4 py-2"
-                  type="submit"
-                >
-                  Send OTP
-                </Button>
+                <Button type="submit">Send OTP</Button>
               </div>
             </form>
           ) : (
@@ -118,9 +113,7 @@ export default function AuthPage() {
                     onChange={(e) => setOtp(e.target.value)}
                   />
                 </div>
-                <Button className="rounded" type="submit">
-                  Verify
-                </Button>
+                <Button type="submit">Verify</Button>
               </div>
             </form>
           )}
@@ -141,7 +134,7 @@ export default function AuthPage() {
             </span>
             {challenge.length ? (
               <Button
-                className="ml-2 rounded"
+                className="ml-2"
                 onClick={() => {
                   setChallenge('');
                   router.back();
@@ -152,7 +145,7 @@ export default function AuthPage() {
             ) : null}
           </p>
           {!challenge.length && (
-            <p className="text-muted-foreground">
+            <p className="text-muted-foreground text-sm">
               By clicking continue, you agree to our{' '}
               <span className="underline font-medium">Terms of Service</span>{' '}
               and{' '}

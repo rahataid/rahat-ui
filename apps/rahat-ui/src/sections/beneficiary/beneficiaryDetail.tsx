@@ -13,6 +13,11 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/components/tooltip';
+import {
+  Dialog,
+  DialogTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/dialog';
+import ConfirmDialog from '../../components/dialog';
 
 import { Label } from '@rahat-ui/shadcn/components/label';
 import { Switch } from '@rahat-ui/shadcn/components/switch';
@@ -20,6 +25,7 @@ import { Archive, Trash2, FilePenLine, Expand } from 'lucide-react';
 import { IBeneficiaryItem } from '../../types/beneficiary';
 import { Button } from '@rahat-ui/shadcn/components/button';
 import { paths } from '../../routes/paths';
+import EditBeneficiary from './editBeneficiary';
 
 type IProps = {
   data: IBeneficiaryItem;
@@ -43,6 +49,7 @@ export default function BeneficiaryDetail({ data }: IProps) {
             <TabsTrigger value="transaction-history">
               Transaction History
             </TabsTrigger>
+            <TabsTrigger value="edit">Edit</TabsTrigger>
           </TabsList>
           <div className="flex gap-4">
             <TooltipProvider delayDuration={100}>
@@ -54,7 +61,7 @@ export default function BeneficiaryDetail({ data }: IProps) {
                     );
                   }}
                 >
-                  <Expand />
+                  <Expand size={20} strokeWidth={1.5} />
                 </TooltipTrigger>
                 <TooltipContent className="bg-secondary ">
                   <p className="text-xs font-medium">Expand</p>
@@ -64,7 +71,7 @@ export default function BeneficiaryDetail({ data }: IProps) {
             <TooltipProvider delayDuration={100}>
               <Tooltip>
                 <TooltipTrigger>
-                  <FilePenLine />
+                  <FilePenLine size={20} strokeWidth={1.5} />
                 </TooltipTrigger>
                 <TooltipContent className="bg-secondary ">
                   <p className="text-xs font-medium">Edit</p>
@@ -74,17 +81,23 @@ export default function BeneficiaryDetail({ data }: IProps) {
             <TooltipProvider delayDuration={100}>
               <Tooltip>
                 <TooltipTrigger>
-                  <Archive />
+                  <Archive size={20} strokeWidth={1.5} />
                 </TooltipTrigger>
                 <TooltipContent className="bg-secondary ">
                   <p className="text-xs font-medium">Archive</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
+            {/* <Button variant="outline">Delete User</Button> */}
             <TooltipProvider delayDuration={100}>
               <Tooltip>
                 <TooltipTrigger>
-                  <Trash2 />
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Trash2 size={20} strokeWidth={1.5} />
+                    </DialogTrigger>
+                    <ConfirmDialog name="beneficiary" />
+                  </Dialog>
                 </TooltipTrigger>
                 <TooltipContent className="bg-secondary ">
                   <p className="text-xs font-medium">Delete</p>
@@ -121,8 +134,8 @@ export default function BeneficiaryDetail({ data }: IProps) {
           </div>
         </div>
         <TabsContent value="detail">
-          <div className="grid grid-cols-2 border-y">
-            <div className="border-r p-4 flex flex-col gap-2">
+          <div className="grid grid-cols-2 border-y font-light">
+            <div className="border-r p-4 flex flex-col gap-2 ">
               <p>Name</p>
               <p>Verified</p>
               <p>Updated Date</p>
@@ -136,6 +149,9 @@ export default function BeneficiaryDetail({ data }: IProps) {
         </TabsContent>
         <TabsContent value="transaction-history">
           <div className="p-4 border-y">Transaction History View</div>
+        </TabsContent>
+        <TabsContent value="edit">
+          <EditBeneficiary />
         </TabsContent>
         <div className="p-6 flex justify-between">
           <div className="flex items-center space-x-2">

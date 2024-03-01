@@ -49,6 +49,9 @@ import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { IBeneficiaryTableData } from '../../types/beneficiary';
 import { ListBeneficiary } from '@rahat-ui/types';
 
+type IProps = {
+  handleClick: (item: Beneficiary) => void;
+};
 const data: Beneficiary[] = BeneficiaryTableData;
 
 export type Beneficiary = {
@@ -137,8 +140,8 @@ export const columns: ColumnDef<ListBeneficiary>[] = [
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem>View Details</DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>Edit</DropdownMenuItem>
+            {/* <DropdownMenuSeparator /> */}
+            {/* <DropdownMenuItem>Edit</DropdownMenuItem> */}
           </DropdownMenuContent>
         </DropdownMenu>
       );
@@ -146,7 +149,7 @@ export const columns: ColumnDef<ListBeneficiary>[] = [
   },
 ];
 
-export default function ListView({ data, meta }: IBeneficiaryTableData) {
+export default function ListView({ handleClick }: IProps) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -177,7 +180,7 @@ export default function ListView({ data, meta }: IBeneficiaryTableData) {
   return (
     <>
       <div className="w-full p-2">
-        <div className="flex items-center mb-4">
+        <div className="flex items-center mb-2">
           <Input
             placeholder="Filter beneficiary..."
             value={
@@ -223,7 +226,7 @@ export default function ListView({ data, meta }: IBeneficiaryTableData) {
         </div>
         <div className="rounded-md border">
           <Table>
-            <ScrollArea className="h-table">
+            <ScrollArea className="h-table1">
               <TableHeader>
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow key={headerGroup.id}>
@@ -248,6 +251,9 @@ export default function ListView({ data, meta }: IBeneficiaryTableData) {
                     <TableRow
                       key={row.id}
                       data-state={row.getIsSelected() && 'selected'}
+                      onClick={() => {
+                        handleClick(row.original);
+                      }}
                     >
                       {row.getVisibleCells().map((cell) => (
                         <TableCell key={cell.id}>

@@ -15,7 +15,7 @@ export default function ThemeSwitch() {
   };
 
   return (
-    <div className="flex items-center space-x-2 p-2">
+    <div className="flex items-center space-x-2 p-1">
       <Label htmlFor="theme">{isChecked ? 'Dark' : 'Light'}</Label>
       <Switch id="theme" onCheckedChange={handleSwitchChange} />
     </div>

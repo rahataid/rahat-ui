@@ -17,23 +17,7 @@ export function useNavData() {
         title: 'Beneficiaries',
         path: paths.dashboard.beneficiary.root,
       },
-      {
-        title: 'Users',
-        path: paths.dashboard.user,
-      },
-    ],
-    []
-  );
-  const subData = useMemo(
-    () => [
-      {
-        title: 'Transactions',
-        path: paths.dashboard.transactions,
-      },
-      {
-        title: 'Vendors',
-        path: paths.dashboard.vendor,
-      },
+
       {
         title: 'Communications',
 
@@ -49,6 +33,23 @@ export function useNavData() {
             path: paths.dashboard.communication.text,
           },
         ],
+      },
+    ],
+    []
+  );
+  const subData = useMemo(
+    () => [
+      {
+        title: 'Transactions',
+        path: paths.dashboard.transactions,
+      },
+      {
+        title: 'Vendors',
+        path: paths.dashboard.vendor,
+      },
+      {
+        title: 'Users',
+        path: paths.dashboard.user,
       },
     ],
     []

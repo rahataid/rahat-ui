@@ -47,12 +47,11 @@ export function Nav() {
       <div className="flex gap-12">
         <Link href={paths.dashboard.root} className="flex items-center">
           <Image
-            src="/rahat-logo.png"
+            src="/rahat_logo_standard.png"
             alt="rahat-logo"
-            height={50}
-            width={50}
+            height={120}
+            width={120}
           />
-          <p className="font-medium text-slate-500">Rahat</p>
         </Link>
         <nav className="hidden md:flex items-center">
           {data.map((item) => (

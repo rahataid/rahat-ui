@@ -9,6 +9,7 @@ import {
   useAuthStore,
 } from '@rumsan/react-query';
 import { BeneficiaryQuery } from '@rahat-ui/query';
+import { useError } from '../utils/useErrors';
 
 export type ServiceContextType = {
   rumsanService: RumsanService;
@@ -29,6 +30,8 @@ export function ServiceProvider({ children }: ServiceProviderProps) {
   const rumsanService = new RumsanService({
     baseURL: process.env.NEXT_PUBLIC_API_HOST_URL,
   });
+
+  useError();
 
   // set bearer token
   rumsanService.client.interceptors.request.use(

@@ -13,7 +13,6 @@ type CardProps = {
 
 export default function CommonCard({ id, title, subTitle, image }: CardProps) {
   const router = useRouter();
-  console.log(image);
 
   const handleClick = () => {
     router.push(`/projects/${id}`);
@@ -22,18 +21,18 @@ export default function CommonCard({ id, title, subTitle, image }: CardProps) {
   return (
     <Card
       onClick={handleClick}
-      className={`cursor-pointer border-none shadow-sm`}
+      className={`cursor-pointer rounded border shadow`}
     >
-      <div className="bg-black">
+      <div className="bg-black rounded">
         <Image
-          className="object-cover h-48 w-full rounded-t opacity-80"
+          className="object-cover h-72 w-full rounded-t opacity-70"
           src={image}
           alt="project"
           height={200}
           width={200}
         />
       </div>
-      <CardContent className="pt-3 pb-3">
+      <CardContent className="pt-4 pb-4">
         <p className="font-bold text-md text-primary">{title} </p>
         <p className="text-sm text-gray-500">{subTitle}</p>
       </CardContent>

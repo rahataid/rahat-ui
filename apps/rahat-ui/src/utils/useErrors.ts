@@ -1,4 +1,4 @@
-import { useErrorStore } from '@rahat-ui/query';
+import { useErrorStore } from '@rumsan/react-query';
 import { useToast } from '@rahat-ui/shadcn/components/use-toast';
 import { useEffect } from 'react';
 
@@ -12,8 +12,6 @@ export const useError = () => {
 
         const errorName = state.error?.response.data.name;
         const errorMessage = state.error?.response.data.message;
-
-        console.log('state.error', state.error);
 
         // Show alert with error name and message
         toast({

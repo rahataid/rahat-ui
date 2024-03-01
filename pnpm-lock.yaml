@@ -72,11 +72,11 @@ dependencies:
     specifier: ^1.0.121
     version: 1.0.121(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.1)(rxjs@7.8.1)
   '@rumsan/react-query':
-    specifier: ^0.0.18
-    version: 0.0.18(@types/react@18.2.59)
+    specifier: ^0.0.21
+    version: 0.0.21(@types/react@18.2.59)
   '@rumsan/sdk':
-    specifier: ^0.0.35
-    version: 0.0.35
+    specifier: ^0.0.36
+    version: 0.0.36
   '@rumsan/user':
     specifier: ^3.0.147
     version: 3.0.147(passport@0.7.0)(reflect-metadata@0.2.1)(typescript@5.3.3)(zod@3.22.4)
@@ -113,6 +113,9 @@ dependencies:
   embla-carousel-react:
     specifier: ^8.0.0-rc22
     version: 8.0.0(react@18.2.0)
+  geist:
+    specifier: ^1.2.2
+    version: 1.2.2(next@14.0.4)
   jsonwebtoken:
     specifier: ^9.0.2
     version: 9.0.2
@@ -6073,10 +6076,10 @@ packages:
       - rxjs
     dev: false
 
-  /@rumsan/react-query@0.0.18(@types/react@18.2.59):
-    resolution: {integrity: sha512-chy2BV8VphnrEgo5Zy9kfmLFJuDpKRdv6Ahjz77A5QZRWc0rlaVsufvpDi7TgKGKn45kbKSlrZVk0pUZE1j7GQ==, tarball: https://npm.pkg.github.com/download/@rumsan/react-query/0.0.18/041e51c8ab3baefa8ed5d9fa2a8d09a9b139be87}
+  /@rumsan/react-query@0.0.21(@types/react@18.2.59):
+    resolution: {integrity: sha512-8nSrc5ScNXmYLl+iIFApXjm212Oxm9bfFC3n4tVjoRyDvMLrakEhE576HqVFIo7bARICbz5ito3UaFgpcvB5sw==, tarball: https://npm.pkg.github.com/download/@rumsan/react-query/0.0.21/c4d3ac536834bec2806b45b96af309a97e9b0f22}
     dependencies:
-      '@rumsan/sdk': 0.0.34
+      '@rumsan/sdk': 0.0.36
       '@tanstack/react-query': 5.24.1(react@18.2.0)
       axios: 1.6.7
       react: 18.2.0
@@ -6099,6 +6102,15 @@ packages:
 
   /@rumsan/sdk@0.0.35:
     resolution: {integrity: sha512-fPWFXd7pyx1+evMwF1zQHWvC0a8rYK0uWbOgcubZqKq4H8R48T8crycN34I0xDqaStjUhaWka9sg3kp54wap6A==, tarball: https://npm.pkg.github.com/download/@rumsan/sdk/0.0.35/266d9cfd39aefca6b42fa2a95756a66ba4dc3f17}
+    dependencies:
+      axios: 1.6.7
+      tslib: 2.6.2
+    transitivePeerDependencies:
+      - debug
+    dev: false
+
+  /@rumsan/sdk@0.0.36:
+    resolution: {integrity: sha512-HSnr7lOvW5y+RpQJ06CCv0wESj9vFGngtQBVFyEf48uWpUY2ZTNL8E+AR+0E8V0xJb9IdOTqvxEsoDQ8aoM/ng==, tarball: https://npm.pkg.github.com/download/@rumsan/sdk/0.0.36/af5806e7360e778bfc88d3d8c1fc03517f151cef}
     dependencies:
       axios: 1.6.7
       tslib: 2.6.2
@@ -12717,6 +12729,14 @@ packages:
     engines: {node: '>=8'}
     dev: false
 
+  /geist@1.2.2(next@14.0.4):
+    resolution: {integrity: sha512-uRDrxhvdnPwWJmh+K5+/5LXSKwvJzaYCl9tDXgiBi4hj7hB4K7+n/WLcvJMFs5btvyn0r9OSwCd1s6CmqAsxEw==}
+    peerDependencies:
+      next: '>=13.2.0 <15'
+    dependencies:
+      next: 14.0.4(@babel/core@7.23.9)(react-dom@18.2.0)(react@18.2.0)(sass@1.62.1)
+    dev: false
+
   /generic-names@4.0.0:
     resolution: {integrity: sha512-ySFolZQfw9FoDb3ed9d80Cm9f0+r7qj+HJkWjeD9RBfpxEVTlVhol+gvaQB/78WbwYfbnNh8nWHHBSlg072y6A==}
     dependencies:
@@ -14894,8 +14914,6 @@ packages:
       webpack: '*'
     peerDependenciesMeta:
       webpack:
-        optional: true
-      webpack-sources:
         optional: true
     dependencies:
       webpack: 5.90.3(@swc/core@1.3.107)(esbuild@0.19.12)

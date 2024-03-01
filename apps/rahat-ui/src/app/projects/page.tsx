@@ -5,6 +5,7 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from '@rahat-ui/shadcn/components/resizable';
+import { Button } from '@rahat-ui/shadcn/components/button';
 import ProjectNav from '../../sections/projects/nav';
 import ProjectCards from '../../sections/projects/projectCard';
 import projectsData from './projectsData.json';
@@ -12,7 +13,7 @@ import { useState } from 'react';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import CustomPagination from '../../components/customPagination';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
-import { Search } from 'lucide-react';
+import { PiIcon, PlusCircle, Search, Settings2 } from 'lucide-react';
 
 interface CardProps {
   id: number;
@@ -54,15 +55,19 @@ export default function ProjectPage({ handleClick }: CardProps) {
             <ProjectNav title="Projects" />
           </ResizablePanel>
           <ResizableHandle />
-          <ResizablePanel>
-            <div className='p-4'>
-              <div className="relative w-full">
+          <ResizablePanel className="bg-secondary">
+            <div className="p-3">
+              <div className="flex relative w-full">
                 <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input placeholder="Search" className="pl-8 rounded" />
+                <Input placeholder="Search" className="pl-8 rounded mr-2" />
+                <Button variant="default" className="ml-auto bg-primary w-40">
+                  <PlusCircle className="mr-2 w-5" />
+                  Add Project
+                </Button>
               </div>
             </div>
-            <ScrollArea className="px-4 h-withPage bg-slate-50">
-              <div className="grid grid-cols-3 gap-4">
+            <ScrollArea className="px-3 h-withPage">
+              <div className="grid grid-cols-3 gap-6">
                 {displayedItems.map((project) => (
                   <ProjectCards
                     id={project.id}

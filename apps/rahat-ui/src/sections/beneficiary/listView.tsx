@@ -179,7 +179,7 @@ export default function ListView({ handleClick }: IProps) {
 
   return (
     <>
-      <div className="w-full p-2">
+      <div className="w-full -mt-2 p-2 bg-secondary">
         <div className="flex items-center mb-2">
           <Input
             placeholder="Filter beneficiary..."
@@ -192,7 +192,7 @@ export default function ListView({ handleClick }: IProps) {
                 .getColumn('walletAddress')
                 ?.setFilterValue(event.target.value)
             }
-            className="max-w-sm mr-3"
+            className="rounded mr-2"
           />
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -224,10 +224,10 @@ export default function ListView({ handleClick }: IProps) {
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-        <div className="rounded-md border">
+        <div className="rounded border bg-white">
           <Table>
             <ScrollArea className="h-table1">
-              <TableHeader>
+              <TableHeader className="sticky top-0 bg-white">
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow key={headerGroup.id}>
                     {headerGroup.headers.map((header) => {
@@ -280,7 +280,7 @@ export default function ListView({ handleClick }: IProps) {
           </Table>
         </div>
       </div>
-      <div className="flex items-center justify-end space-x-8 p-2 border-t">
+      <div className="flex items-center justify-end space-x-4 p-1 pl-2 pr-2 border-t">
         <div className="flex-1 text-sm text-muted-foreground">
           {table.getFilteredSelectedRowModel().rows.length} of{' '}
           {table.getFilteredRowModel().rows.length} row(s) selected.
@@ -310,7 +310,7 @@ export default function ListView({ handleClick }: IProps) {
           Page {table.getState().pagination.pageIndex + 1} of{' '}
           {table.getPageCount()}
         </div>
-        <div className="space-x-4">
+        <div className="space-x-2">
           <Button
             variant="outline"
             size="sm"

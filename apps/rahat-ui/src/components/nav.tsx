@@ -55,7 +55,7 @@ export function Nav() {
             width={120}
           />
         </Link>
-        <nav className="hidden md:flex items-center text-muted-foreground">
+        <nav className="hidden md:flex items-center text-secondary-foreground">
           {data.map((item) =>
             item.children ? (
               <DropdownMenu key={item.title}>

@@ -17,7 +17,9 @@ type IProps = {
 const Nav = ({ title }: IProps) => {
   return (
     <>
-      <h1 className="px-4 pt-4 pb-2 font-semibold text-xl text-primary">{title}</h1>
+      <h1 className="px-4 pt-4 pb-2 font-semibold text-xl text-primary">
+        {title}
+      </h1>
       <ScrollArea className="h-auto">
         <div>
           <nav className="text-muted-foreground p-2">

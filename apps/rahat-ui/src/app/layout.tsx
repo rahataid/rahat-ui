@@ -4,6 +4,7 @@ import { ThemeProvider } from '../providers/theme-provider';
 import { Wagmi } from '../providers/wagmi.provider';
 import './globals.css';
 import { ServiceProvider } from '../providers/service.provider';
+import { GeistSans } from 'geist/font/sans';
 
 export const metadata = {
   title: 'Welcome to Rahat',
@@ -29,7 +30,7 @@ export default function RootLayout({
                 // enableSystem
                 disableTransitionOnChange
               >
-                <main>{children}</main>
+                <main className={GeistSans.className}>{children}</main>
                 <Toaster />
               </ThemeProvider>
             </ServiceProvider>

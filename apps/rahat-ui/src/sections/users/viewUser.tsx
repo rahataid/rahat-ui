@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import {
   Tabs,
   TabsTrigger,
@@ -10,6 +9,15 @@ import { Switch } from '@rahat-ui/shadcn/components/switch';
 import { IUserItem } from '../../types/user';
 import { Button } from '@rahat-ui/shadcn/components/button';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+} from '@rahat-ui/shadcn/components/dialog';
 
 type IProps = {
   data: IUserItem;
@@ -24,6 +32,24 @@ export default function UserDetail({ data }: IProps) {
             <TabsTrigger value="detail">Details </TabsTrigger>
             <TabsTrigger value="edit-user">Edit</TabsTrigger>
           </TabsList>
+          <Dialog>
+            <DialogTrigger asChild className="my-2 ml-4">
+              <Button variant="outline">Delete User</Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>Delete user</DialogTitle>
+                <DialogDescription>
+                  This action cannot be undone. This will permanently delete
+                  this user.
+                </DialogDescription>
+              </DialogHeader>
+              <DialogFooter>
+                <Button type="submit">Cancel</Button>
+                <Button type="submit">Ok</Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </div>
         <div className="flex justify-between items-center p-4">
           <div className="flex gap-4">

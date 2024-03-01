@@ -15,15 +15,10 @@ import { IBeneficiaryItem } from '../../types/beneficiary';
 import AddBeneficiary from './addBeneficiary';
 import { BENEFICIARY_NAV_ROUTE } from '../../const/beneficiary.const';
 import ImportBeneficiary from './importBeneficiary';
-import {
-  ServiceContext,
-  ServiceContextType,
-} from '../../providers/service.provider';
+import { useRumsanService } from '../../providers/service.provider';
 
 export default function BeneficiaryView() {
-  const { beneficiaryQuery } = React.useContext(
-    ServiceContext
-  ) as ServiceContextType;
+  const { beneficiaryQuery } = useRumsanService();
   const [selectedData, setSelectedData] = useState<IBeneficiaryItem>();
   const [addBeneficiary, setAddBeneficiary] = useState<Boolean>(false);
   const [active, setActive] = useState<string>(BENEFICIARY_NAV_ROUTE.DEFAULT);

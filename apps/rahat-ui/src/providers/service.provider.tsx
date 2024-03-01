@@ -1,6 +1,6 @@
 'use client';
 import { useQueryClient } from '@tanstack/react-query';
-import { createContext } from 'react';
+import { createContext, useContext } from 'react';
 import { RumsanService } from '@rumsan/sdk';
 import {
   AuthQuery,
@@ -63,3 +63,7 @@ export function ServiceProvider({ children }: ServiceProviderProps) {
     </ServiceContext.Provider>
   );
 }
+
+export const useRumsanService = (): ServiceContextType => {
+  return useContext(ServiceContext) as ServiceContextType;
+};

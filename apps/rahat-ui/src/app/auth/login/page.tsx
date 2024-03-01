@@ -8,14 +8,11 @@ import { Label } from '@rahat-ui/shadcn/components/label';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import { paths } from '../../../routes/paths';
-import {
-  ServiceContext,
-  ServiceContextType,
-} from '../../../providers/service.provider';
+import { useRumsanService } from '../../../providers/service.provider';
 
 export default function AuthPage() {
-  const { authQuery } = React.useContext(ServiceContext) as ServiceContextType;
   const router = useRouter();
+  const { authQuery } = useRumsanService();
   const [otp, setOtp] = useState('');
   const { address, challenge, service, setAddress, setChallenge, error } =
     useAuthStore((state) => ({
@@ -32,6 +29,7 @@ export default function AuthPage() {
 
   const onSendOtpFormSubmit = async (e: React.SyntheticEvent) => {
     e.preventDefault();
+    console.log('ssssssssssssss');
     await sendOtpMutation.mutateAsync({
       address,
       service,
@@ -41,6 +39,7 @@ export default function AuthPage() {
 
   const onVerifyOtpFormSubmit = async (e: React.SyntheticEvent) => {
     e.preventDefault();
+
     await loginMutation.mutateAsync({ otp, challenge, service });
     //await sendOtp({ otp, challenge, service });
     router.push(paths.dashboard.root);

@@ -16,6 +16,7 @@ interface CardProps {
   id: number;
   title: string;
   subTitle: string;
+  image: string;
   handleClick: VoidFunction;
 }
 
@@ -33,6 +34,7 @@ export default function ProjectPage({ handleClick }: CardProps) {
   const handlePaginationClick = (page: number) => {
     setCurrentPage(page);
   };
+
   return (
     <div>
       <Tabs defaultValue="grid">
@@ -52,12 +54,13 @@ export default function ProjectPage({ handleClick }: CardProps) {
           <ResizableHandle />
           <ResizablePanel>
             <ScrollArea className="h-full bg-slate-50">
-              <div className="grid grid-cols-4 gap-4 p-4">
+              <div className="grid grid-cols-3 gap-4 p-4">
                 {displayedItems.map((project) => (
                   <ProjectCards
                     id={project.id}
                     key={project.id}
                     title={project.title}
+                    image={project.image}
                     subTitle={project.subTitle}
                     handleClick={handleClick}
                   />

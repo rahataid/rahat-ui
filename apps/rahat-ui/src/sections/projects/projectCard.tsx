@@ -7,11 +7,13 @@ type CardProps = {
   id: number;
   title: string;
   subTitle: string;
+  image: string;
   handleClick: VoidFunction;
 };
 
-export default function CommonCard({ id, title, subTitle }: CardProps) {
+export default function CommonCard({ id, title, subTitle, image }: CardProps) {
   const router = useRouter();
+  console.log(image);
 
   const handleClick = () => {
     router.push(`/projects/${id}`);
@@ -23,10 +25,16 @@ export default function CommonCard({ id, title, subTitle }: CardProps) {
       className={`cursor-pointer border-none shadow-sm`}
     >
       {' '}
-      <CardContent>
-        <Image src="/rahat-logo.png" alt="project" height={200} width={200} />
-        <p className="font-bold text-md">{title} </p>
-        <p className="text-sm">{subTitle}</p>
+      <Image
+        className="object-cover h-48 w-96 rounded-t"
+        src={image}
+        alt="project"
+        height={200}
+        width={200}
+      />
+      <CardContent className="pt-3 pb-3">
+        <p className="font-bold text-md text-primary">{title} </p>
+        <p className="text-sm text-gray-500">{subTitle}</p>
       </CardContent>
     </Card>
   );

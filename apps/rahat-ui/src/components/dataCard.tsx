@@ -1,5 +1,10 @@
 import { cn } from '@rahat-ui/shadcn/src/utils';
-import { Card, CardContent, CardHeader, CardTitle } from '@rahat-ui/shadcn/components/card';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@rahat-ui/shadcn/components/card';
 
 type CardProps = {
   title: string;
@@ -16,7 +21,12 @@ export default function DataCard({
   className,
 }: CardProps) {
   return (
-    <Card className={cn('flex flex-col justify-center', className)}>
+    <Card
+      className={cn(
+        'flex flex-col justify-center border-none shadow-sm',
+        className
+      )}
+    >
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium">{title}</CardTitle>
         <svg

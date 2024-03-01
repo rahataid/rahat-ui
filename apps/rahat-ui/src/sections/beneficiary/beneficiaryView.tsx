@@ -42,10 +42,10 @@ export default function BeneficiaryView() {
   };
 
   const { data } = beneficiaryQuery.usebeneficiaryList({ order: 'createdAt' });
-
+  
   return (
-    <div className="mt-2">
-      <Tabs defaultValue="grid">
+    <div>
+      <Tabs defaultValue="list">
         <ResizablePanelGroup
           direction="horizontal"
           className="min-h-max border"

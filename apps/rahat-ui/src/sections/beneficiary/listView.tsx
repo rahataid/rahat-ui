@@ -177,7 +177,7 @@ export default function ListView({ data, meta }: IBeneficiaryTableData) {
   return (
     <>
       <div className="w-full p-2">
-        <div className="flex items-center mb-4">
+        <div className="flex items-center mb-2">
           <Input
             placeholder="Filter beneficiary..."
             value={
@@ -223,7 +223,7 @@ export default function ListView({ data, meta }: IBeneficiaryTableData) {
         </div>
         <div className="rounded-md border">
           <Table>
-            <ScrollArea className="h-table">
+            <ScrollArea className="h-table1">
               <TableHeader>
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow key={headerGroup.id}>

@@ -29,6 +29,7 @@ module.exports = {
         withPage: 'calc(100vh - 150px)',
         custom1: 'calc(100vh - 290px)',
         table: 'calc(100vh - 255px)',
+        table1: 'calc(100vh - 198px)',
       },
       colors: {
         border: 'hsl(var(--border))',

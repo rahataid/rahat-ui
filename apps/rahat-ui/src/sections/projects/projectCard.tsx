@@ -18,7 +18,11 @@ export default function CommonCard({ id, title, subTitle }: CardProps) {
   };
 
   return (
-    <Card onClick={handleClick} className={`cursor-pointer`}>
+    <Card
+      onClick={handleClick}
+      className={`cursor-pointer border-none shadow-sm`}
+    >
+      {' '}
       <CardContent>
         <Image src="/rahat-logo.png" alt="project" height={200} width={200} />
         <p className="font-bold text-md">{title} </p>

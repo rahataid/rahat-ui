@@ -45,7 +45,6 @@ const Nav = ({ title }: IProps) => {
         </div>
       </ScrollArea>
       <Separator />
-      <h1 className="p-4 font-semibold text-xl text-slate-600">Actions</h1>
       <ScrollArea className="h-72">
         <div>
           <nav>

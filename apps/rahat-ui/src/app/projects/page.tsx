@@ -51,8 +51,8 @@ export default function ProjectPage({ handleClick }: CardProps) {
           </ResizablePanel>
           <ResizableHandle />
           <ResizablePanel>
-            <ScrollArea className="h-withPage">
-              <div className="grid grid-cols-4 gap-8 p-4">
+            <ScrollArea className="h-full bg-slate-50">
+              <div className="grid grid-cols-4 gap-4 p-4">
                 {displayedItems.map((project) => (
                   <ProjectCards
                     id={project.id}
@@ -64,11 +64,11 @@ export default function ProjectPage({ handleClick }: CardProps) {
                 ))}
               </div>
             </ScrollArea>
-            <CustomPagination
+            {/* <CustomPagination
               currentPage={currentPage}
               totalPages={totalPages}
               handlePaginationClick={handlePaginationClick}
-            />
+            /> */}
           </ResizablePanel>
         </ResizablePanelGroup>
       </Tabs>

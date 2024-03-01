@@ -27,6 +27,8 @@ import { useNavData } from '../app/config-nav';
 import { paths } from '../routes/paths';
 import ConnectWallet from '../sections/wallet/connect-wallet';
 import ThemeSwitch from './themeToggleSwitch';
+import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+import { Separator } from '@rahat-ui/shadcn/src/components/ui/separator';
 
 export function Nav() {
   const currentPath = usePathname();
@@ -53,11 +55,11 @@ export function Nav() {
             width={120}
           />
         </Link>
-        <nav className="hidden md:flex items-center">
+        <nav className="hidden md:flex items-center text-muted-foreground">
           {data.map((item) =>
             item.children ? (
               <DropdownMenu key={item.title}>
-                <DropdownMenuTrigger className="py-2 px-4 font-light cursor-pointer border:none">
+                <DropdownMenuTrigger className="py-2 px-4 cursor-pointer border:none text-md">
                   {item.title}
                 </DropdownMenuTrigger>
                 <DropdownMenuPortal>
@@ -75,8 +77,8 @@ export function Nav() {
             ) : (
               <Link key={item.title} href={item.path}>
                 <p
-                  className={`py-2 px-4 font-light rounded ${
-                    currentPath === item.path && 'bg-secondary'
+                  className={`py-2 px-4 text-md  rounded ${
+                    currentPath === item.path && 'bg-secondary text-primary'
                   }`}
                 >
                   {item.title}
@@ -85,7 +87,7 @@ export function Nav() {
             )
           )}
           <DropdownMenu>
-            <DropdownMenuTrigger className="py-2 px-4 font-light rounded">
+            <DropdownMenuTrigger className="py-2 px-4 rounded">
               More...
             </DropdownMenuTrigger>
             <DropdownMenuContent className="ml-12">
@@ -110,7 +112,7 @@ export function Nav() {
                   //   </DropdownMenuSub>
                   // ) : (
                   <Link key={item.title} href={item.path}>
-                    <DropdownMenuItem className="cursor-pointer">
+                    <DropdownMenuItem className="cursor-pointer text-muted-foreground">
                       {item.title}
                     </DropdownMenuItem>
                   </Link>
@@ -135,31 +137,35 @@ export function Nav() {
               <AvatarFallback>CN</AvatarFallback>
             </Avatar>
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="mr-5" side="bottom">
+          <DropdownMenuContent
+            className="mr-5 text-muted-foreground text-sm"
+            side="bottom"
+          >
             <DropdownMenuGroup className="p-2 flex flex-col">
-              <div className="p-2 flex flex-col">
-                <span className="font-bold">{user?.name}</span>
-                <span>{user?.email}</span>
+              <div className="flex flex-col mb-1">
+                <span className="font-medium">{user?.name ?? 'John Doe'} </span>
+                <span>{user?.email ?? 'doe@john.com'}</span>
               </div>
+              <Separator />
               <Link
-                className="p-2 hover:bg-secondary"
+                className="p-1 hover:bg-secondary rounded"
                 href={paths.profile.root}
               >
                 Profile
               </Link>
               <Link
-                className="p-2 hover:bg-secondary"
+                className="p-1 hover:bg-secondary rounded"
                 href={paths.dashboard.root}
               >
                 Home
               </Link>
               <ThemeSwitch />
-              <Button
-                className="mt-2 p-2 hover:border w-full"
+              <Badge
+                className="mt-2 rounded bg-primary  text-white hover:border w-full p-1 flex justify-center"
                 onClick={handleLogout}
               >
                 Logout
-              </Button>
+              </Badge>
             </DropdownMenuGroup>
           </DropdownMenuContent>
         </DropdownMenu>

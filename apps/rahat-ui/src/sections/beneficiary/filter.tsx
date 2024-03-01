@@ -1,3 +1,6 @@
+'use client';
+
+import React from 'react';
 import {
   Accordion,
   AccordionContent,
@@ -13,31 +16,41 @@ import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 
 export default function Filter() {
   return (
-    <Accordion type="single" collapsible className="px-4 pb-4">
+    <Accordion type="single" collapsible className="px-2 pb-4">
       <AccordionItem value="item-1">
-        <AccordionTrigger className="no-underline bg-muted hover:bg-primary p-4 rounded-sm hover:text-white mb-2">
+        <AccordionTrigger className="no-underline bg-muted hover:bg-primary p-2 rounded-sm hover:text-white text-primary">
           Filter Options
         </AccordionTrigger>
-        <AccordionContent>
-          <div className="shadow-md">
-            <RadioGroup
-              defaultValue="comfortable"
-              className="p-4 flex flex-col gap-4 "
-            >
-              <div className="flex items-center space-x-2">
-                {/* <RadioGroupItem value="location" id="r1" /> */}
-                <Input type="text" id="search" placeholder="Search Location" />
-                {/* <Label htmlFor="search">Location</Label> */}
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="internetStatus" id="r2" />
-                <Label htmlFor="r2">Internet Status</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="bankStatus" id="r3" />
-                <Label htmlFor="r3">Bank Status</Label>
-              </div>
-            </RadioGroup>
+        <AccordionContent className="p-2">
+          <div className="">
+            <div className="flex items-center space-x-2 mb-2">
+              <Input type="text" id="search" placeholder="Search Location" />
+            </div>
+            <div className="flex items-center space-x-2">
+              <Accordion type="single" collapsible className="px-2 pb-4 w-full">
+                <AccordionItem value="item-1">
+                  <AccordionTrigger className="no-underline hover:bg-muted p-2 rounded">
+                    Internet Status
+                  </AccordionTrigger>
+                  <AccordionContent className="p-2">
+                    <RadioGroup defaultValue="option-one">
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="option-one" id="option-one" />
+                        <Label htmlFor="option-one">No Internet</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="option-two" id="option-two" />
+                        <Label htmlFor="option-two">Phone Internet</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="option-two" id="option-two" />
+                        <Label htmlFor="option-two">Home Internet</Label>
+                      </div>
+                    </RadioGroup>
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
+            </div>
           </div>
         </AccordionContent>
       </AccordionItem>

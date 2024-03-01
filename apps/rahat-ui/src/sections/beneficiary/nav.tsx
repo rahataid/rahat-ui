@@ -25,9 +25,7 @@ export default function Nav({ meta, handleNav }: IProps) {
     <>
       <div>
         <div className="flex justify-between items-center p-4">
-          <h1 className="font-semibold text-xl text-slate-600">
-            Beneficiaries
-          </h1>
+          <h1 className="font-semibold text-xl text-primary">Beneficiaries</h1>
           <TabsList>
             <TabsTrigger value="list">
               <AlignJustify size={18} strokeWidth={1.5} />
@@ -38,8 +36,8 @@ export default function Nav({ meta, handleNav }: IProps) {
           </TabsList>
         </div>
         {/* todo: for temp scroll area height is h-20 but after uncomment  inside the nav tag scroll area height should be 44 as initial */}
-        <ScrollArea className="h-20">
-          <div className="px-4 pb-4">
+        <ScrollArea className="h-auto mb-2">
+          <div className="px-4">
             <nav>
               {/* <div className="flex justify-between p-4 rounded-md cursor-pointer hover:bg-primary hover:text-white">
                 <div className="flex gap-3">
@@ -83,7 +81,7 @@ export default function Nav({ meta, handleNav }: IProps) {
                 </div>
                 <p>9</p>
               </div> */}
-              <div className="flex justify-between p-4 rounded-md cursor-pointer bg-muted hover:bg-primary hover:text-white">
+              <div className="flex justify-between p-2 rounded-md cursor-pointer hover:bg-primary hover:text-white text-muted-foreground">
                 <div
                   className="flex items-center gap-3"
                   onClick={() => handleNav(BENEFICIARY_NAV_ROUTE.DEFAULT)}
@@ -101,21 +99,21 @@ export default function Nav({ meta, handleNav }: IProps) {
       <Filter />
       <Separator />
       <ScrollArea>
-        <div className="p-4">
-          <h1 className="font-semibold text-xl text-slate-600 mb-4">
+        <div className="p-2">
+          {/* <h1 className="font-semibold text-xl mb-4 text-muted-foreground">
             Action Items
-          </h1>
-          <nav>
+          </h1> */}
+          <nav className="text-muted-foreground">
             <div
               onClick={() => handleNav(BENEFICIARY_NAV_ROUTE.ADD_BENEFICIARY)}
-              className="flex items-center p-4 gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white"
+              className="flex items-center p-2 gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white"
             >
               <Plus size={18} strokeWidth={1.5} />
               {/* <PlusSquare size={18} strokeWidth={1.5} /> */}
               <p>Add beneficiaries</p>
             </div>
             <div
-              className="flex items-center p-4 gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white"
+              className="flex items-center p-2 gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white"
               onClick={() =>
                 handleNav(BENEFICIARY_NAV_ROUTE.IMPORT_BENEFICIARY)
               }

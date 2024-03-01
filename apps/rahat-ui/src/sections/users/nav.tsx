@@ -65,13 +65,6 @@ export default function Nav({ onTabChange }: IProps) {
               <Import size={20} strokeWidth={1.5} />
               <p>List Role</p>
             </div>
-            <div
-              className="flex items-center p-4 gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white"
-              onClick={() => handleTabClick(USER_NAV_ROUTE.LIST_ROLE)}
-            >
-              <Import size={20} strokeWidth={1.5} />
-              <p>List Role</p>
-            </div>
           </nav>
         </div>
       </ScrollArea>

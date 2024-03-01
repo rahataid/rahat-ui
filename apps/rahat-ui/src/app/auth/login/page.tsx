@@ -146,7 +146,7 @@ export default function AuthPage() {
             ) : null}
           </p>
           {!challenge.length && (
-            <p className="text-muted-foreground">
+            <p className="text-muted-foreground text-sm">
               By clicking continue, you agree to our{' '}
               <span className="underline font-medium">Terms of Service</span>{' '}
               and{' '}

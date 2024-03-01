@@ -9,15 +9,11 @@ import { Switch } from '@rahat-ui/shadcn/components/switch';
 import { IUserItem } from '../../types/user';
 import { Button } from '@rahat-ui/shadcn/components/button';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
+import ConfirmDialog from '../../components/dialog';
 import {
   Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
   DialogTrigger,
-  DialogFooter,
-} from '@rahat-ui/shadcn/components/dialog';
+} from '@rahat-ui/shadcn/src/components/ui/dialog';
 
 type IProps = {
   data: IUserItem;
@@ -26,7 +22,7 @@ type IProps = {
 export default function UserDetail({ data }: IProps) {
   return (
     <>
-      <Tabs defaultValue="detail">
+      <Tabs defaultValue="detail" className="h-full">
         <div className="flex justify-between items-center p-4">
           <TabsList>
             <TabsTrigger value="detail">Details </TabsTrigger>
@@ -36,19 +32,7 @@ export default function UserDetail({ data }: IProps) {
             <DialogTrigger asChild className="my-2 ml-4">
               <Button variant="outline">Delete User</Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
-              <DialogHeader>
-                <DialogTitle>Delete user</DialogTitle>
-                <DialogDescription>
-                  This action cannot be undone. This will permanently delete
-                  this user.
-                </DialogDescription>
-              </DialogHeader>
-              <DialogFooter>
-                <Button type="submit">Cancel</Button>
-                <Button type="submit">Ok</Button>
-              </DialogFooter>
-            </DialogContent>
+            <ConfirmDialog name="user" />
           </Dialog>
         </div>
         <div className="flex justify-between items-center p-4">
@@ -92,24 +76,29 @@ export default function UserDetail({ data }: IProps) {
             <Button>Confirm</Button>
           </div>
         </TabsContent>
-        <TabsContent value="edit-user">
-          <div className="p-4 border-y">
-            <Input className="mt-1" type="name" placeholder="Name" />
-            <Input className="mt-3" type="email" placeholder="Email" />
-            <Input
-              className="mt-3"
-              type="walletaddress"
-              placeholder="Walletaddress"
-            />
-          </div>
-          <div className="p-4 border-y flex items-center justify-start gap-24">
-            <div className="flex items-center gap-2">
-              <Switch id="approve" />
-              <Label htmlFor="airplane-mode">Approve</Label>
+        <TabsContent
+          value="edit-user"
+          className="flex flex-col justify-between min-h-[40vh] overflow-y-auto  max-h-[80vh]"
+        >
+          <div>
+            <div className="p-4 border-y">
+              <Input className="mt-1" type="name" placeholder="Name" />
+              <Input className="mt-3" type="email" placeholder="Email" />
+              <Input
+                className="mt-3"
+                type="walletaddress"
+                placeholder="Walletaddress"
+              />
             </div>
-            <div className="flex items-center gap-2">
-              <Switch id="disable" />
-              <Label htmlFor="airplane-mode">Disable</Label>
+            <div className="p-4 border-y flex items-center justify-start gap-24">
+              <div className="flex items-center gap-2">
+                <Switch id="approve" />
+                <Label htmlFor="airplane-mode">Approve</Label>
+              </div>
+              <div className="flex items-center gap-2">
+                <Switch id="disable" />
+                <Label htmlFor="airplane-mode">Disable</Label>
+              </div>
             </div>
           </div>
           <div className="p-4 border-t flex justify-between">

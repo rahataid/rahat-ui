@@ -6,6 +6,7 @@ import {
   ServiceContextType,
 } from '../../providers/service.provider';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { EXCEL_FORMAT, FILE_TYPE } from '../../const/excel.format.const';
 
 export default function ImportBeneficiary() {
   const { beneficiaryQuery } = React.useContext(
@@ -21,11 +22,15 @@ export default function ImportBeneficiary() {
 
   const handleUpload = () => {
     const fileExtension = selectedFile && selectedFile?.name?.split('.').pop();
+    const isEXCEl = EXCEL_FORMAT.includes(fileExtension as string);
+    const docType = isEXCEl ? FILE_TYPE.EXCEL : FILE_TYPE.JSON;
+    console.log(docType);
     const formData = new FormData();
     formData.append('file', selectedFile as Blob);
-    formData.append('docType', fileExtension as string);
+    formData.append('doctype', docType as string);
 
     uploadFile.mutate(formData);
+    console.log(uploadFile);
   };
   return (
     <div className="h-custom">
@@ -47,7 +52,7 @@ export default function ImportBeneficiary() {
             disabled={selectedFile === null}
             className="flex justify-end"
           >
-            Upload
+            {uploadFile.isPending ? 'Loading' : 'Upload'}
           </Button>
         </div>
       </div>

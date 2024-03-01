@@ -20,6 +20,7 @@ import { Archive, Trash2, FilePenLine, Expand } from 'lucide-react';
 import { IBeneficiaryItem } from '../../types/beneficiary';
 import { Button } from '@rahat-ui/shadcn/components/button';
 import { paths } from '../../routes/paths';
+import EditBeneficiary from './editBeneficiary';
 
 type IProps = {
   data: IBeneficiaryItem;
@@ -43,6 +44,7 @@ export default function BeneficiaryDetail({ data }: IProps) {
             <TabsTrigger value="transaction-history">
               Transaction History
             </TabsTrigger>
+            <TabsTrigger value="edit">Edit</TabsTrigger>
           </TabsList>
           <div className="flex gap-4">
             <TooltipProvider delayDuration={100}>
@@ -136,6 +138,9 @@ export default function BeneficiaryDetail({ data }: IProps) {
         </TabsContent>
         <TabsContent value="transaction-history">
           <div className="p-4 border-y">Transaction History View</div>
+        </TabsContent>
+        <TabsContent value="edit">
+          <EditBeneficiary />
         </TabsContent>
         <div className="p-6 flex justify-between">
           <div className="flex items-center space-x-2">

@@ -44,15 +44,13 @@ import {
   TableHeader,
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
-import BeneficiaryTableData from '../../app/beneficiary/beneficiaryData.json';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import { IBeneficiaryTableData } from '../../types/beneficiary';
 import { ListBeneficiary } from '@rahat-ui/types';
+import { useRumsanService } from '../../providers/service.provider';
 
 type IProps = {
   handleClick: (item: Beneficiary) => void;
 };
-const data: Beneficiary[] = BeneficiaryTableData;
 
 export type Beneficiary = {
   name: string;
@@ -91,40 +89,24 @@ export const columns: ColumnDef<ListBeneficiary>[] = [
     cell: ({ row }) => <div>{row.getValue('walletAddress')}</div>,
   },
   {
-    accessorKey: 'location',
-    header: 'Location',
-    cell: ({ row }) => (
-      <div className="capitalize">
-        {row.getValue('location') ? row.getValue('location') : 'N/A'}
-      </div>
-    ),
+    accessorKey: 'gender',
+    header: 'Gender',
+    cell: ({ row }) => <div>{row.getValue('gender')}</div>,
   },
   {
     accessorKey: 'internetStatus',
-    header: 'Internet Status',
-    cell: ({ row }) => (
-      <Badge variant="secondary" className="rounded-md capitalize">
-        {row.getValue('internetStatus')}
-      </Badge>
-    ),
+    header: 'Internet Access',
+    cell: ({ row }) => <div>{row.getValue('internetStatus')}</div>,
   },
   {
     accessorKey: 'phoneStatus',
-    header: 'Phone Status',
-    cell: ({ row }) => (
-      <Badge variant="secondary" className="rounded-md capitalize">
-        {row.getValue('phoneStatus')}
-      </Badge>
-    ),
+    header: 'Phone Type',
+    cell: ({ row }) => <div>{row.getValue('phoneStatus')}</div>,
   },
   {
     accessorKey: 'bankedStatus',
-    header: 'Bank Status',
-    cell: ({ row }) => (
-      <Badge variant="secondary" className="rounded-md capitalize">
-        {row.getValue('bankedStatus')}
-      </Badge>
-    ),
+    header: 'Banking Status',
+    cell: ({ row }) => <div>{row.getValue('bankedStatus')}</div>,
   },
   {
     id: 'actions',
@@ -150,6 +132,7 @@ export const columns: ColumnDef<ListBeneficiary>[] = [
 ];
 
 export default function ListView({ handleClick }: IProps) {
+  const { beneficiaryQuery } = useRumsanService();
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -157,9 +140,16 @@ export default function ListView({ handleClick }: IProps) {
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
+  const [pagination, setPagination] = React.useState({
+    pageIndex: 0,
+    pageSize: 50,
+  });
+
+  const { data, isLoading, isError, isSuccess, isFetched } =
+    beneficiaryQuery.usebeneficiaryList({});
 
   const table = useReactTable({
-    data,
+    data: data?.data || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -169,7 +159,9 @@ export default function ListView({ handleClick }: IProps) {
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
+    onPaginationChange: setPagination,
     state: {
+      pagination,
       sorting,
       columnFilters,
       columnVisibility,
@@ -251,7 +243,7 @@ export default function ListView({ handleClick }: IProps) {
                     <TableRow
                       key={row.id}
                       data-state={row.getIsSelected() && 'selected'}
-                      onClick={() => {
+                      onDoubleClick={() => {
                         handleClick(row.original);
                       }}
                     >
@@ -288,7 +280,7 @@ export default function ListView({ handleClick }: IProps) {
         <div className="flex items-center gap-2">
           <div className="text-sm font-medium">Rows per page</div>
           <Select
-            defaultValue="10"
+            defaultValue="50"
             onValueChange={(value) => table.setPageSize(Number(value))}
           >
             <SelectTrigger className="w-16">

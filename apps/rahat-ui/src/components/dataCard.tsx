@@ -14,7 +14,6 @@ type CardProps = {
   subTitle: string;
   className: string;
   Icon: LucideIcon;
-  //   icon: string;
 };
 
 export default function DataCard({
@@ -33,7 +32,11 @@ export default function DataCard({
     >
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-md font-medium">{title}</CardTitle>
-        <Icon className="h-6 w-6 text-muted-foreground" />
+        <Icon
+          size={20}
+          strokeWidth={1.5}
+          className="h-6 w-6 text-muted-foreground"
+        />
       </CardHeader>
       <CardContent>
         <div className="text-4xl text-primary font-semibold">{number}</div>

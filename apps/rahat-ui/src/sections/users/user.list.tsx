@@ -162,7 +162,7 @@ export default function ListView({ handleClick }: IProps) {
 
   return (
     <>
-      <div className="w-full -mt-2 p-2 bg-secondary">
+      <div className="w-full h-full -mt-2 p-2 bg-secondary">
         <div className="flex items-center mb-2">
           <Input
             placeholder="Filter beneficiary..."
@@ -207,7 +207,7 @@ export default function ListView({ handleClick }: IProps) {
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-        <div className="rounded border bg-card">
+        <div className="rounded border h-[calc(100vh-180px)]  bg-card">
           <Table>
             <ScrollArea className="h-table1">
               <TableHeader className="sticky top-0">
@@ -263,7 +263,7 @@ export default function ListView({ handleClick }: IProps) {
           </Table>
         </div>
       </div>
-      <div className="flex items-center justify-end space-x-4 p-1 px-2 border-t bg-card">
+      <div className="sticky bottom-0 flex items-center justify-end space-x-4 px-4 py-1 border-t-2 bg-card">
         <div className="flex-1 text-sm text-muted-foreground">
           {table.getFilteredSelectedRowModel().rows.length} of{' '}
           {table.getFilteredRowModel().rows.length} row(s) selected.

@@ -48,10 +48,10 @@ export default function UserView() {
 
   return (
     <div>
-      <Tabs defaultValue="grid">
+      <Tabs defaultValue="grid" className="h-[calc(100vh-68px)] ">
         <ResizablePanelGroup
           direction="horizontal"
-          className="min-h-max border bg-card ml-2"
+          className="min-h-max bg-card"
         >
           <ResizablePanel
             minSize={20}

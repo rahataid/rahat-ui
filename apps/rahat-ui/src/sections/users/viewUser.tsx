@@ -14,13 +14,15 @@ import {
   Dialog,
   DialogTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dialog';
+import { Trash2 } from 'lucide-react';
+import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+import Image from 'next/image';
 
 type IProps = {
   data: IUserItem;
 };
 
 export default function UserDetail({ data }: IProps) {
-  console.log(data);
   return (
     <>
       <Tabs defaultValue="detail" className="h-full">
@@ -31,16 +33,24 @@ export default function UserDetail({ data }: IProps) {
           </TabsList>
           <Dialog>
             <DialogTrigger asChild className=" ml-4">
-              <Button variant="outline" className="rounded">
-                Delete User
-              </Button>
+              <Trash2 className="cursor-pointer" size={18} strokeWidth={1.5} />
             </DialogTrigger>
             <ConfirmDialog name="user" />
           </Dialog>
         </div>
         <div className="p-4">
-          <div className="flex">
-            <h1 className="font-semibold text-xl">{data.name}</h1>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Image
+                className="rounded-full"
+                src="/svg/funny-cat.svg"
+                alt="cat"
+                height={80}
+                width={80}
+              />
+              <h1 className="font-semibold text-xl">{data.name}</h1>
+            </div>
+            <Badge>Active</Badge>
           </div>
           <div className="flex items-center justify-between gap-4">
             <p className="text-slate-500">{data.email}</p>
@@ -54,18 +64,62 @@ export default function UserDetail({ data }: IProps) {
           </div>
         </div>
         <TabsContent value="detail">
-          <div className="grid grid-cols-2 border-y font-light">
-            <div className="border-r p-4 flex flex-col gap-2 ">
-              <p>Name</p>
-              <p>Verified</p>
-              <p>Updated Date</p>
+          <div className="border-y flex items-center justify-between flex-wrap mx-4 py-4 gap-3">
+            <div>
+              <p className="font-light text-base">{data.name}</p>
+              <p className="text-sm font-normal text-muted-foreground ">Name</p>
             </div>
-            <div className="p-4 flex flex-col gap-2">
-              <p>{'data.walletAddress'}</p>
-              <p>{'False'}</p>
-              <p>{'formattedDate'}</p>
+            <div>
+              <p className="font-light text-base">{'Male'}</p>
+              <p className="text-sm font-normal text-muted-foreground ">
+                Gender
+              </p>
+            </div>
+            <div>
+              <p className="font-light text-base">{data.email || 'N/A'}</p>
+              <p className="text-sm font-normal text-muted-foreground ">
+                Email
+              </p>
+            </div>
+            <div>
+              <p className="font-light text-base">{'986758465'}</p>
+              <p className="text-sm font-normal text-muted-foreground ">
+                Phone
+              </p>
+            </div>
+            <div>
+              <p className="font-light text-base">
+                {data.walletaddress ||
+                  '0xAC6bFaf10e89202c293dD795eCe180BBf1430d7B'}
+              </p>
+              <p className="text-sm font-normal text-muted-foreground ">
+                Wallet
+              </p>
             </div>
           </div>
+          {/* <div className="grid grid-cols-2 border-y font-light">
+            <div className="border-r p-4 flex flex-col gap-2 ">
+              <p>Name</p>
+              <p>Gender</p>
+              <p>Email</p>
+              <p>Phone</p>
+              <p>Wallet</p>
+              <p>Roles</p>
+            </div>
+            <div className="p-4 flex flex-col gap-2">
+              <p>{data.name}</p>
+              <p>{'Male'}</p>
+              <p>{data.email}</p>
+              <p>{'98449586948'}</p>
+              <p>{data.walletaddress || 'Not Available'}</p>
+              <ul>
+                <li>Admin</li>
+                <li>Manager</li>
+                <li>Admin</li>
+                <li>Manager</li>
+              </ul>
+            </div>
+          </div> */}
         </TabsContent>
         <TabsContent
           value="edit-user"

@@ -1,6 +1,5 @@
 'use client';
 
-import * as React from 'react';
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -13,11 +12,11 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { MoreHorizontal, Settings2, Eye } from 'lucide-react';
+import { MoreHorizontal, Settings2 } from 'lucide-react';
+import * as React from 'react';
 
 import { Button } from '@rahat-ui/shadcn/components/button';
 import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
-import { Badge } from '@rahat-ui/shadcn/components/badge';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -27,15 +26,15 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/components/dropdown-menu';
+import { Input } from '@rahat-ui/shadcn/components/input';
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
-  SelectGroup,
 } from '@rahat-ui/shadcn/components/select';
-import { Input } from '@rahat-ui/shadcn/components/input';
 import {
   Table,
   TableBody,
@@ -46,6 +45,7 @@ import {
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { ListBeneficiary } from '@rahat-ui/types';
+import { truncateEthAddress } from '@rumsan/core/utilities/string.utils';
 import { useRumsanService } from '../../providers/service.provider';
 
 type IProps = {
@@ -84,60 +84,46 @@ export const columns: ColumnDef<ListBeneficiary>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: 'walletAddress',
-    header: 'Wallet Address',
-    cell: ({ row }) => <div>{row.getValue('walletAddress')}</div>,
+    accessorKey: 'name',
+    header: 'Name',
+    cell: ({ row }) => <div>{row.getValue('name')}</div>,
   },
   {
-    accessorKey: 'gender',
-    header: 'Gender',
-    cell: ({ row }) => <div>{row.getValue('gender')}</div>,
+    accessorKey: 'email',
+    header: 'Email',
+    cell: ({ row }) => <div>{row.getValue('email')}</div>,
   },
   {
-    accessorKey: 'internetStatus',
-    header: 'Internet Access',
-    cell: ({ row }) => <div>{row.getValue('internetStatus')}</div>,
-  },
-  {
-    accessorKey: 'phoneStatus',
-    header: 'Phone Type',
-    cell: ({ row }) => <div>{row.getValue('phoneStatus')}</div>,
-  },
-  {
-    accessorKey: 'bankedStatus',
-    header: 'Banking Status',
-    cell: ({ row }) => <div>{row.getValue('bankedStatus')}</div>,
+    accessorKey: 'wallet',
+    header: 'Wallet',
+    cell: ({ row }) => <div>{truncateEthAddress(row.getValue('wallet'))}</div>,
   },
   {
     id: 'actions',
+    header: 'Actions',
     enableHiding: false,
     cell: () => {
       return (
-        // <DropdownMenu>
-        //   <DropdownMenuTrigger asChild>
-        //     <Button variant="ghost" className="h-8 w-8 p-0">
-        //       <span className="sr-only">Open menu</span>
-        //       <MoreHorizontal className="h-4 w-4" />
-        //     </Button>
-        //   </DropdownMenuTrigger>
-        //   <DropdownMenuContent align="end">
-        //     <DropdownMenuItem>View Details</DropdownMenuItem>
-        //     {/* <DropdownMenuSeparator /> */}
-        //     {/* <DropdownMenuItem>Edit</DropdownMenuItem> */}
-        //   </DropdownMenuContent>
-        // </DropdownMenu>
-        <Eye
-          size={20}
-          strokeWidth={1.5}
-          className="cursor-pointer hover:text-primary"
-        />
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="h-8 w-8 p-0">
+              <span className="sr-only">Open menu</span>
+              <MoreHorizontal className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem>View Details</DropdownMenuItem>
+            {/* <DropdownMenuSeparator /> */}
+            {/* <DropdownMenuItem>Edit</DropdownMenuItem> */}
+          </DropdownMenuContent>
+        </DropdownMenu>
       );
     },
   },
 ];
 
 export default function ListView({ handleClick }: IProps) {
-  const { beneficiaryQuery } = useRumsanService();
+  const { userQuery } = useRumsanService();
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -150,10 +136,8 @@ export default function ListView({ handleClick }: IProps) {
     pageSize: 50,
   });
 
-  // const { data, isLoading, isError, isSuccess, isFetched } =
-  //   beneficiaryQuery.usebeneficiaryList({});
-
-  const data = [];
+  const { data, isLoading, isError, isSuccess, isFetched } =
+    userQuery.useUserList();
 
   const table = useReactTable({
     data: data?.data || [],
@@ -250,7 +234,7 @@ export default function ListView({ handleClick }: IProps) {
                     <TableRow
                       key={row.id}
                       data-state={row.getIsSelected() && 'selected'}
-                      onClick={() => {
+                      onDoubleClick={() => {
                         handleClick(row.original);
                       }}
                     >
@@ -279,7 +263,7 @@ export default function ListView({ handleClick }: IProps) {
           </Table>
         </div>
       </div>
-      <div className="flex items-center justify-end space-x-4 p-1 px-2 border-t border-rose-500">
+      <div className="flex items-center justify-end space-x-4 p-1 px-2 border-t bg-card">
         <div className="flex-1 text-sm text-muted-foreground">
           {table.getFilteredSelectedRowModel().rows.length} of{' '}
           {table.getFilteredRowModel().rows.length} row(s) selected.

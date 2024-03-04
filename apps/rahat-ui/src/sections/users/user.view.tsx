@@ -8,17 +8,17 @@ import {
 } from '@rahat-ui/shadcn/components/resizable';
 import { Tabs } from '@rahat-ui/shadcn/components/tabs';
 
-import UserNav from '../../sections/users/nav';
-import AddUser from '../../sections/users/addUser';
-import { IRoleItem, IUserItem } from '../../types/user';
 import { USER_NAV_ROUTE } from '../../const/user.const';
-import UserDetails from '../../sections/users/viewUser';
-import AddRole from '../../sections/users/role/addRole';
-import UsersTable from '../../sections/users/usersTable';
-import RoleTable from '../../sections/users/role/roleTable';
-import RoleDetails from '../../sections/users/role/roleDetail';
+import { IRoleItem, IUserItem } from '../../types/user';
+import AddUser from './addUser';
+import UserNav from './nav';
+import AddRole from './role/addRole';
+import RoleDetails from './role/roleDetail';
+import RoleTable from './role/roleTable';
+import UsersTable from './user.list';
+import UserDetails from './viewUser';
 
-export default function UsersPage() {
+export default function UserView() {
   const [selectedUserData, setSelectedUserData] = useState<IUserItem>();
   const [selectedRoleData, setSelectedRoleData] = useState<IRoleItem>();
   // const [addUser, setAddUser] = useState<boolean>(false);
@@ -51,7 +51,7 @@ export default function UsersPage() {
       <Tabs defaultValue="grid">
         <ResizablePanelGroup
           direction="horizontal"
-          className="min-h-max border"
+          className="min-h-max border bg-card ml-2"
         >
           <ResizablePanel
             minSize={20}
@@ -65,7 +65,7 @@ export default function UsersPage() {
             />
           </ResizablePanel>
           <ResizableHandle />
-          <ResizablePanel minSize={28}>
+          <ResizablePanel minSize={28} className="pt-2">
             {activeTab === USER_NAV_ROUTE.DEFAULT && (
               <UsersTable handleClick={handleUserClick} />
             )}

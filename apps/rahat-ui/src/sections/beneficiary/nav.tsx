@@ -24,7 +24,7 @@ export default function Nav({ meta, handleNav }: IProps) {
   return (
     <>
       <div>
-        <div className="flex justify-between items-center p-4">
+        <div className="flex justify-between items-center p-4 border-6">
           <h1 className="font-semibold text-xl text-primary">Beneficiaries</h1>
           <TabsList>
             <TabsTrigger value="list">

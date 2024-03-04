@@ -32,7 +32,7 @@
     "@radix-ui/react-toast": "^1.1.5",
     "@radix-ui/react-tooltip": "^1.0.7",
     "@rahataid/sdk": "^0.0.6",
-    "@rumsan/core": "^3.0.126",
+    "@rumsan/core": "^3.0.128",
     "@rumsan/extensions": "^0.0.10",
     "@rumsan/prisma": "^1.0.121",
     "@rumsan/react-query": "^0.0.21",

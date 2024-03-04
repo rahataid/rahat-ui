@@ -216,10 +216,10 @@ export default function ListView({ handleClick }: IProps) {
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-        <div className="rounded border bg-white">
+        <div className="rounded border bg-card">
           <Table>
             <ScrollArea className="h-table1">
-              <TableHeader className="sticky top-0 bg-white">
+              <TableHeader className="sticky top-0">
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow key={headerGroup.id}>
                     {headerGroup.headers.map((header) => {
@@ -272,7 +272,7 @@ export default function ListView({ handleClick }: IProps) {
           </Table>
         </div>
       </div>
-      <div className="flex items-center justify-end space-x-4 p-1 pl-2 pr-2 border-t">
+      <div className="flex items-center justify-end space-x-4 p-1 px-2 border-t  border-rose-500">
         <div className="flex-1 text-sm text-muted-foreground">
           {table.getFilteredSelectedRowModel().rows.length} of{' '}
           {table.getFilteredRowModel().rows.length} row(s) selected.

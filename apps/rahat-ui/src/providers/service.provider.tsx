@@ -16,7 +16,7 @@ export type ServiceContextType = {
   authQuery: AuthQuery;
   userQuery: UserQuery;
   //beneficiaryQuery: BeneficiaryQuery;
-  //roleQuery: RoleQuery;
+  roleQuery: RoleQuery;
 };
 
 export const ServiceContext = createContext<ServiceContextType | null>(null);
@@ -50,7 +50,7 @@ export function ServiceProvider({ children }: ServiceProviderProps) {
   const authQuery = new AuthQuery(rumsanService, queryClient);
   const userQuery = new UserQuery(rumsanService, queryClient);
   // const beneficiaryQuery = new BeneficiaryQuery(rumsanService, queryClient);
-  // const roleQuery = new RoleQuery(rumsanService, queryClient);
+  const roleQuery = new RoleQuery(rumsanService, queryClient);
 
   return (
     <ServiceContext.Provider
@@ -59,7 +59,7 @@ export function ServiceProvider({ children }: ServiceProviderProps) {
         authQuery,
         userQuery,
         //beneficiaryQuery,
-        //roleQuery,
+        roleQuery,
       }}
     >
       {children}

@@ -1,36 +1,22 @@
-import {
-  Tabs,
-  TabsTrigger,
-  TabsList,
-  TabsContent,
-} from '@rahat-ui/shadcn/components/tabs';
+import { Button } from '@rahat-ui/shadcn/components/button';
 import { Label } from '@rahat-ui/shadcn/components/label';
 import { Switch } from '@rahat-ui/shadcn/components/switch';
-import { IUserItem } from '../../types/user';
-import { Button } from '@rahat-ui/shadcn/components/button';
-import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
-import { Separator } from '@rahat-ui/shadcn/src/components/ui/separator';
-import ConfirmDialog from '../../components/dialog';
-import {
-  Dialog,
-  DialogTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/dialog';
-import { MoreVertical, Trash2 } from 'lucide-react';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
-import Image from 'next/image';
-import { Dropdown } from 'react-day-picker';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
+import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
+import { truncateEthAddress } from '@rumsan/core/utilities/string.utils';
+import { User } from '@rumsan/sdk/types';
+import { MoreVertical } from 'lucide-react';
+import Image from 'next/image';
 import { useState } from 'react';
 
 type IProps = {
-  data: IUserItem;
+  data: User;
 };
 
 export default function UserDetail({ data }: IProps) {
@@ -44,7 +30,7 @@ export default function UserDetail({ data }: IProps) {
 
   return (
     <>
-      <div className="flex justify-end py-3 border-b">
+      <div className="flex justify-end p-3 border-b">
         <DropdownMenu>
           <DropdownMenuTrigger>
             <MoreVertical
@@ -74,11 +60,13 @@ export default function UserDetail({ data }: IProps) {
               height={80}
               width={80}
             />
-            <div className="flex flex-col">
+            <div className="flex flex-col ml-4">
               <div>
                 <h1 className="font-semibold text-xl">{data.name}</h1>
               </div>
-              <p className="text-slate-500">{data.email}</p>
+              <p className="text-slate-500">
+                {truncateEthAddress(data.wallet)}
+              </p>
             </div>
           </div>
           <Badge>Active</Badge>
@@ -86,31 +74,34 @@ export default function UserDetail({ data }: IProps) {
       </div>
       {/* Details View */}
       {activeTab === 'details' && (
-        <div className="border-y flex items-center justify-between flex-wrap mx-4 py-4 gap-3">
-          <div>
-            <p className="font-light text-base">{data.name}</p>
-            <p className="text-sm font-normal text-muted-foreground ">Name</p>
+        <>
+          <div className="border-t grid grid-cols-2 gap-4 p-8">
+            <div>
+              <p className="font-light text-base">{data.name}</p>
+              <p className="text-sm font-normal text-muted-foreground ">Name</p>
+            </div>
+            <div>
+              <p className="font-light text-base">{data.gender || '-'}</p>
+              <p className="text-sm font-normal text-muted-foreground ">
+                Gender
+              </p>
+            </div>
           </div>
-          <div>
-            <p className="font-light text-base">{'Male'}</p>
-            <p className="text-sm font-normal text-muted-foreground ">Gender</p>
+          <div className="flex grid grid-cols-2 gap-4  p-8">
+            <div>
+              <p className="font-light text-base">{data.email || '-'}</p>
+              <p className="text-sm font-normal text-muted-foreground ">
+                Email
+              </p>
+            </div>
+            <div>
+              <p className="font-light text-base">{data.phone || '-'}</p>
+              <p className="text-sm font-normal text-muted-foreground ">
+                Phone
+              </p>
+            </div>
           </div>
-          <div>
-            <p className="font-light text-base">{data.email || 'N/A'}</p>
-            <p className="text-sm font-normal text-muted-foreground ">Email</p>
-          </div>
-          <div>
-            <p className="font-light text-base">{'986758465'}</p>
-            <p className="text-sm font-normal text-muted-foreground ">Phone</p>
-          </div>
-          <div>
-            <p className="font-light text-base">
-              {data.walletaddress ||
-                '0xAC6bFaf10e89202c293dD795eCe180BBf1430d7B'}
-            </p>
-            <p className="text-sm font-normal text-muted-foreground ">Wallet</p>
-          </div>
-        </div>
+        </>
       )}
       {/* Edit View */}
       {activeTab === 'edit' && (

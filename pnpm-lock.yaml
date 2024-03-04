@@ -63,26 +63,26 @@ dependencies:
     specifier: ^1.0.7
     version: 1.0.7(@types/react-dom@18.2.19)(@types/react@18.2.59)(react-dom@18.2.0)(react@18.2.0)
   '@rahataid/sdk':
-    specifier: ^0.0.6
-    version: 0.0.6
+    specifier: ^0.0.11
+    version: 0.0.11
   '@rumsan/core':
-    specifier: ^3.0.128
-    version: 3.0.128
+    specifier: ^3.0.133
+    version: 3.0.133
   '@rumsan/extensions':
-    specifier: ^0.0.10
-    version: 0.0.10(@nestjs/core@10.3.3)(reflect-metadata@0.2.1)
+    specifier: ^0.0.14
+    version: 0.0.14(@nestjs/core@10.3.3)(reflect-metadata@0.2.1)
   '@rumsan/prisma':
-    specifier: ^1.0.121
-    version: 1.0.121(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.1)(rxjs@7.8.1)
+    specifier: ^1.0.125
+    version: 1.0.125(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.1)(rxjs@7.8.1)
   '@rumsan/react-query':
-    specifier: ^0.0.21
-    version: 0.0.21(@types/react@18.2.59)
+    specifier: ^0.0.25
+    version: 0.0.25(@types/react@18.2.59)
   '@rumsan/sdk':
-    specifier: ^0.0.36
-    version: 0.0.36
+    specifier: ^0.0.40
+    version: 0.0.40
   '@rumsan/user':
-    specifier: ^3.0.147
-    version: 3.0.147(passport@0.7.0)(reflect-metadata@0.2.1)(typescript@5.3.3)(zod@3.22.4)
+    specifier: ^3.0.152
+    version: 3.0.152(passport@0.7.0)(reflect-metadata@0.2.1)(typescript@5.3.3)(zod@3.22.4)
   '@tanstack/react-query':
     specifier: ^5.18.1
     version: 5.24.1(react@18.2.0)
@@ -6743,10 +6743,10 @@ packages:
       '@babel/runtime': 7.23.9
     dev: false
 
-  /@rahataid/sdk@0.0.6:
-    resolution: {integrity: sha512-QkSmPf5tNxi9CO6nK6WkFSTG+QS8IblTF5/9LcsdEePvKv75r45PUSWL2MwsAqmR9cN1ZDG5SIhoToaXrbF+6A==, tarball: https://npm.pkg.github.com/download/@rahataid/sdk/0.0.6/a8b5e197cc808b5dda8e0424352d8ca27a273829}
+  /@rahataid/sdk@0.0.11:
+    resolution: {integrity: sha512-6xaZzwp78/jWP9346I9X1w3qIz1t7SwxPDSwxv9cty4MR+ZOqjmw5L7nDER/6yRzRzg4XelctSSWjjOEue4zLA==, tarball: https://npm.pkg.github.com/download/@rahataid/sdk/0.0.11/8b285fa80ad60af5c9eacb34a5aa2d3dd46c52b4}
     dependencies:
-      '@rumsan/sdk': 0.0.35
+      '@rumsan/sdk': 0.0.39
       axios: 1.6.7
       tslib: 2.5.0
     transitivePeerDependencies:
@@ -7220,27 +7220,21 @@ packages:
       picomatch: 2.3.1
       rollup: 2.79.1
 
-  /@rumsan/core@3.0.126:
-    resolution: {integrity: sha512-49mdxJSHOJr0BuOCbI53+qcenpj6MHY+GX3tsrIMTvFN1NS5yQS6TdvTxJLus2kmIUiipoXlt05uwOwBk9wwwA==, tarball: https://npm.pkg.github.com/download/@rumsan/core/3.0.126/648c344fd768175f8274c44cb923063d948c9b19}
+  /@rumsan/core@3.0.133:
+    resolution: {integrity: sha512-ODRPypAPssCCGbGw3+RLyzZwb4Vaq/IL3BstVrdOqIRcITZuqONgvHgxikEEngARx9DqlpdKRkrRgKrz6IoW3w==, tarball: https://npm.pkg.github.com/download/@rumsan/core/3.0.133/1fdc136b7e9970e3eb3e6a9bb09e368e95bdc036}
     dependencies:
       tslib: 2.6.2
     dev: false
 
-  /@rumsan/core@3.0.128:
-    resolution: {integrity: sha512-+cFPHRRwHVmqhWbQ9yBSXMHLl8hEeeMBYlccJ1l67XGWSXyTAKuSsu9r3beFGhjS1/9U8Gy7dF2Bx8DdEE9ekQ==, tarball: https://npm.pkg.github.com/download/@rumsan/core/3.0.128/33bd1d07cb41ad8f35452b3f48810234a0f4a88e}
-    dependencies:
-      tslib: 2.6.2
-    dev: false
-
-  /@rumsan/extensions@0.0.10(@nestjs/core@10.3.3)(reflect-metadata@0.2.1):
-    resolution: {integrity: sha512-HHdu8tWfDxIdukadBuy3mokjILjhDemxDKGbAFRPnqelqKdQzV3+I7qxdHD06rxyJxeTQdPvaA8HykqZOV9JsQ==, tarball: https://npm.pkg.github.com/download/@rumsan/extensions/0.0.10/d48dd6266f0695cc7bab43ad22dfc53c934e6c0d}
+  /@rumsan/extensions@0.0.14(@nestjs/core@10.3.3)(reflect-metadata@0.2.1):
+    resolution: {integrity: sha512-b4L9avqUr/3NdkLoKjjRcrM6FMG4zhKprmqAVVEX4ulL8MGs2XpZB0t/ua4wARGIEjH9/o+3NG34De/8jaOTew==, tarball: https://npm.pkg.github.com/download/@rumsan/extensions/0.0.14/7fca10fb77345d75ed60539d5e7e7f8f37168e31}
     dependencies:
       '@nestjs/common': 10.3.3(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.1)(rxjs@7.8.1)
       '@nestjs/swagger': 7.3.0(@nestjs/common@10.3.3)(@nestjs/core@10.3.3)(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.1)
       '@prisma/client': 5.10.2
-      '@rumsan/core': 3.0.126
-      '@rumsan/prisma': 1.0.121(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.1)(rxjs@7.8.1)
-      '@rumsan/sdk': 0.0.34
+      '@rumsan/core': 3.0.133
+      '@rumsan/prisma': 1.0.125(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.1)(rxjs@7.8.1)
+      '@rumsan/sdk': 0.0.39
       axios: 1.6.7
       class-transformer: 0.5.1
       class-validator: 0.14.1
@@ -7254,12 +7248,12 @@ packages:
       - reflect-metadata
     dev: false
 
-  /@rumsan/prisma@1.0.121(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.1)(rxjs@7.8.1):
-    resolution: {integrity: sha512-InViF7co90LclW1r4YTo9k6yfHzfSbJF1YGxWFFwhDwux/aLTgCg7Gh/PUOTJtlr8CmupsT6q6QJwqEDGScKfQ==, tarball: https://npm.pkg.github.com/download/@rumsan/prisma/1.0.121/301f9eb41161f539588098cd71e2653394c8181b}
+  /@rumsan/prisma@1.0.125(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.1)(rxjs@7.8.1):
+    resolution: {integrity: sha512-KPQhTSVsIuNVmES0Ot/k575kMQe3Af59lrJE4sHjoPQCFyn9VFWMrxxQw5ilcXzlZe3lTCxv5787ibB4zWomng==, tarball: https://npm.pkg.github.com/download/@rumsan/prisma/1.0.125/1b18a6ab1f3d346ce5eb571f2edf24192be60dc5}
     dependencies:
       '@nestjs/common': 10.3.3(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.1)(rxjs@7.8.1)
       '@prisma/client': 5.10.2
-      '@rumsan/sdk': 0.0.34
+      '@rumsan/sdk': 0.0.39
       axios: 1.6.7
       tslib: 2.6.2
     transitivePeerDependencies:
@@ -7271,10 +7265,10 @@ packages:
       - rxjs
     dev: false
 
-  /@rumsan/react-query@0.0.21(@types/react@18.2.59):
-    resolution: {integrity: sha512-8nSrc5ScNXmYLl+iIFApXjm212Oxm9bfFC3n4tVjoRyDvMLrakEhE576HqVFIo7bARICbz5ito3UaFgpcvB5sw==, tarball: https://npm.pkg.github.com/download/@rumsan/react-query/0.0.21/c4d3ac536834bec2806b45b96af309a97e9b0f22}
+  /@rumsan/react-query@0.0.25(@types/react@18.2.59):
+    resolution: {integrity: sha512-Veb+/H38GBQ57bTDF3u7/5pFCE9nzhnurtR3A9EW6Zjd1Kad7yNbuT2NVjQCnQn2STAnQpoba1uo5gLNEbNGpg==, tarball: https://npm.pkg.github.com/download/@rumsan/react-query/0.0.25/59137522c66b7b007b3049ebb169161aeca25010}
     dependencies:
-      '@rumsan/sdk': 0.0.36
+      '@rumsan/sdk': 0.0.39
       '@tanstack/react-query': 5.24.1(react@18.2.0)
       axios: 1.6.7
       react: 18.2.0
@@ -7286,8 +7280,8 @@ packages:
       - immer
     dev: false
 
-  /@rumsan/sdk@0.0.34:
-    resolution: {integrity: sha512-2PVEl8NEiIKY2nww0nEj5CRaH5pK/ou4c96wsfLcePknE3tViFX7oXkurhK8HrVwnNFzudvTUEbG4AcMabQnNA==, tarball: https://npm.pkg.github.com/download/@rumsan/sdk/0.0.34/73ad3e4cbd8966a49775278112f7276ac9a6c552}
+  /@rumsan/sdk@0.0.39:
+    resolution: {integrity: sha512-C5y8TnoGJmywzSNl8tAuz7C/vQH70AJp/CCJXIbwPU6bmmQt06NB6YUi4p8ICh86mRX29gfXHo3INKW+UlBogw==, tarball: https://npm.pkg.github.com/download/@rumsan/sdk/0.0.39/8e180ca43cb298f9d0862e97a1e00e6809789ac4}
     dependencies:
       axios: 1.6.7
       tslib: 2.6.2
@@ -7295,8 +7289,8 @@ packages:
       - debug
     dev: false
 
-  /@rumsan/sdk@0.0.35:
-    resolution: {integrity: sha512-fPWFXd7pyx1+evMwF1zQHWvC0a8rYK0uWbOgcubZqKq4H8R48T8crycN34I0xDqaStjUhaWka9sg3kp54wap6A==, tarball: https://npm.pkg.github.com/download/@rumsan/sdk/0.0.35/266d9cfd39aefca6b42fa2a95756a66ba4dc3f17}
+  /@rumsan/sdk@0.0.40:
+    resolution: {integrity: sha512-tyqGCqZ5w8zq30/NKv+HvAqmqFPNQ2p8PYQ5dCPBqdRZQ8kdcQdvjy9mPVjf31u4Pr4z8xl9fCXBMBKDYxmOEA==, tarball: https://npm.pkg.github.com/download/@rumsan/sdk/0.0.40/fb159965692268c19efe732da8490942bba2df52}
     dependencies:
       axios: 1.6.7
       tslib: 2.6.2
@@ -7304,17 +7298,8 @@ packages:
       - debug
     dev: false
 
-  /@rumsan/sdk@0.0.36:
-    resolution: {integrity: sha512-HSnr7lOvW5y+RpQJ06CCv0wESj9vFGngtQBVFyEf48uWpUY2ZTNL8E+AR+0E8V0xJb9IdOTqvxEsoDQ8aoM/ng==, tarball: https://npm.pkg.github.com/download/@rumsan/sdk/0.0.36/af5806e7360e778bfc88d3d8c1fc03517f151cef}
-    dependencies:
-      axios: 1.6.7
-      tslib: 2.6.2
-    transitivePeerDependencies:
-      - debug
-    dev: false
-
-  /@rumsan/user@3.0.147(passport@0.7.0)(reflect-metadata@0.2.1)(typescript@5.3.3)(zod@3.22.4):
-    resolution: {integrity: sha512-eHDyq29VleBOUdpisCRXXgvVDcL+7tmPTAA8W74umDtKaw0OTNOYkklP0xH/8cnqrHRcezOBWYLsHl4SZi4Y2Q==, tarball: https://npm.pkg.github.com/download/@rumsan/user/3.0.147/c5c679f020576822372799e2c7e8217ceba57d41}
+  /@rumsan/user@3.0.152(passport@0.7.0)(reflect-metadata@0.2.1)(typescript@5.3.3)(zod@3.22.4):
+    resolution: {integrity: sha512-Dyk4SWORlQXSZ5d6Ml7lEg133a8+JliXBc/Fz1HdQbLrPcKhFq4LYGZ+yVKoZi9fRjRXuWy3DJiPQM9IHM5UwQ==, tarball: https://npm.pkg.github.com/download/@rumsan/user/3.0.152/0e084c6ab0f99a9beb2f6a1a1accf824ebd8f08e}
     dependencies:
       '@casl/ability': 6.7.0
       '@nestjs/common': 10.3.3(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.1)(rxjs@7.8.1)
@@ -7325,10 +7310,10 @@ packages:
       '@nestjs/passport': 10.0.3(@nestjs/common@10.3.3)(passport@0.7.0)
       '@nestjs/swagger': 7.3.0(@nestjs/common@10.3.3)(@nestjs/core@10.3.3)(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.1)
       '@prisma/client': 5.10.2
-      '@rumsan/core': 3.0.126
-      '@rumsan/extensions': 0.0.10(@nestjs/core@10.3.3)(reflect-metadata@0.2.1)
-      '@rumsan/prisma': 1.0.121(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.1)(rxjs@7.8.1)
-      '@rumsan/sdk': 0.0.35
+      '@rumsan/core': 3.0.133
+      '@rumsan/extensions': 0.0.14(@nestjs/core@10.3.3)(reflect-metadata@0.2.1)
+      '@rumsan/prisma': 1.0.125(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.1)(rxjs@7.8.1)
+      '@rumsan/sdk': 0.0.40
       axios: 1.6.7
       class-transformer: 0.5.1
       class-validator: 0.14.1
@@ -8090,7 +8075,7 @@ packages:
   /@types/connect@3.4.38:
     resolution: {integrity: sha512-K6uROf1LD88uDQqJCktA4yzL1YYAK6NgfsI0v/mTgyPKWsX1CnJ0XPSDhViejru1GcRkLWb8RlzFYJRqGUbaug==}
     dependencies:
-      '@types/node': 20.11.20
+      '@types/node': 20.11.24
     dev: true
 
   /@types/debug@4.1.12:
@@ -8241,7 +8226,7 @@ packages:
   /@types/jsonwebtoken@9.0.5:
     resolution: {integrity: sha512-VRLSGzik+Unrup6BsouBeHsf4d1hOEgYWTm/7Nmw1sXoN1+tRly/Gy/po3yeahnP4jfnQWWAhQAqcNfH7ngOkA==}
     dependencies:
-      '@types/node': 20.11.20
+      '@types/node': 20.11.24
     dev: false
 
   /@types/jsonwebtoken@9.0.6:
@@ -8282,7 +8267,7 @@ packages:
   /@types/node-forge@1.3.11:
     resolution: {integrity: sha512-FQx220y22OKNTqaByeBGqHWYz4cl94tpcxeFdvBo3wjG6XPBuZ0BNgNZRV5J5TFmmcsJ4IzsLkmGRiQbnYsBEQ==}
     dependencies:
-      '@types/node': 20.11.20
+      '@types/node': 20.11.24
     dev: true
 
   /@types/node@20.11.20:
@@ -8294,7 +8279,6 @@ packages:
     resolution: {integrity: sha512-Kza43ewS3xoLgCEpQrsT+xRo/EJej1y0kVYGiLFE1NEODXGzTfwiC6tXTLMQskn1X4/Rjlh0MQUvx9W+L9long==}
     dependencies:
       undici-types: 5.26.5
-    dev: false
 
   /@types/parse-json@4.0.2:
     resolution: {integrity: sha512-dISoDXWWQwUquiKsyZ4Ng+HX2KsPL7LyHKHQwgGFEA3IaKac4Obd+h2a/a6waisAoepJlBcx9paWqjA8/HVjCw==}
@@ -8362,7 +8346,7 @@ packages:
     resolution: {integrity: sha512-x2EM6TJOybec7c52BX0ZspPodMsQUd5L6PRwOunVyVUhXiBSKf3AezDL8Dgvgt5o0UfKNfuA0eMLr2wLT4AiBA==}
     dependencies:
       '@types/mime': 1.3.5
-      '@types/node': 20.11.20
+      '@types/node': 20.11.24
     dev: true
 
   /@types/serve-index@1.9.4:

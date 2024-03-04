@@ -17,9 +17,10 @@ import RoleDetails from './role/roleDetail';
 import RoleTable from './role/roleTable';
 import UsersTable from './user.list';
 import UserDetails from './viewUser';
+import { User } from '@rumsan/sdk/types';
 
 export default function UserView() {
-  const [selectedUserData, setSelectedUserData] = useState<IUserItem>();
+  const [selectedUserData, setSelectedUserData] = useState<User>();
   const [selectedRoleData, setSelectedRoleData] = useState<IRoleItem>();
   // const [addUser, setAddUser] = useState<boolean>(false);
 
@@ -38,6 +39,10 @@ export default function UserView() {
 
   const handleTabChange = (tab: string) => {
     setActiveTab(tab);
+  };
+
+  const showListTab = () => {
+    handleTabChange(USER_NAV_ROUTE.DEFAULT);
   };
 
   // const handleAddUser = () => {
@@ -74,15 +79,15 @@ export default function UserView() {
             )}
 
             {activeTab === USER_NAV_ROUTE.ADD_ROLE && <AddRole />}
-            {activeTab === USER_NAV_ROUTE.ADD_USER && <AddUser />}
+            {activeTab === USER_NAV_ROUTE.ADD_USER && (
+              <AddUser onSuccess={showListTab} />
+            )}
           </ResizablePanel>
-          {selectedUserData || selectedRoleData ? (
+          {selectedUserData ? (
             <>
               <ResizableHandle />
               <ResizablePanel minSize={24}>
-                {selectedUserData && <UserDetails data={selectedUserData} />}
-                {/* {addUser && <AddUser />} */}
-                {selectedRoleData && <RoleDetails data={selectedRoleData} />}
+                <UserDetails data={selectedUserData} />
               </ResizablePanel>
             </>
           ) : null}

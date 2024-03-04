@@ -15,7 +15,7 @@ import UserNav from './nav';
 import AddRole from './role/addRole';
 import RoleDetails from './role/roleDetail';
 import RoleTable from './role/roleTable';
-import UsersTable from './usersTable';
+import UsersTable from './user.list';
 import UserDetails from './viewUser';
 
 export default function UserView() {
@@ -51,7 +51,7 @@ export default function UserView() {
       <Tabs defaultValue="grid">
         <ResizablePanelGroup
           direction="horizontal"
-          className="min-h-max border"
+          className="min-h-max border bg-card ml-2"
         >
           <ResizablePanel
             minSize={20}
@@ -65,8 +65,8 @@ export default function UserView() {
             />
           </ResizablePanel>
           <ResizableHandle />
-          <ResizablePanel>
-            <div className="p-2">
+          <ResizablePanel minSize={28}>
+            <div className="pt-2">
               {activeTab === USER_NAV_ROUTE.DEFAULT && (
                 <UsersTable handleClick={handleUserClick} />
               )}

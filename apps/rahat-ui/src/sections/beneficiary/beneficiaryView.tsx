@@ -14,7 +14,7 @@ import BeneficiaryDetail from '../../sections/beneficiary/beneficiaryDetail';
 import { IBeneficiaryItem } from '../../types/beneficiary';
 import AddBeneficiary from './addBeneficiary';
 import { BENEFICIARY_NAV_ROUTE } from '../../const/beneficiary.const';
-import ImportBeneficiary from './importBeneficiary';
+import ImportBeneficiary from './import.beneficiary';
 import { useRumsanService } from '../../providers/service.provider';
 
 export default function BeneficiaryView() {

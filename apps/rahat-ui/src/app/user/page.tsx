@@ -47,7 +47,7 @@ export default function UsersPage() {
   // };
 
   return (
-    <div className="mt-2">
+    <div>
       <Tabs defaultValue="grid">
         <ResizablePanelGroup
           direction="horizontal"
@@ -65,18 +65,16 @@ export default function UsersPage() {
             />
           </ResizablePanel>
           <ResizableHandle />
-          <ResizablePanel>
-            <div className="p-2">
-              {activeTab === USER_NAV_ROUTE.DEFAULT && (
-                <UsersTable handleClick={handleUserClick} />
-              )}
-              {activeTab === USER_NAV_ROUTE.LIST_ROLE && (
-                <RoleTable handleClick={handleRoleClick} />
-              )}
+          <ResizablePanel minSize={28}>
+            {activeTab === USER_NAV_ROUTE.DEFAULT && (
+              <UsersTable handleClick={handleUserClick} />
+            )}
+            {activeTab === USER_NAV_ROUTE.LIST_ROLE && (
+              <RoleTable handleClick={handleRoleClick} />
+            )}
 
-              {activeTab === USER_NAV_ROUTE.ADD_ROLE && <AddRole />}
-              {activeTab === USER_NAV_ROUTE.ADD_USER && <AddUser />}
-            </div>
+            {activeTab === USER_NAV_ROUTE.ADD_ROLE && <AddRole />}
+            {activeTab === USER_NAV_ROUTE.ADD_USER && <AddUser />}
           </ResizablePanel>
           {selectedUserData || selectedRoleData ? (
             <>

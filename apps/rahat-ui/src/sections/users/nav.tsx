@@ -3,6 +3,7 @@ import { Separator } from '@rahat-ui/shadcn/components/separator';
 import { ScrollArea } from '@rahat-ui/shadcn/components/scroll-area';
 import { USER_NAV_ROUTE } from '../../const/user.const';
 import { useUserStore } from '@rumsan/react-query';
+import { TabsList } from '@radix-ui/react-tabs';
 
 type IProps = {
   // onAddUsersClick: VoidFunction;
@@ -18,16 +19,20 @@ export default function Nav({ onTabChange }: IProps) {
   };
   return (
     <>
-      <ScrollArea>
-        <div className="p-4">
-          <h1 className="font-semibold text-xl text-slate-600 mb-4">Users</h1>
+      <div>
+        <div className="flex justify-between items-center p-4">
+          <h1 className="font-semibold text-xl text-primary">Users</h1>
+        </div>
+      </div>
+      <ScrollArea className="h-cuto mb-2">
+        <div className="px-4">
           <nav>
             <div
               onClick={() => handleTabClick(USER_NAV_ROUTE.DEFAULT)}
-              className="flex justify-between p-4 rounded-md cursor-pointer hover:bg-primary hover:text-white"
+              className="flex justify-between p-2 rounded-md cursor-pointer hover:bg-primary hover:text-white text-muted-foreground"
             >
               <div className="flex items-center gap-3">
-                <Eye size={20} strokeWidth={1.5} />
+                <Eye size={18} strokeWidth={1.5} />
                 <p>Users </p>
               </div>
               <p>{totalUser || 0}</p>
@@ -37,33 +42,13 @@ export default function Nav({ onTabChange }: IProps) {
       </ScrollArea>
       <Separator />
       <ScrollArea>
-        <div className="p-4">
-          <h1 className="font-semibold text-xl text-slate-600 mb-4">
-            Action Items
-          </h1>
-          <nav>
+        <div className="p-2">
+          <nav className="text-muted-foreground">
             <div
-              className="flex items-center p-4 gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white"
+              className="flex items-center p-2 gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white"
               onClick={() => handleTabClick(USER_NAV_ROUTE.ADD_USER)}
             >
-              <PlusSquare size={20} strokeWidth={1.5} /> <p>Add users</p>
-            </div>
-            <div className="flex items-center p-4 gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white">
-              <Import size={20} strokeWidth={1.5} />
-              <p>Import Users</p>
-            </div>
-            <div
-              className="flex items-center p-4 gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white"
-              onClick={() => handleTabClick(USER_NAV_ROUTE.ADD_ROLE)}
-            >
-              <PlusSquare size={20} strokeWidth={1.5} /> <p>Add Role</p>
-            </div>
-            <div
-              className="flex items-center p-4 gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white"
-              onClick={() => handleTabClick(USER_NAV_ROUTE.LIST_ROLE)}
-            >
-              <Import size={20} strokeWidth={1.5} />
-              <p>List Role</p>
+              <PlusSquare size={18} strokeWidth={1.5} /> <p>Add users</p>
             </div>
           </nav>
         </div>

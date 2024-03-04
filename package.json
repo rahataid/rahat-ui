@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
+    "rahat-ui": "npx nx serve rahat-ui",
     "rahat:dev": "npx nx run rahat-ui:dev",
     "rahat:build": "npx nx run rahat-ui:build ",
     "rahat:serve": "npx nx run rahat-ui:start",

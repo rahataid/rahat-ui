@@ -43,6 +43,8 @@ export default function BeneficiaryView() {
 
   const { data } = beneficiaryQuery.usebeneficiaryList({ order: 'createdAt' });
 
+  console.log('data', data);
+
   return (
     <div>
       <Tabs defaultValue="list">

@@ -213,8 +213,8 @@ export default function UserTable({ handleClick }: IProps) {
             </div>
             {/* USERS TABLE */}
             <div className="rounded border">
-              <Table>
-                <ScrollArea className="h-table1">
+              <ScrollArea className="h-table1">
+                <Table>
                   <TableHeader className="sticky top-0">
                     {table.getHeaderGroups().map((headerGroup) => (
                       <TableRow key={headerGroup.id}>
@@ -258,15 +258,15 @@ export default function UserTable({ handleClick }: IProps) {
                       <TableRow>
                         <TableCell
                           colSpan={columns.length}
-                          className="h-24 text-center"
+                          className="text-center"
                         >
                           No results.
                         </TableCell>
                       </TableRow>
                     )}
                   </TableBody>
-                </ScrollArea>
-              </Table>
+                </Table>
+              </ScrollArea>
             </div>
           </div>
           {/* TABLE PAGINATION */}

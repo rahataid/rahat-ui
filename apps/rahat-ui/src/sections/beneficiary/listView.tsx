@@ -13,7 +13,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { MoreHorizontal, Settings2 } from 'lucide-react';
+import { MoreHorizontal, Settings2, Eye } from 'lucide-react';
 
 import { Button } from '@rahat-ui/shadcn/components/button';
 import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
@@ -113,19 +113,24 @@ export const columns: ColumnDef<ListBeneficiary>[] = [
     enableHiding: false,
     cell: () => {
       return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem>View Details</DropdownMenuItem>
-            {/* <DropdownMenuSeparator /> */}
-            {/* <DropdownMenuItem>Edit</DropdownMenuItem> */}
-          </DropdownMenuContent>
-        </DropdownMenu>
+        // <DropdownMenu>
+        //   <DropdownMenuTrigger asChild>
+        //     <Button variant="ghost" className="h-8 w-8 p-0">
+        //       <span className="sr-only">Open menu</span>
+        //       <MoreHorizontal className="h-4 w-4" />
+        //     </Button>
+        //   </DropdownMenuTrigger>
+        //   <DropdownMenuContent align="end">
+        //     <DropdownMenuItem>View Details</DropdownMenuItem>
+        //     {/* <DropdownMenuSeparator /> */}
+        //     {/* <DropdownMenuItem>Edit</DropdownMenuItem> */}
+        //   </DropdownMenuContent>
+        // </DropdownMenu>
+        <Eye
+          size={20}
+          strokeWidth={1.5}
+          className="cursor-pointer hover:text-primary"
+        />
       );
     },
   },
@@ -243,7 +248,7 @@ export default function ListView({ handleClick }: IProps) {
                     <TableRow
                       key={row.id}
                       data-state={row.getIsSelected() && 'selected'}
-                      onDoubleClick={() => {
+                      onClick={() => {
                         handleClick(row.original);
                       }}
                     >

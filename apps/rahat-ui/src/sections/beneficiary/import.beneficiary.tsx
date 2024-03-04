@@ -77,15 +77,19 @@ export default function ImportBeneficiary() {
         show={isShowAlert}
       />
       <div className="h-full p-4">
-        <div className="w-full m-2">
-          Select beneficiary file to update (Excel, JSON or CSV file)
+        <div className="h-[calc(100vh-240px)] border-2 border-dashed border-primary grid place-items-center">
+          <div className="">
+            <div className='mb-2'>
+              Select beneficiary file to update (Excel, JSON or CSV file)
+            </div>
+            <Input
+              id="file"
+              type="file"
+              onChange={handleFileChange}
+              className="cursor-pointer w-auto rounded"
+            />
+          </div>
         </div>
-        <Input
-          id="file"
-          type="file"
-          onChange={handleFileChange}
-          className="cursor-pointer h-[calc(100vh-240px)] w-full border-2 border-dashed border-primary justify-center flex"
-        />
         <div className="flex justify-end w-full mt-4">
           <Button
             className="w-40 bg-primary hover:ring-2 ring-primary"

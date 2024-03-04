@@ -34,6 +34,11 @@ export default function BeneficiaryView() {
 
   const handleNav = (item: string) => {
     setActive(item);
+    setSelectedData(undefined);
+  };
+
+  const handleDefault = () => {
+    setSelectedData(undefined);
   };
 
   const { data } = beneficiaryQuery.usebeneficiaryList({ order: 'createdAt' });
@@ -83,7 +88,12 @@ export default function BeneficiaryView() {
             <>
               <ResizableHandle />
               <ResizablePanel minSize={24}>
-                {selectedData && <BeneficiaryDetail data={selectedData} />}
+                {selectedData && (
+                  <BeneficiaryDetail
+                    data={selectedData}
+                    handleDefault={handleDefault}
+                  />
+                )}
                 {/* {addBeneficiary && <AddBeneficiary />} */}
               </ResizablePanel>
             </>

@@ -81,11 +81,11 @@ export default function Nav({ meta, handleNav }: IProps) {
                 </div>
                 <p>9</p>
               </div> */}
-              <div className="flex justify-between p-2 rounded-md cursor-pointer hover:bg-primary hover:text-white text-muted-foreground">
-                <div
-                  className="flex items-center gap-3"
-                  onClick={() => handleNav(BENEFICIARY_NAV_ROUTE.DEFAULT)}
-                >
+              <div
+                className="flex justify-between p-2 rounded-md cursor-pointer hover:bg-primary hover:text-white text-muted-foreground"
+                onClick={() => handleNav(BENEFICIARY_NAV_ROUTE.DEFAULT)}
+              >
+                <div className="flex items-center gap-3">
                   <Users size={18} strokeWidth={1.5} />
                   {/* <Eye size={18} strokeWidth={1.5} /> */}
                   <p>Beneficiaries</p>

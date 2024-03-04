@@ -62,7 +62,7 @@ type IProps = {
 export type User = {
   name: string;
   email: string;
-  wallet: string;
+  walletAddress: string;
   role: string;
   status: string;
 };
@@ -98,19 +98,19 @@ export const columns: ColumnDef<any, any>[] = [
     cell: ({ row }) => <div className="capitalize">{row.getValue('name')}</div>,
   },
   {
-    accessorKey: 'wallet',
+    accessorKey: 'walletAddress',
     header: ({ column }) => {
       return (
         <Button
           variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          // onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
-          Walletaddress
-          <ArrowUpDown className="ml-2 h-4 w-4" />
+          Wallet Address
+          {/* <ArrowUpDown className="ml-2 h-4 w-4" /> */}
         </Button>
       );
     },
-    cell: ({ row }) => {
+        cell: ({ row }) => {
       const walletValue = row.getValue('wallet') as string;
       return <div>{walletValue}</div>;
     },

@@ -212,9 +212,9 @@ export default function UserTable({ handleClick }: IProps) {
               </DropdownMenu>
             </div>
             {/* USERS TABLE */}
-            <div className="rounded border">
+            <div className="rounded border w-full">
               <ScrollArea className="h-table1">
-                <Table>
+                <Table className="w-full">
                   <TableHeader className="sticky top-0">
                     {table.getHeaderGroups().map((headerGroup) => (
                       <TableRow key={headerGroup.id}>

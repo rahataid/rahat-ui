@@ -152,7 +152,6 @@ function BeneficiaryView() {
     },
   });
 
-  console.log('pagination', pagination);
 
   return (
     <Tabs defaultValue="list" className="h-full">

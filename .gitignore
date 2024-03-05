@@ -7,7 +7,7 @@ tmp
 .env
 .env.*
 !.env.example
-.npmrc
+.npmrc*
 
 # dependencies
 node_modules

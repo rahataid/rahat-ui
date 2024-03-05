@@ -1,4 +1,7 @@
 import { Toaster } from '@rahat-ui/shadcn/components/toaster';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 import { QueryProvider } from '../providers/query-provider';
 import { ThemeProvider } from '../providers/theme-provider';
 import { Wagmi } from '../providers/wagmi.provider';
@@ -31,6 +34,7 @@ export default function RootLayout({
                 disableTransitionOnChange
               >
                 <main className={GeistSans.className}>{children}</main>
+                <ToastContainer />
                 <Toaster />
               </ThemeProvider>
             </ServiceProvider>

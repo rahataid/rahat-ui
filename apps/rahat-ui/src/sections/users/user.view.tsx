@@ -70,7 +70,7 @@ export default function UserView() {
             />
           </ResizablePanel>
           <ResizableHandle />
-          <ResizablePanel minSize={28} className="pt-2">
+          <ResizablePanel minSize={40} className="pt-2">
             {activeTab === USER_NAV_ROUTE.DEFAULT && (
               <UsersTable handleClick={handleUserClick} />
             )}
@@ -86,7 +86,7 @@ export default function UserView() {
           {selectedUserData ? (
             <>
               <ResizableHandle />
-              <ResizablePanel minSize={24}>
+              <ResizablePanel>
                 <UserDetails data={selectedUserData} />
               </ResizablePanel>
             </>

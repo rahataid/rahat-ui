@@ -24,23 +24,21 @@ export default function AuthPage() {
       error: state.error,
     }));
 
-  const sendOtpMutation = authQuery.useSendOtp();
-  const loginMutation = authQuery.useLogin();
+  const { mutateAsync: requestOtp } = authQuery.useRequestOtp();
+  const { mutateAsync: verifyOtp } = authQuery.useVerifyOtp();
 
-  const onSendOtpFormSubmit = async (e: React.SyntheticEvent) => {
+  const onRequestOtp = async (e: React.SyntheticEvent) => {
     e.preventDefault();
-    await sendOtpMutation.mutateAsync({
+    await requestOtp({
       address,
       service,
-      clientId: '105cd449-53f6-44e4-85f3-feaa7d762ffa',
     });
   };
 
-  const onVerifyOtpFormSubmit = async (e: React.SyntheticEvent) => {
+  const onVerifyOtp = async (e: React.SyntheticEvent) => {
     e.preventDefault();
 
-    await loginMutation.mutateAsync({ otp, challenge, service });
-    //await sendOtp({ otp, challenge, service });
+    await verifyOtp({ otp, challenge, service });
     router.push(paths.dashboard.root);
   };
 
@@ -69,7 +67,7 @@ export default function AuthPage() {
           </div>
 
           {!challenge.length ? (
-            <form onSubmit={onSendOtpFormSubmit}>
+            <form onSubmit={onRequestOtp}>
               <div className="grid gap-2">
                 <div className="grid gap-1">
                   <Label className="sr-only" htmlFor="email">
@@ -95,7 +93,7 @@ export default function AuthPage() {
               </div>
             </form>
           ) : (
-            <form onSubmit={onVerifyOtpFormSubmit}>
+            <form onSubmit={onVerifyOtp}>
               <div className="grid gap-2">
                 <div className="grid gap-1">
                   <Label className="sr-only" htmlFor="otp">
@@ -127,7 +125,7 @@ export default function AuthPage() {
             </Button> */}
             <span
               className="underline font-medium ml-2 cursor-pointer"
-              onClick={onSendOtpFormSubmit}
+              onClick={onVerifyOtp}
             >
               {!challenge.length ? 'Get Started' : 'Resend'}
             </span>
@@ -135,8 +133,8 @@ export default function AuthPage() {
               <Button
                 className="ml-2"
                 onClick={() => {
+                  setAddress('');
                   setChallenge('');
-                  router.back();
                 }}
               >
                 Go Back

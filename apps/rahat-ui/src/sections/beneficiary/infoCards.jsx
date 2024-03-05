@@ -64,19 +64,19 @@ export default function InfoCards({ data }) {
           <div className="flex justify-between gap-8">
             <div className="flex flex-col gap-2">
               <div>
-                <p>{data.bankStatus ?? 'test'}</p>
+                <p>{data?.bankStatus ?? 'test'}</p>
                 <p className="text-sm font-normal text-muted-foreground">
                   Bank Status
                 </p>
               </div>
               <div>
-                <p>{data.internetStatus ?? 'test'}</p>
+                <p>{data?.internetStatus ?? 'test'}</p>
                 <p className="text-sm font-normal text-muted-foreground">
                   Internet Status
                 </p>
               </div>
               <div>
-                <p>{data.phoneStatus ?? 'test'}</p>
+                <p>{data?.phoneStatus ?? 'test'}</p>
                 <p className="text-sm font-normal text-muted-foreground">
                   Phone Status
                 </p>
@@ -84,14 +84,14 @@ export default function InfoCards({ data }) {
             </div>
             <div className="flex flex-col gap-2">
               <div>
-                <p>{data.gender ?? 'test'}</p>
+                <p>{data?.gender ?? 'test'}</p>
                 <p className="text-sm font-normal text-muted-foreground">
                   Gender
                 </p>
               </div>
 
               <div>
-                <p>{data.location ?? 'test'}</p>
+                <p>{data?.location ?? 'test'}</p>
                 <p className="text-sm font-normal text-muted-foreground">
                   Location
                 </p>

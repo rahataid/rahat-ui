@@ -1,55 +1,31 @@
 'use client';
 
-import * as React from 'react';
-import {
-  ColumnDef,
-  ColumnFiltersState,
-  SortingState,
-  VisibilityState,
-  flexRender,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useReactTable,
-} from '@tanstack/react-table';
-import { MoreHorizontal, Settings2, Eye } from 'lucide-react';
+import { Table, flexRender } from '@tanstack/react-table';
+import { Settings2 } from 'lucide-react';
 
 import { Button } from '@rahat-ui/shadcn/components/button';
-import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
-import { Badge } from '@rahat-ui/shadcn/components/badge';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/components/dropdown-menu';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  SelectGroup,
-} from '@rahat-ui/shadcn/components/select';
 import { Input } from '@rahat-ui/shadcn/components/input';
 import {
-  Table,
   TableBody,
   TableCell,
+  Table as TableComponent,
   TableHead,
   TableHeader,
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import { ListBeneficiary } from '@rahat-ui/types';
-import { useRumsanService } from '../../providers/service.provider';
 
 type IProps = {
   handleClick: (item: Beneficiary) => void;
+  table: Table<Beneficiary>;
 };
 
 export type Beneficiary = {
@@ -60,120 +36,7 @@ export type Beneficiary = {
   bank: string;
 };
 
-export const columns: ColumnDef<ListBeneficiary>[] = [
-  {
-    id: 'select',
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && 'indeterminate')
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
-    accessorKey: 'walletAddress',
-    header: 'Wallet Address',
-    cell: ({ row }) => <div>{row.getValue('walletAddress')}</div>,
-  },
-  {
-    accessorKey: 'gender',
-    header: 'Gender',
-    cell: ({ row }) => <div>{row.getValue('gender')}</div>,
-  },
-  {
-    accessorKey: 'internetStatus',
-    header: 'Internet Access',
-    cell: ({ row }) => <div>{row.getValue('internetStatus')}</div>,
-  },
-  {
-    accessorKey: 'phoneStatus',
-    header: 'Phone Type',
-    cell: ({ row }) => <div>{row.getValue('phoneStatus')}</div>,
-  },
-  {
-    accessorKey: 'bankedStatus',
-    header: 'Banking Status',
-    cell: ({ row }) => <div>{row.getValue('bankedStatus')}</div>,
-  },
-  {
-    id: 'actions',
-    enableHiding: false,
-    cell: () => {
-      return (
-        // <DropdownMenu>
-        //   <DropdownMenuTrigger asChild>
-        //     <Button variant="ghost" className="h-8 w-8 p-0">
-        //       <span className="sr-only">Open menu</span>
-        //       <MoreHorizontal className="h-4 w-4" />
-        //     </Button>
-        //   </DropdownMenuTrigger>
-        //   <DropdownMenuContent align="end">
-        //     <DropdownMenuItem>View Details</DropdownMenuItem>
-        //     {/* <DropdownMenuSeparator /> */}
-        //     {/* <DropdownMenuItem>Edit</DropdownMenuItem> */}
-        //   </DropdownMenuContent>
-        // </DropdownMenu>
-        <Eye
-          size={20}
-          strokeWidth={1.5}
-          className="cursor-pointer hover:text-primary"
-        />
-      );
-    },
-  },
-];
-
-export default function ListView({ handleClick }: IProps) {
-  const { beneficiaryQuery } = useRumsanService();
-  const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
-  );
-  const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = React.useState({});
-  const [pagination, setPagination] = React.useState({
-    pageIndex: 0,
-    pageSize: 50,
-  });
-
-  const { data, isLoading, isError, isSuccess, isFetched } =
-    beneficiaryQuery.usebeneficiaryList({});
-
-  const table = useReactTable({
-    data: data?.data || [],
-    columns,
-    onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setRowSelection,
-    onPaginationChange: setPagination,
-    state: {
-      pagination,
-      sorting,
-      columnFilters,
-      columnVisibility,
-      rowSelection,
-    },
-  });
-
+export default function ListView({ handleClick, table }: IProps) {
   return (
     <>
       <div className="w-full -mt-2 p-2 bg-secondary">
@@ -222,9 +85,9 @@ export default function ListView({ handleClick }: IProps) {
           </DropdownMenu>
         </div>
         <div className="rounded border bg-white">
-          <Table>
+          <TableComponent>
             <ScrollArea className="h-table1">
-              <TableHeader className="sticky top-0 bg-white">
+              <TableHeader className="sticky top-0">
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow key={headerGroup.id}>
                     {headerGroup.headers.map((header) => {
@@ -265,7 +128,7 @@ export default function ListView({ handleClick }: IProps) {
                 ) : (
                   <TableRow>
                     <TableCell
-                      colSpan={columns.length}
+                      colSpan={table.getAllColumns().length}
                       className="h-24 text-center"
                     >
                       No results.
@@ -274,56 +137,7 @@ export default function ListView({ handleClick }: IProps) {
                 )}
               </TableBody>
             </ScrollArea>
-          </Table>
-        </div>
-      </div>
-      <div className="flex items-center justify-end space-x-4 p-1 pl-2 pr-2 border-t">
-        <div className="flex-1 text-sm text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length} of{' '}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="text-sm font-medium">Rows per page</div>
-          <Select
-            defaultValue="50"
-            onValueChange={(value) => table.setPageSize(Number(value))}
-          >
-            <SelectTrigger className="w-16">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectItem value="5">5</SelectItem>
-                <SelectItem value="10">10</SelectItem>
-                <SelectItem value="20">20</SelectItem>
-                <SelectItem value="30">30</SelectItem>
-                <SelectItem value="40">40</SelectItem>
-                <SelectItem value="50">50</SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-        </div>
-        <div>
-          Page {table.getState().pagination.pageIndex + 1} of{' '}
-          {table.getPageCount()}
-        </div>
-        <div className="space-x-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            Previous
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            Next
-          </Button>
+          </TableComponent>
         </div>
       </div>
     </>

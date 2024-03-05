@@ -5,21 +5,19 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 import { useCreateRoleMutation } from '@rahat-ui/query';
-import { Button, buttonVariants } from '@rahat-ui/shadcn/components/button';
-import { Input } from '@rahat-ui/shadcn/components/input';
+import { Button } from '@rahat-ui/shadcn/components/button';
 import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
+import { Input } from '@rahat-ui/shadcn/components/input';
 
-import { Label } from '@rahat-ui/shadcn/components/label';
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from '@rahat-ui/shadcn/components/form';
-import React, { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { toast } from 'react-toastify';
 
 export default function AddRole() {

@@ -1,14 +1,12 @@
 'use client';
 
-import { useState } from 'react';
 import { Input } from '@rahat-ui/shadcn/components/input';
-import { Search, Filter } from 'lucide-react';
 import { ScrollArea } from '@rahat-ui/shadcn/components/scroll-area';
+import { Search } from 'lucide-react';
 
-import CustomPagination from '../../components/customPagination';
+import { ListBeneficiary } from '@rahat-ui/types';
 import BeneficiaryCard from '../../sections/beneficiary/card';
 import { IBeneficiaryItem } from '../../types/beneficiary';
-import { ListBeneficiary } from '@rahat-ui/types';
 
 type IProps = {
   handleClick: (item: IBeneficiaryItem) => void;
@@ -16,19 +14,6 @@ type IProps = {
 };
 
 export default function GridView({ handleClick, data }: IProps) {
-  const itemsPerPage = 4;
-  const [currentPage, setCurrentPage] = useState(1);
-
-  const totalItems = data?.length;
-  const totalPages = Math?.ceil(totalItems / itemsPerPage);
-
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const displayedItems = data?.slice(startIndex, endIndex);
-
-  const handlePaginationClick = (page: number) => {
-    setCurrentPage(page);
-  };
   return (
     <>
       <ScrollArea className="px-4 pt-2 h-withPage">
@@ -43,7 +28,7 @@ export default function GridView({ handleClick, data }: IProps) {
         </div>
 
         <div className="flex flex-col gap-3">
-          {displayedItems?.map((data: IBeneficiaryItem) => (
+          {data?.map((data: IBeneficiaryItem) => (
             <BeneficiaryCard
               key={data.uuid}
               walletAddress={data.walletAddress}
@@ -54,11 +39,6 @@ export default function GridView({ handleClick, data }: IProps) {
           ))}
         </div>
       </ScrollArea>
-      <CustomPagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        handlePaginationClick={handlePaginationClick}
-      />
     </>
   );
 }

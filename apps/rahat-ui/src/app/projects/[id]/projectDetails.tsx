@@ -1,6 +1,7 @@
 import ChartsCard from '../../../components/chartsCard';
 import DataCard from '../../../components/dataCard';
 import type { Metadata } from 'next';
+import { Users, CircleDollarSign } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'DashBoard',
@@ -15,13 +16,22 @@ export default function ProjectDetails() {
           title="Beneficiaries"
           number={'12'}
           subTitle="Total"
+          Icon={Users}
         />
-        <DataCard className="" title="Balance" number={'12'} subTitle="Nrs" />
+        <DataCard
+          className=""
+          title="Balance"
+          number={'12'}
+          subTitle="Nrs"
+          Icon={CircleDollarSign}
+        />
+
         <DataCard
           className=""
           title="Distributed"
           number={'12'}
           subTitle="Nrs"
+          Icon={Users}
         />
       </div>
       <div className="grid grid-cols-1 border rounded-lg p-4 border-none shadow-sm bg-white">

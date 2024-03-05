@@ -15,7 +15,7 @@ export type ServiceContextType = {
   rumsanService: RumsanService;
   authQuery: AuthQuery;
   userQuery: UserQuery;
-  beneficiaryQuery: BeneficiaryQuery;
+  //beneficiaryQuery: BeneficiaryQuery;
   roleQuery: RoleQuery;
 };
 
@@ -49,7 +49,7 @@ export function ServiceProvider({ children }: ServiceProviderProps) {
 
   const authQuery = new AuthQuery(rumsanService, queryClient);
   const userQuery = new UserQuery(rumsanService, queryClient);
-  const beneficiaryQuery = new BeneficiaryQuery(rumsanService, queryClient);
+  // const beneficiaryQuery = new BeneficiaryQuery(rumsanService, queryClient);
   const roleQuery = new RoleQuery(rumsanService, queryClient);
 
   return (
@@ -58,7 +58,7 @@ export function ServiceProvider({ children }: ServiceProviderProps) {
         rumsanService,
         authQuery,
         userQuery,
-        beneficiaryQuery,
+        //beneficiaryQuery,
         roleQuery,
       }}
     >

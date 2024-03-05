@@ -29,7 +29,6 @@ export default function AuthPage() {
 
   const onSendOtpFormSubmit = async (e: React.SyntheticEvent) => {
     e.preventDefault();
-    console.log('ssssssssssssss');
     await sendOtpMutation.mutateAsync({
       address,
       service,

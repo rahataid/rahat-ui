@@ -24,7 +24,7 @@ export default function Nav({ meta, handleNav }: IProps) {
   return (
     <>
       <div>
-        <div className="flex justify-between items-center p-4">
+        <div className="flex justify-between items-center p-4 border-6">
           <h1 className="font-semibold text-xl text-primary">Beneficiaries</h1>
           <TabsList>
             <TabsTrigger value="list">
@@ -81,11 +81,11 @@ export default function Nav({ meta, handleNav }: IProps) {
                 </div>
                 <p>9</p>
               </div> */}
-              <div className="flex justify-between p-2 rounded-md cursor-pointer hover:bg-primary hover:text-white text-muted-foreground">
-                <div
-                  className="flex items-center gap-3"
-                  onClick={() => handleNav(BENEFICIARY_NAV_ROUTE.DEFAULT)}
-                >
+              <div
+                className="flex justify-between p-2 rounded-md cursor-pointer hover:bg-primary hover:text-white text-muted-foreground"
+                onClick={() => handleNav(BENEFICIARY_NAV_ROUTE.DEFAULT)}
+              >
+                <div className="flex items-center gap-3">
                   <Users size={18} strokeWidth={1.5} />
                   {/* <Eye size={18} strokeWidth={1.5} /> */}
                   <p>Beneficiaries</p>

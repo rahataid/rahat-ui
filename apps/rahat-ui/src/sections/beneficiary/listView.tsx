@@ -87,7 +87,7 @@ export default function ListView({ handleClick, table }: IProps) {
         <div className="rounded border bg-white">
           <TableComponent>
             <ScrollArea className="h-table1">
-              <TableHeader className="sticky top-0 bg-white">
+              <TableHeader className="sticky top-0">
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow key={headerGroup.id}>
                     {headerGroup.headers.map((header) => {
@@ -111,7 +111,7 @@ export default function ListView({ handleClick, table }: IProps) {
                     <TableRow
                       key={row.id}
                       data-state={row.getIsSelected() && 'selected'}
-                      onDoubleClick={() => {
+                      onClick={() => {
                         handleClick(row.original);
                       }}
                     >

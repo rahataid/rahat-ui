@@ -18,20 +18,28 @@ import {
   DialogTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dialog';
 import ConfirmDialog from '../../components/dialog';
-
+import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+} from '@rahat-ui/shadcn/src/components/ui/card';
 import { Label } from '@rahat-ui/shadcn/components/label';
 import { Switch } from '@rahat-ui/shadcn/components/switch';
-import { Archive, Trash2, FilePenLine, Expand } from 'lucide-react';
+import { Archive, Trash2, FilePenLine, Expand, X, Minus } from 'lucide-react';
 import { IBeneficiaryItem } from '../../types/beneficiary';
 import { Button } from '@rahat-ui/shadcn/components/button';
 import { paths } from '../../routes/paths';
 import EditBeneficiary from './editBeneficiary';
+import InfoCards from './infoCards';
+import { BENEFICIARY_NAV_ROUTE } from '../../const/beneficiary.const';
 
 type IProps = {
   data: IBeneficiaryItem;
+  handleDefault: VoidFunction;
 };
 
-export default function BeneficiaryDetail({ data }: IProps) {
+export default function BeneficiaryDetail({ data, handleDefault }: IProps) {
   const router = useRouter();
 
   const changedDate = new Date(data?.updatedAt);
@@ -44,14 +52,17 @@ export default function BeneficiaryDetail({ data }: IProps) {
     <>
       <Tabs defaultValue="detail">
         <div className="flex justify-between items-center p-4">
-          <TabsList>
-            <TabsTrigger value="detail">Details </TabsTrigger>
-            <TabsTrigger value="transaction-history">
-              Transaction History
-            </TabsTrigger>
-            <TabsTrigger value="edit">Edit</TabsTrigger>
-          </TabsList>
           <div className="flex gap-4">
+            <TooltipProvider delayDuration={100}>
+              <Tooltip>
+                <TooltipTrigger onClick={handleDefault}>
+                  <Minus size={20} strokeWidth={1.5} />
+                </TooltipTrigger>
+                <TooltipContent className="bg-secondary ">
+                  <p className="text-xs font-medium">Close</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
             <TooltipProvider delayDuration={100}>
               <Tooltip>
                 <TooltipTrigger
@@ -105,8 +116,15 @@ export default function BeneficiaryDetail({ data }: IProps) {
               </Tooltip>
             </TooltipProvider>
           </div>
+          <TabsList>
+            <TabsTrigger value="detail">Details </TabsTrigger>
+            <TabsTrigger value="transaction-history">
+              Transaction History
+            </TabsTrigger>
+            <TabsTrigger value="edit">Edit</TabsTrigger>
+          </TabsList>
         </div>
-        <div className="flex justify-between items-center p-4">
+        {/* <div className="flex justify-between items-center p-4">
           <div className="flex gap-4">
             <Image
               className="rounded-full"
@@ -132,9 +150,9 @@ export default function BeneficiaryDetail({ data }: IProps) {
               Last updated
             </p>
           </div>
-        </div>
+        </div> */}
         <TabsContent value="detail">
-          <div className="grid grid-cols-2 border-y font-light">
+          {/* <div className="grid grid-cols-2 border-y font-light">
             <div className="border-r p-4 flex flex-col gap-2 ">
               <p>Name</p>
               <p>Verified</p>
@@ -145,7 +163,58 @@ export default function BeneficiaryDetail({ data }: IProps) {
               <p>{data.verified ? 'True' : 'False'}</p>
               <p>{formattedDate}</p>
             </div>
-          </div>
+          </div> */}
+          {/* <Card className="shadow-md m-2">
+            <CardHeader>
+              <div className="flex justify-between">
+                <p>Name</p>
+                <Badge variant="outline" color="red">
+                  Not Approved
+                </Badge>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 gap-8">
+                <div>
+                  <p>{data.walletAddress ?? 'test'}</p>
+                  <p className="text-sm font-normal text-muted-foreground">
+                    Wallet Address
+                  </p>
+                </div>
+                <div>
+                  <p>{data.gender ?? 'test'}</p>
+                  <p className="text-sm font-normal text-muted-foreground">
+                    Gender
+                  </p>
+                </div>
+                <div>
+                  <p>{data.bankStatus ?? 'test'}</p>
+                  <p className="text-sm font-normal text-muted-foreground">
+                    Bank Status
+                  </p>
+                </div>
+                <div>
+                  <p>{data.location ?? 'test'}</p>
+                  <p className="text-sm font-normal text-muted-foreground">
+                    Location
+                  </p>
+                </div>
+                <div>
+                  <p>{data.internetStatus ?? 'test'}</p>
+                  <p className="text-sm font-normal text-muted-foreground">
+                    Internet Status
+                  </p>
+                </div>
+                <div>
+                  <p>{data.phoneStatus ?? 'test'}</p>
+                  <p className="text-sm font-normal text-muted-foreground">
+                    Phone Status
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card> */}
+          <InfoCards data={data} />
         </TabsContent>
         <TabsContent value="transaction-history">
           <div className="p-4 border-y">Transaction History View</div>
@@ -153,13 +222,13 @@ export default function BeneficiaryDetail({ data }: IProps) {
         <TabsContent value="edit">
           <EditBeneficiary />
         </TabsContent>
-        <div className="p-6 flex justify-between">
+        {/* <div className="p-6 flex justify-between">
           <div className="flex items-center space-x-2">
             <Switch id="disable-user" />
             <Label htmlFor="disable-user">Disable this user</Label>
           </div>
           <Button>Confirm</Button>
-        </div>
+        </div> */}
       </Tabs>
     </>
   );

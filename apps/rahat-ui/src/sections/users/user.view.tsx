@@ -8,18 +8,19 @@ import {
 } from '@rahat-ui/shadcn/components/resizable';
 import { Tabs } from '@rahat-ui/shadcn/components/tabs';
 
-import UserNav from '../../sections/users/nav';
-import AddUser from '../../sections/users/addUser';
-import { IRoleItem, IUserItem } from '../../types/user';
 import { USER_NAV_ROUTE } from '../../const/user.const';
-import UserDetails from '../../sections/users/viewUser';
-import AddRole from '../../sections/users/role/addRole';
-import UsersTable from '../../sections/users/usersTable';
-import RoleTable from '../../sections/users/role/roleTable';
-import RoleDetails from '../../sections/users/role/roleDetail';
+import { IRoleItem, IUserItem } from '../../types/user';
+import AddUser from './addUser';
+import UserNav from './nav';
+import AddRole from './role/addRole';
+import RoleDetails from './role/roleDetail';
+import RoleTable from './role/roleTable';
+import UsersTable from './user.list';
+import UserDetails from './viewUser';
+import { User } from '@rumsan/sdk/types';
 
-export default function UsersPage() {
-  const [selectedUserData, setSelectedUserData] = useState<IUserItem>();
+export default function UserView() {
+  const [selectedUserData, setSelectedUserData] = useState<User>();
   const [selectedRoleData, setSelectedRoleData] = useState<IRoleItem>();
   // const [addUser, setAddUser] = useState<boolean>(false);
 
@@ -40,6 +41,10 @@ export default function UsersPage() {
     setActiveTab(tab);
   };
 
+  const showListTab = () => {
+    handleTabChange(USER_NAV_ROUTE.DEFAULT);
+  };
+
   // const handleAddUser = () => {
   //   setSelectedUserData(undefined);
   //   setSelectedRoleData(undefined);
@@ -47,11 +52,11 @@ export default function UsersPage() {
   // };
 
   return (
-    <div className="mt-2">
-      <Tabs defaultValue="grid">
+    <div>
+      <Tabs defaultValue="grid" className="h-[calc(100vh-68px)] ">
         <ResizablePanelGroup
           direction="horizontal"
-          className="min-h-max border"
+          className="min-h-max bg-card"
         >
           <ResizablePanel
             minSize={20}
@@ -65,26 +70,24 @@ export default function UsersPage() {
             />
           </ResizablePanel>
           <ResizableHandle />
-          <ResizablePanel>
-            <div className="p-2">
-              {activeTab === USER_NAV_ROUTE.DEFAULT && (
-                <UsersTable handleClick={handleUserClick} />
-              )}
-              {activeTab === USER_NAV_ROUTE.LIST_ROLE && (
-                <RoleTable handleClick={handleRoleClick} />
-              )}
+          <ResizablePanel minSize={28} className="pt-2">
+            {activeTab === USER_NAV_ROUTE.DEFAULT && (
+              <UsersTable handleClick={handleUserClick} />
+            )}
+            {activeTab === USER_NAV_ROUTE.LIST_ROLE && (
+              <RoleTable handleClick={handleRoleClick} />
+            )}
 
-              {activeTab === USER_NAV_ROUTE.ADD_ROLE && <AddRole />}
-              {activeTab === USER_NAV_ROUTE.ADD_USER && <AddUser />}
-            </div>
+            {activeTab === USER_NAV_ROUTE.ADD_ROLE && <AddRole />}
+            {activeTab === USER_NAV_ROUTE.ADD_USER && (
+              <AddUser onSuccess={showListTab} />
+            )}
           </ResizablePanel>
-          {selectedUserData || selectedRoleData ? (
+          {selectedUserData ? (
             <>
               <ResizableHandle />
               <ResizablePanel minSize={24}>
-                {selectedUserData && <UserDetails data={selectedUserData} />}
-                {/* {addUser && <AddUser />} */}
-                {selectedRoleData && <RoleDetails data={selectedRoleData} />}
+                <UserDetails data={selectedUserData} />
               </ResizablePanel>
             </>
           ) : null}

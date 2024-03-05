@@ -1,6 +1,9 @@
 import DataCard from '../../components/dataCard';
 import type { Metadata } from 'next';
 import TransactionTable from '../../components/transactions/transactionTable';
+import {
+  Users
+} from 'lucide-react'
 
 export const metadata: Metadata = {
   title: 'Transactions',
@@ -18,24 +21,28 @@ export default function TransactionsPage() {
           title="Cash Issued"
           number={'12'}
           subTitle="To banked beneficiary"
+          Icon={Users}
         />
         <DataCard
           className=""
           title="Issued To"
           number={'12'}
           subTitle="Banked Benificiary"
+          Icon={Users}
         />
         <DataCard
           className=""
           title="Distributed Beneficiaries"
           number={'$' + 12}
           subTitle="Banked Beneficiary"
+          Icon={Users}
         />
         <DataCard
           className=""
           title="Distributed To"
           number={'12'}
           subTitle="To banked beneficiary"
+          Icon={Users}
         />
       </div>
       <TransactionTable />

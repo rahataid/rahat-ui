@@ -1,6 +1,5 @@
 'use client';
 
-import * as React from 'react';
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -13,7 +12,8 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from 'lucide-react';
+import { MoreHorizontal, Settings2 } from 'lucide-react';
+import * as React from 'react';
 
 import { Button } from '@rahat-ui/shadcn/components/button';
 import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
@@ -28,6 +28,14 @@ import {
 } from '@rahat-ui/shadcn/components/dropdown-menu';
 import { Input } from '@rahat-ui/shadcn/components/input';
 import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@rahat-ui/shadcn/components/select';
+import {
   Table,
   TableBody,
   TableCell,
@@ -35,48 +43,21 @@ import {
   TableHeader,
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
+import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import TransactionTableData from '../../app/beneficiary/beneficiaryTransactionData.json';
+import { useGraphService } from '../../providers/subgraph-provider';
 
-const data: Payment[] = [
-  {
-    id: 'm5gr84i9',
-    amount: 316,
-    status: 'success',
-    email: 'ken99@yahoo.com',
-  },
-  {
-    id: '3u1reuv4',
-    amount: 242,
-    status: 'success',
-    email: 'Abe45@gmail.com',
-  },
-  {
-    id: 'derv1ws0',
-    amount: 837,
-    status: 'processing',
-    email: 'Monserrat44@gmail.com',
-  },
-  {
-    id: '5kma53ae',
-    amount: 874,
-    status: 'success',
-    email: 'Silas22@gmail.com',
-  },
-  {
-    id: 'bhqecj4p',
-    amount: 721,
-    status: 'failed',
-    email: 'carmella@hotmail.com',
-  },
-];
+const data: Transaction[] = TransactionTableData;
 
-export type Payment = {
-  id: string;
-  amount: number;
-  status: 'pending' | 'processing' | 'success' | 'failed';
-  email: string;
+export type Transaction = {
+  topic: string;
+  processedBy: string;
+  timeStamp: string;
+  transactionHash: string;
+  amount: string;
 };
 
-export const columns: ColumnDef<Payment>[] = [
+export const columns: ColumnDef<Transaction>[] = [
   {
     id: 'select',
     header: ({ table }) => (
@@ -85,16 +66,14 @@ export const columns: ColumnDef<Payment>[] = [
           table.getIsAllPageRowsSelected() ||
           (table.getIsSomePageRowsSelected() && 'indeterminate')
         }
-        onCheckedChange={(value: any) =>
-          table.toggleAllPageRowsSelected(!!value)
-        }
+        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
         aria-label="Select all"
       />
     ),
     cell: ({ row }) => (
       <Checkbox
         checked={row.getIsSelected()}
-        onCheckedChange={(value: any) => row.toggleSelected(!!value)}
+        onCheckedChange={(value) => row.toggleSelected(!!value)}
         aria-label="Select row"
       />
     ),
@@ -102,48 +81,38 @@ export const columns: ColumnDef<Payment>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: 'status',
-    header: 'Status',
+    accessorKey: 'topic',
+    header: 'Topic',
+    cell: ({ row }) => <div>{row.getValue('topic')}</div>,
+  },
+  {
+    accessorKey: 'processedBy',
+    header: 'Processed By',
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue('status')}</div>
+      <div className="capitalize">
+        {row.getValue('processedBy') ? `${row.getValue('processedBy')?.toString().substring(0,4)}....${row.getValue('processedBy')?.toString()?.slice(-3)}` : 'N/A'}
+      </div>
     ),
   },
   {
-    accessorKey: 'email',
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-        >
-          Email
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
-    cell: ({ row }) => <div className="lowercase">{row.getValue('email')}</div>,
+    accessorKey: 'timeStamp',
+    header: 'Time Stamp',
+    cell: ({ row }) => <div> {row.getValue('timeStamp')}</div>,
+  },
+  {
+    accessorKey: 'transactionHash',
+    header: 'Transaction Hash',
+    cell: ({ row }) => <div> {`${row.getValue('transactionHash')?.toString().substring(0,4)}....${row.getValue('transactionHash')?.toString()?.slice(-3)}`}</div>,
   },
   {
     accessorKey: 'amount',
-    header: () => <div className="text-right">Amount</div>,
-    cell: ({ row }) => {
-      const amount = parseFloat(row.getValue('amount'));
-
-      // Format the amount as a dollar amount
-      const formatted = new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-      }).format(amount);
-
-      return <div className="text-right font-medium">{formatted}</div>;
-    },
+    header: 'Amount',
+    cell: ({ row }) => <div> {row.getValue('amount')}</div>,
   },
   {
     id: 'actions',
     enableHiding: false,
-    cell: ({ row }) => {
-      const payment = row.original;
-
+    cell: () => {
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -153,15 +122,9 @@ export const columns: ColumnDef<Payment>[] = [
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(payment.id)}
-            >
-              Copy payment ID
-            </DropdownMenuItem>
+            <DropdownMenuItem>View Details</DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>View customer</DropdownMenuItem>
-            <DropdownMenuItem>View payment details</DropdownMenuItem>
+            <DropdownMenuItem>Edit</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );
@@ -169,7 +132,7 @@ export const columns: ColumnDef<Payment>[] = [
   },
 ];
 
-export default function DataTableDemo() {
+export default function BeneficiaryDetailTableView() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -177,6 +140,7 @@ export default function DataTableDemo() {
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
+  const [data,setData] = React.useState<Transaction[]>([])
 
   const table = useReactTable({
     data,
@@ -197,100 +161,221 @@ export default function DataTableDemo() {
     },
   });
 
+  const {queryService} = useGraphService();
+ 
+  const fetchBeneficiary =  React.useCallback(()=>{
+    const querRes = queryService.useProjectTransaction();
+    // const claimRes = queryService.useClaimAssigned('0x932a3db51f4c4ef3d0ee454613b55446149302ec148b4bf3d955708802c972d609000000');
+    querRes.then((res)=>{
+      console.log(res)
+     const claimedAssigned = res?.data?.claimAssigneds
+     const claimProcessed = res?.data?.projectClaimProcesseds;
+     const beneficiaryReferred = res?.data?.beneficiaryReferreds;
+     const beneficiaryAdded = res?.data?.beneficiaryAddeds;
+     const claimCreated = res?.data?.claimCreateds;
+     const projectClaimProcessed=res?.data?.projectClaimProcesseds;
+     const tokenBudgetIncrease = res?.data?.tokenBudgetIncreases
+     const data:any =[]
+     
+     claimedAssigned.map((trans)=>{
+      data.push({
+        processedBy:trans.beneficiary,
+        topic:trans.eventType,
+        timeStamp:trans.blockTimestamp,
+        transactionHash:trans.transactionHash,
+        amount:'1'
+      })
+      // const claimRes = queryService?.useClaimAssigned(trans.id);
+    })
+    claimProcessed.map((trans)=>{
+      data.push({
+        processedBy:trans.vendor,
+        topic:trans.eventType,
+        timeStamp:trans.blockTimestamp,
+        transactionHash:trans.transactionHash,
+        amount:''
+
+      })
+    })
+    beneficiaryReferred.map((trans)=>{
+      data.push({
+        processedBy:trans.referrerVendor,
+        topic:trans.eventType,
+        timeStamp:trans.blockTimestamp,
+        transactionHash:trans.transactionHash
+
+      })
+      
+    })
+
+    claimCreated.map((trans)=>{
+      data.push({
+        processedBy:trans.claimee,
+        transactionHash:trans.transactionHash,
+        timeStamp:trans?.blockTimestamp,
+        topic:trans?.eventType
+      })
+    })
+
+    beneficiaryAdded.map((trans)=>{
+      data.push({
+        topic:trans.eventType,
+        transactionHash:trans.transactionHash,
+      })
+    })
+
+    projectClaimProcessed.map((trans)=>{
+      data.push({
+        processedBy:trans.vendor,
+        topic:trans.eventType,
+        transactionHash:trans.transactionHash,
+        timeStamp:trans?.blockTimestamp,
+      })
+    })
+    tokenBudgetIncrease.map((trans)=>{
+      data.push({
+        topic:trans.eventType,
+        transactionHash:trans.transactionHash,
+        timeStamp:trans?.blockTimestamp,
+      })
+    })
+    setData(data)
+    })
+    
+  },[queryService])
+ 
+
+    React.useEffect (()=>{
+      
+      fetchBeneficiary()
+    },[fetchBeneficiary])
+
   return (
-    <div className="w-full">
-      <div className="flex items-center py-4">
-        <Input
-          placeholder="Filter emails..."
-          value={(table.getColumn('email')?.getFilterValue() as string) ?? ''}
-          onChange={(event) =>
-            table.getColumn('email')?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm"
-        />
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto">
-              Columns <ChevronDown className="ml-2 h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {table
-              .getAllColumns()
-              .filter((column) => column.getCanHide())
-              .map((column) => {
-                return (
-                  <DropdownMenuCheckboxItem
-                    key={column.id}
-                    className="capitalize"
-                    checked={column.getIsVisible()}
-                    onCheckedChange={(value) =>
-                      column.toggleVisibility(!!value)
-                    }
-                  >
-                    {column.id}
-                  </DropdownMenuCheckboxItem>
-                );
-              })}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
+    <>
+      <div className="w-full p-2">
+        <div className="flex items-center mb-4">
+          <Input
+            placeholder="Filter topic..."
+            value={(table.getColumn('topic')?.getFilterValue() as string) ?? ''}
+            onChange={(event) =>
+              table.getColumn('topic')?.setFilterValue(event.target.value)
+            }
+            className="max-w-sm mr-3"
+          />
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="ml-auto">
+                <Settings2 className="mr-2 h-4 w-5" />
+                View
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Toggle Columns</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              {table
+                .getAllColumns()
+                .filter((column) => column.getCanHide())
+                .map((column) => {
                   return (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                    </TableHead>
+                    <DropdownMenuCheckboxItem
+                      key={column.id}
+                      className="capitalize"
+                      checked={column.getIsVisible()}
+                      onCheckedChange={(value) =>
+                        column.toggleVisibility(!!value)
+                      }
+                    >
+                      {column.id}
+                    </DropdownMenuCheckboxItem>
                   );
                 })}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && 'selected'}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+        <div className="rounded-md border w-full">
+          <Table>
+            <ScrollArea className="h-table">
+              <TableHeader>
+                {table.getHeaderGroups().map((headerGroup) => (
+                  <TableRow key={headerGroup.id}>
+                    {headerGroup.headers.map((header) => {
+                      return (
+                        <TableHead key={header.id}>
+                          {header.isPlaceholder
+                            ? null
+                            : flexRender(
+                                header.column.columnDef.header,
+                                header.getContext()
+                              )}
+                        </TableHead>
+                      );
+                    })}
+                  </TableRow>
+                ))}
+              </TableHeader>
+              <TableBody>
+                {table.getRowModel().rows?.length ? (
+                  table.getRowModel().rows.map((row) => (
+                    <TableRow
+                      key={row.id}
+                      data-state={row.getIsSelected() && 'selected'}
+                    >
+                      {row.getVisibleCells().map((cell) => (
+                        <TableCell key={cell.id}>
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell
+                      colSpan={columns.length}
+                      className="h-24 text-center"
+                    >
+                      No results.
                     </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  No results.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+                  </TableRow>
+                )}
+              </TableBody>
+            </ScrollArea>
+          </Table>
+        </div>
       </div>
-      <div className="flex items-center justify-end space-x-2 py-4">
+      <div className="flex items-center justify-end space-x-8 p-2">
         <div className="flex-1 text-sm text-muted-foreground">
           {table.getFilteredSelectedRowModel().rows.length} of{' '}
           {table.getFilteredRowModel().rows.length} row(s) selected.
         </div>
-        <div className="space-x-2">
+        <div className="flex items-center gap-2">
+          <div className="text-sm font-medium">Rows per page</div>
+          <Select
+            defaultValue="10"
+            onValueChange={(value) => table.setPageSize(Number(value))}
+          >
+            <SelectTrigger className="w-16">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectItem value="5">5</SelectItem>
+                <SelectItem value="10">10</SelectItem>
+                <SelectItem value="20">20</SelectItem>
+                <SelectItem value="30">30</SelectItem>
+                <SelectItem value="40">40</SelectItem>
+                <SelectItem value="50">50</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
+        <div>
+          Page {table.getState().pagination.pageIndex + 1} of{' '}
+          {table.getPageCount()}
+        </div>
+        <div className="space-x-4">
           <Button
             variant="outline"
             size="sm"
@@ -309,6 +394,6 @@ export default function DataTableDemo() {
           </Button>
         </div>
       </div>
-    </div>
+    </>
   );
 }

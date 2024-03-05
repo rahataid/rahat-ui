@@ -44,94 +44,42 @@ import {
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import TransactionTableData from '../../app/beneficiary/beneficiaryTransactionData.json';
+import { ListBeneficiary } from '@rahat-ui/types';
+import { truncateEthAddress } from '@rumsan/core/utilities/string.utils';
+import { useRumsanService } from '../../providers/service.provider';
 
-const data: Transaction[] = TransactionTableData;
-
-export type Transaction = {
-  topic: string;
-  processedBy: string;
-  timeStamp: string;
-  transactionHash: string;
-  amount: string;
+type IProps = {
+  handleClick: (item: Beneficiary) => void;
 };
 
-export const columns: ColumnDef<Transaction>[] = [
+export type Beneficiary = {
+  name: string;
+  projectsInvolved: string;
+  internetAccess: string;
+  phone: string;
+  bank: string;
+};
+
+export const columns: ColumnDef<ListBeneficiary>[] = [
   {
-    id: 'select',
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && 'indeterminate')
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
+    accessorKey: 'name',
+    header: 'Name',
+    cell: ({ row }) => <div>{row.getValue('name')}</div>,
   },
   {
-    accessorKey: 'topic',
-    header: 'Topic',
-    cell: ({ row }) => <div>{row.getValue('topic')}</div>,
+    accessorKey: 'email',
+    header: 'Email',
+    cell: ({ row }) => <div>{row.getValue('email')}</div>,
   },
   {
-    accessorKey: 'processedBy',
-    header: 'Processed By',
-    cell: ({ row }) => (
-      <div className="capitalize">
-        {row.getValue('processedBy') ? row.getValue('processedBy') : 'N/A'}
-      </div>
-    ),
-  },
-  {
-    accessorKey: 'timeStamp',
-    header: 'Time Stamp',
-    cell: ({ row }) => <div> {row.getValue('timeStamp')}</div>,
-  },
-  {
-    accessorKey: 'transactionHash',
-    header: 'Transaction Hash',
-    cell: ({ row }) => <div> {row.getValue('transactionHash')}</div>,
-  },
-  {
-    accessorKey: 'amount',
-    header: 'Amount',
-    cell: ({ row }) => <div> {row.getValue('amount')}</div>,
-  },
-  {
-    id: 'actions',
-    enableHiding: false,
-    cell: () => {
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem>View Details</DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>Edit</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
-    },
+    accessorKey: 'wallet',
+    header: 'Wallet',
+    cell: ({ row }) => <div>{truncateEthAddress(row.getValue('wallet'))}</div>,
   },
 ];
 
-export default function BeneficiaryDetailTableView() {
+export default function ListView({ handleClick }: IProps) {
+  const { userQuery } = useRumsanService();
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -139,9 +87,16 @@ export default function BeneficiaryDetailTableView() {
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
+  const [pagination, setPagination] = React.useState({
+    pageIndex: 0,
+    pageSize: 50,
+  });
+
+  const { data, isLoading, isError, isSuccess, isFetched } =
+    userQuery.useUserList();
 
   const table = useReactTable({
-    data,
+    data: data?.data || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -151,7 +106,9 @@ export default function BeneficiaryDetailTableView() {
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
+    onPaginationChange: setPagination,
     state: {
+      pagination,
       sorting,
       columnFilters,
       columnVisibility,
@@ -161,15 +118,20 @@ export default function BeneficiaryDetailTableView() {
 
   return (
     <>
-      <div className="w-full p-2">
-        <div className="flex items-center mb-4">
+      <div className="w-full h-full -mt-2 p-2 bg-secondary">
+        <div className="flex items-center mb-2">
           <Input
-            placeholder="Filter topic..."
-            value={(table.getColumn('topic')?.getFilterValue() as string) ?? ''}
-            onChange={(event) =>
-              table.getColumn('topic')?.setFilterValue(event.target.value)
+            placeholder="Search User..."
+            value={
+              (table.getColumn('walletAddress')?.getFilterValue() as string) ??
+              ''
             }
-            className="max-w-sm mr-3"
+            onChange={(event) =>
+              table
+                .getColumn('walletAddress')
+                ?.setFilterValue(event.target.value)
+            }
+            className="rounded mr-2"
           />
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -201,10 +163,10 @@ export default function BeneficiaryDetailTableView() {
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-        <div className="rounded-md border w-full">
+        <div className="rounded border h-[calc(100vh-180px)]  bg-card">
           <Table>
-            <ScrollArea className="h-table">
-              <TableHeader>
+            <ScrollArea className="h-table1">
+              <TableHeader className="sticky top-0">
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow key={headerGroup.id}>
                     {headerGroup.headers.map((header) => {
@@ -228,6 +190,9 @@ export default function BeneficiaryDetailTableView() {
                     <TableRow
                       key={row.id}
                       data-state={row.getIsSelected() && 'selected'}
+                      onClick={() => {
+                        handleClick(row.original);
+                      }}
                     >
                       {row.getVisibleCells().map((cell) => (
                         <TableCell key={cell.id}>
@@ -254,18 +219,17 @@ export default function BeneficiaryDetailTableView() {
           </Table>
         </div>
       </div>
-      <div className="flex items-center justify-end space-x-8 p-2">
+      <div className="sticky bottom-0 flex items-center justify-end space-x-4 px-4 py-1 border-t-2 bg-card">
         <div className="flex-1 text-sm text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length} of{' '}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
+          {table.getFilteredRowModel().rows.length} Users
         </div>
         <div className="flex items-center gap-2">
           <div className="text-sm font-medium">Rows per page</div>
           <Select
-            defaultValue="10"
+            defaultValue="50"
             onValueChange={(value) => table.setPageSize(Number(value))}
           >
-            <SelectTrigger className="w-16">
+            <SelectTrigger className="w-16 h-8">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -284,7 +248,7 @@ export default function BeneficiaryDetailTableView() {
           Page {table.getState().pagination.pageIndex + 1} of{' '}
           {table.getPageCount()}
         </div>
-        <div className="space-x-4">
+        <div className="space-x-2">
           <Button
             variant="outline"
             size="sm"

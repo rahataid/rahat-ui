@@ -3,7 +3,7 @@ const ROOTS = {
   PROJECT: '/projects',
   DASHBOARD: '/dashboard',
   BENEFICIARY: '/beneficiary',
-  USER: '/user',
+  USER: '/users',
   TRANSACTIONS: '/transactions',
   VENDOR: '/vendors',
   COMMUNICATION: '/communications',

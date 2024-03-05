@@ -50,6 +50,7 @@ export default function AddCampaign() {
 
   const createCampaign = useCreateCampaignMutation();
   const [showSelectAudio, setShowSelectAudio] = useState(false);
+  const [showAudiences, setShowAudiences] = useState(false);
 
   const FormSchema = z.object({
     campaignName: z.string().min(2, {
@@ -128,7 +129,7 @@ export default function AddCampaign() {
         onSubmit={form.handleSubmit(handleCreateCampaign)}
         className="h-add"
       >
-        <div className=" w-full p-4 bg-white">
+        <div className="w-full p-4 bg-white">
           <h2 className="text-lg font-semibold mb-4">Campaign: Add</h2>
           <div className="shadow-md p-4 rounded-sm">
             <div className="mb-4 w-full grid grid-cols-3 gap-4 ">
@@ -300,6 +301,26 @@ export default function AddCampaign() {
                   </FormItem>
                 )}
               />
+            </div>
+            <div className="flex justify-end">
+              <Button
+                variant="outline"
+                className="text-primary border-primary mr-4"
+                onClick={() => setShowAudiences(true)}
+              >
+                Select Audiences
+              </Button>
+              <Button>Create Campaign</Button>
+            </div>
+          </div>
+          {showAudiences && (
+            <div className="mt-6 shadow-md rounded-sm p-4">
+              <div className="flex justify-between">
+                <p>Select Audiences</p>
+                <Button variant="ghost" onClick={() => setShowAudiences(false)}>
+                  Close
+                </Button>
+              </div>
               <FormField
                 control={form.control}
                 name="audiences"
@@ -350,10 +371,7 @@ export default function AddCampaign() {
                 )}
               />
             </div>
-            <div className="flex justify-end">
-              <Button>Create Campaign</Button>
-            </div>
-          </div>
+          )}
         </div>
       </form>
     </Form>

@@ -1,6 +1,5 @@
 'use client';
 
-import * as React from 'react';
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -14,10 +13,10 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import { MoreHorizontal, Settings2 } from 'lucide-react';
+import * as React from 'react';
 
 import { Button } from '@rahat-ui/shadcn/components/button';
 import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
-import { Badge } from '@rahat-ui/shadcn/components/badge';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -27,15 +26,15 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/components/dropdown-menu';
+import { Input } from '@rahat-ui/shadcn/components/input';
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
-  SelectGroup,
 } from '@rahat-ui/shadcn/components/select';
-import { Input } from '@rahat-ui/shadcn/components/input';
 import {
   Table,
   TableBody,
@@ -44,8 +43,8 @@ import {
   TableHeader,
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
-import TransactionTableData from '../../app/beneficiary/beneficiaryTransactionData.json';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import TransactionTableData from '../../app/beneficiary/beneficiaryTransactionData.json';
 
 const data: Transaction[] = TransactionTableData;
 

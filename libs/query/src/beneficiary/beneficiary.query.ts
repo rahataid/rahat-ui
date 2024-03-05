@@ -1,9 +1,8 @@
-import { QueryClient, useQuery, UseQueryResult } from '@tanstack/react-query';
-import { useEffect } from 'react';
-import { RumsanService } from '@rumsan/sdk';
 import { getBeneficiaryClient } from '@rahataid/sdk/clients';
-import { TAGS } from '../config';
 import { BeneficiaryClient } from '@rahataid/sdk/types';
+import { RumsanService } from '@rumsan/sdk';
+import { QueryClient, useQuery, UseQueryResult } from '@tanstack/react-query';
+import { TAGS } from '../config';
 
 export class BeneficiaryQuery {
   private reactQueryClient: QueryClient;
@@ -14,10 +13,10 @@ export class BeneficiaryQuery {
     this.client = getBeneficiaryClient(rsService.client);
   }
 
-  usebeneficiaryList = (payload: any): UseQueryResult<any, Error> => {
+  useBeneficiaryList = (payload: any): UseQueryResult<any, Error> => {
     return useQuery({
-      queryKey: [TAGS.GET_BENEFICIARIES],
-      queryFn: () => this.client.list(),
+      queryKey: [TAGS.GET_BENEFICIARIES, payload],
+      queryFn: () => this.client.list(payload),
     });
   };
 }

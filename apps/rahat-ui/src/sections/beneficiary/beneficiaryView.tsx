@@ -1,42 +1,158 @@
 'use client';
-import React, { useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
-import { Tabs, TabsContent } from '@rahat-ui/shadcn/components/tabs';
 import {
-  ResizablePanelGroup,
   ResizableHandle,
   ResizablePanel,
+  ResizablePanelGroup,
 } from '@rahat-ui/shadcn/components/resizable';
-import BeneficiaryNav from '../../sections/beneficiary/nav';
-import BeneficiaryListView from '../../sections/beneficiary/listView';
-import BeneficiaryGridView from '../../sections/beneficiary/gridView';
-import BeneficiaryDetail from '../../sections/beneficiary/beneficiaryDetail';
-import { IBeneficiaryItem } from '../../types/beneficiary';
-import AddBeneficiary from './addBeneficiary';
-import { BENEFICIARY_NAV_ROUTE } from '../../const/beneficiary.const';
-import ImportBeneficiary from './importBeneficiary';
-import { useRumsanService } from '../../providers/service.provider';
+import { Tabs, TabsContent } from '@rahat-ui/shadcn/components/tabs';
 
+import {
+  ColumnDef,
+  VisibilityState,
+  getCoreRowModel,
+  getSortedRowModel,
+  useReactTable,
+} from '@tanstack/react-table';
+import { MoreHorizontal } from 'lucide-react';
+
+import { Button } from '@rahat-ui/shadcn/components/button';
+import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@rahat-ui/shadcn/components/dropdown-menu';
+
+import { usePagination } from '@rahat-ui/query';
+import { Beneficiary } from '@rahataid/sdk/types';
+import CustomPagination from '../../components/customPagination';
+import { BENEFICIARY_NAV_ROUTE } from '../../const/beneficiary.const';
+import { useRumsanService } from '../../providers/service.provider';
+import BeneficiaryDetail from '../../sections/beneficiary/beneficiaryDetail';
+import BeneficiaryGridView from '../../sections/beneficiary/gridView';
+import BeneficiaryListView from '../../sections/beneficiary/listView';
+import BeneficiaryNav from '../../sections/beneficiary/nav';
+import AddBeneficiary from './addBeneficiary';
+import ImportBeneficiary from './importBeneficiary';
+
+export const columns: ColumnDef<Beneficiary>[] = [
+  {
+    id: 'select',
+    header: ({ table }) => (
+      <Checkbox
+        checked={
+          table.getIsAllPageRowsSelected() ||
+          (table.getIsSomePageRowsSelected() && 'indeterminate')
+        }
+        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        aria-label="Select all"
+      />
+    ),
+    cell: ({ row }) => (
+      <Checkbox
+        checked={row.getIsSelected()}
+        onCheckedChange={(value) => row.toggleSelected(!!value)}
+        aria-label="Select row"
+      />
+    ),
+    enableSorting: false,
+    enableHiding: false,
+  },
+  {
+    accessorKey: 'walletAddress',
+    header: 'Wallet Address',
+    cell: ({ row }) => <div>{row.getValue('walletAddress')}</div>,
+  },
+  {
+    accessorKey: 'gender',
+    header: 'Gender',
+    cell: ({ row }) => <div>{row.getValue('gender')}</div>,
+  },
+  {
+    accessorKey: 'internetStatus',
+    header: 'Internet Access',
+    cell: ({ row }) => <div>{row.getValue('internetStatus')}</div>,
+  },
+  {
+    accessorKey: 'phoneStatus',
+    header: 'Phone Type',
+    cell: ({ row }) => <div>{row.getValue('phoneStatus')}</div>,
+  },
+  {
+    accessorKey: 'bankedStatus',
+    header: 'Banking Status',
+    cell: ({ row }) => <div>{row.getValue('bankedStatus')}</div>,
+  },
+  {
+    id: 'actions',
+    enableHiding: false,
+    cell: () => {
+      return (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="h-8 w-8 p-0">
+              <span className="sr-only">Open menu</span>
+              <MoreHorizontal className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem>View Details</DropdownMenuItem>
+            {/* <DropdownMenuSeparator /> */}
+            {/* <DropdownMenuItem>Edit</DropdownMenuItem> */}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      );
+    },
+  },
+];
 export default function BeneficiaryView() {
+  const { pagination, filters, setPagination } = usePagination((state) => ({
+    pagination: state.pagination,
+    filters: state.filters,
+    setPagination: state.setPagination,
+  }));
+  const handleNextPage = usePagination((state) => state.setNextPage);
+  const handlePrevPage = usePagination((state) => state.setPrevPage);
+
   const { beneficiaryQuery } = useRumsanService();
-  const [selectedData, setSelectedData] = useState<IBeneficiaryItem>();
-  const [addBeneficiary, setAddBeneficiary] = useState<Boolean>(false);
+  const [selectedData, setSelectedData] = useState<Beneficiary>();
   const [active, setActive] = useState<string>(BENEFICIARY_NAV_ROUTE.DEFAULT);
 
-  const handleBeneficiaryClick = (item: IBeneficiaryItem) => {
+  const handleBeneficiaryClick = useCallback((item: Beneficiary) => {
     setSelectedData(item);
-    setAddBeneficiary(false);
-  };
+  }, []);
 
-  const handleView = () => {
-    setSelectedData(undefined);
-  };
-
-  const handleNav = (item: string) => {
+  const handleNav = useCallback((item: string) => {
     setActive(item);
-  };
+  }, []);
 
-  const { data } = beneficiaryQuery.usebeneficiaryList({ order: 'createdAt' });
+  const queryOptions = useMemo(
+    () => ({ ...pagination, ...filters }),
+    [pagination, filters]
+  );
+
+  const { data } = beneficiaryQuery.useBeneficiaryList(queryOptions);
+
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const [rowSelection, setRowSelection] = useState({});
+
+  const table = useReactTable({
+    data: data?.data || [],
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    onColumnVisibilityChange: setColumnVisibility,
+    onRowSelectionChange: setRowSelection,
+    state: {
+      columnVisibility,
+      rowSelection,
+    },
+  });
+
+  console.log('data.meta', data?.response?.meta);
 
   return (
     <div>
@@ -65,8 +181,8 @@ export default function BeneficiaryView() {
               <>
                 <TabsContent value="list">
                   <BeneficiaryListView
-                    data={data?.data}
                     meta={data?.meta}
+                    table={table}
                     handleClick={handleBeneficiaryClick}
                   />
                 </TabsContent>
@@ -76,18 +192,21 @@ export default function BeneficiaryView() {
                     data={data?.data}
                   />
                 </TabsContent>
+
+                <CustomPagination
+                  meta={data?.response?.meta || { total: 0, currentPage: 0 }}
+                  handleNextPage={handleNextPage}
+                  handlePrevPage={handlePrevPage}
+                  handlePageSizeChange={(value) =>
+                    setPagination({ perPage: Number(value) })
+                  }
+                />
               </>
             )}
           </ResizablePanel>
-          {selectedData || addBeneficiary ? (
-            <>
-              <ResizableHandle />
-              <ResizablePanel minSize={24}>
-                {selectedData && <BeneficiaryDetail data={selectedData} />}
-                {/* {addBeneficiary && <AddBeneficiary />} */}
-              </ResizablePanel>
-            </>
-          ) : null}
+          {selectedData && (
+            <BeneficiaryDetail data={selectedData as Beneficiary} />
+          )}
         </ResizablePanelGroup>
       </Tabs>
     </div>

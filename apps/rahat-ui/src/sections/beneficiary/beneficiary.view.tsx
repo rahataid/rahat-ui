@@ -114,8 +114,13 @@ function BeneficiaryView() {
     filters: state.filters,
     setPagination: state.setPagination,
   }));
-  const handleNextPage = usePagination((state) => state.setNextPage);
-  const handlePrevPage = usePagination((state) => state.setPrevPage);
+
+  const [perPage, setPerPage] = useState<number>(5);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+
+  const handleNextPage = () => setCurrentPage(currentPage + 1);
+
+  const handlePrevPage = () => setCurrentPage(currentPage - 1);
 
   const { beneficiaryQuery } = useRumsanService();
   const [selectedData, setSelectedData] = useState<Beneficiary>();
@@ -125,21 +130,24 @@ function BeneficiaryView() {
     setSelectedData(item);
   }, []);
 
+  const handleClose = () => {
+    setSelectedData(null);
+  };
+
   const handleNav = useCallback((item: string) => {
     setActive(item);
   }, []);
 
-  const queryOptions = useMemo(
-    () => ({ ...pagination, ...filters }),
-    [pagination, filters]
-  );
-
-  const { data } = beneficiaryQuery.useBeneficiaryList(queryOptions);
+  const { data } = beneficiaryQuery.useBeneficiaryList({
+    perPage,
+    page: currentPage,
+  });
 
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
 
   const table = useReactTable({
+    manualPagination: true,
     data: data?.data || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
@@ -152,12 +160,11 @@ function BeneficiaryView() {
     },
   });
 
-
   return (
     <Tabs defaultValue="list" className="h-full">
       <ResizablePanelGroup direction="horizontal" className="min-h-max bg-card">
         <ResizablePanel minSize={20} defaultSize={20} maxSize={20}>
-          <BeneficiaryNav handleNav={handleNav} meta={data?.meta} />
+          <BeneficiaryNav handleNav={handleNav} meta={data?.response?.meta} />
         </ResizablePanel>
         <ResizableHandle />
         <ResizablePanel minSize={28}>
@@ -188,16 +195,19 @@ function BeneficiaryView() {
             meta={data?.response?.meta || { total: 0, currentPage: 0 }}
             handleNextPage={handleNextPage}
             handlePrevPage={handlePrevPage}
-            handlePageSizeChange={(value) =>
-              setPagination({ perPage: Number(value) })
-            }
+            handlePageSizeChange={(value) => setPerPage(Number(value))}
           />
         </ResizablePanel>
         {selectedData ? (
           <>
             <ResizableHandle />
             <ResizablePanel minSize={24}>
-              {selectedData && <BeneficiaryDetail data={selectedData} />}
+              {selectedData && (
+                <BeneficiaryDetail
+                  handleClose={handleClose}
+                  data={selectedData}
+                />
+              )}
               {/* {addBeneficiary && <AddBeneficiary />} */}
             </ResizablePanel>
           </>
@@ -207,4 +217,4 @@ function BeneficiaryView() {
   );
 }
 
- export default memo(BeneficiaryView);
+export default memo(BeneficiaryView);

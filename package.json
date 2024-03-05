@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "rahat:dev": "npx nx run rahat-ui:dev",
+    "rahat:dev": "npx nx serve rahat-ui",
     "rahat:build": "npx nx run rahat-ui:build ",
     "rahat:serve": "npx nx run rahat-ui:start",
     "build:all": "npx nx run-many --target=build --all",
@@ -72,6 +72,7 @@
     "tailwind": "^4.0.0",
     "tailwind-merge": "^2.2.1",
     "tailwindcss-animate": "^1.0.7",
+    "ts-loader": "^9.5.1",
     "tslib": "^2.3.0",
     "vaul": "^0.9.0",
     "viem": "^2.7.11",

@@ -1,10 +1,10 @@
 import { usePathname } from 'next/navigation';
 
-import { Eye, EyeOff, ScreenShareOff, PlusSquare, Import } from 'lucide-react';
-import { Separator } from '@rahat-ui/shadcn/components/separator';
-import { ScrollArea } from '@rahat-ui/shadcn/components/scroll-area';
-import { COMMUNICATION_NAV_ROUTE } from '../../const/communication.const';
 import { useCampaignStore } from '@rahat-ui/query';
+import { ScrollArea } from '@rahat-ui/shadcn/components/scroll-area';
+import { Separator } from '@rahat-ui/shadcn/components/separator';
+import { Eye, PlusSquare } from 'lucide-react';
+import { COMMUNICATION_NAV_ROUTE } from '../../constants/communication.const';
 
 type IProps = {
   onTabChange: (tab: string) => void;

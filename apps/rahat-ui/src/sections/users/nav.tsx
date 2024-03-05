@@ -1,9 +1,8 @@
-import { Eye, EyeOff, ScreenShareOff, PlusSquare, Import } from 'lucide-react';
-import { Separator } from '@rahat-ui/shadcn/components/separator';
 import { ScrollArea } from '@rahat-ui/shadcn/components/scroll-area';
-import { USER_NAV_ROUTE } from '../../const/user.const';
+import { Separator } from '@rahat-ui/shadcn/components/separator';
 import { useUserStore } from '@rumsan/react-query';
-import { TabsList } from '@radix-ui/react-tabs';
+import { Eye, PlusSquare } from 'lucide-react';
+import { USER_NAV_ROUTE } from '../../constants/user.const';
 
 type IProps = {
   // onAddUsersClick: VoidFunction;

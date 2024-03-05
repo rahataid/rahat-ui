@@ -1,16 +1,16 @@
 'use client';
-import { useState } from 'react';
 import {
-  ResizablePanelGroup,
   ResizableHandle,
   ResizablePanel,
+  ResizablePanelGroup,
 } from '@rahat-ui/shadcn/components/resizable';
+import { useState } from 'react';
 
 import CommunicationNav from '../nav';
-import TextTableView from './textTable';
 import AddCampaign from './addCampaign';
+import TextTableView from './textTable';
 
-import { COMMUNICATION_NAV_ROUTE } from 'apps/rahat-ui/src/const/communication.const';
+import { COMMUNICATION_NAV_ROUTE } from 'apps/rahat-ui/src/constants/communication.const';
 
 export default function TextView() {
   const [activeTab, setActiveTab] = useState<string>(

@@ -9,11 +9,7 @@ export const THEMES = {
   satelliteStreets: 'mapbox://styles/mapbox/satellite-streets-v11',
 };
 
-export const baseSettings = {
-  mapboxAccessToken:
-    'pk.eyJ1IjoicnVtc2FuIiwiYSI6ImNsN3pwc2ltajAzcjY0NHBtNzAycnI4dDMifQ.HhHwz1w0X4dleTgN4D-Kxw',
-  minZoom: 1,
-};
+
 
 export const StyledMapContainer = styled('div')(() => ({
   zIndex: 0,

@@ -64,7 +64,7 @@ export default function CustomPagination({
           size="sm"
           onClick={handleNextPage}
           // disabled={!table.getCanNextPage()}
-          disabled={meta.next === null}
+          // disabled={meta.next === null}
         >
           Next
         </Button>

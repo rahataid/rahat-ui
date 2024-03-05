@@ -1,6 +1,12 @@
 'use client';
 
 import { Tabs, TabsContent } from '@rahat-ui/shadcn/components/tabs';
+import {
+  ClusterMap,
+  StyledMapContainer,
+  THEMES,
+  baseSettings,
+} from '@rahat-ui/shadcn/maps';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { DashboardCharts } from '.';
 import DashboardSummary from './summary';
@@ -16,6 +22,9 @@ export default function DashboardView() {
             <DashboardCharts />
             <DashboardCharts />
           </TabsContent>
+          <StyledMapContainer>
+            <ClusterMap {...baseSettings} mapStyle={THEMES.light} />
+          </StyledMapContainer>
         </ScrollArea>
       </Tabs>
     </div>

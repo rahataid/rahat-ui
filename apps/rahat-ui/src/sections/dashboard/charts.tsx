@@ -1,4 +1,4 @@
-import { PieChart } from '@rahat-ui/charts';
+import { PieChart } from '@rahat-ui/shadcn/charts';
 import { DashboardRecentActivities } from './activities.dashboard';
 
 const Charts = () => {

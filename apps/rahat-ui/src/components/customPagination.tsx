@@ -1,47 +1,74 @@
+import { Button } from '@rahat-ui/shadcn/components/button';
 import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationNext,
-  PaginationPrevious,
-} from '@rahat-ui/shadcn/components/pagination';
-
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@rahat-ui/shadcn/components/select';
+import { PaginatedResult } from '@rumsan/sdk/types';
 type IProps = {
-  currentPage: number;
-  totalPages: number;
-  handlePaginationClick: (item: number) => void;
+  handleNextPage: () => void;
+  handlePrevPage: () => void;
+  handlePageSizeChange: (value: string) => void;
+  meta: PaginatedResult<any>['meta'];
 };
 
+const pageSizes = ['5', '10', '20', '30', '40', '50'];
+
 export default function CustomPagination({
-  currentPage,
-  totalPages,
-  handlePaginationClick,
+  handleNextPage,
+  handlePageSizeChange,
+  handlePrevPage,
+  meta,
 }: IProps) {
   return (
-    <Pagination className="flex flex-row justify-end border-t">
-      <PaginationContent>
-        <PaginationItem className={currentPage === 1 ? '' : 'cursor-pointer'}>
-          <PaginationPrevious
-            onClick={() =>
-              handlePaginationClick(currentPage === 1 ? 1 : currentPage - 1)
-            }
-          />
-        </PaginationItem>
-        <p className="text-sm font-medium mx-2">
-          Page {currentPage} of {totalPages}
-        </p>
-        <PaginationItem
-          className={currentPage === totalPages ? '' : 'cursor-pointer'}
+    <div className="flex items-center justify-end space-x-4 p-1 pl-2 pr-2 border-t">
+      <div className="flex-1 text-sm text-muted-foreground">
+        {meta.currentPage} of {meta.total} row(s) selected.
+      </div>
+      {handlePageSizeChange && (
+        <div className="flex items-center gap-2">
+          <div className="text-sm font-medium">Rows per page</div>
+          <Select defaultValue="50" onValueChange={handlePageSizeChange}>
+            <SelectTrigger className="w-16">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                {pageSizes.map((size) => (
+                  <SelectItem key={size} value={size}>
+                    {size}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
+      )}
+      <div>
+        Page {meta.currentPage} of {meta.total}
+      </div>
+      <div className="space-x-2">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handlePrevPage}
+          disabled={meta.prev === null}
         >
-          <PaginationNext
-            onClick={() =>
-              handlePaginationClick(
-                currentPage === totalPages ? totalPages : currentPage + 1
-              )
-            }
-          />
-        </PaginationItem>
-      </PaginationContent>
-    </Pagination>
+          Previous
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleNextPage}
+          // disabled={!table.getCanNextPage()}
+          disabled={meta.next === null}
+        >
+          Next
+        </Button>
+      </div>
+    </div>
   );
 }

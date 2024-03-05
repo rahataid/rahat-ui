@@ -17,6 +17,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+  DialogClose,
+} from '@rahat-ui/shadcn/components/dialog';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { useParams } from 'next/navigation';
 import { toast } from 'react-toastify';
 import InfoCard from '../infoCard';
@@ -54,17 +65,44 @@ export default function TextDetailView() {
         <p>Loading ...</p>
       ) : (
         <>
-          <div className="mt-5 ml-auto">
-            <Select onValueChange={(e) => handleChange(e)}>
-              <SelectTrigger>
+          <div className="flex justify-between font-semibold text-lg items-center mt-2">
+            <div>Campaign Name</div>
+
+            <Select>
+              <SelectTrigger className="w-24">
                 <SelectValue placeholder="Action" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="trigger">Trigger</SelectItem>
+                <Dialog>
+                  <DialogTrigger className="hover:bg-muted p-1 rounded text-sm text-left w-full">
+                    Trigger Campaign
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Trigger Campaign</DialogTitle>
+                      <DialogDescription>Are you sure??</DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter className="sm:justify-end">
+                      <DialogClose asChild>
+                        <Button type="button" variant="ghost">
+                          Close
+                        </Button>
+                      </DialogClose>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        className="text-primary"
+                        onClick={() => handleChange('trigger')}
+                      >
+                        Trigger
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
               </SelectContent>
             </Select>
           </div>
-          <div className="mt-8 grid grid-cols-3 gap-5">
+          <div className="mt-2 grid grid-cols-3 gap-5">
             <div className="col-span-2">
               <InfoCard
                 name={data?.name}

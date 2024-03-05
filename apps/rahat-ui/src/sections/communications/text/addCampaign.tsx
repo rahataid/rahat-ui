@@ -306,10 +306,10 @@ export default function AddCampaign() {
               <Button
                 variant="outline"
                 className="text-primary border-primary mr-4"
-                onClick={() => setShowAudiences(true)}
-                type='button'
+                onClick={() => setShowAudiences(!showAudiences)}
+                type="button"
               >
-                Select Audiences
+                {showAudiences ? 'Hide Audiences' : 'Select Audiences'}
               </Button>
               <Button>Create Campaign</Button>
             </div>

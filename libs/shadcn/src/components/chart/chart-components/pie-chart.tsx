@@ -54,7 +54,7 @@ export default function PieChart({ title, subheader, chart }: Props) {
     },
     colors,
     labels: series.map((i) => i.label),
-    stroke: { colors: ['#ffffff'] }, // Replace with your desired color
+    stroke: { colors: [colors[0]] },
     legend: {
       offsetY: 0,
       floating: true,
@@ -81,6 +81,7 @@ export default function PieChart({ title, subheader, chart }: Props) {
             total: {
               formatter: (w: { globals: { seriesTotals: number[] } }) => {
                 const sum = w.globals.seriesTotals.reduce((a, b) => a + b, 0);
+                console.log('sum', fNumber(sum));
                 return fNumber(sum);
               },
             },
@@ -92,7 +93,7 @@ export default function PieChart({ title, subheader, chart }: Props) {
   });
 
   return (
-    <div className="bg-white shadow rounded-lg p-6">
+    <div className="bg-card shadow rounded-lg p-6">
       <h2 className="text-lg font-semibold">{title}</h2>
       <p className="text-sm text-gray-500">{subheader}</p>
 
@@ -102,6 +103,7 @@ export default function PieChart({ title, subheader, chart }: Props) {
         series={chartSeries}
         options={chartOptions}
         height={280}
+        width={400}
       />
     </div>
   );

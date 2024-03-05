@@ -50,6 +50,7 @@ export default function AddCampaign() {
 
   const createCampaign = useCreateCampaignMutation();
   const [showSelectAudio, setShowSelectAudio] = useState(false);
+  const [showAudiences, setShowAudiences] = useState(false);
 
   const FormSchema = z.object({
     campaignName: z.string().min(2, {
@@ -126,132 +127,170 @@ export default function AddCampaign() {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(handleCreateCampaign)}
-        className="space-y-8"
+        className="h-add"
       >
-        <div className=" w-full mt-4 p-6 bg-white ">
-          <h2 className="text-2xl font-bold mb-4">Campaign: Add</h2>
-          <div className="mb-4 w-full grid grid-cols-3 gap-5 ">
-            <FormField
-              control={form.control}
-              name="campaignName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Campaign Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Campaign Name" {...field} />
-                  </FormControl>
-
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="startTime"
-              render={({ field }) => (
-                <FormItem className="flex flex-col">
-                  <FormLabel>Start time</FormLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant={'outline'}
-                          className={cn(
-                            '!mt-[15px] w-[240px] pl-3 text-left font-normal',
-                            !field.value && 'text-muted-foreground'
-                          )}
-                        >
-                          {field.value ? (
-                            format(field.value, 'PPP')
-                          ) : (
-                            <span>Pick a date</span>
-                          )}
-                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={field.value}
-                        onSelect={field.onChange}
-                        disabled={(date) =>
-                          date > new Date() || date < new Date('1900-01-01')
-                        }
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
-
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="campaignType"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Campaign Type</FormLabel>
-                  <Select
-                    onValueChange={(e) => {
-                      field.onChange(e);
-                      handleTypeChange(e);
-                    }}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select campaign type" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {Object.keys(CAMPAIGN_TYPES).map((key) => {
-                        return <SelectItem value={key}>{key}</SelectItem>;
-                      })}
-                    </SelectContent>
-                  </Select>
-
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            {/* show only if selected is sms */}
-            {!showSelectAudio ? (
+        <div className="w-full p-4 bg-white">
+          <h2 className="text-lg font-semibold mb-4">Campaign: Add</h2>
+          <div className="shadow-md p-4 rounded-sm">
+            <div className="mb-4 w-full grid grid-cols-3 gap-4 ">
               <FormField
                 control={form.control}
-                name="message"
+                name="campaignName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Message</FormLabel>
+                    {/* <FormLabel>Campaign Name</FormLabel> */}
                     <FormControl>
-                      <Input placeholder="Message" {...field} />
+                      <Input
+                        className="rounded"
+                        placeholder="Campaign Name"
+                        {...field}
+                      />
                     </FormControl>
 
                     <FormMessage />
                   </FormItem>
                 )}
               />
-            ) : (
+
               <FormField
                 control={form.control}
-                name="file"
+                name="startTime"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col">
+                    {/* <FormLabel>Start time</FormLabel> */}
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant={'outline'}
+                            // className={cn(
+                            //   '!mt-[15px] w-[240px] pl-3 text-left font-normal',
+                            //   !field.value && 'text-muted-foreground'
+                            // )}
+                          >
+                            {field.value ? (
+                              format(field.value, 'PPP')
+                            ) : (
+                              <span>Start time</span>
+                            )}
+                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={field.value}
+                          onSelect={field.onChange}
+                          disabled={(date) =>
+                            date > new Date() || date < new Date('1900-01-01')
+                          }
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="campaignType"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Audio</FormLabel>
-                    <Select onValueChange={field.onChange}>
+                    {/* <FormLabel>Campaign Type</FormLabel> */}
+                    <Select
+                      onValueChange={(e) => {
+                        field.onChange(e);
+                        handleTypeChange(e);
+                      }}
+                      defaultValue={field.value}
+                    >
                       <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select audio" />
+                        <SelectTrigger className="rounded">
+                          <SelectValue placeholder="Select campaign type" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {audioData?.map((mp3: any, index: number) => {
+                        {Object.keys(CAMPAIGN_TYPES).map((key) => {
+                          return <SelectItem value={key}>{key}</SelectItem>;
+                        })}
+                      </SelectContent>
+                    </Select>
+
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              {/* show only if selected is sms */}
+              {!showSelectAudio ? (
+                <FormField
+                  control={form.control}
+                  name="message"
+                  render={({ field }) => (
+                    <FormItem>
+                      {/* <FormLabel>Message</FormLabel> */}
+                      <FormControl>
+                        <Input
+                          placeholder="Message"
+                          {...field}
+                          className="rounded"
+                        />
+                      </FormControl>
+
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              ) : (
+                <FormField
+                  control={form.control}
+                  name="file"
+                  render={({ field }) => (
+                    <FormItem>
+                      {/* <FormLabel>Audio</FormLabel> */}
+                      <Select onValueChange={field.onChange}>
+                        <FormControl>
+                          <SelectTrigger className="rounded">
+                            <SelectValue placeholder="Select audio" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {audioData?.map((mp3: any, index: number) => {
+                            return (
+                              <SelectItem key={index} value={mp3?.url}>
+                                {mp3?.filename}
+                              </SelectItem>
+                            );
+                          })}
+                        </SelectContent>
+                      </Select>
+
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+
+              <FormField
+                control={form.control}
+                name="transport"
+                render={({ field }) => (
+                  <FormItem>
+                    {/* <FormLabel>Transport</FormLabel> */}
+                    <Select onValueChange={field.onChange}>
+                      <FormControl>
+                        <SelectTrigger className="rounded">
+                          <SelectValue placeholder="Select transport" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {transportData?.map((data) => {
                           return (
-                            <SelectItem key={index} value={mp3?.url}>
-                              {mp3?.filename}
+                            <SelectItem value={data.id.toString()}>
+                              {data.name}
                             </SelectItem>
                           );
                         })}
@@ -262,89 +301,78 @@ export default function AddCampaign() {
                   </FormItem>
                 )}
               />
-            )}
-
-            <FormField
-              control={form.control}
-              name="transport"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Transport</FormLabel>
-                  <Select onValueChange={field.onChange}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select transport" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {transportData?.map((data) => {
-                        return (
-                          <SelectItem value={data.id.toString()}>
-                            {data.name}
-                          </SelectItem>
-                        );
-                      })}
-                    </SelectContent>
-                  </Select>
-
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="audiences"
-              render={() => (
-                <FormItem>
-                  <div className="mb-4">
-                    <FormLabel className="text-base">Audiences</FormLabel>
-                  </div>
-                  {audienceData &&
-                    audienceData?.map((item) => (
-                      <FormField
-                        key={item.id}
-                        control={form.control}
-                        name="audiences"
-                        render={({ field }) => {
-                          return (
-                            <FormItem
-                              key={item.id}
-                              className="flex flex-row items-start space-x-3 space-y-0"
-                            >
-                              <FormControl>
-                                <Checkbox
-                                  checked={field.value?.includes(item.id)}
-                                  onCheckedChange={(checked) => {
-                                    return checked
-                                      ? field.onChange([
-                                          ...field.value,
-                                          item.id,
-                                        ])
-                                      : field.onChange(
-                                          field.value?.filter(
-                                            (value) => value !== item.id
-                                          )
-                                        );
-                                  }}
-                                />
-                              </FormControl>
-                              <FormLabel className="font-normal">
-                                {item.details.name}
-                              </FormLabel>
-                            </FormItem>
-                          );
-                        }}
-                      />
-                    ))}
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            </div>
+            <div className="flex justify-end">
+              <Button
+                variant="outline"
+                className="text-primary border-primary mr-4"
+                onClick={() => setShowAudiences(!showAudiences)}
+                type="button"
+              >
+                {showAudiences ? 'Hide Audiences' : 'Select Audiences'}
+              </Button>
+              <Button>Create Campaign</Button>
+            </div>
           </div>
-
-          <Button className="bg-blue-500 mt-4 text-white px-4 py-2 rounded-md hover:bg-blue-600">
-            Create Campaign
-          </Button>
+          {showAudiences && (
+            <div className="mt-6 shadow-md rounded-sm p-4">
+              <div className="flex justify-between">
+                <p>Select Audiences</p>
+                <Button variant="ghost" onClick={() => setShowAudiences(false)}>
+                  Close
+                </Button>
+              </div>
+              <FormField
+                control={form.control}
+                name="audiences"
+                render={() => (
+                  <FormItem>
+                    {/* <div className="mb-4">
+                    <FormLabel className="text-base">Audiences</FormLabel>
+                  </div> */}
+                    {audienceData &&
+                      audienceData?.map((item) => (
+                        <FormField
+                          key={item.id}
+                          control={form.control}
+                          name="audiences"
+                          render={({ field }) => {
+                            return (
+                              <FormItem
+                                key={item.id}
+                                className="flex flex-row items-start space-x-3 space-y-0"
+                              >
+                                <FormControl>
+                                  <Checkbox
+                                    checked={field.value?.includes(item.id)}
+                                    onCheckedChange={(checked) => {
+                                      return checked
+                                        ? field.onChange([
+                                            ...field.value,
+                                            item.id,
+                                          ])
+                                        : field.onChange(
+                                            field.value?.filter(
+                                              (value) => value !== item.id
+                                            )
+                                          );
+                                    }}
+                                  />
+                                </FormControl>
+                                <FormLabel className="font-normal">
+                                  {item.details.name}
+                                </FormLabel>
+                              </FormItem>
+                            );
+                          }}
+                        />
+                      ))}
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          )}
         </div>
       </form>
     </Form>

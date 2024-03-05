@@ -1,13 +1,21 @@
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
-import { ChangeEvent, useState } from 'react';
+import { ChangeEvent, RefObject, useState } from 'react';
 import { useRumsanService } from '../../providers/service.provider';
-import ConfirmDialog from '../../components/dialog';
-import { Alert } from '../../components/alert';
+import { toast } from 'react-toastify';
+import { useRef } from 'react';
 
 export default function ImportBeneficiary() {
+  const fileInputRef: RefObject<HTMLInputElement> = useRef(null);
+
+  const resetFileInput = () => {
+    // Resetting the file input value
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
   const { rumsanService } = useRumsanService();
-  const [isShowAlert, showAlert] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const allowedExtensions: { [key: string]: string } = {
     xlsx: 'excel',
@@ -21,7 +29,6 @@ export default function ImportBeneficiary() {
 
     if (!file) return;
 
-    // Get file extension
     const extension = file.name.split('.').pop()?.toLowerCase();
 
     if (!extension || !allowedExtensions[extension]) {
@@ -34,58 +41,43 @@ export default function ImportBeneficiary() {
   };
 
   const handleUpload = () => {
-    // Here you can perform upload logic, like sending the file to a server
-    if (selectedFile) {
-      // Determine doctype based on file extension
-      const extension = selectedFile.name.split('.').pop()?.toLowerCase();
-      const doctype = extension ? allowedExtensions[extension] : '';
+    if (!selectedFile) return toast.error('Please select a file to upload');
 
-      // Example: sending file to server using fetch API
-      const formData = new FormData();
-      formData.append('file', selectedFile);
-      formData.append('doctype', doctype);
+    // Determine doctype based on file extension
+    const extension = selectedFile.name.split('.').pop()?.toLowerCase();
+    const doctype = extension ? allowedExtensions[extension] : '';
 
-      //showAlert(true);
+    const formData = new FormData();
+    formData.append('file', selectedFile);
+    formData.append('doctype', doctype);
 
-      rumsanService.client
-        .post('beneficiaries/upload', formData)
-        .then((res) => {
-          console.log(res);
-        })
-        .catch((error) => {
-          // Handle error
-        });
-    } else {
-      alert('Please select a file to upload.');
-    }
-
-    // const showAlert = (messageToShow: string) => {
-    //   setMessage(messageToShow);
-    //   setShowDialog(true);
-    // };
-
-    // const handleCloseDialog = () => {
-    //   setShowDialog(false);
-    // };
+    rumsanService.client
+      .post('beneficiaries/upload', formData)
+      .then((res) => {
+        setSelectedFile(null);
+        resetFileInput();
+        toast.success(
+          `${res.data.data.count} Beneficiaries uploaded successfully!`
+        );
+      })
+      .catch((error) => {
+        toast.error('Error uploading file!');
+      });
   };
 
   return (
     <div className="h-custom">
-      <Alert
-        title="Upload successful"
-        message="File has been uploaded successfully"
-        show={isShowAlert}
-      />
       <div className="h-full p-4">
         <div className="h-[calc(100vh-240px)] border-2 border-dashed border-primary grid place-items-center">
           <div className="">
-            <div className='mb-2'>
+            <div className="mb-2">
               Select beneficiary file to update (Excel, JSON or CSV file)
             </div>
             <Input
               id="file"
               type="file"
               onChange={handleFileChange}
+              ref={fileInputRef}
               className="cursor-pointer w-auto rounded"
             />
           </div>

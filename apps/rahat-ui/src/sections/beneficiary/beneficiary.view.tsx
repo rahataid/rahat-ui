@@ -188,9 +188,9 @@ function BeneficiaryView() {
             meta={data?.response?.meta || { total: 0, currentPage: 0 }}
             handleNextPage={handleNextPage}
             handlePrevPage={handlePrevPage}
-            handlePageSizeChange={(value) =>
-              setPagination({ perPage: Number(value) })
-            }
+            // handlePageSizeChange={(value) =>
+            //   setPagination({ perPage: Number(value) })
+            // }
           />
         </ResizablePanel>
         {selectedData ? (

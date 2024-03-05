@@ -1,5 +1,5 @@
 'use client';
-import { useCallback, useMemo, useState } from 'react';
+import { memo, useCallback, useMemo, useState } from 'react';
 
 import {
   ResizableHandle,
@@ -108,7 +108,7 @@ export const columns: ColumnDef<Beneficiary>[] = [
   },
 ];
 
-export default function BeneficiaryView() {
+function BeneficiaryView() {
   const { pagination, filters, setPagination } = usePagination((state) => ({
     pagination: state.pagination,
     filters: state.filters,
@@ -151,6 +151,7 @@ export default function BeneficiaryView() {
       rowSelection,
     },
   });
+
 
   return (
     <Tabs defaultValue="list" className="h-full">
@@ -205,3 +206,5 @@ export default function BeneficiaryView() {
     </Tabs>
   );
 }
+
+ export default memo(BeneficiaryView);

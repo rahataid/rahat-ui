@@ -26,9 +26,14 @@ import InfoCards from './infoCards';
 type IProps = {
   data: IBeneficiaryItem;
   handleDefault: VoidFunction;
+  handleClose: VoidFunction;
 };
 
-export default function BeneficiaryDetail({ data, handleDefault }: IProps) {
+export default function BeneficiaryDetail({
+  data,
+  handleDefault,
+  handleClose,
+}: IProps) {
   const router = useRouter();
 
   const changedDate = new Date(data?.updatedAt);
@@ -44,7 +49,7 @@ export default function BeneficiaryDetail({ data, handleDefault }: IProps) {
           <div className="flex gap-4">
             <TooltipProvider delayDuration={100}>
               <Tooltip>
-                <TooltipTrigger onClick={handleDefault}>
+                <TooltipTrigger onClick={handleClose}>
                   <Minus size={20} strokeWidth={1.5} />
                 </TooltipTrigger>
                 <TooltipContent className="bg-secondary ">

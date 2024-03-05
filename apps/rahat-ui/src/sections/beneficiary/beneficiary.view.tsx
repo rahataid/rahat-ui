@@ -28,7 +28,7 @@ import {
 import { Beneficiary } from '@rahataid/sdk/types';
 import { MoreHorizontal } from 'lucide-react';
 import CustomPagination from '../../components/customPagination';
-import { BENEFICIARY_NAV_ROUTE } from '../../const/beneficiary.const';
+import { BENEFICIARY_NAV_ROUTE } from '../../constants/beneficiary.const';
 import { useRumsanService } from '../../providers/service.provider';
 import BeneficiaryDetail from '../../sections/beneficiary/beneficiaryDetail';
 import BeneficiaryGridView from '../../sections/beneficiary/gridView';

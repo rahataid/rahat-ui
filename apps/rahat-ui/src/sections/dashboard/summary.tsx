@@ -1,11 +1,5 @@
+import { BadgeCent, HeartHandshake, Home, Users } from 'lucide-react';
 import DataCard from '../../components/dataCard';
-import {
-  BadgeCent,
-  HeartHandshake,
-  Home,
-  LucideIcon,
-  Users,
-} from 'lucide-react';
 
 const DashboardSummary = () => {
   return (

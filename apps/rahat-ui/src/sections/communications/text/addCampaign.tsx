@@ -307,6 +307,7 @@ export default function AddCampaign() {
                 variant="outline"
                 className="text-primary border-primary mr-4"
                 onClick={() => setShowAudiences(true)}
+                type='button'
               >
                 Select Audiences
               </Button>

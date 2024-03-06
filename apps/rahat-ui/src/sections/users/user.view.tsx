@@ -8,16 +8,15 @@ import {
 } from '@rahat-ui/shadcn/components/resizable';
 import { Tabs } from '@rahat-ui/shadcn/components/tabs';
 
-import { USER_NAV_ROUTE } from '../../const/user.const';
+import { User } from '@rumsan/sdk/types';
+import { USER_NAV_ROUTE } from '../../constants/user.const';
 import { IRoleItem, IUserItem } from '../../types/user';
 import AddUser from './addUser';
 import UserNav from './nav';
 import AddRole from './role/addRole';
-import RoleDetails from './role/roleDetail';
 import RoleTable from './role/roleTable';
 import UsersTable from './user.list';
 import UserDetails from './viewUser';
-import { User } from '@rumsan/sdk/types';
 
 export default function UserView() {
   const [selectedUserData, setSelectedUserData] = useState<User>();

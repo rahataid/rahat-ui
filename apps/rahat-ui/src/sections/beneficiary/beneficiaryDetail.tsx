@@ -1,11 +1,10 @@
 import { useRouter } from 'next/navigation';
 
-import Image from 'next/image';
 import {
   Tabs,
-  TabsTrigger,
-  TabsList,
   TabsContent,
+  TabsList,
+  TabsTrigger,
 } from '@rahat-ui/shadcn/components/tabs';
 import {
   Tooltip,
@@ -17,29 +16,24 @@ import {
   Dialog,
   DialogTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dialog';
+import { Archive, Expand, FilePenLine, Minus, Trash2 } from 'lucide-react';
 import ConfirmDialog from '../../components/dialog';
-import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-} from '@rahat-ui/shadcn/src/components/ui/card';
-import { Label } from '@rahat-ui/shadcn/components/label';
-import { Switch } from '@rahat-ui/shadcn/components/switch';
-import { Archive, Trash2, FilePenLine, Expand, X, Minus } from 'lucide-react';
-import { IBeneficiaryItem } from '../../types/beneficiary';
-import { Button } from '@rahat-ui/shadcn/components/button';
 import { paths } from '../../routes/paths';
+import { IBeneficiaryItem } from '../../types/beneficiary';
 import EditBeneficiary from './editBeneficiary';
 import InfoCards from './infoCards';
-import { BENEFICIARY_NAV_ROUTE } from '../../const/beneficiary.const';
 
 type IProps = {
   data: IBeneficiaryItem;
   handleDefault: VoidFunction;
+  handleClose: VoidFunction;
 };
 
-export default function BeneficiaryDetail({ data, handleDefault }: IProps) {
+export default function BeneficiaryDetail({
+  data,
+  handleDefault,
+  handleClose,
+}: IProps) {
   const router = useRouter();
 
   const changedDate = new Date(data?.updatedAt);
@@ -55,7 +49,7 @@ export default function BeneficiaryDetail({ data, handleDefault }: IProps) {
           <div className="flex gap-4">
             <TooltipProvider delayDuration={100}>
               <Tooltip>
-                <TooltipTrigger onClick={handleDefault}>
+                <TooltipTrigger onClick={handleClose}>
                   <Minus size={20} strokeWidth={1.5} />
                 </TooltipTrigger>
                 <TooltipContent className="bg-secondary ">

@@ -28,7 +28,7 @@ import {
 import { Beneficiary } from '@rahataid/sdk/types';
 import { MoreHorizontal } from 'lucide-react';
 import CustomPagination from '../../components/customPagination';
-import { BENEFICIARY_NAV_ROUTE } from '../../const/beneficiary.const';
+import { BENEFICIARY_NAV_ROUTE } from '../../constants/beneficiary.const';
 import { useRumsanService } from '../../providers/service.provider';
 import BeneficiaryDetail from '../../sections/beneficiary/beneficiaryDetail';
 import BeneficiaryGridView from '../../sections/beneficiary/gridView';
@@ -114,8 +114,13 @@ function BeneficiaryView() {
     filters: state.filters,
     setPagination: state.setPagination,
   }));
-  const handleNextPage = usePagination((state) => state.setNextPage);
-  const handlePrevPage = usePagination((state) => state.setPrevPage);
+
+  const [perPage, setPerPage] = useState<number>(5);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+
+  const handleNextPage = () => setCurrentPage(currentPage + 1);
+
+  const handlePrevPage = () => setCurrentPage(currentPage - 1);
 
   const { beneficiaryQuery } = useRumsanService();
   const [selectedData, setSelectedData] = useState<Beneficiary>();
@@ -124,6 +129,10 @@ function BeneficiaryView() {
   const handleBeneficiaryClick = useCallback((item: Beneficiary) => {
     setSelectedData(item);
   }, []);
+
+  const handleClose = () => {
+    setSelectedData(null);
+  };
 
   const handleNav = useCallback((item: string) => {
     setActive(item);
@@ -134,17 +143,16 @@ function BeneficiaryView() {
     setSelectedData(undefined);
   }, []);
 
-  const queryOptions = useMemo(
-    () => ({ ...pagination, ...filters }),
-    [pagination, filters]
-  );
-
-  const { data } = beneficiaryQuery.useBeneficiaryList(queryOptions);
+  const { data } = beneficiaryQuery.useBeneficiaryList({
+    perPage,
+    page: currentPage,
+  });
 
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
 
   const table = useReactTable({
+    manualPagination: true,
     data: data?.data || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
@@ -161,7 +169,7 @@ function BeneficiaryView() {
     <Tabs defaultValue="list" className="h-full">
       <ResizablePanelGroup direction="horizontal" className="min-h-max bg-card">
         <ResizablePanel minSize={20} defaultSize={20} maxSize={20}>
-          <BeneficiaryNav handleNav={handleNav} meta={data?.meta} />
+          <BeneficiaryNav handleNav={handleNav} meta={data?.response?.meta} />
         </ResizablePanel>
         <ResizableHandle />
         <ResizablePanel minSize={28}>

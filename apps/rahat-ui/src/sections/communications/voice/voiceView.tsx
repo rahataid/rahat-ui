@@ -2,14 +2,14 @@
 import { useState } from 'react';
 
 import {
-  ResizablePanelGroup,
   ResizableHandle,
   ResizablePanel,
+  ResizablePanelGroup,
 } from '@rahat-ui/shadcn/components/resizable';
+import { COMMUNICATION_NAV_ROUTE } from 'apps/rahat-ui/src/constants/communication.const';
 import CommunicationNav from '../nav';
-import VoiceTableView from './voiceTable';
-import { COMMUNICATION_NAV_ROUTE } from 'apps/rahat-ui/src/const/communication.const';
 import AddCampaign from '../text/addCampaign';
+import VoiceTableView from './voiceTable';
 
 export default function VoiceView() {
   const [activeTab, setActiveTab] = useState<string>(

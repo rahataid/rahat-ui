@@ -1,9 +1,5 @@
 'use client';
-import {
-  DashboardCharts,
-  DashboardSummary,
-  DashboardView,
-} from '../../sections/dashboard';
+import { DashboardView } from '../../sections/dashboard';
 
 export default function DashBoardPage() {
   return (

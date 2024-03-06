@@ -41,7 +41,7 @@ import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 
 export default function InfoCards({ data }) {
   return (
-    <div className="grid grid-cols-2 gap-4 p-2">
+    <div className="flex flex-col gap-4 p-2">
       <Card className="shadow-md rounded-sm">
         <CardHeader>
           <div className="flex justify-between">

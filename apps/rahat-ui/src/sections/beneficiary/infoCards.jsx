@@ -37,6 +37,7 @@ import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 
 import { MoreVertical } from 'lucide-react';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
+import { truncateEthAddress } from '@rumsan/sdk/utils';
 // import data from '../../app/beneficiary/beneficiaryData.json';
 
 export default function InfoCards({ data }) {
@@ -53,7 +54,9 @@ export default function InfoCards({ data }) {
         </CardHeader>
         <CardContent>
           <div className="mb-2">
-            <p className="text-xs">{data?.walletAddress ?? 'test'}</p>
+            <p className="text-xs">
+              {truncateEthAddress(data.walletAddress) ?? 'N/A'}
+            </p>
             <p className="text-sm font-normal text-muted-foreground">
               Wallet Address
             </p>
@@ -194,7 +197,9 @@ export default function InfoCards({ data }) {
               <TooltipProvider delayDuration={100}>
                 <Tooltip>
                   <TooltipTrigger>
-                    <p className="text-sm font-medium">87654eu87654edgh76</p>
+                    <p className="text-sm font-medium">
+                      {truncateEthAddress(data.walletAddress || 'N/A')}
+                    </p>
                   </TooltipTrigger>
                   <TooltipContent className="bg-secondary ">
                     <p className="text-xs font-medium">click to copy</p>

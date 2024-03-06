@@ -26,7 +26,6 @@ import { useRumsanService } from '../../providers/service.provider';
 
 type IProps = {
   data: IBeneficiaryItem;
-  handleDefault: VoidFunction;
   handleClose: VoidFunction;
 };
 

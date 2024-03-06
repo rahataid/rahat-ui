@@ -1,9 +1,9 @@
 // @mui
-import { styled } from '@mui/material/styles';
 // utils
-import { fNumber } from 'src/utils/format-number';
 // components
+import styled from '@emotion/styled';
 import Chart, { useChart } from 'src/components/chart';
+import { fNumber } from '../../../utils/fNumber';
 
 // ----------------------------------------------------------------------
 
@@ -18,7 +18,7 @@ const StyledChart = styled(Chart)(({ theme }) => ({
   },
   '& .apexcharts-legend': {
     height: LEGEND_HEIGHT,
-    marginBottom: theme.spacing(3),
+    marginBottom: 2,
     top: `calc(${CHART_HEIGHT - LEGEND_HEIGHT}px) !important`,
   },
 }));
@@ -60,6 +60,12 @@ export default function ChartRadialBar({ series }: Props) {
   });
 
   return (
-    <StyledChart dir="ltr" type="radialBar" series={series} options={chartOptions} height={280} />
+    <StyledChart
+      dir="ltr"
+      type="radialBar"
+      series={series}
+      options={chartOptions}
+      height={280}
+    />
   );
 }

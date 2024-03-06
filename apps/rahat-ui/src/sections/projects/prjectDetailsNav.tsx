@@ -50,7 +50,7 @@ export default function Nav({ title, handleNav }: IProps) {
           Locked
         </Badge>
       </div>
-      <ScrollArea className="h-auto">
+      {/* <ScrollArea className="h-auto"> */}
         <div>
           <nav className="p-2">
             <div
@@ -113,7 +113,7 @@ export default function Nav({ title, handleNav }: IProps) {
             </div>
           </nav>
         </div>
-      </ScrollArea>
+      {/* </ScrollArea> */}
       <Separator />
       {/* <h1 className="p-4 font-semibold text-xl text-slate-600">Actions</h1> */}
       <ScrollArea className="h-auto">

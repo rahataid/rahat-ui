@@ -9,7 +9,6 @@ import { useUserStore } from '@rumsan/react-query';
 
 export default function ProfileView() {
   const user = useUserStore((state) => state.user);
-  console.log(user);
   return (
     <div className="mt-8">
       <p className="text-3xl font-semibold">Profile Detail</p>

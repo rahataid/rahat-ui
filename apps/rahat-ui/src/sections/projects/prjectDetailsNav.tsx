@@ -22,12 +22,14 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/dialog';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { PROJECT_DETAIL_NAV_ROUTE } from '../../constants/project.detail.const';
 
 type IProps = {
   title: string;
+  handleNav: (item: string) => void;
 };
 
-export default function Nav({ title }: IProps) {
+export default function Nav({ title, handleNav }: IProps) {
   return (
     <>
       <div className="flex items-center justify-between">
@@ -132,7 +134,10 @@ export default function Nav({ title }: IProps) {
               </DialogContent>
             </Dialog>
 
-            <div className="flex p-2 items-center gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white">
+            <div
+              className="flex p-2 items-center gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white"
+              onClick={() => handleNav(PROJECT_DETAIL_NAV_ROUTE.EDIT)}
+            >
               <Pencil size={18} strokeWidth={1.5} />
               <p>Edit projects</p>
             </div>

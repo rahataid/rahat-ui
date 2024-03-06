@@ -7,7 +7,7 @@ tmp
 .env
 .env.*
 !.env.example
-.npmrc
+.npmrc*
 
 # dependencies
 node_modules
@@ -20,6 +20,7 @@ node_modules
 *.launch
 .settings/
 *.sublime-workspace
+/play
 
 # IDE - VSCode
 .vscode/*

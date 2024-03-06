@@ -1,44 +1,44 @@
 {
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
-  "namedInputs": {
-    "default": ["{projectRoot}/**/*", "sharedGlobals"],
-    "production": [
-      "default",
-      "!{projectRoot}/cypress/**/*",
-      "!{projectRoot}/**/*.cy.[jt]s?(x)",
-      "!{projectRoot}/cypress.config.[jt]s",
-      "!{projectRoot}/.eslintrc.json",
-      "!{projectRoot}/eslint.config.js",
-      "!{projectRoot}/**/?(*.)+(spec|test).[jt]s?(x)?(.snap)",
-      "!{projectRoot}/tsconfig.spec.json",
-      "!{projectRoot}/jest.config.[jt]s",
-      "!{projectRoot}/src/test-setup.[jt]s",
-      "!{projectRoot}/test-setup.[jt]s"
-    ],
-    "sharedGlobals": []
+  "tasksRunnerOptions": {
+    "default": {
+      "runner": "nx/tasks-runners/default",
+      "options": {
+        "cacheableOperations": ["build", "lint", "test", "mainBuild"]
+      }
+    }
+  },
+  "targetDefaults": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["{projectRoot}/dist"]
+    },
+    "mainBuild": {
+      "dependsOn": ["query:build", "shadcn:build", "types:build"]
+    },
+    "lint": {
+      "dependsOn": ["^lint"],
+      "inputs": [
+        "default",
+        "{workspaceRoot}/.eslintrc.json",
+        "{workspaceRoot}/.eslintignore",
+        "{workspaceRoot}/eslint.config.js"
+      ]
+    },
+    "test": {
+      "inputs": ["default", "^default", "{workspaceRoot}/jest.preset.js"]
+    }
+  },
+  "affected": {
+    "defaultBase": "main"
   },
   "plugins": [
     {
       "plugin": "@nx/next/plugin",
-
       "options": {
         "buildTargetName": "build",
         "devTargetName": "dev",
-        "startTargetName": "start",
-        "serveStaticTargetName": "serve-static"
-      }
-    },
-    {
-      "plugin": "@nx/cypress/plugin",
-      "options": {
-        "targetName": "e2e",
-        "componentTestingTargetName": "component-test"
-      }
-    },
-    {
-      "plugin": "@nx/jest/plugin",
-      "options": {
-        "targetName": "test"
+        "startTargetName": "start"
       }
     },
     {
@@ -48,33 +48,12 @@
       }
     }
   ],
-  "targetDefaults": {
-    "@nx/eslint:lint": {
-      "cache": true,
-      "inputs": [
-        "default",
-        "{workspaceRoot}/.eslintrc.json",
-        "{workspaceRoot}/.eslintignore",
-        "{workspaceRoot}/eslint.config.js"
-      ]
-    },
-    "@nx/js:swc": {
-      "cache": true,
-      "dependsOn": ["^build"],
-      "inputs": ["production", "^production"]
-    }
-  },
   "generators": {
     "@nx/next": {
       "application": {
-        "style": "css",
+        "style": "none",
         "linter": "eslint"
       }
-    }
-  },
-  "projects": {
-    "shadcn": {
-      "tags": []
     }
   }
 }

@@ -80,9 +80,16 @@ export default function ProjectDetails() {
         <ChartsCard className="" title="Beneficiaries" image="/charts.png" />
         <ChartsCard className="" title="Beneficiaries" image="/charts.png" />
 
-        <ChartsCard className="" title="Beneficiaries" image="/charts.png" />
-        <ChartsCard className="" title="Beneficiaries" image="/charts.png" />
+        <DataCard
+          className=""
+          title="Distributed"
+          number={'12'}
+          subTitle="Nrs"
+          Icon={Users}
+        />
       </div>
+
+      <ProjectChart />
     </div>
   );
 }

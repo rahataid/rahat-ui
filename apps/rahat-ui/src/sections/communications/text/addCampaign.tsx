@@ -50,6 +50,7 @@ export default function AddCampaign() {
 
   const createCampaign = useCreateCampaignMutation();
   const [showSelectAudio, setShowSelectAudio] = useState(false);
+  const [showAudiences, setShowAudiences] = useState(false);
 
   const FormSchema = z.object({
     campaignName: z.string().min(2, {
@@ -87,16 +88,15 @@ export default function AddCampaign() {
 
     const additionalData: AdditionalData = {};
 
-    if (data?.campaignType === 'PHONE' && data?.file) {
+    if (data?.campaignType === CAMPAIGN_TYPES.PHONE && data?.file) {
       additionalData.audio = data.file;
-    }
-
-    if (data?.campaignType === 'SMS' && data?.message) {
-      additionalData.message = data?.message;
-    }
-
-    if (data?.campaignType === 'WHATSAPP' && data?.message) {
+    } else if (
+      data?.campaignType === CAMPAIGN_TYPES.WHATSAPP &&
+      data?.message
+    ) {
       additionalData.body = data?.message;
+    } else {
+      additionalData.message = data?.message;
     }
     createCampaign
       .mutateAsync({
@@ -127,49 +127,51 @@ export default function AddCampaign() {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(handleCreateCampaign)}
-        className="space-y-8"
+        className="h-add"
       >
-        <div className=" w-full mt-4 p-6 bg-white ">
-          <h2 className="text-2xl font-bold mb-4">Campaign: Add</h2>
-          <div className="mb-4 w-full grid grid-cols-3 gap-5 ">
-            <div>
+        <div className="w-full p-4 bg-white">
+          <h2 className="text-lg font-semibold mb-4">Campaign: Add</h2>
+          <div className="shadow-md p-4 rounded-sm">
+            <div className="mb-4 w-full grid grid-cols-3 gap-4 ">
               <FormField
                 control={form.control}
                 name="campaignName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Campaign Name</FormLabel>
+                    {/* <FormLabel>Campaign Name</FormLabel> */}
                     <FormControl>
-                      <Input placeholder="Campaign Name" {...field} />
+                      <Input
+                        className="rounded"
+                        placeholder="Campaign Name"
+                        {...field}
+                      />
                     </FormControl>
 
                     <FormMessage />
                   </FormItem>
                 )}
               />
-            </div>
 
-            <div>
               <FormField
                 control={form.control}
                 name="startTime"
                 render={({ field }) => (
                   <FormItem className="flex flex-col">
-                    <FormLabel>Start time</FormLabel>
+                    {/* <FormLabel>Start time</FormLabel> */}
                     <Popover>
                       <PopoverTrigger asChild>
                         <FormControl>
                           <Button
                             variant={'outline'}
-                            className={cn(
-                              'w-[240px] pl-3 text-left font-normal',
-                              !field.value && 'text-muted-foreground'
-                            )}
+                            // className={cn(
+                            //   '!mt-[15px] w-[240px] pl-3 text-left font-normal',
+                            //   !field.value && 'text-muted-foreground'
+                            // )}
                           >
                             {field.value ? (
                               format(field.value, 'PPP')
                             ) : (
-                              <span>Pick a date</span>
+                              <span>Start time</span>
                             )}
                             <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                           </Button>
@@ -192,15 +194,13 @@ export default function AddCampaign() {
                   </FormItem>
                 )}
               />
-            </div>
 
-            <div>
               <FormField
                 control={form.control}
                 name="campaignType"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Campaign Type</FormLabel>
+                    {/* <FormLabel>Campaign Type</FormLabel> */}
                     <Select
                       onValueChange={(e) => {
                         field.onChange(e);
@@ -209,7 +209,7 @@ export default function AddCampaign() {
                       defaultValue={field.value}
                     >
                       <FormControl>
-                        <SelectTrigger>
+                        <SelectTrigger className="rounded">
                           <SelectValue placeholder="Select campaign type" />
                         </SelectTrigger>
                       </FormControl>
@@ -224,36 +224,36 @@ export default function AddCampaign() {
                   </FormItem>
                 )}
               />
-            </div>
-            {/* show only if selected is sms */}
-            {!showSelectAudio ? (
-              <div className="w-full">
+              {/* show only if selected is sms */}
+              {!showSelectAudio ? (
                 <FormField
                   control={form.control}
                   name="message"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Message</FormLabel>
+                      {/* <FormLabel>Message</FormLabel> */}
                       <FormControl>
-                        <Input placeholder="Message" {...field} />
+                        <Input
+                          placeholder="Message"
+                          {...field}
+                          className="rounded"
+                        />
                       </FormControl>
 
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-              </div>
-            ) : (
-              <div>
+              ) : (
                 <FormField
                   control={form.control}
                   name="file"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Audio</FormLabel>
+                      {/* <FormLabel>Audio</FormLabel> */}
                       <Select onValueChange={field.onChange}>
                         <FormControl>
-                          <SelectTrigger>
+                          <SelectTrigger className="rounded">
                             <SelectValue placeholder="Select audio" />
                           </SelectTrigger>
                         </FormControl>
@@ -272,21 +272,17 @@ export default function AddCampaign() {
                     </FormItem>
                   )}
                 />
-              </div>
-            )}
+              )}
 
-            <div>
               <FormField
                 control={form.control}
                 name="transport"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Transport</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                    >
+                    {/* <FormLabel>Transport</FormLabel> */}
+                    <Select onValueChange={field.onChange}>
                       <FormControl>
-                        <SelectTrigger>
+                        <SelectTrigger className="rounded">
                           <SelectValue placeholder="Select transport" />
                         </SelectTrigger>
                       </FormControl>
@@ -306,15 +302,34 @@ export default function AddCampaign() {
                 )}
               />
             </div>
-            <div>
+            <div className="flex justify-end">
+              <Button
+                variant="outline"
+                className="text-primary border-primary mr-4"
+                onClick={() => setShowAudiences(!showAudiences)}
+                type="button"
+              >
+                {showAudiences ? 'Hide Audiences' : 'Select Audiences'}
+              </Button>
+              <Button>Create Campaign</Button>
+            </div>
+          </div>
+          {showAudiences && (
+            <div className="mt-6 shadow-md rounded-sm p-4">
+              <div className="flex justify-between">
+                <p>Select Audiences</p>
+                <Button variant="ghost" onClick={() => setShowAudiences(false)}>
+                  Close
+                </Button>
+              </div>
               <FormField
                 control={form.control}
                 name="audiences"
                 render={() => (
                   <FormItem>
-                    <div className="mb-4">
-                      <FormLabel className="text-base">Audiences</FormLabel>
-                    </div>
+                    {/* <div className="mb-4">
+                    <FormLabel className="text-base">Audiences</FormLabel>
+                  </div> */}
                     {audienceData &&
                       audienceData?.map((item) => (
                         <FormField
@@ -357,11 +372,7 @@ export default function AddCampaign() {
                 )}
               />
             </div>
-          </div>
-
-          <Button className="bg-blue-500 mt-4 text-white px-4 py-2 rounded-md hover:bg-blue-600">
-            Create Campaign
-          </Button>
+          )}
         </div>
       </form>
     </Form>

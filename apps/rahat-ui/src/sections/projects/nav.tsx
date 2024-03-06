@@ -8,13 +8,16 @@ import {
   Store,
   ToggleLeft,
   UsersRound,
+  KanbanSquare,
 } from 'lucide-react';
+import { PROJECT_NAV_ROUTE } from '../../constants/project.const';
 
 type IProps = {
   title: string;
+  handleNav: (item: string) => void;
 };
 
-const Nav = ({ title }: IProps) => {
+const Nav = ({ title, handleNav }: IProps) => {
   return (
     <div>
       <div className="flex items-center justify-between">
@@ -30,19 +33,19 @@ const Nav = ({ title }: IProps) => {
               </div>
               <p className="text-sm">128</p>
             </div>
-            <div className="flex justify-between p-4 items-center rounded-md cursor-pointer hover:bg-primary hover:text-white">
+            <div className="flex justify-between p-2 items-center rounded-md cursor-pointer hover:bg-primary hover:text-white">
               <div className="flex items-center gap-3">
                 <Store size={18} strokeWidth={1.5} />
                 <p>Vendors</p>
               </div>
               <p className="text-sm">32</p>
             </div>
-            <div className="flex justify-between p-4 items-center rounded-md cursor-pointer hover:bg-primary hover:text-white">
+            <div className="flex justify-between p-2 items-center rounded-md cursor-pointer hover:bg-primary hover:text-white">
               <div className="flex items-center gap-3">
                 <Speech size={18} strokeWidth={1.5} /> <p>Campaigns</p>
               </div>
               <p className="text-sm">9</p>
-            </div>
+            </div> */}
           </nav>
         </div>
       </ScrollArea>
@@ -54,15 +57,15 @@ const Nav = ({ title }: IProps) => {
             <div className="flex p-4 items-center gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white">
               <PlusSquare size={18} strokeWidth={1.5} /> <p>Create Tokens</p>
             </div>
-            <div className="flex p-4 items-center gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white">
+            <div className="flex p-2 items-center gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white">
               <Lock size={18} strokeWidth={1.5} />
               <p>Lock projects</p>
             </div>
-            <div className="flex p-4 items-center gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white">
+            <div className="flex p-2 items-center gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white">
               <Pencil size={18} strokeWidth={1.5} />
               <p>Edit projects</p>
             </div>
-            <div className="flex p-4 items-center gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white">
+            <div className="flex p-2 items-center gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white">
               <ToggleLeft size={18} strokeWidth={1.5} />
               <p>Set Offline Benficiaries</p>
             </div>

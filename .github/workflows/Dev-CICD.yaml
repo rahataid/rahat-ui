@@ -10,7 +10,7 @@ on:
 env:
   CI: false
   env_dev: ${{ secrets.ENV_DEV }}
-  # IMAGE_TAG: esatya/rahat-ui:dev
+  env_npmrc: ${{ secrets.ENV_NPMRC }}
 
 jobs:
   deploy:
@@ -21,7 +21,18 @@ jobs:
 
       - name: import env file
         run: |
-          touch ./.env && echo "$env_dev" >> ./.env
+          touch ./.env && echo "$env_dev" >> ./.env && \
+          touch ./.npmrc && echo "$env_npmrc" >> ./.npmrc
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: install dependencies and build apps
+        run: |
+          npm install -g pnpm
+          pnpm install
+          pnpm build:all
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3

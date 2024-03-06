@@ -46,8 +46,9 @@ import {
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
 import { paths } from 'apps/rahat-ui/src/routes/paths';
-import { useListCampaignQuery } from '@rahat-ui/query';
+import { useCampaignStore, useListCampaignQuery } from '@rahat-ui/query';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import { CAMPAIGN_TYPES } from '@rahat-ui/types';
 
 export type Text = {
   id: number;
@@ -161,6 +162,8 @@ export const columns: ColumnDef<Text>[] = [
 ];
 
 export default function TextTableView() {
+  const campaignStore = useCampaignStore();
+
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -173,7 +176,14 @@ export default function TextTableView() {
     useListCampaignQuery({});
 
   const tableData = React.useMemo(() => {
-    return Array.isArray(data?.rows) ? data?.rows : [];
+    const result = Array.isArray(data?.rows)
+      ? data?.rows.filter(
+          (campaign: any) => campaign.type !== CAMPAIGN_TYPES.PHONE
+        )
+      : [];
+
+    campaignStore.setTotalTextCampaign(result?.length);
+    return result;
   }, [isSuccess]);
 
   const table = useReactTable({
@@ -196,51 +206,51 @@ export default function TextTableView() {
   });
 
   return (
-    <>
-      <ScrollArea className="w-full h-withPage p-4">
-        <div className="flex items-center py-4">
-          <Input
-            placeholder="Filter campaigns..."
-            value={
-              (table.getColumn('campaign')?.getFilterValue() as string) ?? ''
-            }
-            onChange={(event) =>
-              table.getColumn('campaign')?.setFilterValue(event.target.value)
-            }
-            className="max-w-sm mr-3"
-          />
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="ml-auto">
-                <Settings2 className="mr-2 h-4 w-5" />
-                View
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Toggle Columns</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              {table
-                .getAllColumns()
-                .filter((column) => column.getCanHide())
-                .map((column) => {
-                  return (
-                    <DropdownMenuCheckboxItem
-                      key={column.id}
-                      className="capitalize"
-                      checked={column.getIsVisible()}
-                      onCheckedChange={(value) =>
-                        column.toggleVisibility(!!value)
-                      }
-                    >
-                      {column.id}
-                    </DropdownMenuCheckboxItem>
-                  );
-                })}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-        <div className="rounded-md border">
-          <Table>
+    <div className="p-2 bg-secondary">
+      <div className="flex items-center mb-2">
+        <Input
+          placeholder="Filter campaigns..."
+          value={
+            (table.getColumn('campaign')?.getFilterValue() as string) ?? ''
+          }
+          onChange={(event) =>
+            table.getColumn('campaign')?.setFilterValue(event.target.value)
+          }
+          className="max-w-sm mr-3"
+        />
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" className="ml-auto">
+              <Settings2 className="mr-2 h-4 w-5" />
+              View
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuLabel>Toggle Columns</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            {table
+              .getAllColumns()
+              .filter((column) => column.getCanHide())
+              .map((column) => {
+                return (
+                  <DropdownMenuCheckboxItem
+                    key={column.id}
+                    className="capitalize"
+                    checked={column.getIsVisible()}
+                    onCheckedChange={(value) =>
+                      column.toggleVisibility(!!value)
+                    }
+                  >
+                    {column.id}
+                  </DropdownMenuCheckboxItem>
+                );
+              })}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+      <div className="rounded border bg-white">
+        <Table>
+          <ScrollArea className="h-table1">
             <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
@@ -287,9 +297,9 @@ export default function TextTableView() {
                 </TableRow>
               )}
             </TableBody>
-          </Table>
-        </div>
-      </ScrollArea>
+          </ScrollArea>
+        </Table>
+      </div>
       <div className="flex items-center justify-end space-x-8 p-2 border-t">
         <div className="flex-1 text-sm text-muted-foreground">
           {table.getFilteredSelectedRowModel().rows.length} of{' '}
@@ -339,6 +349,6 @@ export default function TextTableView() {
           </Button>
         </div>
       </div>
-    </>
+    </div>
   );
 }

@@ -1,6 +1,7 @@
 import DataCard from '../../components/dataCard';
 import type { Metadata } from 'next';
 import TransactionTable from '../../components/transactions/transactionTable';
+import { Users } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'Transactions',

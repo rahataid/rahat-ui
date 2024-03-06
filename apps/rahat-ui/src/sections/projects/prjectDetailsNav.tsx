@@ -11,12 +11,26 @@ import {
   UsersRound,
   XCircle,
 } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+  DialogFooter,
+  DialogHeader,
+  DialogDescription,
+  DialogTitle,
+  DialogClose,
+} from '@rahat-ui/shadcn/src/components/ui/dialog';
+import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { PROJECT_DETAIL_NAV_ROUTE } from '../../constants/project.detail.const';
 
 type IProps = {
   title: string;
+  handleNav: (item: string) => void;
 };
 
-export default function Nav({ title }: IProps) {
+export default function Nav({ title, handleNav }: IProps) {
   return (
     <>
       <div>

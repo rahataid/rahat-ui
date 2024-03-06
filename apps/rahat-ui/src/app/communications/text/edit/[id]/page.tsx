@@ -1,4 +1,4 @@
-import EditTextCampaign from '../../../../../sections/communications/text/editCampaign';
+import EditTextCampaign from 'apps/rahat-ui/src/sections/communications/text/editCampaign';
 
 export const metadata = {
   title: 'Text: Edit',

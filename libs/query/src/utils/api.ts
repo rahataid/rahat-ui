@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { useAuthStore } from '../lib/auth';
+import { useAuthStore } from '@rumsan/react-query/auth';
 
 const baseURL = process.env['NEXT_PUBLIC_API_HOST_URL'];
 const communicationURL = process.env['NEXT_PUBLIC_API_CAMPAIGN_URL'];

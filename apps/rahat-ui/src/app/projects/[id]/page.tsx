@@ -12,9 +12,10 @@ import {
   ProjectDetailsNav,
   EditProject,
   ProjectBeneficiaryTable,
+  ProjectVendorTable,
+  ProjectBeneficiaryDetail,
 } from '../../../sections/projects';
 import ProjectDetails from './projectDetails';
-import { ProjectBeneficiaryDetail } from '../../../sections/projects';
 import { PROJECT_DETAIL_NAV_ROUTE } from 'apps/rahat-ui/src/constants/project.detail.const';
 import { Beneficiary } from '@rahataid/sdk/types';
 
@@ -65,6 +66,9 @@ export default function ProjectPage() {
             )}
             {active === PROJECT_DETAIL_NAV_ROUTE.BENEFICIARY && (
               <ProjectBeneficiaryTable handleClick={handleBeneficiaryClick} />
+            )}
+            {active === PROJECT_DETAIL_NAV_ROUTE.VENDOR && (
+              <ProjectVendorTable />
             )}
           </ResizablePanel>
           {selectedData ? (

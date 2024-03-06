@@ -1,7 +1,12 @@
 import { Button } from '@rahat-ui/shadcn/components/button';
 import { Label } from '@rahat-ui/shadcn/components/label';
 import { Switch } from '@rahat-ui/shadcn/components/switch';
-import { Card } from '@rahat-ui/shadcn/src/components/ui/card';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@rahat-ui/shadcn/components/tabs';
 import {
   Dialog,
   DialogClose,
@@ -19,19 +24,28 @@ import {
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@rahat-ui/shadcn/src/components/ui/select';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { truncateEthAddress } from '@rumsan/core/utilities/string.utils';
 import { User } from '@rumsan/sdk/types';
 import { MoreVertical, PlusCircle, Trash2 } from 'lucide-react';
 import Image from 'next/image';
 import { useState } from 'react';
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from '@rahat-ui/shadcn/components/tabs';
-import RoleTable from './role/roleTable';
 import { UsersRoleTable } from './usersRoleTable';
+import { enumToObjectArray } from '@rumsan/sdk/utils';
+import { Gender } from '@rahataid/sdk/enums';
 
 type IProps = {
   data: User;
@@ -42,7 +56,7 @@ export default function UserDetail({ data }: IProps) {
     'details'
   );
   const [activeUser, setActiveUser] = useState<boolean>(true);
-
+  const genderList = enumToObjectArray(Gender);
   const handleTabChange = (tab: 'details' | 'edit') => {
     setActiveTab(tab);
   };
@@ -68,11 +82,21 @@ export default function UserDetail({ data }: IProps) {
                   {/* Add Roles */}
                   <Dialog>
                     <DialogTrigger>
-                      <PlusCircle
-                        className="cursor-pointer"
-                        size={18}
-                        strokeWidth={1.6}
-                      />
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <PlusCircle
+                              className="cursor-pointer"
+                              size={18}
+                              strokeWidth={1.6}
+                              color="#007bb6"
+                            />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Add Role</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
                     </DialogTrigger>
                     <DialogContent>
                       <DialogHeader>
@@ -98,11 +122,21 @@ export default function UserDetail({ data }: IProps) {
                   {/* Delete User */}
                   <Dialog>
                     <DialogTrigger>
-                      <Trash2
-                        className="cursor-pointer"
-                        size={18}
-                        strokeWidth={1.6}
-                      />
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Trash2
+                              className="cursor-pointer"
+                              size={18}
+                              strokeWidth={1.6}
+                              color="#FF0000"
+                            />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Delete User</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
                     </DialogTrigger>
                     <DialogContent>
                       <DialogHeader>
@@ -153,10 +187,14 @@ export default function UserDetail({ data }: IProps) {
                   : truncateEthAddress(data.wallet || '-')}
               </p>
               <div className="flex items-center space-x-2">
-                <Label className="text-slate-500" htmlFor="activeUser">
+                <Label
+                  className="text-slate-500 font-light text-sm"
+                  htmlFor="activeUser"
+                >
                   {activeUser ? 'Active' : 'Inactive'}
                 </Label>
                 <Switch
+                  className="data-[state=unchecked]:bg-red-600 data-[state=checked]:bg-green-600"
                   id="activeUser"
                   checked={activeUser}
                   onCheckedChange={toggleActiveUser}
@@ -256,34 +294,55 @@ export default function UserDetail({ data }: IProps) {
       {/* Edit View */}
       {activeTab === 'edit' && (
         <>
-          <div className="flex flex-col justify-between min-h-[40vh] overflow-y-auto  max-h-[80vh]">
-            <div className="p-4 border-y">
-              <Input className="mt-1" type="name" placeholder="Name" />
-              <Input className="mt-3" type="email" placeholder="Email" />
-              <Input
-                className="mt-3"
-                type="walletaddress"
-                placeholder="Walletaddress"
-              />
-            </div>
-            <div className="p-4 flex items-center justify-start gap-24">
-              <div className="flex items-center gap-2">
-                <Switch id="approve" />
-                <Label htmlFor="airplane-mode">Approve</Label>
+          <div className="flex flex-col justify-between ">
+            <div className="p-4 border-t">
+              <div className="grid grid-cols-2 gap-4">
+                <Input type="name" placeholder="Name" />
+                <Select>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select gender" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      {genderList.map((gender) => (
+                        <SelectItem value={gender.value}>
+                          {gender.value}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
               </div>
-              <div className="flex items-center gap-2">
-                <Switch id="disable" />
-                <Label htmlFor="airplane-mode">Disable</Label>
+              <div className="mt-4 mb-2">
+                <p className="text-slate-700">Auth & Comms</p>
+              </div>
+              <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-subgrid col-span-2">
+                  <Input type="email" placeholder="Email" />
+                </div>
+                <div className="grid grid-cols-subgrid col-span-1">
+                  <Button
+                    variant={'outline'}
+                    className="border-primary text-primary"
+                  >
+                    Update
+                  </Button>
+                </div>
+              </div>
+              <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-subgrid col-span-2">
+                  <Input className="mt-3" type="wallet" placeholder="Wallet" />
+                </div>
+                <div className="grid grid-cols-subgrid col-span-1 mt-3">
+                  <Button
+                    variant={'outline'}
+                    className="border-primary text-primary"
+                  >
+                    Update
+                  </Button>
+                </div>
               </div>
             </div>
-          </div>
-
-          <div className="p-4 border-t flex justify-between">
-            <div className="flex items-center space-x-2">
-              <Switch id="disable-user" />
-              <Label htmlFor="disable-user">Add as owner</Label>
-            </div>
-            <Button>Confirm</Button>
           </div>
         </>
       )}

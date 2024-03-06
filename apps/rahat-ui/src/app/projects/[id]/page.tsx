@@ -8,10 +8,9 @@ import {
 } from '@rahat-ui/shadcn/components/resizable';
 import { Tabs } from '@rahat-ui/shadcn/components/tabs';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import ProjectDetailsNav from '../../../sections/projects/prjectDetailsNav';
+import { ProjectDetailsNav, EditProject } from '../../../sections/projects';
 import ProjectDetails from './projectDetails';
 import { PROJECT_DETAIL_NAV_ROUTE } from 'apps/rahat-ui/src/constants/project.detail.const';
-import EditProject from 'apps/rahat-ui/src/sections/projects/editProject';
 
 export default function ProjectPage() {
   const [active, setActive] = useState<string>(

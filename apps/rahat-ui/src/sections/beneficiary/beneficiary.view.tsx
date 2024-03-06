@@ -127,6 +127,11 @@ function BeneficiaryView() {
 
   const handleNav = useCallback((item: string) => {
     setActive(item);
+    setSelectedData(undefined);
+  }, []);
+
+  const handleDefault = useCallback(() => {
+    setSelectedData(undefined);
   }, []);
 
   const queryOptions = useMemo(
@@ -151,7 +156,6 @@ function BeneficiaryView() {
       rowSelection,
     },
   });
-
 
   return (
     <Tabs defaultValue="list" className="h-full">
@@ -182,22 +186,27 @@ function BeneficiaryView() {
                   data={data?.data}
                 />
               </TabsContent>
+              <CustomPagination
+                meta={data?.response?.meta || { total: 0, currentPage: 0 }}
+                handleNextPage={handleNextPage}
+                handlePrevPage={handlePrevPage}
+                handlePageSizeChange={(value) =>
+                  setPagination({ perPage: Number(value) })
+                }
+              />
             </>
           )}
-          <CustomPagination
-            meta={data?.response?.meta || { total: 0, currentPage: 0 }}
-            handleNextPage={handleNextPage}
-            handlePrevPage={handlePrevPage}
-            handlePageSizeChange={(value) =>
-              setPagination({ perPage: Number(value) })
-            }
-          />
         </ResizablePanel>
         {selectedData ? (
           <>
             <ResizableHandle />
-            <ResizablePanel minSize={24}>
-              {selectedData && <BeneficiaryDetail data={selectedData} />}
+            <ResizablePanel minSize={28} defaultSize={28}>
+              {selectedData && (
+                <BeneficiaryDetail
+                  data={selectedData}
+                  handleDefault={handleDefault}
+                />
+              )}
               {/* {addBeneficiary && <AddBeneficiary />} */}
             </ResizablePanel>
           </>
@@ -207,4 +216,4 @@ function BeneficiaryView() {
   );
 }
 
- export default memo(BeneficiaryView);
+export default memo(BeneficiaryView);

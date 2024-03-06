@@ -46,9 +46,7 @@ export default function BeneficiaryDetail({ data, handleClose }: IProps) {
     const response = beneficiaryQuery.useBeneficiaryGet(data.uuid);
     beneficiary = response.data?.data;
   }
-  console.log('BEN', beneficiary);
 
-  const piData = { name: 'John Doe', phone: '1234567890' };
   return (
     <>
       <Tabs defaultValue="detail">
@@ -69,7 +67,7 @@ export default function BeneficiaryDetail({ data, handleClose }: IProps) {
                 <TooltipTrigger
                   onClick={() => {
                     router.push(
-                      paths.dashboard.beneficiary.detail(data.walletAddress)
+                      paths.dashboard.beneficiary.detail(data?.walletAddress)
                     );
                   }}
                 >

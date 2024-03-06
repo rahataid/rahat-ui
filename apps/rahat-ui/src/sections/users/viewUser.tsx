@@ -63,7 +63,6 @@ export default function UserDetail({ data }: IProps) {
   const toggleActiveUser = () => {
     setActiveUser(!activeUser);
   };
-  console.log('genderList', genderList);
   return (
     <>
       <div className="p-4">

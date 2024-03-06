@@ -86,6 +86,7 @@ export default function ProjectPage({ handleClick }: CardProps) {
                         title={project.title}
                         image={project.image}
                         subTitle={project.subTitle}
+                        badge={project.badge}
                         handleClick={handleClick}
                       />
                     ))}

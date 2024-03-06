@@ -11,24 +11,20 @@ import {
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuPortal,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-import { useUserStore } from '@rumsan/react-query';
-import { useAuthStore } from '@rumsan/react-query/auth';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { useNavData } from '../app/config-nav';
-import { paths } from '../routes/paths';
-import ConnectWallet from '../sections/wallet/connect-wallet';
-import ThemeSwitch from './themeToggleSwitch';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Separator } from '@rahat-ui/shadcn/src/components/ui/separator';
+import { useUserStore } from '@rumsan/react-query';
+import { useAuthStore } from '@rumsan/react-query/auth';
+import { useNavData } from '../app/config-nav';
+import { paths } from '../routes/paths';
+import ThemeSwitch from './themeToggleSwitch';
+import ConnectWallet from './wallet/connect-wallet';
 
 export function Nav() {
   const currentPath = usePathname();

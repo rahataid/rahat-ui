@@ -40,7 +40,7 @@ export default function Nav({ title, handleNav }: IProps) {
           Locked
         </Badge>
       </div>
-      <ScrollArea className="h-auto">
+      {/* <ScrollArea className="h-auto">
         <div>
           <nav className="p-2">
             <div className="flex justify-between p-2 items-center rounded-md cursor-pointer hover:bg-primary hover:text-white">
@@ -66,7 +66,7 @@ export default function Nav({ title, handleNav }: IProps) {
           </nav>
         </div>
       </ScrollArea>
-      <Separator />
+      <Separator /> */}
       {/* <h1 className="p-4 font-semibold text-xl text-slate-600">Actions</h1> */}
       <ScrollArea className="h-auto">
         <div>

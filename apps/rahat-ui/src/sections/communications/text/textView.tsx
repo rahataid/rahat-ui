@@ -21,8 +21,8 @@ export default function TextView() {
     setActiveTab(tab);
   };
   return (
-    <div>
-      <ResizablePanelGroup direction="horizontal" className="min-h-max border">
+    <div className='h-full'>
+      <ResizablePanelGroup direction="horizontal" className="min-h-max border bg-card">
         <ResizablePanel
           minSize={17}
           defaultSize={17}

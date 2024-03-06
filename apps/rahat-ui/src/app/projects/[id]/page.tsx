@@ -14,6 +14,8 @@ import {
   ProjectBeneficiaryTable,
   ProjectVendorTable,
   ProjectBeneficiaryDetail,
+  ProjectCampaignVoiceTable,
+  ProjectCampaignTextTable,
 } from '../../../sections/projects';
 import ProjectDetails from './projectDetails';
 import { PROJECT_DETAIL_NAV_ROUTE } from 'apps/rahat-ui/src/constants/project.detail.const';
@@ -69,6 +71,12 @@ export default function ProjectPage() {
             )}
             {active === PROJECT_DETAIL_NAV_ROUTE.VENDOR && (
               <ProjectVendorTable />
+            )}
+            {active === PROJECT_DETAIL_NAV_ROUTE.VOICE && (
+              <ProjectCampaignVoiceTable />
+            )}
+            {active === PROJECT_DETAIL_NAV_ROUTE.TEXT && (
+              <ProjectCampaignTextTable />
             )}
           </ResizablePanel>
           {selectedData ? (

@@ -1,5 +1,5 @@
-import ChartsCard from '../../../components/chartsCard';
-import DataCard from '../../../components/dataCard';
+import ChartsCard from '../../../../components/chartsCard';
+import DataCard from '../../../../components/dataCard';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {

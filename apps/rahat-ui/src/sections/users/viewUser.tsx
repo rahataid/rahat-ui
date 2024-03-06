@@ -45,7 +45,7 @@ import Image from 'next/image';
 import { useState } from 'react';
 import { UsersRoleTable } from './usersRoleTable';
 import { enumToObjectArray } from '@rumsan/sdk/utils';
-import { Gender } from '@rahat-ui/types';
+import { Gender } from '@rahataid/sdk/enums';
 
 type IProps = {
   data: User;
@@ -63,6 +63,7 @@ export default function UserDetail({ data }: IProps) {
   const toggleActiveUser = () => {
     setActiveUser(!activeUser);
   };
+  console.log('genderList', genderList);
   return (
     <>
       <div className="p-4">
@@ -194,6 +195,7 @@ export default function UserDetail({ data }: IProps) {
                   {activeUser ? 'Active' : 'Inactive'}
                 </Label>
                 <Switch
+                  className="data-[state=unchecked]:bg-red-600 data-[state=checked]:bg-green-600"
                   id="activeUser"
                   checked={activeUser}
                   onCheckedChange={toggleActiveUser}
@@ -294,7 +296,7 @@ export default function UserDetail({ data }: IProps) {
       {activeTab === 'edit' && (
         <>
           <div className="flex flex-col justify-between ">
-            <div className="p-4 border-y">
+            <div className="p-4 border-t">
               <div className="grid grid-cols-2 gap-4">
                 <Input type="name" placeholder="Name" />
                 <Select>
@@ -304,19 +306,22 @@ export default function UserDetail({ data }: IProps) {
                   <SelectContent>
                     <SelectGroup>
                       {genderList.map((gender) => (
-                        <SelectItem value={gender.value} key={gender.value}>
-                          {gender.label}
+                        <SelectItem value={gender.value}>
+                          {gender.value}
                         </SelectItem>
                       ))}
                     </SelectGroup>
                   </SelectContent>
                 </Select>
               </div>
+              <div className="mt-4 mb-2">
+                <p className="text-slate-700">Auth & Comms</p>
+              </div>
               <div className="grid grid-cols-3 gap-2">
                 <div className="grid grid-cols-subgrid col-span-2">
-                  <Input className="mt-3" type="email" placeholder="Email" />
+                  <Input type="email" placeholder="Email" />
                 </div>
-                <div className="grid grid-cols-subgrid col-span-1 mt-3">
+                <div className="grid grid-cols-subgrid col-span-1">
                   <Button
                     variant={'outline'}
                     className="border-primary text-primary"

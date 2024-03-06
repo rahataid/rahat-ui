@@ -73,7 +73,7 @@ export default function Nav({ title }: IProps) {
               <DialogTrigger className="w-full">
                 <div className="flex p-2 items-center gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white">
                   <PlusSquare size={18} strokeWidth={1.5} />
-                  <p>Create Tokens</p>
+                  <p>Create Token</p>
                 </div>
               </DialogTrigger>
               <DialogContent>
@@ -101,10 +101,37 @@ export default function Nav({ title }: IProps) {
               </DialogContent>
             </Dialog>
 
-            <div className="flex p-2 items-center gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white">
-              <Lock size={18} strokeWidth={1.5} />
-              <p>Lock projects</p>
-            </div>
+            <Dialog>
+              <DialogTrigger className="w-full">
+                <div className="flex p-2 items-center gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white">
+                  <Lock size={18} strokeWidth={1.5} />
+                  <p>Lock project</p>
+                </div>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Lock Project</DialogTitle>
+                  <DialogDescription>
+                    Are you sure you want to lock this project?
+                  </DialogDescription>
+                </DialogHeader>
+                <DialogFooter className="sm:justify-end">
+                  <DialogClose asChild>
+                    <Button type="button" variant="ghost">
+                      Cancel
+                    </Button>
+                  </DialogClose>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    className="text-primary"
+                  >
+                    Lock
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+
             <div className="flex p-2 items-center gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white">
               <Pencil size={18} strokeWidth={1.5} />
               <p>Edit projects</p>

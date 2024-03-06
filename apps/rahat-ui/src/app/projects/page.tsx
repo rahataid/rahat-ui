@@ -1,19 +1,18 @@
 'use client';
 import { Tabs } from '@rahat-ui/shadcn/components//tabs';
+import { Button } from '@rahat-ui/shadcn/components/button';
 import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
 } from '@rahat-ui/shadcn/components/resizable';
-import { Button } from '@rahat-ui/shadcn/components/button';
-import { ProjectNav, ProjectCard, AddProject } from '../../sections/projects';
-import projectsData from './projectsData.json';
-import { useCallback, useState } from 'react';
-import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import CustomPagination from '../../components/customPagination';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
-import { PiIcon, PlusCircle, Search, Settings2 } from 'lucide-react';
+import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import { PlusCircle, Search } from 'lucide-react';
+import { useCallback, useState } from 'react';
 import { PROJECT_NAV_ROUTE } from '../../constants/project.const';
+import { AddProject, ProjectCard, ProjectNav } from '../../sections/projects';
+import projectsData from './projectsData.json';
 
 interface CardProps {
   id: number;

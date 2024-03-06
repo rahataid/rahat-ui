@@ -45,7 +45,7 @@ const Nav = ({ title, handleNav }: IProps) => {
                 <Speech size={18} strokeWidth={1.5} /> <p>Campaigns</p>
               </div>
               <p className="text-sm">9</p>
-            </div> */}
+            </div>
           </nav>
         </div>
       </ScrollArea>

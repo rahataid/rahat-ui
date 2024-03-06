@@ -1,6 +1,8 @@
-import ChartsCard from '../../../../components/chartsCard';
-import DataCard from '../../../../components/dataCard';
+import { Users } from 'lucide-react';
+import ChartsCard from '../../../components/chartsCard';
+import DataCard from '../../../components/dataCard';
 import type { Metadata } from 'next';
+import { ProjectChart } from '..';
 
 export const metadata: Metadata = {
   title: 'DashBoard',
@@ -17,6 +19,7 @@ export default function ProjectDetails() {
           subTitle1="Enrolled"
           number2={'12'}
           subTitle2="Referred"
+          Icon={Users}
         />
         <DataCard
           className="border-green-500"
@@ -25,6 +28,7 @@ export default function ProjectDetails() {
           subTitle1="Free"
           number2={'12'}
           subTitle2="Discount"
+          Icon={Users}
         />
         <DataCard
           className="border-yellow-500"
@@ -33,6 +37,7 @@ export default function ProjectDetails() {
           subTitle1="Free"
           number2={'12'}
           subTitle2="Discount"
+          Icon={Users}
         />
       </div>
       <div className="grid md:grid-cols-2 gap-4">
@@ -43,6 +48,7 @@ export default function ProjectDetails() {
           subTitle1="Checked Glasses Required"
           number2={'12'}
           subTitle2="Checked Glasses Not Required"
+          Icon={Users}
         />
         <DataCard
           className="border-red-500"
@@ -51,6 +57,7 @@ export default function ProjectDetails() {
           subTitle1="Glasses Bought"
           number2={'12'}
           subTitle2="Glasses Not Bought"
+          Icon={Users}
         />
       </div>
       <div className="grid grid-cols-1 border rounded-lg p-4 mt-4">
@@ -79,14 +86,6 @@ export default function ProjectDetails() {
       <div className="mt-4 grid md:grid-cols-4 gap-4">
         <ChartsCard className="" title="Beneficiaries" image="/charts.png" />
         <ChartsCard className="" title="Beneficiaries" image="/charts.png" />
-
-        <DataCard
-          className=""
-          title="Distributed"
-          number={'12'}
-          subTitle="Nrs"
-          Icon={Users}
-        />
       </div>
 
       <ProjectChart />

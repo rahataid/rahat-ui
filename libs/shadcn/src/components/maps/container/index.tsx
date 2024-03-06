@@ -1,4 +1,5 @@
 import styled from '@emotion/styled';
+import { FC } from 'react';
 
 export const THEMES = {
   streets: 'mapbox://styles/mapbox/streets-v11',
@@ -11,7 +12,7 @@ export const THEMES = {
 
 
 
-export const StyledMapContainer = styled('div')(() => ({
+export const StyledMapContainer: FC = styled('div')(() => ({
   zIndex: 0,
   height: 560,
   overflow: 'hidden',

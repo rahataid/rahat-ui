@@ -40,17 +40,20 @@ export default function Nav({ title, handleNav }: IProps) {
           Locked
         </Badge>
       </div>
-      {/* <ScrollArea className="h-auto">
+      <ScrollArea className="h-auto">
         <div>
           <nav className="p-2">
-            <div className="flex justify-between p-2 items-center rounded-md cursor-pointer hover:bg-primary hover:text-white">
+            <div
+              className="flex justify-between p-2 items-center rounded-md cursor-pointer hover:bg-primary hover:text-white"
+              onClick={() => handleNav(PROJECT_DETAIL_NAV_ROUTE.BENEFICIARY)}
+            >
               <div className="flex items-center gap-3">
                 <UsersRound size={18} strokeWidth={1.5} />
                 <p>Beneficiaries</p>
               </div>
               <p className="text-sm">128</p>
             </div>
-            <div className="flex justify-between p-2 items-center rounded-md cursor-pointer hover:bg-primary hover:text-white">
+            {/* <div className="flex justify-between p-2 items-center rounded-md cursor-pointer hover:bg-primary hover:text-white">
               <div className="flex items-center gap-3">
                 <Store size={18} strokeWidth={1.5} />
                 <p>Vendors</p>
@@ -62,11 +65,11 @@ export default function Nav({ title, handleNav }: IProps) {
                 <Speech size={18} strokeWidth={1.5} /> <p>Campaigns</p>
               </div>
               <p className="text-sm">9</p>
-            </div>
+            </div> */}
           </nav>
         </div>
       </ScrollArea>
-      <Separator /> */}
+      <Separator />
       {/* <h1 className="p-4 font-semibold text-xl text-slate-600">Actions</h1> */}
       <ScrollArea className="h-auto">
         <div>

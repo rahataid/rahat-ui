@@ -4,3 +4,5 @@ export { default as ProjectCard } from './projectCard';
 export { default as AddProject } from './addProject';
 export { default as EditProject } from './editProject';
 export { default as ProjectChart } from './charts';
+export { default as ProjectBeneficiaryTable } from './projectBeneficiaryTable';
+export { default as ProjectBeneficiaryDetail } from './projectBeneficiaryDetail'

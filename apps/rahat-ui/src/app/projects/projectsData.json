@@ -3,108 +3,126 @@
     "id": 1,
     "title": "Kathmandu Day Labor",
     "subTitle": "Kathmandu",
-    "image": "/projects/project1.jpeg"
+    "image": "/projects/project1.jpeg",
+    "badge": "CVA"
   },
   {
     "id": 2,
     "title": "Project 2",
     "subTitle": "Pokhara",
-    "image": "/projects/project2.jpeg"
+    "image": "/projects/project2.jpeg",
+    "badge": "AA"
   },
   {
     "id": 3,
     "title": "Project 3",
     "subTitle": "Bhaktapur",
-    "image": "/projects/project3.jpeg"
+    "image": "/projects/project3.jpeg",
+    "badge": "CVA"
   },
   {
     "id": 4,
     "title": "Project 4",
     "subTitle": "Lumbini",
-    "image": "/projects/project4.png"
+    "image": "/projects/project4.png",
+    "badge": "EL"
   },
   {
     "id": 5,
     "title": "Project 5",
     "subTitle": "Chitwan",
-    "image": "/projects/project5.jpeg"
+    "image": "/projects/project5.jpeg",
+    "badge": "AA"
   },
   {
     "id": 6,
     "title": "Project 6",
     "subTitle": "Nagarkot",
-    "image": "/projects/project6.jpeg"
+    "image": "/projects/project6.jpeg",
+    "badge": "CVA"
   },
   {
     "id": 7,
     "title": "Project 7",
     "subTitle": "Gorkha",
-    "image": "/projects/project7.jpeg"
+    "image": "/projects/project7.jpeg",
+    "badge": "EL"
   },
   {
     "id": 8,
     "title": "Project 8",
     "subTitle": "Ilam",
-    "image": "/projects/project8.jpeg"
+    "image": "/projects/project8.jpeg",
+    "badge": "EL"
   },
   {
     "id": 9,
     "title": "Project 9",
     "subTitle": "Mustang",
-    "image": "/projects/project9.jpeg"
+    "image": "/projects/project9.jpeg",
+    "badge": "CVA"
   },
   {
     "id": 10,
     "title": "Project 10",
     "subTitle": "Janakpur",
-    "image": "/projects/project10.jpeg"
+    "image": "/projects/project10.jpeg",
+    "badge": "AA"
   },
   {
     "id": 11,
     "title": "Project 11",
     "subTitle": "Dharan",
-    "image": "/projects/project1.jpeg"
+    "image": "/projects/project1.jpeg",
+    "badge": "CVA"
   },
   {
     "id": 12,
     "title": "Project 12",
     "subTitle": "Biratnagar",
-    "image": "/projects/project1.jpeg"
+    "image": "/projects/project1.jpeg",
+    "badge": "CVA"
   },
   {
     "id": 13,
     "title": "Project 13",
     "subTitle": "Bandipur",
-    "image": "/projects/project1.jpeg"
+    "image": "/projects/project1.jpeg",
+    "badge": "CVA"
   },
   {
     "id": 14,
     "title": "Project 14",
     "subTitle": "Dhulikhel",
-    "image": "/projects/project1.jpeg"
+    "image": "/projects/project1.jpeg",
+    "badge": "CVA"
   },
   {
     "id": 15,
     "title": "Project 15",
     "subTitle": "Birgunj",
-    "image": "/projects/project1.jpeg"
+    "image": "/projects/project1.jpeg",
+    "badge": "CVA"
   },
   {
     "id": 16,
     "title": "Project 16",
     "subTitle": "Rara Lake",
-    "image": "/projects/project1.jpeg"
+    "image": "/projects/project1.jpeg",
+    "badge": "CVA"
   },
   {
     "id": 17,
     "title": "Project 17",
     "subTitle": "Langtang",
-    "image": "/projects/project1.jpeg"
+    "image": "/projects/project1.jpeg",
+    "badge": "CVA"
   },
   {
     "id": 18,
     "title": "Project 18",
     "subTitle": "Patan",
-    "image": "/projects/project1.jpeg"
+    "image": "/projects/project1.jpeg",
+    "badge": "CVA"
   }
 ]

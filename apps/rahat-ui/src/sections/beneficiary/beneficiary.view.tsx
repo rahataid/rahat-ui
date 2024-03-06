@@ -136,6 +136,7 @@ function BeneficiaryView() {
 
   const handleNav = useCallback((item: string) => {
     setActive(item);
+    setSelectedData(null);
   }, []);
 
   const { data } = beneficiaryQuery.useBeneficiaryList({
@@ -189,23 +190,25 @@ function BeneficiaryView() {
                   data={data?.data}
                 />
               </TabsContent>
+              <CustomPagination
+                meta={data?.response?.meta || { total: 0, currentPage: 0 }}
+                handleNextPage={handleNextPage}
+                handlePrevPage={handlePrevPage}
+                handlePageSizeChange={(value) =>
+                  setPagination({ perPage: Number(value) })
+                }
+              />
             </>
           )}
-          <CustomPagination
-            meta={data?.response?.meta || { total: 0, currentPage: 0 }}
-            handleNextPage={handleNextPage}
-            handlePrevPage={handlePrevPage}
-            handlePageSizeChange={(value) => setPerPage(Number(value))}
-          />
         </ResizablePanel>
         {selectedData ? (
           <>
             <ResizableHandle />
-            <ResizablePanel minSize={24}>
+            <ResizablePanel minSize={28} defaultSize={28}>
               {selectedData && (
                 <BeneficiaryDetail
-                  handleClose={handleClose}
                   data={selectedData}
+                  handleClose={handleClose}
                 />
               )}
               {/* {addBeneficiary && <AddBeneficiary />} */}

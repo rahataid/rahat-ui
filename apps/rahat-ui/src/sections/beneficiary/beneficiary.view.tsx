@@ -136,11 +136,7 @@ function BeneficiaryView() {
 
   const handleNav = useCallback((item: string) => {
     setActive(item);
-    setSelectedData(undefined);
-  }, []);
-
-  const handleDefault = useCallback(() => {
-    setSelectedData(undefined);
+    setSelectedData(null);
   }, []);
 
   const { data } = beneficiaryQuery.useBeneficiaryList({
@@ -212,7 +208,7 @@ function BeneficiaryView() {
               {selectedData && (
                 <BeneficiaryDetail
                   data={selectedData}
-                  handleDefault={handleDefault}
+                  handleClose={handleClose}
                 />
               )}
               {/* {addBeneficiary && <AddBeneficiary />} */}

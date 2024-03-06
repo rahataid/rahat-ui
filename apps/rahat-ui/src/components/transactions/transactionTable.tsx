@@ -165,9 +165,7 @@ export default function BeneficiaryDetailTableView() {
  
   const fetchBeneficiary =  React.useCallback(()=>{
     const querRes = queryService.useProjectTransaction();
-    // const claimRes = queryService.useClaimAssigned('0x932a3db51f4c4ef3d0ee454613b55446149302ec148b4bf3d955708802c972d609000000');
     querRes.then((res)=>{
-      console.log(res)
      const claimedAssigned = res?.data?.claimAssigneds
      const claimProcessed = res?.data?.projectClaimProcesseds;
      const beneficiaryReferred = res?.data?.beneficiaryReferreds;
@@ -220,6 +218,7 @@ export default function BeneficiaryDetailTableView() {
     beneficiaryAdded.map((trans)=>{
       data.push({
         topic:trans.eventType,
+        timeStamp:trans.blockTimestamp,
         transactionHash:trans.transactionHash,
       })
     })

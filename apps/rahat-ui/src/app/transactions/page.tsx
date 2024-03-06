@@ -1,15 +1,37 @@
+'use client';
+
 import DataCard from '../../components/dataCard';
 import type { Metadata } from 'next';
 import TransactionTable from '../../components/transactions/transactionTable';
 import {
   Users
 } from 'lucide-react'
+import { useGraphService } from '../../providers/subgraph-provider';
+import { useCallback, useEffect, useState } from 'react';
 
-export const metadata: Metadata = {
-  title: 'Transactions',
-};
+
+// export const metadata: Metadata = {
+//   title: 'Transactions',
+// };
 
 export default function TransactionsPage() {
+  const [data,setData] = useState({freeVoucherAssigned:'',refeeredVoucherAssigned:'',freeVoucherClaimed:'',refeeredVoucherClaimed:''})
+
+const { queryService} = useGraphService();
+
+  const fetchVoucherDetails = useCallback(()=>{
+    const voucherRes =  queryService?.useProjectVoucher('0x38BFDCCAc556ED026706EE21b4945cE86718D4D1');
+    voucherRes.then((res)=>{
+      setData({
+        ...res
+      })
+    })
+    },[queryService])
+  useEffect(()=>{
+    fetchVoucherDetails();
+
+  },[fetchVoucherDetails])
+
   return (
     <div className="max-h-mx">
       <div className="flex items-center justify-between my-4">
@@ -18,30 +40,30 @@ export default function TransactionsPage() {
       <div className=" grid md:grid-cols-4 gap-4">
         <DataCard
           className=""
-          title="Cash Issued"
-          number={'12'}
-          subTitle="To banked beneficiary"
+          title="Voucher Assigned"
+          number={data?.freeVoucherAssigned}
+          subTitle="Free Voucher"
           Icon={Users}
         />
         <DataCard
           className=""
-          title="Issued To"
-          number={'12'}
-          subTitle="Banked Benificiary"
+          title="Voucher Assigned "
+          number={data?.refeeredVoucherAssigned}
+          subTitle="Referred Voucher"
           Icon={Users}
         />
         <DataCard
           className=""
-          title="Distributed Beneficiaries"
-          number={'$' + 12}
-          subTitle="Banked Beneficiary"
+          title="Voucher Claimed"
+          number={data?.freeVoucherClaimed}
+          subTitle="Free Voucher"
           Icon={Users}
         />
         <DataCard
           className=""
-          title="Distributed To"
-          number={'12'}
-          subTitle="To banked beneficiary"
+          title="Voucher Claimed"
+          number={data?.refeeredVoucherClaimed}
+          subTitle="Referred Voucher"
           Icon={Users}
         />
       </div>

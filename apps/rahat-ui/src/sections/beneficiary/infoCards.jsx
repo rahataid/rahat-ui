@@ -38,7 +38,6 @@ import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { MoreVertical } from 'lucide-react';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { truncateEthAddress } from '@rumsan/sdk/utils';
-// import data from '../../app/beneficiary/beneficiaryData.json';
 
 export default function InfoCards({ data }) {
   return (
@@ -46,7 +45,7 @@ export default function InfoCards({ data }) {
       <Card className="shadow-md rounded-sm">
         <CardHeader>
           <div className="flex justify-between">
-            <p>Beneficiary Name</p>
+            <p>Beneficiary </p>
             <Badge variant="outline" color="red">
               Not Approved
             </Badge>

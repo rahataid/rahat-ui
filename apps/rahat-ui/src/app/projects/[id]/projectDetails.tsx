@@ -1,7 +1,7 @@
-import ChartsCard from '../../../components/chartsCard';
 import DataCard from '../../../components/dataCard';
 import type { Metadata } from 'next';
 import { Users, CircleDollarSign } from 'lucide-react';
+import { ProjectChart } from 'apps/rahat-ui/src/sections/projects';
 
 export const metadata: Metadata = {
   title: 'DashBoard',
@@ -62,13 +62,7 @@ export default function ProjectDetails() {
           </p>
         </div>
       </div>
-      <div className="mt-4 grid md:grid-cols-4 gap-4">
-        <ChartsCard className="" title="Beneficiaries" image="/charts.png" />
-        <ChartsCard className="" title="Beneficiaries" image="/charts.png" />
-
-        <ChartsCard className="" title="Beneficiaries" image="/charts.png" />
-        <ChartsCard className="" title="Beneficiaries" image="/charts.png" />
-      </div>
+      <ProjectChart />
     </div>
   );
 }

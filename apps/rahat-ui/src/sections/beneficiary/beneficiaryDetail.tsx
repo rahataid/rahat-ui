@@ -22,6 +22,7 @@ import { paths } from '../../routes/paths';
 import { IBeneficiaryItem } from '../../types/beneficiary';
 import EditBeneficiary from './editBeneficiary';
 import InfoCards from './infoCards';
+import { useRumsanService } from '../../providers/service.provider';
 
 type IProps = {
   data: IBeneficiaryItem;
@@ -30,6 +31,8 @@ type IProps = {
 
 export default function BeneficiaryDetail({ data, handleClose }: IProps) {
   const router = useRouter();
+  const { beneficiaryQuery } = useRumsanService();
+  let beneficiary = null;
 
   const changedDate = new Date(data?.updatedAt);
   const formattedDate = changedDate.toLocaleDateString('en-US', {
@@ -37,6 +40,12 @@ export default function BeneficiaryDetail({ data, handleClose }: IProps) {
     month: 'long',
     day: 'numeric',
   });
+
+  if (data.uuid) {
+    const response = beneficiaryQuery.useBeneficiaryGet(data.uuid);
+    beneficiary = response.data?.data;
+  }
+
   return (
     <>
       <Tabs defaultValue="detail">
@@ -57,7 +66,7 @@ export default function BeneficiaryDetail({ data, handleClose }: IProps) {
                 <TooltipTrigger
                   onClick={() => {
                     router.push(
-                      paths.dashboard.beneficiary.detail(data.walletAddress)
+                      paths.dashboard.beneficiary.detail(data?.walletAddress)
                     );
                   }}
                 >
@@ -68,7 +77,7 @@ export default function BeneficiaryDetail({ data, handleClose }: IProps) {
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
-            <TooltipProvider delayDuration={100}>
+            {/* <TooltipProvider delayDuration={100}>
               <Tooltip>
                 <TooltipTrigger>
                   <FilePenLine size={20} strokeWidth={1.5} />
@@ -77,7 +86,7 @@ export default function BeneficiaryDetail({ data, handleClose }: IProps) {
                   <p className="text-xs font-medium">Edit</p>
                 </TooltipContent>
               </Tooltip>
-            </TooltipProvider>
+            </TooltipProvider> */}
             <TooltipProvider delayDuration={100}>
               <Tooltip>
                 <TooltipTrigger>
@@ -113,111 +122,16 @@ export default function BeneficiaryDetail({ data, handleClose }: IProps) {
             <TabsTrigger value="edit">Edit</TabsTrigger>
           </TabsList>
         </div>
-        {/* <div className="flex justify-between items-center p-4">
-          <div className="flex gap-4">
-            <Image
-              className="rounded-full"
-              src="/svg/funny-cat.svg"
-              alt="cat"
-              height={80}
-              width={80}
-            />
-            <div className="my-auto">
-              <h1 className="font-semibold text-xl mb-2">
-                {data.walletAddress}
-              </h1>
-              <div className="flex justify-between">
-                <p>Edit</p>
-                <p>Delete</p>
-              </div>
-            </div>
-          </div>
-          <div>
-            <p className="text-slate-500">
-              {formattedDate}
-              <br />
-              Last updated
-            </p>
-          </div>
-        </div> */}
+
         <TabsContent value="detail">
-          {/* <div className="grid grid-cols-2 border-y font-light">
-            <div className="border-r p-4 flex flex-col gap-2 ">
-              <p>Name</p>
-              <p>Verified</p>
-              <p>Updated Date</p>
-            </div>
-            <div className="p-4 flex flex-col gap-2">
-              <p>{data.walletAddress}</p>
-              <p>{data.verified ? 'True' : 'False'}</p>
-              <p>{formattedDate}</p>
-            </div>
-          </div> */}
-          {/* <Card className="shadow-md m-2">
-            <CardHeader>
-              <div className="flex justify-between">
-                <p>Name</p>
-                <Badge variant="outline" color="red">
-                  Not Approved
-                </Badge>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 gap-8">
-                <div>
-                  <p>{data.walletAddress ?? 'test'}</p>
-                  <p className="text-sm font-normal text-muted-foreground">
-                    Wallet Address
-                  </p>
-                </div>
-                <div>
-                  <p>{data.gender ?? 'test'}</p>
-                  <p className="text-sm font-normal text-muted-foreground">
-                    Gender
-                  </p>
-                </div>
-                <div>
-                  <p>{data.bankStatus ?? 'test'}</p>
-                  <p className="text-sm font-normal text-muted-foreground">
-                    Bank Status
-                  </p>
-                </div>
-                <div>
-                  <p>{data.location ?? 'test'}</p>
-                  <p className="text-sm font-normal text-muted-foreground">
-                    Location
-                  </p>
-                </div>
-                <div>
-                  <p>{data.internetStatus ?? 'test'}</p>
-                  <p className="text-sm font-normal text-muted-foreground">
-                    Internet Status
-                  </p>
-                </div>
-                <div>
-                  <p>{data.phoneStatus ?? 'test'}</p>
-                  <p className="text-sm font-normal text-muted-foreground">
-                    Phone Status
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card> */}
           <InfoCards data={data} />
         </TabsContent>
         <TabsContent value="transaction-history">
           <div className="p-4 border-y">Transaction History View</div>
         </TabsContent>
         <TabsContent value="edit">
-          <EditBeneficiary />
+          {beneficiary && <EditBeneficiary beneficiary={beneficiary} />}
         </TabsContent>
-        {/* <div className="p-6 flex justify-between">
-          <div className="flex items-center space-x-2">
-            <Switch id="disable-user" />
-            <Label htmlFor="disable-user">Disable this user</Label>
-          </div>
-          <Button>Confirm</Button>
-        </div> */}
       </Tabs>
     </>
   );

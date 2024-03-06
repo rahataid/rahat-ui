@@ -2,6 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { useForm } from 'react-hook-form';
 import {
   Form,
   FormControl,
@@ -17,56 +18,68 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
-import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import { z } from 'zod';
+import { useUpdateBeneficiary } from '@rahat-ui/query';
 
-export default function EditBeneficiary() {
+export default function EditBeneficiary({ beneficiary }: any) {
+  const updateBeneficiary = useUpdateBeneficiary();
+
   const FormSchema = z.object({
     name: z.string().min(2, { message: 'Name must be at least 4 character' }),
     walletAddress: z
       .string()
       .min(42, { message: 'The Ethereum address must be 42 characters long' }),
     phone: z.string(),
-    gender: z.string().toUpperCase(),
-    bankedStatus: z.string().toUpperCase(),
-    internetStatus: z.string().toUpperCase(),
-    phoneStatus: z.string().toUpperCase(),
+    gender: z
+      .string()
+      .toUpperCase()
+      .min(4, { message: 'Must select a Gender' }),
+    bankedStatus: z
+      .string()
+      .toUpperCase()
+      .min(4, { message: 'Must select a Bank Status' }),
+    internetStatus: z
+      .string()
+      .toUpperCase()
+      .min(4, { message: 'Must select Internet Status' }),
+    phoneStatus: z
+      .string()
+      .toUpperCase()
+      .min(4, { message: 'Must select Phone Status' }),
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      name: '',
-      gender: '',
-      walletAddress: '',
-      phone: '',
-      bankedStatus: '',
-      internetStatus: '',
-      phoneStatus: '',
+      name: beneficiary?.piiData?.name,
+      phone: beneficiary?.piiData?.phone,
+      gender: beneficiary?.gender,
+      walletAddress: beneficiary?.walletAddress,
+      bankedStatus: beneficiary?.bankedStatus,
+      internetStatus: beneficiary?.internetStatus,
+      phoneStatus: beneficiary?.phoneStatus,
     },
   });
 
   const handleEditBeneficiary = async (data: z.infer<typeof FormSchema>) => {
-    // try {
-    //   const result = await addBeneficiary.mutateAsync({
-    //     gender: data.gender,
-    //     bankedStatus: data.bankedStatus,
-    //     internetStatus: data.internetStatus,
-    //     phoneStatus: data.phoneStatus,
-    //     piiData: {
-    //       name: data.name,
-    //     },
-    //     walletAddress: data.walletAddress,
-    //     phone: data.phone,
-    //   });
-    //   if (result) {
-    //     toast.success('Benificiary Added');
-    //     form.reset();
-    //   }
-    // } catch (e) {
-    //   toast.error(e);
-    // }
+    try {
+      const result = await updateBeneficiary.mutateAsync({
+        uuid: beneficiary.uuid,
+        gender: data.gender,
+        bankedStatus: data.bankedStatus,
+        internetStatus: data.internetStatus,
+        phoneStatus: data.phoneStatus,
+        piiData: {
+          name: data.name,
+          phone: data.phone,
+        },
+        walletAddress: data.walletAddress,
+      });
+      if (result) toast.success('Benificiary updated successfully!');
+    } catch (e) {
+      toast.error('Failed to update beneficiary!');
+    }
   };
   return (
     <Form {...form}>
@@ -138,12 +151,12 @@ export default function EditBeneficiary() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="banked">Banked</SelectItem>
-                        <SelectItem value="under_banked">
+                        <SelectItem value="BANKED">Banked</SelectItem>
+                        <SelectItem value="UNDER_BANKED">
                           Under Banked
                         </SelectItem>
-                        <SelectItem value="unBanked">UnBanked</SelectItem>
-                        <SelectItem value="unknown">Unknown</SelectItem>
+                        <SelectItem value="UNBANKED">UnBanked</SelectItem>
+                        <SelectItem value="UNKNOWN">Unknown</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -168,10 +181,10 @@ export default function EditBeneficiary() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="male">Male</SelectItem>
-                        <SelectItem value="female">Female</SelectItem>
-                        <SelectItem value="other">Other</SelectItem>
-                        <SelectItem value="unknown">Unknown</SelectItem>
+                        <SelectItem value="MALE">Male</SelectItem>
+                        <SelectItem value="FEMALE">Female</SelectItem>
+                        <SelectItem value="OTHER">Other</SelectItem>
+                        <SelectItem value="UNKNOWN">Unknown</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -195,14 +208,14 @@ export default function EditBeneficiary() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="mobile_internet">
+                        <SelectItem value="MOBILE_INTERNET">
                           Mobile Internet
                         </SelectItem>
-                        <SelectItem value="no_internet">No Internet</SelectItem>
-                        <SelectItem value="home_internet">
+                        <SelectItem value="NO_INTERNET">No Internet</SelectItem>
+                        <SelectItem value="HOME_INTERNET">
                           Home Internet
                         </SelectItem>
-                        <SelectItem value="unknown">Unknown</SelectItem>
+                        <SelectItem value="UNKNOWN">Unknown</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -226,12 +239,12 @@ export default function EditBeneficiary() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="smart_phone">Smart Phone</SelectItem>
-                        <SelectItem value="no_phone">No Phone</SelectItem>
-                        <SelectItem value="feature_phone">
+                        <SelectItem value="SMART_PHONE">Smart Phone</SelectItem>
+                        <SelectItem value="NO_PHONE">No Phone</SelectItem>
+                        <SelectItem value="FEATURE_PHONE">
                           Feature Phone
                         </SelectItem>
-                        <SelectItem value="unknown">Unknown</SelectItem>
+                        <SelectItem value="UNKNOWN">Unknown</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />

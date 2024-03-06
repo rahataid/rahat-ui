@@ -1,6 +1,7 @@
 import styled from '@emotion/styled';
 import dynamic from 'next/dynamic';
-import { memo } from 'react';
+import { FC, memo } from 'react';
+import { Props } from 'react-apexcharts';
 // ----------------------------------------------------------------------
 
 const ApexChart = dynamic(() => import('react-apexcharts'), { ssr: false });
@@ -15,7 +16,7 @@ const customColors = {
   fontWeightBold: 'bold',
 };
 
-const Chart = styled(ApexChart)(() => ({
+const Chart: FC<Props> = styled(ApexChart)(() => ({
   '& .apexcharts-canvas': {
     // Tooltip
     '& .apexcharts-tooltip': {

@@ -1,17 +1,16 @@
+import { Button } from '@rahat-ui/shadcn/components/button';
 import {
   Tabs,
-  TabsTrigger,
-  TabsList,
   TabsContent,
+  TabsList,
+  TabsTrigger,
 } from '@rahat-ui/shadcn/components/tabs';
-import { IRoleItem } from '../../../types/user';
-import { Button } from '@rahat-ui/shadcn/components/button';
-import { toast } from 'react-toastify';
 import React from 'react';
 import {
   ServiceContext,
   ServiceContextType,
 } from '../../../providers/service.provider';
+import { IRoleItem } from '../../../types/user';
 
 type IProps = {
   data: IRoleItem;

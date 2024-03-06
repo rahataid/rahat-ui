@@ -1,7 +1,8 @@
 // @mui
-import { useTheme } from '@mui/material/styles';
 // components
-import Chart, { useChart } from 'src/components/chart';
+
+import Chart from '../chart';
+import useChart from '../use-chart';
 
 // ----------------------------------------------------------------------
 
@@ -13,8 +14,6 @@ type Props = {
 };
 
 export default function ChartColumnNegative({ series }: Props) {
-  const theme = useTheme();
-
   const chartOptions = useChart({
     stroke: { show: false },
     yaxis: {
@@ -65,13 +64,21 @@ export default function ChartColumnNegative({ series }: Props) {
         columnWidth: '58%',
         colors: {
           ranges: [
-            { from: -100, to: -46, color: theme.palette.warning.main },
-            { from: -45, to: 0, color: theme.palette.info.main },
+            { from: -100, to: -46, color: '#F44336' },
+            { from: -45, to: 0, color: '#FFC107' },
           ],
         },
       },
     },
   });
 
-  return <Chart dir="ltr" type="bar" series={series} options={chartOptions} height={320} />;
+  return (
+    <Chart
+      dir="ltr"
+      type="bar"
+      series={series}
+      options={chartOptions}
+      height={320}
+    />
+  );
 }

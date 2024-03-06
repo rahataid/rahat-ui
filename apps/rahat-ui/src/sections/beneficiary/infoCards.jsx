@@ -42,7 +42,7 @@ import { truncateEthAddress } from '@rumsan/sdk/utils';
 
 export default function InfoCards({ data }) {
   return (
-    <div className="grid grid-cols-2 gap-4 p-2">
+    <div className="flex flex-col gap-4 p-2">
       <Card className="shadow-md rounded-sm">
         <CardHeader>
           <div className="flex justify-between">
@@ -55,7 +55,7 @@ export default function InfoCards({ data }) {
         <CardContent>
           <div className="mb-2">
             <p className="text-xs">
-              {truncateEthAddress(data.walletAddress) ?? 'N/A'}
+              {truncateEthAddress(data?.walletAddress) ?? 'N/A'}
             </p>
             <p className="text-sm font-normal text-muted-foreground">
               Wallet Address
@@ -198,7 +198,7 @@ export default function InfoCards({ data }) {
                 <Tooltip>
                   <TooltipTrigger>
                     <p className="text-sm font-medium">
-                      {truncateEthAddress(data.walletAddress || 'N/A')}
+                      {truncateEthAddress(data?.walletAddress || 'N/A')}
                     </p>
                   </TooltipTrigger>
                   <TooltipContent className="bg-secondary ">

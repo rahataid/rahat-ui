@@ -8,13 +8,16 @@ import {
   Store,
   ToggleLeft,
   UsersRound,
+  KanbanSquare,
 } from 'lucide-react';
+import { PROJECT_NAV_ROUTE } from '../../constants/project.const';
 
 type IProps = {
   title: string;
+  handleNav: (item: string) => void;
 };
 
-const Nav = ({ title }: IProps) => {
+const Nav = ({ title, handleNav }: IProps) => {
   return (
     <>
       <h1 className="px-4 pt-4 pb-2 font-semibold text-xl text-primary">
@@ -23,7 +26,17 @@ const Nav = ({ title }: IProps) => {
       <ScrollArea className="h-auto">
         <div>
           <nav className="text-muted-foreground p-2">
-            <div className="flex justify-between p-2 items-center rounded-md cursor-pointer hover:bg-primary hover:text-white">
+            <div
+              className="flex justify-between p-2 items-center rounded-md cursor-pointer hover:bg-primary hover:text-white"
+              onClick={() => handleNav(PROJECT_NAV_ROUTE.DEFAULT)}
+            >
+              <div className="flex items-center gap-3">
+                <KanbanSquare size={18} strokeWidth={1.5} />
+                <p>All Projects</p>
+              </div>
+              <p className="text-sm">32</p>
+            </div>
+            {/* <div className="flex justify-between p-2 items-center rounded-md cursor-pointer hover:bg-primary hover:text-white">
               <div className="flex items-center gap-3">
                 <UsersRound size={18} strokeWidth={1.5} />
                 <p>Beneficiaries</p>
@@ -42,11 +55,11 @@ const Nav = ({ title }: IProps) => {
                 <Speech size={18} strokeWidth={1.5} /> <p>Campaigns</p>
               </div>
               <p className="text-sm">9</p>
-            </div>
+            </div> */}
           </nav>
         </div>
       </ScrollArea>
-      <Separator />
+      {/* <Separator />
       <ScrollArea className="h-auto">
         <div>
           <nav className="text-muted-foreground p-2">
@@ -67,7 +80,7 @@ const Nav = ({ title }: IProps) => {
             </div>
           </nav>
         </div>
-      </ScrollArea>
+      </ScrollArea> */}
     </>
   );
 };

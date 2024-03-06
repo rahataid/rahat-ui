@@ -1,7 +1,10 @@
-import InfoCards from './infoCards';
 import BeneficiaryDetailTableView from './beneficiaryDetailTable';
+import InfoCards from './infoCards';
 
 export default function BeneficiaryDetailPageView() {
+  
+
+  console.log('status', status)
   return (
     <>
       <div>

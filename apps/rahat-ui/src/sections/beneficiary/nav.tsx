@@ -1,18 +1,9 @@
-import {
-  Users,
-  Eye,
-  EyeOff,
-  ScreenShareOff,
-  PlusSquare,
-  Plus,
-  Import,
-} from 'lucide-react';
-import { Separator } from '@rahat-ui/shadcn/components/separator';
 import { ScrollArea } from '@rahat-ui/shadcn/components/scroll-area';
+import { Separator } from '@rahat-ui/shadcn/components/separator';
 import { TabsList, TabsTrigger } from '@rahat-ui/shadcn/src/components/ui/tabs';
-import { LayoutGrid, AlignJustify } from 'lucide-react';
 import { Meta } from '@rahat-ui/types';
-import { BENEFICIARY_NAV_ROUTE } from '../../const/beneficiary.const';
+import { AlignJustify, Import, LayoutGrid, Plus, Users } from 'lucide-react';
+import { BENEFICIARY_NAV_ROUTE } from '../../constants/beneficiary.const';
 import Filter from './filter';
 
 type IProps = {

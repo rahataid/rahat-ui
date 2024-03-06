@@ -1,8 +1,7 @@
-import { defineConfig } from '@wagmi/cli'
-import { etherscan, react } from '@wagmi/cli/plugins'
-import { ELAbi } from './abis/ELProject'
-import {abi} from './abi';
- 
+import { defineConfig } from '@wagmi/cli';
+import { react } from '@wagmi/cli/plugins';
+import { ELAbi } from './abis/ELProject';
+
 export default defineConfig({
   out: 'apps/rahat-ui/src/contract-hooks/generated.ts',
   contracts: [
@@ -11,7 +10,5 @@ export default defineConfig({
       abi: ELAbi,
     },
   ],
-  plugins: [
-    react(),
-  ],
-})
+  plugins: [react()],
+});

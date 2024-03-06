@@ -22,6 +22,7 @@ export default function TransactionsPage() {
           subTitle1="To Enrolled Beneficiary"
           number2={''}
           subTitle2=""
+          Icon={Users}
         />
         <DataCard
           className="border-yellow-500"
@@ -30,6 +31,7 @@ export default function TransactionsPage() {
           subTitle1="By Enrolled Beneficiary"
           number2={''}
           subTitle2=""
+          Icon={Users}
         />
         <DataCard
           className="border-yellow-500"
@@ -38,6 +40,7 @@ export default function TransactionsPage() {
           subTitle1="To Referred Beneficiaries"
           number2={''}
           subTitle2=""
+          Icon={Users}
         />
         <DataCard
           className="border-green-500"
@@ -46,6 +49,7 @@ export default function TransactionsPage() {
           subTitle1="Referred Beneficiaries"
           number2={''}
           subTitle2=""
+          Icon={Users}
         />
       </div>
       <TransactionTable />

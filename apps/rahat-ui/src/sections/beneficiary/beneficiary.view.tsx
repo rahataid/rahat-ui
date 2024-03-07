@@ -26,7 +26,7 @@ import {
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/components/dropdown-menu';
 import { Beneficiary } from '@rahataid/sdk/types';
-import { MoreHorizontal } from 'lucide-react';
+import { Eye } from 'lucide-react';
 import CustomPagination from '../../components/customPagination';
 import { BENEFICIARY_NAV_ROUTE } from '../../constants/beneficiary.const';
 import { useRumsanService } from '../../providers/service.provider';
@@ -90,19 +90,11 @@ export const columns: ColumnDef<Beneficiary>[] = [
     enableHiding: false,
     cell: () => {
       return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem>View Details</DropdownMenuItem>
-            {/* <DropdownMenuSeparator /> */}
-            {/* <DropdownMenuItem>Edit</DropdownMenuItem> */}
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <Eye
+          size={20}
+          strokeWidth={1.5}
+          className="cursor-pointer hover:text-primary"
+        />
       );
     },
   },
@@ -136,6 +128,7 @@ function BeneficiaryView() {
 
   const handleNav = useCallback((item: string) => {
     setActive(item);
+    setSelectedData(null);
   }, []);
 
   const { data } = beneficiaryQuery.useBeneficiaryList({
@@ -164,7 +157,11 @@ function BeneficiaryView() {
     <Tabs defaultValue="list" className="h-full">
       <ResizablePanelGroup direction="horizontal" className="min-h-max bg-card">
         <ResizablePanel minSize={20} defaultSize={20} maxSize={20}>
-          <BeneficiaryNav handleNav={handleNav} meta={data?.response?.meta} />
+          <BeneficiaryNav
+            handleNav={handleNav}
+            meta={data?.response?.meta}
+            active={active}
+          />
         </ResizablePanel>
         <ResizableHandle />
         <ResizablePanel minSize={28}>
@@ -189,23 +186,25 @@ function BeneficiaryView() {
                   data={data?.data}
                 />
               </TabsContent>
+              <CustomPagination
+                meta={data?.response?.meta || { total: 0, currentPage: 0 }}
+                handleNextPage={handleNextPage}
+                handlePrevPage={handlePrevPage}
+                handlePageSizeChange={(value) =>
+                  setPagination({ perPage: Number(value) })
+                }
+              />
             </>
           )}
-          <CustomPagination
-            meta={data?.response?.meta || { total: 0, currentPage: 0 }}
-            handleNextPage={handleNextPage}
-            handlePrevPage={handlePrevPage}
-            handlePageSizeChange={(value) => setPerPage(Number(value))}
-          />
         </ResizablePanel>
         {selectedData ? (
           <>
             <ResizableHandle />
-            <ResizablePanel minSize={24}>
+            <ResizablePanel minSize={28} defaultSize={28}>
               {selectedData && (
                 <BeneficiaryDetail
-                  handleClose={handleClose}
                   data={selectedData}
+                  handleClose={handleClose}
                 />
               )}
               {/* {addBeneficiary && <AddBeneficiary />} */}

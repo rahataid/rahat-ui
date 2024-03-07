@@ -4,10 +4,12 @@ import { Tabs, TabsContent } from '@rahat-ui/shadcn/components/tabs';
 import { ClusterMap, StyledMapContainer, THEMES } from '@rahat-ui/shadcn/maps';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { DashboardCharts } from '.';
+// import { useSwal } from '../../components/swal';
 import { mapboxBasicConfig } from '../../constants/config';
 import DashboardSummary from './summary';
 
 export default function DashboardView() {
+  // const alert = useSwal();
   return (
     <div>
       <Tabs defaultValue="list">

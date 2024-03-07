@@ -43,8 +43,11 @@ export default function Filter() {
                         <Label htmlFor="option-two">Phone Internet</Label>
                       </div>
                       <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="option-two" id="option-two" />
-                        <Label htmlFor="option-two">Home Internet</Label>
+                        <RadioGroupItem
+                          value="option-three"
+                          id="option-three"
+                        />
+                        <Label htmlFor="option-three">Home Internet</Label>
                       </div>
                     </RadioGroup>
                   </AccordionContent>

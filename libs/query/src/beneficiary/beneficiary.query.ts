@@ -19,4 +19,12 @@ export class BeneficiaryQuery {
       queryFn: () => this.client.list(payload),
     });
   };
+
+  useBeneficiaryGet = (uuid: any): UseQueryResult<any, Error> => {
+    return useQuery({
+      queryKey: [TAGS.GET_BENEFICIARY, uuid],
+      // TODO: add to Service
+      queryFn: () => this.client.list(uuid),
+    });
+  };
 }

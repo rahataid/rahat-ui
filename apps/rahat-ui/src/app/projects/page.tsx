@@ -70,6 +70,7 @@ export default function ProjectPage({ handleClick }: CardProps) {
               title="Projects"
               handleNav={handleNav}
               setProjectType={setProjectType}
+              projectType={projectType}
             />
           </ResizablePanel>
           <ResizableHandle />

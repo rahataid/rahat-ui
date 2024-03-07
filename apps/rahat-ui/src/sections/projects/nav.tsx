@@ -17,9 +17,10 @@ type IProps = {
   title: string;
   handleNav: (item: string) => void;
   setProjectType: (item: string) => void;
+  projectType: string;
 };
 
-const Nav = ({ title, handleNav, setProjectType }: IProps) => {
+const Nav = ({ title, handleNav, projectType, setProjectType }: IProps) => {
   const [showProject, setShowProject] = useState(false);
 
   return (
@@ -32,7 +33,9 @@ const Nav = ({ title, handleNav, setProjectType }: IProps) => {
         <nav className="text-muted-foreground p-2">
           <div>
             <div
-              className="flex justify-between p-2 items-center rounded-md cursor-pointer hover:bg-primary hover:text-white"
+              className={`flex justify-between p-2 items-center rounded-md cursor-pointer hover:bg-primary hover:text-white ${
+                projectType === '' && 'text-black bg-secondary'
+              }`}
               onClick={() => {
                 handleNav(PROJECT_NAV_ROUTE.DEFAULT);
                 setShowProject(!showProject);
@@ -52,7 +55,9 @@ const Nav = ({ title, handleNav, setProjectType }: IProps) => {
               }`}
             >
               <div
-                className="flex justify-between p-2 items-center rounded-md cursor-pointer hover:bg-primary hover:text-white"
+                className={`flex justify-between p-2 items-center rounded-md cursor-pointer hover:bg-primary hover:text-white ${
+                  projectType === 'CVA' && 'text-black bg-secondary'
+                }`}
                 onClick={() => setProjectType('CVA')}
               >
                 <div className="flex items-center gap-3">
@@ -61,7 +66,9 @@ const Nav = ({ title, handleNav, setProjectType }: IProps) => {
                 <p className="text-sm">9</p>
               </div>
               <div
-                className="flex justify-between p-2 items-center rounded-md cursor-pointer hover:bg-primary hover:text-white"
+                className={`flex justify-between p-2 items-center rounded-md cursor-pointer hover:bg-primary hover:text-white ${
+                  projectType === 'AA' && 'text-black bg-secondary'
+                } `}
                 onClick={() => setProjectType('AA')}
               >
                 <div className="flex items-center gap-3">
@@ -70,7 +77,9 @@ const Nav = ({ title, handleNav, setProjectType }: IProps) => {
                 <p className="text-sm">9</p>
               </div>
               <div
-                className="flex justify-between p-2 items-center rounded-md cursor-pointer hover:bg-primary hover:text-white"
+                className={`flex justify-between p-2 items-center rounded-md cursor-pointer hover:bg-primary hover:text-white ${
+                  projectType === 'EL' && 'text-black bg-secondary'
+                } `}
                 onClick={() => setProjectType('EL')}
               >
                 <div className="flex items-center gap-3">

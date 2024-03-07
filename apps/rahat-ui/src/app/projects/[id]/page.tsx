@@ -54,6 +54,7 @@ export default function ProjectPage() {
             <ProjectDetailsNav
               title={'Project Details'}
               handleNav={handleNav}
+              active={active}
             />
           </ResizablePanel>
           <ResizableHandle />

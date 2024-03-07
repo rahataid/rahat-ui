@@ -46,6 +46,7 @@ import {
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import TransactionTableData from '../../app/beneficiary/beneficiaryTransactionData.json';
 import { useGraphService } from '../../providers/subgraph-provider';
+import { formatDate } from '../../utils';
 
 const data: Transaction[] = TransactionTableData;
 
@@ -176,7 +177,7 @@ export default function BeneficiaryDetailTableView() {
       data.push({
         processedBy:trans.beneficiary,
         topic:trans.eventType,
-        timeStamp:trans.blockTimestamp,
+        timeStamp:formatDate(trans.blockTimestamp),
         transactionHash:trans.transactionHash,
         amount:'1'
       })
@@ -186,7 +187,7 @@ export default function BeneficiaryDetailTableView() {
       data.push({
         processedBy:trans.vendor,
         topic:trans.eventType,
-        timeStamp:trans.blockTimestamp,
+        timeStamp:formatDate(trans.blockTimestamp),
         transactionHash:trans.transactionHash,
         amount:''
 
@@ -196,7 +197,7 @@ export default function BeneficiaryDetailTableView() {
       data.push({
         processedBy:trans.referrerVendor,
         topic:trans.eventType,
-        timeStamp:trans.blockTimestamp,
+        timeStamp:formatDate(trans.blockTimestamp),
         transactionHash:trans.transactionHash
 
       })

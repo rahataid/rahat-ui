@@ -1,6 +1,6 @@
 'use client';
 
-import {GraphQuery} from '@rumsan-projects/el-subgraph';
+import {GraphQuery} from '@rahataid/el-subgraph';
 import { createContext, useContext } from 'react';
 
 export type GraphContextType ={

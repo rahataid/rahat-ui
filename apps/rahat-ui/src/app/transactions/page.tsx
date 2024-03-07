@@ -44,7 +44,7 @@ export default function TransactionsPage() {
         <DataCard
           className="border-green-500"
           title="Free Voucher Assigned"
-          number1={'100'}
+          number1={data?.freeVoucherAssigned}
           subTitle1="To Enrolled Beneficiary"
           number2={''}
           subTitle2=""
@@ -53,7 +53,7 @@ export default function TransactionsPage() {
         <DataCard
           className="border-yellow-500"
           title="Free Vouchers Redeemed"
-          number1={'12'}
+          number1={data?.freeVoucherClaimed}
           subTitle1="By Enrolled Beneficiary"
           number2={''}
           subTitle2=""
@@ -62,7 +62,7 @@ export default function TransactionsPage() {
         <DataCard
           className="border-yellow-500"
           title="Discount Vouchers Referred"
-          number1={'12'}
+          number1={data?.refeeredVoucherAssigned}
           subTitle1="To Referred Beneficiaries"
           number2={''}
           subTitle2=""
@@ -71,7 +71,7 @@ export default function TransactionsPage() {
         <DataCard
           className="border-green-500"
           title="Discount Voucher Redeemed"
-          number1={'12'}
+          number1={data?.refeeredVoucherClaimed}
           subTitle1="Referred Beneficiaries"
           number2={''}
           subTitle2=""

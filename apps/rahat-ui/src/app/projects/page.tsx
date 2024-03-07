@@ -24,6 +24,7 @@ interface CardProps {
 
 export default function ProjectPage({ handleClick }: CardProps) {
   const [active, setActive] = useState<string>(PROJECT_NAV_ROUTE.DEFAULT);
+  const [projectType, setProjectType] = useState<string>('');
   const itemsPerPage = 12;
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -33,6 +34,14 @@ export default function ProjectPage({ handleClick }: CardProps) {
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const displayedItems = projectsData.slice(startIndex, endIndex);
+
+  const selectedProjectType = displayedItems.filter(
+    (item) => item.badge === projectType
+  );
+
+  const selectedProject = projectType.length
+    ? selectedProjectType
+    : displayedItems;
 
   const handlePaginationClick = (page: number) => {
     setCurrentPage(page);
@@ -56,7 +65,11 @@ export default function ProjectPage({ handleClick }: CardProps) {
             maxSize={20}
             className="h-full"
           >
-            <ProjectNav title="Projects" handleNav={handleNav} />
+            <ProjectNav
+              title="Projects"
+              handleNav={handleNav}
+              setProjectType={setProjectType}
+            />
           </ResizablePanel>
           <ResizableHandle />
           <ResizablePanel className="bg-secondary">
@@ -78,7 +91,7 @@ export default function ProjectPage({ handleClick }: CardProps) {
                 </div>
                 <ScrollArea className="px-3 h-withPage">
                   <div className="grid grid-cols-3 gap-6">
-                    {displayedItems.map((project) => (
+                    {selectedProject.map((project) => (
                       <ProjectCard
                         id={project.id}
                         key={project.id}

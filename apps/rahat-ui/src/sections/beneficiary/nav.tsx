@@ -5,26 +5,34 @@ import { Meta } from '@rahat-ui/types';
 import { AlignJustify, Import, LayoutGrid, Plus, Users } from 'lucide-react';
 import { BENEFICIARY_NAV_ROUTE } from '../../constants/beneficiary.const';
 import Filter from './filter';
+import { PROJECT_DETAIL_NAV_ROUTE } from '../../constants/project.detail.const';
 
 type IProps = {
   meta: Meta | undefined;
   handleNav: (item: string) => void;
+  active: string;
 };
 
-export default function Nav({ meta, handleNav }: IProps) {
+export default function Nav({ meta, handleNav, active }: IProps) {
   return (
     <>
       <div>
-        <div className="flex justify-between items-center p-4 border-6">
+        <div
+          className={`flex justify-between items-center border-6 ${
+            active === PROJECT_DETAIL_NAV_ROUTE.DEFAULT ? 'p-2' : 'py-3.5 px-2'
+          }`}
+        >
           <h1 className="font-semibold text-xl text-primary">Beneficiaries</h1>
-          <TabsList>
-            <TabsTrigger value="list">
-              <AlignJustify size={18} strokeWidth={1.5} />
-            </TabsTrigger>
-            <TabsTrigger value="grid">
-              <LayoutGrid size={18} strokeWidth={1.5} />
-            </TabsTrigger>
-          </TabsList>
+          {active === PROJECT_DETAIL_NAV_ROUTE.DEFAULT && (
+            <TabsList>
+              <TabsTrigger value="list">
+                <AlignJustify size={18} strokeWidth={1.5} />
+              </TabsTrigger>
+              <TabsTrigger value="grid">
+                <LayoutGrid size={18} strokeWidth={1.5} />
+              </TabsTrigger>
+            </TabsList>
+          )}
         </div>
         {/* todo: for temp scroll area height is h-20 but after uncomment  inside the nav tag scroll area height should be 44 as initial */}
         <ScrollArea className="h-auto mb-2">
@@ -87,7 +95,7 @@ export default function Nav({ meta, handleNav }: IProps) {
           </div>
         </ScrollArea>
       </div>
-      <Filter />
+      {active === BENEFICIARY_NAV_ROUTE.DEFAULT && <Filter />}
       <Separator />
       <ScrollArea>
         <div className="p-2">

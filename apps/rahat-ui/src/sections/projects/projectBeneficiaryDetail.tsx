@@ -20,19 +20,19 @@ import { Archive, Expand, FilePenLine, Minus, Trash2 } from 'lucide-react';
 import ConfirmDialog from '../../components/dialog';
 import { paths } from '../../routes/paths';
 import { IBeneficiaryItem } from '../../types/beneficiary';
-import EditBeneficiary from './editBeneficiary';
-import InfoCards from './infoCards';
-import { useRumsanService } from '../../providers/service.provider';
+import EditBeneficiary from '../beneficiary/editBeneficiary';
+import InfoCards from '../beneficiary/infoCards';
 
 type IProps = {
   data: IBeneficiaryItem;
   handleClose: VoidFunction;
 };
 
-export default function BeneficiaryDetail({ data, handleClose }: IProps) {
+export default function ProjectBeneficiaryDetail({
+  data,
+  handleClose,
+}: IProps) {
   const router = useRouter();
-  const { beneficiaryQuery } = useRumsanService();
-  let beneficiary = null;
 
   const changedDate = new Date(data?.updatedAt);
   const formattedDate = changedDate.toLocaleDateString('en-US', {
@@ -40,12 +40,6 @@ export default function BeneficiaryDetail({ data, handleClose }: IProps) {
     month: 'long',
     day: 'numeric',
   });
-
-  if (data.uuid) {
-    const response = beneficiaryQuery.useBeneficiaryGet(data.uuid);
-    beneficiary = response.data?.data;
-  }
-
   return (
     <>
       <Tabs defaultValue="detail">
@@ -66,7 +60,7 @@ export default function BeneficiaryDetail({ data, handleClose }: IProps) {
                 <TooltipTrigger
                   onClick={() => {
                     router.push(
-                      paths.dashboard.beneficiary.detail(data?.walletAddress)
+                      paths.dashboard.beneficiary.detail(data.walletAddress)
                     );
                   }}
                 >
@@ -77,7 +71,7 @@ export default function BeneficiaryDetail({ data, handleClose }: IProps) {
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
-            {/* <TooltipProvider delayDuration={100}>
+            <TooltipProvider delayDuration={100}>
               <Tooltip>
                 <TooltipTrigger>
                   <FilePenLine size={20} strokeWidth={1.5} />
@@ -86,7 +80,7 @@ export default function BeneficiaryDetail({ data, handleClose }: IProps) {
                   <p className="text-xs font-medium">Edit</p>
                 </TooltipContent>
               </Tooltip>
-            </TooltipProvider> */}
+            </TooltipProvider>
             <TooltipProvider delayDuration={100}>
               <Tooltip>
                 <TooltipTrigger>
@@ -97,7 +91,6 @@ export default function BeneficiaryDetail({ data, handleClose }: IProps) {
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
-            {/* <Button variant="outline">Delete User</Button> */}
             <TooltipProvider delayDuration={100}>
               <Tooltip>
                 <TooltipTrigger>
@@ -122,7 +115,6 @@ export default function BeneficiaryDetail({ data, handleClose }: IProps) {
             <TabsTrigger value="edit">Edit</TabsTrigger>
           </TabsList>
         </div>
-
         <TabsContent value="detail">
           <InfoCards data={data} />
         </TabsContent>
@@ -130,7 +122,7 @@ export default function BeneficiaryDetail({ data, handleClose }: IProps) {
           <div className="p-4 border-y">Transaction History View</div>
         </TabsContent>
         <TabsContent value="edit">
-          {beneficiary && <EditBeneficiary beneficiary={beneficiary} />}
+          <EditBeneficiary />
         </TabsContent>
       </Tabs>
     </>

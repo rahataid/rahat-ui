@@ -37,23 +37,20 @@ import {
 
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { MoreVertical } from 'lucide-react';
-import { useWriteElProject } from '../../contract-hooks/generated';
 // import data from '../../app/beneficiary/beneficiaryData.json';
 import { truncateEthAddress } from '@rumsan/sdk/utils';
+import { useAddBeneficiary } from '../../contract-hooks/el-project';
 
 export default function InfoCards({ data }) {
 
-  const useAddBeneficiary =()=>{
-    console.log("add beneficiary")
+  const addBeneficiary = useAddBeneficiary()
+  // addBeneficiary.writeContractAsync({
+    
+  // })
+//  await addBeneficiary.writeContractAsync({
+//     args:['0x082d43D30C31D054b1AEDbE08F50C2a1BBE76fC7'],
 
-    const res = useWriteElProject({
-      address:'0x38BFDCCAc556ED026706EE21b4945cE86718D4D1',
-      functionName:'addBeneficiary',
-      args:['0x082d43D30C31D054b1AEDbE08F50C2a1BBE76fC7']
-    })
-  
-    console.log(res.data)
-  }
+//   })
   // const res = useWriteElProject({
   //   address:'0x38BFDCCAc556ED026706EE21b4945cE86718D4D1',
   //   functionName:'addBeneficiary',

@@ -1,17 +1,18 @@
 'use client';
 
-// import { useAuthInitialization } from '@rahat-ui/query';
-// import { useRouter } from 'next/navigation';
-// import { useCallback, useEffect, useState } from 'react';
-// import { paths } from '../routes/paths';
+import { useAuthInitialization } from '@rahat-ui/query';
+import { useRouter } from 'next/navigation';
+import { useCallback, useEffect, useState } from 'react';
+import { DEBUG_MODE } from '../constants/config';
+import { paths } from '../routes/paths';
 // // routes
 // //
 
 // // ----------------------------------------------------------------------
 
-// const loginPaths: Record<string, string> = {
-//   jwt: paths.auth.login,
-// };
+const loginPaths: Record<string, string> = {
+  jwt: paths.auth.login,
+};
 
 // // ----------------------------------------------------------------------
 
@@ -20,38 +21,41 @@ type Props = {
 };
 
 export default function AuthGuard({ children }: Props) {
-  // const router = useRouter();
-  // const [authenticated, initialized] = useAuthInitialization();
+  const router = useRouter();
+  const [authenticated, initialized] = useAuthInitialization();
 
-  // const [checked, setChecked] = useState(false);
+  const [checked, setChecked] = useState(false);
 
-  // const check = useCallback(() => {
-  //   if (!authenticated) {
-  //     const searchParams = new URLSearchParams({
-  //       returnTo: window.location.pathname,
-  //     }).toString();
+  const check = useCallback(() => {
+    if (!authenticated) {
+      const searchParams = new URLSearchParams({
+        returnTo: window.location.pathname,
+      }).toString();
 
-  //     const loginPath = loginPaths.jwt;
+      const loginPath = loginPaths.jwt;
 
-  //     const href = `${loginPath}?${searchParams}`;
+      const href = `${loginPath}?${searchParams}`;
 
-  //     router.replace(href);
-  //   } else {
-  //     setChecked(true);
-  //   }
-  // }, [authenticated, router]);
+      router.replace(href);
+    } else {
+      setChecked(true);
+    }
+  }, [authenticated, router]);
 
-  // useEffect(() => {
-  //   check();
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, []);
+  useEffect(() => {
+    check();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  console.log(DEBUG_MODE, 'DEBUG_MODE');
 
-  // if (!checked) {
-  //   return null;
-  // }
-  // if (!initialized) {
-  //   return 'Loading';
-  // }
+  if (DEBUG_MODE) return <>{children}</>;
+
+  if (!checked) {
+    return null;
+  }
+  if (!initialized) {
+    return 'Loading';
+  }
 
   return <>{children}</>;
 }

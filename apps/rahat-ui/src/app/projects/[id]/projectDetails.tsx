@@ -1,16 +1,51 @@
-import ChartsCard from '../../../components/chartsCard';
 import DataCard from '../../../components/dataCard';
-import type { Metadata } from 'next';
 import { Users, CircleDollarSign } from 'lucide-react';
-
-export const metadata: Metadata = {
-  title: 'DashBoard',
-};
+import { ProjectChart } from 'apps/rahat-ui/src/sections/projects';
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@rahat-ui/shadcn/src/components/ui/card';
 
 export default function ProjectDetails() {
   return (
     <div className="p-4 bg-slate-100">
-      <div className="mb-4 grid md:grid-cols-3 gap-4">
+      <Card className="shadow-sm mb-4">
+        <CardHeader>
+          <CardTitle>Project Name</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex justify-between gap-4 flex-wrap">
+            <div>
+              <p className="font-medium">Achyut</p>
+              <p className="font-light">Project Manager</p>
+            </div>
+            <div>
+              <p className="font-medium">12</p>
+              <p className="font-light">Vendors</p>
+            </div>
+            <div>
+              <p className="font-medium">01 Feb 2024</p>
+              <p className="font-light">Start Date</p>
+            </div>
+            <div>
+              <p className="font-medium">24 Feb 2024</p>
+              <p className="font-light">End Date</p>
+            </div>
+          </div>
+        </CardContent>
+        <CardFooter>
+          <p>
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quidem
+            nihil eligendi possimus accusantium explicabo error aliquam fugiat
+            voluptas ab enim aspernatur adipisci, non id ullam blanditiis
+            nesciunt, dolores sit odio.
+          </p>
+        </CardFooter>
+      </Card>
+      <div className="grid md:grid-cols-3 gap-4">
         <DataCard
           className="h-40"
           title="Beneficiaries"
@@ -34,41 +69,8 @@ export default function ProjectDetails() {
           Icon={Users}
         />
       </div>
-      <div className="grid grid-cols-1 border rounded-lg p-4 border-none shadow-sm bg-white">
-        <div className="flex items-center flex-wrap mt-4 sm:mt-6 gap-10 md:gap-32">
-          <div>
-            <p className="font-medium">Achyut</p>
-            <p className="font-light">Project Manager</p>
-          </div>
-          <div>
-            <p className="font-medium">12</p>
-            <p className="font-light">Vendors</p>
-          </div>
-          <div>
-            <p className="font-medium">01 Feb 2024</p>
-            <p className="font-light">Start Date</p>
-          </div>
-          <div>
-            <p className="font-medium">24 Feb 2024</p>
-            <p className="font-light">End Date</p>
-          </div>
-        </div>
-        <div>
-          <p className="mt-4 sm:mt-8 sm:w-2/3">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quidem
-            nihil eligendi possimus accusantium explicabo error aliquam fugiat
-            voluptas ab enim aspernatur adipisci, non id ullam blanditiis
-            nesciunt, dolores sit odio.
-          </p>
-        </div>
-      </div>
-      <div className="mt-4 grid md:grid-cols-4 gap-4">
-        <ChartsCard className="" title="Beneficiaries" image="/charts.png" />
-        <ChartsCard className="" title="Beneficiaries" image="/charts.png" />
 
-        <ChartsCard className="" title="Beneficiaries" image="/charts.png" />
-        <ChartsCard className="" title="Beneficiaries" image="/charts.png" />
-      </div>
+      <ProjectChart />
     </div>
   );
 }

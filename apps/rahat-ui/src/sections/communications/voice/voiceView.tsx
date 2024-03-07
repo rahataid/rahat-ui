@@ -7,6 +7,7 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from '@rahat-ui/shadcn/components/resizable';
+import { COMMUNICATION_NAV_ROUTE } from 'apps/rahat-ui/src/constants/communication.const';
 import CommunicationNav from '../nav';
 import AddCampaign from '../text/addCampaign';
 import VoiceTableView from './voiceTable';
@@ -20,8 +21,8 @@ export default function VoiceView() {
     setActiveTab(tab);
   };
   return (
-    <div>
-      <ResizablePanelGroup direction="horizontal" className="min-h-max border">
+    <div className='h-full'>
+      <ResizablePanelGroup direction="horizontal" className="min-h-max border bg-card">
         <ResizablePanel
           minSize={17}
           defaultSize={17}

@@ -31,7 +31,7 @@ export default function CustomPagination({
       {handlePageSizeChange && (
         <div className="flex items-center gap-2">
           <div className="text-sm font-medium">Rows per page</div>
-          <Select defaultValue="50" onValueChange={handlePageSizeChange}>
+          <Select defaultValue="5" onValueChange={handlePageSizeChange}>
             <SelectTrigger className="w-16">
               <SelectValue />
             </SelectTrigger>
@@ -64,7 +64,7 @@ export default function CustomPagination({
           size="sm"
           onClick={handleNextPage}
           // disabled={!table.getCanNextPage()}
-          disabled={meta.next === null}
+          // disabled={meta.next === null}
         >
           Next
         </Button>

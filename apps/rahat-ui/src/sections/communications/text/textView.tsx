@@ -10,7 +10,7 @@ import CommunicationNav from '../nav';
 import AddCampaign from './addCampaign';
 import TextTableView from './textTable';
 
-import { COMMUNICATION_NAV_ROUTE } from '@/apps/rahat-ui/src/constants/communication.const';
+import { COMMUNICATION_NAV_ROUTE } from 'apps/rahat-ui/src/constants/communication.const';
 
 export default function TextView() {
   const [activeTab, setActiveTab] = useState<string>(
@@ -21,8 +21,11 @@ export default function TextView() {
     setActiveTab(tab);
   };
   return (
-    <div>
-      <ResizablePanelGroup direction="horizontal" className="min-h-max border">
+    <div className="h-full">
+      <ResizablePanelGroup
+        direction="horizontal"
+        className="min-h-max border bg-card"
+      >
         <ResizablePanel
           minSize={17}
           defaultSize={17}

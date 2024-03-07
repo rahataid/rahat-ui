@@ -28,7 +28,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { ArrowUpDown, ArrowUpRightFromSquare, ChevronDown } from 'lucide-react';
+import { ArrowUpRightFromSquare, ChevronDown } from 'lucide-react';
 import React from 'react';
 import { IRoleItem } from '../../.../../../types/user';
 import {

@@ -122,14 +122,9 @@ export default function ListView({ handleClick }: IProps) {
         <div className="flex items-center mb-2">
           <Input
             placeholder="Search User..."
-            value={
-              (table.getColumn('walletAddress')?.getFilterValue() as string) ??
-              ''
-            }
+            value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
             onChange={(event) =>
-              table
-                .getColumn('walletAddress')
-                ?.setFilterValue(event.target.value)
+              table.getColumn('name')?.setFilterValue(event.target.value)
             }
             className="rounded mr-2"
           />

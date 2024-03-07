@@ -1,6 +1,5 @@
 'use client';
 
-import { useState, useCallback } from 'react';
 import {
   ResizableHandle,
   ResizablePanel,
@@ -8,18 +7,19 @@ import {
 } from '@rahat-ui/shadcn/components/resizable';
 import { Tabs } from '@rahat-ui/shadcn/components/tabs';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import {
-  ProjectDetailsNav,
-  EditProject,
-  ProjectBeneficiaryTable,
-  ProjectVendorTable,
-  ProjectBeneficiaryDetail,
-  ProjectCampaignVoiceTable,
-  ProjectCampaignTextTable,
-} from '../../../sections/projects';
-import ProjectDetails from './projectDetails';
+import { Beneficiary } from '@rahataid/sdk';
 import { PROJECT_DETAIL_NAV_ROUTE } from 'apps/rahat-ui/src/constants/project.detail.const';
-import { Beneficiary } from '@rahataid/sdk/types';
+import { useCallback, useState } from 'react';
+import {
+  EditProject,
+  ProjectBeneficiaryDetail,
+  ProjectBeneficiaryTable,
+  ProjectCampaignTextTable,
+  ProjectCampaignVoiceTable,
+  ProjectDetailsNav,
+  ProjectVendorTable,
+} from '../../../sections/projects';
+import ProjectDetails from './project-info';
 
 export default function ProjectPage() {
   const [active, setActive] = useState<string>(

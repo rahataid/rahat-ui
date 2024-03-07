@@ -1,16 +1,7 @@
+'use client';
+
+import { KanbanSquare } from 'lucide-react';
 import { useState } from 'react';
-import { ScrollArea } from '@rahat-ui/shadcn/components/scroll-area';
-import { Separator } from '@rahat-ui/shadcn/components/separator';
-import {
-  Lock,
-  Pencil,
-  PlusSquare,
-  Speech,
-  Store,
-  ToggleLeft,
-  UsersRound,
-  KanbanSquare,
-} from 'lucide-react';
 import { PROJECT_NAV_ROUTE } from '../../constants/project.const';
 
 type IProps = {
@@ -103,29 +94,6 @@ const Nav = ({ title, handleNav, setProjectType }: IProps) => {
             </div> */}
         </nav>
       </div>
-      {/* </ScrollArea> */}
-      {/* <Separator />
-      <ScrollArea className="h-auto">
-        <div>
-          <nav className="text-muted-foreground p-2">
-            <div className="flex p-2 items-center gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white">
-              <PlusSquare size={18} strokeWidth={1.5} /> <p>Create Tokens</p>
-            </div>
-            <div className="flex p-2 items-center gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white">
-              <Lock size={18} strokeWidth={1.5} />
-              <p>Lock projects</p>
-            </div>
-            <div className="flex p-2 items-center gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white">
-              <Pencil size={18} strokeWidth={1.5} />
-              <p>Edit projects</p>
-            </div>
-            <div className="flex p-2 items-center gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white">
-              <ToggleLeft size={18} strokeWidth={1.5} />
-              <p>Set Offline Benficiaries</p>
-            </div>
-          </nav>
-        </div>
-      </ScrollArea> */}
     </>
   );
 };

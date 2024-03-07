@@ -10,16 +10,20 @@ import { ReactNode } from 'react';
 
 type CardProps = {
   title: string;
-  number: string;
-  subTitle: string;
+  number1: string;
+  number2: string;
+  subTitle1: string;
+  subTitle2: string;
   className: string;
   Icon: LucideIcon;
 };
 
 export default function DataCard({
   title,
-  number,
-  subTitle,
+  number1,
+  number2,
+  subTitle1,
+  subTitle2,
   className,
   Icon,
 }: CardProps) {
@@ -38,11 +42,19 @@ export default function DataCard({
           className="h-6 w-6 text-muted-foreground"
         />
       </CardHeader>
-      <CardContent>
-        <div className="text-4xl text-primary font-semibold">{number}</div>
-        <p className="text-xs text-muted-foreground space-y-0 pt-2">
-          {subTitle}
-        </p>
+      <CardContent className="flex items-center justify-between">
+        <div className="">
+          <div className="text-4xl font-semibold">{number1}</div>
+          <p className="text-xs text-muted-foreground space-y-0 pt-2">
+            {subTitle1}
+          </p>
+        </div>
+        <div className="">
+          <div className="text-4xl font-semibold">{number2}</div>
+          <p className="text-xs text-muted-foreground space-y-0 pt-2">
+            {subTitle2}
+          </p>
+        </div>
       </CardContent>
     </Card>
   );

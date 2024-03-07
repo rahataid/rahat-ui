@@ -7,7 +7,7 @@ import {
 } from '@rahat-ui/shadcn/components/resizable';
 import { Tabs } from '@rahat-ui/shadcn/components/tabs';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import { Beneficiary } from '@rahataid/sdk/types';
+import { Beneficiary } from '@rahataid/sdk';
 import { PROJECT_DETAIL_NAV_ROUTE } from 'apps/rahat-ui/src/constants/project.detail.const';
 import { useCallback, useState } from 'react';
 import {

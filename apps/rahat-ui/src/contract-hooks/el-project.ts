@@ -1,5 +1,5 @@
 import { useSwal } from '../components/swal';
-import { useWriteElProjectAddBeneficiary } from './generated';
+import { useWriteElProjectAddBeneficiary, useWriteElProjectAssignClaims } from './generated';
 
 export const useAddBeneficiary = () => {
   const alert = useSwal();
@@ -14,4 +14,26 @@ export const useAddBeneficiary = () => {
     },
   });
 };
+
+export const useAssignClaims =() =>{
+  const alert = useSwal();
+  return useWriteElProjectAssignClaims({
+    mutation:{
+      onSuccess: () =>{
+        alert.fire({
+          title:'Beneficiary Assigned Claims Successfully',
+          icon:'success',
+        })
+      },
+      onError: (err) =>{
+        alert.fire({
+          title:'Error while assigning calims to beneficiaries',
+          icon:'error',
+          text:err.message
+    
+        })
+      }
+    }
+  })
+}
 

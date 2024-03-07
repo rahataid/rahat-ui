@@ -30,9 +30,10 @@ import { PROJECT_DETAIL_NAV_ROUTE } from '../../constants/project.detail.const';
 type IProps = {
   title: string;
   handleNav: (item: string) => void;
+  active: string;
 };
 
-export default function Nav({ title, handleNav }: IProps) {
+export default function Nav({ title, handleNav, active }: IProps) {
   const [showCampaigns, setShowCampaigns] = useState(false);
   return (
     <>
@@ -46,9 +47,12 @@ export default function Nav({ title, handleNav }: IProps) {
       </div>
       {/* <ScrollArea className="h-auto"> */}
       <div>
-        <nav className="p-2">
+        <nav className="p-2 text-muted-foreground">
           <div
-            className="flex justify-between p-2 items-center rounded-md cursor-pointer hover:bg-primary hover:text-white"
+            className={`flex justify-between p-2 items-center rounded-md cursor-pointer hover:bg-primary hover:text-white ${
+              active === PROJECT_DETAIL_NAV_ROUTE.BENEFICIARY &&
+              'text-black bg-secondary'
+            }`}
             onClick={() => handleNav(PROJECT_DETAIL_NAV_ROUTE.BENEFICIARY)}
           >
             <div className="flex items-center gap-3">
@@ -58,7 +62,10 @@ export default function Nav({ title, handleNav }: IProps) {
             <p className="text-sm">128</p>
           </div>
           <div
-            className="flex justify-between p-2 items-center rounded-md cursor-pointer hover:bg-primary hover:text-white"
+            className={`flex justify-between p-2 items-center rounded-md cursor-pointer hover:bg-primary hover:text-white ${
+              active === PROJECT_DETAIL_NAV_ROUTE.VENDOR &&
+              'text-black bg-secondary'
+            }`}
             onClick={() => handleNav(PROJECT_DETAIL_NAV_ROUTE.VENDOR)}
           >
             <div className="flex items-center gap-3">
@@ -69,7 +76,7 @@ export default function Nav({ title, handleNav }: IProps) {
           </div>
           <div>
             <div
-              className="flex justify-between p-2 items-center rounded-md cursor-pointer hover:bg-primary hover:text-white"
+              className="flex justify-between p-2 items-center rounded-md cursor-pointer hover:bg-primary hover:text-white "
               onClick={() => setShowCampaigns(!showCampaigns)}
             >
               <div className="flex items-center gap-3">
@@ -83,7 +90,10 @@ export default function Nav({ title, handleNav }: IProps) {
               }`}
             >
               <div
-                className="flex justify-between p-2 items-center rounded-md cursor-pointer hover:bg-primary hover:text-white"
+                className={`flex justify-between p-2 items-center rounded-md cursor-pointer hover:bg-primary hover:text-white ${
+                  active === PROJECT_DETAIL_NAV_ROUTE.VOICE &&
+                  'text-black bg-secondary'
+                }`}
                 onClick={() => handleNav(PROJECT_DETAIL_NAV_ROUTE.VOICE)}
               >
                 <div className="flex items-center gap-3">
@@ -92,7 +102,10 @@ export default function Nav({ title, handleNav }: IProps) {
                 <p className="text-sm">9</p>
               </div>
               <div
-                className="flex justify-between p-2 items-center rounded-md cursor-pointer hover:bg-primary hover:text-white"
+                className={`flex justify-between p-2 items-center rounded-md cursor-pointer hover:bg-primary hover:text-white ${
+                  active === PROJECT_DETAIL_NAV_ROUTE.TEXT &&
+                  'text-black bg-secondary'
+                }`}
                 onClick={() => handleNav(PROJECT_DETAIL_NAV_ROUTE.TEXT)}
               >
                 <div className="flex items-center gap-3">

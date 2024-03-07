@@ -20,7 +20,7 @@ import {
 import ProjectDetails from './projectDetails';
 import { PROJECT_DETAIL_NAV_ROUTE } from 'apps/rahat-ui/src/constants/project.detail.const';
 import { Beneficiary } from '@rahataid/sdk/types';
-import ProjectTransactionView from 'apps/rahat-ui/src/sections/projects/projectTransactionView';
+import { ProjectDetailTransactionView } from 'apps/rahat-ui/src/sections/projects';
 
 export default function ProjectPage() {
   const [active, setActive] = useState<string>(
@@ -81,7 +81,7 @@ export default function ProjectPage() {
               <ProjectCampaignTextTable />
             )}
             {active === PROJECT_DETAIL_NAV_ROUTE.TRANSACTION && (
-              <ProjectTransactionView />
+              <ProjectDetailTransactionView />
             )}
           </ResizablePanel>
           {selectedData ? (

@@ -1,13 +1,14 @@
 import DataCard from '../../components/dataCard';
 import type { Metadata } from 'next';
 import { Users } from 'lucide-react';
-import ProjectTransactionTable from './projectTransactionTable';
+import ProjectTransactionTable from './projectDetailTransactionTable';
+import ProjectDetailTransactionTable from './projectDetailTransactionTable';
 
 export const metadata: Metadata = {
   title: 'Transactions',
 };
 
-export default function ProjectTransactionView() {
+export default function ProjectDetailTransactionView() {
   return (
     <div className="p-3">
       <div className="flex items-center justify-between my-4">
@@ -43,7 +44,7 @@ export default function ProjectTransactionView() {
           Icon={Users}
         />
       </div>
-      <ProjectTransactionTable />
+      <ProjectDetailTransactionTable />
     </div>
   );
 }

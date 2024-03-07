@@ -9,3 +9,4 @@ export { default as ProjectBeneficiaryDetail } from './projectBeneficiaryDetail'
 export { default as ProjectVendorTable } from './projectVendorTable';
 export { default as ProjectCampaignTextTable } from './projectCampaignTextTable';
 export { default as ProjectCampaignVoiceTable } from './projectCampaignVoiceTable';
+export { default as ProjectDetailTransactionView } from './projectDetailTransactionView'

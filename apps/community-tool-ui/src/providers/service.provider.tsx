@@ -1,5 +1,5 @@
 'use client';
-import { BeneficiaryQuery } from '@rahat-ui/query';
+import { CommunityBeneficiaryQuery } from '@rahat-ui/query';
 import {
   AuthQuery,
   RoleQuery,
@@ -15,7 +15,7 @@ export type ServiceContextType = {
   rumsanService: RumsanService;
   authQuery: AuthQuery;
   userQuery: UserQuery;
-  beneficiaryQuery: BeneficiaryQuery;
+  communityBenQuery: CommunityBeneficiaryQuery;
   roleQuery: RoleQuery;
 };
 
@@ -28,7 +28,7 @@ interface ServiceProviderProps {
 export function ServiceProvider({ children }: ServiceProviderProps) {
   const queryClient = useQueryClient();
   const rumsanService = new RumsanService({
-    baseURL: process.env.NEXT_PUBLIC_API_HOST_URL,
+    baseURL: process.env.NEXT_PUBLIC_COMMUNITY_API_URL,
   });
 
   useError();
@@ -49,7 +49,10 @@ export function ServiceProvider({ children }: ServiceProviderProps) {
 
   const authQuery = new AuthQuery(rumsanService, queryClient);
   const userQuery = new UserQuery(rumsanService, queryClient);
-  const beneficiaryQuery = new BeneficiaryQuery(rumsanService, queryClient);
+  const communityBenQuery = new CommunityBeneficiaryQuery(
+    rumsanService,
+    queryClient
+  );
   const roleQuery = new RoleQuery(rumsanService, queryClient);
 
   return (
@@ -58,7 +61,7 @@ export function ServiceProvider({ children }: ServiceProviderProps) {
         rumsanService,
         authQuery,
         userQuery,
-        beneficiaryQuery,
+        communityBenQuery,
         roleQuery,
       }}
     >

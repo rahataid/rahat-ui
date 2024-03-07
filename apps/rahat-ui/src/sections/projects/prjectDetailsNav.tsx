@@ -12,6 +12,7 @@ import {
   UsersRound,
   Phone,
   MessageSquareText,
+  BadgeDollarSign,
 } from 'lucide-react';
 import {
   Dialog,
@@ -71,6 +72,19 @@ export default function Nav({ title, handleNav, active }: IProps) {
             <div className="flex items-center gap-3">
               <Store size={18} strokeWidth={1.5} />
               <p>Vendors</p>
+            </div>
+            <p className="text-sm">32</p>
+          </div>
+          <div
+            className={`flex justify-between p-2 items-center rounded-md cursor-pointer hover:bg-primary hover:text-white ${
+              active === PROJECT_DETAIL_NAV_ROUTE.TRANSACTION &&
+              'text-black bg-secondary'
+            }`}
+            onClick={() => handleNav(PROJECT_DETAIL_NAV_ROUTE.TRANSACTION)}
+          >
+            <div className="flex items-center gap-3">
+              <BadgeDollarSign size={18} strokeWidth={1.5} />
+              <p>Transactions</p>
             </div>
             <p className="text-sm">32</p>
           </div>

@@ -1,7 +1,6 @@
 'use client';
 import { useState } from 'react';
 
-import { COMMUNICATION_NAV_ROUTE } from '@/apps/rahat-ui/src/constants/communication.const';
 import {
   ResizableHandle,
   ResizablePanel,

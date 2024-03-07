@@ -45,23 +45,23 @@ export default function InfoCards({ data }) {
       <Card className="shadow-md rounded-sm">
         <CardHeader>
           <div className="flex justify-between">
-            <p>Beneficiary </p>
-            <Badge variant="outline" color="red">
+            <p>Beneficiary Name</p>
+            <Badge variant="outline" className="bg-secondary">
               Not Approved
             </Badge>
           </div>
         </CardHeader>
         <CardContent>
-          <div className="mb-2">
-            <p className="text-xs">
-              {truncateEthAddress(data?.walletAddress) ?? 'N/A'}
-            </p>
-            <p className="text-sm font-normal text-muted-foreground">
-              Wallet Address
-            </p>
-          </div>
           <div className="flex justify-between gap-8">
             <div className="flex flex-col gap-2">
+              <div>
+                <p className="text-xs">
+                  {truncateEthAddress(data?.walletAddress) ?? 'N/A'}
+                </p>
+                <p className="text-sm font-normal text-muted-foreground">
+                  Wallet Address
+                </p>
+              </div>
               <div>
                 <p>{data?.bankStatus ?? 'test'}</p>
                 <p className="text-sm font-normal text-muted-foreground">
@@ -72,12 +72,6 @@ export default function InfoCards({ data }) {
                 <p>{data?.internetStatus ?? 'test'}</p>
                 <p className="text-sm font-normal text-muted-foreground">
                   Internet Status
-                </p>
-              </div>
-              <div>
-                <p>{data?.phoneStatus ?? 'test'}</p>
-                <p className="text-sm font-normal text-muted-foreground">
-                  Phone Status
                 </p>
               </div>
             </div>
@@ -93,6 +87,12 @@ export default function InfoCards({ data }) {
                 <p>{data?.location ?? 'test'}</p>
                 <p className="text-sm font-normal text-muted-foreground">
                   Location
+                </p>
+              </div>
+              <div>
+                <p>{data?.phoneStatus ?? 'test'}</p>
+                <p className="text-sm font-normal text-muted-foreground">
+                  Phone Status
                 </p>
               </div>
             </div>

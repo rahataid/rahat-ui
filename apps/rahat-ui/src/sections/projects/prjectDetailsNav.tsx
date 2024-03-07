@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { ScrollArea } from '@rahat-ui/shadcn/components/scroll-area';
 import { Separator } from '@rahat-ui/shadcn/components/separator';
 import { Badge } from '@rahat-ui/shadcn/components/badge';
@@ -9,6 +10,8 @@ import {
   Store,
   ToggleLeft,
   UsersRound,
+  Phone,
+  MessageSquareText,
 } from 'lucide-react';
 import {
   Dialog,
@@ -30,6 +33,7 @@ type IProps = {
 };
 
 export default function Nav({ title, handleNav }: IProps) {
+  const [showCampaigns, setShowCampaigns] = useState(false);
   return (
     <>
       <div className="flex items-center justify-between">
@@ -40,33 +44,68 @@ export default function Nav({ title, handleNav }: IProps) {
           Locked
         </Badge>
       </div>
-      {/* <ScrollArea className="h-auto">
-        <div>
-          <nav className="p-2">
-            <div className="flex justify-between p-2 items-center rounded-md cursor-pointer hover:bg-primary hover:text-white">
-              <div className="flex items-center gap-3">
-                <UsersRound size={18} strokeWidth={1.5} />
-                <p>Beneficiaries</p>
-              </div>
-              <p className="text-sm">128</p>
+      {/* <ScrollArea className="h-auto"> */}
+      <div>
+        <nav className="p-2">
+          <div
+            className="flex justify-between p-2 items-center rounded-md cursor-pointer hover:bg-primary hover:text-white"
+            onClick={() => handleNav(PROJECT_DETAIL_NAV_ROUTE.BENEFICIARY)}
+          >
+            <div className="flex items-center gap-3">
+              <UsersRound size={18} strokeWidth={1.5} />
+              <p>Beneficiaries</p>
             </div>
-            <div className="flex justify-between p-2 items-center rounded-md cursor-pointer hover:bg-primary hover:text-white">
-              <div className="flex items-center gap-3">
-                <Store size={18} strokeWidth={1.5} />
-                <p>Vendors</p>
-              </div>
-              <p className="text-sm">32</p>
+            <p className="text-sm">128</p>
+          </div>
+          <div
+            className="flex justify-between p-2 items-center rounded-md cursor-pointer hover:bg-primary hover:text-white"
+            onClick={() => handleNav(PROJECT_DETAIL_NAV_ROUTE.VENDOR)}
+          >
+            <div className="flex items-center gap-3">
+              <Store size={18} strokeWidth={1.5} />
+              <p>Vendors</p>
             </div>
-            <div className="flex justify-between p-2 items-center rounded-md cursor-pointer hover:bg-primary hover:text-white">
+            <p className="text-sm">32</p>
+          </div>
+          <div>
+            <div
+              className="flex justify-between p-2 items-center rounded-md cursor-pointer hover:bg-primary hover:text-white"
+              onClick={() => setShowCampaigns(!showCampaigns)}
+            >
               <div className="flex items-center gap-3">
                 <Speech size={18} strokeWidth={1.5} /> <p>Campaigns</p>
               </div>
               <p className="text-sm">9</p>
             </div>
-          </nav>
-        </div>
-      </ScrollArea>
-      <Separator /> */}
+            <div
+              className={`pl-6 transition-all ease-in-out duration-300 ${
+                showCampaigns ? 'opacity-100 max-h-screen' : 'opacity-0 max-h-0'
+              }`}
+            >
+              <div
+                className="flex justify-between p-2 items-center rounded-md cursor-pointer hover:bg-primary hover:text-white"
+                onClick={() => handleNav(PROJECT_DETAIL_NAV_ROUTE.VOICE)}
+              >
+                <div className="flex items-center gap-3">
+                  <Phone size={18} strokeWidth={1.5} /> <p>Voice</p>
+                </div>
+                <p className="text-sm">9</p>
+              </div>
+              <div
+                className="flex justify-between p-2 items-center rounded-md cursor-pointer hover:bg-primary hover:text-white"
+                onClick={() => handleNav(PROJECT_DETAIL_NAV_ROUTE.TEXT)}
+              >
+                <div className="flex items-center gap-3">
+                  <MessageSquareText size={18} strokeWidth={1.5} /> <p>Text</p>
+                </div>
+                <p className="text-sm">9</p>
+              </div>
+            </div>
+          </div>
+        </nav>
+      </div>
+      {/* </ScrollArea> */}
+      <Separator />
       {/* <h1 className="p-4 font-semibold text-xl text-slate-600">Actions</h1> */}
       <ScrollArea className="h-auto">
         <div>

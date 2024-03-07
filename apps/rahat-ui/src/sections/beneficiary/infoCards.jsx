@@ -1,3 +1,4 @@
+'use client'
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import {
   Card,
@@ -37,18 +38,38 @@ import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 
 import { MoreVertical } from 'lucide-react';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
+import { useWriteElProject } from '../../contract-hooks/generated';
 // import data from '../../app/beneficiary/beneficiaryData.json';
 
 export default function InfoCards({ data }) {
+
+  const useAddBeneficiary =()=>{
+    console.log("add beneficiary")
+
+    const res = useWriteElProject({
+      address:'0x38BFDCCAc556ED026706EE21b4945cE86718D4D1',
+      functionName:'addBeneficiary',
+      args:['0x082d43D30C31D054b1AEDbE08F50C2a1BBE76fC7']
+    })
+  
+    console.log(res.data)
+  }
+  // const res = useWriteElProject({
+  //   address:'0x38BFDCCAc556ED026706EE21b4945cE86718D4D1',
+  //   functionName:'addBeneficiary',
+  //   args:['0x082d43D30C31D054b1AEDbE08F50C2a1BBE76fC7']
+  // })
+
+  // console.log(res.data)
   return (
     <div className="grid grid-cols-2 gap-4 p-2">
       <Card className="shadow-md rounded-sm">
         <CardHeader>
           <div className="flex justify-between">
             <p>Beneficiary Name</p>
-            <Badge variant="outline" color="red">
-              Not Approved
-            </Badge>
+            <Button variant="outline" color="red" onClick={useAddBeneficiary}>
+              Approve
+            </Button>
           </div>
         </CardHeader>
         <CardContent>

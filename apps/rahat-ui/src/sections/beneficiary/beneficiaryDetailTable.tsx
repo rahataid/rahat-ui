@@ -167,7 +167,6 @@ export default function BeneficiaryDetailTableView() {
     const querRes = queryService.useBeneficiaryTransaction('0xf0c84735af5669c809efd62c9d4e466d331a95b0');
     // const claimRes = queryService.useClaimAssigned('0x932a3db51f4c4ef3d0ee454613b55446149302ec148b4bf3d955708802c972d609000000');
     querRes.then((res)=>{
-      console.log(res)
      const claimedAssigned = res?.claimAssigneds
      const claimProcessed = res?.projectClaimProcesseds;
      const beneficiaryReferred = res?.beneficiaryReferreds;

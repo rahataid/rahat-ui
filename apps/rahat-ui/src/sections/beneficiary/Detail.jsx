@@ -1,10 +1,16 @@
+'use client'
 import BeneficiaryDetailTableView from './beneficiaryDetailTable';
 import InfoCards from './infoCards';
+import {useReadElProject} from '../../contract-hooks/generated'
 
 export default function BeneficiaryDetailPageView() {
+
+  const {data} = useReadElProject({
+    address:'0x38BFDCCAc556ED026706EE21b4945cE86718D4D1',
+    functionName:'defaultToken'
+  })
   
 
-  console.log('status', status)
   return (
     <>
       <div>

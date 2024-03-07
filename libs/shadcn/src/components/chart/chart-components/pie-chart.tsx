@@ -81,7 +81,6 @@ export default function PieChart({ title, subheader, chart }: Props) {
             total: {
               formatter: (w: { globals: { seriesTotals: number[] } }) => {
                 const sum = w.globals.seriesTotals.reduce((a, b) => a + b, 0);
-                console.log('sum', fNumber(sum));
                 return fNumber(sum);
               },
             },

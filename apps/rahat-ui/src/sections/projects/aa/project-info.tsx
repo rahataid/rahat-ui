@@ -49,23 +49,29 @@ export default function ProjectDetails() {
         <DataCard
           className="h-40"
           title="Beneficiaries"
-          number={'12'}
-          subTitle="Total"
+          number1={'12'}
+          subTitle1="Total"
+          number2={'12'}
+          subTitle2="Total"
           Icon={Users}
         />
         <DataCard
           className=""
           title="Balance"
-          number={'12'}
-          subTitle="Nrs"
+          number1={'12'}
+          subTitle1="Total"
+          number2={'12'}
+          subTitle2="Total"
           Icon={CircleDollarSign}
         />
 
         <DataCard
           className=""
           title="Distributed"
-          number={'12'}
-          subTitle="Nrs"
+          number1={'12'}
+          subTitle1="Total"
+          number2={'12'}
+          subTitle2="Total"
           Icon={Users}
         />
       </div>

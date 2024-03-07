@@ -36,47 +36,139 @@ import {
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
 
-const data: Payment[] = [
+const data: Transaction[] = [
   {
     id: 'm5gr84i9',
-    amount: 316,
-    status: 'success',
-    email: 'ken99@yahoo.com',
+    topic: 'Claim Processed',
+    beneficiary: 1234567890,
+    voucherId: 'ABC123',
+    timestamp: '2024-02-27T08:00:00Z',
+    txHash: '0x123456789abcdef',
   },
   {
     id: '3u1reuv4',
-    amount: 242,
-    status: 'success',
-    email: 'Abe45@gmail.com',
+    topic: 'Claim Approved',
+    beneficiary: 5678234324,
+    voucherId: 'DEF456',
+    timestamp: '2024-02-27T09:00:00Z',
+    txHash: '0x987654321abcdef',
   },
   {
     id: 'derv1ws0',
-    amount: 837,
-    status: 'processing',
-    email: 'Monserrat44@gmail.com',
+    topic: 'Claim Rejected',
+    beneficiary: 90124353534,
+    voucherId: 'GHI789',
+    timestamp: '2024-02-27T10:00:00Z',
+    txHash: '0xfedcba9876543210',
   },
   {
     id: '5kma53ae',
-    amount: 874,
-    status: 'success',
-    email: 'Silas22@gmail.com',
+    topic: 'Payment Processed',
+    beneficiary: 34563453534,
+    voucherId: 'JKL012',
+    timestamp: '2024-02-27T11:00:00Z',
+    txHash: '0xabcdef1234567890',
   },
   {
     id: 'bhqecj4p',
-    amount: 721,
-    status: 'failed',
-    email: 'carmella@hotmail.com',
+    topic: 'Payment Failed',
+    beneficiary: 7890345345,
+    voucherId: 'MNO345',
+    timestamp: '2024-02-27T12:00:00Z',
+    txHash: '0x0123456789abcdef',
+  },
+  {
+    id: 'p9o8i7u6',
+    topic: 'Claim Approved',
+    beneficiary: 1234567567,
+    voucherId: 'PQR678',
+    timestamp: '2024-02-27T13:00:00Z',
+    txHash: '0xfedcba9876543210',
+  },
+  {
+    id: '3v4b5n6m',
+    topic: 'Payment Processed',
+    beneficiary: 5678456456,
+    voucherId: 'STU901',
+    timestamp: '2024-02-27T14:00:00Z',
+    txHash: '0xabcdef0123456789',
+  },
+  {
+    id: 'a1s2d3f4',
+    topic: 'Claim Processed',
+    beneficiary: 9012456456,
+    voucherId: 'VWX234',
+    timestamp: '2024-02-27T15:00:00Z',
+    txHash: '0x0123456789abcdef',
+  },
+  {
+    id: 'q2w3e4r5',
+    topic: 'Claim Rejected',
+    beneficiary: 3456456456,
+    voucherId: 'YZA567',
+    timestamp: '2024-02-27T16:00:00Z',
+    txHash: '0xabcdef0123456789',
+  },
+  {
+    id: 'zxcvbnml',
+    topic: 'Payment Failed',
+    beneficiary: 7890345345,
+    voucherId: 'BCD890',
+    timestamp: '2024-02-27T17:00:00Z',
+    txHash: '0x0123456789abcdef',
+  },
+  {
+    id: 'qwertyui',
+    topic: 'Payment Processed',
+    beneficiary: 1234345456,
+    voucherId: 'EFG901',
+    timestamp: '2024-02-27T18:00:00Z',
+    txHash: '0xfedcba9876543210',
+  },
+  {
+    id: 'asdfghjk',
+    topic: 'Claim Approved',
+    beneficiary: 5678456345,
+    voucherId: 'HIJ234',
+    timestamp: '2024-02-27T19:00:00Z',
+    txHash: '0xabcdef0123456789',
+  },
+  {
+    id: 'poiuytre',
+    topic: 'Claim Processed',
+    beneficiary: 9012345345,
+    voucherId: 'KLM567',
+    timestamp: '2028-02-27T20:00:00Z',
+    txHash: '0x0123456789abcdef',
+  },
+  {
+    id: 'lkjhgfds',
+    topic: 'Payment Failed',
+    beneficiary: 3456345345,
+    voucherId: 'NOP890',
+    timestamp: '2024-02-27T21:00:00Z',
+    txHash: '0xabcdef0123456789',
+  },
+  {
+    id: 'mnbvcxz1',
+    topic: 'Payment Processed',
+    beneficiary: 78902343456,
+    voucherId: 'QRS234',
+    timestamp: '2024-02-27T22:00:00Z',
+    txHash: '0x0123456789abcdef',
   },
 ];
 
-export type Payment = {
+export type Transaction = {
   id: string;
-  amount: number;
-  status: 'pending' | 'processing' | 'success' | 'failed';
-  email: string;
+  topic: string;
+  beneficiary: number;
+  voucherId: string;
+  timestamp: string;
+  txHash: string;
 };
 
-export const columns: ColumnDef<Payment>[] = [
+export const columns: ColumnDef<Transaction>[] = [
   {
     id: 'select',
     header: ({ table }) => (
@@ -102,41 +194,79 @@ export const columns: ColumnDef<Payment>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: 'status',
-    header: 'Status',
+    accessorKey: 'topic',
+    header: 'Topic',
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue('status')}</div>
+      <div className="capitalize">{row.getValue('topic')}</div>
     ),
   },
   {
-    accessorKey: 'email',
+    accessorKey: 'beneficiary',
     header: ({ column }) => {
       return (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
-          Email
+          Beneficiary
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
     },
-    cell: ({ row }) => <div className="lowercase">{row.getValue('email')}</div>,
+    cell: ({ row }) => (
+      <div className="lowercase">{row.getValue('beneficiary')}</div>
+    ),
   },
   {
-    accessorKey: 'amount',
-    header: () => <div className="text-right">Amount</div>,
-    cell: ({ row }) => {
-      const amount = parseFloat(row.getValue('amount'));
-
-      // Format the amount as a dollar amount
-      const formatted = new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-      }).format(amount);
-
-      return <div className="text-right font-medium">{formatted}</div>;
+    accessorKey: 'voucherId',
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+        >
+          VoucherId
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
     },
+    cell: ({ row }) => (
+      <div className="lowercase">{row.getValue('voucherId')}</div>
+    ),
+  },
+  {
+    accessorKey: 'timestamp',
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+        >
+          Timestamp
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) => (
+      <div className="lowercase">{row.getValue('timestamp')}</div>
+    ),
+  },
+  {
+    accessorKey: 'txHash',
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+        >
+          TxHash
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) => (
+      <div className="lowercase">{row.getValue('txHash')}</div>
+    ),
   },
   {
     id: 'actions',
@@ -157,11 +287,8 @@ export const columns: ColumnDef<Payment>[] = [
             <DropdownMenuItem
               onClick={() => navigator.clipboard.writeText(payment.id)}
             >
-              Copy payment ID
+              Copy payment Txhash
             </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>View customer</DropdownMenuItem>
-            <DropdownMenuItem>View payment details</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );
@@ -201,39 +328,15 @@ export default function DataTableDemo() {
     <div className="w-full">
       <div className="flex items-center py-4">
         <Input
-          placeholder="Filter emails..."
-          value={(table.getColumn('email')?.getFilterValue() as string) ?? ''}
+          placeholder="Filter Beneficiary..."
+          value={
+            (table.getColumn('beneficiary')?.getFilterValue() as string) ?? ''
+          }
           onChange={(event) =>
-            table.getColumn('email')?.setFilterValue(event.target.value)
+            table.getColumn('beneficiary')?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
         />
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto">
-              Columns <ChevronDown className="ml-2 h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {table
-              .getAllColumns()
-              .filter((column) => column.getCanHide())
-              .map((column) => {
-                return (
-                  <DropdownMenuCheckboxItem
-                    key={column.id}
-                    className="capitalize"
-                    checked={column.getIsVisible()}
-                    onCheckedChange={(value) =>
-                      column.toggleVisibility(!!value)
-                    }
-                  >
-                    {column.id}
-                  </DropdownMenuCheckboxItem>
-                );
-              })}
-          </DropdownMenuContent>
-        </DropdownMenu>
       </div>
       <div className="rounded-md border">
         <Table>

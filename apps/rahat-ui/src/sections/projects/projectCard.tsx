@@ -23,7 +23,7 @@ export default function CommonCard({
   const router = useRouter();
 
   const handleClick = () => {
-    router.push(`/projects/${id}`);
+    router.push(`/projects/${badge.toLowerCase()}/${id}`);
   };
 
   return (
@@ -43,7 +43,10 @@ export default function CommonCard({
       <CardContent className="pt-4 pb-4">
         <div className="flex justify-between">
           <p className="font-bold text-md text-primary">{title} </p>
-          <Badge variant="outline" className="border-primary text-primary cursor-auto bg-secondary">
+          <Badge
+            variant="outline"
+            className="border-primary text-primary cursor-auto bg-secondary"
+          >
             {badge}
           </Badge>
         </div>

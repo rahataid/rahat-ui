@@ -45,6 +45,7 @@ import {
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import TransactionTableData from '../../app/beneficiary/beneficiaryTransactionData.json';
+import { cn } from '@rahat-ui/shadcn/src';
 
 const data: Transaction[] = TransactionTableData;
 
@@ -131,7 +132,10 @@ export const columns: ColumnDef<Transaction>[] = [
   },
 ];
 
-export default function BeneficiaryDetailTableView() {
+export default function BeneficiaryDetailTableView({
+  showPagination,
+  tableHeight,
+}) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -201,9 +205,9 @@ export default function BeneficiaryDetailTableView() {
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-        <div className="rounded-md border w-full">
+        <div className="rounded-md border w-full bg-white">
           <Table>
-            <ScrollArea className="h-table">
+            <ScrollArea className={cn('', tableHeight)}>
               <TableHeader>
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow key={headerGroup.id}>
@@ -254,7 +258,12 @@ export default function BeneficiaryDetailTableView() {
           </Table>
         </div>
       </div>
-      <div className="flex items-center justify-end space-x-8 p-2">
+      <div
+        className={cn(
+          'flex items-center justify-end space-x-8 p-2',
+          showPagination
+        )}
+      >
         <div className="flex-1 text-sm text-muted-foreground">
           {table.getFilteredSelectedRowModel().rows.length} of{' '}
           {table.getFilteredRowModel().rows.length} row(s) selected.

@@ -38,11 +38,12 @@ import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { MoreVertical } from 'lucide-react';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { truncateEthAddress } from '@rumsan/sdk/utils';
+import { cn } from '@rahat-ui/shadcn/src';
 
-export default function InfoCards({ data }) {
+export default function InfoCards({ data, className, card1, card2, card3 }) {
   return (
-    <div className="flex flex-col gap-4 p-2">
-      <Card className="shadow-md rounded-sm">
+    <div className={cn('gap-4 p-2', className)}>
+      <Card className={cn('shadow-md rounded-sm', card1)}>
         <CardHeader>
           <div className="flex justify-between">
             <p>Beneficiary Name</p>
@@ -99,7 +100,7 @@ export default function InfoCards({ data }) {
           </div>
         </CardContent>
       </Card>
-      <Card className="shadow-md rounded-sm">
+      <Card className={cn('shadow-md rounded-sm', card2)}>
         <CardHeader>
           <div className="flex justify-between items-center">
             <p>Claim Details</p>
@@ -209,15 +210,17 @@ export default function InfoCards({ data }) {
           </div>
         </CardContent>
       </Card>
-      <Card className="shadow-md rounded-sm">
-        <CardHeader>
-          <p className="fonr-mediun text-md">Projects Involved</p>
-        </CardHeader>
-        <CardContent>
-          <Badge variant="outline" color="secondary" className="rounded">
-            Test Project
-          </Badge>
-        </CardContent>
+      <Card className={cn('shadow-md rounded-sm', card3)}>
+        <div>
+          <CardHeader>
+            <p className="fonr-mediun text-md">Projects Involved</p>
+          </CardHeader>
+          <CardContent>
+            <Badge variant="outline" color="secondary" className="rounded">
+              Test Project
+            </Badge>
+          </CardContent>
+        </div>
       </Card>
     </div>
   );

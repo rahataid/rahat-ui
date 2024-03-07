@@ -4,16 +4,13 @@ import BeneficiaryDetailTableView from './beneficiaryDetailTable';
 export default function BeneficiaryDetailPageView() {
   return (
     <>
-      <div>
-        <div className="flex justify-between gap-2">
-          <div className="w-96">
-            <InfoCards />
-          </div>
-          <div className="w-full flex-1 ">
-            <BeneficiaryDetailTableView />
-          </div>
-        </div>
-      </div>
+      <InfoCards
+        className="flex"
+        card1="flex-1 shrink"
+        card2="flex-1 shrink"
+        card3="text-center"
+      />
+      <BeneficiaryDetailTableView tableHeight="h-[calc(100vh-465px)]" />
     </>
   );
 }

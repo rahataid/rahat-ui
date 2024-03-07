@@ -23,6 +23,7 @@ import { IBeneficiaryItem } from '../../types/beneficiary';
 import EditBeneficiary from './editBeneficiary';
 import InfoCards from './infoCards';
 import { useRumsanService } from '../../providers/service.provider';
+import BeneficiaryDetailTableView from './beneficiaryDetailTable';
 
 type IProps = {
   data: IBeneficiaryItem;
@@ -124,10 +125,13 @@ export default function BeneficiaryDetail({ data, handleClose }: IProps) {
         </div>
 
         <TabsContent value="detail">
-          <InfoCards data={data} />
+          <InfoCards data={data} className="flex flex-col" />
         </TabsContent>
         <TabsContent value="transaction-history">
-          <div className="p-4 border-y">Transaction History View</div>
+          <BeneficiaryDetailTableView
+            showPagination="hidden"
+            tableHeight="h-[calc(100vh-285px)]"
+          />
         </TabsContent>
         <TabsContent value="edit">
           {beneficiary && <EditBeneficiary beneficiary={beneficiary} />}

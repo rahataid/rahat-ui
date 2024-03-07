@@ -7,7 +7,8 @@ export const rahatChain = defineChain({
   rpcUrls: {
     default: {
       http: [
-        'wss://billowing-long-ensemble.arbitrum-sepolia.quiknode.pro/e0c76079c7d67ed114812420ba1d4472a30c93fa',
+        'https://polygon-mumbai.infura.io/v3/627efc2e63b5449eaf60728ea083fa9d'
+        // 'wss://billowing-long-ensemble.arbitrum-sepolia.quiknode.pro/e0c76079c7d67ed114812420ba1d4472a30c93fa',
       ],
     },
   },

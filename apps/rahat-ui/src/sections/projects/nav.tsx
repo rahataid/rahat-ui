@@ -1,3 +1,5 @@
+'use client';
+
 import { KanbanSquare } from 'lucide-react';
 import { useState } from 'react';
 import { PROJECT_NAV_ROUTE } from '../../constants/project.const';

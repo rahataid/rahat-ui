@@ -164,7 +164,7 @@ export default function BeneficiaryDetailTableView() {
   const {queryService} = useGraphService();
  
   const fetchBeneficiary =  React.useCallback(()=>{
-    const querRes = queryService.useBeneficiaryTransaction('0xf0c84735af5669c809efd62c9d4e466d331a95b0');
+    const querRes = queryService.useBeneficiaryTransaction('0x082d43D30C31D054b1AEDbE08F50C2a1BBE76fC7');
     // const claimRes = queryService.useClaimAssigned('0x932a3db51f4c4ef3d0ee454613b55446149302ec148b4bf3d955708802c972d609000000');
     querRes.then((res)=>{
      const claimedAssigned = res?.claimAssigneds

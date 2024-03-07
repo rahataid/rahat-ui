@@ -5,6 +5,8 @@ import { useRumsanService } from '../../providers/service.provider';
 import { toast } from 'react-toastify';
 import { useRef } from 'react';
 
+const DOWNLOAD_FILE_URL = '/files/beneficiary_sample.xlsx';
+
 export default function ImportBeneficiary() {
   const fileInputRef: RefObject<HTMLInputElement> = useRef(null);
 
@@ -65,6 +67,22 @@ export default function ImportBeneficiary() {
       });
   };
 
+  const handleDownloadClick = () => {
+    fetch(DOWNLOAD_FILE_URL)
+      .then((response) => response.blob())
+      .then((blob) => {
+        const url = window.URL.createObjectURL(new Blob([blob]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', 'beneficiary_sample.xlsx');
+        document.body.appendChild(link);
+        link.click();
+      })
+      .catch((error) => {
+        toast.error('Error downloading file!' + error);
+      });
+  };
+
   return (
     <div className="h-custom">
       <div className="h-full p-4">
@@ -83,6 +101,20 @@ export default function ImportBeneficiary() {
           </div>
         </div>
         <div className="flex justify-end w-full mt-4">
+          <button
+            onClick={handleDownloadClick}
+            className="mr-2 bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center"
+          >
+            <svg
+              className="fill-current w-4 h-4 mr-2"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+            >
+              <path d="M13 8V2H7v6H2l8 8 8-8h-5zM0 18h20v2H0v-2z" />
+            </svg>
+            <span>Download Sample</span>
+          </button>
+
           <Button
             className="w-40 bg-primary hover:ring-2 ring-primary"
             onClick={handleUpload}

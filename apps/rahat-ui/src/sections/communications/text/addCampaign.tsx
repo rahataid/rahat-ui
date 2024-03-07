@@ -1,17 +1,10 @@
 'use client';
 
 import { z } from 'zod';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { format } from 'date-fns';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import {
-  useCreateCampaignMutation,
-  useCreateRoleMutation,
-  useGetAudioQuery,
-  useListAudienceQuery,
-  useListTransportQuery,
-} from '@rahat-ui/query';
 import { Input } from '@rahat-ui/shadcn/components/input';
 import { Calendar } from '@rahat-ui/shadcn/components/calendar';
 import { Button } from '@rahat-ui/shadcn/components/button';
@@ -42,13 +35,26 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { CAMPAIGN_TYPES } from '@rahat-ui/types';
 import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
+import {
+  ServiceContext,
+  ServiceContextType,
+  useRumsanService,
+} from 'apps/rahat-ui/src/providers/service.provider';
 
 export default function AddCampaign() {
-  const { data: transportData } = useListTransportQuery();
-  const { data: audienceData } = useListAudienceQuery();
-  const { data: audioData } = useGetAudioQuery();
+  const { communicationQuery } = React.useContext(
+    ServiceContext
+  ) as ServiceContextType;
+  const { data: transportData } = communicationQuery.useListTransport();
+  const { data: audienceData } = communicationQuery.useListAudience();
+  const { data: audioData } = communicationQuery.useGetAudio();
+  const createCampaign = communicationQuery.useCreateCampaign();
+  const createAudience = communicationQuery.useCreateAudience();
 
-  const createCampaign = useCreateCampaignMutation();
+  const { beneficiaryQuery } = useRumsanService();
+  const { data: beneficiaryData } = beneficiaryQuery.useBeneficiaryPii();
+  console.log(beneficiaryData);
+
   const [showSelectAudio, setShowSelectAudio] = useState(false);
   const [showAudiences, setShowAudiences] = useState(false);
 
@@ -66,7 +72,13 @@ export default function AddCampaign() {
       required_error: 'Transport is required.',
     }),
     message: z.string().optional(),
-    audiences: z.array(z.number()),
+    audiences: z.array(
+      z.object({
+        name: z.string(),
+        phone: z.string(),
+        beneficiaryId: z.number(),
+      })
+    ),
     file: z.string().optional(),
   });
 
@@ -79,7 +91,15 @@ export default function AddCampaign() {
   });
 
   const handleCreateCampaign = async (data: z.infer<typeof FormSchema>) => {
-    const audiences = data.audiences.map((data) => Number(data));
+    console.log(data.audiences, audienceData);
+
+    const audiences = audienceData?.data
+      .filter((objA: any) =>
+        data?.audiences?.some((objB) => objB.phone === objA?.details?.phone)
+      )
+      .map((obj: any) => obj.id);
+    console.log(audiences);
+
     type AdditionalData = {
       audio?: any;
       message?: string;
@@ -258,7 +278,7 @@ export default function AddCampaign() {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {audioData?.map((mp3: any, index: number) => {
+                          {audioData?.data?.map((mp3: any, index: number) => {
                             return (
                               <SelectItem key={index} value={mp3?.url}>
                                 {mp3?.filename}
@@ -287,13 +307,17 @@ export default function AddCampaign() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {transportData?.map((data) => {
-                          return (
-                            <SelectItem value={data.id.toString()}>
-                              {data.name}
-                            </SelectItem>
-                          );
-                        })}
+                        {transportData !== undefined &&
+                          transportData?.data?.map((data) => {
+                            return (
+                              <SelectItem
+                                key={data.id}
+                                value={data.id.toString()}
+                              >
+                                {data.name}
+                              </SelectItem>
+                            );
+                          })}
                       </SelectContent>
                     </Select>
 
@@ -330,37 +354,59 @@ export default function AddCampaign() {
                     {/* <div className="mb-4">
                     <FormLabel className="text-base">Audiences</FormLabel>
                   </div> */}
-                    {audienceData &&
-                      audienceData?.map((item) => (
+                    {beneficiaryData &&
+                      beneficiaryData?.data?.map((item) => (
                         <FormField
-                          key={item.id}
+                          key={item.beneficiaryId}
                           control={form.control}
                           name="audiences"
                           render={({ field }) => {
                             return (
                               <FormItem
-                                key={item.id}
+                                key={item.beneficiaryId}
                                 className="flex flex-row items-start space-x-3 space-y-0"
                               >
                                 <FormControl>
                                   <Checkbox
-                                    checked={field.value?.includes(item.id)}
+                                    checked={field.value?.some(
+                                      (value) =>
+                                        value.beneficiaryId ===
+                                        item.beneficiaryId
+                                    )}
                                     onCheckedChange={(checked) => {
+                                      console.log(audienceData, field.value);
+
+                                      const checkAudienceExist =
+                                        audienceData?.data.some(
+                                          (audience) =>
+                                            audience?.details?.phone ===
+                                            item.phone
+                                        );
+                                      console.log(checkAudienceExist);
+
+                                      if (!checkAudienceExist) {
+                                        createAudience.mutateAsync({
+                                          details: {
+                                            name: item.name,
+                                            phone: item.phone,
+                                          },
+                                        });
+                                      }
+
                                       return checked
-                                        ? field.onChange([
-                                            ...field.value,
-                                            item.id,
-                                          ])
+                                        ? field.onChange([...field.value, item])
                                         : field.onChange(
                                             field.value?.filter(
-                                              (value) => value !== item.id
+                                              (value) =>
+                                                value.beneficiaryId !==
+                                                item.beneficiaryId
                                             )
                                           );
                                     }}
                                   />
                                 </FormControl>
                                 <FormLabel className="font-normal">
-                                  {item.details.name}
+                                  {item.name}
                                 </FormLabel>
                               </FormItem>
                             );

@@ -8,6 +8,7 @@ import { Wagmi } from '../providers/wagmi.provider';
 import './globals.css';
 import { ServiceProvider } from '../providers/service.provider';
 import { GeistSans } from 'geist/font/sans';
+import { GraphQueryProvider } from '../providers/subgraph-provider';
 
 export const metadata = {
   title: 'Welcome to Rahat',
@@ -25,6 +26,7 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <Wagmi>
+          <GraphQueryProvider>
           <QueryProvider>
             <ServiceProvider>
               <ThemeProvider
@@ -39,6 +41,7 @@ export default function RootLayout({
               </ThemeProvider>
             </ServiceProvider>
           </QueryProvider>
+          </GraphQueryProvider>
         </Wagmi>
       </body>
     </html>

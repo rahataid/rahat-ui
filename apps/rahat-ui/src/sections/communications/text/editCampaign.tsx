@@ -1,5 +1,6 @@
 'use client';
 
+import React, { useEffect } from 'react';
 import { z } from 'zod';
 import { format } from 'date-fns';
 import { toast } from 'react-toastify';
@@ -9,12 +10,6 @@ import { CalendarIcon } from 'lucide-react';
 import { cn } from '@rahat-ui/shadcn/src/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 
-import {
-  useEditCampaignsMutation,
-  useGetCampaignQuery,
-  useListAudienceQuery,
-  useListTransportQuery,
-} from '@rahat-ui/query';
 import {
   Popover,
   PopoverContent,
@@ -43,17 +38,23 @@ import { Button } from '@rahat-ui/shadcn/components/button';
 import { Input } from '@rahat-ui/shadcn/components/input';
 import { Calendar } from '@rahat-ui/shadcn/components/calendar';
 import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
+import {
+  ServiceContext,
+  ServiceContextType,
+} from 'apps/rahat-ui/src/providers/service.provider';
 
 export default function EditCampaign() {
   const params = useParams<{ tag: string; id: string }>();
+  const { communicationQuery } = React.useContext(
+    ServiceContext
+  ) as ServiceContextType;
+  const { data: transportData } = communicationQuery.useListTransport();
+  const { data: audienceData } = communicationQuery.useListAudience();
 
-  const { data: transportData } = useListTransportQuery();
-  const { data: audienceData } = useListAudienceQuery();
-
-  const { data, isSuccess, isLoading } = useGetCampaignQuery({
+  const { data, isSuccess, isLoading } = communicationQuery.useGetCampaign({
     id: Number(params.id),
   });
-  const editCampaign = useEditCampaignsMutation();
+  const editCampaign = communicationQuery.useUpdateCampaign();
 
   const FormSchema = z.object({
     campaignName: z.string().min(2, {
@@ -79,20 +80,24 @@ export default function EditCampaign() {
       audiences: [],
     },
   });
-  if (data) {
-    console.log(data);
-    const audienceIds = data?.audiences?.map((audience) => audience?.id) || [];
+  useEffect(() => {
+    if (data) {
+      const audienceIds =
+        data?.data?.audiences?.map((audience) => audience?.id) || [];
 
-    form.setValue('campaignName', data.name);
-    form.setValue(
-      'message',
-      data.details.body ? data.details.body : data.details.message || ''
-    );
-    form.setValue('campaignType', data.type);
-    form.setValue('startTime', new Date(data.startTime));
-    form.setValue('transport', data?.transport?.id.toString());
-    form.setValue('audiences', audienceIds);
-  }
+      form.setValue('campaignName', data?.data?.name);
+      form.setValue(
+        'message',
+        data?.data?.details.body
+          ? data?.data?.details.body
+          : data?.data?.details.message || ''
+      );
+      form.setValue('campaignType', data?.data?.type);
+      form.setValue('startTime', new Date(data?.data?.startTime));
+      form.setValue('transport', data?.data?.transport?.id.toString());
+      form.setValue('audiences', audienceIds);
+    }
+  }, [data, form]);
 
   const handleEditCampaign = async (data: z.infer<typeof FormSchema>) => {
     const audiences = data.audiences.map((data) => Number(data));
@@ -137,7 +142,7 @@ export default function EditCampaign() {
 
   return (
     <>
-      {isLoading ? (
+      {isLoading || data === undefined ? (
         <p>Loading . . .</p>
       ) : (
         <Form {...form}>
@@ -271,7 +276,7 @@ export default function EditCampaign() {
                         <FormLabel>Transport</FormLabel>
                         <Select
                           onValueChange={field.onChange}
-                          defaultValue={field.value.toString()}
+                          defaultValue={field.value && field.value.toString()}
                         >
                           <FormControl>
                             <SelectTrigger>
@@ -279,7 +284,7 @@ export default function EditCampaign() {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            {transportData?.map((data) => {
+                            {transportData?.data?.map((data) => {
                               return (
                                 <SelectItem
                                   key={data.id}
@@ -307,7 +312,7 @@ export default function EditCampaign() {
                           <FormLabel className="text-base">Audiences</FormLabel>
                         </div>
                         {audienceData &&
-                          audienceData?.map((item) => (
+                          audienceData?.data?.map((item) => (
                             <FormField
                               key={item.id}
                               control={form.control}

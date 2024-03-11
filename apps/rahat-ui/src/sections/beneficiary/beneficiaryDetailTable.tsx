@@ -152,7 +152,7 @@ export const columns: ColumnDef<Transaction>[] = [
 export default function BeneficiaryDetailTableView() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
+    [],
   );
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
@@ -182,7 +182,7 @@ export default function BeneficiaryDetailTableView() {
 
   const fetchBeneficiary = React.useCallback(() => {
     const querRes = queryService.useBeneficiaryTransaction(
-      '0x082d43D30C31D054b1AEDbE08F50C2a1BBE76fC7'
+      '0x082d43D30C31D054b1AEDbE08F50C2a1BBE76fC7',
     );
     // const claimRes = queryService.useClaimAssigned('0x932a3db51f4c4ef3d0ee454613b55446149302ec148b4bf3d955708802c972d609000000');
     querRes.then((res) => {
@@ -281,7 +281,7 @@ export default function BeneficiaryDetailTableView() {
                             ? null
                             : flexRender(
                                 header.column.columnDef.header,
-                                header.getContext()
+                                header.getContext(),
                               )}
                         </TableHead>
                       );
@@ -300,7 +300,7 @@ export default function BeneficiaryDetailTableView() {
                         <TableCell key={cell.id}>
                           {flexRender(
                             cell.column.columnDef.cell,
-                            cell.getContext()
+                            cell.getContext(),
                           )}
                         </TableCell>
                       ))}

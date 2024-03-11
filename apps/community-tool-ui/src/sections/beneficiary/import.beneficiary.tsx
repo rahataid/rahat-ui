@@ -57,7 +57,7 @@ export default function ImportBeneficiary() {
         setSelectedFile(null);
         resetFileInput();
         toast.success(
-          `${res.data.data.count} Beneficiaries uploaded successfully!`
+          `${res.data.data.count} Beneficiaries uploaded successfully!`,
         );
       })
       .catch((error) => {

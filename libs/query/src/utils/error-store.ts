@@ -25,7 +25,7 @@ const useErrorStore = createStore<ErrorStore>(
   }),
   {
     devtoolsEnabled: true,
-  }
+  },
 );
 
 export default useErrorStore;

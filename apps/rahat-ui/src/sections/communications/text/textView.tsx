@@ -14,7 +14,7 @@ import { COMMUNICATION_NAV_ROUTE } from 'apps/rahat-ui/src/constants/communicati
 
 export default function TextView() {
   const [activeTab, setActiveTab] = useState<string>(
-    COMMUNICATION_NAV_ROUTE.DEFAULT_TEXT
+    COMMUNICATION_NAV_ROUTE.DEFAULT_TEXT,
   );
 
   const handleTabChange = (tab: string) => {

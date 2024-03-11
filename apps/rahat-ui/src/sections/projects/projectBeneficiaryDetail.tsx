@@ -60,7 +60,7 @@ export default function ProjectBeneficiaryDetail({
                 <TooltipTrigger
                   onClick={() => {
                     router.push(
-                      paths.dashboard.beneficiary.detail(data.walletAddress)
+                      paths.dashboard.beneficiary.detail(data.walletAddress),
                     );
                   }}
                 >

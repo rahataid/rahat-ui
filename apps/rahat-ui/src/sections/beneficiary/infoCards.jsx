@@ -217,7 +217,7 @@ export default function InfoCards({ data, voucherData }) {
                   <TooltipTrigger>
                     <p className="text-sm font-medium">
                       {truncateEthAddress(
-                        voucherData?.beneficiaryAddress || 'N/A'
+                        voucherData?.beneficiaryAddress || 'N/A',
                       )}
                     </p>
                   </TooltipTrigger>

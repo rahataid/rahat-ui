@@ -10,7 +10,7 @@ export default function BeneficiaryDetailPageView() {
 
   const fetchBeneficiaryVoucherDetails = useCallback(() => {
     const beneficiaryData = queryService.useBeneficiaryVoucher(
-      '0x082d43D30C31D054b1AEDbE08F50C2a1BBE76fC7'
+      '0x082d43D30C31D054b1AEDbE08F50C2a1BBE76fC7',
     );
     beneficiaryData.then((res) => {
       setVoucherData(res);

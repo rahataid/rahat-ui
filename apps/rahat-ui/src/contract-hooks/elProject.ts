@@ -886,7 +886,10 @@ export const useReadElProjectCheckVendorStatus =
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link elProjectAbi}__ and `functionName` set to `"defaultToken"`
  */
 export const useReadElProjectDefaultToken = /*#__PURE__*/ createUseReadContract(
-  { abi: elProjectAbi, functionName: 'defaultToken' }
+  {
+    abi: elProjectAbi,
+    functionName: 'defaultToken',
+  },
 );
 
 /**
@@ -1372,7 +1375,9 @@ export const useSimulateElProjectUpdateVendor =
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link elProjectAbi}__
  */
 export const useWatchElProjectEvent = /*#__PURE__*/ createUseWatchContractEvent(
-  { abi: elProjectAbi }
+  {
+    abi: elProjectAbi,
+  },
 );
 
 /**

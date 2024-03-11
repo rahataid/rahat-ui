@@ -15,7 +15,7 @@ import ProjectDetails from './project-info';
 
 export default function ProjectPage() {
   const [active, setActive] = useState<string>(
-    PROJECT_DETAIL_NAV_ROUTE.DEFAULT
+    PROJECT_DETAIL_NAV_ROUTE.DEFAULT,
   );
 
   const handleNav = useCallback((item: string) => {

@@ -5,14 +5,14 @@ import { useParams } from 'next/navigation';
 import { ComponentType } from 'react'; // Import ComponentType
 
 const AAProjectView = dynamic(
-  () => import('../../../../sections/projects/aa/project-details.view')
+  () => import('../../../../sections/projects/aa/project-details.view'),
 );
 const CVAProjectView = dynamic(
-  () => import('../../../../sections/projects/cva/project-details.view')
+  () => import('../../../../sections/projects/cva/project-details.view'),
 );
 
 const ELProjectView = dynamic(
-  () => import('../../../../sections/projects/el/project-details.view')
+  () => import('../../../../sections/projects/el/project-details.view'),
 );
 
 const pages: { [key: string]: ComponentType<any> } = {

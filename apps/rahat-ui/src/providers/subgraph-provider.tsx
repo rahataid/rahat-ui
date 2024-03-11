@@ -1,32 +1,33 @@
 'use client';
 
-import {GraphQuery} from '@rahataid/el-subgraph';
+import { GraphQuery } from '@rahataid/el-subgraph';
 import { createContext, useContext } from 'react';
 
-export type GraphContextType ={
-    queryService: GraphQuery
+export type GraphContextType = {
+  queryService: GraphQuery;
+};
+
+export const GraphContext = createContext<GraphContextType | null>(null);
+
+interface QueryProviderProps {
+  children: React.ReactNode;
 }
 
-export const GraphContext = createContext<GraphContextType|null>(null);
+export function GraphQueryProvider({ children }: QueryProviderProps) {
+  const queryService = new GraphQuery(
+    'https://api.thegraph.com/subgraphs/name/anupamakoirala-rumsan/el'
+  );
 
-interface QueryProviderProps{
-    children:React.ReactNode
-}
-
-export function GraphQueryProvider ({children}:QueryProviderProps){
-    const queryService = new GraphQuery('https://api.thegraph.com/subgraphs/name/anupamakoirala-rumsan/el');
-
-
-return (
+  return (
     <GraphContext.Provider
-    value={{
-        queryService
-
-    }}>
-        {children}
+      value={{
+        queryService,
+      }}
+    >
+      {children}
     </GraphContext.Provider>
-)
+  );
 }
-export const useGraphService= ():GraphContextType =>{
-    return useContext(GraphContext) as GraphContextType
-}
+export const useGraphService = (): GraphContextType => {
+  return useContext(GraphContext) as GraphContextType;
+};

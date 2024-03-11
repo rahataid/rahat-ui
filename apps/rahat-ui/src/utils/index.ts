@@ -15,9 +15,7 @@ export function truncateEthereumAddress(address: string) {
   return truncatedAddress;
 }
 
-export function formatDate(date:number){
-  const formattedDate = new Date(
-    date * 1000
-  )?.toLocaleDateString('en-GB');
+export function formatDate(date: number) {
+  const formattedDate = new Date(date * 1000)?.toLocaleDateString('en-GB');
   return formattedDate;
 }

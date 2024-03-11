@@ -18,7 +18,17 @@ export default function ChartColumnMultiple({ series }: Props) {
       colors: ['transparent'],
     },
     xaxis: {
-      categories: ['Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'],
+      categories: [
+        'Feb',
+        'Mar',
+        'Apr',
+        'May',
+        'Jun',
+        'Jul',
+        'Aug',
+        'Sep',
+        'Oct',
+      ],
     },
     tooltip: {
       y: {
@@ -28,5 +38,13 @@ export default function ChartColumnMultiple({ series }: Props) {
     plotOptions: { bar: { columnWidth: '36%' } },
   });
 
-  return <Chart dir="ltr" type="bar" series={series} options={chartOptions} height={320} />;
+  return (
+    <Chart
+      dir="ltr"
+      type="bar"
+      series={series}
+      options={chartOptions}
+      height={320}
+    />
+  );
 }

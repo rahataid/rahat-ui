@@ -20,8 +20,11 @@ export default function VoiceView() {
     setActiveTab(tab);
   };
   return (
-    <div className='h-full'>
-      <ResizablePanelGroup direction="horizontal" className="min-h-max border bg-card">
+    <div className="h-full">
+      <ResizablePanelGroup
+        direction="horizontal"
+        className="min-h-max border bg-card"
+      >
         <ResizablePanel
           minSize={17}
           defaultSize={17}

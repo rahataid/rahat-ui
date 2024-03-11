@@ -91,7 +91,12 @@ export const columns: ColumnDef<Transaction>[] = [
     header: 'Processed By',
     cell: ({ row }) => (
       <div className="capitalize">
-        {row.getValue('processedBy') ? `${row.getValue('processedBy')?.toString().substring(0,4)}....${row.getValue('processedBy')?.toString()?.slice(-3)}` : 'N/A'}
+        {row.getValue('processedBy')
+          ? `${row.getValue('processedBy')?.toString().substring(0, 4)}....${row
+              .getValue('processedBy')
+              ?.toString()
+              ?.slice(-3)}`
+          : 'N/A'}
       </div>
     ),
   },
@@ -103,7 +108,18 @@ export const columns: ColumnDef<Transaction>[] = [
   {
     accessorKey: 'transactionHash',
     header: 'Transaction Hash',
-    cell: ({ row }) => <div> {`${row.getValue('transactionHash')?.toString().substring(0,4)}....${row.getValue('transactionHash')?.toString()?.slice(-3)}`}</div>,
+    cell: ({ row }) => (
+      <div>
+        {' '}
+        {`${row
+          .getValue('transactionHash')
+          ?.toString()
+          .substring(0, 4)}....${row
+          .getValue('transactionHash')
+          ?.toString()
+          ?.slice(-3)}`}
+      </div>
+    ),
   },
   {
     accessorKey: 'amount',
@@ -141,7 +157,7 @@ export default function BeneficiaryDetailTableView() {
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
-  const [data,setData] = React.useState<Transaction[]>([])
+  const [data, setData] = React.useState<Transaction[]>([]);
 
   const table = useReactTable({
     data,
@@ -162,55 +178,53 @@ export default function BeneficiaryDetailTableView() {
     },
   });
 
-  const {queryService} = useGraphService();
- 
-  const fetchBeneficiary =  React.useCallback(()=>{
-    const querRes = queryService.useBeneficiaryTransaction('0x082d43D30C31D054b1AEDbE08F50C2a1BBE76fC7');
+  const { queryService } = useGraphService();
+
+  const fetchBeneficiary = React.useCallback(() => {
+    const querRes = queryService.useBeneficiaryTransaction(
+      '0x082d43D30C31D054b1AEDbE08F50C2a1BBE76fC7'
+    );
     // const claimRes = queryService.useClaimAssigned('0x932a3db51f4c4ef3d0ee454613b55446149302ec148b4bf3d955708802c972d609000000');
-    querRes.then((res)=>{
-     const claimedAssigned = res?.claimAssigneds
-     const claimProcessed = res?.projectClaimProcesseds;
-     const beneficiaryReferred = res?.beneficiaryReferreds;
-     const data:any =[]
-     
-     claimedAssigned.map((trans)=>{
-      data.push({
-        processedBy:trans.beneficiary,
-        topic:trans.eventType,
-        timeStamp:formatDate(trans.blockTimestamp),
-        transactionHash:trans.transactionHash,
-        amount:'1'
-      })
-      // const claimRes = queryService?.useClaimAssigned(trans.id);
-    })
-    claimProcessed.map((trans)=>{
-      data.push({
-        processedBy:trans.vendor,
-        topic:trans.eventType,
-        timeStamp:formatDate(trans.blockTimestamp),
-        transactionHash:trans.transactionHash,
-        amount:''
+    querRes.then((res) => {
+      const claimedAssigned = res?.claimAssigneds;
+      const claimProcessed = res?.projectClaimProcesseds;
+      const beneficiaryReferred = res?.beneficiaryReferreds;
+      const data: any = [];
 
-      })
-    })
-    beneficiaryReferred.map((trans)=>{
-      data.push({
-        processedBy:trans.referrerVendor,
-        topic:trans.eventType,
-        timeStamp:formatDate(trans.blockTimestamp),
-        transactionHash:trans.transactionHash
+      claimedAssigned.map((trans) => {
+        data.push({
+          processedBy: trans.beneficiary,
+          topic: trans.eventType,
+          timeStamp: formatDate(trans.blockTimestamp),
+          transactionHash: trans.transactionHash,
+          amount: '1',
+        });
+        // const claimRes = queryService?.useClaimAssigned(trans.id);
+      });
+      claimProcessed.map((trans) => {
+        data.push({
+          processedBy: trans.vendor,
+          topic: trans.eventType,
+          timeStamp: formatDate(trans.blockTimestamp),
+          transactionHash: trans.transactionHash,
+          amount: '',
+        });
+      });
+      beneficiaryReferred.map((trans) => {
+        data.push({
+          processedBy: trans.referrerVendor,
+          topic: trans.eventType,
+          timeStamp: formatDate(trans.blockTimestamp),
+          transactionHash: trans.transactionHash,
+        });
+      });
+      setData(data);
+    });
+  }, [queryService]);
 
-      })
-    })
-    setData(data)
-    })
-  },[queryService])
- 
-
-    React.useEffect (()=>{
-      
-      fetchBeneficiary()
-    },[fetchBeneficiary])
+  React.useEffect(() => {
+    fetchBeneficiary();
+  }, [fetchBeneficiary]);
 
   return (
     <>

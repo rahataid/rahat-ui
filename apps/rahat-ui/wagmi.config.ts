@@ -36,7 +36,6 @@ export const config = createConfig(
       [sepolia.id]: http(),
       // [arbitrumSepolia.id]: http(),
       [polygonMumbai.id]: http(),
-
     },
     walletConnectProjectId: '',
     // Required App Info

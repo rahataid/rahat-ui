@@ -3,7 +3,7 @@ import {
   createUseWriteContract,
   createUseSimulateContract,
   createUseWatchContractEvent,
-} from 'wagmi/codegen'
+} from 'wagmi/codegen';
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // ELProject
@@ -771,7 +771,7 @@ export const elProjectAbi = [
     outputs: [],
     stateMutability: 'nonpayable',
   },
-] as const
+] as const;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // React
@@ -782,7 +782,7 @@ export const elProjectAbi = [
  */
 export const useReadElProject = /*#__PURE__*/ createUseReadContract({
   abi: elProjectAbi,
-})
+});
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link elProjectAbi}__ and `functionName` set to `"IID_RAHAT_PROJECT"`
@@ -791,7 +791,7 @@ export const useReadElProjectIidRahatProject =
   /*#__PURE__*/ createUseReadContract({
     abi: elProjectAbi,
     functionName: 'IID_RAHAT_PROJECT',
-  })
+  });
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link elProjectAbi}__ and `functionName` set to `"RahatClaim"`
@@ -799,7 +799,7 @@ export const useReadElProjectIidRahatProject =
 export const useReadElProjectRahatClaim = /*#__PURE__*/ createUseReadContract({
   abi: elProjectAbi,
   functionName: 'RahatClaim',
-})
+});
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link elProjectAbi}__ and `functionName` set to `"_registeredTokens"`
@@ -808,7 +808,7 @@ export const useReadElProjectRegisteredTokens =
   /*#__PURE__*/ createUseReadContract({
     abi: elProjectAbi,
     functionName: '_registeredTokens',
-  })
+  });
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link elProjectAbi}__ and `functionName` set to `"beneficiaryClaimStatus"`
@@ -817,7 +817,7 @@ export const useReadElProjectBeneficiaryClaimStatus =
   /*#__PURE__*/ createUseReadContract({
     abi: elProjectAbi,
     functionName: 'beneficiaryClaimStatus',
-  })
+  });
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link elProjectAbi}__ and `functionName` set to `"beneficiaryCount"`
@@ -826,7 +826,7 @@ export const useReadElProjectBeneficiaryCount =
   /*#__PURE__*/ createUseReadContract({
     abi: elProjectAbi,
     functionName: 'beneficiaryCount',
-  })
+  });
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link elProjectAbi}__ and `functionName` set to `"beneficiaryEyeVoucher"`
@@ -835,7 +835,7 @@ export const useReadElProjectBeneficiaryEyeVoucher =
   /*#__PURE__*/ createUseReadContract({
     abi: elProjectAbi,
     functionName: 'beneficiaryEyeVoucher',
-  })
+  });
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link elProjectAbi}__ and `functionName` set to `"beneficiaryReferredByBeneficiary"`
@@ -844,7 +844,7 @@ export const useReadElProjectBeneficiaryReferredByBeneficiary =
   /*#__PURE__*/ createUseReadContract({
     abi: elProjectAbi,
     functionName: 'beneficiaryReferredByBeneficiary',
-  })
+  });
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link elProjectAbi}__ and `functionName` set to `"beneficiaryReferredByVendor"`
@@ -853,7 +853,7 @@ export const useReadElProjectBeneficiaryReferredByVendor =
   /*#__PURE__*/ createUseReadContract({
     abi: elProjectAbi,
     functionName: 'beneficiaryReferredByVendor',
-  })
+  });
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link elProjectAbi}__ and `functionName` set to `"beneficiaryReferredVoucher"`
@@ -862,7 +862,7 @@ export const useReadElProjectBeneficiaryReferredVoucher =
   /*#__PURE__*/ createUseReadContract({
     abi: elProjectAbi,
     functionName: 'beneficiaryReferredVoucher',
-  })
+  });
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link elProjectAbi}__ and `functionName` set to `"checkAdminStatus"`
@@ -871,7 +871,7 @@ export const useReadElProjectCheckAdminStatus =
   /*#__PURE__*/ createUseReadContract({
     abi: elProjectAbi,
     functionName: 'checkAdminStatus',
-  })
+  });
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link elProjectAbi}__ and `functionName` set to `"checkVendorStatus"`
@@ -880,14 +880,14 @@ export const useReadElProjectCheckVendorStatus =
   /*#__PURE__*/ createUseReadContract({
     abi: elProjectAbi,
     functionName: 'checkVendorStatus',
-  })
+  });
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link elProjectAbi}__ and `functionName` set to `"defaultToken"`
  */
 export const useReadElProjectDefaultToken = /*#__PURE__*/ createUseReadContract(
-  { abi: elProjectAbi, functionName: 'defaultToken' },
-)
+  { abi: elProjectAbi, functionName: 'defaultToken' }
+);
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link elProjectAbi}__ and `functionName` set to `"eyeVoucherAssigned"`
@@ -896,7 +896,7 @@ export const useReadElProjectEyeVoucherAssigned =
   /*#__PURE__*/ createUseReadContract({
     abi: elProjectAbi,
     functionName: 'eyeVoucherAssigned',
-  })
+  });
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link elProjectAbi}__ and `functionName` set to `"eyeVoucherClaimed"`
@@ -905,7 +905,7 @@ export const useReadElProjectEyeVoucherClaimed =
   /*#__PURE__*/ createUseReadContract({
     abi: elProjectAbi,
     functionName: 'eyeVoucherClaimed',
-  })
+  });
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link elProjectAbi}__ and `functionName` set to `"eyeVoucherRedeemedByVendor"`
@@ -914,7 +914,7 @@ export const useReadElProjectEyeVoucherRedeemedByVendor =
   /*#__PURE__*/ createUseReadContract({
     abi: elProjectAbi,
     functionName: 'eyeVoucherRedeemedByVendor',
-  })
+  });
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link elProjectAbi}__ and `functionName` set to `"getProjectVoucherDetail"`
@@ -923,7 +923,7 @@ export const useReadElProjectGetProjectVoucherDetail =
   /*#__PURE__*/ createUseReadContract({
     abi: elProjectAbi,
     functionName: 'getProjectVoucherDetail',
-  })
+  });
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link elProjectAbi}__ and `functionName` set to `"getTotalBeneficiaries"`
@@ -932,7 +932,7 @@ export const useReadElProjectGetTotalBeneficiaries =
   /*#__PURE__*/ createUseReadContract({
     abi: elProjectAbi,
     functionName: 'getTotalBeneficiaries',
-  })
+  });
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link elProjectAbi}__ and `functionName` set to `"getVendorVoucherDetail"`
@@ -941,7 +941,7 @@ export const useReadElProjectGetVendorVoucherDetail =
   /*#__PURE__*/ createUseReadContract({
     abi: elProjectAbi,
     functionName: 'getVendorVoucherDetail',
-  })
+  });
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link elProjectAbi}__ and `functionName` set to `"isBeneficiary"`
@@ -950,7 +950,7 @@ export const useReadElProjectIsBeneficiary =
   /*#__PURE__*/ createUseReadContract({
     abi: elProjectAbi,
     functionName: 'isBeneficiary',
-  })
+  });
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link elProjectAbi}__ and `functionName` set to `"isTrustedForwarder"`
@@ -959,7 +959,7 @@ export const useReadElProjectIsTrustedForwarder =
   /*#__PURE__*/ createUseReadContract({
     abi: elProjectAbi,
     functionName: 'isTrustedForwarder',
-  })
+  });
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link elProjectAbi}__ and `functionName` set to `"name"`
@@ -967,7 +967,7 @@ export const useReadElProjectIsTrustedForwarder =
 export const useReadElProjectName = /*#__PURE__*/ createUseReadContract({
   abi: elProjectAbi,
   functionName: 'name',
-})
+});
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link elProjectAbi}__ and `functionName` set to `"otpServerAddress"`
@@ -976,7 +976,7 @@ export const useReadElProjectOtpServerAddress =
   /*#__PURE__*/ createUseReadContract({
     abi: elProjectAbi,
     functionName: 'otpServerAddress',
-  })
+  });
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link elProjectAbi}__ and `functionName` set to `"referralLimit"`
@@ -985,7 +985,7 @@ export const useReadElProjectReferralLimit =
   /*#__PURE__*/ createUseReadContract({
     abi: elProjectAbi,
     functionName: 'referralLimit',
-  })
+  });
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link elProjectAbi}__ and `functionName` set to `"referredBenficiaries"`
@@ -994,7 +994,7 @@ export const useReadElProjectReferredBenficiaries =
   /*#__PURE__*/ createUseReadContract({
     abi: elProjectAbi,
     functionName: 'referredBenficiaries',
-  })
+  });
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link elProjectAbi}__ and `functionName` set to `"referredToken"`
@@ -1003,7 +1003,7 @@ export const useReadElProjectReferredToken =
   /*#__PURE__*/ createUseReadContract({
     abi: elProjectAbi,
     functionName: 'referredToken',
-  })
+  });
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link elProjectAbi}__ and `functionName` set to `"referredVoucherAssigned"`
@@ -1012,7 +1012,7 @@ export const useReadElProjectReferredVoucherAssigned =
   /*#__PURE__*/ createUseReadContract({
     abi: elProjectAbi,
     functionName: 'referredVoucherAssigned',
-  })
+  });
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link elProjectAbi}__ and `functionName` set to `"referredVoucherClaimed"`
@@ -1021,7 +1021,7 @@ export const useReadElProjectReferredVoucherClaimed =
   /*#__PURE__*/ createUseReadContract({
     abi: elProjectAbi,
     functionName: 'referredVoucherClaimed',
-  })
+  });
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link elProjectAbi}__ and `functionName` set to `"referredVoucherRedeemedByVendor"`
@@ -1030,7 +1030,7 @@ export const useReadElProjectReferredVoucherRedeemedByVendor =
   /*#__PURE__*/ createUseReadContract({
     abi: elProjectAbi,
     functionName: 'referredVoucherRedeemedByVendor',
-  })
+  });
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link elProjectAbi}__ and `functionName` set to `"supportsInterface"`
@@ -1039,7 +1039,7 @@ export const useReadElProjectSupportsInterface =
   /*#__PURE__*/ createUseReadContract({
     abi: elProjectAbi,
     functionName: 'supportsInterface',
-  })
+  });
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link elProjectAbi}__ and `functionName` set to `"tokenBudget"`
@@ -1047,7 +1047,7 @@ export const useReadElProjectSupportsInterface =
 export const useReadElProjectTokenBudget = /*#__PURE__*/ createUseReadContract({
   abi: elProjectAbi,
   functionName: 'tokenBudget',
-})
+});
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link elProjectAbi}__ and `functionName` set to `"tokenRequestIds"`
@@ -1056,7 +1056,7 @@ export const useReadElProjectTokenRequestIds =
   /*#__PURE__*/ createUseReadContract({
     abi: elProjectAbi,
     functionName: 'tokenRequestIds',
-  })
+  });
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link elProjectAbi}__ and `functionName` set to `"trustedForwarder"`
@@ -1065,14 +1065,14 @@ export const useReadElProjectTrustedForwarder =
   /*#__PURE__*/ createUseReadContract({
     abi: elProjectAbi,
     functionName: 'trustedForwarder',
-  })
+  });
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link elProjectAbi}__
  */
 export const useWriteElProject = /*#__PURE__*/ createUseWriteContract({
   abi: elProjectAbi,
-})
+});
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link elProjectAbi}__ and `functionName` set to `"addBeneficiary"`
@@ -1081,7 +1081,7 @@ export const useWriteElProjectAddBeneficiary =
   /*#__PURE__*/ createUseWriteContract({
     abi: elProjectAbi,
     functionName: 'addBeneficiary',
-  })
+  });
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link elProjectAbi}__ and `functionName` set to `"addReferredBeneficiaries"`
@@ -1090,7 +1090,7 @@ export const useWriteElProjectAddReferredBeneficiaries =
   /*#__PURE__*/ createUseWriteContract({
     abi: elProjectAbi,
     functionName: 'addReferredBeneficiaries',
-  })
+  });
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link elProjectAbi}__ and `functionName` set to `"assignClaims"`
@@ -1099,7 +1099,7 @@ export const useWriteElProjectAssignClaims =
   /*#__PURE__*/ createUseWriteContract({
     abi: elProjectAbi,
     functionName: 'assignClaims',
-  })
+  });
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link elProjectAbi}__ and `functionName` set to `"assignRefereedClaims"`
@@ -1108,7 +1108,7 @@ export const useWriteElProjectAssignRefereedClaims =
   /*#__PURE__*/ createUseWriteContract({
     abi: elProjectAbi,
     functionName: 'assignRefereedClaims',
-  })
+  });
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link elProjectAbi}__ and `functionName` set to `"closeProject"`
@@ -1117,7 +1117,7 @@ export const useWriteElProjectCloseProject =
   /*#__PURE__*/ createUseWriteContract({
     abi: elProjectAbi,
     functionName: 'closeProject',
-  })
+  });
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link elProjectAbi}__ and `functionName` set to `"increaseTokenBudget"`
@@ -1126,7 +1126,7 @@ export const useWriteElProjectIncreaseTokenBudget =
   /*#__PURE__*/ createUseWriteContract({
     abi: elProjectAbi,
     functionName: 'increaseTokenBudget',
-  })
+  });
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link elProjectAbi}__ and `functionName` set to `"multicall"`
@@ -1134,7 +1134,7 @@ export const useWriteElProjectIncreaseTokenBudget =
 export const useWriteElProjectMulticall = /*#__PURE__*/ createUseWriteContract({
   abi: elProjectAbi,
   functionName: 'multicall',
-})
+});
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link elProjectAbi}__ and `functionName` set to `"processTokenRequest"`
@@ -1143,7 +1143,7 @@ export const useWriteElProjectProcessTokenRequest =
   /*#__PURE__*/ createUseWriteContract({
     abi: elProjectAbi,
     functionName: 'processTokenRequest',
-  })
+  });
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link elProjectAbi}__ and `functionName` set to `"redeemTokenByVendor"`
@@ -1152,7 +1152,7 @@ export const useWriteElProjectRedeemTokenByVendor =
   /*#__PURE__*/ createUseWriteContract({
     abi: elProjectAbi,
     functionName: 'redeemTokenByVendor',
-  })
+  });
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link elProjectAbi}__ and `functionName` set to `"removeBeneficiary"`
@@ -1161,7 +1161,7 @@ export const useWriteElProjectRemoveBeneficiary =
   /*#__PURE__*/ createUseWriteContract({
     abi: elProjectAbi,
     functionName: 'removeBeneficiary',
-  })
+  });
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link elProjectAbi}__ and `functionName` set to `"removeReferredBeneficiaries"`
@@ -1170,7 +1170,7 @@ export const useWriteElProjectRemoveReferredBeneficiaries =
   /*#__PURE__*/ createUseWriteContract({
     abi: elProjectAbi,
     functionName: 'removeReferredBeneficiaries',
-  })
+  });
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link elProjectAbi}__ and `functionName` set to `"requestReferredTokenFromBeneficiary"`
@@ -1179,7 +1179,7 @@ export const useWriteElProjectRequestReferredTokenFromBeneficiary =
   /*#__PURE__*/ createUseWriteContract({
     abi: elProjectAbi,
     functionName: 'requestReferredTokenFromBeneficiary',
-  })
+  });
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link elProjectAbi}__ and `functionName` set to `"requestTokenFromBeneficiary"`
@@ -1188,7 +1188,7 @@ export const useWriteElProjectRequestTokenFromBeneficiary =
   /*#__PURE__*/ createUseWriteContract({
     abi: elProjectAbi,
     functionName: 'requestTokenFromBeneficiary',
-  })
+  });
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link elProjectAbi}__ and `functionName` set to `"updateAdmin"`
@@ -1197,7 +1197,7 @@ export const useWriteElProjectUpdateAdmin =
   /*#__PURE__*/ createUseWriteContract({
     abi: elProjectAbi,
     functionName: 'updateAdmin',
-  })
+  });
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link elProjectAbi}__ and `functionName` set to `"updateOtpServer"`
@@ -1206,7 +1206,7 @@ export const useWriteElProjectUpdateOtpServer =
   /*#__PURE__*/ createUseWriteContract({
     abi: elProjectAbi,
     functionName: 'updateOtpServer',
-  })
+  });
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link elProjectAbi}__ and `functionName` set to `"updateVendor"`
@@ -1215,14 +1215,14 @@ export const useWriteElProjectUpdateVendor =
   /*#__PURE__*/ createUseWriteContract({
     abi: elProjectAbi,
     functionName: 'updateVendor',
-  })
+  });
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link elProjectAbi}__
  */
 export const useSimulateElProject = /*#__PURE__*/ createUseSimulateContract({
   abi: elProjectAbi,
-})
+});
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link elProjectAbi}__ and `functionName` set to `"addBeneficiary"`
@@ -1231,7 +1231,7 @@ export const useSimulateElProjectAddBeneficiary =
   /*#__PURE__*/ createUseSimulateContract({
     abi: elProjectAbi,
     functionName: 'addBeneficiary',
-  })
+  });
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link elProjectAbi}__ and `functionName` set to `"addReferredBeneficiaries"`
@@ -1240,7 +1240,7 @@ export const useSimulateElProjectAddReferredBeneficiaries =
   /*#__PURE__*/ createUseSimulateContract({
     abi: elProjectAbi,
     functionName: 'addReferredBeneficiaries',
-  })
+  });
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link elProjectAbi}__ and `functionName` set to `"assignClaims"`
@@ -1249,7 +1249,7 @@ export const useSimulateElProjectAssignClaims =
   /*#__PURE__*/ createUseSimulateContract({
     abi: elProjectAbi,
     functionName: 'assignClaims',
-  })
+  });
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link elProjectAbi}__ and `functionName` set to `"assignRefereedClaims"`
@@ -1258,7 +1258,7 @@ export const useSimulateElProjectAssignRefereedClaims =
   /*#__PURE__*/ createUseSimulateContract({
     abi: elProjectAbi,
     functionName: 'assignRefereedClaims',
-  })
+  });
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link elProjectAbi}__ and `functionName` set to `"closeProject"`
@@ -1267,7 +1267,7 @@ export const useSimulateElProjectCloseProject =
   /*#__PURE__*/ createUseSimulateContract({
     abi: elProjectAbi,
     functionName: 'closeProject',
-  })
+  });
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link elProjectAbi}__ and `functionName` set to `"increaseTokenBudget"`
@@ -1276,7 +1276,7 @@ export const useSimulateElProjectIncreaseTokenBudget =
   /*#__PURE__*/ createUseSimulateContract({
     abi: elProjectAbi,
     functionName: 'increaseTokenBudget',
-  })
+  });
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link elProjectAbi}__ and `functionName` set to `"multicall"`
@@ -1285,7 +1285,7 @@ export const useSimulateElProjectMulticall =
   /*#__PURE__*/ createUseSimulateContract({
     abi: elProjectAbi,
     functionName: 'multicall',
-  })
+  });
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link elProjectAbi}__ and `functionName` set to `"processTokenRequest"`
@@ -1294,7 +1294,7 @@ export const useSimulateElProjectProcessTokenRequest =
   /*#__PURE__*/ createUseSimulateContract({
     abi: elProjectAbi,
     functionName: 'processTokenRequest',
-  })
+  });
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link elProjectAbi}__ and `functionName` set to `"redeemTokenByVendor"`
@@ -1303,7 +1303,7 @@ export const useSimulateElProjectRedeemTokenByVendor =
   /*#__PURE__*/ createUseSimulateContract({
     abi: elProjectAbi,
     functionName: 'redeemTokenByVendor',
-  })
+  });
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link elProjectAbi}__ and `functionName` set to `"removeBeneficiary"`
@@ -1312,7 +1312,7 @@ export const useSimulateElProjectRemoveBeneficiary =
   /*#__PURE__*/ createUseSimulateContract({
     abi: elProjectAbi,
     functionName: 'removeBeneficiary',
-  })
+  });
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link elProjectAbi}__ and `functionName` set to `"removeReferredBeneficiaries"`
@@ -1321,7 +1321,7 @@ export const useSimulateElProjectRemoveReferredBeneficiaries =
   /*#__PURE__*/ createUseSimulateContract({
     abi: elProjectAbi,
     functionName: 'removeReferredBeneficiaries',
-  })
+  });
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link elProjectAbi}__ and `functionName` set to `"requestReferredTokenFromBeneficiary"`
@@ -1330,7 +1330,7 @@ export const useSimulateElProjectRequestReferredTokenFromBeneficiary =
   /*#__PURE__*/ createUseSimulateContract({
     abi: elProjectAbi,
     functionName: 'requestReferredTokenFromBeneficiary',
-  })
+  });
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link elProjectAbi}__ and `functionName` set to `"requestTokenFromBeneficiary"`
@@ -1339,7 +1339,7 @@ export const useSimulateElProjectRequestTokenFromBeneficiary =
   /*#__PURE__*/ createUseSimulateContract({
     abi: elProjectAbi,
     functionName: 'requestTokenFromBeneficiary',
-  })
+  });
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link elProjectAbi}__ and `functionName` set to `"updateAdmin"`
@@ -1348,7 +1348,7 @@ export const useSimulateElProjectUpdateAdmin =
   /*#__PURE__*/ createUseSimulateContract({
     abi: elProjectAbi,
     functionName: 'updateAdmin',
-  })
+  });
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link elProjectAbi}__ and `functionName` set to `"updateOtpServer"`
@@ -1357,7 +1357,7 @@ export const useSimulateElProjectUpdateOtpServer =
   /*#__PURE__*/ createUseSimulateContract({
     abi: elProjectAbi,
     functionName: 'updateOtpServer',
-  })
+  });
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link elProjectAbi}__ and `functionName` set to `"updateVendor"`
@@ -1366,14 +1366,14 @@ export const useSimulateElProjectUpdateVendor =
   /*#__PURE__*/ createUseSimulateContract({
     abi: elProjectAbi,
     functionName: 'updateVendor',
-  })
+  });
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link elProjectAbi}__
  */
 export const useWatchElProjectEvent = /*#__PURE__*/ createUseWatchContractEvent(
-  { abi: elProjectAbi },
-)
+  { abi: elProjectAbi }
+);
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link elProjectAbi}__ and `eventName` set to `"BeneficiaryAdded"`
@@ -1382,7 +1382,7 @@ export const useWatchElProjectBeneficiaryAddedEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
     abi: elProjectAbi,
     eventName: 'BeneficiaryAdded',
-  })
+  });
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link elProjectAbi}__ and `eventName` set to `"BeneficiaryReferred"`
@@ -1391,7 +1391,7 @@ export const useWatchElProjectBeneficiaryReferredEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
     abi: elProjectAbi,
     eventName: 'BeneficiaryReferred',
-  })
+  });
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link elProjectAbi}__ and `eventName` set to `"BeneficiaryRemoved"`
@@ -1400,7 +1400,7 @@ export const useWatchElProjectBeneficiaryRemovedEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
     abi: elProjectAbi,
     eventName: 'BeneficiaryRemoved',
-  })
+  });
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link elProjectAbi}__ and `eventName` set to `"ClaimAssigned"`
@@ -1409,7 +1409,7 @@ export const useWatchElProjectClaimAssignedEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
     abi: elProjectAbi,
     eventName: 'ClaimAssigned',
-  })
+  });
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link elProjectAbi}__ and `eventName` set to `"ClaimProcessed"`
@@ -1418,7 +1418,7 @@ export const useWatchElProjectClaimProcessedEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
     abi: elProjectAbi,
     eventName: 'ClaimProcessed',
-  })
+  });
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link elProjectAbi}__ and `eventName` set to `"OtpServerUpdated"`
@@ -1427,7 +1427,7 @@ export const useWatchElProjectOtpServerUpdatedEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
     abi: elProjectAbi,
     eventName: 'OtpServerUpdated',
-  })
+  });
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link elProjectAbi}__ and `eventName` set to `"ReferredBeneficiaryRemoved"`
@@ -1436,7 +1436,7 @@ export const useWatchElProjectReferredBeneficiaryRemovedEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
     abi: elProjectAbi,
     eventName: 'ReferredBeneficiaryRemoved',
-  })
+  });
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link elProjectAbi}__ and `eventName` set to `"TokenBudgetDecrease"`
@@ -1445,7 +1445,7 @@ export const useWatchElProjectTokenBudgetDecreaseEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
     abi: elProjectAbi,
     eventName: 'TokenBudgetDecrease',
-  })
+  });
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link elProjectAbi}__ and `eventName` set to `"TokenBudgetIncrease"`
@@ -1454,7 +1454,7 @@ export const useWatchElProjectTokenBudgetIncreaseEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
     abi: elProjectAbi,
     eventName: 'TokenBudgetIncrease',
-  })
+  });
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link elProjectAbi}__ and `eventName` set to `"TokenReceived"`
@@ -1463,7 +1463,7 @@ export const useWatchElProjectTokenReceivedEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
     abi: elProjectAbi,
     eventName: 'TokenReceived',
-  })
+  });
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link elProjectAbi}__ and `eventName` set to `"TokenRedeem"`
@@ -1472,7 +1472,7 @@ export const useWatchElProjectTokenRedeemEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
     abi: elProjectAbi,
     eventName: 'TokenRedeem',
-  })
+  });
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link elProjectAbi}__ and `eventName` set to `"TokenRegistered"`
@@ -1481,7 +1481,7 @@ export const useWatchElProjectTokenRegisteredEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
     abi: elProjectAbi,
     eventName: 'TokenRegistered',
-  })
+  });
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link elProjectAbi}__ and `eventName` set to `"TokenTransfer"`
@@ -1490,7 +1490,7 @@ export const useWatchElProjectTokenTransferEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
     abi: elProjectAbi,
     eventName: 'TokenTransfer',
-  })
+  });
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link elProjectAbi}__ and `eventName` set to `"VendorAllowance"`
@@ -1499,7 +1499,7 @@ export const useWatchElProjectVendorAllowanceEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
     abi: elProjectAbi,
     eventName: 'VendorAllowance',
-  })
+  });
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link elProjectAbi}__ and `eventName` set to `"VendorAllowanceAccept"`
@@ -1508,7 +1508,7 @@ export const useWatchElProjectVendorAllowanceAcceptEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
     abi: elProjectAbi,
     eventName: 'VendorAllowanceAccept',
-  })
+  });
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link elProjectAbi}__ and `eventName` set to `"VendorUpdated"`
@@ -1517,4 +1517,4 @@ export const useWatchElProjectVendorUpdatedEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
     abi: elProjectAbi,
     eventName: 'VendorUpdated',
-  })
+  });

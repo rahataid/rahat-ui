@@ -1,6 +1,6 @@
-import { getBeneficiaryClient } from '@community-tool/sdk/clients';
-import { BeneficiaryClient } from '@community-tool/sdk/types';
-import { Beneficiary as CommunityBeneficiary } from '@community-tool/sdk/beneficiary';
+import { getBeneficiaryClient } from '@rahataid/community-tool-sdk/clients';
+import { BeneficiaryClient } from '@rahataid/community-tool-sdk/types';
+import { Beneficiary as CommunityBeneficiary } from '@rahataid/community-tool-sdk/beneficiary';
 
 import { RumsanService } from '@rumsan/sdk';
 import {

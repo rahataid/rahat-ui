@@ -4,6 +4,7 @@
   "license": "MIT",
   "scripts": {
     "rahat-ui": "npx nx serve rahat-ui",
+    "community-ui": "npx nx serve community-tool-ui",
     "rahat:dev": "npx nx run rahat-ui:dev",
     "rahat:build": "npx nx run rahat-ui:build ",
     "rahat:serve": "npx nx run rahat-ui:start",
@@ -33,6 +34,7 @@
     "@radix-ui/react-tabs": "^1.0.4",
     "@radix-ui/react-toast": "^1.1.5",
     "@radix-ui/react-tooltip": "^1.0.7",
+    "@rahataid/community-tool-sdk": "^0.0.1",
     "@rahataid/el-subgraph": "^0.0.3",
     "@rahataid/sdk": "^0.0.12",
     "@rumsan/communication": "^0.0.3",

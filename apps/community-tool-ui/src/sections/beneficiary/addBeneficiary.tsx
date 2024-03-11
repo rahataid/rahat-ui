@@ -23,12 +23,22 @@ import { toast } from 'react-toastify';
 
 import { z } from 'zod';
 import { Wallet } from 'lucide-react';
+import { useRumsanService } from '../../providers/service.provider';
+import { Beneficiary as CommunityBeneficiary } from '@community-tool/sdk/beneficiary';
 
 export default function AddBeneficiary() {
-  const addBeneficiary = useCreateBeneficiary();
+  const { communityBenQuery } = useRumsanService();
+
+  // const addBeneficiary = useCreateBeneficiary();
+  const res = communityBenQuery.useCommunityBeneficiaryCreate();
 
   const FormSchema = z.object({
-    name: z.string().min(2, { message: 'Name must be at least 4 character' }),
+    firstName: z
+      .string()
+      .min(2, { message: 'FirstName must be at least 4 character' }),
+    lastName: z
+      .string()
+      .min(2, { message: 'LastName must be at least 4 character' }),
     walletAddress: z
       .string()
       .min(42, { message: 'The Ethereum address must be 42 characters long' }),
@@ -54,7 +64,8 @@ export default function AddBeneficiary() {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      name: '',
+      firstName: '',
+      lastName: '',
       gender: '',
       walletAddress: '',
       phone: '',
@@ -65,25 +76,11 @@ export default function AddBeneficiary() {
   });
 
   const handleCreateBeneficiary = async (data: z.infer<typeof FormSchema>) => {
-    try {
-      const result = await addBeneficiary.mutateAsync({
-        gender: data.gender,
-        bankedStatus: data.bankedStatus,
-        internetStatus: data.internetStatus,
-        phoneStatus: data.phoneStatus,
-        piiData: {
-          name: data.name,
-        },
-        walletAddress: data.walletAddress,
-        phone: data.phone,
-      });
-      if (result) {
-        toast.success('Beneficiary added successfully!');
-        form.reset();
-      }
-    } catch (e) {
-      toast.error('Failed to add beneficiary');
-    }
+    console.log('createBenef', data);
+    return res.mutateAsync({
+      firstName: data?.firstName,
+      lastName: data?.lastName,
+    });
   };
   return (
     <Form {...form}>
@@ -115,12 +112,31 @@ export default function AddBeneficiary() {
               />
               <FormField
                 control={form.control}
-                name="name"
+                name="firstName"
                 render={({ field }) => {
                   return (
                     <FormItem>
                       <FormControl>
-                        <Input type="text" placeholder="Name" {...field} />
+                        <Input
+                          type="text"
+                          placeholder="First Name"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
+
+              <FormField
+                control={form.control}
+                name="lastName"
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <FormControl>
+                        <Input type="text" placeholder="Last Name" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -188,10 +204,10 @@ export default function AddBeneficiary() {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="male">Male</SelectItem>
-                          <SelectItem value="female">Female</SelectItem>
-                          <SelectItem value="other">Other</SelectItem>
-                          <SelectItem value="unknown">Unknown</SelectItem>
+                          <SelectItem value="MALE">Male</SelectItem>
+                          <SelectItem value="FEMALE">Female</SelectItem>
+                          <SelectItem value="OTHER">Other</SelectItem>
+                          <SelectItem value="UNKNOWN">Unknown</SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />

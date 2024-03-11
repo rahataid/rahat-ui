@@ -1,7 +1,17 @@
-import { useState } from 'react';
 import { ScrollArea } from '@rahat-ui/shadcn/components/scroll-area';
 import { Separator } from '@rahat-ui/shadcn/components/separator';
-import { Badge } from '@rahat-ui/shadcn/components/badge';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/dialog';
+import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import {
   Lock,
   Pencil,
@@ -13,19 +23,9 @@ import {
   Phone,
   MessageSquareText,
   BadgeDollarSign,
+  XCircle,
 } from 'lucide-react';
-import {
-  Dialog,
-  DialogContent,
-  DialogTrigger,
-  DialogFooter,
-  DialogHeader,
-  DialogDescription,
-  DialogTitle,
-  DialogClose,
-} from '@rahat-ui/shadcn/src/components/ui/dialog';
-import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { useState } from 'react';
 import { PROJECT_DETAIL_NAV_ROUTE } from '../../constants/project.detail.const';
 
 type IProps = {
@@ -38,13 +38,10 @@ export default function Nav({ title, handleNav, active }: IProps) {
   const [showCampaigns, setShowCampaigns] = useState(false);
   return (
     <>
-      <div className="flex items-center justify-between">
-        <h1 className="px-4 pt-4 pb-2 font-semibold text-xl text-primary">
-          {title}
-        </h1>
-        <Badge variant="outline" className="border-red-400 bg-red-50 mr-4">
-          Locked
-        </Badge>
+      <div>
+        <div className="flex items-center justify-between p-4">
+          <h1 className="font-semibold text-xl text-slate-600">{title}</h1>
+        </div>
       </div>
       {/* <ScrollArea className="h-auto"> */}
       <div>

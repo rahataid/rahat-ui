@@ -16,8 +16,9 @@ import {
   Dialog,
   DialogTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dialog';
-import { Archive, Expand, FilePenLine, Minus, Trash2 } from 'lucide-react';
+import { Archive, Expand, Minus, Trash2 } from 'lucide-react';
 import ConfirmDialog from '../../components/dialog';
+import { useRumsanService } from '../../providers/service.provider';
 import { paths } from '../../routes/paths';
 import { IBeneficiaryItem } from '../../types/beneficiary';
 import EditBeneficiary from './editBeneficiary';

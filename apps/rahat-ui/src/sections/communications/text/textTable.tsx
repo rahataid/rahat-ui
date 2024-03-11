@@ -49,6 +49,11 @@ import { paths } from 'apps/rahat-ui/src/routes/paths';
 import { useCampaignStore, useListCampaignQuery } from '@rahat-ui/query';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { CAMPAIGN_TYPES } from '@rahat-ui/types';
+import {
+  ServiceContext,
+  ServiceContextType,
+} from 'apps/rahat-ui/src/providers/service.provider';
+import { ICampaignItemApiResponse } from '@rumsan/communication';
 
 export type Text = {
   id: number;
@@ -59,7 +64,7 @@ export type Text = {
   totalAudiences: number;
 };
 
-export const columns: ColumnDef<Text>[] = [
+export const columns: ColumnDef<ICampaignItemApiResponse>[] = [
   {
     id: 'select',
     header: ({ table }) => (
@@ -163,6 +168,9 @@ export const columns: ColumnDef<Text>[] = [
 
 export default function TextTableView() {
   const campaignStore = useCampaignStore();
+  const { communicationQuery } = React.useContext(
+    ServiceContext
+  ) as ServiceContextType;
 
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -173,17 +181,20 @@ export default function TextTableView() {
   const [rowSelection, setRowSelection] = React.useState({});
 
   const { data, isLoading, isError, isSuccess, isFetched } =
-    useListCampaignQuery({});
+    communicationQuery.useListCampaign({
+      page: 1,
+      perPage: 10,
+    });
 
   const tableData = React.useMemo(() => {
-    const result = Array.isArray(data?.rows)
-      ? data?.rows.filter(
+    const result = Array.isArray(data?.data?.rows)
+      ? data?.data?.rows.filter(
           (campaign: any) => campaign.type !== CAMPAIGN_TYPES.PHONE
         )
       : [];
 
-    campaignStore.setTotalTextCampaign(result?.length);
-    return result;
+    campaignStore.setTotalTextCampaign(result?.length || 0);
+    return result as ICampaignItemApiResponse[];
   }, [isSuccess]);
 
   const table = useReactTable({

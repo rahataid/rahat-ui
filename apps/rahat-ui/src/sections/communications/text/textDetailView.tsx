@@ -1,10 +1,6 @@
 'use client';
 
 import {
-  useGetCampaignQuery,
-  useTriggerCampaignMutation,
-} from '@rahat-ui/query';
-import {
   Card,
   CardContent,
   CardHeader,
@@ -33,16 +29,28 @@ import { toast } from 'react-toastify';
 import InfoCard from '../infoCard';
 import LogCard from '../logCard';
 import TextDetailTable from './textDetailTable';
+import {
+  ServiceContext,
+  ServiceContextType,
+} from 'apps/rahat-ui/src/providers/service.provider';
+import React from 'react';
 
 export default function TextDetailView() {
-  const triggerCampaign = useTriggerCampaignMutation();
+  const { communicationQuery } = React.useContext(
+    ServiceContext
+  ) as ServiceContextType;
+  const triggerCampaign = communicationQuery.useTriggerCampaign();
 
   const params = useParams<{ tag: string; id: string }>();
-  const { data, isLoading } = useGetCampaignQuery({
+  const { data, isLoading } = communicationQuery.useGetCampaign({
     id: Number(params.id),
   });
+
   const logCardData = [
-    { total: data?.communicationLogs.length, title: 'Total SMS sent' },
+    {
+      total: data && data?.data?.communicationLogs.length,
+      title: 'Total SMS sent',
+    },
     { total: 3, title: 'Banked Beneficiaries' },
     { total: 2, title: 'Unbanked Beneficiaries' },
   ];
@@ -105,13 +113,14 @@ export default function TextDetailView() {
           <div className="mt-2 grid grid-cols-3 gap-5">
             <div className="col-span-2">
               <InfoCard
-                name={data?.name}
+                name={data?.data?.name}
                 startTime={
-                  data?.startTime && new Date(data?.startTime).toLocaleString()
+                  data?.data?.startTime &&
+                  new Date(data?.data?.startTime).toLocaleString()
                 }
-                status={data?.status}
-                totalAudience={data?.audiences.length}
-                type={data?.type}
+                status={data?.data?.status}
+                totalAudience={data?.data?.audiences.length}
+                type={data?.data?.type}
               />
             </div>
             <Card className="shadow-md">
@@ -120,9 +129,9 @@ export default function TextDetailView() {
               </CardHeader>
               <CardContent>
                 <p>
-                  {data?.details?.body
-                    ? data?.details?.body
-                    : data?.details?.message}
+                  {data?.data?.details?.body
+                    ? data?.data?.details?.body
+                    : data?.data?.details?.message}
                 </p>
               </CardContent>
             </Card>
@@ -136,8 +145,8 @@ export default function TextDetailView() {
                   ))}
                 </div>
                 <TextDetailTable
-                  data={data?.communicationLogs}
-                  type={data?.type || ''}
+                  data={data?.data?.communicationLogs}
+                  type={data?.data?.type || ''}
                 />
               </CardContent>
             </Card>

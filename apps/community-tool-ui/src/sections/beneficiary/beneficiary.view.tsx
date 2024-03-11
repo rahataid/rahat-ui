@@ -122,7 +122,7 @@ function BeneficiaryView() {
 
   const handlePrevPage = () => setCurrentPage(currentPage - 1);
 
-  const { beneficiaryQuery } = useRumsanService();
+  const { communityBenQuery } = useRumsanService();
   const [selectedData, setSelectedData] = useState<Beneficiary>();
   const [active, setActive] = useState<string>(BENEFICIARY_NAV_ROUTE.DEFAULT);
 
@@ -138,7 +138,7 @@ function BeneficiaryView() {
     setActive(item);
   }, []);
 
-  const { data } = beneficiaryQuery.useBeneficiaryList({
+  const { data } = communityBenQuery.useCommunityBeneficiaryList({
     perPage,
     page: currentPage,
   });
@@ -148,7 +148,7 @@ function BeneficiaryView() {
 
   const table = useReactTable({
     manualPagination: true,
-    data: data?.data || [],
+    data: data?.data?.rows || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),

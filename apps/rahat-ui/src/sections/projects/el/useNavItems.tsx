@@ -19,6 +19,7 @@ export type NavItem = {
 
 export const useNavItems = () => {
   const dialog = useSwal();
+  // const beneficiary = useBeneficiaryStore(state=>state.beneficiary)
 
   const handleCreateToken = async () => {
     const { value } = await dialog.fire({
@@ -44,8 +45,8 @@ export const useNavItems = () => {
       children: [
         {
           title: 'Beneficiaries',
-          path: '/beneficiary',
-          subtitle: 20,
+          path: '',
+          // subtitle: beneficiary.project.length,
           icon: <UsersRound size={18} strokeWidth={1.5} />,
         },
         {
@@ -87,6 +88,10 @@ export const useNavItems = () => {
       children: [
         {
           title: 'Create Token',
+          onClick: handleCreateToken,
+        },
+        {
+          title: 'Create Voucher',
           onClick: handleCreateToken,
         },
       ],

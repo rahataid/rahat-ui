@@ -38,7 +38,7 @@ import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { MoreVertical } from 'lucide-react';
 // import data from '../../app/beneficiary/beneficiaryData.json';
 import { truncateEthAddress } from '@rumsan/sdk/utils';
-import {useAssignClaims } from '../../contract-hooks/el-contracts';
+import {useAssignClaims } from '../../hooks/el/contracts/el-contracts';
 
 export default function InfoCards({ data,voucherData }) {
   const assignClaims = useAssignClaims();

@@ -1,9 +1,10 @@
 'use client';
 
 import { Users } from 'lucide-react';
-import { useCallback, useEffect, useState } from 'react';
+import {useEffect, useState } from 'react';
 import DataCard from '../../components/dataCard';
 import TransactionTable from '../../components/transactions/transactionTable';
+import {getProjectVoucher, getProjectTransaction } from '../../hooks/el/subgraph/querycall';
 import { useGraphService } from '../../providers/subgraph-provider';
 
 // export const metadata: Metadata = {
@@ -17,22 +18,20 @@ export default function TransactionsPage() {
     freeVoucherClaimed: '',
     refeeredVoucherClaimed: '',
   });
-
+  const[transactionData,setTransactionData] = useState({});
   const { queryService } = useGraphService();
 
-  const fetchVoucherDetails = useCallback(() => {
-    const voucherRes = queryService?.useProjectVoucher(
-      '0x38BFDCCAc556ED026706EE21b4945cE86718D4D1'
-    );
-    voucherRes.then((res) => {
-      setData({
-        ...res,
-      });
-    });
-  }, [queryService]);
-  useEffect(() => {
+  useEffect(()=>{
+    const fetchVoucherDetails = async() => {
+      const voucherData = await getProjectVoucher('0x38BFDCCAc556ED026706EE21b4945cE86718D4D1',queryService);
+      console.log(voucherData)
+      setData(voucherData)
+      const transactionData = await getProjectTransaction(queryService);
+      setTransactionData(transactionData)
+    }
     fetchVoucherDetails();
-  }, [fetchVoucherDetails]);
+  },[queryService])
+ 
 
   return (
     <div className="max-h-mx">
@@ -78,7 +77,7 @@ export default function TransactionsPage() {
           Icon={Users}
         />
       </div>
-      <TransactionTable />
+      <TransactionTable transactionData={transactionData}/>
     </div>
   );
 }

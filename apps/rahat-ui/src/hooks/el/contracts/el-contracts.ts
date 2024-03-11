@@ -1,4 +1,4 @@
-import { useSwal } from '../components/swal';
+import { useSwal } from '../../../components/swal';
 import { useWriteElProjectAddBeneficiary, useWriteElProjectAssignClaims } from './elProject';
 import { useWriteRahatDonor, useWriteRahatDonorMintTokenAndApprove } from './donor';
 

@@ -2,23 +2,22 @@
 import BeneficiaryDetailTableView from './beneficiaryDetailTable';
 import InfoCards from './infoCards';
 import { useGraphService } from '../../providers/subgraph-provider';
-import { useCallback, useEffect, useState } from 'react';
+import {useEffect, useState } from 'react';
+import { getBeneficiaryVoucher } from '../../hooks/el/subgraph/querycall';
 
 export default function BeneficiaryDetailPageView() {
 
   const {queryService} = useGraphService();
   const [voucherData,setVoucherData]= useState();
 
-  const fetchBeneficiaryVoucherDetails = useCallback(()=>{
-    const beneficiaryData =queryService.useBeneficiaryVoucher('0x082d43D30C31D054b1AEDbE08F50C2a1BBE76fC7');
-   beneficiaryData.then((res)=>{
-    setVoucherData(res)
-   })
-  },[queryService])
-
   useEffect(()=>{
+    const fetchBeneficiaryVoucherDetails =async ()=>{
+      const beneficiaryData = await getBeneficiaryVoucher('0x082d43D30C31D054b1AEDbE08F50C2a1BBE76fC7',queryService);
+      setVoucherData(beneficiaryData)
+
+    }
     fetchBeneficiaryVoucherDetails()
-  },[fetchBeneficiaryVoucherDetails])
+  },[queryService])
 
   
 

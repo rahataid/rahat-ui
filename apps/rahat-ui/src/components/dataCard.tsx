@@ -30,8 +30,8 @@ export default function DataCard({
   return (
     <Card
       className={cn(
-        'flex flex-col justify-center border-none shadow',
-        className,
+        'flex flex-col rounded-sm justify-center border-none shadow',
+        className
       )}
     >
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -44,13 +44,13 @@ export default function DataCard({
       </CardHeader>
       <CardContent className="flex items-center justify-between">
         <div className="">
-          <div className="text-4xl font-semibold">{number1}</div>
+          <div className="text-4xl font-semibold text-primary">{number1}</div>
           <p className="text-xs text-muted-foreground space-y-0 pt-2">
             {subTitle1}
           </p>
         </div>
         <div className="">
-          <div className="text-4xl font-semibold">{number2}</div>
+          <div className="text-4xl font-semibold text-primary">{number2}</div>
           <p className="text-xs text-muted-foreground space-y-0 pt-2">
             {subTitle2}
           </p>

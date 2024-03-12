@@ -1,8 +1,10 @@
+'use client';
+
 import { Users } from 'lucide-react';
-import ChartsCard from '../../../components/chartsCard';
-import DataCard from '../../../components/dataCard';
 import type { Metadata } from 'next';
 import { ProjectChart } from '..';
+import ChartsCard from '../../../components/chartsCard';
+import DataCard from '../../../components/dataCard';
 
 export const metadata: Metadata = {
   title: 'DashBoard',

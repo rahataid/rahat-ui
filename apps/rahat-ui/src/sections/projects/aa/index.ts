@@ -1,1 +1,2 @@
-export { default as AAProjectView } from './project-details.view';
+export { default as AAProjectView } from './project.main.view';
+export { default as AALayout } from './project.layout'

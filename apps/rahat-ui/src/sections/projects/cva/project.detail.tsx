@@ -1,3 +1,5 @@
+'use client';
+
 import DataCard from '../../../components/dataCard';
 import { Users, CircleDollarSign } from 'lucide-react';
 import { ProjectChart } from 'apps/rahat-ui/src/sections/projects';

@@ -7,6 +7,7 @@ import {
   XCircle,
   Ticket,
   Lock,
+  Receipt,
 } from 'lucide-react';
 import { useSwal } from '../../../components/swal';
 import { useParams } from 'next/navigation';
@@ -95,9 +96,9 @@ export const useNavItems = () => {
         },
         {
           title: 'Transactions',
-          path: '/transactions',
+          path: `/projects/cva/${params.id}/transactions`,
           subtitle: 20,
-          icon: <Store size={18} strokeWidth={1.5} />,
+          icon: <Receipt size={18} strokeWidth={1.5} />,
         },
         {
           title: 'Campaigns',

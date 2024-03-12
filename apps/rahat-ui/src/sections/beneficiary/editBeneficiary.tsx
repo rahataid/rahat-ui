@@ -1,4 +1,4 @@
-'use-client';
+'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';

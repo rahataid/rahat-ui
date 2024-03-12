@@ -1,3 +1,5 @@
+'use client';
+
 import { ScrollArea } from '@rahat-ui/shadcn/components/scroll-area';
 import { Separator } from '@rahat-ui/shadcn/components/separator';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';

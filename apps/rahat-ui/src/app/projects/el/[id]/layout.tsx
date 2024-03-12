@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { Nav } from '../../components/nav';
+import { ELLayout } from '../../../../sections/projects/el';
 
 export default function ProjectLayout({
   children,
@@ -9,9 +9,6 @@ export default function ProjectLayout({
   children: React.ReactNode;
 }) {
   return (
-    <>
-      <Nav />
-      <div className="mx-2">{children}</div>
-    </>
+      <ELLayout>{children}</ELLayout>
   );
 }

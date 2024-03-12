@@ -89,7 +89,7 @@ export const useNavItems = () => {
         },
         {
           title: 'Vendors',
-          path: '/vendors',
+          path: `/projects/cva/${params.id}/vendors`,
           subtitle: 20,
           icon: <Store size={18} strokeWidth={1.5} />,
         },

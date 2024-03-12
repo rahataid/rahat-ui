@@ -44,14 +44,14 @@ export function ServiceProvider({ children }: ServiceProviderProps) {
     },
     (error) => {
       return Promise.reject(error);
-    }
+    },
   );
 
   const authQuery = new AuthQuery(rumsanService, queryClient);
   const userQuery = new UserQuery(rumsanService, queryClient);
   const communityBenQuery = new CommunityBeneficiaryQuery(
     rumsanService,
-    queryClient
+    queryClient,
   );
   const roleQuery = new RoleQuery(rumsanService, queryClient);
 

@@ -1,6 +1,6 @@
 import { getBeneficiaryClient } from '@rahataid/community-tool-sdk/clients';
 import { BeneficiaryClient } from '@rahataid/community-tool-sdk/types';
-import { Beneficiary as CommunityBeneficiary } from '@rahataid/community-tool-sdk/beneficiary';
+// import { Beneficiary as CommunityBeneficiary } from '@rahataid/community-tool-sdk/beneficiary';
 
 import { RumsanService } from '@rumsan/sdk';
 import {
@@ -31,11 +31,7 @@ export class CommunityBeneficiaryQuery {
   useCommunityBeneficiaryCreate = () => {
     return useMutation({
       mutationKey: [TAGS.CREATE_COMMUNITY_BENEFICARY],
-      mutationFn: async (payload: any) => {
-        console.log('payload', payload);
-        const response = await this.client.create(payload);
-        return response;
-      },
+      mutationFn: async (payload: any) => this.client.create(payload),
       onSuccess: () => {
         this.qc.invalidateQueries({
           queryKey: [TAGS.LIST_COMMUNITY_BENFICIARIES],

@@ -31,7 +31,7 @@ export default function DataCard({
     <Card
       className={cn(
         'flex flex-col justify-center border-none shadow',
-        className
+        className,
       )}
     >
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">

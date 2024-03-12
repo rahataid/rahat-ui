@@ -35,7 +35,7 @@ export function useNavData() {
         ],
       },
     ],
-    []
+    [],
   );
   const subData = useMemo(
     () => [
@@ -52,7 +52,7 @@ export function useNavData() {
         path: paths.dashboard.user,
       },
     ],
-    []
+    [],
   );
   return { data, subData };
 }

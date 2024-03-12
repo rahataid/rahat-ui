@@ -199,7 +199,9 @@ export const columns: ColumnDef<Transaction>[] = [
       );
     },
     cell: ({ row }) => (
-      <div className="lowercase">{truncateEthAddress(row.getValue('beneficiary'))}</div>
+      <div className="lowercase">
+        {truncateEthAddress(row.getValue('beneficiary'))}
+      </div>
     ),
   },
   {
@@ -216,7 +218,9 @@ export const columns: ColumnDef<Transaction>[] = [
       );
     },
     cell: ({ row }) => (
-      <div className="lowercase">{truncateEthAddress(row.getValue('voucherId'))}</div>
+      <div className="lowercase">
+        {truncateEthAddress(row.getValue('voucherId'))}
+      </div>
     ),
   },
   {
@@ -284,7 +288,7 @@ export const columns: ColumnDef<Transaction>[] = [
 export default function DataTableDemo() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
+    [],
   );
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
@@ -338,7 +342,7 @@ export default function DataTableDemo() {
                         ? null
                         : flexRender(
                             header.column.columnDef.header,
-                            header.getContext()
+                            header.getContext(),
                           )}
                     </TableHead>
                   );
@@ -357,7 +361,7 @@ export default function DataTableDemo() {
                     <TableCell key={cell.id}>
                       {flexRender(
                         cell.column.columnDef.cell,
-                        cell.getContext()
+                        cell.getContext(),
                       )}
                     </TableCell>
                   ))}

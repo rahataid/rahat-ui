@@ -27,7 +27,7 @@ function MapClusters({ ...other }: MapBoxProps) {
     const clusterId = feature?.properties?.cluster_id;
 
     const mapboxSource = mapRef.current?.getSource(
-      'earthquakes'
+      'earthquakes',
     ) as GeoJSONSource;
 
     mapboxSource.getClusterExpansionZoom(clusterId, (error, zoom) => {

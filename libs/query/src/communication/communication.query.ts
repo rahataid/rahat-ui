@@ -59,7 +59,7 @@ export class CommunicationQuery {
                 'Content-Type': 'application/json',
                 appId: process.env['NEXT_PUBLIC_API_APPLICATION_ID'],
               },
-            }
+            },
           )
           .then(function (response) {
             return response.data;
@@ -76,7 +76,7 @@ export class CommunicationQuery {
   }
 
   useListCampaign(
-    data: Pagination
+    data: Pagination,
   ): UseQueryResult<{ data: { rows: ICampaignItemApiResponse[] } }, Error> {
     return useQuery({
       queryKey: [TAGS.GET_ALL_CAMPAIGNS],

@@ -90,7 +90,12 @@ export const columns: ColumnDef<Transaction>[] = [
     header: 'Processed By',
     cell: ({ row }) => (
       <div className="capitalize">
-        {row.getValue('processedBy') ? `${row.getValue('processedBy')?.toString().substring(0,4)}....${row.getValue('processedBy')?.toString()?.slice(-3)}` : 'N/A'}
+        {row.getValue('processedBy')
+          ? `${row.getValue('processedBy')?.toString().substring(0, 4)}....${row
+              .getValue('processedBy')
+              ?.toString()
+              ?.slice(-3)}`
+          : 'N/A'}
       </div>
     ),
   },
@@ -102,7 +107,18 @@ export const columns: ColumnDef<Transaction>[] = [
   {
     accessorKey: 'transactionHash',
     header: 'Transaction Hash',
-    cell: ({ row }) => <div> {`${row.getValue('transactionHash')?.toString().substring(0,4)}....${row.getValue('transactionHash')?.toString()?.slice(-3)}`}</div>,
+    cell: ({ row }) => (
+      <div>
+        {' '}
+        {`${row
+          .getValue('transactionHash')
+          ?.toString()
+          .substring(0, 4)}....${row
+          .getValue('transactionHash')
+          ?.toString()
+          ?.slice(-3)}`}
+      </div>
+    ),
   },
   {
     accessorKey: 'amount',
@@ -135,7 +151,7 @@ export const columns: ColumnDef<Transaction>[] = [
 export default function BeneficiaryDetailTableView() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
+    [],
   );
   const {data,error} = useBeneficiaryTransaction('0x082d43D30C31D054b1AEDbE08F50C2a1BBE76fC7');
   const [columnVisibility, setColumnVisibility] =
@@ -217,7 +233,7 @@ export default function BeneficiaryDetailTableView() {
                             ? null
                             : flexRender(
                                 header.column.columnDef.header,
-                                header.getContext()
+                                header.getContext(),
                               )}
                         </TableHead>
                       );
@@ -236,7 +252,7 @@ export default function BeneficiaryDetailTableView() {
                         <TableCell key={cell.id}>
                           {flexRender(
                             cell.column.columnDef.cell,
-                            cell.getContext()
+                            cell.getContext(),
                           )}
                         </TableCell>
                       ))}

@@ -69,5 +69,5 @@ export const usePagination = zustandStore<LocalAndUrlStore>(
   }),
   {
     persistOptions: storageOptions,
-  }
+  },
 );

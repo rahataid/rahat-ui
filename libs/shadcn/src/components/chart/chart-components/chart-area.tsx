@@ -31,5 +31,13 @@ export default function ChartArea({ series }: Props) {
     },
   });
 
-  return <Chart dir="ltr" type="area" series={series} options={chartOptions} height={320} />;
+  return (
+    <Chart
+      dir="ltr"
+      type="area"
+      series={series}
+      options={chartOptions}
+      height={320}
+    />
+  );
 }

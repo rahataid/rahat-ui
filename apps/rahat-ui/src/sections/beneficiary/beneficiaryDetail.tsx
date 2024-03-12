@@ -66,7 +66,7 @@ export default function BeneficiaryDetail({ data, handleClose }: IProps) {
                 <TooltipTrigger
                   onClick={() => {
                     router.push(
-                      paths.dashboard.beneficiary.detail(data?.walletAddress)
+                      paths.dashboard.beneficiary.detail(data?.walletAddress),
                     );
                   }}
                 >

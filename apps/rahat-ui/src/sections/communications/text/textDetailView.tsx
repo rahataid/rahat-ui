@@ -37,7 +37,7 @@ import React from 'react';
 
 export default function TextDetailView() {
   const { communicationQuery } = React.useContext(
-    ServiceContext
+    ServiceContext,
   ) as ServiceContextType;
   const triggerCampaign = communicationQuery.useTriggerCampaign();
 

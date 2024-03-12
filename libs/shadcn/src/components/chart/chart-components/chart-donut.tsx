@@ -28,5 +28,13 @@ export default function ChartDonut({ series }: Props) {
     },
   });
 
-  return <Chart dir="ltr" type="donut" series={series} options={chartOptions} width={400} />;
+  return (
+    <Chart
+      dir="ltr"
+      type="donut"
+      series={series}
+      options={chartOptions}
+      width={400}
+    />
+  );
 }

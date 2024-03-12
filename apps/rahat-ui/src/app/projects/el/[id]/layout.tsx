@@ -8,7 +8,5 @@ export default function ProjectLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return (
-      <ELLayout>{children}</ELLayout>
-  );
+  return <ELLayout>{children}</ELLayout>;
 }

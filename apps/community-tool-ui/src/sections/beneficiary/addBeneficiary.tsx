@@ -1,7 +1,6 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useCreateBeneficiary } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   Form,
@@ -24,13 +23,17 @@ import { toast } from 'react-toastify';
 import { z } from 'zod';
 import { Wallet } from 'lucide-react';
 import { useRumsanService } from '../../providers/service.provider';
-import { Beneficiary as CommunityBeneficiary } from '@community-tool/sdk/beneficiary';
+import {
+  BankedStatus,
+  Gender,
+  InternetStatus,
+  PhoneStatus,
+} from '@rahataid/community-tool-sdk/enums';
 
 export default function AddBeneficiary() {
   const { communityBenQuery } = useRumsanService();
 
-  // const addBeneficiary = useCreateBeneficiary();
-  const res = communityBenQuery.useCommunityBeneficiaryCreate();
+  const benefClient = communityBenQuery.useCommunityBeneficiaryCreate();
 
   const FormSchema = z.object({
     firstName: z
@@ -76,12 +79,15 @@ export default function AddBeneficiary() {
   });
 
   const handleCreateBeneficiary = async (data: z.infer<typeof FormSchema>) => {
-    console.log('createBenef', data);
-    return res.mutateAsync({
-      firstName: data?.firstName,
-      lastName: data?.lastName,
-    });
+    try {
+      await benefClient.mutateAsync(data);
+      toast.success('Beneficiary created successfully!');
+      form.reset();
+    } catch (err) {
+      toast.error('Failed to create beneficiary!');
+    }
   };
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleCreateBeneficiary)}>
@@ -174,12 +180,18 @@ export default function AddBeneficiary() {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="banked">Banked</SelectItem>
-                          <SelectItem value="under_banked">
+                          <SelectItem value={BankedStatus.BANKED}>
+                            Banked
+                          </SelectItem>
+                          <SelectItem value={BankedStatus.UNDER_BANKED}>
                             Under Banked
                           </SelectItem>
-                          <SelectItem value="unBanked">UnBanked</SelectItem>
-                          <SelectItem value="unknown">Unknown</SelectItem>
+                          <SelectItem value={BankedStatus.UNBANKED}>
+                            UnBanked
+                          </SelectItem>
+                          <SelectItem value={BankedStatus.UNKNOWN}>
+                            Unknown
+                          </SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />
@@ -204,10 +216,10 @@ export default function AddBeneficiary() {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="MALE">Male</SelectItem>
-                          <SelectItem value="FEMALE">Female</SelectItem>
-                          <SelectItem value="OTHER">Other</SelectItem>
-                          <SelectItem value="UNKNOWN">Unknown</SelectItem>
+                          <SelectItem value={Gender.MALE}>Male</SelectItem>
+                          <SelectItem value={Gender.FEMALE}>Female</SelectItem>
+                          <SelectItem value={Gender.OTHER}>Other</SelectItem>
+                          <SelectItem value={Gender.UKNOWN}>Unknown</SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />
@@ -231,16 +243,18 @@ export default function AddBeneficiary() {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="mobile_internet">
+                          <SelectItem value={InternetStatus.MOBILE_INTERNET}>
                             Mobile Internet
                           </SelectItem>
-                          <SelectItem value="no_internet">
+                          <SelectItem value={InternetStatus.NO_INTERNET}>
                             No Internet
                           </SelectItem>
-                          <SelectItem value="home_internet">
+                          <SelectItem value={InternetStatus.HOME_INTERNET}>
                             Home Internet
                           </SelectItem>
-                          <SelectItem value="unknown">Unknown</SelectItem>
+                          <SelectItem value={InternetStatus.UNKNOWN}>
+                            Unknown
+                          </SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />
@@ -264,14 +278,18 @@ export default function AddBeneficiary() {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="smart_phone">
+                          <SelectItem value={PhoneStatus.SMART_PHONE}>
                             Smart Phone
                           </SelectItem>
-                          <SelectItem value="no_phone">No Phone</SelectItem>
-                          <SelectItem value="feature_phone">
+                          <SelectItem value={PhoneStatus.NO_PHONE}>
+                            No Phone
+                          </SelectItem>
+                          <SelectItem value={PhoneStatus.FEATURE_PHONE}>
                             Feature Phone
                           </SelectItem>
-                          <SelectItem value="unknown">Unknown</SelectItem>
+                          <SelectItem value={PhoneStatus.UNKNOWN}>
+                            Unknown
+                          </SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />

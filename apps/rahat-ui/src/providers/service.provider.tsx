@@ -52,7 +52,7 @@ export function ServiceProvider({ children }: ServiceProviderProps) {
     },
     (error) => {
       return Promise.reject(error);
-    }
+    },
   );
   // set bearer token
   communicationService.client.interceptors.request.use(
@@ -66,7 +66,7 @@ export function ServiceProvider({ children }: ServiceProviderProps) {
     },
     (error) => {
       return Promise.reject(error);
-    }
+    },
   );
 
   const authQuery = new AuthQuery(rumsanService, queryClient);
@@ -75,7 +75,7 @@ export function ServiceProvider({ children }: ServiceProviderProps) {
   const roleQuery = new RoleQuery(rumsanService, queryClient);
   const communicationQuery = new CommunicationQuery(
     communicationService,
-    queryClient
+    queryClient,
   );
 
   return (

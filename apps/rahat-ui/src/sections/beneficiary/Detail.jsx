@@ -1,4 +1,6 @@
-'use client'
+'use client';
+import { useCallback, useEffect, useState } from 'react';
+import { useGraphService } from '../../providers/subgraph-provider';
 import BeneficiaryDetailTableView from './beneficiaryDetailTable';
 import InfoCards from './infoCards';
 import { useBeneficaryVoucher } from '../../hooks/el/subgraph/querycall';

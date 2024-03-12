@@ -9,6 +9,7 @@ import {
   Lock,
 } from 'lucide-react';
 import { useSwal } from '../../../components/swal';
+import { useParams } from 'next/navigation';
 
 export type NavItem = {
   title: string;
@@ -20,6 +21,7 @@ export type NavItem = {
 };
 
 export const useNavItems = () => {
+  const params = useParams();
   const dialog = useSwal();
   // const beneficiary = useBeneficiaryStore(state=>state.beneficiary)
 
@@ -77,11 +79,11 @@ export const useNavItems = () => {
 
   const navItems: NavItem[] = [
     {
-      title: `Project Details`,
+      title: 'Project Details',
       children: [
         {
           title: 'Beneficiaries',
-          path: '',
+          path: `/projects/cva/${params.id}/beneficiary`,
           subtitle: 20,
           icon: <UsersRound size={18} strokeWidth={1.5} />,
         },

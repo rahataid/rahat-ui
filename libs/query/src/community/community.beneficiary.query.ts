@@ -31,7 +31,10 @@ export class CommunityBeneficiaryQuery {
   useCommunityBeneficiaryCreate = () => {
     return useMutation({
       mutationKey: [TAGS.CREATE_COMMUNITY_BENEFICARY],
-      mutationFn: async (payload: any) => this.client.create(payload),
+      mutationFn: async (payload: any) => {
+        console.log(payload);
+        this.client.create(payload);
+      },
       onSuccess: () => {
         this.qc.invalidateQueries({
           queryKey: [TAGS.LIST_COMMUNITY_BENFICIARIES],

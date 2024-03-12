@@ -7,6 +7,7 @@ import {
   FormControl,
   FormField,
   FormItem,
+  FormLabel,
   FormMessage,
 } from '@rahat-ui/shadcn/src/components/ui/form';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
@@ -21,14 +22,23 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 
 import { z } from 'zod';
-import { Wallet } from 'lucide-react';
+import { CalendarIcon, Check, ChevronsUpDown, Wallet } from 'lucide-react';
 import { useRumsanService } from '../../providers/service.provider';
 import {
   BankedStatus,
   Gender,
   InternetStatus,
   PhoneStatus,
-} from '@rahataid/community-tool-sdk/enums';
+} from '@rahataid/community-tool-sdk/enums/';
+import React from 'react';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/popover';
+import { format } from 'date-fns';
+import { Calendar } from '@rahat-ui/shadcn/src/components/ui/calendar';
+import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
 
 export default function AddBeneficiary() {
   const { communityBenQuery } = useRumsanService();
@@ -46,6 +56,12 @@ export default function AddBeneficiary() {
       .string()
       .min(42, { message: 'The Ethereum address must be 42 characters long' }),
     phone: z.string(),
+    email: z.string().email().optional(),
+    birthDate: z.date().optional(),
+    location: z.string().optional(),
+    latitude: z.number().optional(),
+    longitude: z.number().optional(),
+    notes: z.string().optional(),
     gender: z
       .string()
       .toUpperCase()
@@ -75,11 +91,17 @@ export default function AddBeneficiary() {
       bankedStatus: '',
       internetStatus: '',
       phoneStatus: '',
+      email: '',
+      location: '',
+      latitude: 0,
+      longitude: 0,
+      notes: '',
     },
   });
 
   const handleCreateBeneficiary = async (data: z.infer<typeof FormSchema>) => {
     try {
+      console.log(data);
       await benefClient.mutateAsync(data);
       toast.success('Beneficiary created successfully!');
       form.reset();
@@ -296,6 +318,126 @@ export default function AddBeneficiary() {
                     </FormItem>
                   );
                 }}
+              />
+
+              <FormField
+                control={form.control}
+                name="location"
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <FormControl>
+                        <Input type="text" placeholder="Location" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <FormControl>
+                        <Input type="email" placeholder="Email" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
+              <FormField
+                control={form.control}
+                name="longitude"
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <FormControl>
+                        <Input
+                          type="float"
+                          placeholder="Longitude"
+                          onChange={(e) => {
+                            const numericValue = parseFloat(e.target.value);
+                            form.setValue('longitude', numericValue);
+                          }}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
+              <FormField
+                control={form.control}
+                name="latitude"
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <FormControl>
+                        <Input
+                          type="float"
+                          placeholder="Latitude"
+                          onChange={(e) => {
+                            const numericValue = parseFloat(e.target.value);
+                            form.setValue('latitude', numericValue);
+                          }}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
+
+              <FormField
+                control={form.control}
+                name="birthDate"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col">
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button variant={'outline'}>
+                            {field.value ? (
+                              format(field.value, 'PPP')
+                            ) : (
+                              <span>Birth Date</span>
+                            )}
+                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={field.value}
+                          onSelect={field.onChange}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="notes"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Textarea
+                        placeholder="Notes"
+                        className="resize-none"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
             </div>
             <div className="flex justify-end">

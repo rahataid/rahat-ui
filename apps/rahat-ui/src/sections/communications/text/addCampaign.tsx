@@ -23,6 +23,14 @@ import {
   FormLabel,
   FormMessage,
 } from '@rahat-ui/shadcn/components/form';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@rahat-ui/shadcn/components/table';
 import { toast } from 'react-toastify';
 import { cn } from '@rahat-ui/shadcn/src/utils';
 import { CalendarIcon } from 'lucide-react';
@@ -40,8 +48,29 @@ import {
   ServiceContextType,
   useRumsanService,
 } from 'apps/rahat-ui/src/providers/service.provider';
+import {
+  ColumnDef,
+  ColumnFiltersState,
+  SortingState,
+  VisibilityState,
+  flexRender,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  useReactTable,
+} from '@tanstack/react-table';
 
 export default function AddCampaign() {
+  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    []
+  );
+  const [columnVisibility, setColumnVisibility] =
+    React.useState<VisibilityState>({});
+  const [rowSelection, setRowSelection] = React.useState({});
+  const [selectedRows, setSelectedRows] = useState([]);
+
   const { communicationQuery } = React.useContext(
     ServiceContext
   ) as ServiceContextType;
@@ -91,13 +120,16 @@ export default function AddCampaign() {
   });
 
   const handleCreateCampaign = async (data: z.infer<typeof FormSchema>) => {
-    console.log(data.audiences, audienceData);
+    console.log(selectedRows, audienceData);
 
     const audiences = audienceData?.data
-      .filter((objA: any) =>
-        data?.audiences?.some((objB) => objB.phone === objA?.details?.phone)
+      .filter((audienceObject: any) =>
+        selectedRows?.some(
+          (selectedObject) =>
+            selectedObject.phone === audienceObject?.details?.phone
+        )
       )
-      .map((obj: any) => obj.id);
+      .map((filteredObject: any) => filteredObject.id);
     console.log(audiences);
 
     type AdditionalData = {
@@ -143,6 +175,120 @@ export default function AddCampaign() {
     setShowSelectAudio(requiresAudioField);
   };
 
+  const columns: ColumnDef<any>[] = [
+    {
+      id: 'select',
+      header: ({ table }) => (
+        <Checkbox
+          checked={beneficiaryData?.data?.length === selectedRows.length}
+          onCheckedChange={(value) => {
+            if (value && selectedRows.length === 0) {
+              // const item = beneficiaryData && beneficiaryData?.data;
+              beneficiaryData?.data?.map((item) => {
+                const checkAudienceExist = audienceData?.data.some(
+                  (audience) => audience?.details?.phone === item.phone
+                );
+
+                if (!checkAudienceExist) {
+                  createAudience.mutateAsync({
+                    details: {
+                      name: item.name,
+                      phone: item.phone,
+                    },
+                  });
+                }
+                console.log(selectedRows, item);
+
+                setSelectedRows((prevSelectedRows) => [
+                  ...prevSelectedRows,
+                  {
+                    name: item.name,
+                    id: item.beneficiaryId,
+                    phone: item.phone,
+                  },
+                ]);
+              });
+            } else if (!value) {
+              setSelectedRows([]);
+            }
+          }}
+          aria-label="Select all"
+        />
+      ),
+      cell: ({ row }) => (
+        <Checkbox
+          checked={
+            selectedRows &&
+            selectedRows.some((data) => data.id === row?.original.id)
+          }
+          aria-label="Select row"
+          onCheckedChange={(checked) => {
+            const item = row.original;
+
+            const checkAudienceExist = audienceData?.data.some(
+              (audience) => audience?.details?.phone === item.phone
+            );
+
+            if (!checkAudienceExist) {
+              createAudience.mutateAsync({
+                details: {
+                  name: item.name,
+                  phone: item.phone,
+                },
+              });
+            }
+            console.log(selectedRows, checked, item, selectedRows[row.id], row);
+
+            setSelectedRows((prevSelectedRows) =>
+              checked
+                ? [...prevSelectedRows, item]
+                : selectedRows?.filter(
+                    (value) => (value.id || value.beneficiaryId) !== item.id
+                  )
+            );
+          }}
+        />
+      ),
+      enableSorting: false,
+      enableHiding: false,
+    },
+    {
+      accessorKey: 'name',
+      header: 'Name',
+      cell: ({ row }) => <div>{row.getValue('name')}</div>,
+    },
+  ];
+
+  const tableData = React.useMemo(() => {
+    return (
+      beneficiaryData &&
+      beneficiaryData?.data?.map((item: any) => ({
+        name: item?.name,
+        id: item?.beneficiaryId,
+        phone: item?.phone,
+      }))
+    );
+  }, [beneficiaryData]);
+
+  const table = useReactTable({
+    data: tableData,
+    columns,
+    onSortingChange: setSorting,
+    onColumnFiltersChange: setColumnFilters,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    onColumnVisibilityChange: setColumnVisibility,
+    onRowSelectionChange: setRowSelection,
+    state: {
+      sorting,
+      columnFilters,
+      columnVisibility,
+      rowSelection,
+    },
+  });
+
   return (
     <Form {...form}>
       <form
@@ -158,7 +304,6 @@ export default function AddCampaign() {
                 name="campaignName"
                 render={({ field }) => (
                   <FormItem>
-                    {/* <FormLabel>Campaign Name</FormLabel> */}
                     <FormControl>
                       <Input
                         className="rounded"
@@ -338,6 +483,7 @@ export default function AddCampaign() {
               <Button>Create Campaign</Button>
             </div>
           </div>
+
           {showAudiences && (
             <div className="mt-6 shadow-md rounded-sm p-4">
               <div className="flex justify-between">
@@ -354,65 +500,58 @@ export default function AddCampaign() {
                     {/* <div className="mb-4">
                     <FormLabel className="text-base">Audiences</FormLabel>
                   </div> */}
-                    {beneficiaryData &&
-                      beneficiaryData?.data?.map((item) => (
-                        <FormField
-                          key={item.beneficiaryId}
-                          control={form.control}
-                          name="audiences"
-                          render={({ field }) => {
-                            return (
-                              <FormItem
-                                key={item.beneficiaryId}
-                                className="flex flex-row items-start space-x-3 space-y-0"
-                              >
-                                <FormControl>
-                                  <Checkbox
-                                    checked={field.value?.some(
-                                      (value) =>
-                                        value.beneficiaryId ===
-                                        item.beneficiaryId
-                                    )}
-                                    onCheckedChange={(checked) => {
-                                      console.log(audienceData, field.value);
-
-                                      const checkAudienceExist =
-                                        audienceData?.data.some(
-                                          (audience) =>
-                                            audience?.details?.phone ===
-                                            item.phone
-                                        );
-                                      console.log(checkAudienceExist);
-
-                                      if (!checkAudienceExist) {
-                                        createAudience.mutateAsync({
-                                          details: {
-                                            name: item.name,
-                                            phone: item.phone,
-                                          },
-                                        });
-                                      }
-
-                                      return checked
-                                        ? field.onChange([...field.value, item])
-                                        : field.onChange(
-                                            field.value?.filter(
-                                              (value) =>
-                                                value.beneficiaryId !==
-                                                item.beneficiaryId
-                                            )
-                                          );
-                                    }}
-                                  />
-                                </FormControl>
-                                <FormLabel className="font-normal">
-                                  {item.name}
-                                </FormLabel>
-                              </FormItem>
-                            );
-                          }}
-                        />
-                      ))}
+                    <div className="rounded-md border max-h-[300px] overflow-y-auto">
+                      {beneficiaryData && (
+                        <Table>
+                          <TableHeader>
+                            {table.getHeaderGroups().map((headerGroup) => (
+                              <TableRow key={headerGroup.id}>
+                                {headerGroup.headers.map((header) => {
+                                  return (
+                                    <TableHead key={header.id}>
+                                      {header.isPlaceholder
+                                        ? null
+                                        : flexRender(
+                                            header.column.columnDef.header,
+                                            header.getContext()
+                                          )}
+                                    </TableHead>
+                                  );
+                                })}
+                              </TableRow>
+                            ))}
+                          </TableHeader>
+                          <TableBody>
+                            {table.getRowModel().rows?.length ? (
+                              table.getRowModel().rows.map((row) => (
+                                <TableRow
+                                  key={row.id}
+                                  data-state={row.getIsSelected() && 'selected'}
+                                >
+                                  {row.getVisibleCells().map((cell) => (
+                                    <TableCell key={cell.id}>
+                                      {flexRender(
+                                        cell.column.columnDef.cell,
+                                        cell.getContext()
+                                      )}
+                                    </TableCell>
+                                  ))}
+                                </TableRow>
+                              ))
+                            ) : (
+                              <TableRow>
+                                <TableCell
+                                  colSpan={columns.length}
+                                  className="h-24 text-center"
+                                >
+                                  No results.
+                                </TableCell>
+                              </TableRow>
+                            )}
+                          </TableBody>
+                        </Table>
+                      )}
+                    </div>
                     <FormMessage />
                   </FormItem>
                 )}

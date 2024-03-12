@@ -127,7 +127,7 @@ export default function TextDetailTableView({ data, type }: IProps) {
       createdAt: new Date(item.createdAt).toLocaleString(),
       to:
         type === CAMPAIGN_TYPES.EMAIL
-          ? item.details.envelope.to
+          ? item?.details?.envelope?.to
           : item.details.to,
     }));
   }, [data]);

@@ -1,17 +1,12 @@
 'use client';
 
 import * as React from 'react';
-import { Nav } from '../../components/nav';
+import { CVALayout } from '../../../../sections/projects/cva';
 
 export default function ProjectLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return (
-    <>
-      <Nav />
-      <div className="mx-2">{children}</div>
-    </>
-  );
+  return <CVALayout>{children}</CVALayout>;
 }

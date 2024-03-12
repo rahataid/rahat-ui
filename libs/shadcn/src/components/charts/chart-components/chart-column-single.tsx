@@ -1,5 +1,7 @@
 // components
-import Chart, { useChart } from 'src/components/chart';
+
+import Chart from '../chart';
+import useChart from '../use-chart';
 
 // ----------------------------------------------------------------------
 

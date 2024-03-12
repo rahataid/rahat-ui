@@ -17,7 +17,6 @@ const untrackedFiles = require('child_process')
 
 const files = [...changedFiles, ...untrackedFiles];
 
-
 // Loop through all files.
 for (const file of files) {
   console.log('Checking size for file:', file);

@@ -9,7 +9,7 @@ pnpm checkFileSize
 if [ $? -ne 0 ]; then
   exit 1
 fi
-
-
-# nx format
-# pnpm build:all
+echo "Formatting files..."
+nx format
+echo "Builiding package to check for errors..."
+pnpm build:all

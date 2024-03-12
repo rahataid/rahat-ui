@@ -1,5 +1,7 @@
 // components
-import Chart, { useChart } from 'src/components/chart';
+
+import Chart from '../chart';
+import useChart from '../use-chart';
 
 // ----------------------------------------------------------------------
 
@@ -13,7 +15,17 @@ type Props = {
 export default function ChartLine({ series }: Props) {
   const chartOptions = useChart({
     xaxis: {
-      categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'],
+      categories: [
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'May',
+        'Jun',
+        'Jul',
+        'Aug',
+        'Sep',
+      ],
     },
     tooltip: {
       x: {
@@ -23,5 +35,13 @@ export default function ChartLine({ series }: Props) {
     },
   });
 
-  return <Chart dir="ltr" type="line" series={series} options={chartOptions} height={320} />;
+  return (
+    <Chart
+      dir="ltr"
+      type="line"
+      series={series}
+      options={chartOptions}
+      height={320}
+    />
+  );
 }

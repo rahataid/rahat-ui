@@ -40,11 +40,11 @@ export default function VoiceDetailView() {
   });
 
   const successIVR = data?.communicationLogs?.filter(
-    (log) => log.status === COMMUNICATION_DELIVERY_STATUS.COMPLETED
+    (log) => log.status === COMMUNICATION_DELIVERY_STATUS.COMPLETED,
   );
 
   const failedIVR = data?.communicationLogs?.filter(
-    (log) => log.status === COMMUNICATION_DELIVERY_STATUS.FAILED
+    (log) => log.status === COMMUNICATION_DELIVERY_STATUS.FAILED,
   );
   const logCardData = [
     { total: data?.communicationLogs?.length, title: 'Total IVR sent' },

@@ -1,5 +1,7 @@
 // components
-import Chart, { useChart } from 'src/components/chart';
+
+import Chart from '../chart';
+import useChart from '../use-chart';
 
 // ----------------------------------------------------------------------
 
@@ -31,5 +33,13 @@ export default function ChartArea({ series }: Props) {
     },
   });
 
-  return <Chart dir="ltr" type="area" series={series} options={chartOptions} height={320} />;
+  return (
+    <Chart
+      dir="ltr"
+      type="area"
+      series={series}
+      options={chartOptions}
+      height={320}
+    />
+  );
 }

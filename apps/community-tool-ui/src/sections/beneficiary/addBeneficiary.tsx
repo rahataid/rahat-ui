@@ -1,7 +1,6 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useCreateBeneficiary } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   Form,
@@ -23,12 +22,26 @@ import { toast } from 'react-toastify';
 
 import { z } from 'zod';
 import { Wallet } from 'lucide-react';
+import { useRumsanService } from '../../providers/service.provider';
+import {
+  BankedStatus,
+  Gender,
+  InternetStatus,
+  PhoneStatus,
+} from '@rahataid/community-tool-sdk/enums';
 
 export default function AddBeneficiary() {
-  const addBeneficiary = useCreateBeneficiary();
+  const { communityBenQuery } = useRumsanService();
+
+  const benefClient = communityBenQuery.useCommunityBeneficiaryCreate();
 
   const FormSchema = z.object({
-    name: z.string().min(2, { message: 'Name must be at least 4 character' }),
+    firstName: z
+      .string()
+      .min(2, { message: 'FirstName must be at least 4 character' }),
+    lastName: z
+      .string()
+      .min(2, { message: 'LastName must be at least 4 character' }),
     walletAddress: z
       .string()
       .min(42, { message: 'The Ethereum address must be 42 characters long' }),
@@ -54,7 +67,8 @@ export default function AddBeneficiary() {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      name: '',
+      firstName: '',
+      lastName: '',
       gender: '',
       walletAddress: '',
       phone: '',
@@ -66,25 +80,14 @@ export default function AddBeneficiary() {
 
   const handleCreateBeneficiary = async (data: z.infer<typeof FormSchema>) => {
     try {
-      const result = await addBeneficiary.mutateAsync({
-        gender: data.gender,
-        bankedStatus: data.bankedStatus,
-        internetStatus: data.internetStatus,
-        phoneStatus: data.phoneStatus,
-        piiData: {
-          name: data.name,
-        },
-        walletAddress: data.walletAddress,
-        phone: data.phone,
-      });
-      if (result) {
-        toast.success('Beneficiary added successfully!');
-        form.reset();
-      }
-    } catch (e) {
-      toast.error('Failed to add beneficiary');
+      await benefClient.mutateAsync(data);
+      toast.success('Beneficiary created successfully!');
+      form.reset();
+    } catch (err) {
+      toast.error('Failed to create beneficiary!');
     }
   };
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleCreateBeneficiary)}>
@@ -115,12 +118,31 @@ export default function AddBeneficiary() {
               />
               <FormField
                 control={form.control}
-                name="name"
+                name="firstName"
                 render={({ field }) => {
                   return (
                     <FormItem>
                       <FormControl>
-                        <Input type="text" placeholder="Name" {...field} />
+                        <Input
+                          type="text"
+                          placeholder="First Name"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
+
+              <FormField
+                control={form.control}
+                name="lastName"
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <FormControl>
+                        <Input type="text" placeholder="Last Name" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -158,12 +180,18 @@ export default function AddBeneficiary() {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="banked">Banked</SelectItem>
-                          <SelectItem value="under_banked">
+                          <SelectItem value={BankedStatus.BANKED}>
+                            Banked
+                          </SelectItem>
+                          <SelectItem value={BankedStatus.UNDER_BANKED}>
                             Under Banked
                           </SelectItem>
-                          <SelectItem value="unBanked">UnBanked</SelectItem>
-                          <SelectItem value="unknown">Unknown</SelectItem>
+                          <SelectItem value={BankedStatus.UNBANKED}>
+                            UnBanked
+                          </SelectItem>
+                          <SelectItem value={BankedStatus.UNKNOWN}>
+                            Unknown
+                          </SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />
@@ -188,10 +216,10 @@ export default function AddBeneficiary() {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="male">Male</SelectItem>
-                          <SelectItem value="female">Female</SelectItem>
-                          <SelectItem value="other">Other</SelectItem>
-                          <SelectItem value="unknown">Unknown</SelectItem>
+                          <SelectItem value={Gender.MALE}>Male</SelectItem>
+                          <SelectItem value={Gender.FEMALE}>Female</SelectItem>
+                          <SelectItem value={Gender.OTHER}>Other</SelectItem>
+                          <SelectItem value={Gender.UKNOWN}>Unknown</SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />
@@ -215,16 +243,18 @@ export default function AddBeneficiary() {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="mobile_internet">
+                          <SelectItem value={InternetStatus.MOBILE_INTERNET}>
                             Mobile Internet
                           </SelectItem>
-                          <SelectItem value="no_internet">
+                          <SelectItem value={InternetStatus.NO_INTERNET}>
                             No Internet
                           </SelectItem>
-                          <SelectItem value="home_internet">
+                          <SelectItem value={InternetStatus.HOME_INTERNET}>
                             Home Internet
                           </SelectItem>
-                          <SelectItem value="unknown">Unknown</SelectItem>
+                          <SelectItem value={InternetStatus.UNKNOWN}>
+                            Unknown
+                          </SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />
@@ -248,14 +278,18 @@ export default function AddBeneficiary() {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="smart_phone">
+                          <SelectItem value={PhoneStatus.SMART_PHONE}>
                             Smart Phone
                           </SelectItem>
-                          <SelectItem value="no_phone">No Phone</SelectItem>
-                          <SelectItem value="feature_phone">
+                          <SelectItem value={PhoneStatus.NO_PHONE}>
+                            No Phone
+                          </SelectItem>
+                          <SelectItem value={PhoneStatus.FEATURE_PHONE}>
                             Feature Phone
                           </SelectItem>
-                          <SelectItem value="unknown">Unknown</SelectItem>
+                          <SelectItem value={PhoneStatus.UNKNOWN}>
+                            Unknown
+                          </SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />

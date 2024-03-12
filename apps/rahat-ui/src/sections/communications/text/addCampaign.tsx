@@ -43,7 +43,7 @@ import {
 
 export default function AddCampaign() {
   const { communicationQuery } = React.useContext(
-    ServiceContext
+    ServiceContext,
   ) as ServiceContextType;
   const { data: transportData } = communicationQuery.useListTransport();
   const { data: audienceData } = communicationQuery.useListAudience();
@@ -77,7 +77,7 @@ export default function AddCampaign() {
         name: z.string(),
         phone: z.string(),
         beneficiaryId: z.number(),
-      })
+      }),
     ),
     file: z.string().optional(),
   });
@@ -95,7 +95,7 @@ export default function AddCampaign() {
 
     const audiences = audienceData?.data
       .filter((objA: any) =>
-        data?.audiences?.some((objB) => objB.phone === objA?.details?.phone)
+        data?.audiences?.some((objB) => objB.phone === objA?.details?.phone),
       )
       .map((obj: any) => obj.id);
     console.log(audiences);
@@ -371,7 +371,7 @@ export default function AddCampaign() {
                                     checked={field.value?.some(
                                       (value) =>
                                         value.beneficiaryId ===
-                                        item.beneficiaryId
+                                        item.beneficiaryId,
                                     )}
                                     onCheckedChange={(checked) => {
                                       console.log(audienceData, field.value);
@@ -380,7 +380,7 @@ export default function AddCampaign() {
                                         audienceData?.data.some(
                                           (audience) =>
                                             audience?.details?.phone ===
-                                            item.phone
+                                            item.phone,
                                         );
                                       console.log(checkAudienceExist);
 
@@ -399,8 +399,8 @@ export default function AddCampaign() {
                                             field.value?.filter(
                                               (value) =>
                                                 value.beneficiaryId !==
-                                                item.beneficiaryId
-                                            )
+                                                item.beneficiaryId,
+                                            ),
                                           );
                                     }}
                                   />

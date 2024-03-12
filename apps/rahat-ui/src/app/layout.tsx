@@ -27,20 +27,20 @@ export default function RootLayout({
       <body>
         <Wagmi>
           <GraphQueryProvider>
-          <QueryProvider>
-            <ServiceProvider>
-              <ThemeProvider
-                attribute="class"
-                // defaultTheme="system"
-                // enableSystem
-                disableTransitionOnChange
-              >
-                <main className={GeistSans.className}>{children}</main>
-                <ToastContainer />
-                <Toaster />
-              </ThemeProvider>
-            </ServiceProvider>
-          </QueryProvider>
+            <QueryProvider>
+              <ServiceProvider>
+                <ThemeProvider
+                  attribute="class"
+                  // defaultTheme="system"
+                  // enableSystem
+                  disableTransitionOnChange
+                >
+                  <main className={GeistSans.className}>{children}</main>
+                  <ToastContainer />
+                  <Toaster />
+                </ThemeProvider>
+              </ServiceProvider>
+            </QueryProvider>
           </GraphQueryProvider>
         </Wagmi>
       </body>

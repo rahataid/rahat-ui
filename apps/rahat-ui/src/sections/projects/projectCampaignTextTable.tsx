@@ -136,7 +136,7 @@ export const columns: ColumnDef<Text>[] = [
             <DropdownMenuItem
               onClick={() =>
                 router.push(
-                  paths.dashboard.communication.textDetail(row.original.id)
+                  paths.dashboard.communication.textDetail(row.original.id),
                 )
               }
             >
@@ -147,8 +147,8 @@ export const columns: ColumnDef<Text>[] = [
               onClick={() =>
                 router.push(
                   paths.dashboard.communication.editTextCampaign(
-                    row.original.id
-                  )
+                    row.original.id,
+                  ),
                 )
               }
             >
@@ -166,7 +166,7 @@ export default function ProjectCampaignTextTable() {
 
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
+    [],
   );
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
@@ -178,7 +178,7 @@ export default function ProjectCampaignTextTable() {
   const tableData = React.useMemo(() => {
     const result = Array.isArray(data?.rows)
       ? data?.rows.filter(
-          (campaign: any) => campaign.type !== CAMPAIGN_TYPES.PHONE
+          (campaign: any) => campaign.type !== CAMPAIGN_TYPES.PHONE,
         )
       : [];
 
@@ -261,7 +261,7 @@ export default function ProjectCampaignTextTable() {
                           ? null
                           : flexRender(
                               header.column.columnDef.header,
-                              header.getContext()
+                              header.getContext(),
                             )}
                       </TableHead>
                     );
@@ -280,7 +280,7 @@ export default function ProjectCampaignTextTable() {
                       <TableCell key={cell.id}>
                         {flexRender(
                           cell.column.columnDef.cell,
-                          cell.getContext()
+                          cell.getContext(),
                         )}
                       </TableCell>
                     ))}

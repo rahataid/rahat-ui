@@ -46,7 +46,7 @@ import {
 export default function EditCampaign() {
   const params = useParams<{ tag: string; id: string }>();
   const { communicationQuery } = React.useContext(
-    ServiceContext
+    ServiceContext,
   ) as ServiceContextType;
   const { data: transportData } = communicationQuery.useListTransport();
   const { data: audienceData } = communicationQuery.useListAudience();
@@ -90,7 +90,7 @@ export default function EditCampaign() {
         'message',
         data?.data?.details.body
           ? data?.data?.details.body
-          : data?.data?.details.message || ''
+          : data?.data?.details.message || '',
       );
       form.setValue('campaignType', data?.data?.type);
       form.setValue('startTime', new Date(data?.data?.startTime));
@@ -184,7 +184,7 @@ export default function EditCampaign() {
                                 variant={'outline'}
                                 className={cn(
                                   'w-[240px] pl-3 text-left font-normal',
-                                  !field.value && 'text-muted-foreground'
+                                  !field.value && 'text-muted-foreground',
                                 )}
                               >
                                 {field.value ? (
@@ -334,8 +334,8 @@ export default function EditCampaign() {
                                               ])
                                             : field.onChange(
                                                 field.value?.filter(
-                                                  (value) => value !== item.id
-                                                )
+                                                  (value) => value !== item.id,
+                                                ),
                                               );
                                         }}
                                       />

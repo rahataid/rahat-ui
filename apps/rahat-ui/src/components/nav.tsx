@@ -80,7 +80,7 @@ export function Nav() {
                   {item.title}
                 </p>
               </Link>
-            )
+            ),
           )}
           <DropdownMenu>
             <DropdownMenuTrigger className="py-2 px-4 rounded">

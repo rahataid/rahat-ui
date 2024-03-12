@@ -46,7 +46,7 @@ export const config = createConfig(
       'An open-source blockchain-based financial access platform to support vulnerable communities.',
     appUrl: 'https://family.co', // your app's url
     appIcon: 'https://family.co/logo.png', // your app's icon, no bigger than 1024x1024px (max. 1MB)
-  })
+  }),
 );
 
 // export default defineConfig({

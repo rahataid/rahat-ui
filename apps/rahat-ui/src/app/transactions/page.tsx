@@ -22,7 +22,7 @@ export default function TransactionsPage() {
 
   const fetchVoucherDetails = useCallback(() => {
     const voucherRes = queryService?.useProjectVoucher(
-      '0x38BFDCCAc556ED026706EE21b4945cE86718D4D1'
+      '0x38BFDCCAc556ED026706EE21b4945cE86718D4D1',
     );
     voucherRes.then((res) => {
       setData({

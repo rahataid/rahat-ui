@@ -34,7 +34,7 @@ const beneficiaryList = async (payload: any) => {
 };
 
 export const usebeneficiaryList = (
-  payload: any
+  payload: any,
 ): UseQueryResult<any, Error> => {
   return useQuery({
     queryKey: [TAGS.GET_BENEFICIARIES],

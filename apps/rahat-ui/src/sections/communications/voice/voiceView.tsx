@@ -13,7 +13,7 @@ import VoiceTableView from './voiceTable';
 
 export default function VoiceView() {
   const [activeTab, setActiveTab] = useState<string>(
-    COMMUNICATION_NAV_ROUTE.DEFAULT_VOICE
+    COMMUNICATION_NAV_ROUTE.DEFAULT_VOICE,
   );
 
   const handleTabChange = (tab: string) => {

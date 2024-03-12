@@ -1,8 +1,8 @@
 import {
   createUseReadContract,
-  createUseWriteContract,
   createUseSimulateContract,
   createUseWatchContractEvent,
+  createUseWriteContract,
 } from 'wagmi/codegen';
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -402,7 +402,10 @@ export const useWriteRahatDonorClaimToken =
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link rahatDonorAbi}__ and `functionName` set to `"mintToken"`
  */
 export const useWriteRahatDonorMintToken = /*#__PURE__*/ createUseWriteContract(
-  { abi: rahatDonorAbi, functionName: 'mintToken' }
+  {
+    abi: rahatDonorAbi,
+    functionName: 'mintToken',
+  },
 );
 
 /**
@@ -418,7 +421,10 @@ export const useWriteRahatDonorMintTokenAndApprove =
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link rahatDonorAbi}__ and `functionName` set to `"multicall"`
  */
 export const useWriteRahatDonorMulticall = /*#__PURE__*/ createUseWriteContract(
-  { abi: rahatDonorAbi, functionName: 'multicall' }
+  {
+    abi: rahatDonorAbi,
+    functionName: 'multicall',
+  },
 );
 
 /**
@@ -567,7 +573,9 @@ export const useSimulateRahatDonorTransferToken =
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link rahatDonorAbi}__
  */
 export const useWatchRahatDonorEvent =
-  /*#__PURE__*/ createUseWatchContractEvent({ abi: rahatDonorAbi });
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: rahatDonorAbi,
+  });
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link rahatDonorAbi}__ and `eventName` set to `"OwnerAdded"`

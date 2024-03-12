@@ -17,7 +17,7 @@
     "paths": {
       "@rahat-ui/query": ["libs/query/src/index.ts"],
       "@rahat-ui/shadcn/*": ["libs/shadcn/*"],
-      "@rahat-ui/shadcn/charts": ["libs/shadcn/src/components/chart/index.ts"],
+      "@rahat-ui/shadcn/charts": ["libs/shadcn/src/components/charts/index.ts"],
       "@rahat-ui/shadcn/components/*": ["libs/shadcn/src/components/ui/*"],
       "@rahat-ui/shadcn/maps": ["libs/shadcn/src/components/maps/index.ts"],
       "@rahat-ui/shadcn/utils": ["libs/shadcn/src/utils/index.ts"],

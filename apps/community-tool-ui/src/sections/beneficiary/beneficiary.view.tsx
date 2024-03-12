@@ -25,7 +25,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/components/dropdown-menu';
-import { Beneficiary } from '@rahataid/sdk/types';
+import { Beneficiary } from '@community-tool/sdk/beneficiary';
 import { MoreHorizontal } from 'lucide-react';
 import CustomPagination from '../../components/customPagination';
 import { BENEFICIARY_NAV_ROUTE } from '../../constants/beneficiary.const';
@@ -122,7 +122,7 @@ function BeneficiaryView() {
 
   const handlePrevPage = () => setCurrentPage(currentPage - 1);
 
-  const { beneficiaryQuery } = useRumsanService();
+  const { communityBenQuery } = useRumsanService();
   const [selectedData, setSelectedData] = useState<Beneficiary>();
   const [active, setActive] = useState<string>(BENEFICIARY_NAV_ROUTE.DEFAULT);
 
@@ -138,7 +138,7 @@ function BeneficiaryView() {
     setActive(item);
   }, []);
 
-  const { data } = beneficiaryQuery.useBeneficiaryList({
+  const { data } = communityBenQuery.useCommunityBeneficiaryList({
     perPage,
     page: currentPage,
   });
@@ -148,7 +148,7 @@ function BeneficiaryView() {
 
   const table = useReactTable({
     manualPagination: true,
-    data: data?.data || [],
+    data: data?.data?.rows || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -159,7 +159,6 @@ function BeneficiaryView() {
       rowSelection,
     },
   });
-
   return (
     <Tabs defaultValue="list" className="h-full">
       <ResizablePanelGroup direction="horizontal" className="min-h-max bg-card">
@@ -179,7 +178,6 @@ function BeneficiaryView() {
               <TabsContent value="list">
                 <BeneficiaryListView
                   table={table}
-                  meta={data?.meta}
                   handleClick={handleBeneficiaryClick}
                 />
               </TabsContent>

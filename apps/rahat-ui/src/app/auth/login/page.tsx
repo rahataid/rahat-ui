@@ -24,8 +24,8 @@ export default function AuthPage() {
       error: state.error,
     }));
 
-  const { mutateAsync: requestOtp } = authQuery.useSendOtp();
-  const { mutateAsync: verifyOtp } = authQuery.useLogin();
+  const { mutateAsync: requestOtp } = authQuery.useRequestOtp();
+  const { mutateAsync: verifyOtp } = authQuery.useVerifyOtp();
 
   const onRequestOtp = async (e: React.SyntheticEvent) => {
     e.preventDefault();

@@ -10,7 +10,6 @@ type CardProps = {
   subTitle: string;
   image: string;
   badge: string;
-  handleClick: VoidFunction;
 };
 
 export default function CommonCard({

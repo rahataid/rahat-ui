@@ -8,6 +8,8 @@ import {
   Ticket,
   Lock,
   Receipt,
+  Phone,
+  MessageSquare,
 } from 'lucide-react';
 import { useSwal } from '../../../components/swal';
 import { useParams } from 'next/navigation';
@@ -102,9 +104,22 @@ export const useNavItems = () => {
         },
         {
           title: 'Campaigns',
-          path: '/campaigns',
           subtitle: 20,
           icon: <Speech size={18} strokeWidth={1.5} />,
+          children: [
+            {
+              title: 'Voice',
+              subtitle: 10,
+              icon: <Phone size={18} strokeWidth={1.5} />,
+              path: `/projects/cva/${params.id}/campaigns/voice`,
+            },
+            {
+              title: 'Text',
+              subtitle: 10,
+              icon: <MessageSquare size={18} strokeWidth={1.5} />,
+              path: `/projects/cva/${params.id}/campaigns/text`,
+            },
+          ],
         },
       ],
     },

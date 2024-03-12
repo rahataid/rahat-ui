@@ -47,7 +47,7 @@ const listCampaign = async (payload: PaginatedRequestPayload) => {
 };
 
 const useListCampaignQuery = (
-  payload: PaginatedRequestPayload
+  payload: PaginatedRequestPayload,
 ): UseQueryResult<any, Error> => {
   const listCampaignQueryResult = useQuery({
     queryKey: [TAGS.GET_ALL_CAMPAIGNS],
@@ -74,7 +74,7 @@ const useGetCampaignQuery = (payload: {
 const editCampaign = async (payload: EditCampaignPayload) => {
   const response = await communicationApi.patch(
     `/campaigns/${payload.id}`,
-    payload
+    payload,
   );
   return response.data;
 };

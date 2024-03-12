@@ -46,5 +46,13 @@ export default function ChartColumnStacked({ series }: Props) {
     },
   });
 
-  return <Chart dir="ltr" type="bar" series={series} options={chartOptions} height={320} />;
+  return (
+    <Chart
+      dir="ltr"
+      type="bar"
+      series={series}
+      options={chartOptions}
+      height={320}
+    />
+  );
 }

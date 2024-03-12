@@ -3,7 +3,6 @@ import { create, StateCreator, StoreApi, UseBoundStore } from 'zustand';
 import { devtools, persist, PersistOptions } from 'zustand/middleware';
 import { PersistStorage } from 'zustand/middleware';
 
-
 interface ICreateStoreOptions<T, U> {
   persistOptions?: PersistOptions<T, U>;
   devtoolsEnabled?: boolean;
@@ -11,7 +10,7 @@ interface ICreateStoreOptions<T, U> {
 
 export function createStore<T extends object>(
   createState: StateCreator<T>,
-  options?: ICreateStoreOptions<T, any>
+  options?: ICreateStoreOptions<T, any>,
 ): UseBoundStore<StoreApi<T>> {
   let store = create(createState);
 
@@ -30,9 +29,7 @@ export function createStore<T extends object>(
   return store;
 }
 
-
 //localpersiststorage, ps, you can use any storage you want, not just localstorage, but for this example, we will use localstorage
-
 
 export const localPersistStorage: PersistStorage<T> = {
   getItem: (name) => {

@@ -177,7 +177,7 @@ export interface ICampaignItemApiResponse {
 
 export interface ITransportItemApiResponse {
   map(
-    arg0: (transport: any) => import('react').JSX.Element
+    arg0: (transport: any) => import('react').JSX.Element,
   ): import('react').ReactNode;
   id: number;
   name: string;

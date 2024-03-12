@@ -28,7 +28,7 @@ export default function ProjectPage() {
   const displayedItems = projectsData.slice(startIndex, endIndex);
 
   const selectedProjectType = displayedItems.filter(
-    (item) => item.badge === projectType
+    (item) => item.badge === projectType,
   );
 
   const selectedProject = projectType.length

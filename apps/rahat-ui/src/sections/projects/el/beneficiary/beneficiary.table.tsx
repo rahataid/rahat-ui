@@ -50,8 +50,8 @@ import TransactionTableData from './beneficiaryTransactionData.json';
 const data: Transaction[] = TransactionTableData;
 
 export type Transaction = {
-  topic: string;
-  processedBy: string;
+  name: string;
+  vouvherType: string;
   timeStamp: string;
   transactionHash: string;
   amount: string;
@@ -81,18 +81,18 @@ export const columns: ColumnDef<Transaction>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: 'topic',
-    header: 'Topic',
-    cell: ({ row }) => <div>{row.getValue('topic')}</div>,
+    accessorKey: 'name',
+    header: 'Name',
+    cell: ({ row }) => <div>{row.getValue('name')}</div>,
   },
   {
-    accessorKey: 'processedBy',
-    header: 'Processed By',
+    accessorKey: 'vouvherType',
+    header: 'Voucher Type',
     cell: ({ row }) => (
       <div className="capitalize">
-        {row.getValue('processedBy')
-          ? `${row.getValue('processedBy')?.toString().substring(0, 4)}....${row
-              .getValue('processedBy')
+        {row.getValue('vouvherType')
+          ? `${row.getValue('vouvherType')?.toString().substring(0, 4)}....${row
+              .getValue('vouvherType')
               ?.toString()
               ?.slice(-3)}`
           : 'N/A'}
@@ -100,30 +100,19 @@ export const columns: ColumnDef<Transaction>[] = [
     ),
   },
   {
-    accessorKey: 'timeStamp',
-    header: 'Time Stamp',
-    cell: ({ row }) => <div> {row.getValue('timeStamp')}</div>,
+    accessorKey: 'phone',
+    header: 'Phone',
+    cell: ({ row }) => <div> {row.getValue('phone')}</div>,
   },
   {
-    accessorKey: 'transactionHash',
-    header: 'Transaction Hash',
-    cell: ({ row }) => (
-      <div>
-        {' '}
-        {`${row
-          .getValue('transactionHash')
-          ?.toString()
-          .substring(0, 4)}....${row
-          .getValue('transactionHash')
-          ?.toString()
-          ?.slice(-3)}`}
-      </div>
-    ),
+    accessorKey: 'redemption',
+    header: 'Redemption',
+    cell: ({ row }) => <div> {row.getValue('redemption')}</div>,
   },
   {
-    accessorKey: 'amount',
-    header: 'Amount',
-    cell: ({ row }) => <div> {row.getValue('amount')}</div>,
+    accessorKey: 'gender',
+    header: 'Gender',
+    cell: ({ row }) => <div> {row.getValue('gender')}</div>,
   },
   {
     id: 'actions',
@@ -184,10 +173,10 @@ export default function BeneficiaryDetailTableView() {
       <div className="w-full h-full p-2 bg-secondary">
         <div className="flex items-center mb-2">
           <Input
-            placeholder="Filter topic..."
-            value={(table.getColumn('topic')?.getFilterValue() as string) ?? ''}
+            placeholder="Filter name..."
+            value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
             onChange={(event) =>
-              table.getColumn('topic')?.setFilterValue(event.target.value)
+              table.getColumn('name')?.setFilterValue(event.target.value)
             }
             className="max-w-sm rounded mr-2"
           />

@@ -39,7 +39,7 @@ const ProjectLayout: FC<ProjectLayoutProps> = ({ children }) => {
           </ResizablePanel>
           <ResizableHandle />
           <ResizablePanel>
-            <ScrollArea className="h-[calc(100vh-66px)]">{children}</ScrollArea>
+            <ScrollArea className="h-[calc(100vh-65px)]">{children}</ScrollArea>
           </ResizablePanel>
         </ResizablePanelGroup>
       </Tabs>

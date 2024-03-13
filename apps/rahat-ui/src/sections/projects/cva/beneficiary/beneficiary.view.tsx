@@ -1,17 +1,18 @@
 'use client';
 
-import { useState } from 'react';
 import {
   ResizablePanel,
   ResizablePanelGroup,
 } from '@rahat-ui/shadcn/src/components/ui/resizable';
-import BeneficiaryTable from './beneficiary.table';
+import { Beneficiary } from '@rahataid/sdk';
+import { useState } from 'react';
 import BeneficiaryDetail from './beneficiary.detail';
+import BeneficiaryTable from './beneficiary.table';
 
 export default function BeneficiaryView() {
-  const [selectedBeneficiary, setSelectedBeneficiary] = useState();
+  const [selectedBeneficiary, setSelectedBeneficiary] = useState<Beneficiary>();
 
-  const handleRowClick = (selected) => {
+  const handleRowClick = (selected: Beneficiary) => {
     setSelectedBeneficiary(selected);
   };
 

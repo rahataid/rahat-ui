@@ -1,36 +1,36 @@
-'use client';
+"use client";
 
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Button } from "@rahat-ui/shadcn/src/components/ui/button";
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
   FormMessage,
-} from '@rahat-ui/shadcn/src/components/ui/form';
-import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
+} from "@rahat-ui/shadcn/src/components/ui/form";
+import { Input } from "@rahat-ui/shadcn/src/components/ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@rahat-ui/shadcn/src/components/ui/select';
-import { useForm } from 'react-hook-form';
-import { toast } from 'react-toastify';
+} from "@rahat-ui/shadcn/src/components/ui/select";
+import { useForm } from "react-hook-form";
+import { toast } from "react-toastify";
 
-import { z } from 'zod';
-import { useRumsanService } from '../../providers/service.provider';
+import { z } from "zod";
+import { useRumsanService } from "../../providers/service.provider";
 import {
   BankedStatus,
   InternetStatus,
   PhoneStatus,
-} from '@rahataid/community-tool-sdk/enums/';
-import React from 'react';
+} from "@rahataid/community-tool-sdk/enums/";
+import React, { useEffect } from "react";
 
-import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
-import { ListBeneficiary } from '@rahataid/community-tool-sdk/beneficiary';
+import { Textarea } from "@rahat-ui/shadcn/src/components/ui/textarea";
+import { ListBeneficiary } from "@rahataid/community-tool-sdk/beneficiary";
 
 export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
   const { communityBenQuery } = useRumsanService();
@@ -51,28 +51,29 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      phone: data?.phone || '',
-      bankedStatus: data?.bankedStatus || '',
-      internetStatus: data?.internetStatus || '',
-      phoneStatus: data?.phoneStatus || '',
-      location: data?.location || '',
+      phone: data?.phone || "",
+      bankedStatus: data?.bankedStatus || "",
+      internetStatus: data?.internetStatus || "",
+      phoneStatus: data?.phoneStatus || "",
+      location: data?.location || "",
       latitude: data?.latitude || 0,
       longitude: data?.longitude || 0,
-      notes: data?.notes || '',
+      notes: data?.notes || "",
     },
   });
 
   const handleEditBeneficiary = async (
     formData: z.infer<typeof FormSchema>
   ) => {
-    try {
-      await benefClient.mutateAsync({ uuid: data.uuid, payload: formData });
-      toast.success('Beneficiary Updated successfully!');
-      form.reset();
-    } catch (err) {
-      toast.error('Failed to Update beneficiary!');
-    }
+    await benefClient.mutateAsync({ uuid: data.uuid, payload: formData });
   };
+
+  useEffect(() => {
+    if (benefClient.isSuccess) {
+      form.reset();
+    }
+  }, [benefClient.isSuccess, form]);
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleEditBeneficiary)}>
@@ -92,7 +93,7 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
                           placeholder="Phone"
                           {...field}
                           onChange={(e) => {
-                            form.setValue('phone', e.target.value);
+                            form.setValue("phone", e.target.value);
                           }}
                         />
                       </FormControl>
@@ -236,7 +237,7 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
                           {...field}
                           onChange={(e) => {
                             const numericValue = parseFloat(e.target.value);
-                            form.setValue('longitude', numericValue);
+                            form.setValue("longitude", numericValue);
                           }}
                         />
                       </FormControl>
@@ -258,7 +259,7 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
                           {...field}
                           onChange={(e) => {
                             const numericValue = parseFloat(e.target.value);
-                            form.setValue('latitude', numericValue);
+                            form.setValue("latitude", numericValue);
                           }}
                         />
                       </FormControl>

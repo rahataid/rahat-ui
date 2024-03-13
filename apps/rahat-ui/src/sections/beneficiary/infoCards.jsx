@@ -38,16 +38,49 @@ import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { MoreVertical } from 'lucide-react';
 // import data from '../../app/beneficiary/beneficiaryData.json';
 import { truncateEthAddress } from '@rumsan/sdk/utils';
+import { useEffect } from 'react';
+import { useSwal } from '../../components/swal';
 import { useAssignClaims } from '../../contract-hooks/el-contracts';
+import { useRumsanService } from '../../providers/service.provider';
 
 export default function InfoCards({ data, voucherData }) {
   const assignClaims = useAssignClaims();
+  const dialog = useSwal();
+  const { beneficiaryQuery } = useRumsanService();
+  const verifyWallet = beneficiaryQuery.useVerifyBeneficiary();
+
   const handleAssignClaims = () => {
     assignClaims.writeContractAsync({
       address: '0x38BFDCCAc556ED026706EE21b4945cE86718D4D1',
       args: ['0x082d43D30C31D054b1AEDbE08F50C2a1BBE76fC7'],
     });
   };
+
+  const handleVerifyWallet = async () => {
+    const { isConfirmed ,} = await dialog.fire({
+      title: 'Verify Wallet',
+      html: 'Do you want to send an email to the beneficiary?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes',
+      cancelButtonText: 'No',
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+    });
+    if (isConfirmed) {
+      await verifyWallet.mutateAsync(data?.uuid);
+    }
+  };
+
+  useEffect(() => {
+    if (verifyWallet.isSuccess) {
+      dialog.fire({
+        title: 'Email Sent',
+        text: 'An email has been sent to the beneficiary',
+        icon: 'success',
+      });
+    }
+  }, [dialog, verifyWallet.isSuccess]);
   return (
     <div className="flex flex-col gap-4 p-2">
       <Card className="shadow-md rounded-sm">
@@ -57,6 +90,7 @@ export default function InfoCards({ data, voucherData }) {
             <Badge variant="outline" className="bg-secondary">
               Not Approved
             </Badge>
+            <Button onClick={handleVerifyWallet}>Verify Wallet</Button>
             <Button onClick={handleAssignClaims}>Approve</Button>
           </div>
         </CardHeader>

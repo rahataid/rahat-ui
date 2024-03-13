@@ -1,7 +1,12 @@
 import { getBeneficiaryClient } from '@rahataid/sdk/clients';
 import { BeneficiaryClient } from '@rahataid/sdk/types';
 import { RumsanService } from '@rumsan/sdk';
-import { QueryClient, useQuery, UseQueryResult } from '@tanstack/react-query';
+import {
+  QueryClient,
+  useMutation,
+  useQuery,
+  UseQueryResult,
+} from '@tanstack/react-query';
 import axios from 'axios';
 import { TAGS } from '../config';
 
@@ -42,6 +47,23 @@ export class BeneficiaryQuery {
             throw error;
           });
       },
+    });
+  };
+  useVerifyBeneficiary = (payload: any): any => {
+    return useMutation({
+      mutationKey: [TAGS.VERIFY_BENEFICIARY, payload],
+      mutationFn: (uuid: string) => {
+        return fetch(
+          `${process.env['NEXT_PUBLIC_API_HOST_URL']}/beneficiaries/generate-link/${uuid}`,
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            // body: JSON.stringify(payload),
+          },
+        );
+      }, //this.client.generateLink(payload),
     });
   };
 }

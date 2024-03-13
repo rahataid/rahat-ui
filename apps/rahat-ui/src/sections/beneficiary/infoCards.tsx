@@ -95,14 +95,16 @@ export default function InfoCards({ data, voucherData }: InfoCardsProps) {
         <CardHeader>
           <div className="flex justify-between">
             <p>Beneficiary Name</p>
-            {!data!.isVerified && (
-              <Badge variant="outline" className="bg-secondary">
-                Not Approved
-              </Badge>
+            {!data.isVerified && (
+              <>
+                <Badge variant="outline" className="bg-secondary">
+                  Not Approved
+                </Badge>
+                <Button onClick={handleVerifyWallet} variant="outline">
+                  Verify Wallet
+                </Button>
+              </>
             )}
-            <Button onClick={handleVerifyWallet} variant="outline">
-              Verify Wallet
-            </Button>
             <Button onClick={handleAssignClaims}>Approve</Button>
           </div>
         </CardHeader>

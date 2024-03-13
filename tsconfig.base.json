@@ -10,21 +10,45 @@
     "importHelpers": true,
     "target": "es2015",
     "module": "esnext",
-    "lib": ["es2020", "dom"],
+    "lib": [
+      "es2020",
+      "dom"
+    ],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@rahat-ui/query": ["libs/query/src/index.ts"],
-      "@rahat-ui/shadcn/*": ["libs/shadcn/*"],
-      "@rahat-ui/shadcn/charts": ["libs/shadcn/src/components/chart/index.ts"],
-      "@rahat-ui/shadcn/components/*": ["libs/shadcn/src/components/ui/*"],
-      "@rahat-ui/shadcn/maps": ["libs/shadcn/src/components/maps/index.ts"],
-      "@rahat-ui/shadcn/utils": ["libs/shadcn/src/utils/index.ts"],
-      "@rahat-ui/types": ["libs/types/src/index.ts"],
-      "@rahat-ui/web3": ["libs/web3/src/index.ts"],
-      "@rahat-ui/web3/*": ["libs/web3/src/*"]
+      "@rahat-ui/query": [
+        "libs/query/src/index.ts"
+      ],
+      "@rahat-ui/shadcn/*": [
+        "libs/shadcn/*"
+      ],
+      "@rahat-ui/shadcn/charts": [
+        "libs/shadcn/src/components/charts/index.ts"
+      ],
+      "@rahat-ui/shadcn/components/*": [
+        "libs/shadcn/src/components/ui/*"
+      ],
+      "@rahat-ui/shadcn/maps": [
+        "libs/shadcn/src/components/maps/index.ts"
+      ],
+      "@rahat-ui/shadcn/utils": [
+        "libs/shadcn/src/utils/index.ts"
+      ],
+      "@rahat-ui/types": [
+        "libs/types/src/index.ts"
+      ],
+      "@rahat-ui/web3": [
+        "libs/web3/src/index.ts"
+      ],
+      "@rahat-ui/web3/*": [
+        "libs/web3/src/*"
+      ]
     }
   },
-  "exclude": ["node_modules", "tmp"]
+  "exclude": [
+    "node_modules",
+    "tmp"
+  ]
 }

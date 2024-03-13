@@ -41,7 +41,7 @@ const ProjectLayout: FC<ProjectLayoutProps> = ({ children }) => {
             <Separator />
           </ResizablePanel>
           <ResizableHandle />
-          <ResizablePanel>
+          <ResizablePanel defaultSize={80}>
             <ScrollArea className="h-[calc(100vh-66px)]">{children}</ScrollArea>
           </ResizablePanel>
         </ResizablePanelGroup>

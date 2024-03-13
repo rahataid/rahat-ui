@@ -60,8 +60,7 @@ import { Input } from '@rahat-ui/shadcn/components/input';
 import { Calendar } from '@rahat-ui/shadcn/components/calendar';
 import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
 import {
-  ServiceContext,
-  ServiceContextType,
+ 
   useRumsanService,
 } from 'apps/rahat-ui/src/providers/service.provider';
 
@@ -79,12 +78,9 @@ export default function EditCampaign() {
     Array<{ id: number; phone: string; name: string }>
   >([]);
 
-  const { communicationQuery } = React.useContext(
-    ServiceContext
-  ) as ServiceContextType;
+  const { communicationQuery, beneficiaryQuery } = useRumsanService();
   const { data: transportData } = communicationQuery.useListTransport();
   const { data: audienceData } = communicationQuery.useListAudience();
-  const { beneficiaryQuery } = useRumsanService();
   const { data: beneficiaryData } = beneficiaryQuery.useBeneficiaryPii();
 
   const { data, isSuccess, isLoading } = communicationQuery.useGetCampaign({
@@ -499,6 +495,16 @@ export default function EditCampaign() {
                 <div className="mt-6 shadow-md rounded-sm p-4">
                   <div className="flex justify-between">
                     <p>Select Audiences</p>
+                    <Input
+          placeholder="Filter campaigns..."
+          value={
+            (table.getColumn('name')?.getFilterValue() as string) ?? ''
+          }
+          onChange={(event) =>
+            table.getColumn('name')?.setFilterValue(event.target.value)
+          }
+          className="max-w-sm mr-3"
+        />
                     <Button
                       variant="ghost"
                       onClick={() => setShowAudiences(false)}

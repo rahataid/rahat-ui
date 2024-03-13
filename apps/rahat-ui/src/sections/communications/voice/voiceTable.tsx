@@ -204,10 +204,10 @@ export default function VoiceTableView() {
         <Input
           placeholder="Filter campaigns..."
           value={
-            (table.getColumn('campaign')?.getFilterValue() as string) ?? ''
+            (table.getColumn('name')?.getFilterValue() as string) ?? ''
           }
           onChange={(event) =>
-            table.getColumn('campaign')?.setFilterValue(event.target.value)
+            table.getColumn('name')?.setFilterValue(event.target.value)
           }
           className="max-w-sm mr-3"
         />

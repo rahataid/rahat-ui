@@ -1,10 +1,11 @@
 'use client';
-import { BeneficiaryQuery, CommunicationQuery } from '@rahat-ui/query';
+import { BeneficiaryQuery } from '@rahat-ui/query';
 import {
   AuthQuery,
   RoleQuery,
   UserQuery,
   useAuthStore,
+  CommunicationQuery,
 } from '@rumsan/react-query';
 import { RumsanService } from '@rumsan/sdk';
 

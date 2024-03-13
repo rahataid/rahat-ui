@@ -71,16 +71,13 @@ export default function AddCampaign() {
   const [rowSelection, setRowSelection] = React.useState({});
   const [selectedRows, setSelectedRows] = useState([]);
 
-  const { communicationQuery } = React.useContext(
-    ServiceContext
-  ) as ServiceContextType;
+  const { communicationQuery, beneficiaryQuery } = useRumsanService();
   const { data: transportData } = communicationQuery.useListTransport();
   const { data: audienceData } = communicationQuery.useListAudience();
   const { data: audioData } = communicationQuery.useGetAudio();
   const createCampaign = communicationQuery.useCreateCampaign();
   const createAudience = communicationQuery.useCreateAudience();
 
-  const { beneficiaryQuery } = useRumsanService();
   const { data: beneficiaryData } = beneficiaryQuery.useBeneficiaryPii();
   console.log(beneficiaryData);
 
@@ -488,6 +485,17 @@ export default function AddCampaign() {
             <div className="mt-6 shadow-md rounded-sm p-4">
               <div className="flex justify-between">
                 <p>Select Audiences</p>
+
+                <Input
+          placeholder="Filter campaigns..."
+          value={
+            (table.getColumn('name')?.getFilterValue() as string) ?? ''
+          }
+          onChange={(event) =>
+            table.getColumn('name')?.setFilterValue(event.target.value)
+          }
+          className="max-w-sm mr-3"
+        />
                 <Button variant="ghost" onClick={() => setShowAudiences(false)}>
                   Close
                 </Button>
@@ -501,6 +509,7 @@ export default function AddCampaign() {
                     <FormLabel className="text-base">Audiences</FormLabel>
                   </div> */}
                     <div className="rounded-md border max-h-[300px] overflow-y-auto">
+                 
                       {beneficiaryData && (
                         <Table>
                           <TableHeader>

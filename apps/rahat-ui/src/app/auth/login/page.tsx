@@ -125,7 +125,9 @@ export default function AuthPage() {
             </Button> */}
             <span
               className="underline font-medium ml-2 cursor-pointer"
-              onClick={onVerifyOtp}
+              onClick={
+                !challenge.length ? router.push(paths.auth.login) : onVerifyOtp
+              }
             >
               {!challenge.length ? 'Get Started' : 'Resend'}
             </span>

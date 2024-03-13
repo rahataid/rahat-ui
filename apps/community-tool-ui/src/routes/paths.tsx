@@ -17,7 +17,7 @@ export const paths = {
     root: ROOTS.DASHBOARD,
     beneficiary: {
       root: ROOTS.BENEFICIARY,
-      detail: (id: string) => `${ROOTS.BENEFICIARY}/${id}`,
+      detail: (uuid: string) => `${ROOTS.BENEFICIARY}/${id}`,
     },
     user: ROOTS.USER,
   },

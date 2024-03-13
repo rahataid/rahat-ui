@@ -1,7 +1,7 @@
 import { ListBeneficiary, Meta } from '@rahat-ui/types';
 
 export interface IBeneficiaryItem {
-  uuid?: string;
+  uuid: string;
   walletAddress?: string;
   updatedAt: Date;
   verified?: boolean;

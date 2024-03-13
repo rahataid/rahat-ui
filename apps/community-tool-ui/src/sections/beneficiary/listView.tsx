@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { Table, flexRender } from '@tanstack/react-table';
-import { Settings2 } from 'lucide-react';
+import { Table, flexRender } from "@tanstack/react-table";
+import { Settings2 } from "lucide-react";
 
-import { Button } from '@rahat-ui/shadcn/components/button';
+import { Button } from "@rahat-ui/shadcn/components/button";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -11,8 +11,8 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@rahat-ui/shadcn/components/dropdown-menu';
-import { Input } from '@rahat-ui/shadcn/components/input';
+} from "@rahat-ui/shadcn/components/dropdown-menu";
+import { Input } from "@rahat-ui/shadcn/components/input";
 import {
   TableBody,
   TableCell,
@@ -20,20 +20,15 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@rahat-ui/shadcn/components/table';
-import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+} from "@rahat-ui/shadcn/components/table";
+import { ScrollArea } from "@rahat-ui/shadcn/src/components/ui/scroll-area";
+
+import { UUID } from "crypto";
+import { ListBeneficiary } from "@rahataid/community-tool-sdk/beneficiary";
 
 type IProps = {
-  handleClick: (item: Beneficiary) => void;
-  table: Table<Beneficiary>;
-};
-
-export type Beneficiary = {
-  name: string;
-  projectsInvolved: string;
-  internetAccess: string;
-  phone: string;
-  bank: string;
+  handleClick: (index: number) => void;
+  table: Table<ListBeneficiary>;
 };
 
 export default function ListView({ handleClick, table }: IProps) {
@@ -44,12 +39,12 @@ export default function ListView({ handleClick, table }: IProps) {
           <Input
             placeholder="Filter beneficiary..."
             value={
-              (table.getColumn('walletAddress')?.getFilterValue() as string) ??
-              ''
+              (table.getColumn("walletAddress")?.getFilterValue() as string) ??
+              ""
             }
             onChange={(event) =>
               table
-                .getColumn('walletAddress')
+                .getColumn("walletAddress")
                 ?.setFilterValue(event.target.value)
             }
             className="rounded mr-2"
@@ -107,12 +102,12 @@ export default function ListView({ handleClick, table }: IProps) {
               </TableHeader>
               <TableBody>
                 {table.getRowModel().rows?.length ? (
-                  table.getRowModel().rows.map((row) => (
+                  table.getRowModel().rows.map((row, index) => (
                     <TableRow
                       key={row.id}
-                      data-state={row.getIsSelected() && 'selected'}
+                      data-state={row.getIsSelected() && "selected"}
                       onClick={() => {
-                        handleClick(row.original);
+                        handleClick(index);
                       }}
                     >
                       {row.getVisibleCells().map((cell) => (

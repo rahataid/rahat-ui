@@ -7,8 +7,12 @@ import {
   XCircle,
   Ticket,
   Lock,
+  Receipt,
+  Phone,
+  MessageSquare,
 } from 'lucide-react';
 import { useSwal } from '../../../components/swal';
+import { useParams } from 'next/navigation';
 
 export type NavItem = {
   title: string;
@@ -20,6 +24,7 @@ export type NavItem = {
 };
 
 export const useNavItems = () => {
+  const params = useParams();
   const dialog = useSwal();
   // const beneficiary = useBeneficiaryStore(state=>state.beneficiary)
 
@@ -77,31 +82,44 @@ export const useNavItems = () => {
 
   const navItems: NavItem[] = [
     {
-      title: `Project Details`,
+      title: 'Project Details',
       children: [
         {
           title: 'Beneficiaries',
-          path: '',
+          path: `/projects/cva/${params.id}/beneficiary`,
           subtitle: 20,
           icon: <UsersRound size={18} strokeWidth={1.5} />,
         },
         {
           title: 'Vendors',
-          path: '/vendors',
+          path: `/projects/cva/${params.id}/vendors`,
           subtitle: 20,
           icon: <Store size={18} strokeWidth={1.5} />,
         },
         {
           title: 'Transactions',
-          path: '/transactions',
+          path: `/projects/cva/${params.id}/transactions`,
           subtitle: 20,
-          icon: <Store size={18} strokeWidth={1.5} />,
+          icon: <Receipt size={18} strokeWidth={1.5} />,
         },
         {
           title: 'Campaigns',
-          path: '/campaigns',
           subtitle: 20,
           icon: <Speech size={18} strokeWidth={1.5} />,
+          children: [
+            {
+              title: 'Voice',
+              subtitle: 10,
+              icon: <Phone size={18} strokeWidth={1.5} />,
+              path: `/projects/cva/${params.id}/campaigns/voice`,
+            },
+            {
+              title: 'Text',
+              subtitle: 10,
+              icon: <MessageSquare size={18} strokeWidth={1.5} />,
+              path: `/projects/cva/${params.id}/campaigns/text`,
+            },
+          ],
         },
       ],
     },

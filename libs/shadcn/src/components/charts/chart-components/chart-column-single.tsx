@@ -1,5 +1,7 @@
 // components
-import Chart, { useChart } from 'src/components/chart';
+
+import Chart from '../chart';
+import useChart from '../use-chart';
 
 // ----------------------------------------------------------------------
 
@@ -10,12 +12,15 @@ type Props = {
   }[];
 };
 
-export default function ChartColumnMultiple({ series }: Props) {
+export default function ChartColumnSingle({ series }: Props) {
   const chartOptions = useChart({
+    plotOptions: {
+      bar: {
+        columnWidth: '16%',
+      },
+    },
     stroke: {
-      show: true,
-      width: 2,
-      colors: ['transparent'],
+      show: false,
     },
     xaxis: {
       categories: [
@@ -35,7 +40,6 @@ export default function ChartColumnMultiple({ series }: Props) {
         formatter: (value: number) => `$ ${value} thousands`,
       },
     },
-    plotOptions: { bar: { columnWidth: '36%' } },
   });
 
   return (

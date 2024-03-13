@@ -46,7 +46,7 @@ export default function InfoCards({ data }) {
       <Card className="shadow-md rounded-sm">
         <CardHeader>
           <div className="flex justify-between">
-            <p>Beneficiary Name</p>
+            <p>{`${data?.firstName} ${data?.lastName}`}</p>
             <Badge variant="outline" color="red">
               Not Approved
             </Badge>
@@ -55,7 +55,7 @@ export default function InfoCards({ data }) {
         <CardContent>
           <div className="mb-2">
             <p className="text-xs">
-              {truncateEthAddress(data.walletAddress) ?? 'N/A'}
+              {truncateEthAddress(data?.walletAddress) ?? 'N/A'}
             </p>
             <p className="text-sm font-normal text-muted-foreground">
               Wallet Address
@@ -64,7 +64,7 @@ export default function InfoCards({ data }) {
           <div className="flex justify-between gap-8">
             <div className="flex flex-col gap-2">
               <div>
-                <p>{data?.bankStatus ?? 'test'}</p>
+                <p>{data?.bankedStatus ?? 'test'}</p>
                 <p className="text-sm font-normal text-muted-foreground">
                   Bank Status
                 </p>

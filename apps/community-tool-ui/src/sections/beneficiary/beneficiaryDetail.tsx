@@ -22,26 +22,17 @@ import { paths } from '../../routes/paths';
 import { IBeneficiaryItem } from '../../types/beneficiary';
 import EditBeneficiary from './editBeneficiary';
 import InfoCards from './infoCards';
+import { ListBeneficiary } from '@rahataid/community-tool-sdk/beneficiary';
 
 type IProps = {
-  data: IBeneficiaryItem;
-  handleDefault: VoidFunction;
+  data: ListBeneficiary;
+  // handleDefault: VoidFunction;
   handleClose: VoidFunction;
 };
 
-export default function BeneficiaryDetail({
-  data,
-  handleDefault,
-  handleClose,
-}: IProps) {
+export default function BeneficiaryDetail({ data, handleClose }: IProps) {
   const router = useRouter();
 
-  const changedDate = new Date(data?.updatedAt);
-  const formattedDate = changedDate.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
   return (
     <>
       <Tabs defaultValue="detail">
@@ -61,9 +52,7 @@ export default function BeneficiaryDetail({
               <Tooltip>
                 <TooltipTrigger
                   onClick={() => {
-                    router.push(
-                      paths.dashboard.beneficiary.detail(data.walletAddress)
-                    );
+                    router.push(paths.dashboard.beneficiary.detail(data?.uuid));
                   }}
                 >
                   <Expand size={20} strokeWidth={1.5} />
@@ -214,7 +203,7 @@ export default function BeneficiaryDetail({
           <div className="p-4 border-y">Transaction History View</div>
         </TabsContent>
         <TabsContent value="edit">
-          <EditBeneficiary />
+          <EditBeneficiary data={data} />
         </TabsContent>
         {/* <div className="p-6 flex justify-between">
           <div className="flex items-center space-x-2">

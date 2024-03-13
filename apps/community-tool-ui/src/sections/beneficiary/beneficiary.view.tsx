@@ -24,7 +24,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/components/dropdown-menu';
-import { Beneficiary } from '@rahataid/community-tool-sdk/beneficiary';
+import { ListBeneficiary } from '@rahataid/community-tool-sdk/beneficiary';
 import { MoreHorizontal } from 'lucide-react';
 import CustomPagination from '../../components/customPagination';
 import { BENEFICIARY_NAV_ROUTE } from '../../constants/beneficiary.const';
@@ -36,7 +36,7 @@ import BeneficiaryNav from '../../sections/beneficiary/nav';
 import AddBeneficiary from './addBeneficiary';
 import ImportBeneficiary from './import.beneficiary';
 
-export const columns: ColumnDef<Beneficiary>[] = [
+export const columns: ColumnDef<ListBeneficiary>[] = [
   {
     id: 'select',
     header: ({ table }) => (
@@ -115,10 +115,10 @@ function BeneficiaryView() {
   const handlePrevPage = () => setCurrentPage(currentPage - 1);
 
   const { communityBenQuery } = useRumsanService();
-  const [selectedData, setSelectedData] = useState<Beneficiary>();
+  const [selectedData, setSelectedData] = useState<ListBeneficiary>();
   const [active, setActive] = useState<string>(BENEFICIARY_NAV_ROUTE.DEFAULT);
 
-  const handleBeneficiaryClick = useCallback((item: Beneficiary) => {
+  const handleBeneficiaryClick = useCallback((item: ListBeneficiary) => {
     setSelectedData(item);
   }, []);
 

@@ -62,22 +62,10 @@ export default function AddBeneficiary() {
     latitude: z.number().optional(),
     longitude: z.number().optional(),
     notes: z.string().optional(),
-    gender: z
-      .string()
-      .toUpperCase()
-      .min(4, { message: 'Must select a Gender' }),
-    bankedStatus: z
-      .string()
-      .toUpperCase()
-      .min(4, { message: 'Must select a Bank Status' }),
-    internetStatus: z
-      .string()
-      .toUpperCase()
-      .min(4, { message: 'Must select Internet Status' }),
-    phoneStatus: z
-      .string()
-      .toUpperCase()
-      .min(4, { message: 'Must select Phone Status' }),
+    gender: z.string().toUpperCase().optional(),
+    bankedStatus: z.string().toUpperCase().optional(),
+    internetStatus: z.string().toUpperCase().optional(),
+    phoneStatus: z.string().toUpperCase().optional(),
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({

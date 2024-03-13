@@ -34,11 +34,15 @@ import {
   ServiceContextType,
 } from 'apps/rahat-ui/src/providers/service.provider';
 import React from 'react';
+import { useQueryClient } from '@tanstack/react-query';
+import { TAGS } from '@rumsan/react-query/utils/tags';
 
 export default function TextDetailView() {
   const { communicationQuery } = React.useContext(
     ServiceContext,
   ) as ServiceContextType;
+  const queryClient = useQueryClient();
+
   const triggerCampaign = communicationQuery.useTriggerCampaign();
 
   const params = useParams<{ tag: string; id: string }>();
@@ -60,6 +64,7 @@ export default function TextDetailView() {
         .mutateAsync(Number(params.id))
         .then(() => {
           toast.success('Campaign Trigger Success.');
+          queryClient.invalidateQueries([TAGS.GET_CAMPAIGNS]);
         })
         .catch((e) => {
           toast.error('Failed to Trigger Campaign.');

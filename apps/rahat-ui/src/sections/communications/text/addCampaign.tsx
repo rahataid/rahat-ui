@@ -71,7 +71,7 @@ export default function AddCampaign() {
   const [rowSelection, setRowSelection] = React.useState({});
   const [selectedRows, setSelectedRows] = useState([]);
 
-  const { communicationQuery } = React.useContext(
+  const { communicationQuery, beneficiaryQuery } = React.useContext(
     ServiceContext,
   ) as ServiceContextType;
   const { data: transportData } = communicationQuery.useListTransport();
@@ -80,7 +80,6 @@ export default function AddCampaign() {
   const createCampaign = communicationQuery.useCreateCampaign();
   const createAudience = communicationQuery.useCreateAudience();
 
-  const { beneficiaryQuery } = useRumsanService();
   const { data: beneficiaryData } = beneficiaryQuery.useBeneficiaryPii();
   console.log(beneficiaryData);
 
@@ -488,6 +487,17 @@ export default function AddCampaign() {
             <div className="mt-6 shadow-md rounded-sm p-4">
               <div className="flex justify-between">
                 <p>Select Audiences</p>
+
+                <Input
+                  placeholder="Filter campaigns..."
+                  value={
+                    (table.getColumn('name')?.getFilterValue() as string) ?? ''
+                  }
+                  onChange={(event) =>
+                    table.getColumn('name')?.setFilterValue(event.target.value)
+                  }
+                  className="max-w-sm mr-3"
+                />
                 <Button variant="ghost" onClick={() => setShowAudiences(false)}>
                   Close
                 </Button>

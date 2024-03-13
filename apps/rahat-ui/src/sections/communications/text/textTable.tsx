@@ -185,6 +185,7 @@ export default function TextTableView() {
       page: 1,
       perPage: 10,
     });
+  console.log(isSuccess, data);
 
   const tableData = React.useMemo(() => {
     const result = Array.isArray(data?.data?.rows)
@@ -195,7 +196,7 @@ export default function TextTableView() {
 
     campaignStore.setTotalTextCampaign(result?.length || 0);
     return result as ICampaignItemApiResponse[];
-  }, [isSuccess]);
+  }, [isSuccess, data?.data]);
 
   const table = useReactTable({
     data: tableData,
@@ -222,10 +223,10 @@ export default function TextTableView() {
         <Input
           placeholder="Filter campaigns..."
           value={
-            (table.getColumn('campaign')?.getFilterValue() as string) ?? ''
+            (table.getColumn('name')?.getFilterValue() as string) ?? ''
           }
           onChange={(event) =>
-            table.getColumn('campaign')?.setFilterValue(event.target.value)
+            table.getColumn('name')?.setFilterValue(event.target.value)
           }
           className="max-w-sm mr-3"
         />

@@ -2,19 +2,6 @@
 
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-} from '@rahat-ui/shadcn/src/components/ui/form';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@rahat-ui/shadcn/src/components/ui/select';
-import {
   BENEF_DB_FIELDS,
   IMPORT_SOURCE,
   TARGET_FIELD,
@@ -30,7 +17,18 @@ import {
   splitFullName,
 } from 'apps/community-tool-ui/src/utils';
 import NestedObjectRenderer from './NestedObjectRenderer';
-import { d } from '@tanstack/react-query-devtools/build/legacy/devtools-dKCOqp9Q';
+import ItemSelector from './ItemSelector';
+
+const IMPORT_OPTIONS = [
+  {
+    label: IMPORT_SOURCE.EXCEL,
+    value: IMPORT_SOURCE.EXCEL,
+  },
+  {
+    label: IMPORT_SOURCE.KOBOTOOL,
+    value: IMPORT_SOURCE.KOBOTOOL,
+  },
+];
 
 export default function BenImp() {
   const form = useForm({});
@@ -40,15 +38,34 @@ export default function BenImp() {
   const [rawData, setRawData] = useState([]) as any;
   const [mappings, setMappings] = useState([]) as any;
   const [existingMappings, setExistingMappings] = useState([]);
+  const [koboForms, setKoboForms] = useState([]);
   const [importId, setImportId] = useState(''); // Kobo form id or excel sheetID
 
-  const handleSourceChange = (d: string) => {
+  const handleSourceChange = async (d: string) => {
     if (d === IMPORT_SOURCE.KOBOTOOL) {
+      // Fetch kobotool settings and set
       setImportSource(IMPORT_SOURCE.KOBOTOOL);
+      const data = await fetchKoboSettings();
+      if (!data.data.length) return alert('Please setup Kobotool creds!');
+      const sanitizedOptions = data.data.map((d: any) => {
+        return {
+          label: d.name,
+          value: d.formId,
+        };
+      });
+      setKoboForms(sanitizedOptions);
     }
+
     if (d === IMPORT_SOURCE.EXCEL) {
       setImportSource(IMPORT_SOURCE.EXCEL);
     }
+  };
+
+  const handleKoboFormChange = () => {};
+
+  const fetchKoboSettings = async () => {
+    const res = await rumsanService.client.get('/app/settings/kobotool');
+    return res.data;
   };
 
   const handleTargetFieldChange = (
@@ -133,7 +150,6 @@ export default function BenImp() {
         finalPayload = replaced;
       }
     }
-    console.log('FinalPayload', finalPayload);
     return addSourceToQueue(finalPayload, selectedTargets);
   };
 
@@ -166,36 +182,24 @@ export default function BenImp() {
     <div className="h-custom">
       <div className="h-full p-4">
         <div className="flex justify-between m-2">
-          <Form {...form}>
-            <FormField
-              control={form.control}
-              name="gender"
-              render={({ field }) => {
-                return (
-                  <FormItem>
-                    <Select
-                      onValueChange={handleSourceChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="--Select Import Source--" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value={IMPORT_SOURCE.KOBOTOOL}>
-                          {IMPORT_SOURCE.KOBOTOOL}
-                        </SelectItem>
-                        <SelectItem value={IMPORT_SOURCE.EXCEL}>
-                          {IMPORT_SOURCE.EXCEL}
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </FormItem>
-                );
-              }}
-            />
-          </Form>
+          <ItemSelector
+            form={form}
+            placeholder="--Select Import Source"
+            handleItemChange={handleSourceChange}
+            id="selectImportForm"
+            options={IMPORT_OPTIONS}
+          />
+          <div>
+            {importSource === IMPORT_SOURCE.KOBOTOOL && (
+              <ItemSelector
+                form={form}
+                placeholder="--Select Form--"
+                handleItemChange={handleKoboFormChange}
+                id="koboForm"
+                options={koboForms}
+              />
+            )}
+          </div>
           <div>
             {importSource && (
               <Button
@@ -252,7 +256,7 @@ export default function BenImp() {
 
                     <tr>
                       {/* Render key:value */}
-                      {keys.map((key, i) => (
+                      {keys.map((key: any, i) => (
                         <td key={i + 1}>
                           {typeof item[key] === 'object' ? (
                             // Render nested objects

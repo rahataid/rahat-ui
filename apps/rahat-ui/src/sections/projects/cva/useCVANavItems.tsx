@@ -1,27 +1,19 @@
 import {
+  Lock,
+  MessageSquare,
   Pencil,
+  Phone,
   PlusSquare,
+  Receipt,
   Speech,
   Store,
+  Ticket,
   UsersRound,
   XCircle,
-  Ticket,
-  Lock,
-  Receipt,
-  Phone,
-  MessageSquare,
 } from 'lucide-react';
-import { useSwal } from '../../../components/swal';
 import { useParams } from 'next/navigation';
-
-export type NavItem = {
-  title: string;
-  path?: string;
-  icon?: React.ReactNode;
-  subtitle?: string | number;
-  onClick?: () => void;
-  children?: NavItem[];
-};
+import { useSwal } from '../../../components/swal';
+import { NavItem } from '../components';
 
 export const useNavItems = () => {
   const params = useParams();

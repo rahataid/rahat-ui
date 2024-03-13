@@ -1,12 +1,12 @@
-"use client";
-import { memo, useCallback, useState } from "react";
+'use client';
+import { memo, useCallback, useState } from 'react';
 
 import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
-} from "@rahat-ui/shadcn/components/resizable";
-import { Tabs, TabsContent } from "@rahat-ui/shadcn/components/tabs";
+} from '@rahat-ui/shadcn/components/resizable';
+import { Tabs, TabsContent } from '@rahat-ui/shadcn/components/tabs';
 
 import {
   ColumnDef,
@@ -14,36 +14,36 @@ import {
   getCoreRowModel,
   getSortedRowModel,
   useReactTable,
-} from "@tanstack/react-table";
+} from '@tanstack/react-table';
 
-import { Button } from "@rahat-ui/shadcn/components/button";
-import { Checkbox } from "@rahat-ui/shadcn/components/checkbox";
+import { Button } from '@rahat-ui/shadcn/components/button';
+import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@rahat-ui/shadcn/components/dropdown-menu";
-import { ListBeneficiary } from "@rahataid/community-tool-sdk/beneficiary";
-import { MoreHorizontal } from "lucide-react";
-import CustomPagination from "../../components/customPagination";
-import { BENEFICIARY_NAV_ROUTE } from "../../constants/beneficiary.const";
-import { useRumsanService } from "../../providers/service.provider";
-import BeneficiaryDetail from "../../sections/beneficiary/beneficiaryDetail";
-import BeneficiaryGridView from "../../sections/beneficiary/gridView";
-import BeneficiaryListView from "../../sections/beneficiary/listView";
-import BeneficiaryNav from "../../sections/beneficiary/nav";
-import AddBeneficiary from "./addBeneficiary";
-import ImportBeneficiary from "./import.beneficiary";
+} from '@rahat-ui/shadcn/components/dropdown-menu';
+import { ListBeneficiary } from '@rahataid/community-tool-sdk/beneficiary';
+import { MoreHorizontal } from 'lucide-react';
+import CustomPagination from '../../components/customPagination';
+import { BENEFICIARY_NAV_ROUTE } from '../../constants/beneficiary.const';
+import { useRumsanService } from '../../providers/service.provider';
+import BeneficiaryDetail from '../../sections/beneficiary/beneficiaryDetail';
+import BeneficiaryGridView from '../../sections/beneficiary/gridView';
+import BeneficiaryListView from '../../sections/beneficiary/listView';
+import BeneficiaryNav from '../../sections/beneficiary/nav';
+import AddBeneficiary from './addBeneficiary';
+import ImportBeneficiary from './import.beneficiary';
 
 export const columns: ColumnDef<ListBeneficiary>[] = [
   {
-    id: "select",
+    id: 'select',
     header: ({ table }) => (
       <Checkbox
         checked={
           table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
+          (table.getIsSomePageRowsSelected() && 'indeterminate')
         }
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
         aria-label="Select all"
@@ -60,42 +60,42 @@ export const columns: ColumnDef<ListBeneficiary>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "firstName",
-    header: "First Name",
-    cell: ({ row }) => <div>{row.getValue("firstName")}</div>,
+    accessorKey: 'firstName',
+    header: 'First Name',
+    cell: ({ row }) => <div>{row.getValue('firstName')}</div>,
   },
   {
-    accessorKey: "lastName",
-    header: "Last Name",
-    cell: ({ row }) => <div>{row.getValue("lastName")}</div>,
+    accessorKey: 'lastName',
+    header: 'Last Name',
+    cell: ({ row }) => <div>{row.getValue('lastName')}</div>,
   },
   {
-    accessorKey: "walletAddress",
-    header: "Wallet Address",
-    cell: ({ row }) => <div>{row.getValue("walletAddress")}</div>,
+    accessorKey: 'walletAddress',
+    header: 'Wallet Address',
+    cell: ({ row }) => <div>{row.getValue('walletAddress')}</div>,
   },
   {
-    accessorKey: "gender",
-    header: "Gender",
-    cell: ({ row }) => <div>{row.getValue("gender")}</div>,
+    accessorKey: 'gender',
+    header: 'Gender',
+    cell: ({ row }) => <div>{row.getValue('gender')}</div>,
   },
   {
-    accessorKey: "internetStatus",
-    header: "Internet Access",
-    cell: ({ row }) => <div>{row.getValue("internetStatus")}</div>,
+    accessorKey: 'internetStatus',
+    header: 'Internet Access',
+    cell: ({ row }) => <div>{row.getValue('internetStatus')}</div>,
   },
   {
-    accessorKey: "phoneStatus",
-    header: "Phone Type",
-    cell: ({ row }) => <div>{row.getValue("phoneStatus")}</div>,
+    accessorKey: 'phoneStatus',
+    header: 'Phone Type',
+    cell: ({ row }) => <div>{row.getValue('phoneStatus')}</div>,
   },
   {
-    accessorKey: "bankedStatus",
-    header: "Banking Status",
-    cell: ({ row }) => <div>{row.getValue("bankedStatus")}</div>,
+    accessorKey: 'bankedStatus',
+    header: 'Banking Status',
+    cell: ({ row }) => <div>{row.getValue('bankedStatus')}</div>,
   },
   {
-    id: "actions",
+    id: 'actions',
     enableHiding: false,
     cell: () => {
       return (

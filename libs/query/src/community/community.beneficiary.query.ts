@@ -1,19 +1,19 @@
-import { getBeneficiaryClient } from "@rahataid/community-tool-sdk/clients";
-import { BeneficiaryClient } from "@rahataid/community-tool-sdk/types";
+import { getBeneficiaryClient } from '@rahataid/community-tool-sdk/clients';
+import { BeneficiaryClient } from '@rahataid/community-tool-sdk/types';
 import {
   Beneficiary,
   UpdateBeneficiary,
-} from "@rahataid/community-tool-sdk/beneficiary";
+} from '@rahataid/community-tool-sdk/beneficiary';
 
-import { RumsanService } from "@rumsan/sdk";
+import { RumsanService } from '@rumsan/sdk';
 import {
   QueryClient,
   useMutation,
   useQuery,
   UseQueryResult,
-} from "@tanstack/react-query";
+} from '@tanstack/react-query';
 
-import { TAGS } from "../config";
+import { TAGS } from '../config';
 
 export class CommunityBeneficiaryQuery {
   private client: BeneficiaryClient;

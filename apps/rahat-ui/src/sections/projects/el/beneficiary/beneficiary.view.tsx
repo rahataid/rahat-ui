@@ -19,7 +19,7 @@ export default function BeneficiaryView() {
     setSelectedBeneficiary(undefined);
   };
   return (
-    <ResizablePanelGroup direction="horizontal">
+    <ResizablePanelGroup className="bg-secondary" direction="horizontal">
       <ResizablePanel>
         <BeneficiaryTable handleClick={handleRowClick} />
       </ResizablePanel>

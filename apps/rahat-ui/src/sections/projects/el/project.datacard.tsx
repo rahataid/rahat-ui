@@ -1,19 +1,12 @@
 import React from 'react';
 import DataCard from 'apps/rahat-ui/src/components/dataCard';
 import { Users } from 'lucide-react';
-import { useProjectVoucher } from '../../../hooks/el/subgraph/querycall';
-import { useBeneficaryVoucher } from '../../../hooks/el/subgraph/querycall';
+// import { useProjectVoucher } from '../../../hooks/el/subgraph/querycall';
 
 const ProjectDataCard = () => {
-  const { data: projectVoucher } = useProjectVoucher(
-    '0x38BFDCCAc556ED026706EE21b4945cE86718D4D1',
-  );
-
-  const { data: benVoucher } = useBeneficaryVoucher(
-    '0x38BFDCCAc556ED026706EE21b4945cE86718D4D1',
-  );
-
-  console.log('dataone', benVoucher);
+  // const { data: projectVoucher } = useProjectVoucher(
+  //   '0x38BFDCCAc556ED026706EE21b4945cE86718D4D1',
+  // );
 
   return (
     <>
@@ -30,7 +23,7 @@ const ProjectDataCard = () => {
         <DataCard
           className=""
           title="Voucher Details"
-          number1={projectVoucher?.freeVoucherAssigned}
+          number1={'12'}
           subTitle1="Free"
           number2={'12'}
           subTitle2="Discount"

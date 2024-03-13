@@ -38,8 +38,26 @@ const Charts = () => {
       )}
       {chartData3.length && (
         <PieChart
-          title="Phone Status"
-          subheader="Total number of phone status in the system."
+          title="Voucher redemption"
+          subheader="Total number of voucher redemption in the system."
+          chart={{
+            series: chartData3,
+          }}
+        />
+      )}
+      {chartData3.length && (
+        <PieChart
+          title="Eye screening"
+          subheader="Total number of eye screening in the system."
+          chart={{
+            series: chartData3,
+          }}
+        />
+      )}
+      {chartData3.length && (
+        <PieChart
+          title="Discount voucher redemption"
+          subheader="Total number of discount voucher redemption in the system."
           chart={{
             series: chartData3,
           }}

@@ -21,10 +21,7 @@ const ProjectLayout: FC<ProjectLayoutProps> = ({ children }) => {
   return (
     <div className="mb-5">
       <Tabs defaultValue="grid">
-        <ResizablePanelGroup
-          direction="horizontal"
-          className="min-h-max border"
-        >
+        <ResizablePanelGroup direction="horizontal" className="min-h-max">
           <ResizablePanel
             minSize={20}
             defaultSize={20}

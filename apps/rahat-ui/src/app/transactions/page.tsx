@@ -3,14 +3,17 @@
 import { Users } from 'lucide-react';
 import DataCard from '../../components/dataCard';
 import TransactionTable from '../../components/transactions/transactionTable';
-import {useProjectVoucher } from '../../hooks/el/subgraph/querycall';
+import { useProjectVoucher } from '../../hooks/el/subgraph/querycall';
 
 // export const metadata: Metadata = {
 //   title: 'Transactions',
 // };
 
 export default function TransactionsPage() {
-  const {data:transactionData,error} = useProjectVoucher('0x38BFDCCAc556ED026706EE21b4945cE86718D4D1');
+  const { data: transactionData, error } = useProjectVoucher(
+    '0x38BFDCCAc556ED026706EE21b4945cE86718D4D1',
+  );
+  console.log('data', transactionData);
 
   return (
     <div className="max-h-mx">

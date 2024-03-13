@@ -1,12 +1,11 @@
-import { cn } from '@rahat-ui/shadcn/src/utils';
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
 } from '@rahat-ui/shadcn/components/card';
+import { cn } from '@rahat-ui/shadcn/src/utils';
 import { LucideIcon } from 'lucide-react';
-import { ReactNode } from 'react';
 
 type CardProps = {
   title: string;
@@ -31,7 +30,7 @@ export default function DataCard({
     <Card
       className={cn(
         'flex flex-col rounded-sm justify-center border-none shadow',
-        className
+        className,
       )}
     >
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">

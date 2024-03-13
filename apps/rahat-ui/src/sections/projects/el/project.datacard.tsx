@@ -1,41 +1,22 @@
-'use client';
-
+import React from 'react';
+import DataCard from 'apps/rahat-ui/src/components/dataCard';
 import { Users } from 'lucide-react';
-import type { Metadata } from 'next';
-import { ProjectChart } from '..';
-import ChartsCard from '../../../components/chartsCard';
-import DataCard from '../../../components/dataCard';
+import { useProjectVoucher } from '../../../hooks/el/subgraph/querycall';
+import { useBeneficaryVoucher } from '../../../hooks/el/subgraph/querycall';
 
-export const metadata: Metadata = {
-  title: 'DashBoard',
-};
+const ProjectDataCard = () => {
+  const { data: projectVoucher } = useProjectVoucher(
+    '0x38BFDCCAc556ED026706EE21b4945cE86718D4D1',
+  );
 
-export default function ProjectDetails() {
+  const { data: benVoucher } = useBeneficaryVoucher(
+    '0x38BFDCCAc556ED026706EE21b4945cE86718D4D1',
+  );
+
+  console.log('dataone', benVoucher);
+
   return (
-    <div className="p-2 bg-secondary">
-      <div className="grid grid-cols-1 border rounded-sm bg-card p-4 mb-2">
-        <div className="flex items-center flex-wrap mt-4 sm:mt-6 gap-10 md:gap-32">
-          <div>
-            <p className="font-medium text-primary">Achyut</p>
-            <p className="font-light">Project Manager</p>
-          </div>
-          <div>
-            <p className="font-medium text-primary">12</p>
-            <p className="font-light">Vendors</p>
-          </div>
-          <div>
-            <p className="font-medium text-primary">01 Feb 2024</p>
-            <p className="font-light">Start Date</p>
-          </div>
-          <div>
-            <p className="font-medium text-primary">24 Feb 2024</p>
-            <p className="font-light">End Date</p>
-          </div>
-        </div>
-        <div>
-          <p className="mt-4 sm:mt-8 sm:w-2/3">Janaki Rural Municiplality.</p>
-        </div>
-      </div>
+    <>
       <div className="mb-2 grid md:grid-cols-3 gap-2">
         <DataCard
           className=""
@@ -49,7 +30,7 @@ export default function ProjectDetails() {
         <DataCard
           className=""
           title="Voucher Details"
-          number1={'12'}
+          number1={projectVoucher?.freeVoucherAssigned}
           subTitle1="Free"
           number2={'12'}
           subTitle2="Discount"
@@ -85,8 +66,8 @@ export default function ProjectDetails() {
           Icon={Users}
         />
       </div>
-
-      <ProjectChart />
-    </div>
+    </>
   );
-}
+};
+
+export default ProjectDataCard;

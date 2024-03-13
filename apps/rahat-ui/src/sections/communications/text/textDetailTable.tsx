@@ -86,7 +86,6 @@ export const columns: ColumnDef<TextDetail>[] = [
       <div className="capitalize">{row.getValue('createdAt')}</div>
     ),
   },
-  
 ];
 
 type IProps = {
@@ -136,7 +135,6 @@ export default function TextDetailTableView({ data, type }: IProps) {
       {data?.length > 0 && (
         <>
           <div className="flex items-center py-4">
-           
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" className="ml-auto">

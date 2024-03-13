@@ -112,7 +112,6 @@ export const columns: ColumnDef<VoiceDetail>[] = [
       <div className="capitalize">{row.getValue('attempts')}</div>
     ),
   },
-  
 ];
 
 export default function VoiceDetailTableView({ data }: IProps) {
@@ -155,7 +154,6 @@ export default function VoiceDetailTableView({ data }: IProps) {
   return (
     <div>
       <div className="flex items-center py-4">
-        
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">

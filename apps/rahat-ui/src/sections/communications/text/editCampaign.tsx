@@ -70,7 +70,7 @@ export default function EditCampaign() {
   const [showAudiences, setShowAudiences] = useState(false);
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
+    [],
   );
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
@@ -158,8 +158,8 @@ export default function EditCampaign() {
       .filter((audienceObject: any) =>
         selectedRows?.some(
           (selectedObject) =>
-            selectedObject.phone === audienceObject?.details?.phone
-        )
+            selectedObject.phone === audienceObject?.details?.phone,
+        ),
       )
       .map((filteredObject: any) => filteredObject.id);
     type AdditionalData = {
@@ -216,7 +216,7 @@ export default function EditCampaign() {
               beneficiaryData?.data?.map((item) => {
                 const checkAudienceExist = audienceData?.data.some(
                   (audience: Audience) =>
-                    audience?.details?.phone === item.phone
+                    audience?.details?.phone === item.phone,
                 );
 
                 if (!checkAudienceExist) {
@@ -256,7 +256,7 @@ export default function EditCampaign() {
             const item = row.original;
 
             const checkAudienceExist = audienceData?.data.some(
-              (audience: Audience) => audience?.details?.phone === item.phone
+              (audience: Audience) => audience?.details?.phone === item.phone,
             );
 
             if (!checkAudienceExist) {
@@ -272,7 +272,7 @@ export default function EditCampaign() {
             setSelectedRows((prevSelectedRows) =>
               checked
                 ? [...prevSelectedRows, item]
-                : selectedRows?.filter((value) => value.id !== item.id)
+                : selectedRows?.filter((value) => value.id !== item.id),
             );
           }}
         />
@@ -527,7 +527,7 @@ export default function EditCampaign() {
                                             ? null
                                             : flexRender(
                                                 header.column.columnDef.header,
-                                                header.getContext()
+                                                header.getContext(),
                                               )}
                                         </TableHead>
                                       );
@@ -548,7 +548,7 @@ export default function EditCampaign() {
                                         <TableCell key={cell.id}>
                                           {flexRender(
                                             cell.column.columnDef.cell,
-                                            cell.getContext()
+                                            cell.getContext(),
                                           )}
                                         </TableCell>
                                       ))}

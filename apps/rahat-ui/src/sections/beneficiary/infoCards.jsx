@@ -57,7 +57,7 @@ export default function InfoCards({ data, voucherData }) {
   };
 
   const handleVerifyWallet = async () => {
-    const { isConfirmed ,} = await dialog.fire({
+    const { isConfirmed } = await dialog.fire({
       title: 'Verify Wallet',
       html: 'Do you want to send an email to the beneficiary?',
       icon: 'warning',
@@ -90,7 +90,7 @@ export default function InfoCards({ data, voucherData }) {
             <Badge variant="outline" className="bg-secondary">
               Not Approved
             </Badge>
-            <Button onClick={handleVerifyWallet}>Verify Wallet</Button>
+            <Button onClick={handleVerifyWallet} variant="outline">Verify Wallet</Button>
             <Button onClick={handleAssignClaims}>Approve</Button>
           </div>
         </CardHeader>

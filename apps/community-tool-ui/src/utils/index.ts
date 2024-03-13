@@ -14,3 +14,17 @@ export function truncateEthereumAddress(address: string) {
   const truncatedAddress = `${prefix}....${suffix}`;
   return truncatedAddress;
 }
+
+export function removeFieldsWithUnderscore(dataArray: []) {
+  console.log('DA==>', dataArray);
+  return dataArray.map((item) => {
+    const newObj = {} as any;
+    Object.keys(item).forEach((key) => {
+      if (!key.startsWith('_')) {
+        newObj[key] = item[key];
+      }
+      if (key === '_id') newObj[key] = item[key];
+    });
+    return newObj;
+  });
+}

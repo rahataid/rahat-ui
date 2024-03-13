@@ -37,5 +37,5 @@ export const useCampaignStore = createStore<CampaignStore>(
       name: 'campaignStore',
       storage: localPersistStorage,
     },
-  }
+  },
 );

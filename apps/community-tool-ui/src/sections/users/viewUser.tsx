@@ -39,7 +39,7 @@ type IProps = {
 
 export default function UserDetail({ data }: IProps) {
   const [activeTab, setActiveTab] = useState<'details' | 'edit' | null>(
-    'details'
+    'details',
   );
   const [activeUser, setActiveUser] = useState<boolean>(true);
 

@@ -2,7 +2,7 @@
 // utils
 // components
 import styled from '@emotion/styled';
-import Chart, { useChart } from 'src/components/chart';
+import Chart, { useChart } from '..';
 import { fNumber } from '../../../utils/fNumber';
 
 // ----------------------------------------------------------------------

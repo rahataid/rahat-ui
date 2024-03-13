@@ -216,7 +216,9 @@ export const columns: ColumnDef<Transaction>[] = [
       );
     },
     cell: ({ row }) => (
-      <div className="lowercase">{truncateEthAddress(row.getValue('beneficiary'))}</div>
+      <div className="lowercase">
+        {truncateEthAddress(row.getValue('beneficiary'))}
+      </div>
     ),
   },
   {
@@ -233,7 +235,9 @@ export const columns: ColumnDef<Transaction>[] = [
       );
     },
     cell: ({ row }) => (
-      <div className="lowercase">{truncateEthAddress(row.getValue('voucherId'))}</div>
+      <div className="lowercase">
+        {truncateEthAddress(row.getValue('voucherId'))}
+      </div>
     ),
   },
   {
@@ -250,7 +254,7 @@ export const columns: ColumnDef<Transaction>[] = [
       );
     },
     cell: ({ row }) => (
-      <div className="lowercase">{ (row.getValue('timestamp'))}</div>
+      <div className="lowercase">{row.getValue('timestamp')}</div>
     ),
   },
   {
@@ -267,7 +271,9 @@ export const columns: ColumnDef<Transaction>[] = [
       );
     },
     cell: ({ row }) => (
-      <div className="lowercase">{truncateEthAddress(row.getValue('txHash'))}</div>
+      <div className="lowercase">
+        {truncateEthAddress(row.getValue('txHash'))}
+      </div>
     ),
   },
   {
@@ -301,12 +307,12 @@ export const columns: ColumnDef<Transaction>[] = [
 export default function DataTableDemo() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
+    [],
   );
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
-  const [data,setData] = React.useState([])
+  const [data, setData] = React.useState([]);
 
   const table = useReactTable({
     data,
@@ -326,85 +332,80 @@ export default function DataTableDemo() {
       rowSelection,
     },
   });
-const {queryService} = useGraphService()
-  const fetchBeneficiary =  React.useCallback(()=>{
+  const { queryService } = useGraphService();
+  const fetchBeneficiary = React.useCallback(() => {
     const querRes = queryService.useProjectTransaction();
-    querRes.then((res)=>{
-     const claimedAssigned = res?.data?.claimAssigneds
-     const claimProcessed = res?.data?.projectClaimProcesseds;
-     const beneficiaryReferred = res?.data?.beneficiaryReferreds;
-     const beneficiaryAdded = res?.data?.beneficiaryAddeds;
-     const claimCreated = res?.data?.claimCreateds;
-     const tokenBudgetIncrease = res?.data?.tokenBudgetIncreases
-     const data:any =[]
-     
-     claimedAssigned.map((trans)=>{
-      data.push({
-        beneficiary:trans.beneficiary,
-        topic:trans.eventType,
-        timestamp:formatDate(trans.blockTimestamp),
-        txHash:trans.transactionHash,
-        voucherId:trans.tokenAddress
-      })
-      // const claimRes = queryService?.useClaimAssigned(trans.id);
-    })
-    claimProcessed.map((trans)=>{
-      data.push({
-        beneficiary:trans.beneficiary,
-        topic:trans.eventType,
-        timestamp:formatDate(trans.blockTimestamp),
-        txHash:trans.transactionHash,
-        voucherId:trans.token
-      })
-    })
-    beneficiaryReferred.map((trans)=>{
-      data.push({
-        beneficiary:trans.referrerBeneficiaries,
-        topic:trans.eventType,
-        timestamp:formatDate(trans.blockTimestamp),
-        txHash:trans.transactionHash
+    querRes.then((res) => {
+      const claimedAssigned = res?.data?.claimAssigneds;
+      const claimProcessed = res?.data?.projectClaimProcesseds;
+      const beneficiaryReferred = res?.data?.beneficiaryReferreds;
+      const beneficiaryAdded = res?.data?.beneficiaryAddeds;
+      const claimCreated = res?.data?.claimCreateds;
+      const tokenBudgetIncrease = res?.data?.tokenBudgetIncreases;
+      const data: any = [];
 
-      })
-      
-    })
+      claimedAssigned.map((trans) => {
+        data.push({
+          beneficiary: trans.beneficiary,
+          topic: trans.eventType,
+          timestamp: formatDate(trans.blockTimestamp),
+          txHash: trans.transactionHash,
+          voucherId: trans.tokenAddress,
+        });
+        // const claimRes = queryService?.useClaimAssigned(trans.id);
+      });
+      claimProcessed.map((trans) => {
+        data.push({
+          beneficiary: trans.beneficiary,
+          topic: trans.eventType,
+          timestamp: formatDate(trans.blockTimestamp),
+          txHash: trans.transactionHash,
+          voucherId: trans.token,
+        });
+      });
+      beneficiaryReferred.map((trans) => {
+        data.push({
+          beneficiary: trans.referrerBeneficiaries,
+          topic: trans.eventType,
+          timestamp: formatDate(trans.blockTimestamp),
+          txHash: trans.transactionHash,
+        });
+      });
 
-    claimCreated.map((trans)=>{
-      data.push({
-        beneficiary:trans.claimer,
-        txHash:trans.transactionHash,
-        timestamp:formatDate(trans.blockTimestamp),
-        topic:trans?.eventType,
-        voucherId:trans.token
-      })
-    })
+      claimCreated.map((trans) => {
+        data.push({
+          beneficiary: trans.claimer,
+          txHash: trans.transactionHash,
+          timestamp: formatDate(trans.blockTimestamp),
+          topic: trans?.eventType,
+          voucherId: trans.token,
+        });
+      });
 
-    beneficiaryAdded.map((trans)=>{
-      data.push({
-        topic:trans.eventType,
-        timestamp:formatDate(trans.blockTimestamp),
-        txHash:trans.transactionHash,
-        beneficiary:trans.beneficiaryAddress
-      })
-    })
+      beneficiaryAdded.map((trans) => {
+        data.push({
+          topic: trans.eventType,
+          timestamp: formatDate(trans.blockTimestamp),
+          txHash: trans.transactionHash,
+          beneficiary: trans.beneficiaryAddress,
+        });
+      });
 
-    tokenBudgetIncrease.map((trans)=>{
-      data.push({
-        topic:trans.eventType,
-        txHash:trans.transactionHash,
-        timestamp:formatDate(trans.blockTimestamp),
-        voucherId:trans?.tokenAddress
-      })
-    })
-    setData(data)
-    })
-    
-  },[queryService])
- 
+      tokenBudgetIncrease.map((trans) => {
+        data.push({
+          topic: trans.eventType,
+          txHash: trans.transactionHash,
+          timestamp: formatDate(trans.blockTimestamp),
+          voucherId: trans?.tokenAddress,
+        });
+      });
+      setData(data);
+    });
+  }, [queryService]);
 
-    React.useEffect (()=>{
-      
-      fetchBeneficiary()
-    },[fetchBeneficiary])
+  React.useEffect(() => {
+    fetchBeneficiary();
+  }, [fetchBeneficiary]);
 
   return (
     <div className="w-full">
@@ -432,7 +433,7 @@ const {queryService} = useGraphService()
                         ? null
                         : flexRender(
                             header.column.columnDef.header,
-                            header.getContext()
+                            header.getContext(),
                           )}
                     </TableHead>
                   );
@@ -451,7 +452,7 @@ const {queryService} = useGraphService()
                     <TableCell key={cell.id}>
                       {flexRender(
                         cell.column.columnDef.cell,
-                        cell.getContext()
+                        cell.getContext(),
                       )}
                     </TableCell>
                   ))}

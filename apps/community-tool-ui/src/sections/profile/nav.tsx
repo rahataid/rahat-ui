@@ -86,7 +86,7 @@ export function Nav() {
                   {item.title}
                 </p>
               </Link>
-            )
+            ),
           )}
         </nav>
       </div>

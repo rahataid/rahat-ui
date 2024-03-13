@@ -92,7 +92,7 @@ export default function ListView({ handleClick, table }: IProps) {
                             ? null
                             : flexRender(
                                 header.column.columnDef.header,
-                                header.getContext()
+                                header.getContext(),
                               )}
                         </TableHead>
                       );
@@ -114,7 +114,7 @@ export default function ListView({ handleClick, table }: IProps) {
                         <TableCell key={cell.id}>
                           {flexRender(
                             cell.column.columnDef.cell,
-                            cell.getContext()
+                            cell.getContext(),
                           )}
                         </TableCell>
                       ))}

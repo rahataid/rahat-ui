@@ -9,7 +9,7 @@ interface ICreateStoreOptions<T, U> {
 
 export function createStore<T extends object>(
   createState: StateCreator<T>,
-  options?: ICreateStoreOptions<T, any>
+  options?: ICreateStoreOptions<T, any>,
 ): UseBoundStore<StoreApi<T>> {
   let store = create(createState);
 

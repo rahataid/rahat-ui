@@ -1,19 +1,17 @@
-import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+'use client';
 import {
-  Card,
-  CardContent,
-  CardHeader,
-} from '@rahat-ui/shadcn/src/components/ui/card';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@rahat-ui/shadcn/components/tooltip';
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@rahat-ui/shadcn/components/dialog';
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/components/dropdown-menu';
 import {
@@ -24,22 +22,32 @@ import {
   SelectValue,
 } from '@rahat-ui/shadcn/components/select';
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-  DialogFooter,
-  DialogClose,
-} from '@rahat-ui/shadcn/components/dialog';
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@rahat-ui/shadcn/components/tooltip';
+import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-
-import { MoreVertical } from 'lucide-react';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+} from '@rahat-ui/shadcn/src/components/ui/card';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
+import { MoreVertical } from 'lucide-react';
+// import data from '../../app/beneficiary/beneficiaryData.json';
 import { truncateEthAddress } from '@rumsan/sdk/utils';
+import { useAssignClaims } from '../../contract-hooks/el-contracts';
 
-export default function InfoCards({ data }) {
+export default function InfoCards({ data, voucherData }) {
+  const assignClaims = useAssignClaims();
+  const handleAssignClaims = () => {
+    assignClaims.writeContractAsync({
+      address: '0x38BFDCCAc556ED026706EE21b4945cE86718D4D1',
+      args: ['0x082d43D30C31D054b1AEDbE08F50C2a1BBE76fC7'],
+    });
+  };
   return (
     <div className="flex flex-col gap-4 p-2">
       <Card className="shadow-md rounded-sm">
@@ -49,6 +57,7 @@ export default function InfoCards({ data }) {
             <Badge variant="outline" className="bg-secondary">
               Not Approved
             </Badge>
+            <Button onClick={handleAssignClaims}>Approve</Button>
           </div>
         </CardHeader>
         <CardContent>
@@ -184,12 +193,22 @@ export default function InfoCards({ data }) {
         <CardContent>
           <div className="flex flex-col gap-4">
             <div className="flex justify-between items-center">
-              <p>Claimed</p>
-              <p className="text-sm font-light">0</p>
+              <p>ClaimStatus</p>
+              <p className="text-sm font-light">
+                {voucherData?.FreeVoucherClaimStatus?.toString()
+                  ? voucherData?.FreeVoucherClaimStatus?.toString()
+                  : voucherData?.ReferredVoucherClaimStatus?.toString()}
+              </p>
             </div>
             <div className="flex justify-between items-center">
               <p>Received</p>
-              <p className="text-sm font-light">0</p>
+              <p className="text-sm font-light">
+                {voucherData?.FreeVoucherAddress
+                  ? 'Free Voucher'
+                  : voucherData?.ReferredVoucherAddress
+                  ? 'Discount Voucher'
+                  : 'Not Assigned'}
+              </p>
             </div>
             <div className="flex justify-between items-center">
               <p>Wallet Address</p>
@@ -197,7 +216,9 @@ export default function InfoCards({ data }) {
                 <Tooltip>
                   <TooltipTrigger>
                     <p className="text-sm font-medium">
-                      {truncateEthAddress(data?.walletAddress || 'N/A')}
+                      {truncateEthAddress(
+                        voucherData?.beneficiaryAddress || 'N/A',
+                      )}
                     </p>
                   </TooltipTrigger>
                   <TooltipContent className="bg-secondary ">

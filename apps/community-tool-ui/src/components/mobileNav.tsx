@@ -77,7 +77,7 @@ const MobileNav = () => {
                           {item.title}
                         </DropdownMenuItem>
                       </Link>
-                    )
+                    ),
                   )}
                 </DropdownMenuContent>
               </DropdownMenu>

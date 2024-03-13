@@ -13,15 +13,18 @@ import VoiceTableView from './voiceTable';
 
 export default function VoiceView() {
   const [activeTab, setActiveTab] = useState<string>(
-    COMMUNICATION_NAV_ROUTE.DEFAULT_VOICE
+    COMMUNICATION_NAV_ROUTE.DEFAULT_VOICE,
   );
 
   const handleTabChange = (tab: string) => {
     setActiveTab(tab);
   };
   return (
-    <div className='h-full'>
-      <ResizablePanelGroup direction="horizontal" className="min-h-max border bg-card">
+    <div className="h-full">
+      <ResizablePanelGroup
+        direction="horizontal"
+        className="min-h-max border bg-card"
+      >
         <ResizablePanel
           minSize={17}
           defaultSize={17}

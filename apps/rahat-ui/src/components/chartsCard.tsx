@@ -18,7 +18,7 @@ export default function ChartsCard({ title, image, className }: CardProps) {
     <Card
       className={cn(
         'flex flex-col justify-center border-none shadow-sm',
-        className || ''
+        className || '',
       )}
     >
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">

@@ -141,7 +141,7 @@ export const columns: ColumnDef<ICampaignItemApiResponse>[] = [
             <DropdownMenuItem
               onClick={() =>
                 router.push(
-                  paths.dashboard.communication.textDetail(row.original.id)
+                  paths.dashboard.communication.textDetail(row.original.id),
                 )
               }
             >
@@ -152,8 +152,8 @@ export const columns: ColumnDef<ICampaignItemApiResponse>[] = [
               onClick={() =>
                 router.push(
                   paths.dashboard.communication.editTextCampaign(
-                    row.original.id
-                  )
+                    row.original.id,
+                  ),
                 )
               }
             >
@@ -169,12 +169,12 @@ export const columns: ColumnDef<ICampaignItemApiResponse>[] = [
 export default function TextTableView() {
   const campaignStore = useCampaignStore();
   const { communicationQuery } = React.useContext(
-    ServiceContext
+    ServiceContext,
   ) as ServiceContextType;
 
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
+    [],
   );
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
@@ -189,7 +189,7 @@ export default function TextTableView() {
   const tableData = React.useMemo(() => {
     const result = Array.isArray(data?.data?.rows)
       ? data?.data?.rows.filter(
-          (campaign: any) => campaign.type !== CAMPAIGN_TYPES.PHONE
+          (campaign: any) => campaign.type !== CAMPAIGN_TYPES.PHONE,
         )
       : [];
 
@@ -272,7 +272,7 @@ export default function TextTableView() {
                           ? null
                           : flexRender(
                               header.column.columnDef.header,
-                              header.getContext()
+                              header.getContext(),
                             )}
                       </TableHead>
                     );
@@ -291,7 +291,7 @@ export default function TextTableView() {
                       <TableCell key={cell.id}>
                         {flexRender(
                           cell.column.columnDef.cell,
-                          cell.getContext()
+                          cell.getContext(),
                         )}
                       </TableCell>
                     ))}

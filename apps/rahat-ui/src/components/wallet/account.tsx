@@ -7,7 +7,6 @@ export function Account() {
   const { data: ensAvatar } = useEnsAvatar({ name: ensName! });
   const formattedAddress = formatAddress(address);
 
-
   return (
     <div className="flex items-center space-x-4">
       {connector.icon ? (

@@ -2,7 +2,7 @@
 
 import { getDefaultConfig } from 'connectkit';
 import { createConfig, http } from 'wagmi';
-import { arbitrumSepolia, mainnet, sepolia } from 'wagmi/chains';
+import { polygonMumbai, mainnet, sepolia } from 'wagmi/chains';
 import { safe } from 'wagmi/connectors';
 
 declare module 'wagmi' {
@@ -18,8 +18,8 @@ export const config = createConfig(
       // sepolia,
       // arbitrumGoerli,
       // polygon,
-      // polygonMumbai,
-      arbitrumSepolia,
+      polygonMumbai,
+      // arbitrumSepolia,
       // rahatChain,
     ],
     batch: {
@@ -34,7 +34,8 @@ export const config = createConfig(
     transports: {
       [mainnet.id]: http(),
       [sepolia.id]: http(),
-      [arbitrumSepolia.id]: http(),
+      // [arbitrumSepolia.id]: http(),
+      [polygonMumbai.id]: http(),
     },
     walletConnectProjectId: '',
     // Required App Info
@@ -45,7 +46,7 @@ export const config = createConfig(
       'An open-source blockchain-based financial access platform to support vulnerable communities.',
     appUrl: 'https://family.co', // your app's url
     appIcon: 'https://family.co/logo.png', // your app's icon, no bigger than 1024x1024px (max. 1MB)
-  })
+  }),
 );
 
 // export default defineConfig({

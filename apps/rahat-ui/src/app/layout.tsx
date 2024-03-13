@@ -8,6 +8,7 @@ import { Wagmi } from '../providers/wagmi.provider';
 import './globals.css';
 import { ServiceProvider } from '../providers/service.provider';
 import { GeistSans } from 'geist/font/sans';
+import { GraphQueryProvider } from '../providers/subgraph-provider';
 
 export const metadata = {
   title: 'Welcome to Rahat',
@@ -25,20 +26,22 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <Wagmi>
-          <QueryProvider>
-            <ServiceProvider>
-              <ThemeProvider
-                attribute="class"
-                // defaultTheme="system"
-                // enableSystem
-                disableTransitionOnChange
-              >
-                <main className={GeistSans.className}>{children}</main>
-                <ToastContainer />
-                <Toaster />
-              </ThemeProvider>
-            </ServiceProvider>
-          </QueryProvider>
+          <GraphQueryProvider>
+            <QueryProvider>
+              <ServiceProvider>
+                <ThemeProvider
+                  attribute="class"
+                  // defaultTheme="system"
+                  // enableSystem
+                  disableTransitionOnChange
+                >
+                  <main className={GeistSans.className}>{children}</main>
+                  <ToastContainer />
+                  <Toaster />
+                </ThemeProvider>
+              </ServiceProvider>
+            </QueryProvider>
+          </GraphQueryProvider>
         </Wagmi>
       </body>
     </html>

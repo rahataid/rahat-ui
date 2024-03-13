@@ -14,15 +14,7 @@ import { PROJECT_NAV_ROUTE } from '../../constants/project.const';
 import { AddProject, ProjectCard, ProjectNav } from '../../sections/projects';
 import projectsData from './projectsData.json';
 
-interface CardProps {
-  id: number;
-  title: string;
-  subTitle: string;
-  image: string;
-  handleClick: VoidFunction;
-}
-
-export default function ProjectPage({ handleClick }: CardProps) {
+export default function ProjectPage() {
   const [active, setActive] = useState<string>(PROJECT_NAV_ROUTE.DEFAULT);
   const [projectType, setProjectType] = useState<string>('');
   const itemsPerPage = 12;
@@ -36,7 +28,7 @@ export default function ProjectPage({ handleClick }: CardProps) {
   const displayedItems = projectsData.slice(startIndex, endIndex);
 
   const selectedProjectType = displayedItems.filter(
-    (item) => item.badge === projectType
+    (item) => item.badge === projectType,
   );
 
   const selectedProject = projectType.length
@@ -99,7 +91,6 @@ export default function ProjectPage({ handleClick }: CardProps) {
                         image={project.image}
                         subTitle={project.subTitle}
                         badge={project.badge}
-                        handleClick={handleClick}
                       />
                     ))}
                   </div>

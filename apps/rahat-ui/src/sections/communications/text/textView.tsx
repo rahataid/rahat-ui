@@ -14,15 +14,18 @@ import { COMMUNICATION_NAV_ROUTE } from 'apps/rahat-ui/src/constants/communicati
 
 export default function TextView() {
   const [activeTab, setActiveTab] = useState<string>(
-    COMMUNICATION_NAV_ROUTE.DEFAULT_TEXT
+    COMMUNICATION_NAV_ROUTE.DEFAULT_TEXT,
   );
 
   const handleTabChange = (tab: string) => {
     setActiveTab(tab);
   };
   return (
-    <div className='h-full'>
-      <ResizablePanelGroup direction="horizontal" className="min-h-max border bg-card">
+    <div className="h-full">
+      <ResizablePanelGroup
+        direction="horizontal"
+        className="min-h-max border bg-card"
+      >
         <ResizablePanel
           minSize={17}
           defaultSize={17}

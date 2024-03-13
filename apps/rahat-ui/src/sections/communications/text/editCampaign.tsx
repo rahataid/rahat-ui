@@ -80,7 +80,7 @@ export default function EditCampaign() {
   >([]);
 
   const { communicationQuery } = React.useContext(
-    ServiceContext
+    ServiceContext,
   ) as ServiceContextType;
   const { data: transportData } = communicationQuery.useListTransport();
   const { data: audienceData } = communicationQuery.useListAudience();
@@ -139,7 +139,7 @@ export default function EditCampaign() {
         'message',
         data?.data?.details.body
           ? data?.data?.details.body
-          : data?.data?.details.message || ''
+          : data?.data?.details.message || '',
       );
       console.log(data.data);
 

@@ -1,6 +1,6 @@
 import { useNavData } from '../app/config-nav';
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 export default function SideNav() {
   const navData = useNavData();
@@ -12,7 +12,7 @@ export default function SideNav() {
           <div
             className={`flex p-2 gap-2  rounded hover:bg-slate-200 dark:hover:bg-slate-500  cursor-pointer mt-2 ${
               currentPath === item.path &&
-              "bg-primary text-white hover:opacity-80 hover:bg-primary dark:bg-white dark:text-black"
+              'bg-primary text-white hover:opacity-80 hover:bg-primary dark:bg-white dark:text-black'
             }`}
           >
             <div>{item.icon}</div>

@@ -72,7 +72,7 @@ export default function AddCampaign() {
   const [selectedRows, setSelectedRows] = useState([]);
 
   const { communicationQuery } = React.useContext(
-    ServiceContext
+    ServiceContext,
   ) as ServiceContextType;
   const { data: transportData } = communicationQuery.useListTransport();
   const { data: audienceData } = communicationQuery.useListAudience();
@@ -106,7 +106,7 @@ export default function AddCampaign() {
         name: z.string(),
         phone: z.string(),
         beneficiaryId: z.number(),
-      })
+      }),
     ),
     file: z.string().optional(),
   });

@@ -6,9 +6,9 @@
     "allowSyntheticDefaultImports": true,
     "strict": true,
     "baseUrl": ".",
-      "paths": {
-        "@/*": ["./*"]
-      }
+    "paths": {
+      "@/*": ["./*"]
+    }
     // "paths": {
     //   "@rahat-ui/shadcn/*": ["libs/shadcn/*"]
     // }

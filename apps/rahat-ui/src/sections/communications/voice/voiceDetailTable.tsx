@@ -138,7 +138,7 @@ export const columns: ColumnDef<VoiceDetail>[] = [
 export default function VoiceDetailTableView({ data }: IProps) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
+    [],
   );
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
@@ -225,7 +225,7 @@ export default function VoiceDetailTableView({ data }: IProps) {
                         ? null
                         : flexRender(
                             header.column.columnDef.header,
-                            header.getContext()
+                            header.getContext(),
                           )}
                     </TableHead>
                   );
@@ -244,7 +244,7 @@ export default function VoiceDetailTableView({ data }: IProps) {
                     <TableCell key={cell.id}>
                       {flexRender(
                         cell.column.columnDef.cell,
-                        cell.getContext()
+                        cell.getContext(),
                       )}
                     </TableCell>
                   ))}

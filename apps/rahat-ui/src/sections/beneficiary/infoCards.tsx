@@ -35,15 +35,21 @@ import {
   CardHeader,
 } from '@rahat-ui/shadcn/src/components/ui/card';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
-import { MoreVertical } from 'lucide-react';
+import { CheckCircle2, MoreVertical } from 'lucide-react';
 // import data from '../../app/beneficiary/beneficiaryData.json';
+import { Beneficiary } from '@rahataid/sdk';
 import { truncateEthAddress } from '@rumsan/sdk/utils';
 import { useEffect } from 'react';
 import { useSwal } from '../../components/swal';
 import { useAssignClaims } from '../../contract-hooks/el-contracts';
 import { useRumsanService } from '../../providers/service.provider';
 
-export default function InfoCards({ data, voucherData }) {
+interface InfoCardsProps {
+  data: Beneficiary;
+  voucherData: any;
+}
+
+export default function InfoCards({ data, voucherData }: InfoCardsProps) {
   const assignClaims = useAssignClaims();
   const dialog = useSwal();
   const { beneficiaryQuery } = useRumsanService();
@@ -81,16 +87,22 @@ export default function InfoCards({ data, voucherData }) {
       });
     }
   }, [dialog, verifyWallet.isSuccess]);
+
+  console.log('data', data);
   return (
     <div className="flex flex-col gap-4 p-2">
       <Card className="shadow-md rounded-sm">
         <CardHeader>
           <div className="flex justify-between">
             <p>Beneficiary Name</p>
-            <Badge variant="outline" className="bg-secondary">
-              Not Approved
-            </Badge>
-            <Button onClick={handleVerifyWallet} variant="outline">Verify Wallet</Button>
+            {data!.isVerified && (
+              <Badge variant="outline" className="bg-secondary">
+                Not Approved
+              </Badge>
+            )}
+            <Button onClick={handleVerifyWallet} variant="outline">
+              Verify Wallet
+            </Button>
             <Button onClick={handleAssignClaims}>Approve</Button>
           </div>
         </CardHeader>
@@ -98,9 +110,10 @@ export default function InfoCards({ data, voucherData }) {
           <div className="flex justify-between gap-8">
             <div className="flex flex-col gap-2">
               <div>
-                <p className="text-xs">
+                <div className="flex items-center text-xs">
                   {truncateEthAddress(data?.walletAddress) ?? 'N/A'}
-                </p>
+                  {data!.isVerified && <CheckCircle2 />}
+                </div>
                 <p className="text-sm font-normal text-muted-foreground">
                   Wallet Address
                 </p>

@@ -49,9 +49,9 @@ export class BeneficiaryQuery {
       },
     });
   };
-  useVerifyBeneficiary = (payload: any): any => {
+  useVerifyBeneficiary = (): any => {
     return useMutation({
-      mutationKey: [TAGS.VERIFY_BENEFICIARY, payload],
+      mutationKey: [TAGS.VERIFY_BENEFICIARY],
       mutationFn: (uuid: string) => {
         return fetch(
           `${process.env['NEXT_PUBLIC_API_HOST_URL']}/beneficiaries/generate-link/${uuid}`,

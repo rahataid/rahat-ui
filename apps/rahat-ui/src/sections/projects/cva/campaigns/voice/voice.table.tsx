@@ -139,7 +139,7 @@ export const columns: ColumnDef<Voice>[] = [
             <DropdownMenuItem
               onClick={() =>
                 router.push(
-                  paths.dashboard.communication.voiceDetail(row.original.id)
+                  paths.dashboard.communication.voiceDetail(row.original.id),
                 )
               }
             >
@@ -159,7 +159,7 @@ export default function VoiceTable() {
 
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
+    [],
   );
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
@@ -171,7 +171,7 @@ export default function VoiceTable() {
   const tableData = React.useMemo(() => {
     const result = Array.isArray(data?.rows)
       ? data?.rows.filter(
-          (campaign: any) => campaign.type === CAMPAIGN_TYPES.PHONE
+          (campaign: any) => campaign.type === CAMPAIGN_TYPES.PHONE,
         )
       : [];
     campaignStore.setTotalVoiceCampaign(result?.length);
@@ -254,7 +254,7 @@ export default function VoiceTable() {
                           ? null
                           : flexRender(
                               header.column.columnDef.header,
-                              header.getContext()
+                              header.getContext(),
                             )}
                       </TableHead>
                     );
@@ -273,7 +273,7 @@ export default function VoiceTable() {
                       <TableCell key={cell.id}>
                         {flexRender(
                           cell.column.columnDef.cell,
-                          cell.getContext()
+                          cell.getContext(),
                         )}
                       </TableCell>
                     ))}

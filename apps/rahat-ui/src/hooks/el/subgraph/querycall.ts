@@ -1,21 +1,26 @@
 import { formatDate } from '../../../utils';
 import { useGraphService } from '../../../providers/subgraph-provider';
-import { useState, useMemo ,useEffect, useCallback} from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 
 const formatTransaction = (trans: any) => ({
   beneficiary: trans.beneficiary || trans.referrerBeneficiaries || '-',
-  vendor:trans.vendor || '',
-  processedBy: trans.beneficiary || trans.vendor || trans.referrerVendor || trans.claimer || trans.beneficiaryAddress,
+  vendor: trans.vendor || '',
+  processedBy:
+    trans.beneficiary ||
+    trans.vendor ||
+    trans.referrerVendor ||
+    trans.claimer ||
+    trans.beneficiaryAddress,
   topic: trans.eventType,
   timeStamp: formatDate(trans.blockTimestamp),
   transactionHash: trans.transactionHash,
-  amount: '', 
+  amount: '',
   voucherId: trans.tokenAddress || trans.token || '-',
-  id: trans.transactionHash
+  id: trans.transactionHash,
 });
 
-const mapTransactions = (transactions: any[]) => transactions.map(formatTransaction);
-
+const mapTransactions = (transactions: any[]) =>
+  transactions.map(formatTransaction);
 
 export const useProjectVoucher = (projectAddress: string) => {
   const { queryService } = useGraphService();
@@ -45,36 +50,37 @@ export const useProjectVoucher = (projectAddress: string) => {
   return useMemo(() => ({ data, error }), [data, error]);
 };
 
-export const useBeneficaryVoucher = (beneficiary:string)=>{
-  const {queryService} = useGraphService();
-  const [data,setData] = useState<any>();
-  const[error,setError] = useState<string | null>(null);
+export const useBeneficaryVoucher = (beneficiary: string) => {
+  const { queryService } = useGraphService();
+  const [data, setData] = useState<any>();
+  const [error, setError] = useState<string | null>(null);
 
-  const fetchVoucher = useCallback(async ()=>{
-    
-       try{ const res = await queryService.useBeneficiaryVoucher(beneficiary);
-        if(res.error){
-          setError(res.error);
-          setData([]);
-        }
-        else{
-          setData(res) 
-        }}
-        catch(error){
-          setError(error.message || '')
-          setData([])
-        }
-    
-  },[beneficiary,queryService])
+  const fetchVoucher = useCallback(async () => {
+    try {
+      const res = await queryService.useBeneficiaryVoucher(beneficiary);
+      if (res.error) {
+        setError(res.error);
+        setData([]);
+      } else {
+        setData(res);
+      }
+    } catch (error) {
+      setError(error.message || '');
+      setData([]);
+    }
+  }, [beneficiary, queryService]);
 
-  useEffect(()=>{
+  useEffect(() => {
     fetchVoucher();
-  },[fetchVoucher])
+  }, [fetchVoucher]);
 
-  return useMemo(()=>({
-    data,error
-  }),[data,error])
-
+  return useMemo(
+    () => ({
+      data,
+      error,
+    }),
+    [data, error],
+  );
 };
 
 export const useBeneficiaryTransaction = (address: string) => {
@@ -82,7 +88,7 @@ export const useBeneficiaryTransaction = (address: string) => {
   const [data, setData] = useState<any[]>([]);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchData = useCallback( async () => {
+  const fetchData = useCallback(async () => {
     try {
       const res = await queryService.useBeneficiaryTransaction(address);
 
@@ -93,7 +99,9 @@ export const useBeneficiaryTransaction = (address: string) => {
         const claimedAssigned = res?.claimAssigneds || [];
         const claimProcessed = res?.projectClaimProcesseds || [];
         const beneficiaryReferred = res?.beneficiaryReferreds || [];
-        const newData = mapTransactions(claimedAssigned.concat(claimProcessed, beneficiaryReferred));
+        const newData = mapTransactions(
+          claimedAssigned.concat(claimProcessed, beneficiaryReferred),
+        );
 
         setData(newData);
         setError(null);
@@ -102,19 +110,23 @@ export const useBeneficiaryTransaction = (address: string) => {
       setError(error.message || 'An error occurred while fetching data.');
       setData([]);
     }
-  },[address,queryService])
+  }, [address, queryService]);
 
   useEffect(() => {
-    fetchData(); 
+    fetchData();
   }, [fetchData]);
 
-  return useMemo(()=>({
-    data,error
-  }),[data,error])
+  return useMemo(
+    () => ({
+      data,
+      error,
+    }),
+    [data, error],
+  );
 };
 
 export const useProjectTransaction = () => {
-  const {queryService} = useGraphService()
+  const { queryService } = useGraphService();
   const [data, setData] = useState<any[]>([]);
   const [error, setError] = useState<string | null>(null);
 
@@ -126,7 +138,14 @@ export const useProjectTransaction = () => {
         setError(res.error);
         setData([]);
       } else {
-        const transactionTypes = ['claimAssigneds', 'projectClaimProcesseds', 'beneficiaryReferreds', 'beneficiaryAddeds', 'claimCreateds', 'tokenBudgetIncreases'];
+        const transactionTypes = [
+          'claimAssigneds',
+          'projectClaimProcesseds',
+          'beneficiaryReferreds',
+          'beneficiaryAddeds',
+          'claimCreateds',
+          'tokenBudgetIncreases',
+        ];
         const newData = transactionTypes.reduce((acc, type) => {
           const transactions = res?.data[type] || [];
           return acc.concat(transactions.map(formatTransaction));
@@ -142,11 +161,8 @@ export const useProjectTransaction = () => {
   }, [queryService]);
 
   useEffect(() => {
-    fetchData(); 
+    fetchData();
   }, [fetchData]);
 
   return { data, error };
 };
-
-
-

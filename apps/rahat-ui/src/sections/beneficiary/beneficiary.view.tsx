@@ -154,6 +154,7 @@ function BeneficiaryView() {
             handleNav={handleNav}
             meta={data?.response?.meta}
             active={active}
+            table={table}
           />
         </ResizablePanel>
         <ResizableHandle />

@@ -27,7 +27,7 @@ import { UUID } from 'crypto';
 import { ListBeneficiary } from '@rahataid/community-tool-sdk/beneficiary';
 
 type IProps = {
-  handleClick: (index: number) => void;
+  handleClick: (index: ListBeneficiary) => void;
   table: Table<ListBeneficiary>;
 };
 
@@ -102,12 +102,12 @@ export default function ListView({ handleClick, table }: IProps) {
               </TableHeader>
               <TableBody>
                 {table.getRowModel().rows?.length ? (
-                  table.getRowModel().rows.map((row, index) => (
+                  table.getRowModel().rows.map((row) => (
                     <TableRow
                       key={row.id}
                       data-state={row.getIsSelected() && 'selected'}
                       onClick={() => {
-                        handleClick(index);
+                        handleClick(row.original);
                       }}
                     >
                       {row.getVisibleCells().map((cell) => (

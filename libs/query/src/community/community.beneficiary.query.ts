@@ -159,4 +159,29 @@ export class CommunityBeneficiaryQuery {
       },
     });
   };
+
+  useCommunityUploadBeneficiary = () => {
+    return useMutation({
+      mutationKey: [TAGS.CREATE_COMMUNITY_BENEFICARY],
+      mutationFn: async (file: any) => {
+        console.log(file);
+        this.client.uploadBenificiary(file);
+      },
+      onSuccess: () => {
+        this.qc.invalidateQueries({
+          queryKey: [TAGS.LIST_COMMUNITY_BENFICIARIES],
+        });
+        Swal.fire({
+          icon: 'success',
+          title: 'Beneficiary uploaded successfully',
+        });
+      },
+      onError: (error: any) => {
+        Swal.fire({
+          icon: 'error',
+          title: error.message || 'Encounter error on uploading Benificiary',
+        });
+      },
+    });
+  };
 }

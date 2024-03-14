@@ -34,7 +34,7 @@ import BeneficiaryGridView from '../../sections/beneficiary/gridView';
 import BeneficiaryListView from '../../sections/beneficiary/listView';
 import BeneficiaryNav from '../../sections/beneficiary/nav';
 import AddBeneficiary from './addBeneficiary';
-import ImportBeneficiary from './import.beneficiary';
+import UploadBeneficiary from './upload.beneficiary';
 
 export const columns: ColumnDef<ListBeneficiary>[] = [
   {
@@ -172,7 +172,7 @@ function BeneficiaryView() {
           {active === BENEFICIARY_NAV_ROUTE.ADD_BENEFICIARY ? (
             <AddBeneficiary />
           ) : active === BENEFICIARY_NAV_ROUTE.IMPORT_BENEFICIARY ? (
-            <ImportBeneficiary />
+            <UploadBeneficiary />
           ) : null}
 
           {active === BENEFICIARY_NAV_ROUTE.DEFAULT && (

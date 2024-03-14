@@ -1,21 +1,25 @@
+'use-client';
+
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
-import { ChangeEvent, RefObject, useState } from 'react';
+import { ChangeEvent, RefObject, useEffect, useState } from 'react';
 import { useRumsanService } from '../../providers/service.provider';
 import { toast } from 'react-toastify';
 import { useRef } from 'react';
 
-export default function ImportBeneficiary() {
+const DOWNLOAD_FILE_URL = '/files/beneficiary_sample.xlsx';
+
+export default function UploadBenificiary() {
   const fileInputRef: RefObject<HTMLInputElement> = useRef(null);
 
   const resetFileInput = () => {
-    // Resetting the file input value
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
   };
 
-  const { rumsanService } = useRumsanService();
+  const { communityBenQuery } = useRumsanService();
+  const uploadBeneficiary = communityBenQuery.useCommunityUploadBeneficiary();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const allowedExtensions: { [key: string]: string } = {
     xlsx: 'excel',
@@ -32,7 +36,9 @@ export default function ImportBeneficiary() {
     const extension = file.name.split('.').pop()?.toLowerCase();
 
     if (!extension || !allowedExtensions[extension]) {
-      alert('Invalid file format. Please upload Excel, JSON, or CSV files.');
+      toast.error(
+        'Invalid file format. Please upload Excel, JSON, or CSV files.',
+      );
       event.target.value = ''; // Clear file input
       return;
     }
@@ -40,10 +46,9 @@ export default function ImportBeneficiary() {
     setSelectedFile(file);
   };
 
-  const handleUpload = () => {
+  const handleUpload = async () => {
     if (!selectedFile) return toast.error('Please select a file to upload');
 
-    // Determine doctype based on file extension
     const extension = selectedFile.name.split('.').pop()?.toLowerCase();
     const doctype = extension ? allowedExtensions[extension] : '';
 
@@ -51,17 +56,34 @@ export default function ImportBeneficiary() {
     formData.append('file', selectedFile);
     formData.append('doctype', doctype);
 
-    rumsanService.client
-      .post('beneficiaries/upload', formData)
-      .then((res) => {
-        setSelectedFile(null);
-        resetFileInput();
-        toast.success(
-          `${res.data.data.count} Beneficiaries uploaded successfully!`,
-        );
+    await uploadBeneficiary.mutateAsync(formData);
+  };
+
+  useEffect(() => {
+    if (uploadBeneficiary.isSuccess === true) {
+      setSelectedFile(null);
+      resetFileInput();
+    }
+  }, [uploadBeneficiary.isSuccess]);
+
+  const handleDownloadClick = () => {
+    fetch(DOWNLOAD_FILE_URL)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Failed to download file');
+        }
+        return response.blob();
+      })
+      .then((blob) => {
+        const url = window.URL.createObjectURL(new Blob([blob]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', 'beneficiary_sample.xlsx');
+        document.body.appendChild(link);
+        link.click();
       })
       .catch((error) => {
-        toast.error('Error uploading file!');
+        toast.error('Error downloading file: ' + error.message);
       });
   };
 
@@ -83,6 +105,20 @@ export default function ImportBeneficiary() {
           </div>
         </div>
         <div className="flex justify-end w-full mt-4">
+          <button
+            onClick={handleDownloadClick}
+            className="mr-2 bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center"
+          >
+            <svg
+              className="fill-current w-4 h-4 mr-2"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+            >
+              <path d="M13 8V2H7v6H2l8 8 8-8h-5zM0 18h20v2H0v-2z" />
+            </svg>
+            <span>Download Sample</span>
+          </button>
+
           <Button
             className="w-40 bg-primary hover:ring-2 ring-primary"
             onClick={handleUpload}

@@ -18,6 +18,7 @@ import {
 } from 'apps/community-tool-ui/src/utils';
 import NestedObjectRenderer from './NestedObjectRenderer';
 import ItemSelector from './ItemSelector';
+import { set } from 'lodash';
 
 const IMPORT_OPTIONS = [
   {
@@ -42,6 +43,7 @@ export default function BenImp() {
   const [importId, setImportId] = useState(''); // Kobo form id or excel sheetID
 
   const handleSourceChange = async (d: string) => {
+    setRawData([]);
     if (d === IMPORT_SOURCE.KOBOTOOL) {
       // Fetch kobotool settings and set
       setImportSource(IMPORT_SOURCE.KOBOTOOL);
@@ -50,21 +52,36 @@ export default function BenImp() {
       const sanitizedOptions = data.data.map((d: any) => {
         return {
           label: d.name,
-          value: d.formId,
+          value: d.name,
+          formId: d.formId,
         };
       });
       setKoboForms(sanitizedOptions);
     }
 
-    if (d === IMPORT_SOURCE.EXCEL) {
-      setImportSource(IMPORT_SOURCE.EXCEL);
-    }
+    if (d === IMPORT_SOURCE.EXCEL) setImportSource(IMPORT_SOURCE.EXCEL);
   };
 
-  const handleKoboFormChange = () => {};
+  const handleKoboFormChange = async (value: string) => {
+    setRawData([]);
+    const found: any | undefined = koboForms.find(
+      (f: any) => f.value === value,
+    );
+    if (!found) return alert('No form found');
+    setImportId(found.formId);
+    const koboData = await fetchKoboData(value);
+    if (!koboData.data) return alert('No data found for this form');
+    const sanitized = removeFieldsWithUnderscore(koboData.data.results);
+    setRawData(sanitized);
+  };
 
   const fetchKoboSettings = async () => {
     const res = await rumsanService.client.get('/app/settings/kobotool');
+    return res.data;
+  };
+
+  const fetchKoboData = async (name: string) => {
+    const res = await rumsanService.client.get(`/app/kobo-import/${name}`);
     return res.data;
   };
 
@@ -155,6 +172,7 @@ export default function BenImp() {
 
   const addSourceToQueue = (finalPayload: any, selectedTargets: any) => {
     if (!selectedTargets.length) return alert('Please select target fields!');
+    if (!importId) return alert('Please select import source');
     const selectedFieldsOnly = includeOnlySelectedTarget(
       finalPayload,
       selectedTargets,
@@ -165,7 +183,7 @@ export default function BenImp() {
     const sourcePayload = {
       name: importSource,
       importId,
-      details: { message: 'This is default message' },
+      details: { message: 'This is a default message' },
       fieldMapping: { data: final_mapping, sourceTargetMappings: mappings },
     };
     rumsanService.client
@@ -255,14 +273,11 @@ export default function BenImp() {
                     )}
 
                     <tr>
-                      {/* Render key:value */}
                       {keys.map((key: any, i) => (
                         <td key={i + 1}>
                           {typeof item[key] === 'object' ? (
-                            // Render nested objects
                             <NestedObjectRenderer object={item[key]} />
                           ) : (
-                            // Render simple values
                             item[key]
                           )}
                         </td>

@@ -14,6 +14,8 @@ export default function AuthPage() {
   const router = useRouter();
   const { authQuery } = useRumsanService();
   const [otp, setOtp] = useState('');
+  const [optSent, setOtpSent] = useState(false);
+
   const { address, challenge, service, setAddress, setChallenge, error } =
     useAuthStore((state) => ({
       challenge: state.challenge,
@@ -24,7 +26,7 @@ export default function AuthPage() {
       error: state.error,
     }));
 
-  const { mutateAsync: requestOtp } = authQuery.useRequestOtp();
+  const { mutateAsync: requestOtp, isSuccess } = authQuery.useRequestOtp();
   const { mutateAsync: verifyOtp } = authQuery.useVerifyOtp();
 
   const onRequestOtp = async (e: React.SyntheticEvent) => {
@@ -32,6 +34,10 @@ export default function AuthPage() {
     await requestOtp({
       address,
       service,
+    }).then((data) => {
+      if (data.data.challenge) {
+        setOtpSent(true);
+      }
     });
   };
 
@@ -57,16 +63,16 @@ export default function AuthPage() {
         <div className="flex flex-col gap-4 w-96">
           <div className="flex flex-col space-y-2 text-center">
             <h1 className="text-2xl font-semibold tracking-tight">
-              {!challenge.length ? 'Sign in' : 'OTP has been sent'}
+              {!optSent ? 'Sign in' : 'OTP has been sent'}
             </h1>
             <p className="text-sm text-muted-foreground">
-              {!challenge.length
+              {!optSent
                 ? 'Enter your email address.'
                 : `OTP has been sent to ${address}`}
             </p>
           </div>
 
-          {!challenge.length ? (
+          {!optSent ? (
             <form onSubmit={onRequestOtp}>
               <div className="grid gap-2">
                 <div className="grid gap-1">
@@ -115,7 +121,7 @@ export default function AuthPage() {
             </form>
           )}
           <p className="px-8 text-center text-sm text-muted-foreground">
-            {!challenge.length ? "Don't have an account" : "Didn't get one"}?
+            {!optSent ? "Don't have an account" : "Didn't get one"}?
             {/* <Button
               disabled={sendOtpMutation.isPending}
               onClick={onSendOtpFormSubmit}
@@ -125,13 +131,11 @@ export default function AuthPage() {
             </Button> */}
             <span
               className="underline font-medium ml-2 cursor-pointer"
-              onClick={
-                !challenge.length ? router.push(paths.auth.login) : onVerifyOtp
-              }
+              onClick={() => optSent && setOtpSent(false)}
             >
-              {!challenge.length ? 'Get Started' : 'Resend'}
+              {!optSent ? 'Get Started' : 'Resend'}
             </span>
-            {challenge.length ? (
+            {/* {optSent ? (
               <Button
                 className="ml-2"
                 onClick={() => {
@@ -141,9 +145,9 @@ export default function AuthPage() {
               >
                 Go Back
               </Button>
-            ) : null}
+            ) : null} */}
           </p>
-          {!challenge.length && (
+          {!optSent && (
             <p className="text-muted-foreground text-sm">
               By clicking continue, you agree to our{' '}
               <span className="underline font-medium">Terms of Service</span>{' '}

@@ -42,6 +42,14 @@ export default function BenImp() {
   const [koboForms, setKoboForms] = useState([]);
   const [importId, setImportId] = useState(''); // Kobo form id or excel sheetID
 
+  const fetchExistingMapping = async (importId: string) => {
+    const res = await rumsanService.client.get(`/sources/${importId}/mappings`);
+    if (!res.data.data) return;
+    const { fieldMapping } = res.data.data;
+    if (res.data.data)
+      return setExistingMappings(fieldMapping?.sourceTargetMappings);
+  };
+
   const handleSourceChange = async (d: string) => {
     setRawData([]);
     if (d === IMPORT_SOURCE.KOBOTOOL) {
@@ -69,6 +77,7 @@ export default function BenImp() {
     );
     if (!found) return alert('No form found');
     setImportId(found.formId);
+    await fetchExistingMapping(found.formId);
     const koboData = await fetchKoboData(value);
     if (!koboData.data) return alert('No data found for this form');
     const sanitized = removeFieldsWithUnderscore(koboData.data.results);
@@ -113,11 +122,12 @@ export default function BenImp() {
     );
     const { data } = res;
     if (!data) return alert('Failed to upload file');
-    const sanitized = removeFieldsWithUnderscore(
-      data?.data?.workbookData || [],
-    );
-    setImportId(data?.data?.sheetId);
+    const { workbookData, sheetId } = data?.data;
+    const sanitized = removeFieldsWithUnderscore(workbookData || []);
+
+    setImportId(sheetId);
     setRawData(sanitized);
+    await fetchExistingMapping(sheetId);
   };
 
   const handleAddQueueClick = () => {
@@ -186,6 +196,7 @@ export default function BenImp() {
       details: { message: 'This is a default message' },
       fieldMapping: { data: final_mapping, sourceTargetMappings: mappings },
     };
+
     rumsanService.client
       .post('/sources', sourcePayload)
       .then((res) => {
@@ -232,6 +243,12 @@ export default function BenImp() {
 
         {importSource === IMPORT_SOURCE.EXCEL && (
           <ExcelUploader handleFileSelect={handleFileSelect} />
+        )}
+
+        {existingMappings.length > 0 && (
+          <p className="text-orange-500">
+            Fields are already mapped, You can import directly!
+          </p>
         )}
 
         <hr className="my-5 h-0.5 border-t-0 bg-neutral-100 dark:bg-white/10" />

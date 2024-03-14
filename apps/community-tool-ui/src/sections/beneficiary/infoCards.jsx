@@ -1,28 +1,28 @@
-import { Badge } from "@rahat-ui/shadcn/src/components/ui/badge";
+import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import {
   Card,
   CardContent,
   CardHeader,
-} from "@rahat-ui/shadcn/src/components/ui/card";
+} from '@rahat-ui/shadcn/src/components/ui/card';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@rahat-ui/shadcn/components/tooltip";
+} from '@rahat-ui/shadcn/components/tooltip';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@rahat-ui/shadcn/components/dropdown-menu";
+} from '@rahat-ui/shadcn/components/dropdown-menu';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@rahat-ui/shadcn/components/select";
+} from '@rahat-ui/shadcn/components/select';
 import {
   Dialog,
   DialogContent,
@@ -32,12 +32,12 @@ import {
   DialogTrigger,
   DialogFooter,
   DialogClose,
-} from "@rahat-ui/shadcn/components/dialog";
-import { Button } from "@rahat-ui/shadcn/src/components/ui/button";
+} from '@rahat-ui/shadcn/components/dialog';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 
-import { MoreVertical } from "lucide-react";
-import { Input } from "@rahat-ui/shadcn/src/components/ui/input";
-import { truncateEthAddress } from "@rumsan/sdk/utils";
+import { MoreVertical } from 'lucide-react';
+import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
+import { truncateEthAddress } from '@rumsan/sdk/utils';
 // import data from '../../app/beneficiary/beneficiaryData.json';
 
 export default function InfoCards({ data }) {
@@ -56,7 +56,7 @@ export default function InfoCards({ data }) {
         <CardContent>
           <div className="mb-2">
             <p className="text-xs">
-              {truncateEthAddress(data?.walletAddress) ?? "N/A"}
+              {truncateEthAddress(data?.walletAddress) ?? 'N/A'}
             </p>
             <p className="text-sm font-normal text-muted-foreground">
               Wallet Address
@@ -66,25 +66,25 @@ export default function InfoCards({ data }) {
           <div className="flex justify-between gap-8">
             <div className="flex flex-col gap-2">
               <div>
-                <p>{data?.gender ?? "test"}</p>
+                <p>{data?.gender ?? 'test'}</p>
                 <p className="text-sm font-normal text-muted-foreground">
                   Gender
                 </p>
               </div>
               <div>
-                <p>{data?.bankedStatus ?? "test"}</p>
+                <p>{data?.bankedStatus ?? 'test'}</p>
                 <p className="text-sm font-normal text-muted-foreground">
                   Bank Status
                 </p>
               </div>
               <div>
-                <p>{data?.internetStatus ?? "test"}</p>
+                <p>{data?.internetStatus ?? 'test'}</p>
                 <p className="text-sm font-normal text-muted-foreground">
                   Internet Status
                 </p>
               </div>
               <div>
-                <p>{data?.phoneStatus ?? "test"}</p>
+                <p>{data?.phoneStatus ?? 'test'}</p>
                 <p className="text-sm font-normal text-muted-foreground">
                   Phone Status
                 </p>
@@ -92,19 +92,19 @@ export default function InfoCards({ data }) {
             </div>
             <div className="flex flex-col gap-2">
               <div>
-                <p>{data?.phone ?? "N/A"}</p>
+                <p>{data?.phone ?? 'N/A'}</p>
                 <p className="text-sm font-normal text-muted-foreground">
                   Phone
                 </p>
               </div>
               <div>
-                <p>{data?.location ?? "test"}</p>
+                <p>{data?.location ?? 'test'}</p>
                 <p className="text-sm font-normal text-muted-foreground">
                   Location
                 </p>
               </div>
               <div>
-                <p>{data?.notes ? data?.notes : "N/A"}</p>
+                <p>{data?.notes ? data?.notes : 'N/A'}</p>
                 <p className="text-sm font-normal text-muted-foreground">
                   Notes
                 </p>
@@ -211,7 +211,7 @@ export default function InfoCards({ data }) {
                 <Tooltip>
                   <TooltipTrigger>
                     <p className="text-sm font-medium">
-                      {truncateEthAddress(data.walletAddress || "N/A")}
+                      {truncateEthAddress(data.walletAddress || 'N/A')}
                     </p>
                   </TooltipTrigger>
                   <TooltipContent className="bg-secondary ">

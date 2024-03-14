@@ -126,17 +126,15 @@ function BeneficiaryView() {
   const handlePrevPage = () => setCurrentPage(currentPage - 1);
 
   const { communityBenQuery } = useRumsanService();
-  const [selectedBeneficiaryIndex, setSelectedBeneficiaryIndex] = useState<
-    number | null
-  >(null);
+  const [selectedData, setSelectedData] = useState<ListBeneficiary>();
   const [active, setActive] = useState<string>(BENEFICIARY_NAV_ROUTE.DEFAULT);
 
-  const handleBeneficiaryClick = useCallback((index: number) => {
-    setSelectedBeneficiaryIndex(index);
+  const handleBeneficiaryClick = useCallback((item: ListBeneficiary) => {
+    setSelectedData(item);
   }, []);
 
   const handleClose = () => {
-    setSelectedBeneficiaryIndex(null);
+    setSelectedData(null);
   };
 
   const handleNav = useCallback((item: string) => {
@@ -203,13 +201,13 @@ function BeneficiaryView() {
             </>
           )}
         </ResizablePanel>
-        {selectedBeneficiaryIndex ? (
+        {selectedData ? (
           <>
             <ResizableHandle />
             <ResizablePanel minSize={24}>
               <BeneficiaryDetail
                 handleClose={handleClose}
-                data={data?.data?.rows[selectedBeneficiaryIndex]}
+                data={selectedData}
               />
 
               {/* {addBeneficiary && <AddBeneficiary />} */}

@@ -1,12 +1,14 @@
 'use client';
 
 import * as React from 'react';
-import { CVALayout } from '../../../../sections/projects/cva';
+import { ProjectLayout } from '../../../../sections/projects/components';
+import { useNavItems } from '../../../../sections/projects/cva/useCVANavItems';
 
-export default function ProjectLayout({
+export default function ProjectLayoutRoot({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return <CVALayout>{children}</CVALayout>;
+  const menuItems = useNavItems();
+  return <ProjectLayout menuItems={menuItems}>{children}</ProjectLayout>;
 }

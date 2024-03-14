@@ -110,7 +110,7 @@ export default function Nav({ meta, handleNav }: IProps) {
               {/* <PlusSquare size={18} strokeWidth={1.5} /> */}
               <p>Add Beneficiary</p>
             </div>
-            <div
+            {/* <div
               className="flex items-center p-2 gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white"
               onClick={() =>
                 handleNav(BENEFICIARY_NAV_ROUTE.UPLOAD_BENEFICIARY)
@@ -118,7 +118,7 @@ export default function Nav({ meta, handleNav }: IProps) {
             >
               <Upload size={18} strokeWidth={1.5} />
               <p>Upload Beneficiary</p>
-            </div>
+            </div> */}
             <div
               className="flex items-center p-2 gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white"
               onClick={() =>

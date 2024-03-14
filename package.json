@@ -43,7 +43,7 @@
     "@rumsan/core": "^3.0.133",
     "@rumsan/extensions": "^0.0.14",
     "@rumsan/prisma": "^1.0.125",
-    "@rumsan/react-query": "^0.0.27",
+    "@rumsan/react-query": "^0.0.29",
     "@rumsan/sdk": "^0.0.40",
     "@rumsan/user": "^3.0.152",
     "@tanstack/react-query": "^5.18.1",

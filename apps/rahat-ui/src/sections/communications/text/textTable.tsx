@@ -49,10 +49,7 @@ import { paths } from 'apps/rahat-ui/src/routes/paths';
 import { useCampaignStore, useListCampaignQuery } from '@rahat-ui/query';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { CAMPAIGN_TYPES } from '@rahat-ui/types';
-import {
-  ServiceContext,
-  ServiceContextType,
-} from 'apps/rahat-ui/src/providers/service.provider';
+import { useRumsanService } from 'apps/rahat-ui/src/providers/service.provider';
 import { ICampaignItemApiResponse } from '@rumsan/communication';
 
 export type Text = {
@@ -168,9 +165,7 @@ export const columns: ColumnDef<ICampaignItemApiResponse>[] = [
 
 export default function TextTableView() {
   const campaignStore = useCampaignStore();
-  const { communicationQuery } = React.useContext(
-    ServiceContext,
-  ) as ServiceContextType;
+  const { communicationQuery } = useRumsanService();
 
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(

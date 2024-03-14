@@ -7,4 +7,5 @@ export type NavItem = {
   children?: NavItem[];
   style?: React.CSSProperties;
   className?: string;
+  component?: React.ReactNode;
 };

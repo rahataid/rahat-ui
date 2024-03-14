@@ -1,12 +1,14 @@
 'use client';
 
 import * as React from 'react';
-import { ELLayout } from '../../../../sections/projects/el';
+import { ProjectLayout } from '../../../../sections/projects/components';
+import { useNavItems } from '../../../../sections/projects/el/useNavItems';
 
-export default function ProjectLayout({
+export default function ProjectLayoutRoot({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return <ELLayout>{children}</ELLayout>;
+  const navItems = useNavItems();
+  return <ProjectLayout menuItems={navItems}>{children}</ProjectLayout>;
 }

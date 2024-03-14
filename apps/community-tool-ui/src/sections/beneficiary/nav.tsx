@@ -2,7 +2,14 @@ import { ScrollArea } from '@rahat-ui/shadcn/components/scroll-area';
 import { Separator } from '@rahat-ui/shadcn/components/separator';
 import { TabsList, TabsTrigger } from '@rahat-ui/shadcn/src/components/ui/tabs';
 import { Meta } from '@rahat-ui/types';
-import { AlignJustify, Import, LayoutGrid, Plus, Users } from 'lucide-react';
+import {
+  AlignJustify,
+  Import,
+  LayoutGrid,
+  Plus,
+  Settings,
+  Users,
+} from 'lucide-react';
 import { BENEFICIARY_NAV_ROUTE } from '../../constants/beneficiary.const';
 import Filter from './filter';
 
@@ -82,6 +89,15 @@ export default function Nav({ meta, handleNav }: IProps) {
                   <p>Beneficiaries</p>
                 </div>
                 <p>{meta?.total}</p>
+              </div>
+              <div
+                className="flex justify-between p-2 rounded-md cursor-pointer hover:bg-primary hover:text-white text-muted-foreground"
+                onClick={() => handleNav(BENEFICIARY_NAV_ROUTE.SETTINGS)}
+              >
+                <div className="flex items-center gap-3">
+                  <Settings size={18} strokeWidth={1.5} />
+                  <p>Settings</p>
+                </div>
               </div>
             </nav>
           </div>

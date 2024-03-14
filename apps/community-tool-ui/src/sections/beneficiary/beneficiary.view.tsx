@@ -35,6 +35,7 @@ import BeneficiaryListView from '../../sections/beneficiary/listView';
 import BeneficiaryNav from '../../sections/beneficiary/nav';
 import AddBeneficiary from './addBeneficiary';
 import ImportBeneficiary from './import.beneficiary';
+import Setting from './setting';
 
 export const columns: ColumnDef<ListBeneficiary>[] = [
   {
@@ -173,6 +174,8 @@ function BeneficiaryView() {
             <AddBeneficiary />
           ) : active === BENEFICIARY_NAV_ROUTE.IMPORT_BENEFICIARY ? (
             <ImportBeneficiary />
+          ) : active === BENEFICIARY_NAV_ROUTE.SETTINGS ? (
+            <Setting />
           ) : null}
 
           {active === BENEFICIARY_NAV_ROUTE.DEFAULT && (
@@ -189,14 +192,14 @@ function BeneficiaryView() {
                   data={data?.data}
                 />
               </TabsContent>
+              <CustomPagination
+                meta={data?.response?.meta || { total: 0, currentPage: 0 }}
+                handleNextPage={handleNextPage}
+                handlePrevPage={handlePrevPage}
+                handlePageSizeChange={(value) => setPerPage(Number(value))}
+              />
             </>
           )}
-          <CustomPagination
-            meta={data?.response?.meta || { total: 0, currentPage: 0 }}
-            handleNextPage={handleNextPage}
-            handlePrevPage={handlePrevPage}
-            handlePageSizeChange={(value) => setPerPage(Number(value))}
-          />
         </ResizablePanel>
         {selectedData ? (
           <>

@@ -41,7 +41,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
-import { CAMPAIGN_TYPES } from '@rahat-ui/types';
+import { CAMPAIGN_PATH, CAMPAIGN_TYPES } from '@rahat-ui/types';
 import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
 import {
   ServiceContext,
@@ -60,6 +60,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
+import { usePathname } from 'next/navigation';
 
 export default function AddCampaign() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -70,6 +71,8 @@ export default function AddCampaign() {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
   const [selectedRows, setSelectedRows] = useState([]);
+
+  const path = usePathname().split('/');
 
   const { communicationQuery, beneficiaryQuery } = React.useContext(
     ServiceContext,
@@ -379,7 +382,16 @@ export default function AddCampaign() {
                       </FormControl>
                       <SelectContent>
                         {Object.keys(CAMPAIGN_TYPES).map((key) => {
-                          return <SelectItem value={key}>{key}</SelectItem>;
+                          if (
+                            key !== CAMPAIGN_TYPES.PHONE &&
+                            path[path.length - 1] === CAMPAIGN_PATH.TEXT
+                          )
+                            return <SelectItem value={key}>{key}</SelectItem>;
+                          else if (
+                            key === CAMPAIGN_TYPES.PHONE &&
+                            path[path.length - 1] === CAMPAIGN_PATH.VOICE
+                          )
+                            return <SelectItem value={key}>{key}</SelectItem>;
                         })}
                       </SelectContent>
                     </Select>

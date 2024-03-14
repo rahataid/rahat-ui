@@ -413,7 +413,10 @@ export default function EditCampaign() {
                           </FormControl>
                           <SelectContent>
                             {Object.keys(CAMPAIGN_TYPES).map((key) => {
-                              return <SelectItem value={key}>{key}</SelectItem>;
+                              if (key !== CAMPAIGN_TYPES.PHONE)
+                                return (
+                                  <SelectItem value={key}>{key}</SelectItem>
+                                );
                             })}
                           </SelectContent>
                         </Select>

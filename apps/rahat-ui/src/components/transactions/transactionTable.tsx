@@ -237,7 +237,7 @@ export const columns: ColumnDef<Transaction>[] = [
       );
     },
     cell: ({ row }) => (
-      <div className="lowercase">{ (row.getValue('timeStamp'))}</div>
+      <div className="lowercase">{row.getValue('timeStamp')}</div>
     ),
   },
   {
@@ -254,7 +254,9 @@ export const columns: ColumnDef<Transaction>[] = [
       );
     },
     cell: ({ row }) => (
-      <div className="lowercase">{truncateEthAddress(row.getValue('transactionHash'))}</div>
+      <div className="lowercase">
+        {truncateEthAddress(row.getValue('transactionHash'))}
+      </div>
     ),
   },
   {
@@ -294,8 +296,7 @@ export default function DataTableDemo() {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
-  const {data,error} = useProjectTransaction();
-
+  const { data, error } = useProjectTransaction();
 
   const table = useReactTable({
     data,

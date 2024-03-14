@@ -1,5 +1,8 @@
 import { useSwal } from '../../../components/swal';
-import { useWriteElProjectAddBeneficiary, useWriteElProjectAssignClaims } from './elProject';
+import {
+  useWriteElProjectAddBeneficiary,
+  useWriteElProjectAssignClaims,
+} from './elProject';
 import { useWriteRahatDonorMintTokenAndApprove } from './donor';
 
 export const useAddBeneficiary = () => {
@@ -16,47 +19,44 @@ export const useAddBeneficiary = () => {
   });
 };
 
-export const useAssignClaims =() =>{
+export const useAssignClaims = () => {
   const alert = useSwal();
   return useWriteElProjectAssignClaims({
-    mutation:{
-      onSuccess: () =>{
+    mutation: {
+      onSuccess: () => {
         alert.fire({
-          title:'Beneficiary Assigned Claims Successfully',
-          icon:'success',
-        })
+          title: 'Beneficiary Assigned Claims Successfully',
+          icon: 'success',
+        });
       },
-      onError: (err) =>{
+      onError: (err) => {
         alert.fire({
-          title:'Error while assigning calims to beneficiaries',
-          icon:'error',
-          text:err.message
-    
-        })
-      }
-    }
-  })
-}
+          title: 'Error while assigning calims to beneficiaries',
+          icon: 'error',
+          text: err.message,
+        });
+      },
+    },
+  });
+};
 
-export const useMintVouchers = () =>{
+export const useMintVouchers = () => {
   const alert = useSwal();
   return useWriteRahatDonorMintTokenAndApprove({
-    mutation:{
-      onSuccess: () =>{
+    mutation: {
+      onSuccess: () => {
         alert.fire({
-          title:'Voucher Minted',
-          icon:'success',
-        })
+          title: 'Voucher Minted',
+          icon: 'success',
+        });
       },
-      onError: (err) =>{
+      onError: (err) => {
         alert.fire({
-          title:'Error while minting vouchers',
-          icon:'error',
-          text:err.message
-    
-        })
-      }
-    }
-  })
-}
-
+          title: 'Error while minting vouchers',
+          icon: 'error',
+          text: err.message,
+        });
+      },
+    },
+  });
+};

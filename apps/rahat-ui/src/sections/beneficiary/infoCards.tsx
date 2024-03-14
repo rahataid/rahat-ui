@@ -39,13 +39,18 @@ import { MoreVertical } from 'lucide-react';
 // import data from '../../app/beneficiary/beneficiaryData.json';
 import { truncateEthAddress } from '@rumsan/sdk/utils';
 import { useAssignClaims } from '../../hooks/el/contracts/el-contracts';
+import { useBeneficaryVoucher } from '../../hooks/el/subgraph/querycall';
 
 export default function InfoCards({ data, voucherData }) {
   const assignClaims = useAssignClaims();
+  
   const handleAssignClaims = () => {
+
+    const walletAddress = data.walletAddress || '';
+    
     assignClaims.writeContractAsync({
       address: '0x38BFDCCAc556ED026706EE21b4945cE86718D4D1',
-      args: ['0x082d43D30C31D054b1AEDbE08F50C2a1BBE76fC7'],
+      args: [walletAddress],
     });
   };
   return (

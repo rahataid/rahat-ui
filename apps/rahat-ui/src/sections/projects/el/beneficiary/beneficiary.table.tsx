@@ -168,6 +168,8 @@ export default function BeneficiaryDetailTableView() {
     },
   });
 
+  console.log(table.getRowModel().rows)
+
   return (
     <>
       <div className="w-full h-full p-2 bg-secondary">

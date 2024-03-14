@@ -31,14 +31,12 @@ type IProps = {
 };
 
 export default function BeneficiaryDetail({ data, handleClose }: IProps) {
-
-
   const router = useRouter();
   const { beneficiaryQuery } = useRumsanService();
   let beneficiary = null;
   const walletAddress = data.walletAddress || '';
 
-  const beneficiaryDetails = useBeneficaryVoucher(walletAddress)
+  const beneficiaryDetails = useBeneficaryVoucher(walletAddress);
 
   const changedDate = new Date(data?.updatedAt);
   const formattedDate = changedDate.toLocaleDateString('en-US', {
@@ -130,7 +128,7 @@ export default function BeneficiaryDetail({ data, handleClose }: IProps) {
         </div>
 
         <TabsContent value="detail">
-          <InfoCards data={data} voucherData={beneficiaryDetails.data}/>
+          <InfoCards data={data} voucherData={beneficiaryDetails.data} />
         </TabsContent>
         <TabsContent value="transaction-history">
           <div className="p-4 border-y">Transaction History View</div>

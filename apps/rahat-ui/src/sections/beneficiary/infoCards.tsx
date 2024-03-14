@@ -116,7 +116,12 @@ export default function InfoCards({ data, voucherData }: InfoCardsProps) {
                   {truncateEthAddress(data?.walletAddress) ?? 'N/A'}
                 </div>
                 <p className=" flex text-sm font-normal text-muted-foreground">
-                  Wallet Address {data!.isVerified && <CheckCircle style={{ color: 'green', width: '20px', height: '20px' }} />}
+                  Wallet Address{' '}
+                  {data!.isVerified && (
+                    <CheckCircle
+                      style={{ color: 'green', width: '20px', height: '20px' }}
+                    />
+                  )}
                 </p>
               </div>
               <div>
@@ -254,8 +259,8 @@ export default function InfoCards({ data, voucherData }: InfoCardsProps) {
                 {voucherData?.FreeVoucherAddress
                   ? 'Free Voucher'
                   : voucherData?.ReferredVoucherAddress
-                    ? 'Discount Voucher'
-                    : 'Not Assigned'}
+                  ? 'Discount Voucher'
+                  : 'Not Assigned'}
               </p>
             </div>
             <div className="flex justify-between items-center">

@@ -68,14 +68,14 @@ export default function ProjectPage() {
                   <div className="flex relative w-full">
                     <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                     <Input placeholder="Search" className="pl-8 rounded mr-2" />
-                    <Button
+                    {/* <Button
                       variant="default"
                       className="ml-auto bg-primary w-40"
                       onClick={() => handleNav(PROJECT_NAV_ROUTE.ADD)}
                     >
                       <PlusCircle className="mr-2 w-5" />
                       Add Project
-                    </Button>
+                    </Button> */}
                   </div>
                 </div>
                 <ScrollArea className="px-3 h-withPage">

@@ -1,12 +1,14 @@
 'use client';
 
 import * as React from 'react';
-import { AALayout } from '../../../../sections/projects/aa';
+import { ProjectLayout } from '../../../../sections/projects/components';
+import { useNavItems } from '../../../../sections/projects/aa/useAANavItems';
 
-export default function ProjectLayout({
+export default function ProjectLayoutRoot({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return <AALayout>{children}</AALayout>;
+  const menuItems = useNavItems();
+  return <ProjectLayout menuItems={menuItems}>{children}</ProjectLayout>;
 }

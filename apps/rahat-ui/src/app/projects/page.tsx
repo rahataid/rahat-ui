@@ -47,10 +47,7 @@ export default function ProjectPage() {
     <div>
       <Tabs defaultValue="grid">
         <div className="flex items-center justify-between"></div>
-        <ResizablePanelGroup
-          direction="horizontal"
-          className="min-h-max border"
-        >
+        <ResizablePanelGroup direction="horizontal" className="min-h-max">
           <ResizablePanel
             minSize={20}
             defaultSize={20}

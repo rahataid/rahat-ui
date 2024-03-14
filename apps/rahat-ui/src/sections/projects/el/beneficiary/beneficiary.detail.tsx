@@ -16,30 +16,24 @@ import {
   Dialog,
   DialogTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dialog';
-import { Archive, Expand, FilePenLine, Minus, Trash2 } from 'lucide-react';
-import ConfirmDialog from '../../components/dialog';
-import { paths } from '../../routes/paths';
-import { IBeneficiaryItem } from '../../types/beneficiary';
-import EditBeneficiary from '../beneficiary/editBeneficiary';
-import InfoCards from '../beneficiary/infoCards';
+import { Archive, Expand, Minus, Trash2 } from 'lucide-react';
+// import ConfirmDialog from '../../components/dialog';
+import { paths } from '../../../../routes/paths';
+import { IBeneficiaryItem } from '../../../../types/beneficiary';
+// import EditBeneficiary from '../beneficiary/editBeneficiary';
+import InfoCards from './beneficiary.infoCards';
+import TransactionTable from './beneficiary.transaction.table';
 
 type IProps = {
   data: IBeneficiaryItem;
-  handleClose: VoidFunction;
+  closeSecondPanel: VoidFunction;
 };
 
-export default function ProjectBeneficiaryDetail({
-  data,
-  handleClose,
-}: IProps) {
+export default function BeneficiaryDetail({ data, closeSecondPanel }: IProps) {
   const router = useRouter();
 
   const changedDate = new Date(data?.updatedAt);
-  const formattedDate = changedDate.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
+
   return (
     <>
       <Tabs defaultValue="detail">
@@ -47,7 +41,7 @@ export default function ProjectBeneficiaryDetail({
           <div className="flex gap-4">
             <TooltipProvider delayDuration={100}>
               <Tooltip>
-                <TooltipTrigger onClick={handleClose}>
+                <TooltipTrigger onClick={closeSecondPanel}>
                   <Minus size={20} strokeWidth={1.5} />
                 </TooltipTrigger>
                 <TooltipContent className="bg-secondary ">
@@ -74,16 +68,6 @@ export default function ProjectBeneficiaryDetail({
             <TooltipProvider delayDuration={100}>
               <Tooltip>
                 <TooltipTrigger>
-                  <FilePenLine size={20} strokeWidth={1.5} />
-                </TooltipTrigger>
-                <TooltipContent className="bg-secondary ">
-                  <p className="text-xs font-medium">Edit</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-            <TooltipProvider delayDuration={100}>
-              <Tooltip>
-                <TooltipTrigger>
                   <Archive size={20} strokeWidth={1.5} />
                 </TooltipTrigger>
                 <TooltipContent className="bg-secondary ">
@@ -98,7 +82,7 @@ export default function ProjectBeneficiaryDetail({
                     <DialogTrigger asChild>
                       <Trash2 size={20} strokeWidth={1.5} />
                     </DialogTrigger>
-                    <ConfirmDialog name="beneficiary" />
+                    {/* <ConfirmDialog name="beneficiary" /> */}
                   </Dialog>
                 </TooltipTrigger>
                 <TooltipContent className="bg-secondary ">
@@ -119,11 +103,9 @@ export default function ProjectBeneficiaryDetail({
           <InfoCards data={data} />
         </TabsContent>
         <TabsContent value="transaction-history">
-          <div className="p-4 border-y">Transaction History View</div>
+          <TransactionTable />
         </TabsContent>
-        <TabsContent value="edit">
-          <EditBeneficiary />
-        </TabsContent>
+        <TabsContent value="edit">{/* <EditBeneficiary /> */}</TabsContent>
       </Tabs>
     </>
   );

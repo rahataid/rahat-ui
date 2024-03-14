@@ -1,55 +1,63 @@
 'use client';
 
-import { useState } from 'react';
-import { flexRender } from '@tanstack/react-table';
-import { Settings2 } from 'lucide-react';
-import { usePagination } from '@rahat-ui/query';
-import { useRumsanService } from '../../providers/service.provider';
+import {
+  ColumnDef,
+  ColumnFiltersState,
+  SortingState,
+  VisibilityState,
+  flexRender,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  useReactTable,
+} from '@tanstack/react-table';
+import { MoreHorizontal, Settings2 } from 'lucide-react';
+import * as React from 'react';
 
 import { Button } from '@rahat-ui/shadcn/components/button';
+import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
+  DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/components/dropdown-menu';
 import { Input } from '@rahat-ui/shadcn/components/input';
 import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@rahat-ui/shadcn/components/select';
+import {
+  Table,
   TableBody,
   TableCell,
-  Table as TableComponent,
   TableHead,
   TableHeader,
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import {
-  ColumnDef,
-  VisibilityState,
-  getCoreRowModel,
-  getSortedRowModel,
-  useReactTable,
-} from '@tanstack/react-table';
-import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
-import { MoreHorizontal } from 'lucide-react';
-import CustomPagination from '../../components/customPagination';
+import TransactionTableData from './beneficiaryTransactionData.json';
+// import { useBeneficiaryTransaction } from '../../hooks/el/subgraph/querycall';
 
-type IProps = {
-  handleClick: (item: Beneficiary) => void;
+const data: Transaction[] = TransactionTableData;
+
+export type Transaction = {
+  topic: string;
+  processedBy: string;
+  timeStamp: string;
+  transactionHash: string;
+  amount: string;
 };
 
-export type Beneficiary = {
-  name: string;
-  projectsInvolved: string;
-  internetAccess: string;
-  phone: string;
-  bank: string;
-};
-
-export const columns: ColumnDef<Beneficiary>[] = [
+export const columns: ColumnDef<Transaction>[] = [
   {
     id: 'select',
     header: ({ table }) => (
@@ -73,29 +81,49 @@ export const columns: ColumnDef<Beneficiary>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: 'walletAddress',
-    header: 'Wallet Address',
-    cell: ({ row }) => <div>{row.getValue('walletAddress')}</div>,
+    accessorKey: 'topic',
+    header: 'Topic',
+    cell: ({ row }) => <div>{row.getValue('topic')}</div>,
   },
   {
-    accessorKey: 'gender',
-    header: 'Gender',
-    cell: ({ row }) => <div>{row.getValue('gender')}</div>,
+    accessorKey: 'processedBy',
+    header: 'Processed By',
+    cell: ({ row }) => (
+      <div className="capitalize">
+        {row.getValue('processedBy')
+          ? `${row.getValue('processedBy')?.toString().substring(0, 4)}....${row
+              .getValue('processedBy')
+              ?.toString()
+              ?.slice(-3)}`
+          : 'N/A'}
+      </div>
+    ),
   },
   {
-    accessorKey: 'internetStatus',
-    header: 'Internet Access',
-    cell: ({ row }) => <div>{row.getValue('internetStatus')}</div>,
+    accessorKey: 'timeStamp',
+    header: 'Time Stamp',
+    cell: ({ row }) => <div> {row.getValue('timeStamp')}</div>,
   },
   {
-    accessorKey: 'phoneStatus',
-    header: 'Phone Type',
-    cell: ({ row }) => <div>{row.getValue('phoneStatus')}</div>,
+    accessorKey: 'transactionHash',
+    header: 'Transaction Hash',
+    cell: ({ row }) => (
+      <div>
+        {' '}
+        {`${row
+          .getValue('transactionHash')
+          ?.toString()
+          .substring(0, 4)}....${row
+          .getValue('transactionHash')
+          ?.toString()
+          ?.slice(-3)}`}
+      </div>
+    ),
   },
   {
-    accessorKey: 'bankedStatus',
-    header: 'Banking Status',
-    cell: ({ row }) => <div>{row.getValue('bankedStatus')}</div>,
+    accessorKey: 'amount',
+    header: 'Amount',
+    cell: ({ row }) => <div> {row.getValue('amount')}</div>,
   },
   {
     id: 'actions',
@@ -111,8 +139,8 @@ export const columns: ColumnDef<Beneficiary>[] = [
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem>View Details</DropdownMenuItem>
-            {/* <DropdownMenuSeparator /> */}
-            {/* <DropdownMenuItem>Edit</DropdownMenuItem> */}
+            <DropdownMenuSeparator />
+            <DropdownMenuItem>Edit</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );
@@ -120,60 +148,48 @@ export const columns: ColumnDef<Beneficiary>[] = [
   },
 ];
 
-export default function ProjectBeneficiaryTable({
-  handleClick,
-}: //   table,
-IProps) {
-  const { pagination, filters, setPagination } = usePagination((state) => ({
-    pagination: state.pagination,
-    filters: state.filters,
-    setPagination: state.setPagination,
-  }));
-
-  const [perPage, setPerPage] = useState<number>(5);
-  const [currentPage, setCurrentPage] = useState<number>(1);
-
-  const handleNextPage = () => setCurrentPage(currentPage + 1);
-
-  const handlePrevPage = () => setCurrentPage(currentPage - 1);
-  const { beneficiaryQuery } = useRumsanService();
-
-  const { data } = beneficiaryQuery.useBeneficiaryList({
-    perPage,
-    page: currentPage,
-  });
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = useState({});
+export default function BeneficiaryDetailTableView() {
+  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    [],
+  );
+  //   const { data, error } = useBeneficiaryTransaction(
+  //     '0x082d43D30C31D054b1AEDbE08F50C2a1BBE76fC7',
+  //   );
+  const [columnVisibility, setColumnVisibility] =
+    React.useState<VisibilityState>({});
+  const [rowSelection, setRowSelection] = React.useState({});
 
   const table = useReactTable({
-    manualPagination: true,
-    data: data?.data || [],
+    data,
     columns,
+    onSortingChange: setSorting,
+    onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
     state: {
+      sorting,
+      columnFilters,
       columnVisibility,
       rowSelection,
     },
   });
+
   return (
     <>
-      <div className="w-full p-2 bg-secondary">
+      <div className="w-full h-full p-2 bg-secondary">
         <div className="flex items-center mb-2">
           <Input
-            placeholder="Filter beneficiary..."
-            value={
-              (table.getColumn('walletAddress')?.getFilterValue() as string) ??
-              ''
-            }
+            placeholder="Filter topic..."
+            value={(table.getColumn('topic')?.getFilterValue() as string) ?? ''}
             onChange={(event) =>
-              table
-                .getColumn('walletAddress')
-                ?.setFilterValue(event.target.value)
+              table.getColumn('topic')?.setFilterValue(event.target.value)
             }
-            className="rounded mr-2"
+            className="max-w-sm mr-3"
           />
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -205,8 +221,8 @@ IProps) {
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-        <div className="rounded border bg-white">
-          <TableComponent>
+        <div className="rounded border h-[calc(100vh-180px)]  bg-card">
+          <Table>
             <ScrollArea className="h-table1">
               <TableHeader className="sticky top-0">
                 {table.getHeaderGroups().map((headerGroup) => (
@@ -232,9 +248,6 @@ IProps) {
                     <TableRow
                       key={row.id}
                       data-state={row.getIsSelected() && 'selected'}
-                      onClick={() => {
-                        handleClick(row.original);
-                      }}
                     >
                       {row.getVisibleCells().map((cell) => (
                         <TableCell key={cell.id}>
@@ -249,7 +262,7 @@ IProps) {
                 ) : (
                   <TableRow>
                     <TableCell
-                      colSpan={table.getAllColumns().length}
+                      colSpan={columns.length}
                       className="h-24 text-center"
                     >
                       No results.
@@ -258,15 +271,56 @@ IProps) {
                 )}
               </TableBody>
             </ScrollArea>
-          </TableComponent>
-          <CustomPagination
-            meta={data?.response?.meta || { total: 0, currentPage: 0 }}
-            handleNextPage={handleNextPage}
-            handlePrevPage={handlePrevPage}
-            handlePageSizeChange={(value) =>
-              setPagination({ perPage: Number(value) })
-            }
-          />
+          </Table>
+        </div>
+        <div className="sticky bottom-0 flex items-center justify-end space-x-4 px-4 py-1 border-t-2 bg-card">
+          <div className="flex-1 text-sm text-muted-foreground">
+            {table.getFilteredSelectedRowModel().rows.length} of{' '}
+            {table.getFilteredRowModel().rows.length} row(s) selected.
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="text-sm font-medium">Rows per page</div>
+            <Select
+              defaultValue="10"
+              onValueChange={(value) => table.setPageSize(Number(value))}
+            >
+              <SelectTrigger className="w-16 h-8">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectItem value="5">5</SelectItem>
+                  <SelectItem value="10">10</SelectItem>
+                  <SelectItem value="20">20</SelectItem>
+                  <SelectItem value="30">30</SelectItem>
+                  <SelectItem value="40">40</SelectItem>
+                  <SelectItem value="50">50</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            Page {table.getState().pagination.pageIndex + 1} of{' '}
+            {table.getPageCount()}
+          </div>
+          <div className="space-x-4">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => table.previousPage()}
+              disabled={!table.getCanPreviousPage()}
+            >
+              Previous
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => table.nextPage()}
+              disabled={!table.getCanNextPage()}
+            >
+              Next
+            </Button>
+          </div>
         </div>
       </div>
     </>

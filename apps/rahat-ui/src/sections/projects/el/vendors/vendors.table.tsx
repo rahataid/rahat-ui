@@ -12,18 +12,15 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from 'lucide-react';
+import { ArrowUpDown, MoreHorizontal } from 'lucide-react';
 import * as React from 'react';
 
 import { Button } from '@rahat-ui/shadcn/components/button';
 import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
 import {
   DropdownMenu,
-  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/components/dropdown-menu';
 import {
@@ -39,71 +36,60 @@ import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 const data: Payment[] = [
   {
     id: 'm5gr84i9',
-    amount: 316,
-    status: 'success',
-    email: 'ken99@yahoo.com',
+    name: 'John Doe',
+    walletaddress: '0xeEkljas09sd92k20942ls',
   },
   {
     id: '3u1reuv4',
-    amount: 242,
-    status: 'success',
-    email: 'Abe45@gmail.com',
+    name: 'John Doe',
+    walletaddress: '0xeEkljas09sd92k20942ls',
   },
   {
     id: 'derv1ws0',
-    amount: 837,
-    status: 'processing',
-    email: 'Monserrat44@gmail.com',
+    name: 'John Doe',
+    walletaddress: '0xeEkljas09sd92k20942lsing',
   },
   {
     id: '5kma53ae',
-    amount: 874,
-    status: 'success',
-    email: 'Silas22@gmail.com',
+    name: 'John Doe',
+    walletaddress: '0xeEkljas09sd92k20942ls',
   },
   {
     id: 'bhqecj4p',
-    amount: 721,
-    status: 'failed',
-    email: 'carmella@hotmail.com',
+    name: 'John Doe',
+    walletaddress: '0xeEkljas09sd92k20942l',
   },
   {
     id: 'm5gr84i9',
-    amount: 316,
-    status: 'success',
-    email: 'ken99@yahoo.com',
+    name: 'John Doe',
+    walletaddress: '0xeEkljas09sd92k20942ls',
   },
   {
     id: '3u1reuv4',
-    amount: 242,
-    status: 'success',
-    email: 'Abe45@gmail.com',
+    name: 'John Doe',
+    walletaddress: '0xeEkljas09sd92k20942ls',
   },
   {
     id: 'derv1ws0',
-    amount: 837,
-    status: 'processing',
-    email: 'Monserrat44@gmail.com',
+    name: 'John Doe',
+    walletaddress: '0xeEkljas09sd92k20942lsing',
   },
   {
     id: '5kma53ae',
-    amount: 874,
-    status: 'success',
-    email: 'Silas22@gmail.com',
+    name: 'John Doe',
+    walletaddress: '0xeEkljas09sd92k20942ls',
   },
   {
     id: 'bhqecj4p',
-    amount: 721,
-    status: 'failed',
-    email: 'carmella@hotmail.com',
+    name: 'John Doe',
+    walletaddress: '0xeEkljas09sd92k20942l',
   },
 ];
 
 export type Payment = {
   id: string;
-  amount: number;
-  status: 'pending' | 'processing' | 'success' | 'failed';
-  email: string;
+  name: string;
+  walletaddress: string;
 };
 
 export const columns: ColumnDef<Payment>[] = [
@@ -132,42 +118,28 @@ export const columns: ColumnDef<Payment>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: 'status',
-    header: 'Status',
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue('status')}</div>
-    ),
+    accessorKey: 'name',
+    header: 'Name',
+    cell: ({ row }) => <div className="capitalize">{row.getValue('name')}</div>,
   },
   {
-    accessorKey: 'email',
+    accessorKey: 'walletaddress',
     header: ({ column }) => {
       return (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
-          Email
+          Walletaddress
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
     },
-    cell: ({ row }) => <div className="lowercase">{row.getValue('email')}</div>,
+    cell: ({ row }) => (
+      <div className="lowercase">{row.getValue('walletaddress')}</div>
+    ),
   },
-  {
-    accessorKey: 'amount',
-    header: () => <div className="text-right">Amount</div>,
-    cell: ({ row }) => {
-      const amount = parseFloat(row.getValue('amount'));
 
-      // Format the amount as a dollar amount
-      const formatted = new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-      }).format(amount);
-
-      return <div className="text-right font-medium">{formatted}</div>;
-    },
-  },
   {
     id: 'actions',
     enableHiding: false,
@@ -192,7 +164,7 @@ export const columns: ColumnDef<Payment>[] = [
   },
 ];
 
-export default function ProjectVendorTable() {
+export default function VendorTable() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
@@ -223,8 +195,8 @@ export default function ProjectVendorTable() {
   return (
     <>
       <div className="w-full p-2 bg-secondary">
-        <Table className="bg-white rounded border">
-          <ScrollArea className="w-full h-table1">
+        <Table className="bg-card rounded">
+          <ScrollArea className="w-full h-[calc(100vh-138px)]">
             <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
@@ -274,7 +246,7 @@ export default function ProjectVendorTable() {
           </ScrollArea>
         </Table>
       </div>
-      <div className="flex items-center justify-end space-x-2 p-2 border-t">
+      <div className="flex items-center justify-end space-x-2 p-2 border-t w-fll">
         <div className="flex-1 text-sm text-muted-foreground">
           {table.getFilteredSelectedRowModel().rows.length} of{' '}
           {table.getFilteredRowModel().rows.length} row(s) selected.

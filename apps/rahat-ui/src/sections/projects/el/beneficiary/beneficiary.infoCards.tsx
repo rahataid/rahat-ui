@@ -38,7 +38,7 @@ import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { MoreVertical } from 'lucide-react';
 // import data from '../../app/beneficiary/beneficiaryData.json';
 import { truncateEthAddress } from '@rumsan/sdk/utils';
-import { useAssignClaims } from '../../contract-hooks/el-contracts';
+import { useAssignClaims } from 'apps/rahat-ui/src/hooks/el/contracts/el-contracts';
 
 export default function InfoCards({ data, voucherData }) {
   const assignClaims = useAssignClaims();
@@ -49,39 +49,38 @@ export default function InfoCards({ data, voucherData }) {
     });
   };
   return (
-    <div className="flex flex-col gap-4 p-2">
-      <Card className="shadow-md rounded-sm">
+    <div className="flex flex-col gap-2 py-2 pl-2">
+      <Card className="shadow rounded">
         <CardHeader>
           <div className="flex justify-between">
-            <p>Beneficiary Name</p>
-            <Badge variant="outline" className="bg-secondary">
-              Not Approved
-            </Badge>
-            <Button onClick={handleAssignClaims}>Approve</Button>
+            <div className="flex flex-col items-start justify-start">
+              <p>Beneficiary Name</p>
+              <Badge variant="outline" className="bg-secondary">
+                Not Approved
+              </Badge>
+            </div>
           </div>
         </CardHeader>
         <CardContent>
           <div className="flex justify-between gap-8">
             <div className="flex flex-col gap-2">
-              <div>
+              {/* <div>
                 <p className="text-xs">
                   {truncateEthAddress(data?.walletAddress) ?? 'N/A'}
                 </p>
                 <p className="text-sm font-normal text-muted-foreground">
                   Wallet Address
                 </p>
-              </div>
+              </div> */}
               <div>
                 <p>{data?.bankStatus ?? 'test'}</p>
                 <p className="text-sm font-normal text-muted-foreground">
-                  Bank Status
+                  Phone
                 </p>
               </div>
               <div>
                 <p>{data?.internetStatus ?? 'test'}</p>
-                <p className="text-sm font-normal text-muted-foreground">
-                  Internet Status
-                </p>
+                <p className="text-sm font-normal text-muted-foreground">Age</p>
               </div>
             </div>
             <div className="flex flex-col gap-2">
@@ -95,7 +94,7 @@ export default function InfoCards({ data, voucherData }) {
               <div>
                 <p>{data?.location ?? 'test'}</p>
                 <p className="text-sm font-normal text-muted-foreground">
-                  Location
+                  Beneficiary Type
                 </p>
               </div>
               <div>
@@ -108,7 +107,7 @@ export default function InfoCards({ data, voucherData }) {
           </div>
         </CardContent>
       </Card>
-      <Card className="shadow-md rounded-sm">
+      <Card className="shadow rounded">
         <CardHeader>
           <div className="flex justify-between items-center">
             <p>Claim Details</p>
@@ -193,7 +192,7 @@ export default function InfoCards({ data, voucherData }) {
         <CardContent>
           <div className="flex flex-col gap-4">
             <div className="flex justify-between items-center">
-              <p>ClaimStatus</p>
+              <p>Voucher Type</p>
               <p className="text-sm font-light">
                 {voucherData?.FreeVoucherClaimStatus?.toString()
                   ? voucherData?.FreeVoucherClaimStatus?.toString()
@@ -201,7 +200,7 @@ export default function InfoCards({ data, voucherData }) {
               </p>
             </div>
             <div className="flex justify-between items-center">
-              <p>Received</p>
+              <p>Free Voucher</p>
               <p className="text-sm font-light">
                 {voucherData?.FreeVoucherAddress
                   ? 'Free Voucher'
@@ -230,9 +229,9 @@ export default function InfoCards({ data, voucherData }) {
           </div>
         </CardContent>
       </Card>
-      <Card className="shadow-md rounded-sm">
+      <Card className="shadow rounded">
         <CardHeader>
-          <p className="fonr-mediun text-md">Projects Involved</p>
+          <p className="font-mediun text-md">Projects Involved</p>
         </CardHeader>
         <CardContent>
           <Badge variant="outline" color="secondary" className="rounded">

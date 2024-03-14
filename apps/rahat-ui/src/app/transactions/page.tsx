@@ -1,38 +1,19 @@
 'use client';
 
 import { Users } from 'lucide-react';
-import { useCallback, useEffect, useState } from 'react';
 import DataCard from '../../components/dataCard';
 import TransactionTable from '../../components/transactions/transactionTable';
-import { useGraphService } from '../../providers/subgraph-provider';
+import { useProjectVoucher } from '../../hooks/el/subgraph/querycall';
 
 // export const metadata: Metadata = {
 //   title: 'Transactions',
 // };
 
 export default function TransactionsPage() {
-  const [data, setData] = useState({
-    freeVoucherAssigned: '',
-    refeeredVoucherAssigned: '',
-    freeVoucherClaimed: '',
-    refeeredVoucherClaimed: '',
-  });
-
-  const { queryService } = useGraphService();
-
-  const fetchVoucherDetails = useCallback(() => {
-    const voucherRes = queryService?.useProjectVoucher(
-      '0x38BFDCCAc556ED026706EE21b4945cE86718D4D1',
-    );
-    voucherRes.then((res) => {
-      setData({
-        ...res,
-      });
-    });
-  }, [queryService]);
-  useEffect(() => {
-    fetchVoucherDetails();
-  }, [fetchVoucherDetails]);
+  const { data: transactionData, error } = useProjectVoucher(
+    '0x38BFDCCAc556ED026706EE21b4945cE86718D4D1',
+  );
+  console.log('data', transactionData);
 
   return (
     <div className="max-h-mx">
@@ -44,7 +25,7 @@ export default function TransactionsPage() {
         <DataCard
           className="border-green-500"
           title="Free Voucher Assigned"
-          number1={data?.freeVoucherAssigned}
+          number1={transactionData?.freeVoucherAssigned}
           subTitle1="To Enrolled Beneficiary"
           number2={''}
           subTitle2=""
@@ -53,7 +34,7 @@ export default function TransactionsPage() {
         <DataCard
           className="border-yellow-500"
           title="Free Vouchers Redeemed"
-          number1={data?.freeVoucherClaimed}
+          number1={transactionData?.freeVoucherClaimed}
           subTitle1="By Enrolled Beneficiary"
           number2={''}
           subTitle2=""
@@ -62,7 +43,7 @@ export default function TransactionsPage() {
         <DataCard
           className="border-yellow-500"
           title="Discount Vouchers Referred"
-          number1={data?.refeeredVoucherAssigned}
+          number1={transactionData?.refeeredVoucherAssigned}
           subTitle1="To Referred Beneficiaries"
           number2={''}
           subTitle2=""
@@ -71,7 +52,7 @@ export default function TransactionsPage() {
         <DataCard
           className="border-green-500"
           title="Discount Voucher Redeemed"
-          number1={data?.refeeredVoucherClaimed}
+          number1={transactionData?.refeeredVoucherClaimed}
           subTitle1="Referred Beneficiaries"
           number2={''}
           subTitle2=""

@@ -1,12 +1,21 @@
 'use client';
 
 import * as React from 'react';
-import { ELLayout } from '../../../../sections/projects/el';
+import { useSecondPanel } from '../../../../providers/second-panel-provider';
+import { ProjectLayout } from '../../../../sections/projects/components';
+import { useNavItems } from '../../../../sections/projects/el/useNavItems';
 
-export default function ProjectLayout({
+export default function ProjectLayoutRoot({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return <ELLayout>{children}</ELLayout>;
+  const navItems = useNavItems();
+  const { secondPanel } = useSecondPanel();
+
+  return (
+    <ProjectLayout menuItems={navItems}>
+      {secondPanel ? [children, secondPanel] : children}
+    </ProjectLayout>
+  );
 }

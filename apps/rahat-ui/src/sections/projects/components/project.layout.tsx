@@ -1,23 +1,23 @@
 'use client';
 
-import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import { Separator } from '@rahat-ui/shadcn/components/separator';
 import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
 } from '@rahat-ui/shadcn/src/components/ui/resizable';
-import { Separator } from '@rahat-ui/shadcn/src/components/ui/separator';
+import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { Tabs } from '@rahat-ui/shadcn/src/components/ui/tabs';
 import { FC } from 'react';
+import { NavItem } from './nav-items.types';
 import ProjectNavView from './project.nav.view';
-import { useNavItems } from './useNavItems';
 
 type ProjectLayoutProps = {
   children: React.ReactNode;
+  menuItems: NavItem[];
 };
 
-const ProjectLayout: FC<ProjectLayoutProps> = ({ children }) => {
-  const navItems = useNavItems();
+const ProjectLayout: FC<ProjectLayoutProps> = ({ children, menuItems }) => {
   return (
     <div>
       <Tabs defaultValue="grid">
@@ -31,7 +31,7 @@ const ProjectLayout: FC<ProjectLayoutProps> = ({ children }) => {
             maxSize={20}
             className="h-full"
           >
-            {navItems.map((item) => (
+            {menuItems.map((item) => (
               <ProjectNavView
                 key={item.title}
                 title={item.title}

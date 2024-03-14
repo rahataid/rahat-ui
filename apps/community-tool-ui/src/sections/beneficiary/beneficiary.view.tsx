@@ -24,7 +24,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/components/dropdown-menu';
-import { Beneficiary } from '@rahataid/community-tool-sdk/beneficiary';
+import { ListBeneficiary } from '@rahataid/community-tool-sdk/beneficiary';
 import { MoreHorizontal } from 'lucide-react';
 import CustomPagination from '../../components/customPagination';
 import { BENEFICIARY_NAV_ROUTE } from '../../constants/beneficiary.const';
@@ -36,7 +36,7 @@ import BeneficiaryNav from '../../sections/beneficiary/nav';
 import AddBeneficiary from './addBeneficiary';
 import ImportBeneficiary from './import.beneficiary';
 
-export const columns: ColumnDef<Beneficiary>[] = [
+export const columns: ColumnDef<ListBeneficiary>[] = [
   {
     id: 'select',
     header: ({ table }) => (
@@ -58,6 +58,16 @@ export const columns: ColumnDef<Beneficiary>[] = [
     ),
     enableSorting: false,
     enableHiding: false,
+  },
+  {
+    accessorKey: 'firstName',
+    header: 'First Name',
+    cell: ({ row }) => <div>{row.getValue('firstName')}</div>,
+  },
+  {
+    accessorKey: 'lastName',
+    header: 'Last Name',
+    cell: ({ row }) => <div>{row.getValue('lastName')}</div>,
   },
   {
     accessorKey: 'walletAddress',
@@ -115,15 +125,17 @@ function BeneficiaryView() {
   const handlePrevPage = () => setCurrentPage(currentPage - 1);
 
   const { communityBenQuery } = useRumsanService();
-  const [selectedData, setSelectedData] = useState<Beneficiary>();
+  const [selectedBeneficiaryIndex, setSelectedBeneficiaryIndex] = useState<
+    number | null
+  >(null);
   const [active, setActive] = useState<string>(BENEFICIARY_NAV_ROUTE.DEFAULT);
 
-  const handleBeneficiaryClick = useCallback((item: Beneficiary) => {
-    setSelectedData(item);
+  const handleBeneficiaryClick = useCallback((index: number) => {
+    setSelectedBeneficiaryIndex(index);
   }, []);
 
   const handleClose = () => {
-    setSelectedData(null);
+    setSelectedBeneficiaryIndex(null);
   };
 
   const handleNav = useCallback((item: string) => {
@@ -188,16 +200,15 @@ function BeneficiaryView() {
             handlePageSizeChange={(value) => setPerPage(Number(value))}
           />
         </ResizablePanel>
-        {selectedData ? (
+        {selectedBeneficiaryIndex ? (
           <>
             <ResizableHandle />
             <ResizablePanel minSize={24}>
-              {selectedData && (
-                <BeneficiaryDetail
-                  handleClose={handleClose}
-                  data={selectedData}
-                />
-              )}
+              <BeneficiaryDetail
+                handleClose={handleClose}
+                data={data?.data?.rows[selectedBeneficiaryIndex]}
+              />
+
               {/* {addBeneficiary && <AddBeneficiary />} */}
             </ResizablePanel>
           </>
@@ -207,4 +218,4 @@ function BeneficiaryView() {
   );
 }
 
-export default memo(BeneficiaryView);
+export default BeneficiaryView;

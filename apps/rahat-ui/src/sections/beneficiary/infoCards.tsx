@@ -49,14 +49,16 @@ export default function InfoCards({ data, voucherData }) {
     });
   };
   return (
-    <div className="flex flex-col gap-4 p-2">
-      <Card className="shadow-md rounded-sm">
+    <div className="flex flex-col gap-2 py-2 pl-2">
+      <Card className="shadow rounded">
         <CardHeader>
           <div className="flex justify-between">
-            <p>Beneficiary Name</p>
-            <Badge variant="outline" className="bg-secondary">
-              Not Approved
-            </Badge>
+            <div className="flex flex-col items-start justify-start">
+              <p>Beneficiary Name</p>
+              <Badge variant="outline" className="bg-secondary">
+                Not Approved
+              </Badge>
+            </div>
             <Button onClick={handleAssignClaims}>Approve</Button>
           </div>
         </CardHeader>
@@ -108,7 +110,7 @@ export default function InfoCards({ data, voucherData }) {
           </div>
         </CardContent>
       </Card>
-      <Card className="shadow-md rounded-sm">
+      <Card className="shadow rounded">
         <CardHeader>
           <div className="flex justify-between items-center">
             <p>Claim Details</p>
@@ -230,9 +232,9 @@ export default function InfoCards({ data, voucherData }) {
           </div>
         </CardContent>
       </Card>
-      <Card className="shadow-md rounded-sm">
+      <Card className="shadow rounded">
         <CardHeader>
-          <p className="fonr-mediun text-md">Projects Involved</p>
+          <p className="font-mediun text-md">Projects Involved</p>
         </CardHeader>
         <CardContent>
           <Badge variant="outline" color="secondary" className="rounded">

@@ -23,17 +23,12 @@ import {
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 
-type IProps = {
-  handleClick: (item: Beneficiary) => void;
-  table: Table<Beneficiary>;
-};
+import { UUID } from 'crypto';
+import { ListBeneficiary } from '@rahataid/community-tool-sdk/beneficiary';
 
-export type Beneficiary = {
-  name: string;
-  projectsInvolved: string;
-  internetAccess: string;
-  phone: string;
-  bank: string;
+type IProps = {
+  handleClick: (index: number) => void;
+  table: Table<ListBeneficiary>;
 };
 
 export default function ListView({ handleClick, table }: IProps) {
@@ -107,12 +102,12 @@ export default function ListView({ handleClick, table }: IProps) {
               </TableHeader>
               <TableBody>
                 {table.getRowModel().rows?.length ? (
-                  table.getRowModel().rows.map((row) => (
+                  table.getRowModel().rows.map((row, index) => (
                     <TableRow
                       key={row.id}
                       data-state={row.getIsSelected() && 'selected'}
                       onClick={() => {
-                        handleClick(row.original);
+                        handleClick(index);
                       }}
                     >
                       {row.getVisibleCells().map((cell) => (

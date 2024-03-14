@@ -1,12 +1,9 @@
 import { useSwal } from '../../../components/swal';
+import { useWriteRahatDonorMintTokenAndApprove } from './donor';
 import {
   useWriteElProjectAddBeneficiary,
   useWriteElProjectAssignClaims,
 } from './elProject';
-import {
-  useWriteRahatDonor,
-  useWriteRahatDonorMintTokenAndApprove,
-} from './donor';
 
 export const useAddBeneficiary = () => {
   const alert = useSwal();

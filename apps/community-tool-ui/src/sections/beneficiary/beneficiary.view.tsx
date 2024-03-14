@@ -35,6 +35,7 @@ import BeneficiaryListView from '../../sections/beneficiary/listView';
 import BeneficiaryNav from '../../sections/beneficiary/nav';
 import AddBeneficiary from './addBeneficiary';
 import ImportBeneficiary from './import.beneficiary';
+import BenImp from './import/beneficiary';
 
 export const columns: ColumnDef<ListBeneficiary>[] = [
   {
@@ -125,17 +126,15 @@ function BeneficiaryView() {
   const handlePrevPage = () => setCurrentPage(currentPage - 1);
 
   const { communityBenQuery } = useRumsanService();
-  const [selectedBeneficiaryIndex, setSelectedBeneficiaryIndex] = useState<
-    number | null
-  >(null);
+  const [selectedData, setSelectedData] = useState<ListBeneficiary>();
   const [active, setActive] = useState<string>(BENEFICIARY_NAV_ROUTE.DEFAULT);
 
-  const handleBeneficiaryClick = useCallback((index: number) => {
-    setSelectedBeneficiaryIndex(index);
+  const handleBeneficiaryClick = useCallback((item: ListBeneficiary) => {
+    setSelectedData(item);
   }, []);
 
   const handleClose = () => {
-    setSelectedBeneficiaryIndex(null);
+    setSelectedData(null);
   };
 
   const handleNav = useCallback((item: string) => {
@@ -171,11 +170,13 @@ function BeneficiaryView() {
         </ResizablePanel>
         <ResizableHandle />
         <ResizablePanel minSize={28}>
-          {active === BENEFICIARY_NAV_ROUTE.ADD_BENEFICIARY ? (
+          {active === BENEFICIARY_NAV_ROUTE.ADD_BENEFICIARY && (
             <AddBeneficiary />
-          ) : active === BENEFICIARY_NAV_ROUTE.IMPORT_BENEFICIARY ? (
+          )}
+          {active === BENEFICIARY_NAV_ROUTE.UPLOAD_BENEFICIARY && (
             <ImportBeneficiary />
-          ) : null}
+          )}
+          {active === BENEFICIARY_NAV_ROUTE.IMPORT_BENEFICIARY && <BenImp />}
 
           {active === BENEFICIARY_NAV_ROUTE.DEFAULT && (
             <>
@@ -191,22 +192,22 @@ function BeneficiaryView() {
                   data={data?.data}
                 />
               </TabsContent>
+              <CustomPagination
+                meta={data?.response?.meta || { total: 0, currentPage: 0 }}
+                handleNextPage={handleNextPage}
+                handlePrevPage={handlePrevPage}
+                handlePageSizeChange={(value) => setPerPage(Number(value))}
+              />
             </>
           )}
-          <CustomPagination
-            meta={data?.response?.meta || { total: 0, currentPage: 0 }}
-            handleNextPage={handleNextPage}
-            handlePrevPage={handlePrevPage}
-            handlePageSizeChange={(value) => setPerPage(Number(value))}
-          />
         </ResizablePanel>
-        {selectedBeneficiaryIndex ? (
+        {selectedData ? (
           <>
             <ResizableHandle />
             <ResizablePanel minSize={24}>
               <BeneficiaryDetail
                 handleClose={handleClose}
-                data={data?.data?.rows[selectedBeneficiaryIndex]}
+                data={selectedData}
               />
 
               {/* {addBeneficiary && <AddBeneficiary />} */}

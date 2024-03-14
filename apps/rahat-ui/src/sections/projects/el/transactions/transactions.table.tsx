@@ -422,9 +422,9 @@ export default function TransactionTable() {
           className="w-full"
         />
       </div>
-      <div className="rounded border bg-white">
-        <Table>
-          <ScrollArea className="h-[calc(100vh-184px)]">
+      <div className="w-full p-2 bg-secondary">
+        <Table className="bg-card rounded">
+          <ScrollArea className="w-full h-[calc(100vh-184px)]">
             <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
@@ -474,7 +474,7 @@ export default function TransactionTable() {
           </ScrollArea>
         </Table>
       </div>
-      <div className="flex items-center justify-end space-x-2 py-2">
+      <div className="flex items-center justify-end space-x-2 p-2 border-t bg-card">
         <div className="flex-1 text-sm text-muted-foreground">
           {table.getFilteredSelectedRowModel().rows.length} of{' '}
           {table.getFilteredRowModel().rows.length} row(s) selected.

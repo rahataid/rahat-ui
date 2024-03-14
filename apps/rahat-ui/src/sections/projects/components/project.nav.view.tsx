@@ -14,7 +14,7 @@ const ProjectNavView: FC<ProjectNavViewProps> = ({ title, items }) => {
   const handleNav = (item: NavItem) => {
     if (item.children) {
       setOpenSubmenu(item.title === openSubmenu ? null : item.title);
-    } else {
+    } else if (item.path) {
       router.push(item.path as string);
     }
   };
@@ -33,11 +33,19 @@ const ProjectNavView: FC<ProjectNavViewProps> = ({ title, items }) => {
                 onClick={() => handleNav(item)}
                 {...item}
               >
-                <div className="flex gap-3 items-center">
-                  {item.icon}
-                  <p>{item.title}</p>
-                </div>
-                <p className="text-sm">{item.subtitle}</p>
+                {item.component ? (
+                  item.component
+                ) : (
+                  <>
+                    {' '}
+                    <div className="flex gap-3 items-center">
+                      {item.icon}
+                      <p>{item.title}</p>
+                    </div>
+                    <p className="text-sm">{item.subtitle}</p>
+                  </>
+                )}
+
                 {item.children && (
                   <div
                     className={`transition-transform duration-200 ${
@@ -70,11 +78,18 @@ const ProjectNavView: FC<ProjectNavViewProps> = ({ title, items }) => {
                       onClick={() => subItem.path && router.push(subItem.path)}
                       {...subItem}
                     >
-                      <div className="flex gap-3 items-center">
-                        {subItem.icon}
-                        <p>{subItem.title}</p>
-                      </div>
-                      <p className="text-sm">{subItem.subtitle}</p>
+                      {item.component ? (
+                        item.component
+                      ) : (
+                        <>
+                          {' '}
+                          <div className="flex gap-3 items-center">
+                            {subItem.icon}
+                            <p>{subItem.title}</p>
+                          </div>
+                          <p className="text-sm">{subItem.subtitle}</p>
+                        </>
+                      )}
                     </div>
                   ))}
                 </div>

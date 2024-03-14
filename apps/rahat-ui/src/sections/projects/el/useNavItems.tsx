@@ -1,68 +1,22 @@
 import {
+  Lock,
+  MessageSquare,
   Pencil,
-  PlusSquare,
+  Phone,
+  Receipt,
   Speech,
   Store,
   UsersRound,
   XCircle,
-  Ticket,
-  Lock,
-  Receipt,
-  Phone,
-  MessageSquare,
 } from 'lucide-react';
-import { useSwal } from '../../../components/swal';
 import { useParams } from 'next/navigation';
-
-export type NavItem = {
-  title: string;
-  path?: string;
-  icon?: React.ReactNode;
-  subtitle?: string | number;
-  onClick?: () => void;
-  children?: NavItem[];
-};
-
+import { useSwal } from '../../../components/swal';
+import { NavItem } from '../components';
+import CreateVoucherModal from './create-voucher-modal';
 export const useNavItems = () => {
   const params = useParams();
   const dialog = useSwal();
   // const beneficiary = useBeneficiaryStore(state=>state.beneficiary)
-
-  const handleCreateToken = async () => {
-    const { value } = await dialog.fire({
-      title: 'Create Token',
-      text: 'Create a token for the project',
-      showCancelButton: true,
-      confirmButtonText: 'Create',
-      cancelButtonText: 'Cancel',
-      input: 'text',
-    });
-    if (value) {
-      dialog.fire({
-        title: 'Token Created',
-        text: `Token ${value} has been created successfully`,
-        icon: 'success',
-      });
-    }
-  };
-
-  const handleCreateVoucher = async () => {
-    const { value } = await dialog.fire({
-      title: 'Create Voucher',
-      text: 'Create a voucher for the project',
-      showCancelButton: true,
-      confirmButtonText: 'Create',
-      cancelButtonText: 'Cancel',
-      input: 'text',
-    });
-    if (value) {
-      dialog.fire({
-        title: 'Voucher Created',
-        text: `Voucher ${value} has been created successfully`,
-        icon: 'success',
-      });
-    }
-  };
 
   const handleLockProject = async () => {
     const { value } = await dialog.fire({
@@ -127,9 +81,8 @@ export const useNavItems = () => {
       title: 'Actions',
       children: [
         {
+          component: <CreateVoucherModal />,
           title: 'Create Voucher',
-          icon: <PlusSquare size={18} strokeWidth={1.5} />,
-          onClick: handleCreateVoucher,
         },
         {
           title: 'Lock Project',

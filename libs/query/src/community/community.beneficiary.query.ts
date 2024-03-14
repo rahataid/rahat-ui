@@ -14,6 +14,7 @@ import {
 } from '@tanstack/react-query';
 
 import { TAGS } from '../config';
+import Swal from 'sweetalert2';
 
 export class CommunityBeneficiaryQuery {
   private client: BeneficiaryClient;
@@ -26,9 +27,22 @@ export class CommunityBeneficiaryQuery {
 
   useCommunityBeneficiaryList = (payload: any): UseQueryResult<any, Error> => {
     return useQuery({
-      queryKey: [TAGS.LIST_COMMUNITY_BENFICIARIES],
+      refetchOnMount: true,
+      queryKey: [TAGS.LIST_COMMUNITY_BENFICIARIES, payload],
       queryFn: () => {
         return this.client.list(payload);
+      },
+    });
+  };
+
+  useCommunityBeneficiaryListByID = (
+    uuid: string,
+  ): UseQueryResult<any, Error> => {
+    return useQuery({
+      refetchOnMount: true,
+      queryKey: [TAGS.GET_BENEFICIARY],
+      queryFn: () => {
+        return this.client.listById(uuid);
       },
     });
   };
@@ -40,9 +54,19 @@ export class CommunityBeneficiaryQuery {
         console.log(payload);
         return this.client.create(payload);
       },
-      onSuccess: () => {
-        this.qc.invalidateQueries({
+      onSuccess: async () => {
+        await this.qc.invalidateQueries({
           queryKey: [TAGS.LIST_COMMUNITY_BENFICIARIES],
+        });
+        Swal.fire({
+          icon: 'success',
+          title: 'Beneficiary Created successfully',
+        });
+      },
+      onError: (error: any) => {
+        Swal.fire({
+          icon: 'error',
+          title: error.message || 'Encounter error on Creating Data',
         });
       },
     });
@@ -61,6 +85,76 @@ export class CommunityBeneficiaryQuery {
 
         await this.qc.refetchQueries({
           queryKey: [TAGS.LIST_COMMUNITY_BENFICIARIES],
+        });
+
+        Swal.fire({
+          icon: 'success',
+          title: 'Beneficiary updated successfully',
+        });
+      },
+      onError: (error: any) => {
+        Swal.fire({
+          icon: 'error',
+          title: error.message || 'Encounter error on Updating Data',
+        });
+      },
+    });
+  };
+
+  useCommunityBeneficiaryRemove = () => {
+    return useMutation({
+      mutationKey: [TAGS.REMOVE_COMMUNITY_BENEFICARY],
+      mutationFn: async (uuid: string) => {
+        return this.client.remove(uuid);
+      },
+      onSuccess: async (data) => {
+        await this.qc.invalidateQueries({
+          queryKey: [TAGS.LIST_COMMUNITY_BENFICIARIES],
+        });
+
+        await this.qc.refetchQueries({
+          queryKey: [TAGS.LIST_COMMUNITY_BENFICIARIES],
+        });
+
+        Swal.fire({
+          icon: 'success',
+          title: 'Beneficiary Removed successfully',
+        });
+      },
+      onError: (error: any) => {
+        Swal.fire({
+          icon: 'error',
+          title: error.message || 'Encounter error on Removing Benificiary',
+        });
+      },
+    });
+  };
+
+  useCommunityBeneficiaryCreateBulk = () => {
+    return useMutation({
+      mutationKey: [TAGS.CREATE_BULK_COMMUNITY_BENEFICARY],
+      mutationFn: async (data: any) => {
+        return this.client.createBulk(data);
+      },
+      onSuccess: async (data) => {
+        await this.qc.invalidateQueries({
+          queryKey: [TAGS.LIST_COMMUNITY_BENFICIARIES],
+        });
+
+        await this.qc.refetchQueries({
+          queryKey: [TAGS.LIST_COMMUNITY_BENFICIARIES],
+        });
+
+        Swal.fire({
+          icon: 'success',
+          title: 'Bulk Beneficiary Created Successfully',
+        });
+      },
+      onError: (error: any) => {
+        Swal.fire({
+          icon: 'error',
+          title:
+            error.message || 'Encounter error on Creating Benificiary Bulk',
         });
       },
     });

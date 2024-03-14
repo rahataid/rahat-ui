@@ -219,7 +219,7 @@ dependencies:
     specifier: ^0.8.0
     version: 0.8.0(typescript@5.3.3)
   sweetalert2:
-    specifier: ^11.10.5
+    specifier: ^11.10.6
     version: 11.10.6
   sweetalert2-react-content:
     specifier: ^5.0.7
@@ -6750,7 +6750,6 @@ packages:
     dependencies:
       '@babel/runtime': 7.24.0
     dev: false
-
   /@rahataid/community-tool-sdk@0.0.2:
     resolution:
       {
@@ -6761,7 +6760,7 @@ packages:
       tslib: 2.6.2
     dev: false
 
-  /@rahataid/el-subgraph@0.0.3:
+/@rahataid/el-subgraph@0.0.3:
     resolution:
       {
         integrity: sha512-u2nVutI7IqD2p2gD0Wca9LvGcw594Jmts+bPfjzzGb37Siw1BL6xlQIyTN4zsIDimEEBKj8DCFLuT/olI6n5EA==,
@@ -12223,7 +12222,7 @@ packages:
     engines: { node: '>=0.10.0' }
     dev: false
 
-  /cmdk@1.0.0(@types/react-dom@18.2.22)(@types/react@18.2.65)(react-dom@18.2.0)(react@18.2.0):
+  /cmdk@1.0.0(@types/react-dom@18.2.21)(@types/react@18.2.64)(react-dom@18.2.0)(react@18.2.0):
     resolution:
       {
         integrity: sha512-gDzVf0a09TvoJ5jnuPvygTB77+XdOSwEmJ88L6XPFPlv7T3RxbP9jgenfylrAMD0+Le1aO0nVjQUzl2g+vjz5Q==,

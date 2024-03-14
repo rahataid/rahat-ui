@@ -21,7 +21,8 @@ import { Archive, Expand, Minus, Trash2 } from 'lucide-react';
 import { paths } from '../../../../routes/paths';
 import { IBeneficiaryItem } from '../../../../types/beneficiary';
 // import EditBeneficiary from '../beneficiary/editBeneficiary';
-import InfoCards from '../../../beneficiary/infoCards';
+import InfoCards from './beneficiary.infoCards';
+import TransactionTable from './beneficiary.transaction.table';
 
 type IProps = {
   data: IBeneficiaryItem;
@@ -102,7 +103,7 @@ export default function BeneficiaryDetail({ data, handleClose }: IProps) {
           <InfoCards data={data} />
         </TabsContent>
         <TabsContent value="transaction-history">
-          <div className="p-4 border-y">Transaction History View</div>
+          <TransactionTable />
         </TabsContent>
         <TabsContent value="edit">{/* <EditBeneficiary /> */}</TabsContent>
       </Tabs>

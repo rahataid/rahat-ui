@@ -13,6 +13,7 @@ import {
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/components/dropdown-menu';
 import { useSecondPanel } from '../../../../providers/second-panel-provider';
+import BeneficiaryDetail from '../../../../sections/projects/el/beneficiary/beneficiary.detail';
 
 export const useProjectBeneficiaryTableColumns = () => {
   const { setSecondPanelComponent, closeSecondPanel } = useSecondPanel();
@@ -92,12 +93,7 @@ export const useProjectBeneficiaryTableColumns = () => {
               <DropdownMenuItem
                 onClick={() => {
                   console.log('first panel');
-                  setSecondPanelComponent(
-                    <div>
-                      <h1>Second Panel</h1>
-                      <button onClick={closeSecondPanel}>Close</button>
-                    </div>,
-                  );
+                  setSecondPanelComponent(<BeneficiaryDetail />);
                 }}
               >
                 View Details

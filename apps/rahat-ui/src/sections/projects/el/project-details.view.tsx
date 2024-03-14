@@ -19,7 +19,7 @@ import {
   ProjectDetailsNav,
   ProjectVendorTable,
 } from '../../../sections/projects';
-import ProjectDetails from './project-info';
+import ProjectDetails from './project.detail';
 
 export default function ProjectPage() {
   const [active, setActive] = useState<string>(
@@ -59,7 +59,7 @@ export default function ProjectPage() {
           <ResizableHandle />
           <ResizablePanel>
             {active === PROJECT_DETAIL_NAV_ROUTE.DEFAULT && (
-              <ScrollArea className="h-custom">
+              <ScrollArea className="h-[calc(100vh-66px)]">
                 <ProjectDetails />
               </ScrollArea>
             )}

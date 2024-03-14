@@ -45,8 +45,7 @@ import {
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import TransactionTableData from '../../app/beneficiary/beneficiaryTransactionData.json';
-import { useGraphService } from '../../providers/subgraph-provider';
-import { formatDate } from '../../utils';
+import { useBeneficiaryTransaction } from '../../hooks/el/subgraph/querycall';
 
 const data: Transaction[] = TransactionTableData;
 
@@ -154,10 +153,12 @@ export default function BeneficiaryDetailTableView() {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
   );
+  const { data, error } = useBeneficiaryTransaction(
+    '0x082d43D30C31D054b1AEDbE08F50C2a1BBE76fC7',
+  );
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
-  const [data, setData] = React.useState<Transaction[]>([]);
 
   const table = useReactTable({
     data,
@@ -178,58 +179,10 @@ export default function BeneficiaryDetailTableView() {
     },
   });
 
-  const { queryService } = useGraphService();
-
-  const fetchBeneficiary = React.useCallback(() => {
-    const querRes = queryService.useBeneficiaryTransaction(
-      '0x082d43D30C31D054b1AEDbE08F50C2a1BBE76fC7',
-    );
-    // const claimRes = queryService.useClaimAssigned('0x932a3db51f4c4ef3d0ee454613b55446149302ec148b4bf3d955708802c972d609000000');
-    querRes.then((res) => {
-      const claimedAssigned = res?.claimAssigneds;
-      const claimProcessed = res?.projectClaimProcesseds;
-      const beneficiaryReferred = res?.beneficiaryReferreds;
-      const data: any = [];
-
-      claimedAssigned.map((trans) => {
-        data.push({
-          processedBy: trans.beneficiary,
-          topic: trans.eventType,
-          timeStamp: formatDate(trans.blockTimestamp),
-          transactionHash: trans.transactionHash,
-          amount: '1',
-        });
-        // const claimRes = queryService?.useClaimAssigned(trans.id);
-      });
-      claimProcessed.map((trans) => {
-        data.push({
-          processedBy: trans.vendor,
-          topic: trans.eventType,
-          timeStamp: formatDate(trans.blockTimestamp),
-          transactionHash: trans.transactionHash,
-          amount: '',
-        });
-      });
-      beneficiaryReferred.map((trans) => {
-        data.push({
-          processedBy: trans.referrerVendor,
-          topic: trans.eventType,
-          timeStamp: formatDate(trans.blockTimestamp),
-          transactionHash: trans.transactionHash,
-        });
-      });
-      setData(data);
-    });
-  }, [queryService]);
-
-  React.useEffect(() => {
-    fetchBeneficiary();
-  }, [fetchBeneficiary]);
-
   return (
     <>
-      <div className="w-full p-2">
-        <div className="flex items-center mb-4">
+      <div className="w-full h-full p-2 bg-secondary">
+        <div className="flex items-center mb-2">
           <Input
             placeholder="Filter topic..."
             value={(table.getColumn('topic')?.getFilterValue() as string) ?? ''}
@@ -268,10 +221,10 @@ export default function BeneficiaryDetailTableView() {
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-        <div className="rounded-md border w-full">
+        <div className="rounded border h-[calc(100vh-180px)]  bg-card">
           <Table>
-            <ScrollArea className="h-table">
-              <TableHeader>
+            <ScrollArea className="h-table1">
+              <TableHeader className="sticky top-0">
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow key={headerGroup.id}>
                     {headerGroup.headers.map((header) => {
@@ -320,54 +273,54 @@ export default function BeneficiaryDetailTableView() {
             </ScrollArea>
           </Table>
         </div>
-      </div>
-      <div className="flex items-center justify-end space-x-8 p-2">
-        <div className="flex-1 text-sm text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length} of{' '}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="text-sm font-medium">Rows per page</div>
-          <Select
-            defaultValue="10"
-            onValueChange={(value) => table.setPageSize(Number(value))}
-          >
-            <SelectTrigger className="w-16">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectItem value="5">5</SelectItem>
-                <SelectItem value="10">10</SelectItem>
-                <SelectItem value="20">20</SelectItem>
-                <SelectItem value="30">30</SelectItem>
-                <SelectItem value="40">40</SelectItem>
-                <SelectItem value="50">50</SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-        </div>
-        <div>
-          Page {table.getState().pagination.pageIndex + 1} of{' '}
-          {table.getPageCount()}
-        </div>
-        <div className="space-x-4">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            Previous
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            Next
-          </Button>
+        <div className="sticky bottom-0 flex items-center justify-end space-x-4 px-4 py-1 border-t-2 bg-card">
+          <div className="flex-1 text-sm text-muted-foreground">
+            {table.getFilteredSelectedRowModel().rows.length} of{' '}
+            {table.getFilteredRowModel().rows.length} row(s) selected.
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="text-sm font-medium">Rows per page</div>
+            <Select
+              defaultValue="10"
+              onValueChange={(value) => table.setPageSize(Number(value))}
+            >
+              <SelectTrigger className="w-16 h-8">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectItem value="5">5</SelectItem>
+                  <SelectItem value="10">10</SelectItem>
+                  <SelectItem value="20">20</SelectItem>
+                  <SelectItem value="30">30</SelectItem>
+                  <SelectItem value="40">40</SelectItem>
+                  <SelectItem value="50">50</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            Page {table.getState().pagination.pageIndex + 1} of{' '}
+            {table.getPageCount()}
+          </div>
+          <div className="space-x-4">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => table.previousPage()}
+              disabled={!table.getCanPreviousPage()}
+            >
+              Previous
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => table.nextPage()}
+              disabled={!table.getCanNextPage()}
+            >
+              Next
+            </Button>
+          </div>
         </div>
       </div>
     </>

@@ -7,8 +7,8 @@ import {
   Import,
   LayoutGrid,
   Plus,
-  Settings,
   Users,
+  Upload,
 } from 'lucide-react';
 import { BENEFICIARY_NAV_ROUTE } from '../../constants/beneficiary.const';
 import Filter from './filter';
@@ -117,8 +117,17 @@ export default function Nav({ meta, handleNav }: IProps) {
             >
               <Plus size={18} strokeWidth={1.5} />
               {/* <PlusSquare size={18} strokeWidth={1.5} /> */}
-              <p>Add beneficiaries</p>
+              <p>Add Beneficiary</p>
             </div>
+            {/* <div
+              className="flex items-center p-2 gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white"
+              onClick={() =>
+                handleNav(BENEFICIARY_NAV_ROUTE.UPLOAD_BENEFICIARY)
+              }
+            >
+              <Upload size={18} strokeWidth={1.5} />
+              <p>Upload Beneficiary</p>
+            </div> */}
             <div
               className="flex items-center p-2 gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white"
               onClick={() =>
@@ -126,7 +135,7 @@ export default function Nav({ meta, handleNav }: IProps) {
               }
             >
               <Import size={18} strokeWidth={1.5} />
-              <p>Import beneficiaries</p>
+              <p>Import Beneficiary</p>
             </div>
           </nav>
         </div>

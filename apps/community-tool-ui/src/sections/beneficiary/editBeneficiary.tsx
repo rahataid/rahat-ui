@@ -68,12 +68,6 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
     await benefClient.mutateAsync({ uuid: data.uuid, payload: formData });
   };
 
-  useEffect(() => {
-    if (benefClient.isSuccess) {
-      form.reset();
-    }
-  }, [benefClient.isSuccess, form]);
-
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleEditBeneficiary)}>

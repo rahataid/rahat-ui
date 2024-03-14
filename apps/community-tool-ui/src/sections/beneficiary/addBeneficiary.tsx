@@ -30,7 +30,7 @@ import {
   InternetStatus,
   PhoneStatus,
 } from '@rahataid/community-tool-sdk/enums/';
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   Popover,
   PopoverContent,
@@ -88,15 +88,14 @@ export default function AddBeneficiary() {
   });
 
   const handleCreateBeneficiary = async (data: z.infer<typeof FormSchema>) => {
-    try {
-      console.log(data);
-      await benefClient.mutateAsync(data);
-      toast.success('Beneficiary created successfully!');
-      form.reset();
-    } catch (err) {
-      toast.error('Failed to create beneficiary!');
-    }
+    await benefClient.mutateAsync(data);
   };
+
+  useEffect(() => {
+    if (benefClient.isSuccess) {
+      form.reset();
+    }
+  }, [benefClient.isSuccess, form]);
 
   return (
     <Form {...form}>

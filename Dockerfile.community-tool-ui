@@ -1,13 +1,13 @@
 # Install dependencies only when needed
 FROM node:18-alpine3.17 AS deps
 WORKDIR /usr/src/app
-COPY dist/apps/rahat-ui/package.json .npmrc ./
+COPY dist/apps/community-tool-ui/package.json .npmrc ./
 RUN yarn install --production && \
     yarn cache clean
 
 FROM node:18-alpine3.17 AS runner
 USER node
 WORKDIR /usr/src/app
-COPY --chown=node:node dist/apps/rahat-ui/ ./
+COPY --chown=node:node dist/apps/community-tool-ui ./
 COPY --chown=node:node --from=deps /usr/src/app/node_modules ./node_modules
-CMD [ "npm", "start" ]
+CMD [ "yarn", "start" ]

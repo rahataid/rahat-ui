@@ -49,7 +49,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          file: Dockerfile
+          file: Dockerfile.rahat-ui
           push: ${{ github.event_name == 'push' && 'true' || 'false' }}
           # push: false
           tags: esatya/rahat-ui:dev
@@ -62,3 +62,14 @@ jobs:
       #     app: '${{ secrets.APP_NAME }}'
       #     token: '${{ secrets.APP_TOKEN }}'
       #     image: $IMAGE_TAG
+
+      # Community-Tool-UI Image
+      - name: build && push community-tool-ui
+        id: build-push-community-tool-ui
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: Dockerfile.community-tool-ui
+          push: ${{ github.event_name == 'push' && 'true' || 'false' }}
+          # push: false
+          tags: esatya/community-tool-ui:dev

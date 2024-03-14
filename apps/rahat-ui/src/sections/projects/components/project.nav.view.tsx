@@ -1,7 +1,6 @@
-import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import { FC, useState } from 'react';
-import { NavItem } from './useNavItems';
 import { useRouter } from 'next/navigation';
+import { FC, useState } from 'react';
+import { NavItem } from './nav-items.types';
 
 type ProjectNavViewProps = {
   title: string;
@@ -10,24 +9,26 @@ type ProjectNavViewProps = {
 
 const ProjectNavView: FC<ProjectNavViewProps> = ({ title, items }) => {
   const router = useRouter();
-  const [showCampaignType, setShowCampaignType] = useState(false);
+  const [openSubmenu, setOpenSubmenu] = useState<string | null>(null);
 
-  const handleNav = (item) => {
-    item.path && router.push(item.path);
-    item.title === 'Campaigns' && setShowCampaignType(!showCampaignType);
+  const handleNav = (item: NavItem) => {
+    if (item.children) {
+      setOpenSubmenu(item.title === openSubmenu ? null : item.title);
+    } else {
+      router.push(item.path as string);
+    }
   };
+
   return (
     <div className="pb-2">
       <div className="flex items-center justify-between p-4">
         <h1 className="font-semibold text-xl text-slate-600">{title}</h1>
       </div>
-      {/* <ScrollArea className="h-48"> */}
       <div className="px-2 ">
         <nav>
           {items?.map((item) => (
-            <>
+            <div key={item.title}>
               <div
-                key={item.title}
                 className="flex justify-between p-2 items-center rounded-md cursor-pointer hover:bg-primary hover:text-white"
                 onClick={() => handleNav(item)}
                 {...item}
@@ -37,16 +38,32 @@ const ProjectNavView: FC<ProjectNavViewProps> = ({ title, items }) => {
                   <p>{item.title}</p>
                 </div>
                 <p className="text-sm">{item.subtitle}</p>
+                {item.children && (
+                  <div
+                    className={`transition-transform duration-200 ${
+                      openSubmenu === item.title ? 'rotate-90' : ''
+                    }`}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      className="h-4 w-4"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 5l7 7-7 7"
+                      />
+                    </svg>
+                  </div>
+                )}
               </div>
-              {item.children && (
-                <div
-                  className={`pl-6 transition-all ease-in-out duration-300 ${
-                    showCampaignType
-                      ? 'opacity-100 max-h-screen'
-                      : 'opacity-0 max-h-0'
-                  }`}
-                >
-                  {item?.children?.map((subItem) => (
+              {item.children && openSubmenu === item.title && (
+                <div className="pl-6 transition-all ease-in-out duration-300 opacity-100 max-h-screen">
+                  {item.children.map((subItem) => (
                     <div
                       key={subItem.title}
                       className="flex justify-between p-2 items-center rounded-md cursor-pointer hover:bg-primary hover:text-white"
@@ -62,11 +79,10 @@ const ProjectNavView: FC<ProjectNavViewProps> = ({ title, items }) => {
                   ))}
                 </div>
               )}
-            </>
+            </div>
           ))}
         </nav>
       </div>
-      {/* </ScrollArea> */}
     </div>
   );
 };

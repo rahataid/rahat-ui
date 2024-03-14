@@ -179,8 +179,7 @@ export default function BeneficiaryDetailTableView() {
       columnVisibility,
       rowSelection,
     },
-  })
-
+  });
 
   return (
     <>

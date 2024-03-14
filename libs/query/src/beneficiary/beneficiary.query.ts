@@ -17,14 +17,14 @@ export class BeneficiaryQuery {
   useBeneficiaryList = (payload: any): UseQueryResult<any, Error> => {
     return useQuery({
       queryKey: [TAGS.GET_BENEFICIARIES, payload],
-      queryFn: () => this.client.list(payload)
+      queryFn: () => this.client.list(payload),
     });
   };
 
   useProjectBeneficiaryList = (payload: any): UseQueryResult<any, Error> => {
     return useQuery({
       queryKey: [TAGS.GET_BENEFICIARIES, payload],
-      queryFn: () => this.client.listPiiData(payload)
+      queryFn: () => this.client.listPiiData(payload),
     });
   };
 

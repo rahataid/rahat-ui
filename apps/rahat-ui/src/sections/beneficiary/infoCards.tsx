@@ -35,7 +35,7 @@ import {
   CardHeader,
 } from '@rahat-ui/shadcn/src/components/ui/card';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
-import { CheckCircle2, MoreVertical } from 'lucide-react';
+import { CheckCircle, MoreVertical } from 'lucide-react';
 // import data from '../../app/beneficiary/beneficiaryData.json';
 import { Beneficiary } from '@rahataid/sdk';
 import { truncateEthAddress } from '@rumsan/sdk/utils';
@@ -114,10 +114,9 @@ export default function InfoCards({ data, voucherData }: InfoCardsProps) {
               <div>
                 <div className="flex items-center text-xs">
                   {truncateEthAddress(data?.walletAddress) ?? 'N/A'}
-                  {data!.isVerified && <CheckCircle2 />}
                 </div>
-                <p className="text-sm font-normal text-muted-foreground">
-                  Wallet Address
+                <p className=" flex text-sm font-normal text-muted-foreground">
+                  Wallet Address {data!.isVerified && <CheckCircle style={{ color: 'green', width: '20px', height: '20px' }} />}
                 </p>
               </div>
               <div>
@@ -255,8 +254,8 @@ export default function InfoCards({ data, voucherData }: InfoCardsProps) {
                 {voucherData?.FreeVoucherAddress
                   ? 'Free Voucher'
                   : voucherData?.ReferredVoucherAddress
-                  ? 'Discount Voucher'
-                  : 'Not Assigned'}
+                    ? 'Discount Voucher'
+                    : 'Not Assigned'}
               </p>
             </div>
             <div className="flex justify-between items-center">

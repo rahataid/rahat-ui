@@ -1,7 +1,6 @@
 'use client';
 
 import {
-  ColumnDef,
   ColumnFiltersState,
   SortingState,
   VisibilityState,
@@ -12,16 +11,14 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { MoreHorizontal, Settings2 } from 'lucide-react';
+import { Settings2 } from 'lucide-react';
 import * as React from 'react';
 
 import { Button } from '@rahat-ui/shadcn/components/button';
-import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
@@ -45,97 +42,10 @@ import {
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import TransactionTableData from './beneficiaryTransactionData.json';
+import { useProjectBeneficiaryTableColumns } from './use-table-column';
 // import { useBeneficiaryTransaction } from '../../hooks/el/subgraph/querycall';
 
 const data: Transaction[] = TransactionTableData;
-
-export type Transaction = {
-  name: string;
-  vouvherType: string;
-  timeStamp: string;
-  transactionHash: string;
-  amount: string;
-};
-
-export const columns: ColumnDef<Transaction>[] = [
-  {
-    id: 'select',
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && 'indeterminate')
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
-    accessorKey: 'name',
-    header: 'Name',
-    cell: ({ row }) => <div>{row.getValue('name')}</div>,
-  },
-  {
-    accessorKey: 'vouvherType',
-    header: 'Voucher Type',
-    cell: ({ row }) => (
-      <div className="capitalize">
-        {row.getValue('vouvherType')
-          ? `${row.getValue('vouvherType')?.toString().substring(0, 4)}....${row
-              .getValue('vouvherType')
-              ?.toString()
-              ?.slice(-3)}`
-          : 'N/A'}
-      </div>
-    ),
-  },
-  {
-    accessorKey: 'phone',
-    header: 'Phone',
-    cell: ({ row }) => <div> {row.getValue('phone')}</div>,
-  },
-  {
-    accessorKey: 'redemption',
-    header: 'Redemption',
-    cell: ({ row }) => <div> {row.getValue('redemption')}</div>,
-  },
-  {
-    accessorKey: 'gender',
-    header: 'Gender',
-    cell: ({ row }) => <div> {row.getValue('gender')}</div>,
-  },
-  {
-    id: 'actions',
-    enableHiding: false,
-    cell: () => {
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem>View Details</DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>Edit</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
-    },
-  },
-];
 
 export default function BeneficiaryDetailTableView() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -148,6 +58,8 @@ export default function BeneficiaryDetailTableView() {
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
+
+  const columns = useProjectBeneficiaryTableColumns();
 
   const table = useReactTable({
     data,

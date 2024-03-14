@@ -16,7 +16,7 @@ import {
   Dialog,
   DialogTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dialog';
-import { Archive, Expand, FilePenLine, Minus, Trash2 } from 'lucide-react';
+import { Archive, Expand, Minus, Trash2 } from 'lucide-react';
 // import ConfirmDialog from '../../components/dialog';
 import { paths } from '../../../../routes/paths';
 import { IBeneficiaryItem } from '../../../../types/beneficiary';
@@ -32,11 +32,7 @@ export default function BeneficiaryDetail({ data, handleClose }: IProps) {
   const router = useRouter();
 
   const changedDate = new Date(data?.updatedAt);
-  const formattedDate = changedDate.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
+
   return (
     <>
       <Tabs defaultValue="detail">

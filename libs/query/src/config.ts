@@ -15,4 +15,5 @@ export const TAGS = {
   LIST_COMMUNITY_BENFICIARIES: 'list_community_beneficiaries',
   CREATE_COMMUNITY_BENEFICARY: 'create_community_beneficary',
   UPDATE_COMMUNITY_BENEFICARY: 'update_community_beneficary',
+  REMOVE_COMMUNITY_BENEFICARY: 'remove_community_beneficary',
 };

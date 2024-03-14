@@ -86,7 +86,7 @@
     "react-resizable-panels": "^1.0.9",
     "react-toastify": "^10.0.4",
     "shadcn-ui": "^0.8.0",
-    "sweetalert2": "^11.10.5",
+    "sweetalert2": "^11.10.6",
     "sweetalert2-react-content": "^5.0.7",
     "tailwind": "^4.0.0",
     "tailwind-merge": "^2.2.1",

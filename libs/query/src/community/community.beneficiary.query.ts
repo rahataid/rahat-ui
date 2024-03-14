@@ -14,6 +14,7 @@ import {
 } from '@tanstack/react-query';
 
 import { TAGS } from '../config';
+import Swal from 'sweetalert2';
 
 export class CommunityBeneficiaryQuery {
   private client: BeneficiaryClient;
@@ -26,7 +27,8 @@ export class CommunityBeneficiaryQuery {
 
   useCommunityBeneficiaryList = (payload: any): UseQueryResult<any, Error> => {
     return useQuery({
-      queryKey: [TAGS.LIST_COMMUNITY_BENFICIARIES],
+      refetchOnMount: true,
+      queryKey: [TAGS.LIST_COMMUNITY_BENFICIARIES, payload],
       queryFn: () => {
         return this.client.list(payload);
       },
@@ -40,9 +42,19 @@ export class CommunityBeneficiaryQuery {
         console.log(payload);
         return this.client.create(payload);
       },
-      onSuccess: () => {
-        this.qc.invalidateQueries({
+      onSuccess: async () => {
+        await this.qc.invalidateQueries({
           queryKey: [TAGS.LIST_COMMUNITY_BENFICIARIES],
+        });
+        Swal.fire({
+          icon: 'success',
+          title: 'Beneficiary Created successfully',
+        });
+      },
+      onError: (error: any) => {
+        Swal.fire({
+          icon: 'error',
+          title: error.message || 'Encounter error on Creating Data',
         });
       },
     });
@@ -61,6 +73,17 @@ export class CommunityBeneficiaryQuery {
 
         await this.qc.refetchQueries({
           queryKey: [TAGS.LIST_COMMUNITY_BENFICIARIES],
+        });
+
+        Swal.fire({
+          icon: 'success',
+          title: 'Beneficiary updated successfully',
+        });
+      },
+      onError: (error: any) => {
+        Swal.fire({
+          icon: 'error',
+          title: error.message || 'Encounter error on Updating Data',
         });
       },
     });

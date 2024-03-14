@@ -20,7 +20,7 @@ import {
 import NestedObjectRenderer from './NestedObjectRenderer';
 import ItemSelector from './ItemSelector';
 import Loader from 'apps/community-tool-ui/src/components/Loader';
-import { InfoIcon } from 'lucide-react';
+import Swal from 'sweetalert2';
 
 const IMPORT_OPTIONS = [
   {
@@ -78,7 +78,11 @@ export default function BenImp() {
       // Fetch kobotool settings and set
       setImportSource(IMPORT_SOURCE.KOBOTOOL);
       const data = await fetchKoboSettings();
-      if (!data.data.length) return alert('Please setup Kobotool creds!');
+      if (!data.data.length)
+        return Swal.fire({
+          icon: 'success',
+          title: 'Please setup kobotool settings first',
+        });
       const sanitizedOptions = data.data.map((d: any) => {
         return {
           label: d.name,
@@ -103,7 +107,11 @@ export default function BenImp() {
     setImportId(found.formId);
     await fetchExistingMapping(found.formId);
     const koboData = await fetchKoboData(value);
-    if (!koboData.data) return alert('No data found for this form');
+    if (!koboData.data)
+      return Swal.fire({
+        icon: 'error',
+        title: 'No data found for this form',
+      });
     const sanitized = removeFieldsWithUnderscore(koboData.data.results);
     setRawData(sanitized);
     setFetching(false);
@@ -139,14 +147,22 @@ export default function BenImp() {
     setRawData([]);
     const { files } = e.target;
     const formData = new FormData();
-    if (!files?.length) return alert('Please select a file to upload');
+    if (!files?.length)
+      return Swal.fire({
+        icon: 'error',
+        title: 'Please select a file to upload',
+      });
     formData.append('file', files[0]);
     const res = await rumsanService.client.post(
       'beneficiaries/upload',
       formData,
     );
     const { data } = res;
-    if (!data) return alert('Failed to upload file');
+    if (!data)
+      return Swal.fire({
+        icon: 'error',
+        title: 'Failed to upload a file',
+      });
     const { workbookData, sheetId } = data?.data;
     const sanitized = removeFieldsWithUnderscore(workbookData || []);
 
@@ -206,8 +222,11 @@ export default function BenImp() {
   };
 
   const addSourceToQueue = (finalPayload: any, selectedTargets: any) => {
-    if (!selectedTargets.length) return alert('Please select target fields!');
-    if (!importId) return alert('Please select import source');
+    if (!selectedTargets.length)
+      return Swal.fire({
+        icon: 'error',
+        title: 'Please select target fields!',
+      });
     const selectedFieldsOnly = includeOnlySelectedTarget(
       finalPayload,
       selectedTargets,
@@ -226,10 +245,16 @@ export default function BenImp() {
     rumsanService.client
       .post('/sources', sourcePayload)
       .then((res) => {
-        alert('Added to queue');
+        Swal.fire({
+          icon: 'success',
+          title: 'Data added to the queue, they will be imported soon!',
+        });
       })
       .catch((err) => {
-        alert('Error adding to queue');
+        Swal.fire({
+          icon: 'error',
+          title: 'Failed to add to the queue!',
+        });
       });
   };
 

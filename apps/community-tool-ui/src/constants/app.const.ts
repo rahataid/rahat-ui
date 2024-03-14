@@ -8,6 +8,7 @@ export const TARGET_FIELD = {
   FIRSTNAME: 'firstName',
   LASTNAME: 'lastName',
   LOCATION: 'location',
+  WALLET_ADDRESS: 'walletAddress',
   PHONE: 'phone',
   EMAIL: 'email',
   GENDER: 'gender',
@@ -27,6 +28,7 @@ export const BENEF_DB_FIELDS = [
   TARGET_FIELD.LOCATION,
   TARGET_FIELD.PHONE,
   TARGET_FIELD.EMAIL,
+  TARGET_FIELD.WALLET_ADDRESS,
   TARGET_FIELD.GENDER,
   TARGET_FIELD.BIRTH_DATE,
   TARGET_FIELD.NOTES,
@@ -36,3 +38,9 @@ export const BENEF_DB_FIELDS = [
   TARGET_FIELD.BANKED_STATUS,
   TARGET_FIELD.INTERNET_STATUS,
 ];
+
+export const UNIQUE_FIELD = {
+  PHONE: 'phone',
+  EMAIL: 'email',
+  WALLET: 'walletAddress',
+};

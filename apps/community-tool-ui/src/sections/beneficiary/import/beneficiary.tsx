@@ -5,6 +5,7 @@ import {
   BENEF_DB_FIELDS,
   IMPORT_SOURCE,
   TARGET_FIELD,
+  UNIQUE_FIELD,
 } from 'apps/community-tool-ui/src/constants/app.const';
 import React, { Fragment, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -18,7 +19,8 @@ import {
 } from 'apps/community-tool-ui/src/utils';
 import NestedObjectRenderer from './NestedObjectRenderer';
 import ItemSelector from './ItemSelector';
-import { set } from 'lodash';
+import Loader from 'apps/community-tool-ui/src/components/Loader';
+import { InfoIcon } from 'lucide-react';
 
 const IMPORT_OPTIONS = [
   {
@@ -31,16 +33,33 @@ const IMPORT_OPTIONS = [
   },
 ];
 
+const UNIQUE_FIELD_OPTIONS = [
+  {
+    label: 'Phone',
+    value: UNIQUE_FIELD.PHONE,
+  },
+  {
+    label: 'Email',
+    value: UNIQUE_FIELD.EMAIL,
+  },
+  {
+    label: 'Wallet Address',
+    value: UNIQUE_FIELD.WALLET,
+  },
+];
+
 export default function BenImp() {
   const form = useForm({});
   const { rumsanService } = useRumsanService();
 
+  const [uniqueField, setUniqueField] = useState('');
   const [importSource, setImportSource] = useState('');
   const [rawData, setRawData] = useState([]) as any;
   const [mappings, setMappings] = useState([]) as any;
   const [existingMappings, setExistingMappings] = useState([]);
   const [koboForms, setKoboForms] = useState([]);
   const [importId, setImportId] = useState(''); // Kobo form id or excel sheetID
+  const [fetching, setFetching] = useState(false);
 
   const fetchExistingMapping = async (importId: string) => {
     const res = await rumsanService.client.get(`/sources/${importId}/mappings`);
@@ -50,8 +69,11 @@ export default function BenImp() {
       return setExistingMappings(fieldMapping?.sourceTargetMappings);
   };
 
+  const handleUniqueFieldChange = (value: string) => setUniqueField(value);
+
   const handleSourceChange = async (d: string) => {
     setRawData([]);
+    setExistingMappings([]);
     if (d === IMPORT_SOURCE.KOBOTOOL) {
       // Fetch kobotool settings and set
       setImportSource(IMPORT_SOURCE.KOBOTOOL);
@@ -71,6 +93,8 @@ export default function BenImp() {
   };
 
   const handleKoboFormChange = async (value: string) => {
+    setFetching(true);
+    setExistingMappings([]);
     setRawData([]);
     const found: any | undefined = koboForms.find(
       (f: any) => f.value === value,
@@ -82,6 +106,7 @@ export default function BenImp() {
     if (!koboData.data) return alert('No data found for this form');
     const sanitized = removeFieldsWithUnderscore(koboData.data.results);
     setRawData(sanitized);
+    setFetching(false);
   };
 
   const fetchKoboSettings = async () => {
@@ -193,6 +218,7 @@ export default function BenImp() {
     const sourcePayload = {
       name: importSource,
       importId,
+      uniqueField,
       details: { message: 'This is a default message' },
       fieldMapping: { data: final_mapping, sourceTargetMappings: mappings },
     };
@@ -218,6 +244,7 @@ export default function BenImp() {
             id="selectImportForm"
             options={IMPORT_OPTIONS}
           />
+
           <div>
             {importSource === IMPORT_SOURCE.KOBOTOOL && (
               <ItemSelector
@@ -230,12 +257,21 @@ export default function BenImp() {
             )}
           </div>
           <div>
+            <ItemSelector
+              form={form}
+              placeholder="--Select Unique Field--"
+              handleItemChange={handleUniqueFieldChange}
+              id="selectUniqueField"
+              options={UNIQUE_FIELD_OPTIONS}
+            />
+          </div>
+          <div>
             {importSource && (
               <Button
                 onClick={handleAddQueueClick}
                 className="w-40 bg-primary hover:ring-2 ring-primary"
               >
-                Add to Queue
+                Import Data
               </Button>
             )}
           </div>
@@ -245,66 +281,73 @@ export default function BenImp() {
           <ExcelUploader handleFileSelect={handleFileSelect} />
         )}
 
-        {existingMappings.length > 0 && (
-          <p className="text-orange-500">
-            Fields are already mapped, You can import directly!
-          </p>
+        {rawData.length > 0 && (
+          <span className="ml-2 mt-5 text-blue-500">
+            Select target field for each column you want to import!
+          </span>
         )}
 
         <hr className="my-5 h-0.5 border-t-0 bg-neutral-100 dark:bg-white/10" />
 
         <div className="relative overflow-x-auto">
-          <table className="w-full text-sm text-left rtl:text-right">
-            {rawData.map((item: string, index: number) => {
-              const keys = Object.keys(item);
+          {fetching ? (
+            <Loader />
+          ) : (
+            <table className="w-full text-sm text-left rtl:text-right">
+              {rawData.map((item: string, index: number) => {
+                const keys = Object.keys(item);
 
-              return (
-                <Fragment key={index}>
-                  <tbody>
-                    {index === 0 && (
+                return (
+                  <Fragment key={index}>
+                    <tbody>
+                      {index === 0 && (
+                        <tr>
+                          {keys.map((key, i) => {
+                            return (
+                              <td key={i + 1}>
+                                <strong>{key.toLocaleUpperCase()}</strong>{' '}
+                                <br />
+                                <select
+                                  name="targetField"
+                                  id="targetField"
+                                  onChange={(e) =>
+                                    handleTargetFieldChange(key, e.target.value)
+                                  }
+                                >
+                                  <option value="None">
+                                    --Choose Target--
+                                  </option>
+                                  {BENEF_DB_FIELDS.map((f) => {
+                                    return (
+                                      <option key={f} value={f}>
+                                        {f}
+                                      </option>
+                                    );
+                                  })}
+                                </select>
+                              </td>
+                            );
+                          })}
+                        </tr>
+                      )}
+
                       <tr>
-                        {keys.map((key, i) => {
-                          return (
-                            <td key={i + 1}>
-                              <strong>{key.toLocaleUpperCase()}</strong> <br />
-                              <select
-                                name="targetField"
-                                id="targetField"
-                                onChange={(e) =>
-                                  handleTargetFieldChange(key, e.target.value)
-                                }
-                              >
-                                <option value="None">--Choose Target--</option>
-                                {BENEF_DB_FIELDS.map((f) => {
-                                  return (
-                                    <option key={f} value={f}>
-                                      {f}
-                                    </option>
-                                  );
-                                })}
-                              </select>
-                            </td>
-                          );
-                        })}
+                        {keys.map((key: any, i) => (
+                          <td key={i + 1}>
+                            {typeof item[key] === 'object' ? (
+                              <NestedObjectRenderer object={item[key]} />
+                            ) : (
+                              item[key]
+                            )}
+                          </td>
+                        ))}
                       </tr>
-                    )}
-
-                    <tr>
-                      {keys.map((key: any, i) => (
-                        <td key={i + 1}>
-                          {typeof item[key] === 'object' ? (
-                            <NestedObjectRenderer object={item[key]} />
-                          ) : (
-                            item[key]
-                          )}
-                        </td>
-                      ))}
-                    </tr>
-                  </tbody>
-                </Fragment>
-              );
-            })}
-          </table>
+                    </tbody>
+                  </Fragment>
+                );
+              })}
+            </table>
+          )}
         </div>
       </div>
     </div>

@@ -6,14 +6,31 @@ import { AlignJustify, Import, LayoutGrid, Plus, Users } from 'lucide-react';
 import { BENEFICIARY_NAV_ROUTE } from '../../constants/beneficiary.const';
 import Filter from './filter';
 import { PROJECT_DETAIL_NAV_ROUTE } from '../../constants/project.detail.const';
+import { Table } from '@tanstack/react-table';
+import {
+  Select,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+} from '@rahat-ui/shadcn/src/components/ui/select';
 
 type IProps = {
   meta: Meta | undefined;
   handleNav: (item: string) => void;
   active: string;
+  table: Table<Beneficiary>;
 };
 
-export default function Nav({ meta, handleNav, active }: IProps) {
+type Beneficiary = {
+  name: string;
+  projectsInvolved: string;
+  internetAccess: string;
+  phone: string;
+  bank: string;
+};
+
+export default function Nav({ meta, handleNav, active, table }: IProps) {
   return (
     <>
       <div>
@@ -123,6 +140,26 @@ export default function Nav({ meta, handleNav, active }: IProps) {
           </nav>
         </div>
       </ScrollArea>
+      {(table.getIsSomeRowsSelected() || table.getIsAllRowsSelected()) && (
+        <>
+          <Separator />
+          <div className="px-4 py-2">
+            <p className="text-muted-foreground mb-2">
+              {table.getFilteredSelectedRowModel().rows.length} of{' '}
+              {table.getFilteredRowModel().rows.length} row(s) selected.
+            </p>
+            <Select>
+              <SelectTrigger>
+                <SelectValue placeholder="Filter" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="assignProject">Assign Project</SelectItem>
+                <SelectItem value="assignToken">Assign Token</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </>
+      )}
     </>
   );
 }

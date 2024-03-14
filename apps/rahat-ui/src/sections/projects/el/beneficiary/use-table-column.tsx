@@ -92,8 +92,9 @@ export const useProjectBeneficiaryTableColumns = () => {
             <DropdownMenuContent align="end">
               <DropdownMenuItem
                 onClick={() => {
-                  console.log('first panel');
-                  setSecondPanelComponent(<BeneficiaryDetail />);
+                  setSecondPanelComponent(
+                    <BeneficiaryDetail closeSecondPanel={closeSecondPanel} />,
+                  );
                 }}
               >
                 View Details

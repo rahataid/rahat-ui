@@ -72,8 +72,8 @@ dependencies:
     specifier: ^0.0.3
     version: 0.0.3
   '@rahataid/sdk':
-    specifier: ^0.0.12
-    version: 0.0.12
+    specifier: ^0.0.15
+    version: 0.0.15
   '@rumsan/communication':
     specifier: ^0.0.3
     version: 0.0.3
@@ -5704,10 +5704,15 @@ packages:
       - graphql
     dev: false
 
-  /@rahataid/sdk@0.0.12:
-    resolution: {integrity: sha512-398MlQsSeJnFXPQxEdC3lR5Ge0NLzVwWGefalGSHPo44jkeabgwtANIc5eanM60h8BKqG6ex7280tX47dAtYkw==, tarball: https://npm.pkg.github.com/download/@rahataid/sdk/0.0.12/249f6ca3f9d9269a057d55df44694df3cc520521}
+
+  /@rahataid/sdk@0.0.15:
+    resolution:
+      {
+        integrity: sha512-QFWO3AhDbboBUVil4ORrAeb+u2YdpHhe+blQrMZNPiBdyfnxxP0cZ3N2uJdFLeiw4CRWjw5pJLvvBb4AVl00hA==,
+        tarball: https://npm.pkg.github.com/download/@rahataid/sdk/0.0.15/ebd20d645eeeb7904f38de60fc980b76c2aa7e97,
+      }
+
     dependencies:
-      '@rumsan/sdk': 0.0.40
       axios: 1.6.7
       tslib: 2.5.0
     transitivePeerDependencies:

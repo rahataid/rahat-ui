@@ -28,14 +28,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/components/dropdown-menu';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  SelectGroup,
-} from '@rahat-ui/shadcn/components/select';
+
 import { Input } from '@rahat-ui/shadcn/components/input';
 import {
   Table,

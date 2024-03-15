@@ -36,6 +36,7 @@ import BeneficiaryNav from '../../sections/beneficiary/nav';
 import AddBeneficiary from './addBeneficiary';
 import ImportBeneficiary from './import.beneficiary';
 import BenImp from './import/beneficiary';
+import AddSetting from '../settings/setting';
 
 export const columns: ColumnDef<ListBeneficiary>[] = [
   {
@@ -177,6 +178,7 @@ function BeneficiaryView() {
             <ImportBeneficiary />
           )}
           {active === BENEFICIARY_NAV_ROUTE.IMPORT_BENEFICIARY && <BenImp />}
+          {active === BENEFICIARY_NAV_ROUTE.SETTINGS && <AddSetting />}
 
           {active === BENEFICIARY_NAV_ROUTE.DEFAULT && (
             <>

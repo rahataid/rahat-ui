@@ -9,6 +9,7 @@ import {
   Plus,
   Users,
   Upload,
+  Settings,
 } from 'lucide-react';
 import { BENEFICIARY_NAV_ROUTE } from '../../constants/beneficiary.const';
 import Filter from './filter';

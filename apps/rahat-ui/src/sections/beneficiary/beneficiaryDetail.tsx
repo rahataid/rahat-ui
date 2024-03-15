@@ -50,7 +50,7 @@ export default function BeneficiaryDetail({ data, handleClose }: IProps) {
     <>
       <Tabs defaultValue="detail">
         <div className="flex justify-between items-center p-4">
-          <div className="flex gap-4">
+          <div className="flex gap-2">
             <TooltipProvider delayDuration={100}>
               <Tooltip>
                 <TooltipTrigger onClick={handleClose}>

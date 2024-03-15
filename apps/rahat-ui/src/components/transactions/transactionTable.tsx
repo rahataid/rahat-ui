@@ -34,9 +34,8 @@ import {
   TableHeader,
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
-import { useGraphService } from '../../providers/subgraph-provider';
 import { truncateEthAddress } from '@rumsan/sdk/utils';
-import { formatDate } from '../../utils';
+import { useProjectTransaction } from '../../hooks/el/subgraph/querycall';
 
 const data: Transaction[] = [
   {
@@ -44,7 +43,7 @@ const data: Transaction[] = [
     topic: 'Claim Processed',
     beneficiary: 1234567890,
     voucherId: 'ABC123',
-    timestamp: '2024-02-27T08:00:00Z',
+    timeStamp: '2024-02-27T08:00:00Z',
     txHash: '0x123456789abcdef',
   },
   {
@@ -52,7 +51,7 @@ const data: Transaction[] = [
     topic: 'Claim Approved',
     beneficiary: 5678234324,
     voucherId: 'DEF456',
-    timestamp: '2024-02-27T09:00:00Z',
+    timeStamp: '2024-02-27T09:00:00Z',
     txHash: '0x987654321abcdef',
   },
   {
@@ -60,7 +59,7 @@ const data: Transaction[] = [
     topic: 'Claim Rejected',
     beneficiary: 90124353534,
     voucherId: 'GHI789',
-    timestamp: '2024-02-27T10:00:00Z',
+    timeStamp: '2024-02-27T10:00:00Z',
     txHash: '0xfedcba9876543210',
   },
   {
@@ -68,7 +67,7 @@ const data: Transaction[] = [
     topic: 'Payment Processed',
     beneficiary: 34563453534,
     voucherId: 'JKL012',
-    timestamp: '2024-02-27T11:00:00Z',
+    timeStamp: '2024-02-27T11:00:00Z',
     txHash: '0xabcdef1234567890',
   },
   {
@@ -76,7 +75,7 @@ const data: Transaction[] = [
     topic: 'Payment Failed',
     beneficiary: 7890345345,
     voucherId: 'MNO345',
-    timestamp: '2024-02-27T12:00:00Z',
+    timeStamp: '2024-02-27T12:00:00Z',
     txHash: '0x0123456789abcdef',
   },
   {
@@ -84,7 +83,7 @@ const data: Transaction[] = [
     topic: 'Claim Approved',
     beneficiary: 1234567567,
     voucherId: 'PQR678',
-    timestamp: '2024-02-27T13:00:00Z',
+    timeStamp: '2024-02-27T13:00:00Z',
     txHash: '0xfedcba9876543210',
   },
   {
@@ -92,7 +91,7 @@ const data: Transaction[] = [
     topic: 'Payment Processed',
     beneficiary: 5678456456,
     voucherId: 'STU901',
-    timestamp: '2024-02-27T14:00:00Z',
+    timeStamp: '2024-02-27T14:00:00Z',
     txHash: '0xabcdef0123456789',
   },
   {
@@ -100,7 +99,7 @@ const data: Transaction[] = [
     topic: 'Claim Processed',
     beneficiary: 9012456456,
     voucherId: 'VWX234',
-    timestamp: '2024-02-27T15:00:00Z',
+    timeStamp: '2024-02-27T15:00:00Z',
     txHash: '0x0123456789abcdef',
   },
   {
@@ -108,7 +107,7 @@ const data: Transaction[] = [
     topic: 'Claim Rejected',
     beneficiary: 3456456456,
     voucherId: 'YZA567',
-    timestamp: '2024-02-27T16:00:00Z',
+    timeStamp: '2024-02-27T16:00:00Z',
     txHash: '0xabcdef0123456789',
   },
   {
@@ -116,7 +115,7 @@ const data: Transaction[] = [
     topic: 'Payment Failed',
     beneficiary: 7890345345,
     voucherId: 'BCD890',
-    timestamp: '2024-02-27T17:00:00Z',
+    timeStamp: '2024-02-27T17:00:00Z',
     txHash: '0x0123456789abcdef',
   },
   {
@@ -124,7 +123,7 @@ const data: Transaction[] = [
     topic: 'Payment Processed',
     beneficiary: 1234345456,
     voucherId: 'EFG901',
-    timestamp: '2024-02-27T18:00:00Z',
+    timeStamp: '2024-02-27T18:00:00Z',
     txHash: '0xfedcba9876543210',
   },
   {
@@ -132,7 +131,7 @@ const data: Transaction[] = [
     topic: 'Claim Approved',
     beneficiary: 5678456345,
     voucherId: 'HIJ234',
-    timestamp: '2024-02-27T19:00:00Z',
+    timeStamp: '2024-02-27T19:00:00Z',
     txHash: '0xabcdef0123456789',
   },
   {
@@ -140,23 +139,7 @@ const data: Transaction[] = [
     topic: 'Claim Processed',
     beneficiary: 9012345345,
     voucherId: 'KLM567',
-    timestamp: '2028-02-27T20:00:00Z',
-    txHash: '0x0123456789abcdef',
-  },
-  {
-    id: 'lkjhgfds',
-    topic: 'Payment Failed',
-    beneficiary: 3456345345,
-    voucherId: 'NOP890',
-    timestamp: '2024-02-27T21:00:00Z',
-    txHash: '0xabcdef0123456789',
-  },
-  {
-    id: 'mnbvcxz1',
-    topic: 'Payment Processed',
-    beneficiary: 78902343456,
-    voucherId: 'QRS234',
-    timestamp: '2024-02-27T22:00:00Z',
+    timeStamp: '2028-02-27T20:00:00Z',
     txHash: '0x0123456789abcdef',
   },
 ];
@@ -166,7 +149,7 @@ export type Transaction = {
   topic: string;
   beneficiary: number;
   voucherId: string;
-  timestamp: string;
+  timeStamp: string;
   txHash: string;
 };
 
@@ -241,7 +224,7 @@ export const columns: ColumnDef<Transaction>[] = [
     ),
   },
   {
-    accessorKey: 'timestamp',
+    accessorKey: 'timeStamp',
     header: ({ column }) => {
       return (
         <Button
@@ -254,11 +237,11 @@ export const columns: ColumnDef<Transaction>[] = [
       );
     },
     cell: ({ row }) => (
-      <div className="lowercase">{row.getValue('timestamp')}</div>
+      <div className="lowercase">{row.getValue('timeStamp')}</div>
     ),
   },
   {
-    accessorKey: 'txHash',
+    accessorKey: 'transactionHash',
     header: ({ column }) => {
       return (
         <Button
@@ -272,7 +255,7 @@ export const columns: ColumnDef<Transaction>[] = [
     },
     cell: ({ row }) => (
       <div className="lowercase">
-        {truncateEthAddress(row.getValue('txHash'))}
+        {truncateEthAddress(row.getValue('transactionHash'))}
       </div>
     ),
   },
@@ -312,7 +295,8 @@ export default function DataTableDemo() {
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
-  const [data, setData] = React.useState([]);
+
+  const { data, error } = useProjectTransaction();
 
   const table = useReactTable({
     data,
@@ -332,80 +316,6 @@ export default function DataTableDemo() {
       rowSelection,
     },
   });
-  const { queryService } = useGraphService();
-  const fetchBeneficiary = React.useCallback(() => {
-    const querRes = queryService.useProjectTransaction();
-    querRes.then((res) => {
-      const claimedAssigned = res?.data?.claimAssigneds;
-      const claimProcessed = res?.data?.projectClaimProcesseds;
-      const beneficiaryReferred = res?.data?.beneficiaryReferreds;
-      const beneficiaryAdded = res?.data?.beneficiaryAddeds;
-      const claimCreated = res?.data?.claimCreateds;
-      const tokenBudgetIncrease = res?.data?.tokenBudgetIncreases;
-      const data: any = [];
-
-      claimedAssigned.map((trans) => {
-        data.push({
-          beneficiary: trans.beneficiary,
-          topic: trans.eventType,
-          timestamp: formatDate(trans.blockTimestamp),
-          txHash: trans.transactionHash,
-          voucherId: trans.tokenAddress,
-        });
-        // const claimRes = queryService?.useClaimAssigned(trans.id);
-      });
-      claimProcessed.map((trans) => {
-        data.push({
-          beneficiary: trans.beneficiary,
-          topic: trans.eventType,
-          timestamp: formatDate(trans.blockTimestamp),
-          txHash: trans.transactionHash,
-          voucherId: trans.token,
-        });
-      });
-      beneficiaryReferred.map((trans) => {
-        data.push({
-          beneficiary: trans.referrerBeneficiaries,
-          topic: trans.eventType,
-          timestamp: formatDate(trans.blockTimestamp),
-          txHash: trans.transactionHash,
-        });
-      });
-
-      claimCreated.map((trans) => {
-        data.push({
-          beneficiary: trans.claimer,
-          txHash: trans.transactionHash,
-          timestamp: formatDate(trans.blockTimestamp),
-          topic: trans?.eventType,
-          voucherId: trans.token,
-        });
-      });
-
-      beneficiaryAdded.map((trans) => {
-        data.push({
-          topic: trans.eventType,
-          timestamp: formatDate(trans.blockTimestamp),
-          txHash: trans.transactionHash,
-          beneficiary: trans.beneficiaryAddress,
-        });
-      });
-
-      tokenBudgetIncrease.map((trans) => {
-        data.push({
-          topic: trans.eventType,
-          txHash: trans.transactionHash,
-          timestamp: formatDate(trans.blockTimestamp),
-          voucherId: trans?.tokenAddress,
-        });
-      });
-      setData(data);
-    });
-  }, [queryService]);
-
-  React.useEffect(() => {
-    fetchBeneficiary();
-  }, [fetchBeneficiary]);
 
   return (
     <div className="w-full">

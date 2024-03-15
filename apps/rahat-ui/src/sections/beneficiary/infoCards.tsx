@@ -55,10 +55,10 @@ export default function InfoCards({ data, voucherData }) {
           <div className="flex justify-between">
             <div className="flex flex-col items-start justify-start">
               <p>Beneficiary Name</p>
-              <Badge variant="outline" className="bg-secondary">
-                Not Approved
-              </Badge>
             </div>
+            <Badge variant="outline" className="bg-secondary">
+              Not Approved
+            </Badge>
             <Button onClick={handleAssignClaims}>Approve</Button>
           </div>
         </CardHeader>

@@ -4,30 +4,16 @@ import { TabsList, TabsTrigger } from '@rahat-ui/shadcn/src/components/ui/tabs';
 import { Meta } from '@rahat-ui/types';
 import { AlignJustify, Import, LayoutGrid, Plus, Users } from 'lucide-react';
 import { BENEFICIARY_NAV_ROUTE } from '../../constants/beneficiary.const';
-import Filter from './filter';
+import MultipleSelectFilter from './filter';
 import { PROJECT_DETAIL_NAV_ROUTE } from '../../constants/project.detail.const';
 import { Table } from '@tanstack/react-table';
-import {
-  Select,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-} from '@rahat-ui/shadcn/src/components/ui/select';
+import { ListBeneficiary } from '@rahat-ui/types';
 
 type IProps = {
   meta: Meta | undefined;
   handleNav: (item: string) => void;
   active: string;
-  table: Table<Beneficiary>;
-};
-
-type Beneficiary = {
-  name: string;
-  projectsInvolved: string;
-  internetAccess: string;
-  phone: string;
-  bank: string;
+  table: Table<ListBeneficiary>;
 };
 
 export default function Nav({ meta, handleNav, active, table }: IProps) {
@@ -55,55 +41,12 @@ export default function Nav({ meta, handleNav, active, table }: IProps) {
         <ScrollArea className="h-auto mb-2">
           <div className="px-4">
             <nav>
-              {/* <div className="flex justify-between p-4 rounded-md cursor-pointer hover:bg-primary hover:text-white">
-                <div className="flex gap-3">
-                  <Eye size={18} strokeWidth={1.5} />
-                  <p>Active beneficiaries</p>
-                </div>
-                <p>128</p>
-              </div>
-              <div className="flex justify-between p-4 rounded-md cursor-pointer hover:bg-primary hover:text-white">
-                <div className="flex gap-3">
-                  <EyeOff size={18} strokeWidth={1.5} />
-                  <p>Inactive beneficiaries</p>
-                </div>
-                <p>32</p>
-              </div>
-              <div className="flex justify-between p-4 rounded-md cursor-pointer hover:bg-primary hover:text-white">
-                <div className="flex gap-3">
-                  <ScreenShareOff size={18} strokeWidth={1.5} />{' '}
-                  <p>Disabled/ Deleted</p>
-                </div>
-                <p>9</p>
-              </div>
-              <div className="flex justify-between p-4 rounded-md cursor-pointer hover:bg-primary hover:text-white">
-                <div className="flex gap-3">
-                  <Eye size={18} strokeWidth={1.5} />
-                  <p>Active beneficiaries</p>
-                </div>
-                <p>128</p>
-              </div>
-              <div className="flex justify-between p-4 rounded-md cursor-pointer hover:bg-primary hover:text-white">
-                <div className="flex gap-3">
-                  <EyeOff size={18} strokeWidth={1.5} />
-                  <p>Inactive beneficiaries</p>
-                </div>
-                <p>32</p>
-              </div>
-              <div className="flex justify-between p-4 rounded-md cursor-pointer hover:bg-primary hover:text-white">
-                <div className="flex gap-3">
-                  <ScreenShareOff size={18} strokeWidth={1.5} />{' '}
-                  <p>Archived</p>
-                </div>
-                <p>9</p>
-              </div> */}
               <div
                 className="flex justify-between p-2 rounded-md cursor-pointer hover:bg-primary hover:text-white text-muted-foreground"
                 onClick={() => handleNav(BENEFICIARY_NAV_ROUTE.DEFAULT)}
               >
                 <div className="flex items-center gap-3">
                   <Users size={18} strokeWidth={1.5} />
-                  {/* <Eye size={18} strokeWidth={1.5} /> */}
                   <p>Beneficiaries</p>
                 </div>
                 <p>{meta?.total}</p>
@@ -112,7 +55,6 @@ export default function Nav({ meta, handleNav, active, table }: IProps) {
           </div>
         </ScrollArea>
       </div>
-      {active === BENEFICIARY_NAV_ROUTE.DEFAULT && <Filter />}
       <Separator />
       <ScrollArea>
         <div className="p-2">
@@ -125,7 +67,6 @@ export default function Nav({ meta, handleNav, active, table }: IProps) {
               className="flex items-center p-2 gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white"
             >
               <Plus size={18} strokeWidth={1.5} />
-              {/* <PlusSquare size={18} strokeWidth={1.5} /> */}
               <p>Add beneficiaries</p>
             </div>
             <div
@@ -142,22 +83,8 @@ export default function Nav({ meta, handleNav, active, table }: IProps) {
       </ScrollArea>
       {(table.getIsSomeRowsSelected() || table.getIsAllRowsSelected()) && (
         <>
-          <Separator />
-          <div className="px-4 py-2">
-            <p className="text-muted-foreground mb-2">
-              {table.getFilteredSelectedRowModel().rows.length} of{' '}
-              {table.getFilteredRowModel().rows.length} row(s) selected.
-            </p>
-            <Select>
-              <SelectTrigger>
-                <SelectValue placeholder="Filter" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="assignProject">Assign Project</SelectItem>
-                <SelectItem value="assignToken">Assign Token</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          <Separator className="mb-2" />
+          <MultipleSelectFilter table={table} />
         </>
       )}
     </>

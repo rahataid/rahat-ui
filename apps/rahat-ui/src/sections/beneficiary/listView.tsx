@@ -22,18 +22,11 @@ import {
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import { ListBeneficiary } from '@rahat-ui/types';
 
 type IProps = {
-  handleClick: (item: Beneficiary) => void;
-  table: Table<Beneficiary>;
-};
-
-export type Beneficiary = {
-  name: string;
-  projectsInvolved: string;
-  internetAccess: string;
-  phone: string;
-  bank: string;
+  handleClick: (item: ListBeneficiary) => void;
+  table: Table<ListBeneficiary>;
 };
 
 export default function ListView({ handleClick, table }: IProps) {

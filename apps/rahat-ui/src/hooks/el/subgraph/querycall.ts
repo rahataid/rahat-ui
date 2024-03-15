@@ -1,0 +1,168 @@
+import { formatDate } from '../../../utils';
+import { useGraphService } from '../../../providers/subgraph-provider';
+import { useState, useMemo, useEffect, useCallback } from 'react';
+
+const formatTransaction = (trans: any) => ({
+  beneficiary: trans.beneficiary || trans.referrerBeneficiaries || '-',
+  vendor: trans.vendor || '',
+  processedBy:
+    trans.beneficiary ||
+    trans.vendor ||
+    trans.referrerVendor ||
+    trans.claimer ||
+    trans.beneficiaryAddress,
+  topic: trans.eventType,
+  timeStamp: formatDate(trans.blockTimestamp),
+  transactionHash: trans.transactionHash,
+  amount: '',
+  voucherId: trans.tokenAddress || trans.token || '-',
+  id: trans.transactionHash,
+});
+
+const mapTransactions = (transactions: any[]) =>
+  transactions.map(formatTransaction);
+
+export const useProjectVoucher = (projectAddress: string) => {
+  const { queryService } = useGraphService();
+  const [data, setData] = useState<any>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchVoucher = useCallback(async () => {
+    try {
+      const res = await queryService.useProjectVoucher(projectAddress);
+      if (res.error) {
+        setError(res.error);
+        setData([]);
+      } else {
+        setData(res);
+        setError(null);
+      }
+    } catch (error) {
+      setError(error.message || 'An error occurred while fetching data.');
+      setData([]);
+    }
+  }, [projectAddress, queryService]);
+
+  useEffect(() => {
+    fetchVoucher();
+  }, [fetchVoucher]);
+
+  return useMemo(() => ({ data, error }), [data, error]);
+};
+
+export const useBeneficaryVoucher = (beneficiary: string) => {
+  const { queryService } = useGraphService();
+  const [data, setData] = useState<any>();
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchVoucher = useCallback(async () => {
+    try {
+      const res = await queryService.useBeneficiaryVoucher(beneficiary);
+      if (res.error) {
+        setError(res.error);
+        setData([]);
+      } else {
+        setData(res);
+      }
+    } catch (error) {
+      setError(error.message || '');
+      setData([]);
+    }
+  }, [beneficiary, queryService]);
+
+  useEffect(() => {
+    fetchVoucher();
+  }, [fetchVoucher]);
+
+  return useMemo(
+    () => ({
+      data,
+      error,
+    }),
+    [data, error],
+  );
+};
+
+export const useBeneficiaryTransaction = (address: string) => {
+  const { queryService } = useGraphService();
+  const [data, setData] = useState<any[]>([]);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchData = useCallback(async () => {
+    try {
+      const res = await queryService.useBeneficiaryTransaction(address);
+
+      if (res.error) {
+        setError(res.error);
+        setData([]);
+      } else {
+        const claimedAssigned = res?.claimAssigneds || [];
+        const claimProcessed = res?.projectClaimProcesseds || [];
+        const beneficiaryReferred = res?.beneficiaryReferreds || [];
+        const newData = mapTransactions(
+          claimedAssigned.concat(claimProcessed, beneficiaryReferred),
+        );
+
+        setData(newData);
+        setError(null);
+      }
+    } catch (error) {
+      setError(error.message || 'An error occurred while fetching data.');
+      setData([]);
+    }
+  }, [address, queryService]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  return useMemo(
+    () => ({
+      data,
+      error,
+    }),
+    [data, error],
+  );
+};
+
+export const useProjectTransaction = () => {
+  const { queryService } = useGraphService();
+  const [data, setData] = useState<any[]>([]);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchData = useCallback(async () => {
+    try {
+      const res = await queryService.useProjectTransaction();
+
+      if (res.error) {
+        setError(res.error);
+        setData([]);
+      } else {
+        const transactionTypes = [
+          'claimAssigneds',
+          'projectClaimProcesseds',
+          'beneficiaryReferreds',
+          'beneficiaryAddeds',
+          'claimCreateds',
+          'tokenBudgetIncreases',
+        ];
+        const newData = transactionTypes.reduce((acc, type) => {
+          const transactions = res?.data[type] || [];
+          return acc.concat(transactions.map(formatTransaction));
+        }, []);
+
+        setData(newData);
+        setError(null);
+      }
+    } catch (error) {
+      setError(error.message || 'An error occurred while fetching data.');
+      setData([]);
+    }
+  }, [queryService]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  return { data, error };
+};

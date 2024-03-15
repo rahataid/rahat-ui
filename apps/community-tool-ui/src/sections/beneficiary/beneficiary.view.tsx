@@ -24,7 +24,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/components/dropdown-menu';
-import { Beneficiary } from '@rahataid/community-tool-sdk/beneficiary';
+import { ListBeneficiary } from '@rahataid/community-tool-sdk/beneficiary';
 import { MoreHorizontal } from 'lucide-react';
 import CustomPagination from '../../components/customPagination';
 import { BENEFICIARY_NAV_ROUTE } from '../../constants/beneficiary.const';
@@ -35,8 +35,9 @@ import BeneficiaryListView from '../../sections/beneficiary/listView';
 import BeneficiaryNav from '../../sections/beneficiary/nav';
 import AddBeneficiary from './addBeneficiary';
 import ImportBeneficiary from './import.beneficiary';
+import BenImp from './import/beneficiary';
 
-export const columns: ColumnDef<Beneficiary>[] = [
+export const columns: ColumnDef<ListBeneficiary>[] = [
   {
     id: 'select',
     header: ({ table }) => (
@@ -58,6 +59,16 @@ export const columns: ColumnDef<Beneficiary>[] = [
     ),
     enableSorting: false,
     enableHiding: false,
+  },
+  {
+    accessorKey: 'firstName',
+    header: 'First Name',
+    cell: ({ row }) => <div>{row.getValue('firstName')}</div>,
+  },
+  {
+    accessorKey: 'lastName',
+    header: 'Last Name',
+    cell: ({ row }) => <div>{row.getValue('lastName')}</div>,
   },
   {
     accessorKey: 'walletAddress',
@@ -115,10 +126,10 @@ function BeneficiaryView() {
   const handlePrevPage = () => setCurrentPage(currentPage - 1);
 
   const { communityBenQuery } = useRumsanService();
-  const [selectedData, setSelectedData] = useState<Beneficiary>();
+  const [selectedData, setSelectedData] = useState<ListBeneficiary>();
   const [active, setActive] = useState<string>(BENEFICIARY_NAV_ROUTE.DEFAULT);
 
-  const handleBeneficiaryClick = useCallback((item: Beneficiary) => {
+  const handleBeneficiaryClick = useCallback((item: ListBeneficiary) => {
     setSelectedData(item);
   }, []);
 
@@ -159,11 +170,13 @@ function BeneficiaryView() {
         </ResizablePanel>
         <ResizableHandle />
         <ResizablePanel minSize={28}>
-          {active === BENEFICIARY_NAV_ROUTE.ADD_BENEFICIARY ? (
+          {active === BENEFICIARY_NAV_ROUTE.ADD_BENEFICIARY && (
             <AddBeneficiary />
-          ) : active === BENEFICIARY_NAV_ROUTE.IMPORT_BENEFICIARY ? (
+          )}
+          {active === BENEFICIARY_NAV_ROUTE.UPLOAD_BENEFICIARY && (
             <ImportBeneficiary />
-          ) : null}
+          )}
+          {active === BENEFICIARY_NAV_ROUTE.IMPORT_BENEFICIARY && <BenImp />}
 
           {active === BENEFICIARY_NAV_ROUTE.DEFAULT && (
             <>
@@ -179,25 +192,24 @@ function BeneficiaryView() {
                   data={data?.data}
                 />
               </TabsContent>
+              <CustomPagination
+                meta={data?.response?.meta || { total: 0, currentPage: 0 }}
+                handleNextPage={handleNextPage}
+                handlePrevPage={handlePrevPage}
+                handlePageSizeChange={(value) => setPerPage(Number(value))}
+              />
             </>
           )}
-          <CustomPagination
-            meta={data?.response?.meta || { total: 0, currentPage: 0 }}
-            handleNextPage={handleNextPage}
-            handlePrevPage={handlePrevPage}
-            handlePageSizeChange={(value) => setPerPage(Number(value))}
-          />
         </ResizablePanel>
         {selectedData ? (
           <>
             <ResizableHandle />
             <ResizablePanel minSize={24}>
-              {selectedData && (
-                <BeneficiaryDetail
-                  handleClose={handleClose}
-                  data={selectedData}
-                />
-              )}
+              <BeneficiaryDetail
+                handleClose={handleClose}
+                data={selectedData}
+              />
+
               {/* {addBeneficiary && <AddBeneficiary />} */}
             </ResizablePanel>
           </>
@@ -207,4 +219,4 @@ function BeneficiaryView() {
   );
 }
 
-export default memo(BeneficiaryView);
+export default BeneficiaryView;

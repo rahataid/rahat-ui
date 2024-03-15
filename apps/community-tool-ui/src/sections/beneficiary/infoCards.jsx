@@ -41,12 +41,13 @@ import { truncateEthAddress } from '@rumsan/sdk/utils';
 // import data from '../../app/beneficiary/beneficiaryData.json';
 
 export default function InfoCards({ data }) {
+  console.log(data);
   return (
     <div className="grid grid-cols-2 gap-4 p-2">
       <Card className="shadow-md rounded-sm">
         <CardHeader>
           <div className="flex justify-between">
-            <p>Beneficiary Name</p>
+            <p>{`${data?.firstName} ${data?.lastName}`}</p>
             <Badge variant="outline" color="red">
               Not Approved
             </Badge>
@@ -55,16 +56,23 @@ export default function InfoCards({ data }) {
         <CardContent>
           <div className="mb-2">
             <p className="text-xs">
-              {truncateEthAddress(data.walletAddress) ?? 'N/A'}
+              {truncateEthAddress(data?.walletAddress) ?? 'N/A'}
             </p>
             <p className="text-sm font-normal text-muted-foreground">
               Wallet Address
             </p>
           </div>
+
           <div className="flex justify-between gap-8">
             <div className="flex flex-col gap-2">
               <div>
-                <p>{data?.bankStatus ?? 'test'}</p>
+                <p>{data?.gender ?? 'test'}</p>
+                <p className="text-sm font-normal text-muted-foreground">
+                  Gender
+                </p>
+              </div>
+              <div>
+                <p>{data?.bankedStatus ?? 'test'}</p>
                 <p className="text-sm font-normal text-muted-foreground">
                   Bank Status
                 </p>
@@ -84,16 +92,21 @@ export default function InfoCards({ data }) {
             </div>
             <div className="flex flex-col gap-2">
               <div>
-                <p>{data?.gender ?? 'test'}</p>
+                <p>{data?.phone ?? 'N/A'}</p>
                 <p className="text-sm font-normal text-muted-foreground">
-                  Gender
+                  Phone
                 </p>
               </div>
-
               <div>
                 <p>{data?.location ?? 'test'}</p>
                 <p className="text-sm font-normal text-muted-foreground">
                   Location
+                </p>
+              </div>
+              <div>
+                <p>{data?.notes ? data?.notes : 'N/A'}</p>
+                <p className="text-sm font-normal text-muted-foreground">
+                  Notes
                 </p>
               </div>
             </div>

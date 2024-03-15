@@ -19,229 +19,270 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
-import { z } from 'zod';
 
-export default function EditBeneficiary() {
+import { z } from 'zod';
+import { useRumsanService } from '../../providers/service.provider';
+import {
+  BankedStatus,
+  InternetStatus,
+  PhoneStatus,
+} from '@rahataid/community-tool-sdk/enums/';
+import React, { useEffect } from 'react';
+
+import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
+import { ListBeneficiary } from '@rahataid/community-tool-sdk/beneficiary';
+
+export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
+  const { communityBenQuery } = useRumsanService();
+  const benefClient = communityBenQuery.useCommunityBeneficiaryUpdate();
+
   const FormSchema = z.object({
-    name: z.string().min(2, { message: 'Name must be at least 4 character' }),
-    walletAddress: z
-      .string()
-      .min(42, { message: 'The Ethereum address must be 42 characters long' }),
     phone: z.string(),
-    gender: z.string().toUpperCase(),
-    bankedStatus: z.string().toUpperCase(),
-    internetStatus: z.string().toUpperCase(),
-    phoneStatus: z.string().toUpperCase(),
+    location: z.string().optional(),
+    latitude: z.number().optional(),
+    longitude: z.number().optional(),
+    notes: z.string().optional(),
+
+    bankedStatus: z.string().toUpperCase().optional(),
+    internetStatus: z.string().toUpperCase().optional(),
+    phoneStatus: z.string().toUpperCase().optional(),
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      name: '',
-      gender: '',
-      walletAddress: '',
-      phone: '',
-      bankedStatus: '',
-      internetStatus: '',
-      phoneStatus: '',
+      phone: data?.phone || '',
+      bankedStatus: data?.bankedStatus || '',
+      internetStatus: data?.internetStatus || '',
+      phoneStatus: data?.phoneStatus || '',
+      location: data?.location || '',
+      latitude: data?.latitude || 0,
+      longitude: data?.longitude || 0,
+      notes: data?.notes || '',
     },
   });
 
-  const handleEditBeneficiary = async (data: z.infer<typeof FormSchema>) => {
-    // try {
-    //   const result = await addBeneficiary.mutateAsync({
-    //     gender: data.gender,
-    //     bankedStatus: data.bankedStatus,
-    //     internetStatus: data.internetStatus,
-    //     phoneStatus: data.phoneStatus,
-    //     piiData: {
-    //       name: data.name,
-    //     },
-    //     walletAddress: data.walletAddress,
-    //     phone: data.phone,
-    //   });
-    //   if (result) {
-    //     toast.success('Benificiary Added');
-    //     form.reset();
-    //   }
-    // } catch (e) {
-    //   toast.error(e);
-    // }
+  const handleEditBeneficiary = async (
+    formData: z.infer<typeof FormSchema>,
+  ) => {
+    await benefClient.mutateAsync({ uuid: data.uuid, payload: formData });
   };
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleEditBeneficiary)}>
-        <div className="p-4">
-          <h1 className="text-md font-semibold mb-6">Edit Beneficiary</h1>
-          <div className="grid grid-cols-2 gap-4 mb-4">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => {
-                return (
-                  <FormItem>
-                    <FormControl>
-                      <Input type="text" placeholder="Name" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            />
+        <div className="p-4 h-add">
+          <h1 className="text-lg font-semibold mb-6">Update Beneficiary</h1>
+          <div className="shadow-md p-4 rounded-sm">
+            <div className="grid grid-cols-2 gap-4 mb-4">
+              <FormField
+                control={form.control}
+                name="phone"
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <FormControl>
+                        <Input
+                          type="text"
+                          placeholder="Phone"
+                          {...field}
+                          onChange={(e) => {
+                            form.setValue('phone', e.target.value);
+                          }}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
+              <FormField
+                control={form.control}
+                name="bankedStatus"
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Banked Status" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value={BankedStatus.BANKED}>
+                            Banked
+                          </SelectItem>
+                          <SelectItem value={BankedStatus.UNDER_BANKED}>
+                            Under Banked
+                          </SelectItem>
+                          <SelectItem value={BankedStatus.UNBANKED}>
+                            UnBanked
+                          </SelectItem>
+                          <SelectItem value={BankedStatus.UNKNOWN}>
+                            Unknown
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
 
-            <FormField
-              control={form.control}
-              name="walletAddress"
-              render={({ field }) => {
-                return (
+              <FormField
+                control={form.control}
+                name="internetStatus"
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Internet Status" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value={InternetStatus.MOBILE_INTERNET}>
+                            Mobile Internet
+                          </SelectItem>
+                          <SelectItem value={InternetStatus.NO_INTERNET}>
+                            No Internet
+                          </SelectItem>
+                          <SelectItem value={InternetStatus.HOME_INTERNET}>
+                            Home Internet
+                          </SelectItem>
+                          <SelectItem value={InternetStatus.UNKNOWN}>
+                            Unknown
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
+              <FormField
+                control={form.control}
+                name="phoneStatus"
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Phone Status" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value={PhoneStatus.SMART_PHONE}>
+                            Smart Phone
+                          </SelectItem>
+                          <SelectItem value={PhoneStatus.NO_PHONE}>
+                            No Phone
+                          </SelectItem>
+                          <SelectItem value={PhoneStatus.FEATURE_PHONE}>
+                            Feature Phone
+                          </SelectItem>
+                          <SelectItem value={PhoneStatus.UNKNOWN}>
+                            Unknown
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
+
+              <FormField
+                control={form.control}
+                name="location"
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <FormControl>
+                        <Input type="text" placeholder="Location" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
+
+              <FormField
+                control={form.control}
+                name="longitude"
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <FormControl>
+                        <Input
+                          type="float"
+                          placeholder="Longitude"
+                          {...field}
+                          onChange={(e) => {
+                            const numericValue = parseFloat(e.target.value);
+                            form.setValue('longitude', numericValue);
+                          }}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
+              <FormField
+                control={form.control}
+                name="latitude"
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <FormControl>
+                        <Input
+                          type="float"
+                          placeholder="Latitude"
+                          {...field}
+                          onChange={(e) => {
+                            const numericValue = parseFloat(e.target.value);
+                            form.setValue('latitude', numericValue);
+                          }}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
+
+              <FormField
+                control={form.control}
+                name="notes"
+                render={({ field }) => (
                   <FormItem>
                     <FormControl>
-                      <Input
-                        type="text"
-                        placeholder="Wallet Address"
+                      <Textarea
+                        placeholder="Notes"
+                        className="resize-none"
                         {...field}
                       />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
-                );
-              }}
-            />
-
-            <FormField
-              control={form.control}
-              name="phone"
-              render={({ field }) => {
-                return (
-                  <FormItem>
-                    <FormControl>
-                      <Input type="text" placeholder="Phone" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            />
-            <FormField
-              control={form.control}
-              name="bankedStatus"
-              render={({ field }) => {
-                return (
-                  <FormItem>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Banked Status" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="banked">Banked</SelectItem>
-                        <SelectItem value="under_banked">
-                          Under Banked
-                        </SelectItem>
-                        <SelectItem value="unBanked">UnBanked</SelectItem>
-                        <SelectItem value="unknown">Unknown</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            />
-
-            <FormField
-              control={form.control}
-              name="gender"
-              render={({ field }) => {
-                return (
-                  <FormItem>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Gender" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="male">Male</SelectItem>
-                        <SelectItem value="female">Female</SelectItem>
-                        <SelectItem value="other">Other</SelectItem>
-                        <SelectItem value="unknown">Unknown</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            />
-            <FormField
-              control={form.control}
-              name="internetStatus"
-              render={({ field }) => {
-                return (
-                  <FormItem>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Internet Status" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="mobile_internet">
-                          Mobile Internet
-                        </SelectItem>
-                        <SelectItem value="no_internet">No Internet</SelectItem>
-                        <SelectItem value="home_internet">
-                          Home Internet
-                        </SelectItem>
-                        <SelectItem value="unknown">Unknown</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            />
-            <FormField
-              control={form.control}
-              name="phoneStatus"
-              render={({ field }) => {
-                return (
-                  <FormItem>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Phone Status" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="smart_phone">Smart Phone</SelectItem>
-                        <SelectItem value="no_phone">No Phone</SelectItem>
-                        <SelectItem value="feature_phone">
-                          Feature Phone
-                        </SelectItem>
-                        <SelectItem value="unknown">Unknown</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            />
-          </div>
-          <div className="flex justify-end">
-            <Button>Update Beneficiary</Button>
+                )}
+              />
+            </div>
+            <div className="flex justify-end">
+              <Button>Update Beneficiary</Button>
+            </div>
           </div>
         </div>
       </form>

@@ -30,7 +30,7 @@ export default function GridView({ handleClick, data }: IProps) {
         <div className="flex flex-col gap-3">
           {data?.map((data: IBeneficiaryItem) => (
             <BeneficiaryCard
-              key={data.uuid}
+              key={data?.uuid}
               walletAddress={data.walletAddress}
               updatedAt={data.updatedAt}
               verified={data.verified}

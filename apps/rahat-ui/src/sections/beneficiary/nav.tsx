@@ -4,7 +4,7 @@ import { TabsList, TabsTrigger } from '@rahat-ui/shadcn/src/components/ui/tabs';
 import { Meta } from '@rahat-ui/types';
 import { AlignJustify, Import, LayoutGrid, Plus, Users } from 'lucide-react';
 import { BENEFICIARY_NAV_ROUTE } from '../../constants/beneficiary.const';
-import MultipleSelectFilter from './filter';
+import MultipleSelectFilter from './multipleSelectFilter';
 import { PROJECT_DETAIL_NAV_ROUTE } from '../../constants/project.detail.const';
 import { Table } from '@tanstack/react-table';
 import { ListBeneficiary } from '@rahat-ui/types';

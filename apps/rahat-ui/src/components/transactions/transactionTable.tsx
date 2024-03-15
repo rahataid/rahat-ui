@@ -298,8 +298,6 @@ export default function DataTableDemo() {
 
   const { data, error } = useProjectTransaction();
 
-  console.log(data);
-
   const table = useReactTable({
     data,
     columns,
@@ -344,9 +342,9 @@ export default function DataTableDemo() {
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext(),
-                          )}
+                          header.column.columnDef.header,
+                          header.getContext(),
+                        )}
                     </TableHead>
                   );
                 })}

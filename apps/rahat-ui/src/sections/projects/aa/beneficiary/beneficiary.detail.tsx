@@ -16,24 +16,27 @@ import {
   Dialog,
   DialogTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dialog';
-import { Archive, Expand, Minus, Trash2 } from 'lucide-react';
+import { Archive, Expand, FilePenLine, Minus, Trash2 } from 'lucide-react';
 // import ConfirmDialog from '../../components/dialog';
 import { paths } from '../../../../routes/paths';
 import { IBeneficiaryItem } from '../../../../types/beneficiary';
 // import EditBeneficiary from '../beneficiary/editBeneficiary';
-import InfoCards from './beneficiary.infoCards';
-import TransactionTable from './beneficiary.transaction.table';
+import InfoCards from '../../../beneficiary/infoCards';
 
 type IProps = {
   data: IBeneficiaryItem;
-  closeSecondPanel: VoidFunction;
+  handleClose: VoidFunction;
 };
 
-export default function BeneficiaryDetail({ data, closeSecondPanel }: IProps) {
+export default function BeneficiaryDetail({ data, handleClose }: IProps) {
   const router = useRouter();
 
   const changedDate = new Date(data?.updatedAt);
-
+  const formattedDate = changedDate.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
   return (
     <>
       <Tabs defaultValue="detail">
@@ -41,14 +44,14 @@ export default function BeneficiaryDetail({ data, closeSecondPanel }: IProps) {
           <div className="flex gap-4">
             <TooltipProvider delayDuration={100}>
               <Tooltip>
-                <TooltipTrigger onClick={closeSecondPanel}>
+                <TooltipTrigger onClick={handleClose}>
                   <Minus size={20} strokeWidth={1.5} />
                 </TooltipTrigger>
                 <TooltipContent className="bg-secondary ">
                   <p className="text-xs font-medium">Close</p>
                 </TooltipContent>
               </Tooltip>
-            </TooltipProvider >
+            </TooltipProvider>
             <TooltipProvider delayDuration={100}>
               <Tooltip>
                 <TooltipTrigger
@@ -90,7 +93,7 @@ export default function BeneficiaryDetail({ data, closeSecondPanel }: IProps) {
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
-          </div >
+          </div>
           <TabsList>
             <TabsTrigger value="detail">Details </TabsTrigger>
             <TabsTrigger value="transaction-history">
@@ -98,15 +101,15 @@ export default function BeneficiaryDetail({ data, closeSecondPanel }: IProps) {
             </TabsTrigger>
             <TabsTrigger value="edit">Edit</TabsTrigger>
           </TabsList>
-        </div >
+        </div>
         <TabsContent value="detail">
           <InfoCards data={data} />
         </TabsContent>
         <TabsContent value="transaction-history">
-          <TransactionTable />
-        </TabsContent >
+          <div className="p-4 border-y">Transaction History View</div>
+        </TabsContent>
         <TabsContent value="edit">{/* <EditBeneficiary /> */}</TabsContent>
-      </Tabs >
+      </Tabs>
     </>
   );
 }

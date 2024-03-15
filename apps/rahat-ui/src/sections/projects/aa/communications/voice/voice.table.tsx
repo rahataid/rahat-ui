@@ -1,9 +1,6 @@
 'use client';
 
-import * as React from 'react';
-import { useRouter } from 'next/navigation';
 import {
-  ColumnDef,
   ColumnFiltersState,
   SortingState,
   VisibilityState,
@@ -14,22 +11,28 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { MoreHorizontal, Settings2 } from 'lucide-react';
+import { Settings2 } from 'lucide-react';
+import * as React from 'react';
 
+import { useCampaignStore, useListCampaignQuery } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/components/button';
-import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
-import { Badge } from '@rahat-ui/shadcn/components/badge';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/components/dropdown-menu';
-
 import { Input } from '@rahat-ui/shadcn/components/input';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@rahat-ui/shadcn/components/select';
 import {
   Table,
   TableBody,
@@ -38,124 +41,13 @@ import {
   TableHeader,
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
-import { paths } from 'apps/rahat-ui/src/routes/paths';
-import { useCampaignStore, useListCampaignQuery } from '@rahat-ui/query';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { CAMPAIGN_TYPES } from '@rahat-ui/types';
+import { useVoiceTableColumn } from './useVoiceTableColumn';
 
-export type Text = {
-  id: number;
-  campaign: string;
-  startTime: string;
-  status: string;
-  transport: string;
-  totalAudiences: number;
-};
-
-export const columns: ColumnDef<Text>[] = [
-  {
-    id: 'select',
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && 'indeterminate')
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
-    accessorKey: 'name',
-    header: 'Text Campaigns',
-    cell: ({ row }) => <div>{row.getValue('name')}</div>,
-  },
-  {
-    accessorKey: 'startTime',
-    header: 'Start Time',
-    cell: ({ row }) => (
-      <div className="capitalize">
-        {new Date(row.getValue('startTime')).toLocaleString()}
-      </div>
-    ),
-  },
-  {
-    accessorKey: 'status',
-    header: 'Status',
-    cell: ({ row }) => (
-      <Badge variant="secondary" className="rounded-md capitalize">
-        {row.getValue('status')}
-      </Badge>
-    ),
-  },
-  {
-    accessorKey: 'transport',
-    header: 'Transport',
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue('transport')}</div>
-    ),
-  },
-  {
-    accessorKey: 'totalAudiences',
-    header: 'Total Audiences',
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue('totalAudiences')}</div>
-    ),
-  },
-  {
-    id: 'actions',
-    enableHiding: false,
-    cell: ({ row }) => {
-      const router = useRouter();
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem
-              onClick={() =>
-                router.push(
-                  paths.dashboard.communication.textDetail(row.original.id),
-                )
-              }
-            >
-              View Details
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onClick={() =>
-                router.push(
-                  paths.dashboard.communication.editTextCampaign(
-                    row.original.id,
-                  ),
-                )
-              }
-            >
-              Edit
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
-    },
-  },
-];
-
-export default function TextTable() {
+export default function VoiceTable() {
   const campaignStore = useCampaignStore();
+  const columns = useVoiceTableColumn();
 
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -171,11 +63,11 @@ export default function TextTable() {
   const tableData = React.useMemo(() => {
     const result = Array.isArray(data?.rows)
       ? data?.rows.filter(
-        (campaign: any) => campaign.type !== CAMPAIGN_TYPES.PHONE,
-      )
+          (campaign: any) => campaign.type === CAMPAIGN_TYPES.PHONE,
+        )
       : [];
+    campaignStore.setTotalVoiceCampaign(result?.length);
 
-    campaignStore.setTotalTextCampaign(result?.length);
     return result;
   }, [isSuccess]);
 
@@ -199,7 +91,7 @@ export default function TextTable() {
   });
 
   return (
-    <div className="w-full h-full p-2 bg-secondary">
+    <div className="p-2 bg-secondary">
       <div className="flex items-center mb-2">
         <Input
           placeholder="Filter campaigns..."
@@ -241,9 +133,9 @@ export default function TextTable() {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <div className="rounded border h-[calc(100vh-180px)]  bg-card">
+      <div className="rounded border bg-white">
         <Table>
-          <ScrollArea className="w-full h-[calc(100vh-184px)]">
+          <ScrollArea className="h-table1">
             <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
@@ -253,9 +145,9 @@ export default function TextTable() {
                         {header.isPlaceholder
                           ? null
                           : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext(),
-                          )}
+                              header.column.columnDef.header,
+                              header.getContext(),
+                            )}
                       </TableHead>
                     );
                   })}
@@ -293,12 +185,37 @@ export default function TextTable() {
           </ScrollArea>
         </Table>
       </div>
-      <div className="flex items-center justify-end space-x-2 p-2 border-t bg-card">
+      <div className="flex items-center justify-end space-x-8 p-2 border-t">
         <div className="flex-1 text-sm text-muted-foreground">
           {table.getFilteredSelectedRowModel().rows.length} of{' '}
           {table.getFilteredRowModel().rows.length} row(s) selected.
         </div>
-        <div className="space-x-2">
+        <div className="flex items-center gap-2">
+          <div className="text-sm font-medium">Rows per page</div>
+          <Select
+            defaultValue="10"
+            onValueChange={(value) => table.setPageSize(Number(value))}
+          >
+            <SelectTrigger className="w-16">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectItem value="5">5</SelectItem>
+                <SelectItem value="10">10</SelectItem>
+                <SelectItem value="20">20</SelectItem>
+                <SelectItem value="30">30</SelectItem>
+                <SelectItem value="40">40</SelectItem>
+                <SelectItem value="50">50</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
+        <div>
+          Page {table.getState().pagination.pageIndex + 1} of{' '}
+          {table.getPageCount()}
+        </div>
+        <div className="space-x-4">
           <Button
             variant="outline"
             size="sm"

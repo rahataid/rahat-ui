@@ -38,18 +38,14 @@ import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { MoreVertical } from 'lucide-react';
 // import data from '../../app/beneficiary/beneficiaryData.json';
 import { truncateEthAddress } from '@rumsan/sdk/utils';
-import { useAssignClaims } from '../../hooks/el/contracts/el-contracts';
-import { useBeneficaryVoucher } from '../../hooks/el/subgraph/querycall';
+import { useAssignClaims } from 'apps/rahat-ui/src/hooks/el/contracts/el-contracts';
 
 export default function InfoCards({ data, voucherData }) {
   const assignClaims = useAssignClaims();
-
   const handleAssignClaims = () => {
-    const walletAddress = data.walletAddress || '';
-
     assignClaims.writeContractAsync({
       address: '0x38BFDCCAc556ED026706EE21b4945cE86718D4D1',
-      args: [walletAddress],
+      args: ['0x082d43D30C31D054b1AEDbE08F50C2a1BBE76fC7'],
     });
   };
   return (
@@ -63,31 +59,28 @@ export default function InfoCards({ data, voucherData }) {
                 Not Approved
               </Badge>
             </div>
-            <Button onClick={handleAssignClaims}>Approve</Button>
           </div>
         </CardHeader>
         <CardContent>
           <div className="flex justify-between gap-8">
             <div className="flex flex-col gap-2">
-              <div>
+              {/* <div>
                 <p className="text-xs">
                   {truncateEthAddress(data?.walletAddress) ?? 'N/A'}
                 </p>
                 <p className="text-sm font-normal text-muted-foreground">
                   Wallet Address
                 </p>
-              </div>
+              </div> */}
               <div>
                 <p>{data?.bankStatus ?? 'test'}</p>
                 <p className="text-sm font-normal text-muted-foreground">
-                  Bank Status
+                  Phone
                 </p>
               </div>
               <div>
                 <p>{data?.internetStatus ?? 'test'}</p>
-                <p className="text-sm font-normal text-muted-foreground">
-                  Internet Status
-                </p>
+                <p className="text-sm font-normal text-muted-foreground">Age</p>
               </div>
             </div>
             <div className="flex flex-col gap-2">
@@ -101,7 +94,7 @@ export default function InfoCards({ data, voucherData }) {
               <div>
                 <p>{data?.location ?? 'test'}</p>
                 <p className="text-sm font-normal text-muted-foreground">
-                  Location
+                  Beneficiary Type
                 </p>
               </div>
               <div>
@@ -199,7 +192,7 @@ export default function InfoCards({ data, voucherData }) {
         <CardContent>
           <div className="flex flex-col gap-4">
             <div className="flex justify-between items-center">
-              <p>ClaimStatus</p>
+              <p>Voucher Type</p>
               <p className="text-sm font-light">
                 {voucherData?.FreeVoucherClaimStatus?.toString()
                   ? voucherData?.FreeVoucherClaimStatus?.toString()
@@ -207,13 +200,13 @@ export default function InfoCards({ data, voucherData }) {
               </p>
             </div>
             <div className="flex justify-between items-center">
-              <p>Received</p>
+              <p>Free Voucher</p>
               <p className="text-sm font-light">
                 {voucherData?.FreeVoucherAddress
                   ? 'Free Voucher'
                   : voucherData?.ReferredVoucherAddress
-                    ? 'Discount Voucher'
-                    : 'Not Assigned'}
+                  ? 'Discount Voucher'
+                  : 'Not Assigned'}
               </p>
             </div>
             <div className="flex justify-between items-center">

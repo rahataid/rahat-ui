@@ -80,8 +80,8 @@ export default function BenImp() {
       const data = await fetchKoboSettings();
       if (!data.data.length)
         return Swal.fire({
-          icon: 'success',
-          title: 'Please setup kobotool settings first',
+          icon: 'warning',
+          title: 'Please setup kobotool settings first!',
         });
       const sanitizedOptions = data.data.map((d: any) => {
         return {

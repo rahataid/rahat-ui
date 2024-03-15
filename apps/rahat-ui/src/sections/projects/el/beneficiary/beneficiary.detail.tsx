@@ -48,7 +48,7 @@ export default function BeneficiaryDetail({ data, closeSecondPanel }: IProps) {
                   <p className="text-xs font-medium">Close</p>
                 </TooltipContent>
               </Tooltip>
-            </TooltipProvider >
+            </TooltipProvider>
             <TooltipProvider delayDuration={100}>
               <Tooltip>
                 <TooltipTrigger
@@ -90,7 +90,7 @@ export default function BeneficiaryDetail({ data, closeSecondPanel }: IProps) {
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
-          </div >
+          </div>
           <TabsList>
             <TabsTrigger value="detail">Details </TabsTrigger>
             <TabsTrigger value="transaction-history">
@@ -98,15 +98,15 @@ export default function BeneficiaryDetail({ data, closeSecondPanel }: IProps) {
             </TabsTrigger>
             <TabsTrigger value="edit">Edit</TabsTrigger>
           </TabsList>
-        </div >
+        </div>
         <TabsContent value="detail">
           <InfoCards data={data} />
         </TabsContent>
         <TabsContent value="transaction-history">
           <TransactionTable />
-        </TabsContent >
+        </TabsContent>
         <TabsContent value="edit">{/* <EditBeneficiary /> */}</TabsContent>
-      </Tabs >
+      </Tabs>
     </>
   );
 }

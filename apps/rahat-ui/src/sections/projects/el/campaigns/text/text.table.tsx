@@ -171,8 +171,8 @@ export default function TextTable() {
   const tableData = React.useMemo(() => {
     const result = Array.isArray(data?.rows)
       ? data?.rows.filter(
-        (campaign: any) => campaign.type !== CAMPAIGN_TYPES.PHONE,
-      )
+          (campaign: any) => campaign.type !== CAMPAIGN_TYPES.PHONE,
+        )
       : [];
 
     campaignStore.setTotalTextCampaign(result?.length);
@@ -253,9 +253,9 @@ export default function TextTable() {
                         {header.isPlaceholder
                           ? null
                           : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext(),
-                          )}
+                              header.column.columnDef.header,
+                              header.getContext(),
+                            )}
                       </TableHead>
                     );
                   })}

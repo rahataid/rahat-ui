@@ -123,7 +123,7 @@ export const columns: ColumnDef<Beneficiary>[] = [
 export default function BeneficiaryTable({
   handleClick,
 }: //   table,
-  IProps) {
+IProps) {
   const { pagination, filters, setPagination } = usePagination((state) => ({
     pagination: state.pagination,
     filters: state.filters,
@@ -217,9 +217,9 @@ export default function BeneficiaryTable({
                           {header.isPlaceholder
                             ? null
                             : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext(),
-                            )}
+                                header.column.columnDef.header,
+                                header.getContext(),
+                              )}
                         </TableHead>
                       );
                     })}

@@ -212,8 +212,8 @@ export default function InfoCards({ data, voucherData }) {
                 {voucherData?.FreeVoucherAddress
                   ? 'Free Voucher'
                   : voucherData?.ReferredVoucherAddress
-                    ? 'Discount Voucher'
-                    : 'Not Assigned'}
+                  ? 'Discount Voucher'
+                  : 'Not Assigned'}
               </p>
             </div>
             <div className="flex justify-between items-center">

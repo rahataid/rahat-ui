@@ -17,7 +17,6 @@ import { useState } from 'react';
 import { usePagination } from '@rahat-ui/query';
 import { useRumsanService } from 'apps/rahat-ui/src/providers/service.provider';
 
-
 import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
 import * as React from 'react';
 
@@ -98,9 +97,9 @@ export const columns: ColumnDef<Transaction>[] = [
       <div className="capitalize">
         {row.getValue('vouvherType')
           ? `${row.getValue('vouvherType')?.toString().substring(0, 4)}....${row
-            .getValue('vouvherType')
-            ?.toString()
-            ?.slice(-3)}`
+              .getValue('vouvherType')
+              ?.toString()
+              ?.slice(-3)}`
           : 'N/A'}
       </div>
     ),
@@ -143,9 +142,7 @@ export const columns: ColumnDef<Transaction>[] = [
   },
 ];
 
-
 // import { useBeneficiaryTransaction } from '../../hooks/el/subgraph/querycall';
-
 
 export default function BeneficiaryDetailTableView() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -176,7 +173,6 @@ export default function BeneficiaryDetailTableView() {
   });
 
   // console.log(datas)
-
 
   const table = useReactTable({
     data,
@@ -239,8 +235,7 @@ export default function BeneficiaryDetailTableView() {
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-        < div className="rounded border h-[calc(100vh-180px)] bg-card" >
-
+        <div className="rounded border h-[calc(100vh-180px)] bg-card">
           <Table>
             <ScrollArea className="h-table1">
               <TableHeader className="sticky top-0">
@@ -252,9 +247,9 @@ export default function BeneficiaryDetailTableView() {
                           {header.isPlaceholder
                             ? null
                             : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext(),
-                            )}
+                                header.column.columnDef.header,
+                                header.getContext(),
+                              )}
                         </TableHead>
                       );
                     })}

@@ -44,6 +44,7 @@ import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import TransactionTableData from './beneficiaryTransactionData.json';
 import { useState } from 'react';
 import { useRumsanService } from 'apps/rahat-ui/src/providers/service.provider';
+import { useProjectBeneficiaryTableColumns } from './use-table-column';
 // import { useBeneficiaryTransaction } from '../../hooks/el/subgraph/querycall';
 
 // const data: Transaction[] = TransactionTableData;
@@ -64,6 +65,7 @@ export default function BeneficiaryDetailTableView() {
   const [currentPage, setCurrentPage] = useState<number>(1);
 
   const { beneficiaryQuery } = useRumsanService();
+  const columns = useProjectBeneficiaryTableColumns();
 
   const { data } = beneficiaryQuery.useProjectBeneficiaryList({
     perPage,

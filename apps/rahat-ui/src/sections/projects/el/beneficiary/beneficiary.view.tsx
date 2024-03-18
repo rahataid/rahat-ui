@@ -14,14 +14,15 @@ export default function BeneficiaryView() {
   // };
 
   return (
-    <ResizablePanelGroup className="bg-secondary" direction="horizontal">
-      <ResizablePanel>
-        <BeneficiaryTable />
-      </ResizablePanel>
-      <ResizablePanel>
-        <ResizableHandle />
-        <BeneficiaryDetail />
-      </ResizablePanel>
-    </ResizablePanelGroup>
+    <BeneficiaryTable />
+    // <ResizablePanelGroup className="bg-secondary" direction="horizontal">
+    //   <ResizablePanel>
+    //     <BeneficiaryTable />
+    //   </ResizablePanel>
+    //   {/* <ResizablePanel>
+    //     <ResizableHandle />
+    //     <BeneficiaryDetail />
+    //   </ResizablePanel> */}
+    // </ResizablePanelGroup>
   );
 }

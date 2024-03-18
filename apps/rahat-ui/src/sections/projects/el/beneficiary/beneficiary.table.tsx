@@ -15,7 +15,7 @@ import {
 } from '@tanstack/react-table';
 import { useRumsanService } from 'apps/rahat-ui/src/providers/service.provider';
 import { MoreHorizontal, Settings2 } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
 import * as React from 'react';
@@ -49,6 +49,7 @@ import {
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { useProjectBeneficiaryTableColumns } from './use-table-column';
+import { useProjectAction } from 'libs/query/src/lib/projects/projects';
 // import { useBeneficiaryTransaction } from '../../hooks/el/subgraph/querycall';
 
 // const data: Transaction[] = TransactionTableData;
@@ -163,6 +164,7 @@ export default function BeneficiaryDetailTableView() {
 
   const [perPage, setPerPage] = useState<number>(5);
   const [currentPage, setCurrentPage] = useState<number>(1);
+  const [tableData, setTableData] = useState<any>()
 
   const { beneficiaryQuery } = useRumsanService();
   const columns = useProjectBeneficiaryTableColumns();
@@ -176,6 +178,28 @@ export default function BeneficiaryDetailTableView() {
     }
   })
 
+  const addBeneficiary = useProjectAction();
+
+  const handleAssignClaims = async () => {
+    const result = await addBeneficiary.mutateAsync({
+      uuid: 'bb32449c-fb10-4def-ade0-7710b567daab',
+      payload: {
+        action: 'beneficiary.list_by_project',
+        payload: {
+          page: currentPage,
+          perPage
+           
+        }
+      },
+    });
+
+    setTableData(result?.data)
+  };
+
+  useEffect(() => {
+    handleAssignClaims()
+  }, [])
+
   // const { data } = beneficiaryQuery.useProjectBeneficiaryList({
   //   perPage,
   //   page: currentPage,
@@ -184,7 +208,7 @@ export default function BeneficiaryDetailTableView() {
   // console.log(data2)
 
   const table = useReactTable({
-    data: data?.data || [],
+    data: tableData || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,

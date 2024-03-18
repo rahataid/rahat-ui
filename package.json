@@ -12,7 +12,7 @@
     "postbuild": "cp -R apps/rahat-ui/public dist/apps/rahat-ui",
     "clean": "rm -rf dist node_modules tmp",
     "prepare": "husky install",
-    "checkFileSize": "node ./checkFileSize.js"
+    "checkFileSize": "node ./tools/scripts/checkFileSize.js"
   },
   "private": true,
   "dependencies": {

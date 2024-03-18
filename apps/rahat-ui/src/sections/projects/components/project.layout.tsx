@@ -20,7 +20,7 @@ type ProjectLayoutProps = {
 const ProjectLayout: FC<ProjectLayoutProps> = ({ children, menuItems }) => {
   const renderResizablePanel = (children: React.ReactNode, index?: number) => {
     return (
-      <ResizablePanel defaultSize={80} key={index}>
+      <ResizablePanel key={index}>
         <ScrollArea className="h-[calc(100vh-66px)]">{children}</ScrollArea>
       </ResizablePanel>
     );
@@ -28,11 +28,23 @@ const ProjectLayout: FC<ProjectLayoutProps> = ({ children, menuItems }) => {
   const renderChildren = () => {
     if (Array.isArray(children)) {
       return children.map((child, index) => {
-        return renderResizablePanel(child, index);
+        return (
+          <>
+            <ResizableHandle withHandle />
+            {renderResizablePanel(child, index)}
+          </>
+        );
       });
     }
-    return renderResizablePanel(children);
+    return (
+      <>
+        <ResizableHandle withHandle />
+        {renderResizablePanel(children)}
+      </>
+    );
   };
+
+  console.log('children', children);
   return (
     <div>
       <Tabs defaultValue="grid">
@@ -41,8 +53,8 @@ const ProjectLayout: FC<ProjectLayoutProps> = ({ children, menuItems }) => {
           className="min-h-max border"
         >
           <ResizablePanel
-            minSize={20}
             defaultSize={20}
+            minSize={20}
             maxSize={20}
             className="h-full"
           >
@@ -55,7 +67,6 @@ const ProjectLayout: FC<ProjectLayoutProps> = ({ children, menuItems }) => {
             ))}
             <Separator />
           </ResizablePanel>
-          <ResizableHandle />
           {renderChildren()}
         </ResizablePanelGroup>
       </Tabs>

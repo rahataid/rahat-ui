@@ -24,7 +24,7 @@ const projectActions = async(uuid:any,payload:any)=>{
   return res.data;
 }
 
-const useProjectAction = ()=>{  
+const useProjectAction = () => {  
   return useMutation({
     mutationFn: (data:any) => projectActions(data?.uuid,data.payload),
   });

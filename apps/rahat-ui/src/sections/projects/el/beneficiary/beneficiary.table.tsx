@@ -42,10 +42,11 @@ import {
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import TransactionTableData from './beneficiaryTransactionData.json';
-import { useProjectBeneficiaryTableColumns } from './use-table-column';
+import { useState } from 'react';
+import { useRumsanService } from 'apps/rahat-ui/src/providers/service.provider';
 // import { useBeneficiaryTransaction } from '../../hooks/el/subgraph/querycall';
 
-const data: Transaction[] = TransactionTableData;
+// const data: Transaction[] = TransactionTableData;
 
 export default function BeneficiaryDetailTableView() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -59,10 +60,20 @@ export default function BeneficiaryDetailTableView() {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
-  const columns = useProjectBeneficiaryTableColumns();
+  const [perPage, setPerPage] = useState<number>(5);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+
+  const { beneficiaryQuery } = useRumsanService();
+
+  const { data } = beneficiaryQuery.useProjectBeneficiaryList({
+    perPage,
+    page: currentPage,
+  });
+
+  // console.log(datas)
 
   const table = useReactTable({
-    data,
+    data: data?.data || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -70,8 +81,7 @@ export default function BeneficiaryDetailTableView() {
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setRowSelection,
+    onColumnVisibilityChange: setRowSelection,
     state: {
       sorting,
       columnFilters,

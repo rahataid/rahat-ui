@@ -298,6 +298,8 @@ export default function DataTableDemo() {
 
   const { data, error } = useProjectTransaction();
 
+  console.log(data);
+
   const table = useReactTable({
     data,
     columns,

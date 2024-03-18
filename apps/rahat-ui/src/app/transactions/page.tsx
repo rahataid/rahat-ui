@@ -13,7 +13,6 @@ export default function TransactionsPage() {
   const { data: transactionData, error } = useProjectVoucher(
     '0x38BFDCCAc556ED026706EE21b4945cE86718D4D1',
   );
-  console.log('data', transactionData);
 
   return (
     <div className="max-h-mx">

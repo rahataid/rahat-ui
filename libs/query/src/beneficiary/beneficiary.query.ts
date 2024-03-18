@@ -21,6 +21,13 @@ export class BeneficiaryQuery {
     });
   };
 
+  useProjectBeneficiaryList = (payload: any): UseQueryResult<any, Error> => {
+    return useQuery({
+      queryKey: [TAGS.GET_BENEFICIARIES, payload],
+      queryFn: () => this.client.listPiiData(payload),
+    });
+  };
+
   useBeneficiaryGet = (uuid: any): UseQueryResult<any, Error> => {
     return useQuery({
       queryKey: [TAGS.GET_BENEFICIARY, uuid],

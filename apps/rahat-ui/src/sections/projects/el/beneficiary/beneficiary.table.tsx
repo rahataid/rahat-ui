@@ -1,5 +1,6 @@
 'use client';
 
+import { usePagination } from '@rahat-ui/query';
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -12,11 +13,14 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
+import { useRumsanService } from 'apps/rahat-ui/src/providers/service.provider';
 import { MoreHorizontal, Settings2 } from 'lucide-react';
+import { useState } from 'react';
+
+import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
 import * as React from 'react';
 
 import { Button } from '@rahat-ui/shadcn/components/button';
-import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -44,9 +48,7 @@ import {
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import TransactionTableData from './beneficiaryTransactionData.json';
-import { useState } from 'react';
-import { useRumsanService } from 'apps/rahat-ui/src/providers/service.provider';
+import { useProjectBeneficiaryTableColumns } from './use-table-column';
 // import { useBeneficiaryTransaction } from '../../hooks/el/subgraph/querycall';
 
 // const data: Transaction[] = TransactionTableData;
@@ -139,6 +141,8 @@ export const columns: ColumnDef<Transaction>[] = [
   },
 ];
 
+// import { useBeneficiaryTransaction } from '../../hooks/el/subgraph/querycall';
+
 export default function BeneficiaryDetailTableView() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -151,10 +155,17 @@ export default function BeneficiaryDetailTableView() {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
+  const { pagination, filters, setPagination } = usePagination((state) => ({
+    pagination: state.pagination,
+    filters: state.filters,
+    setPagination: state.setPagination,
+  }));
+
   const [perPage, setPerPage] = useState<number>(5);
   const [currentPage, setCurrentPage] = useState<number>(1);
 
   const { beneficiaryQuery } = useRumsanService();
+  const columns = useProjectBeneficiaryTableColumns();
 
   const {data} = beneficiaryQuery.useProjectBeneficiaryList({
     "action": "beneficiary.list_by_project",
@@ -181,7 +192,8 @@ export default function BeneficiaryDetailTableView() {
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    onColumnVisibilityChange: setRowSelection,
+    onColumnVisibilityChange: setColumnVisibility,
+    onRowSelectionChange: setRowSelection,
     state: {
       sorting,
       columnFilters,

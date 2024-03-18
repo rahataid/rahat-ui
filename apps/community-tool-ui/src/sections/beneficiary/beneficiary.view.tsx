@@ -35,6 +35,8 @@ import BeneficiaryListView from '../../sections/beneficiary/listView';
 import BeneficiaryNav from '../../sections/beneficiary/nav';
 import AddBeneficiary from './addBeneficiary';
 import ImportBeneficiary from './import.beneficiary';
+import BenImp from './import/beneficiary';
+import AddSetting from '../settings/setting';
 
 export const columns: ColumnDef<ListBeneficiary>[] = [
   {
@@ -169,11 +171,14 @@ function BeneficiaryView() {
         </ResizablePanel>
         <ResizableHandle />
         <ResizablePanel minSize={28}>
-          {active === BENEFICIARY_NAV_ROUTE.ADD_BENEFICIARY ? (
+          {active === BENEFICIARY_NAV_ROUTE.ADD_BENEFICIARY && (
             <AddBeneficiary />
-          ) : active === BENEFICIARY_NAV_ROUTE.IMPORT_BENEFICIARY ? (
+          )}
+          {active === BENEFICIARY_NAV_ROUTE.UPLOAD_BENEFICIARY && (
             <ImportBeneficiary />
-          ) : null}
+          )}
+          {active === BENEFICIARY_NAV_ROUTE.IMPORT_BENEFICIARY && <BenImp />}
+          {active === BENEFICIARY_NAV_ROUTE.SETTINGS && <AddSetting />}
 
           {active === BENEFICIARY_NAV_ROUTE.DEFAULT && (
             <>
@@ -189,14 +194,14 @@ function BeneficiaryView() {
                   data={data?.data}
                 />
               </TabsContent>
+              <CustomPagination
+                meta={data?.response?.meta || { total: 0, currentPage: 0 }}
+                handleNextPage={handleNextPage}
+                handlePrevPage={handlePrevPage}
+                handlePageSizeChange={(value) => setPerPage(Number(value))}
+              />
             </>
           )}
-          <CustomPagination
-            meta={data?.response?.meta || { total: 0, currentPage: 0 }}
-            handleNextPage={handleNextPage}
-            handlePrevPage={handlePrevPage}
-            handlePageSizeChange={(value) => setPerPage(Number(value))}
-          />
         </ResizablePanel>
         {selectedData ? (
           <>

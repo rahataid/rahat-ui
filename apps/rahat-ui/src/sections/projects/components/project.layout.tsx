@@ -13,11 +13,37 @@ import { NavItem } from './nav-items.types';
 import ProjectNavView from './project.nav.view';
 
 type ProjectLayoutProps = {
-  children: React.ReactNode;
+  children: React.ReactNode | React.ReactNode[];
   menuItems: NavItem[];
 };
 
 const ProjectLayout: FC<ProjectLayoutProps> = ({ children, menuItems }) => {
+  const renderResizablePanel = (children: React.ReactNode, index?: number) => {
+    return (
+      <ResizablePanel key={index}>
+        <ScrollArea className="h-[calc(100vh-66px)]">{children}</ScrollArea>
+      </ResizablePanel>
+    );
+  };
+  const renderChildren = () => {
+    if (Array.isArray(children)) {
+      return children.map((child, index) => {
+        return (
+          <>
+            <ResizableHandle withHandle />
+            {renderResizablePanel(child, index)}
+          </>
+        );
+      });
+    }
+    return (
+      <>
+        <ResizableHandle />
+        {renderResizablePanel(children)}
+      </>
+    );
+  };
+
   return (
     <div>
       <Tabs defaultValue="grid">
@@ -26,8 +52,8 @@ const ProjectLayout: FC<ProjectLayoutProps> = ({ children, menuItems }) => {
           className="min-h-max border"
         >
           <ResizablePanel
-            minSize={20}
             defaultSize={20}
+            minSize={20}
             maxSize={20}
             className="h-full"
           >
@@ -40,10 +66,7 @@ const ProjectLayout: FC<ProjectLayoutProps> = ({ children, menuItems }) => {
             ))}
             <Separator />
           </ResizablePanel>
-          <ResizableHandle />
-          <ResizablePanel defaultSize={80}>
-            <ScrollArea className="h-[calc(100vh-66px)]">{children}</ScrollArea>
-          </ResizablePanel>
+          {renderChildren()}
         </ResizablePanelGroup>
       </Tabs>
     </div>

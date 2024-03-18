@@ -11,7 +11,7 @@ To initiate the project locally, proceed with the following steps:
 
 ### Clone the Repository
 
-```bash
+```bash 
 git clone git@github.com:rahataid/rahat-ui.git
 ```
 

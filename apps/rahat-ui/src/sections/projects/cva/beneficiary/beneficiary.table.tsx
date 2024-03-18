@@ -142,6 +142,7 @@ IProps) {
     perPage,
     page: currentPage,
   });
+
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
 

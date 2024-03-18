@@ -156,12 +156,21 @@ export default function BeneficiaryDetailTableView() {
 
   const { beneficiaryQuery } = useRumsanService();
 
-  const { data } = beneficiaryQuery.useProjectBeneficiaryList({
-    perPage,
-    page: currentPage,
-  });
+  const {data} = beneficiaryQuery.useProjectBeneficiaryList({
+    "action": "beneficiary.list_by_project",
+    "payload": {
+      page: currentPage,
+      perPage
+       
+    }
+  })
 
-  // console.log(datas)
+  // const { data } = beneficiaryQuery.useProjectBeneficiaryList({
+  //   perPage,
+  //   page: currentPage,
+  // });
+
+  // console.log(data2)
 
   const table = useReactTable({
     data: data?.data || [],

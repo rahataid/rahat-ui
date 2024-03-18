@@ -38,13 +38,12 @@ const ProjectLayout: FC<ProjectLayoutProps> = ({ children, menuItems }) => {
     }
     return (
       <>
-        <ResizableHandle withHandle />
+        <ResizableHandle />
         {renderResizablePanel(children)}
       </>
     );
   };
 
-  console.log('children', children);
   return (
     <div>
       <Tabs defaultValue="grid">

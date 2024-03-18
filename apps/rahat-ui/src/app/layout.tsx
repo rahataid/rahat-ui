@@ -10,6 +10,7 @@ import { GraphQueryProvider } from '../providers/subgraph-provider';
 import { ThemeProvider } from '../providers/theme-provider';
 import { Wagmi } from '../providers/wagmi.provider';
 import './globals.css';
+import { RSQueryProvider } from '@rumsan/react-query/providers/rs-query-provider';
 
 export const metadata = {
   title: 'Welcome to Rahat',
@@ -29,20 +30,22 @@ export default function RootLayout({
         <Wagmi>
           <GraphQueryProvider>
             <QueryProvider>
-              <ServiceProvider>
-                <SecondPanelProvider>
-                  <ThemeProvider
-                    attribute="class"
-                    // defaultTheme="system"
-                    // enableSystem
-                    disableTransitionOnChange
-                  >
-                    <main className={GeistSans.className}>{children}</main>
-                    <ToastContainer />
-                    <Toaster />
-                  </ThemeProvider>
-                </SecondPanelProvider>
-              </ServiceProvider>
+              <RSQueryProvider>
+                <ServiceProvider>
+                  <SecondPanelProvider>
+                    <ThemeProvider
+                      attribute="class"
+                      // defaultTheme="system"
+                      // enableSystem
+                      disableTransitionOnChange
+                    >
+                      <main className={GeistSans.className}>{children}</main>
+                      <ToastContainer />
+                      <Toaster />
+                    </ThemeProvider>
+                  </SecondPanelProvider>
+                </ServiceProvider>
+              </RSQueryProvider>
             </QueryProvider>
           </GraphQueryProvider>
         </Wagmi>

@@ -16,7 +16,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 
-import { usePagination } from '@rahat-ui/query';
+import { usePagination, usebeneficiaryList } from '@rahat-ui/query';
 import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
 import { Beneficiary } from '@rahataid/sdk/types';
 import { Eye } from 'lucide-react';
@@ -107,7 +107,7 @@ function BeneficiaryView() {
 
   const handlePrevPage = () => setCurrentPage(currentPage - 1);
 
-  const { beneficiaryQuery } = useRumsanService();
+  // const { beneficiaryQuery } = useRumsanService();
   const [selectedData, setSelectedData] = useState<Beneficiary>();
   const [active, setActive] = useState<string>(BENEFICIARY_NAV_ROUTE.DEFAULT);
 
@@ -124,11 +124,8 @@ function BeneficiaryView() {
     setSelectedData(null);
   }, []);
 
-  const { data } = beneficiaryQuery.useBeneficiaryList({
-    perPage,
-    page: currentPage,
-  });
-
+  const { data } = usebeneficiaryList({ perPage, currentPage, filters });
+  console.log('data', data);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
 

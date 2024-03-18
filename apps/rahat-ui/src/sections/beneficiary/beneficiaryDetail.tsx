@@ -23,6 +23,7 @@ import { paths } from '../../routes/paths';
 import { IBeneficiaryItem } from '../../types/beneficiary';
 import EditBeneficiary from './editBeneficiary';
 import InfoCards from './infoCards';
+import { useBeneficaryVoucher } from '../../hooks/el/subgraph/querycall';
 
 type IProps = {
   data: IBeneficiaryItem;
@@ -33,6 +34,9 @@ export default function BeneficiaryDetail({ data, handleClose }: IProps) {
   const router = useRouter();
   const { beneficiaryQuery } = useRumsanService();
   let beneficiary = null;
+  const walletAddress = data.walletAddress || '';
+
+  const beneficiaryDetails = useBeneficaryVoucher(walletAddress);
 
   const changedDate = new Date(data?.updatedAt);
   const formattedDate = changedDate.toLocaleDateString('en-US', {
@@ -124,7 +128,7 @@ export default function BeneficiaryDetail({ data, handleClose }: IProps) {
         </div>
 
         <TabsContent value="detail">
-          <InfoCards data={data} />
+          <InfoCards data={data} voucherData={beneficiaryDetails.data} />
         </TabsContent>
         <TabsContent value="transaction-history">
           <div className="p-4 border-y">Transaction History View</div>

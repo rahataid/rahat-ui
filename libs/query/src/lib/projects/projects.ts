@@ -19,15 +19,15 @@ const useProjectCreateMutation = () => {
   });
 };
 
-const projectActions = async(uuid:any,payload:any)=>{
-  const res = await api.post(`/projects/${uuid}/actions`,payload);
+const projectActions = async (uuid: any, payload: any) => {
+  const res = await api.post(`/projects/${uuid}/actions`, payload);
   return res.data;
-}
+};
 
-const useProjectAction = () => {  
+const useProjectAction = () => {
   return useMutation({
-    mutationFn: (data:any) => projectActions(data?.uuid,data.payload),
+    mutationFn: (data: any) => projectActions(data?.uuid, data.payload),
   });
-}
+};
 
-export { useProjectCreateMutation,useProjectAction };
+export { useProjectCreateMutation, useProjectAction };

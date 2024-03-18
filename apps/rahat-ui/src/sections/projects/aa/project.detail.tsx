@@ -1,7 +1,5 @@
 'use client';
 
-import DataCard from '../../../components/dataCard';
-import { Users, CircleDollarSign } from 'lucide-react';
 import { ProjectChart } from 'apps/rahat-ui/src/sections/projects';
 import {
   Card,
@@ -10,6 +8,8 @@ import {
   CardHeader,
   CardTitle,
 } from '@rahat-ui/shadcn/src/components/ui/card';
+import { ClusterMap, StyledMapContainer, THEMES } from '@rahat-ui/shadcn/maps';
+import { mapboxBasicConfig } from '../../../constants/config';
 
 export default function ProjectDetails() {
   return (
@@ -47,37 +47,9 @@ export default function ProjectDetails() {
           </p>
         </CardFooter>
       </Card>
-      <div className="grid md:grid-cols-3 gap-4">
-        <DataCard
-          className="h-40"
-          title="Beneficiaries"
-          number1={'12'}
-          subTitle1="Total"
-          number2={'12'}
-          subTitle2="Total"
-          Icon={Users}
-        />
-        <DataCard
-          className=""
-          title="Balance"
-          number1={'12'}
-          subTitle1="Total"
-          number2={'12'}
-          subTitle2="Total"
-          Icon={CircleDollarSign}
-        />
-
-        <DataCard
-          className=""
-          title="Distributed"
-          number1={'12'}
-          subTitle1="Total"
-          number2={'12'}
-          subTitle2="Total"
-          Icon={Users}
-        />
-      </div>
-
+      <StyledMapContainer>
+        <ClusterMap {...mapboxBasicConfig} mapStyle={THEMES.light} />
+      </StyledMapContainer>
       <ProjectChart />
     </div>
   );

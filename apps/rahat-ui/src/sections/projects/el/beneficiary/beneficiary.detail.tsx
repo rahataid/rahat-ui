@@ -1,4 +1,5 @@
-import { Button } from '@rahat-ui/shadcn/components/button';
+import { useRouter } from 'next/navigation';
+
 import {
   Tabs,
   TabsContent,

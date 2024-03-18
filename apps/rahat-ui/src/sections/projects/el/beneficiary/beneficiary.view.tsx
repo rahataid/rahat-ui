@@ -1,7 +1,7 @@
 'use client';
 
+import { useState } from 'react';
 import {
-  ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
 } from '@rahat-ui/shadcn/src/components/ui/resizable';
@@ -9,10 +9,15 @@ import BeneficiaryTable from './beneficiary.table';
 import BeneficiaryDetail from './beneficiary.detail';
 
 export default function BeneficiaryView() {
-  // const handleClose = () => {
-  //   setSelectedBeneficiary(undefined);
-  // };
+  const [selectedBeneficiary, setSelectedBeneficiary] = useState();
 
+  const handleRowClick = (selected) => {
+    setSelectedBeneficiary(selected);
+  };
+
+  const handleClose = () => {
+    setSelectedBeneficiary(undefined);
+  };
   return (
     <BeneficiaryTable />
     // <ResizablePanelGroup className="bg-secondary" direction="horizontal">

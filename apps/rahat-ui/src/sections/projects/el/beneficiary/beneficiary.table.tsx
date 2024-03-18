@@ -13,7 +13,6 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { useRumsanService } from 'apps/rahat-ui/src/providers/service.provider';
 import { MoreHorizontal, Settings2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
@@ -62,6 +61,7 @@ export type Transaction = {
   amount: string;
 };
 
+//@sushant-rumsan convert this to hook, you can refer with @amrit-rumsan
 export const columns: ColumnDef<Transaction>[] = [
   {
     id: 'select',
@@ -164,22 +164,13 @@ export default function BeneficiaryDetailTableView() {
 
   const [perPage, setPerPage] = useState<number>(5);
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [tableData, setTableData] = useState<any>()
+  const [tableData, setTableData] = useState<any>();
 
-  const { beneficiaryQuery } = useRumsanService();
   const columns = useProjectBeneficiaryTableColumns();
-
-  const {data} = beneficiaryQuery.useProjectBeneficiaryList({
-    "action": "beneficiary.list_by_project",
-    "payload": {
-      page: currentPage,
-      perPage
-       
-    }
-  })
 
   const addBeneficiary = useProjectAction();
 
+  //@sushant-rumsan , @anupamakoirala-rumsan - this is not the correct way, if you want to use the useBeneficiaryTransaction hook, you need to import it from the correct path, you should not randomly use mutate async from useProjectAction, if it's for fetching use query, if it's for mutation use mutation
   const handleAssignClaims = async () => {
     const result = await addBeneficiary.mutateAsync({
       uuid: 'bb32449c-fb10-4def-ade0-7710b567daab',
@@ -187,18 +178,17 @@ export default function BeneficiaryDetailTableView() {
         action: 'beneficiary.list_by_project',
         payload: {
           page: currentPage,
-          perPage
-           
-        }
+          perPage,
+        },
       },
     });
 
-    setTableData(result?.data)
+    setTableData(result?.data);
   };
 
   useEffect(() => {
-    handleAssignClaims()
-  }, [])
+    handleAssignClaims();
+  }, []);
 
   // const { data } = beneficiaryQuery.useProjectBeneficiaryList({
   //   perPage,

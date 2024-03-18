@@ -6,6 +6,10 @@ import {
 } from '@tanstack/react-query';
 import { TAGS } from '../../config';
 import { api } from '../../utils/api';
+import { useRSQuery } from '@rumsan/react-query';
+import { getBeneficiaryClient } from '@rahataid/sdk/clients';
+import { useBeneficiaryStore } from './beneficiary.store';
+import { useEffect } from 'react';
 
 const createNewBeneficiary = async (payload: any) => {
   const response = await api.post('/beneficiaries', payload);
@@ -22,24 +26,31 @@ export const useCreateBeneficiary = () => {
   });
 };
 
-const beneficiaryList = async (payload: any) => {
-  const searchParams = {
-    page: 1,
-    perPage: 10,
-    sort: 'createdAt',
-    order: 'desc',
-  };
-  const response = await api.get(`/beneficiaries`, { params: searchParams });
-  return response?.data;
-};
-
-export const usebeneficiaryList = (
+export const useBeneficiaryList = (
   payload: any,
 ): UseQueryResult<any, Error> => {
-  return useQuery({
-    queryKey: [TAGS.GET_BENEFICIARIES],
-    queryFn: () => beneficiaryList(payload),
-  });
+  const { rumsanService, queryClient } = useRSQuery();
+  const benClient = getBeneficiaryClient(rumsanService.client);
+  const { setBeneficiaries } = useBeneficiaryStore((state) => ({
+    setBeneficiaries: state.setBeneficiaries,
+  }));
+
+  const ben = useQuery(
+    {
+      queryKey: [TAGS.GET_BENEFICIARIES],
+      queryFn: () => benClient.list(payload),
+    },
+    queryClient,
+  );
+
+  useEffect(() => {
+    if (ben.data) {
+      //TODO: fix this type @karun-rumsan
+      setBeneficiaries(ben.data.data || []);
+    }
+  }, [ben.data, setBeneficiaries]);
+
+  return ben;
 };
 
 const listBeneficiaryStatus = async () => {

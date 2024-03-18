@@ -16,7 +16,11 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 
-import { usePagination, usebeneficiaryList } from '@rahat-ui/query';
+import {
+  useBeneficiaryList,
+  usePagination,
+  usebeneficiaryList,
+} from '@rahat-ui/query';
 import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
 import { Beneficiary } from '@rahataid/sdk/types';
 import { Eye } from 'lucide-react';
@@ -124,7 +128,12 @@ function BeneficiaryView() {
     setSelectedData(null);
   }, []);
 
-  const { data } = usebeneficiaryList({ perPage, currentPage, filters });
+  const { data } = useBeneficiaryList({
+    perPage,
+    currentPage,
+    filters,
+    page: currentPage,
+  });
   console.log('data', data);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});

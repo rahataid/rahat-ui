@@ -1,10 +1,11 @@
 'use client';
-import { BeneficiaryQuery, CommunicationQuery,VendorQuery } from '@rahat-ui/query';
+import { BeneficiaryQuery, VendorQuery } from '@rahat-ui/query';
 import {
   AuthQuery,
   RoleQuery,
   UserQuery,
   useAuthStore,
+  CommunicationQuery,
 } from '@rumsan/react-query';
 import { RumsanService } from '@rumsan/sdk';
 
@@ -20,7 +21,7 @@ export type ServiceContextType = {
   authQuery: AuthQuery;
   userQuery: UserQuery;
   beneficiaryQuery: BeneficiaryQuery;
-  vendorQuery:VendorQuery;
+  vendorQuery: VendorQuery;
   roleQuery: RoleQuery;
 };
 
@@ -73,7 +74,7 @@ export function ServiceProvider({ children }: ServiceProviderProps) {
   const authQuery = new AuthQuery(rumsanService, queryClient);
   const userQuery = new UserQuery(rumsanService, queryClient);
   const beneficiaryQuery = new BeneficiaryQuery(rumsanService, queryClient);
-  const vendorQuery = new VendorQuery(rumsanService,queryClient)
+  const vendorQuery = new VendorQuery(rumsanService, queryClient);
   const roleQuery = new RoleQuery(rumsanService, queryClient);
   const communicationQuery = new CommunicationQuery(
     communicationService,

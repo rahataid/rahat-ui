@@ -5,6 +5,7 @@ import { ScrollArea } from '@rahat-ui/shadcn/components/scroll-area';
 import { Separator } from '@rahat-ui/shadcn/components/separator';
 import { Eye, PlusSquare } from 'lucide-react';
 import { COMMUNICATION_NAV_ROUTE } from '../../constants/communication.const';
+import { CAMPAIGN_PATH } from '@rahat-ui/types';
 
 type IProps = {
   onTabChange: (tab: string) => void;
@@ -32,7 +33,7 @@ export default function Nav({ onTabChange, title }: IProps) {
             <nav>
               <div
                 onClick={() => {
-                  if (path[path.length - 1] === 'text') {
+                  if (path[path.length - 1] === CAMPAIGN_PATH.TEXT) {
                     handleTabClick(COMMUNICATION_NAV_ROUTE.DEFAULT_TEXT);
                   } else {
                     handleTabClick(COMMUNICATION_NAV_ROUTE.DEFAULT_VOICE);
@@ -45,7 +46,7 @@ export default function Nav({ onTabChange, title }: IProps) {
                   <p>Campaign</p>
                 </div>
                 <p>
-                  {path[path.length - 1] === 'text'
+                  {path[path.length - 1] === CAMPAIGN_PATH.TEXT
                     ? totalTextCampaign
                     : totalVoiceCampaign}
                 </p>

@@ -1,31 +1,41 @@
 import { Beneficiary } from '@rahataid/community-tool-sdk/beneficiary';
 import { localStore, zustandStore } from '@rumsan/react-query';
+import { FormattedResponse } from '@rumsan/sdk/utils';
 
 type BeneficiaryState = {
-  singleBeneficiary: Beneficiary | null;
-  beneficiaries: Beneficiary[];
+  singleBeneficiary: FormattedResponse<Beneficiary>['data'] | null;
+  beneficiaries: FormattedResponse<Beneficiary[]>['data'] | null;
+  meta: FormattedResponse<Beneficiary>['response']['meta'];
 };
 
 type BeneficiaryStateAction = {
-  setSingleBeneficiary: (beneficiary: Beneficiary) => void;
-  setBeneficiaries: (beneficiaries: Beneficiary[]) => void;
+  setSingleBeneficiary: (
+    beneficiary: FormattedResponse<Beneficiary>['data'],
+  ) => void;
+  setBeneficiaries: (
+    beneficiaries: FormattedResponse<Beneficiary[]>['data'],
+  ) => void;
   resetBeneficiary: () => void;
+  setMeta: (meta: any) => void;
 };
 
-type AuthStore = BeneficiaryState & BeneficiaryStateAction;
+type BeneficiaryStore = BeneficiaryState & BeneficiaryStateAction;
 
 const initialStore = {
   singleBeneficiary: null,
   beneficiaries: [],
 };
 
-export const useBeneficiaryStore = zustandStore<AuthStore>(
+export const useBeneficiaryStore = zustandStore<BeneficiaryStore>(
   (set) => ({
     ...initialStore,
+    meta: {},
     setSingleBeneficiary: (beneficiary) =>
       set({ singleBeneficiary: beneficiary }),
     setBeneficiaries: (beneficiaries) => set({ beneficiaries }),
     resetBeneficiary: () => set({ ...initialStore }),
+    setMeta: (meta: FormattedResponse<Beneficiary>['response']['meta']) =>
+      set({ meta }),
   }),
   {
     devtoolsEnabled: true,

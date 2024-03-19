@@ -31,8 +31,9 @@ export const useBeneficiaryList = (
 ): UseQueryResult<any, Error> => {
   const { rumsanService, queryClient } = useRSQuery();
   const benClient = getBeneficiaryClient(rumsanService.client);
-  const { setBeneficiaries } = useBeneficiaryStore((state) => ({
+  const { setBeneficiaries, setMeta } = useBeneficiaryStore((state) => ({
     setBeneficiaries: state.setBeneficiaries,
+    setMeta: state.setMeta,
   }));
 
   const ben = useQuery(
@@ -46,7 +47,8 @@ export const useBeneficiaryList = (
   useEffect(() => {
     if (ben.data) {
       //TODO: fix this type @karun-rumsan
-      setBeneficiaries(ben.data.data || []);
+      setBeneficiaries(ben.data.data as any[]);
+      setMeta(ben.data.response.meta);
     }
   }, [ben.data, setBeneficiaries]);
 

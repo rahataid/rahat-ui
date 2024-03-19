@@ -46,8 +46,6 @@ export function ServiceProvider({ children }: ServiceProviderProps) {
     }
   }, [rumsanService, setRumsanService]);
 
-  console.log('queryClient,rumsanService', queryClient, rumsanService);
-
   const communicationService = new CommunicationService({
     baseURL: process.env.NEXT_PUBLIC_API_COMMUNICATION_URL,
   });

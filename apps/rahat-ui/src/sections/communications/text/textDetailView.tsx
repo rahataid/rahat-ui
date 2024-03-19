@@ -77,7 +77,7 @@ export default function TextDetailView() {
       {isLoading ? (
         <p>Loading ...</p>
       ) : (
-        <>
+        <div className='p-2 bg-secondary'>
           <div className="flex justify-between font-semibold text-lg items-center mt-2">
             <div>Campaign Name</div>
 
@@ -141,22 +141,22 @@ export default function TextDetailView() {
               </CardContent>
             </Card>
           </div>
-          <div className="mt-5">
+          {/* <div className="mt-5">
             <Card>
-              <CardContent>
-                <div className="grid grid-cols-3 gap-5 mt-8">
+              <CardContent> */}
+          {/* <div className="grid grid-cols-3 gap-5 mt-8">
                   {logCardData.map((item) => (
                     <LogCard title={item.title} total={item?.total} />
                   ))}
-                </div>
-                <TextDetailTable
-                  data={data?.data?.communicationLogs}
-                  type={data?.data?.type || ''}
-                />
-              </CardContent>
+                </div> */}
+          <TextDetailTable
+            data={data?.data?.communicationLogs}
+            type={data?.data?.type || ''}
+          />
+          {/* </CardContent>
             </Card>
-          </div>
-        </>
+          </div> */}
+        </div>
       )}
     </>
   );

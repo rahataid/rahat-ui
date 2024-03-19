@@ -1,9 +1,7 @@
-import TextView from '../../../sections/communications/text/textView';
+import { TextView } from "../../../sections/communications/text";
 
-export const metadata = {
-  title: 'Text',
-};
-
-export default function TextPage() {
-  return <TextView />;
+const Page = () => {
+  return <TextView />
 }
+
+export default Page;

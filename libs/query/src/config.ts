@@ -19,6 +19,6 @@ export const TAGS = {
   CREATE_BULK_COMMUNITY_BENEFICARY: 'create_bulk_community_beneficary',
   CREATE_COMMUNITY_SETTINGS: 'create_community_settings',
   LIST_COMMUNITY_SETTINGS: 'list_community_settings',
-  GET_VENDORS:'list_vendors',
-  GET_VENDOR_DETAILS:'get_vendors_details',
+  GET_VENDORS: 'list_vendors',
+  GET_VENDOR_DETAILS: 'get_vendors_details',
 };

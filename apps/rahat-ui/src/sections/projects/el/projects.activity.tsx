@@ -14,9 +14,10 @@ type CardProps = {
   title: string;
   image?: string;
   className?: string;
+  data?: any;
 };
 
-export default function Activities({ title, className }: CardProps) {
+export default function Activities({ title, className, data }: CardProps) {
   return (
     <Card className={cn('border-none shadow-sm', className || '')}>
       <CardHeader className="flex flex-row items-center justify-between space-y-0">
@@ -31,12 +32,21 @@ export default function Activities({ title, className }: CardProps) {
             <p className="text-sm text-muted-foreground">Reedemed</p>
           </div>
           <div>
-            <div className="ml-auto font-light text-sm"> 123 </div>
-            <p className="text-xs text-muted-foreground">$1,999.00</p>
-            <div className="ml-auto font-light text-sm"> 123 </div>
-            <p className="text-xs text-muted-foreground">$1,999.00</p>
-            <div className="ml-auto font-light text-sm"> 123 </div>
-            <p className="text-xs text-muted-foreground">$1,999.00</p>
+            <div className="ml-auto font-light text-sm">
+              {' '}
+              {data?.freeVoucherBudget}{' '}
+            </div>
+            <p className="text-xs text-muted-foreground">$5</p>
+            <div className="ml-auto font-light text-sm">
+              {' '}
+              {data?.freeVoucherAssigned}{' '}
+            </div>
+            <p className="text-xs text-muted-foreground">$5</p>
+            <div className="ml-auto font-light text-sm">
+              {' '}
+              {data?.freeVoucherClaimed}{' '}
+            </div>
+            <p className="text-xs text-muted-foreground">$5</p>
           </div>
         </div>
         <div className="flex items-center justify-between">
@@ -47,11 +57,20 @@ export default function Activities({ title, className }: CardProps) {
             <p className="text-sm text-muted-foreground">Reedemed</p>
           </div>
           <div>
-            <div className="ml-auto font-light text-sm"> 123 </div>
+            <div className="ml-auto font-light text-sm">
+              {' '}
+              {data?.refeeredVoucherBudget}{' '}
+            </div>
             <p className="text-xs text-muted-foreground">$1,999.00</p>
-            <div className="ml-auto font-light text-sm"> 123 </div>
-            <p className="text-xs text-muted-foreground">$1,999.00</p>
-            <div className="ml-auto font-light text-sm"> 123 </div>
+            <div className="ml-auto font-light text-sm">
+              {' '}
+              {data?.refeeredVoucherAssigned}{' '}
+            </div>
+            <p className="text-xs text-muted-foreground">$5</p>
+            <div className="ml-auto font-light text-sm">
+              {' '}
+              {data?.refeeredVoucherClaimed}{' '}
+            </div>
             <p className="text-xs text-muted-foreground">$1,999.00</p>
           </div>
         </div>

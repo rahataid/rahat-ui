@@ -164,19 +164,18 @@ export default function BeneficiaryDetailTableView() {
 
   const [perPage, setPerPage] = useState<number>(5);
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [tableData, setTableData] = useState<any>()
+  const [tableData, setTableData] = useState<any>();
 
   const { beneficiaryQuery } = useRumsanService();
   const columns = useProjectBeneficiaryTableColumns();
 
-  const {data} = beneficiaryQuery.useProjectBeneficiaryList({
-    "action": "beneficiary.list_by_project",
-    "payload": {
+  const { data } = beneficiaryQuery.useProjectBeneficiaryList({
+    action: 'beneficiary.list_by_project',
+    payload: {
       page: currentPage,
-      perPage
-       
-    }
-  })
+      perPage,
+    },
+  });
 
   const addBeneficiary = useProjectAction();
 
@@ -187,18 +186,17 @@ export default function BeneficiaryDetailTableView() {
         action: 'beneficiary.list_by_project',
         payload: {
           page: currentPage,
-          perPage
-           
-        }
+          perPage,
+        },
       },
     });
 
-    setTableData(result?.data)
+    setTableData(result?.data);
   };
 
   useEffect(() => {
-    handleAssignClaims()
-  }, [])
+    handleAssignClaims();
+  }, []);
 
   // const { data } = beneficiaryQuery.useProjectBeneficiaryList({
   //   perPage,

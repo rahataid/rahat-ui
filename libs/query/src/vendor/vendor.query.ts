@@ -19,5 +19,4 @@ export class VendorQuery {
       queryFn: () => this.client.list(payload),
     });
   };
-
 }

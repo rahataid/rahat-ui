@@ -1,6 +1,7 @@
 'use client';
 
 import {
+  ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
 } from '@rahat-ui/shadcn/src/components/ui/resizable';
@@ -25,12 +26,15 @@ export default function BeneficiaryView() {
         <BeneficiaryTable handleClick={handleRowClick} />
       </ResizablePanel>
       {selectedBeneficiary && (
-        <ResizablePanel defaultSize={32}>
-          <BeneficiaryDetail
-            data={selectedBeneficiary}
-            handleClose={handleClose}
-          />
-        </ResizablePanel>
+        <>
+          <ResizableHandle />
+          <ResizablePanel defaultSize={32}>
+            <BeneficiaryDetail
+              data={selectedBeneficiary}
+              handleClose={handleClose}
+            />
+          </ResizablePanel>
+        </>
       )}
     </ResizablePanelGroup>
   );

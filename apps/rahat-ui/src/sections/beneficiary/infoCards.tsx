@@ -9,6 +9,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@rahat-ui/shadcn/components/dialog';
+import { useProjectAction } from '../../../../../libs/query/src/lib/projects/projects';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -44,14 +45,30 @@ import { useBeneficaryVoucher } from '../../hooks/el/subgraph/querycall';
 export default function InfoCards({ data, voucherData }) {
   const assignClaims = useAssignClaims();
 
-  const handleAssignClaims = () => {
+  const addBeneficiary = useProjectAction();
+
+  const handleAssignClaims = async () => {
     const walletAddress = data.walletAddress || '';
+
+
+    const uuid = process.env.NEXT_PUBLIC_PROJECT_UUID;
+
+    const result = await addBeneficiary.mutateAsync({
+      uuid,
+      payload: {
+        action: 'beneficiary.assign_to_project',
+        payload: {
+          beneficiaryId: data?.uuid,
+        },
+      },
+    });
 
     assignClaims.writeContractAsync({
       address: '0x38BFDCCAc556ED026706EE21b4945cE86718D4D1',
       args: [walletAddress],
     });
   };
+
   return (
     <div className="flex flex-col gap-2 py-2 pl-2">
       <Card className="shadow rounded">

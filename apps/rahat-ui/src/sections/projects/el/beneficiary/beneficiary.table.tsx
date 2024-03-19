@@ -1,5 +1,6 @@
 'use client';
 
+import { usePagination } from '@rahat-ui/query';
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -12,10 +13,9 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { MoreHorizontal, Settings2 } from 'lucide-react';
-import { useState } from 'react';
-import { usePagination } from '@rahat-ui/query';
 import { useRumsanService } from 'apps/rahat-ui/src/providers/service.provider';
+import { MoreHorizontal, Settings2 } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
 import * as React from 'react';
@@ -48,9 +48,9 @@ import {
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import { useProjectBeneficiaryTableColumns } from './use-table-column';
+import { useProjectAction } from 'libs/query/src/lib/projects/projects';
 // import { useBeneficiaryTransaction } from '../../hooks/el/subgraph/querycall';
-
-import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 
 // const data: Transaction[] = TransactionTableData;
 
@@ -164,18 +164,49 @@ export default function BeneficiaryDetailTableView() {
 
   const [perPage, setPerPage] = useState<number>(5);
   const [currentPage, setCurrentPage] = useState<number>(1);
+  const [tableData, setTableData] = useState<any>();
 
   const { beneficiaryQuery } = useRumsanService();
+  const columns = useProjectBeneficiaryTableColumns();
 
   const { data } = beneficiaryQuery.useProjectBeneficiaryList({
-    perPage,
-    page: currentPage,
+    action: 'beneficiary.list_by_project',
+    payload: {
+      page: currentPage,
+      perPage,
+    },
   });
 
-  // console.log(datas)
+  const addBeneficiary = useProjectAction();
+
+  const handleAssignClaims = async () => {
+    const result = await addBeneficiary.mutateAsync({
+      uuid: 'bb32449c-fb10-4def-ade0-7710b567daab',
+      payload: {
+        action: 'beneficiary.list_by_project',
+        payload: {
+          page: currentPage,
+          perPage,
+        },
+      },
+    });
+
+    setTableData(result?.data);
+  };
+
+  useEffect(() => {
+    handleAssignClaims();
+  }, []);
+
+  // const { data } = beneficiaryQuery.useProjectBeneficiaryList({
+  //   perPage,
+  //   page: currentPage,
+  // });
+
+  // console.log(data2)
 
   const table = useReactTable({
-    data,
+    data: tableData || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,

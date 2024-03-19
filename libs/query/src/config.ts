@@ -21,4 +21,5 @@ export const TAGS = {
   LIST_COMMUNITY_SETTINGS: 'list_community_settings',
   GET_VENDORS: 'list_vendors',
   GET_VENDOR_DETAILS: 'get_vendors_details',
+  GET_PROJECT_DETAILS: 'get_project_details',
 };

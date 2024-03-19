@@ -9,6 +9,7 @@ type BeneficiaryState = {
 type BeneficiaryStateAction = {
   setSingleBeneficiary: (beneficiary: Beneficiary) => void;
   setBeneficiaries: (beneficiaries: Beneficiary[]) => void;
+  resetBeneficiary: () => void;
 };
 
 type AuthStore = BeneficiaryState & BeneficiaryStateAction;
@@ -24,6 +25,7 @@ export const useBeneficiaryStore = zustandStore<AuthStore>(
     setSingleBeneficiary: (beneficiary) =>
       set({ singleBeneficiary: beneficiary }),
     setBeneficiaries: (beneficiaries) => set({ beneficiaries }),
+    resetBeneficiary: () => set({ ...initialStore }),
   }),
   {
     devtoolsEnabled: true,

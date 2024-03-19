@@ -5,7 +5,7 @@ import { RumsanService } from '@rumsan/sdk';
 
 import { CommunicationService } from '@rumsan/communication';
 import { useQueryClient } from '@tanstack/react-query';
-import { createContext, useContext, useEffect } from 'react';
+import { createContext, memo, useContext, useEffect, useMemo } from 'react';
 import { useError } from '../utils/useErrors';
 import { useRSQuery } from '@rumsan/react-query/providers/rs-query-provider';
 
@@ -29,6 +29,13 @@ export function ServiceProvider({ children }: ServiceProviderProps) {
   const qc = useQueryClient();
   const { queryClient, rumsanService, setQueryClient, setRumsanService } =
     useRSQuery();
+  const rsService = useMemo(
+    () =>
+      new RumsanService({
+        baseURL: process.env.NEXT_PUBLIC_API_HOST_URL,
+      }),
+    [],
+  );
 
   useEffect(() => {
     if (!queryClient) {
@@ -38,13 +45,9 @@ export function ServiceProvider({ children }: ServiceProviderProps) {
 
   useEffect(() => {
     if (!rumsanService) {
-      setRumsanService(
-        new RumsanService({
-          baseURL: process.env.NEXT_PUBLIC_API_HOST_URL,
-        }),
-      );
+      setRumsanService(rsService);
     }
-  }, [rumsanService, setRumsanService]);
+  }, [rsService, rumsanService, setRumsanService]);
 
   const communicationService = new CommunicationService({
     baseURL: process.env.NEXT_PUBLIC_API_COMMUNICATION_URL,

@@ -48,6 +48,11 @@ export enum CAMPAIGN_STATUS {
   SCHEDULED = 'SCHEDULED',
 }
 
+export enum CAMPAIGN_PATH {
+  TEXT = 'text',
+  VOICE = 'voice',
+}
+
 export enum COMMUNICATION_DELIVERY_STATUS {
   QUEUED = 'QUEUED',
   COMPLETED = 'COMPLETED',

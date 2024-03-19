@@ -1,5 +1,6 @@
 'use client';
-import { useUserStore } from '@rahat-ui/query';
+import { useUserStore } from '@rumsan/react-query';
+
 import {
   Card,
   CardContent,

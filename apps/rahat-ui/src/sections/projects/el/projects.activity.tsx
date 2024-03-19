@@ -1,10 +1,5 @@
 import { cn } from '@rahat-ui/shadcn/src';
 import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from '@rahat-ui/shadcn/src/components/ui/avatar';
-import {
   Card,
   CardContent,
   CardHeader,

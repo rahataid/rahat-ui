@@ -26,7 +26,7 @@ export default function DashboardLayout({
             minSize={20}
             defaultSize={20}
             maxSize={20}
-            className="h-[calc(100vh-68px)] w-full bg-secondary"
+            className="w-full bg-secondary"
           >
             {children}
           </ResizablePanel>

@@ -24,7 +24,7 @@ export const QueryProvider = ({ children }: QueryProviderProps) => {
   return (
     <QueryClientProvider client={queryClient}>
       <ConnectKitProvider>{children}</ConnectKitProvider>
-      <ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-left" />
+      {/* <ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-left" /> */}
     </QueryClientProvider>
   );
 };

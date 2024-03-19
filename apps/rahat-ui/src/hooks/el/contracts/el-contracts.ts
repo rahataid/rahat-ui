@@ -1,5 +1,8 @@
 import { useSwal } from '../../../components/swal';
-import { useWriteRahatDonorMintTokenAndApprove } from './donor';
+import {
+  useSimulateRahatDonorMintTokenAndApprove,
+  useWriteRahatDonorMintTokenAndApprove,
+} from './donor';
 import {
   useWriteElProjectAddBeneficiary,
   useWriteElProjectAssignClaims,
@@ -42,13 +45,24 @@ export const useAssignClaims = () => {
 
 export const useMintVouchers = () => {
   const alert = useSwal();
+  const toastMixin = alert.mixin({
+    toast: true,
+    icon: 'success',
+    title: 'General Title',
+    animation: false,
+    position: 'top-right',
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+      toast.addEventListener('mouseenter', alert.stopTimer);
+      toast.addEventListener('mouseleave', alert.resumeTimer);
+    },
+  });
   return useWriteRahatDonorMintTokenAndApprove({
     mutation: {
       onSuccess: () => {
-        alert.fire({
-          title: 'Voucher Minted',
-          icon: 'success',
-        });
+        toastMixin.fire('It has been done');
       },
       onError: (err) => {
         alert.fire({

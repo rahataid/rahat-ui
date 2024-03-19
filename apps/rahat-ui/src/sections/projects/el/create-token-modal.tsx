@@ -1,58 +1,74 @@
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dialog';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
-import { PlusSquare } from 'lucide-react';
+import { FC } from 'react';
 
-const CreateVoucherModal = ({ open, noOfVouchers }) => {
+type CreateVoucherModalType = {
+  open: boolean;
+  voucherInputs: {
+    tokens: string;
+    amountInDollar: string;
+  };
+  handleSubmit: (e: any) => void;
+};
+
+const CreateVoucherModal: FC<CreateVoucherModalType> = ({
+  open,
+  voucherInputs,
+  handleSubmit,
+}) => {
   return (
     <Dialog open={open}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Create Token</DialogTitle>
-          <DialogDescription></DialogDescription>
         </DialogHeader>
-        <div className="grid gap-4 py-4">
-          <div>
-            <Label htmlFor="noOfVouchers" className="text-right">
-              No. Of Free Vouchers
-            </Label>
-            <Input
-              disabled
-              id="noOfVouchers"
-              className="col-span-3"
-              value={noOfVouchers}
-            />
-          </div>
-          <div>
-            <Label htmlFor="amount" className="text-right">
-              No. Of Discount Vouchers
-            </Label>
-            <Input
-              id="amount"
-              className="col-span-3"
-              value={noOfVouchers * 3}
-              disabled
-            />
-          </div>
-          <div>
+        <form onSubmit={handleSubmit}>
+          <div className="grid gap-4 py-4">
+            <div>
+              <Label htmlFor="noOfVouchers" className="text-right">
+                No. Of Free Vouchers
+              </Label>
+              <Input
+                disabled
+                id="tokens"
+                className="col-span-3"
+                value={voucherInputs.tokens}
+              />
+            </div>
+            <div>
+              <Label htmlFor="amount" className="text-right">
+                No. Of Discount Vouchers
+              </Label>
+              <Input
+                id="amount"
+                className="col-span-3"
+                value={+voucherInputs.tokens * 3}
+                disabled
+              />
+            </div>
+            {/* <div>
             <Label htmlFor="description" className="text-right">
               Description
             </Label>
             <Input id="description" className="col-span-3" />
+          </div> */}
           </div>
-        </div>
-        <DialogFooter>
-          <Button type="submit">Submit</Button>
-        </DialogFooter>
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button type="submit">Submit</Button>
+            </DialogClose>
+          </DialogFooter>
+        </form>
       </DialogContent>
     </Dialog>
   );

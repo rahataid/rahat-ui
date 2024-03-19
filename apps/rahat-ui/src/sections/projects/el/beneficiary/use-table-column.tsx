@@ -17,6 +17,7 @@ import BeneficiaryDetail from '../../../../sections/projects/el/beneficiary/bene
 
 export const useProjectBeneficiaryTableColumns = () => {
   const { setSecondPanelComponent, closeSecondPanel } = useSecondPanel();
+
   const columns: ColumnDef<any>[] = [
     {
       id: 'select',

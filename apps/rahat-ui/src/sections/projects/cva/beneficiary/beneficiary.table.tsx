@@ -34,6 +34,8 @@ import {
 } from '@tanstack/react-table';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import { MoreHorizontal } from 'lucide-react';
+import { useSecondPanel } from 'apps/rahat-ui/src/providers/second-panel-provider';
+import BeneficiaryDetail from './beneficiary.detail';
 
 type IProps = {
   handleClick: (item: Beneficiary) => void;
@@ -124,8 +126,8 @@ export default function BeneficiaryTable() {
     filters: state.filters,
     setPagination: state.setPagination,
   }));
+  const { setSecondPanelComponent, closeSecondPanel } = useSecondPanel();
 
-  const [perPage, setPerPage] = useState<number>(5);
   const [currentPage, setCurrentPage] = useState<number>(1);
 
   const handleNextPage = () => setCurrentPage(currentPage + 1);
@@ -225,7 +227,12 @@ export default function BeneficiaryTable() {
                       key={row.id}
                       data-state={row.getIsSelected() && 'selected'}
                       onClick={() => {
-                        handleClick(row.original);
+                        setSecondPanelComponent(
+                          <BeneficiaryDetail
+                            data={row}
+                            handleClose={closeSecondPanel}
+                          />,
+                        );
                       }}
                     >
                       {row.getVisibleCells().map((cell) => (

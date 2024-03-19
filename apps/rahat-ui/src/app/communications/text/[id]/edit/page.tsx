@@ -1,9 +1,9 @@
-import { TextEditView } from "../../../../../sections/communications/text";
+import { TextEditView } from '../../../../../sections/communications/text';
 
 export const metadata = {
-    title: 'Text: Edit',
+  title: 'Text: Edit',
 };
 
 export default function TextCampaignEdit() {
-    return <TextEditView />;
+  return <TextEditView />;
 }

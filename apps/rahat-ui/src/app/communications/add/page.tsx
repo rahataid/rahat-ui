@@ -1,7 +1,7 @@
-import { CommunicationAddView } from "../../../sections/communications/add";
+import { CommunicationAddView } from '../../../sections/communications/add';
 
 const Page = () => {
-    return <CommunicationAddView />
-}
+  return <CommunicationAddView />;
+};
 
 export default Page;

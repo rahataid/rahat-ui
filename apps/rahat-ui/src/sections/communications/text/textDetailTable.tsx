@@ -13,7 +13,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { MoreHorizontal, Settings2 , Eye} from 'lucide-react';
+import { MoreHorizontal, Settings2, Eye } from 'lucide-react';
 
 import { Button } from '@rahat-ui/shadcn/components/button';
 import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
@@ -182,7 +182,7 @@ export default function TextDetailTableView({ data, type }: IProps) {
           </div> */}
           <div className="rounded-md border mt-4 bg-card">
             <Table>
-              <ScrollArea className='h-[calc(100vh-370px)]'>
+              <ScrollArea className="h-[calc(100vh-370px)]">
                 <TableHeader>
                   {table.getHeaderGroups().map((headerGroup) => (
                     <TableRow key={headerGroup.id}>
@@ -192,9 +192,9 @@ export default function TextDetailTableView({ data, type }: IProps) {
                             {header.isPlaceholder
                               ? null
                               : flexRender(
-                                header.column.columnDef.header,
-                                header.getContext(),
-                              )}
+                                  header.column.columnDef.header,
+                                  header.getContext(),
+                                )}
                           </TableHead>
                         );
                       })}

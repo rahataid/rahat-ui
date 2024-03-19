@@ -7,7 +7,10 @@ type CommunicationNavViewProps = {
   items?: NavItem[];
 };
 
-const CommunicationNavView: FC<CommunicationNavViewProps> = ({ title, items }) => {
+const CommunicationNavView: FC<CommunicationNavViewProps> = ({
+  title,
+  items,
+}) => {
   const router = useRouter();
   const [openSubmenu, setOpenSubmenu] = useState<string | null>(null);
 
@@ -48,8 +51,9 @@ const CommunicationNavView: FC<CommunicationNavViewProps> = ({ title, items }) =
 
                 {item.children && (
                   <div
-                    className={`transition-transform duration-200 ${openSubmenu === item.title ? 'rotate-90' : ''
-                      }`}
+                    className={`transition-transform duration-200 ${
+                      openSubmenu === item.title ? 'rotate-90' : ''
+                    }`}
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"

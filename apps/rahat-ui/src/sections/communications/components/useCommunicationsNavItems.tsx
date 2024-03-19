@@ -1,8 +1,4 @@
-import {
-  Speech,
-  Plus,
-  FilePenLine
-} from 'lucide-react';
+import { Speech, Plus, FilePenLine } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 import { NavItem } from '.';
@@ -11,8 +7,8 @@ export const useNavItems = () => {
   const router = useRouter();
 
   const handleGoBack = () => {
-    router.back()
-  }
+    router.back();
+  };
 
   const navItems: NavItem[] = [
     {

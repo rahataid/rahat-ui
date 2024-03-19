@@ -1,1 +1,1 @@
-export { default as CommunicationAddView } from './addCampaign'
+export { default as CommunicationAddView } from './addCampaign';

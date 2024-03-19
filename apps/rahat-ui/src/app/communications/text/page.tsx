@@ -1,7 +1,7 @@
-import { TextView } from "../../../sections/communications/text";
+import { TextView } from '../../../sections/communications/text';
 
 const Page = () => {
-  return <TextView />
-}
+  return <TextView />;
+};
 
 export default Page;

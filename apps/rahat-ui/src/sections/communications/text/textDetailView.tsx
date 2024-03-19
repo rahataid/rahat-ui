@@ -77,7 +77,7 @@ export default function TextDetailView() {
       {isLoading ? (
         <p>Loading ...</p>
       ) : (
-        <div className='p-2 bg-secondary'>
+        <div className="p-2 bg-secondary">
           <div className="flex justify-between font-semibold text-lg items-center mt-2">
             <div>Campaign Name</div>
 

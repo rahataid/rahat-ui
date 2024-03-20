@@ -77,22 +77,22 @@ export const useMintVouchers = () => {
   });
 };
 
-export const useAddVendors = () =>{
+export const useAddVendors = () => {
   const alert = useSwal();
   return useWriteElProjectUpdateVendor({
-    mutation:{
-      onSuccess:()=>{
+    mutation: {
+      onSuccess: () => {
         alert.fire({
-          title:'Vendor Assigned Sucessfully',
-          icon:'success'
-        })
+          title: 'Vendor Assigned Sucessfully',
+          icon: 'success',
+        });
       },
-      onError: (err)=>{
+      onError: (err) => {
         alert.fire({
-          title:'Error while updating vendor',
-          icon:'error'
-        })
-      }
-    }
-  })
-}
+          title: 'Error while updating vendor',
+          icon: 'error',
+        });
+      },
+    },
+  });
+};

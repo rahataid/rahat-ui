@@ -2,18 +2,13 @@ import { getSettingsClient } from '@rahataid/community-tool-sdk/clients';
 import { SettingClient } from '@rahataid/community-tool-sdk/types';
 
 import { RumsanService } from '@rumsan/sdk';
-import {
-  QueryClient,
-  useMutation,
-  useQuery,
-  UseQueryResult,
-} from '@tanstack/react-query';
+import { QueryClient, useMutation } from '@tanstack/react-query';
 
 import { TAGS } from '../config';
 import Swal from 'sweetalert2';
 import { SettingInput } from '@rahataid/community-tool-sdk/settings/settings.types';
 
-export class CommunitySettings {
+export class Settings {
   private client: SettingClient;
   public qc;
 

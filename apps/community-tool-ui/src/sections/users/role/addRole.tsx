@@ -4,7 +4,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-import { useCreateRoleMutation } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/components/button';
 import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
 import { Input } from '@rahat-ui/shadcn/components/input';
@@ -17,13 +16,19 @@ import {
   FormLabel,
   FormMessage,
 } from '@rahat-ui/shadcn/components/form';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { toast } from 'react-toastify';
+import {
+  ServiceContext,
+  ServiceContextType,
+} from 'apps/community-tool-ui/src/providers/service.provider';
 
 export default function AddRole() {
   const [roleName, setRoleName] = useState('');
 
-  const createRole = useCreateRoleMutation();
+  const { roleQuery } = React.useContext(ServiceContext) as ServiceContextType;
+
+  const createRole = roleQuery.userRoleCreate();
 
   const permissions = [
     {

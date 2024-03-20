@@ -16,6 +16,8 @@ interface QueryProviderProps {
 export function GraphQueryProvider({ children }: QueryProviderProps) {
   const queryService = new GraphQuery(
     'https://api.thegraph.com/subgraphs/name/anupamakoirala-rumsan/el',
+
+    // 'https://api.thegraph.com/subgraphs/name/anupamakoirala-rumsan/el',
   );
 
   return (

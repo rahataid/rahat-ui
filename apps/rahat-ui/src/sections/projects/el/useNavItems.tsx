@@ -13,9 +13,57 @@ import { useParams } from 'next/navigation';
 import { useSwal } from '../../../components/swal';
 import { NavItem } from '../components';
 import CreateVoucherModal from './create-voucher-modal';
+import CreateTokenModal from './create-token-modal';
+import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
+import { useState } from 'react';
+import { useMintVouchers } from 'apps/rahat-ui/src/hooks/el/contracts/el-contracts';
+
 export const useNavItems = () => {
   const params = useParams();
   const dialog = useSwal();
+  const [voucherInputs, setVoucherInputs] = useState({
+    tokens: '',
+    amountInDollar: '',
+    // description: '',
+  });
+  const [completeTransaction, setCompleteTransaction] = useState(false);
+
+  const handleCreateVoucherTokenChange = (e: any) => {
+    const { name, value } = e.target;
+    setVoucherInputs((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const createVoucher = useMintVouchers();
+  const handleCreateVoucherSubmit = async (e: any) => {
+    e.preventDefault();
+    await createVoucher.writeContractAsync({
+      address: '0x217A4bD7C3619B2d4Fd0625B1857fdCd9279d1b3',
+      args: [
+        `0x1a134Beafb9D79064c8C318F233AD7f46fF49D78`,
+        '0x9C8Ee9931BEc18EA883c8F23c7427016bBDeF171',
+        BigInt(voucherInputs.tokens),
+        // voucherInputs.description,
+      ],
+    });
+  };
+
+  const handleCreateTokenSubmit = async (e: any) => {
+    e.preventDefault();
+    await createVoucher.writeContractAsync({
+      address: '0x217A4bD7C3619B2d4Fd0625B1857fdCd9279d1b3',
+      args: [
+        `0x3BB2526e0B8f8bD46b0187Aa4d24b351cf434437`,
+        '0x9C8Ee9931BEc18EA883c8F23c7427016bBDeF171',
+        BigInt(voucherInputs.tokens),
+        // voucherInputs.description,
+      ],
+    });
+    setCompleteTransaction(true);
+  };
+
   // const beneficiary = useBeneficiaryStore(state=>state.beneficiary)
 
   const handleLockProject = async () => {
@@ -81,7 +129,20 @@ export const useNavItems = () => {
       title: 'Actions',
       children: [
         {
-          component: <CreateVoucherModal />,
+          component: (
+            <>
+              <CreateVoucherModal
+                voucherInputs={voucherInputs}
+                handleSubmit={handleCreateVoucherSubmit}
+                handleInputChange={handleCreateVoucherTokenChange}
+              />
+              <CreateTokenModal
+                open={createVoucher.isSuccess && !completeTransaction}
+                voucherInputs={voucherInputs}
+                handleSubmit={handleCreateTokenSubmit}
+              />
+            </>
+          ),
           title: 'Create Voucher',
         },
         {

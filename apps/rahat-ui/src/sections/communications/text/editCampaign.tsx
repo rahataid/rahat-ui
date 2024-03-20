@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { z } from 'zod';
 import { format } from 'date-fns';
 import { toast } from 'react-toastify';
@@ -15,6 +15,14 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@rahat-ui/shadcn/components/popover';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@rahat-ui/shadcn/components/table';
 
 import {
   Form,
@@ -33,7 +41,20 @@ import {
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
 
-import { CAMPAIGN_TYPES } from '@rahat-ui/types';
+import {
+  ColumnDef,
+  ColumnFiltersState,
+  SortingState,
+  VisibilityState,
+  flexRender,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  useReactTable,
+} from '@tanstack/react-table';
+
+import { Audience, CAMPAIGN_TYPES } from '@rahat-ui/types';
 import { Button } from '@rahat-ui/shadcn/components/button';
 import { Input } from '@rahat-ui/shadcn/components/input';
 import { Calendar } from '@rahat-ui/shadcn/components/calendar';
@@ -41,19 +62,35 @@ import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
 import {
   ServiceContext,
   ServiceContextType,
+  useRumsanService,
 } from 'apps/rahat-ui/src/providers/service.provider';
 
 export default function EditCampaign() {
   const params = useParams<{ tag: string; id: string }>();
-  const { communicationQuery } = React.useContext(
+  const [showAudiences, setShowAudiences] = useState(false);
+  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    [],
+  );
+  const [columnVisibility, setColumnVisibility] =
+    React.useState<VisibilityState>({});
+  const [rowSelection, setRowSelection] = React.useState({});
+  const [selectedRows, setSelectedRows] = useState<
+    Array<{ id: number; phone: string; name: string }>
+  >([]);
+
+  const { communicationQuery, beneficiaryQuery } = React.useContext(
     ServiceContext,
   ) as ServiceContextType;
   const { data: transportData } = communicationQuery.useListTransport();
   const { data: audienceData } = communicationQuery.useListAudience();
+  const { data: beneficiaryData } = beneficiaryQuery.useBeneficiaryPii();
 
   const { data, isSuccess, isLoading } = communicationQuery.useGetCampaign({
     id: Number(params.id),
   });
+  const createAudience = communicationQuery.useCreateAudience();
+
   const editCampaign = communicationQuery.useUpdateCampaign();
 
   const FormSchema = z.object({
@@ -82,8 +119,19 @@ export default function EditCampaign() {
   });
   useEffect(() => {
     if (data) {
-      const audienceIds =
-        data?.data?.audiences?.map((audience) => audience?.id) || [];
+      // const audienceIds =
+      //   data?.data?.audiences?.map((audience) => audience?.id) || [];
+
+      data?.data?.audiences?.map((audience) => {
+        setSelectedRows((prevSelectedRows) => [
+          ...prevSelectedRows,
+          {
+            name: audience?.details.name,
+            id: audience?.id,
+            phone: audience?.details?.phone,
+          },
+        ]);
+      });
 
       form.setValue('campaignName', data?.data?.name);
       form.setValue(
@@ -92,15 +140,27 @@ export default function EditCampaign() {
           ? data?.data?.details.body
           : data?.data?.details.message || '',
       );
+      console.log(data.data);
+
       form.setValue('campaignType', data?.data?.type);
       form.setValue('startTime', new Date(data?.data?.startTime));
       form.setValue('transport', data?.data?.transport?.id.toString());
-      form.setValue('audiences', audienceIds);
+      // form.setValue('audiences', audienceIds);
     }
   }, [data, form]);
 
   const handleEditCampaign = async (data: z.infer<typeof FormSchema>) => {
-    const audiences = data.audiences.map((data) => Number(data));
+    // const audiences = data.audiences.map((data) => Number(data));
+    console.log(audienceData);
+
+    const audiences = audienceData?.data
+      .filter((audienceObject: any) =>
+        selectedRows?.some(
+          (selectedObject) =>
+            selectedObject.phone === audienceObject?.details?.phone,
+        ),
+      )
+      .map((filteredObject: any) => filteredObject.id);
     type AdditionalData = {
       audio?: any;
       message?: string;
@@ -113,12 +173,15 @@ export default function EditCampaign() {
     //   additionalData.audio = data.file;
     // }
 
-    if (data?.campaignType === 'SMS' && data?.message) {
-      additionalData.message = data?.message;
-    }
-
     if (data?.campaignType === 'WHATSAPP' && data?.message) {
       additionalData.body = data?.message;
+    }
+    if (
+      data?.campaignType !==
+        (CAMPAIGN_TYPES.PHONE && CAMPAIGN_TYPES.WHATSAPP) &&
+      data?.message
+    ) {
+      additionalData.message = data?.message;
     }
     editCampaign
       .mutateAsync({
@@ -140,6 +203,119 @@ export default function EditCampaign() {
       });
   };
 
+  const columns: ColumnDef<any>[] = [
+    {
+      id: 'select',
+      header: ({ table }) => (
+        <Checkbox
+          checked={beneficiaryData?.data?.length === selectedRows.length}
+          onCheckedChange={(value) => {
+            if (value && selectedRows.length === 0) {
+              // const item = beneficiaryData && beneficiaryData?.data;
+              beneficiaryData?.data?.map((item) => {
+                const checkAudienceExist = audienceData?.data.some(
+                  (audience: Audience) =>
+                    audience?.details?.phone === item.phone,
+                );
+
+                if (!checkAudienceExist) {
+                  createAudience.mutateAsync({
+                    details: {
+                      name: item.name,
+                      phone: item.phone,
+                    },
+                  });
+                }
+                console.log(selectedRows, item);
+
+                setSelectedRows((prevSelectedRows) => [
+                  ...prevSelectedRows,
+                  {
+                    name: item.name,
+                    id: item.beneficiaryId,
+                    phone: item.phone,
+                  },
+                ]);
+              });
+            } else if (!value) {
+              setSelectedRows([]);
+            }
+          }}
+          aria-label="Select all"
+        />
+      ),
+      cell: ({ row }) => (
+        <Checkbox
+          checked={
+            selectedRows &&
+            selectedRows.some((data) => data.phone === row?.original.phone)
+          }
+          aria-label="Select row"
+          onCheckedChange={(checked) => {
+            const item = row.original;
+
+            const checkAudienceExist = audienceData?.data.some(
+              (audience: Audience) => audience?.details?.phone === item.phone,
+            );
+
+            if (!checkAudienceExist) {
+              createAudience.mutateAsync({
+                details: {
+                  name: item.name,
+                  phone: item.phone,
+                },
+              });
+            }
+            console.log(selectedRows, checked, item, selectedRows[row.id], row);
+
+            setSelectedRows((prevSelectedRows) =>
+              checked
+                ? [...prevSelectedRows, item]
+                : selectedRows?.filter((value) => value.id !== item.id),
+            );
+          }}
+        />
+      ),
+      enableSorting: false,
+      enableHiding: false,
+    },
+    {
+      accessorKey: 'name',
+      header: 'Name',
+      cell: ({ row }) => <div>{row.getValue('name')}</div>,
+    },
+  ];
+
+  const tableData = React.useMemo(() => {
+    return (
+      beneficiaryData &&
+      beneficiaryData?.data?.map((item: any) => ({
+        name: item?.name,
+        id: item?.beneficiaryId,
+        phone: item?.phone,
+      }))
+    );
+  }, [beneficiaryData]);
+
+  const table = useReactTable({
+    data: tableData,
+    columns,
+    onSortingChange: setSorting,
+    onColumnFiltersChange: setColumnFilters,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    onColumnVisibilityChange: setColumnVisibility,
+    onRowSelectionChange: setRowSelection,
+    state: {
+      sorting,
+      columnFilters,
+      columnVisibility,
+      rowSelection,
+    },
+  });
+
   return (
     <>
       {isLoading || data === undefined ? (
@@ -148,49 +324,50 @@ export default function EditCampaign() {
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(handleEditCampaign)}
-            className="space-y-8"
+            className="h-add"
           >
-            <div className=" w-full mt-4 p-6 bg-white ">
-              <h2 className="text-2xl font-bold mb-4">Campaign: Edit</h2>
-              <div className="mb-4 w-full grid grid-cols-3 gap-5 ">
-                <div className="">
+            <div className="w-full p-4 bg-white">
+              <h2 className="text-lg font-semibold mb-4">Campaign: Edit</h2>
+              <div className="shadow-md p-4 rounded-sm">
+                <div className="mb-4 w-full grid grid-cols-3 gap-4 ">
                   <FormField
                     control={form.control}
                     name="campaignName"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Campaign Name</FormLabel>
                         <FormControl>
-                          <Input placeholder="Campaign Name" {...field} />
+                          <Input
+                            className="rounded"
+                            placeholder="Campaign Name"
+                            {...field}
+                          />
                         </FormControl>
 
                         <FormMessage />
                       </FormItem>
                     )}
                   />
-                </div>
 
-                <div className="">
                   <FormField
                     control={form.control}
                     name="startTime"
                     render={({ field }) => (
                       <FormItem className="flex flex-col">
-                        <FormLabel>Start time</FormLabel>
+                        {/* <FormLabel>Start time</FormLabel> */}
                         <Popover>
                           <PopoverTrigger asChild>
                             <FormControl>
                               <Button
                                 variant={'outline'}
-                                className={cn(
-                                  'w-[240px] pl-3 text-left font-normal',
-                                  !field.value && 'text-muted-foreground',
-                                )}
+                                // className={cn(
+                                //   '!mt-[15px] w-[240px] pl-3 text-left font-normal',
+                                //   !field.value && 'text-muted-foreground'
+                                // )}
                               >
                                 {field.value ? (
                                   format(field.value, 'PPP')
                                 ) : (
-                                  <span>Pick a date</span>
+                                  <span>Start time</span>
                                 )}
                                 <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                               </Button>
@@ -201,10 +378,7 @@ export default function EditCampaign() {
                               mode="single"
                               selected={field.value}
                               onSelect={field.onChange}
-                              disabled={(date) =>
-                                date > new Date() ||
-                                date < new Date('1900-01-01')
-                              }
+                              disabled={(date) => date < new Date()}
                               initialFocus
                             />
                           </PopoverContent>
@@ -214,32 +388,32 @@ export default function EditCampaign() {
                       </FormItem>
                     )}
                   />
-                </div>
 
-                <div className="">
                   <FormField
                     control={form.control}
                     name="campaignType"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Campaign Type</FormLabel>
+                        {/* <FormLabel>Campaign Type</FormLabel> */}
                         <Select
+                          // onValueChange={(e) => {
+                          //   field.onChange(e);
+                          //   handleTypeChange(e);
+                          // }}
                           onValueChange={field.onChange}
-                          defaultValue={field.value}
-                          // value={field.value}
+                          defaultValue={field.value || data?.data?.type}
                         >
                           <FormControl>
-                            <SelectTrigger>
+                            <SelectTrigger className="rounded">
                               <SelectValue placeholder="Select campaign type" />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            {Object.keys(CAMPAIGN_TYPES).map((key, index) => {
-                              return (
-                                <SelectItem key={index} value={key}>
-                                  {key}
-                                </SelectItem>
-                              );
+                            {Object.keys(CAMPAIGN_TYPES).map((key) => {
+                              if (key !== CAMPAIGN_TYPES.PHONE)
+                                return (
+                                  <SelectItem value={key}>{key}</SelectItem>
+                                );
                             })}
                           </SelectContent>
                         </Select>
@@ -248,52 +422,57 @@ export default function EditCampaign() {
                       </FormItem>
                     )}
                   />
-                </div>
-                {/* show only if selected is sms */}
-                <div className="">
+                  {/* show only if selected is sms */}
+                  {/* {!showSelectAudio ? ( */}
                   <FormField
                     control={form.control}
                     name="message"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Message</FormLabel>
+                        {/* <FormLabel>Message</FormLabel> */}
                         <FormControl>
-                          <Input placeholder="Message" {...field} />
+                          <Input
+                            placeholder="Message"
+                            {...field}
+                            className="rounded"
+                          />
                         </FormControl>
 
                         <FormMessage />
                       </FormItem>
                     )}
                   />
-                </div>
 
-                <div className="">
                   <FormField
                     control={form.control}
                     name="transport"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Transport</FormLabel>
+                        {/* <FormLabel>Transport</FormLabel> */}
                         <Select
                           onValueChange={field.onChange}
-                          defaultValue={field.value && field.value.toString()}
+                          defaultValue={
+                            field?.value?.toString() ||
+                            data?.data?.transport?.id.toString()
+                          }
                         >
                           <FormControl>
-                            <SelectTrigger>
+                            <SelectTrigger className="rounded">
                               <SelectValue placeholder="Select transport" />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            {transportData?.data?.map((data) => {
-                              return (
-                                <SelectItem
-                                  key={data.id}
-                                  value={data.id.toString()}
-                                >
-                                  {data.name}
-                                </SelectItem>
-                              );
-                            })}
+                            {transportData !== undefined &&
+                              transportData?.data?.map((data) => {
+                                return (
+                                  <SelectItem
+                                    key={data.id}
+                                    value={data.id.toString()}
+                                  >
+                                    {data.name}
+                                  </SelectItem>
+                                );
+                              })}
                           </SelectContent>
                         </Select>
 
@@ -302,62 +481,111 @@ export default function EditCampaign() {
                     )}
                   />
                 </div>
-                <div className="">
+                <div className="flex justify-end">
+                  <Button
+                    variant="outline"
+                    className="text-primary border-primary mr-4"
+                    onClick={() => setShowAudiences(!showAudiences)}
+                    type="button"
+                  >
+                    {showAudiences ? 'Hide Audiences' : 'Select Audiences'}
+                  </Button>
+                  <Button>Edit Campaign</Button>
+                </div>
+              </div>
+
+              {showAudiences && (
+                <div className="mt-6 shadow-md rounded-sm p-4">
+                  <div className="flex justify-between">
+                    <p>Select Audiences</p>
+                    <Input
+                      placeholder="Filter campaigns..."
+                      value={
+                        (table.getColumn('name')?.getFilterValue() as string) ??
+                        ''
+                      }
+                      onChange={(event) =>
+                        table
+                          .getColumn('name')
+                          ?.setFilterValue(event.target.value)
+                      }
+                      className="max-w-sm mr-3"
+                    />
+                    <Button
+                      variant="ghost"
+                      onClick={() => setShowAudiences(false)}
+                    >
+                      Close
+                    </Button>
+                  </div>
                   <FormField
                     control={form.control}
                     name="audiences"
                     render={() => (
                       <FormItem>
-                        <div className="mb-4">
-                          <FormLabel className="text-base">Audiences</FormLabel>
+                        {/* <div className="mb-4">
+                    <FormLabel className="text-base">Audiences</FormLabel>
+                  </div> */}
+                        <div className="rounded-md border max-h-[300px] overflow-y-auto">
+                          {beneficiaryData && (
+                            <Table>
+                              <TableHeader>
+                                {table.getHeaderGroups().map((headerGroup) => (
+                                  <TableRow key={headerGroup.id}>
+                                    {headerGroup.headers.map((header) => {
+                                      return (
+                                        <TableHead key={header.id}>
+                                          {header.isPlaceholder
+                                            ? null
+                                            : flexRender(
+                                                header.column.columnDef.header,
+                                                header.getContext(),
+                                              )}
+                                        </TableHead>
+                                      );
+                                    })}
+                                  </TableRow>
+                                ))}
+                              </TableHeader>
+                              <TableBody>
+                                {table.getRowModel().rows?.length ? (
+                                  table.getRowModel().rows.map((row) => (
+                                    <TableRow
+                                      key={row.id}
+                                      data-state={
+                                        row.getIsSelected() && 'selected'
+                                      }
+                                    >
+                                      {row.getVisibleCells().map((cell) => (
+                                        <TableCell key={cell.id}>
+                                          {flexRender(
+                                            cell.column.columnDef.cell,
+                                            cell.getContext(),
+                                          )}
+                                        </TableCell>
+                                      ))}
+                                    </TableRow>
+                                  ))
+                                ) : (
+                                  <TableRow>
+                                    <TableCell
+                                      colSpan={columns.length}
+                                      className="h-24 text-center"
+                                    >
+                                      No results.
+                                    </TableCell>
+                                  </TableRow>
+                                )}
+                              </TableBody>
+                            </Table>
+                          )}
                         </div>
-                        {audienceData &&
-                          audienceData?.data?.map((item) => (
-                            <FormField
-                              key={item.id}
-                              control={form.control}
-                              name="audiences"
-                              render={({ field }) => {
-                                return (
-                                  <FormItem
-                                    key={item.id}
-                                    className="flex flex-row items-start space-x-3 space-y-0"
-                                  >
-                                    <FormControl>
-                                      <Checkbox
-                                        checked={field.value?.includes(item.id)}
-                                        onCheckedChange={(checked) => {
-                                          return checked
-                                            ? field.onChange([
-                                                ...field.value,
-                                                item.id,
-                                              ])
-                                            : field.onChange(
-                                                field.value?.filter(
-                                                  (value) => value !== item.id,
-                                                ),
-                                              );
-                                        }}
-                                      />
-                                    </FormControl>
-                                    <FormLabel className="font-normal">
-                                      {item.details.name}
-                                    </FormLabel>
-                                  </FormItem>
-                                );
-                              }}
-                            />
-                          ))}
                         <FormMessage />
                       </FormItem>
                     )}
                   />
                 </div>
-              </div>
-
-              <Button className="bg-blue-500 mt-4 text-white px-4 py-2 rounded-md hover:bg-blue-600">
-                Edit Campaign
-              </Button>
+              )}
             </div>
           </form>
         </Form>

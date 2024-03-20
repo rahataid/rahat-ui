@@ -9,20 +9,16 @@ import { LucideIcon } from 'lucide-react';
 
 type CardProps = {
   title: string;
-  number1: string;
-  number2: string;
-  subTitle1: string;
-  subTitle2: string;
+  number: string;
+  subTitle: string;
   className: string;
   Icon: LucideIcon;
 };
 
 export default function DataCard({
   title,
-  number1,
-  number2,
-  subTitle1,
-  subTitle2,
+  number,
+  subTitle,
   className,
   Icon,
 }: CardProps) {
@@ -43,15 +39,9 @@ export default function DataCard({
       </CardHeader>
       <CardContent className="flex items-center justify-between">
         <div className="">
-          <div className="text-4xl font-semibold text-primary">{number1}</div>
+          <div className="text-4xl font-semibold text-primary">{number}</div>
           <p className="text-xs text-muted-foreground space-y-0 pt-2">
-            {subTitle1}
-          </p>
-        </div>
-        <div className="">
-          <div className="text-4xl font-semibold text-primary">{number2}</div>
-          <p className="text-xs text-muted-foreground space-y-0 pt-2">
-            {subTitle2}
+            {subTitle}
           </p>
         </div>
       </CardContent>

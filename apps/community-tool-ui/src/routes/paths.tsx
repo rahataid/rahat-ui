@@ -4,6 +4,7 @@ const ROOTS = {
   BENEFICIARY: '/beneficiary',
   USER: '/users',
   PROFILE: '/profile',
+  SETTINGS: '/settings',
 };
 
 export const paths = {
@@ -20,5 +21,8 @@ export const paths = {
       detail: (uuid: string) => `${ROOTS.BENEFICIARY}/${id}`,
     },
     user: ROOTS.USER,
+  },
+  settings: {
+    root: ROOTS.SETTINGS,
   },
 };

@@ -11,7 +11,10 @@ import {
   Upload,
   Settings,
 } from 'lucide-react';
-import { BENEFICIARY_NAV_ROUTE } from '../../constants/beneficiary.const';
+import {
+  BENEFICIARY_NAV_ROUTE,
+  GROUP_NAV_ROUTE,
+} from '../../constants/beneficiary.const';
 import Filter from './filter';
 
 type IProps = {
@@ -91,15 +94,13 @@ export default function Nav({ meta, handleNav }: IProps) {
                 </div>
                 <p>{meta?.total}</p>
               </div>
-              <div
-                className="flex justify-between p-2 rounded-md cursor-pointer hover:bg-primary hover:text-white text-muted-foreground"
-                onClick={() => handleNav(BENEFICIARY_NAV_ROUTE.SETTINGS)}
+              {/* <div
+                className="flex items-center p-2 gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white text-muted-foreground"
+                onClick={() => handleNav(GROUP_NAV_ROUTE.VIEW_GROUP)}
               >
-                <div className="flex items-center gap-3">
-                  <Settings size={18} strokeWidth={1.5} />
-                  <p>Settings</p>
-                </div>
-              </div>
+                <Import size={18} strokeWidth={1.5} />
+                <p>Group</p>
+              </div> */}
             </nav>
           </div>
         </ScrollArea>

@@ -17,6 +17,8 @@ export const paths = {
   dashboard: {
     root: ROOTS.DASHBOARD,
     beneficiary: {
+      add: `${ROOTS.BENEFICIARY}/add`,
+      import: `${ROOTS.BENEFICIARY}/import`,
       root: ROOTS.BENEFICIARY,
       detail: (uuid: string) => `${ROOTS.BENEFICIARY}/${id}`,
     },

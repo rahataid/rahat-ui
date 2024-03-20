@@ -1,5 +1,5 @@
 'use client';
-import { memo, useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 
 import {
   ResizableHandle,
@@ -33,9 +33,7 @@ import BeneficiaryDetail from '../../sections/beneficiary/beneficiaryDetail';
 import BeneficiaryGridView from '../../sections/beneficiary/gridView';
 import BeneficiaryListView from '../../sections/beneficiary/listView';
 import BeneficiaryNav from '../../sections/beneficiary/nav';
-import AddBeneficiary from './addBeneficiary';
 import ImportBeneficiary from './import.beneficiary';
-import BenImp from './import/beneficiary';
 
 export const columns: ColumnDef<ListBeneficiary>[] = [
   {
@@ -170,13 +168,9 @@ function BeneficiaryView() {
         </ResizablePanel>
         <ResizableHandle />
         <ResizablePanel minSize={28}>
-          {active === BENEFICIARY_NAV_ROUTE.ADD_BENEFICIARY && (
-            <AddBeneficiary />
-          )}
           {active === BENEFICIARY_NAV_ROUTE.UPLOAD_BENEFICIARY && (
             <ImportBeneficiary />
           )}
-          {active === BENEFICIARY_NAV_ROUTE.IMPORT_BENEFICIARY && <BenImp />}
 
           {active === BENEFICIARY_NAV_ROUTE.DEFAULT && (
             <>

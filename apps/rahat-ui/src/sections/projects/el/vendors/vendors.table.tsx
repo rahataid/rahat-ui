@@ -14,7 +14,7 @@ import {
 } from '@tanstack/react-table';
 import { ArrowUpDown, MoreHorizontal } from 'lucide-react';
 import * as React from 'react';
-
+import {useEffect, useState} from 'react';
 import { Button } from '@rahat-ui/shadcn/components/button';
 import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
 import {
@@ -32,6 +32,7 @@ import {
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import { useProjectAction } from 'libs/query/src/lib/projects/projects';
 
 const data: Payment[] = [
   {
@@ -43,47 +44,7 @@ const data: Payment[] = [
     id: '3u1reuv4',
     name: 'John Doe',
     walletaddress: '0xeEkljas09sd92k20942ls',
-  },
-  {
-    id: 'derv1ws0',
-    name: 'John Doe',
-    walletaddress: '0xeEkljas09sd92k20942lsing',
-  },
-  {
-    id: '5kma53ae',
-    name: 'John Doe',
-    walletaddress: '0xeEkljas09sd92k20942ls',
-  },
-  {
-    id: 'bhqecj4p',
-    name: 'John Doe',
-    walletaddress: '0xeEkljas09sd92k20942l',
-  },
-  {
-    id: 'm5gr84i9',
-    name: 'John Doe',
-    walletaddress: '0xeEkljas09sd92k20942ls',
-  },
-  {
-    id: '3u1reuv4',
-    name: 'John Doe',
-    walletaddress: '0xeEkljas09sd92k20942ls',
-  },
-  {
-    id: 'derv1ws0',
-    name: 'John Doe',
-    walletaddress: '0xeEkljas09sd92k20942lsing',
-  },
-  {
-    id: '5kma53ae',
-    name: 'John Doe',
-    walletaddress: '0xeEkljas09sd92k20942ls',
-  },
-  {
-    id: 'bhqecj4p',
-    name: 'John Doe',
-    walletaddress: '0xeEkljas09sd92k20942l',
-  },
+  }
 ];
 
 export type Payment = {
@@ -169,12 +130,40 @@ export default function VendorTable() {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
   );
+
+  const [tableData, setTableData] = useState<Payment[]>()
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
+  const listVendor = useProjectAction();
+
+  const getVendorList = async () => {
+    const vendorData = await listVendor.mutateAsync({
+      uuid: 'bb32449c-fb10-4def-ade0-7710b567daab',
+      payload: {
+        action: 'vendor.list_by_project',
+        payload: {
+          page: 1,
+          perPage:10
+        }
+      },
+    });
+
+    const filteredVendorData = vendorData?.data.map((row:any) => {
+      return {id: '1', name: row.User.name, walletaddress: row.User.wallet}
+    })
+
+    setTableData(filteredVendorData)
+    
+  }
+
+  useEffect(() => {
+    getVendorList()
+  }, [])
+
   const table = useReactTable({
-    data,
+    data: tableData || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,

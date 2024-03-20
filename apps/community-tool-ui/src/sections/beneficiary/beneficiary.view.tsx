@@ -27,7 +27,10 @@ import {
 import { ListBeneficiary } from '@rahataid/community-tool-sdk/beneficiary';
 import { MoreHorizontal } from 'lucide-react';
 import CustomPagination from '../../components/customPagination';
-import { BENEFICIARY_NAV_ROUTE } from '../../constants/beneficiary.const';
+import {
+  BENEFICIARY_NAV_ROUTE,
+  GROUP_NAV_ROUTE,
+} from '../../constants/beneficiary.const';
 import { useRumsanService } from '../../providers/service.provider';
 import BeneficiaryDetail from '../../sections/beneficiary/beneficiaryDetail';
 import BeneficiaryGridView from '../../sections/beneficiary/gridView';
@@ -36,6 +39,7 @@ import BeneficiaryNav from '../../sections/beneficiary/nav';
 import AddBeneficiary from './addBeneficiary';
 import ImportBeneficiary from './import.beneficiary';
 import BenImp from './import/beneficiary';
+import ViewGroup from '../group/group.view';
 
 export const columns: ColumnDef<ListBeneficiary>[] = [
   {
@@ -162,6 +166,7 @@ function BeneficiaryView() {
       rowSelection,
     },
   });
+  console.log('select', selectedData);
   return (
     <Tabs defaultValue="list" className="h-full">
       <ResizablePanelGroup direction="horizontal" className="min-h-max bg-card">
@@ -200,7 +205,7 @@ function BeneficiaryView() {
               />
             </>
           )}
-          {/* {active === GROUP_NAV_ROUTE.VIEW_GROUP && <ViewGroup />} */}
+          {active === GROUP_NAV_ROUTE.VIEW_GROUP && <ViewGroup />}
         </ResizablePanel>
         {selectedData ? (
           <>

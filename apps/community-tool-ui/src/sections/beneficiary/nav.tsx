@@ -94,13 +94,13 @@ export default function Nav({ meta, handleNav }: IProps) {
                 </div>
                 <p>{meta?.total}</p>
               </div>
-              {/* <div
+              <div
                 className="flex items-center p-2 gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white text-muted-foreground"
                 onClick={() => handleNav(GROUP_NAV_ROUTE.VIEW_GROUP)}
               >
                 <Import size={18} strokeWidth={1.5} />
                 <p>Group</p>
-              </div> */}
+              </div>
             </nav>
           </div>
         </ScrollArea>

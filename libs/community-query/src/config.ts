@@ -22,4 +22,7 @@ export const TAGS = {
   GET_VENDORS: 'list_vendors',
   GET_VENDOR_DETAILS: 'get_vendors_details',
   GET_PROJECT_DETAILS: 'get_project_details',
+  LIST_COMMUNITY_GROUP: 'list_community_group',
+  LIST_COMMUNITY_GROUP_BY_ID: 'list_community_group_by_id',
+  ADD_COMMUNITY_GROUP: 'add_community_group',
 };

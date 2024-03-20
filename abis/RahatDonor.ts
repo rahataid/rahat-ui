@@ -343,7 +343,7 @@ export const RahatDonorAbi = [
         type: 'string',
       },
     ],
-    name: 'mintTokenAndApprove',
+    name: 'mintTokenAndApproveDescription',
     outputs: [],
     stateMutability: 'nonpayable',
     type: 'function',

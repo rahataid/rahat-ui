@@ -2,10 +2,12 @@ import { useSwal } from '../../../components/swal';
 import {
   useSimulateRahatDonorMintTokenAndApprove,
   useWriteRahatDonorMintTokenAndApprove,
+  useWriteRahatDonorMintTokenAndApproveDescription,
 } from './donor';
 import {
   useWriteElProjectAddBeneficiary,
   useWriteElProjectAssignClaims,
+  useWriteElProjectUpdateVendor,
 } from './elProject';
 
 export const useAddBeneficiary = () => {
@@ -59,7 +61,7 @@ export const useMintVouchers = () => {
       toast.addEventListener('mouseleave', alert.resumeTimer);
     },
   });
-  return useWriteRahatDonorMintTokenAndApprove({
+  return useWriteRahatDonorMintTokenAndApproveDescription({
     mutation: {
       onSuccess: () => {
         toastMixin.fire('It has been done');
@@ -74,3 +76,23 @@ export const useMintVouchers = () => {
     },
   });
 };
+
+export const useAddVendors = () =>{
+  const alert = useSwal();
+  return useWriteElProjectUpdateVendor({
+    mutation:{
+      onSuccess:()=>{
+        alert.fire({
+          title:'Vendor Assigned Sucessfully',
+          icon:'success'
+        })
+      },
+      onError: (err)=>{
+        alert.fire({
+          title:'Error while updating vendor',
+          icon:'error'
+        })
+      }
+    }
+  })
+}

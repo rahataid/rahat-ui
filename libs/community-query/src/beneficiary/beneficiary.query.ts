@@ -1,9 +1,5 @@
 import { getBeneficiaryClient } from '@rahataid/community-tool-sdk/clients';
 import { BeneficiaryClient } from '@rahataid/community-tool-sdk/types';
-import {
-  Beneficiary,
-  UpdateBeneficiary,
-} from '@rahataid/community-tool-sdk/beneficiary';
 
 import { RumsanService } from '@rumsan/sdk';
 import {
@@ -16,7 +12,7 @@ import {
 import { TAGS } from '../config';
 import Swal from 'sweetalert2';
 
-export class CommunityBeneficiaryQuery {
+export class BeneficiaryQuery {
   private client: BeneficiaryClient;
   public qc;
 

@@ -1,5 +1,5 @@
 'use client';
-import { BeneficiaryQuery, Settings } from '@rahat-ui/community';
+import { BeneficiaryQuery, Settings } from '@rahat-ui/community-query';
 import {
   AuthQuery,
   RoleQuery,

@@ -1,0 +1,23 @@
+{
+  "name": "community-query",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/community-query/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/community-query",
+        "main": "libs/community-query/src/index.ts",
+        "tsConfig": "libs/community-query/tsconfig.lib.json",
+        "assets": ["libs/community-query/*.md"]
+      }
+    },
+    "publish": {
+      "command": "node tools/scripts/publish.mjs community-query {args.ver} {args.tag}",
+      "dependsOn": ["build"]
+    }
+  },
+  "tags": []
+}

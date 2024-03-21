@@ -29,12 +29,19 @@ import { MoreVertical } from 'lucide-react';
 import Image from 'next/image';
 import { useState } from 'react';
 import TransactionTable from '../transactions/transactions.table';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { useAssignClaims } from 'apps/rahat-ui/src/hooks/el/contracts/el-contracts';
 
 type IProps = {
   data: User;
 };
 
-export default function UserDetail() {
+export default function UserDetail({beneficiaryDetails}:any) {
+
+  const assignClaims = useAssignClaims();
+
+  const walletAddress = beneficiaryDetails.name;
+  
   const [activeTab, setActiveTab] = useState<'details' | 'edit' | null>(
     'details',
   );
@@ -46,6 +53,13 @@ export default function UserDetail() {
   const toggleActiveUser = () => {
     setActiveUser(!activeUser);
   };
+
+  const handleAssignVoucher = () => {
+    assignClaims.writeContractAsync({
+      address: '0x9C8Ee9931BEc18EA883c8F23c7427016bBDeF171',
+      args: [walletAddress],
+    });
+  }
   return (
     <>
       <div className="p-4 bg-card mt-2">
@@ -86,6 +100,7 @@ export default function UserDetail() {
             </div>
             <div className="flex align-center justify-between w-full ml-4">
               <p className="text-slate-500">johndoe@mailinator.com</p>
+              <Button onClick={handleAssignVoucher}>Assign Voucher</Button>
               <Badge>Active</Badge>
             </div>
           </div>

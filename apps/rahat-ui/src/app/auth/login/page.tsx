@@ -39,7 +39,7 @@ export default function AuthPage() {
         setOtpSent(true);
       }
     });
-  }; 
+  };
 
   const onVerifyOtp = async (e: React.SyntheticEvent) => {
     e.preventDefault();

@@ -13,24 +13,21 @@ export const metadata: Metadata = {
 };
 
 const ProjectDetails = () => {
-  
   const uuid = process.env.NEXT_PUBLIC_PROJECT_UUID;
   const getProject = useProjectAction();
 
   const fetchAddress = async () => {
     try {
       const address = await getProjectAddress(getProject, uuid);
-      console.log(address)
+      console.log(address);
     } catch (error) {
       console.error('Error fetching project address:', error);
     }
   };
 
   useEffect(() => {
-    fetchAddress()
-  }, [])
-
-
+    fetchAddress();
+  }, []);
 
   return (
     <div className="p-2 bg-secondary">

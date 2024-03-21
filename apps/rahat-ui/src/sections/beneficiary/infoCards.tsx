@@ -43,7 +43,7 @@ import { useAssignClaims } from '../../hooks/el/contracts/el-contracts';
 import { useBeneficaryVoucher } from '../../hooks/el/subgraph/querycall';
 
 export default function InfoCards({ data, voucherData }) {
-  const assignClaims = useAssignClaims();
+  
 
   const addBeneficiary = useProjectAction();
 
@@ -60,11 +60,6 @@ export default function InfoCards({ data, voucherData }) {
           beneficiaryId: data?.uuid,
         },
       },
-    });
-
-    assignClaims.writeContractAsync({
-      address: '0x38BFDCCAc556ED026706EE21b4945cE86718D4D1',
-      args: [walletAddress],
     });
   };
 

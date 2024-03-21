@@ -191,9 +191,9 @@ export default function BeneficiaryDetailTableView() {
       },
     });
 
-    const filteredData = result?.data.map((row:any) => {
-            return {name: row.Beneficiary.walletAddress}
-          })
+    const filteredData = result?.data.map((row: any) => {
+      return { name: row.Beneficiary.walletAddress };
+    });
 
     setTableData(filteredData);
   };
@@ -202,12 +202,6 @@ export default function BeneficiaryDetailTableView() {
     handleAssignClaims();
   }, []);
 
-  // const { data } = beneficiaryQuery.useProjectBeneficiaryList({
-  //   perPage,
-  //   page: currentPage,
-  // });
-
-  // console.log(data2)
 
   const table = useReactTable({
     data: tableData || [],

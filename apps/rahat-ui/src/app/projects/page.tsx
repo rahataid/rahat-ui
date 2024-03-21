@@ -20,8 +20,6 @@ export default function ProjectPage() {
   const itemsPerPage = 12;
   const [currentPage, setCurrentPage] = useState(1);
 
-  
-
   const totalItems = projectsData.length;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 

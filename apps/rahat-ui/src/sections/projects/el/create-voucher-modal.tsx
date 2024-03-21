@@ -18,7 +18,6 @@ interface CreateVoucherModalType {
   voucherInputs: {
     tokens: string;
     amountInDollar: string;
-    description: string;
   };
   handleSubmit: (e: any) => void;
   handleInputChange: (e: any) => void;
@@ -72,7 +71,7 @@ const CreateVoucherModal: FC<CreateVoucherModalType> = ({
                   onChange={handleInputChange}
                 />
               </div>
-              <div>
+              {/* <div>
                 <Label htmlFor="description" className="text-right">
                   Description
                 </Label>
@@ -82,7 +81,7 @@ const CreateVoucherModal: FC<CreateVoucherModalType> = ({
                   name="description"
                   className="col-span-3"
                 />
-              </div>
+              </div> */}
             </div>
             <DialogFooter>
               <DialogClose asChild>

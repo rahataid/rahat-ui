@@ -5,7 +5,7 @@ import { RahatDonorAbi } from './abis/RahatDonor';
 
 export default defineConfig([
   {
-    out: 'apps/rahat-ui/src/hooks/el/contracts/elProject.ts',
+    out: 'apps/rahat-ui/src/contract-hooks/elProject.ts',
     contracts: [
       {
         name: 'ELProject',
@@ -15,7 +15,7 @@ export default defineConfig([
     plugins: [react()],
   },
   {
-    out: 'apps/rahat-ui/src/hooks/el/contracts/donor.ts',
+    out: 'apps/rahat-ui/src/contract-hooks/donor.ts',
     contracts: [
       {
         name: 'RahatDonor',

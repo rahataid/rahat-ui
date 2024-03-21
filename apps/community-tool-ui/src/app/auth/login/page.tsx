@@ -37,7 +37,6 @@ export default function AuthPage() {
 
   const onVerifyOtp = async (e: React.SyntheticEvent) => {
     e.preventDefault();
-
     await verifyOtp({ otp, challenge, service });
     router.push(paths.dashboard.root);
   };
@@ -74,6 +73,7 @@ export default function AuthPage() {
                     Email
                   </Label>
                   <Input
+                    required={true}
                     id="email"
                     placeholder="Email"
                     type="email"
@@ -100,6 +100,7 @@ export default function AuthPage() {
                     OTP
                   </Label>
                   <Input
+                    required={true}
                     id="otp"
                     placeholder="Enter OTP"
                     type="text"

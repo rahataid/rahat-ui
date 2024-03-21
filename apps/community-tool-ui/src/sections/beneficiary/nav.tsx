@@ -16,13 +16,21 @@ import {
   GROUP_NAV_ROUTE,
 } from '../../constants/beneficiary.const';
 import Filter from './filter';
+import MultipleSelectFilter from './multipleSelectorFilter';
 
 type IProps = {
   meta: Meta | undefined;
   handleNav: (item: string) => void;
+  selectedData: number[];
+  handleClose: () => void;
 };
 
-export default function Nav({ meta, handleNav }: IProps) {
+export default function Nav({
+  meta,
+  handleNav,
+  selectedData,
+  handleClose,
+}: IProps) {
   return (
     <>
       <div>
@@ -109,27 +117,15 @@ export default function Nav({ meta, handleNav }: IProps) {
       <Separator />
       <ScrollArea>
         <div className="p-2">
-          {/* <h1 className="font-semibold text-xl mb-4 text-muted-foreground">
-            Action Items
-          </h1> */}
           <nav className="text-muted-foreground">
             <div
               onClick={() => handleNav(BENEFICIARY_NAV_ROUTE.ADD_BENEFICIARY)}
               className="flex items-center p-2 gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white"
             >
               <Plus size={18} strokeWidth={1.5} />
-              {/* <PlusSquare size={18} strokeWidth={1.5} /> */}
               <p>Add Beneficiary</p>
             </div>
-            {/* <div
-              className="flex items-center p-2 gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white"
-              onClick={() =>
-                handleNav(BENEFICIARY_NAV_ROUTE.UPLOAD_BENEFICIARY)
-              }
-            >
-              <Upload size={18} strokeWidth={1.5} />
-              <p>Upload Beneficiary</p>
-            </div> */}
+
             <div
               className="flex items-center p-2 gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white"
               onClick={() =>
@@ -142,6 +138,15 @@ export default function Nav({ meta, handleNav }: IProps) {
           </nav>
         </div>
       </ScrollArea>
+      {selectedData && selectedData.length > 0 && (
+        <>
+          <Separator className="mb-2" />
+          <MultipleSelectFilter
+            selectedData={selectedData}
+            handleClose={handleClose}
+          />
+        </>
+      )}
     </>
   );
 }

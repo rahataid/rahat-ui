@@ -25,16 +25,31 @@ export class CommunityGroupQuery {
     return useQuery({
       refetchOnMount: true,
       queryKey: [TAGS.LIST_COMMUNITY_GROUP, payload],
-      queryFn: () => {
-        return this.client.list(payload);
+      queryFn: async () => {
+        const k = await this.client.list(payload);
+        return k;
       },
     });
   };
 
+  // useCommunityGroupListALL = (payload: any): UseQueryResult<any, Error> => {
+  //   return useQuery({
+  //     refetchOnMount: true,
+  //     queryKey: [TAGS.LIST_COMMUNITY_GROUP, payload],
+  //     queryFn: async () => {
+  //       const k = await this.client.list(payload);
+  //       const perPage = k.response.meta?.['total'];
+  //       const fetchAll = await this.client.list(perPage);
+  //       console.log(fetchAll);
+  //       return fetchAll;
+  //     },
+  //   });
+  // };
+
   useCommunityGroupListByID = (id: string): UseQueryResult<any, Error> => {
     return useQuery({
       refetchOnMount: true,
-      queryKey: [TAGS.LIST_COMMUNITY_GROUP_BY_ID],
+      queryKey: [TAGS.LIST_COMMUNITY_GROUP, id],
       queryFn: () => {
         return this.client.listById(id);
       },

@@ -131,11 +131,29 @@ function BeneficiaryView() {
 
   const { communityBenQuery } = useRumsanService();
   const [selectedData, setSelectedData] = useState<ListBeneficiary>();
+  const [selectedBenefId, setSelectedBenefId] = useState<number[]>([]);
   const [active, setActive] = useState<string>(BENEFICIARY_NAV_ROUTE.DEFAULT);
+
+  // const handleBeneficiaryClick = useCallback((item: ListBeneficiary) => {
+  //   setSelectedData(item);
+  // }, []);
 
   const handleBeneficiaryClick = useCallback((item: ListBeneficiary) => {
     setSelectedData(item);
+    setSelectedBenefId((prevSelectedData) => {
+      const isSelected = prevSelectedData?.includes(item.id);
+
+      if (isSelected) {
+        return prevSelectedData.filter((selectedId) => selectedId !== item.id);
+      } else {
+        return [...(prevSelectedData || []), item.id];
+      }
+    });
   }, []);
+
+  const handleClear = () => {
+    setSelectedBenefId([]);
+  };
 
   const handleClose = () => {
     setSelectedData(null);
@@ -157,6 +175,7 @@ function BeneficiaryView() {
     manualPagination: true,
     data: data?.data?.rows || [],
     columns,
+    getRowId: (row) => row.uuid,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
@@ -170,7 +189,12 @@ function BeneficiaryView() {
     <Tabs defaultValue="list" className="h-full">
       <ResizablePanelGroup direction="horizontal" className="min-h-max bg-card">
         <ResizablePanel minSize={20} defaultSize={20} maxSize={20}>
-          <BeneficiaryNav handleNav={handleNav} meta={data?.response?.meta} />
+          <BeneficiaryNav
+            handleNav={handleNav}
+            meta={data?.response?.meta}
+            selectedData={selectedBenefId}
+            handleClose={handleClear}
+          />
         </ResizablePanel>
         <ResizableHandle />
         <ResizablePanel minSize={28}>
@@ -214,8 +238,6 @@ function BeneficiaryView() {
                 handleClose={handleClose}
                 data={selectedData}
               />
-
-              {/* {addBeneficiary && <AddBeneficiary />} */}
             </ResizablePanel>
           </>
         ) : null}

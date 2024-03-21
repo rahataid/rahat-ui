@@ -12,49 +12,19 @@ import {
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 
-import { ListBeneficiary } from '@rahataid/community-tool-sdk/beneficiary';
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-} from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
+import { GroupResponseById } from '@rahataid/community-tool-sdk/groups';
 
 type IProps = {
-  handleClick: (item: ListBeneficiary) => void;
-
-  table: Table<ListBeneficiary>;
+  table: Table<GroupResponseById[]>;
 };
 
-export default function BenificiaryTable({ handleClick, table }: IProps) {
+export default function GroupDetailTable({ table }: IProps) {
   return (
     <>
       <div className="w-full -mt-2 p-2 bg-secondary">
-        <div className="flex items-center mb-2">
-          <DropdownMenu>
-            <DropdownMenuContent align="end">
-              {table
-                .getAllColumns()
-                .filter((column) => column.getCanHide())
-                .map((column) => {
-                  return (
-                    <DropdownMenuCheckboxItem
-                      key={column.id}
-                      className="capitalize"
-                      checked={column.getIsVisible()}
-                      onCheckedChange={(value) =>
-                        column.toggleVisibility(!!value)
-                      }
-                    >
-                      {column.id}
-                    </DropdownMenuCheckboxItem>
-                  );
-                })}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
         <div className="rounded border bg-white">
           <TableComponent>
-            <ScrollArea className="h-96">
+            <ScrollArea className="h-table">
               <TableHeader className="sticky top-0">
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow key={headerGroup.id}>
@@ -79,9 +49,6 @@ export default function BenificiaryTable({ handleClick, table }: IProps) {
                     <TableRow
                       key={row.id}
                       data-state={row.getIsSelected() && 'selected'}
-                      onClick={() => {
-                        handleClick(row.original);
-                      }}
                     >
                       {row.getVisibleCells().map((cell) => (
                         <TableCell key={cell.id}>

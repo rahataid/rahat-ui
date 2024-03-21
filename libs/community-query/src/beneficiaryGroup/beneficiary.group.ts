@@ -24,41 +24,39 @@ export class CommunityBeneficiaryGroupQuery {
     this.qc = reactQueryClient;
   }
 
-  //   useCommunityBeneficiaryGroupList = (payload: any): UseQueryResult<any, Error> => {
-  //     return useQuery({
-  //       refetchOnMount: true,
-  //       queryKey: [TAGS.LIST_COMMUNITY_GROUP, payload],
-  //       queryFn: () => {
-  //         return this.client.list(payload);
-  //       },
-  //     });
-  //   };
-
-  //   useCommunityGroupListByID = (id: string): UseQueryResult<any, Error> => {
-  //     return useQuery({
-  //       refetchOnMount: true,
-  //       queryKey: [TAGS.LIST_COMMUNITY_GROUP_BY_ID],
-  //       queryFn: () => {
-  //         return this.client.listById(id);
-  //       },
-  //     });
-  //   };
-
   useCommunityBeneficiaryGroupCreate = () => {
     return useMutation({
       mutationKey: [TAGS.ADD_COMMUNITY_BENEFICIARY_GROUP],
       mutationFn: async (payload: any) => {
-        console.log('payload', payload);
-        // return this.client.create(payload);
+        const { value } = await Swal.fire({
+          title: 'Select Group',
+          text: 'Select group for the beneficiary',
+          showCancelButton: true,
+          confirmButtonText: 'Create',
+          cancelButtonText: 'Cancel',
+          input: 'select',
+          inputOptions: payload.inputOptions,
+          inputPlaceholder: 'Select a project',
+        });
+
+        const inputData = {
+          beneficiariesId: payload?.selectedData,
+          groupId: parseInt(value),
+        };
+
+        return this.client.create(inputData);
       },
-      onSuccess: async () => {
+      onSuccess: async (data) => {
         await this.qc.invalidateQueries({
           queryKey: [TAGS.LIST_COMMUNITY_BENEFICIARY_GROUP],
         });
-        Swal.fire({
-          icon: 'success',
-          title: 'Group Created successfully',
-        });
+
+        data &&
+          Swal.fire({
+            title: 'Beneficiaries Group has been created Sucessfully ',
+
+            icon: 'success',
+          });
       },
       onError: (error: any) => {
         Swal.fire({

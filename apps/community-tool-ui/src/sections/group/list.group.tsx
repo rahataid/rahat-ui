@@ -1,15 +1,7 @@
 'use client';
 
-import React, { useMemo, useState } from 'react';
-import {
-  ColumnDef,
-  Table,
-  VisibilityState,
-  flexRender,
-  getCoreRowModel,
-  getSortedRowModel,
-  useReactTable,
-} from '@tanstack/react-table';
+import React from 'react';
+import { Table, flexRender } from '@tanstack/react-table';
 
 import {
   TableBody,

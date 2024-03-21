@@ -101,6 +101,7 @@ function ViewGroup() {
     getSortedRowModel: getSortedRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
+    getRowId: (row) => row.id.toString(),
     state: {
       columnVisibility,
       rowSelection,
@@ -108,6 +109,7 @@ function ViewGroup() {
   });
 
   const handleGroup = useCallback((item: ListGroup) => {
+    console.log('item', item);
     setSelectedData(item);
   }, []);
 
@@ -124,7 +126,7 @@ function ViewGroup() {
 
       <TabsContent value="list">
         <ResizablePanelGroup direction={'horizontal'}>
-          <ResizablePanel minSize={20}>
+          <ResizablePanel minSize={25}>
             <GroupList table={table} handleClick={handleGroup} />
             <CustomPagination
               meta={data?.response?.meta || { total: 0, currentPage: 0 }}
@@ -136,7 +138,7 @@ function ViewGroup() {
           {selectedData ? (
             <>
               <ResizableHandle />
-              <ResizablePanel minSize={30}>
+              <ResizablePanel minSize={80} defaultSize={75}>
                 <GroupDetail handleClose={handleClose} data={selectedData} />
               </ResizablePanel>
             </>

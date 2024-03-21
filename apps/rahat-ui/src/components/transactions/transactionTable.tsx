@@ -53,7 +53,7 @@ const data: Transaction[] = [
     voucherId: 'DEF456',
     timeStamp: '2024-02-27T09:00:00Z',
     txHash: '0x987654321abcdef',
-  }
+  },
 ];
 
 export type Transaction = {

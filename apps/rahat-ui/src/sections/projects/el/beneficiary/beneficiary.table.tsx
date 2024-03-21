@@ -181,7 +181,7 @@ export default function BeneficiaryDetailTableView() {
 
   const handleAssignClaims = async () => {
     const result = await addBeneficiary.mutateAsync({
-      uuid: 'bb32449c-fb10-4def-ade0-7710b567daab',
+      uuid: process.env.NEXT_PUBLIC_PROJECT_UUID,
       payload: {
         action: 'beneficiary.list_by_project',
         payload: {
@@ -201,7 +201,6 @@ export default function BeneficiaryDetailTableView() {
   useEffect(() => {
     handleAssignClaims();
   }, []);
-
 
   const table = useReactTable({
     data: tableData || [],

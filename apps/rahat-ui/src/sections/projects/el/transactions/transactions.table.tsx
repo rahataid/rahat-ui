@@ -55,7 +55,7 @@ const data: Transaction[] = [
     voucherId: 'DEF456',
     timestamp: '2024-02-27T09:00:00Z',
     txHash: '0x987654321abcdef',
-  }
+  },
 ];
 
 export type Transaction = {
@@ -201,7 +201,7 @@ export const columns: ColumnDef<Transaction>[] = [
   },
 ];
 
-export default function TransactionTable() {
+export default function TransactionTable({walletAddress}) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
@@ -209,7 +209,7 @@ export default function TransactionTable() {
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
-  const [data, setData] = React.useState([]);
+  const [data, setData] = React.useState([]); 
 
   const table = useReactTable({
     data,
@@ -231,17 +231,19 @@ export default function TransactionTable() {
   });
   const { queryService } = useGraphService();
   const fetchBeneficiary = React.useCallback(() => {
-    const querRes = queryService.useProjectTransaction();
+    // const querRes = queryService.useProjectTransaction();
+    const querRes = queryService.useBeneficiaryTransaction(walletAddress)
+
     querRes.then((res) => {
-      const claimedAssigned = res?.data?.claimAssigneds;
-      const claimProcessed = res?.data?.projectClaimProcesseds;
-      const beneficiaryReferred = res?.data?.beneficiaryReferreds;
-      const beneficiaryAdded = res?.data?.beneficiaryAddeds;
-      const claimCreated = res?.data?.claimCreateds;
-      const tokenBudgetIncrease = res?.data?.tokenBudgetIncreases;
+      const claimedAssigned = res?.claimAssigneds;
+      const claimProcessed = res?.projectClaimProcesseds;
+      const beneficiaryReferred = res?.beneficiaryReferreds;
+      const beneficiaryAdded = res?.beneficiaryAddeds;
+      const claimCreated = res?.claimCreateds;
+      const tokenBudgetIncrease = res?.tokenBudgetIncreases;
       const data: any = [];
 
-      claimedAssigned.map((trans) => {
+      claimedAssigned?.map((trans) => {
         data.push({
           beneficiary: trans.beneficiary,
           topic: trans.eventType,
@@ -251,7 +253,7 @@ export default function TransactionTable() {
         });
         // const claimRes = queryService?.useClaimAssigned(trans.id);
       });
-      claimProcessed.map((trans) => {
+      claimProcessed?.map((trans) => {
         data.push({
           beneficiary: trans.beneficiary,
           topic: trans.eventType,
@@ -260,7 +262,7 @@ export default function TransactionTable() {
           voucherId: trans.token,
         });
       });
-      beneficiaryReferred.map((trans) => {
+      beneficiaryReferred?.map((trans) => {
         data.push({
           beneficiary: trans.referrerBeneficiaries,
           topic: trans.eventType,
@@ -269,7 +271,7 @@ export default function TransactionTable() {
         });
       });
 
-      claimCreated.map((trans) => {
+      claimCreated?.map((trans) => {
         data.push({
           beneficiary: trans.claimer,
           txHash: trans.transactionHash,
@@ -279,7 +281,7 @@ export default function TransactionTable() {
         });
       });
 
-      beneficiaryAdded.map((trans) => {
+      beneficiaryAdded?.map((trans) => {
         data.push({
           topic: trans.eventType,
           timestamp: formatDate(trans.blockTimestamp),
@@ -288,7 +290,7 @@ export default function TransactionTable() {
         });
       });
 
-      tokenBudgetIncrease.map((trans) => {
+      tokenBudgetIncrease?.map((trans) => {
         data.push({
           topic: trans.eventType,
           txHash: trans.transactionHash,

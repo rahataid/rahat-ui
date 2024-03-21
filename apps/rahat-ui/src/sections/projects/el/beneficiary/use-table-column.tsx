@@ -81,7 +81,7 @@ export const useProjectBeneficiaryTableColumns = () => {
     {
       id: 'actions',
       enableHiding: false,
-      cell: ({row}) => {
+      cell: ({ row }) => {
         return (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -94,7 +94,10 @@ export const useProjectBeneficiaryTableColumns = () => {
               <DropdownMenuItem
                 onClick={() => {
                   setSecondPanelComponent(
-                    <BeneficiaryDetail closeSecondPanel={closeSecondPanel} beneficiaryDetails={row.original} />,
+                    <BeneficiaryDetail
+                      closeSecondPanel={closeSecondPanel}
+                      beneficiaryDetails={row.original}
+                    />,
                   );
                 }}
               >

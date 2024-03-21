@@ -43,8 +43,6 @@ import { useAssignClaims } from '../../hooks/el/contracts/el-contracts';
 import { useBeneficaryVoucher } from '../../hooks/el/subgraph/querycall';
 
 export default function InfoCards({ data, voucherData }) {
-  
-
   const addBeneficiary = useProjectAction();
 
   const handleAssignClaims = async () => {

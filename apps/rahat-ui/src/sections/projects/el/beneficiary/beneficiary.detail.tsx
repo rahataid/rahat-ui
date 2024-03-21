@@ -36,12 +36,11 @@ type IProps = {
   data: User;
 };
 
-export default function UserDetail({beneficiaryDetails}:any) {
-
+export default function UserDetail({ beneficiaryDetails }: any) {
   const assignClaims = useAssignClaims();
 
   const walletAddress = beneficiaryDetails.name;
-  
+
   const [activeTab, setActiveTab] = useState<'details' | 'edit' | null>(
     'details',
   );
@@ -59,7 +58,7 @@ export default function UserDetail({beneficiaryDetails}:any) {
       address: '0x9C8Ee9931BEc18EA883c8F23c7427016bBDeF171',
       args: [walletAddress],
     });
-  }
+  };
   return (
     <>
       <div className="p-4 bg-card mt-2">
@@ -149,7 +148,7 @@ export default function UserDetail({beneficiaryDetails}:any) {
                 </TabsContent>
                 <TabsContent value="transaction">
                   <div className="p-8">
-                    <TransactionTable />
+                    <TransactionTable walletAddress={walletAddress}/>
                   </div>
                 </TabsContent>
               </Tabs>

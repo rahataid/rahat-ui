@@ -12,7 +12,7 @@ const Charts = () => {
     { label: 'Unbanked', value: 53345 },
   ];
   return (
-    <div className=" grid md:grid-cols-3 gap-4 mt-4">
+    <div className=" grid md:grid-cols-3 gap-2 mt-2">
       {chartData1.length && (
         <PieChart
           title="Beneficiaries"

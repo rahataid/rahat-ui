@@ -24,13 +24,13 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { Gender } from '@rahataid/sdk/enums';
 import { User } from '@rumsan/sdk/types';
-import { enumToObjectArray } from '@rumsan/sdk/utils';
+import { enumToObjectArray, truncateEthAddress } from '@rumsan/sdk/utils';
 import { MoreVertical } from 'lucide-react';
 import Image from 'next/image';
 import { useState } from 'react';
 import TransactionTable from '../transactions/transactions.table';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { useAssignClaims } from 'apps/rahat-ui/src/hooks/el/contracts/el-contracts';
+import { useAssignClaims } from '../../../../hooks/el/contracts/el-contracts';
 
 type IProps = {
   data: User;
@@ -72,7 +72,9 @@ export default function UserDetail({ beneficiaryDetails }: any) {
           />
           <div className="flex flex-col items-center justify-center w-full mr-2 gap-2">
             <div className="flex align-center justify-between w-full ml-4">
-              <h1 className="font-semibold text-xl">John Doe</h1>
+              <h1 className="font-semibold text-xl">
+                {truncateEthAddress(walletAddress)}
+              </h1>
               <div className="flex">
                 <div className="pl-2">
                   <DropdownMenu>
@@ -98,7 +100,9 @@ export default function UserDetail({ beneficiaryDetails }: any) {
               </div>
             </div>
             <div className="flex align-center justify-between w-full ml-4">
-              <p className="text-slate-500">johndoe@mailinator.com</p>
+              <p className="text-slate-500">
+                {truncateEthAddress(walletAddress)}
+              </p>
               <Button onClick={handleAssignVoucher}>Assign Voucher</Button>
               <Badge>Active</Badge>
             </div>

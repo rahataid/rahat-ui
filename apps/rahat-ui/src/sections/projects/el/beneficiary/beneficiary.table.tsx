@@ -13,7 +13,6 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { useRumsanService } from 'apps/rahat-ui/src/providers/service.provider';
 import { MoreHorizontal, Settings2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
@@ -51,6 +50,7 @@ import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { useProjectBeneficiaryTableColumns } from './use-table-column';
 import { useProjectAction } from '@rahat-ui/query';
 import { useParams } from 'next/navigation';
+import { MS_ACTIONS } from '@rahataid/sdk';
 // import { useBeneficiaryTransaction } from '../../hooks/el/subgraph/querycall';
 
 // const data: Transaction[] = TransactionTableData;
@@ -168,25 +168,15 @@ export default function BeneficiaryDetailTableView() {
   const [perPage, setPerPage] = useState<number>(5);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [tableData, setTableData] = useState<any>();
-
-  const { beneficiaryQuery } = useRumsanService();
   const columns = useProjectBeneficiaryTableColumns();
-
-  const { data } = beneficiaryQuery.useProjectBeneficiaryList({
-    action: 'beneficiary.list_by_project',
-    payload: {
-      page: currentPage,
-      perPage,
-    },
-  });
 
   const addBeneficiary = useProjectAction();
 
-  const handleAssignClaims = async () => {
+  const getBeneficiary = async () => {
     const result = await addBeneficiary.mutateAsync({
       uuid,
       payload: {
-        action: 'beneficiary.list_by_project',
+        action: MS_ACTIONS.BENEFICIARY.LIST_BY_PROJECT,
         payload: {
           page: currentPage,
           perPage,
@@ -202,7 +192,7 @@ export default function BeneficiaryDetailTableView() {
   };
 
   useEffect(() => {
-    handleAssignClaims();
+    getBeneficiary();
   }, []);
 
   const table = useReactTable({

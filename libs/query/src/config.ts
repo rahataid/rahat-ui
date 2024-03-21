@@ -26,4 +26,5 @@ export const TAGS = {
   GET_VENDORS: 'list_vendors',
   GET_VENDOR_DETAILS: 'get_vendors_details',
   GET_PROJECT_DETAILS: 'get_project_details',
+  GET_BENFICIARY_STATS: 'get_beneficiary_stats',
 };

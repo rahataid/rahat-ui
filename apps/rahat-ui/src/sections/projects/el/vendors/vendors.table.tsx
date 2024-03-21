@@ -33,6 +33,7 @@ import {
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { useProjectAction } from 'libs/query/src/lib/projects/projects';
+import { MS_ACTIONS } from '@rahataid/sdk';
 
 const data: Payment[] = [
   {
@@ -142,7 +143,7 @@ export default function VendorTable() {
     const vendorData = await listVendor.mutateAsync({
       uuid: process.env.NEXT_PUBLIC_PROJECT_UUID,
       payload: {
-        action: 'vendor.list_by_project',
+        action: MS_ACTIONS.VENDOR.LIST_BY_PROJECT,
         payload: {
           page: 1,
           perPage: 10,

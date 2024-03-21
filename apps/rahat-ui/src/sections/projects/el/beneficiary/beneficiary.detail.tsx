@@ -148,7 +148,7 @@ export default function UserDetail({ beneficiaryDetails }: any) {
                 </TabsContent>
                 <TabsContent value="transaction">
                   <div className="p-8">
-                    <TransactionTable walletAddress={walletAddress}/>
+                    <TransactionTable walletAddress={walletAddress} />
                   </div>
                 </TabsContent>
               </Tabs>

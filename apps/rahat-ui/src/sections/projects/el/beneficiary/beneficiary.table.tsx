@@ -49,7 +49,7 @@ import {
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { useProjectBeneficiaryTableColumns } from './use-table-column';
-import { useProjectAction } from 'libs/query/src/lib/projects/projects';
+import { useProjectAction } from '@rahat-ui/query';
 // import { useBeneficiaryTransaction } from '../../hooks/el/subgraph/querycall';
 
 // const data: Transaction[] = TransactionTableData;
@@ -144,7 +144,7 @@ export const columns: ColumnDef<Transaction>[] = [
 
 // import { useBeneficiaryTransaction } from '../../hooks/el/subgraph/querycall';
 
-export default function BeneficiaryDetailTableView() {
+export default function BeneficiaryDetailTableView({uuid}:{uuid: string}) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
@@ -181,7 +181,7 @@ export default function BeneficiaryDetailTableView() {
 
   const handleAssignClaims = async () => {
     const result = await addBeneficiary.mutateAsync({
-      uuid: process.env.NEXT_PUBLIC_PROJECT_UUID,
+      uuid,
       payload: {
         action: 'beneficiary.list_by_project',
         payload: {

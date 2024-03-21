@@ -9,25 +9,46 @@ import {
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { PlusCircle, Search } from 'lucide-react';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { PROJECT_NAV_ROUTE } from '../../constants/project.const';
 import { AddProject, ProjectCard, ProjectNav } from '../../sections/projects';
 import projectsData from './projectsData.json';
+import { useRumsanService } from '../../providers/service.provider';
 
 export default function ProjectPage() {
   const [active, setActive] = useState<string>(PROJECT_NAV_ROUTE.DEFAULT);
   const [projectType, setProjectType] = useState<string>('');
   const itemsPerPage = 12;
   const [currentPage, setCurrentPage] = useState(1);
+  const [projectData, setProjectData] = useState<any>()
 
-  const totalItems = projectsData.length;
+  const totalItems = projectData && projectData?.length;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const displayedItems = projectsData.slice(startIndex, endIndex);
+  const displayedItems = projectData && projectData?.slice(startIndex, endIndex);
 
-  const selectedProjectType = displayedItems.filter(
+  const { projectQuery } = useRumsanService();
+  const projectsList = projectQuery.useProjectList({})
+
+  console.log(projectsList)
+  
+  const handleGetProjects = (projectsDatas:any) => {
+    return projectsDatas && projectsDatas?.map((row:any) => {
+      return {id: row?.uuid, title: row?.name, badge: row?.type, image: '/projects/project3.jpeg', subTitle: row?.description}
+    })
+  }
+
+  useEffect(() => {
+    if(projectsList && !projectData){
+      const data = handleGetProjects(projectsList?.data?.data)
+      setProjectData(data)
+    }
+    
+  }, [projectsList])
+
+  const selectedProjectType = displayedItems?.filter(
     (item) => item.badge === projectType,
   );
 
@@ -80,7 +101,7 @@ export default function ProjectPage() {
                 </div>
                 <ScrollArea className="px-3 h-withPage">
                   <div className="grid grid-cols-3 gap-6">
-                    {selectedProject.map((project) => (
+                    {selectedProject?.map((project) => (
                       <ProjectCard
                         id={project.id}
                         key={project.id}

@@ -48,6 +48,8 @@ export default function InfoCards({ data, voucherData }) {
   const handleAssignClaims = async () => {
     const walletAddress = data.walletAddress || '';
 
+    console.log(data.uuid)
+
     const uuid = process.env.NEXT_PUBLIC_PROJECT_UUID;
 
     const result = await addBeneficiary.mutateAsync({

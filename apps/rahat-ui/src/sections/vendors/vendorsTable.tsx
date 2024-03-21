@@ -34,7 +34,7 @@ import {
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { useRumsanService } from '../../providers/service.provider';
-import { useProjectAction } from 'libs/query/src/lib/projects/projects';
+import { useAddVendors } from '../../hooks/el/contracts/el-contracts';
 
 const data: Payment[] = [
   {
@@ -125,17 +125,12 @@ export const columns: ColumnDef<Payment>[] = [
     enableHiding: false,
     cell: ({ row }) => {
       const payment = row.original;
-      const addVendor = useProjectAction();
-      const handleRegisterVendor = async (vendorUuid: string) => {
-        // const uuid = process.env.NEXT_PUBLIC_PROJECT_UUID;
-        await addVendor.mutateAsync({
-          uuid: 'bb32449c-fb10-4def-ade0-7710b567daab',
-          payload: {
-            action: 'vendor.assign_to_project',
-            payload: {
-              vendorUuid: 'd7cb7578-d833-4c10-b1c5-5914114277fa',
-            },
-          },
+      const uuid = process.env.NEXT_PUBLIC_PROJECT_UUID || '';
+      const updateVendor = useAddVendors(uuid, payment.id);
+      const handleRegisterVendor = async () => {
+        await updateVendor.writeContractAsync({
+          address: '0x9C8Ee9931BEc18EA883c8F23c7427016bBDeF171',
+          args: ['0x9C8Ee9931BEc18EA883c8F23c7427016bBDeF171', true],
         });
       };
       return (

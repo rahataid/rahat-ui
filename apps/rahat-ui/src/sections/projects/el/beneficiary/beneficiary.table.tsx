@@ -49,7 +49,7 @@ import {
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { useProjectBeneficiaryTableColumns } from './use-table-column';
-import { useProjectAction } from 'libs/query/src/lib/projects/projects';
+import { useProjectAction } from '@rahat-ui/query';
 // import { useBeneficiaryTransaction } from '../../hooks/el/subgraph/querycall';
 
 // const data: Transaction[] = TransactionTableData;

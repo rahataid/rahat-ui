@@ -5,7 +5,7 @@ import { QueryClient, useQuery, UseQueryResult } from '@tanstack/react-query';
 import { TAGS } from '../config';
 import { UUID } from 'crypto';
 
-export class VendorQuery {
+export class ProjectQuery {
   private reactQueryClient: QueryClient;
   private client: ProjectClient;
 

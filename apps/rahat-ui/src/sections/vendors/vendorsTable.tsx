@@ -34,7 +34,6 @@ import {
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { useRumsanService } from '../../providers/service.provider';
-import { useProjectAction } from 'libs/query/src/lib/projects/projects';
 import { useAddVendors } from '../../hooks/el/contracts/el-contracts';
 
 const data: Payment[] = [

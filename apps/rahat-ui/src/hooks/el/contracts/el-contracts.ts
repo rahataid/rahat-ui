@@ -11,6 +11,7 @@ import {
 } from './elProject';
 
 import { useProjectAction } from 'libs/query/src/lib/projects/projects';
+import { MS_ACTIONS } from '@rahataid/sdk';
 
 export const useAddBeneficiary = () => {
   const alert = useSwal();
@@ -88,7 +89,8 @@ export const useAddVendors = (uuid: string, vendorUuid: string) => {
         await addVendor.mutateAsync({
           uuid: uuid,
           payload: {
-            action: 'vendor.assign_to_project',
+            action: MS_ACTIONS.VENDOR.ASSIGN_TO_PROJECT,
+            // 'vendor.assign_to_project',
             payload: {
               vendorUuid,
             },

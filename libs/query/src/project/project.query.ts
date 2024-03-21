@@ -21,10 +21,10 @@ export class ProjectQuery {
     });
   };
 
-  useProjectDetails = (uuid:UUID): UseQueryResult<any,Error> =>{
+  useProjectDetails = (uuid: UUID): UseQueryResult<any, Error> => {
     return useQuery({
-      queryKey:[TAGS.GET_PROJECT_DETAILS,uuid],
-      queryFn: () => this.client.get(uuid)
-    })
-  }
+      queryKey: [TAGS.GET_PROJECT_DETAILS, uuid],
+      queryFn: () => this.client.get(uuid),
+    });
+  };
 }

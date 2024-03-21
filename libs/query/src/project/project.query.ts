@@ -17,7 +17,21 @@ export class ProjectQuery {
   useProjectList = (payload: any): UseQueryResult<any, Error> => {
     return useQuery({
       queryKey: [TAGS.GET_ALL_PROJECTS, payload],
-      queryFn: () => this.client.list(payload),
+      queryFn: async () => {
+        const data = (await this.client.list(payload)) as any;
+        return {
+          ...data,
+          data: data.data.map((row: any) => {
+            return {
+              id: row?.uuid,
+              title: row?.name,
+              badge: row?.type,
+              image: '/projects/project3.jpeg',
+              subTitle: row?.description,
+            };
+          }),
+        };
+      },
     });
   };
 

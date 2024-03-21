@@ -13,6 +13,7 @@ export const metadata: Metadata = {
 };
 
 const ProjectDetails = () => {
+  // Remove fetching uuid from env
   const uuid = process.env.NEXT_PUBLIC_PROJECT_UUID;
   const getProject = useProjectAction();
 

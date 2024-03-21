@@ -49,6 +49,7 @@ import {
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { useProjectBeneficiaryTableColumns } from './use-table-column';
 import { useProjectAction } from '@rahat-ui/query';
+import { useParams } from 'next/navigation';
 import { MS_ACTIONS } from '@rahataid/sdk';
 // import { useBeneficiaryTransaction } from '../../hooks/el/subgraph/querycall';
 
@@ -156,6 +157,8 @@ export default function BeneficiaryDetailTableView() {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
+  const uuid = useParams().id;
+
   const { pagination, filters, setPagination } = usePagination((state) => ({
     pagination: state.pagination,
     filters: state.filters,
@@ -171,7 +174,7 @@ export default function BeneficiaryDetailTableView() {
 
   const getBeneficiary = async () => {
     const result = await addBeneficiary.mutateAsync({
-      uuid: process.env.NEXT_PUBLIC_PROJECT_UUID,
+      uuid,
       payload: {
         action: MS_ACTIONS.BENEFICIARY.LIST_BY_PROJECT,
         payload: {

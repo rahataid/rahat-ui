@@ -1,9 +1,17 @@
 import { useSwal } from '../../../components/swal';
-import { useWriteRahatDonorMintTokenAndApprove } from './donor';
+import {
+  useWriteRahatDonorMintTokenAndApprove,
+  useWriteRahatDonorMintTokenAndApproveDescription,
+} from './donor';
 import {
   useWriteElProjectAddBeneficiary,
   useWriteElProjectAssignClaims,
+  useWriteElProjectCloseProject,
+  useWriteElProjectUpdateVendor,
 } from './elProject';
+
+import { useProjectAction } from 'libs/query/src/lib/projects/projects';
+import { MS_ACTIONS } from '@rahataid/sdk';
 
 export const useAddBeneficiary = () => {
   const alert = useSwal();
@@ -56,7 +64,7 @@ export const useMintVouchers = () => {
       toast.addEventListener('mouseleave', alert.resumeTimer);
     },
   });
-  return useWriteRahatDonorMintTokenAndApprove({
+  return useWriteRahatDonorMintTokenAndApproveDescription({
     mutation: {
       onSuccess: () => {
         toastMixin.fire('It has been done');
@@ -66,6 +74,57 @@ export const useMintVouchers = () => {
           title: 'Error while minting vouchers',
           icon: 'error',
           text: err.message,
+        });
+      },
+    },
+  });
+};
+
+export const useAddVendors = (uuid: string, vendorUuid: string) => {
+  const alert = useSwal();
+  const addVendor = useProjectAction();
+  return useWriteElProjectUpdateVendor({
+    mutation: {
+      onSuccess: async () => {
+        await addVendor.mutateAsync({
+          uuid: uuid,
+          payload: {
+            action: MS_ACTIONS.VENDOR.ASSIGN_TO_PROJECT,
+            // 'vendor.assign_to_project',
+            payload: {
+              vendorUuid,
+            },
+          },
+        });
+        alert.fire({
+          title: 'Vendor Assigned Sucessfully',
+          icon: 'success',
+        });
+      },
+      onError: (err) => {
+        alert.fire({
+          title: 'Error while updating vendor',
+          icon: 'error',
+        });
+      },
+    },
+  });
+};
+
+export const useCloseProject = () => {
+  const alert = useSwal();
+  return useWriteElProjectCloseProject({
+    mutation: {
+      onSuccess: () => {
+        alert.fire({
+          title: 'Project closed successfully',
+          icon: 'success',
+        });
+      },
+      onError: (err) => {
+        alert.fire({
+          title: 'Error closing Project',
+          icon: 'error',
         });
       },
     },

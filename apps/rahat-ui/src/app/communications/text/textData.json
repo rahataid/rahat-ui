@@ -1,42 +1,42 @@
 [
-    {
-        "id": 0,
-        "campaign": "Campaign 1",
-        "startTime": "15 Feb, 2024 3:25 PM",
-        "status": "ONGOING",
-        "transport": "Voxcrow",
-        "totalAudiences": 4
-    },
-    {
-        "id": 1,
-        "campaign": "Campaign 2",
-        "startTime": "1 Jan, 2024 1:25 PM",
-        "status": "COMPLETED",
-        "transport": "Prabhu",
-        "totalAudiences": 2
-    },
-    {
-        "id": 2,
-        "campaign": "Campaign 3",
-        "startTime": "5 Dec, 2023 3:00 PM",
-        "status": "COMPLETED",
-        "transport": "Somleng",
-        "totalAudiences": 5
-    },
-    {
-        "id": 3,
-        "campaign": "Campaign 4",
-        "startTime": "15 Feb, 2024 3:25 PM",
-        "status": "ONGOING",
-        "transport": "Voxcrow",
-        "totalAudiences": 4
-    },
-    {
-        "id": 4,
-        "campaign": "Campaign 5",
-        "startTime": "15 Feb, 2024 3:25 PM",
-        "status": "ONGOING",
-        "transport": "Voxcrow",
-        "totalAudiences": 4
-    }
+  {
+    "id": 0,
+    "campaign": "Campaign 1",
+    "startTime": "15 Feb, 2024 3:25 PM",
+    "status": "ONGOING",
+    "transport": "Voxcrow",
+    "totalAudiences": 4
+  },
+  {
+    "id": 1,
+    "campaign": "Campaign 2",
+    "startTime": "1 Jan, 2024 1:25 PM",
+    "status": "COMPLETED",
+    "transport": "Prabhu",
+    "totalAudiences": 2
+  },
+  {
+    "id": 2,
+    "campaign": "Campaign 3",
+    "startTime": "5 Dec, 2023 3:00 PM",
+    "status": "COMPLETED",
+    "transport": "Somleng",
+    "totalAudiences": 5
+  },
+  {
+    "id": 3,
+    "campaign": "Campaign 4",
+    "startTime": "15 Feb, 2024 3:25 PM",
+    "status": "ONGOING",
+    "transport": "Voxcrow",
+    "totalAudiences": 4
+  },
+  {
+    "id": 4,
+    "campaign": "Campaign 5",
+    "startTime": "15 Feb, 2024 3:25 PM",
+    "status": "ONGOING",
+    "transport": "Voxcrow",
+    "totalAudiences": 4
+  }
 ]

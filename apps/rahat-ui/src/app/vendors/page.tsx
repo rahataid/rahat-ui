@@ -4,16 +4,13 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from '@rahat-ui/shadcn/components/resizable';
-import ProjectNav from '../../components/projects/nav';
-import VendorsTable from '../../components/vendors/vendorsTable';
+import ProjectNav from '../../sections/projects/nav';
+import VendorsTable from '../../sections/vendors/vendorsTable';
 
 export default function VendorsPage() {
   return (
-    <div className="mb-5">
+    <div className="mt-4">
       <Tabs defaultValue="grid">
-        <div className="flex items-center justify-between mb-9 mt-8">
-          <h1 className="text-3xl font-semibold">Vendors List</h1>
-        </div>
         <ResizablePanelGroup
           direction="horizontal"
           className="min-h-max border"
@@ -24,13 +21,11 @@ export default function VendorsPage() {
             maxSize={20}
             className="h-full"
           >
-            <ProjectNav />
+            <ProjectNav title="Vendors" />
           </ResizablePanel>
           <ResizableHandle />
           <ResizablePanel>
-            <div className="p-4">
-              <VendorsTable />
-            </div>
+            <VendorsTable />
           </ResizablePanel>
         </ResizablePanelGroup>
       </Tabs>

@@ -15,16 +15,9 @@ export function useNavData() {
       },
       {
         title: 'Beneficiaries',
-        path: paths.dashboard.beneficiary,
+        path: paths.dashboard.beneficiary.root,
       },
-      {
-        title: 'Transactions',
-        path: paths.dashboard.transactions,
-      },
-      {
-        title: 'Vendors',
-        path: paths.dashboard.vendor,
-      },
+
       {
         title: 'Communications',
 
@@ -41,12 +34,25 @@ export function useNavData() {
           },
         ],
       },
+    ],
+    [],
+  );
+  const subData = useMemo(
+    () => [
+      {
+        title: 'Transactions',
+        path: paths.dashboard.transactions,
+      },
+      {
+        title: 'Vendors',
+        path: paths.dashboard.vendor,
+      },
       {
         title: 'Users',
         path: paths.dashboard.user,
       },
     ],
-    []
+    [],
   );
-  return data;
+  return { data, subData };
 }

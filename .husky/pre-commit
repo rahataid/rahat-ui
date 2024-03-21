@@ -1,0 +1,13 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Run the file size check script.
+pnpm checkFileSize
+
+# If the file size check script exited with a non-zero status code (indicating an error),
+# exit this script with the same status code to prevent the commit.
+if [ $? -ne 0 ]; then
+  exit 1
+fi
+echo "Formatting files..."
+npx nx format:write --uncommitted

@@ -1,0 +1,10 @@
+.git/
+.github/
+node_modules/
+.dockerignore
+.env.*
+Dockerfile
+.nx/
+
+# Local 
+apps/**/.next/

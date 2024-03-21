@@ -1,9 +1,7 @@
-import TextView from 'apps/rahat-ui/src/components/communications/text/textView';
+import { TextView } from '../../../sections/communications/text';
 
-export const metadata = {
-  title: 'Text',
+const Page = () => {
+  return <TextView />;
 };
 
-export default function TextPage() {
-  return <TextView />;
-}
+export default Page;

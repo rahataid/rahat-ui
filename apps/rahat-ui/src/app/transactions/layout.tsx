@@ -10,7 +10,7 @@ export default function TransactionsLayout({
   return (
     <>
       <Nav />
-      <div className="mx-8">{children}</div>
+      <div className="mx-2">{children}</div>
     </>
   );
 }

@@ -4,6 +4,7 @@ import { useAuthInitialization } from '@rahat-ui/query';
 import { useRouter, useSearchParams } from 'next/navigation';
 // routes
 import { useCallback, useEffect } from 'react';
+import { DEBUG_MODE } from '../constants/config';
 import { paths } from '../routes/paths';
 //
 
@@ -24,7 +25,7 @@ export default function GuestGuard({ children }: Props) {
   // const { isActive } = useWeb3React();
 
   const check = useCallback(() => {
-    if (authenticated) {
+    if (!DEBUG_MODE && authenticated) {
       router.replace(returnTo || paths.dashboard.root);
     }
   }, [authenticated, returnTo, router]);
@@ -32,6 +33,8 @@ export default function GuestGuard({ children }: Props) {
   useEffect(() => {
     check();
   }, [check]);
+
+  if (DEBUG_MODE) return <>{children}</>;
 
   if (!initialized) {
     return 'Loading';

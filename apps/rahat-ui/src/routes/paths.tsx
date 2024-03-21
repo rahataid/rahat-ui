@@ -3,7 +3,7 @@ const ROOTS = {
   PROJECT: '/projects',
   DASHBOARD: '/dashboard',
   BENEFICIARY: '/beneficiary',
-  USER: '/user',
+  USER: '/users',
   TRANSACTIONS: '/transactions',
   VENDOR: '/vendors',
   COMMUNICATION: '/communications',
@@ -20,7 +20,10 @@ export const paths = {
   dashboard: {
     project: ROOTS.PROJECT,
     root: ROOTS.DASHBOARD,
-    beneficiary: ROOTS.BENEFICIARY,
+    beneficiary: {
+      root: ROOTS.BENEFICIARY,
+      detail: (id: string) => `${ROOTS.BENEFICIARY}/${id}`,
+    },
     transactions: ROOTS.TRANSACTIONS,
     user: ROOTS.USER,
     vendor: ROOTS.VENDOR,
@@ -29,6 +32,8 @@ export const paths = {
       voiceDetail: (id: number) => `${ROOTS.COMMUNICATION}/voice/${id}`,
       text: `${ROOTS.COMMUNICATION}/text`,
       textDetail: (id: number) => `${ROOTS.COMMUNICATION}/text/${id}`,
+      editTextCampaign: (id: number) =>
+        `${ROOTS.COMMUNICATION}/text/edit/${id}`,
     },
   },
 };

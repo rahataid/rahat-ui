@@ -8,7 +8,6 @@ export interface LoginResponse {
   accessToken: string;
 }
 
-
 export interface OTPPayload {
   address: string;
   clientId: string;

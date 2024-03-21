@@ -1,0 +1,61 @@
+{
+  "name": "community-tool-ui",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/community-tool-ui",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "nx:noop",
+      "dependsOn": ["mainBuild"]
+    },
+    "mainBuild": {
+      "executor": "@nrwl/next:build",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "root": "apps/community-tool-ui",
+        "outputPath": "dist/apps/community-tool-ui",
+        "tsConfig": "apps/community-tool-ui/tsconfig.json"
+      },
+      "configurations": {
+        "development": {
+          "outputPath": "apps/community-tool-ui"
+        },
+        "production": {}
+      }
+    },
+    "serve": {
+      "executor": "@nrwl/next:server",
+      "defaultConfiguration": "development",
+      "options": {
+        "port": 3001,
+        "buildTarget": "community-tool-ui:mainBuild",
+        "dev": true
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "community-tool-ui:mainBuild:development",
+          "dev": true
+        },
+        "production": {
+          "buildTarget": "community-tool-ui:mainBuild:production",
+          "dev": false
+        }
+      }
+    },
+    "export": {
+      "executor": "@nrwl/next:export",
+      "options": {
+        "buildTarget": "community-tool-ui:mainBuild:production"
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["apps/community-tool-ui/**/*.{ts,tsx,js,jsx}"]
+      }
+    }
+  },
+  "tags": ["scope:community-tool-ui"]
+}

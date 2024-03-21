@@ -1,18 +1,21 @@
 'use client';
 
-import { useAuthStore, useLogin, useSendOtp } from '@rahat-ui/query';
-import { Button, buttonVariants } from '@rahat-ui/shadcn/components/button';
+import Link from 'next/link';
+import { useAuthStore } from '@rumsan/react-query/auth';
+import { Button } from '@rahat-ui/shadcn/components/button';
 import { Input } from '@rahat-ui/shadcn/components/input';
 import { Label } from '@rahat-ui/shadcn/components/label';
-import { cn } from '@rahat-ui/shadcn/src/utils';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { paths } from '../../../routes/paths';
+import { useRumsanService } from '../../../providers/service.provider';
 
 export default function AuthPage() {
   const router = useRouter();
+  const { authQuery } = useRumsanService();
   const [otp, setOtp] = useState('');
+  const [optSent, setOtpSent] = useState(false);
+
   const { address, challenge, service, setAddress, setChallenge, error } =
     useAuthStore((state) => ({
       challenge: state.challenge,
@@ -23,43 +26,31 @@ export default function AuthPage() {
       error: state.error,
     }));
 
-  const sendOtpMutation = useSendOtp();
-  const loginMutation = useLogin();
+  const { mutateAsync: requestOtp, isSuccess } = authQuery.useRequestOtp();
+  const { mutateAsync: verifyOtp } = authQuery.useVerifyOtp();
 
-  const onSendOtpFormSubmit = async (e: React.SyntheticEvent) => {
+  const onRequestOtp = async (e: React.SyntheticEvent) => {
     e.preventDefault();
-    await sendOtpMutation.mutateAsync({
+    await requestOtp({
       address,
       service,
-      clientId: '105cd449-53f6-44e4-85f3-feaa7d762ffa',
+    }).then((data) => {
+      if (data.data.challenge) {
+        setOtpSent(true);
+      }
     });
   };
 
-  useEffect(() => {
-    if (sendOtpMutation.isSuccess) {
-      setChallenge(sendOtpMutation.data?.data?.challenge ?? '');
-    }
-  }, [
-    sendOtpMutation.data?.data?.challenge,
-    sendOtpMutation.isSuccess,
-    setChallenge,
-  ]);
-
-
-  const onVerifyOtpFormSubmit = async (e: React.SyntheticEvent) => {
+  const onVerifyOtp = async (e: React.SyntheticEvent) => {
     e.preventDefault();
-    try {
-      await loginMutation.mutateAsync({ otp, challenge, service });
-      router.push(paths.dashboard.root);
-    } catch (error) {
-      console.error('Failed to verify OTP:', error);
-    }
-  };
 
+    await verifyOtp({ otp, challenge, service });
+    router.push(paths.dashboard.root);
+  };
 
   return (
     <div className="h-full grid place-items-center relative">
-      <Link
+      {/* <Link
         href="/"
         className={cn(
           buttonVariants({ variant: 'ghost' }),
@@ -67,26 +58,22 @@ export default function AuthPage() {
         )}
       >
         Get Started
-      </Link>
+      </Link> */}
       <div className="w-full flex justify-center">
         <div className="flex flex-col gap-4 w-96">
           <div className="flex flex-col space-y-2 text-center">
             <h1 className="text-2xl font-semibold tracking-tight">
-              {!challenge.length ? 'Sign in' : 'OTP has been sent'}
+              {!optSent ? 'Sign in' : 'OTP has been sent'}
             </h1>
             <p className="text-sm text-muted-foreground">
-              {!challenge.length
-                ? 'Enter your email below to Sign in.'
-                : 'Please enter the OTP sent to your email address.'}
+              {!optSent
+                ? 'Enter your email address.'
+                : `OTP has been sent to ${address}`}
             </p>
           </div>
-          {error && (
-            <p className="text-red-500 text-center">
-              {error?.response?.data?.message}
-            </p>
-          )}
-          {!challenge.length ? (
-            <form onSubmit={onSendOtpFormSubmit}>
+
+          {!optSent ? (
+            <form onSubmit={onRequestOtp}>
               <div className="grid gap-2">
                 <div className="grid gap-1">
                   <Label className="sr-only" htmlFor="email">
@@ -103,11 +90,16 @@ export default function AuthPage() {
                     onChange={(e) => setAddress(e.target.value)}
                   />
                 </div>
+                {error && (
+                  <p className="text-red-500 text-center">
+                    {error?.response?.data?.message}
+                  </p>
+                )}
                 <Button type="submit">Send OTP</Button>
               </div>
             </form>
           ) : (
-            <form onSubmit={onVerifyOtpFormSubmit}>
+            <form onSubmit={onVerifyOtp}>
               <div className="grid gap-2">
                 <div className="grid gap-1">
                   <Label className="sr-only" htmlFor="otp">
@@ -129,15 +121,49 @@ export default function AuthPage() {
             </form>
           )}
           <p className="px-8 text-center text-sm text-muted-foreground">
-            {!challenge.length ? "Don't have an account" : "Didn't get one"}?{' '}
-            <Button
+            {!optSent ? "Don't have an account" : "Didn't get one"}?
+            {/* <Button
               disabled={sendOtpMutation.isPending}
               onClick={onSendOtpFormSubmit}
-              className="font-medium"
+              className="font-medium ml-2"
             >
               {!challenge.length ? 'Get Started' : 'Resend'}
-            </Button>
+            </Button> */}
+            <span
+              className="underline font-medium ml-2 cursor-pointer"
+              onClick={() => optSent && setOtpSent(false)}
+            >
+              {!optSent ? 'Get Started' : 'Resend'}
+            </span>
+            {/* {optSent ? (
+              <Button
+                className="ml-2"
+                onClick={() => {
+                  setAddress('');
+                  setChallenge('');
+                }}
+              >
+                Go Back
+              </Button>
+            ) : null} */}
           </p>
+          {!optSent && (
+            <p className="text-muted-foreground text-sm">
+              By clicking continue, you agree to our{' '}
+              <span className="underline font-medium">Terms of Service</span>{' '}
+              and{' '}
+              <Link
+                target="_blank"
+                href={
+                  'https://docs.google.com/document/d/1pWc5apsDdVDQvQXIaIMckGXfQo4YHs5ZoXMrKxIvdNQ/edit'
+                }
+                className="underline font-medium"
+              >
+                Privacy Policy
+              </Link>
+              .
+            </p>
+          )}
         </div>
       </div>
     </div>

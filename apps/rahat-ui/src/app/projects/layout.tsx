@@ -1,7 +1,7 @@
 'use client';
 
-import { Nav } from '../../components/nav';
 import * as React from 'react';
+import { Nav } from '../../components/nav';
 
 export default function ProjectLayout({
   children,
@@ -11,7 +11,7 @@ export default function ProjectLayout({
   return (
     <>
       <Nav />
-      <div className="mx-8">{children}</div>
+      <div className="mx-2">{children}</div>
     </>
   );
 }

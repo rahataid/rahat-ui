@@ -7,6 +7,7 @@ import {
 import {
   useWriteElProjectAddBeneficiary,
   useWriteElProjectAssignClaims,
+  useWriteElProjectCloseProject,
   useWriteElProjectUpdateVendor,
 } from './elProject';
 
@@ -110,3 +111,25 @@ export const useAddVendors = (uuid: string, vendorUuid: string) => {
     },
   });
 };
+
+export const useCloseProject =() =>{
+  const alert = useSwal();
+  return useWriteElProjectCloseProject({
+    mutation:{
+      onSuccess: () =>{
+        alert.fire({ 
+          title:'Project closed successfully',
+          icon:'success'
+        
+        })
+      },
+      onError:(err) =>{
+        alert.fire({
+          title:'Error closing Project',
+          icon:'error'
+        })
+      }
+
+    }
+  })
+}

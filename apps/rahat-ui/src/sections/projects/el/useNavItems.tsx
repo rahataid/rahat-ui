@@ -16,7 +16,7 @@ import CreateVoucherModal from './create-voucher-modal';
 import CreateTokenModal from './create-token-modal';
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 import { useState } from 'react';
-import { useMintVouchers } from 'apps/rahat-ui/src/hooks/el/contracts/el-contracts';
+import { useMintVouchers,useCloseProject } from 'apps/rahat-ui/src/hooks/el/contracts/el-contracts';
 
 export const useNavItems = () => {
   const params = useParams();
@@ -37,6 +37,7 @@ export const useNavItems = () => {
   };
 
   const createVoucher = useMintVouchers();
+  const closeProject = useCloseProject();
   const handleCreateVoucherSubmit = async (e: any) => {
     e.preventDefault();
     await createVoucher.writeContractAsync({
@@ -64,21 +65,17 @@ export const useNavItems = () => {
     setCompleteTransaction(true);
   };
 
-  // const beneficiary = useBeneficiaryStore(state=>state.beneficiary)
-
-  const handleLockProject = async () => {
+  const handleCloseProject = async () => {
     const { value } = await dialog.fire({
-      title: 'Lock Project',
-      text: 'Are you sure you want to lock the project?',
+      title: 'Close Project',
+      text: 'Are you sure you want to close the project? You won\'t be able to access any project actions',
       showCancelButton: true,
       confirmButtonText: 'Lock',
     });
     if (value) {
-      dialog.fire({
-        title: 'Project Locked',
-        text: 'Project has been locked successfully',
-        icon: 'success',
-      });
+      closeProject.writeContractAsync({
+        address:'0x9C8Ee9931BEc18EA883c8F23c7427016bBDeF171',
+      })
     }
   };
 
@@ -145,14 +142,14 @@ export const useNavItems = () => {
           ),
           title: 'Create Voucher',
         },
-        {
-          title: 'Lock Project',
-          icon: <Lock size={18} strokeWidth={1.5} />,
-          onClick: handleLockProject,
-        },
+        // {
+        //   title: 'Lock Project',
+        //   icon: <Lock size={18} strokeWidth={1.5} />,
+        //   onClick: handleLockProject,
+        // },
         {
           title: 'Close Project',
-          path: '/edit',
+          onClick: handleCloseProject,
           icon: <XCircle size={18} strokeWidth={1.5} />,
         },
         {

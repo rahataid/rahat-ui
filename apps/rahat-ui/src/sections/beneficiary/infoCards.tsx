@@ -50,7 +50,6 @@ export default function InfoCards({ data, voucherData }) {
   const handleAssignClaims = async () => {
     const walletAddress = data.walletAddress || '';
 
-
     const uuid = process.env.NEXT_PUBLIC_PROJECT_UUID;
 
     const result = await addBeneficiary.mutateAsync({
@@ -63,10 +62,10 @@ export default function InfoCards({ data, voucherData }) {
       },
     });
 
-    assignClaims.writeContractAsync({
-      address: '0x38BFDCCAc556ED026706EE21b4945cE86718D4D1',
-      args: [walletAddress],
-    });
+    // assignClaims.writeContractAsync({
+    //   address: '0x38BFDCCAc556ED026706EE21b4945cE86718D4D1',
+    //   args: [walletAddress],
+    // });
   };
 
   return (

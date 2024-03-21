@@ -32,17 +32,18 @@ export default function Activities({ title, className, data }: CardProps) {
             <p className="text-sm text-muted-foreground">Assigned</p>
             <p className="text-sm text-muted-foreground">Reedemed</p>
           </div>
-          <div>
+          <div className="space-y-1">
             <div className="ml-auto font-light text-sm flex items-center justify-between gap-3">
               {data?.freeVoucherBudget}
-              <span>$45</span>
+              <span className="text-xs text-muted-foreground">$45</span>
             </div>
             <div className="ml-auto font-light text-sm flex items-center justify-between gap-3">
-              {data?.freeVoucherAssigned} <span>$45</span>
+              {data?.freeVoucherAssigned}{' '}
+              <span className="text-xs text-muted-foreground">$45</span>
             </div>
             <div className="ml-auto font-light text-sm flex items-center justify-between gap-3">
               {data?.freeVoucherClaimed}
-              <span>$45</span>
+              <span className="text-xs text-muted-foreground">$45</span>
             </div>
           </div>
         </div>
@@ -54,39 +55,17 @@ export default function Activities({ title, className, data }: CardProps) {
             <p className="text-sm text-muted-foreground">Reedemed</p>
           </div>
           <div className="space-y-1">
-            <div className="ml-auto font-light text-sm">
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger>{data?.refeeredVoucherBudget}</TooltipTrigger>
-                  <TooltipContent>
-                    <p>$45</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+            <div className="ml-auto font-light text-sm flex items-center justify-between gap-3">
+              {data?.refeeredVoucherBudget}
+              <span className="text-xs text-muted-foreground">$45</span>
             </div>
-            <div className="ml-auto font-light text-sm">
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger>
-                    {data?.refeeredVoucherAssigned}
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>$45</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+            <div className="ml-auto font-light text-sm flex items-center justify-between gap-3">
+              {data?.refeeredVoucherAssigned}{' '}
+              <span className="text-xs text-muted-foreground">$45</span>
             </div>
-            <div className="ml-auto font-light text-sm">
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger>
-                    {data?.refeeredVoucherClaimed}
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>$45</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+            <div className="ml-auto font-light text-sm flex items-center justify-between gap-3">
+              {data?.refeeredVoucherClaimed}
+              <span className="text-xs text-muted-foreground">$45</span>
             </div>
           </div>
         </div>

@@ -169,15 +169,20 @@ export default function BeneficiaryDetailTableView() {
   const { beneficiaryQuery } = useRumsanService();
   const columns = useProjectBeneficiaryTableColumns();
 
-  const { data } = beneficiaryQuery.useProjectBeneficiaryList({
-    action: 'beneficiary.list_by_project',
+  const addBeneficiary = useProjectAction();
+
+  const result = addBeneficiary.mutateAsync({
+    uuid: 'f703bae1-6194-4953-9551-f80455cd3c9d',
     payload: {
-      page: currentPage,
-      perPage,
+      action: 'beneficiary.list_by_project',
+      payload: {
+        page: currentPage,
+        perPage,
+      },
     },
   });
-
-  const addBeneficiary = useProjectAction();
+  setTableData(result?.data);
+  console.log('result?.data', result);
 
   const handleAssignClaims = async () => {
     const result = await addBeneficiary.mutateAsync({

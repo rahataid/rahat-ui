@@ -1,5 +1,5 @@
 import { useSwal } from '../../../components/swal';
-import { useWriteRahatDonorMintTokenAndApprove } from './donor';
+import { useWriteRahatDonorMintTokenAndApprove, useWriteRahatDonorMintTokenAndApproveDescription } from './donor';
 import {
   useWriteElProjectAddBeneficiary,
   useWriteElProjectAssignClaims,

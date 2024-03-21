@@ -27,16 +27,17 @@ export default function ProjectPage() {
 
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const displayedItems =
-    projectsList && projectsList?.slice(startIndex, endIndex);
+  
 
-  const selectedProjectType = displayedItems?.filter(
+  const selectedProjectType = []?.filter(
     (item) => item.badge === projectType,
   );
 
+  console.log(projectsList?.data?.data)
+
   const selectedProject = projectType.length
     ? selectedProjectType
-    : displayedItems;
+    : projectsList?.data?.data
 
   const handlePaginationClick = (page: number) => {
     setCurrentPage(page);

@@ -15,24 +15,25 @@ export class ProjectQuery {
   }
 
   useProjectList = (payload: any): UseQueryResult<any, Error> => {
-    const result = useQuery({
+    return useQuery({
       queryKey: [TAGS.GET_ALL_PROJECTS, payload],
-      queryFn: () => this.client.list(payload),
-    });
+      queryFn: async () => {
 
-    const filteredResult =
-      result &&
-      result?.data?.data.map((row: any) => {
+        const data = await this.client.list(payload) as any;
         return {
-          id: row?.uuid,
-          title: row?.name,
-          badge: row?.type,
-          image: '/projects/project3.jpeg',
-          subTitle: row?.description,
-        };
-      });
-
-    return filteredResult;
+          ...data,
+          data: data.data.map((row: any) => {
+            return {
+              id: row?.uuid,
+              title: row?.name,
+              badge: row?.type,
+              image: '/projects/project3.jpeg',
+              subTitle: row?.description,
+            }
+          })
+        }
+      },
+    });
   };
 
   useProjectDetails = (uuid: UUID): UseQueryResult<any, Error> => {

@@ -15,27 +15,29 @@ export class VendorQuery {
   }
 
   useVendorList = (payload: any): UseQueryResult<any, Error> => {
-    const result = useQuery({
+    return useQuery({
       queryKey: [TAGS.GET_VENDORS, payload],
-      queryFn: () => this.client.list(payload),
+      queryFn: async () => {
+        const data = await this.client.list(payload)
+        return {
+          ...data,
+          // TODO: remove type any
+          data: data.data.map((d: any) => ({
+            // TODO:Must include User in the Vendor Type ,use uuid key
+            id: d.User.uuid,
+            status: 'pending',
+            email: d.User.email,
+            amount: 300,
+          }))
+        }
+      },
     });
-
-    const filteredData = result?.data?.map((row: any) => {
-      return {
-        id: row.User.uuid,
-        status: 'pending',
-        email: row.User.email,
-        amount: 300,
-      };
-    });
-
-    return filteredData;
   };
 
   useVendorDetails = (uuid: UUID): UseQueryResult<any, Error> => {
     return useQuery({
       queryKey: [TAGS.GET_VENDOR_DETAILS, uuid],
-      queryFn: () => this.client.get(uuid),
-    });
-  };
+      queryFn: () => this.client.get(uuid)
+    })
+  }
 }

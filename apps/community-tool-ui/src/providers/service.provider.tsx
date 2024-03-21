@@ -3,6 +3,7 @@ import {
   BeneficiaryQuery,
   Settings,
   CommunityGroupQuery,
+  CommunityBeneficiaryGroupQuery,
 } from '@rahat-ui/community-query';
 import {
   AuthQuery,
@@ -23,6 +24,7 @@ export type ServiceContextType = {
   roleQuery: RoleQuery;
   communitySettingQuery: Settings;
   communityGroupQuery: CommunityGroupQuery;
+  communityBeneficiaryGroupQuery: CommunityBeneficiaryGroupQuery;
 };
 
 export const ServiceContext = createContext<ServiceContextType | null>(null);
@@ -62,7 +64,10 @@ export function ServiceProvider({ children }: ServiceProviderProps) {
     rumsanService,
     queryClient,
   );
-
+  const communityBeneficiaryGroupQuery = new CommunityBeneficiaryGroupQuery(
+    rumsanService,
+    queryClient,
+  );
   return (
     <ServiceContext.Provider
       value={{
@@ -73,6 +78,7 @@ export function ServiceProvider({ children }: ServiceProviderProps) {
         roleQuery,
         communitySettingQuery,
         communityGroupQuery,
+        communityBeneficiaryGroupQuery,
       }}
     >
       {children}

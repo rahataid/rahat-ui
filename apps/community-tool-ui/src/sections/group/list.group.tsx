@@ -20,17 +20,12 @@ import {
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { Settings2 } from 'lucide-react';
+
 import { ListGroup } from '@rahataid/community-tool-sdk/groups';
 
 type IProps = {

@@ -81,7 +81,8 @@ export const columns: ColumnDef<ListBeneficiary>[] = [
 
 export default function GroupDetail({ data, handleClose }: IProps) {
   const router = useRouter();
-  const { communityBenQuery } = useRumsanService();
+  const { communityBenQuery, communityBeneficiaryGroupQuery } =
+    useRumsanService();
 
   const [perPage, setPerPage] = useState<number>(5);
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -110,7 +111,8 @@ export default function GroupDetail({ data, handleClose }: IProps) {
     perPage,
     page: currentPage,
   });
-
+  const addBeneficiaryGroup =
+    communityBeneficiaryGroupQuery.useCommunityBeneficiaryGroupCreate();
   const table = useReactTable({
     manualPagination: true,
     data: benefData?.data?.rows || [],
@@ -125,14 +127,13 @@ export default function GroupDetail({ data, handleClose }: IProps) {
     },
   });
 
-  const handleBeneficiaryGroupClick = () => {
+  const handleBeneficiaryGroupClick = async () => {
     const k = {
       groupId: data?.id,
       benficiaryId: selectedData,
     };
-    console.log('k', k);
+    await addBeneficiaryGroup.mutateAsync(k);
   };
-  console.log('arrray', selectedData);
 
   return (
     <>
@@ -199,7 +200,7 @@ export default function GroupDetail({ data, handleClose }: IProps) {
             handlePrevPage={handlePrevPage}
             handlePageSizeChange={(value) => setPerPage(Number(value))}
           />
-          <div className="flex justify-end">
+          <div className="flex justify-end mt-5">
             <Button
               onClick={handleBeneficiaryGroupClick}
               disabled={selectedData.length === 0}

@@ -166,7 +166,6 @@ function BeneficiaryView() {
       rowSelection,
     },
   });
-  console.log('select', selectedData);
   return (
     <Tabs defaultValue="list" className="h-full">
       <ResizablePanelGroup direction="horizontal" className="min-h-max bg-card">

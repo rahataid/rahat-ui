@@ -54,7 +54,7 @@ export default function BenificiaryTable({ handleClick, table }: IProps) {
         </div>
         <div className="rounded border bg-white">
           <TableComponent>
-            <ScrollArea className="h-5/6">
+            <ScrollArea className="h-96">
               <TableHeader className="sticky top-0">
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow key={headerGroup.id}>

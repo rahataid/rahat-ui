@@ -27,6 +27,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/resizable';
 import { Eye } from 'lucide-react';
 import GroupDetail from './groupdetails';
+import CustomPagination from '../../components/customPagination';
 const columns: ColumnDef<ListGroup>[] = [
   {
     id: 'select',
@@ -125,6 +126,12 @@ function ViewGroup() {
         <ResizablePanelGroup direction={'horizontal'}>
           <ResizablePanel minSize={20}>
             <GroupList table={table} handleClick={handleGroup} />
+            <CustomPagination
+              meta={data?.response?.meta || { total: 0, currentPage: 0 }}
+              handleNextPage={handleNextPage}
+              handlePrevPage={handlePrevPage}
+              handlePageSizeChange={(value) => setPerPage(Number(value))}
+            />
           </ResizablePanel>
           {selectedData ? (
             <>

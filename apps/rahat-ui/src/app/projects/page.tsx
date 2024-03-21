@@ -28,7 +28,7 @@ export default function ProjectPage() {
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const displayedItems =
-  projectsList && projectsList?.slice(startIndex, endIndex);
+    projectsList && projectsList?.slice(startIndex, endIndex);
 
   const selectedProjectType = displayedItems?.filter(
     (item) => item.badge === projectType,

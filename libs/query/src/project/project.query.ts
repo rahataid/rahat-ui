@@ -20,15 +20,17 @@ export class ProjectQuery {
       queryFn: () => this.client.list(payload),
     });
 
-    const filteredResult = result && result?.data?.data.map((row: any) => {
-      return {
-        id: row?.uuid,
-        title: row?.name,
-        badge: row?.type,
-        image: '/projects/project3.jpeg',
-        subTitle: row?.description,
-      };
-    })
+    const filteredResult =
+      result &&
+      result?.data?.data.map((row: any) => {
+        return {
+          id: row?.uuid,
+          title: row?.name,
+          badge: row?.type,
+          image: '/projects/project3.jpeg',
+          subTitle: row?.description,
+        };
+      });
 
     return filteredResult;
   };

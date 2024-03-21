@@ -27,15 +27,15 @@ export class VendorQuery {
         email: row.User.email,
         amount: 300,
       };
-    })
+    });
 
     return filteredData;
   };
 
-  useVendorDetails = (uuid:UUID): UseQueryResult<any,Error> =>{
+  useVendorDetails = (uuid: UUID): UseQueryResult<any, Error> => {
     return useQuery({
-      queryKey:[TAGS.GET_VENDOR_DETAILS,uuid],
-      queryFn: () => this.client.get(uuid)
-    })
-  }
+      queryKey: [TAGS.GET_VENDOR_DETAILS, uuid],
+      queryFn: () => this.client.get(uuid),
+    });
+  };
 }

@@ -191,7 +191,11 @@ export default function BeneficiaryDetailTableView() {
       },
     });
 
-    setTableData(result?.data);
+    const filteredData = result?.data.map((row:any) => {
+            return {name: row.Beneficiary.walletAddress}
+          })
+
+    setTableData(filteredData);
   };
 
   useEffect(() => {

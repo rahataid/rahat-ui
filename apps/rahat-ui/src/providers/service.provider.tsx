@@ -1,7 +1,6 @@
 'use client';
 import {
   BeneficiaryQuery,
-  
   VendorQuery,
 } from '@rahat-ui/query';
 import {

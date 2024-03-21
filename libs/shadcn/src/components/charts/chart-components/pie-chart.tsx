@@ -39,11 +39,11 @@ interface Props {
 
 export default function PieChart({ title, subheader, chart }: Props) {
   const {
-    colors = ['#FFC107', '#FF7043', '#FFC107', '#FF7043'],
+    colors = ['#4682B4', '#FFBF00', '#ffff99', '#2B4EBD', '#CEB180'],
     series = [],
     options = {},
   } = chart;
-
+  console.log('series', series);
   const chartSeries = series.map((i) => i.value);
 
   const chartOptions = useChart({

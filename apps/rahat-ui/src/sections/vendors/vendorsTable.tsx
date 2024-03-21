@@ -14,6 +14,7 @@ import {
 } from '@tanstack/react-table';
 import { ArrowUpDown, MoreHorizontal } from 'lucide-react';
 import * as React from 'react';
+import { useEffect } from 'react';
 
 import { Button } from '@rahat-ui/shadcn/components/button';
 import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
@@ -32,6 +33,8 @@ import {
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import { useRumsanService } from '../../providers/service.provider';
+import { useProjectAction } from 'libs/query/src/lib/projects/projects';
 
 const data: Payment[] = [
   {
@@ -122,7 +125,19 @@ export const columns: ColumnDef<Payment>[] = [
     enableHiding: false,
     cell: ({ row }) => {
       const payment = row.original;
-
+      const addVendor = useProjectAction();
+      const handleRegisterVendor = async (vendorUuid: string) => {
+        // const uuid = process.env.NEXT_PUBLIC_PROJECT_UUID;
+        await addVendor.mutateAsync({
+          uuid: 'bb32449c-fb10-4def-ade0-7710b567daab',
+          payload: {
+            action: 'vendor.assign_to_project',
+            payload: {
+              vendorUuid: 'd7cb7578-d833-4c10-b1c5-5914114277fa',
+            },
+          },
+        });
+      };
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -133,7 +148,9 @@ export const columns: ColumnDef<Payment>[] = [
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="bg-white">
             <DropdownMenuItem>View Details</DropdownMenuItem>
-            <DropdownMenuItem>Register Vendor</DropdownMenuItem>
+            <DropdownMenuItem onClick={handleRegisterVendor}>
+              Register Vendor
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );
@@ -146,12 +163,48 @@ export default function DataTableDemo() {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
   );
+
+  const [filteredData, setFilterdData] = React.useState<Payment[]>([
+    {
+      id: 'bhqecj4p',
+      amount: 721,
+      status: 'failed',
+      email: 'carmella@hotmail.com',
+    },
+    {
+      id: 'm5gr84i9',
+      amount: 316,
+      status: 'success',
+      email: 'ken99@yahoo.com',
+    },
+  ]);
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
+  const { vendorQuery } = useRumsanService();
+
+  const { data: vendorData } = vendorQuery.useVendorList({
+    perPage: 5,
+    page: 1,
+  });
+
+  useEffect(() => {
+    if (vendorData) {
+      const filteredVendorData = vendorData?.data.map((row: any) => {
+        return {
+          id: row.User.uuid,
+          status: 'pending',
+          email: row.User.email,
+          amount: 300,
+        };
+      });
+      setFilterdData(filteredVendorData);
+    }
+  }, [vendorData]);
+
   const table = useReactTable({
-    data,
+    data: filteredData || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,

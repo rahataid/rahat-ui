@@ -5,7 +5,7 @@ import { QueryClient, useQuery, UseQueryResult } from '@tanstack/react-query';
 import { TAGS } from '../config';
 import { UUID } from 'crypto';
 
-export class VendorQuery {
+export class ProjectQuery {
   private reactQueryClient: QueryClient;
   private client: ProjectClient;
 
@@ -21,10 +21,10 @@ export class VendorQuery {
     });
   };
 
-  useProjectDetails = (uuid:UUID): UseQueryResult<any,Error> =>{
+  useProjectDetails = (uuid: UUID): UseQueryResult<any, Error> => {
     return useQuery({
-      queryKey:[TAGS.GET_PROJECT_DETAILS,uuid],
-      queryFn: () => this.client.get(uuid)
-    })
-  }
+      queryKey: [TAGS.GET_PROJECT_DETAILS, uuid],
+      queryFn: () => this.client.get(uuid),
+    });
+  };
 }

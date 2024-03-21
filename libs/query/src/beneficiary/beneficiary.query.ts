@@ -51,4 +51,21 @@ export class BeneficiaryQuery {
       },
     });
   };
+  useBeneficiaryStats = (payload?: any): UseQueryResult<any, Error> => {
+    return useQuery({
+      queryKey: [TAGS.GET_BENFICIARY_STATS],
+      // TODO: @bipinparajuli use from stats but should be change to the new hook based approach
+      queryFn: () => {
+        return axios
+          .get(`${process.env['NEXT_PUBLIC_API_HOST_URL']}/beneficiaries/stats`)
+          .then(function (response) {
+            return response.data.data || [];
+          })
+          .catch(function (error) {
+            console.error('Error:', error);
+            throw error;
+          });
+      },
+    });
+  };
 }

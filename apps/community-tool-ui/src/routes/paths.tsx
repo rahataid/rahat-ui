@@ -4,6 +4,7 @@ const ROOTS = {
   BENEFICIARY: '/beneficiary',
   USER: '/users',
   PROFILE: '/profile',
+  SETTINGS: '/settings',
 };
 
 export const paths = {
@@ -16,9 +17,14 @@ export const paths = {
   dashboard: {
     root: ROOTS.DASHBOARD,
     beneficiary: {
+      add: `${ROOTS.BENEFICIARY}/add`,
+      import: `${ROOTS.BENEFICIARY}/import`,
       root: ROOTS.BENEFICIARY,
       detail: (uuid: string) => `${ROOTS.BENEFICIARY}/${id}`,
     },
     user: ROOTS.USER,
+  },
+  settings: {
+    root: ROOTS.SETTINGS,
   },
 };

@@ -13,7 +13,6 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { useRumsanService } from 'apps/rahat-ui/src/providers/service.provider';
 import { MoreHorizontal, Settings2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
@@ -49,7 +48,7 @@ import {
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { useProjectBeneficiaryTableColumns } from './use-table-column';
-import { useProjectAction } from 'libs/query/src/lib/projects/projects';
+import { useProjectAction } from '@rahat-ui/query';
 import { MS_ACTIONS } from '@rahataid/sdk';
 // import { useBeneficiaryTransaction } from '../../hooks/el/subgraph/querycall';
 
@@ -166,8 +165,6 @@ export default function BeneficiaryDetailTableView() {
   const [perPage, setPerPage] = useState<number>(5);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [tableData, setTableData] = useState<any>();
-
-  const { beneficiaryQuery } = useRumsanService();
   const columns = useProjectBeneficiaryTableColumns();
 
   const addBeneficiary = useProjectAction();

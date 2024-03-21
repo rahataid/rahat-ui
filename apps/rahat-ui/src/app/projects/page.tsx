@@ -20,33 +20,42 @@ export default function ProjectPage() {
   const [projectType, setProjectType] = useState<string>('');
   const itemsPerPage = 12;
   const [currentPage, setCurrentPage] = useState(1);
-  const [projectData, setProjectData] = useState<any>()
+  const [projectData, setProjectData] = useState<any>();
 
   const totalItems = projectData && projectData?.length;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const displayedItems = projectData && projectData?.slice(startIndex, endIndex);
+  const displayedItems =
+    projectData && projectData?.slice(startIndex, endIndex);
 
   const { projectQuery } = useRumsanService();
-  const projectsList = projectQuery.useProjectList({})
+  const projectsList = projectQuery.useProjectList({});
 
-  console.log(projectsList)
-  
-  const handleGetProjects = (projectsDatas:any) => {
-    return projectsDatas && projectsDatas?.map((row:any) => {
-      return {id: row?.uuid, title: row?.name, badge: row?.type, image: '/projects/project3.jpeg', subTitle: row?.description}
-    })
-  }
+  console.log(projectsList);
+
+  const handleGetProjects = (projectsDatas: any) => {
+    return (
+      projectsDatas &&
+      projectsDatas?.map((row: any) => {
+        return {
+          id: row?.uuid,
+          title: row?.name,
+          badge: row?.type,
+          image: '/projects/project3.jpeg',
+          subTitle: row?.description,
+        };
+      })
+    );
+  };
 
   useEffect(() => {
-    if(projectsList && !projectData){
-      const data = handleGetProjects(projectsList?.data?.data)
-      setProjectData(data)
+    if (projectsList && !projectData) {
+      const data = handleGetProjects(projectsList?.data?.data);
+      setProjectData(data);
     }
-    
-  }, [projectsList])
+  }, [projectsList]);
 
   const selectedProjectType = displayedItems?.filter(
     (item) => item.badge === projectType,

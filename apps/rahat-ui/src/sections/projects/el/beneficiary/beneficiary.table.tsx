@@ -144,7 +144,7 @@ export const columns: ColumnDef<Transaction>[] = [
 
 // import { useBeneficiaryTransaction } from '../../hooks/el/subgraph/querycall';
 
-export default function BeneficiaryDetailTableView({uuid}:{uuid: string}) {
+export default function BeneficiaryDetailTableView({ uuid }: { uuid: string }) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],

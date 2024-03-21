@@ -77,7 +77,7 @@ export function ServiceProvider({ children }: ServiceProviderProps) {
   const beneficiaryQuery = new BeneficiaryQuery(rumsanService, queryClient);
   const vendorQuery = new VendorQuery(rumsanService, queryClient);
   const roleQuery = new RoleQuery(rumsanService, queryClient);
-  const projectQuery = new ProjectQuery(rumsanService, queryClient)
+  const projectQuery = new ProjectQuery(rumsanService, queryClient);
   const communicationQuery = new CommunicationQuery(
     communicationService,
     queryClient,

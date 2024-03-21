@@ -126,7 +126,7 @@ export const columns: ColumnDef<Payment>[] = [
   },
 ];
 
-export default function VendorTable({uuid}:{uuid:string}) {
+export default function VendorTable({ uuid }: { uuid: string }) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],

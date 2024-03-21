@@ -16,7 +16,10 @@ import CreateVoucherModal from './create-voucher-modal';
 import CreateTokenModal from './create-token-modal';
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 import { useState } from 'react';
-import { useMintVouchers,useCloseProject } from 'apps/rahat-ui/src/hooks/el/contracts/el-contracts';
+import {
+  useMintVouchers,
+  useCloseProject,
+} from 'apps/rahat-ui/src/hooks/el/contracts/el-contracts';
 
 export const useNavItems = () => {
   const params = useParams();
@@ -68,14 +71,14 @@ export const useNavItems = () => {
   const handleCloseProject = async () => {
     const { value } = await dialog.fire({
       title: 'Close Project',
-      text: 'Are you sure you want to close the project? You won\'t be able to access any project actions',
+      text: "Are you sure you want to close the project? You won't be able to access any project actions",
       showCancelButton: true,
       confirmButtonText: 'Lock',
     });
     if (value) {
       closeProject.writeContractAsync({
-        address:'0x9C8Ee9931BEc18EA883c8F23c7427016bBDeF171',
-      })
+        address: '0x9C8Ee9931BEc18EA883c8F23c7427016bBDeF171',
+      });
     }
   };
 

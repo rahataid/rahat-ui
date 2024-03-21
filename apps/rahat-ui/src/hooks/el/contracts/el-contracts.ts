@@ -112,24 +112,22 @@ export const useAddVendors = (uuid: string, vendorUuid: string) => {
   });
 };
 
-export const useCloseProject =() =>{
+export const useCloseProject = () => {
   const alert = useSwal();
   return useWriteElProjectCloseProject({
-    mutation:{
-      onSuccess: () =>{
-        alert.fire({ 
-          title:'Project closed successfully',
-          icon:'success'
-        
-        })
-      },
-      onError:(err) =>{
+    mutation: {
+      onSuccess: () => {
         alert.fire({
-          title:'Error closing Project',
-          icon:'error'
-        })
-      }
-
-    }
-  })
-}
+          title: 'Project closed successfully',
+          icon: 'success',
+        });
+      },
+      onError: (err) => {
+        alert.fire({
+          title: 'Error closing Project',
+          icon: 'error',
+        });
+      },
+    },
+  });
+};

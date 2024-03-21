@@ -53,6 +53,7 @@ export function ServiceProvider({ children }: ServiceProviderProps) {
   const communityBenQuery = new BeneficiaryQuery(rumsanService, queryClient);
   const roleQuery = new RoleQuery(rumsanService, queryClient);
   const communitySettingQuery = new Settings(rumsanService, queryClient);
+
   return (
     <ServiceContext.Provider
       value={{

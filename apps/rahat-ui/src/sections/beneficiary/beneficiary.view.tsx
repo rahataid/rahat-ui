@@ -9,93 +9,23 @@ import {
 import { Tabs, TabsContent } from '@rahat-ui/shadcn/components/tabs';
 
 import {
-  ColumnDef,
   VisibilityState,
   getCoreRowModel,
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
 
-import {
-  useBeneficiaryList,
-  usePagination,
-  usebeneficiaryList,
-} from '@rahat-ui/query';
-import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
+import { useBeneficiaryList, usePagination } from '@rahat-ui/query';
 import { Beneficiary } from '@rahataid/sdk/types';
-import { Eye } from 'lucide-react';
 import CustomPagination from '../../components/customPagination';
 import { BENEFICIARY_NAV_ROUTE } from '../../constants/beneficiary.const';
-import { useRumsanService } from '../../providers/service.provider';
 import BeneficiaryDetail from '../../sections/beneficiary/beneficiaryDetail';
 import BeneficiaryGridView from '../../sections/beneficiary/gridView';
 import BeneficiaryListView from '../../sections/beneficiary/listView';
 import BeneficiaryNav from '../../sections/beneficiary/nav';
 import AddBeneficiary from './addBeneficiary';
 import ImportBeneficiary from './import.beneficiary';
-
-export const columns: ColumnDef<Beneficiary>[] = [
-  {
-    id: 'select',
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && 'indeterminate')
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
-    accessorKey: 'walletAddress',
-    header: 'Wallet Address',
-    cell: ({ row }) => <div>{row.getValue('walletAddress')}</div>,
-  },
-  {
-    accessorKey: 'gender',
-    header: 'Gender',
-    cell: ({ row }) => <div>{row.getValue('gender')}</div>,
-  },
-  {
-    accessorKey: 'internetStatus',
-    header: 'Internet Access',
-    cell: ({ row }) => <div>{row.getValue('internetStatus')}</div>,
-  },
-  {
-    accessorKey: 'phoneStatus',
-    header: 'Phone Type',
-    cell: ({ row }) => <div>{row.getValue('phoneStatus')}</div>,
-  },
-  {
-    accessorKey: 'bankedStatus',
-    header: 'Banking Status',
-    cell: ({ row }) => <div>{row.getValue('bankedStatus')}</div>,
-  },
-  {
-    id: 'actions',
-    enableHiding: false,
-    cell: () => {
-      return (
-        <Eye
-          size={20}
-          strokeWidth={1.5}
-          className="cursor-pointer hover:text-primary"
-        />
-      );
-    },
-  },
-];
+import { useBeneficiaryTableColumns } from './useBeneficiaryColumns';
 
 function BeneficiaryView() {
   const { pagination, filters, setPagination } = usePagination((state) => ({
@@ -134,9 +64,9 @@ function BeneficiaryView() {
     filters,
     page: currentPage,
   });
-  console.log('data', data);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
+  const columns = useBeneficiaryTableColumns();
 
   const table = useReactTable({
     manualPagination: true,
@@ -146,6 +76,7 @@ function BeneficiaryView() {
     getSortedRowModel: getSortedRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
+    getRowId: (row) => row.uuid,
     state: {
       columnVisibility,
       rowSelection,

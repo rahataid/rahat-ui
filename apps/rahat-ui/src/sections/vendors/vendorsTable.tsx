@@ -35,6 +35,7 @@ import {
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { useRumsanService } from '../../providers/service.provider';
 import { useProjectAction } from 'libs/query/src/lib/projects/projects';
+import { useAddVendors } from '../../hooks/el/contracts/el-contracts';
 
 const data: Payment[] = [
   {
@@ -51,16 +52,12 @@ const data: Payment[] = [
   },
 ];
 
-
-
 export type Payment = {
   id: string;
   amount: number;
   status: 'pending' | 'processing' | 'success' | 'failed';
   email: string;
 };
-
-
 
 export const columns: ColumnDef<Payment>[] = [
   {
@@ -129,19 +126,14 @@ export const columns: ColumnDef<Payment>[] = [
     enableHiding: false,
     cell: ({ row }) => {
       const payment = row.original;
-      const addVendor = useProjectAction();
-      const handleRegisterVendor = async (vendorUuid:string) => {
-        // const uuid = process.env.NEXT_PUBLIC_PROJECT_UUID;
-          await addVendor.mutateAsync({
-            uuid: 'bb32449c-fb10-4def-ade0-7710b567daab',
-            payload: {
-              action: 'vendor.assign_to_project',
-              payload: {
-                vendorUuid: 'd7cb7578-d833-4c10-b1c5-5914114277fa',
-              },
-            },
-          });
-      }
+      const uuid = process.env.NEXT_PUBLIC_PROJECT_UUID || '';
+      const updateVendor = useAddVendors(uuid, payment.id);
+      const handleRegisterVendor = async () => {
+        await updateVendor.writeContractAsync({
+          address: '0x9C8Ee9931BEc18EA883c8F23c7427016bBDeF171',
+          args: ['0x9C8Ee9931BEc18EA883c8F23c7427016bBDeF171', true],
+        });
+      };
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -152,7 +144,9 @@ export const columns: ColumnDef<Payment>[] = [
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="bg-white">
             <DropdownMenuItem>View Details</DropdownMenuItem>
-            <DropdownMenuItem onClick={handleRegisterVendor}>Register Vendor</DropdownMenuItem>
+            <DropdownMenuItem onClick={handleRegisterVendor}>
+              Register Vendor
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );
@@ -179,28 +173,33 @@ export default function DataTableDemo() {
       status: 'success',
       email: 'ken99@yahoo.com',
     },
-  ])
+  ]);
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
-  const {vendorQuery} = useRumsanService();
+  const { vendorQuery } = useRumsanService();
 
-  const { data:vendorData } = vendorQuery.useVendorList({
+  const { data: vendorData } = vendorQuery.useVendorList({
     perPage: 5,
     page: 1,
   });
 
   useEffect(() => {
-    if(vendorData){
-      const filteredVendorData = vendorData?.data.map((row:any) => {
-        return {id: row.User.uuid, status: 'pending', email: row.User.email, amount: 300}
-      })
-      setFilterdData(filteredVendorData)
+    if (vendorData) {
+      const filteredVendorData = vendorData?.data.map((row: any) => {
+        return {
+          id: row.User.uuid,
+          status: 'pending',
+          email: row.User.email,
+          amount: 300,
+        };
+      });
+      setFilterdData(filteredVendorData);
     }
-  }, [vendorData])
+  }, [vendorData]);
 
-  const table =  useReactTable({
+  const table = useReactTable({
     data: filteredData || [],
     columns,
     onSortingChange: setSorting,

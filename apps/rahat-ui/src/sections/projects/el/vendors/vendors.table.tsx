@@ -14,7 +14,7 @@ import {
 } from '@tanstack/react-table';
 import { ArrowUpDown, MoreHorizontal } from 'lucide-react';
 import * as React from 'react';
-import {useEffect, useState} from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from '@rahat-ui/shadcn/components/button';
 import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
 import {
@@ -44,7 +44,7 @@ const data: Payment[] = [
     id: '3u1reuv4',
     name: 'John Doe',
     walletaddress: '0xeEkljas09sd92k20942ls',
-  }
+  },
 ];
 
 export type Payment = {
@@ -131,36 +131,36 @@ export default function VendorTable() {
     [],
   );
 
-  const [tableData, setTableData] = useState<Payment[]>()
+  const [tableData, setTableData] = useState<Payment[]>();
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
   const listVendor = useProjectAction();
+  const uuid = process.env.NEXT_PUBLIC_PROJECT_UUID;
 
   const getVendorList = async () => {
     const vendorData = await listVendor.mutateAsync({
-      uuid: 'bb32449c-fb10-4def-ade0-7710b567daab',
+      uuid,
       payload: {
         action: 'vendor.list_by_project',
         payload: {
           page: 1,
-          perPage:10
-        }
+          perPage: 10,
+        },
       },
     });
 
-    const filteredVendorData = vendorData?.data.map((row:any) => {
-      return {id: '1', name: row.User.name, walletaddress: row.User.wallet}
-    })
+    const filteredVendorData = vendorData?.data.map((row: any) => {
+      return { id: '1', name: row.User.name, walletaddress: row.User.wallet };
+    });
 
-    setTableData(filteredVendorData)
-    
-  }
+    setTableData(filteredVendorData);
+  };
 
   useEffect(() => {
-    getVendorList()
-  }, [])
+    getVendorList();
+  }, []);
 
   const table = useReactTable({
     data: tableData || [],

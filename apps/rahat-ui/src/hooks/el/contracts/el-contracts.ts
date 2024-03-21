@@ -10,6 +10,8 @@ import {
   useWriteElProjectUpdateVendor,
 } from './elProject';
 
+import { useProjectAction } from 'libs/query/src/lib/projects/projects';
+
 export const useAddBeneficiary = () => {
   const alert = useSwal();
   return useWriteElProjectAddBeneficiary({
@@ -77,11 +79,21 @@ export const useMintVouchers = () => {
   });
 };
 
-export const useAddVendors = () => {
+export const useAddVendors = (uuid: string, vendorUuid: string) => {
   const alert = useSwal();
+  const addVendor = useProjectAction();
   return useWriteElProjectUpdateVendor({
     mutation: {
-      onSuccess: () => {
+      onSuccess: async () => {
+        await addVendor.mutateAsync({
+          uuid: uuid,
+          payload: {
+            action: 'vendor.assign_to_project',
+            payload: {
+              vendorUuid,
+            },
+          },
+        });
         alert.fire({
           title: 'Vendor Assigned Sucessfully',
           icon: 'success',

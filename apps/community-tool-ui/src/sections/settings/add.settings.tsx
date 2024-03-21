@@ -79,121 +79,80 @@ export default function AddSetting() {
     <form onSubmit={handleSubmit(handleAddSetting)}>
       <div className="p-4 h-add">
         <h1 className="text-lg font-semibold mb-6">Add Settings</h1>
-        <div className="shadow-md p-4 rounded-sm">
+        <div className="shadow-md p-4 rounded-sm m-4">
           <div className="grid grid-cols-5 gap-4 mb-4">
-            <div className="col-span-2">
-              <FormField
-                control={control}
-                name="name"
-                render={({ field }) => (
-                  <>
-                    <Label>Name</Label>
-                    <Input type="text" placeholder="Name" {...field} />
-                  </>
-                )}
-              />
-            </div>
-            <div className="col-span-2">
-              <FormField
-                control={control}
-                name="requiredFields"
-                render={({ field }) => (
-                  <>
-                    <Label>
-                      RequiredFields{' '}
-                      <span className="text-sm text-muted-foreground">
-                        {' '}
-                        should be seprated by comma for different value
-                      </span>
-                    </Label>
-                    <Input
-                      type="text"
-                      placeholder="SAME AS KEY eg: CLIENT_ID "
-                      {...field}
-                      onChange={(e) => {
-                        const uppercaseValue = e.target.value.toUpperCase();
-                        field.onChange(
-                          uppercaseValue.split(',').map((item) => item.trim()), // Remove leading and trailing whitespaces
-                        );
-                      }}
-                    />
-                  </>
-                )}
-              />
-            </div>
+            <Label className="col-span-2">Name</Label>
+            <Label className="col-span-2">RequiredFields</Label>
+          </div>
+          <div className="grid grid-cols-5 gap-5 mb-4">
+            <FormField
+              control={control}
+              name="name"
+              render={({ field }) => (
+                <Input
+                  type="text"
+                  placeholder="Name"
+                  {...field}
+                  className="col-span-2"
+                />
+              )}
+            />
 
-            {/* <div className="col-span-1 flex items-center space-x-2">
-              <div className="flex items-center space-x-2">
-                <FormField
-                  control={control}
-                  name="isReadOnly"
-                  render={({ field }) => (
+            <FormField
+              control={control}
+              name="requiredFields"
+              render={({ field }) => (
+                <Input
+                  type="text"
+                  placeholder="SAME AS KEY eg: CLIENT_ID "
+                  className="col-span-2"
+                  {...field}
+                  onChange={(e) => {
+                    const uppercaseValue = e.target.value.toUpperCase();
+                    field.onChange(
+                      uppercaseValue.split(',').map((item) => item.trim()), // Remove leading and trailing whitespaces
+                    );
+                  }}
+                />
+              )}
+            />
+            <div>
+              <FormField
+                control={control}
+                name="isReadOnly"
+                render={({ field }) => (
+                  <>
+                    <Label>ReadOnly</Label>
                     <Switch
                       {...field}
                       value={field.value ? 'false' : 'true'}
                       checked={field.value}
                       onCheckedChange={field.onChange}
                     />
-                  )}
-                />
-                <Label>ReadOnly</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <FormField
-                  control={control}
-                  name="isPrivate"
-                  render={({ field }) => (
+                  </>
+                )}
+              />
+
+              <FormField
+                control={control}
+                name="isPrivate"
+                render={({ field }) => (
+                  <>
+                    <Label>Private</Label>
                     <Switch
                       {...field}
                       value={field.value ? 'true' : 'false'}
                       checked={field.value}
                       onCheckedChange={field.onChange}
                     />
-                  )}
-                />
-                <Label>Private</Label>
-              </div>
-            </div> */}
-            <div className="col-span-1 flex flex-col items-center col space-y-3 mt-3">
-              <div className="flex flex-row items-center space-x-3 space-y-2">
-                <FormField
-                  control={control}
-                  name="isReadOnly"
-                  render={({ field }) => (
-                    <>
-                      <Label>ReadOnly</Label>
-                      <Switch
-                        {...field}
-                        value={field.value ? 'false' : 'true'}
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
-                    </>
-                  )}
-                />
-              </div>
-              <div className="flex flex-row items-center space-x-2">
-                <FormField
-                  control={control}
-                  name="isPrivate"
-                  render={({ field }) => (
-                    <>
-                      <Label>Private</Label>
-                      <Switch
-                        {...field}
-                        value={field.value ? 'true' : 'false'}
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
-                    </>
-                  )}
-                />
-              </div>
+                  </>
+                )}
+              />
             </div>
           </div>
-          <div className="grid grid-cols-3 gap-4 mb-4">
-            <label>KEY</label>
-            <label>VALUE</label>
+          <div className="grid grid-cols-5 gap-4 mb-4">
+            <Label className="col-span-2">KEY</Label>
+            <Label className="col-span-2">VALUE</Label>
           </div>
           <div className="grid grid-cols-5 gap-5 mb-4">
             {fields.map((fieldName, index) => {
@@ -208,7 +167,6 @@ export default function AddSetting() {
                         placeholder="eg:Client-ID"
                         className="col-span-2"
                         {...field}
-                        // value={field.value}
                       />
                     )}
                   />
@@ -221,7 +179,6 @@ export default function AddSetting() {
                         placeholder="Value"
                         className="col-span-2"
                         {...field}
-                        // value={field.value}
                       />
                     )}
                   />
@@ -230,7 +187,7 @@ export default function AddSetting() {
                     <Button
                       type="button"
                       onClick={() => remove(index)}
-                      className=" p-1 text-xs  w-10"
+                      className="p-1 text-xs  w-10"
                     >
                       <Minus size={18} strokeWidth={1.5} />
                     </Button>
@@ -243,7 +200,7 @@ export default function AddSetting() {
           <Button
             onClick={appendField}
             type="button"
-            className="flex items-center gap-2"
+            className="flex items-center p-2 gap-1 text-xs  w-15"
           >
             <Plus size={18} strokeWidth={1.5} />
             Add Field

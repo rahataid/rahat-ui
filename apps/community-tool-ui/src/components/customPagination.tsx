@@ -63,8 +63,6 @@ export default function CustomPagination({
           variant="outline"
           size="sm"
           onClick={handleNextPage}
-          // disabled={!table.getCanNextPage()}
-          // disabled={meta.next === null}
           disabled={meta?.currentPage === meta?.lastPage}
         >
           Next

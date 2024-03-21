@@ -2,7 +2,12 @@ import { getSettingsClient } from '@rahataid/community-tool-sdk/clients';
 import { SettingClient } from '@rahataid/community-tool-sdk/types';
 
 import { RumsanService } from '@rumsan/sdk';
-import { QueryClient, useMutation } from '@tanstack/react-query';
+import {
+  QueryClient,
+  UseQueryResult,
+  useMutation,
+  useQuery,
+} from '@tanstack/react-query';
 
 import { TAGS } from '../config';
 import Swal from 'sweetalert2';
@@ -16,6 +21,16 @@ export class Settings {
     this.client = getSettingsClient(rsService.client);
     this.qc = reactQueryClient;
   }
+
+  useCommunitySettingList = (): UseQueryResult<any, Error> => {
+    return useQuery({
+      queryKey: [TAGS.LIST_COMMUNITY_SETTINGS],
+      queryFn: () => {
+        return this.client.list();
+      },
+    });
+  };
+
   useCommunitySettingCreate = () => {
     return useMutation({
       mutationKey: [TAGS.CREATE_COMMUNITY_SETTINGS],

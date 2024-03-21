@@ -45,7 +45,7 @@ const data: Payment[] = [
     amount: 316,
     status: 'success',
     email: 'ken99@yahoo.com',
-  }
+  },
 ];
 
 export type Payment = {

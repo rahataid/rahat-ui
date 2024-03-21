@@ -1,22 +1,16 @@
 'use client';
-import { BeneficiaryQuery, CommunicationQuery } from '@rahat-ui/query';
-import { AuthQuery, RoleQuery, UserQuery } from '@rumsan/react-query';
 import { RumsanService } from '@rumsan/sdk';
 
 import { CommunicationService } from '@rumsan/communication';
+import { useRSQuery } from '@rumsan/react-query';
 import { useQueryClient } from '@tanstack/react-query';
-import { createContext, memo, useContext, useEffect, useMemo } from 'react';
+import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { useError } from '../utils/useErrors';
-import { useRSQuery } from '@rumsan/react-query/providers/rs-query-provider';
 
 export type ServiceContextType = {
   rumsanService: RumsanService;
+  // communicationQuery: CommunicationQuery;
   communicationService: CommunicationService;
-  communicationQuery: CommunicationQuery;
-  authQuery: AuthQuery;
-  userQuery: UserQuery;
-  beneficiaryQuery: BeneficiaryQuery;
-  roleQuery: RoleQuery;
 };
 
 export const ServiceContext = createContext<ServiceContextType | null>(null);
@@ -26,6 +20,11 @@ interface ServiceProviderProps {
 }
 
 export function ServiceProvider({ children }: ServiceProviderProps) {
+  const [communicationService, setCommunicationService] =
+    useState<CommunicationService>();
+  // const [communicationQuery, setCommunicationQuery] =
+  // useState<CommunicationQuery>();
+
   const qc = useQueryClient();
   const { queryClient, rumsanService, setQueryClient, setRumsanService } =
     useRSQuery();
@@ -49,41 +48,55 @@ export function ServiceProvider({ children }: ServiceProviderProps) {
     }
   }, [rsService, rumsanService, setRumsanService]);
 
-  const communicationService = new CommunicationService({
-    baseURL: process.env.NEXT_PUBLIC_API_COMMUNICATION_URL,
-  });
+  useEffect(() => {
+    if (!communicationService) {
+      setCommunicationService(
+        new CommunicationService({
+          baseURL: process.env.NEXT_PUBLIC_API_COMMUNICATION_URL,
+        }),
+      );
+    }
+  }, [communicationService, setCommunicationService]);
 
   useError();
 
-  // set bearer token
-  // rumsanService.client.interceptors.request.use(
-  //   (config) => {
-  //     const token = useAuthStore.getState().token;
-  //     if (token) {
-  //       config.headers['Authorization'] = 'Bearer ' + token;
-  //     }
-  //     return config;
-  //   },
-  //   (error) => {
-  //     return Promise.reject(error);
-  //   },
-  // );
-  // // set bearer token
-  // communicationService.client.interceptors.request.use(
-  //   (config) => {
-  //     const token = useAuthStore.getState().token;
-  //     if (token) {
-  //       config.headers['Authorization'] = 'Bearer ' + token;
-  //     }
-  //     config.headers['appId'] = process.env.NEXT_PUBLIC_API_APPLICATION_ID;
-  //     return config;
-  //   },
-  //   (error) => {
-  //     return Promise.reject(error);
-  //   },
-  // );
+  useEffect(() => {
+    if (rumsanService) {
+      rumsanService.client.interceptors.request.use(
+        (config) => {
+          const token = localStorage.getItem('token');
+          if (token) {
+            config.headers['Authorization'] = 'Bearer ' + token;
+          }
+          return config;
+        },
+        (error) => {
+          return Promise.reject(error);
+        },
+      );
+    }
+  }, [rumsanService]);
 
-  if (!rumsanService || !queryClient) return 'Setting up services...';
+  useEffect(() => {
+    if (communicationService) {
+      communicationService.client.interceptors.request.use(
+        (config) => {
+          const token = localStorage.getItem('token');
+          if (token) {
+            config.headers['Authorization'] = 'Bearer ' + token;
+          }
+          config.headers['appId'] = process.env.NEXT_PUBLIC_API_APPLICATION_ID;
+          return config;
+        },
+        (error) => {
+          return Promise.reject(error);
+        },
+      );
+    }
+  }, [communicationService]);
+
+  if (!rumsanService || !queryClient || !communicationService)
+    return 'Setting up services...';
 
   return children;
 }

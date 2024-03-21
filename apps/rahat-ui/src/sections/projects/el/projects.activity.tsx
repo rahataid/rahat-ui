@@ -5,6 +5,12 @@ import {
   CardHeader,
   CardTitle,
 } from '@rahat-ui/shadcn/src/components/ui/card';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/tooltip';
 type CardProps = {
   title: string;
   image?: string;
@@ -27,21 +33,17 @@ export default function Activities({ title, className, data }: CardProps) {
             <p className="text-sm text-muted-foreground">Reedemed</p>
           </div>
           <div>
-            <div className="ml-auto font-light text-sm">
-              {' '}
-              {data?.freeVoucherBudget}{' '}
+            <div className="ml-auto font-light text-sm flex items-center justify-between gap-3">
+              {data?.freeVoucherBudget}
+              <span>$45</span>
             </div>
-            <p className="text-xs text-muted-foreground">$5</p>
-            <div className="ml-auto font-light text-sm">
-              {' '}
-              {data?.freeVoucherAssigned}{' '}
+            <div className="ml-auto font-light text-sm flex items-center justify-between gap-3">
+              {data?.freeVoucherAssigned} <span>$45</span>
             </div>
-            <p className="text-xs text-muted-foreground">$5</p>
-            <div className="ml-auto font-light text-sm">
-              {' '}
-              {data?.freeVoucherClaimed}{' '}
+            <div className="ml-auto font-light text-sm flex items-center justify-between gap-3">
+              {data?.freeVoucherClaimed}
+              <span>$45</span>
             </div>
-            <p className="text-xs text-muted-foreground">$5</p>
           </div>
         </div>
         <div className="flex items-center justify-between">
@@ -51,22 +53,41 @@ export default function Activities({ title, className, data }: CardProps) {
             <p className="text-sm text-muted-foreground">Assigned</p>
             <p className="text-sm text-muted-foreground">Reedemed</p>
           </div>
-          <div>
+          <div className="space-y-1">
             <div className="ml-auto font-light text-sm">
-              {' '}
-              {data?.refeeredVoucherBudget}{' '}
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger>{data?.refeeredVoucherBudget}</TooltipTrigger>
+                  <TooltipContent>
+                    <p>$45</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </div>
-            <p className="text-xs text-muted-foreground">$1,999.00</p>
             <div className="ml-auto font-light text-sm">
-              {' '}
-              {data?.refeeredVoucherAssigned}{' '}
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger>
+                    {data?.refeeredVoucherAssigned}
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>$45</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </div>
-            <p className="text-xs text-muted-foreground">$5</p>
             <div className="ml-auto font-light text-sm">
-              {' '}
-              {data?.refeeredVoucherClaimed}{' '}
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger>
+                    {data?.refeeredVoucherClaimed}
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>$45</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </div>
-            <p className="text-xs text-muted-foreground">$1,999.00</p>
           </div>
         </div>
       </CardContent>

@@ -159,20 +159,6 @@ export default function DataTableDemo() {
     [],
   );
 
-  const [filteredData, setFilterdData] = React.useState<Payment[]>([
-    {
-      id: 'bhqecj4p',
-      amount: 721,
-      status: 'failed',
-      email: 'carmella@hotmail.com',
-    },
-    {
-      id: 'm5gr84i9',
-      amount: 316,
-      status: 'success',
-      email: 'ken99@yahoo.com',
-    },
-  ]);
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
@@ -184,22 +170,8 @@ export default function DataTableDemo() {
     page: 1,
   });
 
-  useEffect(() => {
-    if (vendorData) {
-      const filteredVendorData = vendorData?.data.map((row: any) => {
-        return {
-          id: row.User.uuid,
-          status: 'pending',
-          email: row.User.email,
-          amount: 300,
-        };
-      });
-      setFilterdData(filteredVendorData);
-    }
-  }, [vendorData]);
-
   const table = useReactTable({
-    data: filteredData || [],
+    data: vendorData || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,

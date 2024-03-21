@@ -50,6 +50,7 @@ import {
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { useProjectBeneficiaryTableColumns } from './use-table-column';
 import { useProjectAction } from '@rahat-ui/query';
+import { useParams } from 'next/navigation';
 // import { useBeneficiaryTransaction } from '../../hooks/el/subgraph/querycall';
 
 // const data: Transaction[] = TransactionTableData;
@@ -144,7 +145,7 @@ export const columns: ColumnDef<Transaction>[] = [
 
 // import { useBeneficiaryTransaction } from '../../hooks/el/subgraph/querycall';
 
-export default function BeneficiaryDetailTableView({ uuid }: { uuid: string }) {
+export default function BeneficiaryDetailTableView() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
@@ -155,6 +156,8 @@ export default function BeneficiaryDetailTableView({ uuid }: { uuid: string }) {
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
+
+  const uuid = useParams().id;
 
   const { pagination, filters, setPagination } = usePagination((state) => ({
     pagination: state.pagination,

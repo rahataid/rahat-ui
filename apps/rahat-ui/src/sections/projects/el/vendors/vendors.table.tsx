@@ -34,6 +34,7 @@ import {
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { useProjectAction } from 'libs/query/src/lib/projects/projects';
 import { MS_ACTIONS } from '@rahataid/sdk';
+import { useParams } from 'next/navigation';
 
 const data: Payment[] = [
   {
@@ -126,12 +127,12 @@ export const columns: ColumnDef<Payment>[] = [
   },
 ];
 
-export default function VendorTable({ uuid }: { uuid: string }) {
+export default function VendorTable() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
   );
-
+  const uuid = useParams().id;
   const [tableData, setTableData] = useState<Payment[]>();
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});

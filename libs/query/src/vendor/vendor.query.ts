@@ -15,10 +15,21 @@ export class VendorQuery {
   }
 
   useVendorList = (payload: any): UseQueryResult<any, Error> => {
-    return useQuery({
+    const result = useQuery({
       queryKey: [TAGS.GET_VENDORS, payload],
       queryFn: () => this.client.list(payload),
     });
+
+    const filteredData = result?.data?.map((row: any) => {
+      return {
+        id: row.User.uuid,
+        status: 'pending',
+        email: row.User.email,
+        amount: 300,
+      };
+    })
+
+    return filteredData;
   };
 
   useVendorDetails = (uuid:UUID): UseQueryResult<any,Error> =>{

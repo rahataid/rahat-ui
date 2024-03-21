@@ -22,40 +22,13 @@ export default function ProjectPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [projectData, setProjectData] = useState<any>();
 
-  const totalItems = projectData && projectData?.length;
-  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const { projectQuery } = useRumsanService();
+  const projectsList = projectQuery.useProjectList({});
 
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const displayedItems =
-    projectData && projectData?.slice(startIndex, endIndex);
-
-  const { projectQuery } = useRumsanService();
-  const projectsList = projectQuery.useProjectList({});
-
-  console.log(projectsList);
-
-  const handleGetProjects = (projectsDatas: any) => {
-    return (
-      projectsDatas &&
-      projectsDatas?.map((row: any) => {
-        return {
-          id: row?.uuid,
-          title: row?.name,
-          badge: row?.type,
-          image: '/projects/project3.jpeg',
-          subTitle: row?.description,
-        };
-      })
-    );
-  };
-
-  useEffect(() => {
-    if (projectsList && !projectData) {
-      const data = handleGetProjects(projectsList?.data?.data);
-      setProjectData(data);
-    }
-  }, [projectsList]);
+  projectsList && projectsList?.slice(startIndex, endIndex);
 
   const selectedProjectType = displayedItems?.filter(
     (item) => item.badge === projectType,

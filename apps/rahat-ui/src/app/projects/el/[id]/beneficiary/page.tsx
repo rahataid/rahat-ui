@@ -1,7 +1,7 @@
 import { ELBeneficiaryView } from '../../../../../sections/projects/el/beneficiary';
 
-const page = ({ params }) => {
-  return <ELBeneficiaryView uuid={params.id} />;
+const page = () => {
+  return <ELBeneficiaryView />;
 };
 
 export default page;

@@ -18,7 +18,7 @@ export class VendorQuery {
     return useQuery({
       queryKey: [TAGS.GET_VENDORS, payload],
       queryFn: async () => {
-        const data = await this.client.list(payload)
+        const data = await this.client.list(payload);
         return {
           ...data,
           // TODO: remove type any
@@ -28,8 +28,8 @@ export class VendorQuery {
             status: 'pending',
             email: d.User.email,
             amount: 300,
-          }))
-        }
+          })),
+        };
       },
     });
   };
@@ -37,7 +37,7 @@ export class VendorQuery {
   useVendorDetails = (uuid: UUID): UseQueryResult<any, Error> => {
     return useQuery({
       queryKey: [TAGS.GET_VENDOR_DETAILS, uuid],
-      queryFn: () => this.client.get(uuid)
-    })
-  }
+      queryFn: () => this.client.get(uuid),
+    });
+  };
 }

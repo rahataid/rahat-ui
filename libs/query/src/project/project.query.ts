@@ -18,8 +18,7 @@ export class ProjectQuery {
     return useQuery({
       queryKey: [TAGS.GET_ALL_PROJECTS, payload],
       queryFn: async () => {
-
-        const data = await this.client.list(payload) as any;
+        const data = (await this.client.list(payload)) as any;
         return {
           ...data,
           data: data.data.map((row: any) => {
@@ -29,9 +28,9 @@ export class ProjectQuery {
               badge: row?.type,
               image: '/projects/project3.jpeg',
               subTitle: row?.description,
-            }
-          })
-        }
+            };
+          }),
+        };
       },
     });
   };

@@ -11,6 +11,14 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/dialog';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@rahat-ui/shadcn/src/components/ui/select';
 import { PlusSquare } from 'lucide-react';
 import { FC } from 'react';
 
@@ -19,6 +27,7 @@ interface CreateVoucherModalType {
     tokens: string;
     amountInDollar: string;
     description: string;
+    currency: string;
   };
   handleSubmit: (e: any) => void;
   handleInputChange: (e: any) => void;
@@ -29,6 +38,14 @@ const CreateVoucherModal: FC<CreateVoucherModalType> = ({
   handleSubmit,
   handleInputChange,
 }) => {
+  const handleSelectChange = (value: string) => {
+    handleInputChange({
+      target: {
+        name: 'currency',
+        value,
+      },
+    });
+  };
   return (
     <>
       <Dialog>
@@ -61,17 +78,36 @@ const CreateVoucherModal: FC<CreateVoucherModalType> = ({
                   onChange={handleInputChange}
                 />
               </div>
+
               <div>
-                <Label htmlFor="amount" className="text-right">
-                  Amount in $
+                <Label htmlFor="currency" className="">
+                  Select Currency
                 </Label>
-                <Input
-                  name="amountInDollar"
-                  className="col-span-3"
-                  value={voucherInputs.amountInDollar}
-                  onChange={handleInputChange}
-                />
+                <Select name="currency" onValueChange={handleSelectChange}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectItem value={'NPR'}>NPR</SelectItem>
+                      <SelectItem value={'USD'}>American Dollar</SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
               </div>
+              {voucherInputs.currency && (
+                <div>
+                  <Label htmlFor="amount" className="text-right">
+                    Amount in {voucherInputs.currency}
+                  </Label>
+                  <Input
+                    name="amountInDollar"
+                    className="col-span-3"
+                    value={voucherInputs.amountInDollar}
+                    onChange={handleInputChange}
+                  />
+                </div>
+              )}
               <div>
                 <Label htmlFor="description" className="text-right">
                   Description

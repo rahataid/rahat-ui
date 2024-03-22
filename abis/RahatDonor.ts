@@ -342,6 +342,16 @@ export const RahatDonorAbi = [
         name: '_description',
         type: 'string',
       },
+      {
+        internalType: 'uint256',
+        name: '_price',
+        type: 'uint256',
+      },
+      {
+        internalType: 'string',
+        name: '_currency',
+        type: 'string',
+      },
     ],
     name: 'mintTokenAndApproveDescription',
     outputs: [],

@@ -11,7 +11,7 @@ export function useNavData() {
       },
       {
         title: 'Project',
-        path: paths.dashboard.project,
+        path: paths.dashboard.project.root,
       },
       {
         title: 'Beneficiaries',

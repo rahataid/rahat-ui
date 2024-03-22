@@ -69,8 +69,8 @@ dependencies:
     specifier: ^0.0.5
     version: 0.0.5
   '@rahataid/el-subgraph':
-    specifier: ^0.0.2
-    version: 0.0.2
+    specifier: 0.0.4
+    version: 0.0.4
   '@rahataid/sdk':
     specifier: ^0.0.17
     version: 0.0.17
@@ -5348,8 +5348,8 @@ packages:
       tslib: 2.6.2
     dev: false
 
-  /@rahataid/el-subgraph@0.0.2:
-    resolution: {integrity: sha512-NwS+uTRrylOG0yaLi/KxwmutjVycseZVMxxBuSWMqJHT86EV3e50fSOkeKKyAxtczBEY3wriZo/9kfB/1auRbw==, tarball: https://npm.pkg.github.com/download/@rahataid/el-subgraph/0.0.2/e31aafcca0b0cfab79f72014eb0174dc8f2bd760}
+  /@rahataid/el-subgraph@0.0.4:
+    resolution: {integrity: sha512-lfawhmoklpL4GWtkXDMdGFMTD8CLS/DNXHE8iZLxB96pOahNPmp5i/SEdtqpfMEPQQu/DGvxhqVGyrlMOkEQqA==, tarball: https://npm.pkg.github.com/download/@rahataid/el-subgraph/0.0.4/6382e533090e1ea4cc1b43336ae2f64087a7cf5e}
     dependencies:
       '@types/react': 18.2.67
       '@urql/core': 4.3.0

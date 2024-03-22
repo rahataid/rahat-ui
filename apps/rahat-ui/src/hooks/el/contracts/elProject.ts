@@ -86,6 +86,12 @@ export const elProjectAbi = [
         type: 'address',
         indexed: false,
       },
+      {
+        name: 'assigner',
+        internalType: 'address',
+        type: 'address',
+        indexed: false,
+      },
     ],
     name: 'ClaimAssigned',
   },
@@ -113,6 +119,25 @@ export const elProjectAbi = [
       },
     ],
     name: 'ClaimProcessed',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'beneficiary',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'tokenAddress',
+        internalType: 'address',
+        type: 'address',
+        indexed: false,
+      },
+    ],
+    name: 'ClaimRevert',
   },
   {
     type: 'event',
@@ -332,13 +357,6 @@ export const elProjectAbi = [
   },
   {
     type: 'function',
-    inputs: [{ name: '', internalType: 'address', type: 'address' }],
-    name: '_registeredTokens',
-    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
     inputs: [{ name: '_address', internalType: 'address', type: 'address' }],
     name: 'addBeneficiary',
     outputs: [],
@@ -368,6 +386,8 @@ export const elProjectAbi = [
     type: 'function',
     inputs: [
       { name: '_claimerAddress', internalType: 'address', type: 'address' },
+      { name: '_referralben', internalType: 'address', type: 'address' },
+      { name: '_referralVendor', internalType: 'address', type: 'address' },
       { name: '_refereedToken', internalType: 'address', type: 'address' },
     ],
     name: 'assignRefereedClaims',
@@ -465,6 +485,13 @@ export const elProjectAbi = [
     type: 'function',
     inputs: [{ name: '', internalType: 'address', type: 'address' }],
     name: 'eyeVoucherRedeemedByVendor',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'eyeVoucherReverted',
     outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
     stateMutability: 'view',
   },
@@ -671,6 +698,20 @@ export const elProjectAbi = [
   },
   {
     type: 'function',
+    inputs: [],
+    name: 'referredVoucherReverted',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: '', internalType: 'address', type: 'address' }],
+    name: 'registeredTokens',
+    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
     inputs: [{ name: '_address', internalType: 'address', type: 'address' }],
     name: 'removeBeneficiary',
     outputs: [],
@@ -695,20 +736,28 @@ export const elProjectAbi = [
   },
   {
     type: 'function',
-    inputs: [
-      { name: '_benAddress', internalType: 'address', type: 'address' },
-      { name: '_tokenAddress', internalType: 'address', type: 'address' },
-      { name: '_otpServer', internalType: 'address', type: 'address' },
-    ],
+    inputs: [{ name: '_benAddress', internalType: 'address', type: 'address' }],
     name: 'requestTokenFromBeneficiary',
     outputs: [{ name: 'requestId', internalType: 'uint256', type: 'uint256' }],
     stateMutability: 'nonpayable',
   },
   {
     type: 'function',
-    inputs: [{ name: '_benAddress', internalType: 'address', type: 'address' }],
-    name: 'requestTokenFromBeneficiary',
-    outputs: [{ name: 'requestId', internalType: 'uint256', type: 'uint256' }],
+    inputs: [
+      { name: '_claimerAddress', internalType: 'address', type: 'address' },
+    ],
+    name: 'revertedClaims',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: '_claimerAddress', internalType: 'address', type: 'address' },
+      { name: '_refereedToken', internalType: 'address', type: 'address' },
+    ],
+    name: 'revertedRefereedClaims',
+    outputs: [],
     stateMutability: 'nonpayable',
   },
   {
@@ -800,15 +849,6 @@ export const useReadElProjectRahatClaim = /*#__PURE__*/ createUseReadContract({
   abi: elProjectAbi,
   functionName: 'RahatClaim',
 });
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link elProjectAbi}__ and `functionName` set to `"_registeredTokens"`
- */
-export const useReadElProjectRegisteredTokens =
-  /*#__PURE__*/ createUseReadContract({
-    abi: elProjectAbi,
-    functionName: '_registeredTokens',
-  });
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link elProjectAbi}__ and `functionName` set to `"beneficiaryClaimStatus"`
@@ -914,6 +954,15 @@ export const useReadElProjectEyeVoucherRedeemedByVendor =
   /*#__PURE__*/ createUseReadContract({
     abi: elProjectAbi,
     functionName: 'eyeVoucherRedeemedByVendor',
+  });
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link elProjectAbi}__ and `functionName` set to `"eyeVoucherReverted"`
+ */
+export const useReadElProjectEyeVoucherReverted =
+  /*#__PURE__*/ createUseReadContract({
+    abi: elProjectAbi,
+    functionName: 'eyeVoucherReverted',
   });
 
 /**
@@ -1030,6 +1079,24 @@ export const useReadElProjectReferredVoucherRedeemedByVendor =
   /*#__PURE__*/ createUseReadContract({
     abi: elProjectAbi,
     functionName: 'referredVoucherRedeemedByVendor',
+  });
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link elProjectAbi}__ and `functionName` set to `"referredVoucherReverted"`
+ */
+export const useReadElProjectReferredVoucherReverted =
+  /*#__PURE__*/ createUseReadContract({
+    abi: elProjectAbi,
+    functionName: 'referredVoucherReverted',
+  });
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link elProjectAbi}__ and `functionName` set to `"registeredTokens"`
+ */
+export const useReadElProjectRegisteredTokens =
+  /*#__PURE__*/ createUseReadContract({
+    abi: elProjectAbi,
+    functionName: 'registeredTokens',
   });
 
 /**
@@ -1191,6 +1258,24 @@ export const useWriteElProjectRequestTokenFromBeneficiary =
   });
 
 /**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link elProjectAbi}__ and `functionName` set to `"revertedClaims"`
+ */
+export const useWriteElProjectRevertedClaims =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: elProjectAbi,
+    functionName: 'revertedClaims',
+  });
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link elProjectAbi}__ and `functionName` set to `"revertedRefereedClaims"`
+ */
+export const useWriteElProjectRevertedRefereedClaims =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: elProjectAbi,
+    functionName: 'revertedRefereedClaims',
+  });
+
+/**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link elProjectAbi}__ and `functionName` set to `"updateAdmin"`
  */
 export const useWriteElProjectUpdateAdmin =
@@ -1342,6 +1427,24 @@ export const useSimulateElProjectRequestTokenFromBeneficiary =
   });
 
 /**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link elProjectAbi}__ and `functionName` set to `"revertedClaims"`
+ */
+export const useSimulateElProjectRevertedClaims =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: elProjectAbi,
+    functionName: 'revertedClaims',
+  });
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link elProjectAbi}__ and `functionName` set to `"revertedRefereedClaims"`
+ */
+export const useSimulateElProjectRevertedRefereedClaims =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: elProjectAbi,
+    functionName: 'revertedRefereedClaims',
+  });
+
+/**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link elProjectAbi}__ and `functionName` set to `"updateAdmin"`
  */
 export const useSimulateElProjectUpdateAdmin =
@@ -1418,6 +1521,15 @@ export const useWatchElProjectClaimProcessedEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
     abi: elProjectAbi,
     eventName: 'ClaimProcessed',
+  });
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link elProjectAbi}__ and `eventName` set to `"ClaimRevert"`
+ */
+export const useWatchElProjectClaimRevertEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: elProjectAbi,
+    eventName: 'ClaimRevert',
   });
 
 /**

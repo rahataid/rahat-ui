@@ -71,7 +71,7 @@ export default function InfoCards({ data, voucherData }) {
                 Not Approved
               </Badge>
             </div>
-            <Button onClick={handleAssignClaims}>Approve</Button>
+            <Button onClick={handleAssignClaims}>Assign To Project</Button>
           </div>
         </CardHeader>
         <CardContent>

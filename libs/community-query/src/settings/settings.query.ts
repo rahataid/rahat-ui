@@ -35,10 +35,10 @@ export class Settings {
     return useMutation({
       mutationKey: [TAGS.CREATE_COMMUNITY_SETTINGS],
       mutationFn: async (payload: SettingInput) => {
-        const response = this.client.create(payload);
-        return response;
+        return this.client.create(payload);
       },
       onSuccess: async (data) => {
+        console.log(data);
         await this.qc.invalidateQueries({
           queryKey: [TAGS.LIST_COMMUNITY_SETTINGS],
         });
@@ -47,10 +47,12 @@ export class Settings {
           title: 'Settings Created successfully',
         });
       },
-      onError: (response) => {
+      onError: (error: any) => {
         Swal.fire({
           icon: 'error',
-          title: response || 'Encounter error on creating Settings',
+          title:
+            error.response.data.message ||
+            'Encounter error on creating Settings',
         });
       },
     });

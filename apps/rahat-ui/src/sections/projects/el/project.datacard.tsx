@@ -9,11 +9,11 @@ import Activities from './projects.activity';
 
 const ProjectDataCard = () => {
   const { data: projectVoucher } = useProjectVoucher(
-    '0x9C8Ee9931BEc18EA883c8F23c7427016bBDeF171',
+    '0x1b4d9fa12f3e1b1181b413979330c0aff9bbaae5',
   );
 
   const { data: beneficiaryDetails } = useBeneficiaryCount(
-    '0x9C8Ee9931BEc18EA883c8F23c7427016bBDeF171',
+    '0x1b4d9fa12f3e1b1181b413979330c0aff9bbaae5',
   );
   return (
     <>
@@ -43,7 +43,7 @@ const ProjectDataCard = () => {
           <DataCard
             className=""
             title="Vouchers"
-            number={projectVoucher?.refeeredVoucherBudget || '-'}
+            number={projectVoucher?.referredVoucherBudget || '-'}
             subTitle="Discount"
             Icon={Users}
           />

@@ -192,6 +192,8 @@ export const rahatDonorAbi = [
       { name: '_projectAddress', internalType: 'address', type: 'address' },
       { name: '_amount', internalType: 'uint256', type: 'uint256' },
       { name: '_description', internalType: 'string', type: 'string' },
+      { name: '_price', internalType: 'uint256', type: 'uint256' },
+      { name: '_currency', internalType: 'string', type: 'string' },
     ],
     name: 'mintTokenAndApproveDescription',
     outputs: [],

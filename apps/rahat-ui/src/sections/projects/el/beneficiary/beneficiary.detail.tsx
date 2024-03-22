@@ -55,7 +55,7 @@ export default function UserDetail({ beneficiaryDetails }: any) {
 
   const handleAssignVoucher = () => {
     assignClaims.writeContractAsync({
-      address: '0x9C8Ee9931BEc18EA883c8F23c7427016bBDeF171',
+      address: '0x1B4D9FA12f3e1b1181b413979330c0afF9BbaAE5',
       args: [walletAddress],
     });
   };

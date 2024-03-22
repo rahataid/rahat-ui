@@ -34,13 +34,12 @@ interface ServiceProviderProps {
 
 export function ServiceProvider({ children }: ServiceProviderProps) {
   const queryClient = useQueryClient();
-  const prefix = '/api/v1';
   const rumsanService = new RumsanService({
-    baseURL: process.env.NEXT_PUBLIC_API_HOST_URL + prefix,
+    baseURL: process.env.NEXT_PUBLIC_API_HOST_URL,
   });
 
   const communicationService = new CommunicationService({
-    baseURL: process.env.NEXT_PUBLIC_API_COMMUNICATION_URL + prefix,
+    baseURL: process.env.NEXT_PUBLIC_API_COMMUNICATION_URL,
   });
 
   useError();

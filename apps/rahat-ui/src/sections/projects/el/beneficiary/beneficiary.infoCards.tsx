@@ -41,13 +41,7 @@ import { truncateEthAddress } from '@rumsan/sdk/utils';
 import { useAssignClaims } from 'apps/rahat-ui/src/hooks/el/contracts/el-contracts';
 
 export default function InfoCards({ data, voucherData }) {
-  const assignClaims = useAssignClaims();
-  const handleAssignClaims = () => {
-    assignClaims.writeContractAsync({
-      address: '0x38BFDCCAc556ED026706EE21b4945cE86718D4D1',
-      args: ['0x082d43D30C31D054b1AEDbE08F50C2a1BBE76fC7'],
-    });
-  };
+  
   return (
     <div className="flex flex-col gap-2 py-2 pl-2">
       <Card className="shadow rounded">

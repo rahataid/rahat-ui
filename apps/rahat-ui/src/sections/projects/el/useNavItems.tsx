@@ -31,7 +31,6 @@ export const useNavItems = () => {
     currency: '',
   });
 
-  
   const [completeTransaction, setCompleteTransaction] = useState(false);
 
   const handleCreateVoucherTokenChange = (e: any) => {

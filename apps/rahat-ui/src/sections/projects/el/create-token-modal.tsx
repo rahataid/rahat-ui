@@ -58,17 +58,21 @@ const CreateVoucherModal: FC<CreateVoucherModalType> = ({
               />
             </div>
             <div>
-            <Label htmlFor="description" className="text-right">
-              Description
-            </Label>
-            <Input id="description" className="col-span-3" />
-          </div>
-          <div>
-            <Label htmlFor="amountInDollar" className="text-right">
-              Price
-            </Label>
-            <Input id="amountInDollar" className="col-span-3" name="referredTokenPrice"/>
-          </div>
+              <Label htmlFor="description" className="text-right">
+                Description
+              </Label>
+              <Input id="description" className="col-span-3" />
+            </div>
+            <div>
+              <Label htmlFor="amountInDollar" className="text-right">
+                Price
+              </Label>
+              <Input
+                id="amountInDollar"
+                className="col-span-3"
+                name="referredTokenPrice"
+              />
+            </div>
           </div>
           <DialogFooter>
             <DialogClose asChild>

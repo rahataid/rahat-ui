@@ -22,28 +22,28 @@ const ProjectDataCard = () => {
           <DataCard
             className=""
             title="Beneficiary"
-            number={beneficiaryDetails?.enrolledBen}
+            number={beneficiaryDetails?.enrolledBen || '-'}
             subTitle="Enrolled"
             Icon={Users}
           />
           <DataCard
             className=""
             title="Beneficiary"
-            number={beneficiaryDetails?.referredBen}
+            number={beneficiaryDetails?.referredBen || '-'}
             subTitle="Referred"
             Icon={Users}
           />
           <DataCard
             className=""
             title="Vouchers"
-            number={projectVoucher?.freeVoucherBudget}
+            number={projectVoucher?.freeVoucherBudget || '-'}
             subTitle="Free"
             Icon={Users}
           />
           <DataCard
             className=""
             title="Vouchers"
-            number={projectVoucher?.refeeredVoucherBudget}
+            number={projectVoucher?.refeeredVoucherBudget || '-'}
             subTitle="Discount"
             Icon={Users}
           />

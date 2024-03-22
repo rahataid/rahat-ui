@@ -1,9 +1,5 @@
 'use client';
-import {
-  BeneficiaryQuery,
-  
-  VendorQuery,
-} from '@rahat-ui/query';
+import { BeneficiaryQuery, ProjectQuery, VendorQuery } from '@rahat-ui/query';
 import {
   AuthQuery,
   RoleQuery,
@@ -27,6 +23,7 @@ export type ServiceContextType = {
   beneficiaryQuery: BeneficiaryQuery;
   vendorQuery: VendorQuery;
   roleQuery: RoleQuery;
+  projectQuery: ProjectQuery;
 };
 
 export const ServiceContext = createContext<ServiceContextType | null>(null);
@@ -80,6 +77,7 @@ export function ServiceProvider({ children }: ServiceProviderProps) {
   const beneficiaryQuery = new BeneficiaryQuery(rumsanService, queryClient);
   const vendorQuery = new VendorQuery(rumsanService, queryClient);
   const roleQuery = new RoleQuery(rumsanService, queryClient);
+  const projectQuery = new ProjectQuery(rumsanService, queryClient);
   const communicationQuery = new CommunicationQuery(
     communicationService,
     queryClient,
@@ -94,6 +92,7 @@ export function ServiceProvider({ children }: ServiceProviderProps) {
         userQuery,
         beneficiaryQuery,
         vendorQuery,
+        projectQuery,
         roleQuery,
         communicationQuery,
       }}

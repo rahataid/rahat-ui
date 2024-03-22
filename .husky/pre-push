@@ -11,3 +11,5 @@ if [ $? -ne 0 ]; then
 fi
 echo "Formatting files..."
 npx nx format:write --uncommitted
+echo "Builiding package to check for errors..."
+pnpm build:all

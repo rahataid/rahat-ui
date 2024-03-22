@@ -33,6 +33,8 @@ import {
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { useProjectAction } from 'libs/query/src/lib/projects/projects';
+import { MS_ACTIONS } from '@rahataid/sdk';
+import { useParams } from 'next/navigation';
 
 const data: Payment[] = [
   {
@@ -130,7 +132,7 @@ export default function VendorTable() {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
   );
-
+  const uuid = useParams().id;
   const [tableData, setTableData] = useState<Payment[]>();
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
@@ -140,9 +142,10 @@ export default function VendorTable() {
 
   const getVendorList = async () => {
     const vendorData = await listVendor.mutateAsync({
-      uuid: process.env.NEXT_PUBLIC_PROJECT_UUID,
+      uuid,
       payload: {
-        action: 'vendor.list_by_project',
+        action: MS_ACTIONS.VENDOR.LIST_BY_PROJECT,
+        // 'vendor.list_by_project',
         payload: {
           page: 1,
           perPage: 10,

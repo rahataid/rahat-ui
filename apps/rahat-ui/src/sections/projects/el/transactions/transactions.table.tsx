@@ -201,7 +201,7 @@ export const columns: ColumnDef<Transaction>[] = [
   },
 ];
 
-export default function TransactionTable({walletAddress}) {
+export default function TransactionTable({ walletAddress }) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
@@ -209,7 +209,7 @@ export default function TransactionTable({walletAddress}) {
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
-  const [data, setData] = React.useState([]); 
+  const [data, setData] = React.useState([]);
 
   const table = useReactTable({
     data,
@@ -232,7 +232,7 @@ export default function TransactionTable({walletAddress}) {
   const { queryService } = useGraphService();
   const fetchBeneficiary = React.useCallback(() => {
     // const querRes = queryService.useProjectTransaction();
-    const querRes = queryService.useBeneficiaryTransaction(walletAddress)
+    const querRes = queryService.useBeneficiaryTransaction(walletAddress);
 
     querRes.then((res) => {
       const claimedAssigned = res?.claimAssigneds;

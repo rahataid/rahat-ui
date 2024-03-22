@@ -16,7 +16,10 @@ import CreateVoucherModal from './create-voucher-modal';
 import CreateTokenModal from './create-token-modal';
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 import { useState } from 'react';
-import { useMintVouchers } from 'apps/rahat-ui/src/hooks/el/contracts/el-contracts';
+import {
+  useMintVouchers,
+  useCloseProject,
+} from 'apps/rahat-ui/src/hooks/el/contracts/el-contracts';
 
 export const useNavItems = () => {
   const params = useParams();
@@ -24,7 +27,7 @@ export const useNavItems = () => {
   const [voucherInputs, setVoucherInputs] = useState({
     tokens: '',
     amountInDollar: '',
-    // description: '',
+    description: '',
   });
   const [completeTransaction, setCompleteTransaction] = useState(false);
 
@@ -37,15 +40,16 @@ export const useNavItems = () => {
   };
 
   const createVoucher = useMintVouchers();
+  const closeProject = useCloseProject();
   const handleCreateVoucherSubmit = async (e: any) => {
     e.preventDefault();
     await createVoucher.writeContractAsync({
-      address: '0x217A4bD7C3619B2d4Fd0625B1857fdCd9279d1b3',
+      address: '0xb72Edc10170c61A0Bb85f9816Da05f368C719A9f',
       args: [
-        `0x1a134Beafb9D79064c8C318F233AD7f46fF49D78`,
-        '0x9C8Ee9931BEc18EA883c8F23c7427016bBDeF171',
+        `0xc19d064Ac3C96aa3E1b2E5b0A8e248A1A8a15775`,
+        '0x494073864D8187414c54796987dBFf4AA469A8D6',
         BigInt(voucherInputs.tokens),
-        // voucherInputs.description,
+        voucherInputs.description,
       ],
     });
   };
@@ -53,31 +57,27 @@ export const useNavItems = () => {
   const handleCreateTokenSubmit = async (e: any) => {
     e.preventDefault();
     await createVoucher.writeContractAsync({
-      address: '0x217A4bD7C3619B2d4Fd0625B1857fdCd9279d1b3',
+      address: '0xb72Edc10170c61A0Bb85f9816Da05f368C719A9f',
       args: [
-        `0x3BB2526e0B8f8bD46b0187Aa4d24b351cf434437`,
-        '0x9C8Ee9931BEc18EA883c8F23c7427016bBDeF171',
+        `0xC01d0B6B3CcCa78C5685B52859FB538Bd7b11483`,
+        '0x494073864D8187414c54796987dBFf4AA469A8D6',
         BigInt(voucherInputs.tokens),
-        // voucherInputs.description,
+        voucherInputs.description,
       ],
     });
     setCompleteTransaction(true);
   };
 
-  // const beneficiary = useBeneficiaryStore(state=>state.beneficiary)
-
-  const handleLockProject = async () => {
+  const handleCloseProject = async () => {
     const { value } = await dialog.fire({
-      title: 'Lock Project',
-      text: 'Are you sure you want to lock the project?',
+      title: 'Close Project',
+      text: "Are you sure you want to close the project? You won't be able to access any project actions",
       showCancelButton: true,
       confirmButtonText: 'Lock',
     });
     if (value) {
-      dialog.fire({
-        title: 'Project Locked',
-        text: 'Project has been locked successfully',
-        icon: 'success',
+      closeProject.writeContractAsync({
+        address: '0x9C8Ee9931BEc18EA883c8F23c7427016bBDeF171',
       });
     }
   };
@@ -145,14 +145,14 @@ export const useNavItems = () => {
           ),
           title: 'Create Voucher',
         },
-        {
-          title: 'Lock Project',
-          icon: <Lock size={18} strokeWidth={1.5} />,
-          onClick: handleLockProject,
-        },
+        // {
+        //   title: 'Lock Project',
+        //   icon: <Lock size={18} strokeWidth={1.5} />,
+        //   onClick: handleLockProject,
+        // },
         {
           title: 'Close Project',
-          path: '/edit',
+          onClick: handleCloseProject,
           icon: <XCircle size={18} strokeWidth={1.5} />,
         },
         {

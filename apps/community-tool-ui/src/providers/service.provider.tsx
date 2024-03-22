@@ -1,5 +1,10 @@
 'use client';
-import { BeneficiaryQuery, Settings } from '@rahat-ui/community-query';
+import {
+  BeneficiaryQuery,
+  Settings,
+  CommunityGroupQuery,
+  CommunityBeneficiaryGroupQuery,
+} from '@rahat-ui/community-query';
 import {
   AuthQuery,
   RoleQuery,
@@ -18,6 +23,8 @@ export type ServiceContextType = {
   communityBenQuery: BeneficiaryQuery;
   roleQuery: RoleQuery;
   communitySettingQuery: Settings;
+  communityGroupQuery: CommunityGroupQuery;
+  communityBeneficiaryGroupQuery: CommunityBeneficiaryGroupQuery;
 };
 
 export const ServiceContext = createContext<ServiceContextType | null>(null);
@@ -53,7 +60,14 @@ export function ServiceProvider({ children }: ServiceProviderProps) {
   const communityBenQuery = new BeneficiaryQuery(rumsanService, queryClient);
   const roleQuery = new RoleQuery(rumsanService, queryClient);
   const communitySettingQuery = new Settings(rumsanService, queryClient);
-
+  const communityGroupQuery = new CommunityGroupQuery(
+    rumsanService,
+    queryClient,
+  );
+  const communityBeneficiaryGroupQuery = new CommunityBeneficiaryGroupQuery(
+    rumsanService,
+    queryClient,
+  );
   return (
     <ServiceContext.Provider
       value={{
@@ -63,6 +77,8 @@ export function ServiceProvider({ children }: ServiceProviderProps) {
         communityBenQuery,
         roleQuery,
         communitySettingQuery,
+        communityGroupQuery,
+        communityBeneficiaryGroupQuery,
       }}
     >
       {children}

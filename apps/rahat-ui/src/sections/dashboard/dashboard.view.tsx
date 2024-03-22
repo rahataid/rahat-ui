@@ -13,7 +13,7 @@ export default function DashboardView() {
   return (
     <div>
       <Tabs defaultValue="list">
-        <ScrollArea className="h-[calc(100vh-68px)] px-4 py-2">
+        <ScrollArea className="h-[calc(100vh-68px)] px-2 py-2">
           <TabsContent value="list">
             <DashboardSummary />
             <DashboardCharts />

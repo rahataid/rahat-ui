@@ -1,9 +1,7 @@
 'use client';
-import { useCallback, useEffect, useState } from 'react';
-import { useGraphService } from '../../providers/subgraph-provider';
+import { useBeneficaryVoucher } from '../../hooks/el/subgraph/querycall';
 import BeneficiaryDetailTableView from './beneficiaryDetailTable';
 import InfoCards from './infoCards';
-import { useBeneficaryVoucher } from '../../hooks/el/subgraph/querycall';
 
 export default function BeneficiaryDetailPageView() {
   const { data: voucherData, error: voucherError } = useBeneficaryVoucher(

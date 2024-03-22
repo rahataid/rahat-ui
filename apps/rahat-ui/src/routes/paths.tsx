@@ -18,7 +18,11 @@ export const paths = {
     root: ROOTS.PROFILE,
   },
   dashboard: {
-    project: ROOTS.PROJECT,
+    project: {
+      root: ROOTS.PROJECT,
+      add: `${ROOTS.PROJECT}/add`,
+      detail: (id: string) => `${ROOTS.PROJECT}/${id}`,
+    },
     root: ROOTS.DASHBOARD,
     beneficiary: {
       root: ROOTS.BENEFICIARY,

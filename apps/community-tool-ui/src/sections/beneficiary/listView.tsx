@@ -27,7 +27,7 @@ import { UUID } from 'crypto';
 import { ListBeneficiary } from '@rahataid/community-tool-sdk/beneficiary';
 
 type IProps = {
-  handleClick: (index: ListBeneficiary) => void;
+  handleClick: (item: ListBeneficiary) => void;
   table: Table<ListBeneficiary>;
 };
 

@@ -3,15 +3,28 @@ import { Separator } from '@rahat-ui/shadcn/components/separator';
 import { TabsList, TabsTrigger } from '@rahat-ui/shadcn/src/components/ui/tabs';
 import { AlignJustify, Import, LayoutGrid, Plus, Users } from 'lucide-react';
 import Filter from './filter';
+import MultipleSelectFilter from './multipleSelectorFilter';
 import Link from 'next/link';
 import { paths } from '../../routes/paths';
+import {
+  BENEFICIARY_NAV_ROUTE,
+  GROUP_NAV_ROUTE,
+} from '../../constants/beneficiary.const';
+import { Meta } from '@rahat-ui/types';
 
-// type IProps = {
-//   meta?: Meta | undefined;
-//   handleNav?: (item: string) => void;
-// };
+type IProps = {
+  meta: Meta | undefined;
+  handleNav: (item: string) => void;
+  selectedData: number[];
+  handleClose: () => void;
+};
 
-export default function Nav() {
+export default function Nav({
+  meta,
+  handleNav,
+  selectedData,
+  handleClose,
+}: IProps) {
   return (
     <>
       <div>
@@ -40,6 +53,13 @@ export default function Nav() {
                 </div>
                 <p>{}</p>
               </div>
+              <div
+                className="flex items-center p-2 gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white text-muted-foreground"
+                onClick={() => handleNav(GROUP_NAV_ROUTE.VIEW_GROUP)}
+              >
+                <Import size={18} strokeWidth={1.5} />
+                <p>Group</p>
+              </div>
             </nav>
           </div>
         </ScrollArea>
@@ -51,6 +71,15 @@ export default function Nav() {
           <nav className="text-muted-foreground">
             <div className="flex items-center p-2 gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white">
               <Plus size={18} strokeWidth={1.5} />
+              <p>Add Beneficiary</p>
+            </div>
+
+            <div
+              className="flex items-center p-2 gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white"
+              onClick={() =>
+                handleNav(BENEFICIARY_NAV_ROUTE.IMPORT_BENEFICIARY)
+              }
+            >
               <Link href={paths.dashboard.beneficiary.add}>
                 {' '}
                 Add Beneficiary
@@ -66,6 +95,15 @@ export default function Nav() {
           </nav>
         </div>
       </ScrollArea>
+      {selectedData && selectedData.length > 0 && (
+        <>
+          <Separator className="mb-2" />
+          <MultipleSelectFilter
+            selectedData={selectedData}
+            handleClose={handleClose}
+          />
+        </>
+      )}
     </>
   );
 }

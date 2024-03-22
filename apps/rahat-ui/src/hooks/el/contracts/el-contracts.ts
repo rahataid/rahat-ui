@@ -102,6 +102,7 @@ export const useAddVendors = (uuid: string, vendorUuid: string) => {
         });
       },
       onError: (err) => {
+        console.log('Error==>', err);
         alert.fire({
           title: 'Error while updating vendor',
           icon: 'error',

@@ -29,7 +29,6 @@ export const SecondPanelProvider: React.FC<SecondPanelProviderProps> = ({
 }) => {
   const [secondPanel, setSecondPanel] = useState<ReactNode>(null);
   const pathname = usePathname();
-  console.log(pathname);
 
   useEffect(() => {
     setSecondPanel(null);
@@ -45,7 +44,6 @@ export const SecondPanelProvider: React.FC<SecondPanelProviderProps> = ({
   const closeSecondPanel = useCallback(() => {
     setSecondPanel(null);
   }, [setSecondPanel]);
-  console.log('secondPanel', secondPanel);
   const value = useMemo(
     () => ({
       secondPanel,

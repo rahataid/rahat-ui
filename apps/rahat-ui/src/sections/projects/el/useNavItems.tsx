@@ -1,5 +1,8 @@
 import {
-  Lock,
+  useCloseProject,
+  useMintVouchers,
+} from 'apps/rahat-ui/src/hooks/el/contracts/el-contracts';
+import {
   MessageSquare,
   Pencil,
   Phone,
@@ -10,16 +13,11 @@ import {
   XCircle,
 } from 'lucide-react';
 import { useParams } from 'next/navigation';
+import { useState } from 'react';
 import { useSwal } from '../../../components/swal';
 import { NavItem } from '../components';
-import CreateVoucherModal from './create-voucher-modal';
 import CreateTokenModal from './create-token-modal';
-import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
-import { useState } from 'react';
-import {
-  useMintVouchers,
-  useCloseProject,
-} from 'apps/rahat-ui/src/hooks/el/contracts/el-contracts';
+import CreateVoucherModal from './create-voucher-modal';
 
 export const useNavItems = () => {
   const params = useParams();
@@ -29,6 +27,7 @@ export const useNavItems = () => {
     amountInDollar: '',
     description: '',
     currency: '',
+    tokenDescription: '',
   });
 
   const [completeTransaction, setCompleteTransaction] = useState(false);
@@ -55,7 +54,7 @@ export const useNavItems = () => {
         BigInt(voucherInputs.tokens),
         voucherInputs.description,
         BigInt(voucherInputs.amountInDollar),
-        'USD',
+        voucherInputs.currency,
       ],
     });
   };
@@ -63,18 +62,20 @@ export const useNavItems = () => {
   // Referred Voucher
   const handleCreateTokenSubmit = async (e: any) => {
     e.preventDefault();
-    await createVoucher.writeContractAsync({
-      address: '0xA69f271c08700771765D911540D912C086f42F57',
-      args: [
-        `0xd7F992c60F8FDE06Df0b93276E2e43eb6555a5FA`,
-        '0x1B4D9FA12f3e1b1181b413979330c0afF9BbaAE5',
-        BigInt(voucherInputs.tokens),
-        voucherInputs.description,
-        BigInt(voucherInputs.amountInDollar),
-        'USD',
-      ],
-    });
-    setCompleteTransaction(true);
+    console.log(voucherInputs)
+    // const referredVoucherAmount = voucherInputs.amountInDollar;
+    // await createVoucher.writeContractAsync({
+    //   address: '0xA69f271c08700771765D911540D912C086f42F57',
+    //   args: [
+    //     `0xd7F992c60F8FDE06Df0b93276E2e43eb6555a5FA`,
+    //     '0x1B4D9FA12f3e1b1181b413979330c0afF9BbaAE5',
+    //     BigInt(voucherInputs.tokens),
+    //     voucherInputs.description,
+    //     BigInt(+referredVoucherAmount * 3),
+    //     voucherInputs.currency,
+    //   ],
+    // });
+    // setCompleteTransaction(true);
   };
 
   const handleCloseProject = async () => {

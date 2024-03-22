@@ -27,6 +27,7 @@ interface CreateVoucherModalType {
     tokens: string;
     amountInDollar: string;
     description: string;
+    currency: string;
   };
   handleSubmit: (e: any) => void;
   handleInputChange: (e: any) => void;
@@ -70,17 +71,6 @@ const CreateVoucherModal: FC<CreateVoucherModalType> = ({
                 />
               </div>
               <div>
-                <Label htmlFor="amount" className="text-right">
-                  Amount in $
-                </Label>
-                <Input
-                  name="amountInDollar"
-                  className="col-span-3"
-                  value={voucherInputs.amountInDollar}
-                  onChange={handleInputChange}
-                />
-              </div>
-              <div>
                 <Label htmlFor="currency" className="">
                   Select Currency
                 </Label>
@@ -91,11 +81,23 @@ const CreateVoucherModal: FC<CreateVoucherModalType> = ({
                   <SelectContent>
                     <SelectGroup>
                       <SelectItem value={'NPR'}>NPR</SelectItem>
-                      <SelectItem value={'dollar'}>American Dollar</SelectItem>
+                      <SelectItem value={'USD'}>American Dollar</SelectItem>
                     </SelectGroup>
                   </SelectContent>
                 </Select>
               </div>
+              <div>
+                <Label htmlFor="amount" className="text-right">
+                  Price
+                </Label>
+                <Input
+                  name="amountInDollar"
+                  className="col-span-3"
+                  value={voucherInputs.amountInDollar}
+                  onChange={handleInputChange}
+                />
+              </div>
+              
               <div>
                 <Label htmlFor="description" className="text-right">
                   Description

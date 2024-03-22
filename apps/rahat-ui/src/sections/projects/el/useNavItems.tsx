@@ -28,6 +28,7 @@ export const useNavItems = () => {
     tokens: '',
     amountInDollar: '',
     description: '',
+    currency: ''
   });
   const [completeTransaction, setCompleteTransaction] = useState(false);
 
@@ -46,12 +47,14 @@ export const useNavItems = () => {
   const handleCreateVoucherSubmit = async (e: any) => {
     e.preventDefault();
     await createVoucher.writeContractAsync({
-      address: '0xb72Edc10170c61A0Bb85f9816Da05f368C719A9f',
+      address: '0xA69f271c08700771765D911540D912C086f42F57',
       args: [
-        `0xc19d064Ac3C96aa3E1b2E5b0A8e248A1A8a15775`,
-        '0x494073864D8187414c54796987dBFf4AA469A8D6',
+        `0xC8A8032fc777b9Ad39C57a0eBaBbFA0b630825a0`,
+        '0x1B4D9FA12f3e1b1181b413979330c0afF9BbaAE5',
         BigInt(voucherInputs.tokens),
         voucherInputs.description,
+        BigInt(voucherInputs.amountInDollar),
+        'USD'
       ],
     });
   };
@@ -60,12 +63,14 @@ export const useNavItems = () => {
   const handleCreateTokenSubmit = async (e: any) => {
     e.preventDefault();
     await createVoucher.writeContractAsync({
-      address: '0xb72Edc10170c61A0Bb85f9816Da05f368C719A9f',
+      address: '0xA69f271c08700771765D911540D912C086f42F57',
       args: [
-        `0xC01d0B6B3CcCa78C5685B52859FB538Bd7b11483`,
-        '0x494073864D8187414c54796987dBFf4AA469A8D6',
+        `0xd7F992c60F8FDE06Df0b93276E2e43eb6555a5FA`,
+        '0x1B4D9FA12f3e1b1181b413979330c0afF9BbaAE5',
         BigInt(voucherInputs.tokens),
         voucherInputs.description,
+        BigInt(voucherInputs.amountInDollar),
+        'USD'
       ],
     });
     setCompleteTransaction(true);
@@ -128,7 +133,7 @@ export const useNavItems = () => {
         },
       ],
     },
-    {
+    { 
       title: 'Actions',
       children: [
         {

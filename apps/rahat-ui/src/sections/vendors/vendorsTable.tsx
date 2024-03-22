@@ -41,7 +41,7 @@ export type Payment = {
   amount: number;
   status: 'pending' | 'processing' | 'success' | 'failed';
   email: string;
-  walletAddress:`0x${string}`;
+  walletAddress: `0x${string}`;
 };
 
 export const columns: ColumnDef<Payment>[] = [

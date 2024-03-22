@@ -36,26 +36,12 @@ import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { useRumsanService } from '../../providers/service.provider';
 import { useAddVendors } from '../../hooks/el/contracts/el-contracts';
 
-const data: Payment[] = [
-  {
-    id: 'bhqecj4p',
-    amount: 721,
-    status: 'failed',
-    email: 'carmella@hotmail.com',
-  },
-  {
-    id: 'm5gr84i9',
-    amount: 316,
-    status: 'success',
-    email: 'ken99@yahoo.com',
-  },
-];
-
 export type Payment = {
   id: string;
   amount: number;
   status: 'pending' | 'processing' | 'success' | 'failed';
   email: string;
+  walletAddress:`0x${string}`;
 };
 
 export const columns: ColumnDef<Payment>[] = [
@@ -130,7 +116,7 @@ export const columns: ColumnDef<Payment>[] = [
       const handleRegisterVendor = async () => {
         await updateVendor.writeContractAsync({
           address: '0x9C8Ee9931BEc18EA883c8F23c7427016bBDeF171',
-          args: ['0x9C8Ee9931BEc18EA883c8F23c7427016bBDeF171', true],
+          args: [payment.walletAddress, true],
         });
       };
       return (
@@ -171,7 +157,7 @@ export default function DataTableDemo() {
   });
 
   const table = useReactTable({
-    data: vendorData || [],
+    data: vendorData?.data || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,

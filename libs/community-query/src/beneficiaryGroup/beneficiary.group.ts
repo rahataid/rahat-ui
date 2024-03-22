@@ -14,6 +14,7 @@ import {
 
 import { TAGS } from '../config';
 import Swal from 'sweetalert2';
+import { BeneficiaryGroup } from '@rahataid/community-tool-sdk/beneficiarygroup';
 
 export class CommunityBeneficiaryGroupQuery {
   private client: BeneficiaryGroupClient;
@@ -44,7 +45,7 @@ export class CommunityBeneficiaryGroupQuery {
           groupId: parseInt(value),
         };
 
-        return this.client.create(inputData);
+        return this.client.create(inputData as any);
       },
       onSuccess: async (data) => {
         await this.qc.invalidateQueries({

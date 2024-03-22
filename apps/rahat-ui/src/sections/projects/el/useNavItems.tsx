@@ -1,5 +1,8 @@
 import {
-  Lock,
+  useCloseProject,
+  useMintVouchers,
+} from 'apps/rahat-ui/src/hooks/el/contracts/el-contracts';
+import {
   MessageSquare,
   Pencil,
   Phone,
@@ -10,16 +13,11 @@ import {
   XCircle,
 } from 'lucide-react';
 import { useParams } from 'next/navigation';
+import { useState } from 'react';
 import { useSwal } from '../../../components/swal';
 import { NavItem } from '../components';
-import CreateVoucherModal from './create-voucher-modal';
 import CreateTokenModal from './create-token-modal';
-import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
-import { useState } from 'react';
-import {
-  useMintVouchers,
-  useCloseProject,
-} from 'apps/rahat-ui/src/hooks/el/contracts/el-contracts';
+import CreateVoucherModal from './create-voucher-modal';
 
 export const useNavItems = () => {
   const params = useParams();
@@ -28,6 +26,7 @@ export const useNavItems = () => {
     tokens: '',
     amountInDollar: '',
     description: '',
+    currency: '',
   });
   const [completeTransaction, setCompleteTransaction] = useState(false);
 

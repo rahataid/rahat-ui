@@ -19,6 +19,12 @@ export default function Filter({ table }: IProps) {
   const dialog = useSwal();
   const totalSelected = table.getFilteredSelectedRowModel().rows.length;
 
+  const selectedAddresses = table
+    .getFilteredSelectedRowModel()
+    .rows.map((row) => row.original)
+    .map((r) => r.walletAddress);
+  console.log('selectedBeneficiaries', selectedAddresses);
+
   const handleAssignProject = async () => {
     const { value } = await dialog.fire({
       title: 'Assign Project',

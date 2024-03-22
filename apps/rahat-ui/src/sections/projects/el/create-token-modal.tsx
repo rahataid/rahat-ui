@@ -19,13 +19,13 @@ type CreateVoucherModalType = {
     amountInDollar: string;
     tokenDescription: string;
   };
-  handleSubmit: (e: any) => void
+  handleSubmit: (e: any) => void;
 };
 
 const CreateVoucherModal: FC<CreateVoucherModalType> = ({
   open,
   voucherInputs,
-  handleSubmit
+  handleSubmit,
 }) => {
   return (
     <Dialog open={open}>
@@ -61,7 +61,11 @@ const CreateVoucherModal: FC<CreateVoucherModalType> = ({
               <Label htmlFor="description" className="text-right">
                 Description
               </Label>
-              <Input id="description" value={voucherInputs.tokenDescription} className="col-span-3"/>
+              <Input
+                id="description"
+                value={voucherInputs.tokenDescription}
+                className="col-span-3"
+              />
             </div>
             <div>
               <Label htmlFor="amountInDollar" className="text-right">

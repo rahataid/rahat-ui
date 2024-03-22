@@ -62,7 +62,7 @@ export const useNavItems = () => {
   // Referred Voucher
   const handleCreateTokenSubmit = async (e: any) => {
     e.preventDefault();
-    console.log(voucherInputs)
+    console.log(voucherInputs);
     // const referredVoucherAmount = voucherInputs.amountInDollar;
     // await createVoucher.writeContractAsync({
     //   address: '0xA69f271c08700771765D911540D912C086f42F57',

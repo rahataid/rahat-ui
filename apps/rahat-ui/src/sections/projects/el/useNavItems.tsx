@@ -28,8 +28,10 @@ export const useNavItems = () => {
     tokens: '',
     amountInDollar: '',
     description: '',
-    currency: ''
+    currency: '',
   });
+
+  
   const [completeTransaction, setCompleteTransaction] = useState(false);
 
   const handleCreateVoucherTokenChange = (e: any) => {
@@ -54,7 +56,7 @@ export const useNavItems = () => {
         BigInt(voucherInputs.tokens),
         voucherInputs.description,
         BigInt(voucherInputs.amountInDollar),
-        'USD'
+        'USD',
       ],
     });
   };
@@ -70,7 +72,7 @@ export const useNavItems = () => {
         BigInt(voucherInputs.tokens),
         voucherInputs.description,
         BigInt(voucherInputs.amountInDollar),
-        'USD'
+        'USD',
       ],
     });
     setCompleteTransaction(true);
@@ -133,7 +135,7 @@ export const useNavItems = () => {
         },
       ],
     },
-    { 
+    {
       title: 'Actions',
       children: [
         {

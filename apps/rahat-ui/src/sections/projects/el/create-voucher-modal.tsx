@@ -97,7 +97,7 @@ const CreateVoucherModal: FC<CreateVoucherModalType> = ({
                   onChange={handleInputChange}
                 />
               </div>
-              
+
               <div>
                 <Label htmlFor="description" className="text-right">
                   Description

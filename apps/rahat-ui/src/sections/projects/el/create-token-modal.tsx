@@ -54,14 +54,21 @@ const CreateVoucherModal: FC<CreateVoucherModalType> = ({
                 className="col-span-3"
                 value={+voucherInputs.tokens * 3}
                 disabled
+                name="referredTokenDescription"
               />
             </div>
-            {/* <div>
+            <div>
             <Label htmlFor="description" className="text-right">
               Description
             </Label>
             <Input id="description" className="col-span-3" />
-          </div> */}
+          </div>
+          <div>
+            <Label htmlFor="amountInDollar" className="text-right">
+              Price
+            </Label>
+            <Input id="amountInDollar" className="col-span-3" name="referredTokenPrice"/>
+          </div>
           </div>
           <DialogFooter>
             <DialogClose asChild>

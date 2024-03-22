@@ -35,6 +35,11 @@ import {
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { useRumsanService } from '../../providers/service.provider';
 import { useAddVendors } from '../../hooks/el/contracts/el-contracts';
+import { useProjectAction } from '@rahat-ui/query';
+import { PROJECT_SETTINGS } from '../../constants/project.const';
+import { MS_ACTIONS } from '@rahataid/sdk/constants';
+
+const PROJECT_ID = '0f30fa38-9c08-4474-8306-ca6bb76a148a';
 
 const data: Payment[] = [
   {
@@ -154,6 +159,27 @@ export const columns: ColumnDef<Payment>[] = [
 ];
 
 export default function DataTableDemo() {
+  const [contract, setContract] = React.useState(null);
+  const projectClient = useProjectAction();
+
+  useEffect(() => {
+    projectClient
+      .mutateAsync({
+        uuid: PROJECT_ID,
+        data: {
+          action: MS_ACTIONS.SETTINGS.GET,
+          payload: {
+            name: PROJECT_SETTINGS.CONTRACTS,
+          },
+        },
+      })
+      .then((res: any) => {
+        if (res.data) setContract(res.data.value);
+      });
+  }, []);
+
+  console.log('CONTRACT', contract);
+
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],

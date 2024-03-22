@@ -24,7 +24,7 @@ import { toast } from 'react-toastify';
 import { z } from 'zod';
 import { Wallet } from 'lucide-react';
 
-export default function AddBeneficiary() {
+export default function AddBeneficiaryForm() {
   const addBeneficiary = useCreateBeneficiary();
 
   const FormSchema = z.object({

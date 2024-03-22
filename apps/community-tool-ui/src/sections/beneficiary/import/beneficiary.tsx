@@ -175,9 +175,9 @@ export default function BenImp() {
     let finalPayload = rawData;
     const selectedTargets = []; // Only submit selected target fields
 
-    const myMappings = existingMappings.length ? existingMappings : mappings;
+    // const myMappings = existingMappings.length ? existingMappings : mappings;
 
-    for (let m of myMappings) {
+    for (let m of mappings) {
       if (m.targetField === TARGET_FIELD.FIRSTNAME) {
         selectedTargets.push(TARGET_FIELD.FIRSTNAME);
         const replaced = finalPayload.map((item: any) => {

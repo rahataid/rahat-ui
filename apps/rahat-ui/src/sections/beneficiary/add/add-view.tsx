@@ -6,7 +6,7 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from '@rahat-ui/shadcn/components/resizable';
-import { Tabs, TabsContent } from '@rahat-ui/shadcn/components/tabs';
+import { Tabs } from '@rahat-ui/shadcn/components/tabs';
 
 import {
   VisibilityState,
@@ -17,16 +17,13 @@ import {
 
 import { usePagination } from '@rahat-ui/query';
 import { Beneficiary } from '@rahataid/sdk/types';
-import CustomPagination from '../../components/customPagination';
-import { BENEFICIARY_NAV_ROUTE } from '../../constants/beneficiary.const';
-import { useRumsanService } from '../../providers/service.provider';
-import BeneficiaryDetail from '../../sections/beneficiary/beneficiaryDetail';
-import BeneficiaryGridView from '../../sections/beneficiary/gridView';
-import BeneficiaryListView from '../../sections/beneficiary/listView';
-import BeneficiaryNav from '../../sections/beneficiary/nav';
-import AddBeneficiary from './addBeneficiary';
-import ImportBeneficiary from './import.beneficiary';
-import { useBeneficiaryTableColumns } from './useBeneficiaryColumns';
+import { BENEFICIARY_NAV_ROUTE } from '../../../constants/beneficiary.const';
+import { useRumsanService } from '../../../providers/service.provider';
+import BeneficiaryDetail from '../../../sections/beneficiary/beneficiaryDetail';
+import BeneficiaryNav from '../../../sections/beneficiary/nav';
+import AddBeneficiaryForm from './addBeneficiary';
+import ImportBeneficiary from '../import.beneficiary';
+import { useBeneficiaryTableColumns } from '../useBeneficiaryColumns';
 
 function BeneficiaryView() {
   const { pagination, filters, setPagination } = usePagination((state) => ({
@@ -100,31 +97,9 @@ function BeneficiaryView() {
             <ImportBeneficiary />
           ) : null}
 
-          {active === BENEFICIARY_NAV_ROUTE.DEFAULT && (
-            <>
-              <TabsContent value="list">
-                <BeneficiaryListView
-                  table={table}
-                  meta={data?.meta}
-                  handleClick={handleBeneficiaryClick}
-                />
-              </TabsContent>
-              <TabsContent value="grid">
-                <BeneficiaryGridView
-                  handleClick={handleBeneficiaryClick}
-                  data={data?.data}
-                />
-              </TabsContent>
-              <CustomPagination
-                meta={data?.response?.meta || { total: 0, currentPage: 0 }}
-                handleNextPage={handleNextPage}
-                handlePrevPage={handlePrevPage}
-                handlePageSizeChange={(value) =>
-                  setPagination({ perPage: Number(value) })
-                }
-              />
-            </>
-          )}
+          <>
+            <AddBeneficiaryForm />
+          </>
         </ResizablePanel>
         {selectedData ? (
           <>

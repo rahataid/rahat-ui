@@ -1,7 +1,5 @@
 'use client';
-import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import { Search } from 'lucide-react';
 import { useRumsanService } from '../../providers/service.provider';
 import { ProjectCard } from '../../sections/projects';
 import Filters from './filter';

@@ -1,15 +1,14 @@
 'use client';
 
-import React from 'react';
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from '@rahat-ui/shadcn/components/accordion';
+import { ListBeneficiary } from '@rahat-ui/types';
 import { Table } from '@tanstack/react-table';
 import { useSwal } from '../../components/swal';
-import { ListBeneficiary } from '@rahat-ui/types';
 
 type IProps = {
   table: Table<ListBeneficiary>;

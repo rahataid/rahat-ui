@@ -185,10 +185,11 @@ export default function BeneficiaryDetailTableView() {
     });
 
     const filteredData = result?.data.map((row: any) => {
-      return { name: row.Beneficiary.walletAddress,
-      gender:row.Beneficiary.gender,
-      phone:row.Beneficiary.phone || "N/A" ,
-      redemption:'N/A'
+      return {
+        name: row.Beneficiary.walletAddress,
+        gender: row.Beneficiary.gender,
+        phone: row.Beneficiary.phone || 'N/A',
+        redemption: 'N/A',
       };
     });
 

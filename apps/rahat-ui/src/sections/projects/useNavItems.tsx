@@ -11,6 +11,10 @@ export const useProjectListNavItems = () => {
           icon: <KanbanSquare size={18} strokeWidth={1.5} />,
           children: [
             {
+              title: 'All',
+              path: '/projects',
+            },
+            {
               title: 'CVA',
             },
             {

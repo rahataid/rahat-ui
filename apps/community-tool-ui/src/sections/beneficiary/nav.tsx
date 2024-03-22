@@ -4,6 +4,13 @@ import { TabsList, TabsTrigger } from '@rahat-ui/shadcn/src/components/ui/tabs';
 import { AlignJustify, Import, LayoutGrid, Plus, Users } from 'lucide-react';
 import Filter from './filter';
 import MultipleSelectFilter from './multipleSelectorFilter';
+import Link from 'next/link';
+import { paths } from '../../routes/paths';
+import {
+  BENEFICIARY_NAV_ROUTE,
+  GROUP_NAV_ROUTE,
+} from '../../constants/beneficiary.const';
+import { Meta } from '@rahat-ui/types';
 
 type IProps = {
   meta: Meta | undefined;
@@ -18,15 +25,6 @@ export default function Nav({
   selectedData,
   handleClose,
 }: IProps) {
-import Link from 'next/link';
-import { paths } from '../../routes/paths';
-
-// type IProps = {
-//   meta?: Meta | undefined;
-//   handleNav?: (item: string) => void;
-// };
-
-export default function Nav() {
   return (
     <>
       <div>

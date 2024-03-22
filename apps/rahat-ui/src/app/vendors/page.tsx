@@ -4,7 +4,6 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from '@rahat-ui/shadcn/components/resizable';
-import ProjectNav from '../../sections/projects/nav';
 import VendorsTable from '../../sections/vendors/vendorsTable';
 
 export default function VendorsPage() {
@@ -21,7 +20,7 @@ export default function VendorsPage() {
             maxSize={20}
             className="h-full"
           >
-            <ProjectNav title="Vendors" />
+            {/* <ProjectNav title="Vendors" /> */}
           </ResizablePanel>
           <ResizableHandle />
           <ResizablePanel>

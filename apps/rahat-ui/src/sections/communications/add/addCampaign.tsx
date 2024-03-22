@@ -380,16 +380,8 @@ export default function AddCampaign() {
                       </FormControl>
                       <SelectContent>
                         {Object.keys(CAMPAIGN_TYPES).map((key) => {
-                          if (
-                            key !== CAMPAIGN_TYPES.PHONE &&
-                            path[path.length - 1] === CAMPAIGN_PATH.TEXT
-                          )
-                            return <SelectItem value={key}>{key}</SelectItem>;
-                          else if (
-                            key === CAMPAIGN_TYPES.PHONE &&
-                            path[path.length - 1] === CAMPAIGN_PATH.VOICE
-                          )
-                            return <SelectItem value={key}>{key}</SelectItem>;
+                         
+                          return <SelectItem value={key}>{key}</SelectItem>;
                         })}
                       </SelectContent>
                     </Select>

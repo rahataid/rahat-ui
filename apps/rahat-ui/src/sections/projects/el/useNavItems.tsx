@@ -41,6 +41,8 @@ export const useNavItems = () => {
 
   const createVoucher = useMintVouchers();
   const closeProject = useCloseProject();
+
+    // Free Voucher
   const handleCreateVoucherSubmit = async (e: any) => {
     e.preventDefault();
     await createVoucher.writeContractAsync({
@@ -54,6 +56,7 @@ export const useNavItems = () => {
     });
   };
 
+  // Referred Voucher
   const handleCreateTokenSubmit = async (e: any) => {
     e.preventDefault();
     await createVoucher.writeContractAsync({

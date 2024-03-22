@@ -17,8 +17,6 @@ export default function DashboardView() {
           <TabsContent value="list">
             <DashboardSummary />
             <DashboardCharts />
-            <DashboardCharts />
-            <DashboardCharts />
           </TabsContent>
           <StyledMapContainer>
             <ClusterMap {...mapboxBasicConfig} mapStyle={THEMES.light} />

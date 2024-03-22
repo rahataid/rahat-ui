@@ -1,3 +1,5 @@
+'use client';
+
 import { ScrollArea } from '@rahat-ui/shadcn/components/scroll-area';
 import { Separator } from '@rahat-ui/shadcn/components/separator';
 import { useUserStore } from '@rumsan/react-query';
@@ -21,19 +23,25 @@ import {
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-
+import { useRumsanService } from '../../providers/service.provider';
+import { use } from 'react';
 // type IProps = {
 //   // onAddUsersClick: VoidFunction;
 //   onTabChange: (tab: string) => void;
 // };
 
 export default function Nav() {
+  const { projectQuery } = useRumsanService();
   const totalUser = useUserStore.getState().totalUser;
 
-  //   const handleTabClick = (tab: string) => {
-  //     // Notify the parent component about the tab change
-  //     onTabChange(tab);
-  //   };
+  const projectsList = projectQuery.useProjectList({});
+  const d = projectsList.data;
+  const projectList = d?.data || [];
+
+  const handleProjectChange = (d: string) => {
+    console.log('D==>', d);
+  };
+
   return (
     <>
       <div className="bg-card border-b">
@@ -69,14 +77,19 @@ export default function Nav() {
                     </DialogDescription>
                   </DialogHeader>
                   <div>
-                    <Select>
+                    <Select onValueChange={handleProjectChange}>
                       <SelectTrigger>
                         <SelectValue placeholder="Projects" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="1">Project 1</SelectItem>
-                        <SelectItem value="2">Project 2</SelectItem>
-                        <SelectItem value="3">Project 3</SelectItem>
+                        {projectList.length > 0 &&
+                          projectList.map((project: any) => {
+                            return (
+                              <SelectItem key={project.id} value={project.id}>
+                                {project.title}
+                              </SelectItem>
+                            );
+                          })}
                       </SelectContent>
                     </Select>
                   </div>

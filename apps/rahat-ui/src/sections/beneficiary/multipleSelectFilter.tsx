@@ -22,7 +22,6 @@ export default function Filter({ table }: IProps) {
     .getFilteredSelectedRowModel()
     .rows.map((row) => row.original)
     .map((r) => r.walletAddress);
-  console.log('selectedBeneficiaries', selectedAddresses);
 
   const handleAssignProject = async () => {
     const { value } = await dialog.fire({

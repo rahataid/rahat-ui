@@ -58,8 +58,6 @@ export default function InfoCards({ data, voucherData }) {
         },
       },
     });
-
-    
   };
 
   return (

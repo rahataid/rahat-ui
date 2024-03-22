@@ -11,6 +11,14 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/dialog';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@rahat-ui/shadcn/src/components/ui/select';
 import { PlusSquare } from 'lucide-react';
 import { FC } from 'react';
 
@@ -71,6 +79,22 @@ const CreateVoucherModal: FC<CreateVoucherModalType> = ({
                   value={voucherInputs.amountInDollar}
                   onChange={handleInputChange}
                 />
+              </div>
+              <div>
+                <Label htmlFor="currency" className="">
+                  Select Currency
+                </Label>
+                <Select>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectItem value={'NPR'}>NPR</SelectItem>
+                      <SelectItem value={'dollar'}>American Dollar</SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
               </div>
               <div>
                 <Label htmlFor="description" className="text-right">

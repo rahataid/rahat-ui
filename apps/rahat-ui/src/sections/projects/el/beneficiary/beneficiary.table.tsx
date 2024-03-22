@@ -97,8 +97,8 @@ export const columns: ColumnDef<Transaction>[] = [
     cell: ({ row }) => (
       <div className="capitalize">
         {row.getValue('vouvherType')
-          ? `${row.getValue('vouvherType')?.toString().substring(0, 4)}....${row
-              .getValue('vouvherType')
+          ? `${row.getValue('voucherType')?.toString().substring(0, 4)}....${row
+              .getValue('voucherType')
               ?.toString()
               ?.slice(-3)}`
           : 'N/A'}
@@ -185,7 +185,11 @@ export default function BeneficiaryDetailTableView() {
     });
 
     const filteredData = result?.data.map((row: any) => {
-      return { name: row.Beneficiary.walletAddress };
+      return { name: row.Beneficiary.walletAddress,
+      gender:row.Beneficiary.gender,
+      phone:row.Beneficiary.phone || "N/A" ,
+      redemption:'N/A'
+      };
     });
 
     setTableData(filteredData);

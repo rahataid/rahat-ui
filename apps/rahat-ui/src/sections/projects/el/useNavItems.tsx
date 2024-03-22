@@ -1,5 +1,8 @@
 import {
-  Lock,
+  useCloseProject,
+  useMintVouchers,
+} from 'apps/rahat-ui/src/hooks/el/contracts/el-contracts';
+import {
   MessageSquare,
   Pencil,
   Phone,
@@ -10,16 +13,11 @@ import {
   XCircle,
 } from 'lucide-react';
 import { useParams } from 'next/navigation';
+import { useState } from 'react';
 import { useSwal } from '../../../components/swal';
 import { NavItem } from '../components';
-import CreateVoucherModal from './create-voucher-modal';
 import CreateTokenModal from './create-token-modal';
-import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
-import { useState } from 'react';
-import {
-  useMintVouchers,
-  useCloseProject,
-} from 'apps/rahat-ui/src/hooks/el/contracts/el-contracts';
+import CreateVoucherModal from './create-voucher-modal';
 
 export const useNavItems = () => {
   const params = useParams();
@@ -28,7 +26,10 @@ export const useNavItems = () => {
     tokens: '',
     amountInDollar: '',
     description: '',
+    currency: '',
+    tokenDescription: '',
   });
+
   const [completeTransaction, setCompleteTransaction] = useState(false);
 
   const handleCreateVoucherTokenChange = (e: any) => {
@@ -41,28 +42,34 @@ export const useNavItems = () => {
 
   const createVoucher = useMintVouchers();
   const closeProject = useCloseProject();
+
+  // Free Voucher
   const handleCreateVoucherSubmit = async (e: any) => {
     e.preventDefault();
     await createVoucher.writeContractAsync({
-      address: '0xb72Edc10170c61A0Bb85f9816Da05f368C719A9f',
+      address: '0xA69f271c08700771765D911540D912C086f42F57',
       args: [
-        `0xc19d064Ac3C96aa3E1b2E5b0A8e248A1A8a15775`,
-        '0x494073864D8187414c54796987dBFf4AA469A8D6',
+        `0xC8A8032fc777b9Ad39C57a0eBaBbFA0b630825a0`,
+        '0x1B4D9FA12f3e1b1181b413979330c0afF9BbaAE5',
         BigInt(voucherInputs.tokens),
         voucherInputs.description,
+        BigInt(voucherInputs.amountInDollar),
+        voucherInputs.currency,
       ],
     });
   };
 
-  const handleCreateTokenSubmit = async (e: any) => {
-    e.preventDefault();
+  // Referred Voucher
+  const handleCreateTokenSubmit = async (value: any) => {
     await createVoucher.writeContractAsync({
-      address: '0xb72Edc10170c61A0Bb85f9816Da05f368C719A9f',
+      address: '0xA69f271c08700771765D911540D912C086f42F57',
       args: [
-        `0xC01d0B6B3CcCa78C5685B52859FB538Bd7b11483`,
-        '0x494073864D8187414c54796987dBFf4AA469A8D6',
-        BigInt(voucherInputs.tokens),
-        voucherInputs.description,
+        `0xd7F992c60F8FDE06Df0b93276E2e43eb6555a5FA`,
+        '0x1B4D9FA12f3e1b1181b413979330c0afF9BbaAE5',
+        BigInt(+voucherInputs.tokens * 3),
+        value.description,
+        BigInt(value.price),
+        voucherInputs.currency,
       ],
     });
     setCompleteTransaction(true);

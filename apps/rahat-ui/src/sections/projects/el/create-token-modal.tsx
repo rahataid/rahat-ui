@@ -29,15 +29,15 @@ const CreateVoucherModal: FC<CreateVoucherModalType> = ({
 }) => {
   const [description, setDescription] = useState<string>('');
 
-  const [price, setPrice] = useState<string>('')
+  const [price, setPrice] = useState<string>('');
 
   const handleDescriptionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setDescription(e.target.value);
   };
 
   const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPrice(e.target.value)
-  }
+    setPrice(e.target.value);
+  };
 
   const submitForm = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

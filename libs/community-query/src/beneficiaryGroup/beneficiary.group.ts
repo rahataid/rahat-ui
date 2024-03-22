@@ -40,7 +40,7 @@ export class CommunityBeneficiaryGroupQuery {
         });
 
         const inputData = {
-          beneficiariesId: payload?.selectedData,
+          beneficiaryId: payload?.selectedData,
           groupId: parseInt(value),
         };
 

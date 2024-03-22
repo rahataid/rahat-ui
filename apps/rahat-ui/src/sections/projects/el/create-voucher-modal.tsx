@@ -90,7 +90,7 @@ const CreateVoucherModal: FC<CreateVoucherModalType> = ({
                   <SelectContent>
                     <SelectGroup>
                       <SelectItem value={'NPR'}>NPR</SelectItem>
-                      <SelectItem value={'dollar'}>American Dollar</SelectItem>
+                      <SelectItem value={'USD'}>American Dollar</SelectItem>
                     </SelectGroup>
                   </SelectContent>
                 </Select>

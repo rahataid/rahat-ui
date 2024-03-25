@@ -187,7 +187,7 @@ export default function DataTableDemo() {
 
   return (
     <>
-      <div className="w-full h-full -mt-2 p-2 bg-secondary">
+      <div className="w-full h-full p-2">
         <div className="flex items-center mb-2">
           <Input
             placeholder="Search User..."

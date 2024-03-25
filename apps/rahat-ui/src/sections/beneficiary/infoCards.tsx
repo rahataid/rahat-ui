@@ -207,21 +207,11 @@ export default function InfoCards({ data, voucherData }) {
         <CardContent>
           <div className="flex flex-col gap-4">
             <div className="flex justify-between items-center">
-              <p>ClaimStatus</p>
+              <p>Voucher Type</p>
               <p className="text-sm font-light">
                 {voucherData?.FreeVoucherClaimStatus?.toString()
                   ? voucherData?.FreeVoucherClaimStatus?.toString()
                   : voucherData?.ReferredVoucherClaimStatus?.toString()}
-              </p>
-            </div>
-            <div className="flex justify-between items-center">
-              <p>Received</p>
-              <p className="text-sm font-light">
-                {voucherData?.FreeVoucherAddress
-                  ? 'Free Voucher'
-                  : voucherData?.ReferredVoucherAddress
-                  ? 'Discount Voucher'
-                  : 'Not Assigned'}
               </p>
             </div>
             <div className="flex justify-between items-center">

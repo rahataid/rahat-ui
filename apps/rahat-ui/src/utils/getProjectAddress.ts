@@ -3,7 +3,7 @@ import { PROJECT_SETTINGS } from '../constants/project.const';
 
 export const getProjectSettings = async (
   getProject: UseMutationResult<any, Error, any, unknown>,
-  uuid: string | undefined,
+  uuid: string | string[] | undefined,
 ) => {
   const res = await getProject.mutateAsync({
     uuid,

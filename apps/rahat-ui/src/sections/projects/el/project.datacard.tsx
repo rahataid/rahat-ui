@@ -10,7 +10,7 @@ import Activities from './projects.activity';
 const ProjectDataCard = ({ contractSettings }) => {
   const { data: projectVoucher } = useProjectVoucher(
     contractSettings?.elproject?.address,
-    contractSettings?.eyevouche?.address,
+    contractSettings?.eyevoucher?.address,
   );
 
   const { data: beneficiaryDetails } = useBeneficiaryCount(

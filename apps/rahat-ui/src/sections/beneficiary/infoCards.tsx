@@ -51,7 +51,7 @@ export default function InfoCards({ data, voucherData }) {
 
     const result = await addBeneficiary.mutateAsync({
       uuid,
-      payload: {
+      data: {
         action: MS_ACTIONS.BENEFICIARY.ASSGIN_TO_PROJECT,
         payload: {
           beneficiaryId: data?.uuid,

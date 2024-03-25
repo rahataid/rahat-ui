@@ -88,7 +88,7 @@ export const useAddVendors = (uuid: string, vendorUuid: string) => {
       onSuccess: async () => {
         await addVendor.mutateAsync({
           uuid: uuid,
-          payload: {
+          data: {
             action: MS_ACTIONS.VENDOR.ASSIGN_TO_PROJECT,
             // 'vendor.assign_to_project',
             payload: {

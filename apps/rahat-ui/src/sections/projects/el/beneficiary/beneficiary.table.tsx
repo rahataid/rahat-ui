@@ -175,7 +175,7 @@ export default function BeneficiaryDetailTableView() {
   const getBeneficiary = async () => {
     const result = await addBeneficiary.mutateAsync({
       uuid,
-      payload: {
+      data: {
         action: MS_ACTIONS.BENEFICIARY.LIST_BY_PROJECT,
         payload: {
           page: currentPage,

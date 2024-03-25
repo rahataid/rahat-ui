@@ -6,7 +6,7 @@ export const getProjectAddress = async (
 ) => {
   const res = await getProject.mutateAsync({
     uuid,
-    payload: {
+    data: {
       action: 'settings.list',
       payload: {},
     },

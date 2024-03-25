@@ -143,7 +143,7 @@ export default function VendorTable() {
   const getVendorList = async () => {
     const vendorData = await listVendor.mutateAsync({
       uuid,
-      payload: {
+      data: {
         action: MS_ACTIONS.VENDOR.LIST_BY_PROJECT,
         // 'vendor.list_by_project',
         payload: {

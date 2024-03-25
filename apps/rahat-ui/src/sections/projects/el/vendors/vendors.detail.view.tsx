@@ -11,7 +11,7 @@ import VendorTable from '../../../vendors/vendors.transaction.table';
 import ReferralTable from '../../../vendors/vendors.referral.table';
 import VendorsInfo from '../../../vendors/vendors.info';
 
-export default function VendorsPage() {
+export default function VendorsDetailPage() {
   return (
     <div className="bg-secondary">
       {/* Data Cards */}

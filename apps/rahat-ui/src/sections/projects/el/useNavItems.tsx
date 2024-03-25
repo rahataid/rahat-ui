@@ -152,6 +152,12 @@ export const useNavItems = () => {
           icon: <Receipt size={18} strokeWidth={1.5} />,
         },
         {
+          title: 'Redemptions',
+          path: `/projects/el/${params.id}/redemptions`,
+          // subtitle: ,
+          icon: <Receipt size={18} strokeWidth={1.5} />,
+        },
+        {
           title: 'Campaigns',
           subtitle: 20,
           icon: <Speech size={18} strokeWidth={1.5} />,

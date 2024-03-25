@@ -32,7 +32,7 @@ import {
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import useActivitiesTableColumn from './useActivitiesTableColumn';
-import ActivitiesData from './activities.json'
+import ActivitiesData from './activities.json';
 
 export default function ActivitiesTable() {
   const columns = useActivitiesTableColumn();
@@ -43,7 +43,7 @@ export default function ActivitiesTable() {
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
-  const data = ActivitiesData
+  const data = ActivitiesData;
   const table = useReactTable({
     data: data,
     columns,
@@ -77,9 +77,9 @@ export default function ActivitiesTable() {
                         {header.isPlaceholder
                           ? null
                           : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext(),
-                          )}
+                              header.column.columnDef.header,
+                              header.getContext(),
+                            )}
                       </TableHead>
                     );
                   })}

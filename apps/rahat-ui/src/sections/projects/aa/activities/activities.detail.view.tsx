@@ -12,7 +12,10 @@ type IProps = {
   closeSecondPanel: VoidFunction;
 };
 
-export default function ActivitiesDetail({ activityDetail, closeSecondPanel }: IProps) {
+export default function ActivitiesDetail({
+  activityDetail,
+  closeSecondPanel,
+}: IProps) {
   return (
     <div className="p-2">
       <div className="flex gap-4">
@@ -48,7 +51,9 @@ export default function ActivitiesDetail({ activityDetail, closeSecondPanel }: I
         </TooltipProvider>
       </div>
       <div className="mt-4 flex flex-col gap-2">
-        <p className="font-medium text-xl">{activityDetail?.title ?? 'Activity Title'}</p>
+        <p className="font-medium text-xl">
+          {activityDetail?.title ?? 'Activity Title'}
+        </p>
         <p className="font-normal texl-md">
           {activityDetail?.description ??
             'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat'}

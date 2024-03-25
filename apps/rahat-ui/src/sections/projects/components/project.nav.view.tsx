@@ -10,14 +10,12 @@ type ProjectNavViewProps = {
 const ProjectNavView: FC<ProjectNavViewProps> = ({ title, items }) => {
   const router = useRouter();
   const [openSubmenu, setOpenSubmenu] = useState<string | null>(null);
-  const [selectedItem, setSelectedItem] = useState<string | null>(null);
 
   const handleNav = (item: NavItem) => {
     if (item.children) {
       setOpenSubmenu(item.title === openSubmenu ? null : item.title);
     } else if (item.path) {
       router.push(item.path as string);
-      setSelectedItem(item.title);
     }
   };
 
@@ -31,9 +29,7 @@ const ProjectNavView: FC<ProjectNavViewProps> = ({ title, items }) => {
           {items?.map((item) => (
             <div key={item.title}>
               <div
-                className={`flex justify-between p-2 items-center rounded-md cursor-pointer hover:bg-primary hover:text-white ${
-                  selectedItem === item.title ? 'bg-primary text-white' : ''
-                }`}
+                className={`flex justify-between p-2 items-center rounded-md cursor-pointer hover:bg-primary hover:text-white `}
                 onClick={() => handleNav(item)}
                 {...item}
               >

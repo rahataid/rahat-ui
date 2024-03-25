@@ -380,7 +380,6 @@ export default function AddCampaign() {
                       </FormControl>
                       <SelectContent>
                         {Object.keys(CAMPAIGN_TYPES).map((key) => {
-                         
                           return <SelectItem value={key}>{key}</SelectItem>;
                         })}
                       </SelectContent>

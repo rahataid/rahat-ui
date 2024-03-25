@@ -1,25 +1,30 @@
 import { ScrollArea } from '@rahat-ui/shadcn/components/scroll-area';
 import { Separator } from '@rahat-ui/shadcn/components/separator';
 import { TabsList, TabsTrigger } from '@rahat-ui/shadcn/src/components/ui/tabs';
-import { Meta } from '@rahat-ui/types';
-import {
-  AlignJustify,
-  Import,
-  LayoutGrid,
-  Plus,
-  Users,
-  Upload,
-  Settings,
-} from 'lucide-react';
-import { BENEFICIARY_NAV_ROUTE } from '../../constants/beneficiary.const';
+import { AlignJustify, Import, LayoutGrid, Plus, Users } from 'lucide-react';
 import Filter from './filter';
+import MultipleSelectFilter from './multipleSelectorFilter';
+import Link from 'next/link';
+import { paths } from '../../routes/paths';
+import {
+  BENEFICIARY_NAV_ROUTE,
+  GROUP_NAV_ROUTE,
+} from '../../constants/beneficiary.const';
+import { Meta } from '@rahat-ui/types';
 
 type IProps = {
   meta: Meta | undefined;
   handleNav: (item: string) => void;
+  selectedData: number[];
+  handleClose: () => void;
 };
 
-export default function Nav({ meta, handleNav }: IProps) {
+export default function Nav({
+  meta,
+  handleNav,
+  selectedData,
+  handleClose,
+}: IProps) {
   return (
     <>
       <div>
@@ -38,67 +43,22 @@ export default function Nav({ meta, handleNav }: IProps) {
         <ScrollArea className="h-auto mb-2">
           <div className="px-4">
             <nav>
-              {/* <div className="flex justify-between p-4 rounded-md cursor-pointer hover:bg-primary hover:text-white">
-                <div className="flex gap-3">
-                  <Eye size={18} strokeWidth={1.5} />
-                  <p>Active beneficiaries</p>
-                </div>
-                <p>128</p>
-              </div>
-              <div className="flex justify-between p-4 rounded-md cursor-pointer hover:bg-primary hover:text-white">
-                <div className="flex gap-3">
-                  <EyeOff size={18} strokeWidth={1.5} />
-                  <p>Inactive beneficiaries</p>
-                </div>
-                <p>32</p>
-              </div>
-              <div className="flex justify-between p-4 rounded-md cursor-pointer hover:bg-primary hover:text-white">
-                <div className="flex gap-3">
-                  <ScreenShareOff size={18} strokeWidth={1.5} />{' '}
-                  <p>Disabled/ Deleted</p>
-                </div>
-                <p>9</p>
-              </div>
-              <div className="flex justify-between p-4 rounded-md cursor-pointer hover:bg-primary hover:text-white">
-                <div className="flex gap-3">
-                  <Eye size={18} strokeWidth={1.5} />
-                  <p>Active beneficiaries</p>
-                </div>
-                <p>128</p>
-              </div>
-              <div className="flex justify-between p-4 rounded-md cursor-pointer hover:bg-primary hover:text-white">
-                <div className="flex gap-3">
-                  <EyeOff size={18} strokeWidth={1.5} />
-                  <p>Inactive beneficiaries</p>
-                </div>
-                <p>32</p>
-              </div>
-              <div className="flex justify-between p-4 rounded-md cursor-pointer hover:bg-primary hover:text-white">
-                <div className="flex gap-3">
-                  <ScreenShareOff size={18} strokeWidth={1.5} />{' '}
-                  <p>Archived</p>
-                </div>
-                <p>9</p>
-              </div> */}
-              <div
-                className="flex justify-between p-2 rounded-md cursor-pointer hover:bg-primary hover:text-white text-muted-foreground"
-                onClick={() => handleNav(BENEFICIARY_NAV_ROUTE.DEFAULT)}
-              >
+              <div className="flex justify-between p-2 rounded-md cursor-pointer hover:bg-primary hover:text-white text-muted-foreground">
                 <div className="flex items-center gap-3">
                   <Users size={18} strokeWidth={1.5} />
                   {/* <Eye size={18} strokeWidth={1.5} /> */}
-                  <p>Beneficiaries</p>
+                  <Link href={paths.dashboard.beneficiary.root}>
+                    Beneficiary List
+                  </Link>
                 </div>
-                <p>{meta?.total}</p>
+                <p>{}</p>
               </div>
               <div
-                className="flex justify-between p-2 rounded-md cursor-pointer hover:bg-primary hover:text-white text-muted-foreground"
-                onClick={() => handleNav(BENEFICIARY_NAV_ROUTE.SETTINGS)}
+                className="flex items-center p-2 gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white text-muted-foreground"
+                onClick={() => handleNav(GROUP_NAV_ROUTE.VIEW_GROUP)}
               >
-                <div className="flex items-center gap-3">
-                  <Settings size={18} strokeWidth={1.5} />
-                  <p>Settings</p>
-                </div>
+                <Import size={18} strokeWidth={1.5} />
+                <p>Group</p>
               </div>
             </nav>
           </div>
@@ -108,39 +68,42 @@ export default function Nav({ meta, handleNav }: IProps) {
       <Separator />
       <ScrollArea>
         <div className="p-2">
-          {/* <h1 className="font-semibold text-xl mb-4 text-muted-foreground">
-            Action Items
-          </h1> */}
           <nav className="text-muted-foreground">
-            <div
-              onClick={() => handleNav(BENEFICIARY_NAV_ROUTE.ADD_BENEFICIARY)}
-              className="flex items-center p-2 gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white"
-            >
+            <div className="flex items-center p-2 gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white">
               <Plus size={18} strokeWidth={1.5} />
-              {/* <PlusSquare size={18} strokeWidth={1.5} /> */}
               <p>Add Beneficiary</p>
             </div>
-            {/* <div
-              className="flex items-center p-2 gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white"
-              onClick={() =>
-                handleNav(BENEFICIARY_NAV_ROUTE.UPLOAD_BENEFICIARY)
-              }
-            >
-              <Upload size={18} strokeWidth={1.5} />
-              <p>Upload Beneficiary</p>
-            </div> */}
+
             <div
               className="flex items-center p-2 gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white"
               onClick={() =>
                 handleNav(BENEFICIARY_NAV_ROUTE.IMPORT_BENEFICIARY)
               }
             >
+              <Link href={paths.dashboard.beneficiary.add}>
+                {' '}
+                Add Beneficiary
+              </Link>
+            </div>
+            <div className="flex items-center p-2 gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white">
               <Import size={18} strokeWidth={1.5} />
-              <p>Import Beneficiary</p>
+              <Link href={paths.dashboard.beneficiary.import}>
+                {' '}
+                Import Beneficiary
+              </Link>
             </div>
           </nav>
         </div>
       </ScrollArea>
+      {selectedData && selectedData.length > 0 && (
+        <>
+          <Separator className="mb-2" />
+          <MultipleSelectFilter
+            selectedData={selectedData}
+            handleClose={handleClose}
+          />
+        </>
+      )}
     </>
   );
 }

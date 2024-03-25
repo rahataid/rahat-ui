@@ -20,20 +20,27 @@ export default function AddSetting() {
   const { communitySettingQuery } = useRumsanService();
   const communitySetting = communitySettingQuery.useCommunitySettingCreate();
   const FormSchema = z.object({
-    name: z.string(),
+    name: z.string().min(1, { message: 'Name is required' }),
     field: z.array(
       z.object({
         value: z.object({
-          key: z.string(),
-          value: z.string(),
+          key: z.string().min(1, { message: 'Key is required' }),
+          value: z.string().min(1, { message: 'Value is required' }),
         }),
       }),
     ),
-    requiredFields: z.array(z.string()),
+    requiredFields: z.array(
+      z.string().min(1, { message: 'Required Fields is required' }),
+    ),
     isReadOnly: z.boolean(),
     isPrivate: z.boolean(),
   });
-  const { handleSubmit, control } = useForm<z.infer<typeof FormSchema>>({
+
+  const {
+    handleSubmit,
+    control,
+    formState: { errors },
+  } = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
       name: '',
@@ -74,93 +81,66 @@ export default function AddSetting() {
     };
     await communitySetting.mutateAsync(finalSettingData);
   };
-
   return (
     <form onSubmit={handleSubmit(handleAddSetting)}>
       <div className="p-4 h-add">
         <h1 className="text-lg font-semibold mb-6">Add Settings</h1>
         <div className="shadow-md p-4 rounded-sm">
           <div className="grid grid-cols-5 gap-4 mb-4">
-            <div className="col-span-2">
-              <FormField
-                control={control}
-                name="name"
-                render={({ field }) => (
-                  <>
-                    <Label>Name</Label>
-                    <Input type="text" placeholder="Name" {...field} />
-                  </>
-                )}
-              />
-            </div>
-            <div className="col-span-2">
-              <FormField
-                control={control}
-                name="requiredFields"
-                render={({ field }) => (
-                  <>
-                    <Label>
-                      RequiredFields{' '}
-                      <span className="text-sm text-muted-foreground">
-                        {' '}
-                        should be seprated by comma for different value
-                      </span>
-                    </Label>
-                    <Input
-                      type="text"
-                      placeholder="SAME AS KEY eg: CLIENT_ID "
-                      {...field}
-                      onChange={(e) => {
-                        const uppercaseValue = e.target.value.toUpperCase();
-                        field.onChange(
-                          uppercaseValue.split(',').map((item) => item.trim()), // Remove leading and trailing whitespaces
-                        );
-                      }}
-                    />
-                  </>
-                )}
-              />
-            </div>
+            <Label className="col-span-2">Name</Label>
+            <Label className="col-span-2">RequiredFields</Label>
+          </div>
+          <div className="grid grid-cols-5 gap-5 mb-4">
+            <FormField
+              control={control}
+              name="name"
+              render={({ field }) => (
+                <div className="col-span-2">
+                  <Input type="text" placeholder="Name" {...field} />
 
-            {/* <div className="col-span-1 flex items-center space-x-2">
-              <div className="flex items-center space-x-2">
+                  {errors.name && (
+                    <Label className="text-red-500">
+                      {errors.name.message}
+                    </Label>
+                  )}
+                </div>
+              )}
+            />
+
+            <FormField
+              control={control}
+              name="requiredFields"
+              render={({ field }) => (
+                <div className="col-span-2">
+                  <Input
+                    type="text"
+                    placeholder="SAME AS KEY eg: CLIENT_ID "
+                    {...field}
+                    onChange={(e) => {
+                      const uppercaseValue = e.target.value.toUpperCase();
+                      field.onChange(
+                        uppercaseValue.split(',').map((item) => item.trim()), // Remove leading and trailing whitespaces
+                      );
+                    }}
+                  />
+                  {errors.requiredFields &&
+                    Array.isArray(errors.requiredFields) && (
+                      <span className="text-red-500">
+                        {errors?.requiredFields?.map((error, index) => (
+                          <Label key={index}>{error?.message}</Label>
+                        ))}
+                      </span>
+                    )}
+                </div>
+              )}
+            />
+            <div className="col-span-1 ">
+              <div className="flex flex-col justify-center space-y-4">
                 <FormField
                   control={control}
                   name="isReadOnly"
                   render={({ field }) => (
-                    <Switch
-                      {...field}
-                      value={field.value ? 'false' : 'true'}
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  )}
-                />
-                <Label>ReadOnly</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <FormField
-                  control={control}
-                  name="isPrivate"
-                  render={({ field }) => (
-                    <Switch
-                      {...field}
-                      value={field.value ? 'true' : 'false'}
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  )}
-                />
-                <Label>Private</Label>
-              </div>
-            </div> */}
-            <div className="col-span-1 flex flex-col items-center col space-y-3 mt-3">
-              <div className="flex flex-row items-center space-x-3 space-y-2">
-                <FormField
-                  control={control}
-                  name="isReadOnly"
-                  render={({ field }) => (
-                    <>
+                    <div className=" flex flex-row justify-evenly">
                       <Label>ReadOnly</Label>
                       <Switch
                         {...field}
@@ -168,16 +148,15 @@ export default function AddSetting() {
                         checked={field.value}
                         onCheckedChange={field.onChange}
                       />
-                    </>
+                    </div>
                   )}
                 />
-              </div>
-              <div className="flex flex-row items-center space-x-2">
+
                 <FormField
                   control={control}
                   name="isPrivate"
                   render={({ field }) => (
-                    <>
+                    <div className=" flex flex-row justify-evenly">
                       <Label>Private</Label>
                       <Switch
                         {...field}
@@ -185,15 +164,15 @@ export default function AddSetting() {
                         checked={field.value}
                         onCheckedChange={field.onChange}
                       />
-                    </>
+                    </div>
                   )}
                 />
               </div>
             </div>
           </div>
-          <div className="grid grid-cols-3 gap-4 mb-4">
-            <label>KEY</label>
-            <label>VALUE</label>
+          <div className="grid grid-cols-5 gap-4 mb-4">
+            <Label className="col-span-2">KEY</Label>
+            <Label className="col-span-2">VALUE</Label>
           </div>
           <div className="grid grid-cols-5 gap-5 mb-4">
             {fields.map((fieldName, index) => {
@@ -203,26 +182,33 @@ export default function AddSetting() {
                     control={control}
                     name={`field.${index}.value.key`}
                     render={({ field }) => (
-                      <Input
-                        type="text"
-                        placeholder="eg:Client-ID"
-                        className="col-span-2"
-                        {...field}
-                        // value={field.value}
-                      />
+                      <div className="col-span-2">
+                        <Input
+                          type="text"
+                          placeholder="eg:Client-ID"
+                          {...field}
+                        />
+                        {errors?.field?.[index]?.value?.key && (
+                          <Label className="text-red-500">
+                            {errors?.field[index]?.value?.key?.message}
+                          </Label>
+                        )}
+                      </div>
                     )}
                   />
+
                   <FormField
                     control={control}
                     name={`field.${index}.value.value`}
                     render={({ field }) => (
-                      <Input
-                        type="text"
-                        placeholder="Value"
-                        className="col-span-2"
-                        {...field}
-                        // value={field.value}
-                      />
+                      <div className="col-span-2">
+                        <Input type="text" placeholder="Value" {...field} />
+                        {errors?.field?.[index]?.value?.value && (
+                          <Label className="text-red-500">
+                            {errors?.field[index]?.value?.value?.message}
+                          </Label>
+                        )}
+                      </div>
                     )}
                   />
 
@@ -230,7 +216,7 @@ export default function AddSetting() {
                     <Button
                       type="button"
                       onClick={() => remove(index)}
-                      className=" p-1 text-xs  w-10"
+                      className="p-1 text-xs  w-10"
                     >
                       <Minus size={18} strokeWidth={1.5} />
                     </Button>
@@ -243,7 +229,7 @@ export default function AddSetting() {
           <Button
             onClick={appendField}
             type="button"
-            className="flex items-center gap-2"
+            className="flex items-center p-2 gap-1 text-xs  w-15"
           >
             <Plus size={18} strokeWidth={1.5} />
             Add Field

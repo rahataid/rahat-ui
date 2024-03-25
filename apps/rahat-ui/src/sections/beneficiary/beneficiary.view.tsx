@@ -9,7 +9,6 @@ import {
 import { Tabs, TabsContent } from '@rahat-ui/shadcn/components/tabs';
 
 import {
-  ColumnDef,
   VisibilityState,
   getCoreRowModel,
   getSortedRowModel,
@@ -17,9 +16,7 @@ import {
 } from '@tanstack/react-table';
 
 import { usePagination } from '@rahat-ui/query';
-import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
 import { Beneficiary } from '@rahataid/sdk/types';
-import { Eye } from 'lucide-react';
 import CustomPagination from '../../components/customPagination';
 import { BENEFICIARY_NAV_ROUTE } from '../../constants/beneficiary.const';
 import { useRumsanService } from '../../providers/service.provider';
@@ -27,85 +24,18 @@ import BeneficiaryDetail from '../../sections/beneficiary/beneficiaryDetail';
 import BeneficiaryGridView from '../../sections/beneficiary/gridView';
 import BeneficiaryListView from '../../sections/beneficiary/listView';
 import BeneficiaryNav from '../../sections/beneficiary/nav';
-import AddBeneficiary from './addBeneficiary';
 import ImportBeneficiary from './import.beneficiary';
-
-export const columns: ColumnDef<Beneficiary>[] = [
-  {
-    id: 'select',
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && 'indeterminate')
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
-    accessorKey: 'walletAddress',
-    header: 'Wallet Address',
-    cell: ({ row }) => <div>{row.getValue('walletAddress')}</div>,
-  },
-  {
-    accessorKey: 'gender',
-    header: 'Gender',
-    cell: ({ row }) => <div>{row.getValue('gender')}</div>,
-  },
-  {
-    accessorKey: 'internetStatus',
-    header: 'Internet Access',
-    cell: ({ row }) => <div>{row.getValue('internetStatus')}</div>,
-  },
-  {
-    accessorKey: 'phoneStatus',
-    header: 'Phone Type',
-    cell: ({ row }) => <div>{row.getValue('phoneStatus')}</div>,
-  },
-  {
-    accessorKey: 'bankedStatus',
-    header: 'Banking Status',
-    cell: ({ row }) => <div>{row.getValue('bankedStatus')}</div>,
-  },
-  {
-    id: 'actions',
-    enableHiding: false,
-    cell: () => {
-      return (
-        <Eye
-          size={20}
-          strokeWidth={1.5}
-          className="cursor-pointer hover:text-primary"
-        />
-      );
-    },
-  },
-];
+import { useBeneficiaryTableColumns } from './useBeneficiaryColumns';
 
 function BeneficiaryView() {
-  const { pagination, filters, setPagination } = usePagination((state) => ({
-    pagination: state.pagination,
-    filters: state.filters,
-    setPagination: state.setPagination,
-  }));
-
-  const [perPage, setPerPage] = useState<number>(5);
-  const [currentPage, setCurrentPage] = useState<number>(1);
-
-  const handleNextPage = () => setCurrentPage(currentPage + 1);
-
-  const handlePrevPage = () => setCurrentPage(currentPage - 1);
+  const {
+    pagination,
+    selectedListItems,
+    setSelectedListItems,
+    setNextPage,
+    setPrevPage,
+    setPerPage,
+  } = usePagination();
 
   const { beneficiaryQuery } = useRumsanService();
   const [selectedData, setSelectedData] = useState<Beneficiary>();
@@ -125,12 +55,11 @@ function BeneficiaryView() {
   }, []);
 
   const { data } = beneficiaryQuery.useBeneficiaryList({
-    perPage,
-    page: currentPage,
+    ...pagination,
   });
 
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = useState({});
+  const columns = useBeneficiaryTableColumns();
 
   const table = useReactTable({
     manualPagination: true,
@@ -139,10 +68,11 @@ function BeneficiaryView() {
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setRowSelection,
+    onRowSelectionChange: setSelectedListItems,
+    getRowId: (row) => row.uuid,
     state: {
       columnVisibility,
-      rowSelection,
+      rowSelection: selectedListItems,
     },
   });
 
@@ -159,9 +89,7 @@ function BeneficiaryView() {
         </ResizablePanel>
         <ResizableHandle />
         <ResizablePanel minSize={28}>
-          {active === BENEFICIARY_NAV_ROUTE.ADD_BENEFICIARY ? (
-            <AddBeneficiary />
-          ) : active === BENEFICIARY_NAV_ROUTE.IMPORT_BENEFICIARY ? (
+          {active === BENEFICIARY_NAV_ROUTE.IMPORT_BENEFICIARY ? (
             <ImportBeneficiary />
           ) : null}
 
@@ -182,11 +110,12 @@ function BeneficiaryView() {
               </TabsContent>
               <CustomPagination
                 meta={data?.response?.meta || { total: 0, currentPage: 0 }}
-                handleNextPage={handleNextPage}
-                handlePrevPage={handlePrevPage}
-                handlePageSizeChange={(value) =>
-                  setPagination({ perPage: Number(value) })
-                }
+                handleNextPage={setNextPage}
+                handlePrevPage={setPrevPage}
+                handlePageSizeChange={setPerPage}
+                currentPage={pagination.page}
+                perPage={pagination.perPage}
+                total={data?.response?.meta.lastPage || 0}
               />
             </>
           )}

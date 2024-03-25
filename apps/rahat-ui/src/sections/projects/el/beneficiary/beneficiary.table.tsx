@@ -1,5 +1,6 @@
 'use client';
 
+import { usePagination } from '@rahat-ui/query';
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -13,9 +14,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import { MoreHorizontal, Settings2 } from 'lucide-react';
-import { useState } from 'react';
-import { usePagination } from '@rahat-ui/query';
-import { useRumsanService } from 'apps/rahat-ui/src/providers/service.provider';
+import { useEffect, useState } from 'react';
 
 import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
 import * as React from 'react';
@@ -48,9 +47,11 @@ import {
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import { useProjectBeneficiaryTableColumns } from './use-table-column';
+import { useProjectAction } from '@rahat-ui/query';
+import { useParams } from 'next/navigation';
+import { MS_ACTIONS } from '@rahataid/sdk';
 // import { useBeneficiaryTransaction } from '../../hooks/el/subgraph/querycall';
-
-import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 
 // const data: Transaction[] = TransactionTableData;
 
@@ -96,8 +97,8 @@ export const columns: ColumnDef<Transaction>[] = [
     cell: ({ row }) => (
       <div className="capitalize">
         {row.getValue('vouvherType')
-          ? `${row.getValue('vouvherType')?.toString().substring(0, 4)}....${row
-              .getValue('vouvherType')
+          ? `${row.getValue('voucherType')?.toString().substring(0, 4)}....${row
+              .getValue('voucherType')
               ?.toString()
               ?.slice(-3)}`
           : 'N/A'}
@@ -156,6 +157,8 @@ export default function BeneficiaryDetailTableView() {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
+  const uuid = useParams().id;
+
   const { pagination, filters, setPagination } = usePagination((state) => ({
     pagination: state.pagination,
     filters: state.filters,
@@ -164,18 +167,41 @@ export default function BeneficiaryDetailTableView() {
 
   const [perPage, setPerPage] = useState<number>(5);
   const [currentPage, setCurrentPage] = useState<number>(1);
+  const [tableData, setTableData] = useState<any>();
+  const columns = useProjectBeneficiaryTableColumns();
 
-  const { beneficiaryQuery } = useRumsanService();
+  const addBeneficiary = useProjectAction();
 
-  const { data } = beneficiaryQuery.useProjectBeneficiaryList({
-    perPage,
-    page: currentPage,
-  });
+  const getBeneficiary = async () => {
+    const result = await addBeneficiary.mutateAsync({
+      uuid,
+      payload: {
+        action: MS_ACTIONS.BENEFICIARY.LIST_BY_PROJECT,
+        payload: {
+          page: currentPage,
+          perPage,
+        },
+      },
+    });
 
-  // console.log(datas)
+    const filteredData = result?.data.map((row: any) => {
+      return {
+        name: row.Beneficiary.walletAddress,
+        gender: row.Beneficiary.gender,
+        phone: row.Beneficiary.phone || 'N/A',
+        redemption: 'N/A',
+      };
+    });
+
+    setTableData(filteredData);
+  };
+
+  useEffect(() => {
+    getBeneficiary();
+  }, []);
 
   const table = useReactTable({
-    data,
+    data: tableData || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,

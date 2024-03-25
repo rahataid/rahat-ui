@@ -1,6 +1,12 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Calendar } from '@rahat-ui/shadcn/components/calendar';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@rahat-ui/shadcn/components/popover';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   Form,
@@ -11,31 +17,25 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/form';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@rahat-ui/shadcn/components/popover';
-import {
   Select,
-  SelectTrigger,
-  SelectValue,
   SelectContent,
   SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { format } from 'date-fns';
 import { CalendarIcon } from 'lucide-react';
-import { Calendar } from '@rahat-ui/shadcn/components/calendar';
 
+import { Wallet } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { Wallet } from 'lucide-react';
-import { PROJECT_NAV_ROUTE } from '../../constants/project.const';
 
-type IProps = {
-  handleGoBack: (item: string) => void;
-};
-
-export default function AddProject({ handleGoBack }: IProps) {
+export default function AddProject() {
+  const router = useRouter();
+  const handleGoBack = () => {
+    router.back();
+  };
   const FormSchema = z.object({
     name: z.string().min(2, { message: 'Name must be at least 4 character' }),
     projectType: z.string({
@@ -342,7 +342,7 @@ export default function AddProject({ handleGoBack }: IProps) {
                 variant="ghost"
                 className="text-primary"
                 type="button"
-                onClick={() => handleGoBack(PROJECT_NAV_ROUTE.DEFAULT)}
+                onClick={handleGoBack}
               >
                 Go Back
               </Button>

@@ -9,6 +9,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@rahat-ui/shadcn/components/dialog';
+import { useProjectAction } from '../../../../../libs/query/src/lib/projects/projects';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -36,22 +37,29 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/card';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { MoreVertical } from 'lucide-react';
-// import data from '../../app/beneficiary/beneficiaryData.json';
 import { truncateEthAddress } from '@rumsan/sdk/utils';
-import { useAssignClaims } from '../../hooks/el/contracts/el-contracts';
-import { useBeneficaryVoucher } from '../../hooks/el/subgraph/querycall';
+import { MS_ACTIONS } from '@rahataid/sdk';
 
 export default function InfoCards({ data, voucherData }) {
-  const assignClaims = useAssignClaims();
+  const addBeneficiary = useProjectAction();
 
-  const handleAssignClaims = () => {
+  const handleAssignClaims = async () => {
     const walletAddress = data.walletAddress || '';
 
-    assignClaims.writeContractAsync({
-      address: '0x38BFDCCAc556ED026706EE21b4945cE86718D4D1',
-      args: [walletAddress],
+    // Remove fetching uuid from env
+    const uuid = process.env.NEXT_PUBLIC_PROJECT_UUID;
+
+    const result = await addBeneficiary.mutateAsync({
+      uuid,
+      payload: {
+        action: MS_ACTIONS.BENEFICIARY.ASSGIN_TO_PROJECT,
+        payload: {
+          beneficiaryId: data?.uuid,
+        },
+      },
     });
   };
+
   return (
     <div className="flex flex-col gap-2 py-2 pl-2">
       <Card className="shadow rounded">
@@ -63,7 +71,7 @@ export default function InfoCards({ data, voucherData }) {
                 Not Approved
               </Badge>
             </div>
-            <Button onClick={handleAssignClaims}>Approve</Button>
+            <Button onClick={handleAssignClaims}>Assign To Project</Button>
           </div>
         </CardHeader>
         <CardContent>

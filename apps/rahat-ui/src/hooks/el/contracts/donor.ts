@@ -1,8 +1,8 @@
 import {
   createUseReadContract,
+  createUseWriteContract,
   createUseSimulateContract,
   createUseWatchContractEvent,
-  createUseWriteContract,
 } from 'wagmi/codegen';
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -192,8 +192,10 @@ export const rahatDonorAbi = [
       { name: '_projectAddress', internalType: 'address', type: 'address' },
       { name: '_amount', internalType: 'uint256', type: 'uint256' },
       { name: '_description', internalType: 'string', type: 'string' },
+      { name: '_price', internalType: 'uint256', type: 'uint256' },
+      { name: '_currency', internalType: 'string', type: 'string' },
     ],
-    name: 'mintTokenAndApprove',
+    name: 'mintTokenAndApproveDescription',
     outputs: [],
     stateMutability: 'nonpayable',
   },
@@ -402,10 +404,7 @@ export const useWriteRahatDonorClaimToken =
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link rahatDonorAbi}__ and `functionName` set to `"mintToken"`
  */
 export const useWriteRahatDonorMintToken = /*#__PURE__*/ createUseWriteContract(
-  {
-    abi: rahatDonorAbi,
-    functionName: 'mintToken',
-  },
+  { abi: rahatDonorAbi, functionName: 'mintToken' },
 );
 
 /**
@@ -418,13 +417,19 @@ export const useWriteRahatDonorMintTokenAndApprove =
   });
 
 /**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link rahatDonorAbi}__ and `functionName` set to `"mintTokenAndApproveDescription"`
+ */
+export const useWriteRahatDonorMintTokenAndApproveDescription =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: rahatDonorAbi,
+    functionName: 'mintTokenAndApproveDescription',
+  });
+
+/**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link rahatDonorAbi}__ and `functionName` set to `"multicall"`
  */
 export const useWriteRahatDonorMulticall = /*#__PURE__*/ createUseWriteContract(
-  {
-    abi: rahatDonorAbi,
-    functionName: 'multicall',
-  },
+  { abi: rahatDonorAbi, functionName: 'multicall' },
 );
 
 /**
@@ -525,6 +530,15 @@ export const useSimulateRahatDonorMintTokenAndApprove =
   });
 
 /**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link rahatDonorAbi}__ and `functionName` set to `"mintTokenAndApproveDescription"`
+ */
+export const useSimulateRahatDonorMintTokenAndApproveDescription =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: rahatDonorAbi,
+    functionName: 'mintTokenAndApproveDescription',
+  });
+
+/**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link rahatDonorAbi}__ and `functionName` set to `"multicall"`
  */
 export const useSimulateRahatDonorMulticall =
@@ -573,9 +587,7 @@ export const useSimulateRahatDonorTransferToken =
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link rahatDonorAbi}__
  */
 export const useWatchRahatDonorEvent =
-  /*#__PURE__*/ createUseWatchContractEvent({
-    abi: rahatDonorAbi,
-  });
+  /*#__PURE__*/ createUseWatchContractEvent({ abi: rahatDonorAbi });
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link rahatDonorAbi}__ and `eventName` set to `"OwnerAdded"`

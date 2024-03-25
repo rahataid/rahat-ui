@@ -23,7 +23,7 @@ import { toast } from 'react-toastify';
 
 import { z } from 'zod';
 import { CalendarIcon, Check, ChevronsUpDown, Wallet } from 'lucide-react';
-import { useRumsanService } from '../../providers/service.provider';
+import { useRumsanService } from '../../../providers/service.provider';
 import {
   BankedStatus,
   Gender,

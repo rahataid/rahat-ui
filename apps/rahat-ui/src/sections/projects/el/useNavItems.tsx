@@ -1,5 +1,8 @@
 import {
-  Lock,
+  useCloseProject,
+  useMintVouchers,
+} from 'apps/rahat-ui/src/hooks/el/contracts/el-contracts';
+import {
   MessageSquare,
   Pencil,
   Phone,
@@ -10,26 +13,78 @@ import {
   XCircle,
 } from 'lucide-react';
 import { useParams } from 'next/navigation';
+import { useState } from 'react';
 import { useSwal } from '../../../components/swal';
 import { NavItem } from '../components';
+import CreateTokenModal from './create-token-modal';
 import CreateVoucherModal from './create-voucher-modal';
+
 export const useNavItems = () => {
   const params = useParams();
   const dialog = useSwal();
-  // const beneficiary = useBeneficiaryStore(state=>state.beneficiary)
+  const [voucherInputs, setVoucherInputs] = useState({
+    tokens: '',
+    amountInDollar: '',
+    description: '',
+    currency: '',
+    tokenDescription: '',
+  });
 
-  const handleLockProject = async () => {
+  const [completeTransaction, setCompleteTransaction] = useState(false);
+
+  const handleCreateVoucherTokenChange = (e: any) => {
+    const { name, value } = e.target;
+    setVoucherInputs((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const createVoucher = useMintVouchers();
+  const closeProject = useCloseProject();
+
+  // Free Voucher
+  const handleCreateVoucherSubmit = async (e: any) => {
+    e.preventDefault();
+    await createVoucher.writeContractAsync({
+      address: '0xA69f271c08700771765D911540D912C086f42F57',
+      args: [
+        `0xC8A8032fc777b9Ad39C57a0eBaBbFA0b630825a0`,
+        '0x1B4D9FA12f3e1b1181b413979330c0afF9BbaAE5',
+        BigInt(voucherInputs.tokens),
+        voucherInputs.description,
+        BigInt(voucherInputs.amountInDollar),
+        voucherInputs.currency,
+      ],
+    });
+  };
+
+  // Referred Voucher
+  const handleCreateTokenSubmit = async (value: any) => {
+    await createVoucher.writeContractAsync({
+      address: '0xA69f271c08700771765D911540D912C086f42F57',
+      args: [
+        `0xd7F992c60F8FDE06Df0b93276E2e43eb6555a5FA`,
+        '0x1B4D9FA12f3e1b1181b413979330c0afF9BbaAE5',
+        BigInt(+voucherInputs.tokens * 3),
+        value.description,
+        BigInt(value.price),
+        voucherInputs.currency,
+      ],
+    });
+    setCompleteTransaction(true);
+  };
+
+  const handleCloseProject = async () => {
     const { value } = await dialog.fire({
-      title: 'Lock Project',
-      text: 'Are you sure you want to lock the project?',
+      title: 'Close Project',
+      text: "Are you sure you want to close the project? You won't be able to access any project actions",
       showCancelButton: true,
       confirmButtonText: 'Lock',
     });
     if (value) {
-      dialog.fire({
-        title: 'Project Locked',
-        text: 'Project has been locked successfully',
-        icon: 'success',
+      closeProject.writeContractAsync({
+        address: '0x9C8Ee9931BEc18EA883c8F23c7427016bBDeF171',
       });
     }
   };
@@ -81,17 +136,30 @@ export const useNavItems = () => {
       title: 'Actions',
       children: [
         {
-          component: <CreateVoucherModal />,
+          component: (
+            <>
+              <CreateVoucherModal
+                voucherInputs={voucherInputs}
+                handleSubmit={handleCreateVoucherSubmit}
+                handleInputChange={handleCreateVoucherTokenChange}
+              />
+              <CreateTokenModal
+                open={createVoucher.isSuccess && !completeTransaction}
+                voucherInputs={voucherInputs}
+                handleSubmit={handleCreateTokenSubmit}
+              />
+            </>
+          ),
           title: 'Create Voucher',
         },
-        {
-          title: 'Lock Project',
-          icon: <Lock size={18} strokeWidth={1.5} />,
-          onClick: handleLockProject,
-        },
+        // {
+        //   title: 'Lock Project',
+        //   icon: <Lock size={18} strokeWidth={1.5} />,
+        //   onClick: handleLockProject,
+        // },
         {
           title: 'Close Project',
-          path: '/edit',
+          onClick: handleCloseProject,
           icon: <XCircle size={18} strokeWidth={1.5} />,
         },
         {

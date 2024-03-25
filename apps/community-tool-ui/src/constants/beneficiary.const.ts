@@ -5,3 +5,7 @@ export const BENEFICIARY_NAV_ROUTE = {
   IMPORT_BENEFICIARY: 'import_beneficiary',
   UPLOAD_BENEFICIARY: 'upload_beneficiary',
 };
+export const GROUP_NAV_ROUTE = {
+  VIEW_GROUP: 'view_group',
+  ADD_GROUP: 'add_group',
+};

@@ -1,10 +1,13 @@
 'use client';
 
+import { usePathname } from 'next/navigation';
+import { useRouter } from 'next/router';
 import React, {
   createContext,
   ReactNode,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useState,
 } from 'react';
@@ -25,6 +28,11 @@ export const SecondPanelProvider: React.FC<SecondPanelProviderProps> = ({
   children,
 }) => {
   const [secondPanel, setSecondPanel] = useState<ReactNode>(null);
+  const pathname = usePathname();
+
+  useEffect(() => {
+    setSecondPanel(null);
+  }, [pathname]);
 
   const setSecondPanelComponent = useCallback(
     (component: ReactNode) => {
@@ -36,7 +44,6 @@ export const SecondPanelProvider: React.FC<SecondPanelProviderProps> = ({
   const closeSecondPanel = useCallback(() => {
     setSecondPanel(null);
   }, [setSecondPanel]);
-
   const value = useMemo(
     () => ({
       secondPanel,

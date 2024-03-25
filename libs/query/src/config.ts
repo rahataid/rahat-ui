@@ -19,4 +19,12 @@ export const TAGS = {
   CREATE_BULK_COMMUNITY_BENEFICARY: 'create_bulk_community_beneficary',
   CREATE_COMMUNITY_SETTINGS: 'create_community_settings',
   LIST_COMMUNITY_SETTINGS: 'list_community_settings',
+  LIST_COMMUNITY_GROUP: 'list_community_group',
+  ADD_COMMUNITY_GROUP: 'add_community_group',
+  LIST_COMMUNITY_BENEFICIARY_GROUP: 'list_community_beneficiary_group',
+  ADD_COMMUNITY_BENEFICIARY_GROUP: 'add_community_beneficiary_group',
+  GET_VENDORS: 'list_vendors',
+  GET_VENDOR_DETAILS: 'get_vendors_details',
+  GET_PROJECT_DETAILS: 'get_project_details',
+  GET_BENFICIARY_STATS: 'get_beneficiary_stats',
 };

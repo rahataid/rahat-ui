@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -11,22 +11,41 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/dialog';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@rahat-ui/shadcn/src/components/ui/select';
 import { PlusSquare } from 'lucide-react';
-import CreateToken from './create-token-modal';
+import { FC } from 'react';
 
-const CreateVoucherModal = () => {
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [noOfVouchers, setNoOfVouchers] = useState('');
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setShowSuccessModal(true);
+interface CreateVoucherModalType {
+  voucherInputs: {
+    tokens: string;
+    amountInDollar: string;
+    description: string;
+    currency: string;
   };
+  handleSubmit: (e: any) => void;
+  handleInputChange: (e: any) => void;
+}
 
-  const handleInputChange = (e) => {
-    setNoOfVouchers(e.target.value);
+const CreateVoucherModal: FC<CreateVoucherModalType> = ({
+  voucherInputs,
+  handleSubmit,
+  handleInputChange,
+}) => {
+  const handleSelectChange = (value: string) => {
+    handleInputChange({
+      target: {
+        name: 'currency',
+        value,
+      },
+    });
   };
-
   return (
     <>
       <Dialog>
@@ -53,33 +72,62 @@ const CreateVoucherModal = () => {
                   No. Of Free Vouchers
                 </Label>
                 <Input
-                  id="noOfVouchers"
+                  name="tokens"
                   className="col-span-3"
-                  value={noOfVouchers}
+                  value={voucherInputs.tokens}
                   onChange={handleInputChange}
                 />
               </div>
+
               <div>
-                <Label htmlFor="amount" className="text-right">
-                  Amount in $
+                <Label htmlFor="currency" className="">
+                  Select Currency
                 </Label>
-                <Input id="amount" className="col-span-3" />
+                <Select name="currency" onValueChange={handleSelectChange}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectItem value={'NPR'}>NPR</SelectItem>
+                      <SelectItem value={'USD'}>American Dollar</SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
               </div>
+              {voucherInputs.currency && (
+                <div>
+                  <Label htmlFor="amount" className="text-right">
+                    Amount in {voucherInputs.currency}
+                  </Label>
+                  <Input
+                    name="amountInDollar"
+                    className="col-span-3"
+                    value={voucherInputs.amountInDollar}
+                    onChange={handleInputChange}
+                  />
+                </div>
+              )}
               <div>
                 <Label htmlFor="description" className="text-right">
                   Description
                 </Label>
-                <Input id="description" className="col-span-3" />
+                <Input
+                  value={voucherInputs.description}
+                  onChange={handleInputChange}
+                  name="description"
+                  className="col-span-3"
+                />
               </div>
             </div>
             <DialogFooter>
-              <Button type="submit">Submit</Button>
+              <DialogClose asChild>
+                <Button type="submit">Submit</Button>
+              </DialogClose>
             </DialogFooter>
           </form>
         </DialogContent>
       </Dialog>
-
-      <CreateToken open={showSuccessModal} noOfVouchers={noOfVouchers} />
     </>
   );
 };

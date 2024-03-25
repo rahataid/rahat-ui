@@ -1,9 +1,5 @@
 import { getBeneficiaryClient } from '@rahataid/community-tool-sdk/clients';
 import { BeneficiaryClient } from '@rahataid/community-tool-sdk/types';
-import {
-  Beneficiary,
-  UpdateBeneficiary,
-} from '@rahataid/community-tool-sdk/beneficiary';
 
 import { RumsanService } from '@rumsan/sdk';
 import {
@@ -16,7 +12,7 @@ import {
 import { TAGS } from '../config';
 import Swal from 'sweetalert2';
 
-export class CommunityBeneficiaryQuery {
+export class BeneficiaryQuery {
   private client: BeneficiaryClient;
   public qc;
 
@@ -34,6 +30,22 @@ export class CommunityBeneficiaryQuery {
       },
     });
   };
+  // useCommunityBeneficiaryListALL = (
+  //   payload: any,
+  // ): UseQueryResult<any, Error> => {
+  //   return useQuery({
+  //     // refetchOnMount: true,
+  //     queryKey: [TAGS.LIST_COMMUNITY_BENFICIARIES, payload],
+  //     queryFn: async () => {
+  //       const k = await this.client.list(payload);
+  //       const perPage = k.response.meta?.['total'];
+  //       console.log('sdads', perPage);
+  //       const fetchAll = await this.client.list({ perPage, page: 1 });
+  //       console.log('fetch', fetchAll);
+  //       return fetchAll;
+  //     },
+  //   });
+  // };
 
   useCommunityBeneficiaryListByID = (
     uuid: string,

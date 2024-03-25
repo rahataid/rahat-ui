@@ -24,7 +24,7 @@ import { toast } from 'react-toastify';
 import { z } from 'zod';
 import { Wallet } from 'lucide-react';
 
-export default function AddBeneficiary() {
+export default function AddBeneficiaryForm() {
   const addBeneficiary = useCreateBeneficiary();
 
   const FormSchema = z.object({
@@ -32,7 +32,9 @@ export default function AddBeneficiary() {
     walletAddress: z
       .string()
       .min(42, { message: 'The Ethereum address must be 42 characters long' }),
-    phone: z.string(),
+    phone: z
+      .string()
+      .min(10, { message: 'Phone number must be 10 characters' }),
     gender: z
       .string()
       .toUpperCase()

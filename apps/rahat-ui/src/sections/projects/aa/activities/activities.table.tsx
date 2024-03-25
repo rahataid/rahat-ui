@@ -12,17 +12,8 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { Settings2 } from 'lucide-react';
 
 import { Button } from '@rahat-ui/shadcn/components/button';
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@rahat-ui/shadcn/components/dropdown-menu';
 import {
   Select,
   SelectContent,
@@ -31,7 +22,6 @@ import {
   SelectValue,
   SelectGroup,
 } from '@rahat-ui/shadcn/components/select';
-import { Input } from '@rahat-ui/shadcn/components/input';
 import {
   Table,
   TableBody,
@@ -42,11 +32,10 @@ import {
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import useActivitiesTableColumn from './useActivitiesTableColumn';
-import { useSecondPanel } from '../../../../providers/second-panel-provider';
+import ActivitiesData from './activities.json'
 
 export default function ActivitiesTable() {
-  const { columns, data } = useActivitiesTableColumn();
-  const { setSecondPanelComponent, closeSecondPanel } = useSecondPanel();
+  const columns = useActivitiesTableColumn();
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
@@ -54,6 +43,7 @@ export default function ActivitiesTable() {
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
+  const data = ActivitiesData
   const table = useReactTable({
     data: data,
     columns,
@@ -87,9 +77,9 @@ export default function ActivitiesTable() {
                         {header.isPlaceholder
                           ? null
                           : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext(),
-                            )}
+                            header.column.columnDef.header,
+                            header.getContext(),
+                          )}
                       </TableHead>
                     );
                   })}

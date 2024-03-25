@@ -1,36 +1,17 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import { useSecondPanel } from '../../../../providers/second-panel-provider';
 
 import { Eye } from 'lucide-react';
 import { IActivitiesItem } from '../../../../types/activities';
-import {
-  Select,
-  SelectContent,
-  SelectValue,
-  SelectTrigger,
-  SelectItem,
-} from '@rahat-ui/shadcn/src/components/ui/select';
 import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
-import ActivitiesData from './activities.json';
 import { ActivitiesDetailView } from '.';
-import { ResizablePanel } from '@rahat-ui/shadcn/src/components/ui/resizable';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 
 export default function useActivitiesTableColumn() {
   const { setSecondPanelComponent, closeSecondPanel } = useSecondPanel();
-  const [selectedAction, setSelectedAction] = useState('');
-  const filteredData = useMemo(
-    () =>
-      selectedAction.length
-        ? ActivitiesData.filter(
-            (item) => item.category.toLowerCase() === selectedAction,
-          )
-        : ActivitiesData,
-    [],
-  );
 
   const columns: ColumnDef<IActivitiesItem>[] = [
     {
@@ -55,24 +36,6 @@ export default function useActivitiesTableColumn() {
       enableSorting: false,
       enableHiding: false,
     },
-    // {
-    //     accessorKey: 'title',
-    //     header: () => (
-    //         <Select onValueChange={(value) => setSelectedAction(value)}>
-    //             <SelectTrigger className='w-auto border-0 p-0'>
-    //                 <SelectValue placeholder="Actions" />
-    //             </SelectTrigger>
-    //             <SelectContent>
-    //                 {ActivitiesData.map((item) => (
-    //                     <SelectItem key={item.category.toLowerCase()} value={item.category.toLowerCase()} >
-    //                         {item.category}
-    //                     </SelectItem>
-    //                 ))}
-    //             </SelectContent>
-    //         </Select>
-    //     ),
-    //     cell: ({ row }) => <div>{row.getValue('title')}</div>,
-    // },
     {
       accessorKey: 'title',
       header: 'Title',
@@ -109,7 +72,7 @@ export default function useActivitiesTableColumn() {
             onClick={() => {
               setSecondPanelComponent(
                 <ActivitiesDetailView
-                  data={row.original}
+                  activityDetail={row.original}
                   closeSecondPanel={closeSecondPanel}
                 />,
               );
@@ -120,5 +83,5 @@ export default function useActivitiesTableColumn() {
     },
   ];
 
-  return { columns, data: filteredData };
+  return columns;
 }

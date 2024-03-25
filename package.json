@@ -38,7 +38,7 @@
     "@radix-ui/react-toast": "^1.1.5",
     "@radix-ui/react-tooltip": "^1.0.7",
     "@rahataid/community-tool-sdk": "^0.0.5",
-    "@rahataid/el-subgraph": "0.0.4",
+    "@rahataid/el-subgraph": "0.0.5",
     "@rahataid/sdk": "^0.0.17",
     "@rumsan/communication": "^0.0.3",
     "@rumsan/core": "^3.0.133",

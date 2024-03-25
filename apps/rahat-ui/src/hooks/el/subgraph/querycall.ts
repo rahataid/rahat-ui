@@ -30,6 +30,7 @@ export const useProjectVoucher = (
   const [data, setData] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
 
+
   const fetchVoucher = useCallback(async () => {
     if (!projectAddress) return;
     const res = await queryService.useProjectVoucher(projectAddress);
@@ -39,7 +40,7 @@ export const useProjectVoucher = (
     } else {
       const voucherdetails: any = {};
       res?.voucherDescriptiona?.map((des) => {
-        if (des.id === freeToken) {
+        if (des.id?.toLowerCase() === freeToken.toLowerCase()) {
           voucherdetails.freeVoucherCurrency = des?.currency;
           voucherdetails.freeVoucherPrice = des?.price;
           voucherdetails.freeVoucherDescription = des?.description;

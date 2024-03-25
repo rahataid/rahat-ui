@@ -59,6 +59,7 @@ import {
 import { useBoolean } from '../../hooks/use-boolean';
 import { useTableColumns } from './useTableColumns';
 import { useAddVendors } from '../../hooks/el/contracts/el-contracts';
+import { useSwal } from '../../components/swal';
 
 export type Payment = {
   id: string;
@@ -96,6 +97,8 @@ export default function DataTableDemo() {
   const projectsList = projectQuery.useProjectList({});
   const d = projectsList.data;
   const projectList = d?.data || [];
+
+  const alert = useSwal();
 
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -136,21 +139,49 @@ export default function DataTableDemo() {
     const res = await projectClient.mutateAsync({
       uuid: selectedProject,
       data: {
-        action: MS_ACTIONS.SETTINGS.GET,
+        action: MS_ACTIONS.VENDOR.ASSIGN_TO_PROJECT,
         payload: {
-          name: PROJECT_SETTINGS.CONTRACTS,
+          vendorUuid: selectedRow?.id,
         },
       },
     });
-    if (!res.data.value) return alert('No contract found!');
-    const { value } = res.data;
-    console.log('Vendor==>', selectedRow.id);
-    console.log('Project==>', selectedProject);
-    return updateVendor.writeContractAsync({
-      address: value.el.address, // value.el.address
-      args: [selectedRow.walletAddress, true], // selecteWalletAddress
-    });
+
+    // const res = await projectClient.mutateAsync({
+    //   uuid: selectedProject,
+    //   data: {
+    //     action: MS_ACTIONS.SETTINGS.GET,
+    //     payload: {
+    //       name: PROJECT_SETTINGS.CONTRACTS,
+    //     },
+    //   },
+    // });
+    // if (!res.data.value) return alert('No contract found!');
+    // const { value } = res.data;
+    // console.log('Vendor==>', selectedRow.id);
+    // console.log('Project==>', selectedProject);
+    // return updateVendor.writeContractAsync({
+    //   address: value.el.address, // value.el.address
+    //   args: [selectedRow.walletAddress, true], // selecteWalletAddress
+    // });
   };
+
+  React.useEffect(() => {
+    if (!projectClient) return;
+    if (projectClient.isSuccess) {
+      alert.fire({
+        title: 'Vendor Assigned Successfully',
+        icon: 'success',
+      });
+      projectClient.reset();
+    }
+    if (projectClient.isError) {
+      alert.fire({
+        title: 'Error while updating Vendor',
+        icon: 'error',
+      });
+      projectClient.reset();
+    }
+  }, [projectClient, alert]);
 
   const handleProjectChange = (d: string) => setSelectedProject(d);
 

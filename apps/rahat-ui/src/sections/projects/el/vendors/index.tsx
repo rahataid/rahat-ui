@@ -1,1 +1,1 @@
-export { default as ELVendorView } from './vendors.view';
+export { default as ELVendorDetailView } from './vendors.detail.view';

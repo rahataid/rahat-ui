@@ -4,7 +4,7 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from '@rahat-ui/shadcn/components/resizable';
-import VendorsTable from '../../sections/vendors/vendorsTable';
+import VendorsTable from '../../sections/vendors/vendors.transaction.table';
 import VendorNav from '../../sections/vendors/nav';
 
 export default function VendorsPage() {

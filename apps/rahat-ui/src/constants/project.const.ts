@@ -4,6 +4,6 @@ export const PROJECT_NAV_ROUTE = {
 };
 
 export const PROJECT_SETTINGS = {
-  CONTRACTS: 'CONTRACTS',
+  CONTRACTS: 'CONTRACT',
   BLOCKCHAIN: 'BLOCKCHAIN',
 };

@@ -11,7 +11,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/components/dropdown-menu';
-import { Payment } from './vendorsTable';
+import { Payment } from './vendors.transaction.table';
 
 export const useTableColumns = (handleAssignClick: any) => {
   const handleAssign = (row: any) => {

@@ -26,7 +26,9 @@ interface CreateVoucherModalType {
   voucherInputs: {
     tokens: string;
     amountInDollar: string;
+    amountInDollarReferral: string;
     description: string;
+    descriptionReferred: string;
     currency: string;
   };
   handleSubmit: (e: any) => void;
@@ -60,7 +62,7 @@ const CreateVoucherModal: FC<CreateVoucherModalType> = ({
         </DialogTrigger>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle>Create Voucher</DialogTitle>
+            <DialogTitle>Create Vouchers</DialogTitle>
             <DialogDescription>
               {/* Make changes to your profile here. Click save when you&apos;re done. */}
             </DialogDescription>
@@ -75,6 +77,18 @@ const CreateVoucherModal: FC<CreateVoucherModalType> = ({
                   name="tokens"
                   className="col-span-3"
                   value={voucherInputs.tokens}
+                  onChange={handleInputChange}
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="noOfVouchers" className="text-right">
+                  No. Of Referred Vouchers
+                </Label>
+                <Input
+                  name="tokens"
+                  className="col-span-3"
+                  value={+voucherInputs.tokens * 3}
                   onChange={handleInputChange}
                 />
               </div>
@@ -96,9 +110,10 @@ const CreateVoucherModal: FC<CreateVoucherModalType> = ({
                 </Select>
               </div>
               {voucherInputs.currency && (
+                <>
                 <div>
                   <Label htmlFor="amount" className="text-right">
-                    Amount in {voucherInputs.currency}
+                    Price of Free voucher in {voucherInputs.currency}
                   </Label>
                   <Input
                     name="amountInDollar"
@@ -107,15 +122,38 @@ const CreateVoucherModal: FC<CreateVoucherModalType> = ({
                     onChange={handleInputChange}
                   />
                 </div>
+                <div>
+                  <Label htmlFor="amount" className="text-right">
+                    Price of Referred voucher in {voucherInputs.currency}
+                  </Label>
+                  <Input
+                    name="amountInDollarReferral"
+                    className="col-span-3"
+                    value={voucherInputs.amountInDollarReferral}
+                    onChange={handleInputChange}
+                  />
+                </div>
+                </>
               )}
               <div>
                 <Label htmlFor="description" className="text-right">
-                  Description
+                  Description Free Voucher
                 </Label>
                 <Input
                   value={voucherInputs.description}
                   onChange={handleInputChange}
                   name="description"
+                  className="col-span-3"
+                />
+              </div>
+              <div>
+                <Label htmlFor="descriptionReferred" className="text-right">
+                  Description Referred Voucher
+                </Label>
+                <Input
+                  value={voucherInputs.descriptionReferred}
+                  onChange={handleInputChange}
+                  name="descriptionReferred"
                   className="col-span-3"
                 />
               </div>

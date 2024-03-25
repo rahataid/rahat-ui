@@ -10,6 +10,7 @@ import DataCard from '../../../../components/dataCard';
 import VendorTable from '../../../vendors/vendors.transaction.table';
 import ReferralTable from '../../../vendors/vendors.referral.table';
 import VendorsInfo from '../../../vendors/vendors.info';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 
 export default function VendorsDetailPage() {
   return (
@@ -38,10 +39,17 @@ export default function VendorsDetailPage() {
       </div>
       <div className="mt-2 mx-2">
         <Tabs defaultValue="transactions" className="w-full">
-          <TabsList className="w-1/3 gap-14">
-            <TabsTrigger value="transactions">Transaction History</TabsTrigger>
-            <TabsTrigger value="referrals">Referrals List</TabsTrigger>
-          </TabsList>
+          <div className="flex justify-between items-center">
+            <TabsList className="w-1/3 gap-14">
+              <TabsTrigger value="transactions">
+                Transaction History
+              </TabsTrigger>
+              <TabsTrigger value="referrals">Referrals List</TabsTrigger>
+            </TabsList>
+            <div>
+              <Button>Assign Voucher</Button>
+            </div>
+          </div>
           <TabsContent value="transactions">
             <VendorTable />
           </TabsContent>

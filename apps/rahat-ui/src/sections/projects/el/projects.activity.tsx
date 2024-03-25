@@ -35,15 +35,15 @@ export default function Activities({ title, className, data }: CardProps) {
           <div className="space-y-1">
             <div className="ml-auto font-light text-sm flex items-center justify-between gap-3">
               {data?.freeVoucherBudget}
-              <span className="text-xs text-muted-foreground">$45</span>
+              <span className="text-xs text-muted-foreground">{data?.freeVoucherCurrency} {(data?.freeVoucherBudget)*(data?.freeVoucherPrice)}</span>
             </div>
             <div className="ml-auto font-light text-sm flex items-center justify-between gap-3">
               {data?.freeVoucherAssigned}{' '}
-              <span className="text-xs text-muted-foreground">$45</span>
+              <span className="text-xs text-muted-foreground">{data?.freeVoucherCurrency} {(data?.freeVoucherAssigned)*(data?.freeVoucherPrice)}</span>
             </div>
             <div className="ml-auto font-light text-sm flex items-center justify-between gap-3">
               {data?.freeVoucherClaimed}
-              <span className="text-xs text-muted-foreground">$45</span>
+              <span className="text-xs text-muted-foreground">{data?.freeVoucherCurrency} {(data?.freeVoucherClaimed)*(data?.freeVoucherPrice)}</span>
             </div>
           </div>
         </div>
@@ -56,16 +56,16 @@ export default function Activities({ title, className, data }: CardProps) {
           </div>
           <div className="space-y-1">
             <div className="ml-auto font-light text-sm flex items-center justify-between gap-3">
-              {data?.refeeredVoucherBudget}
-              <span className="text-xs text-muted-foreground">$45</span>
+              {data?.referredVoucherBudget}
+              <span className="text-xs text-muted-foreground">{data?.referredVoucherCurrency} {(data?.referredVoucherBudget)*(data?.referredVoucherBudget)}</span>
             </div>
             <div className="ml-auto font-light text-sm flex items-center justify-between gap-3">
-              {data?.refeeredVoucherAssigned}{' '}
-              <span className="text-xs text-muted-foreground">$45</span>
+              {data?.referredVoucherAssigned}{' '}
+              <span className="text-xs text-muted-foreground">{data?.referredVoucherCurrency} {(data?.referredVoucherAssigned)*(data?.referredVoucherBudget)}</span>
             </div>
             <div className="ml-auto font-light text-sm flex items-center justify-between gap-3">
-              {data?.refeeredVoucherClaimed}
-              <span className="text-xs text-muted-foreground">$45</span>
+              {data?.referredVoucherClaimed}
+              <span className="text-xs text-muted-foreground">{data?.referredVoucherCurrency} {(data?.referredVoucherClaimed)*(data?.referredVoucherBudget)}</span>
             </div>
           </div>
         </div>

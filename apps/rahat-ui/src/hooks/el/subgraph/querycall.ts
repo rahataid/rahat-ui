@@ -22,7 +22,7 @@ const formatTransaction = (trans: any) => ({
 const mapTransactions = (transactions: any[]) =>
   transactions.map(formatTransaction);
 
-export const useProjectVoucher = (projectAddress: string) => {
+export const useProjectVoucher = (projectAddress: string,freeToken:string,referredToken:string) => {
   const { queryService } = useGraphService();
   const [data, setData] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
@@ -33,7 +33,21 @@ export const useProjectVoucher = (projectAddress: string) => {
       setError(res.error);
       setData([]);
     } else {
-      setData(res);
+      const voucherdetails:any ={}
+      res?.voucherDescriptiona?.map((des)=>{
+        if(des.id ===freeToken){
+          voucherdetails.freeVoucherCurrency = des?.currency;
+          voucherdetails.freeVoucherPrice = des?.price;
+          voucherdetails.freeVoucherDescription = des?.description;
+
+        }
+        else{
+          voucherdetails.referredVoucherCurrency = des?.currency;
+          voucherdetails.referredVoucherPrice = des?.price;
+          voucherdetails.referredVoucherDescription = des?.description;
+        }
+      })
+      setData({...voucherdetails,...res});
       setError(null);
     }
   }, [projectAddress, queryService]);

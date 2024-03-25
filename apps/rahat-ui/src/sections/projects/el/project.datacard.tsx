@@ -10,6 +10,8 @@ import Activities from './projects.activity';
 const ProjectDataCard = () => {
   const { data: projectVoucher } = useProjectVoucher(
     '0x1b4d9fa12f3e1b1181b413979330c0aff9bbaae5',
+    '0xc8a8032fc777b9ad39c57a0ebabbfa0b630825a0',
+    '0xd7f992c60f8fde06df0b93276e2e43eb6555a5fa'
   );
 
   const { data: beneficiaryDetails } = useBeneficiaryCount(

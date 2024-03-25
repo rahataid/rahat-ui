@@ -22,21 +22,37 @@ const formatTransaction = (trans: any) => ({
 const mapTransactions = (transactions: any[]) =>
   transactions.map(formatTransaction);
 
-export const useProjectVoucher = (projectAddress: string) => {
+export const useProjectVoucher = (
+  projectAddress: string,
+  freeToken: string,
+) => {
   const { queryService } = useGraphService();
   const [data, setData] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
 
   const fetchVoucher = useCallback(async () => {
+    if (!projectAddress) return;
     const res = await queryService.useProjectVoucher(projectAddress);
     if (res.error) {
       setError(res.error);
       setData([]);
     } else {
-      setData(res);
+      const voucherdetails: any = {};
+      res?.voucherDescriptiona?.map((des) => {
+        if (des.id === freeToken) {
+          voucherdetails.freeVoucherCurrency = des?.currency;
+          voucherdetails.freeVoucherPrice = des?.price;
+          voucherdetails.freeVoucherDescription = des?.description;
+        } else {
+          voucherdetails.referredVoucherCurrency = des?.currency;
+          voucherdetails.referredVoucherPrice = des?.price;
+          voucherdetails.referredVoucherDescription = des?.description;
+        }
+      });
+      setData({ ...voucherdetails, ...res });
       setError(null);
     }
-  }, [projectAddress, queryService]);
+  }, [projectAddress, queryService, freeToken]);
 
   useEffect(() => {
     fetchVoucher();
@@ -168,4 +184,74 @@ export const useBeneficiaryCount = (projectAddress: string) => {
   }, [fetchBeneficiaries]);
 
   return useMemo(() => ({ data, error }), [data, error]);
+};
+
+export const useVendorTransaction = (address: string) => {
+  const { queryService } = useGraphService();
+  const [data, setData] = useState<any[]>([]);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchData = useCallback(async () => {
+    const res = await queryService.useVendorTransaction(address);
+
+    if (res.error) {
+      setError(res.error);
+      setData([]);
+    } else {
+      const claimedAssigned = res?.data?.claimCreateds || [];
+      const claimProcessed = res?.data?.projectClaimProcesseds || [];
+      const beneficiaryReferred = res?.data?.beneficiaryReferreds || [];
+      const tokenRedeems = res?.data?.tokenRedeems || [];
+      const newData = mapTransactions(
+        claimedAssigned.concat(
+          claimProcessed,
+          beneficiaryReferred,
+          tokenRedeems,
+        ),
+      );
+
+      setData(newData);
+      setError(null);
+    }
+  }, [address, queryService]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  return useMemo(
+    () => ({
+      data,
+      error,
+    }),
+    [data, error],
+  );
+};
+
+export const useVendorVoucher = (address: string) => {
+  const { queryService } = useGraphService();
+  const [data, setData] = useState<any>();
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchVoucher = useCallback(async () => {
+    const res = await queryService.useVendorVoucher(address);
+    if (res.error) {
+      setError(res.error);
+      setData([]);
+    } else {
+      setData(res);
+    }
+  }, [address, queryService]);
+
+  useEffect(() => {
+    fetchVoucher();
+  }, [fetchVoucher]);
+
+  return useMemo(
+    () => ({
+      data,
+      error,
+    }),
+    [data, error],
+  );
 };

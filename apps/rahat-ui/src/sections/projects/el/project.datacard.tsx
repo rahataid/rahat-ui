@@ -7,13 +7,14 @@ import {
 } from '../../../hooks/el/subgraph/querycall';
 import Activities from './projects.activity';
 
-const ProjectDataCard = () => {
+const ProjectDataCard = ({ contractSettings }) => {
   const { data: projectVoucher } = useProjectVoucher(
-    '0x1b4d9fa12f3e1b1181b413979330c0aff9bbaae5',
+    contractSettings?.elproject?.address,
+    contractSettings?.eyevouche?.address,
   );
 
   const { data: beneficiaryDetails } = useBeneficiaryCount(
-    '0x1b4d9fa12f3e1b1181b413979330c0aff9bbaae5',
+    contractSettings?.elproject?.address,
   );
   return (
     <>

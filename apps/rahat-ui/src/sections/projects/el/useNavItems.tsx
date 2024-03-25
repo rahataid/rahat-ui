@@ -26,18 +26,14 @@ export const useNavItems = () => {
   const dialog = useSwal();
 
   type AddressType = {
-    donorAddress: `0x${string}`,
-    eyeVoucherAddress: `0x${string}`,
-    referralVoucherAddress: `0x${string}`,
-    elProjectAddress: `0x${string}`
-};
+    donorAddress: `0x${string}`;
+    eyeVoucherAddress: `0x${string}`;
+    referralVoucherAddress:`0x${string}`;
+    elProjectAddress:`0x${string}`;
+  };
 
-  const addresses:AddressType = {
-    donorAddress: '0x',
-    eyeVoucherAddress: '0x',
-    referralVoucherAddress: '0x',
-    elProjectAddress: '0x'
-  }
+  const [addresses,setAddresses] = useState<AddressType>() 
+
 
   const [voucherInputs, setVoucherInputs] = useState({
     tokens: '',
@@ -54,20 +50,23 @@ export const useNavItems = () => {
 
   const fetchAddress = async () => {
     try {
+      let addressValue:any
       const address = await getProjectAddress(getProject, uuid);
-      addresses.donorAddress = address[0].value.rahatdonor.address;
-      addresses.eyeVoucherAddress = address[0].value.eyevoucher.address;
-      addresses.referralVoucherAddress = address[0].value.referralvoucher.address;
-      addresses.elProjectAddress = address[0].value.elproject.address;
+      setAddresses({
+        donorAddress:address?.value?.rahatdonor?.address,
+        elProjectAddress:address?.value?.elproject?.address,
+        eyeVoucherAddress:address?.value?.eyevoucher?.address,
+        referralVoucherAddress:address?.value?.referralvoucher?.address
+      })
+
     } catch (error) {
-      console.log('reached error')
-      console.error('Error fetching project address:', error);
+      console.log('Error fetching project address:', error);
     }
   };
 
   useEffect(() => {
-    fetchAddress()
-  }, [])
+    fetchAddress();
+  }, []);
 
   const handleCreateVoucherTokenChange = (e: any) => {
     const { name, value } = e.target;
@@ -83,11 +82,12 @@ export const useNavItems = () => {
   // Free Voucher
   const handleCreateVoucherSubmit = async (e: any) => {
     e.preventDefault();
+    if(!addresses) return;
     const referralLimit = 3;
     await createVoucher.writeContractAsync({
-      address: addresses.donorAddress,
+      address: addresses?.donorAddress,
       args: [
-        addresses.eyeVoucherAddress,
+        addresses?.eyeVoucherAddress,
         addresses.referralVoucherAddress,
         addresses.elProjectAddress,
         BigInt(voucherInputs.tokens),

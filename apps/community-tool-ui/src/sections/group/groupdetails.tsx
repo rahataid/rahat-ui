@@ -91,16 +91,15 @@ export const columns: ColumnDef<GroupResponseById[]>[] = [
 export default function GroupDetail({ data, handleClose }: IProps) {
   const router = useRouter();
   const { communityGroupQuery } = useRumsanService();
-  const { data: responseByID } = communityGroupQuery.useCommunityGroupListByID(
-    data.id.toString(),
-  );
+  const { data: responseByUUID } =
+    communityGroupQuery.useCommunityGroupListByID(data.uuid);
 
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
 
   const table = useReactTable({
     manualPagination: true,
-    data: responseByID?.data?.beneficiariesGroup || [],
+    data: responseByUUID?.data?.beneficiariesGroup || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),

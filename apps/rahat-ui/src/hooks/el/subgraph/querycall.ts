@@ -31,7 +31,7 @@ export const useProjectVoucher = (
   const [error, setError] = useState<string | null>(null);
 
   const fetchVoucher = useCallback(async () => {
-    if(!projectAddress) return;
+    if (!projectAddress) return;
     const res = await queryService.useProjectVoucher(projectAddress);
     if (res.error) {
       setError(res.error);
@@ -52,7 +52,7 @@ export const useProjectVoucher = (
       setData({ ...voucherdetails, ...res });
       setError(null);
     }
-  }, [projectAddress, queryService,freeToken]);
+  }, [projectAddress, queryService, freeToken]);
 
   useEffect(() => {
     fetchVoucher();
@@ -163,7 +163,6 @@ export const useProjectTransaction = () => {
   return { data, error };
 };
 
-
 export const useBeneficiaryCount = (projectAddress: string) => {
   const { queryService } = useGraphService();
   const [data, setData] = useState<any>(null);
@@ -187,7 +186,7 @@ export const useBeneficiaryCount = (projectAddress: string) => {
   return useMemo(() => ({ data, error }), [data, error]);
 };
 
-export const useVendorTransaction = (address:string) =>{
+export const useVendorTransaction = (address: string) => {
   const { queryService } = useGraphService();
   const [data, setData] = useState<any[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -204,7 +203,11 @@ export const useVendorTransaction = (address:string) =>{
       const beneficiaryReferred = res?.data?.beneficiaryReferreds || [];
       const tokenRedeems = res?.data?.tokenRedeems || [];
       const newData = mapTransactions(
-        claimedAssigned.concat(claimProcessed, beneficiaryReferred,tokenRedeems),
+        claimedAssigned.concat(
+          claimProcessed,
+          beneficiaryReferred,
+          tokenRedeems,
+        ),
       );
 
       setData(newData);
@@ -223,9 +226,9 @@ export const useVendorTransaction = (address:string) =>{
     }),
     [data, error],
   );
-}
+};
 
-export const useVendorVoucher = (address:string) =>{
+export const useVendorVoucher = (address: string) => {
   const { queryService } = useGraphService();
   const [data, setData] = useState<any>();
   const [error, setError] = useState<string | null>(null);
@@ -251,5 +254,4 @@ export const useVendorVoucher = (address:string) =>{
     }),
     [data, error],
   );
-
-}
+};

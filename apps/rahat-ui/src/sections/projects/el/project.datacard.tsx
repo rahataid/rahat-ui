@@ -7,16 +7,15 @@ import {
 } from '../../../hooks/el/subgraph/querycall';
 import Activities from './projects.activity';
 
-const ProjectDataCard = ({contractSettings}) => {
+const ProjectDataCard = ({ contractSettings }) => {
   const { data: projectVoucher } = useProjectVoucher(
     contractSettings?.elproject?.address,
-    contractSettings?.eyevouche?.address
-
+    contractSettings?.eyevouche?.address,
   );
 
-
   const { data: beneficiaryDetails } = useBeneficiaryCount(
-    contractSettings?.elproject?.address);
+    contractSettings?.elproject?.address,
+  );
   return (
     <>
       <div className="mb-2 grid md:grid-cols-3 gap-2">

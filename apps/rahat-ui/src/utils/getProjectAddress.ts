@@ -16,7 +16,6 @@ export const getProjectSettings = async (
   return res?.data;
 };
 
-
 export const getProjectAddress = async (
   getProject: UseMutationResult<any, Error, any, unknown>,
   uuid: string | undefined,
@@ -26,7 +25,7 @@ export const getProjectAddress = async (
     data: {
       action: 'settings.get',
       payload: {
-        name:PROJECT_SETTINGS.CONTRACTS
+        name: PROJECT_SETTINGS.CONTRACTS,
       },
     },
   });

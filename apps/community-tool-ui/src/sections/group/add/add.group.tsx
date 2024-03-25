@@ -16,7 +16,7 @@ import { useRumsanService } from '../../../providers/service.provider';
 
 function AddGroup() {
   const FormSchema = z.object({
-    name: z.string(),
+    name: z.string().min(3, 'Group name is required'),
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({

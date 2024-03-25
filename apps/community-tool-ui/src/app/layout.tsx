@@ -10,7 +10,7 @@ import { ServiceProvider } from '../providers/service.provider';
 import { GeistSans } from 'geist/font/sans';
 
 export const metadata = {
-  title: 'Welcome to Rahat',
+  title: 'Welcome - Rahat Community',
   icons: {
     icon: '/svg/rahat-logo.png',
   },

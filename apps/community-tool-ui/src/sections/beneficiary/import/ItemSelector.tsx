@@ -11,6 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
+import { d } from '@tanstack/react-query-devtools/build/legacy/devtools-9h89nHJX';
 import React from 'react';
 
 export default function ItemSelector({
@@ -19,7 +20,9 @@ export default function ItemSelector({
   handleItemChange,
   id,
   options,
+  defaultData,
 }: any) {
+  console.log(defaultData, 'defaultData');
   return (
     <div>
       <Form {...form}>
@@ -31,7 +34,7 @@ export default function ItemSelector({
               <FormItem>
                 <Select
                   onValueChange={handleItemChange}
-                  defaultValue={field.value}
+                  defaultValue={defaultData || field.value}
                 >
                   <FormControl>
                     <SelectTrigger>

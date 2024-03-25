@@ -37,7 +37,7 @@ import BeneficiaryGridView from '../../sections/beneficiary/gridView';
 import BeneficiaryListView from '../../sections/beneficiary/listView';
 import BeneficiaryNav from '../../sections/beneficiary/nav';
 import ImportBeneficiary from './import.beneficiary';
-import BenImp from './import/beneficiary';
+import BenImp from './import/Beneficiary';
 import ViewGroup from '../group/group.view';
 
 export const columns: ColumnDef<ListBeneficiary>[] = [

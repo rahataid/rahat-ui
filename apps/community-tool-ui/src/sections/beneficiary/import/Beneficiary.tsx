@@ -1,15 +1,13 @@
 'use client';
 
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   BENEF_DB_FIELDS,
+  BENEF_IMPORT_SCREENS,
   IMPORT_SOURCE,
   TARGET_FIELD,
-  UNIQUE_FIELD,
 } from 'apps/community-tool-ui/src/constants/app.const';
 import React, { Fragment, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import ExcelUploader from './ExcelUploader';
 import { useRumsanService } from '../../../providers/service.provider';
 import {
   attachedRawData,
@@ -18,35 +16,11 @@ import {
   splitFullName,
 } from 'apps/community-tool-ui/src/utils';
 import NestedObjectRenderer from './NestedObjectRenderer';
-import ItemSelector from './ItemSelector';
 import Loader from 'apps/community-tool-ui/src/components/Loader';
 import Swal from 'sweetalert2';
-
-const IMPORT_OPTIONS = [
-  {
-    label: IMPORT_SOURCE.EXCEL,
-    value: IMPORT_SOURCE.EXCEL,
-  },
-  {
-    label: IMPORT_SOURCE.KOBOTOOL,
-    value: IMPORT_SOURCE.KOBOTOOL,
-  },
-];
-
-const UNIQUE_FIELD_OPTIONS = [
-  {
-    label: 'Phone',
-    value: UNIQUE_FIELD.PHONE,
-  },
-  {
-    label: 'Email',
-    value: UNIQUE_FIELD.EMAIL,
-  },
-  {
-    label: 'Wallet Address',
-    value: UNIQUE_FIELD.WALLET,
-  },
-];
+import FilterBox from './FilterBox';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { ArrowBigLeft } from 'lucide-react';
 
 export default function BenImp() {
   const form = useForm({});
@@ -60,6 +34,9 @@ export default function BenImp() {
   const [koboForms, setKoboForms] = useState([]);
   const [importId, setImportId] = useState(''); // Kobo form id or excel sheetID
   const [fetching, setFetching] = useState(false);
+  const [currentScreen, setCurrentScreen] = useState(
+    BENEF_IMPORT_SCREENS.SELECTION,
+  );
 
   const fetchExistingMapping = async (importId: string) => {
     const res = await rumsanService.client.get(`/sources/${importId}/mappings`);
@@ -171,6 +148,15 @@ export default function BenImp() {
     await fetchExistingMapping(sheetId);
   };
 
+  const handleGoClick = () => {
+    if (rawData.length === 0)
+      return Swal.fire({
+        icon: 'error',
+        title: 'Please load data from data source!',
+      });
+    setCurrentScreen(BENEF_IMPORT_SCREENS.VALIDATION);
+  };
+
   const handleAddQueueClick = () => {
     let finalPayload = rawData;
     const selectedTargets = []; // Only submit selected target fields
@@ -261,63 +247,38 @@ export default function BenImp() {
   return (
     <div className="h-custom">
       <div className="h-full p-4">
-        <div className="flex justify-between m-2">
-          <ItemSelector
-            form={form}
-            placeholder="--Select Import Source"
-            handleItemChange={handleSourceChange}
-            id="selectImportForm"
-            options={IMPORT_OPTIONS}
-          />
-
-          <div>
-            {importSource === IMPORT_SOURCE.KOBOTOOL && (
-              <ItemSelector
-                form={form}
-                placeholder="--Select Form--"
-                handleItemChange={handleKoboFormChange}
-                id="koboForm"
-                options={koboForms}
-              />
-            )}
-          </div>
-          <div>
-            <ItemSelector
+        {currentScreen === BENEF_IMPORT_SCREENS.SELECTION ? (
+          <>
+            <FilterBox
+              rawData={rawData}
               form={form}
-              placeholder="--Select Unique Field--"
-              handleItemChange={handleUniqueFieldChange}
-              id="selectUniqueField"
-              options={UNIQUE_FIELD_OPTIONS}
+              importSource={importSource}
+              handleSourceChange={handleSourceChange}
+              handleFileSelect={handleFileSelect}
+              koboForms={koboForms}
+              handleKoboFormChange={handleKoboFormChange}
+              handleGoClick={handleGoClick}
+              selectedUniqueField={uniqueField}
             />
-          </div>
-          <div>
-            {importSource && (
-              <Button
-                onClick={handleAddQueueClick}
-                className="w-40 bg-primary hover:ring-2 ring-primary"
-              >
-                Import Data
-              </Button>
+            <div className="pt-10">{fetching && <Loader />}</div>
+          </>
+        ) : (
+          <div className="relative overflow-x-auto">
+            {rawData.length > 0 && (
+              <div className="flex mb-5 justify-between m-2">
+                <Button
+                  onClick={() =>
+                    setCurrentScreen(BENEF_IMPORT_SCREENS.SELECTION)
+                  }
+                  className="w-40 bg-secondary hover:ring-2bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow"
+                >
+                  <ArrowBigLeft size={18} strokeWidth={2} /> Back
+                </Button>
+                <Button className="w-40 bg-primary hover:ring-2 ring-primary">
+                  Validate Data
+                </Button>
+              </div>
             )}
-          </div>
-        </div>
-
-        {importSource === IMPORT_SOURCE.EXCEL && (
-          <ExcelUploader handleFileSelect={handleFileSelect} />
-        )}
-
-        {rawData.length > 0 && (
-          <span className="ml-2 mt-5 text-blue-500">
-            Select target field for each column you want to import!
-          </span>
-        )}
-
-        <hr className="my-5 h-0.5 border-t-0 bg-neutral-100 dark:bg-white/10" />
-
-        <div className="relative overflow-x-auto">
-          {fetching ? (
-            <Loader />
-          ) : (
             <table className="w-full text-sm text-left rtl:text-right">
               {rawData.map((item: string, index: number) => {
                 const keys = Object.keys(item);
@@ -372,8 +333,8 @@ export default function BenImp() {
                 );
               })}
             </table>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );

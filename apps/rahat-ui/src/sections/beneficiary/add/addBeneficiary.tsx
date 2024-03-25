@@ -32,7 +32,9 @@ export default function AddBeneficiaryForm() {
     walletAddress: z
       .string()
       .min(42, { message: 'The Ethereum address must be 42 characters long' }),
-    phone: z.string(),
+    phone: z
+      .string()
+      .min(10, { message: 'Phone number must be 10 characters' }),
     gender: z
       .string()
       .toUpperCase()

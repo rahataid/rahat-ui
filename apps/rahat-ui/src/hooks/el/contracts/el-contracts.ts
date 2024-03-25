@@ -86,16 +86,16 @@ export const useAddVendors = (uuid: string, vendorUuid: string) => {
   return useWriteElProjectUpdateVendor({
     mutation: {
       onSuccess: async () => {
-        await addVendor.mutateAsync({
-          uuid: uuid,
-          data: {
-            action: MS_ACTIONS.VENDOR.ASSIGN_TO_PROJECT,
-            // 'vendor.assign_to_project',
-            payload: {
-              vendorUuid,
-            },
-          },
-        });
+        // await addVendor.mutateAsync({
+        //   uuid: uuid,
+        //   data: {
+        //     action: MS_ACTIONS.VENDOR.ASSIGN_TO_PROJECT,
+        //     // 'vendor.assign_to_project',
+        //     payload: {
+        //       vendorUuid,
+        //     },
+        //   },
+        // });
         alert.fire({
           title: 'Vendor Assigned Sucessfully',
           icon: 'success',

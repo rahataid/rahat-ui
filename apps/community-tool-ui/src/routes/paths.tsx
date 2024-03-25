@@ -27,6 +27,7 @@ export const paths = {
     group: {
       root: ROOTS.GROUPS,
       add: `${ROOTS.GROUPS}/add`,
+      detail: (uuid: string) => `${ROOTS.GROUPS}/${uuid}`,
     },
   },
   settings: {

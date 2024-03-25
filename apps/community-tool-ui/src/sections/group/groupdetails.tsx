@@ -130,9 +130,7 @@ export default function GroupDetail({ data, handleClose }: IProps) {
               <Tooltip>
                 <TooltipTrigger
                   onClick={() => {
-                    router.push(
-                      paths.dashboard.beneficiary.detail(data?.id.toString()),
-                    );
+                    router.push(paths.dashboard.group.detail(data.uuid));
                   }}
                 >
                   <Expand size={20} strokeWidth={1.5} />

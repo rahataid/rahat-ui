@@ -28,7 +28,7 @@ export class CommunityBeneficiaryGroupQuery {
           cancelButtonText: 'Cancel',
           input: 'select',
           inputOptions: payload.inputOptions,
-          inputPlaceholder: 'Select a project',
+          inputPlaceholder: 'Select a Group',
         });
 
         const inputData = {

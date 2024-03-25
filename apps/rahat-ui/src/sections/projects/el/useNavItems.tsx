@@ -28,12 +28,11 @@ export const useNavItems = () => {
   type AddressType = {
     donorAddress: `0x${string}`;
     eyeVoucherAddress: `0x${string}`;
-    referralVoucherAddress:`0x${string}`;
-    elProjectAddress:`0x${string}`;
+    referralVoucherAddress: `0x${string}`;
+    elProjectAddress: `0x${string}`;
   };
 
-  const [addresses,setAddresses] = useState<AddressType>() 
-
+  const [addresses, setAddresses] = useState<AddressType>();
 
   const [voucherInputs, setVoucherInputs] = useState({
     tokens: '',
@@ -50,15 +49,14 @@ export const useNavItems = () => {
 
   const fetchAddress = async () => {
     try {
-      let addressValue:any
+      let addressValue: any;
       const address = await getProjectAddress(getProject, uuid);
       setAddresses({
-        donorAddress:address?.value?.rahatdonor?.address,
-        elProjectAddress:address?.value?.elproject?.address,
-        eyeVoucherAddress:address?.value?.eyevoucher?.address,
-        referralVoucherAddress:address?.value?.referralvoucher?.address
-      })
-
+        donorAddress: address?.value?.rahatdonor?.address,
+        elProjectAddress: address?.value?.elproject?.address,
+        eyeVoucherAddress: address?.value?.eyevoucher?.address,
+        referralVoucherAddress: address?.value?.referralvoucher?.address,
+      });
     } catch (error) {
       console.log('Error fetching project address:', error);
     }
@@ -82,7 +80,7 @@ export const useNavItems = () => {
   // Free Voucher
   const handleCreateVoucherSubmit = async (e: any) => {
     e.preventDefault();
-    if(!addresses) return;
+    if (!addresses) return;
     const referralLimit = 3;
     await createVoucher.writeContractAsync({
       address: addresses?.donorAddress,

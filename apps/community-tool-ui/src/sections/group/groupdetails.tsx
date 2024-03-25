@@ -91,16 +91,15 @@ export const columns: ColumnDef<GroupResponseById[]>[] = [
 export default function GroupDetail({ data, handleClose }: IProps) {
   const router = useRouter();
   const { communityGroupQuery } = useRumsanService();
-  const { data: responseByID } = communityGroupQuery.useCommunityGroupListByID(
-    data.id.toString(),
-  );
+  const { data: responseByUUID } =
+    communityGroupQuery.useCommunityGroupListByID(data.uuid);
 
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
 
   const table = useReactTable({
     manualPagination: true,
-    data: responseByID?.data?.beneficiariesGroup || [],
+    data: responseByUUID?.data?.beneficiariesGroup || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -131,9 +130,7 @@ export default function GroupDetail({ data, handleClose }: IProps) {
               <Tooltip>
                 <TooltipTrigger
                   onClick={() => {
-                    router.push(
-                      paths.dashboard.beneficiary.detail(data?.id.toString()),
-                    );
+                    router.push(paths.dashboard.group.detail(data.uuid));
                   }}
                 >
                   <Expand size={20} strokeWidth={1.5} />

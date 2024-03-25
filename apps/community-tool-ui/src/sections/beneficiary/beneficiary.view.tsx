@@ -189,10 +189,10 @@ function BeneficiaryView() {
       <ResizablePanelGroup direction="horizontal" className="min-h-max bg-card">
         <ResizablePanel minSize={20} defaultSize={20} maxSize={20}>
           <BeneficiaryNav
-            handleNav={handleNav}
             meta={data?.response?.meta}
-            selectedData={selectedBenefId}
-            handleClose={handleClear}
+            selectedBenefID={selectedBenefId}
+            // handleClear={handleclear}
+            setSelectedBenefId={setSelectedBenefId}
           />
         </ResizablePanel>
         <ResizableHandle />

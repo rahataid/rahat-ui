@@ -12,10 +12,61 @@ import ReferralTable from '../../../vendors/vendors.referral.table';
 import VendorsInfo from '../../../vendors/vendors.info';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { useParams } from 'next/navigation';
+import Swal from 'sweetalert2';
+import { useAddVendors } from '../../../../hooks/el/contracts/el-contracts';
+import { MS_ACTIONS } from '@rahataid/sdk';
+import { PROJECT_SETTINGS } from 'apps/rahat-ui/src/constants/project.const';
+import { useProjectAction } from '@rahat-ui/query';
+import { useEffect, useState } from 'react';
+
+interface IParams {
+  uuid: any;
+  id: string;
+}
 
 export default function VendorsDetailPage() {
-  const { uuid: walletAddress } = useParams();
-  console.log({ walletAddress });
+  const { uuid: walletAddress, id: projectId } = useParams<IParams>();
+  const [contractAddress, setContractAddress] = useState<any>('');
+
+  const updateVendor = useAddVendors(projectId, walletAddress);
+  const projectClient = useProjectAction();
+
+  const assignVendorToProjet = async () => {
+    return updateVendor.writeContractAsync({
+      address: walletAddress,
+      args: [contractAddress, true],
+    });
+  };
+
+  const handleAssignVoucher = () => {
+    Swal.fire({
+      title: 'Assign voucher to the vendor?',
+      showCancelButton: true,
+      confirmButtonText: 'Assign',
+    }).then((result) => {
+      if (result.isConfirmed) return assignVendorToProjet();
+    });
+  };
+
+  useEffect(() => {
+    async function fetchData() {
+      const res = await projectClient.mutateAsync({
+        uuid: projectId,
+        data: {
+          action: MS_ACTIONS.SETTINGS.GET,
+          payload: {
+            name: PROJECT_SETTINGS.CONTRACTS,
+          },
+        },
+      });
+      if (res.data) {
+        const { value } = res.data;
+        setContractAddress(value?.elproject?.address || '');
+      }
+    }
+    fetchData();
+  }, []);
+
   return (
     <div className="bg-secondary">
       {/* Data Cards */}
@@ -50,7 +101,7 @@ export default function VendorsDetailPage() {
               <TabsTrigger value="referrals">Referrals List</TabsTrigger>
             </TabsList>
             <div>
-              <Button>Assign Voucher</Button>
+              <Button onClick={handleAssignVoucher}>Assign Voucher</Button>
             </div>
           </div>
           <TabsContent value="transactions">

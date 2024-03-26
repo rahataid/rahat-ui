@@ -7,7 +7,7 @@ import { fNumber } from '../../../utils/fNumber';
 
 // ----------------------------------------------------------------------
 
-const CHART_HEIGHT = 150;
+const CHART_HEIGHT = 152;
 
 const LEGEND_HEIGHT = 30;
 

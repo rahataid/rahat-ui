@@ -63,7 +63,7 @@ import { useSwal } from '../../components/swal';
 
 export type Payment = {
   id: string;
-  amount: number;
+  projectName: string;
   status: 'pending' | 'processing' | 'success' | 'failed';
   email: string;
   walletAddress: `0x${string}`;

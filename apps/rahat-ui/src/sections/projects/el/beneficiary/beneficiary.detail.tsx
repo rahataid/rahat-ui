@@ -1,4 +1,4 @@
-import { useRouter } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 
 import {
   Tabs,
@@ -52,33 +52,36 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
-
-type IProps = {
-  data: User;
-};
+import { useProjectAction } from '@rahat-ui/query';
+import { getProjectAddress } from 'apps/rahat-ui/src/utils/getProjectAddress';
 
 export default function UserDetail({ beneficiaryDetails }: any) {
   const assignClaims = useAssignClaims();
+  const { id } = useParams();
+  const getProject = useProjectAction();
 
   const walletAddress = beneficiaryDetails.name;
 
   const [activeTab, setActiveTab] = useState<'details' | 'edit' | null>(
     'details',
   );
-  const [activeUser, setActiveUser] = useState<boolean>(true);
   const genderList = enumToObjectArray(Gender);
   const handleTabChange = (tab: 'details' | 'edit') => {
     setActiveTab(tab);
   };
-  const toggleActiveUser = () => {
-    setActiveUser(!activeUser);
-  };
 
   const handleAssignVoucher = () => {
-    assignClaims.writeContractAsync({
-      address: '0x1B4D9FA12f3e1b1181b413979330c0afF9BbaAE5',
-      args: [walletAddress],
+    getProjectAddress(getProject, id as string).then((res) => {
+      assignClaims.writeContractAsync({
+        address: res.value.elproject.address,
+        args: [walletAddress],
+      });
     });
+
+    // assignClaims.writeContractAsync({
+    //   address: '0x1B4D9FA12f3e1b1181b413979330c0afF9BbaAE5',
+    //   args: [walletAddress],
+    // });
   };
   return (
     <>

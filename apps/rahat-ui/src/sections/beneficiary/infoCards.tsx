@@ -1,33 +1,4 @@
 'use client';
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@rahat-ui/shadcn/components/dialog';
-import { useProjectAction } from '../../../../../libs/query/src/lib/projects/projects';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from '@rahat-ui/shadcn/components/dropdown-menu';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@rahat-ui/shadcn/components/select';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@rahat-ui/shadcn/components/tooltip';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
@@ -35,10 +6,9 @@ import {
   CardContent,
   CardHeader,
 } from '@rahat-ui/shadcn/src/components/ui/card';
-import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
-import { MoreVertical } from 'lucide-react';
-import { truncateEthAddress } from '@rumsan/sdk/utils';
 import { MS_ACTIONS } from '@rahataid/sdk';
+import { truncateEthAddress } from '@rumsan/sdk/utils';
+import { useProjectAction } from '../../../../../libs/query/src/lib/projects/projects';
 
 export default function InfoCards({ data, voucherData }) {
   const addBeneficiary = useProjectAction();

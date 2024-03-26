@@ -30,7 +30,6 @@ export const useProjectVoucher = (
   const [data, setData] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
 
-
   const fetchVoucher = useCallback(async () => {
     if (!projectAddress) return;
     const res = await queryService.useProjectVoucher(projectAddress);

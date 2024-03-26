@@ -39,13 +39,14 @@ export class CommunityBeneficiaryGroupQuery {
           },
         });
 
-        const inputData = {
-          beneficiariesId: payload?.selectedData,
-          groupId: parseInt(value),
-        };
         if (value !== undefined && value !== '') {
+          const inputData = {
+            beneficiariesId: payload?.selectedData,
+            groupId: parseInt(value),
+          };
           return await this.client.create(inputData as any);
         }
+        return null;
       },
       onSuccess: async (data: any) => {
         if (data) {

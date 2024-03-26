@@ -20,7 +20,7 @@ export class CommunityBeneficiaryGroupQuery {
     return useMutation({
       mutationKey: [TAGS.ADD_COMMUNITY_BENEFICIARY_GROUP],
       mutationFn: async (payload: any) => {
-        const { value } = await Swal.fire({
+        const { value, isDismissed } = await Swal.fire({
           title: 'Select Group',
           text: 'Select group for the beneficiary',
           showCancelButton: true,
@@ -29,32 +29,43 @@ export class CommunityBeneficiaryGroupQuery {
           input: 'select',
           inputOptions: payload.inputOptions,
           inputPlaceholder: 'Select a Group',
+          preConfirm: (selectedValue) => {
+            if (!selectedValue) {
+              Swal.showValidationMessage(
+                'Select a group to proceed an operation',
+              );
+            }
+            return selectedValue;
+          },
         });
 
-        const inputData = {
-          beneficiariesId: payload?.selectedData,
-          groupId: parseInt(value),
-        };
-
-        return this.client.create(inputData as any);
+        if (!isDismissed && value !== undefined && value !== '') {
+          const inputData = {
+            beneficiariesId: payload?.selectedData,
+            groupId: parseInt(value),
+          };
+          return this.client.create(inputData as any);
+        }
       },
       onSuccess: async (data: any) => {
-        await this.qc.invalidateQueries({
-          queryKey: [TAGS.LIST_COMMUNITY_BENEFICIARY_GROUP],
-        });
+        if (data) {
+          await this.qc.invalidateQueries({
+            queryKey: [TAGS.LIST_COMMUNITY_BENEFICIARY_GROUP],
+          });
 
-        data && data?.data?.info === false
-          ? Swal.fire({
-              text: data?.data?.finalMessage,
-              icon: 'success',
-            })
-          : Swal.fire({
-              title: data?.data?.finalMessage,
-              titleText: data?.data?.finalMessage,
-              text: data?.data?.info,
+          data?.data?.info === false
+            ? await Swal.fire({
+                text: data?.data?.finalMessage,
+                icon: 'success',
+              })
+            : await Swal.fire({
+                title: data?.data?.finalMessage,
+                titleText: data?.data?.finalMessage,
+                text: data?.data?.info,
 
-              icon: 'info',
-            });
+                icon: 'info',
+              });
+        }
       },
       onError: (error: any) => {
         Swal.fire({

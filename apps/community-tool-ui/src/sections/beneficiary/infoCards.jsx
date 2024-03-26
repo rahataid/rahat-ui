@@ -18,6 +18,13 @@ export default function InfoCards({ data }) {
               Not Approved
             </Badge>
           </div>
+
+          <div className="mt-1 mb-2">
+            <p className="text-xs">{data?.customId}</p>
+            <p className="text-sm font-normal text-muted-foreground">
+              Custom Id
+            </p>
+          </div>
         </CardHeader>
         <CardContent>
           <div className="mb-2">
@@ -61,6 +68,12 @@ export default function InfoCards({ data }) {
                 <p>{data?.phone ?? 'N/A'}</p>
                 <p className="text-sm font-normal text-muted-foreground">
                   Phone
+                </p>
+              </div>
+              <div>
+                <p>{data?.email ?? 'N/A'}</p>
+                <p className="text-sm font-normal text-muted-foreground">
+                  Email
                 </p>
               </div>
               <div>

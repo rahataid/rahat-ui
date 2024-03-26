@@ -80,6 +80,8 @@ export const useNavItems = () => {
   // Free Voucher
   const handleCreateVoucherSubmit = async (e: any) => {
     e.preventDefault();
+    console.log("reached")
+    console.log(addresses)
     if (!addresses) return;
     const referralLimit = 3;
     await createVoucher.writeContractAsync({

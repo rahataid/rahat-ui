@@ -1,3 +1,4 @@
+'use client';
 import { Tabs } from '@rahat-ui/shadcn/components//tabs';
 import {
   ResizableHandle,
@@ -23,10 +24,18 @@ export default function VendorsPage() {
             <VendorNav />
           </ResizablePanel>
           <ResizableHandle />
-          <ResizablePanel>
+          <ResizablePanel minSize={35} defaultSize={60} maxSize={60}>
             <VendorsTable />
           </ResizablePanel>
-          {secondPanel && secondPanel}
+
+          {secondPanel && (
+            <>
+              <ResizableHandle withHandle />
+              <ResizablePanel minSize={20} defaultSize={60} maxSize={60}>
+                {secondPanel}
+              </ResizablePanel>
+            </>
+          )}
         </ResizablePanelGroup>
       </Tabs>
     </div>

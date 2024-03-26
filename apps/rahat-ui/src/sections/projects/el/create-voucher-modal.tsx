@@ -36,7 +36,7 @@ interface CreateVoucherModalType {
   handleSubmit: (e: any) => void;
   handleInputChange: (e: any) => void;
   data?: any;
-  setVoucherInputs?:any;
+  setVoucherInputs?: any;
 }
 
 const CreateVoucherModal: FC<CreateVoucherModalType> = ({
@@ -44,7 +44,7 @@ const CreateVoucherModal: FC<CreateVoucherModalType> = ({
   handleSubmit,
   handleInputChange,
   data,
-  setVoucherInputs
+  setVoucherInputs,
 }) => {
   const handleSelectChange = (value: string) => {
     handleInputChange({
@@ -54,7 +54,6 @@ const CreateVoucherModal: FC<CreateVoucherModalType> = ({
       },
     });
   };
-  
 
   return (
     <>

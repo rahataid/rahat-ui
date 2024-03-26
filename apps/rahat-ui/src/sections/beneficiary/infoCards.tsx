@@ -60,13 +60,15 @@ export default function InfoCards({ data, voucherData }) {
     });
   };
 
+  console.log('INFO==>', data);
+
   return (
     <div className="flex flex-col gap-2 py-2 pl-2">
       <Card className="shadow rounded">
         <CardHeader>
           <div className="flex justify-between">
             <div className="flex flex-col items-start justify-start">
-              <p>Beneficiary Name</p>
+              <p>{data?.piiData?.name || 'N/A'}</p>
               <Badge variant="outline" className="bg-secondary">
                 Not Approved
               </Badge>
@@ -86,34 +88,40 @@ export default function InfoCards({ data, voucherData }) {
                 </p>
               </div>
               <div>
-                <p>{data?.bankStatus ?? 'test'}</p>
+                <p>{data?.bankStatus ?? '-'}</p>
                 <p className="text-sm font-normal text-muted-foreground">
                   Bank Status
                 </p>
               </div>
               <div>
-                <p>{data?.internetStatus ?? 'test'}</p>
+                <p>{data?.internetStatus ?? '-'}</p>
                 <p className="text-sm font-normal text-muted-foreground">
                   Internet Status
+                </p>
+              </div>
+              <div>
+                <p>{data?.piiData?.phone || '-'}</p>
+                <p className="text-sm font-normal text-muted-foreground">
+                  Phone
                 </p>
               </div>
             </div>
             <div className="flex flex-col gap-2">
               <div>
-                <p>{data?.gender ?? 'test'}</p>
+                <p>{data?.gender ?? '-'}</p>
                 <p className="text-sm font-normal text-muted-foreground">
                   Gender
                 </p>
               </div>
 
               <div>
-                <p>{data?.location ?? 'test'}</p>
+                <p>{data?.location ?? '-'}</p>
                 <p className="text-sm font-normal text-muted-foreground">
                   Location
                 </p>
               </div>
               <div>
-                <p>{data?.phoneStatus ?? 'test'}</p>
+                <p>{data?.phoneStatus ?? '-'}</p>
                 <p className="text-sm font-normal text-muted-foreground">
                   Phone Status
                 </p>
@@ -129,7 +137,7 @@ export default function InfoCards({ data, voucherData }) {
         </CardHeader>
         <CardContent>
           <Badge variant="outline" color="secondary" className="rounded">
-            Test Project
+            - Project
           </Badge>
         </CardContent>
       </Card>

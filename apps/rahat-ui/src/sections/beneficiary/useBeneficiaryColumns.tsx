@@ -34,6 +34,14 @@ export const useBeneficiaryTableColumns = () => {
       enableHiding: false,
     },
     {
+      accessorKey: 'piiData',
+      header: 'Name',
+      cell: ({ row }) => {
+        const piiData = row.getValue('piiData') as any;
+        return <div>{piiData?.name || '-'}</div>;
+      },
+    },
+    {
       accessorKey: 'walletAddress',
       header: 'Wallet Address',
       cell: ({ row }) => <div>{row.getValue('walletAddress')}</div>,

@@ -7,7 +7,7 @@ import {
   TabsTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tabs';
 import DataCard from '../../../../components/dataCard';
-import VendorTable from '../../../vendors/vendors.transaction.table';
+import VendorTxnTable from '../../../vendors/vendors.transaction.table';
 import ReferralTable from '../../../vendors/vendors.referral.table';
 import VendorsInfo from '../../../vendors/vendors.info';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
@@ -51,7 +51,7 @@ export default function VendorsDetailPage() {
             </div>
           </div>
           <TabsContent value="transactions">
-            <VendorTable />
+            <VendorTxnTable />
           </TabsContent>
           <TabsContent value="referrals">
             <ReferralTable />

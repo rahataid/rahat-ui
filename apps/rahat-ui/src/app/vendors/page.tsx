@@ -6,8 +6,10 @@ import {
 } from '@rahat-ui/shadcn/components/resizable';
 import VendorsTable from '../../sections/vendors/vendors.transaction.table';
 import VendorNav from '../../sections/vendors/nav';
+import { useSecondPanel } from '../../providers/second-panel-provider';
 
 export default function VendorsPage() {
+  const { secondPanel } = useSecondPanel();
   return (
     <div className="mt-2">
       <Tabs defaultValue="grid">
@@ -24,6 +26,7 @@ export default function VendorsPage() {
           <ResizablePanel>
             <VendorsTable />
           </ResizablePanel>
+          {secondPanel && secondPanel}
         </ResizablePanelGroup>
       </Tabs>
     </div>

@@ -26,18 +26,18 @@ export const useNavItems = () => {
   const dialog = useSwal();
 
   type AddressType = {
-    donorAddress: `0x${string}`,
-    eyeVoucherAddress: `0x${string}`,
-    referralVoucherAddress: `0x${string}`,
-    elProjectAddress: `0x${string}`
-};
+    donorAddress: `0x${string}`;
+    eyeVoucherAddress: `0x${string}`;
+    referralVoucherAddress: `0x${string}`;
+    elProjectAddress: `0x${string}`;
+  };
 
-  const addresses:AddressType = {
+  const addresses: AddressType = {
     donorAddress: '0x',
     eyeVoucherAddress: '0x',
     referralVoucherAddress: '0x',
-    elProjectAddress: '0x'
-  }
+    elProjectAddress: '0x',
+  };
 
   const [voucherInputs, setVoucherInputs] = useState({
     tokens: '',
@@ -57,17 +57,18 @@ export const useNavItems = () => {
       const address = await getProjectAddress(getProject, uuid);
       addresses.donorAddress = address[0].value.rahatdonor.address;
       addresses.eyeVoucherAddress = address[0].value.eyevoucher.address;
-      addresses.referralVoucherAddress = address[0].value.referralvoucher.address;
+      addresses.referralVoucherAddress =
+        address[0].value.referralvoucher.address;
       addresses.elProjectAddress = address[0].value.elproject.address;
     } catch (error) {
-      console.log('reached error')
+      console.log('reached error');
       console.error('Error fetching project address:', error);
     }
   };
 
   useEffect(() => {
-    fetchAddress()
-  }, [])
+    fetchAddress();
+  }, []);
 
   const handleCreateVoucherTokenChange = (e: any) => {
     const { name, value } = e.target;

@@ -111,28 +111,28 @@ const CreateVoucherModal: FC<CreateVoucherModalType> = ({
               </div>
               {voucherInputs.currency && (
                 <>
-                <div>
-                  <Label htmlFor="amount" className="text-right">
-                    Price of Free voucher in {voucherInputs.currency}
-                  </Label>
-                  <Input
-                    name="amountInDollar"
-                    className="col-span-3"
-                    value={voucherInputs.amountInDollar}
-                    onChange={handleInputChange}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="amount" className="text-right">
-                    Price of Referred voucher in {voucherInputs.currency}
-                  </Label>
-                  <Input
-                    name="amountInDollarReferral"
-                    className="col-span-3"
-                    value={voucherInputs.amountInDollarReferral}
-                    onChange={handleInputChange}
-                  />
-                </div>
+                  <div>
+                    <Label htmlFor="amount" className="text-right">
+                      Price of Free voucher in {voucherInputs.currency}
+                    </Label>
+                    <Input
+                      name="amountInDollar"
+                      className="col-span-3"
+                      value={voucherInputs.amountInDollar}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="amount" className="text-right">
+                      Price of Referred voucher in {voucherInputs.currency}
+                    </Label>
+                    <Input
+                      name="amountInDollarReferral"
+                      className="col-span-3"
+                      value={voucherInputs.amountInDollarReferral}
+                      onChange={handleInputChange}
+                    />
+                  </div>
                 </>
               )}
               <div>

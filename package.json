@@ -13,7 +13,7 @@
     "clean": "rm -rf dist node_modules tmp",
     "prepare": "husky install",
     "checkFileSize": "node ./tools/scripts/checkFileSize.js",
-    "play" : "ts-node play"
+    "play": "ts-node play"
   },
   "private": true,
   "dependencies": {

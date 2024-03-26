@@ -18,6 +18,8 @@ import { MS_ACTIONS } from '@rahataid/sdk';
 import { PROJECT_SETTINGS } from 'apps/rahat-ui/src/constants/project.const';
 import { useProjectAction } from '@rahat-ui/query';
 import { useEffect, useState } from 'react';
+import { useVendorVoucher } from 'apps/rahat-ui/src/hooks/el/subgraph/querycall';
+import { useSearchParams } from 'next/navigation';
 
 interface IParams {
   uuid: any;
@@ -25,11 +27,18 @@ interface IParams {
 }
 
 export default function VendorsDetailPage() {
+  const searchParams = useSearchParams();
+
+  const phone = searchParams.get('phone');
+  const name = searchParams.get('name');
+  const vendorWallet = searchParams.get('walletAddress');
+
   const { uuid: walletAddress, id: projectId } = useParams<IParams>();
   const [contractAddress, setContractAddress] = useState<any>('');
 
   const updateVendor = useAddVendors(projectId, walletAddress);
   const projectClient = useProjectAction();
+  const { data } = useVendorVoucher(walletAddress);
 
   const assignVendorToProjet = async () => {
     return updateVendor.writeContractAsync({
@@ -74,22 +83,22 @@ export default function VendorsDetailPage() {
         <DataCard
           className="mt-2"
           title="Free Vouchers Redeemed"
-          number={'12'}
+          number={data?.voucherDetailsByVendor?.freeVoucherRedeemed || '0'}
           subTitle="Free Vouchers"
         />
         <DataCard
           className="mt-2"
-          title="Discount Voucher Redeemed"
-          number={'12'}
+          title="Referred Voucher Redeemed"
+          number={data?.voucherDetailsByVendor?.referredVoucherRedeemed || '0'}
           subTitle="Discount Vouchers"
         />
         <DataCard
           className="mt-2"
           title="Referrals"
-          number={'12'}
+          number={data?.voucherDetailsByVendor?.beneficiaryReferred || '0'}
           subTitle="Beneficiaries"
         />
-        <VendorsInfo />
+        <VendorsInfo vendorData={{ name, phone, vendorWallet }} />
       </div>
       <div className="mt-2 mx-2">
         <Tabs defaultValue="transactions" className="w-full">

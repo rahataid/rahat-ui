@@ -35,7 +35,6 @@ import {
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { MS_ACTIONS } from '@rahataid/sdk';
-import { truncateEthAddress } from '@rumsan/sdk/utils';
 import { useParams, useRouter } from 'next/navigation';
 import { useVendorTable } from './useVendorTable';
 
@@ -52,8 +51,10 @@ export default function VendorsList() {
   const router = useRouter();
   const uuid = useParams().id;
 
-  const handleViewClick = (walletAddress: string) => {
-    router.push(`/projects/el/${uuid}/vendors/${walletAddress}`);
+  const handleViewClick = (rowData: any) => {
+    router.push(
+      `/projects/el/${uuid}/vendors/${rowData.walletaddress}?phone=${rowData.phone}&&name=${rowData.name}&&walletAddress=${rowData.walletaddress}`,
+    );
   };
 
   const columns = useVendorTable({ handleViewClick });
@@ -106,6 +107,7 @@ export default function VendorsList() {
       return {
         name: row.User.name,
         walletaddress: row.User.wallet,
+        phone: row.User.phone,
       };
     });
     setData(filteredData);

@@ -71,9 +71,11 @@ export const useTableColumns = (handleAssignClick: any) => {
       accessorKey: 'projectName',
       header: () => <div className="text-right">Project Name</div>,
       cell: ({ row }) => {
-
-
-        return <div className="text-right font-medium">{row.getValue('projectName')}</div>;
+        return (
+          <div className="text-right font-medium">
+            {row.getValue('projectName')}
+          </div>
+        );
       },
     },
     {

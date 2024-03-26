@@ -259,6 +259,11 @@ export default function AddCampaign() {
       header: 'Name',
       cell: ({ row }) => <div>{row.getValue('name')}</div>,
     },
+    {
+      accessorKey: 'phone',
+      header: 'Phone',
+      cell: ({ row }) => <div>{row.getValue('phone')}</div>,
+    },
   ];
 
   const tableData = React.useMemo(() => {
@@ -380,7 +385,6 @@ export default function AddCampaign() {
                       </FormControl>
                       <SelectContent>
                         {Object.keys(CAMPAIGN_TYPES).map((key) => {
-                         
                           return <SelectItem value={key}>{key}</SelectItem>;
                         })}
                       </SelectContent>

@@ -75,6 +75,7 @@ export default function AddBeneficiaryForm() {
         phoneStatus: data.phoneStatus,
         piiData: {
           name: data.name,
+          phone: data.phone,
         },
         walletAddress: data.walletAddress,
         phone: data.phone,

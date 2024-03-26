@@ -13,9 +13,9 @@ export default function ActivitiesList() {
 
   return (
     <>
+      <ActivitiesPhaseCard />
       <ResizablePanelGroup className="bg-secondary" direction="horizontal">
         <ResizablePanel>
-          <ActivitiesPhaseCard />
           <ActivitiesTable />
         </ResizablePanel>
         {secondPanel && secondPanel}

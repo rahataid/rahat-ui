@@ -1,5 +1,5 @@
 'use client';
- import * as React from 'react';
+import * as React from 'react';
 import {
   Dialog,
   DialogClose,
@@ -44,16 +44,14 @@ import { MS_ACTIONS } from '@rahataid/sdk';
 import { useBoolean } from '../../hooks/use-boolean';
 import { useSwal } from '../../components/swal';
 
-
 export default function InfoCards({ data, voucherData }) {
   const addBeneficiary = useProjectAction();
-  const {projectQuery} = useRumsanService();
+  const { projectQuery } = useRumsanService();
 
   const [selectedProject, setSelectedProject] = React.useState('');
   const [selectedRow, setSelectedRow] = React.useState(null) as any;
 
   const alert = useSwal();
-
 
   const projectsList = projectQuery.useProjectList({});
   const d = projectsList.data;
@@ -62,12 +60,11 @@ export default function InfoCards({ data, voucherData }) {
   const projectModal = useBoolean();
   const handleProjectChange = (d: string) => setSelectedProject(d);
 
-
   const handleAssignProject = async () => {
     if (!selectedProject) return alert('Please select a project');
 
     const result = await addBeneficiary.mutateAsync({
-      uuid:selectedProject,
+      uuid: selectedProject,
       data: {
         action: MS_ACTIONS.BENEFICIARY.ASSGIN_TO_PROJECT,
         payload: {
@@ -102,80 +99,82 @@ export default function InfoCards({ data, voucherData }) {
 
   return (
     <>
-    <div className="flex flex-col gap-2 py-2 pl-2">
-      <Card className="shadow rounded">
-        <CardHeader>
-          <div className="flex justify-between">
-            <div className="flex flex-col items-start justify-start">
-              <p>Beneficiary Name</p>
-              <Badge variant="outline" className="bg-secondary">
-                Not Approved
-              </Badge>
+      <div className="flex flex-col gap-2 py-2 pl-2">
+        <Card className="shadow rounded">
+          <CardHeader>
+            <div className="flex justify-between">
+              <div className="flex flex-col items-start justify-start">
+                <p>Beneficiary Name</p>
+                <Badge variant="outline" className="bg-secondary">
+                  Not Approved
+                </Badge>
+              </div>
+              <Button onClick={handleAssignModalClick}>
+                Assign To Project
+              </Button>
             </div>
-            <Button onClick={handleAssignModalClick}>Assign To Project</Button>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="flex justify-between gap-8">
-            <div className="flex flex-col gap-2">
-              <div>
-                <p className="text-xs">
-                  {truncateEthAddress(data?.walletAddress) ?? 'N/A'}
-                </p>
-                <p className="text-sm font-normal text-muted-foreground">
-                  Wallet Address
-                </p>
+          </CardHeader>
+          <CardContent>
+            <div className="flex justify-between gap-8">
+              <div className="flex flex-col gap-2">
+                <div>
+                  <p className="text-xs">
+                    {truncateEthAddress(data?.walletAddress) ?? 'N/A'}
+                  </p>
+                  <p className="text-sm font-normal text-muted-foreground">
+                    Wallet Address
+                  </p>
+                </div>
+                <div>
+                  <p>{data?.bankStatus ?? 'test'}</p>
+                  <p className="text-sm font-normal text-muted-foreground">
+                    Bank Status
+                  </p>
+                </div>
+                <div>
+                  <p>{data?.internetStatus ?? 'test'}</p>
+                  <p className="text-sm font-normal text-muted-foreground">
+                    Internet Status
+                  </p>
+                </div>
               </div>
-              <div>
-                <p>{data?.bankStatus ?? 'test'}</p>
-                <p className="text-sm font-normal text-muted-foreground">
-                  Bank Status
-                </p>
-              </div>
-              <div>
-                <p>{data?.internetStatus ?? 'test'}</p>
-                <p className="text-sm font-normal text-muted-foreground">
-                  Internet Status
-                </p>
-              </div>
-            </div>
-            <div className="flex flex-col gap-2">
-              <div>
-                <p>{data?.gender ?? 'test'}</p>
-                <p className="text-sm font-normal text-muted-foreground">
-                  Gender
-                </p>
-              </div>
+              <div className="flex flex-col gap-2">
+                <div>
+                  <p>{data?.gender ?? 'test'}</p>
+                  <p className="text-sm font-normal text-muted-foreground">
+                    Gender
+                  </p>
+                </div>
 
-              <div>
-                <p>{data?.location ?? 'test'}</p>
-                <p className="text-sm font-normal text-muted-foreground">
-                  Location
-                </p>
-              </div>
-              <div>
-                <p>{data?.phoneStatus ?? 'test'}</p>
-                <p className="text-sm font-normal text-muted-foreground">
-                  Phone Status
-                </p>
+                <div>
+                  <p>{data?.location ?? 'test'}</p>
+                  <p className="text-sm font-normal text-muted-foreground">
+                    Location
+                  </p>
+                </div>
+                <div>
+                  <p>{data?.phoneStatus ?? 'test'}</p>
+                  <p className="text-sm font-normal text-muted-foreground">
+                    Phone Status
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
 
-      <Card className="shadow rounded">
-        <CardHeader>
-          <p className="font-mediun text-md">Projects Involved</p>
-        </CardHeader>
-        <CardContent>
-          <Badge variant="outline" color="secondary" className="rounded">
-            Test Project
-          </Badge>
-        </CardContent>
-      </Card>
-    </div>
-    <div className="py-2 w-full border-t">
+        <Card className="shadow rounded">
+          <CardHeader>
+            <p className="font-mediun text-md">Projects Involved</p>
+          </CardHeader>
+          <CardContent>
+            <Badge variant="outline" color="secondary" className="rounded">
+              Test Project
+            </Badge>
+          </CardContent>
+        </Card>
+      </div>
+      <div className="py-2 w-full border-t">
         <div className="p-4 flex flex-col gap-0.5 text-sm">
           <Dialog
             open={projectModal.value}
@@ -227,6 +226,6 @@ export default function InfoCards({ data, voucherData }) {
           </Dialog>
         </div>
       </div>
-      </>
+    </>
   );
 }

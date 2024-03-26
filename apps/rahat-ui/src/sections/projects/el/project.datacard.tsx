@@ -7,13 +7,14 @@ import {
 } from '../../../hooks/el/subgraph/querycall';
 import Activities from './projects.activity';
 
-const ProjectDataCard = () => {
+const ProjectDataCard = ({ contractSettings }) => {
   const { data: projectVoucher } = useProjectVoucher(
-    '0x9C8Ee9931BEc18EA883c8F23c7427016bBDeF171',
+    contractSettings?.elproject?.address,
+    contractSettings?.eyevoucher?.address,
   );
 
   const { data: beneficiaryDetails } = useBeneficiaryCount(
-    '0x9C8Ee9931BEc18EA883c8F23c7427016bBDeF171',
+    contractSettings?.elproject?.address,
   );
   return (
     <>
@@ -43,7 +44,7 @@ const ProjectDataCard = () => {
           <DataCard
             className=""
             title="Vouchers"
-            number={projectVoucher?.refeeredVoucherBudget || '-'}
+            number={projectVoucher?.referredVoucherBudget || '-'}
             subTitle="Discount"
             Icon={Users}
           />

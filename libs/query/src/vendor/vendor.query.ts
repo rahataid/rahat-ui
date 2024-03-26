@@ -28,6 +28,7 @@ export class VendorQuery {
             status: 'pending',
             email: d.User.email,
             amount: 300,
+            walletAddress: d.User.wallet,
           })),
         };
       },

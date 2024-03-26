@@ -1,7 +1,8 @@
 import axios from 'axios';
 import { useAuthStore } from '@rumsan/react-query/auth';
 
-const baseURL = process.env['NEXT_PUBLIC_API_HOST_URL'];
+const version = '/v1';
+const baseURL = process.env['NEXT_PUBLIC_API_HOST_URL'] + version;
 const communicationURL = process.env['NEXT_PUBLIC_API_CAMPAIGN_URL'];
 const appId = process.env['NEXT_PUBLIC_APP_ID'];
 

@@ -1,5 +1,5 @@
 'use client';
-
+import * as React from 'react';
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -12,18 +12,20 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { ArrowUpDown, MoreHorizontal } from 'lucide-react';
-import * as React from 'react';
-import { useEffect } from 'react';
+import { ArrowUpDown, ChevronDown, MoreHorizontal } from 'lucide-react';
 
 import { Button } from '@rahat-ui/shadcn/components/button';
 import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
 import {
   DropdownMenu,
+  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/components/dropdown-menu';
+import { Input } from '@rahat-ui/shadcn/components/input';
 import {
   Table,
   TableBody,
@@ -32,33 +34,21 @@ import {
   TableHeader,
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
+import { useGraphService } from '../../../../providers/subgraph-provider';
+import { truncateEthAddress } from '@rumsan/sdk/utils';
+import { formatDate } from '../../../../utils';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import { useRumsanService } from '../../providers/service.provider';
-import { useAddVendors } from '../../hooks/el/contracts/el-contracts';
 
-const data: Payment[] = [
-  {
-    id: 'bhqecj4p',
-    amount: 721,
-    status: 'failed',
-    email: 'carmella@hotmail.com',
-  },
-  {
-    id: 'm5gr84i9',
-    amount: 316,
-    status: 'success',
-    email: 'ken99@yahoo.com',
-  },
-];
-
-export type Payment = {
+export type Redemption = {
   id: string;
-  amount: number;
-  status: 'pending' | 'processing' | 'success' | 'failed';
-  email: string;
+  topic: string;
+  beneficiary: number;
+  voucherId: string;
+  timestamp: string;
+  txHash: string;
 };
 
-export const columns: ColumnDef<Payment>[] = [
+export const columns: ColumnDef<Redemption>[] = [
   {
     id: 'select',
     header: ({ table }) => (
@@ -84,55 +74,69 @@ export const columns: ColumnDef<Payment>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: 'status',
-    header: 'Status',
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue('status')}</div>
-    ),
+    accessorKey: 'name',
+    header: 'Name',
+    cell: ({ row }) => <div className="capitalize">{row.getValue('name')}</div>,
   },
   {
-    accessorKey: 'email',
+    accessorKey: 'walletAddress',
     header: ({ column }) => {
       return (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
-          Email
+          WalletAddress
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
     },
-    cell: ({ row }) => <div className="lowercase">{row.getValue('email')}</div>,
+    cell: ({ row }) => (
+      <div className="lowercase">
+        {truncateEthAddress(row.getValue('walletAddress'))}
+      </div>
+    ),
   },
   {
-    accessorKey: 'amount',
-    header: () => <div className="text-right">Amount</div>,
-    cell: ({ row }) => {
-      const amount = parseFloat(row.getValue('amount'));
-
-      // Format the amount as a dollar amount
-      const formatted = new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-      }).format(amount);
-
-      return <div className="text-right font-medium">{formatted}</div>;
+    accessorKey: 'token',
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+        >
+          Token
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
     },
   },
+  {
+    accessorKey: 'status',
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+        >
+          Status
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) => (
+      <div className="lowercase">
+        {truncateEthAddress(row.getValue('status'))}
+      </div>
+    ),
+  },
+
   {
     id: 'actions',
     enableHiding: false,
     cell: ({ row }) => {
       const payment = row.original;
-      const uuid = process.env.NEXT_PUBLIC_PROJECT_UUID || '';
-      const updateVendor = useAddVendors(uuid, payment.id);
-      const handleRegisterVendor = async () => {
-        await updateVendor.writeContractAsync({
-          address: '0x9C8Ee9931BEc18EA883c8F23c7427016bBDeF171',
-          args: ['0x9C8Ee9931BEc18EA883c8F23c7427016bBDeF171', true],
-        });
-      };
+
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -141,10 +145,12 @@ export const columns: ColumnDef<Payment>[] = [
               <MoreHorizontal className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="bg-white">
-            <DropdownMenuItem>View Details</DropdownMenuItem>
-            <DropdownMenuItem onClick={handleRegisterVendor}>
-              Register Vendor
+          <DropdownMenuContent align="end">
+            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+            <DropdownMenuItem
+              onClick={() => navigator.clipboard.writeText(payment.id)}
+            >
+              Copy payment Txhash
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -153,25 +159,18 @@ export const columns: ColumnDef<Payment>[] = [
   },
 ];
 
-export default function DataTableDemo() {
+export default function RedemptionTable({ walletAddress }) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
   );
-
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
-
-  const { vendorQuery } = useRumsanService();
-
-  const { data: vendorData } = vendorQuery.useVendorList({
-    perPage: 5,
-    page: 1,
-  });
+  const [data, setData] = React.useState([]);
 
   const table = useReactTable({
-    data: vendorData || [],
+    data,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -188,13 +187,101 @@ export default function DataTableDemo() {
       rowSelection,
     },
   });
+  const { queryService } = useGraphService();
+  const fetchBeneficiary = React.useCallback(() => {
+    // const querRes = queryService.useProjectTransaction();
+    const querRes = queryService.useBeneficiaryTransaction(walletAddress);
+
+    querRes.then((res) => {
+      const claimedAssigned = res?.claimAssigneds;
+      const claimProcessed = res?.projectClaimProcesseds;
+      const beneficiaryReferred = res?.beneficiaryReferreds;
+      const beneficiaryAdded = res?.beneficiaryAddeds;
+      const claimCreated = res?.claimCreateds;
+      const tokenBudgetIncrease = res?.tokenBudgetIncreases;
+      const data: any = [];
+
+      claimedAssigned?.map((trans) => {
+        data.push({
+          beneficiary: trans.beneficiary,
+          topic: trans.eventType,
+          timestamp: formatDate(trans.blockTimestamp),
+          txHash: trans.transactionHash,
+          voucherId: trans.tokenAddress,
+        });
+        // const claimRes = queryService?.useClaimAssigned(trans.id);
+      });
+      claimProcessed?.map((trans) => {
+        data.push({
+          beneficiary: trans.beneficiary,
+          topic: trans.eventType,
+          timestamp: formatDate(trans.blockTimestamp),
+          txHash: trans.transactionHash,
+          voucherId: trans.token,
+        });
+      });
+      beneficiaryReferred?.map((trans) => {
+        data.push({
+          beneficiary: trans.referrerBeneficiaries,
+          topic: trans.eventType,
+          timestamp: formatDate(trans.blockTimestamp),
+          txHash: trans.transactionHash,
+        });
+      });
+
+      claimCreated?.map((trans) => {
+        data.push({
+          beneficiary: trans.claimer,
+          txHash: trans.transactionHash,
+          timestamp: formatDate(trans.blockTimestamp),
+          topic: trans?.eventType,
+          voucherId: trans.token,
+        });
+      });
+
+      beneficiaryAdded?.map((trans) => {
+        data.push({
+          topic: trans.eventType,
+          timestamp: formatDate(trans.blockTimestamp),
+          txHash: trans.transactionHash,
+          beneficiary: trans.beneficiaryAddress,
+        });
+      });
+
+      tokenBudgetIncrease?.map((trans) => {
+        data.push({
+          topic: trans.eventType,
+          txHash: trans.transactionHash,
+          timestamp: formatDate(trans.blockTimestamp),
+          voucherId: trans?.tokenAddress,
+        });
+      });
+      setData(data);
+    });
+  }, [queryService]);
+
+  React.useEffect(() => {
+    fetchBeneficiary();
+  }, [fetchBeneficiary]);
 
   return (
-    <>
-      <ScrollArea className="w-full h-withPage p-4">
-        <div className="rounded-md border">
-          <Table>
-            <TableHeader>
+    <div className="w-full h-full p-2 bg-secondary">
+      <div className="flex items-center mb-2">
+        <Input
+          placeholder="Filter Redemptions..."
+          value={
+            (table.getColumn('beneficiary')?.getFilterValue() as string) ?? ''
+          }
+          onChange={(event) =>
+            table.getColumn('beneficiary')?.setFilterValue(event.target.value)
+          }
+          className="w-full"
+        />
+      </div>
+      <div className="rounded border h-[calc(100vh-180px)] bg-card">
+        <Table>
+          <ScrollArea className="h-table1">
+            <TableHeader className="sticky top-0">
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
                   {headerGroup.headers.map((header) => {
@@ -240,10 +327,10 @@ export default function DataTableDemo() {
                 </TableRow>
               )}
             </TableBody>
-          </Table>
-        </div>
-      </ScrollArea>
-      <div className="flex items-center justify-end space-x-2 p-2 border-t">
+          </ScrollArea>
+        </Table>
+      </div>
+      <div className="sticky bottom-0 flex items-center justify-end space-x-4 px-4 py-1 border-t-2 bg-card">
         <div className="flex-1 text-sm text-muted-foreground">
           {table.getFilteredSelectedRowModel().rows.length} of{' '}
           {table.getFilteredRowModel().rows.length} row(s) selected.
@@ -267,6 +354,6 @@ export default function DataTableDemo() {
           </Button>
         </div>
       </div>
-    </>
+    </div>
   );
 }

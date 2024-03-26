@@ -12,7 +12,7 @@ type CardProps = {
   number: string;
   subTitle: string;
   className: string;
-  Icon: LucideIcon;
+  Icon?: LucideIcon;
 };
 
 export default function DataCard({
@@ -29,13 +29,15 @@ export default function DataCard({
         className,
       )}
     >
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+      <CardHeader className="flex items-start justify-between pb-2">
         <CardTitle className="text-md font-medium">{title}</CardTitle>
-        <Icon
-          size={20}
-          strokeWidth={1.5}
-          className="h-6 w-6 text-muted-foreground"
-        />
+        {Icon && (
+          <Icon
+            size={20}
+            strokeWidth={1.5}
+            className="h-6 w-6 text-muted-foreground"
+          />
+        )}
       </CardHeader>
       <CardContent className="flex items-center justify-between">
         <div className="">

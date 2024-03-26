@@ -116,15 +116,17 @@ export default function TextDetailTableView({ data, type }: IProps) {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
+  console.log('data', data);
+
   const tableData = React.useMemo(() => {
     return data?.map((item: any) => ({
       createdAt: new Date(item.createdAt).toLocaleString(),
       to:
         type === CAMPAIGN_TYPES.EMAIL
           ? item?.details?.envelope?.to
-          : item.details.to,
+          : item?.details?.to,
     }));
-  }, [data]);
+  }, [data, type]);
 
   const table = useReactTable({
     data: tableData,

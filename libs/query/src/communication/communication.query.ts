@@ -52,7 +52,7 @@ export class CommunicationQuery {
       mutationFn: (payload: createAudience) => {
         return axios
           .post(
-            `${process.env['NEXT_PUBLIC_API_COMMUNICATION_URL']}/audiences`,
+            `${process.env['NEXT_PUBLIC_API_COMMUNICATION_URL']}/v1/audiences`,
             payload,
             {
               headers: {

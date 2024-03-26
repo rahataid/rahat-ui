@@ -65,9 +65,6 @@ export default function Nav({ meta, handleNav, active, table }: IProps) {
       <Separator />
       <ScrollArea>
         <div className="p-2">
-          {/* <h1 className="font-semibold text-xl mb-4 text-muted-foreground">
-            Action Items
-          </h1> */}
           <nav className="text-muted-foreground">
             <div
               onClick={handleAddBeneficiaryClick}

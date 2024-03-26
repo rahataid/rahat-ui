@@ -7,12 +7,15 @@ import {
   TabsTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tabs';
 import DataCard from '../../../../components/dataCard';
-import VendorTable from '../../../vendors/vendors.transaction.table';
+import VendorTxnList from '../../../vendors/vendors.txn.list';
 import ReferralTable from '../../../vendors/vendors.referral.table';
 import VendorsInfo from '../../../vendors/vendors.info';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { useParams } from 'next/navigation';
 
 export default function VendorsDetailPage() {
+  const { uuid: walletAddress } = useParams();
+  console.log({ walletAddress });
   return (
     <div className="bg-secondary">
       {/* Data Cards */}
@@ -51,7 +54,7 @@ export default function VendorsDetailPage() {
             </div>
           </div>
           <TabsContent value="transactions">
-            <VendorTable />
+            <VendorTxnList walletAddress={walletAddress} />
           </TabsContent>
           <TabsContent value="referrals">
             <ReferralTable />

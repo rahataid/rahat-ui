@@ -1,21 +1,17 @@
-import React from 'react';
 import DataCard from 'apps/rahat-ui/src/components/dataCard';
 import { Users } from 'lucide-react';
-import {
-  useProjectVoucher,
-  useBeneficiaryCount,
-} from '../../../hooks/el/subgraph/querycall';
+import { FC } from 'react';
 import Activities from './projects.activity';
 
-const ProjectDataCard = ({ contractSettings }) => {
-  const { data: projectVoucher } = useProjectVoucher(
-    contractSettings?.elproject?.address,
-    contractSettings?.eyevoucher?.address,
-  );
+type ProjectDataCardProps = {
+  beneficiaryDetails: any;
+  projectVoucher: any;
+};
 
-  const { data: beneficiaryDetails } = useBeneficiaryCount(
-    contractSettings?.elproject?.address,
-  );
+const ProjectDataCard: FC<ProjectDataCardProps> = ({
+  beneficiaryDetails,
+  projectVoucher,
+}) => {
   return (
     <>
       <div className="mb-2 grid md:grid-cols-3 gap-2">

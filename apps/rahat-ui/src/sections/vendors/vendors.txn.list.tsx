@@ -1,19 +1,6 @@
 'use client';
 
-import {
-  ColumnDef,
-  ColumnFiltersState,
-  SortingState,
-  VisibilityState,
-  flexRender,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useReactTable,
-} from '@tanstack/react-table';
-import { Settings2 } from 'lucide-react';
-import * as React from 'react';
+import { useProjectAction } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/components/button';
 import {
   DropdownMenu,
@@ -32,11 +19,35 @@ import {
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import { useProjectAction } from '@rahat-ui/query';
-import { PROJECT_SETTINGS } from '../../constants/project.const';
-import { MS_ACTIONS } from '@rahataid/sdk/constants';
+import {
+  ColumnDef,
+  ColumnFiltersState,
+  SortingState,
+  VisibilityState,
+  flexRender,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  useReactTable,
+} from '@tanstack/react-table';
+import { Settings2 } from 'lucide-react';
+import * as React from 'react';
 
-import { useRumsanService } from '../../providers/service.provider';
+import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
+import { MS_ACTIONS } from '@rahataid/sdk/constants';
+import { ArrowUpDown } from 'lucide-react';
+
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@rahat-ui/shadcn/src/components/ui/dialog';
+import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import {
   Select,
   SelectContent,
@@ -45,32 +56,95 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
-import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
-import {
-  DialogClose,
-  DialogFooter,
-  DialogContent,
-  Dialog,
-  DialogTrigger,
-  DialogHeader,
-  DialogDescription,
-  DialogTitle,
-} from '@rahat-ui/shadcn/src/components/ui/dialog';
-import { useBoolean } from '../../hooks/use-boolean';
-import { useTableColumns } from './useTableColumns';
-import { useAddVendors } from '../../hooks/el/contracts/el-contracts';
 import { useSwal } from '../../components/swal';
+import { useAddVendors } from '../../hooks/el/contracts/el-contracts';
+import { useBoolean } from '../../hooks/use-boolean';
+import { useRumsanService } from '../../providers/service.provider';
+import { useVendorTransaction } from '../../hooks/el/subgraph/querycall';
 
 export type Payment = {
   id: string;
-  projectName: string;
+  amount: number;
   status: 'pending' | 'processing' | 'success' | 'failed';
   email: string;
   walletAddress: `0x${string}`;
 };
 
-export default function DataTableDemo() {
+const columns: ColumnDef<Payment>[] = [
+  {
+    id: 'select',
+    header: ({ table }) => (
+      <Checkbox
+        checked={
+          table.getIsAllPageRowsSelected() ||
+          (table.getIsSomePageRowsSelected() && 'indeterminate')
+        }
+        onCheckedChange={(value: any) =>
+          table.toggleAllPageRowsSelected(!!value)
+        }
+        aria-label="Select all"
+      />
+    ),
+    cell: ({ row }) => (
+      <Checkbox
+        checked={row.getIsSelected()}
+        onCheckedChange={(value: any) => row.toggleSelected(!!value)}
+        aria-label="Select row"
+      />
+    ),
+    enableSorting: false,
+    enableHiding: false,
+  },
+  {
+    accessorKey: 'status',
+    header: 'Status',
+    cell: ({ row }) => (
+      <div className="capitalize">{row.getValue('status')}</div>
+    ),
+  },
+  {
+    accessorKey: 'email',
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+        >
+          Email
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) => <div className="lowercase">{row.getValue('email')}</div>,
+  },
+  {
+    accessorKey: 'amount',
+    header: () => <div className="text-right">Amount</div>,
+    cell: ({ row }) => {
+      const amount = parseFloat(row.getValue('amount'));
+
+      // Format the amount as a dollar amount
+      const formatted = new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+      }).format(amount);
+
+      return <div className="text-right font-medium">{formatted}</div>;
+    },
+  },
+];
+
+interface VendorTxnListProps {
+  walletAddress: string;
+}
+
+export default function VendorTxnList({ walletAddress }: VendorTxnListProps) {
   const { vendorQuery, projectQuery } = useRumsanService();
+
+  const txns = useVendorTransaction(
+    '0xbecb49559e22858739132303916a2d265bb7370d  ',
+  );
+  console.log('Txns==>', txns);
 
   const projectModal = useBoolean();
   const [selectedProject, setSelectedProject] = React.useState('');
@@ -90,8 +164,6 @@ export default function DataTableDemo() {
   //     args: [payment.walletAddress, true],
   //   });
   // };
-
-  const columns = useTableColumns(handleAssignModalClick);
 
   const projectClient = useProjectAction();
   const projectsList = projectQuery.useProjectList({});
@@ -145,24 +217,6 @@ export default function DataTableDemo() {
         },
       },
     });
-
-    // const res = await projectClient.mutateAsync({
-    //   uuid: selectedProject,
-    //   data: {
-    //     action: MS_ACTIONS.SETTINGS.GET,
-    //     payload: {
-    //       name: PROJECT_SETTINGS.CONTRACTS,
-    //     },
-    //   },
-    // });
-    // if (!res.data.value) return alert('No contract found!');
-    // const { value } = res.data;
-    // console.log('Vendor==>', selectedRow.id);
-    // console.log('Project==>', selectedProject);
-    // return updateVendor.writeContractAsync({
-    //   address: value.el.address, // value.el.address
-    //   args: [selectedRow.walletAddress, true], // selecteWalletAddress
-    // });
   };
 
   React.useEffect(() => {

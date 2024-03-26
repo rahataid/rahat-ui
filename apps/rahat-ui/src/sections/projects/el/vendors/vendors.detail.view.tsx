@@ -47,11 +47,11 @@ export default function VendorsDetailPage() {
     });
   };
 
-  const handleAssignVoucher = () => {
+  const handleApproveVendor = () => {
     Swal.fire({
-      title: 'Assign voucher to the vendor?',
+      title: 'Approve vendor?',
       showCancelButton: true,
-      confirmButtonText: 'Assign',
+      confirmButtonText: 'Yes',
     }).then((result) => {
       if (result.isConfirmed) return assignVendorToProjet();
     });
@@ -110,7 +110,7 @@ export default function VendorsDetailPage() {
               <TabsTrigger value="referrals">Referrals List</TabsTrigger>
             </TabsList>
             <div>
-              <Button onClick={handleAssignVoucher}>Assign Voucher</Button>
+              <Button onClick={handleApproveVendor}>Approve Vendor</Button>
             </div>
           </div>
           <TabsContent value="transactions">

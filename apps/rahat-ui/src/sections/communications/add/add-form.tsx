@@ -210,34 +210,6 @@ const CampaignForm: FC<CampaignFormProps> = ({
                 )}
               />
             )}
-
-            <FormField
-              control={form.control}
-              name="transport"
-              render={({ field }) => (
-                <FormItem>
-                  {/* <FormLabel>Transport</FormLabel> */}
-                  <Select onValueChange={field.onChange}>
-                    <FormControl>
-                      <SelectTrigger className="rounded">
-                        <SelectValue placeholder="Select transport" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {transports?.map((data) => {
-                        return (
-                          <SelectItem key={data.id} value={data.id.toString()}>
-                            {data.name}
-                          </SelectItem>
-                        );
-                      })}
-                    </SelectContent>
-                  </Select>
-
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
           </div>
           <div className="flex justify-end">
             <Button
@@ -250,7 +222,7 @@ const CampaignForm: FC<CampaignFormProps> = ({
             </Button>
             <Button
               variant="outline"
-              onClick={setShowAddAudience}
+              onClick={() => setShowAddAudience()}
               className="mr-2"
               type="button"
             >

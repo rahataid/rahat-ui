@@ -13,7 +13,7 @@ export default function PhaseCard() {
       <Card className="h-auto overflow-hidden">
         <CardContent className="flex p-2">
           <div>
-            <RadialChart series={[30]} total={15} label='Preparedness' />
+            <RadialChart series={[30]} total={15} label="Preparedness" />
           </div>
           <div>
             <div className="flex justify-between">
@@ -35,7 +35,7 @@ export default function PhaseCard() {
       </Card>
       <Card className="h-auto overflow-hidden">
         <CardContent className="flex p-2">
-          <RadialChart series={[50]} total={5} label='Readiness' />
+          <RadialChart series={[50]} total={5} label="Readiness" />
           <div>
             <div className="flex justify-between">
               <p className="font-medium text-xl">Readiness</p>
@@ -56,7 +56,7 @@ export default function PhaseCard() {
       </Card>
       <Card className="h-auto overflow-hidden">
         <CardContent className="flex p-2">
-          <RadialChart series={[70]} total={10} label='Activation' />
+          <RadialChart series={[70]} total={10} label="Activation" />
           <div>
             <div className="flex justify-between">
               <p className="font-medium text-xl">Activation</p>

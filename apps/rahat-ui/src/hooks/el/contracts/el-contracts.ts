@@ -97,14 +97,14 @@ export const useAddVendors = (uuid: string, vendorUuid: string) => {
         //   },
         // });
         alert.fire({
-          title: 'Vendor Assigned Sucessfully',
+          title: 'Vendor approved sucessfully',
           icon: 'success',
         });
       },
       onError: (err) => {
-        console.log('Error==>', err);
+        console.log('Err==>', err);
         alert.fire({
-          title: 'Error while updating vendor',
+          title: 'Failed to approve vendor!',
           icon: 'error',
         });
       },

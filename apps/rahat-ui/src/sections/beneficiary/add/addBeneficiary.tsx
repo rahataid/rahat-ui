@@ -78,7 +78,6 @@ export default function AddBeneficiaryForm() {
           phone: data.phone,
         },
         walletAddress: data.walletAddress,
-        phone: data.phone,
       });
       if (result) {
         toast.success('Beneficiary added successfully!');

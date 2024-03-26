@@ -20,7 +20,7 @@ export class CommunityBeneficiaryGroupQuery {
     return useMutation({
       mutationKey: [TAGS.ADD_COMMUNITY_BENEFICIARY_GROUP],
       mutationFn: async (payload: any) => {
-        const { value, isDismissed } = await Swal.fire({
+        const { value } = await Swal.fire({
           title: 'Select Group',
           text: 'Select group for the beneficiary',
           showCancelButton: true,
@@ -39,12 +39,12 @@ export class CommunityBeneficiaryGroupQuery {
           },
         });
 
-        if (!isDismissed && value !== undefined && value !== '') {
-          const inputData = {
-            beneficiariesId: payload?.selectedData,
-            groupId: parseInt(value),
-          };
-          return this.client.create(inputData as any);
+        const inputData = {
+          beneficiariesId: payload?.selectedData,
+          groupId: parseInt(value),
+        };
+        if (value !== undefined && value !== '') {
+          return await this.client.create(inputData as any);
         }
       },
       onSuccess: async (data: any) => {

@@ -68,21 +68,21 @@ export default function Activities({ title, className, data }: CardProps) {
               {data?.referredVoucherBudget}
               <span className="text-xs text-muted-foreground">
                 {data?.referredVoucherCurrency}{' '}
-                {data?.referredVoucherBudget * data?.referredVoucherBudget}
+                {data?.referredVoucherBudget * data?.referredVoucherPrice}
               </span>
             </div>
             <div className="ml-auto font-light text-sm flex items-center justify-between gap-3">
               {data?.referredVoucherAssigned}{' '}
               <span className="text-xs text-muted-foreground">
                 {data?.referredVoucherCurrency}{' '}
-                {data?.referredVoucherAssigned * data?.referredVoucherBudget}
+                {data?.referredVoucherAssigned * data?.referredVoucherPrice}
               </span>
             </div>
             <div className="ml-auto font-light text-sm flex items-center justify-between gap-3">
               {data?.referredVoucherClaimed}
               <span className="text-xs text-muted-foreground">
                 {data?.referredVoucherCurrency}{' '}
-                {data?.referredVoucherClaimed * data?.referredVoucherBudget}
+                {data?.referredVoucherClaimed * data?.referredVoucherPrice}
               </span>
             </div>
           </div>

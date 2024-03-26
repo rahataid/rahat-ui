@@ -1,6 +1,6 @@
 import { formatDate } from '../../../utils';
 import { useGraphService } from '../../../providers/subgraph-provider';
-import { useState, useMemo, useEffect, useCallback } from 'react';
+import { useQuery } from '@tanstack/react-query';
 
 const formatTransaction = (trans: any) => ({
   beneficiary: trans.beneficiary || trans.referrerBeneficiaries || '-',
@@ -27,17 +27,12 @@ export const useProjectVoucher = (
   freeToken: string,
 ) => {
   const { queryService } = useGraphService();
-  const [data, setData] = useState<any>(null);
-  const [error, setError] = useState<string | null>(null);
 
-
-  const fetchVoucher = useCallback(async () => {
-    if (!projectAddress) return;
-    const res = await queryService.useProjectVoucher(projectAddress);
-    if (res.error) {
-      setError(res.error);
-      setData([]);
-    } else {
+  return useQuery({
+    enabled:projectAddress? true:false,
+    queryKey:['project-vouchers',projectAddress,freeToken],
+    queryFn: async()=>{
+      const res = await queryService.useProjectVoucher(projectAddress)
       const voucherdetails: any = {};
       res?.voucherDescriptiona?.map((des) => {
         if (des.id?.toLowerCase() === freeToken.toLowerCase()) {
@@ -49,156 +44,195 @@ export const useProjectVoucher = (
           voucherdetails.referredVoucherPrice = des?.price;
           voucherdetails.referredVoucherDescription = des?.description;
         }
-      });
-      setData({ ...voucherdetails, ...res });
-      setError(null);
+        
+      })
+      return {
+        ...res,
+        ...voucherdetails
+      }
     }
-  }, [projectAddress, queryService, freeToken]);
-
-  useEffect(() => {
-    fetchVoucher();
-  }, [fetchVoucher]);
-
-  return useMemo(() => ({ data, error }), [data, error]);
+  })
 };
 
 export const useBeneficaryVoucher = (beneficiary: string) => {
   const { queryService } = useGraphService();
-  const [data, setData] = useState<any>();
-  const [error, setError] = useState<string | null>(null);
-
-  const fetchVoucher = useCallback(async () => {
-    const res = await queryService.useBeneficiaryVoucher(beneficiary);
-    if (res.error) {
-      setError(res.error);
-      setData([]);
-    } else {
-      setData(res);
+  // const [data, setData] = useState<any>();
+  // const [error, setError] = useState<string | null>(null);
+  return useQuery({
+    enabled:beneficiary?true:false,
+    queryKey:['beneficiary-voucher',beneficiary],
+    queryFn: async () =>{
+      const res = await queryService.useBeneficiaryVoucher(beneficiary);
+      return res;
     }
-  }, [beneficiary, queryService]);
+  })
 
-  useEffect(() => {
-    fetchVoucher();
-  }, [fetchVoucher]);
+  // const fetchVoucher = useCallback(async () => {
+    // const res = await queryService.useBeneficiaryVoucher(beneficiary);
+  //   if (res.error) {
+  //     setError(res.error);
+  //     setData([]);
+  //   } else {
+  //     setData(res);
+  //   }
+  // }, [beneficiary, queryService]);
 
-  return useMemo(
-    () => ({
-      data,
-      error,
-    }),
-    [data, error],
-  );
+  // useEffect(() => {
+  //   fetchVoucher();
+  // }, [fetchVoucher]);
+
+  // return useMemo(
+  //   () => ({
+  //     data,
+  //     error,
+  //   }),
+  //   [data, error],
+  // );
 };
 
 export const useBeneficiaryTransaction = (address: string) => {
   const { queryService } = useGraphService();
-  const [data, setData] = useState<any[]>([]);
-  const [error, setError] = useState<string | null>(null);
 
-  const fetchData = useCallback(async () => {
-    const res = await queryService.useBeneficiaryTransaction(address);
-
-    if (res.error) {
-      setError(res.error);
-      setData([]);
-    } else {
+  return useQuery({
+    enabled:address?true:false,
+    queryKey:['beneficiary-transaction',address],
+    queryFn: async ()=>{
+      const res = await queryService.useBeneficiaryTransaction(address);
       const claimedAssigned = res?.claimAssigneds || [];
       const claimProcessed = res?.projectClaimProcesseds || [];
       const beneficiaryReferred = res?.beneficiaryReferreds || [];
       const newData = mapTransactions(
         claimedAssigned.concat(claimProcessed, beneficiaryReferred),
       );
-
-      setData(newData);
-      setError(null);
+        return newData;
     }
-  }, [address, queryService]);
+  })
 
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+  // const fetchData = useCallback(async () => {
+    // const res = await queryService.useBeneficiaryTransaction(address);
 
-  return useMemo(
-    () => ({
-      data,
-      error,
-    }),
-    [data, error],
-  );
+  //   if (res.error) {
+  //     setError(res.error);
+  //     setData([]);
+  //   } else {
+      // const claimedAssigned = res?.claimAssigneds || [];
+      // const claimProcessed = res?.projectClaimProcesseds || [];
+      // const beneficiaryReferred = res?.beneficiaryReferreds || [];
+      // const newData = mapTransactions(
+      //   claimedAssigned.concat(claimProcessed, beneficiaryReferred),
+      // );
+
+      // setData(newData);
+  //     setError(null);
+  //   }
+  // }, [address, queryService]);
+
+  // useEffect(() => {
+  //   fetchData();
+  // }, [fetchData]);
+
+  // return useMemo(
+  //   () => ({
+  //     data,
+  //     error,
+  //   }),
+  //   [data, error],
+  // );
 };
 
 export const useProjectTransaction = () => {
   const { queryService } = useGraphService();
-  const [data, setData] = useState<any[]>([]);
-  const [error, setError] = useState<string | null>(null);
 
-  const fetchData = useCallback(async () => {
-    const res = await queryService.useProjectTransaction();
+  return useQuery({
+    queryKey:['project-trans'],
+    queryFn: async()=>{
+          const res = await queryService.useProjectTransaction();
+          const transactionTypes = [
+                  'claimAssigneds',
+                  'projectClaimProcesseds',
+                  'beneficiaryReferreds',
+                  'beneficiaryAddeds',
+                  'claimCreateds',
+                  'tokenBudgetIncreases',
+                ];
+                const newData = transactionTypes.reduce((acc, type) => {
+                  const transactions = res?.data[type] || [];
+                  return acc.concat(transactions.map(formatTransaction));
+                }, []);
 
-    if (res.error) {
-      setError(res.error);
-      setData([]);
-    } else {
-      const transactionTypes = [
-        'claimAssigneds',
-        'projectClaimProcesseds',
-        'beneficiaryReferreds',
-        'beneficiaryAddeds',
-        'claimCreateds',
-        'tokenBudgetIncreases',
-      ];
-      const newData = transactionTypes.reduce((acc, type) => {
-        const transactions = res?.data[type] || [];
-        return acc.concat(transactions.map(formatTransaction));
-      }, []);
-
-      setData(newData);
-      setError(null);
+      return newData
     }
-  }, [queryService]);
+  })
 
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+  // const fetchData = useCallback(async () => {
+  //   const res = await queryService.useProjectTransaction();
 
-  return { data, error };
+  //   if (res.error) {
+  //     setError(res.error);
+  //     setData([]);
+  //   } else {
+  //     const transactionTypes = [
+  //       'claimAssigneds',
+  //       'projectClaimProcesseds',
+  //       'beneficiaryReferreds',
+  //       'beneficiaryAddeds',
+  //       'claimCreateds',
+  //       'tokenBudgetIncreases',
+  //     ];
+  //     const newData = transactionTypes.reduce((acc, type) => {
+  //       const transactions = res?.data[type] || [];
+  //       return acc.concat(transactions.map(formatTransaction));
+  //     }, []);
+
+  //     setData(newData);
+  //     setError(null);
+  //   }
+  // }, [queryService]);
+
+  // useEffect(() => {
+  //   fetchData();
+  // }, [fetchData]);
+
+  // return { data, error };
 };
 
 export const useBeneficiaryCount = (projectAddress: string) => {
   const { queryService } = useGraphService();
-  const [data, setData] = useState<any>(null);
-  const [error, setError] = useState<string | null>(null);
-
-  const fetchBeneficiaries = useCallback(async () => {
-    const res = await queryService.getTotalBeneficiary(projectAddress);
-    if (res.error) {
-      setError(res.error);
-      setData([]);
-    } else {
-      setData(res);
-      setError(null);
+  return useQuery({
+    enabled:projectAddress?true:false,
+    queryKey:['beneficiary-count',projectAddress],
+    queryFn: async ()=>{
+      const res = await queryService.getTotalBeneficiary(projectAddress);
+      return res;
     }
-  }, [projectAddress, queryService]);
+  })
 
-  useEffect(() => {
-    fetchBeneficiaries();
-  }, [fetchBeneficiaries]);
+  // const fetchBeneficiaries = useCallback(async () => {
+  //   const res = await queryService.getTotalBeneficiary(projectAddress);
+  //   if (res.error) {
+  //     setError(res.error);
+  //     setData([]);
+  //   } else {
+  //     setData(res);
+  //     setError(null);
+  //   }
+  // }, [projectAddress, queryService]);
 
-  return useMemo(() => ({ data, error }), [data, error]);
+  // useEffect(() => {
+  //   fetchBeneficiaries();
+  // }, [fetchBeneficiaries]);
+
+  // return useMemo(() => ({ data, error }), [data, error]);
 };
 
 export const useVendorTransaction = (address: string) => {
   const { queryService } = useGraphService();
-  const [data, setData] = useState<any[]>([]);
-  const [error, setError] = useState<string | null>(null);
 
-  const fetchData = useCallback(async () => {
-    const res = await queryService.useVendorTransaction(address);
-
-    if (res.error) {
-      setError(res.error);
-      setData([]);
-    } else {
+  return useQuery({
+    enabled:address?true:false,
+    queryKey:['vendor-vouchers',address],
+    queryFn: async () =>{
+      const res = await queryService.useVendorTransaction(address);
       const claimedAssigned = res?.data?.claimCreateds || [];
       const claimProcessed = res?.data?.projectClaimProcesseds || [];
       const beneficiaryReferred = res?.data?.beneficiaryReferreds || [];
@@ -210,49 +244,47 @@ export const useVendorTransaction = (address: string) => {
           tokenRedeems,
         ),
       );
-
-      setData(newData);
-      setError(null);
+      return {
+         newData
+      }
     }
-  }, [address, queryService]);
 
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
-
-  return useMemo(
-    () => ({
-      data,
-      error,
-    }),
-    [data, error],
-  );
+  })
 };
 
 export const useVendorVoucher = (address: string) => {
   const { queryService } = useGraphService();
-  const [data, setData] = useState<any>();
-  const [error, setError] = useState<string | null>(null);
+  // const [data, setData] = useState<any>();
+  // const [error, setError] = useState<string | null>(null);
 
-  const fetchVoucher = useCallback(async () => {
-    const res = await queryService.useVendorVoucher(address);
-    if (res.error) {
-      setError(res.error);
-      setData([]);
-    } else {
-      setData(res);
+  return useQuery({
+    enabled:address?true:false,
+    queryKey:['vendor-voucher',address],
+    queryFn: async ()=>{
+      const res = await queryService.useVendorVoucher(address);
+      return res;
     }
-  }, [address, queryService]);
+  })
 
-  useEffect(() => {
-    fetchVoucher();
-  }, [fetchVoucher]);
+  // const fetchVoucher = useCallback(async () => {
+    // const res = await queryService.useVendorVoucher(address);
+  //   if (res.error) {
+  //     setError(res.error);
+  //     setData([]);
+  //   } else {
+  //     setData(res);
+  //   }
+  // }, [address, queryService]);
 
-  return useMemo(
-    () => ({
-      data,
-      error,
-    }),
-    [data, error],
-  );
+  // useEffect(() => {
+  //   fetchVoucher();
+  // }, [fetchVoucher]);
+
+  // return useMemo(
+  //   () => ({
+  //     data,
+  //     error,
+  //   }),
+  //   [data, error],
+  // );
 };

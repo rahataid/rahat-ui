@@ -1,9 +1,5 @@
 'use client';
-import {
-  BeneficiaryQuery,
-  
-  VendorQuery,
-} from '@rahat-ui/query';
+import { BeneficiaryQuery, ProjectQuery, VendorQuery } from '@rahat-ui/query';
 import {
   AuthQuery,
   RoleQuery,
@@ -27,6 +23,7 @@ export type ServiceContextType = {
   beneficiaryQuery: BeneficiaryQuery;
   vendorQuery: VendorQuery;
   roleQuery: RoleQuery;
+  projectQuery: ProjectQuery;
 };
 
 export const ServiceContext = createContext<ServiceContextType | null>(null);
@@ -37,12 +34,13 @@ interface ServiceProviderProps {
 
 export function ServiceProvider({ children }: ServiceProviderProps) {
   const queryClient = useQueryClient();
+  const version = '/v1';
   const rumsanService = new RumsanService({
-    baseURL: process.env.NEXT_PUBLIC_API_HOST_URL,
+    baseURL: process.env.NEXT_PUBLIC_API_HOST_URL + version,
   });
 
   const communicationService = new CommunicationService({
-    baseURL: process.env.NEXT_PUBLIC_API_COMMUNICATION_URL,
+    baseURL: process.env.NEXT_PUBLIC_API_COMMUNICATION_URL + version,
   });
 
   useError();
@@ -80,6 +78,7 @@ export function ServiceProvider({ children }: ServiceProviderProps) {
   const beneficiaryQuery = new BeneficiaryQuery(rumsanService, queryClient);
   const vendorQuery = new VendorQuery(rumsanService, queryClient);
   const roleQuery = new RoleQuery(rumsanService, queryClient);
+  const projectQuery = new ProjectQuery(rumsanService, queryClient);
   const communicationQuery = new CommunicationQuery(
     communicationService,
     queryClient,
@@ -94,6 +93,7 @@ export function ServiceProvider({ children }: ServiceProviderProps) {
         userQuery,
         beneficiaryQuery,
         vendorQuery,
+        projectQuery,
         roleQuery,
         communicationQuery,
       }}

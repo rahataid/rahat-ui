@@ -12,7 +12,8 @@
     "postbuild": "cp -R apps/rahat-ui/public dist/apps/rahat-ui",
     "clean": "rm -rf dist node_modules tmp",
     "prepare": "husky install",
-    "checkFileSize": "node ./tools/scripts/checkFileSize.js"
+    "checkFileSize": "node ./tools/scripts/checkFileSize.js",
+    "play": "ts-node play"
   },
   "private": true,
   "dependencies": {
@@ -36,15 +37,15 @@
     "@radix-ui/react-tabs": "^1.0.4",
     "@radix-ui/react-toast": "^1.1.5",
     "@radix-ui/react-tooltip": "^1.0.7",
-    "@rahataid/community-tool-sdk": "^0.0.4",
-    "@rahataid/el-subgraph": "^0.0.3",
+    "@rahataid/community-tool-sdk": "^0.0.5",
+    "@rahataid/el-subgraph": "0.0.5",
     "@rahataid/sdk": "^0.0.17",
-    "@rumsan/communication": "^0.0.3",
+    "@rumsan/communication": "^0.0.7",
     "@rumsan/core": "^3.0.133",
     "@rumsan/extensions": "^0.0.14",
     "@rumsan/prisma": "^1.0.125",
-    "@rumsan/react-query": "^0.0.29",
-    "@rumsan/sdk": "^0.0.40",
+    "@rumsan/react-query": "0.0.33",
+    "@rumsan/sdk": "^0.0.43",
     "@rumsan/user": "^3.0.152",
     "@tanstack/react-query": "^5.18.1",
     "@tanstack/react-query-devtools": "^5.18.1",
@@ -101,15 +102,15 @@
     "zustand": "^4.5.2"
   },
   "devDependencies": {
-    "@nx/cypress": "18.0.8",
-    "@nx/eslint": "18.0.8",
-    "@nx/eslint-plugin": "18.0.8",
-    "@nx/jest": "18.0.8",
-    "@nx/js": "18.0.8",
-    "@nx/next": "18.0.8",
-    "@nx/react": "18.0.8",
-    "@nx/rollup": "18.0.8",
-    "@nx/workspace": "18.0.8",
+    "@nx/cypress": "18.0.0",
+    "@nx/eslint": "18.0.0",
+    "@nx/eslint-plugin": "18.0.0",
+    "@nx/jest": "18.0.0",
+    "@nx/js": "18.0.0",
+    "@nx/next": "18.0.0",
+    "@nx/react": "18.0.0",
+    "@nx/rollup": "18.0.0",
+    "@nx/workspace": "18.0.0",
     "@rollup/plugin-url": "^8.0.2",
     "@svgr/rollup": "^8.1.0",
     "@swc-node/register": "~1.9.0",
@@ -150,5 +151,6 @@
     "ts-node": "10.9.2",
     "typescript": "~5.4.2",
     "verdaccio": "^5.29.2"
-  }
+  },
+  "packageManager": "pnpm@8.15.5+sha1.a58c038faac410c947dbdb93eb30994037d0fce2"
 }

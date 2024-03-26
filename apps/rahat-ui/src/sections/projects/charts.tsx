@@ -1,68 +1,31 @@
 import { PieChart } from '@rahat-ui/shadcn/charts';
+import { useRumsanService } from '../../providers/service.provider';
+import { formatUnderScoredString } from '../../utils/string';
 
 const Charts = () => {
-  const chartData1 = [
-    { label: 'Male', value: 12244 },
-    { label: 'Female', value: 53345 },
-    { label: 'Other', value: 345 },
-  ];
+  const { beneficiaryQuery } = useRumsanService();
+  const { data, isLoading } = beneficiaryQuery.useBeneficiaryStats();
 
-  const chartData2 = [
-    { label: 'Banked', value: 12244 },
-    { label: 'Unbanked', value: 53345 },
-  ];
+  if (isLoading) return null;
 
-  const chartData3 = [
-    { label: 'No_Phone', value: 2244 },
-    { label: 'Smart_Phone', value: 3345 },
-  ];
   return (
     <div className="grid md:grid-cols-3 gap-2 mt-2">
-      {chartData1.length && (
-        <PieChart
-          title="Gender-wise Distribution"
-          subheader="Total number of peoples in the system."
-          chart={{
-            series: chartData1,
-          }}
-        />
-      )}
-      {chartData2.length && (
-        <PieChart
-          title="Beneficiaries"
-          subheader="Total number of beneficiaries in the system."
-          chart={{
-            series: chartData2,
-          }}
-        />
-      )}
-      {chartData3.length && (
-        <PieChart
-          title="Voucher redemption"
-          subheader="Total number of voucher redemption in the system."
-          chart={{
-            series: chartData3,
-          }}
-        />
-      )}
-      {chartData3.length && (
-        <PieChart
-          title="Eye screening"
-          subheader="Total number of eye screening in the system."
-          chart={{
-            series: chartData3,
-          }}
-        />
-      )}
-      {chartData3.length && (
-        <PieChart
-          title="Discount voucher redemption"
-          subheader="Total number of discount voucher redemption in the system."
-          chart={{
-            series: chartData3,
-          }}
-        />
-      )}
+      {data?.map((d: any) => {
+        const series = Array.isArray(d?.data)
+          ? d?.data.map((item: any) => ({
+              label: formatUnderScoredString(item.id),
+              value: item.count,
+            }))
+          : [{ label: formatUnderScoredString(d.name), value: d?.data?.count }];
+        return (
+          <PieChart
+            key={d.name}
+            title={formatUnderScoredString(d.name)}
+            subheader={d.subheader || ''}
+            chart={{ series }}
+          />
+        );
+      })}
     </div>
   );
 };

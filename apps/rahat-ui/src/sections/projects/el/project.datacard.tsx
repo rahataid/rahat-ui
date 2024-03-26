@@ -1,20 +1,17 @@
-import React from 'react';
 import DataCard from 'apps/rahat-ui/src/components/dataCard';
 import { Users } from 'lucide-react';
-import {
-  useProjectVoucher,
-  useBeneficiaryCount,
-} from '../../../hooks/el/subgraph/querycall';
+import { FC } from 'react';
 import Activities from './projects.activity';
 
-const ProjectDataCard = () => {
-  const { data: projectVoucher } = useProjectVoucher(
-    '0x9C8Ee9931BEc18EA883c8F23c7427016bBDeF171',
-  );
+type ProjectDataCardProps = {
+  beneficiaryDetails: any;
+  projectVoucher: any;
+};
 
-  const { data: beneficiaryDetails } = useBeneficiaryCount(
-    '0x9C8Ee9931BEc18EA883c8F23c7427016bBDeF171',
-  );
+const ProjectDataCard: FC<ProjectDataCardProps> = ({
+  beneficiaryDetails,
+  projectVoucher,
+}) => {
   return (
     <>
       <div className="mb-2 grid md:grid-cols-3 gap-2">
@@ -22,28 +19,28 @@ const ProjectDataCard = () => {
           <DataCard
             className=""
             title="Beneficiary"
-            number={beneficiaryDetails?.enrolledBen}
+            number={beneficiaryDetails?.enrolledBen || '-'}
             subTitle="Enrolled"
             Icon={Users}
           />
           <DataCard
             className=""
             title="Beneficiary"
-            number={beneficiaryDetails?.referredBen}
+            number={beneficiaryDetails?.referredBen || '-'}
             subTitle="Referred"
             Icon={Users}
           />
           <DataCard
             className=""
             title="Vouchers"
-            number={projectVoucher?.freeVoucherBudget}
+            number={projectVoucher?.freeVoucherBudget || '-'}
             subTitle="Free"
             Icon={Users}
           />
           <DataCard
             className=""
             title="Vouchers"
-            number={projectVoucher?.refeeredVoucherBudget}
+            number={projectVoucher?.referredVoucherBudget || '-'}
             subTitle="Discount"
             Icon={Users}
           />

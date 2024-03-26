@@ -1,7 +1,8 @@
-import { ELVendorView } from '../../../../../sections/projects/el/vendors';
+import React from 'react';
+import VendorsList from '../../../../../sections/projects/el/vendors/vendors.list';
 
-const Page = () => {
-  return <ELVendorView />;
+const VendorList = () => {
+  return <VendorsList />;
 };
 
-export default Page;
+export default VendorList;

@@ -26,22 +26,28 @@ export default function Activities({ title, className, data }: CardProps) {
             <p className="text-sm text-muted-foreground">Assigned</p>
             <p className="text-sm text-muted-foreground">Reedemed</p>
           </div>
-          <div>
-            <div className="ml-auto font-light text-sm">
-              {' '}
-              {data?.freeVoucherBudget}{' '}
+          <div className="space-y-1">
+            <div className="ml-auto font-light text-sm flex items-center justify-between gap-3">
+              {data?.freeVoucherBudget}
+              <span className="text-xs text-muted-foreground">
+                {data?.freeVoucherCurrency}{' '}
+                {data?.freeVoucherBudget * data?.freeVoucherPrice}
+              </span>
             </div>
-            <p className="text-xs text-muted-foreground">$5</p>
-            <div className="ml-auto font-light text-sm">
-              {' '}
+            <div className="ml-auto font-light text-sm flex items-center justify-between gap-3">
               {data?.freeVoucherAssigned}{' '}
+              <span className="text-xs text-muted-foreground">
+                {data?.freeVoucherCurrency}{' '}
+                {data?.freeVoucherAssigned * data?.freeVoucherPrice}
+              </span>
             </div>
-            <p className="text-xs text-muted-foreground">$5</p>
-            <div className="ml-auto font-light text-sm">
-              {' '}
-              {data?.freeVoucherClaimed}{' '}
+            <div className="ml-auto font-light text-sm flex items-center justify-between gap-3">
+              {data?.freeVoucherClaimed}
+              <span className="text-xs text-muted-foreground">
+                {data?.freeVoucherCurrency}{' '}
+                {data?.freeVoucherClaimed * data?.freeVoucherPrice}
+              </span>
             </div>
-            <p className="text-xs text-muted-foreground">$5</p>
           </div>
         </div>
         <div className="flex items-center justify-between">
@@ -51,22 +57,28 @@ export default function Activities({ title, className, data }: CardProps) {
             <p className="text-sm text-muted-foreground">Assigned</p>
             <p className="text-sm text-muted-foreground">Reedemed</p>
           </div>
-          <div>
-            <div className="ml-auto font-light text-sm">
-              {' '}
-              {data?.refeeredVoucherBudget}{' '}
+          <div className="space-y-1">
+            <div className="ml-auto font-light text-sm flex items-center justify-between gap-3">
+              {data?.referredVoucherBudget}
+              <span className="text-xs text-muted-foreground">
+                {data?.referredVoucherCurrency}{' '}
+                {data?.referredVoucherBudget * data?.referredVoucherPrice}
+              </span>
             </div>
-            <p className="text-xs text-muted-foreground">$1,999.00</p>
-            <div className="ml-auto font-light text-sm">
-              {' '}
-              {data?.refeeredVoucherAssigned}{' '}
+            <div className="ml-auto font-light text-sm flex items-center justify-between gap-3">
+              {data?.referredVoucherAssigned}{' '}
+              <span className="text-xs text-muted-foreground">
+                {data?.referredVoucherCurrency}{' '}
+                {data?.referredVoucherAssigned * data?.referredVoucherPrice}
+              </span>
             </div>
-            <p className="text-xs text-muted-foreground">$5</p>
-            <div className="ml-auto font-light text-sm">
-              {' '}
-              {data?.refeeredVoucherClaimed}{' '}
+            <div className="ml-auto font-light text-sm flex items-center justify-between gap-3">
+              {data?.referredVoucherClaimed}
+              <span className="text-xs text-muted-foreground">
+                {data?.referredVoucherCurrency}{' '}
+                {data?.referredVoucherClaimed * data?.referredVoucherPrice}
+              </span>
             </div>
-            <p className="text-xs text-muted-foreground">$1,999.00</p>
           </div>
         </div>
       </CardContent>

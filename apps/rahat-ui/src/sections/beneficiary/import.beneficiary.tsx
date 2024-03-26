@@ -63,7 +63,8 @@ export default function ImportBeneficiary() {
         );
       })
       .catch((error) => {
-        toast.error('Error uploading file!');
+        console.log('error', error);
+        toast.error('Invalid data format please check your data!');
       });
   };
 

@@ -53,7 +53,6 @@ export default function VendorsList() {
   const uuid = useParams().id;
 
   const handleViewClick = (walletAddress: string) => {
-    console.log({ walletAddress });
     router.push(`/projects/el/${uuid}/vendors/${walletAddress}`);
   };
 

@@ -68,21 +68,16 @@ export const useTableColumns = (handleAssignClick: any) => {
       ),
     },
     {
-      accessorKey: 'amount',
-      header: () => <div className="text-right">Amount</div>,
+      accessorKey: 'projectName',
+      header: () => <div className="text-right">Project Name</div>,
       cell: ({ row }) => {
-        const amount = parseFloat(row.getValue('amount'));
 
-        // Format the amount as a dollar amount
-        const formatted = new Intl.NumberFormat('en-US', {
-          style: 'currency',
-          currency: 'USD',
-        }).format(amount);
 
-        return <div className="text-right font-medium">{formatted}</div>;
+        return <div className="text-right font-medium">{row.getValue('projectName')}</div>;
       },
     },
     {
+      header: () => <div className="text-right">Actions</div>,
       id: 'actions',
       enableHiding: false,
       cell: ({ row }) => {

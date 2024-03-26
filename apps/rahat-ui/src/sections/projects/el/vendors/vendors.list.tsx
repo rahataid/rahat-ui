@@ -40,8 +40,6 @@ import { useProjectAction } from '@rahat-ui/query';
 import { useParams } from 'next/navigation';
 import { MS_ACTIONS } from '@rahataid/sdk';
 
-
-
 export type Transaction = {
   id: string;
   topic: string;
@@ -154,37 +152,35 @@ export default function VendorsList() {
       rowSelection,
     },
   });
-  const uuid = useParams().id
+  const uuid = useParams().id;
 
   const [perPage, setPerPage] = React.useState<number>(5);
   const [currentPage, setCurrentPage] = React.useState<number>(1);
 
-  const fetchVendors = async () =>{
+  const fetchVendors = async () => {
     const result = await getVendors.mutateAsync({
       uuid,
-      data:{
+      data: {
         action: MS_ACTIONS.VENDOR.LIST_BY_PROJECT,
         payload: {
           page: currentPage,
           perPage,
-        }
-      }
+        },
+      },
+    });
 
-    })
+    const filteredData = result?.data.map((row: any) => {
+      return {
+        name: row.User.name,
+        walletaddress: row.User.wallet,
+      };
+    });
+    setData(filteredData);
+  };
 
-    const filteredData = result?.data.map ((row:any)=>{
-      return{
-        name:row.User.name,
-        walletaddress:row.User.wallet
-      }
-    })
-    setData(filteredData)
-  }
-  
   // const fetchBeneficiary = React.useCallback(() => {
   //   // const querRes = queryService.useProjectTransaction();
 
-    
   //   const querRes = queryService.useBeneficiaryTransaction(walletAddress);
 
   //   querRes.then((res) => {

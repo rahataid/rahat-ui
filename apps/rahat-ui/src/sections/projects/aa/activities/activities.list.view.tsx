@@ -19,14 +19,14 @@ export default function ActivitiesList() {
         <ResizablePanel minSize={50}>
           <ActivitiesTable />
         </ResizablePanel>
-        {secondPanel &&
+        {secondPanel && (
           <>
-            <ResizableHandle className='mt-2' withHandle />
+            <ResizableHandle className="mt-2" withHandle />
             <ResizablePanel minSize={30} defaultSize={30}>
               {secondPanel}
             </ResizablePanel>
           </>
-        }
+        )}
       </ResizablePanelGroup>
     </>
   );

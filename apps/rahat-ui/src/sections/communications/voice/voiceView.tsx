@@ -8,7 +8,7 @@ import {
 } from '@rahat-ui/shadcn/components/resizable';
 import { COMMUNICATION_NAV_ROUTE } from 'apps/rahat-ui/src/constants/communication.const';
 import CommunicationNav from '../nav';
-import AddCampaign from '../add/addCampaign';
+import AddCampaign from '../add/add-form';
 import VoiceTableView from './voiceTable';
 
 export default function VoiceView() {

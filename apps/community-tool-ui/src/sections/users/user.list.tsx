@@ -47,9 +47,10 @@ import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { ListBeneficiary } from '@rahat-ui/types';
 import { truncateEthAddress } from '@rumsan/core/utilities/string.utils';
 import { useRumsanService } from '../../providers/service.provider';
+import { IUserItem } from '../../types/user';
 
 type IProps = {
-  handleClick: (item: Beneficiary) => void;
+  handleClick: (item: IUserItem) => void;
 };
 
 export type Beneficiary = {
@@ -60,7 +61,7 @@ export type Beneficiary = {
   bank: string;
 };
 
-export const columns: ColumnDef<ListBeneficiary>[] = [
+export const columns: ColumnDef<IUserItem>[] = [
   {
     accessorKey: 'name',
     header: 'Name',
@@ -115,7 +116,6 @@ export default function ListView({ handleClick }: IProps) {
       rowSelection,
     },
   });
-
   return (
     <>
       <div className="w-full h-full -mt-2 p-2 bg-secondary">

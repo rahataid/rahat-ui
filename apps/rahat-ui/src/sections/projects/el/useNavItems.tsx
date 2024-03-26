@@ -1,6 +1,7 @@
 import {
   useCloseProject,
   useMintVouchers,
+  useOnlyMintVoucher,
 } from 'apps/rahat-ui/src/hooks/el/contracts/el-contracts';
 import {
   MessageSquare,
@@ -20,6 +21,7 @@ import CreateTokenModal from './create-token-modal';
 import CreateVoucherModal from './create-voucher-modal';
 import { useProjectAction } from 'libs/query/src/lib/projects/projects';
 import { getProjectAddress } from 'apps/rahat-ui/src/utils/getProjectAddress';
+import { useProjectVoucher } from 'apps/rahat-ui/src/hooks/el/subgraph/querycall';
 
 export const useNavItems = () => {
   const params = useParams();
@@ -31,6 +33,11 @@ export const useNavItems = () => {
     referralVoucherAddress: `0x${string}`;
     elProjectAddress: `0x${string}`;
   };
+
+  const { data } = useProjectVoucher(
+    '0xaC29e7A5b6A4657a4B98E43F3b9517152867c896',
+    '0x93B2C030C17B86500962889cE3C380b4376F42D4',
+  );
 
   const [addresses, setAddresses] = useState<AddressType>();
 
@@ -75,16 +82,17 @@ export const useNavItems = () => {
   };
 
   const createVoucher = useMintVouchers();
+  const createOnlyVoucher = useOnlyMintVoucher();
   const closeProject = useCloseProject();
+
+  console.log(voucherInputs)
 
   // Free Voucher
   const handleCreateVoucherSubmit = async (e: any) => {
     e.preventDefault();
-    console.log("reached")
-    console.log(addresses)
     if (!addresses) return;
     const referralLimit = 3;
-    await createVoucher.writeContractAsync({
+    !data ? await createVoucher.writeContractAsync({
       address: addresses?.donorAddress,
       args: [
         addresses?.eyeVoucherAddress,
@@ -98,7 +106,16 @@ export const useNavItems = () => {
         BigInt(referralLimit),
         voucherInputs.currency,
       ],
-    });
+    }) : await createOnlyVoucher.writeContractAsync({
+      address: addresses?.donorAddress,
+      args: [
+        "0x93B2C030C17B86500962889cE3C380b4376F42D4",
+        "0x0e952DFcf7506Dfd1c38822173531c658a27996e",
+        "0xaC29e7A5b6A4657a4B98E43F3b9517152867c896",
+        BigInt(voucherInputs.tokens),
+        BigInt(referralLimit),
+      ],
+    })
   };
 
   // Referred Voucher
@@ -190,6 +207,8 @@ export const useNavItems = () => {
                 voucherInputs={voucherInputs}
                 handleSubmit={handleCreateVoucherSubmit}
                 handleInputChange={handleCreateVoucherTokenChange}
+                data = {data}
+                setVoucherInputs = {setVoucherInputs}
               />
               {/* <CreateTokenModal
                 open={createVoucher.isSuccess && !completeTransaction}

@@ -245,8 +245,8 @@ export default function AddCampaign() {
               checked
                 ? [...prevSelectedRows, item]
                 : selectedRows?.filter(
-                    (value) => (value.id || value.beneficiaryId) !== item.id,
-                  ),
+                  (value) => (value.id || value.beneficiaryId) !== item.id,
+                ),
             );
           }}
         />
@@ -258,6 +258,11 @@ export default function AddCampaign() {
       accessorKey: 'name',
       header: 'Name',
       cell: ({ row }) => <div>{row.getValue('name')}</div>,
+    },
+    {
+      accessorKey: 'phone',
+      header: 'Phone',
+      cell: ({ row }) => <div>{row.getValue('phone')}</div>,
     },
   ];
 
@@ -330,10 +335,10 @@ export default function AddCampaign() {
                         <FormControl>
                           <Button
                             variant={'outline'}
-                            // className={cn(
-                            //   '!mt-[15px] w-[240px] pl-3 text-left font-normal',
-                            //   !field.value && 'text-muted-foreground'
-                            // )}
+                          // className={cn(
+                          //   '!mt-[15px] w-[240px] pl-3 text-left font-normal',
+                          //   !field.value && 'text-muted-foreground'
+                          // )}
                           >
                             {field.value ? (
                               format(field.value, 'PPP')
@@ -380,7 +385,7 @@ export default function AddCampaign() {
                       </FormControl>
                       <SelectContent>
                         {Object.keys(CAMPAIGN_TYPES).map((key) => {
-                         
+
                           return <SelectItem value={key}>{key}</SelectItem>;
                         })}
                       </SelectContent>
@@ -524,9 +529,9 @@ export default function AddCampaign() {
                                       {header.isPlaceholder
                                         ? null
                                         : flexRender(
-                                            header.column.columnDef.header,
-                                            header.getContext(),
-                                          )}
+                                          header.column.columnDef.header,
+                                          header.getContext(),
+                                        )}
                                     </TableHead>
                                   );
                                 })}

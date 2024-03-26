@@ -17,7 +17,7 @@ export default function ActivitiesDetail({
   closeSecondPanel,
 }: IProps) {
   return (
-    <div className="p-2 bg-card mt-2 mr-2 rounded border">
+    <div className="p-2 bg-card h-full mt-2 mr-2 rounded border-t border-r">
       <div className="flex gap-4">
         <TooltipProvider delayDuration={100}>
           <Tooltip>
@@ -59,6 +59,7 @@ export default function ActivitiesDetail({
             'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat'}
         </p>
         <p>Phase : {activityDetail?.phase}</p>
+        <p>Category : {activityDetail?.category} </p>
       </div>
     </div>
   );

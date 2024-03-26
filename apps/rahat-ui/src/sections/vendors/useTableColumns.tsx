@@ -98,7 +98,18 @@ export const useTableColumns = (handleAssignClick: any) => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="bg-white">
-              <DropdownMenuItem onClick={() => setSecondPanelComponent(<VendorsDetailSplitView closeSecondPanel={closeSecondPanel} vendorsDetail={row.original} />)}>View Details</DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() =>
+                  setSecondPanelComponent(
+                    <VendorsDetailSplitView
+                      closeSecondPanel={closeSecondPanel}
+                      vendorsDetail={row.original}
+                    />,
+                  )
+                }
+              >
+                View Details
+              </DropdownMenuItem>
               {/* <DropdownMenuItem onClick={handleRegisterVendor}>
                 Register Vendor
               </DropdownMenuItem> */}

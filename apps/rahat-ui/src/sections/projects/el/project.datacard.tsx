@@ -45,7 +45,7 @@ const ProjectDataCard: FC<ProjectDataCardProps> = ({
             Icon={Users}
           />
         </div>
-        <div className="">
+        <div>
           <Activities title="Vouchers" data={projectVoucher} />
         </div>
       </div>

@@ -206,10 +206,10 @@ IProps) {
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-        <div className="rounded border bg-white">
+        <div className="rounded border bg-card">
           <TableComponent>
             <ScrollArea className="h-[calc(100vh-182px)]">
-              <TableHeader className="sticky top-0">
+              <TableHeader className="bg-card sticky top-0">
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow key={headerGroup.id}>
                     {headerGroup.headers.map((header) => {

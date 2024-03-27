@@ -204,10 +204,10 @@ export default function VendorsList() {
           className="w-full"
         />
       </div>
-      <div className="rounded border h-[calc(100vh-180px)] bg-card">
+      <div className="rounded  h-[calc(100vh-180px)] bg-card">
         <Table>
           <ScrollArea className="h-table1">
-            <TableHeader className="sticky top-0">
+            <TableHeader className="bg-card sticky top-0">
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
                   {headerGroup.headers.map((header) => {

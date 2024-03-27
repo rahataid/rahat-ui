@@ -1,14 +1,22 @@
 import { CreateProjectPayload } from '@rahat-ui/types';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import {
+  UseQueryResult,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
 import { TAGS } from '../../config';
+import { useRSQuery } from '@rumsan/react-query';
+
 import { api } from '../../utils/api';
+import { getProjectClient } from '@rahataid/sdk/clients';
 
 const createProject = async (payload: CreateProjectPayload) => {
   const res = await api.post('/projects', payload);
   return res.data;
 };
 
-const useProjectCreateMutation = () => {
+export const useProjectCreateMutation = () => {
   const qc = useQueryClient();
 
   return useMutation({
@@ -24,10 +32,21 @@ const projectActions = async (uuid: any, payload: any) => {
   return res.data;
 };
 
-const useProjectAction = () => {
+export const useProjectAction = () => {
   return useMutation({
     mutationFn: (data: any) => projectActions(data?.uuid, data.payload),
   });
 };
 
-export { useProjectCreateMutation, useProjectAction };
+export const useProjectList = (payload: any): UseQueryResult<any, Error> => {
+  const { queryClient, rumsanService } = useRSQuery();
+
+  const projectClient = getProjectClient(rumsanService.client);
+  return useQuery(
+    {
+      queryKey: [TAGS.GET_ALL_PROJECTS, payload],
+      queryFn: () => projectClient.list(payload),
+    },
+    queryClient,
+  );
+};

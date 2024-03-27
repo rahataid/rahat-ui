@@ -1,5 +1,3 @@
-import React from 'react';
-
 const ProjectInfo = () => {
   return (
     <div className="grid grid-cols-1 rounded-sm bg-card p-4 mb-2 shadow">

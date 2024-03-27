@@ -17,6 +17,7 @@ import { Project, ProjectActions } from '@rahataid/sdk/project/project.types';
 import { PaginatedResult, Pagination } from '@rumsan/sdk/types';
 import { useProjectSettingsStore } from './project.store';
 import { useEffect } from 'react';
+import { isEmpty } from 'lodash';
 
 const createProject = async (payload: CreateProjectPayload) => {
   const res = await api.post('/projects', payload);
@@ -64,9 +65,11 @@ export const useProjectSettings = (uuid: UUID) => {
     settings: state.settings,
     setSettings: state.setSettings,
   }));
+
   const query = useQuery({
     queryKey: [TAGS.GET_PROJECT_SETTINGS],
-    enabled: settings?.[uuid] !== uuid,
+    enabled: isEmpty(settings?.[uuid]),
+    // enabled: !!settings[uuid],
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid,
@@ -77,15 +80,16 @@ export const useProjectSettings = (uuid: UUID) => {
           },
         },
       });
-      return mutate;
+      return mutate.data.value;
     },
+    // initialData: settings?.[uuid],
   });
 
   useEffect(() => {
-    if (query.data) {
+    if (query.isSuccess) {
       setSettings({
         ...settings,
-        [uuid]: query.data?.data?.value,
+        [uuid]: query?.data,
       });
     }
   }, [query.data]);

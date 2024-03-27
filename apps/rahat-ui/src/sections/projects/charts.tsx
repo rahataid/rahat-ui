@@ -1,5 +1,4 @@
 import { PieChart } from '@rahat-ui/shadcn/charts';
-import { useRumsanService } from '../../providers/service.provider';
 import { formatUnderScoredString } from '../../utils/string';
 
 const Charts = () => {

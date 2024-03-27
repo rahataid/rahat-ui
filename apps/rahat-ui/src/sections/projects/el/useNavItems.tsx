@@ -1,8 +1,11 @@
+import { useProjectSettingsStore } from '@rahat-ui/query';
 import {
   useCloseProject,
   useMintVouchers,
   useOnlyMintVoucher,
 } from 'apps/rahat-ui/src/hooks/el/contracts/el-contracts';
+import { useProjectVoucher } from 'apps/rahat-ui/src/hooks/el/subgraph/querycall';
+import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 import {
   LayoutDashboard,
   MessageSquare,
@@ -21,10 +24,6 @@ import { useSwal } from '../../../components/swal';
 import { NavItem } from '../components';
 import ConfirmModal from './confirm.modal';
 import CreateVoucherModal from './create-voucher-modal';
-import { getProjectAddress } from 'apps/rahat-ui/src/utils/getProjectAddress';
-import { useProjectVoucher } from 'apps/rahat-ui/src/hooks/el/subgraph/querycall';
-import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
-import { useProjectAction } from '@rahat-ui/query';
 
 type AddressType = {
   donorAddress: `0x${string}`;
@@ -34,15 +33,13 @@ type AddressType = {
 };
 
 export const useNavItems = () => {
-  const params = useParams();
+  const { id } = useParams();
+  const contractSettings = useProjectSettingsStore(
+    (state) => state.settings?.[id] || null,
+  );
   const dialog = useSwal();
   const createTokenSummaryModal = useBoolean();
   const createTokenModal = useBoolean();
-
-  console.log('first', {
-    tokenModal: createTokenModal.value,
-    summaryModal: createTokenSummaryModal.value,
-  });
 
   const handleOpenCreateTokenModal = () => {
     createTokenModal.onToggle();
@@ -76,12 +73,9 @@ export const useNavItems = () => {
     tokenDescription: '',
   });
 
-  const uuid = params.id;
-  const getProject = useProjectAction();
-
   const projectVoucher = useProjectVoucher(
-    addresses?.elProjectAddress || '',
-    addresses?.eyeVoucherAddress || '',
+    contractSettings?.elProjectAddress || '',
+    contractSettings?.eyeVoucherAddress || '',
   );
 
   useEffect(() => {
@@ -91,25 +85,6 @@ export const useNavItems = () => {
       }));
     }
   }, [projectVoucher.isSuccess]);
-
-  const fetchAddress = async () => {
-    try {
-      let addressValue: any;
-      const address = await getProjectAddress(getProject, uuid);
-      setAddresses({
-        donorAddress: address?.value?.rahatdonor?.address,
-        elProjectAddress: address?.value?.elproject?.address,
-        eyeVoucherAddress: address?.value?.eyevoucher?.address,
-        referralVoucherAddress: address?.value?.referralvoucher?.address,
-      });
-    } catch (error) {
-      console.log('Error fetching project address:', error);
-    }
-  };
-
-  useEffect(() => {
-    fetchAddress();
-  }, []);
 
   const handleCreateVoucherTokenChange = (e: any) => {
     const { name, value } = e.target;
@@ -127,34 +102,51 @@ export const useNavItems = () => {
   // Free Voucher
   const handleCreateVoucherSubmit = async (e: any) => {
     e.preventDefault();
-    if (!addresses) return;
-    const referralLimit = 3;
-    voucherInputs.description.length === 0
-      ? await createVoucher.writeContractAsync({
-          address: addresses?.donorAddress,
-          args: [
-            addresses?.eyeVoucherAddress,
-            addresses.referralVoucherAddress,
-            addresses.elProjectAddress,
-            BigInt(voucherInputs.tokens),
-            voucherInputs.description,
-            voucherInputs.descriptionReferred,
-            BigInt(voucherInputs.amountInDollar),
-            BigInt(voucherInputs.amountInDollarReferral),
-            BigInt(referralLimit),
-            voucherInputs.currency,
-          ],
-        })
-      : await createOnlyVoucher.writeContractAsync({
-          address: addresses?.donorAddress,
-          args: [
-            addresses?.eyeVoucherAddress,
-            addresses.referralVoucherAddress,
-            addresses.elProjectAddress,
-            BigInt(voucherInputs.tokens),
-            BigInt(referralLimit),
-          ],
-        });
+    if (!contractSettings) return;
+
+    const {
+      donorAddress,
+      eyeVoucherAddress,
+      referralVoucherAddress,
+      elProjectAddress,
+    } = contractSettings;
+    const {
+      tokens,
+      description,
+      descriptionReferred,
+      amountInDollar,
+      amountInDollarReferral,
+      currency,
+    } = voucherInputs;
+    const referralLimit = BigInt(3);
+    const tokensBigInt = BigInt(tokens);
+
+    const commonArgs = [
+      eyeVoucherAddress,
+      referralVoucherAddress,
+      elProjectAddress,
+      tokensBigInt,
+      referralLimit,
+    ];
+
+    if (description.length === 0) {
+      await createVoucher.writeContractAsync({
+        address: donorAddress,
+        args: [
+          ...commonArgs,
+          description,
+          descriptionReferred,
+          BigInt(amountInDollar),
+          BigInt(amountInDollarReferral),
+          currency,
+        ],
+      });
+    } else {
+      await createOnlyVoucher.writeContractAsync({
+        address: donorAddress,
+        args: commonArgs,
+      });
+    }
   };
 
   // Referred Voucher
@@ -193,30 +185,30 @@ export const useNavItems = () => {
       children: [
         {
           title: 'Dashboard',
-          path: `/projects/el/${params.id}`,
+          path: `/projects/el/${id}`,
           icon: <LayoutDashboard size={18} strokeWidth={1.5} />,
         },
         {
           title: 'Beneficiaries',
-          path: `/projects/el/${params.id}/beneficiary`,
+          path: `/projects/el/${id}/beneficiary`,
           subtitle: 20,
           icon: <UsersRound size={18} strokeWidth={1.5} />,
         },
         {
           title: 'Vendors',
-          path: `/projects/el/${params.id}/vendors`,
+          path: `/projects/el/${id}/vendors`,
           subtitle: 20,
           icon: <Store size={18} strokeWidth={1.5} />,
         },
         {
           title: 'Transactions',
-          path: `/projects/el/${params.id}/transactions`,
+          path: `/projects/el/${id}/transactions`,
           subtitle: 20,
           icon: <Receipt size={18} strokeWidth={1.5} />,
         },
         {
           title: 'Redemptions',
-          path: `/projects/el/${params.id}/redemptions`,
+          path: `/projects/el/${id}/redemptions`,
           icon: <TicketCheck size={18} strokeWidth={1.5} />,
         },
         {
@@ -227,13 +219,13 @@ export const useNavItems = () => {
               title: 'Voice',
               subtitle: 10,
               icon: <Phone size={18} strokeWidth={1.5} />,
-              path: `/projects/el/${params.id}/campaigns/voice`,
+              path: `/projects/el/${id}/campaigns/voice`,
             },
             {
               title: 'Text',
               subtitle: 10,
               icon: <MessageSquare size={18} strokeWidth={1.5} />,
-              path: `/projects/el/${params.id}/campaigns/text`,
+              path: `/projects/el/${id}/campaigns/text`,
             },
           ],
         },

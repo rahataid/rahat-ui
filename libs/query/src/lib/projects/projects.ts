@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { TAGS } from '../../config';
 import { api } from '../../utils/api';
+import Swal from 'sweetalert2';
 
 const createProject = async (payload: any) => {
   const res = await api.post('/projects', payload);
@@ -28,6 +29,18 @@ const useProjectAction = () => {
     mutationFn: (data: any) => {
       return projectActions(data?.uuid, data);
     },
+    onError: (error: any) => {
+      Swal.fire({
+        icon: 'error',
+        title: error.response?.data?.message || 'Something went wrong',
+      });
+    },
+    // onSettled: () => {
+    //   Swal.fire({
+    //     icon: 'success',
+    //     title: 'Action performed successfully',
+    //   });
+    // },
   });
 };
 

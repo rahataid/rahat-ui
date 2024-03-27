@@ -38,25 +38,8 @@ import { useGraphService } from '../../../../providers/subgraph-provider';
 import { truncateEthAddress } from '@rumsan/sdk/utils';
 import { formatDate } from '../../../../utils';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import { useProjectTransaction } from 'apps/rahat-ui/src/hooks/el/subgraph/querycall';
 
-const data: Transaction[] = [
-  {
-    id: 'm5gr84i9',
-    topic: 'Claim Processed',
-    beneficiary: 1234567890,
-    voucherId: 'ABC123',
-    timestamp: '2024-02-27T08:00:00Z',
-    txHash: '0x123456789abcdef',
-  },
-  {
-    id: '3u1reuv4',
-    topic: 'Claim Approved',
-    beneficiary: 5678234324,
-    voucherId: 'DEF456',
-    timestamp: '2024-02-27T09:00:00Z',
-    txHash: '0x987654321abcdef',
-  },
-];
 
 export type Transaction = {
   id: string;
@@ -138,7 +121,7 @@ export const columns: ColumnDef<Transaction>[] = [
     ),
   },
   {
-    accessorKey: 'timestamp',
+    accessorKey: 'timeStamp',
     header: ({ column }) => {
       return (
         <Button
@@ -151,11 +134,11 @@ export const columns: ColumnDef<Transaction>[] = [
       );
     },
     cell: ({ row }) => (
-      <div className="lowercase">{row.getValue('timestamp')}</div>
+      <div className="lowercase">{row.getValue('timeStamp')}</div>
     ),
   },
   {
-    accessorKey: 'txHash',
+    accessorKey: 'transactionHash',
     header: ({ column }) => {
       return (
         <Button
@@ -169,7 +152,7 @@ export const columns: ColumnDef<Transaction>[] = [
     },
     cell: ({ row }) => (
       <div className="lowercase">
-        {truncateEthAddress(row.getValue('txHash'))}
+        {truncateEthAddress(row.getValue('transactionHash'))}
       </div>
     ),
   },
@@ -201,7 +184,7 @@ export const columns: ColumnDef<Transaction>[] = [
   },
 ];
 
-export default function TransactionTable({ walletAddress }) {
+export default function TransactionTable({  }) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
@@ -209,10 +192,12 @@ export default function TransactionTable({ walletAddress }) {
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
-  const [data, setData] = React.useState([]);
+  // const [data, setData] = React.useState([]);
+
+  const {data} = useProjectTransaction();
 
   const table = useReactTable({
-    data,
+    data:data || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -229,82 +214,6 @@ export default function TransactionTable({ walletAddress }) {
       rowSelection,
     },
   });
-  const { queryService } = useGraphService();
-  const fetchBeneficiary = React.useCallback(() => {
-    // const querRes = queryService.useProjectTransaction();
-    const querRes = queryService.useBeneficiaryTransaction(walletAddress);
-
-    querRes.then((res) => {
-      const claimedAssigned = res?.claimAssigneds;
-      const claimProcessed = res?.projectClaimProcesseds;
-      const beneficiaryReferred = res?.beneficiaryReferreds;
-      const beneficiaryAdded = res?.beneficiaryAddeds;
-      const claimCreated = res?.claimCreateds;
-      const tokenBudgetIncrease = res?.tokenBudgetIncreases;
-      const data: any = [];
-
-      claimedAssigned?.map((trans) => {
-        data.push({
-          beneficiary: trans.beneficiary,
-          topic: trans.eventType,
-          timestamp: formatDate(trans.blockTimestamp),
-          txHash: trans.transactionHash,
-          voucherId: trans.tokenAddress,
-        });
-        // const claimRes = queryService?.useClaimAssigned(trans.id);
-      });
-      claimProcessed?.map((trans) => {
-        data.push({
-          beneficiary: trans.beneficiary,
-          topic: trans.eventType,
-          timestamp: formatDate(trans.blockTimestamp),
-          txHash: trans.transactionHash,
-          voucherId: trans.token,
-        });
-      });
-      beneficiaryReferred?.map((trans) => {
-        data.push({
-          beneficiary: trans.referrerBeneficiaries,
-          topic: trans.eventType,
-          timestamp: formatDate(trans.blockTimestamp),
-          txHash: trans.transactionHash,
-        });
-      });
-
-      claimCreated?.map((trans) => {
-        data.push({
-          beneficiary: trans.claimer,
-          txHash: trans.transactionHash,
-          timestamp: formatDate(trans.blockTimestamp),
-          topic: trans?.eventType,
-          voucherId: trans.token,
-        });
-      });
-
-      beneficiaryAdded?.map((trans) => {
-        data.push({
-          topic: trans.eventType,
-          timestamp: formatDate(trans.blockTimestamp),
-          txHash: trans.transactionHash,
-          beneficiary: trans.beneficiaryAddress,
-        });
-      });
-
-      tokenBudgetIncrease?.map((trans) => {
-        data.push({
-          topic: trans.eventType,
-          txHash: trans.transactionHash,
-          timestamp: formatDate(trans.blockTimestamp),
-          voucherId: trans?.tokenAddress,
-        });
-      });
-      setData(data);
-    });
-  }, [queryService]);
-
-  React.useEffect(() => {
-    fetchBeneficiary();
-  }, [fetchBeneficiary]);
 
   return (
     <div className="w-full h-full p-2 bg-secondary">

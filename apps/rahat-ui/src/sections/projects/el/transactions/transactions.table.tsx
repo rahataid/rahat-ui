@@ -40,7 +40,6 @@ import { formatDate } from '../../../../utils';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { useProjectTransaction } from 'apps/rahat-ui/src/hooks/el/subgraph/querycall';
 
-
 export type Transaction = {
   id: string;
   topic: string;
@@ -184,7 +183,7 @@ export const columns: ColumnDef<Transaction>[] = [
   },
 ];
 
-export default function TransactionTable({  }) {
+export default function TransactionTable({}) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
@@ -194,10 +193,10 @@ export default function TransactionTable({  }) {
   const [rowSelection, setRowSelection] = React.useState({});
   // const [data, setData] = React.useState([]);
 
-  const {data} = useProjectTransaction();
+  const { data } = useProjectTransaction();
 
   const table = useReactTable({
-    data:data || [],
+    data: data || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,

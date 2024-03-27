@@ -93,30 +93,30 @@ export const useNavItems = () => {
     const referralLimit = 3;
     data.voucherDescriptiona.length === 0
       ? await createVoucher.writeContractAsync({
-        address: addresses?.donorAddress,
-        args: [
-          addresses?.eyeVoucherAddress,
-          addresses.referralVoucherAddress,
-          addresses.elProjectAddress,
-          BigInt(voucherInputs.tokens),
-          voucherInputs.description,
-          voucherInputs.descriptionReferred,
-          BigInt(voucherInputs.amountInDollar),
-          BigInt(voucherInputs.amountInDollarReferral),
-          BigInt(referralLimit),
-          voucherInputs.currency,
-        ],
-      })
+          address: addresses?.donorAddress,
+          args: [
+            addresses?.eyeVoucherAddress,
+            addresses.referralVoucherAddress,
+            addresses.elProjectAddress,
+            BigInt(voucherInputs.tokens),
+            voucherInputs.description,
+            voucherInputs.descriptionReferred,
+            BigInt(voucherInputs.amountInDollar),
+            BigInt(voucherInputs.amountInDollarReferral),
+            BigInt(referralLimit),
+            voucherInputs.currency,
+          ],
+        })
       : await createOnlyVoucher.writeContractAsync({
-        address: addresses?.donorAddress,
-        args: [
-          addresses?.eyeVoucherAddress,
-          addresses.referralVoucherAddress,
-          addresses.elProjectAddress,
-          BigInt(voucherInputs.tokens),
-          BigInt(referralLimit),
-        ],
-      });
+          address: addresses?.donorAddress,
+          args: [
+            addresses?.eyeVoucherAddress,
+            addresses.referralVoucherAddress,
+            addresses.elProjectAddress,
+            BigInt(voucherInputs.tokens),
+            BigInt(referralLimit),
+          ],
+        });
   };
 
   // Referred Voucher

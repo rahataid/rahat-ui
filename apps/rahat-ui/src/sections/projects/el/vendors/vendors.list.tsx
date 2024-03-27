@@ -1,5 +1,4 @@
 'use client';
-import * as React from 'react';
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -12,17 +11,17 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from 'lucide-react';
+import { ArrowUpDown, MoreHorizontal } from 'lucide-react';
+import * as React from 'react';
 
+import { useProjectAction } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/components/button';
 import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
 import {
   DropdownMenu,
-  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/components/dropdown-menu';
 import { Input } from '@rahat-ui/shadcn/components/input';
@@ -34,29 +33,10 @@ import {
   TableHeader,
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
-import { useGraphService } from '../../../../providers/subgraph-provider';
-import { truncateEthAddress } from '@rumsan/sdk/utils';
-import { formatDate } from '../../../../utils';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-
-const data: Transaction[] = [
-  {
-    id: 'm5gr84i9',
-    topic: 'Claim Processed',
-    beneficiary: 1234567890,
-    voucherId: 'ABC123',
-    timestamp: '2024-02-27T08:00:00Z',
-    txHash: '0x123456789abcdef',
-  },
-  {
-    id: '3u1reuv4',
-    topic: 'Claim Approved',
-    beneficiary: 5678234324,
-    voucherId: 'DEF456',
-    timestamp: '2024-02-27T09:00:00Z',
-    txHash: '0x987654321abcdef',
-  },
-];
+import { MS_ACTIONS } from '@rahataid/sdk';
+import { useParams, useRouter } from 'next/navigation';
+import { useVendorTable } from './useVendorTable';
 
 export type Transaction = {
   id: string;
@@ -67,80 +47,17 @@ export type Transaction = {
   txHash: string;
 };
 
-export const columns: ColumnDef<Transaction>[] = [
-  {
-    id: 'select',
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && 'indeterminate')
-        }
-        onCheckedChange={(value: any) =>
-          table.toggleAllPageRowsSelected(!!value)
-        }
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value: any) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
-    accessorKey: 'name',
-    header: 'Name',
-    cell: ({ row }) => <div className="capitalize">{row.getValue('name')}</div>,
-  },
-  {
-    accessorKey: 'walletaddress',
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-        >
-          Wallet Address
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
-    cell: ({ row }) => (
-      <div className="lowercase">
-        {truncateEthAddress(row.getValue('walletaddress'))}
-      </div>
-    ),
-  },
-  {
-    id: 'actions',
-    enableHiding: false,
-    cell: ({ row }) => {
-      const payment = row.original;
+export default function VendorsList() {
+  const router = useRouter();
+  const uuid = useParams().id;
 
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem>View Details</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
-    },
-  },
-];
+  const handleViewClick = (rowData: any) => {
+    router.push(
+      `/projects/el/${uuid}/vendors/${rowData.walletaddress}?phone=${rowData.phone}&&name=${rowData.name}&&walletAddress=${rowData.walletaddress}`,
+    );
+  };
 
-export default function VendorsList({ walletAddress }) {
+  const columns = useVendorTable({ handleViewClick });
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
@@ -149,6 +66,8 @@ export default function VendorsList({ walletAddress }) {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
   const [data, setData] = React.useState([]);
+
+  const getVendors = useProjectAction();
 
   const table = useReactTable({
     data,
@@ -168,82 +87,108 @@ export default function VendorsList({ walletAddress }) {
       rowSelection,
     },
   });
-  const { queryService } = useGraphService();
-  const fetchBeneficiary = React.useCallback(() => {
-    // const querRes = queryService.useProjectTransaction();
-    const querRes = queryService.useBeneficiaryTransaction(walletAddress);
 
-    querRes.then((res) => {
-      const claimedAssigned = res?.claimAssigneds;
-      const claimProcessed = res?.projectClaimProcesseds;
-      const beneficiaryReferred = res?.beneficiaryReferreds;
-      const beneficiaryAdded = res?.beneficiaryAddeds;
-      const claimCreated = res?.claimCreateds;
-      const tokenBudgetIncrease = res?.tokenBudgetIncreases;
-      const data: any = [];
+  const [perPage, setPerPage] = React.useState<number>(5);
+  const [currentPage, setCurrentPage] = React.useState<number>(1);
 
-      claimedAssigned?.map((trans) => {
-        data.push({
-          beneficiary: trans.beneficiary,
-          topic: trans.eventType,
-          timestamp: formatDate(trans.blockTimestamp),
-          txHash: trans.transactionHash,
-          voucherId: trans.tokenAddress,
-        });
-        // const claimRes = queryService?.useClaimAssigned(trans.id);
-      });
-      claimProcessed?.map((trans) => {
-        data.push({
-          beneficiary: trans.beneficiary,
-          topic: trans.eventType,
-          timestamp: formatDate(trans.blockTimestamp),
-          txHash: trans.transactionHash,
-          voucherId: trans.token,
-        });
-      });
-      beneficiaryReferred?.map((trans) => {
-        data.push({
-          beneficiary: trans.referrerBeneficiaries,
-          topic: trans.eventType,
-          timestamp: formatDate(trans.blockTimestamp),
-          txHash: trans.transactionHash,
-        });
-      });
-
-      claimCreated?.map((trans) => {
-        data.push({
-          beneficiary: trans.claimer,
-          txHash: trans.transactionHash,
-          timestamp: formatDate(trans.blockTimestamp),
-          topic: trans?.eventType,
-          voucherId: trans.token,
-        });
-      });
-
-      beneficiaryAdded?.map((trans) => {
-        data.push({
-          topic: trans.eventType,
-          timestamp: formatDate(trans.blockTimestamp),
-          txHash: trans.transactionHash,
-          beneficiary: trans.beneficiaryAddress,
-        });
-      });
-
-      tokenBudgetIncrease?.map((trans) => {
-        data.push({
-          topic: trans.eventType,
-          txHash: trans.transactionHash,
-          timestamp: formatDate(trans.blockTimestamp),
-          voucherId: trans?.tokenAddress,
-        });
-      });
-      setData(data);
+  const fetchVendors = async () => {
+    const result = await getVendors.mutateAsync({
+      uuid,
+      data: {
+        action: MS_ACTIONS.VENDOR.LIST_BY_PROJECT,
+        payload: {
+          page: currentPage,
+          perPage,
+        },
+      },
     });
-  }, [queryService]);
+
+    const filteredData = result?.data.map((row: any) => {
+      return {
+        name: row.User.name,
+        walletaddress: row.User.wallet,
+        phone: row.User.phone,
+      };
+    });
+    setData(filteredData);
+  };
+
+  // const fetchBeneficiary = React.useCallback(() => {
+  //   // const querRes = queryService.useProjectTransaction();
+
+  //   const querRes = queryService.useBeneficiaryTransaction(walletAddress);
+
+  //   querRes.then((res) => {
+  //     const claimedAssigned = res?.claimAssigneds;
+  //     const claimProcessed = res?.projectClaimProcesseds;
+  //     const beneficiaryReferred = res?.beneficiaryReferreds;
+  //     const beneficiaryAdded = res?.beneficiaryAddeds;
+  //     const claimCreated = res?.claimCreateds;
+  //     const tokenBudgetIncrease = res?.tokenBudgetIncreases;
+  //     const data: any = [];
+
+  //     claimedAssigned?.map((trans) => {
+  //       data.push({
+  //         beneficiary: trans.beneficiary,
+  //         topic: trans.eventType,
+  //         timestamp: formatDate(trans.blockTimestamp),
+  //         txHash: trans.transactionHash,
+  //         voucherId: trans.tokenAddress,
+  //       });
+  //       // const claimRes = queryService?.useClaimAssigned(trans.id);
+  //     });
+  //     claimProcessed?.map((trans) => {
+  //       data.push({
+  //         beneficiary: trans.beneficiary,
+  //         topic: trans.eventType,
+  //         timestamp: formatDate(trans.blockTimestamp),
+  //         txHash: trans.transactionHash,
+  //         voucherId: trans.token,
+  //       });
+  //     });
+  //     beneficiaryReferred?.map((trans) => {
+  //       data.push({
+  //         beneficiary: trans.referrerBeneficiaries,
+  //         topic: trans.eventType,
+  //         timestamp: formatDate(trans.blockTimestamp),
+  //         txHash: trans.transactionHash,
+  //       });
+  //     });
+
+  //     claimCreated?.map((trans) => {
+  //       data.push({
+  //         beneficiary: trans.claimer,
+  //         txHash: trans.transactionHash,
+  //         timestamp: formatDate(trans.blockTimestamp),
+  //         topic: trans?.eventType,
+  //         voucherId: trans.token,
+  //       });
+  //     });
+
+  //     beneficiaryAdded?.map((trans) => {
+  //       data.push({
+  //         topic: trans.eventType,
+  //         timestamp: formatDate(trans.blockTimestamp),
+  //         txHash: trans.transactionHash,
+  //         beneficiary: trans.beneficiaryAddress,
+  //       });
+  //     });
+
+  //     tokenBudgetIncrease?.map((trans) => {
+  //       data.push({
+  //         topic: trans.eventType,
+  //         txHash: trans.transactionHash,
+  //         timestamp: formatDate(trans.blockTimestamp),
+  //         voucherId: trans?.tokenAddress,
+  //       });
+  //     });
+  //     setData(data);
+  //   });
+  // }, [queryService]);
 
   React.useEffect(() => {
-    fetchBeneficiary();
-  }, [fetchBeneficiary]);
+    fetchVendors();
+  }, []);
 
   return (
     <div className="w-full h-full p-2 bg-secondary">

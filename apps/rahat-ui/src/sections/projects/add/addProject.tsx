@@ -41,8 +41,8 @@ export default function AddProject() {
     projectType: z.string({
       required_error: 'Please select project type.',
     }),
-    longitude: z.number(),
-    latitude: z.number(),
+    longitude: z.number().optional(),
+    latitude: z.number().optional(),
     hazardType: z.string({
       required_error: 'Please select hazard type.',
     }),

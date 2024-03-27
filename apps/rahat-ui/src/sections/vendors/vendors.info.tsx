@@ -2,23 +2,31 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
 } from '@rahat-ui/shadcn/src/components/ui/card';
-import React from 'react';
+import { truncateEthAddress } from '@rumsan/sdk/utils';
 
-const VendorsInfo = () => {
+interface IVendorsInfo {
+  vendorData: {
+    name: string | null;
+    phone: string | null;
+    vendorWallet: string | null;
+  };
+}
+
+const VendorsInfo = ({ vendorData }: IVendorsInfo) => {
+  const { name, phone, vendorWallet } = vendorData;
   return (
     <>
       <Card className="mt-2 rounded shadow">
         <div className="mt-3">
           <CardContent>
-            <p className="text-primary">Vendors Name</p>
-            <CardDescription>0xb8djd0djz089e204948</CardDescription>
+            <p className="text-primary">{name || 'Name N/A'}</p>
+            <CardDescription>
+              {vendorWallet ? truncateEthAddress(vendorWallet) : '-'}
+            </CardDescription>
           </CardContent>
           <CardContent>
-            <p className="text-primary">9873495860</p>
+            <p className="text-primary">{phone || '-'}</p>
             <CardDescription>Phone</CardDescription>
           </CardContent>
         </div>

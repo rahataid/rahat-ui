@@ -1,5 +1,4 @@
 'use client';
-
 import { ColumnDef } from '@tanstack/react-table';
 import { ArrowUpDown, MoreHorizontal } from 'lucide-react';
 
@@ -9,19 +8,22 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/components/dropdown-menu';
-import { Payment } from './vendors.transaction.table';
-import { useSecondPanel } from '../../providers/second-panel-provider';
-import VendorsDetailSplitView from './vendors.detail.split.view';
+import { truncateEthAddress } from '@rumsan/sdk/utils';
 
-export const useTableColumns = (handleAssignClick: any) => {
-  const { closeSecondPanel, setSecondPanelComponent } = useSecondPanel();
-  const handleAssign = (row: any) => {
-    handleAssignClick(row);
-  };
+export type VendorType = {
+  name: string;
+  walletaddress: string;
+};
 
-  const columns: ColumnDef<Payment>[] = [
+interface VendorTableProps {
+  handleViewClick: any;
+}
+
+export const useVendorTable = ({ handleViewClick }: VendorTableProps) => {
+  const columns: ColumnDef<VendorType>[] = [
     {
       id: 'select',
       header: ({ table }) => (
@@ -47,45 +49,36 @@ export const useTableColumns = (handleAssignClick: any) => {
       enableHiding: false,
     },
     {
-      accessorKey: 'status',
-      header: 'Status',
+      accessorKey: 'name',
+      header: 'Name',
       cell: ({ row }) => (
-        <div className="capitalize">{row.getValue('status')}</div>
+        <div className="capitalize">{row.getValue('name')}</div>
       ),
     },
     {
-      accessorKey: 'email',
+      accessorKey: 'walletaddress',
       header: ({ column }) => {
         return (
           <Button
             variant="ghost"
             onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
           >
-            Email
+            Wallet Address
             <ArrowUpDown className="ml-2 h-4 w-4" />
           </Button>
         );
       },
       cell: ({ row }) => (
-        <div className="lowercase">{row.getValue('email')}</div>
+        <div className="lowercase">
+          {truncateEthAddress(row.getValue('walletaddress'))}
+        </div>
       ),
     },
     {
-      accessorKey: 'projectName',
-      header: () => <div className="text-right">Project Name</div>,
-      cell: ({ row }) => {
-        return (
-          <div className="text-right font-medium">
-            {row.getValue('projectName')}
-          </div>
-        );
-      },
-    },
-    {
-      header: () => <div className="text-right">Actions</div>,
       id: 'actions',
       enableHiding: false,
       cell: ({ row }) => {
+        const rowData = row.original;
         return (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -94,24 +87,10 @@ export const useTableColumns = (handleAssignClick: any) => {
                 <MoreHorizontal className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="bg-white">
-              <DropdownMenuItem
-                onClick={() =>
-                  setSecondPanelComponent(
-                    <VendorsDetailSplitView
-                      closeSecondPanel={closeSecondPanel}
-                      vendorsDetail={row.original}
-                    />,
-                  )
-                }
-              >
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+              <DropdownMenuItem onClick={() => handleViewClick(rowData)}>
                 View Details
-              </DropdownMenuItem>
-              {/* <DropdownMenuItem onClick={handleRegisterVendor}>
-                Register Vendor
-              </DropdownMenuItem> */}
-              <DropdownMenuItem onClick={() => handleAssign(row.original)}>
-                Assign Project
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

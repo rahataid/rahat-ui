@@ -1,5 +1,15 @@
 'use client';
 
+import { Button } from '@rahat-ui/shadcn/components/button';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@rahat-ui/shadcn/components/table';
+import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -12,31 +22,8 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { Settings2 } from 'lucide-react';
 import * as React from 'react';
-import { Button } from '@rahat-ui/shadcn/components/button';
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@rahat-ui/shadcn/components/dropdown-menu';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@rahat-ui/shadcn/components/table';
-import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import { useProjectAction } from '@rahat-ui/query';
-import { PROJECT_SETTINGS } from '../../constants/project.const';
-import { MS_ACTIONS } from '@rahataid/sdk/constants';
 
-import { useRumsanService } from '../../providers/service.provider';
 import {
   Select,
   SelectContent,
@@ -45,60 +32,48 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
-import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
-import {
-  DialogClose,
-  DialogFooter,
-  DialogContent,
-  Dialog,
-  DialogTrigger,
-  DialogHeader,
-  DialogDescription,
-  DialogTitle,
-} from '@rahat-ui/shadcn/src/components/ui/dialog';
-import { useBoolean } from '../../hooks/use-boolean';
-import { useTableColumns } from './useTableColumns';
-import { useAddVendors } from '../../hooks/el/contracts/el-contracts';
-import { useSwal } from '../../components/swal';
+import { useVendorTransaction } from '../../hooks/el/subgraph/querycall';
 
 export type Payment = {
   id: string;
-  projectName: string;
+  amount: number;
   status: 'pending' | 'processing' | 'success' | 'failed';
   email: string;
   walletAddress: `0x${string}`;
 };
 
-export default function DataTableDemo() {
-  const { vendorQuery, projectQuery } = useRumsanService();
+const columns: ColumnDef<Payment>[] = [
+  {
+    accessorKey: 'topic',
+    header: 'Topic',
+    cell: ({ row }) => (
+      <div className="capitalize">{row.getValue('topic')}</div>
+    ),
+  },
+  {
+    accessorKey: 'transactionHash',
+    header: 'Txn Hash',
+    cell: ({ row }) => <div>{row.getValue('transactionHash')}</div>,
+  },
+  {
+    accessorKey: 'timeStamp',
+    header: () => <div className="text-right">Timestamp</div>,
+    cell: ({ row }) => {
+      return (
+        <div className="text-right font-medium">
+          {row.getValue('timeStamp')}
+        </div>
+      );
+    },
+  },
+];
 
-  const projectModal = useBoolean();
-  const [selectedProject, setSelectedProject] = React.useState('');
-  const [selectedRow, setSelectedRow] = React.useState(null) as any;
+interface VendorTxnListProps {
+  walletAddress: string;
+}
 
-  const updateVendor = useAddVendors(selectedProject, selectedRow?.id);
-
-  const handleAssignModalClick = (row: any) => {
-    setSelectedRow(row);
-    projectModal.onTrue();
-  };
-
-  // const assignVendorToProjet = (project: string, payment: any) => {
-  //   const updateVendor = useAddVendors(project, payment.id);
-  //   return updateVendor.writeContractAsync({
-  //     address: '0x9C8Ee9931BEc18EA883c8F23c7427016bBDeF171',
-  //     args: [payment.walletAddress, true],
-  //   });
-  // };
-
-  const columns = useTableColumns(handleAssignModalClick);
-
-  const projectClient = useProjectAction();
-  const projectsList = projectQuery.useProjectList({});
-  const d = projectsList.data;
-  const projectList = d?.data || [];
-
-  const alert = useSwal();
+export default function VendorTxnList({ walletAddress }: VendorTxnListProps) {
+  const txns = useVendorTransaction(walletAddress);
 
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -109,13 +84,8 @@ export default function DataTableDemo() {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
-  const { data: vendorData } = vendorQuery.useVendorList({
-    perPage: 5,
-    page: 1,
-  });
-
   const table = useReactTable({
-    data: vendorData?.data || [],
+    data: txns?.data || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -133,71 +103,19 @@ export default function DataTableDemo() {
     },
   });
 
-  const handleAssignProject = async () => {
-    if (!selectedProject) return alert('Please select a project');
-
-    const res = await projectClient.mutateAsync({
-      uuid: selectedProject,
-      data: {
-        action: MS_ACTIONS.VENDOR.ASSIGN_TO_PROJECT,
-        payload: {
-          vendorUuid: selectedRow?.id,
-        },
-      },
-    });
-
-    // const res = await projectClient.mutateAsync({
-    //   uuid: selectedProject,
-    //   data: {
-    //     action: MS_ACTIONS.SETTINGS.GET,
-    //     payload: {
-    //       name: PROJECT_SETTINGS.CONTRACTS,
-    //     },
-    //   },
-    // });
-    // if (!res.data.value) return alert('No contract found!');
-    // const { value } = res.data;
-    // console.log('Vendor==>', selectedRow.id);
-    // console.log('Project==>', selectedProject);
-    // return updateVendor.writeContractAsync({
-    //   address: value.el.address, // value.el.address
-    //   args: [selectedRow.walletAddress, true], // selecteWalletAddress
-    // });
-  };
-
-  React.useEffect(() => {
-    if (!projectClient) return;
-    if (projectClient.isSuccess) {
-      alert.fire({
-        title: 'Vendor Assigned Successfully',
-        icon: 'success',
-      });
-      projectClient.reset();
-    }
-    if (projectClient.isError) {
-      alert.fire({
-        title: 'Error while updating Vendor',
-        icon: 'error',
-      });
-      projectClient.reset();
-    }
-  }, [projectClient, alert]);
-
-  const handleProjectChange = (d: string) => setSelectedProject(d);
-
   return (
     <>
       <div className="w-full h-full -mt-2 p-2 bg-secondary">
         <div className="flex items-center mb-2">
-          <Input
+          {/* <Input
             placeholder="Search User..."
             value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
             onChange={(event) =>
               table.getColumn('name')?.setFilterValue(event.target.value)
             }
             className="rounded mr-2"
-          />
-          <DropdownMenu>
+          /> */}
+          {/* <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="ml-auto">
                 <Settings2 className="mr-2 h-4 w-5" />
@@ -225,7 +143,7 @@ export default function DataTableDemo() {
                   );
                 })}
             </DropdownMenuContent>
-          </DropdownMenu>
+          </DropdownMenu> */}
         </div>
         <div className="rounded border h-[calc(100vh-180px)]  bg-card">
           <Table>
@@ -327,59 +245,6 @@ export default function DataTableDemo() {
           >
             Next
           </Button>
-        </div>
-      </div>
-
-      <div className="py-2 w-full border-t">
-        <div className="p-4 flex flex-col gap-0.5 text-sm">
-          <Dialog
-            open={projectModal.value}
-            onOpenChange={projectModal.onToggle}
-          >
-            {/* <DialogTrigger className=" hover:bg-muted p-1 rounded text-left">
-              Assign Projects
-            </DialogTrigger> */}
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Assign Project</DialogTitle>
-                <DialogDescription>
-                  Select the project to be assigned to the beneficiary
-                </DialogDescription>
-              </DialogHeader>
-              <div>
-                <Select onValueChange={handleProjectChange}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Projects" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {projectList.length > 0 &&
-                      projectList.map((project: any) => {
-                        return (
-                          <SelectItem key={project.id} value={project.id}>
-                            {project.title}
-                          </SelectItem>
-                        );
-                      })}
-                  </SelectContent>
-                </Select>
-              </div>
-              <DialogFooter className="sm:justify-end">
-                <DialogClose asChild>
-                  <Button type="button" variant="ghost">
-                    Close
-                  </Button>
-                </DialogClose>
-                <Button
-                  onClick={handleAssignProject}
-                  type="button"
-                  variant="ghost"
-                  className="text-primary"
-                >
-                  Assign
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
         </div>
       </div>
     </>

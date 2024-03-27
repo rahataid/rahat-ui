@@ -17,21 +17,49 @@ import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useSwal } from '../../../components/swal';
 import { NavItem } from '../components';
-import CreateTokenModal from './create-token-modal';
+import ConfirmModal from './confirm.modal';
 import CreateVoucherModal from './create-voucher-modal';
 import { useProjectAction } from 'libs/query/src/lib/projects/projects';
 import { getProjectAddress } from 'apps/rahat-ui/src/utils/getProjectAddress';
 import { useProjectVoucher } from 'apps/rahat-ui/src/hooks/el/subgraph/querycall';
+import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
+
+type AddressType = {
+  donorAddress: `0x${string}`;
+  eyeVoucherAddress: `0x${string}`;
+  referralVoucherAddress: `0x${string}`;
+  elProjectAddress: `0x${string}`;
+};
 
 export const useNavItems = () => {
   const params = useParams();
   const dialog = useSwal();
+  const createTokenSummaryModal = useBoolean();
+  const createTokenModal = useBoolean();
 
-  type AddressType = {
-    donorAddress: `0x${string}`;
-    eyeVoucherAddress: `0x${string}`;
-    referralVoucherAddress: `0x${string}`;
-    elProjectAddress: `0x${string}`;
+  console.log('first', {
+    tokenModal: createTokenModal.value,
+    summaryModal: createTokenSummaryModal.value,
+  });
+
+  const handleOpenCreateTokenModal = () => {
+    createTokenModal.onToggle();
+    createTokenSummaryModal.onFalse();
+  };
+  const handleSubmitCreateTokenModal = (e: any) => {
+    e.preventDefault();
+    createTokenModal.onFalse();
+    createTokenSummaryModal.onTrue();
+  };
+  const handleBackToCreateTokenModal = () => {
+    createTokenModal.onTrue();
+    createTokenSummaryModal.onFalse();
+  };
+  const handleCloseSummaryModal = () => {
+    createTokenSummaryModal.onFalse();
+  };
+  const handleSummaryModal = () => {
+    createTokenModal.onToggle();
   };
 
   const [addresses, setAddresses] = useState<AddressType>();
@@ -49,10 +77,18 @@ export const useNavItems = () => {
   const uuid = params.id;
   const getProject = useProjectAction();
 
-  const { data } = useProjectVoucher(
+  const projectVoucher = useProjectVoucher(
     addresses?.elProjectAddress || '',
     addresses?.eyeVoucherAddress || '',
   );
+
+  useEffect(() => {
+    if (projectVoucher.isSuccess) {
+      setVoucherInputs((prev) => ({
+        ...prev,
+      }));
+    }
+  }, [projectVoucher.isSuccess]);
 
   const fetchAddress = async () => {
     try {
@@ -85,8 +121,6 @@ export const useNavItems = () => {
   const createVoucher = useMintVouchers();
   const createOnlyVoucher = useOnlyMintVoucher();
   const closeProject = useCloseProject();
-
-  console.log('createVoucher', createVoucher.isPending);
 
   // Free Voucher
   const handleCreateVoucherSubmit = async (e: any) => {
@@ -206,19 +240,21 @@ export const useNavItems = () => {
         {
           component: (
             <>
-              {createVoucher.isPending && <h3>Minting Voucher...</h3>}
               <CreateVoucherModal
                 voucherInputs={voucherInputs}
-                handleSubmit={handleCreateVoucherSubmit}
+                handleSubmit={handleSubmitCreateTokenModal}
                 handleInputChange={handleCreateVoucherTokenChange}
-                data={data}
                 setVoucherInputs={setVoucherInputs}
+                open={createTokenModal.value}
+                handleModal={handleOpenCreateTokenModal}
               />
-              {/* <CreateTokenModal
-                open={createVoucher.isSuccess && !completeTransaction}
+              <ConfirmModal
+                open={createTokenSummaryModal.value}
                 voucherInputs={voucherInputs}
-                handleSubmit={handleCreateTokenSubmit}
-              /> */}
+                handleSubmit={handleCreateVoucherSubmit}
+                handleGoBack={handleBackToCreateTokenModal}
+                handleClose={handleCloseSummaryModal}
+              />
             </>
           ),
           title: 'Create Voucher',

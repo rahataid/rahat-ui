@@ -1,0 +1,82 @@
+import { DialogClose } from '@radix-ui/react-dialog';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@rahat-ui/shadcn/src/components/ui/dialog';
+
+type Iprops = {
+  open: boolean;
+  close: boolean;
+  voucherInputs: {
+    tokens: string;
+    amountInDollar: string;
+    amountInDollarReferral: string;
+    freeVoucherDescription: string;
+    descriptionReferred: string;
+    currency: string;
+    freeVoucherCurrency: string;
+    referredVoucherCurrency: string;
+    referredVoucherPrice: string;
+    referredVoucherDescription: string;
+  };
+  handleSubmit: (e: any) => void;
+  handleGoBack: () => void;
+  handleClose: () => void;
+};
+
+const SuccessModal = ({
+  open,
+  voucherInputs,
+  handleGoBack,
+  handleClose,
+}: Iprops) => {
+  // const submitForm = (e: React.FormEvent<HTMLFormElement>) => {
+  //   e.preventDefault();
+  //   handleSubmit({ ...voucherInputs, description, price });
+  // };
+  console.log('voucherInputs', voucherInputs);
+  return (
+    <Dialog open={open}>
+      <DialogContent className="sm:max-w-[500px]">
+        <DialogHeader>
+          <DialogTitle>Confirm</DialogTitle>
+        </DialogHeader>
+        <div>
+          You are about to create{' '}
+          <span className="text-primary"> {voucherInputs.tokens} tokens</span>{' '}
+          worth amount{' '}
+          <span className="text-primary">
+            {voucherInputs.currency} {voucherInputs.amountInDollar}
+          </span>
+          .
+          <br /> Are you sure you want to continue ?
+        </div>
+        <div className="flex justify-center items-center gap-4">
+          <Button>Submit</Button>
+          <Button
+            onClick={() => {
+              handleGoBack();
+            }}
+            variant="secondary"
+          >
+            Back to Edit
+          </Button>
+          <Button
+            onClick={() => {
+              handleClose();
+            }}
+            variant="secondary"
+          >
+            Close
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+export default SuccessModal;

@@ -18,33 +18,36 @@ import {
   SelectGroup,
   SelectItem,
   SelectTrigger,
-  SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
-import { useProjectVoucher } from '../../../hooks/el/subgraph/querycall';
 import { PlusSquare } from 'lucide-react';
-import { FC, useEffect } from 'react';
+import { FC } from 'react';
 
 interface CreateVoucherModalType {
   voucherInputs: {
     tokens: string;
     amountInDollar: string;
     amountInDollarReferral: string;
-    description: string;
+    freeVoucherDescription: string;
     descriptionReferred: string;
     currency: string;
+    freeVoucherCurrency: string;
+    referredVoucherCurrency: string;
+    referredVoucherPrice: string;
+    referredVoucherDescription: string;
   };
-  handleSubmit: (e: any) => void;
+  open: boolean;
   handleInputChange: (e: any) => void;
-  data?: any;
   setVoucherInputs?: any;
+  handleSubmit: () => void;
+  handleModal: () => void;
 }
 
 const CreateVoucherModal: FC<CreateVoucherModalType> = ({
   voucherInputs,
-  handleSubmit,
   handleInputChange,
-  data,
-  setVoucherInputs,
+  open,
+  handleModal,
+  handleSubmit,
 }) => {
   const handleSelectChange = (value: string) => {
     handleInputChange({
@@ -57,118 +60,118 @@ const CreateVoucherModal: FC<CreateVoucherModalType> = ({
 
   return (
     <>
-      {data ? (
-        <Dialog>
-          <DialogTrigger asChild>
-            <div className="w-full flex justify-between items-center">
-              <div className="flex gap-3 items-center">
-                <PlusSquare size={18} strokeWidth={1.5} />
-                <p>Mint Voucher</p>
+      <Dialog onOpenChange={handleModal}>
+        <DialogTrigger asChild>
+          <div className="w-full flex justify-between items-center">
+            <div className="flex gap-3 items-center">
+              <PlusSquare size={18} strokeWidth={1.5} />
+              <p>Create Voucher</p>
+            </div>
+          </div>
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle>Mint Voucher</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleSubmit}>
+            <div className="grid grid-cols-2 gap-4 py-4">
+              <div>
+                <Label htmlFor="noOfVouchers" className="text-right">
+                  No. of Free Vouchers
+                </Label>
+                <Input
+                  name="tokens"
+                  className="col-span-3"
+                  value={voucherInputs.tokens}
+                  onChange={handleInputChange}
+                />
+              </div>
+              <div>
+                <Label htmlFor="noOfVouchers" className="text-right">
+                  No. of Referred Vouchers
+                </Label>
+                <Input
+                  name="tokens"
+                  className="col-span-3"
+                  value={+voucherInputs.tokens * 3}
+                  onChange={handleInputChange}
+                />
+              </div>
+              <div>
+                <Label htmlFor="description" className="text-right">
+                  Description Free Voucher
+                </Label>
+                <textarea
+                  value={voucherInputs.freeVoucherDescription}
+                  onChange={handleInputChange}
+                  name="description"
+                  className="border rounded w-full p-1"
+                />
+              </div>
+              <div>
+                <Label htmlFor="descriptionReferred" className="text-right">
+                  Description Referred Voucher
+                </Label>
+                <textarea
+                  value={voucherInputs.referredVoucherDescription}
+                  onChange={handleInputChange}
+                  name="descriptionReferred"
+                  className="border rounded w-full p-1"
+                />
+              </div>
+              <div>
+                <Label htmlFor="currency" className="">
+                  Select Currency
+                </Label>
+                <Select name="currency" onValueChange={handleSelectChange}>
+                  <SelectTrigger>
+                    {voucherInputs.freeVoucherCurrency ||
+                      voucherInputs.referredVoucherCurrency}
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectItem value={'NPR'}>NPR</SelectItem>
+                      <SelectItem value={'USD'}>American Dollar</SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label htmlFor="amount" className="text-right text-sm">
+                  Price of Referred voucher in{' '}
+                  {voucherInputs.freeVoucherCurrency ||
+                    voucherInputs.referredVoucherCurrency}
+                </Label>
+                <Input
+                  name="amountInDollarReferral"
+                  className="col-span-3"
+                  value={voucherInputs.referredVoucherPrice}
+                  onChange={handleInputChange}
+                />
+              </div>
+              <div>
+                <Label htmlFor="amount" className="text-right">
+                  Price of Free voucher in{' '}
+                  {voucherInputs.freeVoucherCurrency ||
+                    voucherInputs.referredVoucherCurrency}
+                </Label>
+                <Input
+                  name="amountInDollar"
+                  className="col-span-3"
+                  value={voucherInputs.freeVoucherPrice}
+                  onChange={handleInputChange}
+                />
               </div>
             </div>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-[600px]">
-            <DialogHeader>
-              <DialogTitle>Mint Voucher</DialogTitle>
-            </DialogHeader>
-            <form onSubmit={handleSubmit}>
-              <div className="grid grid-cols-2 gap-4 py-4">
-                <div>
-                  <Label htmlFor="noOfVouchers" className="text-right">
-                    No. of Free Vouchers
-                  </Label>
-                  <Input
-                    name="tokens"
-                    className="col-span-3"
-                    value={voucherInputs.tokens}
-                    onChange={handleInputChange}
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="noOfVouchers" className="text-right">
-                    No. of Referred Vouchers
-                  </Label>
-                  <Input
-                    name="tokens"
-                    className="col-span-3"
-                    value={+voucherInputs.tokens * 3}
-                    onChange={handleInputChange}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="description" className="text-right">
-                    Description Free Voucher
-                  </Label>
-                  <textarea
-                    value={data.freeVoucherDescription}
-                    onChange={handleInputChange}
-                    name="description"
-                    className="border rounded w-full p-1"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="descriptionReferred" className="text-right">
-                    Description Referred Voucher
-                  </Label>
-                  <textarea
-                    value={data.referredVoucherDescription}
-                    onChange={handleInputChange}
-                    name="descriptionReferred"
-                    className="border rounded w-full p-1"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="currency" className="">
-                    Select Currency
-                  </Label>
-                  <Select name="currency" onValueChange={handleSelectChange}>
-                    <SelectTrigger>
-                      {data.freeVoucherCurrency || data.referredVoucherCurrency}
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        <SelectItem value={'NPR'}>NPR</SelectItem>
-                        <SelectItem value={'USD'}>American Dollar</SelectItem>
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label htmlFor="amount" className="text-right text-sm">
-                    Price of Referred voucher in{' '}
-                    {data.freeVoucherCurrency || data.referredVoucherCurrency}
-                  </Label>
-                  <Input
-                    name="amountInDollarReferral"
-                    className="col-span-3"
-                    value={data.referredVoucherPrice}
-                    onChange={handleInputChange}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="amount" className="text-right">
-                    Price of Free voucher in{' '}
-                    {data.freeVoucherCurrency || data.referredVoucherCurrency}
-                  </Label>
-                  <Input
-                    name="amountInDollar"
-                    className="col-span-3"
-                    value={data.freeVoucherPrice}
-                    onChange={handleInputChange}
-                  />
-                </div>
-              </div>
-              <DialogFooter>
-                <DialogClose asChild>
-                  <Button type="submit">Submit</Button>
-                </DialogClose>
-              </DialogFooter>
-            </form>
-          </DialogContent>
-        </Dialog>
-      ) : (
-        <Dialog>
+            <DialogFooter>
+              <DialogClose asChild>
+                <Button type="submit">Submit</Button>
+              </DialogClose>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+      {/* <Dialog>
           <DialogTrigger asChild>
             <div className="w-full flex justify-between items-center">
               <div className="flex gap-3 items-center">
@@ -181,7 +184,7 @@ const CreateVoucherModal: FC<CreateVoucherModalType> = ({
             <DialogHeader>
               <DialogTitle>Create Vouchers</DialogTitle>
             </DialogHeader>
-            <form onSubmit={handleSubmit}>
+            <form>
               <div className="grid grid-cols-2 gap-4 py-4">
                 <div>
                   <Label htmlFor="noOfVouchers" className="text-right">
@@ -277,13 +280,14 @@ const CreateVoucherModal: FC<CreateVoucherModalType> = ({
               </div>
               <DialogFooter>
                 <DialogClose asChild>
-                  <Button type="submit">Submit</Button>
+                  <Button onClick={() => setSetsuccessModal(true)}>
+                    Submit
+                  </Button>
                 </DialogClose>
               </DialogFooter>
             </form>
           </DialogContent>
-        </Dialog>
-      )}
+        </Dialog> */}
     </>
   );
 };

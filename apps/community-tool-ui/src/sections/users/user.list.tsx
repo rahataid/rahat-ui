@@ -93,7 +93,7 @@ export default function ListView({ handleClick }: IProps) {
     pageSize: 50,
   });
 
-  const { data, isLoading, isError, isSuccess, isFetched } =
+  const { data, isLoading, isError, isSuccess, isFetched, refetch } =
     userQuery.useUserList();
 
   const table = useReactTable({
@@ -116,6 +116,13 @@ export default function ListView({ handleClick }: IProps) {
       rowSelection,
     },
   });
+
+  React.useEffect(() => {
+    if (isFetched && isSuccess) {
+      refetch();
+    }
+  }, [isFetched, isSuccess, refetch]);
+
   return (
     <>
       <div className="w-full h-full -mt-2 p-2 bg-secondary">

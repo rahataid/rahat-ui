@@ -52,6 +52,7 @@ export default function UserView() {
 
   const handleClose = () => {
     setSelectedUserData(null);
+    setActiveTab(USER_NAV_ROUTE.DEFAULT);
   };
 
   return (

@@ -4,12 +4,14 @@ import {
   useOnlyMintVoucher,
 } from 'apps/rahat-ui/src/hooks/el/contracts/el-contracts';
 import {
+  LayoutDashboard,
   MessageSquare,
   Pencil,
   Phone,
   Receipt,
   Speech,
   Store,
+  TicketCheck,
   UsersRound,
   XCircle,
 } from 'lucide-react';
@@ -190,6 +192,11 @@ export const useNavItems = () => {
       title: 'Project Details',
       children: [
         {
+          title: 'Dashboard',
+          path: `/projects/el/${params.id}`,
+          icon: <LayoutDashboard size={18} strokeWidth={1.5} />,
+        },
+        {
           title: 'Beneficiaries',
           path: `/projects/el/${params.id}/beneficiary`,
           subtitle: 20,
@@ -210,12 +217,10 @@ export const useNavItems = () => {
         {
           title: 'Redemptions',
           path: `/projects/el/${params.id}/redemptions`,
-          // subtitle: ,
-          icon: <Receipt size={18} strokeWidth={1.5} />,
+          icon: <TicketCheck size={18} strokeWidth={1.5} />,
         },
         {
           title: 'Campaigns',
-          subtitle: 20,
           icon: <Speech size={18} strokeWidth={1.5} />,
           children: [
             {

@@ -2,7 +2,7 @@
 
 RahatUi serves as the Frontend Services for the Rahat project. It comprises the following components:
 
-- **rahat-ui**: The primary UI component utilized by Admins for managing the Rahat project.
+- **rahat-ui**: The primary UI component utilized by Admins for managing the Rahat project
 - **community-tool-ui**: The UI component designed for community Admins to oversee beneficiary management, offering a comprehensive toolset for effective management.
 
 ## Getting Started

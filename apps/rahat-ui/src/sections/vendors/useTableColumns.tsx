@@ -12,8 +12,11 @@ import {
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/components/dropdown-menu';
 import { Payment } from './vendors.transaction.table';
+import { useSecondPanel } from '../../providers/second-panel-provider';
+import VendorsDetailSplitView from './vendors.detail.split.view';
 
 export const useTableColumns = (handleAssignClick: any) => {
+  const { closeSecondPanel, setSecondPanelComponent } = useSecondPanel();
   const handleAssign = (row: any) => {
     handleAssignClick(row);
   };
@@ -92,7 +95,18 @@ export const useTableColumns = (handleAssignClick: any) => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="bg-white">
-              {/* <DropdownMenuItem>View Details</DropdownMenuItem> */}
+              <DropdownMenuItem
+                onClick={() =>
+                  setSecondPanelComponent(
+                    <VendorsDetailSplitView
+                      closeSecondPanel={closeSecondPanel}
+                      vendorsDetail={row.original}
+                    />,
+                  )
+                }
+              >
+                View Details
+              </DropdownMenuItem>
               {/* <DropdownMenuItem onClick={handleRegisterVendor}>
                 Register Vendor
               </DropdownMenuItem> */}

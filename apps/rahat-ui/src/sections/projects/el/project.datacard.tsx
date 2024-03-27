@@ -18,14 +18,14 @@ const ProjectDataCard: FC<ProjectDataCardProps> = ({
         <div className="grid grid-cols-2 col-span-2 gap-2">
           <DataCard
             className=""
-            title="Beneficiary"
+            title="Enrolled Beneficiary"
             number={beneficiaryDetails?.enrolledBen || '-'}
             subTitle="Enrolled"
             Icon={Users}
           />
           <DataCard
             className=""
-            title="Beneficiary"
+            title="Referred Beneficiary"
             number={beneficiaryDetails?.referredBen || '-'}
             subTitle="Referred"
             Icon={Users}

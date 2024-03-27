@@ -33,7 +33,7 @@ export const useAssignClaims = () => {
     mutation: {
       onSuccess: () => {
         alert.fire({
-          title: 'Beneficiary Assigned Claims Successfully',
+          title: 'Voucher Assigned Successfully',
           icon: 'success',
         });
       },
@@ -65,6 +65,38 @@ export const useMintVouchers = () => {
     },
   });
   return useWriteRahatDonorMintTokenAndApproveDescription({
+    mutation: {
+      onSuccess: () => {
+        toastMixin.fire('It has been done');
+      },
+      onError: (err) => {
+        alert.fire({
+          title: 'Error while minting vouchers',
+          icon: 'error',
+          text: err.message,
+        });
+      },
+    },
+  });
+};
+
+export const useOnlyMintVoucher = () => {
+  const alert = useSwal();
+  const toastMixin = alert.mixin({
+    toast: true,
+    icon: 'success',
+    title: 'General Title',
+    animation: false,
+    position: 'top-right',
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+      toast.addEventListener('mouseenter', alert.stopTimer);
+      toast.addEventListener('mouseleave', alert.resumeTimer);
+    },
+  });
+  return useWriteRahatDonorMintTokenAndApprove({
     mutation: {
       onSuccess: () => {
         toastMixin.fire('It has been done');

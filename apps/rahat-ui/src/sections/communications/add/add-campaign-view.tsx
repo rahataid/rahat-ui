@@ -22,6 +22,7 @@ import AddAudience from './add-audiences';
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 import { CAMPAIGN_TYPES } from '@rahat-ui/types';
 import { toast } from 'react-toastify';
+import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 
 const FormSchema = z.object({
   campaignName: z.string().min(2, {
@@ -110,6 +111,10 @@ const AddCampaignView = () => {
     getRowId: (row) => row.id,
     state: {
       rowSelection,
+      pagination: {
+        pageSize: -1,
+        pageIndex: 0,
+      },
     },
   });
 
@@ -180,7 +185,19 @@ const AddCampaignView = () => {
           form={form}
         />
         {showAddAudienceView.value ? (
-          <AddAudience table={table} columns={columns} form={form} />
+          <>
+            <Input
+              placeholder="Filter campaigns..."
+              value={
+                (table.getColumn('name')?.getFilterValue() as string) ?? ''
+              }
+              onChange={(event) =>
+                table.getColumn('name')?.setFilterValue(event.target.value)
+              }
+              className="max-w-sm mr-3 ml-4"
+            />
+            <AddAudience table={table} columns={columns} form={form} />
+          </>
         ) : null}
       </form>
     </FormProvider>

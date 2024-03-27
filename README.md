@@ -12,7 +12,7 @@ To initiate the project locally, proceed with the following steps:
 ### Clone the Repository
 
 ```bash
-git clone git@github.com:rahataid/rahat-ui.git
+git clone git@github.com:rahataid/rahat-ui.git 
 ```
 
 ### Install Dependencies

@@ -61,8 +61,6 @@ function BeneficiaryView() {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const columns = useBeneficiaryTableColumns();
 
-  console.log('Data==>', data);
-
   const table = useReactTable({
     manualPagination: true,
     data: data?.data || [],

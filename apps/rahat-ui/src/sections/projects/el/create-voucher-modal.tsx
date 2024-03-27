@@ -36,7 +36,7 @@ interface CreateVoucherModalType {
   handleSubmit: (e: any) => void;
   handleInputChange: (e: any) => void;
   data?: any;
-  setVoucherInputs?:any;
+  setVoucherInputs?: any;
 }
 
 const CreateVoucherModal: FC<CreateVoucherModalType> = ({
@@ -44,7 +44,7 @@ const CreateVoucherModal: FC<CreateVoucherModalType> = ({
   handleSubmit,
   handleInputChange,
   data,
-  setVoucherInputs
+  setVoucherInputs,
 }) => {
   const handleSelectChange = (value: string) => {
     handleInputChange({
@@ -54,7 +54,6 @@ const CreateVoucherModal: FC<CreateVoucherModalType> = ({
       },
     });
   };
-  
 
   return (
     <>
@@ -124,7 +123,7 @@ const CreateVoucherModal: FC<CreateVoucherModalType> = ({
                     Select Currency
                   </Label>
                   <Select name="currency" onValueChange={handleSelectChange}>
-                    <SelectTrigger>{data.freeVoucherCurrency}</SelectTrigger>
+                    <SelectTrigger>{voucherInputs.currency}</SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
                         <SelectItem value={'NPR'}>NPR</SelectItem>
@@ -135,7 +134,7 @@ const CreateVoucherModal: FC<CreateVoucherModalType> = ({
                 </div>
                 <div>
                   <Label htmlFor="amount" className="text-right text-sm">
-                    Price of Referred voucher in {data.freeVoucherCurrency}
+                    Price of Referred voucher in {voucherInputs.currency}
                   </Label>
                   <Input
                     name="amountInDollarReferral"
@@ -146,7 +145,7 @@ const CreateVoucherModal: FC<CreateVoucherModalType> = ({
                 </div>
                 <div>
                   <Label htmlFor="amount" className="text-right">
-                    Price of Free voucher in {data.freeVoucherCurrency}
+                    Price of Free voucher in {voucherInputs.currency}
                   </Label>
                   <Input
                     name="amountInDollar"
@@ -229,7 +228,11 @@ const CreateVoucherModal: FC<CreateVoucherModalType> = ({
                   <Label htmlFor="currency" className="">
                     Select Currency
                   </Label>
-                  <Select name="currency" onValueChange={handleSelectChange}>
+                  <Select
+                    name="currency"
+                    value={voucherInputs.currency}
+                    onValueChange={handleSelectChange}
+                  >
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>

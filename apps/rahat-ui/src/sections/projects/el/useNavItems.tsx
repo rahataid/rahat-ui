@@ -75,6 +75,7 @@ export const useNavItems = () => {
 
   const handleCreateVoucherTokenChange = (e: any) => {
     const { name, value } = e.target;
+
     setVoucherInputs((prev) => ({
       ...prev,
       [name]: value,
@@ -85,37 +86,38 @@ export const useNavItems = () => {
   const createOnlyVoucher = useOnlyMintVoucher();
   const closeProject = useCloseProject();
 
-  console.log(voucherInputs)
-
   // Free Voucher
   const handleCreateVoucherSubmit = async (e: any) => {
     e.preventDefault();
     if (!addresses) return;
     const referralLimit = 3;
-    !data ? await createVoucher.writeContractAsync({
-      address: addresses?.donorAddress,
-      args: [
-        addresses?.eyeVoucherAddress,
-        addresses.referralVoucherAddress,
-        addresses.elProjectAddress,
-        BigInt(voucherInputs.tokens),
-        voucherInputs.description,
-        voucherInputs.descriptionReferred,
-        BigInt(voucherInputs.amountInDollar),
-        BigInt(voucherInputs.amountInDollarReferral),
-        BigInt(referralLimit),
-        voucherInputs.currency,
-      ],
-    }) : await createOnlyVoucher.writeContractAsync({
-      address: addresses?.donorAddress,
-      args: [
-        "0x93B2C030C17B86500962889cE3C380b4376F42D4",
-        "0x0e952DFcf7506Dfd1c38822173531c658a27996e",
-        "0xaC29e7A5b6A4657a4B98E43F3b9517152867c896",
-        BigInt(voucherInputs.tokens),
-        BigInt(referralLimit),
-      ],
-    })
+    console.log('creting voucher');
+    !data
+      ? await createVoucher.writeContractAsync({
+          address: addresses?.donorAddress,
+          args: [
+            addresses?.eyeVoucherAddress,
+            addresses.referralVoucherAddress,
+            addresses.elProjectAddress,
+            BigInt(voucherInputs.tokens),
+            voucherInputs.description,
+            voucherInputs.descriptionReferred,
+            BigInt(voucherInputs.amountInDollar),
+            BigInt(voucherInputs.amountInDollarReferral),
+            BigInt(referralLimit),
+            voucherInputs.currency,
+          ],
+        })
+      : await createOnlyVoucher.writeContractAsync({
+          address: addresses?.donorAddress,
+          args: [
+            '0x93B2C030C17B86500962889cE3C380b4376F42D4',
+            '0x0e952DFcf7506Dfd1c38822173531c658a27996e',
+            '0xaC29e7A5b6A4657a4B98E43F3b9517152867c896',
+            BigInt(voucherInputs.tokens),
+            BigInt(referralLimit),
+          ],
+        });
   };
 
   // Referred Voucher
@@ -207,8 +209,8 @@ export const useNavItems = () => {
                 voucherInputs={voucherInputs}
                 handleSubmit={handleCreateVoucherSubmit}
                 handleInputChange={handleCreateVoucherTokenChange}
-                data = {data}
-                setVoucherInputs = {setVoucherInputs}
+                data={data}
+                setVoucherInputs={setVoucherInputs}
               />
               {/* <CreateTokenModal
                 open={createVoucher.isSuccess && !completeTransaction}

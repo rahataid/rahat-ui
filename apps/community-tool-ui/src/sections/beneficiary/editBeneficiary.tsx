@@ -226,7 +226,7 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
                     <FormItem>
                       <FormControl>
                         <Input
-                          type="float"
+                          type="number"
                           placeholder="Longitude"
                           {...field}
                           onChange={(e) => {
@@ -248,7 +248,7 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
                     <FormItem>
                       <FormControl>
                         <Input
-                          type="float"
+                          type="number"
                           placeholder="Latitude"
                           {...field}
                           onChange={(e) => {

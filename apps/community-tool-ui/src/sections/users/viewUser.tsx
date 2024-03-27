@@ -49,6 +49,13 @@ export default function UserDetail({ data }: IProps) {
   const toggleActiveUser = () => {
     setActiveUser(!activeUser);
   };
+
+  const changedDate = new Date(data?.createdAt as Date);
+  const formattedDate = changedDate.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
   return (
     <>
       <div className="p-4">
@@ -211,11 +218,27 @@ export default function UserDetail({ data }: IProps) {
                         Phone
                       </p>
                     </div>
+
+                    <div>
+                      <p className="font-light text-base">{formattedDate}</p>
+                      <p className="text-sm font-normal text-muted-foreground">
+                        Created At
+                      </p>
+                    </div>
+
+                    <div>
+                      <p className="font-light text-base">
+                        {data?.createdBy ?? 'N/A'}
+                      </p>
+                      <p className="text-sm font-normal text-muted-foreground">
+                        Created By
+                      </p>
+                    </div>
                   </div>
                 </TabsContent>
                 <TabsContent value="roles">
                   <div className="p-8">
-                    <UsersRoleTable />
+                    <UsersRoleTable uuid={data?.uuid} />
                     {/* <Card className="p-4">
                       <div className="grid grid-cols-4">
                         <div className="grid grid-cols-subgrid gap-4 col-span-4">

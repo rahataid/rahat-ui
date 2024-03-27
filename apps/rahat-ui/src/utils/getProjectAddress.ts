@@ -18,7 +18,7 @@ export const getProjectSettings = async (
 
 export const getProjectAddress = async (
   getProject: UseMutationResult<any, Error, any, unknown>,
-  uuid: string | undefined,
+  uuid: string | string[] | undefined,
 ) => {
   const res = await getProject.mutateAsync({
     uuid,

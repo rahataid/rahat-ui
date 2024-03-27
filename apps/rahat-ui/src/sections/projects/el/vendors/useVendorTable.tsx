@@ -78,8 +78,7 @@ export const useVendorTable = ({ handleViewClick }: VendorTableProps) => {
       id: 'actions',
       enableHiding: false,
       cell: ({ row }) => {
-        const payment = row.original;
-        console.log('Payment', payment);
+        const rowData = row.original;
         return (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -90,9 +89,7 @@ export const useVendorTable = ({ handleViewClick }: VendorTableProps) => {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuItem
-                onClick={() => handleViewClick(payment?.walletaddress)}
-              >
+              <DropdownMenuItem onClick={() => handleViewClick(rowData)}>
                 View Details
               </DropdownMenuItem>
             </DropdownMenuContent>

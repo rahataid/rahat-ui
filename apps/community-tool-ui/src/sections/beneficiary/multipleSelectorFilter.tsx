@@ -34,17 +34,19 @@ export default function Filter({ selectedData, handleClose }: IProps) {
   });
 
   const inputOptions: { [key: string]: string } = {};
-
   groupData?.data?.rows.forEach((row: { id: string; name: string }) => {
     inputOptions[row.id] = row.name;
   });
+
   const totalSelected = selectedData.length;
+
   const handleAssignBeneficiariesGroup = async () => {
-    await beneficiaryGroup.mutateAsync({
+    const res = await beneficiaryGroup.mutateAsync({
       inputOptions,
       selectedData,
     });
-    handleClose();
+
+    res?.response?.success && handleClose();
   };
 
   return (

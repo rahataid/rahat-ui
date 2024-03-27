@@ -7,7 +7,14 @@ import {
 import { truncateEthAddress } from '@rumsan/sdk/utils';
 
 export default function InfoCards({ data }) {
-  console.log(data);
+  const changedDate = new Date(data?.createdAt);
+  const formattedDate = changedDate.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+
+  console.log(formattedDate);
   return (
     <div className="grid grid-cols-1 gap-4 p-2">
       <Card className="shadow-md rounded-sm">
@@ -55,12 +62,26 @@ export default function InfoCards({ data }) {
                   Phone Status
                 </p>
               </div>
+
+              <div>
+                <p>{formattedDate ?? 'N/A'}</p>
+                <p className="text-sm font-normal text-muted-foreground">
+                  CreateAt
+                </p>
+              </div>
             </div>
             <div className="flex flex-col gap-2">
               <div>
                 <p>{data?.phone ?? 'N/A'}</p>
                 <p className="text-sm font-normal text-muted-foreground">
                   Phone
+                </p>
+              </div>
+
+              <div>
+                <p>{data?.email ?? 'N/A'}</p>
+                <p className="text-sm font-normal text-muted-foreground">
+                  Email
                 </p>
               </div>
               <div>

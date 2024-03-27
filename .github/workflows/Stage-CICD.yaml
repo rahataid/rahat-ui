@@ -1,12 +1,12 @@
 name: Stage CI/CD
 on:
-  # push:
-  #   branches:
-  #     - 'stage'
-  # pull_request:
-  #   branches:
-  #     - 'stage'
-  workflow_dispatch:
+  push:
+    branches:
+      - 'stage'
+  pull_request:
+    branches:
+      - 'stage'
+  # workflow_dispatch:
 
 env:
   CI: false
@@ -17,6 +17,8 @@ jobs:
   deploy:
     name: build && push image to Docker hub
     runs-on: ubuntu-latest
+    if: contains(github.event.head_commit.message, 'action')
+
     steps:
       - uses: actions/checkout@v4
 
@@ -51,8 +53,8 @@ jobs:
         with:
           context: .
           file: Dockerfile.rahat-ui
-          # push: ${{ github.event_name == 'push' && 'true' || 'false' }}
-          push: true
+          push: ${{ github.event_name == 'push' && 'true' || 'false' }}
+          # push: true
           tags: esatya/rahat-ui:stage
 
       # Community-Tool-UI Image
@@ -62,6 +64,6 @@ jobs:
         with:
           context: .
           file: Dockerfile.community-tool-ui
-          # push: ${{ github.event_name == 'push' && 'true' || 'false' }}
-          push: true
+          push: ${{ github.event_name == 'push' && 'true' || 'false' }}
+          # push: true
           tags: esatya/community-tool-ui:stage

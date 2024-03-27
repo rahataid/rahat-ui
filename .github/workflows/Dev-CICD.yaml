@@ -1,12 +1,12 @@
 name: Dev CI/CD
 on:
-  # push:
-  #   branches:
-  #     - 'dev'
-  # pull_request:
-  #   branches:
-  #     - 'dev'
-  workflow_dispatch:
+  push:
+    branches:
+      - 'dev'
+  pull_request:
+    branches:
+      - 'dev'
+  # workflow_dispatch:
 
 env:
   CI: false
@@ -17,6 +17,8 @@ jobs:
   deploy:
     name: build && push image to Docker hub
     runs-on: ubuntu-latest
+    if: contains(github.event.head_commit.message, 'action')
+
     steps:
       - uses: actions/checkout@v4
 
@@ -54,15 +56,6 @@ jobs:
           push: ${{ github.event_name == 'push' && 'true' || 'false' }}
           # push: false
           tags: esatya/rahat-ui:dev
-
-      # - name: Deploy Image to CapRrover
-      #   uses: caprover/deploy-from-github@v1.1.2
-      #   if: github.event_name == 'push'
-      #   with:
-      #     server: '${{ secrets.CAPROVER_SERVER }}'
-      #     app: '${{ secrets.APP_NAME }}'
-      #     token: '${{ secrets.APP_TOKEN }}'
-      #     image: $IMAGE_TAG
 
       # Community-Tool-UI Image
       - name: build && push community-tool-ui

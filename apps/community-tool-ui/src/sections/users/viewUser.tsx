@@ -62,7 +62,7 @@ export default function UserDetail({ data }: IProps) {
         <div className="flex">
           <Image
             className="rounded-full"
-            src="/svg/funny-cat.svg"
+            src="/svg/PortraitPlaceholder.png"
             alt="cat"
             height={80}
             width={80}
@@ -140,11 +140,11 @@ export default function UserDetail({ data }: IProps) {
                       />
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
-                      <DropdownMenuItem
+                      {/* <DropdownMenuItem
                         onClick={() => handleTabChange('details')}
                       >
                         Details{' '}
-                      </DropdownMenuItem>
+                      </DropdownMenuItem> */}
                       <DropdownMenuItem onClick={() => handleTabChange('edit')}>
                         Edit
                       </DropdownMenuItem>
@@ -289,7 +289,7 @@ export default function UserDetail({ data }: IProps) {
                 placeholder="Walletaddress"
               />
             </div>
-            <div className="p-4 flex items-center justify-start gap-24">
+            {/* <div className="p-4 flex items-center justify-start gap-24">
               <div className="flex items-center gap-2">
                 <Switch id="approve" />
                 <Label htmlFor="airplane-mode">Approve</Label>
@@ -305,8 +305,10 @@ export default function UserDetail({ data }: IProps) {
             <div className="flex items-center space-x-2">
               <Switch id="disable-user" />
               <Label htmlFor="disable-user">Add as owner</Label>
+            </div> */}
+            <div className="flex justify-end">
+              <Button>Confirm</Button>
             </div>
-            <Button>Confirm</Button>
           </div>
         </>
       )}

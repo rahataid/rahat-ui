@@ -1,19 +1,6 @@
 'use client';
 
-import {
-  ColumnDef,
-  ColumnFiltersState,
-  SortingState,
-  VisibilityState,
-  flexRender,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useReactTable,
-} from '@tanstack/react-table';
-import { Settings2 } from 'lucide-react';
-import * as React from 'react';
+import { useProjectAction } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/components/button';
 import {
   DropdownMenu,
@@ -32,11 +19,31 @@ import {
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import { useProjectAction } from '@rahat-ui/query';
-import { PROJECT_SETTINGS } from '../../constants/project.const';
 import { MS_ACTIONS } from '@rahataid/sdk/constants';
+import {
+  ColumnFiltersState,
+  SortingState,
+  VisibilityState,
+  flexRender,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  useReactTable,
+} from '@tanstack/react-table';
+import { Settings2 } from 'lucide-react';
+import * as React from 'react';
 
-import { useRumsanService } from '../../providers/service.provider';
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@rahat-ui/shadcn/src/components/ui/dialog';
+import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import {
   Select,
   SelectContent,
@@ -45,23 +52,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
-import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
-import {
-  DialogClose,
-  DialogFooter,
-  DialogContent,
-  Dialog,
-  DialogTrigger,
-  DialogHeader,
-  DialogDescription,
-  DialogTitle,
-} from '@rahat-ui/shadcn/src/components/ui/dialog';
 import { useBoolean } from '../../hooks/use-boolean';
+import { useRumsanService } from '../../providers/service.provider';
 import { useTableColumns } from './useTableColumns';
-import { useAddVendors } from '../../hooks/el/contracts/el-contracts';
-import { useSwal } from '../../components/swal';
+import Swal from 'sweetalert2';
 
-export type Payment = {
+export type IVendor = {
   id: string;
   projectName: string;
   status: 'pending' | 'processing' | 'success' | 'failed';
@@ -69,27 +65,17 @@ export type Payment = {
   walletAddress: `0x${string}`;
 };
 
-export default function DataTableDemo() {
+export default function VendorsList() {
   const { vendorQuery, projectQuery } = useRumsanService();
 
   const projectModal = useBoolean();
   const [selectedProject, setSelectedProject] = React.useState('');
   const [selectedRow, setSelectedRow] = React.useState(null) as any;
 
-  const updateVendor = useAddVendors(selectedProject, selectedRow?.id);
-
   const handleAssignModalClick = (row: any) => {
     setSelectedRow(row);
     projectModal.onTrue();
   };
-
-  // const assignVendorToProjet = (project: string, payment: any) => {
-  //   const updateVendor = useAddVendors(project, payment.id);
-  //   return updateVendor.writeContractAsync({
-  //     address: '0x9C8Ee9931BEc18EA883c8F23c7427016bBDeF171',
-  //     args: [payment.walletAddress, true],
-  //   });
-  // };
 
   const columns = useTableColumns(handleAssignModalClick);
 
@@ -97,8 +83,6 @@ export default function DataTableDemo() {
   const projectsList = projectQuery.useProjectList({});
   const d = projectsList.data;
   const projectList = d?.data || [];
-
-  const alert = useSwal();
 
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -134,9 +118,9 @@ export default function DataTableDemo() {
   });
 
   const handleAssignProject = async () => {
-    if (!selectedProject) return alert('Please select a project');
+    if (!selectedProject) return;
 
-    const res = await projectClient.mutateAsync({
+    await projectClient.mutateAsync({
       uuid: selectedProject,
       data: {
         action: MS_ACTIONS.VENDOR.ASSIGN_TO_PROJECT,
@@ -145,43 +129,21 @@ export default function DataTableDemo() {
         },
       },
     });
-
-    // const res = await projectClient.mutateAsync({
-    //   uuid: selectedProject,
-    //   data: {
-    //     action: MS_ACTIONS.SETTINGS.GET,
-    //     payload: {
-    //       name: PROJECT_SETTINGS.CONTRACTS,
-    //     },
-    //   },
-    // });
-    // if (!res.data.value) return alert('No contract found!');
-    // const { value } = res.data;
-    // console.log('Vendor==>', selectedRow.id);
-    // console.log('Project==>', selectedProject);
-    // return updateVendor.writeContractAsync({
-    //   address: value.el.address, // value.el.address
-    //   args: [selectedRow.walletAddress, true], // selecteWalletAddress
-    // });
   };
 
   React.useEffect(() => {
     if (!projectClient) return;
     if (projectClient.isSuccess) {
-      alert.fire({
-        title: 'Vendor Assigned Successfully',
-        icon: 'success',
-      });
+      Swal.fire({ icon: 'success', title: 'Action performed successfully' });
       projectClient.reset();
     }
     if (projectClient.isError) {
-      alert.fire({
-        title: 'Error while updating Vendor',
-        icon: 'error',
-      });
+      const error = projectClient.error as any;
+      const message = error?.response?.data?.message || 'Internal Server Error';
+      Swal.fire({ icon: 'error', title: message });
       projectClient.reset();
     }
-  }, [projectClient, alert]);
+  }, [projectClient]);
 
   const handleProjectChange = (d: string) => setSelectedProject(d);
 
@@ -191,7 +153,7 @@ export default function DataTableDemo() {
         <div className="flex items-center mb-2">
           <Input
             placeholder="Search User..."
-            value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
+            value=""
             onChange={(event) =>
               table.getColumn('name')?.setFilterValue(event.target.value)
             }
@@ -283,7 +245,7 @@ export default function DataTableDemo() {
 
       <div className="sticky bottom-0 flex items-center justify-end space-x-4 px-4 py-1 border-t-2 bg-card">
         <div className="flex-1 text-sm text-muted-foreground">
-          {table.getFilteredRowModel().rows.length} Users
+          {table.getFilteredRowModel().rows.length} Vendors
         </div>
         <div className="flex items-center gap-2">
           <div className="text-sm font-medium">Rows per page</div>
@@ -336,20 +298,21 @@ export default function DataTableDemo() {
             open={projectModal.value}
             onOpenChange={projectModal.onToggle}
           >
-            {/* <DialogTrigger className=" hover:bg-muted p-1 rounded text-left">
-              Assign Projects
-            </DialogTrigger> */}
             <DialogContent>
               <DialogHeader>
                 <DialogTitle>Assign Project</DialogTitle>
                 <DialogDescription>
-                  Select the project to be assigned to the beneficiary
+                  {!selectedProject && (
+                    <p className="text-orange-500">
+                      Select a project to assign
+                    </p>
+                  )}
                 </DialogDescription>
               </DialogHeader>
               <div>
                 <Select onValueChange={handleProjectChange}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Projects" />
+                    <SelectValue placeholder="--Select--" />
                   </SelectTrigger>
                   <SelectContent>
                     {projectList.length > 0 &&

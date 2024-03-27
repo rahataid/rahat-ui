@@ -5,7 +5,7 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from '@rahat-ui/shadcn/components/resizable';
-import VendorsTable from '../../sections/vendors/vendors.transaction.table';
+import VendorsTable from '../../sections/vendors/vendors.list.table';
 import VendorNav from '../../sections/vendors/nav';
 import { useSecondPanel } from '../../providers/second-panel-provider';
 

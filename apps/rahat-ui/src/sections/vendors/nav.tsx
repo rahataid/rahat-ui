@@ -60,10 +60,10 @@ export default function Nav() {
                 <Eye size={18} strokeWidth={1.5} />
                 <p>Vendors </p>
               </div>
-              <p>{totalUser || 0}</p>
+              <p></p>
             </div>
           </nav>
-          <div className="py-2 w-full border-t">
+          {/* <div className="py-2 w-full border-t">
             <div className="p-4 flex flex-col gap-0.5 text-sm">
               <Dialog>
                 <DialogTrigger className=" hover:bg-muted p-1 rounded text-left">
@@ -110,7 +110,7 @@ export default function Nav() {
                 </DialogContent>
               </Dialog>
             </div>
-          </div>
+          </div> */}
         </div>
       </ScrollArea>
     </>

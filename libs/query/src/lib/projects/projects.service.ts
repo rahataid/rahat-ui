@@ -15,6 +15,8 @@ import { UUID } from 'crypto';
 import { FormattedResponse } from '@rumsan/sdk/utils';
 import { Project, ProjectActions } from '@rahataid/sdk/project/project.types';
 import { PaginatedResult, Pagination } from '@rumsan/sdk/types';
+import { useProjectSettingsStore } from './project.store';
+import { useEffect } from 'react';
 
 const createProject = async (payload: CreateProjectPayload) => {
   const res = await api.post('/projects', payload);
@@ -58,8 +60,13 @@ export const useProjectAction = () => {
 
 export const useProjectSettings = (uuid: UUID) => {
   const q = useProjectAction();
+  const { setSettings, settings } = useProjectSettingsStore((state) => ({
+    settings: state.settings,
+    setSettings: state.setSettings,
+  }));
   const query = useQuery({
     queryKey: [TAGS.GET_PROJECT_SETTINGS],
+    enabled: settings?.[uuid] !== uuid,
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid,
@@ -73,6 +80,16 @@ export const useProjectSettings = (uuid: UUID) => {
       return mutate;
     },
   });
+
+  useEffect(() => {
+    if (query.data) {
+      setSettings({
+        ...settings,
+        [uuid]: query.data?.data?.value,
+      });
+    }
+  }, [query.data]);
+
   return query;
 };
 

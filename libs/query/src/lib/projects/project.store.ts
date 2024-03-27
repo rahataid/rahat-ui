@@ -1,6 +1,7 @@
 import { Project } from '@rahataid/sdk/project/project.types';
 import { localStore, zustandStore } from '@rumsan/react-query';
 import { FormattedResponse } from '@rumsan/sdk/utils';
+import { UUID } from 'crypto';
 
 type ProjectState = {
   singleProject: FormattedResponse<Project>['data'] | null;
@@ -48,6 +49,7 @@ type ProjectSettingsState = {
 type ProjectSettingsStateAction = {
   setSettings: (settings: Record<string, any>) => void;
   resetSettings: () => void;
+  // getSettings:(uuid:UUID)=>void;
 };
 
 type ProjectSettingsStore = ProjectSettingsState & ProjectSettingsStateAction;
@@ -57,6 +59,7 @@ export const useProjectSettingsStore = zustandStore<ProjectSettingsStore>(
     ...initialSettingsStore,
     setSettings: (settings) => set({ settings }),
     resetSettings: () => set({ ...initialSettingsStore }),
+    // Fetch settings from api
   }),
   {
     devtoolsEnabled: true,

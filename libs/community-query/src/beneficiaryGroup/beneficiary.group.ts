@@ -29,32 +29,44 @@ export class CommunityBeneficiaryGroupQuery {
           input: 'select',
           inputOptions: payload.inputOptions,
           inputPlaceholder: 'Select a Group',
+          preConfirm: (selectedValue) => {
+            if (!selectedValue) {
+              Swal.showValidationMessage(
+                'Select a group to proceed an operation',
+              );
+            }
+            return selectedValue;
+          },
         });
 
-        const inputData = {
-          beneficiariesId: payload?.selectedData,
-          groupId: parseInt(value),
-        };
-
-        return this.client.create(inputData as any);
+        if (value !== undefined && value !== '') {
+          const inputData = {
+            beneficiariesId: payload?.selectedData,
+            groupId: parseInt(value),
+          };
+          return await this.client.create(inputData as any);
+        }
+        return null;
       },
       onSuccess: async (data: any) => {
-        await this.qc.invalidateQueries({
-          queryKey: [TAGS.LIST_COMMUNITY_BENEFICIARY_GROUP],
-        });
+        if (data) {
+          await this.qc.invalidateQueries({
+            queryKey: [TAGS.LIST_COMMUNITY_BENEFICIARY_GROUP],
+          });
 
-        data && data?.data?.info === false
-          ? Swal.fire({
-              text: data?.data?.finalMessage,
-              icon: 'success',
-            })
-          : Swal.fire({
-              title: data?.data?.finalMessage,
-              titleText: data?.data?.finalMessage,
-              text: data?.data?.info,
+          data?.data?.info === false
+            ? await Swal.fire({
+                text: data?.data?.finalMessage,
+                icon: 'success',
+              })
+            : await Swal.fire({
+                title: data?.data?.finalMessage,
+                titleText: data?.data?.finalMessage,
+                text: data?.data?.info,
 
-              icon: 'info',
-            });
+                icon: 'info',
+              });
+        }
       },
       onError: (error: any) => {
         Swal.fire({

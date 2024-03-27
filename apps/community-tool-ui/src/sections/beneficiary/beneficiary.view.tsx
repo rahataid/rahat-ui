@@ -211,7 +211,7 @@ function BeneficiaryView() {
               <TabsContent value="grid">
                 <BeneficiaryGridView
                   handleClick={handleBeneficiaryClick}
-                  data={data?.data}
+                  data={data?.data?.rows}
                 />
               </TabsContent>
               <CustomPagination

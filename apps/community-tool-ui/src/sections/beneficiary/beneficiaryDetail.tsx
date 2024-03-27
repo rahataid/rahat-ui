@@ -47,7 +47,7 @@ export default function BeneficiaryDetail({ data, handleClose }: IProps) {
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
-            <TooltipProvider delayDuration={100}>
+            {/* <TooltipProvider delayDuration={100}>
               <Tooltip>
                 <TooltipTrigger
                   onClick={() => {
@@ -60,8 +60,8 @@ export default function BeneficiaryDetail({ data, handleClose }: IProps) {
                   <p className="text-xs font-medium">Expand</p>
                 </TooltipContent>
               </Tooltip>
-            </TooltipProvider>
-            <TooltipProvider delayDuration={100}>
+            </TooltipProvider> */}
+            {/* <TooltipProvider delayDuration={100}>
               <Tooltip>
                 <TooltipTrigger>
                   <FilePenLine size={20} strokeWidth={1.5} />
@@ -70,8 +70,8 @@ export default function BeneficiaryDetail({ data, handleClose }: IProps) {
                   <p className="text-xs font-medium">Edit</p>
                 </TooltipContent>
               </Tooltip>
-            </TooltipProvider>
-            <TooltipProvider delayDuration={100}>
+            </TooltipProvider> */}
+            {/* <TooltipProvider delayDuration={100}>
               <Tooltip>
                 <TooltipTrigger>
                   <Archive size={20} strokeWidth={1.5} />
@@ -80,9 +80,9 @@ export default function BeneficiaryDetail({ data, handleClose }: IProps) {
                   <p className="text-xs font-medium">Archive</p>
                 </TooltipContent>
               </Tooltip>
-            </TooltipProvider>
+            </TooltipProvider> */}
             {/* <Button variant="outline">Delete User</Button> */}
-            <TooltipProvider delayDuration={100}>
+            {/* <TooltipProvider delayDuration={100}>
               <Tooltip>
                 <TooltipTrigger>
                   <Dialog>
@@ -96,22 +96,22 @@ export default function BeneficiaryDetail({ data, handleClose }: IProps) {
                   <p className="text-xs font-medium">Delete</p>
                 </TooltipContent>
               </Tooltip>
-            </TooltipProvider>
+            </TooltipProvider> */}
           </div>
           <TabsList>
             <TabsTrigger value="detail">Details </TabsTrigger>
-            <TabsTrigger value="transaction-history">
+            {/* <TabsTrigger value="transaction-history">
               Transaction History
-            </TabsTrigger>
+            </TabsTrigger> */}
             <TabsTrigger value="edit">Edit</TabsTrigger>
           </TabsList>
         </div>
         <TabsContent value="detail">
           <InfoCards data={data} />
         </TabsContent>
-        <TabsContent value="transaction-history">
+        {/* <TabsContent value="transaction-history">
           <div className="p-4 border-y">Transaction History View</div>
-        </TabsContent>
+        </TabsContent> */}
         <TabsContent value="edit">
           <EditBeneficiary data={data} />
         </TabsContent>

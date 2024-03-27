@@ -3,9 +3,10 @@ import Image from 'next/image';
 import { Card, CardContent } from '@rahat-ui/shadcn/components/card';
 import { useRouter } from 'next/navigation';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+import { UUID } from 'crypto';
 
 type CardProps = {
-  address: string;
+  address: UUID;
   title: string;
   subTitle: string;
   image: string;

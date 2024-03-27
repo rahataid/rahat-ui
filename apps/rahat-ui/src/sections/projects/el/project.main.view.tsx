@@ -1,6 +1,6 @@
 'use client';
 
-import { useProjectSettingsStore } from '@rahat-ui/query';
+import { useProjectSettingsStore, useProjectStore } from '@rahat-ui/query';
 import {
   useBeneficiaryCount,
   useProjectVoucher,
@@ -13,6 +13,8 @@ import { memo } from 'react';
 
 const ProjectMainView = () => {
   const { id } = useParams();
+
+  const project = useProjectStore((state) => state.singleProject);
   const contractSettings = useProjectSettingsStore(
     (state) => state.settings?.[id] || null,
   );
@@ -32,7 +34,7 @@ const ProjectMainView = () => {
 
   return (
     <div className="p-2 bg-secondary">
-      <ProjectInfo />
+      <ProjectInfo project={project} />
       <ProjectDataCard
         beneficiaryDetails={beneficiaryDetails}
         projectVoucher={projectVoucher}

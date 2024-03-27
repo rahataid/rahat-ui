@@ -26,7 +26,7 @@ type usePaginationReturn = {
   };
   selectedListItems: any;
   setPagination: (pagination: Pagination) => void;
-  setFilters: (filters: { [key: string]: string }) => void;
+  setFilters: (filters: { [key: string]: any }) => void;
   setNextPage: () => void;
   setPrevPage: () => void;
   resetPagination: () => void;

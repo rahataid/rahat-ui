@@ -15,7 +15,7 @@ import { UUID } from 'crypto';
 import { FormattedResponse } from '@rumsan/sdk/utils';
 import { Project, ProjectActions } from '@rahataid/sdk/project/project.types';
 import { PaginatedResult, Pagination } from '@rumsan/sdk/types';
-import { useProjectSettingsStore } from './project.store';
+import { useProjectSettingsStore, useProjectStore } from './project.store';
 import { useEffect } from 'react';
 import { isEmpty } from 'lodash';
 
@@ -33,11 +33,6 @@ export const useProjectCreateMutation = () => {
       qc.invalidateQueries({ queryKey: [TAGS.GET_ALL_PROJECTS] });
     },
   });
-};
-
-const projectActions = async (uuid: any, payload: any) => {
-  const res = await api.post(`/projects/${uuid}/actions`, payload);
-  return res.data;
 };
 
 export const useProjectAction = () => {
@@ -114,15 +109,25 @@ export const useProjectList = (
     queryClient,
   );
 };
-export const useProject = (uuid: UUID): UseQueryResult<any, Error> => {
+export const useProject = (
+  uuid: UUID,
+): UseQueryResult<FormattedResponse<Project>, Error> => {
   const { queryClient, rumsanService } = useRSQuery();
+  const setSingleProject = useProjectStore((state) => state.setSingleProject);
 
   const projectClient = getProjectClient(rumsanService.client);
-  return useQuery(
+  const query = useQuery(
     {
       queryKey: [TAGS.GET_PROJECT_DETAILS, uuid],
       queryFn: () => projectClient.get(uuid),
     },
     queryClient,
   );
+
+  useEffect(() => {
+    if (query.data) {
+      setSingleProject(query.data.data); // Access the 'data' property of the 'FormattedResponse' object
+    }
+  }, [query.data]);
+  return query;
 };

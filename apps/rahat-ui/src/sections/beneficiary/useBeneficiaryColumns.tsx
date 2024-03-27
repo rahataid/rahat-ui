@@ -5,6 +5,7 @@ import { ColumnDef } from '@tanstack/react-table';
 import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
 import { Beneficiary } from '@rahataid/sdk/types';
 import { Eye } from 'lucide-react';
+import { truncateEthAddress } from '@rumsan/sdk/utils';
 
 export const useBeneficiaryTableColumns = () => {
   const columns: ColumnDef<Beneficiary>[] = [
@@ -44,7 +45,9 @@ export const useBeneficiaryTableColumns = () => {
     {
       accessorKey: 'walletAddress',
       header: 'Wallet Address',
-      cell: ({ row }) => <div>{row.getValue('walletAddress')}</div>,
+      cell: ({ row }) => (
+        <div>{truncateEthAddress(row.getValue('walletAddress'))}</div>
+      ),
     },
     {
       accessorKey: 'gender',

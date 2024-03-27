@@ -10,6 +10,8 @@ import {
   FormMessage,
 } from '@rahat-ui/shadcn/components/form';
 import { Input } from '@rahat-ui/shadcn/components/input';
+import { Textarea } from '@rahat-ui/shadcn/components/textarea';
+
 import {
   Popover,
   PopoverContent,
@@ -169,9 +171,14 @@ const CampaignForm: FC<CampaignFormProps> = ({
                   <FormItem>
                     {/* <FormLabel>Message</FormLabel> */}
                     <FormControl>
-                      <Input
+                      {/* <Input
                         placeholder="Message"
                         {...field}
+                        className="rounded"
+                      /> */}
+                      <Textarea
+                        {...field}
+                        placeholder="Type your message here."
                         className="rounded"
                       />
                     </FormControl>

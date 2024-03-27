@@ -27,13 +27,17 @@ import {
 import { ListBeneficiary } from '@rahataid/community-tool-sdk/beneficiary';
 import { MoreHorizontal } from 'lucide-react';
 import CustomPagination from '../../components/customPagination';
-import { BENEFICIARY_NAV_ROUTE } from '../../constants/beneficiary.const';
+import {
+  BENEFICIARY_NAV_ROUTE,
+  GROUP_NAV_ROUTE,
+} from '../../constants/beneficiary.const';
 import { useRumsanService } from '../../providers/service.provider';
 import BeneficiaryDetail from '../../sections/beneficiary/beneficiaryDetail';
 import BeneficiaryGridView from '../../sections/beneficiary/gridView';
 import BeneficiaryListView from '../../sections/beneficiary/listView';
 import BeneficiaryNav from '../../sections/beneficiary/nav';
 import ImportBeneficiary from './import.beneficiary';
+import ViewGroup from '../group/group.view';
 
 export const columns: ColumnDef<ListBeneficiary>[] = [
   {
@@ -125,11 +129,29 @@ function BeneficiaryView() {
 
   const { communityBenQuery } = useRumsanService();
   const [selectedData, setSelectedData] = useState<ListBeneficiary>();
+  const [selectedBenefId, setSelectedBenefId] = useState<number[]>([]);
   const [active, setActive] = useState<string>(BENEFICIARY_NAV_ROUTE.DEFAULT);
+
+  // const handleBeneficiaryClick = useCallback((item: ListBeneficiary) => {
+  //   setSelectedData(item);
+  // }, []);
 
   const handleBeneficiaryClick = useCallback((item: ListBeneficiary) => {
     setSelectedData(item);
+    setSelectedBenefId((prevSelectedData) => {
+      const isSelected = prevSelectedData?.includes(item.id);
+
+      if (isSelected) {
+        return prevSelectedData.filter((selectedId) => selectedId !== item.id);
+      } else {
+        return [...(prevSelectedData || []), item.id];
+      }
+    });
   }, []);
+
+  const handleClear = () => {
+    setSelectedBenefId([]);
+  };
 
   const handleClose = () => {
     setSelectedData(null);
@@ -151,6 +173,7 @@ function BeneficiaryView() {
     manualPagination: true,
     data: data?.data?.rows || [],
     columns,
+    getRowId: (row) => row.uuid,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
@@ -164,7 +187,12 @@ function BeneficiaryView() {
     <Tabs defaultValue="list" className="h-full">
       <ResizablePanelGroup direction="horizontal" className="min-h-max bg-card">
         <ResizablePanel minSize={20} defaultSize={20} maxSize={20}>
-          <BeneficiaryNav handleNav={handleNav} meta={data?.response?.meta} />
+          <BeneficiaryNav
+            meta={data?.response?.meta}
+            selectedBenefID={selectedBenefId}
+            // handleClear={handleclear}
+            setSelectedBenefId={setSelectedBenefId}
+          />
         </ResizablePanel>
         <ResizableHandle />
         <ResizablePanel minSize={28}>
@@ -183,7 +211,7 @@ function BeneficiaryView() {
               <TabsContent value="grid">
                 <BeneficiaryGridView
                   handleClick={handleBeneficiaryClick}
-                  data={data?.data}
+                  data={data?.data?.rows}
                 />
               </TabsContent>
               <CustomPagination
@@ -194,7 +222,7 @@ function BeneficiaryView() {
               />
             </>
           )}
-          {/* {active === GROUP_NAV_ROUTE.VIEW_GROUP && <ViewGroup />} */}
+          {active === GROUP_NAV_ROUTE.VIEW_GROUP && <ViewGroup />}
         </ResizablePanel>
         {selectedData ? (
           <>
@@ -204,8 +232,6 @@ function BeneficiaryView() {
                 handleClose={handleClose}
                 data={selectedData}
               />
-
-              {/* {addBeneficiary && <AddBeneficiary />} */}
             </ResizablePanel>
           </>
         ) : null}

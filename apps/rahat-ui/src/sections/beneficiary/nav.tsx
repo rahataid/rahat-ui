@@ -1,3 +1,5 @@
+'use client';
+
 import { ScrollArea } from '@rahat-ui/shadcn/components/scroll-area';
 import { Separator } from '@rahat-ui/shadcn/components/separator';
 import { TabsList, TabsTrigger } from '@rahat-ui/shadcn/src/components/ui/tabs';
@@ -8,6 +10,7 @@ import MultipleSelectFilter from './multipleSelectFilter';
 import { PROJECT_DETAIL_NAV_ROUTE } from '../../constants/project.detail.const';
 import { Table } from '@tanstack/react-table';
 import { ListBeneficiary } from '@rahat-ui/types';
+import { useRouter } from 'next/navigation';
 
 type IProps = {
   meta: Meta | undefined;
@@ -17,6 +20,10 @@ type IProps = {
 };
 
 export default function Nav({ meta, handleNav, active, table }: IProps) {
+  const router = useRouter();
+  const handleAddBeneficiaryClick = () => {
+    router.push('/beneficiary/add');
+  };
   return (
     <>
       <div>
@@ -43,7 +50,7 @@ export default function Nav({ meta, handleNav, active, table }: IProps) {
             <nav>
               <div
                 className="flex justify-between p-2 rounded-md cursor-pointer hover:bg-primary hover:text-white text-muted-foreground"
-                onClick={() => handleNav(BENEFICIARY_NAV_ROUTE.DEFAULT)}
+                onClick={() => router.push('/beneficiary')}
               >
                 <div className="flex items-center gap-3">
                   <Users size={18} strokeWidth={1.5} />
@@ -58,12 +65,9 @@ export default function Nav({ meta, handleNav, active, table }: IProps) {
       <Separator />
       <ScrollArea>
         <div className="p-2">
-          {/* <h1 className="font-semibold text-xl mb-4 text-muted-foreground">
-            Action Items
-          </h1> */}
           <nav className="text-muted-foreground">
             <div
-              onClick={() => handleNav(BENEFICIARY_NAV_ROUTE.ADD_BENEFICIARY)}
+              onClick={handleAddBeneficiaryClick}
               className="flex items-center p-2 gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white"
             >
               <Plus size={18} strokeWidth={1.5} />

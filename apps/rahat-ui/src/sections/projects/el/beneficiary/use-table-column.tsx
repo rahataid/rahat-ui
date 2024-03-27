@@ -14,6 +14,7 @@ import {
 } from '@rahat-ui/shadcn/components/dropdown-menu';
 import { useSecondPanel } from '../../../../providers/second-panel-provider';
 import BeneficiaryDetail from '../../../../sections/projects/el/beneficiary/beneficiary.detail';
+import { truncateEthAddress } from '@rumsan/sdk/utils';
 
 export const useProjectBeneficiaryTableColumns = () => {
   const { setSecondPanelComponent, closeSecondPanel } = useSecondPanel();
@@ -43,8 +44,8 @@ export const useProjectBeneficiaryTableColumns = () => {
     },
     {
       accessorKey: 'name',
-      header: 'Name',
-      cell: ({ row }) => <div>{row.getValue('name')}</div>,
+      header: 'Wallet',
+      cell: ({ row }) => <div>{truncateEthAddress(row.getValue('name'))}</div>,
     },
     {
       accessorKey: 'vouvherType',
@@ -81,7 +82,7 @@ export const useProjectBeneficiaryTableColumns = () => {
     {
       id: 'actions',
       enableHiding: false,
-      cell: () => {
+      cell: ({ row }) => {
         return (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -94,11 +95,14 @@ export const useProjectBeneficiaryTableColumns = () => {
               <DropdownMenuItem
                 onClick={() => {
                   setSecondPanelComponent(
-                    <BeneficiaryDetail closeSecondPanel={closeSecondPanel} />,
+                    <BeneficiaryDetail
+                      closeSecondPanel={closeSecondPanel}
+                      beneficiaryDetails={row.original}
+                    />,
                   );
                 }}
               >
-                View Details
+                View Beneficiary
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem>Edit</DropdownMenuItem>

@@ -1,17 +1,36 @@
 import { ScrollArea } from '@rahat-ui/shadcn/components/scroll-area';
 import { Separator } from '@rahat-ui/shadcn/components/separator';
 import { TabsList, TabsTrigger } from '@rahat-ui/shadcn/src/components/ui/tabs';
-import { AlignJustify, Import, LayoutGrid, Plus, Users } from 'lucide-react';
+import {
+  AlignJustify,
+  Group,
+  Import,
+  LayoutGrid,
+  Plus,
+  Users,
+} from 'lucide-react';
 import Filter from './filter';
+import MultipleSelectFilter from './multipleSelectorFilter';
 import Link from 'next/link';
 import { paths } from '../../routes/paths';
 
-// type IProps = {
-//   meta?: Meta | undefined;
-//   handleNav?: (item: string) => void;
-// };
+import { Meta } from '@rahat-ui/types';
 
-export default function Nav() {
+type IProps = {
+  meta: Meta | undefined;
+  selectedBenefID?: number[];
+  // handleClear: () => void | null;
+  setSelectedBenefId?: any;
+};
+
+export default function Nav({
+  meta,
+  selectedBenefID,
+  setSelectedBenefId,
+}: IProps) {
+  const handleClear = () => {
+    setSelectedBenefId([]);
+  };
   return (
     <>
       <div>
@@ -38,7 +57,10 @@ export default function Nav() {
                     Beneficiary List
                   </Link>
                 </div>
-                <p>{}</p>
+              </div>
+              <div className="flex items-center p-2 gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white text-muted-foreground">
+                <Group size={18} strokeWidth={1.5} />
+                <Link href={paths.dashboard.group.root}>Group List</Link>
               </div>
             </nav>
           </div>
@@ -52,20 +74,33 @@ export default function Nav() {
             <div className="flex items-center p-2 gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white">
               <Plus size={18} strokeWidth={1.5} />
               <Link href={paths.dashboard.beneficiary.add}>
-                {' '}
                 Add Beneficiary
               </Link>
             </div>
+
             <div className="flex items-center p-2 gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white">
               <Import size={18} strokeWidth={1.5} />
               <Link href={paths.dashboard.beneficiary.import}>
-                {' '}
                 Import Beneficiary
               </Link>
+            </div>
+
+            <div className="flex items-center p-2 gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white">
+              <Plus size={18} strokeWidth={1.5} />
+              <Link href={paths.dashboard.group.add}>Add Group</Link>
             </div>
           </nav>
         </div>
       </ScrollArea>
+      {selectedBenefID && selectedBenefID.length > 0 && (
+        <>
+          <Separator className="mb-2" />
+          <MultipleSelectFilter
+            selectedData={selectedBenefID}
+            handleClose={handleClear}
+          />
+        </>
+      )}
     </>
   );
 }

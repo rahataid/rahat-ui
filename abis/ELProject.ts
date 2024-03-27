@@ -1,31 +1,61 @@
 export const ELAbi = [
   {
     inputs: [
-      { internalType: 'string', name: '_name', type: 'string' },
-      { internalType: 'address', name: '_defaultToken', type: 'address' },
+      {
+        internalType: 'string',
+        name: '_name',
+        type: 'string',
+      },
+      {
+        internalType: 'address',
+        name: '_defaultToken',
+        type: 'address',
+      },
       {
         internalType: 'address',
         name: '_referredToken',
         type: 'address',
       },
-      { internalType: 'address', name: '_rahatClaim', type: 'address' },
+      {
+        internalType: 'address',
+        name: '_rahatClaim',
+        type: 'address',
+      },
       {
         internalType: 'address',
         name: '_otpServerAddress',
         type: 'address',
       },
-      { internalType: 'address', name: '_forwarder', type: 'address' },
-      { internalType: 'uint256', name: '_referralLimit', type: 'uint256' },
+      {
+        internalType: 'address',
+        name: '_forwarder',
+        type: 'address',
+      },
+      {
+        internalType: 'uint256',
+        name: '_referralLimit',
+        type: 'uint256',
+      },
     ],
     stateMutability: 'nonpayable',
     type: 'constructor',
   },
   {
-    inputs: [{ internalType: 'address', name: 'target', type: 'address' }],
+    inputs: [
+      {
+        internalType: 'address',
+        name: 'target',
+        type: 'address',
+      },
+    ],
     name: 'AddressEmptyCode',
     type: 'error',
   },
-  { inputs: [], name: 'FailedInnerCall', type: 'error' },
+  {
+    inputs: [],
+    name: 'FailedInnerCall',
+    type: 'error',
+  },
   {
     anonymous: false,
     inputs: [
@@ -92,6 +122,12 @@ export const ELAbi = [
         name: 'tokenAddress',
         type: 'address',
       },
+      {
+        indexed: false,
+        internalType: 'address',
+        name: 'assigner',
+        type: 'address',
+      },
     ],
     name: 'ClaimAssigned',
     type: 'event',
@@ -119,6 +155,25 @@ export const ELAbi = [
       },
     ],
     name: 'ClaimProcessed',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: 'address',
+        name: 'beneficiary',
+        type: 'address',
+      },
+      {
+        indexed: false,
+        internalType: 'address',
+        name: 'tokenAddress',
+        type: 'address',
+      },
+    ],
+    name: 'ClaimRevert',
     type: 'event',
   },
   {
@@ -339,7 +394,13 @@ export const ELAbi = [
   {
     inputs: [],
     name: 'IID_RAHAT_PROJECT',
-    outputs: [{ internalType: 'bytes4', name: '', type: 'bytes4' }],
+    outputs: [
+      {
+        internalType: 'bytes4',
+        name: '',
+        type: 'bytes4',
+      },
+    ],
     stateMutability: 'view',
     type: 'function',
   },
@@ -347,20 +408,23 @@ export const ELAbi = [
     inputs: [],
     name: 'RahatClaim',
     outputs: [
-      { internalType: 'contract IRahatClaim', name: '', type: 'address' },
+      {
+        internalType: 'contract IRahatClaim',
+        name: '',
+        type: 'address',
+      },
     ],
     stateMutability: 'view',
     type: 'function',
   },
   {
-    inputs: [{ internalType: 'address', name: '', type: 'address' }],
-    name: '_registeredTokens',
-    outputs: [{ internalType: 'bool', name: '', type: 'bool' }],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [{ internalType: 'address', name: '_address', type: 'address' }],
+    inputs: [
+      {
+        internalType: 'address',
+        name: '_address',
+        type: 'address',
+      },
+    ],
     name: 'addBeneficiary',
     outputs: [],
     stateMutability: 'nonpayable',
@@ -368,9 +432,21 @@ export const ELAbi = [
   },
   {
     inputs: [
-      { internalType: 'address', name: '_account', type: 'address' },
-      { internalType: 'address', name: '_benAddress', type: 'address' },
-      { internalType: 'address', name: '_vendorAddress', type: 'address' },
+      {
+        internalType: 'address',
+        name: '_account',
+        type: 'address',
+      },
+      {
+        internalType: 'address',
+        name: '_benAddress',
+        type: 'address',
+      },
+      {
+        internalType: 'address',
+        name: '_vendorAddress',
+        type: 'address',
+      },
     ],
     name: 'addReferredBeneficiaries',
     outputs: [],
@@ -397,7 +473,21 @@ export const ELAbi = [
         name: '_claimerAddress',
         type: 'address',
       },
-      { internalType: 'address', name: '_refereedToken', type: 'address' },
+      {
+        internalType: 'address',
+        name: '_referralben',
+        type: 'address',
+      },
+      {
+        internalType: 'address',
+        name: '_referralVendor',
+        type: 'address',
+      },
+      {
+        internalType: 'address',
+        name: '_refereedToken',
+        type: 'address',
+      },
     ],
     name: 'assignRefereedClaims',
     outputs: [],
@@ -406,60 +496,152 @@ export const ELAbi = [
   },
   {
     inputs: [
-      { internalType: 'address', name: '', type: 'address' },
-      { internalType: 'address', name: '', type: 'address' },
+      {
+        internalType: 'address',
+        name: '',
+        type: 'address',
+      },
+      {
+        internalType: 'address',
+        name: '',
+        type: 'address',
+      },
     ],
     name: 'beneficiaryClaimStatus',
-    outputs: [{ internalType: 'bool', name: '', type: 'bool' }],
+    outputs: [
+      {
+        internalType: 'bool',
+        name: '',
+        type: 'bool',
+      },
+    ],
     stateMutability: 'view',
     type: 'function',
   },
   {
     inputs: [],
     name: 'beneficiaryCount',
-    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
+    ],
     stateMutability: 'view',
     type: 'function',
   },
   {
-    inputs: [{ internalType: 'address', name: '', type: 'address' }],
+    inputs: [
+      {
+        internalType: 'address',
+        name: '',
+        type: 'address',
+      },
+    ],
     name: 'beneficiaryEyeVoucher',
-    outputs: [{ internalType: 'address', name: '', type: 'address' }],
+    outputs: [
+      {
+        internalType: 'address',
+        name: '',
+        type: 'address',
+      },
+    ],
     stateMutability: 'view',
     type: 'function',
   },
   {
-    inputs: [{ internalType: 'address', name: '', type: 'address' }],
+    inputs: [
+      {
+        internalType: 'address',
+        name: '',
+        type: 'address',
+      },
+    ],
     name: 'beneficiaryReferredByBeneficiary',
-    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
+    ],
     stateMutability: 'view',
     type: 'function',
   },
   {
-    inputs: [{ internalType: 'address', name: '', type: 'address' }],
+    inputs: [
+      {
+        internalType: 'address',
+        name: '',
+        type: 'address',
+      },
+    ],
     name: 'beneficiaryReferredByVendor',
-    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
+    ],
     stateMutability: 'view',
     type: 'function',
   },
   {
-    inputs: [{ internalType: 'address', name: '', type: 'address' }],
+    inputs: [
+      {
+        internalType: 'address',
+        name: '',
+        type: 'address',
+      },
+    ],
     name: 'beneficiaryReferredVoucher',
-    outputs: [{ internalType: 'address', name: '', type: 'address' }],
+    outputs: [
+      {
+        internalType: 'address',
+        name: '',
+        type: 'address',
+      },
+    ],
     stateMutability: 'view',
     type: 'function',
   },
   {
-    inputs: [{ internalType: 'address', name: '_address', type: 'address' }],
+    inputs: [
+      {
+        internalType: 'address',
+        name: '_address',
+        type: 'address',
+      },
+    ],
     name: 'checkAdminStatus',
-    outputs: [{ internalType: 'bool', name: '_status', type: 'bool' }],
+    outputs: [
+      {
+        internalType: 'bool',
+        name: '_status',
+        type: 'bool',
+      },
+    ],
     stateMutability: 'view',
     type: 'function',
   },
   {
-    inputs: [{ internalType: 'address', name: '_address', type: 'address' }],
+    inputs: [
+      {
+        internalType: 'address',
+        name: '_address',
+        type: 'address',
+      },
+    ],
     name: 'checkVendorStatus',
-    outputs: [{ internalType: 'bool', name: '_vendorStatus', type: 'bool' }],
+    outputs: [
+      {
+        internalType: 'bool',
+        name: '_vendorStatus',
+        type: 'bool',
+      },
+    ],
     stateMutability: 'view',
     type: 'function',
   },
@@ -473,28 +655,71 @@ export const ELAbi = [
   {
     inputs: [],
     name: 'defaultToken',
-    outputs: [{ internalType: 'address', name: '', type: 'address' }],
+    outputs: [
+      {
+        internalType: 'address',
+        name: '',
+        type: 'address',
+      },
+    ],
     stateMutability: 'view',
     type: 'function',
   },
   {
     inputs: [],
     name: 'eyeVoucherAssigned',
-    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
+    ],
     stateMutability: 'view',
     type: 'function',
   },
   {
     inputs: [],
     name: 'eyeVoucherClaimed',
-    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
+    ],
     stateMutability: 'view',
     type: 'function',
   },
   {
-    inputs: [{ internalType: 'address', name: '', type: 'address' }],
+    inputs: [
+      {
+        internalType: 'address',
+        name: '',
+        type: 'address',
+      },
+    ],
     name: 'eyeVoucherRedeemedByVendor',
-    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'eyeVoucherReverted',
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
+    ],
     stateMutability: 'view',
     type: 'function',
   },
@@ -547,14 +772,28 @@ export const ELAbi = [
     inputs: [],
     name: 'getTotalBeneficiaries',
     outputs: [
-      { internalType: 'uint256', name: 'enrolledBen', type: 'uint256' },
-      { internalType: 'uint256', name: 'referredBen', type: 'uint256' },
+      {
+        internalType: 'uint256',
+        name: 'enrolledBen',
+        type: 'uint256',
+      },
+      {
+        internalType: 'uint256',
+        name: 'referredBen',
+        type: 'uint256',
+      },
     ],
     stateMutability: 'view',
     type: 'function',
   },
   {
-    inputs: [{ internalType: 'address', name: '_vendor', type: 'address' }],
+    inputs: [
+      {
+        internalType: 'address',
+        name: '_vendor',
+        type: 'address',
+      },
+    ],
     name: 'getVendorVoucherDetail',
     outputs: [
       {
@@ -585,8 +824,16 @@ export const ELAbi = [
   },
   {
     inputs: [
-      { internalType: 'uint256', name: '_amount', type: 'uint256' },
-      { internalType: 'address', name: '_tokenAddress', type: 'address' },
+      {
+        internalType: 'uint256',
+        name: '_amount',
+        type: 'uint256',
+      },
+      {
+        internalType: 'address',
+        name: '_tokenAddress',
+        type: 'address',
+      },
     ],
     name: 'increaseTokenBudget',
     outputs: [],
@@ -594,44 +841,100 @@ export const ELAbi = [
     type: 'function',
   },
   {
-    inputs: [{ internalType: 'address', name: '_address', type: 'address' }],
+    inputs: [
+      {
+        internalType: 'address',
+        name: '_address',
+        type: 'address',
+      },
+    ],
     name: 'isBeneficiary',
-    outputs: [{ internalType: 'bool', name: '', type: 'bool' }],
+    outputs: [
+      {
+        internalType: 'bool',
+        name: '',
+        type: 'bool',
+      },
+    ],
     stateMutability: 'view',
     type: 'function',
   },
   {
-    inputs: [{ internalType: 'address', name: 'forwarder', type: 'address' }],
+    inputs: [
+      {
+        internalType: 'address',
+        name: 'forwarder',
+        type: 'address',
+      },
+    ],
     name: 'isTrustedForwarder',
-    outputs: [{ internalType: 'bool', name: '', type: 'bool' }],
+    outputs: [
+      {
+        internalType: 'bool',
+        name: '',
+        type: 'bool',
+      },
+    ],
     stateMutability: 'view',
     type: 'function',
   },
   {
-    inputs: [{ internalType: 'bytes[]', name: 'data', type: 'bytes[]' }],
+    inputs: [
+      {
+        internalType: 'bytes[]',
+        name: 'data',
+        type: 'bytes[]',
+      },
+    ],
     name: 'multicall',
-    outputs: [{ internalType: 'bytes[]', name: 'results', type: 'bytes[]' }],
+    outputs: [
+      {
+        internalType: 'bytes[]',
+        name: 'results',
+        type: 'bytes[]',
+      },
+    ],
     stateMutability: 'nonpayable',
     type: 'function',
   },
   {
     inputs: [],
     name: 'name',
-    outputs: [{ internalType: 'string', name: '', type: 'string' }],
+    outputs: [
+      {
+        internalType: 'string',
+        name: '',
+        type: 'string',
+      },
+    ],
     stateMutability: 'view',
     type: 'function',
   },
   {
     inputs: [],
     name: 'otpServerAddress',
-    outputs: [{ internalType: 'address', name: '', type: 'address' }],
+    outputs: [
+      {
+        internalType: 'address',
+        name: '',
+        type: 'address',
+      },
+    ],
     stateMutability: 'view',
     type: 'function',
   },
   {
     inputs: [
-      { internalType: 'address', name: '_benAddress', type: 'address' },
-      { internalType: 'string', name: '_otp', type: 'string' },
+      {
+        internalType: 'address',
+        name: '_benAddress',
+        type: 'address',
+      },
+      {
+        internalType: 'string',
+        name: '_otp',
+        type: 'string',
+      },
     ],
     name: 'processTokenRequest',
     outputs: [],
@@ -640,9 +943,26 @@ export const ELAbi = [
   },
   {
     inputs: [
-      { internalType: 'address', name: '_tokenAddress', type: 'address' },
-      { internalType: 'uint256', name: '_amount', type: 'uint256' },
-      { internalType: 'address', name: '_vendorAddress', type: 'address' },
+      {
+        internalType: 'address',
+        name: '_tokenAddress',
+        type: 'address',
+      },
+      {
+        internalType: 'uint256',
+        name: '_amount',
+        type: 'uint256',
+      },
+      {
+        internalType: 'address',
+        name: '_vendorAddress',
+        type: 'address',
+      },
+      {
+        internalType: 'address',
+        name: '_adminAddress',
+        type: 'address',
+      },
     ],
     name: 'redeemTokenByVendor',
     outputs: [],
@@ -652,15 +972,31 @@ export const ELAbi = [
   {
     inputs: [],
     name: 'referralLimit',
-    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
+    ],
     stateMutability: 'view',
     type: 'function',
   },
   {
-    inputs: [{ internalType: 'address', name: '', type: 'address' }],
+    inputs: [
+      {
+        internalType: 'address',
+        name: '',
+        type: 'address',
+      },
+    ],
     name: 'referredBenficiaries',
     outputs: [
-      { internalType: 'address', name: 'account', type: 'address' },
+      {
+        internalType: 'address',
+        name: 'account',
+        type: 'address',
+      },
       {
         internalType: 'address',
         name: 'referrerVendor',
@@ -678,40 +1014,114 @@ export const ELAbi = [
   {
     inputs: [],
     name: 'referredToken',
-    outputs: [{ internalType: 'address', name: '', type: 'address' }],
+    outputs: [
+      {
+        internalType: 'address',
+        name: '',
+        type: 'address',
+      },
+    ],
     stateMutability: 'view',
     type: 'function',
   },
   {
     inputs: [],
     name: 'referredVoucherAssigned',
-    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
+    ],
     stateMutability: 'view',
     type: 'function',
   },
   {
     inputs: [],
     name: 'referredVoucherClaimed',
-    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
+    ],
     stateMutability: 'view',
     type: 'function',
   },
   {
-    inputs: [{ internalType: 'address', name: '', type: 'address' }],
+    inputs: [
+      {
+        internalType: 'address',
+        name: '',
+        type: 'address',
+      },
+    ],
     name: 'referredVoucherRedeemedByVendor',
-    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
+    ],
     stateMutability: 'view',
     type: 'function',
   },
   {
-    inputs: [{ internalType: 'address', name: '_address', type: 'address' }],
+    inputs: [],
+    name: 'referredVoucherReverted',
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: '',
+        type: 'address',
+      },
+    ],
+    name: 'registeredTokens',
+    outputs: [
+      {
+        internalType: 'bool',
+        name: '',
+        type: 'bool',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: '_address',
+        type: 'address',
+      },
+    ],
     name: 'removeBeneficiary',
     outputs: [],
     stateMutability: 'nonpayable',
     type: 'function',
   },
   {
-    inputs: [{ internalType: 'address', name: '_account', type: 'address' }],
+    inputs: [
+      {
+        internalType: 'address',
+        name: '_account',
+        type: 'address',
+      },
+    ],
     name: 'removeReferredBeneficiaries',
     outputs: [],
     stateMutability: 'nonpayable',
@@ -719,69 +1129,165 @@ export const ELAbi = [
   },
   {
     inputs: [
-      { internalType: 'address', name: '_benAddress', type: 'address' },
-      { internalType: 'address', name: '_tokenAddress', type: 'address' },
+      {
+        internalType: 'address',
+        name: '_benAddress',
+        type: 'address',
+      },
+      {
+        internalType: 'address',
+        name: '_tokenAddress',
+        type: 'address',
+      },
     ],
     name: 'requestReferredTokenFromBeneficiary',
-    outputs: [{ internalType: 'uint256', name: 'requestId', type: 'uint256' }],
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: 'requestId',
+        type: 'uint256',
+      },
+    ],
     stateMutability: 'nonpayable',
     type: 'function',
   },
   {
     inputs: [
-      { internalType: 'address', name: '_benAddress', type: 'address' },
-      { internalType: 'address', name: '_tokenAddress', type: 'address' },
-      { internalType: 'address', name: '_otpServer', type: 'address' },
+      {
+        internalType: 'address',
+        name: '_benAddress',
+        type: 'address',
+      },
     ],
     name: 'requestTokenFromBeneficiary',
-    outputs: [{ internalType: 'uint256', name: 'requestId', type: 'uint256' }],
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: 'requestId',
+        type: 'uint256',
+      },
+    ],
     stateMutability: 'nonpayable',
     type: 'function',
   },
   {
-    inputs: [{ internalType: 'address', name: '_benAddress', type: 'address' }],
-    name: 'requestTokenFromBeneficiary',
-    outputs: [{ internalType: 'uint256', name: 'requestId', type: 'uint256' }],
+    inputs: [
+      {
+        internalType: 'address',
+        name: '_claimerAddress',
+        type: 'address',
+      },
+    ],
+    name: 'revertedClaims',
+    outputs: [],
     stateMutability: 'nonpayable',
     type: 'function',
   },
   {
-    inputs: [{ internalType: 'bytes4', name: 'interfaceId', type: 'bytes4' }],
+    inputs: [
+      {
+        internalType: 'address',
+        name: '_claimerAddress',
+        type: 'address',
+      },
+      {
+        internalType: 'address',
+        name: '_refereedToken',
+        type: 'address',
+      },
+    ],
+    name: 'revertedRefereedClaims',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'bytes4',
+        name: 'interfaceId',
+        type: 'bytes4',
+      },
+    ],
     name: 'supportsInterface',
-    outputs: [{ internalType: 'bool', name: '', type: 'bool' }],
+    outputs: [
+      {
+        internalType: 'bool',
+        name: '',
+        type: 'bool',
+      },
+    ],
     stateMutability: 'view',
     type: 'function',
   },
   {
     inputs: [
-      { internalType: 'address', name: '_tokenAddress', type: 'address' },
+      {
+        internalType: 'address',
+        name: '_tokenAddress',
+        type: 'address',
+      },
     ],
     name: 'tokenBudget',
-    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
+    ],
     stateMutability: 'view',
     type: 'function',
   },
   {
     inputs: [
-      { internalType: 'address', name: '', type: 'address' },
-      { internalType: 'address', name: '', type: 'address' },
+      {
+        internalType: 'address',
+        name: '',
+        type: 'address',
+      },
+      {
+        internalType: 'address',
+        name: '',
+        type: 'address',
+      },
     ],
     name: 'tokenRequestIds',
-    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
+    ],
     stateMutability: 'view',
     type: 'function',
   },
   {
     inputs: [],
     name: 'trustedForwarder',
-    outputs: [{ internalType: 'address', name: '', type: 'address' }],
+    outputs: [
+      {
+        internalType: 'address',
+        name: '',
+        type: 'address',
+      },
+    ],
     stateMutability: 'view',
     type: 'function',
   },
   {
     inputs: [
-      { internalType: 'address', name: '_admin', type: 'address' },
-      { internalType: 'bool', name: '_status', type: 'bool' },
+      {
+        internalType: 'address',
+        name: '_admin',
+        type: 'address',
+      },
+      {
+        internalType: 'bool',
+        name: '_status',
+        type: 'bool',
+      },
     ],
     name: 'updateAdmin',
     outputs: [],
@@ -789,7 +1295,13 @@ export const ELAbi = [
     type: 'function',
   },
   {
-    inputs: [{ internalType: 'address', name: '_address', type: 'address' }],
+    inputs: [
+      {
+        internalType: 'address',
+        name: '_address',
+        type: 'address',
+      },
+    ],
     name: 'updateOtpServer',
     outputs: [],
     stateMutability: 'nonpayable',
@@ -797,8 +1309,16 @@ export const ELAbi = [
   },
   {
     inputs: [
-      { internalType: 'address', name: '_address', type: 'address' },
-      { internalType: 'bool', name: '_status', type: 'bool' },
+      {
+        internalType: 'address',
+        name: '_address',
+        type: 'address',
+      },
+      {
+        internalType: 'bool',
+        name: '_status',
+        type: 'bool',
+      },
     ],
     name: 'updateVendor',
     outputs: [],

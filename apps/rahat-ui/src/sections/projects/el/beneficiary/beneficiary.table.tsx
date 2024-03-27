@@ -48,7 +48,9 @@ import {
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { useProjectBeneficiaryTableColumns } from './use-table-column';
-import { useProjectAction } from 'libs/query/src/lib/projects/projects';
+import { useProjectAction } from '@rahat-ui/query';
+import { useParams } from 'next/navigation';
+import { MS_ACTIONS } from '@rahataid/sdk';
 // import { useBeneficiaryTransaction } from '../../hooks/el/subgraph/querycall';
 
 // const data: Transaction[] = TransactionTableData;
@@ -96,8 +98,8 @@ export const columns: ColumnDef<Transaction>[] = [
     cell: ({ row }) => (
       <div className="capitalize">
         {row.getValue('vouvherType')
-          ? `${row.getValue('vouvherType')?.toString().substring(0, 4)}....${row
-              .getValue('vouvherType')
+          ? `${row.getValue('voucherType')?.toString().substring(0, 4)}....${row
+              .getValue('voucherType')
               ?.toString()
               ?.slice(-3)}`
           : 'N/A'}
@@ -149,6 +151,7 @@ export default function BeneficiaryDetailTableView() {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
   );
+  const { pagination } = usePagination();
   // const { data, error } = useBeneficiaryTransaction(
   //   '0x082d43D30C31D054b1AEDbE08F50C2a1BBE76fC7',
   // );
@@ -156,16 +159,10 @@ export default function BeneficiaryDetailTableView() {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
-  const { pagination, filters, setPagination } = usePagination((state) => ({
-    pagination: state.pagination,
-    filters: state.filters,
-    setPagination: state.setPagination,
-  }));
+  const uuid = useParams().id;
 
-  const [perPage, setPerPage] = useState<number>(5);
-  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [perPage, setPerPage] = useState<number>(10);
   const [tableData, setTableData] = useState<any>();
-
   const columns = useProjectBeneficiaryTableColumns();
 
   const addBeneficiary = useProjectAction();
@@ -173,29 +170,28 @@ export default function BeneficiaryDetailTableView() {
   //@sushant-rumsan , @anupamakoirala-rumsan - this is not the correct way, if you want to use the useBeneficiaryTransaction hook, you need to import it from the correct path, you should not randomly use mutate async from useProjectAction, if it's for fetching use query, if it's for mutation use mutation
   const handleAssignClaims = async () => {
     const result = await addBeneficiary.mutateAsync({
-      uuid: 'bb32449c-fb10-4def-ade0-7710b567daab',
-      payload: {
-        action: 'beneficiary.list_by_project',
-        payload: {
-          page: currentPage,
-          perPage,
-        },
+      uuid,
+      data: {
+        action: MS_ACTIONS.BENEFICIARY.LIST_BY_PROJECT,
+        payload: pagination,
       },
     });
 
-    setTableData(result?.data);
+    const filteredData = result?.data.map((row: any) => {
+      return {
+        name: row.Beneficiary.walletAddress,
+        gender: row.Beneficiary.gender,
+        phone: row.Beneficiary.phone || 'N/A',
+        redemption: 'N/A',
+      };
+    });
+
+    setTableData(filteredData);
   };
 
-  useEffect(() => {
-    handleAssignClaims();
-  }, []);
-
-  // const { data } = beneficiaryQuery.useProjectBeneficiaryList({
-  //   perPage,
-  //   page: currentPage,
-  // });
-
-  // console.log(data2)
+  // useEffect(() => {
+  //   getBeneficiary();
+  // }, []);
 
   const table = useReactTable({
     data: tableData || [],
@@ -261,7 +257,7 @@ export default function BeneficiaryDetailTableView() {
         <div className="rounded border h-[calc(100vh-180px)] bg-card">
           <Table>
             <ScrollArea className="h-table1">
-              <TableHeader className="sticky top-0">
+              <TableHeader className="bg-card sticky top-0">
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow key={headerGroup.id}>
                     {headerGroup.headers.map((header) => {
@@ -320,7 +316,7 @@ export default function BeneficiaryDetailTableView() {
           <div className="text-sm font-medium">Rows per page</div>
           <Select
             defaultValue="10"
-            onValueChange={(value) => table.setPageSize(Number(value))}
+            onValueChange={(value) => setPerPage(Number(value))}
           >
             <SelectTrigger className="w-16">
               <SelectValue />

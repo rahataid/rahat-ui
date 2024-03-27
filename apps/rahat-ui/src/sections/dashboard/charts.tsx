@@ -1,36 +1,38 @@
 import { PieChart } from '@rahat-ui/shadcn/charts';
 import { DashboardRecentActivities } from './activities.dashboard';
+import { useRumsanService } from '../../providers/service.provider';
+import { formatUnderScoredString } from '../../utils/string';
 
 const Charts = () => {
-  const chartData1 = [
-    { label: 'Banked', value: 12244 },
-    { label: 'Unbanked', value: 53345 },
-  ];
+  const { beneficiaryQuery } = useRumsanService();
+  const { data, isLoading } = beneficiaryQuery.useBeneficiaryStats();
 
-  const chartData2 = [
-    { label: 'Banked', value: 12244 },
-    { label: 'Unbanked', value: 53345 },
-  ];
+  if (isLoading) return null;
+
   return (
-    <div className=" grid md:grid-cols-3 gap-4 mt-4">
-      {chartData1.length && (
-        <PieChart
-          title="Beneficiaries"
-          subheader="Total number of beneficiaries in the system."
-          chart={{
-            series: chartData1,
-          }}
-        />
-      )}
-      {chartData2.length && (
-        <PieChart
-          title="Phone Status"
-          subheader="Total number of phone status in the system."
-          chart={{
-            series: chartData2,
-          }}
-        />
-      )}{' '}
+    <div className=" grid md:grid-cols-3 gap-2 mt-2">
+      {data?.map((d: any) => {
+        const series = Array.isArray(d?.data)
+          ? d?.data.map((item: any) => ({
+              label: formatUnderScoredString(item.id),
+              value: item.count,
+            }))
+          : [
+              {
+                label: formatUnderScoredString(d.name),
+                value: d?.data?.count,
+              },
+            ];
+        return (
+          <PieChart
+            key={d.name}
+            title={formatUnderScoredString(d.name)}
+            subheader={d.subheader || ''}
+            chart={{ series }}
+          />
+        );
+      })}
+
       <DashboardRecentActivities title="Recent Activities" />
     </div>
   );

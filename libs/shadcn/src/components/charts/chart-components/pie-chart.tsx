@@ -43,7 +43,6 @@ export default function PieChart({ title, subheader, chart }: Props) {
     series = [],
     options = {},
   } = chart;
-  console.log('series', series);
   const chartSeries = series.map((i) => i.value);
 
   const chartOptions = useChart({
@@ -92,7 +91,7 @@ export default function PieChart({ title, subheader, chart }: Props) {
   });
 
   return (
-    <div className="bg-card shadow rounded-lg p-6">
+    <div className="bg-card shadow rounded p-4 flex flex-col items-center justify-center">
       <h2 className="text-lg font-semibold">{title}</h2>
       <p className="text-sm text-gray-500">{subheader}</p>
 

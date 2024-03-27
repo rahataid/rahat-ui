@@ -23,23 +23,18 @@ import BeneficiaryDetail from '../../sections/beneficiary/beneficiaryDetail';
 import BeneficiaryGridView from '../../sections/beneficiary/gridView';
 import BeneficiaryListView from '../../sections/beneficiary/listView';
 import BeneficiaryNav from '../../sections/beneficiary/nav';
-import AddBeneficiary from './addBeneficiary';
 import ImportBeneficiary from './import.beneficiary';
 import { useBeneficiaryTableColumns } from './useBeneficiaryColumns';
 
 function BeneficiaryView() {
-  const { pagination, filters, setPagination } = usePagination((state) => ({
-    pagination: state.pagination,
-    filters: state.filters,
-    setPagination: state.setPagination,
-  }));
-
-  const [perPage, setPerPage] = useState<number>(5);
-  const [currentPage, setCurrentPage] = useState<number>(1);
-
-  const handleNextPage = () => setCurrentPage(currentPage + 1);
-
-  const handlePrevPage = () => setCurrentPage(currentPage - 1);
+  const {
+    pagination,
+    selectedListItems,
+    setSelectedListItems,
+    setNextPage,
+    setPrevPage,
+    setPerPage,
+  } = usePagination();
 
   // const { beneficiaryQuery } = useRumsanService();
   const [selectedData, setSelectedData] = useState<Beneficiary>();
@@ -58,14 +53,8 @@ function BeneficiaryView() {
     setSelectedData(null);
   }, []);
 
-  const { data } = useBeneficiaryList({
-    perPage,
-    currentPage,
-    filters,
-    page: currentPage,
-  });
+  const { data } = useBeneficiaryList(pagination);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = useState({});
   const columns = useBeneficiaryTableColumns();
 
   const table = useReactTable({
@@ -75,11 +64,11 @@ function BeneficiaryView() {
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setRowSelection,
+    onRowSelectionChange: setSelectedListItems,
     getRowId: (row) => row.uuid,
     state: {
       columnVisibility,
-      rowSelection,
+      rowSelection: selectedListItems,
     },
   });
 
@@ -96,9 +85,7 @@ function BeneficiaryView() {
         </ResizablePanel>
         <ResizableHandle />
         <ResizablePanel minSize={28}>
-          {active === BENEFICIARY_NAV_ROUTE.ADD_BENEFICIARY ? (
-            <AddBeneficiary />
-          ) : active === BENEFICIARY_NAV_ROUTE.IMPORT_BENEFICIARY ? (
+          {active === BENEFICIARY_NAV_ROUTE.IMPORT_BENEFICIARY ? (
             <ImportBeneficiary />
           ) : null}
 
@@ -119,11 +106,12 @@ function BeneficiaryView() {
               </TabsContent>
               <CustomPagination
                 meta={data?.response?.meta || { total: 0, currentPage: 0 }}
-                handleNextPage={handleNextPage}
-                handlePrevPage={handlePrevPage}
-                handlePageSizeChange={(value) =>
-                  setPagination({ perPage: Number(value) })
-                }
+                handleNextPage={setNextPage}
+                handlePrevPage={setPrevPage}
+                handlePageSizeChange={setPerPage}
+                currentPage={pagination.page}
+                perPage={pagination.perPage}
+                total={data?.response?.meta.lastPage || 0}
               />
             </>
           )}

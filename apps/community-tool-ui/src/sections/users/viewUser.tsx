@@ -21,7 +21,7 @@ import {
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { truncateEthAddress } from '@rumsan/core/utilities/string.utils';
 import { User } from '@rumsan/sdk/types';
-import { MoreVertical, PlusCircle, Trash2 } from 'lucide-react';
+import { Minus, MoreVertical, PlusCircle, Trash2 } from 'lucide-react';
 import Image from 'next/image';
 import { useState } from 'react';
 import {
@@ -32,12 +32,19 @@ import {
 } from '@rahat-ui/shadcn/components/tabs';
 import RoleTable from './role/roleTable';
 import { UsersRoleTable } from './usersRoleTable';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/tooltip';
 
 type IProps = {
   data: User;
+  handleClose: VoidFunction;
 };
 
-export default function UserDetail({ data }: IProps) {
+export default function UserDetail({ data, handleClose }: IProps) {
   const [activeTab, setActiveTab] = useState<'details' | 'edit' | null>(
     'details',
   );
@@ -70,8 +77,20 @@ export default function UserDetail({ data }: IProps) {
           <div className="flex flex-col items-center justify-center w-full mr-2 gap-2">
             <div className="flex align-center justify-between w-full ml-4">
               <h1 className="font-semibold text-xl">{data.name}</h1>
-              <div className="flex">
-                <div className="mr-3">
+              <div className="flex gap-3">
+                <div>
+                  <TooltipProvider delayDuration={100}>
+                    <Tooltip>
+                      <TooltipTrigger onClick={handleClose}>
+                        <Minus size={20} strokeWidth={1.5} />
+                      </TooltipTrigger>
+                      <TooltipContent className="bg-secondary ">
+                        <p className="text-xs font-medium">Close</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
+                <div>
                   {/* Add Roles */}
                   <Dialog>
                     <DialogTrigger>
@@ -130,7 +149,7 @@ export default function UserDetail({ data }: IProps) {
                     </DialogContent>
                   </Dialog>
                 </div>
-                <div className="pl-2">
+                <div>
                   <DropdownMenu>
                     <DropdownMenuTrigger>
                       <MoreVertical

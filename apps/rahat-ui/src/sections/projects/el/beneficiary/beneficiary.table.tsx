@@ -98,9 +98,9 @@ export const columns: ColumnDef<Transaction>[] = [
       <div className="capitalize">
         {row.getValue('vouvherType')
           ? `${row.getValue('voucherType')?.toString().substring(0, 4)}....${row
-              .getValue('voucherType')
-              ?.toString()
-              ?.slice(-3)}`
+            .getValue('voucherType')
+            ?.toString()
+            ?.slice(-3)}`
           : 'N/A'}
       </div>
     ),
@@ -165,7 +165,7 @@ export default function BeneficiaryDetailTableView() {
     setPagination: state.setPagination,
   }));
 
-  const [perPage, setPerPage] = useState<number>(5);
+  const [perPage, setPerPage] = useState<number>(10);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [tableData, setTableData] = useState<any>();
   const columns = useProjectBeneficiaryTableColumns();
@@ -273,9 +273,9 @@ export default function BeneficiaryDetailTableView() {
                           {header.isPlaceholder
                             ? null
                             : flexRender(
-                                header.column.columnDef.header,
-                                header.getContext(),
-                              )}
+                              header.column.columnDef.header,
+                              header.getContext(),
+                            )}
                         </TableHead>
                       );
                     })}
@@ -323,7 +323,7 @@ export default function BeneficiaryDetailTableView() {
           <div className="text-sm font-medium">Rows per page</div>
           <Select
             defaultValue="10"
-            onValueChange={(value) => table.setPageSize(Number(value))}
+            onValueChange={(value) => setPerPage(Number(value))}
           >
             <SelectTrigger className="w-16">
               <SelectValue />

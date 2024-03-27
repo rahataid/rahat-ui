@@ -10,12 +10,19 @@ export default function ProjectLayoutRoot({
 }: {
   children: React.ReactNode;
 }) {
-  const navItems = useNavItems();
+  const { navItems, createVoucher } = useNavItems();
   const { secondPanel } = useSecondPanel();
 
-  return (
-    <ProjectLayout menuItems={navItems}>
-      {secondPanel ? [children, secondPanel] : children}
-    </ProjectLayout>
-  );
+  const renderChildren = () => {
+    if (createVoucher.isPending) {
+      return <h3>Minting Voucher...</h3>;
+    }
+    if (secondPanel) {
+      return [children, secondPanel];
+    }
+
+    return children;
+  };
+
+  return <ProjectLayout menuItems={navItems}>{renderChildren()}</ProjectLayout>;
 }

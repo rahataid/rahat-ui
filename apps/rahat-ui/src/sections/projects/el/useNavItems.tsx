@@ -86,6 +86,8 @@ export const useNavItems = () => {
   const createOnlyVoucher = useOnlyMintVoucher();
   const closeProject = useCloseProject();
 
+  console.log('createVoucher', createVoucher.isPending);
+
   // Free Voucher
   const handleCreateVoucherSubmit = async (e: any) => {
     e.preventDefault();
@@ -204,6 +206,7 @@ export const useNavItems = () => {
         {
           component: (
             <>
+              {createVoucher.isPending && <h3>Minting Voucher...</h3>}
               <CreateVoucherModal
                 voucherInputs={voucherInputs}
                 handleSubmit={handleCreateVoucherSubmit}
@@ -239,5 +242,5 @@ export const useNavItems = () => {
     },
   ];
 
-  return navItems;
+  return { navItems, createVoucher };
 };

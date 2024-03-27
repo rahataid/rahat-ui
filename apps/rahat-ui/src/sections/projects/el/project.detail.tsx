@@ -4,7 +4,6 @@ import type { Metadata } from 'next';
 import { ProjectChart } from '..';
 import ProjectDataCard from './project.datacard';
 import ProjectInfo from './project.info';
-import { useProjectAction } from 'libs/query/src/lib/projects/projects';
 import { useEffect, useState } from 'react';
 import { getProjectAddress } from 'apps/rahat-ui/src/utils/getProjectAddress';
 import * as React from 'react';
@@ -13,6 +12,8 @@ import {
   useProjectVoucher,
 } from 'apps/rahat-ui/src/hooks/el/subgraph/querycall';
 import { useParams } from 'next/navigation';
+import { useProjectAction, useProjectSettings } from '@rahat-ui/query';
+import { UUID } from 'crypto';
 
 export const metadata: Metadata = {
   title: 'DashBoard',

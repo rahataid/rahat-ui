@@ -1,7 +1,14 @@
+import { usePagination } from '@rahat-ui/query';
 import { NavItem } from './components';
 import { KanbanSquare, Archive, Plus } from 'lucide-react';
 
 export const useProjectListNavItems = () => {
+  const { setFilters } = usePagination();
+
+  const handleFilter = (type: string) => {
+    setFilters({ type });
+  };
+
   const menuItems: NavItem[] = [
     {
       title: 'Projects',
@@ -16,12 +23,15 @@ export const useProjectListNavItems = () => {
             },
             {
               title: 'CVA',
+              onClick: () => handleFilter('cva'),
             },
             {
               title: 'AA',
+              onClick: () => handleFilter('aa'),
             },
             {
               title: 'EL',
+              onClick: () => handleFilter('el'),
             },
           ],
         },

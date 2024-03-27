@@ -1,5 +1,6 @@
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 
+import { useProjectAction } from '@rahat-ui/query';
 import {
   Tabs,
   TabsContent,
@@ -7,30 +8,7 @@ import {
   TabsTrigger,
 } from '@rahat-ui/shadcn/components/tabs';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
-import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@rahat-ui/shadcn/src/components/ui/select';
-import { Gender } from '@rahataid/sdk/enums';
-import { User } from '@rumsan/sdk/types';
-import { enumToObjectArray, truncateEthAddress } from '@rumsan/sdk/utils';
-import { MoreVertical } from 'lucide-react';
-import Image from 'next/image';
-import { useState } from 'react';
-import TransactionTable from '../transactions/transactions.table';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { useAssignClaims } from '../../../../hooks/el/contracts/el-contracts';
 import {
   Card,
   CardContent,
@@ -47,13 +25,34 @@ import {
   DialogTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dialog';
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
+import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@rahat-ui/shadcn/src/components/ui/select';
+import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
-import { useProjectAction } from '@rahat-ui/query';
+import { Gender } from '@rahataid/sdk/enums';
+import { enumToObjectArray, truncateEthAddress } from '@rumsan/sdk/utils';
 import { getProjectAddress } from 'apps/rahat-ui/src/utils/getProjectAddress';
+import { MoreVertical } from 'lucide-react';
+import Image from 'next/image';
+import { useState } from 'react';
+import { useAssignClaims } from '../../../../hooks/el/contracts/el-contracts';
+import TransactionTable from '../transactions/transactions.table';
 
 export default function UserDetail({ beneficiaryDetails }: any) {
   const assignClaims = useAssignClaims();

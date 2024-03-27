@@ -21,10 +21,10 @@ import { useSwal } from '../../../components/swal';
 import { NavItem } from '../components';
 import ConfirmModal from './confirm.modal';
 import CreateVoucherModal from './create-voucher-modal';
-import { useProjectAction } from 'libs/query/src/lib/projects/projects';
 import { getProjectAddress } from 'apps/rahat-ui/src/utils/getProjectAddress';
 import { useProjectVoucher } from 'apps/rahat-ui/src/hooks/el/subgraph/querycall';
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
+import { useProjectAction } from '@rahat-ui/query';
 
 type AddressType = {
   donorAddress: `0x${string}`;

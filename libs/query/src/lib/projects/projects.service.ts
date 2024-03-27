@@ -13,7 +13,8 @@ import { api } from '../../utils/api';
 import { getProjectClient } from '@rahataid/sdk/clients';
 import { UUID } from 'crypto';
 import { FormattedResponse } from '@rumsan/sdk/utils';
-import { ProjectActions } from '@rahataid/sdk/project/project.types';
+import { Project, ProjectActions } from '@rahataid/sdk/project/project.types';
+import { PaginatedResult, Pagination } from '@rumsan/sdk/types';
 
 const createProject = async (payload: CreateProjectPayload) => {
   const res = await api.post('/projects', payload);
@@ -62,7 +63,12 @@ export const useProjectSettings = (uuid: UUID) => {
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid,
-        data: { action: 'get_settings' },
+        data: {
+          action: 'settings.get',
+          payload: {
+            name: 'CONTRACT',
+          },
+        },
       });
       return mutate;
     },
@@ -70,19 +76,23 @@ export const useProjectSettings = (uuid: UUID) => {
   return query;
 };
 
-export const useProjectList = (payload: any): UseQueryResult<any, Error> => {
+export const useProjectList = (
+  payload: Pagination,
+): UseQueryResult<FormattedResponse<Project[]>, Error> => {
   const { queryClient, rumsanService } = useRSQuery();
 
   const projectClient = getProjectClient(rumsanService.client);
   return useQuery(
     {
       queryKey: [TAGS.GET_ALL_PROJECTS, payload],
-      queryFn: () => projectClient.list(payload),
+      // todo, add support for pagination
+      queryFn: () => projectClient.list(payload as any),
+      refetchOnWindowFocus: true,
+      retryOnMount: true,
     },
     queryClient,
   );
 };
-
 export const useProject = (uuid: UUID): UseQueryResult<any, Error> => {
   const { queryClient, rumsanService } = useRSQuery();
 

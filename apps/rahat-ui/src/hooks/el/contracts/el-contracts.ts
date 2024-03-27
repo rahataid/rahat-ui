@@ -1,3 +1,4 @@
+import { useProjectAction } from '@rahat-ui/query';
 import { useSwal } from '../../../components/swal';
 import {
   useWriteRahatDonorMintTokenAndApprove,
@@ -10,7 +11,6 @@ import {
   useWriteElProjectUpdateVendor,
 } from './elProject';
 
-import { useProjectAction } from 'libs/query/src/lib/projects/projects';
 import { MS_ACTIONS } from '@rahataid/sdk';
 
 export const useAddBeneficiary = () => {

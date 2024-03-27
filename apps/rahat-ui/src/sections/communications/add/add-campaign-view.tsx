@@ -69,10 +69,6 @@ const AddCampaignView = () => {
 
   const showAddAudienceView = useBoolean(false);
 
-  const handleisAlreadyAudience = (id: number) => {
-    return Object.keys(rowSelection).includes(id.toString());
-  };
-
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {

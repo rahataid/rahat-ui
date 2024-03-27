@@ -123,7 +123,9 @@ const CreateVoucherModal: FC<CreateVoucherModalType> = ({
                     Select Currency
                   </Label>
                   <Select name="currency" onValueChange={handleSelectChange}>
-                    <SelectTrigger>{voucherInputs.currency}</SelectTrigger>
+                    <SelectTrigger>
+                      {data.freeVoucherCurrency || data.referredVoucherCurrency}
+                    </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
                         <SelectItem value={'NPR'}>NPR</SelectItem>
@@ -134,7 +136,8 @@ const CreateVoucherModal: FC<CreateVoucherModalType> = ({
                 </div>
                 <div>
                   <Label htmlFor="amount" className="text-right text-sm">
-                    Price of Referred voucher in {voucherInputs.currency}
+                    Price of Referred voucher in{' '}
+                    {data.freeVoucherCurrency || data.referredVoucherCurrency}
                   </Label>
                   <Input
                     name="amountInDollarReferral"
@@ -145,7 +148,8 @@ const CreateVoucherModal: FC<CreateVoucherModalType> = ({
                 </div>
                 <div>
                   <Label htmlFor="amount" className="text-right">
-                    Price of Free voucher in {voucherInputs.currency}
+                    Price of Free voucher in{' '}
+                    {data.freeVoucherCurrency || data.referredVoucherCurrency}
                   </Label>
                   <Input
                     name="amountInDollar"

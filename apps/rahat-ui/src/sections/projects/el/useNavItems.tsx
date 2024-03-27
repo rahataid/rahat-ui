@@ -112,9 +112,9 @@ export const useNavItems = () => {
       : await createOnlyVoucher.writeContractAsync({
           address: addresses?.donorAddress,
           args: [
-            '0x93B2C030C17B86500962889cE3C380b4376F42D4',
-            '0x0e952DFcf7506Dfd1c38822173531c658a27996e',
-            '0xaC29e7A5b6A4657a4B98E43F3b9517152867c896',
+            addresses?.eyeVoucherAddress,
+            addresses.referralVoucherAddress,
+            addresses.elProjectAddress,
             BigInt(voucherInputs.tokens),
             BigInt(referralLimit),
           ],

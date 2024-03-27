@@ -21,9 +21,9 @@ import {
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { truncateEthAddress } from '@rumsan/core/utilities/string.utils';
 import { User } from '@rumsan/sdk/types';
-import { MoreVertical, PlusCircle, Trash2 } from 'lucide-react';
+import { Minus, MoreVertical, PlusCircle, Trash2 } from 'lucide-react';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Tabs,
   TabsContent,
@@ -32,12 +32,25 @@ import {
 } from '@rahat-ui/shadcn/components/tabs';
 import RoleTable from './role/roleTable';
 import { UsersRoleTable } from './usersRoleTable';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/tooltip';
+import EditUser from './editUser';
+import { useRumsanService } from '../../providers/service.provider';
 
 type IProps = {
   data: User;
+  handleClose: () => void;
 };
 
-export default function UserDetail({ data }: IProps) {
+export default function UserDetail({ data, handleClose }: IProps) {
+  const { rumsanService } = useRumsanService();
+
+  const [userData, setUserData] = useState<User | undefined>();
+
   const [activeTab, setActiveTab] = useState<'details' | 'edit' | null>(
     'details',
   );
@@ -50,28 +63,49 @@ export default function UserDetail({ data }: IProps) {
     setActiveUser(!activeUser);
   };
 
-  const changedDate = new Date(data?.createdAt as Date);
+  const changedDate = new Date(userData?.createdAt as Date);
   const formattedDate = changedDate.toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
   });
+
+  useEffect(() => {
+    const changedUser = async (uuid: string) => {
+      const res = await rumsanService.client.get(`/users/${uuid}`);
+      setUserData(res?.data?.data);
+    };
+    changedUser(data?.uuid as string);
+  }, [data?.uuid, rumsanService.client]);
+
   return (
     <>
       <div className="p-4">
         <div className="flex">
           <Image
             className="rounded-full"
-            src="/svg/funny-cat.svg"
+            src="/svg/PortraitPlaceholder.png"
             alt="cat"
             height={80}
             width={80}
           />
           <div className="flex flex-col items-center justify-center w-full mr-2 gap-2">
             <div className="flex align-center justify-between w-full ml-4">
-              <h1 className="font-semibold text-xl">{data.name}</h1>
-              <div className="flex">
-                <div className="mr-3">
+              <h1 className="font-semibold text-xl">{userData?.name}</h1>
+              <div className="flex gap-3">
+                <div>
+                  <TooltipProvider delayDuration={100}>
+                    <Tooltip>
+                      <TooltipTrigger onClick={handleClose}>
+                        <Minus size={20} strokeWidth={1.5} />
+                      </TooltipTrigger>
+                      <TooltipContent className="bg-secondary ">
+                        <p className="text-xs font-medium">Close</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
+                <div>
                   {/* Add Roles */}
                   <Dialog>
                     <DialogTrigger>
@@ -130,7 +164,7 @@ export default function UserDetail({ data }: IProps) {
                     </DialogContent>
                   </Dialog>
                 </div>
-                <div className="pl-2">
+                <div>
                   <DropdownMenu>
                     <DropdownMenuTrigger>
                       <MoreVertical
@@ -140,11 +174,11 @@ export default function UserDetail({ data }: IProps) {
                       />
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
-                      <DropdownMenuItem
+                      {/* <DropdownMenuItem
                         onClick={() => handleTabChange('details')}
                       >
                         Details{' '}
-                      </DropdownMenuItem>
+                      </DropdownMenuItem> */}
                       <DropdownMenuItem onClick={() => handleTabChange('edit')}>
                         Edit
                       </DropdownMenuItem>
@@ -187,14 +221,14 @@ export default function UserDetail({ data }: IProps) {
                 <TabsContent value="details">
                   <div className="grid grid-cols-2 gap-4 p-8">
                     <div>
-                      <p className="font-light text-base">{data.name}</p>
+                      <p className="font-light text-base">{userData?.name}</p>
                       <p className="text-sm font-normal text-muted-foreground">
                         Name
                       </p>
                     </div>
                     <div>
                       <p className="font-light text-base">
-                        {data.gender || '-'}
+                        {userData?.gender || '-'}
                       </p>
                       <p className="text-sm font-normal text-muted-foreground ">
                         Gender
@@ -204,7 +238,7 @@ export default function UserDetail({ data }: IProps) {
                   <div className="border-b grid grid-cols-2 gap-4 p-8">
                     <div>
                       <p className="font-light text-base">
-                        {data.email || '-'}
+                        {userData?.email || '-'}
                       </p>
                       <p className="text-sm font-normal text-muted-foreground ">
                         Email
@@ -212,7 +246,7 @@ export default function UserDetail({ data }: IProps) {
                     </div>
                     <div>
                       <p className="font-light text-base">
-                        {data.phone || '-'}
+                        {userData?.phone || '-'}
                       </p>
                       <p className="text-sm font-normal text-muted-foreground ">
                         Phone
@@ -279,35 +313,7 @@ export default function UserDetail({ data }: IProps) {
       {/* Edit View */}
       {activeTab === 'edit' && (
         <>
-          <div className="flex flex-col justify-between min-h-[40vh] overflow-y-auto  max-h-[80vh]">
-            <div className="p-4 border-y">
-              <Input className="mt-1" type="name" placeholder="Name" />
-              <Input className="mt-3" type="email" placeholder="Email" />
-              <Input
-                className="mt-3"
-                type="walletaddress"
-                placeholder="Walletaddress"
-              />
-            </div>
-            <div className="p-4 flex items-center justify-start gap-24">
-              <div className="flex items-center gap-2">
-                <Switch id="approve" />
-                <Label htmlFor="airplane-mode">Approve</Label>
-              </div>
-              <div className="flex items-center gap-2">
-                <Switch id="disable" />
-                <Label htmlFor="airplane-mode">Disable</Label>
-              </div>
-            </div>
-          </div>
-
-          <div className="p-4 border-t flex justify-between">
-            <div className="flex items-center space-x-2">
-              <Switch id="disable-user" />
-              <Label htmlFor="disable-user">Add as owner</Label>
-            </div>
-            <Button>Confirm</Button>
-          </div>
+          <EditUser userData={userData} handleClose={handleClose} />
         </>
       )}
     </>

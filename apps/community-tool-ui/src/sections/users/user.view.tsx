@@ -50,6 +50,11 @@ export default function UserView() {
   //   setAddUser(true);
   // };
 
+  const handleClose = () => {
+    setSelectedUserData(null);
+    setActiveTab(USER_NAV_ROUTE.DEFAULT);
+  };
+
   return (
     <div>
       <Tabs defaultValue="grid" className="h-[calc(100vh-68px)] ">
@@ -86,7 +91,10 @@ export default function UserView() {
             <>
               <ResizableHandle />
               <ResizablePanel>
-                <UserDetails data={selectedUserData} />
+                <UserDetails
+                  data={selectedUserData}
+                  handleClose={handleClose}
+                />
               </ResizablePanel>
             </>
           ) : null}

@@ -33,7 +33,7 @@ export const useAssignClaims = () => {
     mutation: {
       onSuccess: () => {
         alert.fire({
-          title: 'Beneficiary Assigned Claims Successfully',
+          title: 'Voucher Assigned Successfully',
           icon: 'success',
         });
       },

@@ -24,14 +24,16 @@ type Iprops = {
     referredVoucherDescription: string;
   };
   handleSubmit: (e: any) => void;
-  handleGoBack: () => void;
+  // handleGoBack: () => void;
   handleClose: () => void;
+  handleCreateVoucherSubmit: () => void;
 };
 
 const SuccessModal = ({
   open,
   voucherInputs,
-  handleGoBack,
+  // handleGoBack,
+  handleCreateVoucherSubmit,
   handleClose,
 }: Iprops) => {
   // const submitForm = (e: React.FormEvent<HTMLFormElement>) => {
@@ -56,15 +58,15 @@ const SuccessModal = ({
           <br /> Are you sure you want to continue ?
         </div>
         <div className="flex justify-center items-center gap-4">
-          <Button>Submit</Button>
-          <Button
+          <Button onClick={handleCreateVoucherSubmit}>Submit</Button>
+          {/* <Button
             onClick={() => {
               handleGoBack();
             }}
             variant="secondary"
           >
             Back to Edit
-          </Button>
+          </Button> */}
           <Button
             onClick={() => {
               handleClose();

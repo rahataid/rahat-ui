@@ -38,7 +38,7 @@ interface CreateVoucherModalType {
   open: boolean;
   handleInputChange: (e: any) => void;
   setVoucherInputs?: any;
-  handleSubmit: () => void;
+  handleSubmit: (e: any) => void;
   handleModal: () => void;
 }
 

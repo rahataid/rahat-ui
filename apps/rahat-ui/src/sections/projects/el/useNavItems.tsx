@@ -52,8 +52,8 @@ export const useNavItems = () => {
     createTokenSummaryModal.onTrue();
   };
   const handleBackToCreateTokenModal = () => {
-    createTokenModal.onTrue();
     createTokenSummaryModal.onFalse();
+    createTokenModal.onTrue();
   };
   const handleCloseSummaryModal = () => {
     createTokenSummaryModal.onFalse();
@@ -127,7 +127,7 @@ export const useNavItems = () => {
     e.preventDefault();
     if (!addresses) return;
     const referralLimit = 3;
-    data.voucherDescriptiona.length === 0
+    voucherInputs.description.length === 0
       ? await createVoucher.writeContractAsync({
           address: addresses?.donorAddress,
           args: [
@@ -254,6 +254,7 @@ export const useNavItems = () => {
                 handleSubmit={handleCreateVoucherSubmit}
                 handleGoBack={handleBackToCreateTokenModal}
                 handleClose={handleCloseSummaryModal}
+                handleCreateVoucherSubmit={handleCreateVoucherSubmit}
               />
             </>
           ),

@@ -34,11 +34,6 @@ export const useNavItems = () => {
     elProjectAddress: `0x${string}`;
   };
 
-  const { data } = useProjectVoucher(
-    '0xaC29e7A5b6A4657a4B98E43F3b9517152867c896',
-    '0x93B2C030C17B86500962889cE3C380b4376F42D4',
-  );
-
   const [addresses, setAddresses] = useState<AddressType>();
 
   const [voucherInputs, setVoucherInputs] = useState({
@@ -53,6 +48,11 @@ export const useNavItems = () => {
 
   const uuid = params.id;
   const getProject = useProjectAction();
+
+  const { data } = useProjectVoucher(
+    addresses?.elProjectAddress || '',
+    addresses?.eyeVoucherAddress || '',
+  );
 
   const fetchAddress = async () => {
     try {
@@ -91,8 +91,7 @@ export const useNavItems = () => {
     e.preventDefault();
     if (!addresses) return;
     const referralLimit = 3;
-    console.log('creting voucher');
-    !data
+    data.voucherDescriptiona.length === 0
       ? await createVoucher.writeContractAsync({
           address: addresses?.donorAddress,
           args: [

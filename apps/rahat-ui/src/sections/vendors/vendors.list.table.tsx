@@ -137,7 +137,12 @@ export default function VendorsList() {
       Swal.fire({ icon: 'success', title: 'Action performed successfully' });
       projectClient.reset();
     }
-    if (projectClient.isError) projectClient.reset();
+    if (projectClient.isError) {
+      const error = projectClient.error as any;
+      const message = error?.response?.data?.message || 'Internal Server Error';
+      Swal.fire({ icon: 'error', title: message });
+      projectClient.reset();
+    }
   }, [projectClient]);
 
   const handleProjectChange = (d: string) => setSelectedProject(d);

@@ -98,9 +98,9 @@ export const columns: ColumnDef<Transaction>[] = [
       <div className="capitalize">
         {row.getValue('vouvherType')
           ? `${row.getValue('voucherType')?.toString().substring(0, 4)}....${row
-            .getValue('voucherType')
-            ?.toString()
-            ?.slice(-3)}`
+              .getValue('voucherType')
+              ?.toString()
+              ?.slice(-3)}`
           : 'N/A'}
       </div>
     ),
@@ -273,9 +273,9 @@ export default function BeneficiaryDetailTableView() {
                           {header.isPlaceholder
                             ? null
                             : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext(),
-                            )}
+                                header.column.columnDef.header,
+                                header.getContext(),
+                              )}
                         </TableHead>
                       );
                     })}

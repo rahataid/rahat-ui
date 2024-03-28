@@ -37,7 +37,7 @@ export default function RootLayout({
                       attribute="class"
                       // defaultTheme="system"
                       // enableSystem
-                      disableTransitionOnChange
+                      // disableTransitionOnChange
                     >
                       <main className={GeistSans.className}>{children}</main>
                       <ToastContainer />

@@ -1,10 +1,6 @@
 'use client';
 
 import { useBeneficiaryStore, useSingleBeneficiary } from '@rahat-ui/query';
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Image from 'next/image';
-import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import {
   Tabs,
   TabsContent,
@@ -17,31 +13,31 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/components/tooltip';
+import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import {
   Dialog,
   DialogTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dialog';
-import { UUID } from 'crypto';
-import { Archive, Expand, Minus, Trash2 } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
-import { Archive, Expand, Minus, Trash2, MoreVertical } from 'lucide-react';
 import { truncateEthAddress } from '@rumsan/sdk/utils';
+import { UUID } from 'crypto';
+import { Archive, Expand, Minus, MoreVertical, Trash2 } from 'lucide-react';
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 import ConfirmDialog from '../../components/dialog';
-import { useBeneficaryVoucher } from '../../hooks/el/subgraph/querycall';
+import { useBoolean } from '../../hooks/use-boolean';
 import { paths } from '../../routes/paths';
 import { IBeneficiaryItem } from '../../types/beneficiary';
-import EditBeneficiary from './editBeneficiary';
-import InfoCards from './infoCards';
-import { useBeneficaryVoucher } from '../../hooks/el/subgraph/querycall';
-import { useBoolean } from '../../hooks/use-boolean';
+import BeneficiaryDetailTableView from './beneficiaryDetailTable';
 import AssignToProjectModal from './components/assignToProjectModal';
 import SplitViewDetailCards from './components/split.view.detail.cards';
-import BeneficiaryDetailTableView from './beneficiaryDetailTable';
+import EditBeneficiary from './editBeneficiary';
 
 type IProps = {
   data: IBeneficiaryItem;

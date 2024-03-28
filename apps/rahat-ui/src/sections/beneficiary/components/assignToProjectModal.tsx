@@ -1,6 +1,6 @@
 'use client';
 
-import { useProjectAction, useProjectList } from '@rahat-ui/query';
+import { useAssignBenToProject, useProjectList } from '@rahat-ui/query';
 import {
   Dialog,
   DialogClose,
@@ -18,7 +18,6 @@ import {
   SelectValue,
 } from '@rahat-ui/shadcn/components/select';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { MS_ACTIONS } from '@rahataid/sdk';
 import { UUID } from 'crypto';
 import * as React from 'react';
 
@@ -36,7 +35,7 @@ export default function AssignToProjectModal({
   beneficiaryDetail,
   projectModal,
 }: IProps) {
-  const addBeneficiary = useProjectAction();
+  const addBeneficiary = useAssignBenToProject();
   const projectsList = useProjectList({});
 
   const [selectedProject, setSelectedProject] = React.useState<UUID>();
@@ -46,14 +45,18 @@ export default function AssignToProjectModal({
   const handleAssignProject = async () => {
     if (!selectedProject) return alert('Please select a project');
     await addBeneficiary.mutateAsync({
-      uuid: selectedProject,
-      data: {
-        action: MS_ACTIONS.BENEFICIARY.ASSGIN_TO_PROJECT,
-        payload: {
-          beneficiaryId: beneficiaryDetail?.uuid,
-        },
-      },
+      beneficiaryUUID: beneficiaryDetail?.uuid,
+      projectUUID: selectedProject,
     });
+    // await addBeneficiary.mutateAsync({
+    //   uuid: selectedProject,
+    //   data: {
+    //     action: MS_ACTIONS.BENEFICIARY.ASSGIN_TO_PROJECT,
+    //     payload: {
+    //       beneficiaryId: beneficiaryDetail?.uuid,
+    //     },
+    //   },
+    // });
   };
 
   return (
@@ -72,10 +75,10 @@ export default function AssignToProjectModal({
             </SelectTrigger>
             <SelectContent>
               {projectsList.data?.data.length &&
-                projectsList.data?.data.map((project: any) => {
+                projectsList.data?.data.map((project) => {
                   return (
-                    <SelectItem key={project.id} value={project.id}>
-                      {project.title}
+                    <SelectItem key={project.uuid} value={project.uuid}>
+                      {project.name}
                     </SelectItem>
                   );
                 })}

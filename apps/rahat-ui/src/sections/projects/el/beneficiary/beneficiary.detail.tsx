@@ -27,7 +27,7 @@ import { User } from '@rumsan/sdk/types';
 import { enumToObjectArray, truncateEthAddress } from '@rumsan/sdk/utils';
 import { MoreVertical } from 'lucide-react';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import TransactionTable from '../transactions/transactions.table';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { useAssignClaims } from '../../../../hooks/el/contracts/el-contracts';
@@ -83,6 +83,12 @@ export default function UserDetail({ beneficiaryDetails }: any) {
     //   args: [walletAddress],
     // });
   };
+  console.log('window.ethereum.isWagmi', window.ethereum.isMetaMask);
+  useEffect(() => {
+    if (window.ethereum.isWagmi) {
+      console.log('first');
+    }
+  }, []);
   return (
     <>
       <div className="p-4 bg-card mt-2">

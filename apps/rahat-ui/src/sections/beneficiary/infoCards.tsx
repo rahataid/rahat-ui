@@ -17,6 +17,8 @@ import ProjectAssign from './project.assign.modal';
 import Projectconfirm from './projects.assign.confirm';
 
 export default function InfoCards({ data, voucherData }) {
+  const [id, setId] = React.useState('');
+
   const addBeneficiary = useProjectAction();
   const router = useRouter();
 
@@ -31,10 +33,10 @@ export default function InfoCards({ data, voucherData }) {
   const projectModal = useBoolean();
 
   const handleAssignProject = async () => {
-    if (!selectedProject) return alert('Please select a project');
+    if (!id) return alert('Please select a project');
 
     const result = await addBeneficiary.mutateAsync({
-      uuid: selectedProject,
+      uuid: id,
       data: {
         action: MS_ACTIONS.BENEFICIARY.ASSGIN_TO_PROJECT,
         payload: {
@@ -177,6 +179,7 @@ export default function InfoCards({ data, voucherData }) {
       </div>
       <ProjectAssign
         open={projectAssignModal.value}
+        setId={setId}
         handleModal={handleOpenProjectAssignModal}
         handleSubmit={handleSubmitProjectAssignModal}
       />

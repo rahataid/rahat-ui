@@ -22,21 +22,24 @@ import { FC } from 'react';
 interface ProjectAssignModal {
   handleModal: () => void;
   handleSubmit: () => void;
+  setId: (id: string) => void;
   open: boolean;
 }
 
 const ProjectAssign: FC<ProjectAssignModal> = ({
   handleModal,
   handleSubmit,
+  setId,
   open,
 }) => {
   const { projectQuery } = useRumsanService();
   const projectsList = projectQuery.useProjectList({});
-  const d = projectsList.data;
-  const projectList = d?.data || [];
+  const id = projectsList.data;
+  const projectList = id?.data || [];
 
-  const handleProjectChange = (d: string) => {
-    console.log('D==>', d);
+  const handleProjectChange = (id: string) => {
+    console.log('ID==>', id);
+    setId(id);
   };
 
   return (

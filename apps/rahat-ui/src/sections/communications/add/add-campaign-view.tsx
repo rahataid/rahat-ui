@@ -10,10 +10,12 @@ import { z } from 'zod';
 import { FormProvider, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
+  FilterFn,
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
+  PaginationState,
   useReactTable,
 } from '@tanstack/react-table';
 import { useAudienceColumns } from './use-audience-columns';
@@ -23,7 +25,11 @@ import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 import { CAMPAIGN_TYPES } from '@rahat-ui/types';
 import { toast } from 'react-toastify';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
-
+import {
+  RankingInfo,
+  rankItem,
+  compareItems,
+} from '@tanstack/match-sorter-utils';
 const FormSchema = z.object({
   campaignName: z.string().min(2, {
     message: 'Campaign Name must be at least 2 characters.',
@@ -67,7 +73,11 @@ const AddCampaignView = () => {
 
   const [rowSelection, setRowSelection] = React.useState({});
   const [selectedRows, setSelectedRows] = React.useState<SelectedRowType[]>([]);
-
+  const [globalFilter, setGlobalFilter] = React.useState('');
+  const [pagination, setPagination] = React.useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 10,
+  });
   const showAddAudienceView = useBoolean(false);
 
   const handleisAlreadyAudience = (id: number) => {
@@ -100,21 +110,41 @@ const AddCampaignView = () => {
       }))
     );
   }, [beneficiaryData]);
+  const audienceFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
+    // Rank the item
+    let itemRank = rankItem(row.getValue(columnId), value);
+    if (!itemRank.passed) {
+      itemRank = rankItem(row.getValue('phone'), value); //TODO:make dynamic
+    }
+
+    // Store the itemRank info
+    addMeta({
+      itemRank,
+    });
+
+    // Return if the item should be filtered in/out
+    return itemRank.passed;
+  };
   const table = useReactTable({
     data: tableData || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
+    onGlobalFilterChange: setGlobalFilter,
+    globalFilterFn: audienceFilter,
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onRowSelectionChange: setRowSelection,
+    onPaginationChange: setPagination,
     getRowId: (row) => row.id,
+
+    filterFns: {
+      fuzzy: audienceFilter,
+    },
     state: {
       rowSelection,
-      pagination: {
-        pageSize: -1,
-        pageIndex: 0,
-      },
+      globalFilter,
+      pagination,
     },
   });
 
@@ -169,7 +199,6 @@ const AddCampaignView = () => {
         toast.error(e);
       });
   };
-
   return (
     <FormProvider {...form}>
       <form
@@ -186,16 +215,18 @@ const AddCampaignView = () => {
         />
         {showAddAudienceView.value ? (
           <>
-            <Input
-              placeholder="Filter campaigns..."
-              value={
-                (table.getColumn('name')?.getFilterValue() as string) ?? ''
-              }
-              onChange={(event) =>
-                table.getColumn('name')?.setFilterValue(event.target.value)
-              }
-              className="max-w-sm mr-3 ml-4"
-            />
+            <div className="flex justify-between m-2">
+              <Input
+                placeholder="Filter campaigns..."
+                value={globalFilter ?? ''}
+                onChange={(value) => {
+                  setGlobalFilter(value.target.value);
+                }}
+                className="max-w-sm mr-3 ml-4"
+              />
+              <p className="mr-6">Audience selected: {selectedRows.length}</p>
+            </div>
+
             <AddAudience table={table} columns={columns} form={form} />
           </>
         ) : null}

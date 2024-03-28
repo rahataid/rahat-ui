@@ -161,20 +161,22 @@ export const useNavItems = () => {
           title: 'Campaigns',
           subtitle: 20,
           icon: <Speech size={18} strokeWidth={1.5} />,
-          children: [
-            {
-              title: 'Voice',
-              subtitle: 10,
-              icon: <Phone size={18} strokeWidth={1.5} />,
-              path: `/projects/el/${params.id}/campaigns/voice`,
-            },
-            {
-              title: 'Text',
-              subtitle: 10,
-              icon: <MessageSquare size={18} strokeWidth={1.5} />,
-              path: `/projects/el/${params.id}/campaigns/text`,
-            },
-          ],
+          path: `/projects/el/${params.id}/campaigns/text`,
+
+          // children: [
+          //   {
+          //     title: 'Voice',
+          //     subtitle: 10,
+          //     icon: <Phone size={18} strokeWidth={1.5} />,
+          //     path: `/projects/el/${params.id}/campaigns/voice`,
+          //   },
+          //   {
+          //     title: 'Text',
+          //     subtitle: 10,
+          //     icon: <MessageSquare size={18} strokeWidth={1.5} />,
+          //     path: `/projects/el/${params.id}/campaigns/text`,
+          //   },
+          // ],
         },
       ],
     },

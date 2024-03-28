@@ -32,7 +32,9 @@ export const useAudienceColumns = (
         <Checkbox
           checked={beneficiaryData?.data?.length === selectedRows.length}
           onCheckedChange={(value) => {
-            if (value && selectedRows.length === 0) {
+            if (value) {
+              setSelectedRows([]);
+
               beneficiaryData?.data?.map((item) => {
                 handleCreateAudience(item);
 

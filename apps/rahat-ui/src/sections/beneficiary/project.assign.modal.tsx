@@ -58,8 +58,8 @@ const ProjectAssign: FC<ProjectAssignModal> = ({
                   {projectsList.data?.data.length &&
                     projectsList.data.data.map((project) => {
                       return (
-                        <SelectItem key={project.id} value={project.id}>
-                          {project.title}
+                        <SelectItem key={project.uuid} value={project.uuid}>
+                          {project.name}
                         </SelectItem>
                       );
                     })}

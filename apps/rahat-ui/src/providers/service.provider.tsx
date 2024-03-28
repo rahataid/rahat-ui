@@ -31,7 +31,7 @@ export function ServiceProvider({ children }: ServiceProviderProps) {
   const rsService = useMemo(
     () =>
       new RumsanService({
-        baseURL: process.env.NEXT_PUBLIC_API_HOST_URL,
+        baseURL: process.env.NEXT_PUBLIC_API_HOST_URL + '/v1',
       }),
     [],
   );

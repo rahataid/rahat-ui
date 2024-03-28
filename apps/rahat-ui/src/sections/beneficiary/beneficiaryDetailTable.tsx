@@ -44,10 +44,9 @@ import {
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import TransactionTableData from '../../app/beneficiary/beneficiaryTransactionData.json';
 import { useBeneficiaryTransaction } from '../../hooks/el/subgraph/querycall';
 
-const data: Transaction[] = TransactionTableData;
+const data: Transaction[] = [];
 
 export type Transaction = {
   topic: string;
@@ -161,7 +160,7 @@ export default function BeneficiaryDetailTableView() {
   const [rowSelection, setRowSelection] = React.useState({});
 
   const table = useReactTable({
-    data,
+    data: data || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,

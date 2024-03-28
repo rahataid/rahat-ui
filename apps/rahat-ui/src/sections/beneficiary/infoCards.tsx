@@ -1,5 +1,10 @@
 'use client';
 import {
+  useAssignBenToProject,
+  useBeneficiaryStore,
+  useProjectList,
+} from '@rahat-ui/query';
+import {
   Dialog,
   DialogClose,
   DialogContent,
@@ -22,67 +27,38 @@ import {
   CardContent,
   CardHeader,
 } from '@rahat-ui/shadcn/src/components/ui/card';
-import { MS_ACTIONS } from '@rahataid/sdk';
 import { truncateEthAddress } from '@rumsan/sdk/utils';
-import * as React from 'react';
-import { useSwal } from '../../components/swal';
-import { useBoolean } from '../../hooks/use-boolean';
+import { UUID } from 'crypto';
 import { useRouter } from 'next/navigation';
-import { useProjectAction } from '@rahat-ui/query';
+import * as React from 'react';
+import { useBoolean } from '../../hooks/use-boolean';
 
-export default function InfoCards({ data, voucherData }) {
-  const addBeneficiary = useProjectAction();
+export default function InfoCards() {
+  const addBeneficiary = useAssignBenToProject();
+  const projectsList = useProjectList({});
+
+  const data = useBeneficiaryStore((state) => state.singleBeneficiary);
   // const { projectQuery } = useRumsanService();
   const router = useRouter();
 
-  const [selectedProject, setSelectedProject] = React.useState('');
-  const [selectedRow, setSelectedRow] = React.useState(null) as any;
-
-  const alert = useSwal();
-
-  const projectsList = projectQuery.useProjectList({});
-  const d = projectsList.data;
-  const projectList = d?.data || [];
+  const [selectedProject, setSelectedProject] = React.useState<UUID>();
 
   const projectModal = useBoolean();
-  const handleProjectChange = (d: string) => setSelectedProject(d);
+  const handleProjectChange = (d: UUID) => setSelectedProject(d);
 
   const handleAssignProject = async () => {
-    if (!selectedProject) return alert('Please select a project');
-
-    const result = await addBeneficiary.mutateAsync({
-      uuid: selectedProject,
-      data: {
-        action: MS_ACTIONS.BENEFICIARY.ASSGIN_TO_PROJECT,
-        payload: {
-          beneficiaryId: data?.uuid,
-        },
-      },
+    if (!selectedProject) {
+      return;
+    }
+    await addBeneficiary.mutateAsync({
+      beneficiaryUUID: data?.uuid as UUID,
+      projectUUID: selectedProject,
     });
   };
 
-  const handleAssignModalClick = (row: any) => {
-    setSelectedRow(row);
+  const handleAssignModalClick = () => {
     projectModal.onTrue();
   };
-
-  React.useEffect(() => {
-    if (!addBeneficiary) return;
-    if (addBeneficiary.isSuccess) {
-      alert.fire({
-        title: 'Beneficiary Assigned Successfully',
-        icon: 'success',
-      });
-      addBeneficiary.reset();
-    }
-    if (addBeneficiary.isError) {
-      alert.fire({
-        title: 'Error while updating Beneficiary',
-        icon: 'error',
-      });
-      addBeneficiary.reset();
-    }
-  }, [addBeneficiary, alert]);
 
   return (
     <>
@@ -197,11 +173,11 @@ export default function InfoCards({ data, voucherData }) {
                     <SelectValue placeholder="Projects" />
                   </SelectTrigger>
                   <SelectContent>
-                    {projectList.length > 0 &&
-                      projectList.map((project: any) => {
+                    {projectsList.data?.data.length &&
+                      projectsList.data.data.map((project) => {
                         return (
-                          <SelectItem key={project.id} value={project.id}>
-                            {project.title}
+                          <SelectItem key={project.uuid} value={project.uuid}>
+                            {project.name}
                           </SelectItem>
                         );
                       })}

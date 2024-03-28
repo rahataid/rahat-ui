@@ -18,6 +18,7 @@ import { PaginatedResult, Pagination } from '@rumsan/sdk/types';
 import { useProjectSettingsStore, useProjectStore } from './project.store';
 import { useEffect } from 'react';
 import { isEmpty } from 'lodash';
+import { useSwal } from '../../swal';
 
 const createProject = async (payload: CreateProjectPayload) => {
   const res = await api.post('/projects', payload);
@@ -37,7 +38,7 @@ export const useProjectCreateMutation = () => {
 
 export const useProjectAction = () => {
   const { queryClient, rumsanService } = useRSQuery();
-  const projecClient = getProjectClient(rumsanService.client);
+  const projectClient = getProjectClient(rumsanService.client);
   return useMutation<
     FormattedResponse<any>,
     Error,
@@ -48,10 +49,56 @@ export const useProjectAction = () => {
     unknown
   >(
     {
-      mutationFn: projecClient.projectActions,
+      mutationFn: projectClient.projectActions,
     },
     queryClient,
   );
+};
+
+export const useAssignBenToProject = () => {
+  const q = useProjectAction();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+  return useMutation({
+    mutationFn: async ({
+      beneficiaryUUID,
+      projectUUID,
+    }: {
+      projectUUID: UUID;
+      beneficiaryUUID: UUID;
+    }) => {
+      return q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'beneficiary.assign_to_project',
+          payload: {
+            beneficiaryId: beneficiaryUUID,
+          },
+        },
+      });
+    },
+    onSuccess: () => {
+      q.reset();
+      toast.fire({
+        title: 'Beneficiary Assigned Successfully',
+        icon: 'success',
+      });
+    },
+    onError: (error) => {
+      const errorMessage = error?.response?.data?.message || 'Error';
+      q.reset();
+      toast.fire({
+        title: 'Error while updating Beneficiary',
+        icon: 'error',
+        text: errorMessage,
+      });
+    },
+  });
 };
 
 export const useProjectSettings = (uuid: UUID) => {

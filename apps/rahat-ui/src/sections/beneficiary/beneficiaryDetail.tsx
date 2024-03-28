@@ -1,5 +1,6 @@
 import { useRouter } from 'next/navigation';
 
+import { useBeneficiaryStore, useSingleBeneficiary } from '@rahat-ui/query';
 import {
   Tabs,
   TabsContent,
@@ -16,14 +17,14 @@ import {
   Dialog,
   DialogTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dialog';
+import { UUID } from 'crypto';
 import { Archive, Expand, Minus, Trash2 } from 'lucide-react';
 import ConfirmDialog from '../../components/dialog';
-import { useRumsanService } from '../../providers/service.provider';
+import { useBeneficaryVoucher } from '../../hooks/el/subgraph/querycall';
 import { paths } from '../../routes/paths';
 import { IBeneficiaryItem } from '../../types/beneficiary';
 import EditBeneficiary from './editBeneficiary';
 import InfoCards from './infoCards';
-import { useBeneficaryVoucher } from '../../hooks/el/subgraph/querycall';
 
 type IProps = {
   data: IBeneficiaryItem;
@@ -32,23 +33,12 @@ type IProps = {
 
 export default function BeneficiaryDetail({ data, handleClose }: IProps) {
   const router = useRouter();
-  const { beneficiaryQuery } = useRumsanService();
-  let beneficiary = null;
+  useSingleBeneficiary(data.uuid as UUID);
+  const beneficiary = useBeneficiaryStore((state) => state.singleBeneficiary);
   const walletAddress = data.walletAddress || '';
 
   const beneficiaryDetails = useBeneficaryVoucher(walletAddress);
-
-  const changedDate = new Date(data?.updatedAt);
-  const formattedDate = changedDate.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
-
-  if (data.uuid) {
-    const response = beneficiaryQuery.useBeneficiaryGet(data.uuid);
-    beneficiary = response.data?.data;
-  }
+  console.log('first', beneficiaryDetails.data);
 
   return (
     <>
@@ -128,7 +118,7 @@ export default function BeneficiaryDetail({ data, handleClose }: IProps) {
         </div>
 
         <TabsContent value="detail">
-          <InfoCards data={data} voucherData={beneficiaryDetails.data} />
+          <InfoCards />
         </TabsContent>
         <TabsContent value="transaction-history">
           <div className="p-4 border-y">Transaction History View</div>

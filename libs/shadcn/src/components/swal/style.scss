@@ -1,0 +1,31 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+.swal2-popup {
+  @apply text-lg bg-card rounded-lg shadow-lg; // Add rounded corners and shadow
+}
+
+.swal2-title {
+  @apply text-primary font-semibold text-2xl; // Make the title bold and larger
+}
+
+.swal2-content {
+  @apply text-gray-700; // Change the content text color
+}
+
+.swal2-confirm.swal2-styled {
+  @apply bg-blue-500 text-white font-semibold py-2 px-4 rounded-md shadow-md transition-colors duration-200 ease-in-out hover:bg-blue-600 active:bg-blue-700; // Style the confirm button
+}
+
+.swal2-cancel {
+  @apply bg-gray-200 text-black py-2 px-4 rounded; // Style the cancel button
+}
+
+.swal2-icon {
+  @apply text-4xl; // Make the icon larger
+}
+
+.swal2-close {
+  @apply text-gray-500; // Change the close button color
+}

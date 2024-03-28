@@ -1,20 +1,5 @@
 'use client';
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@rahat-ui/shadcn/components/dialog';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@rahat-ui/shadcn/components/select';
+
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
@@ -22,48 +7,21 @@ import {
   CardContent,
   CardHeader,
 } from '@rahat-ui/shadcn/src/components/ui/card';
-import { MS_ACTIONS } from '@rahataid/sdk';
 import { truncateEthAddress } from '@rumsan/sdk/utils';
 import * as React from 'react';
 import { useProjectAction } from '../../../../../libs/query/src/lib/projects/projects';
 import { useSwal } from '../../components/swal';
 import { useBoolean } from '../../hooks/use-boolean';
-import { useRumsanService } from '../../providers/service.provider';
 import { useRouter } from 'next/navigation';
+import AssignToProjectModal from './components/assignToProjectModal';
 
-export default function InfoCards({ data, voucherData }) {
+export default function InfoCards({ data, voucherData }: any) {
   const addBeneficiary = useProjectAction();
-  const { projectQuery } = useRumsanService();
   const router = useRouter();
-
-  const [selectedProject, setSelectedProject] = React.useState('');
-  const [selectedRow, setSelectedRow] = React.useState(null) as any;
-
   const alert = useSwal();
-
-  const projectsList = projectQuery.useProjectList({});
-  const d = projectsList.data;
-  const projectList = d?.data || [];
-
   const projectModal = useBoolean();
-  const handleProjectChange = (d: string) => setSelectedProject(d);
 
-  const handleAssignProject = async () => {
-    if (!selectedProject) return alert('Please select a project');
-
-    const result = await addBeneficiary.mutateAsync({
-      uuid: selectedProject,
-      data: {
-        action: MS_ACTIONS.BENEFICIARY.ASSGIN_TO_PROJECT,
-        payload: {
-          beneficiaryId: data?.uuid,
-        },
-      },
-    });
-  };
-
-  const handleAssignModalClick = (row: any) => {
-    setSelectedRow(row);
+  const handleAssignModalClick = () => {
     projectModal.onTrue();
   };
 
@@ -87,6 +45,10 @@ export default function InfoCards({ data, voucherData }) {
 
   return (
     <>
+      <AssignToProjectModal
+        beneficiaryDetail={data}
+        projectModal={projectModal}
+      />
       <div className="flex flex-col gap-2 py-2 pl-2">
         <Card className="shadow rounded">
           <CardHeader>
@@ -175,58 +137,6 @@ export default function InfoCards({ data, voucherData }) {
             })}
           </CardContent>
         </Card>
-      </div>
-      <div className="py-2 w-full border-t">
-        <div className="p-4 flex flex-col gap-0.5 text-sm">
-          <Dialog
-            open={projectModal.value}
-            onOpenChange={projectModal.onToggle}
-          >
-            {/* <DialogTrigger className=" hover:bg-muted p-1 rounded text-left">
-              Assign Projects
-            </DialogTrigger> */}
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Assign Project</DialogTitle>
-                <DialogDescription>
-                  Select the project to be assigned to the beneficiary
-                </DialogDescription>
-              </DialogHeader>
-              <div>
-                <Select onValueChange={handleProjectChange}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Projects" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {projectList.length > 0 &&
-                      projectList.map((project: any) => {
-                        return (
-                          <SelectItem key={project.id} value={project.id}>
-                            {project.title}
-                          </SelectItem>
-                        );
-                      })}
-                  </SelectContent>
-                </Select>
-              </div>
-              <DialogFooter className="sm:justify-end">
-                <DialogClose asChild>
-                  <Button type="button" variant="ghost">
-                    Close
-                  </Button>
-                </DialogClose>
-                <Button
-                  onClick={handleAssignProject}
-                  type="button"
-                  variant="ghost"
-                  className="text-primary"
-                >
-                  Assign
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-        </div>
       </div>
     </>
   );

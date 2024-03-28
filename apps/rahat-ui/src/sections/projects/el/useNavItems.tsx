@@ -80,6 +80,7 @@ export const useNavItems = () => {
 
   useEffect(() => {
     if (projectVoucher.isSuccess) {
+      console.log('projectVoucher', projectVoucher.data);
       setVoucherInputs((prev) => ({
         ...prev,
       }));

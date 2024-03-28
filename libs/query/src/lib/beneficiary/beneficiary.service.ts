@@ -60,9 +60,9 @@ const listBeneficiaryStatus = async () => {
   return response?.data;
 };
 
-export const useListBeneficiaryStatus = (): UseQueryResult<any, Error> => {
+export const useGetBeneficiaryStats = (): UseQueryResult<any, Error> => {
   return useQuery({
-    queryKey: [TAGS.GET_BENEFICIARIES_STATUS],
+    queryKey: [TAGS.GET_BENEFICIARIES_STATS],
     queryFn: () => listBeneficiaryStatus(),
   });
 };
@@ -108,6 +108,23 @@ export const useUploadBeneficiary = () => {
     mutationFn: (file: any) => uploadBeneficiary(file),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: [TAGS.GET_BENEFICIARIES] });
+    },
+  });
+};
+
+export const useBeneficiaryPii = (): UseQueryResult<any, Error> => {
+  return useQuery({
+    queryKey: [TAGS.GET_BENEFICIARIES],
+    queryFn: () => {
+      return api
+        .get('/beneficiaries/pii')
+        .then(function (response) {
+          return response.data;
+        })
+        .catch(function (error) {
+          console.error('Error:', error);
+          throw error;
+        });
     },
   });
 };

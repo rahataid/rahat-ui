@@ -2,7 +2,7 @@
 import { RumsanService } from '@rumsan/sdk';
 
 import { CommunicationService } from '@rumsan/communication';
-import { useRSQuery } from '@rumsan/react-query';
+import { useAuthStore, useRSQuery } from '@rumsan/react-query';
 import { useQueryClient } from '@tanstack/react-query';
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { useError } from '../utils/useErrors';
@@ -64,7 +64,7 @@ export function ServiceProvider({ children }: ServiceProviderProps) {
     if (rumsanService) {
       rumsanService.client.interceptors.request.use(
         (config) => {
-          const token = localStorage.getItem('token');
+          const token = useAuthStore.getState().token;
           if (token) {
             config.headers['Authorization'] = 'Bearer ' + token;
           }
@@ -81,7 +81,7 @@ export function ServiceProvider({ children }: ServiceProviderProps) {
     if (communicationService) {
       communicationService.client.interceptors.request.use(
         (config) => {
-          const token = localStorage.getItem('token');
+          const token = useAuthStore.getState().token;
           if (token) {
             config.headers['Authorization'] = 'Bearer ' + token;
           }

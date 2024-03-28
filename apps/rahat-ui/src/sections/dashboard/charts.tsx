@@ -1,17 +1,11 @@
 import { PieChart } from '@rahat-ui/shadcn/charts';
-import { DashboardRecentActivities } from './activities.dashboard';
-import { useRumsanService } from '../../providers/service.provider';
 import { formatUnderScoredString } from '../../utils/string';
+import { DashboardRecentActivities } from './activities.dashboard';
 
-const Charts = () => {
-  const { beneficiaryQuery } = useRumsanService();
-  const { data, isLoading } = beneficiaryQuery.useBeneficiaryStats();
-
-  if (isLoading) return null;
-
+const Charts = ({ charts }: { charts: any }) => {
   return (
     <div className=" grid md:grid-cols-3 gap-2 mt-2">
-      {data?.map((d: any) => {
+      {charts?.map((d: any) => {
         const series = Array.isArray(d?.data)
           ? d?.data.map((item: any) => ({
               label: formatUnderScoredString(item.id),

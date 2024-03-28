@@ -48,22 +48,27 @@ export const useProjectBeneficiaryTableColumns = () => {
       cell: ({ row }) => <div>{truncateEthAddress(row.getValue('name'))}</div>,
     },
     {
-      accessorKey: 'vouvherType',
-      header: 'Voucher Type',
-      cell: ({ row }) => (
-        <div className="capitalize">
-          {row.getValue('vouvherType')
-            ? `${row
-                .getValue('vouvherType')
-                ?.toString()
-                .substring(0, 4)}....${row
-                .getValue('vouvherType')
-                ?.toString()
-                ?.slice(-3)}`
-            : 'N/A'}
-        </div>
-      ),
+      accessorKey: 'type',
+      header: 'Type',
+      cell: ({ row }) => <div> {row.getValue('type')}</div>,
     },
+    // {
+    //   accessorKey: 'Type',
+    //   header: 'Type',
+    //   cell: ({ row }) => (
+    //     <div className="capitalize">
+    //       {row.getValue('vouvherType')
+    //         ? `${row
+    //             .getValue('vouvherType')
+    //             ?.toString()
+    //             .substring(0, 4)}....${row
+    //             .getValue('vouvherType')
+    //             ?.toString()
+    //             ?.slice(-3)}`
+    //         : 'N/A'}
+    //     </div>
+    //   ),
+    // },
     {
       accessorKey: 'phone',
       header: 'Phone',

@@ -145,7 +145,7 @@ export default function BeneficiaryDetail({
             <TooltipProvider delayDuration={100}>
               <Tooltip>
                 <TooltipTrigger onClick={clickToCopy}>
-                  <p className="text-slate-500 text-base" onClick={clickToCopy}>
+                  <p className="text-slate-500 text-base">
                     {truncateEthAddress(walletAddress)}
                   </p>
                 </TooltipTrigger>

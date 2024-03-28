@@ -6,21 +6,22 @@ interface IProps {
   data: any;
   handleReUploadClick: any;
   handleImportClick: any;
+  invalidFields: any;
 }
 
 export default function AddToQueue({
   data,
   handleReUploadClick,
   handleImportClick,
+  invalidFields,
 }: IProps) {
-  console.log('Data==>', data);
   const mappedData =
     data.length > 0
       ? data.map((d: any) => {
           const { rawData, ...rest } = d;
           return rest;
         })
-      : [];
+      : []; // Omit rawData
   const keys = mappedData.length > 0 ? Object.keys(mappedData[0]) : [];
 
   return (
@@ -33,6 +34,7 @@ export default function AddToQueue({
           <ArrowBigLeft size={18} strokeWidth={2} /> Re-Upload
         </Button>
         <Button
+          disabled={invalidFields.length}
           onClick={handleImportClick}
           className="w-40 bg-primary hover:ring-2 ring-primary"
         >
@@ -44,20 +46,19 @@ export default function AddToQueue({
         <table className="w-full text-sm text-left rtl:text-right">
           <thead>
             <tr>
-              {/* Dynamically generating table headers */}
+              {/* Dynamically generated table headers */}
               {keys.map((key) => (
                 <th className="pt-2 pb-2" key={key}>
                   {key.toUpperCase()}
                 </th>
               ))}
-              <th>IsValid?</th>
             </tr>
           </thead>
 
           <tbody>
             {data.map((item: any, index: number) => (
               <tr key={index}>
-                {/* Dynamically generating table cells */}
+                {/* Dynamically generated table cells */}
                 {keys.map((key) => (
                   <td key={key}>{item[key]}</td>
                 ))}

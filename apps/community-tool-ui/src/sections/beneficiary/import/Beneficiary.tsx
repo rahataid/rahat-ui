@@ -23,6 +23,7 @@ import FilterBox from './FilterBox';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { ArrowBigLeft } from 'lucide-react';
 import AddToQueue from './AddToQueue';
+import ErrorAlert from './ErrorAlert';
 
 export default function BenImp() {
   const form = useForm({});
@@ -40,6 +41,7 @@ export default function BenImp() {
     BENEF_IMPORT_SCREENS.SELECTION,
   );
   const [processedData, setProcessedData] = useState([]) as any;
+  const [invalidFields, setInvalidFields] = useState([]) as any;
 
   const fetchExistingMapping = async (importId: string) => {
     const res = await rumsanService.client.get(`/sources/${importId}/mappings`);
@@ -229,7 +231,6 @@ export default function BenImp() {
       name: importSource,
       importId,
       uniqueField,
-      details: { message: 'This is a default message' },
       fieldMapping: { data: final_mapping, sourceTargetMappings: mappings },
     };
 
@@ -241,13 +242,15 @@ export default function BenImp() {
       .post('/sources', sourcePayload)
       .then((res) => {
         if (sourcePayload.action === IMPORT_ACTION.IMPORT) {
+          resetStates();
           return Swal.fire({
             icon: 'success',
             title: `${sourcePayload.fieldMapping.data.length} Beneficiaries imported successfully!`,
           });
         }
-        const { data } = res.data;
-        setProcessedData(data);
+        const { result, invalidFields } = res.data.data;
+        setProcessedData(result);
+        if (invalidFields.length) setInvalidFields(invalidFields);
         setCurrentScreen(BENEF_IMPORT_SCREENS.IMPORT_DATA);
       })
       .catch((err) => {
@@ -258,14 +261,18 @@ export default function BenImp() {
       });
   };
 
-  const handleReUploadClick = () => {
+  const handleReUploadClick = () => resetStates();
+
+  const resetStates = () => {
     setProcessedData([]);
     setCurrentScreen(BENEF_IMPORT_SCREENS.SELECTION);
     setRawData([]);
     setMappings([]);
+    setInvalidFields([]);
   };
 
   console.log({ currentScreen });
+  console.log('INvalidFields=>', invalidFields);
 
   return (
     <div className="h-custom">
@@ -282,6 +289,7 @@ export default function BenImp() {
               handleKoboFormChange={handleKoboFormChange}
               handleGoClick={handleGoClick}
               selectedUniqueField={uniqueField}
+              handleUniqueFieldChange={handleUniqueFieldChange}
             />
             <div className="pt-10">{fetching && <Loader />}</div>
           </>
@@ -371,11 +379,20 @@ export default function BenImp() {
         )}
 
         {currentScreen === BENEF_IMPORT_SCREENS.IMPORT_DATA && (
-          <AddToQueue
-            handleReUploadClick={handleReUploadClick}
-            data={processedData}
-            handleImportClick={() => validateOrImport(IMPORT_ACTION.IMPORT)}
-          />
+          <>
+            {invalidFields.length > 0 && (
+              <ErrorAlert
+                errorType="Validation Error!"
+                message="Fix validation and re-upload"
+              />
+            )}
+            <AddToQueue
+              handleReUploadClick={handleReUploadClick}
+              data={processedData}
+              handleImportClick={() => validateOrImport(IMPORT_ACTION.IMPORT)}
+              invalidFields={invalidFields}
+            />
+          </>
         )}
       </div>
     </div>

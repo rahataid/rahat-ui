@@ -89,7 +89,7 @@ export const useAssignBenToProject = () => {
         icon: 'success',
       });
     },
-    onError: (error) => {
+    onError: (error: any) => {
       const errorMessage = error?.response?.data?.message || 'Error';
       q.reset();
       toast.fire({

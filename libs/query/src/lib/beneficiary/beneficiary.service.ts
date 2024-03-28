@@ -138,7 +138,7 @@ export const useUploadBeneficiary = () => {
           title: 'Beneficiary uploaded successfully',
         });
       },
-      onError: (error) => {
+      onError: (error: any) => {
         console.log('error', error);
         const message = error.response?.data?.message || error.message;
         toast.fire({

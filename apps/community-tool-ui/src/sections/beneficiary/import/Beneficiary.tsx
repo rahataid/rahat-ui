@@ -3,6 +3,7 @@
 import {
   BENEF_DB_FIELDS,
   BENEF_IMPORT_SCREENS,
+  IMPORT_ACTION,
   IMPORT_SOURCE,
   TARGET_FIELD,
 } from 'apps/community-tool-ui/src/constants/app.const';
@@ -21,6 +22,7 @@ import Swal from 'sweetalert2';
 import FilterBox from './FilterBox';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { ArrowBigLeft } from 'lucide-react';
+import AddToQueue from './AddToQueue';
 
 export default function BenImp() {
   const form = useForm({});
@@ -37,6 +39,7 @@ export default function BenImp() {
   const [currentScreen, setCurrentScreen] = useState(
     BENEF_IMPORT_SCREENS.SELECTION,
   );
+  const [processedData, setProcessedData] = useState([]) as any;
 
   const fetchExistingMapping = async (importId: string) => {
     const res = await rumsanService.client.get(`/sources/${importId}/mappings`);
@@ -157,10 +160,9 @@ export default function BenImp() {
     setCurrentScreen(BENEF_IMPORT_SCREENS.VALIDATION);
   };
 
-  const handleAddQueueClick = () => {
+  const validateOrImport = (action: string) => {
     let finalPayload = rawData;
     const selectedTargets = []; // Only submit selected target fields
-
     // const myMappings = existingMappings.length ? existingMappings : mappings;
 
     for (let m of mappings) {
@@ -204,10 +206,14 @@ export default function BenImp() {
         finalPayload = replaced;
       }
     }
-    return addSourceToQueue(finalPayload, selectedTargets);
+    return validateAndImortBeneficiary(finalPayload, selectedTargets, action);
   };
 
-  const addSourceToQueue = (finalPayload: any, selectedTargets: any) => {
+  const validateAndImortBeneficiary = (
+    finalPayload: any,
+    selectedTargets: any,
+    action: string,
+  ) => {
     if (!selectedTargets.length)
       return Swal.fire({
         icon: 'error',
@@ -217,10 +223,9 @@ export default function BenImp() {
       finalPayload,
       selectedTargets,
     );
-    // Attach raw data
     const final_mapping = attachedRawData(selectedFieldsOnly, rawData);
-    // Validate payload against backend
     const sourcePayload = {
+      action,
       name: importSource,
       importId,
       uniqueField,
@@ -228,13 +233,22 @@ export default function BenImp() {
       fieldMapping: { data: final_mapping, sourceTargetMappings: mappings },
     };
 
+    return createSourceAndImport(sourcePayload);
+  };
+
+  const createSourceAndImport = (sourcePayload: any) => {
     rumsanService.client
       .post('/sources', sourcePayload)
       .then((res) => {
-        Swal.fire({
-          icon: 'success',
-          title: 'Data added to the queue, they will be imported soon!',
-        });
+        if (sourcePayload.action === IMPORT_ACTION.IMPORT) {
+          return Swal.fire({
+            icon: 'success',
+            title: `${sourcePayload.fieldMapping.data.length} Beneficiaries imported successfully!`,
+          });
+        }
+        const { data } = res.data;
+        setProcessedData(data);
+        setCurrentScreen(BENEF_IMPORT_SCREENS.IMPORT_DATA);
       })
       .catch((err) => {
         Swal.fire({
@@ -244,12 +258,19 @@ export default function BenImp() {
       });
   };
 
+  const handleReUploadClick = () => {
+    setProcessedData([]);
+    setCurrentScreen(BENEF_IMPORT_SCREENS.SELECTION);
+    setRawData([]);
+    setMappings([]);
+  };
+
   console.log({ currentScreen });
 
   return (
     <div className="h-custom">
       <div className="h-full p-4">
-        {currentScreen === BENEF_IMPORT_SCREENS.SELECTION ? (
+        {currentScreen === BENEF_IMPORT_SCREENS.SELECTION && (
           <>
             <FilterBox
               rawData={rawData}
@@ -264,8 +285,10 @@ export default function BenImp() {
             />
             <div className="pt-10">{fetching && <Loader />}</div>
           </>
-        ) : (
-          <div className="relative overflow-x-auto">
+        )}
+
+        {currentScreen === BENEF_IMPORT_SCREENS.VALIDATION && (
+          <div className="relative">
             {rawData.length > 0 && (
               <div className="flex mb-5 justify-between m-2">
                 <Button
@@ -276,66 +299,83 @@ export default function BenImp() {
                 >
                   <ArrowBigLeft size={18} strokeWidth={2} /> Back
                 </Button>
-                <Button className="w-40 bg-primary hover:ring-2 ring-primary">
+                <Button
+                  onClick={() => validateOrImport(IMPORT_ACTION.VALIDATE)}
+                  className="w-40 bg-primary hover:ring-2 ring-primary"
+                >
                   Validate Data
                 </Button>
               </div>
             )}
-            <table className="w-full text-sm text-left rtl:text-right">
-              {rawData.map((item: string, index: number) => {
-                const keys = Object.keys(item);
+            <hr />
+            <div className="overflow-x-auto overflow-y-auto">
+              <table className="w-full text-sm text-left rtl:text-right">
+                {rawData.map((item: string, index: number) => {
+                  const keys = Object.keys(item);
 
-                return (
-                  <Fragment key={index}>
-                    <tbody>
-                      {index === 0 && (
+                  return (
+                    <Fragment key={index}>
+                      <tbody>
+                        {index === 0 && (
+                          <tr>
+                            {keys.map((key, i) => {
+                              return (
+                                <td key={i + 1}>
+                                  <strong>{key.toLocaleUpperCase()}</strong>{' '}
+                                  <br />
+                                  <select
+                                    name="targetField"
+                                    id="targetField"
+                                    onChange={(e) =>
+                                      handleTargetFieldChange(
+                                        key,
+                                        e.target.value,
+                                      )
+                                    }
+                                  >
+                                    <option value="None">
+                                      --Choose Target--
+                                    </option>
+                                    {BENEF_DB_FIELDS.map((f) => {
+                                      return (
+                                        <option key={f} value={f}>
+                                          {f}
+                                        </option>
+                                      );
+                                    })}
+                                  </select>
+                                </td>
+                              );
+                            })}
+                          </tr>
+                        )}
+
                         <tr>
-                          {keys.map((key, i) => {
-                            return (
-                              <td key={i + 1}>
-                                <strong>{key.toLocaleUpperCase()}</strong>{' '}
-                                <br />
-                                <select
-                                  name="targetField"
-                                  id="targetField"
-                                  onChange={(e) =>
-                                    handleTargetFieldChange(key, e.target.value)
-                                  }
-                                >
-                                  <option value="None">
-                                    --Choose Target--
-                                  </option>
-                                  {BENEF_DB_FIELDS.map((f) => {
-                                    return (
-                                      <option key={f} value={f}>
-                                        {f}
-                                      </option>
-                                    );
-                                  })}
-                                </select>
-                              </td>
-                            );
-                          })}
+                          {keys.map((key: any, i) => (
+                            <td key={i + 1}>
+                              {typeof item[key] === 'object' ? (
+                                <NestedObjectRenderer object={item[key]} />
+                              ) : (
+                                item[key]
+                              )}
+                            </td>
+                          ))}
                         </tr>
-                      )}
-
-                      <tr>
-                        {keys.map((key: any, i) => (
-                          <td key={i + 1}>
-                            {typeof item[key] === 'object' ? (
-                              <NestedObjectRenderer object={item[key]} />
-                            ) : (
-                              item[key]
-                            )}
-                          </td>
-                        ))}
-                      </tr>
-                    </tbody>
-                  </Fragment>
-                );
-              })}
-            </table>
+                      </tbody>
+                    </Fragment>
+                  );
+                })}
+              </table>
+            </div>
           </div>
+        )}
+
+        {currentScreen === BENEF_IMPORT_SCREENS.IMPORT_DATA && (
+          <AddToQueue
+            handleReUploadClick={handleReUploadClick}
+            data={processedData}
+            handleImportClick={() => validateOrImport(IMPORT_ACTION.IMPORT)}
+          />
         )}
       </div>
     </div>

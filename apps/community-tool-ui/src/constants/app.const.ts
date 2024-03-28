@@ -69,4 +69,10 @@ export const UNIQUE_FIELD_OPTIONS = [
 export const BENEF_IMPORT_SCREENS = {
   SELECTION: 'selection.page',
   VALIDATION: 'validation.page',
+  IMPORT_DATA: 'import.page',
+};
+
+export const IMPORT_ACTION = {
+  VALIDATE: 'VALIDATE',
+  IMPORT: 'IMPORT',
 };

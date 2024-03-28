@@ -11,6 +11,7 @@ import { getBeneficiaryClient } from '@rahataid/sdk/clients';
 import { useBeneficiaryStore } from './beneficiary.store';
 import { useEffect } from 'react';
 import { UUID } from 'crypto';
+import { useSwal } from '../../swal';
 
 const createNewBeneficiary = async (payload: any) => {
   const response = await api.post('/beneficiaries', payload);
@@ -98,19 +99,57 @@ export const useAddBulkBeneficiary = () => {
   });
 };
 
-const uploadBeneficiary = async (file: any) => {
-  const response = await api.post('/beneficiaries/upload', file);
+const uploadBeneficiary = async (
+  selectedFile: File,
+  doctype: string,
+  client: any,
+) => {
+  const formData = new FormData();
+  formData.append('file', selectedFile);
+  formData.append('doctype', doctype);
+
+  const response = await client.post('/beneficiaries/upload', formData);
   return response?.data;
 };
 
 export const useUploadBeneficiary = () => {
   const qc = useQueryClient();
-  return useMutation({
-    mutationFn: (file: any) => uploadBeneficiary(file),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: [TAGS.GET_BENEFICIARIES] });
-    },
+  const { rumsanService, queryClient } = useRSQuery();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-right',
+    showConfirmButton: false,
+    timer: 3000,
   });
+  return useMutation(
+    {
+      mutationFn: ({
+        selectedFile,
+        doctype,
+      }: {
+        selectedFile: File;
+        doctype: string;
+      }) => uploadBeneficiary(selectedFile, doctype, rumsanService.client),
+      onSuccess: () => {
+        qc.invalidateQueries({ queryKey: [TAGS.GET_BENEFICIARIES] });
+        toast.fire({
+          icon: 'success',
+          title: 'Beneficiary uploaded successfully',
+        });
+      },
+      onError: (error) => {
+        console.log('error', error);
+        const message = error.response?.data?.message || error.message;
+        toast.fire({
+          icon: 'error',
+          title: 'Something went wrong',
+          text: message,
+        });
+      },
+    },
+    queryClient,
+  );
 };
 
 export const useBeneficiaryPii = (): UseQueryResult<any, Error> => {

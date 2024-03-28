@@ -1,9 +1,12 @@
+'use client';
+
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { ChangeEvent, RefObject, useState } from 'react';
-import { useRumsanService } from '../../providers/service.provider';
+import { useRumsanService } from '../../../providers/service.provider';
 import { toast } from 'react-toastify';
 import { useRef } from 'react';
+import { useUploadBeneficiary } from '@rahat-ui/query';
 
 const DOWNLOAD_FILE_URL = '/files/beneficiary_sample.xlsx';
 
@@ -17,7 +20,8 @@ export default function ImportBeneficiary() {
     }
   };
 
-  const { rumsanService } = useRumsanService();
+  const uploadBeneficiary = useUploadBeneficiary();
+
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const allowedExtensions: { [key: string]: string } = {
     xlsx: 'excel',
@@ -42,30 +46,17 @@ export default function ImportBeneficiary() {
     setSelectedFile(file);
   };
 
-  const handleUpload = () => {
+  const handleUpload = async () => {
     if (!selectedFile) return toast.error('Please select a file to upload');
 
     // Determine doctype based on file extension
     const extension = selectedFile.name.split('.').pop()?.toLowerCase();
     const doctype = extension ? allowedExtensions[extension] : '';
 
-    const formData = new FormData();
-    formData.append('file', selectedFile);
-    formData.append('doctype', doctype);
-
-    rumsanService.client
-      .post('beneficiaries/upload', formData)
-      .then((res) => {
-        setSelectedFile(null);
-        resetFileInput();
-        toast.success(
-          `${res.data.data.count} Beneficiaries uploaded successfully!`,
-        );
-      })
-      .catch((error) => {
-        console.log('error', error);
-        toast.error('Invalid data format please check your data!');
-      });
+    await uploadBeneficiary.mutateAsync({
+      selectedFile,
+      doctype,
+    });
   };
 
   const handleDownloadClick = () => {

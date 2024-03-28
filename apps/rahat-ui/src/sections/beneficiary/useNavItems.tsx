@@ -5,6 +5,7 @@ import {
   Plus,
   AlignJustify,
   LayoutGrid,
+  Import,
 } from 'lucide-react';
 import { NavItem } from './nav-items.types';
 import { TabsList, TabsTrigger } from '@rahat-ui/shadcn/src/components/ui/tabs';
@@ -72,7 +73,7 @@ export const useBeneficiaryNavItems = () => {
         {
           title: 'Import Beneficiaries',
           path: '/beneficiary/import',
-          icon: <Plus size={18} strokeWidth={1.5} />,
+          icon: <Import size={18} strokeWidth={1.5} />,
         },
       ],
     },

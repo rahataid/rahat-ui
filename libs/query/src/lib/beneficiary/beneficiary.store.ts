@@ -39,9 +39,9 @@ export const useBeneficiaryStore = zustandStore<BeneficiaryStore>(
   }),
   {
     devtoolsEnabled: true,
-    persistOptions: {
-      name: 'beneficiaryStore',
-      storage: localStore,
-    },
+    // persistOptions: {
+    //   name: 'beneficiaryStore',
+    //   storage: localStore,
+    // },
   },
 );

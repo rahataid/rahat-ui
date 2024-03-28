@@ -1,7 +1,8 @@
+import { ImportBeneficiaryView } from 'apps/rahat-ui/src/sections/beneficiary/import';
 import React from 'react';
 
 const ImportBeneficiary = () => {
-  return <div>ImportBeneficiary</div>;
+  return <ImportBeneficiaryView />;
 };
 
 export default ImportBeneficiary;

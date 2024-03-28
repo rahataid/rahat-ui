@@ -9,7 +9,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-  DropdownMenuLabel
+  DropdownMenuLabel,
 } from '@rahat-ui/shadcn/components/dropdown-menu';
 import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
 import { useSecondPanel } from '../../../../providers/second-panel-provider';
@@ -50,7 +50,9 @@ export const useTableColumns = (handleAssignClick: any) => {
     {
       accessorKey: 'name',
       header: 'Name',
-      cell: ({ row }) => <div className="capitalize">{row.getValue('name')}</div>,
+      cell: ({ row }) => (
+        <div className="capitalize">{row.getValue('name')}</div>
+      ),
     },
     {
       accessorKey: 'walletAddress',
@@ -85,9 +87,7 @@ export const useTableColumns = (handleAssignClick: any) => {
         );
       },
       cell: ({ row }) => (
-        <div className="lowercase">
-          {(row.getValue('tokenAmount'))}
-        </div>
+        <div className="lowercase">{row.getValue('tokenAmount')}</div>
       ),
     },
     {
@@ -103,19 +103,13 @@ export const useTableColumns = (handleAssignClick: any) => {
           </Button>
         );
       },
-      cell: ({ row }) => (
-        <div >
-          {(row.getValue('status'))}
-        </div>
-      ),
+      cell: ({ row }) => <div>{row.getValue('status')}</div>,
     },
-  
-  
-  
+
     {
       id: 'actions',
       enableHiding: false,
-      cell: ({ row }) => {  
+      cell: ({ row }) => {
         return (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -126,13 +120,12 @@ export const useTableColumns = (handleAssignClick: any) => {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              {row.getValue('status') === 'REQUESTED' && 
-                <DropdownMenuItem onClick ={()=>handleAssign(row.original)}
-              >
-                Approve Request
-              </DropdownMenuItem>
-                }   
-          </DropdownMenuContent>
+              {row.getValue('status') === 'REQUESTED' && (
+                <DropdownMenuItem onClick={() => handleAssign(row.original)}>
+                  Approve Request
+                </DropdownMenuItem>
+              )}
+            </DropdownMenuContent>
           </DropdownMenu>
         );
       },

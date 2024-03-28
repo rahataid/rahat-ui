@@ -72,7 +72,6 @@ export default function BeneficiaryDetailTableView() {
 
   const uuid = useParams().id;
 
-
   const [perPage, setPerPage] = useState<number>(10);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [tableData, setTableData] = useState<any>();

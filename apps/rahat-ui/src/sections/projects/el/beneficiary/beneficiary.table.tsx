@@ -66,20 +66,12 @@ export default function BeneficiaryDetailTableView() {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
   );
-  // const { data, error } = useBeneficiaryTransaction(
-  //   '0x082d43D30C31D054b1AEDbE08F50C2a1BBE76fC7',
-  // );
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
   const uuid = useParams().id;
 
-  const { pagination, filters, setPagination } = usePagination((state) => ({
-    pagination: state.pagination,
-    filters: state.filters,
-    setPagination: state.setPagination,
-  }));
 
   const [perPage, setPerPage] = useState<number>(10);
   const [currentPage, setCurrentPage] = useState<number>(1);

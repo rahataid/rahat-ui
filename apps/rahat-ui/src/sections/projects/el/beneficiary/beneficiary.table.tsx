@@ -53,7 +53,6 @@ import { useParams } from 'next/navigation';
 import { MS_ACTIONS } from '@rahataid/sdk';
 // import { useBeneficiaryTransaction } from '../../hooks/el/subgraph/querycall';
 
-
 export type Transaction = {
   name: string;
   beneficaryType: string;
@@ -107,7 +106,7 @@ export default function BeneficiaryDetailTableView() {
         gender: row.Beneficiary.gender,
         phone: row.Beneficiary.notes || 'N/A',
         redemption: 'N/A',
-        type:row.Beneficiary.type|| 'N/A'
+        type: row.Beneficiary.type || 'N/A',
       };
     });
     setTableData(filteredData);

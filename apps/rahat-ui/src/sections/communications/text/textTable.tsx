@@ -69,7 +69,6 @@ export default function TextTableView({ handleClick }: IProps) {
       page: 1,
       perPage: 10,
     });
-  console.log(isSuccess, data);
 
   const tableData = React.useMemo(() => {
     const result = Array.isArray(data?.data?.rows)

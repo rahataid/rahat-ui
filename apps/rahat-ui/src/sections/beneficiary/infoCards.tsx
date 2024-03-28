@@ -32,6 +32,7 @@ import { UUID } from 'crypto';
 import { useRouter } from 'next/navigation';
 import * as React from 'react';
 import { useBoolean } from '../../hooks/use-boolean';
+import AssignToProjectModal from './components/assignToProjectModal';
 
 export default function InfoCards() {
   const addBeneficiary = useAssignBenToProject();
@@ -62,12 +63,18 @@ export default function InfoCards() {
 
   return (
     <>
-      <div className="flex flex-col gap-2 py-2 pl-2">
-        <Card className="shadow rounded">
+      <AssignToProjectModal
+        beneficiaryDetail={data}
+        projectModal={projectModal}
+      />
+      <div className="p-2 grid grid-cols-3 gap-2">
+        <Card className="shadow rounded col-span-2">
           <CardHeader>
             <div className="flex justify-between">
-              <div className="flex flex-col items-start justify-start">
-                <p>{data?.piiData?.name}</p>
+              <div className="flex gap-2 items-center">
+                <p className="text-xl font-semibold">
+                  {data?.piiData?.name ?? 'Beneficiary Name'}
+                </p>
                 <Badge variant="outline" className="bg-secondary">
                   Not Approved
                 </Badge>
@@ -79,48 +86,42 @@ export default function InfoCards() {
           </CardHeader>
           <CardContent>
             <div className="flex justify-between gap-8">
-              <div className="flex flex-col gap-2">
-                <div>
-                  <p className="text-xs">
-                    {truncateEthAddress(data?.walletAddress) ?? 'N/A'}
-                  </p>
-                  <p className="text-sm font-normal text-muted-foreground">
-                    Wallet Address
-                  </p>
-                </div>
-                <div>
-                  <p>{data?.bankStatus ?? '-'}</p>
-                  <p className="text-sm font-normal text-muted-foreground">
-                    Bank Status
-                  </p>
-                </div>
-                <div>
-                  <p>{data?.internetStatus ?? '-'}</p>
-                  <p className="text-sm font-normal text-muted-foreground">
-                    Internet Status
-                  </p>
-                </div>
+              <div>
+                <p>{truncateEthAddress(data?.walletAddress) ?? 'N/A'}</p>
+                <p className="text-sm font-normal text-muted-foreground">
+                  Wallet Address
+                </p>
               </div>
-              <div className="flex flex-col gap-2">
-                <div>
-                  <p>{data?.gender ?? '-'}</p>
-                  <p className="text-sm font-normal text-muted-foreground">
-                    Gender
-                  </p>
-                </div>
+              <div>
+                <p>{data?.bankedStatus ?? '-'}</p>
+                <p className="text-sm font-normal text-muted-foreground">
+                  Bank Status
+                </p>
+              </div>
+              <div>
+                <p>{data?.internetStatus ?? '-'}</p>
+                <p className="text-sm font-normal text-muted-foreground">
+                  Internet Status
+                </p>
+              </div>
+              <div>
+                <p>{data?.gender ?? '-'}</p>
+                <p className="text-sm font-normal text-muted-foreground">
+                  Gender
+                </p>
+              </div>
 
-                <div>
-                  <p>{data?.location ?? '-'}</p>
-                  <p className="text-sm font-normal text-muted-foreground">
-                    Location
-                  </p>
-                </div>
-                <div>
-                  <p>{data?.phoneStatus ?? '-'}</p>
-                  <p className="text-sm font-normal text-muted-foreground">
-                    Phone Status
-                  </p>
-                </div>
+              <div>
+                <p>{data?.location ?? '-'}</p>
+                <p className="text-sm font-normal text-muted-foreground">
+                  Location
+                </p>
+              </div>
+              <div>
+                <p>{data?.phoneStatus ?? '-'}</p>
+                <p className="text-sm font-normal text-muted-foreground">
+                  Phone Status
+                </p>
               </div>
             </div>
           </CardContent>
@@ -144,64 +145,12 @@ export default function InfoCards() {
                     );
                   }}
                 >
-                  {benProject.Project.name}
+                  {benProject.Project.name ?? 'Projects Name'}
                 </Badge>
               );
             })}
           </CardContent>
         </Card>
-      </div>
-      <div className="py-2 w-full border-t">
-        <div className="p-4 flex flex-col gap-0.5 text-sm">
-          <Dialog
-            open={projectModal.value}
-            onOpenChange={projectModal.onToggle}
-          >
-            {/* <DialogTrigger className=" hover:bg-muted p-1 rounded text-left">
-              Assign Projects
-            </DialogTrigger> */}
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Assign Project</DialogTitle>
-                <DialogDescription>
-                  Select the project to be assigned to the beneficiary
-                </DialogDescription>
-              </DialogHeader>
-              <div>
-                <Select onValueChange={handleProjectChange}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Projects" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {projectsList.data?.data.length &&
-                      projectsList.data.data.map((project) => {
-                        return (
-                          <SelectItem key={project.uuid} value={project.uuid}>
-                            {project.name}
-                          </SelectItem>
-                        );
-                      })}
-                  </SelectContent>
-                </Select>
-              </div>
-              <DialogFooter className="sm:justify-end">
-                <DialogClose asChild>
-                  <Button type="button" variant="ghost">
-                    Close
-                  </Button>
-                </DialogClose>
-                <Button
-                  onClick={handleAssignProject}
-                  type="button"
-                  variant="ghost"
-                  className="text-primary"
-                >
-                  Assign
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-        </div>
       </div>
     </>
   );

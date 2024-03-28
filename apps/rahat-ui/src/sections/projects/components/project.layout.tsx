@@ -20,7 +20,7 @@ type ProjectLayoutProps = {
 const ProjectLayout: FC<ProjectLayoutProps> = ({ children, menuItems }) => {
   const renderResizablePanel = (children: React.ReactNode, index?: number) => {
     return (
-      <ResizablePanel key={index}>
+      <ResizablePanel defaultSize={10} minSize={25} key={index}>
         <ScrollArea className="h-[calc(100vh-66px)]">{children}</ScrollArea>
       </ResizablePanel>
     );

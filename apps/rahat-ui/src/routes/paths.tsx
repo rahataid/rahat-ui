@@ -37,7 +37,7 @@ export const paths = {
       text: `${ROOTS.COMMUNICATION}/text`,
       textDetail: (id: number) => `${ROOTS.COMMUNICATION}/text/${id}`,
       editTextCampaign: (id: number) =>
-        `${ROOTS.COMMUNICATION}/text/edit/${id}`,
+        `${ROOTS.COMMUNICATION}/text/${id}/edit`,
     },
   },
 };

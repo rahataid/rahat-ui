@@ -51,117 +51,29 @@ import { useProjectBeneficiaryTableColumns } from './use-table-column';
 import { useProjectAction } from '@rahat-ui/query';
 import { useParams } from 'next/navigation';
 import { MS_ACTIONS } from '@rahataid/sdk';
+import { UUID } from 'crypto';
 // import { useBeneficiaryTransaction } from '../../hooks/el/subgraph/querycall';
-
-// const data: Transaction[] = TransactionTableData;
 
 export type Transaction = {
   name: string;
-  vouvherType: string;
+  beneficaryType: string;
   timeStamp: string;
   transactionHash: string;
   amount: string;
 };
-
-//@sushant-rumsan convert this to hook, you can refer with @amrit-rumsan
-export const columns: ColumnDef<Transaction>[] = [
-  {
-    id: 'select',
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && 'indeterminate')
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
-    accessorKey: 'name',
-    header: 'Name',
-    cell: ({ row }) => <div>{row.getValue('name')}</div>,
-  },
-  {
-    accessorKey: 'vouvherType',
-    header: 'Voucher Type',
-    cell: ({ row }) => (
-      <div className="capitalize">
-        {row.getValue('vouvherType')
-          ? `${row.getValue('voucherType')?.toString().substring(0, 4)}....${row
-              .getValue('voucherType')
-              ?.toString()
-              ?.slice(-3)}`
-          : 'N/A'}
-      </div>
-    ),
-  },
-  {
-    accessorKey: 'phone',
-    header: 'Phone',
-    cell: ({ row }) => <div> {row.getValue('phone')}</div>,
-  },
-  {
-    accessorKey: 'redemption',
-    header: 'Redemption',
-    cell: ({ row }) => <div> {row.getValue('redemption')}</div>,
-  },
-  {
-    accessorKey: 'gender',
-    header: 'Gender',
-    cell: ({ row }) => <div> {row.getValue('gender')}</div>,
-  },
-  {
-    id: 'actions',
-    enableHiding: false,
-    cell: () => {
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem>View Details</DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>Edit</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
-    },
-  },
-];
-
-// import { useBeneficiaryTransaction } from '../../hooks/el/subgraph/querycall';
 
 export default function BeneficiaryDetailTableView() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
   );
-  const { pagination } = usePagination();
-  // const { data, error } = useBeneficiaryTransaction(
-  //   '0x082d43D30C31D054b1AEDbE08F50C2a1BBE76fC7',
-  // );
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
+  const { pagination } = usePagination();
 
-  const uuid = useParams().id;
+  const uuid = useParams().id as UUID;
 
-  const [perPage, setPerPage] = useState<number>(10);
   const [tableData, setTableData] = useState<any>();
   const columns = useProjectBeneficiaryTableColumns();
 
@@ -181,11 +93,11 @@ export default function BeneficiaryDetailTableView() {
       return {
         name: row.Beneficiary.walletAddress,
         gender: row.Beneficiary.gender,
-        phone: row.Beneficiary.phone || 'N/A',
+        phone: row.Beneficiary.notes || 'N/A',
         redemption: 'N/A',
+        type: row.Beneficiary.type || 'N/A',
       };
     });
-
     setTableData(filteredData);
   };
 
@@ -307,7 +219,7 @@ export default function BeneficiaryDetailTableView() {
           </Table>
         </div>
       </div>
-      <div className="sticky bottom-0 flex items-center justify-end space-x-4 px-4 py-1 border-t-2 bg-card">
+      {/* <div className="sticky bottom-0 flex items-center justify-end space-x-4 px-4 py-1 border-t-2 bg-card">
         <div className="flex-1 text-sm text-muted-foreground">
           {table.getFilteredSelectedRowModel().rows.length} of{' '}
           {table.getFilteredRowModel().rows.length} row(s) selected.
@@ -355,7 +267,7 @@ export default function BeneficiaryDetailTableView() {
             Next
           </Button>
         </div>
-      </div>
+      </div> */}
     </>
   );
 }

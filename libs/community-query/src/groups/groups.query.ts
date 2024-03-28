@@ -46,12 +46,12 @@ export class CommunityGroupQuery {
   //   });
   // };
 
-  useCommunityGroupListByID = (id: string): UseQueryResult<any, Error> => {
+  useCommunityGroupListByID = (uuid: string): UseQueryResult<any, Error> => {
     return useQuery({
       refetchOnMount: true,
-      queryKey: [TAGS.LIST_COMMUNITY_GROUP, id],
+      queryKey: [TAGS.LIST_COMMUNITY_GROUP, uuid],
       queryFn: () => {
-        return this.client.listById(id);
+        return this.client.listById(uuid);
       },
     });
   };

@@ -11,7 +11,6 @@ const Charts = () => {
   return (
     <div className="grid md:grid-cols-3 gap-2 mt-2">
       {data?.map((d: any) => {
-        console.log('d', d);
         const series = Array.isArray(d?.data)
           ? d?.data.map((item: any) => ({
               label: formatUnderScoredString(item.id),

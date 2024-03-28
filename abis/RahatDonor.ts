@@ -301,7 +301,12 @@ export const RahatDonorAbi = [
     inputs: [
       {
         internalType: 'address',
-        name: '_token',
+        name: '_tokenFree',
+        type: 'address',
+      },
+      {
+        internalType: 'address',
+        name: '_tokenReferral',
         type: 'address',
       },
       {
@@ -311,7 +316,12 @@ export const RahatDonorAbi = [
       },
       {
         internalType: 'uint256',
-        name: '_amount',
+        name: '_amountFree',
+        type: 'uint256',
+      },
+      {
+        internalType: 'uint256',
+        name: '_referralLimit',
         type: 'uint256',
       },
     ],
@@ -324,7 +334,12 @@ export const RahatDonorAbi = [
     inputs: [
       {
         internalType: 'address',
-        name: '_token',
+        name: '_tokenFree',
+        type: 'address',
+      },
+      {
+        internalType: 'address',
+        name: '_tokenReferral',
         type: 'address',
       },
       {
@@ -334,17 +349,32 @@ export const RahatDonorAbi = [
       },
       {
         internalType: 'uint256',
-        name: '_amount',
+        name: '_amountFree',
         type: 'uint256',
       },
       {
         internalType: 'string',
-        name: '_description',
+        name: '_descriptionFree',
+        type: 'string',
+      },
+      {
+        internalType: 'string',
+        name: '_descriptionReferral',
         type: 'string',
       },
       {
         internalType: 'uint256',
-        name: '_price',
+        name: '_priceFree',
+        type: 'uint256',
+      },
+      {
+        internalType: 'uint256',
+        name: '_priceReferral',
+        type: 'uint256',
+      },
+      {
+        internalType: 'uint256',
+        name: '_referralLimit',
         type: 'uint256',
       },
       {

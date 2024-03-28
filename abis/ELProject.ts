@@ -958,6 +958,11 @@ export const ELAbi = [
         name: '_vendorAddress',
         type: 'address',
       },
+      {
+        internalType: 'address',
+        name: '_adminAddress',
+        type: 'address',
+      },
     ],
     name: 'redeemTokenByVendor',
     outputs: [],

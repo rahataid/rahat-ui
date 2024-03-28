@@ -36,6 +36,8 @@ export default function AddUser({ onSuccess }: Props) {
     name: z.string().min(2, { message: 'Name must be at least 4 character' }),
     email: z.string().email(),
     gender: z.string(),
+    role: z.string(),
+    phone: z.string(),
     wallet: z
       .string()
       .min(42, { message: 'The Ethereum address must be 42 characters long' }),
@@ -60,8 +62,9 @@ export default function AddUser({ onSuccess }: Props) {
 
   const userCreate = userQuery.useUserCreate();
 
-  const handleAddUser = async () => {
-    await userCreate.mutateAsync(form.getValues());
+  const handleAddUser = async (data: any) => {
+    console.log(data);
+    await userCreate.mutateAsync(data);
     onSuccess();
   };
   return (

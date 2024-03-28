@@ -36,9 +36,8 @@ import BeneficiaryDetail from '../../sections/beneficiary/beneficiaryDetail';
 import BeneficiaryGridView from '../../sections/beneficiary/gridView';
 import BeneficiaryListView from '../../sections/beneficiary/listView';
 import BeneficiaryNav from '../../sections/beneficiary/nav';
-import ImportBeneficiary from './import.beneficiary';
-import BenImp from './import/Beneficiary';
 import ViewGroup from '../group/group.view';
+import ImportBeneficiary from './import.beneficiary';
 
 export const columns: ColumnDef<ListBeneficiary>[] = [
   {
@@ -189,10 +188,10 @@ function BeneficiaryView() {
       <ResizablePanelGroup direction="horizontal" className="min-h-max bg-card">
         <ResizablePanel minSize={20} defaultSize={20} maxSize={20}>
           <BeneficiaryNav
-            handleNav={handleNav}
             meta={data?.response?.meta}
-            selectedData={selectedBenefId}
-            handleClose={handleClear}
+            selectedBenefID={selectedBenefId}
+            // handleClear={handleclear}
+            setSelectedBenefId={setSelectedBenefId}
           />
         </ResizablePanel>
         <ResizableHandle />
@@ -212,7 +211,7 @@ function BeneficiaryView() {
               <TabsContent value="grid">
                 <BeneficiaryGridView
                   handleClick={handleBeneficiaryClick}
-                  data={data?.data}
+                  data={data?.data?.rows}
                 />
               </TabsContent>
               <CustomPagination

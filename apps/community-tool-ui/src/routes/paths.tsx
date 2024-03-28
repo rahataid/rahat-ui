@@ -5,6 +5,7 @@ const ROOTS = {
   USER: '/users',
   PROFILE: '/profile',
   SETTINGS: '/settings',
+  GROUPS: '/group',
 };
 
 export const paths = {
@@ -23,6 +24,11 @@ export const paths = {
       detail: (uuid: string) => `${ROOTS.BENEFICIARY}/${id}`,
     },
     user: ROOTS.USER,
+    group: {
+      root: ROOTS.GROUPS,
+      add: `${ROOTS.GROUPS}/add`,
+      detail: (uuid: string) => `${ROOTS.GROUPS}/${uuid}`,
+    },
   },
   settings: {
     root: ROOTS.SETTINGS,

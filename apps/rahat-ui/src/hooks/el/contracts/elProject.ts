@@ -641,6 +641,7 @@ export const elProjectAbi = [
       { name: '_tokenAddress', internalType: 'address', type: 'address' },
       { name: '_amount', internalType: 'uint256', type: 'uint256' },
       { name: '_vendorAddress', internalType: 'address', type: 'address' },
+      { name: '_adminAddress', internalType: 'address', type: 'address' },
     ],
     name: 'redeemTokenByVendor',
     outputs: [],

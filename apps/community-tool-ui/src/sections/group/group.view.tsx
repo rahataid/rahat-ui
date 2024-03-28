@@ -1,18 +1,10 @@
+'use client';
 import React, { useCallback, useState } from 'react';
 
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/tabs';
-
-import AddGroup from './add.group';
 import GroupList from './list.group';
 import {
   ColumnDef,
   VisibilityState,
-  flexRender,
   getCoreRowModel,
   getSortedRowModel,
   useReactTable,
@@ -28,6 +20,8 @@ import {
 import { Eye } from 'lucide-react';
 import GroupDetail from './groupdetails';
 import CustomPagination from '../../components/customPagination';
+import BenificiaryNav from '../beneficiary/nav';
+import { Tabs, TabsContent } from '@rahat-ui/shadcn/src/components/ui/tabs';
 const columns: ColumnDef<ListGroup>[] = [
   {
     id: 'select',
@@ -109,7 +103,6 @@ function ViewGroup() {
   });
 
   const handleGroup = useCallback((item: ListGroup) => {
-    console.log('item', item);
     setSelectedData(item);
   }, []);
 
@@ -118,15 +111,17 @@ function ViewGroup() {
   };
 
   return (
-    <Tabs defaultValue="list" className="p-4 h-full">
-      <TabsList className="grid w-full grid-cols-2">
-        <TabsTrigger value="list">List</TabsTrigger>
-        <TabsTrigger value="add">ADD</TabsTrigger>
-      </TabsList>
-
-      <TabsContent value="list">
-        <ResizablePanelGroup direction={'horizontal'}>
-          <ResizablePanel minSize={25}>
+    <Tabs defaultValue="groupList" className="h-full">
+      <ResizablePanelGroup
+        direction={'horizontal'}
+        className="min-h-max bg-card"
+      >
+        <ResizablePanel minSize={20} defaultSize={20} maxSize={20}>
+          <BenificiaryNav meta={data?.response?.meta} />
+        </ResizablePanel>
+        <ResizableHandle />
+        <ResizablePanel minSize={25}>
+          <TabsContent value="groupList">
             <GroupList table={table} handleClick={handleGroup} />
             <CustomPagination
               meta={data?.response?.meta || { total: 0, currentPage: 0 }}
@@ -134,20 +129,17 @@ function ViewGroup() {
               handlePrevPage={handlePrevPage}
               handlePageSizeChange={(value) => setPerPage(Number(value))}
             />
-          </ResizablePanel>
-          {selectedData ? (
-            <>
-              <ResizableHandle />
-              <ResizablePanel minSize={80} defaultSize={75}>
-                <GroupDetail handleClose={handleClose} data={selectedData} />
-              </ResizablePanel>
-            </>
-          ) : null}
-        </ResizablePanelGroup>
-      </TabsContent>
-      <TabsContent value="add">
-        <AddGroup />
-      </TabsContent>
+          </TabsContent>
+        </ResizablePanel>
+        {selectedData ? (
+          <>
+            <ResizableHandle />
+            <ResizablePanel minSize={80} defaultSize={75}>
+              <GroupDetail handleClose={handleClose} data={selectedData} />
+            </ResizablePanel>
+          </>
+        ) : null}
+      </ResizablePanelGroup>
     </Tabs>
   );
 }

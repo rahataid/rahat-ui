@@ -244,6 +244,8 @@ export default function BenImp() {
       });
   };
 
+  console.log({ currentScreen });
+
   return (
     <div className="h-custom">
       <div className="h-full p-4">

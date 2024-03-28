@@ -33,7 +33,7 @@ export const useAssignClaims = () => {
     mutation: {
       onSuccess: () => {
         alert.fire({
-          title: 'Beneficiary Assigned Claims Successfully',
+          title: 'Voucher Assigned Successfully',
           icon: 'success',
         });
       },
@@ -80,31 +80,63 @@ export const useMintVouchers = () => {
   });
 };
 
+export const useOnlyMintVoucher = () => {
+  const alert = useSwal();
+  const toastMixin = alert.mixin({
+    toast: true,
+    icon: 'success',
+    title: 'General Title',
+    animation: false,
+    position: 'top-right',
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+      toast.addEventListener('mouseenter', alert.stopTimer);
+      toast.addEventListener('mouseleave', alert.resumeTimer);
+    },
+  });
+  return useWriteRahatDonorMintTokenAndApprove({
+    mutation: {
+      onSuccess: () => {
+        toastMixin.fire('It has been done');
+      },
+      onError: (err) => {
+        alert.fire({
+          title: 'Error while minting vouchers',
+          icon: 'error',
+          text: err.message,
+        });
+      },
+    },
+  });
+};
+
 export const useAddVendors = (uuid: string, vendorUuid: string) => {
   const alert = useSwal();
   const addVendor = useProjectAction();
   return useWriteElProjectUpdateVendor({
     mutation: {
       onSuccess: async () => {
-        await addVendor.mutateAsync({
-          uuid: uuid,
-          payload: {
-            action: MS_ACTIONS.VENDOR.ASSIGN_TO_PROJECT,
-            // 'vendor.assign_to_project',
-            payload: {
-              vendorUuid,
-            },
-          },
-        });
+        // await addVendor.mutateAsync({
+        //   uuid: uuid,
+        //   data: {
+        //     action: MS_ACTIONS.VENDOR.ASSIGN_TO_PROJECT,
+        //     // 'vendor.assign_to_project',
+        //     payload: {
+        //       vendorUuid,
+        //     },
+        //   },
+        // });
         alert.fire({
-          title: 'Vendor Assigned Sucessfully',
+          title: 'Vendor approved sucessfully',
           icon: 'success',
         });
       },
       onError: (err) => {
-        console.log('Error==>', err);
+        console.log('Err==>', err);
         alert.fire({
-          title: 'Error while updating vendor',
+          title: 'Failed to approve vendor!',
           icon: 'error',
         });
       },

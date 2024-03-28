@@ -3,6 +3,8 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useCreateBeneficiary } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { PhoneInput } from '@rahat-ui/shadcn/src/components/ui/phone-input';
+
 import {
   Form,
   FormControl,
@@ -20,7 +22,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
-
+import { isValidPhoneNumber } from 'react-phone-number-input';
 import { z } from 'zod';
 import { Wallet } from 'lucide-react';
 
@@ -32,7 +34,9 @@ export default function AddBeneficiaryForm() {
     walletAddress: z
       .string()
       .min(42, { message: 'The Ethereum address must be 42 characters long' }),
-    phone: z.string(),
+    phone: z
+      .string()
+      .refine(isValidPhoneNumber, { message: 'Invalid phone number' }),
     gender: z
       .string()
       .toUpperCase()
@@ -73,9 +77,9 @@ export default function AddBeneficiaryForm() {
         phoneStatus: data.phoneStatus,
         piiData: {
           name: data.name,
+          phone: data.phone,
         },
         walletAddress: data.walletAddress,
-        phone: data.phone,
       });
       if (result) {
         toast.success('Beneficiary added successfully!');
@@ -135,7 +139,7 @@ export default function AddBeneficiaryForm() {
                   return (
                     <FormItem>
                       <FormControl>
-                        <Input type="text" placeholder="Phone" {...field} />
+                        <PhoneInput placeholder="Phone" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

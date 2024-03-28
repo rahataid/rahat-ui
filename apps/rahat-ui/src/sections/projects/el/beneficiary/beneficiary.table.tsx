@@ -165,7 +165,7 @@ export default function BeneficiaryDetailTableView() {
     setPagination: state.setPagination,
   }));
 
-  const [perPage, setPerPage] = useState<number>(5);
+  const [perPage, setPerPage] = useState<number>(10);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [tableData, setTableData] = useState<any>();
   const columns = useProjectBeneficiaryTableColumns();
@@ -175,7 +175,7 @@ export default function BeneficiaryDetailTableView() {
   const getBeneficiary = async () => {
     const result = await addBeneficiary.mutateAsync({
       uuid,
-      payload: {
+      data: {
         action: MS_ACTIONS.BENEFICIARY.LIST_BY_PROJECT,
         payload: {
           page: currentPage,
@@ -264,7 +264,7 @@ export default function BeneficiaryDetailTableView() {
         <div className="rounded border h-[calc(100vh-180px)] bg-card">
           <Table>
             <ScrollArea className="h-table1">
-              <TableHeader className="sticky top-0">
+              <TableHeader className="bg-card sticky top-0">
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow key={headerGroup.id}>
                     {headerGroup.headers.map((header) => {
@@ -323,7 +323,7 @@ export default function BeneficiaryDetailTableView() {
           <div className="text-sm font-medium">Rows per page</div>
           <Select
             defaultValue="10"
-            onValueChange={(value) => table.setPageSize(Number(value))}
+            onValueChange={(value) => setPerPage(Number(value))}
           >
             <SelectTrigger className="w-16">
               <SelectValue />

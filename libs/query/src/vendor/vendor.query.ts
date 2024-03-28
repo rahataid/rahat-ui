@@ -25,10 +25,15 @@ export class VendorQuery {
           data: data.data.map((d: any) => ({
             // TODO:Must include User in the Vendor Type ,use uuid key
             id: d.User.uuid,
-            status: 'pending',
-            email: d.User.email,
-            amount: 300,
+            status: d.User?.VendorProject[0]?.Project?.id
+              ? 'Assigned'
+              : 'Pending',
+            email: d.User?.email,
+            projectName: d.User?.VendorProject[0]?.Project?.name || 'N/A',
             walletAddress: d.User.wallet,
+            name: d.User?.name,
+            phone: d.User?.phone,
+            gender: d.User?.gender,
           })),
         };
       },

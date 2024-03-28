@@ -83,12 +83,13 @@ export default function TextDetailSplitView({ data, handleClose }: IProps) {
       </div>
       <div className="mt-5 flex flex-col gap-5">
         <InfoCard
+          id={data?.id}
           name={data?.name}
           startTime={
             data?.startTime && new Date(data?.startTime).toLocaleString()
           }
           status={data?.status}
-          totalAudience={data?.audiences?.length ?? 0}
+          totalAudience={data?.totalAudiences ?? 0}
           type={data?.type}
         />
         <Card className="shadow-md">
@@ -96,7 +97,13 @@ export default function TextDetailSplitView({ data, handleClose }: IProps) {
             <CardTitle>Message</CardTitle>
           </CardHeader>
           <CardContent>
-            <p>{data?.details?.message ?? 'No message'}</p>
+            <p>
+              {data?.details?.body
+                ? data?.details?.body
+                : data?.details?.message
+                ? data?.details?.message
+                : 'No message'}
+            </p>
           </CardContent>
         </Card>
       </div>

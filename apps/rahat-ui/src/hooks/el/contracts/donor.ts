@@ -177,9 +177,11 @@ export const rahatDonorAbi = [
   {
     type: 'function',
     inputs: [
-      { name: '_token', internalType: 'address', type: 'address' },
+      { name: '_tokenFree', internalType: 'address', type: 'address' },
+      { name: '_tokenReferral', internalType: 'address', type: 'address' },
       { name: '_projectAddress', internalType: 'address', type: 'address' },
-      { name: '_amount', internalType: 'uint256', type: 'uint256' },
+      { name: '_amountFree', internalType: 'uint256', type: 'uint256' },
+      { name: '_referralLimit', internalType: 'uint256', type: 'uint256' },
     ],
     name: 'mintTokenAndApprove',
     outputs: [],
@@ -188,11 +190,15 @@ export const rahatDonorAbi = [
   {
     type: 'function',
     inputs: [
-      { name: '_token', internalType: 'address', type: 'address' },
+      { name: '_tokenFree', internalType: 'address', type: 'address' },
+      { name: '_tokenReferral', internalType: 'address', type: 'address' },
       { name: '_projectAddress', internalType: 'address', type: 'address' },
-      { name: '_amount', internalType: 'uint256', type: 'uint256' },
-      { name: '_description', internalType: 'string', type: 'string' },
-      { name: '_price', internalType: 'uint256', type: 'uint256' },
+      { name: '_amountFree', internalType: 'uint256', type: 'uint256' },
+      { name: '_descriptionFree', internalType: 'string', type: 'string' },
+      { name: '_descriptionReferral', internalType: 'string', type: 'string' },
+      { name: '_priceFree', internalType: 'uint256', type: 'uint256' },
+      { name: '_priceReferral', internalType: 'uint256', type: 'uint256' },
+      { name: '_referralLimit', internalType: 'uint256', type: 'uint256' },
       { name: '_currency', internalType: 'string', type: 'string' },
     ],
     name: 'mintTokenAndApproveDescription',

@@ -1,0 +1,69 @@
+name: Stage CI/CD
+on:
+  push:
+    branches:
+      - 'stage'
+  pull_request:
+    branches:
+      - 'stage'
+  # workflow_dispatch:
+
+env:
+  CI: false
+  env_stage: ${{ secrets.ENV_STAGE }}
+  env_npmrc: ${{ secrets.ENV_NPMRC }}
+
+jobs:
+  deploy:
+    name: build && push image to Docker hub
+    runs-on: ubuntu-latest
+    if: contains(github.event.head_commit.message, 'action')
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: import env file
+        run: |
+          touch ./.env && echo "$env_stage" >> ./.env && \
+          touch ./.npmrc && echo "$env_npmrc" >> ./.npmrc
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: install dependencies and build apps
+        run: |
+          npm install -g pnpm
+          pnpm install
+          pnpm build:all
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: docker login
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      # Rahat-UI Image
+      - name: build && push rahat-ui
+        id: build-push-rahat-ui
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: Dockerfile.rahat-ui
+          push: ${{ github.event_name == 'push' && 'true' || 'false' }}
+          # push: true
+          tags: esatya/rahat-ui:stage
+
+      # Community-Tool-UI Image
+      - name: build && push community-tool-ui
+        id: build-push-community-tool-ui
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: Dockerfile.community-tool-ui
+          push: ${{ github.event_name == 'push' && 'true' || 'false' }}
+          # push: true
+          tags: esatya/community-tool-ui:stage

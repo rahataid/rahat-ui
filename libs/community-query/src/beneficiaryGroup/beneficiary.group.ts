@@ -1,20 +1,11 @@
 import { getBeneficiaryGroupClient } from '@rahataid/community-tool-sdk/clients';
-import {
-  BeneficiaryGroupClient,
-  GroupClient,
-} from '@rahataid/community-tool-sdk/types';
+import { BeneficiaryGroupClient } from '@rahataid/community-tool-sdk/types';
 
 import { RumsanService } from '@rumsan/sdk';
-import {
-  QueryClient,
-  useMutation,
-  useQuery,
-  UseQueryResult,
-} from '@tanstack/react-query';
+import { QueryClient, useMutation } from '@tanstack/react-query';
 
 import { TAGS } from '../config';
 import Swal from 'sweetalert2';
-import { BeneficiaryGroup } from '@rahataid/community-tool-sdk/beneficiarygroup';
 
 export class CommunityBeneficiaryGroupQuery {
   private client: BeneficiaryGroupClient;
@@ -37,27 +28,45 @@ export class CommunityBeneficiaryGroupQuery {
           cancelButtonText: 'Cancel',
           input: 'select',
           inputOptions: payload.inputOptions,
-          inputPlaceholder: 'Select a project',
+          inputPlaceholder: 'Select a Group',
+          preConfirm: (selectedValue) => {
+            if (!selectedValue) {
+              Swal.showValidationMessage(
+                'Select a group to proceed an operation',
+              );
+            }
+            return selectedValue;
+          },
         });
 
-        const inputData = {
-          beneficiaryId: payload?.selectedData,
-          groupId: parseInt(value),
-        };
-
-        return this.client.create(inputData as any);
+        if (value !== undefined && value !== '') {
+          const inputData = {
+            beneficiariesId: payload?.selectedData,
+            groupId: parseInt(value),
+          };
+          return await this.client.create(inputData as any);
+        }
+        return null;
       },
-      onSuccess: async (data) => {
-        await this.qc.invalidateQueries({
-          queryKey: [TAGS.LIST_COMMUNITY_BENEFICIARY_GROUP],
-        });
-
-        data &&
-          Swal.fire({
-            title: 'Beneficiaries Group has been created Sucessfully ',
-
-            icon: 'success',
+      onSuccess: async (data: any) => {
+        if (data) {
+          await this.qc.invalidateQueries({
+            queryKey: [TAGS.LIST_COMMUNITY_BENEFICIARY_GROUP],
           });
+
+          data?.data?.info === false
+            ? await Swal.fire({
+                text: data?.data?.finalMessage,
+                icon: 'success',
+              })
+            : await Swal.fire({
+                title: data?.data?.finalMessage,
+                titleText: data?.data?.finalMessage,
+                text: data?.data?.info,
+
+                icon: 'info',
+              });
+        }
       },
       onError: (error: any) => {
         Swal.fire({

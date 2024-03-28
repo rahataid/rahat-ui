@@ -75,7 +75,7 @@ export default function BeneficiaryDetail({
 
   const clickToCopy = () => {
     if (walletAddress) {
-      navigator.clipboard.writeText(walletAddress)
+      navigator.clipboard.writeText(walletAddress);
     }
   };
 
@@ -149,12 +149,11 @@ export default function BeneficiaryDetail({
                     {truncateEthAddress(walletAddress)}
                   </p>
                 </TooltipTrigger>
-                <TooltipContent className="bg-secondary" side='bottom'>
+                <TooltipContent className="bg-secondary" side="bottom">
                   <p className="text-xs font-medium">click to copy</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
-
           </div>
         </div>
         <div>

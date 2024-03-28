@@ -30,6 +30,8 @@ import {
   rankItem,
   compareItems,
 } from '@tanstack/match-sorter-utils';
+import { useRouter } from 'next/navigation';
+import { paths } from 'apps/rahat-ui/src/routes/paths';
 const FormSchema = z.object({
   campaignName: z.string().min(2, {
     message: 'Campaign Name must be at least 2 characters.',
@@ -79,6 +81,7 @@ const AddCampaignView = () => {
     pageSize: 10,
   });
   const showAddAudienceView = useBoolean(false);
+  const router = useRouter();
 
   const handleisAlreadyAudience = (id: number) => {
     return Object.keys(rowSelection).includes(id.toString());
@@ -193,6 +196,7 @@ const AddCampaignView = () => {
       .then((data) => {
         if (data) {
           toast.success('Campaign Created Success.');
+          router.push(paths.dashboard.communication.text);
         }
       })
       .catch((e) => {

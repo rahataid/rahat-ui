@@ -33,6 +33,9 @@ import { useRouter } from 'next/navigation';
 import * as React from 'react';
 import { useBoolean } from '../../hooks/use-boolean';
 import AssignToProjectModal from './components/assignToProjectModal';
+import { useSwal } from '../../components/swal';
+import ProjectConfirm from './projects.assign.confirm';
+import ProjectAssign from './project.assign.modal';
 
 export default function InfoCards() {
   const addBeneficiary = useAssignBenToProject();
@@ -45,6 +48,15 @@ export default function InfoCards() {
   const [selectedProject, setSelectedProject] = React.useState<UUID>();
 
   const projectModal = useBoolean();
+
+  const projectConfirmModal = useBoolean();
+  const projectAssignModal = useBoolean();
+
+  const [selectedRow, setSelectedRow] = React.useState(null) as any;
+  const setId = (id: any) => setSelectedRow(id);
+
+  const alert = useSwal();
+
   const handleProjectChange = (d: UUID) => setSelectedProject(d);
 
   const handleAssignProject = async () => {
@@ -55,6 +67,23 @@ export default function InfoCards() {
       beneficiaryUUID: data?.uuid as UUID,
       projectUUID: selectedProject,
     });
+  };
+  const handleOpenProjectAssignModal = () => {
+    projectAssignModal.onToggle();
+    projectConfirmModal.onFalse();
+  };
+
+  const handleSubmitProjectAssignModal = () => {
+    projectAssignModal.onFalse();
+    projectConfirmModal.onTrue();
+  };
+
+  const handleSubmitConfirmProjectModal = () => {
+    handleAssignProject();
+    projectConfirmModal.onFalse();
+  };
+  const handleCloseConfirmProjectModal = () => {
+    projectConfirmModal.onFalse();
   };
 
   const handleAssignModalClick = () => {
@@ -79,7 +108,7 @@ export default function InfoCards() {
                   Not Approved
                 </Badge>
               </div>
-              <Button onClick={handleAssignModalClick}>
+              <Button onClick={handleOpenProjectAssignModal}>
                 Assign To Project
               </Button>
             </div>
@@ -152,6 +181,17 @@ export default function InfoCards() {
           </CardContent>
         </Card>
       </div>
+      <ProjectAssign
+        open={projectAssignModal.value}
+        setId={setId}
+        handleModal={handleOpenProjectAssignModal}
+        handleSubmit={handleSubmitProjectAssignModal}
+      />
+      <ProjectConfirm
+        open={projectConfirmModal.value}
+        handleClose={handleCloseConfirmProjectModal}
+        handleSubmit={handleSubmitConfirmProjectModal}
+      />
     </>
   );
 }

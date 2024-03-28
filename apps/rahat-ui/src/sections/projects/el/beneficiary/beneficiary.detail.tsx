@@ -48,7 +48,7 @@ import {
 import { Gender } from '@rahataid/sdk/enums';
 import { enumToObjectArray, truncateEthAddress } from '@rumsan/sdk/utils';
 import { getProjectAddress } from 'apps/rahat-ui/src/utils/getProjectAddress';
-import { MoreVertical } from 'lucide-react';
+import { Minus, MoreVertical } from 'lucide-react';
 import Image from 'next/image';
 import { useState } from 'react';
 import { useAssignClaims } from '../../../../hooks/el/contracts/el-contracts';
@@ -97,6 +97,12 @@ export default function BeneficiaryDetail({
     //   args: [walletAddress],
     // });
   };
+  console.log('window.ethereum.isWagmi', window.ethereum.isMetaMask);
+  useEffect(() => {
+    if (window.ethereum.isWagmi) {
+      console.log('first');
+    }
+  }, []);
   return (
     <>
       <div className="flex justify-between px-4 py-2 bg-secondary">

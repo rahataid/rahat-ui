@@ -72,6 +72,13 @@ export default function BeneficiaryDetail({
   const [activeTab, setActiveTab] = useState<'details' | 'edit' | null>(
     'details',
   );
+
+  const clickToCopy = () => {
+    if (walletAddress) {
+      navigator.clipboard.writeText(walletAddress)
+    }
+  };
+
   const genderList = enumToObjectArray(Gender);
   const handleTabChange = (tab: 'details' | 'edit') => {
     setActiveTab(tab);
@@ -135,9 +142,19 @@ export default function BeneficiaryDetail({
               <h1 className="font-semibold text-xl">Name</h1>
               <Badge>Active</Badge>
             </div>
-            <p className="text-slate-500 text-base">
-              {truncateEthAddress(walletAddress)}
-            </p>
+            <TooltipProvider delayDuration={100}>
+              <Tooltip>
+                <TooltipTrigger onClick={clickToCopy}>
+                  <p className="text-slate-500 text-base" onClick={clickToCopy}>
+                    {truncateEthAddress(walletAddress)}
+                  </p>
+                </TooltipTrigger>
+                <TooltipContent className="bg-secondary" side='bottom'>
+                  <p className="text-xs font-medium">click to copy</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+
           </div>
         </div>
         <div>

@@ -12,6 +12,7 @@
     "postbuild": "cp -R apps/rahat-ui/public dist/apps/rahat-ui",
     "clean": "rm -rf dist node_modules tmp",
     "prepare": "husky install",
+    "format": "nx format:write --uncommitted",
     "checkFileSize": "node ./tools/scripts/checkFileSize.js",
     "play": "ts-node play"
   },

@@ -49,12 +49,14 @@ export default function InfoCards({ data, voucherData }: any) {
         beneficiaryDetail={data}
         projectModal={projectModal}
       />
-      <div className="flex flex-col gap-2 py-2 pl-2">
-        <Card className="shadow rounded">
+      <div className="p-2 grid grid-cols-3 gap-2">
+        <Card className="shadow rounded col-span-2">
           <CardHeader>
             <div className="flex justify-between">
-              <div className="flex flex-col items-start justify-start">
-                <p>{data?.piiData?.name}</p>
+              <div className="flex gap-2 items-center">
+                <p className="text-xl font-semibold">
+                  {data?.piiData?.name ?? 'Beneficiary Name'}
+                </p>
                 <Badge variant="outline" className="bg-secondary">
                   Not Approved
                 </Badge>
@@ -66,48 +68,42 @@ export default function InfoCards({ data, voucherData }: any) {
           </CardHeader>
           <CardContent>
             <div className="flex justify-between gap-8">
-              <div className="flex flex-col gap-2">
-                <div>
-                  <p className="text-xs">
-                    {truncateEthAddress(data?.walletAddress) ?? 'N/A'}
-                  </p>
-                  <p className="text-sm font-normal text-muted-foreground">
-                    Wallet Address
-                  </p>
-                </div>
-                <div>
-                  <p>{data?.bankStatus ?? '-'}</p>
-                  <p className="text-sm font-normal text-muted-foreground">
-                    Bank Status
-                  </p>
-                </div>
-                <div>
-                  <p>{data?.internetStatus ?? '-'}</p>
-                  <p className="text-sm font-normal text-muted-foreground">
-                    Internet Status
-                  </p>
-                </div>
+              <div>
+                <p>{truncateEthAddress(data?.walletAddress) ?? 'N/A'}</p>
+                <p className="text-sm font-normal text-muted-foreground">
+                  Wallet Address
+                </p>
               </div>
-              <div className="flex flex-col gap-2">
-                <div>
-                  <p>{data?.gender ?? '-'}</p>
-                  <p className="text-sm font-normal text-muted-foreground">
-                    Gender
-                  </p>
-                </div>
+              <div>
+                <p>{data?.bankedStatus ?? '-'}</p>
+                <p className="text-sm font-normal text-muted-foreground">
+                  Bank Status
+                </p>
+              </div>
+              <div>
+                <p>{data?.internetStatus ?? '-'}</p>
+                <p className="text-sm font-normal text-muted-foreground">
+                  Internet Status
+                </p>
+              </div>
+              <div>
+                <p>{data?.gender ?? '-'}</p>
+                <p className="text-sm font-normal text-muted-foreground">
+                  Gender
+                </p>
+              </div>
 
-                <div>
-                  <p>{data?.location ?? '-'}</p>
-                  <p className="text-sm font-normal text-muted-foreground">
-                    Location
-                  </p>
-                </div>
-                <div>
-                  <p>{data?.phoneStatus ?? '-'}</p>
-                  <p className="text-sm font-normal text-muted-foreground">
-                    Phone Status
-                  </p>
-                </div>
+              <div>
+                <p>{data?.location ?? '-'}</p>
+                <p className="text-sm font-normal text-muted-foreground">
+                  Location
+                </p>
+              </div>
+              <div>
+                <p>{data?.phoneStatus ?? '-'}</p>
+                <p className="text-sm font-normal text-muted-foreground">
+                  Phone Status
+                </p>
               </div>
             </div>
           </CardContent>
@@ -131,7 +127,7 @@ export default function InfoCards({ data, voucherData }: any) {
                     );
                   }}
                 >
-                  {benProject.Project.name}
+                  {benProject.Project.name ?? 'Projects Name'}
                 </Badge>
               );
             })}

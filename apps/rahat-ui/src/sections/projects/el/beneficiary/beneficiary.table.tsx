@@ -70,7 +70,7 @@ export default function BeneficiaryDetailTableView() {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
-  const[status,setStatus] = React.useState();
+  const [status, setStatus] = React.useState();
 
   const uuid = useParams().id;
 
@@ -79,30 +79,29 @@ export default function BeneficiaryDetailTableView() {
   const [tableData, setTableData] = useState<any>();
   const columns = useProjectBeneficiaryTableColumns();
 
-  const benType =[
+  const benType = [
     {
-      key:'ALL',
-      value:'ALL'
+      key: 'ALL',
+      value: 'ALL',
     },
     {
-    key:'ENROLLED',
-    value:'ENROLLED'
+      key: 'ENROLLED',
+      value: 'ENROLLED',
     },
     {
-     key:'REFERRED',
-     value:'REFERRED',
-    }
-]
+      key: 'REFERRED',
+      value: 'REFERRED',
+    },
+  ];
 
   const addBeneficiary = useProjectAction();
 
-  const handleBenType = (type:string) =>{
-    if(type ==="ALL") return setStatus(undefined)
+  const handleBenType = (type: string) => {
+    if (type === 'ALL') return setStatus(undefined);
     setStatus(type);
-  }
+  };
 
   const getBeneficiary = async () => {
-  
     const result = await addBeneficiary.mutateAsync({
       uuid,
       data: {
@@ -110,7 +109,7 @@ export default function BeneficiaryDetailTableView() {
         payload: {
           page: currentPage,
           perPage,
-          status: status
+          status: status,
         },
       },
     });
@@ -163,20 +162,20 @@ export default function BeneficiaryDetailTableView() {
             className="max-w-sm rounded mr-2"
           />
           <div className="max-w-sm rounded mr-2">
-          <Select onValueChange={handleBenType} >
-            <SelectTrigger>
-              <SelectValue placeholder ="Beneficiary Type"/>
-            </SelectTrigger>
-            <SelectContent>
-              {benType.map((item)=>{
-                return(
-                  <SelectItem key ={item.key} value ={item.value}>
-                    {item.key}
-                  </SelectItem>
-                )
-              })}
-            </SelectContent>
-          </Select>
+            <Select onValueChange={handleBenType}>
+              <SelectTrigger>
+                <SelectValue placeholder="Beneficiary Type" />
+              </SelectTrigger>
+              <SelectContent>
+                {benType.map((item) => {
+                  return (
+                    <SelectItem key={item.key} value={item.value}>
+                      {item.key}
+                    </SelectItem>
+                  );
+                })}
+              </SelectContent>
+            </Select>
           </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

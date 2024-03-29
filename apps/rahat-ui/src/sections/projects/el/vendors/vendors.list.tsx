@@ -53,7 +53,7 @@ export default function VendorsList() {
 
   const handleViewClick = (rowData: any) => {
     router.push(
-      `/projects/el/${uuid}/vendors/${rowData.walletaddress}?phone=${rowData.phone}&&name=${rowData.name}&&walletAddress=${rowData.walletaddress}`,
+      `/projects/el/${uuid}/vendors/${rowData.walletaddress}?phone=${rowData.phone}&&name=${rowData.name}&&walletAddress=${rowData.walletaddress} &&vendorId=${rowData.vendorId}`,
     );
   };
 
@@ -108,6 +108,7 @@ export default function VendorsList() {
         name: row.User.name,
         walletaddress: row.User.wallet,
         phone: row.User.phone,
+        vendorId:row.User.uuid
       };
     });
     setData(filteredData);

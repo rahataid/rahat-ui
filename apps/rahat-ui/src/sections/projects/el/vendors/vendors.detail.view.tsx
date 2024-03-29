@@ -25,6 +25,7 @@ import {
   useReadElProject,
   useReadElProjectCheckVendorStatus,
 } from 'apps/rahat-ui/src/hooks/el/contracts/elProject';
+import { Card } from '@rahat-ui/shadcn/src/components/ui/card';
 
 interface IParams {
   uuid: any;
@@ -91,6 +92,7 @@ export default function VendorsDetailPage() {
     <div className="bg-secondary">
       {/* Data Cards */}
       <div className="grid md:grid-cols-4 gap-2 mx-2">
+        <VendorsInfo vendorData={{ name, phone, vendorWallet }} />
         <DataCard
           className="mt-2"
           title="Free Vouchers Redeemed"
@@ -109,23 +111,26 @@ export default function VendorsDetailPage() {
           number={data?.voucherDetailsByVendor?.beneficiaryReferred || '0'}
           subTitle="Beneficiaries"
         />
-        <VendorsInfo vendorData={{ name, phone, vendorWallet }} />
       </div>
-      <div className="mt-2 mx-2">
-        <Tabs defaultValue="transactions" className="w-full">
+      <div className="mt-2 mx-2 w-full">
+        <Tabs defaultValue="transactions">
           <div className="flex justify-between items-center">
-            <TabsList className="w-1/3 gap-2">
-              <TabsTrigger value="transactions">
-                Transaction History
-              </TabsTrigger>
-              <TabsTrigger value="referrals">Referrals List</TabsTrigger>
-              <TabsTrigger value="redeem">Redemption List</TabsTrigger>
-            </TabsList>
-            {!vendorStatus && (
-              <div>
-                <Button onClick={handleApproveVendor}>Approve Vendor</Button>
-              </div>
-            )}
+            <Card className="rounded h-14 w-full mr-2 flex items-center justify-between">
+              <TabsList className="gap-2">
+                <TabsTrigger value="transactions">
+                  Transaction History
+                </TabsTrigger>
+                <TabsTrigger value="referrals">Referrals List</TabsTrigger>
+                <TabsTrigger value="redeem">Redemption List</TabsTrigger>
+              </TabsList>
+              {!vendorStatus && (
+                <div>
+                  <Button className="mr-3 h-1/2" onClick={handleApproveVendor}>
+                    Approve Vendor
+                  </Button>
+                </div>
+              )}
+            </Card>
           </div>
           <TabsContent value="transactions">
             <VendorTxnList walletAddress={walletAddress} />

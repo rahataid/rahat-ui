@@ -12,21 +12,17 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { MoreHorizontal, Settings2 } from 'lucide-react';
+import { MoreHorizontal } from 'lucide-react';
 import * as React from 'react';
 
 import { Button } from '@rahat-ui/shadcn/components/button';
-import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
 import {
   DropdownMenu,
-  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/components/dropdown-menu';
-import { Input } from '@rahat-ui/shadcn/components/input';
 import {
   Select,
   SelectContent,
@@ -191,45 +187,6 @@ export default function BeneficiaryDetailTableView({
   return (
     <>
       <div className={`w-full h-full bg-secondary ${tableSpacing}`}>
-        {/* <div className="flex items-center mb-2">
-          <Input
-            placeholder="Filter topic..."
-            value={(table.getColumn('topic')?.getFilterValue() as string) ?? ''}
-            onChange={(event) =>
-              table.getColumn('topic')?.setFilterValue(event.target.value)
-            }
-            className="max-w-sm mr-3"
-          />
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="ml-auto">
-                <Settings2 className="mr-2 h-4 w-5" />
-                View
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Toggle Columns</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              {table
-                .getAllColumns()
-                .filter((column) => column.getCanHide())
-                .map((column) => {
-                  return (
-                    <DropdownMenuCheckboxItem
-                      key={column.id}
-                      className="capitalize"
-                      checked={column.getIsVisible()}
-                      onCheckedChange={(value) =>
-                        column.toggleVisibility(!!value)
-                      }
-                    >
-                      {column.id}
-                    </DropdownMenuCheckboxItem>
-                  );
-                })}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div> */}
         <div className="rounded border bg-card">
           <Table>
             <ScrollArea className={tableScrollAreaHeight}>

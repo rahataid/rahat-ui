@@ -21,7 +21,9 @@ export const useVendorList = (payload: any): UseQueryResult<any, Error> => {
           ...data,
           data: data.data.map((d: any) => ({
             id: d.User.uuid,
-            status: d.User?.VendorProject[0]?.Project?.id ? 'Assigned' : 'Pending',
+            status: d.User?.VendorProject[0]?.Project?.id
+              ? 'Assigned'
+              : 'Pending',
             email: d.User?.email,
             projectName: d.User?.VendorProject[0]?.Project?.name || 'N/A',
             walletAddress: d.User.wallet,

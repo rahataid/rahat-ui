@@ -148,10 +148,9 @@ export const columns: ColumnDef<Transaction>[] = [
       </div>
     ),
   },
-
 ];
 
-export default function ReferralTable({ projectId,vendorId ,walletAddress}) {
+export default function ReferralTable({ projectId, vendorId, walletAddress }) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
@@ -195,10 +194,10 @@ export default function ReferralTable({ projectId,vendorId ,walletAddress}) {
       });
       const filteredData = res?.data.map((item) => {
         return {
-          walletAddress:item?.walletAddress,
-          referredBy:walletAddress,
-          timeStamp:formatdbDate(item?.createdAt),
-          phone:item?.phoneNumber
+          walletAddress: item?.walletAddress,
+          referredBy: walletAddress,
+          timeStamp: formatdbDate(item?.createdAt),
+          phone: item?.phoneNumber,
         };
       });
       setData(filteredData);

@@ -20,7 +20,7 @@ export function formatDate(date: number) {
   return formattedDate;
 }
 
-export function formatdbDate(date:string){
+export function formatdbDate(date: string) {
   const updated = new Date(date).toLocaleDateString();
-  return updated
+  return updated;
 }

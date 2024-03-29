@@ -39,7 +39,6 @@ export const useNavItems = () => {
   const createTokenSummaryModal = useBoolean();
   const createTokenModal = useBoolean();
 
-
   const handleOpenCreateTokenModal = () => {
     createTokenModal.onToggle();
     createTokenSummaryModal.onFalse();

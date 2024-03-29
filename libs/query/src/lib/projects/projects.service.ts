@@ -101,6 +101,52 @@ export const useAssignBenToProject = () => {
   });
 };
 
+export const useAssignVendorToProject = () => {
+  const q = useProjectAction();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+  return useMutation({
+    mutationFn: async ({
+      vendorUUID,
+      projectUUID,
+    }: {
+      projectUUID: UUID;
+      vendorUUID: UUID;
+    }) => {
+      return q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'vendor.assign_to_project',
+          payload: {
+            vendorId: vendorUUID,
+          },
+        },
+      });
+    },
+    onSuccess: () => {
+      q.reset();
+      toast.fire({
+        title: 'Vendor Assigned Successfully',
+        icon: 'success',
+      });
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || 'Error';
+      q.reset();
+      toast.fire({
+        title: 'Error while updating Vendor',
+        icon: 'error',
+        text: errorMessage,
+      });
+    },
+  });
+};
+
 export const useProjectSettings = (uuid: UUID) => {
   const q = useProjectAction();
   const { setSettings, settings } = useProjectSettingsStore((state) => ({

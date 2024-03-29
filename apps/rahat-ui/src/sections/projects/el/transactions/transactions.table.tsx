@@ -38,7 +38,10 @@ import { useGraphService } from '../../../../providers/subgraph-provider';
 import { truncateEthAddress } from '@rumsan/sdk/utils';
 import { formatDate } from '../../../../utils';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import { useProjectTransaction } from 'apps/rahat-ui/src/hooks/el/subgraph/querycall';
+import {
+  useBeneficiaryTransaction,
+  useProjectTransaction,
+} from 'apps/rahat-ui/src/hooks/el/subgraph/querycall';
 
 export type Transaction = {
   id: string;
@@ -50,30 +53,6 @@ export type Transaction = {
 };
 
 export const columns: ColumnDef<Transaction>[] = [
-  {
-    id: 'select',
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && 'indeterminate')
-        }
-        onCheckedChange={(value: any) =>
-          table.toggleAllPageRowsSelected(!!value)
-        }
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value: any) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
   {
     accessorKey: 'topic',
     header: 'Topic',
@@ -183,7 +162,7 @@ export const columns: ColumnDef<Transaction>[] = [
   },
 ];
 
-export default function TransactionTable({}) {
+export default function TransactionTable({ walletAddress }) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
@@ -191,9 +170,8 @@ export default function TransactionTable({}) {
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
-  // const [data, setData] = React.useState([]);
 
-  const { data } = useProjectTransaction();
+  const { data } = useBeneficiaryTransaction(walletAddress);
 
   const table = useReactTable({
     data: data || [],

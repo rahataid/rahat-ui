@@ -103,7 +103,7 @@
     "wagmi": "^2.5.7",
     "zod": "^3.22.4",
     "zustand": "^4.5.2",
-    "@rumsan/communication-query": "^0.0.7"
+    "@rumsan/communication-query": "0.0.1"
   },
   "devDependencies": {
     "@nx/cypress": "18.0.0",

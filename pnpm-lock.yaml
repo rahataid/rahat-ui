@@ -72,11 +72,14 @@ dependencies:
     specifier: 0.0.5
     version: 0.0.5
   '@rahataid/sdk':
-    specifier: ^0.0.17
-    version: 0.0.17
+    specifier: 0.0.19
+    version: 0.0.19
   '@rumsan/communication':
     specifier: ^0.0.7
     version: 0.0.7
+  '@rumsan/communication-query':
+    specifier: 0.0.1
+    version: 0.0.1(@types/react@18.2.70)(typescript@5.4.3)(zod@3.22.4)
   '@rumsan/core':
     specifier: ^3.0.133
     version: 3.0.140
@@ -87,14 +90,17 @@ dependencies:
     specifier: ^1.0.125
     version: 1.0.130(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.1)(rxjs@7.8.1)
   '@rumsan/react-query':
-    specifier: 0.0.33
-    version: 0.0.33(@types/react@18.2.70)
+    specifier: 0.0.34
+    version: 0.0.34(@types/react@18.2.70)
   '@rumsan/sdk':
     specifier: ^0.0.43
     version: 0.0.43
   '@rumsan/user':
     specifier: ^3.0.152
     version: 3.0.155(passport@0.7.0)(reflect-metadata@0.2.1)(typescript@5.4.3)(zod@3.22.4)
+  '@tanstack/match-sorter-utils':
+    specifier: ^8.11.8
+    version: 8.15.1
   '@tanstack/react-query':
     specifier: ^5.18.1
     version: 5.28.8(react@18.2.0)
@@ -6622,11 +6628,11 @@ packages:
       - graphql
     dev: false
 
-  /@rahataid/sdk@0.0.17:
+  /@rahataid/sdk@0.0.19:
     resolution:
       {
-        integrity: sha512-EHxoipjOVFGVUZU044E/MTpeaXYrwnHvleLbOPA5BnwOjmZMb75awoOmdxjjsKIrMIxxponsh6io69BJz5UQjA==,
-        tarball: https://npm.pkg.github.com/download/@rahataid/sdk/0.0.17/adbfacfb1c694b81b9c0ad8809cc64c72e030e98,
+        integrity: sha512-vsNH2/V4IAuYqOPoqBylYgzwCX8ud2vMIMukAEoPMP8ncu7KzRnmeyiMBsTS5KFtNwzAPABlrAYhX+md+GAgGA==,
+        tarball: https://npm.pkg.github.com/download/@rahataid/sdk/0.0.19/9d861920d611fe776181fc9cfab60a83b58bef0c,
       }
     dependencies:
       '@rumsan/sdk': 0.0.41
@@ -7208,11 +7214,52 @@ packages:
       picomatch: 2.3.1
       rollup: 2.79.1
 
+  /@rumsan/communication-query@0.0.1(@types/react@18.2.70)(typescript@5.4.3)(zod@3.22.4):
+    resolution:
+      {
+        integrity: sha512-4mcdtGt6ssJLNHi7nIXVAsqUdDxWIqrVfqKGcrQc4zM9yy+xEutKQLoWFytXdeykuBvfyej4d9TbVbz3zGRZOg==,
+        tarball: https://npm.pkg.github.com/download/@rumsan/communication-query/0.0.1/ea8437855453d1bd17fb9e151b7bb0eb69a61bd5,
+      }
+    dependencies:
+      '@rumsan/communication': 0.0.8
+      '@rumsan/react-query': 0.0.35(@types/react@18.2.70)
+      '@rumsan/sdk': 0.0.43
+      '@swc/helpers': 0.5.7
+      '@tanstack/react-query': 5.28.8(react@18.2.0)
+      '@tanstack/react-query-devtools': 5.28.8(@tanstack/react-query@5.28.8)(react@18.2.0)
+      axios: 1.6.8
+      jsonwebtoken: 9.0.2
+      react: 18.2.0
+      tslib: 2.6.2
+      viem: 2.9.2(typescript@5.4.3)(zod@3.22.4)
+      zustand: 4.5.2(@types/react@18.2.70)(react@18.2.0)
+    transitivePeerDependencies:
+      - '@types/react'
+      - bufferutil
+      - debug
+      - immer
+      - typescript
+      - utf-8-validate
+      - zod
+    dev: false
+
   /@rumsan/communication@0.0.7:
     resolution:
       {
         integrity: sha512-QS62ou8/nPaoWXb++qMPp6mLdqgiJSlo8/RAkV/FdaKX89e3YWIHdPdoebtTaUYPFPbiA0x35K92nd7C6+V9Ww==,
         tarball: https://npm.pkg.github.com/download/@rumsan/communication/0.0.7/de8921789c08cc72ef6c106fc96057370ad218aa,
+      }
+    dependencies:
+      axios: 1.6.8
+    transitivePeerDependencies:
+      - debug
+    dev: false
+
+  /@rumsan/communication@0.0.8:
+    resolution:
+      {
+        integrity: sha512-Ht+vIdZVabacljbIO54QDm2FXYSH5CAKyDQ68/NcvQdqQz39x3wZLt4DWuliTGY6ZpaniddVyql57NTdcmae6Q==,
+        tarball: https://npm.pkg.github.com/download/@rumsan/communication/0.0.8/b11e20c168799814e0d5058533ec77ed35f2d505,
       }
     dependencies:
       axios: 1.6.8
@@ -7334,11 +7381,31 @@ packages:
       - rxjs
     dev: false
 
-  /@rumsan/react-query@0.0.33(@types/react@18.2.70):
+  /@rumsan/react-query@0.0.34(@types/react@18.2.70):
     resolution:
       {
-        integrity: sha512-fOwlQSF8C5YyrG16UoJt2d5dn+VM4MG+KwBx3wBFcSfasQnBZQAcBXFlBPBoAF2zldoPvPQ6/XpZ6oSs5/KbQg==,
-        tarball: https://npm.pkg.github.com/download/@rumsan/react-query/0.0.33/aa278843b79cd1763def54f50e54d4389e5cfe8a,
+        integrity: sha512-Sd5XsThQaI8IN+KSNdqQqZWmlbRR8BNzBLlojPOGCqM9QLKskjyPREpIyOT3JTSmH+ITU3yocW4lDt1IJqlVJA==,
+        tarball: https://npm.pkg.github.com/download/@rumsan/react-query/0.0.34/1559e5a8544466ab164a070649ed8fb0570d28b8,
+      }
+    dependencies:
+      '@rumsan/communication': 0.0.7
+      '@rumsan/sdk': 0.0.43
+      '@tanstack/react-query': 5.28.8(react@18.2.0)
+      axios: 1.6.8
+      react: 18.2.0
+      tslib: 2.6.2
+      zustand: 4.5.2(@types/react@18.2.70)(react@18.2.0)
+    transitivePeerDependencies:
+      - '@types/react'
+      - debug
+      - immer
+    dev: false
+
+  /@rumsan/react-query@0.0.35(@types/react@18.2.70):
+    resolution:
+      {
+        integrity: sha512-vIIZOjneL4HcKtZNpHviILf3DTmssovX9f3rkAM3pfz0ALXUvtbporqKORhutUUSIUs3DGmusET5PY/p45XH6g==,
+        tarball: https://npm.pkg.github.com/download/@rumsan/react-query/0.0.35/8d9e78c914ebc98854badead9c9c673c919bca02,
       }
     dependencies:
       '@rumsan/communication': 0.0.7
@@ -8257,6 +8324,16 @@ packages:
     dependencies:
       defer-to-connect: 2.0.1
     dev: true
+
+  /@tanstack/match-sorter-utils@8.15.1:
+    resolution:
+      {
+        integrity: sha512-PnVV3d2poenUM31ZbZi/yXkBu3J7kd5k2u51CGwwNojag451AjTH9N6n41yjXz2fpLeewleyLBmNS6+HcGDlXw==,
+      }
+    engines: { node: '>=12' }
+    dependencies:
+      remove-accents: 0.5.0
+    dev: false
 
   /@tanstack/query-core@5.28.8:
     resolution:
@@ -23818,6 +23895,7 @@ packages:
       {
         integrity: sha512-i5lLI6iw9AU3Uu4szRNPPEkomnkjRTaVt9hy/bn5g/oSzekBSMeLZblcjP74AW0vBabqERLLIrz+gR8QYR54Tw==,
       }
+    deprecated: This version has a critical bug in fallback handling. Please upgrade to reflect-metadata@0.2.2 or newer.
     dev: false
 
   /reflect.getprototypeof@1.0.6:
@@ -23920,6 +23998,13 @@ packages:
     hasBin: true
     dependencies:
       jsesc: 0.5.0
+
+  /remove-accents@0.5.0:
+    resolution:
+      {
+        integrity: sha512-8g3/Otx1eJaVD12e31UbJj1YzdtVvzH85HV7t+9MJYk/u3XmkOUJ5Ys9wQrf9PCPK8+xn4ymzqYCiZl6QWKn+A==,
+      }
+    dev: false
 
   /request-progress@3.0.0:
     resolution:

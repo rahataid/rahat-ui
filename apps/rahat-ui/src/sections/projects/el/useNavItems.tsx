@@ -155,6 +155,7 @@ export const useNavItems = () => {
             BigInt(referralLimit),
           ],
         });
+    handleCloseSummaryModal();
   };
 
   // Referred Voucher
@@ -262,6 +263,7 @@ export const useNavItems = () => {
                 handleGoBack={handleBackToCreateTokenModal}
                 handleClose={handleCloseSummaryModal}
                 handleCreateVoucherSubmit={handleCreateVoucherSubmit}
+                isLoading={createVoucher.isPending}
               />
             </>
           ),

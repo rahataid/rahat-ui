@@ -24,7 +24,7 @@ import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { ArrowBigLeft } from 'lucide-react';
 import AddToQueue from './AddToQueue';
 import ErrorAlert from './ErrorAlert';
-import SuccessAlert from './SuccessAlert';
+import InfoBox from './InfoBox';
 
 export default function BenImp() {
   const form = useForm({});
@@ -46,10 +46,11 @@ export default function BenImp() {
 
   const fetchExistingMapping = async (importId: string) => {
     const res = await rumsanService.client.get(`/sources/${importId}/mappings`);
-    if (!res.data.data) return;
-    const { fieldMapping } = res.data.data;
-    if (res.data.data)
+    if (!res) return;
+    if (res?.data?.data) {
+      const { fieldMapping } = res.data.data;
       return setExistingMappings(fieldMapping?.sourceTargetMappings);
+    }
   };
 
   const handleUniqueFieldChange = (value: string) => setUniqueField(value);
@@ -169,6 +170,15 @@ export default function BenImp() {
         title: 'Please load data from data source!',
       });
     setCurrentScreen(BENEF_IMPORT_SCREENS.VALIDATION);
+  };
+
+  const handleImportNowClick = async () => {
+    const dialog = await Swal.fire({
+      title: `${processedData.length} Beneficiaries will be imported!`,
+      showCancelButton: true,
+      confirmButtonText: 'Proceed',
+    });
+    if (dialog.isConfirmed) return validateOrImport(IMPORT_ACTION.IMPORT);
   };
 
   const validateOrImport = (action: string) => {
@@ -314,14 +324,19 @@ export default function BenImp() {
 
         {currentScreen === BENEF_IMPORT_SCREENS.VALIDATION && (
           <div className="relative">
+            <InfoBox
+              title="Target Mapping"
+              message="Select matching target field for your data"
+            />
             {rawData.length > 0 && (
-              <div className="flex mb-5 justify-between m-2">
+              <div className="flex mb-5 mt-5 justify-between m-2">
                 <Button
                   onClick={handleBackClick}
                   className="w-40 bg-secondary hover:ring-2bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow"
                 >
                   <ArrowBigLeft size={18} strokeWidth={2} /> Back
                 </Button>
+
                 <Button
                   onClick={() => validateOrImport(IMPORT_ACTION.VALIDATE)}
                   className="w-40 bg-primary hover:ring-2 ring-primary"
@@ -330,8 +345,12 @@ export default function BenImp() {
                 </Button>
               </div>
             )}
+
             <hr />
-            <div className="overflow-x-auto overflow-y-auto">
+            <div
+              style={{ maxHeight: '68vh' }}
+              className="overflow-x-auto overflow-y-auto"
+            >
               <table className="w-full text-sm text-left rtl:text-right">
                 {rawData.map((item: string, index: number) => {
                   const keys = Object.keys(item);
@@ -397,15 +416,21 @@ export default function BenImp() {
           <>
             {invalidFields.length > 0 ? (
               <ErrorAlert
-                message={`Validation faield for these fields: ${invalidFields.toString()}`}
+                message={`Validation failed for these fields: ${invalidFields
+                  .toString()
+                  .toUpperCase()}`}
               />
             ) : (
-              <SuccessAlert message="Here is your list of data being imported" />
+              <InfoBox
+                title="Import Beneficiary"
+                message="Here is your list of data being imported"
+              />
             )}
+
             <AddToQueue
               handleRetargetClick={handleRetargetClick}
               data={processedData}
-              handleImportClick={() => validateOrImport(IMPORT_ACTION.IMPORT)}
+              handleImportClick={handleImportNowClick}
               invalidFields={invalidFields}
             />
           </>

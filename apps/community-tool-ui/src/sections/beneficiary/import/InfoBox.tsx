@@ -1,15 +1,18 @@
 import React from 'react';
 
-export default function ErrorAlert({ message = 'This is default message' }) {
+export default function InfoBox({
+  title = 'Info',
+  message = 'This is default message',
+}) {
   return (
     <div
-      className="bg-red-100 border-t-4 border-red-400 rounded-b text-red-900 px-4 py-3 shadow-md"
+      className="bg-blue-100 border-t-4 border-blue-400 rounded-b text-blue-900 px-4 py-3 shadow-md"
       role="alert"
     >
       <div className="flex">
         <div className="py-1">
           <svg
-            className="fill-current h-6 w-6 text-red-500 mr-4"
+            className="fill-current h-6 w-6 text-blue-500 mr-4"
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 20 20"
           >
@@ -17,7 +20,7 @@ export default function ErrorAlert({ message = 'This is default message' }) {
           </svg>
         </div>
         <div>
-          <p className="font-bold">Validation Error!</p>
+          <p className="font-bold">{title}</p>
           <p className="text-sm">{message}</p>
         </div>
       </div>

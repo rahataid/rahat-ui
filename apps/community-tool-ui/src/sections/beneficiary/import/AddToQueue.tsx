@@ -25,7 +25,7 @@ export default function AddToQueue({
   const keys = mappedData.length > 0 ? Object.keys(mappedData[0]) : [];
 
   return (
-    <div className="relative">
+    <div className="relative mt-5">
       <div className="flex mb-5 justify-between m-2">
         <Button
           onClick={handleRetargetClick}

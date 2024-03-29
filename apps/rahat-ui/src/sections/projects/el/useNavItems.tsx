@@ -103,51 +103,35 @@ export const useNavItems = () => {
   // Free Voucher
   const handleCreateVoucherSubmit = async (e: any) => {
     e.preventDefault();
-    if (!contractSettings) return;
-
-    const {
-      donorAddress,
-      eyeVoucherAddress,
-      referralVoucherAddress,
-      elProjectAddress,
-    } = contractSettings;
-    const {
-      tokens,
-      description,
-      descriptionReferred,
-      amountInDollar,
-      amountInDollarReferral,
-      currency,
-    } = voucherInputs;
-    const referralLimit = BigInt(3);
-    const tokensBigInt = BigInt(tokens);
-
-    const commonArgs = [
-      eyeVoucherAddress,
-      referralVoucherAddress,
-      elProjectAddress,
-      tokensBigInt,
-      referralLimit,
-    ];
-
-    if (description.length === 0) {
-      await createVoucher.writeContractAsync({
-        address: donorAddress,
-        args: [
-          ...commonArgs,
-          description,
-          descriptionReferred,
-          BigInt(amountInDollar),
-          BigInt(amountInDollarReferral),
-          currency,
-        ],
-      });
-    } else {
-      await createOnlyVoucher.writeContractAsync({
-        address: donorAddress,
-        args: commonArgs,
-      });
-    }
+    if (!addresses) return;
+    const referralLimit = 3;
+    voucherInputs.description.length === 0
+      ? await createVoucher.writeContractAsync({
+          address: addresses?.donorAddress,
+          args: [
+            addresses?.eyeVoucherAddress,
+            addresses.referralVoucherAddress,
+            addresses.elProjectAddress,
+            BigInt(voucherInputs.tokens),
+            voucherInputs.description,
+            voucherInputs.descriptionReferred,
+            BigInt(voucherInputs.amountInDollar),
+            BigInt(voucherInputs.amountInDollarReferral),
+            BigInt(referralLimit),
+            voucherInputs.currency,
+          ],
+        })
+      : await createOnlyVoucher.writeContractAsync({
+          address: addresses?.donorAddress,
+          args: [
+            addresses?.eyeVoucherAddress,
+            addresses.referralVoucherAddress,
+            addresses.elProjectAddress,
+            BigInt(voucherInputs.tokens),
+            BigInt(referralLimit),
+          ],
+        });
+    handleCloseSummaryModal();
   };
 
   // Referred Voucher
@@ -255,6 +239,7 @@ export const useNavItems = () => {
                 handleGoBack={handleBackToCreateTokenModal}
                 handleClose={handleCloseSummaryModal}
                 handleCreateVoucherSubmit={handleCreateVoucherSubmit}
+                isLoading={createVoucher.isPending}
               />
             </>
           ),

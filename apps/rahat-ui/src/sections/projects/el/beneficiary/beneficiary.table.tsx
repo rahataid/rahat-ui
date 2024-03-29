@@ -63,6 +63,7 @@ export type Transaction = {
 };
 
 export default function BeneficiaryDetailTableView() {
+  // TODO: Refactor it
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],

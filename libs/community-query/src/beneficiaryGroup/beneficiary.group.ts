@@ -21,19 +21,17 @@ export class CommunityBeneficiaryGroupQuery {
       mutationKey: [TAGS.ADD_COMMUNITY_BENEFICIARY_GROUP],
       mutationFn: async (payload: any) => {
         const { value } = await Swal.fire({
-          title: 'Select Group',
+          title: 'Assign Group',
           text: 'Select group for the beneficiary',
           showCancelButton: true,
-          confirmButtonText: 'Create',
+          confirmButtonText: 'Assign',
           cancelButtonText: 'Cancel',
           input: 'select',
           inputOptions: payload.inputOptions,
           inputPlaceholder: 'Select a Group',
           preConfirm: (selectedValue) => {
             if (!selectedValue) {
-              Swal.showValidationMessage(
-                'Select a group to proceed an operation',
-              );
+              Swal.showValidationMessage('Please select a group to proceed!');
             }
             return selectedValue;
           },

@@ -1,16 +1,12 @@
 'use client';
 
-import React, { useEffect } from 'react';
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from '@rahat-ui/shadcn/components/accordion';
-import { Table } from '@tanstack/react-table';
-import { ListBeneficiary } from '@rahataid/community-tool-sdk/beneficiary';
 // import { useSwal } from '/src/components/swal';
-import Swal from 'sweetalert2';
 import { useRumsanService } from '../../providers/service.provider';
 
 type IProps = {
@@ -65,7 +61,7 @@ export default function Filter({ selectedData, handleClose }: IProps) {
             className="p-2 hover:bg-muted rounded cursor-pointer"
             onClick={handleAssignBeneficiariesGroup}
           >
-            Create Beneficiarries Group
+            Assign Group
           </div>
         </AccordionContent>
       </AccordionItem>

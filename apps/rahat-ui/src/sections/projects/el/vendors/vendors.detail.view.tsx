@@ -20,6 +20,7 @@ import { useProjectAction } from '@rahat-ui/query';
 import { useEffect, useState } from 'react';
 import { useVendorVoucher } from 'apps/rahat-ui/src/hooks/el/subgraph/querycall';
 import { useSearchParams } from 'next/navigation';
+import { Card } from '@rahat-ui/shadcn/src/components/ui/card';
 
 interface IParams {
   uuid: any;
@@ -80,6 +81,7 @@ export default function VendorsDetailPage() {
     <div className="bg-secondary">
       {/* Data Cards */}
       <div className="grid md:grid-cols-4 gap-2 mx-2">
+        <VendorsInfo vendorData={{ name, phone, vendorWallet }} />
         <DataCard
           className="mt-2"
           title="Free Vouchers Redeemed"
@@ -98,29 +100,30 @@ export default function VendorsDetailPage() {
           number={data?.voucherDetailsByVendor?.beneficiaryReferred || '0'}
           subTitle="Beneficiaries"
         />
-        <VendorsInfo vendorData={{ name, phone, vendorWallet }} />
       </div>
-      <div className="mt-2 mx-2">
-        <Tabs defaultValue="transactions" className="w-full">
-          <div className="flex justify-between items-center">
-            <TabsList className="w-1/3 gap-14">
+      <Tabs defaultValue="transactions" className="ml-2">
+        <Card className="my-2 mr-2 rounded">
+          <div className="flex h-14 items-center justify-between">
+            <TabsList className="gap-14">
               <TabsTrigger value="transactions">
                 Transaction History
               </TabsTrigger>
               <TabsTrigger value="referrals">Referrals List</TabsTrigger>
             </TabsList>
             <div>
-              <Button onClick={handleApproveVendor}>Approve Vendor</Button>
+              <Button className="h-1/2 mr-3" onClick={handleApproveVendor}>
+                Approve Vendor
+              </Button>
             </div>
           </div>
-          <TabsContent value="transactions">
-            <VendorTxnList walletAddress={walletAddress} />
-          </TabsContent>
-          <TabsContent value="referrals">
-            <ReferralTable />
-          </TabsContent>
-        </Tabs>
-      </div>
+        </Card>
+        <TabsContent value="transactions">
+          <VendorTxnList walletAddress={walletAddress} />
+        </TabsContent>
+        <TabsContent value="referrals">
+          <ReferralTable />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

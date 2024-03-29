@@ -96,11 +96,10 @@ export default function VendorTxnList({ walletAddress }: VendorTxnListProps) {
 
   return (
     <>
-      <div className="w-full h-full -mt-2 p-2 bg-secondary">
-        <div className="flex items-center mb-2"></div>
-        <div className="rounded border h-[calc(100vh-180px)]  bg-card">
+      <div className="h-full bg-secondary">
+        <div className="rounded border h-[calc(100vh-180px)] bg-card">
           <Table>
-            <ScrollArea className="w-full h-withPage p-4">
+            <ScrollArea className="h-withPage p-4">
               <TableHeader>
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow key={headerGroup.id}>

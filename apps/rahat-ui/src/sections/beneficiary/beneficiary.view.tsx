@@ -79,20 +79,6 @@ function BeneficiaryView() {
         total={data?.response?.meta.lastPage || 0}
       />
     </>
-    //         {/* {selectedData ? (
-    //           <>
-    //             <ResizableHandle />
-    //             <ResizablePanel minSize={28} defaultSize={28}>
-    //               {selectedData && (
-    //                 <BeneficiaryDetail
-    //                   data={selectedData}
-    //                   handleClose={handleClose}
-    //                 />
-    //               )}
-    //               {/* {addBeneficiary && <AddBeneficiary />} */}
-    //         //     </ResizablePanel>
-    //         //   </>
-    // // ) : null} */}
   );
 }
 

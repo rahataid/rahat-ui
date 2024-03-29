@@ -40,7 +40,7 @@ export const useBeneficiaryList = (
 
   const ben = useQuery(
     {
-      queryKey: [TAGS.GET_BENEFICIARIES],
+      queryKey: [TAGS.GET_BENEFICIARIES, payload],
       queryFn: () => benClient.list(payload),
     },
     queryClient,

@@ -19,3 +19,8 @@ export function formatDate(date: number) {
   const formattedDate = new Date(date * 1000)?.toLocaleDateString('en-GB');
   return formattedDate;
 }
+
+export function formatdbDate(date:string){
+  const updated = new Date(date).toLocaleDateString();
+  return updated
+}

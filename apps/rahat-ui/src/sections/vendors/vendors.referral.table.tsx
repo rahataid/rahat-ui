@@ -35,8 +35,9 @@ import {
 
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { truncateEthAddress } from '@rumsan/sdk/utils';
-import { useGraphService } from '../../providers/subgraph-provider';
-import { formatDate } from '../../utils';
+import { useProjectAction } from '@rahat-ui/query';
+import { MS_ACTIONS } from '@rahataid/sdk';
+import { formatdbDate } from '../../utils';
 
 export type Transaction = {
   id: string;
@@ -73,7 +74,7 @@ export const columns: ColumnDef<Transaction>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: 'beneficiary',
+    accessorKey: 'walletAddress',
     header: ({ column }) => {
       return (
         <Button
@@ -87,32 +88,32 @@ export const columns: ColumnDef<Transaction>[] = [
     },
     cell: ({ row }) => (
       <div className="lowercase">
-        {truncateEthAddress(row.getValue('beneficiary'))}
+        {truncateEthAddress(row.getValue('walletAddress'))}
       </div>
     ),
   },
 
+  // {
+  //   accessorKey: 'phoneNumber',
+  //   header: ({ column }) => {
+  //     return (
+  //       <Button
+  //         variant="ghost"
+  //         onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+  //       >
+  //         Phone Number
+  //         <ArrowUpDown className="ml-2 h-4 w-4" />
+  //       </Button>
+  //     );
+  //   },
+  //   cell: ({ row }) => (
+  //     <div className="lowercase">
+  //       {truncateEthAddress(row.getValue('phoneNumber'))}
+  //     </div>
+  //   ),
+  // },
   {
-    accessorKey: 'phoneNumber',
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-        >
-          Phone Number
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
-    cell: ({ row }) => (
-      <div className="lowercase">
-        {truncateEthAddress(row.getValue('phoneNumber'))}
-      </div>
-    ),
-  },
-  {
-    accessorKey: 'timestamp',
+    accessorKey: 'timeStamp',
     header: ({ column }) => {
       return (
         <Button
@@ -125,7 +126,7 @@ export const columns: ColumnDef<Transaction>[] = [
       );
     },
     cell: ({ row }) => (
-      <div className="lowercase">{row.getValue('timestamp')}</div>
+      <div className="lowercase">{row.getValue('timeStamp')}</div>
     ),
   },
   {
@@ -147,35 +148,10 @@ export const columns: ColumnDef<Transaction>[] = [
       </div>
     ),
   },
-  {
-    id: 'actions',
-    enableHiding: false,
-    cell: ({ row }) => {
-      const payment = row.original;
 
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(payment.id)}
-            >
-              Copy payment ReferredBy
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
-    },
-  },
 ];
 
-export default function ReferralTable({ walletAddress }) {
+export default function ReferralTable({ projectId,vendorId ,walletAddress}) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
@@ -203,82 +179,32 @@ export default function ReferralTable({ walletAddress }) {
       rowSelection,
     },
   });
-  const { queryService } = useGraphService();
-  const fetchBeneficiary = React.useCallback(() => {
-    // const querRes = queryService.useProjectTransaction();
-    const querRes = queryService.useBeneficiaryTransaction(walletAddress);
 
-    querRes.then((res) => {
-      const claimedAssigned = res?.claimAssigneds;
-      const claimProcessed = res?.projectClaimProcesseds;
-      const beneficiaryReferred = res?.beneficiaryReferreds;
-      const beneficiaryAdded = res?.beneficiaryAddeds;
-      const claimCreated = res?.claimCreateds;
-      const tokenBudgetIncrease = res?.tokenBudgetIncreases;
-      const data: any = [];
-
-      claimedAssigned?.map((trans) => {
-        data.push({
-          beneficiary: trans.beneficiary,
-          topic: trans.eventType,
-          timestamp: formatDate(trans.blockTimestamp),
-          referredBy: trans.transactionHash,
-          phoneNumber: trans.tokenAddress,
-        });
-        // const claimRes = queryService?.useClaimAssigned(trans.id);
-      });
-      claimProcessed?.map((trans) => {
-        data.push({
-          beneficiary: trans.beneficiary,
-          topic: trans.eventType,
-          timestamp: formatDate(trans.blockTimestamp),
-          referredBy: trans.transactionHash,
-          phoneNumber: trans.token,
-        });
-      });
-      beneficiaryReferred?.map((trans) => {
-        data.push({
-          beneficiary: trans.referrerBeneficiaries,
-          topic: trans.eventType,
-          timestamp: formatDate(trans.blockTimestamp),
-          referredBy: trans.transactionHash,
-        });
-      });
-
-      claimCreated?.map((trans) => {
-        data.push({
-          beneficiary: trans.claimer,
-          referredBy: trans.transactionHash,
-          timestamp: formatDate(trans.blockTimestamp),
-          topic: trans?.eventType,
-          phoneNumber: trans.token,
-        });
-      });
-
-      beneficiaryAdded?.map((trans) => {
-        data.push({
-          topic: trans.eventType,
-          timestamp: formatDate(trans.blockTimestamp),
-          referredBy: trans.transactionHash,
-          beneficiary: trans.beneficiaryAddress,
-        });
-      });
-
-      tokenBudgetIncrease?.map((trans) => {
-        data.push({
-          topic: trans.eventType,
-          referredBy: trans.transactionHash,
-          timestamp: formatDate(trans.blockTimestamp),
-          phoneNumber: trans?.tokenAddress,
-        });
-      });
-      setData(data);
-    });
-  }, [queryService]);
+  const getVendorRedemption = useProjectAction();
 
   React.useEffect(() => {
-    fetchBeneficiary();
-  }, [fetchBeneficiary]);
+    async function fetchData() {
+      const res = await getVendorRedemption.mutateAsync({
+        uuid: projectId,
+        data: {
+          action: 'elProject.beneficiaryReferred',
+          payload: {
+            vendorId,
+          },
+        },
+      });
+      const filteredData = res?.data.map((item) => {
+        return {
+          walletAddress:item?.walletAddress,
+          referredBy:walletAddress,
+          timeStamp:formatdbDate(item?.createdAt),
+          phone:item?.phoneNumber
+        };
+      });
+      setData(filteredData);
+    }
+    fetchData();
+  }, []);
 
   return (
     <div className="w-full h-full bg-secondary">
@@ -286,10 +212,10 @@ export default function ReferralTable({ walletAddress }) {
         <Input
           placeholder="Filter Referrals..."
           value={
-            (table.getColumn('beneficiary')?.getFilterValue() as string) ?? ''
+            (table.getColumn('walletAddress')?.getFilterValue() as string) ?? ''
           }
           onChange={(event) =>
-            table.getColumn('beneficiary')?.setFilterValue(event.target.value)
+            table.getColumn('walletAddress')?.setFilterValue(event.target.value)
           }
           className="w-full"
         />

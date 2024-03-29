@@ -42,7 +42,6 @@ const SuccessModal = ({
   //   e.preventDefault();
   //   handleSubmit({ ...voucherInputs, description, price });
   // };
-  console.log('voucherInputs', voucherInputs);
   return (
     <Dialog open={open}>
       <DialogContent className="sm:max-w-[500px]">

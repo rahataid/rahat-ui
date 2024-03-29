@@ -21,6 +21,7 @@ import { useEffect, useState } from 'react';
 import { useVendorVoucher } from 'apps/rahat-ui/src/hooks/el/subgraph/querycall';
 import { useSearchParams } from 'next/navigation';
 import RedemptionTable from '../../../vendors/vendors.redemption.table';
+import { useReadElProject, useReadElProjectCheckVendorStatus } from 'apps/rahat-ui/src/hooks/el/contracts/elProject';
 
 interface IParams {
   uuid: any;
@@ -38,14 +39,19 @@ export default function VendorsDetailPage() {
   const { uuid: walletAddress, id: projectId } = useParams<IParams>();
   const [contractAddress, setContractAddress] = useState<any>('');
 
-  const updateVendor = useAddVendors(projectId, walletAddress);
+  const updateVendor = useAddVendors();
   const projectClient = useProjectAction();
   const { data } = useVendorVoucher(walletAddress);
 
+  const {data:vendorStatus} =  useReadElProjectCheckVendorStatus({
+    address:contractAddress,
+    args:[walletAddress]
+  });
+
   const assignVendorToProjet = async () => {
     return updateVendor.writeContractAsync({
-      address: walletAddress,
-      args: [contractAddress, true],
+      address: contractAddress,
+      args: [walletAddress, true],
     });
   };
 
@@ -112,18 +118,18 @@ export default function VendorsDetailPage() {
               <TabsTrigger value="referrals">Referrals List</TabsTrigger>
               <TabsTrigger value="redeem">Redemption List</TabsTrigger>
             </TabsList>
-            <div>
+            {!vendorStatus && <div>
               <Button onClick={handleApproveVendor}>Approve Vendor</Button>
-            </div>
+            </div>}
           </div>
           <TabsContent value="transactions">
             <VendorTxnList walletAddress={walletAddress} />
           </TabsContent>
           <TabsContent value="referrals">
-            <ReferralTable />
+            <ReferralTable projectId={projectId} vendorId={vendorId} walletAddress={walletAddress} />
           </TabsContent>
           <TabsContent value="redeem">
-            <RedemptionTable projectId={projectId} vendorId={vendorId}/>
+            <RedemptionTable projectId={projectId} vendorId={vendorId} />
           </TabsContent>
         </Tabs>
       </div>

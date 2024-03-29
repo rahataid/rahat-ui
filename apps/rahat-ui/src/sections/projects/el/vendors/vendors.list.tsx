@@ -108,7 +108,7 @@ export default function VendorsList() {
         name: row.User.name,
         walletaddress: row.User.wallet,
         phone: row.User.phone,
-        vendorId:row.User.uuid
+        vendorId: row.User.uuid,
       };
     });
     setData(filteredData);

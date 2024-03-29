@@ -26,9 +26,9 @@ import {
 } from '@rahat-ui/shadcn/components/table';
 
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import { useEffect } from 'react';
 import { useProjectAction } from '@rahat-ui/query';
 import { MS_ACTIONS } from '@rahataid/sdk';
+import { formatdbDate } from '../../utils';
 
 export type Transaction = {
   id: string;
@@ -40,7 +40,6 @@ export type Transaction = {
 };
 
 export const columns: ColumnDef<Transaction>[] = [
-  
   {
     accessorKey: 'voucherNumber',
     header: ({ column }) => {
@@ -55,9 +54,7 @@ export const columns: ColumnDef<Transaction>[] = [
       );
     },
     cell: ({ row }) => (
-      <div className='lowercase'>
-       { (row.getValue('voucherNumber'))}
-      </div>
+      <div className="lowercase">{row.getValue('voucherNumber')}</div>
     ),
   },
 
@@ -74,11 +71,7 @@ export const columns: ColumnDef<Transaction>[] = [
         </Button>
       );
     },
-    cell: ({ row }) => (
-      <div>
-        {(row.getValue('voucherType'))}
-      </div>
-    ),
+    cell: ({ row }) => <div>{row.getValue('voucherType')}</div>,
   },
   {
     accessorKey: 'timestamp',
@@ -93,9 +86,7 @@ export const columns: ColumnDef<Transaction>[] = [
         </Button>
       );
     },
-    cell: ({ row }) => (
-      <div>{row.getValue('timestamp')}</div>
-    ),
+    cell: ({ row }) => <div>{row.getValue('timestamp')}</div>,
   },
   {
     accessorKey: 'status',
@@ -110,16 +101,11 @@ export const columns: ColumnDef<Transaction>[] = [
         </Button>
       );
     },
-    cell: ({ row }) => (
-      <div>
-        {(row.getValue('status'))}
-      </div>
-    ),
+    cell: ({ row }) => <div>{row.getValue('status')}</div>,
   },
-
 ];
 
-export default function RedemptionTable({projectId, vendorId }) {
+export default function RedemptionTable({ projectId, vendorId }) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
@@ -149,110 +135,34 @@ export default function RedemptionTable({projectId, vendorId }) {
   });
 
   const getVendorRedemption = useProjectAction();
-  
-  useEffect (()=>{
-    async function fetchData(){
-        const res = await getVendorRedemption.mutateAsync({
-            uuid:projectId,
-            data:{
-                action: MS_ACTIONS.ELPROJECT.GET_VENDOR_REDEMPTION,
-                payload:{
-                    vendorId
-                }
-            }
-        });
-        const filteredData = res?.data.map((item)=>{
-           return {
-            voucherNumber:item?.voucherNumber,
-            voucherType:item?.voucherType,
-            status:item?.status,
-            timestamp:item?.createdAt
-           }
-        })
-        console.log({filteredData})
-        setData(filteredData)
+
+  React.useEffect(() => {
+    async function fetchData() {
+      const res = await getVendorRedemption.mutateAsync({
+        uuid: projectId,
+        data: {
+          action: MS_ACTIONS.ELPROJECT.GET_VENDOR_REDEMPTION,
+          payload: {
+            vendorId,
+          },
+        },
+      });
+      const filteredData = res?.data.map((item) => {
+        return {
+          voucherNumber: item?.voucherNumber,
+          voucherType: item?.voucherType,
+          status: item?.status,
+          timestamp: formatdbDate(item?.createdAt),
+        };
+      });
+      setData(filteredData);
     }
     fetchData();
-  },[])
-//   const fetchBeneficiary = React.useCallback(() => {
-//     // const querRes = queryService.useProjectTransaction();
-//     const querRes = queryService.useBeneficiaryTransaction(walletAddress);
-
-//     querRes.then((res) => {
-//       const claimedAssigned = res?.claimAssigneds;
-//       const claimProcessed = res?.projectClaimProcesseds;
-//       const beneficiaryReferred = res?.beneficiaryReferreds;
-//       const beneficiaryAdded = res?.beneficiaryAddeds;
-//       const claimCreated = res?.claimCreateds;
-//       const tokenBudgetIncrease = res?.tokenBudgetIncreases;
-//       const data: any = [];
-
-//       claimedAssigned?.map((trans) => {
-//         data.push({
-//           beneficiary: trans.beneficiary,
-//           topic: trans.eventType,
-//           timestamp: formatDate(trans.blockTimestamp),
-//           referredBy: trans.transactionHash,
-//           phoneNumber: trans.tokenAddress,
-//         });
-//         // const claimRes = queryService?.useClaimAssigned(trans.id);
-//       });
-//       claimProcessed?.map((trans) => {
-//         data.push({
-//           beneficiary: trans.beneficiary,
-//           topic: trans.eventType,
-//           timestamp: formatDate(trans.blockTimestamp),
-//           referredBy: trans.transactionHash,
-//           phoneNumber: trans.token,
-//         });
-//       });
-//       beneficiaryReferred?.map((trans) => {
-//         data.push({
-//           beneficiary: trans.referrerBeneficiaries,
-//           topic: trans.eventType,
-//           timestamp: formatDate(trans.blockTimestamp),
-//           referredBy: trans.transactionHash,
-//         });
-//       });
-
-//       claimCreated?.map((trans) => {
-//         data.push({
-//           beneficiary: trans.claimer,
-//           referredBy: trans.transactionHash,
-//           timestamp: formatDate(trans.blockTimestamp),
-//           topic: trans?.eventType,
-//           phoneNumber: trans.token,
-//         });
-//       });
-
-//       beneficiaryAdded?.map((trans) => {
-//         data.push({
-//           topic: trans.eventType,
-//           timestamp: formatDate(trans.blockTimestamp),
-//           referredBy: trans.transactionHash,
-//           beneficiary: trans.beneficiaryAddress,
-//         });
-//       });
-
-//       tokenBudgetIncrease?.map((trans) => {
-//         data.push({
-//           topic: trans.eventType,
-//           referredBy: trans.transactionHash,
-//           timestamp: formatDate(trans.blockTimestamp),
-//           phoneNumber: trans?.tokenAddress,
-//         });
-//       });
-//       setData(data);
-//     });
-//   }, [queryService]);
-
-//   React.useEffect(() => {
-//     fetchBeneficiary();
-//   }, [fetchBeneficiary]);
+  }, []);
 
   return (
     <div className="w-full h-full bg-secondary">
-      <div className="flex items-center mb-2">
+      {/* <div className="flex items-center mb-2">
         <Input
           placeholder="Filter Referrals..."
           value={
@@ -263,7 +173,7 @@ export default function RedemptionTable({projectId, vendorId }) {
           }
           className="w-full"
         />
-      </div>
+      </div> */}
       <div className="rounded border h-[calc(100vh-180px)] bg-card">
         <Table>
           <ScrollArea className="h-table1">

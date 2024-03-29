@@ -325,8 +325,8 @@ export default function BenImp() {
         {currentScreen === BENEF_IMPORT_SCREENS.VALIDATION && (
           <div className="relative">
             <InfoBox
-              title="Target Mapping"
-              message="Select matching target field for your data"
+              title="Field Mapping"
+              message="Select matching field for your data"
             />
             {rawData.length > 0 && (
               <div className="flex mb-5 mt-5 justify-between m-2">
@@ -376,7 +376,7 @@ export default function BenImp() {
                                     }
                                   >
                                     <option value="None">
-                                      --Choose Target--
+                                      --Choose Field--
                                     </option>
                                     {BENEF_DB_FIELDS.map((f) => {
                                       return (

@@ -13,13 +13,6 @@ const DOWNLOAD_FILE_URL = '/files/beneficiary_sample.xlsx';
 export default function ImportBeneficiary() {
   const fileInputRef: RefObject<HTMLInputElement> = useRef(null);
 
-  const resetFileInput = () => {
-    // Resetting the file input value
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
-  };
-
   const uploadBeneficiary = useUploadBeneficiary();
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);

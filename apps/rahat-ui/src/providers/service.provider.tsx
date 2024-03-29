@@ -1,30 +1,22 @@
 'use client';
 import { RumsanService } from '@rumsan/sdk';
 
-import { CommunicationService } from '@rumsan/communication';
-import { useAuthStore, useRSQuery } from '@rumsan/react-query';
+import {
+  RSQueryContextType,
+  useAuthStore,
+  useRSQuery,
+} from '@rumsan/react-query';
 import { useQueryClient } from '@tanstack/react-query';
-import { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { createContext, useEffect, useMemo } from 'react';
 import { useError } from '../utils/useErrors';
 
-export type ServiceContextType = {
-  rumsanService: RumsanService;
-  // communicationQuery: CommunicationQuery;
-  communicationService: CommunicationService;
-};
-
-export const ServiceContext = createContext<ServiceContextType | null>(null);
+export const ServiceContext = createContext<RSQueryContextType | null>(null);
 
 interface ServiceProviderProps {
   children: React.ReactNode;
 }
 
 export function ServiceProvider({ children }: ServiceProviderProps) {
-  const [communicationService, setCommunicationService] =
-    useState<CommunicationService>();
-  // const [communicationQuery, setCommunicationQuery] =
-  // useState<CommunicationQuery>();
-
   const qc = useQueryClient();
   const { queryClient, rumsanService, setQueryClient, setRumsanService } =
     useRSQuery();
@@ -48,16 +40,6 @@ export function ServiceProvider({ children }: ServiceProviderProps) {
     }
   }, [rsService, rumsanService, setRumsanService]);
 
-  useEffect(() => {
-    if (!communicationService) {
-      setCommunicationService(
-        new CommunicationService({
-          baseURL: process.env.NEXT_PUBLIC_API_COMMUNICATION_URL,
-        }),
-      );
-    }
-  }, [communicationService, setCommunicationService]);
-
   useError();
 
   useEffect(() => {
@@ -77,30 +59,11 @@ export function ServiceProvider({ children }: ServiceProviderProps) {
     }
   }, [rumsanService]);
 
-  useEffect(() => {
-    if (communicationService) {
-      communicationService.client.interceptors.request.use(
-        (config) => {
-          const token = useAuthStore.getState().token;
-          if (token) {
-            config.headers['Authorization'] = 'Bearer ' + token;
-          }
-          config.headers['appId'] = process.env.NEXT_PUBLIC_API_APPLICATION_ID;
-          return config;
-        },
-        (error) => {
-          return Promise.reject(error);
-        },
-      );
-    }
-  }, [communicationService]);
-
-  if (!rumsanService || !queryClient || !communicationService)
-    return 'Setting up services...';
+  if (!rumsanService || !queryClient) return 'Setting up services...';
 
   return children;
 }
 
-export const useRumsanService = (): ServiceContextType => {
-  return useContext(ServiceContext) as ServiceContextType;
-};
+// export const useRumsanService = (): ServiceContextType => {
+//   return useContext(ServiceContext) as ServiceContextType;
+// };

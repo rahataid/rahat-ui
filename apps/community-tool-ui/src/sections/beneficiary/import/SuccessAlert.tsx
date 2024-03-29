@@ -4,10 +4,10 @@ interface IProps {
   message: string;
 }
 
-export default function ErrorAlert({ message = 'No data' }: IProps) {
+export default function SuccessAlert({ message = 'No data' }: IProps) {
   return (
     <div
-      className="flex items-center p-4 mb-4 text-sm text-red-800 border border-red-300 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400 dark:border-red-800"
+      className="flex items-center p-4 mb-4 text-sm text-blue-800 rounded-lg bg-blue-100 dark:bg-gray-800 dark:text-green-400"
       role="alert"
     >
       <svg
@@ -21,7 +21,7 @@ export default function ErrorAlert({ message = 'No data' }: IProps) {
       </svg>
       <span className="sr-only">Info</span>
       <div>
-        <span className="font-medium">Error</span> {message}
+        <span className="font-medium">Info!</span> {message}
       </div>
     </div>
   );

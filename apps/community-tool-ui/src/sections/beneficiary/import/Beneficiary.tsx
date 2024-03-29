@@ -24,6 +24,7 @@ import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { ArrowBigLeft } from 'lucide-react';
 import AddToQueue from './AddToQueue';
 import ErrorAlert from './ErrorAlert';
+import SuccessAlert from './SuccessAlert';
 
 export default function BenImp() {
   const form = useForm({});
@@ -79,24 +80,32 @@ export default function BenImp() {
   };
 
   const handleKoboFormChange = async (value: string) => {
-    setFetching(true);
-    setExistingMappings([]);
-    setRawData([]);
-    const found: any | undefined = koboForms.find(
-      (f: any) => f.value === value,
-    );
-    if (!found) return alert('No form found');
-    setImportId(found.formId);
-    await fetchExistingMapping(found.formId);
-    const koboData = await fetchKoboData(value);
-    if (!koboData.data)
+    try {
+      setFetching(true);
+      setExistingMappings([]);
+      setRawData([]);
+      const found: any | undefined = koboForms.find(
+        (f: any) => f.value === value,
+      );
+      if (!found) return alert('No form found');
+      setImportId(found.formId);
+      await fetchExistingMapping(found.formId);
+      const koboData = await fetchKoboData(value);
+      if (!koboData)
+        return Swal.fire({
+          icon: 'error',
+          title: 'Failed to fetch kobotool settings',
+        });
+      const sanitized = removeFieldsWithUnderscore(koboData.data.results);
+      setRawData(sanitized);
+      setFetching(false);
+    } catch (err) {
+      setFetching(false);
       return Swal.fire({
         icon: 'error',
-        title: 'No data found for this form',
+        title: 'Failed to fetch kobotool settings',
       });
-    const sanitized = removeFieldsWithUnderscore(koboData.data.results);
-    setRawData(sanitized);
-    setFetching(false);
+    }
   };
 
   const fetchKoboSettings = async () => {
@@ -261,7 +270,12 @@ export default function BenImp() {
       });
   };
 
-  const handleReUploadClick = () => resetStates();
+  const handleRetargetClick = () => {
+    setProcessedData([]);
+    setCurrentScreen(BENEF_IMPORT_SCREENS.VALIDATION);
+    setMappings([]);
+    setInvalidFields([]);
+  };
 
   const resetStates = () => {
     setProcessedData([]);
@@ -271,8 +285,11 @@ export default function BenImp() {
     setInvalidFields([]);
   };
 
-  console.log({ currentScreen });
-  console.log('INvalidFields=>', invalidFields);
+  const handleBackClick = () => {
+    setCurrentScreen(BENEF_IMPORT_SCREENS.SELECTION);
+    setUniqueField('');
+    setRawData([]);
+  };
 
   return (
     <div className="h-custom">
@@ -300,9 +317,7 @@ export default function BenImp() {
             {rawData.length > 0 && (
               <div className="flex mb-5 justify-between m-2">
                 <Button
-                  onClick={() =>
-                    setCurrentScreen(BENEF_IMPORT_SCREENS.SELECTION)
-                  }
+                  onClick={handleBackClick}
                   className="w-40 bg-secondary hover:ring-2bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow"
                 >
                   <ArrowBigLeft size={18} strokeWidth={2} /> Back
@@ -380,14 +395,15 @@ export default function BenImp() {
 
         {currentScreen === BENEF_IMPORT_SCREENS.IMPORT_DATA && (
           <>
-            {invalidFields.length > 0 && (
+            {invalidFields.length > 0 ? (
               <ErrorAlert
-                errorType="Validation Error!"
-                message="Fix validation and re-upload"
+                message={`Validation faield for these fields: ${invalidFields.toString()}`}
               />
+            ) : (
+              <SuccessAlert message="Here is your list of data being imported" />
             )}
             <AddToQueue
-              handleReUploadClick={handleReUploadClick}
+              handleRetargetClick={handleRetargetClick}
               data={processedData}
               handleImportClick={() => validateOrImport(IMPORT_ACTION.IMPORT)}
               invalidFields={invalidFields}

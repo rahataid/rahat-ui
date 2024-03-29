@@ -4,14 +4,14 @@ import React from 'react';
 
 interface IProps {
   data: any;
-  handleReUploadClick: any;
+  handleRetargetClick: any;
   handleImportClick: any;
   invalidFields: any;
 }
 
 export default function AddToQueue({
   data,
-  handleReUploadClick,
+  handleRetargetClick,
   handleImportClick,
   invalidFields,
 }: IProps) {
@@ -28,17 +28,17 @@ export default function AddToQueue({
     <div className="relative">
       <div className="flex mb-5 justify-between m-2">
         <Button
-          onClick={handleReUploadClick}
+          onClick={handleRetargetClick}
           className="w-40 bg-secondary hover:ring-2bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow"
         >
-          <ArrowBigLeft size={18} strokeWidth={2} /> Re-Upload
+          <ArrowBigLeft size={18} strokeWidth={2} /> Re-Target
         </Button>
         <Button
           disabled={invalidFields.length}
           onClick={handleImportClick}
           className="w-40 bg-primary hover:ring-2 ring-primary"
         >
-          Import Data
+          Import Now
         </Button>
       </div>
       <hr />

@@ -59,8 +59,6 @@ export default function FilterBox({
         </div>
       </div>
 
-      <div className="m-5"></div>
-
       <div className="flex justify-between m-2">
         <ItemSelector
           form={form}

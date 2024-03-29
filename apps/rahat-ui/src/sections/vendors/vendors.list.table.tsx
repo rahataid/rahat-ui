@@ -52,7 +52,12 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { useBoolean } from '../../hooks/use-boolean';
 import { useTableColumns } from './useTableColumns';
-import { useVendorList, usePagination, useProjectList, useAssignVendorToProject } from '@rahat-ui/query';
+import {
+  useVendorList,
+  usePagination,
+  useProjectList,
+  useAssignVendorToProject,
+} from '@rahat-ui/query';
 import { UUID } from 'crypto';
 
 export type IVendor = {
@@ -67,7 +72,7 @@ export default function VendorsList() {
   const { pagination } = usePagination();
   const { data: vendorData } = useVendorList(pagination);
   const projectList = useProjectList({});
-  const addVendor = useAssignVendorToProject()
+  const addVendor = useAssignVendorToProject();
 
   const projectModal = useBoolean();
   const [selectedProject, setSelectedProject] = React.useState<UUID>();
@@ -113,7 +118,7 @@ export default function VendorsList() {
     await addVendor.mutateAsync({
       vendorUUID: selectedRow?.uuid,
       projectUUID: selectedProject,
-    })
+    });
   };
 
   const handleProjectChange = (d: UUID) => setSelectedProject(d);
@@ -172,9 +177,9 @@ export default function VendorsList() {
                           {header.isPlaceholder
                             ? null
                             : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext(),
-                            )}
+                                header.column.columnDef.header,
+                                header.getContext(),
+                              )}
                         </TableHead>
                       );
                     })}

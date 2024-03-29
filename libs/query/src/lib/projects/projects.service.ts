@@ -124,16 +124,16 @@ export const useAssignVendorToProject = () => {
           action: 'vendor.assign_to_project',
           payload: {
             vendorId: vendorUUID,
-          }
-        }
-      })
+          },
+        },
+      });
     },
     onSuccess: () => {
       q.reset();
       toast.fire({
         title: 'Vendor Assigned Successfully',
         icon: 'success',
-      })
+      });
     },
     onError: (error: any) => {
       const errorMessage = error?.response?.data?.message || 'Error';
@@ -141,11 +141,11 @@ export const useAssignVendorToProject = () => {
       toast.fire({
         title: 'Error while updating Vendor',
         icon: 'error',
-        text: errorMessage
-      })
-    }
-  })
-}
+        text: errorMessage,
+      });
+    },
+  });
+};
 
 export const useProjectSettings = (uuid: UUID) => {
   const q = useProjectAction();

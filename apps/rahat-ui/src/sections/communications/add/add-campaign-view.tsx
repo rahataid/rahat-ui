@@ -23,6 +23,13 @@ import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 import { CAMPAIGN_TYPES } from '@rahat-ui/types';
 import { toast } from 'react-toastify';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
+import {
+  useListTransport,
+  useListAudience,
+  useGetAudio,
+  useCreateCampaign,
+  useCreateAudience,
+} from '@rumsan/communication/react-query';
 
 const FormSchema = z.object({
   campaignName: z.string().min(2, {
@@ -58,11 +65,11 @@ const AddCampaignView = () => {
   const { communicationQuery, beneficiaryQuery } = React.useContext(
     ServiceContext,
   ) as ServiceContextType;
-  const { data: transportData } = communicationQuery.useListTransport();
-  const { data: audienceData } = communicationQuery.useListAudience();
-  const { data: audioData } = communicationQuery.useGetAudio();
-  const createCampaign = communicationQuery.useCreateCampaign();
-  const createAudience = communicationQuery.useCreateAudience();
+  const { data: transportData } = useListTransport();
+  const { data: audienceData } = useListAudience();
+  const { data: audioData } = useGetAudio();
+  const createCampaign = useCreateCampaign();
+  const createAudience = useCreateAudience();
   const { data: beneficiaryData } = beneficiaryQuery.useBeneficiaryPii();
 
   const [rowSelection, setRowSelection] = React.useState({});

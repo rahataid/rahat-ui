@@ -46,6 +46,7 @@ import { CAMPAIGN_TYPES } from '@rahat-ui/types';
 import { useRumsanService } from 'apps/rahat-ui/src/providers/service.provider';
 import { ICampaignItemApiResponse } from '@rumsan/communication';
 import useTextTableColumn from './useTextTableColumn';
+import { useListCampaign } from '@rumsan/communication/react-query';
 
 type IProps = {
   handleClick: (item: ICampaignItemApiResponse) => void;
@@ -54,7 +55,7 @@ type IProps = {
 export default function TextTableView({ handleClick }: IProps) {
   const columns = useTextTableColumn({ handleSplitDetail: handleClick });
   const campaignStore = useCampaignStore();
-  const { communicationQuery } = useRumsanService();
+  // const { communicationQuery } = useRumsanService();
 
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -64,11 +65,10 @@ export default function TextTableView({ handleClick }: IProps) {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
-  const { data, isLoading, isError, isSuccess, isFetched } =
-    communicationQuery.useListCampaign({
-      page: 1,
-      perPage: 10,
-    });
+  const { data, isLoading, isError, isSuccess, isFetched } = useListCampaign({
+    page: 1,
+    perPage: 10,
+  });
   console.log(isSuccess, data);
 
   const tableData = React.useMemo(() => {

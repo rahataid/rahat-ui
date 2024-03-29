@@ -64,6 +64,13 @@ import {
   ServiceContextType,
   useRumsanService,
 } from 'apps/rahat-ui/src/providers/service.provider';
+import {
+  useListTransport,
+  useListAudience,
+  useCreateAudience,
+  useUpdateCampaign,
+  useGetCampaign,
+} from '@rumsan/communication/react-query';
 
 export default function EditCampaign() {
   const params = useParams<{ tag: string; id: string }>();
@@ -82,16 +89,16 @@ export default function EditCampaign() {
   const { communicationQuery, beneficiaryQuery } = React.useContext(
     ServiceContext,
   ) as ServiceContextType;
-  const { data: transportData } = communicationQuery.useListTransport();
-  const { data: audienceData } = communicationQuery.useListAudience();
+  const { data: transportData } = useListTransport();
+  const { data: audienceData } = useListAudience();
   const { data: beneficiaryData } = beneficiaryQuery.useBeneficiaryPii();
 
-  const { data, isSuccess, isLoading } = communicationQuery.useGetCampaign({
+  const { data, isSuccess, isLoading } = useGetCampaign({
     id: Number(params.id),
   });
-  const createAudience = communicationQuery.useCreateAudience();
+  const createAudience = useCreateAudience();
 
-  const editCampaign = communicationQuery.useUpdateCampaign();
+  const editCampaign = useUpdateCampaign();
 
   const FormSchema = z.object({
     campaignName: z.string().min(2, {

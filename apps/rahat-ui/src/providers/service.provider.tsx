@@ -36,6 +36,16 @@ export function ServiceProvider({ children }: ServiceProviderProps) {
     [],
   );
 
+  // const { queryClient:communicationQueryClient, communicationService, setQueryClient:setCommunicationQueryClient, setCommunicationService } =
+  //   useCommunicationQuery();
+  // const csService = useMemo(
+  //   () =>
+  //     new CommunicationService({
+  //       baseURL: process.env.NEXT_PUBLIC_API_HOST_URL,
+  //     }),
+  //   [],
+  // );
+
   useEffect(() => {
     if (!queryClient) {
       setQueryClient(qc);
@@ -47,6 +57,18 @@ export function ServiceProvider({ children }: ServiceProviderProps) {
       setRumsanService(rsService);
     }
   }, [rsService, rumsanService, setRumsanService]);
+
+  // useEffect(() => {
+  //   if (!communicationQueryClient) {
+  //     setCommunicationQueryClient(qc);
+  //   }
+  // }, [qc, communicationQueryClient, setCommunicationQueryClient]);
+
+  // useEffect(() => {
+  //   if (!communicationService) {
+  //     setCommunicationService(rsService);
+  //   }
+  // }, [csService, communicationService, setCommunicationService]);
 
   useEffect(() => {
     if (!communicationService) {

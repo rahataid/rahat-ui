@@ -29,6 +29,7 @@ import React from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { TAGS } from '@rumsan/react-query/utils/tags';
 import { toast } from 'react-toastify';
+import { useTriggerCampaign } from '@rumsan/communication/react-query';
 
 type IProps = {
   id?: number;
@@ -47,12 +48,9 @@ const InfoCard: React.FC<IProps> = ({
   status,
   totalAudience,
 }) => {
-  const { communicationQuery } = React.useContext(
-    ServiceContext,
-  ) as ServiceContextType;
   const queryClient = useQueryClient();
 
-  const triggerCampaign = communicationQuery.useTriggerCampaign();
+  const triggerCampaign = useTriggerCampaign();
   const handleChange = (e: string) => {
     if (e === 'trigger') {
       triggerCampaign

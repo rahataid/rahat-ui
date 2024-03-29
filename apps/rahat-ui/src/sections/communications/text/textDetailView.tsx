@@ -36,17 +36,20 @@ import {
 import React from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { TAGS } from '@rumsan/react-query/utils/tags';
-
-export default function TextDetailView() {
-  const { communicationQuery } = React.useContext(
-    ServiceContext,
-  ) as ServiceContextType;
+import {
+  useGetCampaign,
+  useTriggerCampaign,
+} from '@rumsan/communication/react-query';
+// export default function TextDetailView() {
+//   const { communicationQuery } = React.useContext(
+//     ServiceContext,
+//   ) as ServiceContextType;
   const queryClient = useQueryClient();
 
-  const triggerCampaign = communicationQuery.useTriggerCampaign();
+  const triggerCampaign = useTriggerCampaign();
 
   const params = useParams<{ tag: string; id: string }>();
-  const { data, isLoading } = communicationQuery.useGetCampaign({
+  const { data, isLoading } = useGetCampaign({
     id: Number(params.id),
   });
 

@@ -1,37 +1,46 @@
 'use client';
+
 import { RumsanService } from '@rumsan/sdk';
-
-import { CommunicationService } from '@rumsan/communication';
-import { useAuthStore, useRSQuery } from '@rumsan/react-query';
+import {
+  RSQueryContextType,
+  useAuthStore,
+  useRSQuery,
+} from '@rumsan/react-query';
 import { useQueryClient } from '@tanstack/react-query';
-import { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { createContext, useContext, useEffect, useMemo } from 'react';
 import { useError } from '../utils/useErrors';
+import { useCommunicationQuery } from '@rumsan/communication-query';
+import { CommunicationService } from '@rumsan/communication';
 
-export type ServiceContextType = {
-  rumsanService: RumsanService;
-  // communicationQuery: CommunicationQuery;
-  communicationService: CommunicationService;
-};
-
-export const ServiceContext = createContext<ServiceContextType | null>(null);
+export const ServiceContext = createContext<RSQueryContextType | null>(null);
 
 interface ServiceProviderProps {
   children: React.ReactNode;
 }
 
 export function ServiceProvider({ children }: ServiceProviderProps) {
-  const [communicationService, setCommunicationService] =
-    useState<CommunicationService>();
-  // const [communicationQuery, setCommunicationQuery] =
-  // useState<CommunicationQuery>();
-
   const qc = useQueryClient();
   const { queryClient, rumsanService, setQueryClient, setRumsanService } =
     useRSQuery();
+  const {
+    communicationService,
+    setCommunicationService,
+    queryClient: commsQueryClient,
+    setQueryClient: setCommsQueryClient,
+  } = useCommunicationQuery();
+
   const rsService = useMemo(
     () =>
       new RumsanService({
-        baseURL: process.env.NEXT_PUBLIC_API_HOST_URL,
+        baseURL: process.env.NEXT_PUBLIC_API_HOST_URL + '/v1',
+      }),
+    [],
+  );
+
+  const commsService = useMemo(
+    () =>
+      new CommunicationService({
+        baseURL: process.env.NEXT_PUBLIC_API_HOST_URL + '/v1',
       }),
     [],
   );
@@ -71,14 +80,16 @@ export function ServiceProvider({ children }: ServiceProviderProps) {
   // }, [csService, communicationService, setCommunicationService]);
 
   useEffect(() => {
-    if (!communicationService) {
-      setCommunicationService(
-        new CommunicationService({
-          baseURL: process.env.NEXT_PUBLIC_API_COMMUNICATION_URL,
-        }),
-      );
+    if (!commsQueryClient) {
+      setCommsQueryClient(qc);
     }
-  }, [communicationService, setCommunicationService]);
+  }, [qc, commsQueryClient, setCommsQueryClient]);
+
+  useEffect(() => {
+    if (!communicationService) {
+      setCommunicationService(commsService);
+    }
+  }, [commsService, communicationService, setCommunicationService]);
 
   useError();
 
@@ -123,6 +134,6 @@ export function ServiceProvider({ children }: ServiceProviderProps) {
   return children;
 }
 
-export const useRumsanService = (): ServiceContextType => {
-  return useContext(ServiceContext) as ServiceContextType;
+export const useRumsanService = () => {
+  return useContext(ServiceContext);
 };

@@ -44,10 +44,9 @@ import {
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import TransactionTableData from '../../app/beneficiary/beneficiaryTransactionData.json';
 import { useBeneficiaryTransaction } from '../../hooks/el/subgraph/querycall';
 
-const data: Transaction[] = TransactionTableData;
+const data: Transaction[] = [];
 
 export type Transaction = {
   topic: string;
@@ -58,28 +57,28 @@ export type Transaction = {
 };
 
 export const columns: ColumnDef<Transaction>[] = [
-  {
-    id: 'select',
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && 'indeterminate')
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
+  // {
+  //   id: 'select',
+  //   header: ({ table }) => (
+  //     <Checkbox
+  //       checked={
+  //         table.getIsAllPageRowsSelected() ||
+  //         (table.getIsSomePageRowsSelected() && 'indeterminate')
+  //       }
+  //       onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+  //       aria-label="Select all"
+  //     />
+  //   ),
+  //   cell: ({ row }) => (
+  //     <Checkbox
+  //       checked={row.getIsSelected()}
+  //       onCheckedChange={(value) => row.toggleSelected(!!value)}
+  //       aria-label="Select row"
+  //     />
+  //   ),
+  //   enableSorting: false,
+  //   enableHiding: false,
+  // },
   {
     accessorKey: 'topic',
     header: 'Topic',
@@ -148,7 +147,15 @@ export const columns: ColumnDef<Transaction>[] = [
   },
 ];
 
-export default function BeneficiaryDetailTableView() {
+type IProps = {
+  tableScrollAreaHeight: string;
+  tableSpacing?: string;
+};
+
+export default function BeneficiaryDetailTableView({
+  tableScrollAreaHeight,
+  tableSpacing,
+}: IProps) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
@@ -156,12 +163,13 @@ export default function BeneficiaryDetailTableView() {
   const { data, error } = useBeneficiaryTransaction(
     '0x082d43D30C31D054b1AEDbE08F50C2a1BBE76fC7',
   );
+
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
   const table = useReactTable({
-    data,
+    data: data || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -181,8 +189,8 @@ export default function BeneficiaryDetailTableView() {
 
   return (
     <>
-      <div className="w-full h-full p-2 bg-secondary">
-        <div className="flex items-center mb-2">
+      <div className={`w-full h-full bg-secondary ${tableSpacing}`}>
+        {/* <div className="flex items-center mb-2">
           <Input
             placeholder="Filter topic..."
             value={(table.getColumn('topic')?.getFilterValue() as string) ?? ''}
@@ -220,10 +228,10 @@ export default function BeneficiaryDetailTableView() {
                 })}
             </DropdownMenuContent>
           </DropdownMenu>
-        </div>
-        <div className="rounded border h-[calc(100vh-180px)]  bg-card">
+        </div> */}
+        <div className="rounded border bg-card">
           <Table>
-            <ScrollArea className="h-table1">
+            <ScrollArea className={tableScrollAreaHeight}>
               <TableHeader className=" sticky top-0">
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow key={headerGroup.id}>

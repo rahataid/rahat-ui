@@ -10,6 +10,8 @@ import { useRSQuery } from '@rumsan/react-query';
 import { getBeneficiaryClient } from '@rahataid/sdk/clients';
 import { useBeneficiaryStore } from './beneficiary.store';
 import { useEffect } from 'react';
+import { UUID } from 'crypto';
+import { useSwal } from '../../swal';
 
 const createNewBeneficiary = async (payload: any) => {
   const response = await api.post('/beneficiaries', payload);
@@ -38,7 +40,7 @@ export const useBeneficiaryList = (
 
   const ben = useQuery(
     {
-      queryKey: [TAGS.GET_BENEFICIARIES],
+      queryKey: [TAGS.GET_BENEFICIARIES, payload],
       queryFn: () => benClient.list(payload),
     },
     queryClient,
@@ -97,34 +99,91 @@ export const useAddBulkBeneficiary = () => {
   });
 };
 
-const uploadBeneficiary = async (file: any) => {
-  const response = await api.post('/beneficiaries/upload', file);
+const uploadBeneficiary = async (
+  selectedFile: File,
+  doctype: string,
+  client: any,
+) => {
+  const formData = new FormData();
+  formData.append('file', selectedFile);
+  formData.append('doctype', doctype);
+
+  const response = await client.post('/beneficiaries/upload', formData);
   return response?.data;
 };
 
 export const useUploadBeneficiary = () => {
   const qc = useQueryClient();
-  return useMutation({
-    mutationFn: (file: any) => uploadBeneficiary(file),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: [TAGS.GET_BENEFICIARIES] });
-    },
+  const { rumsanService, queryClient } = useRSQuery();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-right',
+    showConfirmButton: false,
+    timer: 3000,
   });
+  return useMutation(
+    {
+      mutationFn: ({
+        selectedFile,
+        doctype,
+      }: {
+        selectedFile: File;
+        doctype: string;
+      }) => uploadBeneficiary(selectedFile, doctype, rumsanService.client),
+      onSuccess: () => {
+        qc.invalidateQueries({ queryKey: [TAGS.GET_BENEFICIARIES] });
+        toast.fire({
+          icon: 'success',
+          title: 'Beneficiary uploaded successfully',
+        });
+      },
+      onError: (error: any) => {
+        console.log('error', error);
+        const message = error.response?.data?.message || error.message;
+        toast.fire({
+          icon: 'error',
+          title: 'Something went wrong',
+          text: message,
+        });
+      },
+    },
+    queryClient,
+  );
 };
 
 export const useBeneficiaryPii = (): UseQueryResult<any, Error> => {
-  return useQuery({
-    queryKey: [TAGS.GET_BENEFICIARIES],
-    queryFn: () => {
-      return api
-        .get('/beneficiaries/pii')
-        .then(function (response) {
-          return response.data;
-        })
-        .catch(function (error) {
-          console.error('Error:', error);
-          throw error;
-        });
+  const { rumsanService, queryClient } = useRSQuery();
+  const benClient = getBeneficiaryClient(rumsanService.client);
+  return useQuery(
+    {
+      queryKey: [TAGS.GET_BENEFICIARIES],
+      queryFn: () => benClient.listPiiData(),
     },
-  });
+    queryClient,
+  );
+};
+
+export const useSingleBeneficiary = (
+  uuid: UUID,
+): UseQueryResult<any, Error> => {
+  const { setSingleBeneficiary } = useBeneficiaryStore();
+  const { rumsanService, queryClient } = useRSQuery();
+  const benClient = getBeneficiaryClient(rumsanService.client);
+
+  const query = useQuery(
+    {
+      queryKey: [TAGS.GET_BENEFICIARY, uuid],
+      queryFn: () => benClient.get(uuid),
+    },
+    queryClient,
+  );
+
+  useEffect(() => {
+    if (query.data) {
+      setSingleBeneficiary(query.data.data);
+    }
+  }, [query.data, setSingleBeneficiary]);
+
+  return query;
 };

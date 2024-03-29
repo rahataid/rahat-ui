@@ -47,33 +47,12 @@ import {
   const queryClient = useQueryClient();
 
   const triggerCampaign = useTriggerCampaign();
+  // const triggerCampaign = communicationQuery.useTriggerCampaign();
 
   const params = useParams<{ tag: string; id: string }>();
   const { data, isLoading } = useGetCampaign({
     id: Number(params.id),
   });
-
-  const logCardData = [
-    {
-      total: data && data?.data?.communicationLogs.length,
-      title: 'Total SMS sent',
-    },
-    { total: 3, title: 'Banked Beneficiaries' },
-    { total: 2, title: 'Unbanked Beneficiaries' },
-  ];
-  const handleChange = (e: string) => {
-    if (e === 'trigger') {
-      triggerCampaign
-        .mutateAsync(Number(params.id))
-        .then(() => {
-          toast.success('Campaign Trigger Success.');
-          queryClient.invalidateQueries([TAGS.GET_CAMPAIGNS]);
-        })
-        .catch((e) => {
-          toast.error('Failed to Trigger Campaign.');
-        });
-    }
-  };
 
   return (
     <>
@@ -83,40 +62,6 @@ import {
         <div className="p-2 bg-secondary">
           <div className="flex justify-between font-semibold text-lg items-center mt-2">
             <div>Campaign Name</div>
-
-            <Select>
-              <SelectTrigger className="w-24">
-                <SelectValue placeholder="Action" />
-              </SelectTrigger>
-              <SelectContent>
-                <Dialog>
-                  <DialogTrigger className="hover:bg-muted p-1 rounded text-sm text-left w-full">
-                    Trigger Campaign
-                  </DialogTrigger>
-                  <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle>Trigger Campaign</DialogTitle>
-                      <DialogDescription>Are you sure??</DialogDescription>
-                    </DialogHeader>
-                    <DialogFooter className="sm:justify-end">
-                      <DialogClose asChild>
-                        <Button type="button" variant="ghost">
-                          Close
-                        </Button>
-                      </DialogClose>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        className="text-primary"
-                        onClick={() => handleChange('trigger')}
-                      >
-                        Trigger
-                      </Button>
-                    </DialogFooter>
-                  </DialogContent>
-                </Dialog>
-              </SelectContent>
-            </Select>
           </div>
           <div className="mt-2 grid grid-cols-3 gap-5">
             <div className="col-span-2">

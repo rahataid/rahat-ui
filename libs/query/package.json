@@ -7,7 +7,8 @@
     "@tanstack/react-query": "^5.18.1",
     "zustand": "^4.5.0",
     "jsonwebtoken": "^9.0.2",
-    "react": "18.2.0"
+    "react": "18.2.0",
+    "@rahat-ui/shadcn": "^0.0.1"
   },
   "type": "commonjs",
   "main": "./src/index.js",

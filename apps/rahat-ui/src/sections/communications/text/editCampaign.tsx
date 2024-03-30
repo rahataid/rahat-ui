@@ -70,7 +70,7 @@ import {
   useCreateAudience,
   useUpdateCampaign,
   useGetCampaign,
-} from '@rumsan/communication/react-query';
+} from '@rumsan/communication-query';
 
 export default function EditCampaign() {
   const params = useParams<{ tag: string; id: string }>();
@@ -86,12 +86,13 @@ export default function EditCampaign() {
     Array<{ id: number; phone: string; name: string }>
   >([]);
 
-  const { communicationQuery, beneficiaryQuery } = React.useContext(
-    ServiceContext,
-  ) as ServiceContextType;
+  // const { communicationQuery, beneficiaryQuery } = React.useContext(
+  //   ServiceContext,
+  // ) as ServiceContextType;
   const { data: transportData } = useListTransport();
   const { data: audienceData } = useListAudience();
-  const { data: beneficiaryData } = beneficiaryQuery.useBeneficiaryPii();
+  let beneficiaryData;
+  // = beneficiaryQuery.useBeneficiaryPii();
 
   const { data, isSuccess, isLoading } = useGetCampaign({
     id: Number(params.id),

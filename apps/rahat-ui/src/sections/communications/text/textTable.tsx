@@ -45,7 +45,6 @@ import { CAMPAIGN_TYPES } from '@rahat-ui/types';
 import { ICampaignItemApiResponse } from '@rumsan/communication';
 import { useCampaignStore, useListCampaign } from '@rumsan/communication-query';
 import useTextTableColumn from './useTextTableColumn';
-import { useListCampaign } from '@rumsan/communication/react-query';
 
 type IProps = {
   handleClick: (item: ICampaignItemApiResponse) => void;

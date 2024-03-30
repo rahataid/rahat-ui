@@ -42,6 +42,7 @@
     "@rahataid/el-subgraph": "0.0.5",
     "@rahataid/sdk": "0.0.19",
     "@rumsan/communication": "^0.0.7",
+    "@rumsan/communication-query": "^0.0.1",
     "@rumsan/core": "^3.0.133",
     "@rumsan/extensions": "^0.0.14",
     "@rumsan/prisma": "^1.0.125",
@@ -102,8 +103,7 @@
     "viem": "^2.8.5",
     "wagmi": "^2.5.7",
     "zod": "^3.22.4",
-    "zustand": "^4.5.2",
-    "@rumsan/communication-query": "^0.0.7"
+    "zustand": "^4.5.2"
   },
   "devDependencies": {
     "@nx/cypress": "18.0.0",

@@ -31,7 +31,7 @@ import {
   useGetAudio,
   useCreateCampaign,
   useCreateAudience,
-} from '@rumsan/communication/react-query';
+} from '@rumsan/communication-query';
 import {
   RankingInfo,
   rankItem,
@@ -69,16 +69,19 @@ export type SelectedRowType = {
 };
 
 const AddCampaignView = () => {
+  // console.log(ServiceContext);
+
   // TODO: Implement the new structure
-  const { communicationQuery, beneficiaryQuery } = React.useContext(
-    ServiceContext,
-  ) as ServiceContextType;
+  // const { beneficiaryQuery } = React.useContext(
+  //   ServiceContext,
+  // ) as ServiceContextType;
   const { data: transportData } = useListTransport();
   const { data: audienceData } = useListAudience();
   const { data: audioData } = useGetAudio();
   const createCampaign = useCreateCampaign();
   const createAudience = useCreateAudience();
-  const { data: beneficiaryData } = beneficiaryQuery.useBeneficiaryPii();
+  let beneficiaryData;
+  // = beneficiaryQuery.useBeneficiaryPii();
 
   const [rowSelection, setRowSelection] = React.useState({});
   const [selectedRows, setSelectedRows] = React.useState<SelectedRowType[]>([]);

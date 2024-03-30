@@ -40,20 +40,10 @@ export function ServiceProvider({ children }: ServiceProviderProps) {
   const commsService = useMemo(
     () =>
       new CommunicationService({
-        baseURL: process.env.NEXT_PUBLIC_API_HOST_URL + '/v1',
+        baseURL: process.env.NEXT_PUBLIC_API_COMMUNICATION_URL + '/v1',
       }),
     [],
   );
-
-  // const { queryClient:communicationQueryClient, communicationService, setQueryClient:setCommunicationQueryClient, setCommunicationService } =
-  //   useCommunicationQuery();
-  // const csService = useMemo(
-  //   () =>
-  //     new CommunicationService({
-  //       baseURL: process.env.NEXT_PUBLIC_API_HOST_URL,
-  //     }),
-  //   [],
-  // );
 
   useEffect(() => {
     if (!queryClient) {
@@ -66,18 +56,6 @@ export function ServiceProvider({ children }: ServiceProviderProps) {
       setRumsanService(rsService);
     }
   }, [rsService, rumsanService, setRumsanService]);
-
-  // useEffect(() => {
-  //   if (!communicationQueryClient) {
-  //     setCommunicationQueryClient(qc);
-  //   }
-  // }, [qc, communicationQueryClient, setCommunicationQueryClient]);
-
-  // useEffect(() => {
-  //   if (!communicationService) {
-  //     setCommunicationService(rsService);
-  //   }
-  // }, [csService, communicationService, setCommunicationService]);
 
   useEffect(() => {
     if (!commsQueryClient) {

@@ -1,5 +1,6 @@
 'use client';
 import {
+  ColumnDef,
   ColumnFiltersState,
   SortingState,
   VisibilityState,
@@ -10,9 +11,9 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
+import { ArrowUpDown, MoreHorizontal } from 'lucide-react';
 import * as React from 'react';
 
-import { useProjectAction } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/components/button';
 import { Input } from '@rahat-ui/shadcn/components/input';
 import {
@@ -23,31 +24,88 @@ import {
   TableHeader,
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
+
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import { useProjectAction } from '@rahat-ui/query';
 import { MS_ACTIONS } from '@rahataid/sdk';
-import { useParams, useRouter } from 'next/navigation';
-import { useVendorTable } from './useVendorTable';
+import { formatdbDate } from '../../utils';
 
 export type Transaction = {
   id: string;
   topic: string;
   beneficiary: number;
-  voucherId: string;
+  phoneNumber: string;
   timestamp: string;
-  txHash: string;
+  referredBy: string;
 };
 
-export default function VendorsList() {
-  const router = useRouter();
-  const uuid = useParams().id;
+export const columns: ColumnDef<Transaction>[] = [
+  {
+    accessorKey: 'voucherNumber',
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+        >
+          Voucher Amount
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) => (
+      <div className="lowercase">{row.getValue('voucherNumber')}</div>
+    ),
+  },
 
-  const handleViewClick = (rowData: any) => {
-    router.push(
-      `/projects/el/${uuid}/vendors/${rowData.walletaddress}?phone=${rowData.phone}&&name=${rowData.name}&&walletAddress=${rowData.walletaddress} &&vendorId=${rowData.vendorId}`,
-    );
-  };
+  {
+    accessorKey: 'voucherType',
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+        >
+          Voucher Type
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) => <div>{row.getValue('voucherType')}</div>,
+  },
+  {
+    accessorKey: 'timestamp',
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+        >
+          Timestamp
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) => <div>{row.getValue('timestamp')}</div>,
+  },
+  {
+    accessorKey: 'status',
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+        >
+          Redemption Status
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) => <div>{row.getValue('status')}</div>,
+  },
+];
 
-  const columns = useVendorTable({ handleViewClick });
+export default function RedemptionTable({ projectId, vendorId }) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
@@ -56,8 +114,6 @@ export default function VendorsList() {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
   const [data, setData] = React.useState([]);
-
-  const getVendors = useProjectAction();
 
   const table = useReactTable({
     data,
@@ -78,114 +134,37 @@ export default function VendorsList() {
     },
   });
 
-  const [perPage, setPerPage] = React.useState<number>(5);
-  const [currentPage, setCurrentPage] = React.useState<number>(1);
-
-  const fetchVendors = async () => {
-    const result = await getVendors.mutateAsync({
-      uuid,
-      data: {
-        action: MS_ACTIONS.VENDOR.LIST_BY_PROJECT,
-        payload: {
-          page: currentPage,
-          perPage,
-        },
-      },
-    });
-
-    const filteredData = result?.data.map((row: any) => {
-      return {
-        name: row.User.name,
-        walletaddress: row.User.wallet,
-        phone: row.User.phone,
-        vendorId: row.User.uuid,
-      };
-    });
-    setData(filteredData);
-  };
-
-  // const fetchBeneficiary = React.useCallback(() => {
-  //   // const querRes = queryService.useProjectTransaction();
-
-  //   const querRes = queryService.useBeneficiaryTransaction(walletAddress);
-
-  //   querRes.then((res) => {
-  //     const claimedAssigned = res?.claimAssigneds;
-  //     const claimProcessed = res?.projectClaimProcesseds;
-  //     const beneficiaryReferred = res?.beneficiaryReferreds;
-  //     const beneficiaryAdded = res?.beneficiaryAddeds;
-  //     const claimCreated = res?.claimCreateds;
-  //     const tokenBudgetIncrease = res?.tokenBudgetIncreases;
-  //     const data: any = [];
-
-  //     claimedAssigned?.map((trans) => {
-  //       data.push({
-  //         beneficiary: trans.beneficiary,
-  //         topic: trans.eventType,
-  //         timestamp: formatDate(trans.blockTimestamp),
-  //         txHash: trans.transactionHash,
-  //         voucherId: trans.tokenAddress,
-  //       });
-  //       // const claimRes = queryService?.useClaimAssigned(trans.id);
-  //     });
-  //     claimProcessed?.map((trans) => {
-  //       data.push({
-  //         beneficiary: trans.beneficiary,
-  //         topic: trans.eventType,
-  //         timestamp: formatDate(trans.blockTimestamp),
-  //         txHash: trans.transactionHash,
-  //         voucherId: trans.token,
-  //       });
-  //     });
-  //     beneficiaryReferred?.map((trans) => {
-  //       data.push({
-  //         beneficiary: trans.referrerBeneficiaries,
-  //         topic: trans.eventType,
-  //         timestamp: formatDate(trans.blockTimestamp),
-  //         txHash: trans.transactionHash,
-  //       });
-  //     });
-
-  //     claimCreated?.map((trans) => {
-  //       data.push({
-  //         beneficiary: trans.claimer,
-  //         txHash: trans.transactionHash,
-  //         timestamp: formatDate(trans.blockTimestamp),
-  //         topic: trans?.eventType,
-  //         voucherId: trans.token,
-  //       });
-  //     });
-
-  //     beneficiaryAdded?.map((trans) => {
-  //       data.push({
-  //         topic: trans.eventType,
-  //         timestamp: formatDate(trans.blockTimestamp),
-  //         txHash: trans.transactionHash,
-  //         beneficiary: trans.beneficiaryAddress,
-  //       });
-  //     });
-
-  //     tokenBudgetIncrease?.map((trans) => {
-  //       data.push({
-  //         topic: trans.eventType,
-  //         txHash: trans.transactionHash,
-  //         timestamp: formatDate(trans.blockTimestamp),
-  //         voucherId: trans?.tokenAddress,
-  //       });
-  //     });
-  //     setData(data);
-  //   });
-  // }, [queryService]);
+  const getVendorRedemption = useProjectAction();
 
   React.useEffect(() => {
-    fetchVendors();
+    async function fetchData() {
+      const res = await getVendorRedemption.mutateAsync({
+        uuid: projectId,
+        data: {
+          action: MS_ACTIONS.ELPROJECT.GET_VENDOR_REDEMPTION,
+          payload: {
+            vendorId,
+          },
+        },
+      });
+      const filteredData = res?.data.map((item) => {
+        return {
+          voucherNumber: item?.voucherNumber,
+          voucherType: item?.voucherType,
+          status: item?.status,
+          timestamp: formatdbDate(item?.createdAt),
+        };
+      });
+      setData(filteredData);
+    }
+    fetchData();
   }, []);
 
   return (
-    <div className="w-full h-full p-2 bg-secondary">
-      <div className="flex items-center mb-2">
+    <div className="w-full h-full bg-secondary">
+      {/* <div className="flex items-center mb-2">
         <Input
-          placeholder="Filter Vendors..."
+          placeholder="Filter Referrals..."
           value={
             (table.getColumn('beneficiary')?.getFilterValue() as string) ?? ''
           }
@@ -194,8 +173,8 @@ export default function VendorsList() {
           }
           className="w-full"
         />
-      </div>
-      <div className="rounded  h-[calc(100vh-180px)] bg-card">
+      </div> */}
+      <div className="rounded border h-[calc(100vh-180px)] bg-card">
         <Table>
           <ScrollArea className="h-table1">
             <TableHeader className="bg-card sticky top-0">

@@ -112,22 +112,12 @@ export const useOnlyMintVoucher = () => {
   });
 };
 
-export const useAddVendors = (uuid: string, vendorUuid: string) => {
+export const useAddVendors = () => {
   const alert = useSwal();
   const addVendor = useProjectAction();
   return useWriteElProjectUpdateVendor({
     mutation: {
       onSuccess: async () => {
-        // await addVendor.mutateAsync({
-        //   uuid: uuid,
-        //   data: {
-        //     action: MS_ACTIONS.VENDOR.ASSIGN_TO_PROJECT,
-        //     // 'vendor.assign_to_project',
-        //     payload: {
-        //       vendorUuid,
-        //     },
-        //   },
-        // });
         alert.fire({
           title: 'Vendor approved sucessfully',
           icon: 'success',

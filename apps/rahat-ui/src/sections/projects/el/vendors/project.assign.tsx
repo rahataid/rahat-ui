@@ -1,3 +1,4 @@
+import { useProjectList } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   Dialog,
@@ -16,7 +17,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
-import { useRumsanService } from 'apps/rahat-ui/src/providers/service.provider';
 import { FC } from 'react';
 
 interface ProjectAssignModal {
@@ -30,10 +30,7 @@ const ProjectAssign: FC<ProjectAssignModal> = ({
   handleSubmit,
   open,
 }) => {
-  const { projectQuery } = useRumsanService();
-  const projectsList = projectQuery.useProjectList({});
-  const d = projectsList.data;
-  const projectList = d?.data || [];
+  const projectsList = useProjectList({});
 
   const handleProjectChange = (d: string) => {
     console.log('D==>', d);
@@ -59,11 +56,11 @@ const ProjectAssign: FC<ProjectAssignModal> = ({
                   <SelectValue placeholder="Projects" />
                 </SelectTrigger>
                 <SelectContent>
-                  {projectList.length > 0 &&
-                    projectList.map((project: any) => {
+                  {projectsList?.data?.data &&
+                    projectsList.data.data.map((project) => {
                       return (
-                        <SelectItem key={project.id} value={project.id}>
-                          {project.title}
+                        <SelectItem key={project.uuid} value={project.uuid}>
+                          {project.name}
                         </SelectItem>
                       );
                     })}

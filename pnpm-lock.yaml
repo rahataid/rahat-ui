@@ -75,11 +75,11 @@ dependencies:
     specifier: 0.0.19
     version: 0.0.19
   '@rumsan/communication':
-    specifier: ^0.0.7
-    version: 0.0.7
+    specifier: ^0.0.9
+    version: 0.0.9
   '@rumsan/communication-query':
-    specifier: ^0.0.1
-    version: 0.0.1(@types/react@18.2.70)(typescript@5.4.3)(zod@3.22.4)
+    specifier: ^0.0.2
+    version: 0.0.2(@types/react@18.2.70)
   '@rumsan/core':
     specifier: ^3.0.133
     version: 3.0.140
@@ -5850,29 +5850,20 @@ packages:
       picomatch: 2.3.1
       rollup: 2.79.1
 
-  /@rumsan/communication-query@0.0.1(@types/react@18.2.70)(typescript@5.4.3)(zod@3.22.4):
-    resolution: {integrity: sha512-4mcdtGt6ssJLNHi7nIXVAsqUdDxWIqrVfqKGcrQc4zM9yy+xEutKQLoWFytXdeykuBvfyej4d9TbVbz3zGRZOg==, tarball: https://npm.pkg.github.com/download/@rumsan/communication-query/0.0.1/ea8437855453d1bd17fb9e151b7bb0eb69a61bd5}
+  /@rumsan/communication-query@0.0.2(@types/react@18.2.70):
+    resolution: {integrity: sha512-m3vTQEJCfCFzkIdr2QqWCSBJ93BO/AlOBdwCqnYet3oPgkGRu6rg0pTdS8xvUkhf87WBOphw7wP5JxNMQ1lOjQ==, tarball: https://npm.pkg.github.com/download/@rumsan/communication-query/0.0.2/49bc6a3c6c404733fbbf88d7b757c7438dc84824}
     dependencies:
-      '@rumsan/communication': 0.0.8
-      '@rumsan/react-query': 0.0.35(@types/react@18.2.70)
-      '@rumsan/sdk': 0.0.43
-      '@swc/helpers': 0.5.7
+      '@rumsan/communication': 0.0.9
+      '@rumsan/react-query': 0.0.34(@types/react@18.2.70)
       '@tanstack/react-query': 5.28.8(react@18.2.0)
-      '@tanstack/react-query-devtools': 5.28.8(@tanstack/react-query@5.28.8)(react@18.2.0)
       axios: 1.6.8
-      jsonwebtoken: 9.0.2
       react: 18.2.0
       tslib: 2.6.2
-      viem: 2.9.2(typescript@5.4.3)(zod@3.22.4)
       zustand: 4.5.2(@types/react@18.2.70)(react@18.2.0)
     transitivePeerDependencies:
       - '@types/react'
-      - bufferutil
       - debug
       - immer
-      - typescript
-      - utf-8-validate
-      - zod
     dev: false
 
   /@rumsan/communication@0.0.7:
@@ -5883,8 +5874,8 @@ packages:
       - debug
     dev: false
 
-  /@rumsan/communication@0.0.8:
-    resolution: {integrity: sha512-Ht+vIdZVabacljbIO54QDm2FXYSH5CAKyDQ68/NcvQdqQz39x3wZLt4DWuliTGY6ZpaniddVyql57NTdcmae6Q==, tarball: https://npm.pkg.github.com/download/@rumsan/communication/0.0.8/b11e20c168799814e0d5058533ec77ed35f2d505}
+  /@rumsan/communication@0.0.9:
+    resolution: {integrity: sha512-PrioZi1tpD7tOMMZ1g3mGADCX2brKvarJV5dB3E8H21ncWwlYBS+XyfYBebnoRBQ9HjELH9VIBTKVhnYThdhIQ==, tarball: https://npm.pkg.github.com/download/@rumsan/communication/0.0.9/e9528ec698dbb494851f84bfeac7667a2a8789e5}
     dependencies:
       axios: 1.6.8
     transitivePeerDependencies:
@@ -5979,6 +5970,22 @@ packages:
       - prisma
       - reflect-metadata
       - rxjs
+    dev: false
+
+  /@rumsan/react-query@0.0.34(@types/react@18.2.70):
+    resolution: {integrity: sha512-Sd5XsThQaI8IN+KSNdqQqZWmlbRR8BNzBLlojPOGCqM9QLKskjyPREpIyOT3JTSmH+ITU3yocW4lDt1IJqlVJA==, tarball: https://npm.pkg.github.com/download/@rumsan/react-query/0.0.34/1559e5a8544466ab164a070649ed8fb0570d28b8}
+    dependencies:
+      '@rumsan/communication': 0.0.7
+      '@rumsan/sdk': 0.0.43
+      '@tanstack/react-query': 5.28.8(react@18.2.0)
+      axios: 1.6.8
+      react: 18.2.0
+      tslib: 2.6.2
+      zustand: 4.5.2(@types/react@18.2.70)(react@18.2.0)
+    transitivePeerDependencies:
+      - '@types/react'
+      - debug
+      - immer
     dev: false
 
   /@rumsan/react-query@0.0.35(@types/react@18.2.70):

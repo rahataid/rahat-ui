@@ -10,8 +10,8 @@ import { GraphQueryProvider } from '../providers/subgraph-provider';
 import { ThemeProvider } from '../providers/theme-provider';
 import { Wagmi } from '../providers/wagmi.provider';
 import './globals.css';
-import { RSQueryProvider } from '@rumsan/react-query/providers/index';
-import { CommunicationQueryProvider } from '@rumsan/communication-query';
+import { RSQueryProvider } from '@rumsan/react-query/providers/rs-query-provider';
+import { CommunicationQueryProvider } from '@rumsan/communication-query/providers/communication-query-provider';
 
 export const metadata = {
   title: 'Welcome to Rahat',

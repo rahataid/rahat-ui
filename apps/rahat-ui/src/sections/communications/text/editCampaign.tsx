@@ -59,11 +59,7 @@ import { Button } from '@rahat-ui/shadcn/components/button';
 import { Input } from '@rahat-ui/shadcn/components/input';
 import { Calendar } from '@rahat-ui/shadcn/components/calendar';
 import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
-import {
-  ServiceContext,
-  ServiceContextType,
-  useRumsanService,
-} from 'apps/rahat-ui/src/providers/service.provider';
+
 import {
   useListTransport,
   useListAudience,
@@ -71,6 +67,7 @@ import {
   useUpdateCampaign,
   useGetCampaign,
 } from '@rumsan/communication-query';
+import { useBeneficiaryPii } from '@rahat-ui/query';
 
 export default function EditCampaign() {
   const params = useParams<{ tag: string; id: string }>();
@@ -86,13 +83,10 @@ export default function EditCampaign() {
     Array<{ id: number; phone: string; name: string }>
   >([]);
 
-  // const { communicationQuery, beneficiaryQuery } = React.useContext(
-  //   ServiceContext,
-  // ) as ServiceContextType;
   const { data: transportData } = useListTransport();
   const { data: audienceData } = useListAudience();
-  let beneficiaryData;
-  // = beneficiaryQuery.useBeneficiaryPii();
+
+  const { data: beneficiaryData } = useBeneficiaryPii();
 
   const { data, isSuccess, isLoading } = useGetCampaign({
     id: Number(params.id),
@@ -274,7 +268,6 @@ export default function EditCampaign() {
                 },
               });
             }
-            console.log(selectedRows, checked, item, selectedRows[row.id], row);
 
             setSelectedRows((prevSelectedRows) =>
               checked

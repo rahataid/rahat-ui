@@ -72,7 +72,7 @@ export default function VendorsList() {
   const { pagination } = usePagination();
   const { data: vendorData } = useVendorList(pagination);
   const projectList = useProjectList({});
-    const addVendor = useAssignVendorToProject();
+  const addVendor = useAssignVendorToProject();
 
   const projectModal = useBoolean();
   const [selectedProject, setSelectedProject] = React.useState<UUID>();
@@ -177,9 +177,9 @@ export default function VendorsList() {
                           {header.isPlaceholder
                             ? null
                             : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext(),
-                            )}
+                                header.column.columnDef.header,
+                                header.getContext(),
+                              )}
                         </TableHead>
                       );
                     })}

@@ -8,10 +8,10 @@ import CustomPagination from '../../components/customPagination';
 export default function UserView() {
   const { pagination, setNextPage, setPerPage, setPrevPage } = usePagination();
   const users = useUserStore((state) => state.users);
-  useUserList({
-    page: +pagination.page,
-    perPage: +pagination.perPage,
-  });
+  // useUserList({
+  //   page: +pagination.page,
+  //   perPage: +pagination.perPage,
+  // });
   useUserList();
 
   return (

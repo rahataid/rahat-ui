@@ -7,23 +7,24 @@ import CustomPagination from '../../components/customPagination';
 
 export default function UserView() {
   const { pagination, setNextPage, setPerPage, setPrevPage } = usePagination();
+  const users = useUserStore((state) => state.users);
   useUserList({
     page: +pagination.page,
     perPage: +pagination.perPage,
   });
-  const users = useUserStore((state) => state.users);
+  useUserList();
 
   return (
     <div>
       <UsersTable />
       <CustomPagination
-        currentPage={users.response.meta.currentPage}
+        currentPage={users && users?.response?.meta?.currentPage}
         handleNextPage={setNextPage}
         handlePrevPage={setPrevPage}
         handlePageSizeChange={setPerPage}
-        meta={users.response.meta}
+        meta={users && users?.response?.meta}
         perPage={pagination.perPage}
-        total={users.response.meta.total}
+        total={users && users?.response?.meta?.total}
       />
 
       {/* <UserDetails data={selectedUserData} /> */}

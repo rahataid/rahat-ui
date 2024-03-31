@@ -15,7 +15,24 @@ export const useVendorList = (payload: any): UseQueryResult<any, Error> => {
 
   const vendor = useQuery(
     {
-      queryKey: [TAGS.GET_VENDORS],
+      queryKey: [TAGS.GET_VENDORS, payload],
+      select: (data) => {
+        return {
+          ...data,
+          data: data.data.map((d: any) => ({
+            id: d.User.uuid,
+            status: d.User?.VendorProject[0]?.Project?.id
+              ? 'Assigned'
+              : 'Pending',
+            email: d.User?.email,
+            projectName: d.User?.VendorProject[0]?.Project?.name || 'N/A',
+            walletAddress: d.User.wallet,
+            name: d.User?.name,
+            phone: d.User?.phone,
+            gender: d.User?.gender,
+          })),
+        };
+      },
       queryFn: () => vendorClient.list(payload),
     },
     queryClient,
@@ -23,7 +40,6 @@ export const useVendorList = (payload: any): UseQueryResult<any, Error> => {
 
   useEffect(() => {
     if (vendor.data) {
-      //TODO: fix this type
       setVendors(vendor.data.data as any[]);
       setMeta(vendor.data.response.meta);
     }

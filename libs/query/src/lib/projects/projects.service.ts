@@ -1,24 +1,24 @@
 import { CreateProjectPayload } from '@rahat-ui/types';
+import { useRSQuery } from '@rumsan/react-query';
 import {
-  UseMutationResult,
   UseQueryResult,
   useMutation,
   useQuery,
   useQueryClient,
 } from '@tanstack/react-query';
 import { TAGS } from '../../config';
-import { useRSQuery } from '@rumsan/react-query';
 
-import { api } from '../../utils/api';
 import { getProjectClient } from '@rahataid/sdk/clients';
-import { UUID } from 'crypto';
-import { FormattedResponse } from '@rumsan/sdk/utils';
 import { Project, ProjectActions } from '@rahataid/sdk/project/project.types';
-import { PaginatedResult, Pagination } from '@rumsan/sdk/types';
-import { useProjectSettingsStore, useProjectStore } from './project.store';
-import { useEffect } from 'react';
+import { Pagination } from '@rumsan/sdk/types';
+import { FormattedResponse } from '@rumsan/sdk/utils';
+import { UUID } from 'crypto';
 import { isEmpty } from 'lodash';
+import { useCallback, useEffect, useMemo } from 'react';
 import { useSwal } from '../../swal';
+import { api } from '../../utils/api';
+import { useProjectSettingsStore, useProjectStore } from './project.store';
+import { MS_ACTIONS } from '@rahataid/sdk';
 
 const createProject = async (payload: CreateProjectPayload) => {
   const res = await api.post('/projects', payload);
@@ -222,5 +222,51 @@ export const useProject = (
       setSingleProject(query.data.data); // Access the 'data' property of the 'FormattedResponse' object
     }
   }, [query.data]);
+  return query;
+};
+
+type GetProjectBeneficiaries = Pagination & {
+  status?: string;
+  projectUUID: UUID;
+};
+
+export const useProjectBeneficiaries = (payload: GetProjectBeneficiaries) => {
+  const q = useProjectAction();
+  const { projectUUID, ...restPayload } = payload;
+
+  const restPayloadString = JSON.stringify(restPayload);
+
+  const queryKey = useMemo(
+    () => [MS_ACTIONS.BENEFICIARY.LIST_BY_PROJECT, restPayloadString],
+    [restPayloadString],
+  );
+
+  const queryFn = useCallback(async () => {
+    const mutate = await q.mutateAsync({
+      uuid: projectUUID,
+      data: {
+        action: MS_ACTIONS.BENEFICIARY.LIST_BY_PROJECT,
+        payload: restPayload,
+      },
+    });
+    return mutate.data;
+  }, [q, projectUUID, restPayloadString]);
+
+  const query = useQuery({
+    queryKey,
+    initialData: [],
+
+    select(data) {
+      return data.map((row: any) => ({
+        name: row.Beneficiary.walletAddress,
+        gender: row.Beneficiary.gender,
+        phone: row.Beneficiary.notes || 'N/A',
+        redemption: 'N/A',
+        type: row.Beneficiary.type || 'N/A',
+      }));
+    },
+    queryFn,
+  });
+
   return query;
 };

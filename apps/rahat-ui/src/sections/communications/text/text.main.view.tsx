@@ -21,6 +21,7 @@ export default function TextMainView() {
     setSelected(undefined);
   };
   return (
+    // TODO: refactor to new structure,rremove ResizablePanelGroup and use the custom hook
     <ResizablePanelGroup direction="horizontal">
       <ResizablePanel minSize={50}>
         <TextTable handleClick={handleCommunicationClick} />

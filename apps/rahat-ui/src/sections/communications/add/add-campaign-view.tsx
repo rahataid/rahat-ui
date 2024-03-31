@@ -2,10 +2,7 @@
 
 import React from 'react';
 import AddForm from './add-form';
-import {
-  ServiceContext,
-  ServiceContextType,
-} from 'apps/rahat-ui/src/providers/service.provider';
+
 import { z } from 'zod';
 import { FormProvider, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -39,6 +36,7 @@ import {
 } from '@tanstack/match-sorter-utils';
 import { useRouter } from 'next/navigation';
 import { paths } from 'apps/rahat-ui/src/routes/paths';
+import { useBeneficiaryPii } from '@rahat-ui/query';
 const FormSchema = z.object({
   campaignName: z.string().min(2, {
     message: 'Campaign Name must be at least 2 characters.',
@@ -69,19 +67,12 @@ export type SelectedRowType = {
 };
 
 const AddCampaignView = () => {
-  // console.log(ServiceContext);
-
-  // TODO: Implement the new structure
-  // const { beneficiaryQuery } = React.useContext(
-  //   ServiceContext,
-  // ) as ServiceContextType;
   const { data: transportData } = useListTransport();
   const { data: audienceData } = useListAudience();
   const { data: audioData } = useGetAudio();
   const createCampaign = useCreateCampaign();
   const createAudience = useCreateAudience();
-  let beneficiaryData;
-  // = beneficiaryQuery.useBeneficiaryPii();
+  const { data: beneficiaryData } = useBeneficiaryPii();
 
   const [rowSelection, setRowSelection] = React.useState({});
   const [selectedRows, setSelectedRows] = React.useState<SelectedRowType[]>([]);

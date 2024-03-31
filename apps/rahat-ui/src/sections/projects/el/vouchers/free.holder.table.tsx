@@ -167,14 +167,15 @@ export function FreeHoldersTable() {
 
   return (
     <div className="w-full bg-card">
-      <div className="flex items-center py-4">
+      <div className="flex items-center justify-between py-2 mx-2">
+        <h1 className="text-primary">Holders</h1>
         <Input
           placeholder="Filter emails..."
           value={(table.getColumn('email')?.getFilterValue() as string) ?? ''}
           onChange={(event) =>
             table.getColumn('email')?.setFilterValue(event.target.value)
           }
-          className="max-w-sm"
+          className="w-2/3 mr-2"
         />
       </div>
       <div className="rounded border h-[calc(100vh-600px)] bg-card">

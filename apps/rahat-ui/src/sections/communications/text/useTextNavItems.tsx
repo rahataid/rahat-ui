@@ -1,6 +1,6 @@
 import { Speech, FilePenLine, Plus } from 'lucide-react';
 import { useParams } from 'next/navigation';
-import { useCampaignStore } from '@rumsan/react-query';
+import { useCampaignStore } from '@rumsan/communication-query';
 import { NavItem } from '../components/nav-items.types';
 
 export const useNavItems = () => {

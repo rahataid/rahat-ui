@@ -22,7 +22,9 @@ const VendorsInfo = ({ vendorData }: IVendorsInfo) => {
           <CardContent>
             <p className="text-primary">{name || 'Name N/A'}</p>
             <CardDescription>
-              {vendorWallet ? truncateEthAddress(vendorWallet) : '-'}
+              {vendorWallet
+                ? vendorWallet.slice(0, 10) + '...' + vendorWallet.slice(-10)
+                : '-'}
             </CardDescription>
           </CardContent>
           <CardContent>

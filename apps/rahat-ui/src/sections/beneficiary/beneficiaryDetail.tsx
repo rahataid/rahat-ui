@@ -1,9 +1,6 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Image from 'next/image';
-import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+import { useBeneficiaryStore, useSingleBeneficiary } from '@rahat-ui/query';
 import {
   Tabs,
   TabsContent,
@@ -16,6 +13,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/components/tooltip';
+import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import {
   Dialog,
   DialogTrigger,
@@ -26,18 +24,20 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
-import { Archive, Expand, Minus, Trash2, MoreVertical } from 'lucide-react';
 import { truncateEthAddress } from '@rumsan/sdk/utils';
+import { UUID } from 'crypto';
+import { Archive, Expand, Minus, MoreVertical, Trash2 } from 'lucide-react';
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 import ConfirmDialog from '../../components/dialog';
-import { useRumsanService } from '../../providers/service.provider';
+import { useBoolean } from '../../hooks/use-boolean';
 import { paths } from '../../routes/paths';
 import { IBeneficiaryItem } from '../../types/beneficiary';
-import EditBeneficiary from './editBeneficiary';
-import { useBeneficaryVoucher } from '../../hooks/el/subgraph/querycall';
-import { useBoolean } from '../../hooks/use-boolean';
+import BeneficiaryDetailTableView from './beneficiaryDetailTable';
 import AssignToProjectModal from './components/assignToProjectModal';
 import SplitViewDetailCards from './components/split.view.detail.cards';
-import BeneficiaryDetailTableView from './beneficiaryDetailTable';
+import EditBeneficiary from './editBeneficiary';
 
 type IProps = {
   data: IBeneficiaryItem;
@@ -46,27 +46,15 @@ type IProps = {
 
 export default function BeneficiaryDetail({ data, handleClose }: IProps) {
   const router = useRouter();
-  const { beneficiaryQuery } = useRumsanService();
+  useSingleBeneficiary(data.uuid as UUID);
+  const beneficiary = useBeneficiaryStore((state) => state.singleBeneficiary);
   const projectModal = useBoolean();
   const [activeTab, setActiveTab] = useState<'details' | 'edit' | null>(
     'details',
   );
-  let beneficiary = null;
   const walletAddress = data.walletAddress || '';
 
-  const beneficiaryDetails = useBeneficaryVoucher(walletAddress);
-
-  const changedDate = new Date(data?.updatedAt);
-  const formattedDate = changedDate.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
-
-  if (data.uuid) {
-    const response = beneficiaryQuery.useBeneficiaryGet(data.uuid);
-    beneficiary = response.data?.data;
-  }
+  // const beneficiaryDetails = useBeneficaryVoucher(walletAddress);
 
   const handleTabChange = (tab: 'details' | 'edit') => {
     setActiveTab(tab);

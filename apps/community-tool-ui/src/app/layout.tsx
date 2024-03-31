@@ -8,6 +8,7 @@ import { Wagmi } from '../providers/wagmi.provider';
 import './globals.css';
 import { ServiceProvider } from '../providers/service.provider';
 import { GeistSans } from 'geist/font/sans';
+import { RSQueryProvider } from '@rumsan/react-query';
 
 export const metadata = {
   title: 'Welcome to Rahat',
@@ -26,18 +27,20 @@ export default function RootLayout({
       <body>
         <Wagmi>
           <QueryProvider>
-            <ServiceProvider>
-              <ThemeProvider
-                attribute="class"
-                // defaultTheme="system"
-                // enableSystem
-                disableTransitionOnChange
-              >
-                <main className={GeistSans.className}>{children}</main>
-                <ToastContainer />
-                <Toaster />
-              </ThemeProvider>
-            </ServiceProvider>
+            <RSQueryProvider>
+              <ServiceProvider>
+                <ThemeProvider
+                  attribute="class"
+                  // defaultTheme="system"
+                  // enableSystem
+                  disableTransitionOnChange
+                >
+                  <main className={GeistSans.className}>{children}</main>
+                  <ToastContainer />
+                  <Toaster />
+                </ThemeProvider>
+              </ServiceProvider>
+            </RSQueryProvider>
           </QueryProvider>
         </Wagmi>
       </body>

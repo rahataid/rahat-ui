@@ -1,16 +1,15 @@
 import { PieChart } from '@rahat-ui/shadcn/charts';
-import { useRumsanService } from '../../providers/service.provider';
 import { formatUnderScoredString } from '../../utils/string';
 
 const Charts = () => {
-  const { beneficiaryQuery } = useRumsanService();
-  const { data, isLoading } = beneficiaryQuery.useBeneficiaryStats();
+  // const { beneficiaryQuery } = useRumsanService();
+  // const { data, isLoading } = beneficiaryQuery.useBeneficiaryStats();
 
-  if (isLoading) return null;
+  // if (isLoading) return null;
 
   return (
     <div className="grid md:grid-cols-3 gap-2 mt-2">
-      {data?.map((d: any) => {
+      {[]?.map((d: any) => {
         const series = Array.isArray(d?.data)
           ? d?.data.map((item: any) => ({
               label: formatUnderScoredString(item.id),

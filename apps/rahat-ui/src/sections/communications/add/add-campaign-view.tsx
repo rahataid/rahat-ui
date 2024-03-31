@@ -2,10 +2,7 @@
 
 import React from 'react';
 import AddForm from './add-form';
-import {
-  ServiceContext,
-  ServiceContextType,
-} from 'apps/rahat-ui/src/providers/service.provider';
+
 import { z } from 'zod';
 import { FormProvider, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -26,12 +23,20 @@ import { CAMPAIGN_TYPES } from '@rahat-ui/types';
 import { toast } from 'react-toastify';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import {
+  useListTransport,
+  useListAudience,
+  useGetAudio,
+  useCreateCampaign,
+  useCreateAudience,
+} from '@rumsan/communication-query';
+import {
   RankingInfo,
   rankItem,
   compareItems,
 } from '@tanstack/match-sorter-utils';
 import { useRouter } from 'next/navigation';
 import { paths } from 'apps/rahat-ui/src/routes/paths';
+import { useBeneficiaryPii } from '@rahat-ui/query';
 const FormSchema = z.object({
   campaignName: z.string().min(2, {
     message: 'Campaign Name must be at least 2 characters.',
@@ -62,16 +67,12 @@ export type SelectedRowType = {
 };
 
 const AddCampaignView = () => {
-  // TODO: Implement the new structure
-  const { communicationQuery, beneficiaryQuery } = React.useContext(
-    ServiceContext,
-  ) as ServiceContextType;
-  const { data: transportData } = communicationQuery.useListTransport();
-  const { data: audienceData } = communicationQuery.useListAudience();
-  const { data: audioData } = communicationQuery.useGetAudio();
-  const createCampaign = communicationQuery.useCreateCampaign();
-  const createAudience = communicationQuery.useCreateAudience();
-  const { data: beneficiaryData } = beneficiaryQuery.useBeneficiaryPii();
+  const { data: transportData } = useListTransport();
+  const { data: audienceData } = useListAudience();
+  const { data: audioData } = useGetAudio();
+  const createCampaign = useCreateCampaign();
+  const createAudience = useCreateAudience();
+  const { data: beneficiaryData } = useBeneficiaryPii();
 
   const [rowSelection, setRowSelection] = React.useState({});
   const [selectedRows, setSelectedRows] = React.useState<SelectedRowType[]>([]);

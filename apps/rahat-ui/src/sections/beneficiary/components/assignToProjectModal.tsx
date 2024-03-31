@@ -1,6 +1,6 @@
 'use client';
 
-import * as React from 'react';
+import { useAssignBenToProject, useProjectList } from '@rahat-ui/query';
 import {
   Dialog,
   DialogClose,
@@ -18,9 +18,8 @@ import {
   SelectValue,
 } from '@rahat-ui/shadcn/components/select';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { useRumsanService } from 'apps/rahat-ui/src/providers/service.provider';
-import { MS_ACTIONS } from '@rahataid/sdk';
-import { useProjectAction } from '../../../../../../libs/query/src/lib/projects/projects';
+import { UUID } from 'crypto';
+import * as React from 'react';
 
 type ProjectModalType = {
   value: boolean;
@@ -36,27 +35,28 @@ export default function AssignToProjectModal({
   beneficiaryDetail,
   projectModal,
 }: IProps) {
-  const addBeneficiary = useProjectAction();
-  const { projectQuery } = useRumsanService();
-  const projectsList = projectQuery.useProjectList({});
-  const d = projectsList.data;
-  const projectList = d?.data || [];
+  const addBeneficiary = useAssignBenToProject();
+  const projectsList = useProjectList({});
 
-  const [selectedProject, setSelectedProject] = React.useState('');
+  const [selectedProject, setSelectedProject] = React.useState<UUID>();
 
-  const handleProjectChange = (d: string) => setSelectedProject(d);
+  const handleProjectChange = (d: UUID) => setSelectedProject(d);
 
   const handleAssignProject = async () => {
     if (!selectedProject) return alert('Please select a project');
-    const result = await addBeneficiary.mutateAsync({
-      uuid: selectedProject,
-      data: {
-        action: MS_ACTIONS.BENEFICIARY.ASSGIN_TO_PROJECT,
-        payload: {
-          beneficiaryId: beneficiaryDetail?.uuid,
-        },
-      },
+    await addBeneficiary.mutateAsync({
+      beneficiaryUUID: beneficiaryDetail?.uuid,
+      projectUUID: selectedProject,
     });
+    // await addBeneficiary.mutateAsync({
+    //   uuid: selectedProject,
+    //   data: {
+    //     action: MS_ACTIONS.BENEFICIARY.ASSGIN_TO_PROJECT,
+    //     payload: {
+    //       beneficiaryId: beneficiaryDetail?.uuid,
+    //     },
+    //   },
+    // });
   };
 
   return (
@@ -74,11 +74,11 @@ export default function AssignToProjectModal({
               <SelectValue placeholder="Projects" />
             </SelectTrigger>
             <SelectContent>
-              {projectList.length > 0 &&
-                projectList.map((project: any) => {
+              {projectsList.data?.data.length &&
+                projectsList.data?.data.map((project) => {
                   return (
-                    <SelectItem key={project.id} value={project.id}>
-                      {project.title}
+                    <SelectItem key={project.uuid} value={project.uuid}>
+                      {project.name}
                     </SelectItem>
                   );
                 })}

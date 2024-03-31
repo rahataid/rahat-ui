@@ -6,47 +6,15 @@ import {
   CardHeader,
   CardTitle,
 } from '@rahat-ui/shadcn/src/components/ui/card';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@rahat-ui/shadcn/src/components/ui/select';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-  DialogFooter,
-  DialogClose,
-} from '@rahat-ui/shadcn/components/dialog';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+
 import { useParams } from 'next/navigation';
-import { toast } from 'react-toastify';
 import InfoCard from '../infoCard';
-import LogCard from '../logCard';
 import TextDetailTable from './textDetailTable';
-import {
-  ServiceContext,
-  ServiceContextType,
-} from 'apps/rahat-ui/src/providers/service.provider';
-import React from 'react';
-import { useQueryClient } from '@tanstack/react-query';
-import { TAGS } from '@rumsan/react-query/utils/tags';
 
+import { useGetCampaign } from '@rumsan/communication-query';
 export default function TextDetailView() {
-  const { communicationQuery } = React.useContext(
-    ServiceContext,
-  ) as ServiceContextType;
-  const queryClient = useQueryClient();
-
-  // const triggerCampaign = communicationQuery.useTriggerCampaign();
-
   const params = useParams<{ tag: string; id: string }>();
-  const { data, isLoading } = communicationQuery.useGetCampaign({
+  const { data, isLoading } = useGetCampaign({
     id: Number(params.id),
   });
 

@@ -29,15 +29,19 @@ export default function DataCard({
         className,
       )}
     >
-      <CardHeader className="flex items-start justify-between pb-2">
-        <CardTitle className="text-md font-medium">{title}</CardTitle>
-        {Icon && (
-          <Icon
-            size={20}
-            strokeWidth={1.5}
-            className="h-6 w-6 text-muted-foreground"
-          />
-        )}
+      <CardHeader className="pb-2">
+        <div className="flex items-start justify-between ">
+          <CardTitle className="text-md font-medium">{title}</CardTitle>
+          <div>
+            {Icon && (
+              <Icon
+                size={20}
+                strokeWidth={1.5}
+                className="text-muted-foreground"
+              />
+            )}
+          </div>
+        </div>
       </CardHeader>
       <CardContent className="flex items-center justify-between">
         <div className="">

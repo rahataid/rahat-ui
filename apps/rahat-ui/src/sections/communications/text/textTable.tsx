@@ -54,7 +54,6 @@ export default function TextTableView({ handleClick }: IProps) {
   const columns = useTextTableColumn({ handleSplitDetail: handleClick });
   const campaignStore = useCampaignStore();
   const { data, isSuccess } = useListCampaign({ page: 1, perPage: 10 });
-  console.log('data', data);
 
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(

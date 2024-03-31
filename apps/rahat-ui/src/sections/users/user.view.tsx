@@ -18,13 +18,13 @@ export default function UserView() {
     <div>
       <UsersTable />
       <CustomPagination
-        currentPage={users.response.meta.currentPage}
+        currentPage={users && users?.response?.meta?.currentPage}
         handleNextPage={setNextPage}
         handlePrevPage={setPrevPage}
         handlePageSizeChange={setPerPage}
-        meta={users.response.meta}
+        meta={users && users?.response?.meta}
         perPage={pagination.perPage}
-        total={users.response.meta.total}
+        total={users && users?.response?.meta?.total}
       />
 
       {/* <UserDetails data={selectedUserData} /> */}

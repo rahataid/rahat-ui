@@ -52,7 +52,7 @@ export default function ListView() {
     React.useState<VisibilityState>({});
 
   const table = useReactTable({
-    data: users.data,
+    data: users && users?.data?.length > 0 ? users.data : [],
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),

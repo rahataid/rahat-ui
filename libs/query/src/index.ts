@@ -1,7 +1,6 @@
 export * from '@tanstack/react-query';
 export * from '@tanstack/react-query-devtools';
 export * from './beneficiary/beneficiary.query';
-export * from './communication/communication.query';
 export * from './vendor/vendor.query';
 export * from './lib/beneficiary';
 export * from './lib/communication';

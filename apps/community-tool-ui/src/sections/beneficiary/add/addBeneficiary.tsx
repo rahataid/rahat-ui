@@ -23,7 +23,6 @@ import { toast } from 'react-toastify';
 
 import { z } from 'zod';
 import { CalendarIcon, Check, ChevronsUpDown, Wallet } from 'lucide-react';
-import { useRumsanService } from '../../../providers/service.provider';
 import {
   BankedStatus,
   Gender,
@@ -39,12 +38,10 @@ import {
 import { format } from 'date-fns';
 import { Calendar } from '@rahat-ui/shadcn/src/components/ui/calendar';
 import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
+import { useCommunityBeneficiaryCreate } from '@rahat-ui/community-query';
 
 export default function AddBeneficiary() {
-  const { communityBenQuery } = useRumsanService();
-
-  const benefClient = communityBenQuery.useCommunityBeneficiaryCreate();
-
+  const addCommunityBeneficiary = useCommunityBeneficiaryCreate();
   const FormSchema = z.object({
     firstName: z
       .string()
@@ -88,14 +85,28 @@ export default function AddBeneficiary() {
   });
 
   const handleCreateBeneficiary = async (data: z.infer<typeof FormSchema>) => {
-    await benefClient.mutateAsync(data);
+    await addCommunityBeneficiary.mutateAsync({
+      firstName: data.firstName,
+      lastName: data.lastName,
+      gender: data.gender as Gender,
+      walletAddress: data.walletAddress,
+      phone: data.phone,
+      bankedStatus: data.bankedStatus as BankedStatus,
+      internetStatus: data.internetStatus as InternetStatus,
+      phoneStatus: data.phoneStatus as PhoneStatus,
+      email: data.email,
+      location: data.location,
+      latitude: data.latitude,
+      longitude: data.longitude,
+      notes: data.notes,
+    });
   };
 
   useEffect(() => {
-    if (benefClient.isSuccess) {
+    if (addCommunityBeneficiary.isSuccess) {
       form.reset();
     }
-  }, [benefClient.isSuccess, form]);
+  }, [addCommunityBeneficiary.isSuccess, form]);
 
   return (
     <Form {...form}>

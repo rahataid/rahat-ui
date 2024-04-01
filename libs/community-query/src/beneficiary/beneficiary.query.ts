@@ -5,17 +5,19 @@ import { TAGS } from '../config';
 import { Pagination } from '@rumsan/sdk/types';
 import { useEffect } from 'react';
 import Swal from 'sweetalert2';
-import { useBeneficiaryStore } from '@rahat-ui/query';
+import { useCommunityBeneficiaryStore } from './beneficiary.store';
 
 export const useCommunityBeneficaryList = (
-  payload: any,
+  payload: Pagination & { any?: string },
 ): UseQueryResult<any, Error> => {
   const { queryClient, rumsanService } = useRSQuery();
   const benClient = getBeneficiaryClient(rumsanService.client);
-  const { setBeneficiaries, setMeta } = useBeneficiaryStore((state) => ({
-    setBeneficiaries: state.setBeneficiaries,
-    setMeta: state.setMeta,
-  }));
+  const { setBeneficiaries, setMeta } = useCommunityBeneficiaryStore(
+    (state) => ({
+      setBeneficiaries: state.setBeneficiaries,
+      setMeta: state.setMeta,
+    }),
+  );
   const query = useQuery(
     {
       queryKey: [TAGS.LIST_COMMUNITY_BENFICIARIES, payload],

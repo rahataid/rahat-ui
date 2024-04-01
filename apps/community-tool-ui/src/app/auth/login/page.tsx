@@ -1,18 +1,21 @@
 'use client';
 
 import Link from 'next/link';
-import { useAuthStore } from '@rumsan/react-query/auth';
+import {
+  useAuthStore,
+  useRequestOtp,
+  useVerifyOtp,
+} from '@rumsan/react-query/auth';
 import { Button } from '@rahat-ui/shadcn/components/button';
 import { Input } from '@rahat-ui/shadcn/components/input';
 import { Label } from '@rahat-ui/shadcn/components/label';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import { paths } from '../../../routes/paths';
-import { useRumsanService } from '../../../providers/service.provider';
 
 export default function AuthPage() {
   const router = useRouter();
-  const { authQuery } = useRumsanService();
+  // const { authQuery } = useRumsanService();
   const [otp, setOtp] = useState('');
   const { address, challenge, service, setAddress, setChallenge, error } =
     useAuthStore((state) => ({
@@ -24,8 +27,8 @@ export default function AuthPage() {
       error: state.error,
     }));
 
-  const { mutateAsync: requestOtp } = authQuery.useRequestOtp();
-  const { mutateAsync: verifyOtp } = authQuery.useVerifyOtp();
+  const { mutateAsync: requestOtp } = useRequestOtp();
+  const { mutateAsync: verifyOtp } = useVerifyOtp();
 
   const onRequestOtp = async (e: React.SyntheticEvent) => {
     e.preventDefault();

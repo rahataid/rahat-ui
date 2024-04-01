@@ -12,12 +12,14 @@ import { FreeTransactionTable } from './free.transactions.table';
 import { FreeHoldersTable } from './free.holder.table';
 import { DiscountTransactionTable } from './discount.transactions.table';
 import { DiscountHoldersTable } from './discount.holder.table';
+import AddVoucher from './add.voucher';
 
 const VoucherView = () => {
   return (
     <>
       <FreeVoucherInfo />
       <DiscountVoucherInfo />
+      <AddVoucher />
       <div className="mt-2 mr-2 ml-2 w-full">
         <Tabs defaultValue="free">
           <div className="flex justify-between items-center">

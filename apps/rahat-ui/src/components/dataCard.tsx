@@ -5,7 +5,7 @@ import {
   CardTitle,
 } from '@rahat-ui/shadcn/components/card';
 import { cn } from '@rahat-ui/shadcn/src/utils';
-import { LucideIcon } from 'lucide-react';
+import { LucideIcon, RefreshCcw } from 'lucide-react';
 
 type CardProps = {
   title: string;
@@ -44,11 +44,18 @@ export default function DataCard({
         </div>
       </CardHeader>
       <CardContent className="flex items-center justify-between">
-        <div className="">
+        <div>
           <div className="text-4xl font-semibold text-primary">{number}</div>
-          <p className="text-xs text-muted-foreground space-y-0 pt-2">
-            {subTitle}
-          </p>
+          <div className="flex items-end gap-4">
+            <p className="text-xs text-muted-foreground space-y-0 pt-2">
+              {subTitle}
+            </p>
+            <RefreshCcw
+              size={14}
+              strokeWidth={1.5}
+              className="text-primary cursor-pointer"
+            />
+          </div>
         </div>
       </CardContent>
     </Card>

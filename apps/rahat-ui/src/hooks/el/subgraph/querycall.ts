@@ -1,6 +1,7 @@
 import { formatDate } from '../../../utils';
 import { useGraphService } from '../../../providers/subgraph-provider';
 import { useQuery } from '@tanstack/react-query';
+import { useProjectBeneficiaries } from '@rahat-ui/query';
 
 const formatTransaction = (trans: any) => ({
   beneficiary: trans.beneficiary || trans.referrerBeneficiaries || '-',

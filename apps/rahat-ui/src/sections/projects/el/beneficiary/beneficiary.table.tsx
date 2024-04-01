@@ -46,6 +46,7 @@ import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
 import { useProjectBeneficiaryTableColumns } from './use-table-column';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
+import { useGraphService } from 'apps/rahat-ui/src/providers/subgraph-provider';
 // import { useBeneficiaryTransaction } from '../../hooks/el/subgraph/querycall';
 
 export type Transaction = {
@@ -90,13 +91,19 @@ function BeneficiaryDetailTableView() {
     setPrevPage,
     setPerPage,
   } = usePagination();
+  const { queryService } = useGraphService();
 
-  const projectBeneficiaries = useProjectBeneficiaries({
-    page: pagination.page,
-    perPage: pagination.perPage,
-    projectUUID: uuid,
-    ...filters,
-  });
+  const projectBeneficiaries = useProjectBeneficiaries(
+    {
+      page: pagination.page,
+      perPage: pagination.perPage,
+      projectUUID: uuid,
+      ...filters,
+    },
+    queryService,
+  );
+
+  console.log('projectBeneficiaries.data', projectBeneficiaries.data);
 
   const columns = useProjectBeneficiaryTableColumns();
 

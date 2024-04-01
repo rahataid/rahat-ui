@@ -65,7 +65,7 @@ export const useProjectBeneficiaryTableColumns = () => {
               className="flex gap-3 cursor-pointer"
               onClick={() => clickToCopy(row.getValue('name'), row.index)}
             >
-              <p>{truncateEthAddress(row.getValue('name'))}</p>
+              <p>{truncateEthAddress(row?.getValue('name'))}</p>
               {walletAddressCopied === row.index ? (
                 <CopyCheck size={20} strokeWidth={1.5} />
               ) : (

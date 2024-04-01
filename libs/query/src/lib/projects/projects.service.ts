@@ -3,6 +3,7 @@ import { useRSQuery } from '@rumsan/react-query';
 import {
   UseQueryResult,
   useMutation,
+  useQueries,
   useQuery,
   useQueryClient,
 } from '@tanstack/react-query';
@@ -230,7 +231,12 @@ type GetProjectBeneficiaries = Pagination & {
   projectUUID: UUID;
 };
 
-export const useProjectBeneficiaries = (payload: GetProjectBeneficiaries) => {
+type QueryService = any;
+
+export const useProjectBeneficiaries = (
+  payload: GetProjectBeneficiaries,
+  queryService: QueryService,
+) => {
   const q = useProjectAction();
   const { projectUUID, ...restPayload } = payload;
 
@@ -258,15 +264,59 @@ export const useProjectBeneficiaries = (payload: GetProjectBeneficiaries) => {
 
     select(data) {
       return data.map((row: any) => ({
+        ...row,
         name: row.Beneficiary.walletAddress,
         gender: row.Beneficiary.gender,
         phone: row.Beneficiary.notes || 'N/A',
-        redemption: 'N/A',
         type: row.Beneficiary.type || 'N/A',
       }));
     },
     queryFn,
   });
 
-  return query;
+  console.log('query.data', query.data);
+
+  const queriesProp = useMemo(() => {
+    return (
+      query.data?.map((r) => {
+        const stringified = JSON.stringify(r);
+        const queryKey = useMemo(
+          () => ['project_beneficiaries', stringified],
+          [stringified],
+        );
+        return {
+          queryKey,
+          queryFn: async () => {
+            const qc = await queryService.useBeneficiaryVoucher(r.name);
+            console.log('r', r);
+            return {
+              ...qc,
+              ...r,
+              redemption: qc.FreeVoucherClaimStatus
+                ? 'Redeemed'
+                : 'Not Redeemed',
+            };
+          },
+        };
+      }) || []
+    );
+  }, [query.isSuccess]);
+
+  const queries = useQueries({
+    queries: queriesProp,
+  });
+  console.log('queries', queries);
+
+  const isLoading = queries.some((q) => q.isLoading);
+
+  let formattedResponse = [];
+  if (!isLoading) {
+    formattedResponse = queries.map((q) => q.data);
+    console.log('formattedResponse', formattedResponse);
+  }
+
+  return {
+    data: formattedResponse,
+    isLoading,
+  };
 };

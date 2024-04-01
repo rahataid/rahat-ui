@@ -42,5 +42,37 @@ export const BENEF_DB_FIELDS = [
 export const UNIQUE_FIELD = {
   PHONE: 'phone',
   EMAIL: 'email',
-  WALLET: 'walletAddress',
+};
+
+export const IMPORT_OPTIONS = [
+  {
+    label: IMPORT_SOURCE.EXCEL,
+    value: IMPORT_SOURCE.EXCEL,
+  },
+  {
+    label: IMPORT_SOURCE.KOBOTOOL,
+    value: IMPORT_SOURCE.KOBOTOOL,
+  },
+];
+
+export const UNIQUE_FIELD_OPTIONS = [
+  {
+    label: 'Phone',
+    value: UNIQUE_FIELD.PHONE,
+  },
+  {
+    label: 'Email',
+    value: UNIQUE_FIELD.EMAIL,
+  },
+];
+
+export const BENEF_IMPORT_SCREENS = {
+  SELECTION: 'selection.page',
+  VALIDATION: 'validation.page',
+  IMPORT_DATA: 'import.page',
+};
+
+export const IMPORT_ACTION = {
+  VALIDATE: 'VALIDATE',
+  IMPORT: 'IMPORT',
 };

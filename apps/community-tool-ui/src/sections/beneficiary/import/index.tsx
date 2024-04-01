@@ -7,7 +7,7 @@ import {
 import { Tabs } from '@rahat-ui/shadcn/src/components/ui/tabs';
 import React from 'react';
 import BeneficiaryNav from '../../../sections/beneficiary/nav';
-import ImportBen from './beneficiary';
+import ImportBen from './Beneficiary';
 
 export default function ImportBeneficiary() {
   return (

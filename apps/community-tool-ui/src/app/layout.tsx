@@ -11,7 +11,7 @@ import { GeistSans } from 'geist/font/sans';
 import { RSQueryProvider } from '@rumsan/react-query';
 
 export const metadata = {
-  title: 'Welcome to Rahat',
+  title: 'Welcome - Rahat Community',
   icons: {
     icon: '/svg/rahat-logo.png',
   },

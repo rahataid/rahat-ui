@@ -9,10 +9,9 @@ import {
   Plus,
   Users,
 } from 'lucide-react';
-import Filter from './filter';
-import MultipleSelectFilter from './multipleSelectorFilter';
 import Link from 'next/link';
 import { paths } from '../../routes/paths';
+import MultipleSelectFilter from './multipleSelectorFilter';
 
 import { Meta } from '@rahat-ui/types';
 
@@ -66,7 +65,6 @@ export default function Nav({
           </div>
         </ScrollArea>
       </div>
-      <Filter />
       <Separator />
       <ScrollArea>
         <div className="p-2">

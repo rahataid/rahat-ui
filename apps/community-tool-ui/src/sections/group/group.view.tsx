@@ -46,7 +46,7 @@ const columns: ColumnDef<ListGroup>[] = [
     enableHiding: false,
   },
   {
-    header: 'id',
+    header: 'ID',
     accessorKey: 'ID',
     cell: ({ row }) => <div>{row.original.id}</div>,
   },

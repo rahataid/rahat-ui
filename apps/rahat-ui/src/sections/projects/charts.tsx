@@ -11,7 +11,6 @@ const Charts: FC<ChartData> = ({ chartData = [] }) => {
   // const { data, isLoading } = beneficiaryQuery.useBeneficiaryStats();
 
   // if (isLoading) return null;
-  console.log('chartData', chartData);
 
   return (
     <div className="grid md:grid-cols-3 gap-2 mt-2">

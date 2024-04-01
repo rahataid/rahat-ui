@@ -1,8 +1,7 @@
 'use client';
 
-import { useState } from 'react';
 import { ColumnDef } from '@tanstack/react-table';
-import { MoreHorizontal, Copy, CopyCheck } from 'lucide-react';
+import { MoreHorizontal, Copy } from 'lucide-react';
 
 import { Button } from '@rahat-ui/shadcn/components/button';
 import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
@@ -25,11 +24,8 @@ import { truncateEthAddress } from '@rumsan/sdk/utils';
 
 export const useProjectBeneficiaryTableColumns = () => {
   const { setSecondPanelComponent, closeSecondPanel } = useSecondPanel();
-  const [walletAddressCopied, setWalletAddressCopied] =
-    useState<boolean>(false);
   const clickToCopy = (walletAddress: string) => {
     navigator.clipboard.writeText(walletAddress);
-    setWalletAddressCopied(true);
   };
   const columns: ColumnDef<any>[] = [
     {
@@ -65,16 +61,10 @@ export const useProjectBeneficiaryTableColumns = () => {
               onClick={() => clickToCopy(row.getValue('name'))}
             >
               <p>{truncateEthAddress(row.getValue('name'))}</p>
-              {walletAddressCopied ? (
-                <CopyCheck size={20} strokeWidth={1.5} />
-              ) : (
-                <Copy size={20} strokeWidth={1.5} />
-              )}
+              <Copy size={20} strokeWidth={1.5} />
             </TooltipTrigger>
             <TooltipContent className="bg-secondary" side="bottom">
-              <p className="text-xs font-medium">
-                {walletAddressCopied ? 'copied' : 'click to copy'}
-              </p>
+              <p className="text-xs font-medium">click to copy</p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>

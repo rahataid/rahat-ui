@@ -14,81 +14,27 @@ import {
 } from '@rahat-ui/shadcn/components/tooltip';
 import { Minus } from 'lucide-react';
 
+import { ListGroup } from '@rahataid/community-tool-sdk/groups';
 import {
-  GroupResponseById,
-  ListGroup,
-} from '@rahataid/community-tool-sdk/groups';
-import { useRumsanService } from '../../providers/service.provider';
-import {
-  ColumnDef,
   VisibilityState,
   getCoreRowModel,
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
 import React, { useState } from 'react';
-import { Beneficiary } from '@rahataid/community-tool-sdk/beneficiary';
 
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import GroupDetailTable from './group.table';
+import { useCommunityGroupListByID } from '@rahat-ui/community-query';
+import { useCommunityGroupDeailsColumns } from './useGroupColumns';
 type IProps = {
   data: ListGroup;
   handleClose: VoidFunction;
 };
 
-export const columns: ColumnDef<GroupResponseById[]>[] = [
-  {
-    accessorKey: 'beneficiary',
-    header: 'FullName',
-    cell: ({ row }) => {
-      if (row && row.getValue && typeof row.getValue === 'function') {
-        const beneficiary = row.getValue('beneficiary') as Beneficiary;
-        if (beneficiary && beneficiary.firstName && beneficiary.lastName) {
-          return beneficiary.firstName + beneficiary.lastName;
-        }
-      }
-      return '';
-    },
-  },
-  {
-    accessorKey: 'beneficiary',
-    header: 'WalletAddress',
-    cell: ({ row }) => {
-      if (row && row.getValue && typeof row.getValue === 'function') {
-        const beneficiary = row.getValue('beneficiary') as Beneficiary;
-        if (beneficiary && beneficiary.walletAddress) {
-          return beneficiary.walletAddress;
-        }
-      }
-      return '';
-    },
-  },
-  {
-    accessorKey: 'beneficiary',
-    header: 'customID',
-    cell: ({ row }) => {
-      if (row && row.getValue && typeof row.getValue === 'function') {
-        const beneficiary = row.getValue('beneficiary') as Beneficiary;
-        if (beneficiary && beneficiary.customId) {
-          return beneficiary.customId;
-        }
-      }
-      return '';
-    },
-  },
-  {
-    accessorKey: 'beneficiaryId',
-    header: 'id',
-    cell: ({ row }) => <div>{row.getValue('beneficiaryId')}</div>,
-  },
-];
-
 export default function GroupDetail({ data, handleClose }: IProps) {
-  const router = useRouter();
-  const { communityGroupQuery } = useRumsanService();
-  const { data: responseByUUID } =
-    communityGroupQuery.useCommunityGroupListByID(data.uuid);
-
+  const { data: responseByUUID } = useCommunityGroupListByID(data?.uuid);
+  const columns = useCommunityGroupDeailsColumns();
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
 

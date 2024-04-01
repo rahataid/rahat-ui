@@ -22,10 +22,10 @@ export default function GroupDetailTable({ table }: IProps) {
   return (
     <>
       <div className="w-full -mt-2 p-2 bg-secondary">
-        <div className="rounded border bg-white">
+        <div className="rounded border bg-card">
           <TableComponent>
             <ScrollArea className="h-table">
-              <TableHeader className="sticky top-0">
+              <TableHeader className="bg-card sticky top-0">
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow key={headerGroup.id}>
                     {headerGroup.headers.map((header) => {

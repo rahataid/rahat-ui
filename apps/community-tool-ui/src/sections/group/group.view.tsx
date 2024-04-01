@@ -23,54 +23,8 @@ import BenificiaryNav from '../beneficiary/nav';
 import { Tabs, TabsContent } from '@rahat-ui/shadcn/src/components/ui/tabs';
 import { useCommunityGroupList } from '@rahat-ui/community-query';
 import { usePagination } from '@rahat-ui/query';
-const columns: ColumnDef<ListGroup>[] = [
-  {
-    id: 'select',
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && 'indeterminate')
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
-    header: 'ID',
-    accessorKey: 'ID',
-    cell: ({ row }) => <div>{row.original.id}</div>,
-  },
-  {
-    header: 'Name',
-    accessorKey: 'name',
-    cell: ({ row }) => <div>{row.getValue('name')}</div>,
-  },
-  {
-    id: 'actions',
+import { useCommunityGroupTableColumns } from './useGroupColumns';
 
-    enableHiding: false,
-    cell: () => {
-      return (
-        <Eye
-          size={20}
-          strokeWidth={1.5}
-          className="cursor-pointer hover:text-primary"
-        />
-      );
-    },
-  },
-];
 function ViewGroup() {
   const [selectedData, setSelectedData] = useState<ListGroup>();
   const {
@@ -83,12 +37,13 @@ function ViewGroup() {
   } = usePagination();
 
   const { data } = useCommunityGroupList(pagination);
-
+  const columns = useCommunityGroupTableColumns();
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   // const { closeSecondPanel, setSecondPanelComponent } = useSecondPanel();
   const table = useReactTable({
     manualPagination: true,
     data: data?.data?.rows || [],
+    getRowId: (row) => row.uuid,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),

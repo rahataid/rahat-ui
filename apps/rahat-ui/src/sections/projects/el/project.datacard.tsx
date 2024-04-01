@@ -6,12 +6,15 @@ import Activities from './projects.activity';
 type ProjectDataCardProps = {
   beneficiaryDetails: any;
   projectVoucher: any;
+  voucherDetails:any;
 };
 
 const ProjectDataCard: FC<ProjectDataCardProps> = ({
   beneficiaryDetails,
   projectVoucher,
+  voucherDetails,
 }) => {
+  const data ={...projectVoucher,...voucherDetails}
   return (
     <>
       <div className="mb-2 grid md:grid-cols-3 gap-2">
@@ -19,34 +22,34 @@ const ProjectDataCard: FC<ProjectDataCardProps> = ({
           <DataCard
             className=""
             title="Enrolled Beneficiary"
-            number={beneficiaryDetails?.enrolledBen || '-'}
+            number={beneficiaryDetails?beneficiaryDetails[0].toString() : '-'}
             subTitle="Enrolled"
             Icon={Users}
           />
           <DataCard
             className=""
             title="Referred Beneficiary"
-            number={beneficiaryDetails?.referredBen || '-'}
+            number={beneficiaryDetails? beneficiaryDetails[1].toString() :'-'}
             subTitle="Referred"
             Icon={Users}
           />
           <DataCard
             className=""
             title="Vouchers"
-            number={projectVoucher?.freeVoucherBudget || '-'}
+            number={projectVoucher?.eyeVoucherBudget?.toString() || '-'}
             subTitle="Free"
             Icon={Users}
           />
           <DataCard
             className=""
             title="Vouchers"
-            number={projectVoucher?.referredVoucherBudget || '-'}
+            number={projectVoucher?.referredVoucherBudget?.toString() || '-'}
             subTitle="Discount"
             Icon={Users}
           />
         </div>
         <div>
-          <Activities title="Vouchers" data={projectVoucher} />
+          <Activities title="Vouchers" data={data} />
         </div>
       </div>
     </>

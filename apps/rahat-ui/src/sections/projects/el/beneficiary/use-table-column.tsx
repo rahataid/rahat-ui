@@ -1,7 +1,7 @@
 'use client';
 
 import { ColumnDef } from '@tanstack/react-table';
-import { MoreHorizontal } from 'lucide-react';
+import { MoreHorizontal, Copy } from 'lucide-react';
 
 import { Button } from '@rahat-ui/shadcn/components/button';
 import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
@@ -12,13 +12,21 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/components/dropdown-menu';
+import {
+  Tooltip,
+  TooltipProvider,
+  TooltipTrigger,
+  TooltipContent,
+} from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { useSecondPanel } from '../../../../providers/second-panel-provider';
 import BeneficiaryDetail from '../../../../sections/projects/el/beneficiary/beneficiary.detail';
 import { truncateEthAddress } from '@rumsan/sdk/utils';
 
 export const useProjectBeneficiaryTableColumns = () => {
   const { setSecondPanelComponent, closeSecondPanel } = useSecondPanel();
-
+  const clickToCopy = (walletAddress: string) => {
+    navigator.clipboard.writeText(walletAddress);
+  };
   const columns: ColumnDef<any>[] = [
     {
       id: 'select',
@@ -45,7 +53,22 @@ export const useProjectBeneficiaryTableColumns = () => {
     {
       accessorKey: 'name',
       header: 'Wallet',
-      cell: ({ row }) => <div>{truncateEthAddress(row.getValue('name'))}</div>,
+      cell: ({ row }) => (
+        <TooltipProvider delayDuration={100}>
+          <Tooltip>
+            <TooltipTrigger
+              className="flex gap-3 cursor-pointer"
+              onClick={() => clickToCopy(row.getValue('name'))}
+            >
+              <p>{truncateEthAddress(row.getValue('name'))}</p>
+              <Copy size={20} strokeWidth={1.5} />
+            </TooltipTrigger>
+            <TooltipContent className="bg-secondary" side="bottom">
+              <p className="text-xs font-medium">click to copy</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      ),
     },
     {
       accessorKey: 'type',

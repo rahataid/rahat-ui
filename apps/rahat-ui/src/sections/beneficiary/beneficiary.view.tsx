@@ -16,7 +16,6 @@ import BeneficiaryGridView from '../../sections/beneficiary/gridView';
 import BeneficiaryListView from '../../sections/beneficiary/listView';
 import { useBeneficiaryTableColumns } from './useBeneficiaryColumns';
 import { useSecondPanel } from '../../providers/second-panel-provider';
-import BeneficiaryDetail from './beneficiaryDetail';
 
 function BeneficiaryView() {
   const {
@@ -27,6 +26,19 @@ function BeneficiaryView() {
     setPrevPage,
     setPerPage,
   } = usePagination();
+
+  // const { beneficiaryQuery } = useRumsanService();
+  // const { secondPanel, setSecondPanelComponent } = useSecondPanel();
+  // const [active, setActive] = useState<string>(BENEFICIARY_NAV_ROUTE.DEFAULT);
+
+  // const handleNav = useCallback((item: string) => {
+  //   setActive(item);
+  //   setSecondPanelComponent(null);
+  // }, []);
+
+  // const { data } = beneficiaryQuery.useBeneficiaryList({
+  //   ...pagination,
+  // });
 
   const { data } = useBeneficiaryList(pagination);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});

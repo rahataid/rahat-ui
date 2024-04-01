@@ -25,11 +25,10 @@ import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { ListBeneficiary } from '@rahat-ui/types';
 
 type IProps = {
-  handleClick: (item: ListBeneficiary) => void;
   table: Table<ListBeneficiary>;
 };
 
-export default function ListView({ handleClick, table }: IProps) {
+export default function ListView({ table }: IProps) {
   return (
     <>
       <div className="w-full -mt-2 p-2 bg-secondary">
@@ -104,9 +103,6 @@ export default function ListView({ handleClick, table }: IProps) {
                     <TableRow
                       key={row.id}
                       data-state={row.getIsSelected() && 'selected'}
-                      onClick={() => {
-                        handleClick(row.original);
-                      }}
                     >
                       {row.getVisibleCells().map((cell) => (
                         <TableCell key={cell.id}>

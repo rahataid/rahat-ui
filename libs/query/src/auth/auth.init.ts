@@ -29,6 +29,8 @@ export const useAuthInitialization = (): UseAuthInitializationReturn => {
           decodedToken.exp !== undefined &&
           decodedToken.exp > currentTime
         ) {
+          const timeDifference = Math.abs(decodedToken.exp - currentTime) / 60;
+          console.log('Token expires in:', timeDifference, 'minutes');
           setInitialization({
             isInitialized: true,
             isAuthenticated: true,

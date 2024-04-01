@@ -10,7 +10,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { createContext, useContext, useEffect, useMemo } from 'react';
 import { useError } from '../utils/useErrors';
 import { useCommunicationQuery } from '@rumsan/communication-query';
-import { CommunicationService } from '@rumsan/communication';
+import { CommunicationService } from '@rumsan/communication/services/communication.client';
 
 export const ServiceContext = createContext<RSQueryContextType | null>(null);
 

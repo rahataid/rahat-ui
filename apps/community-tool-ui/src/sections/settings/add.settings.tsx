@@ -46,7 +46,7 @@ export default function AddSetting() {
       name: '',
       requiredFields: [''],
       field: [{ value: { key: '', value: '' } }],
-      isPrivate: true,
+      isPrivate: false,
       isReadOnly: false,
     },
   });
@@ -88,7 +88,7 @@ export default function AddSetting() {
         <div className="shadow-md p-4 rounded-sm">
           <div className="grid grid-cols-5 gap-4 mb-4">
             <Label className="col-span-2">Name</Label>
-            <Label className="col-span-2">RequiredFields</Label>
+            <Label className="col-span-2">Required Fields</Label>
           </div>
           <div className="grid grid-cols-5 gap-5 mb-4">
             <FormField
@@ -114,7 +114,7 @@ export default function AddSetting() {
                 <div className="col-span-2">
                   <Input
                     type="text"
-                    placeholder="SAME AS KEY eg: CLIENT_ID "
+                    placeholder="Comma separated keys EG: key1, key2"
                     {...field}
                     onChange={(e) => {
                       const uppercaseValue = e.target.value.toUpperCase();

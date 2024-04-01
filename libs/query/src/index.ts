@@ -1,12 +1,8 @@
 export * from '@tanstack/react-query';
 export * from '@tanstack/react-query-devtools';
-export * from './beneficiary/beneficiary.query';
-export * from './communication/communication.query';
-export * from './vendor/vendor.query';
 export * from './lib/beneficiary';
 export * from './lib/communication';
 export * from './lib/projects';
-export * from './project/project.query';
 export { useAuthInitialization } from './auth/auth.init';
 export { default as useErrorStore } from './utils/error-store';
 export * from './utils/use-pagination';

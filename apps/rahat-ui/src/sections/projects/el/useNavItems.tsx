@@ -8,9 +8,7 @@ import { useProjectVoucher } from 'apps/rahat-ui/src/hooks/el/subgraph/querycall
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 import {
   LayoutDashboard,
-  MessageSquare,
   Pencil,
-  Phone,
   Receipt,
   Speech,
   Store,
@@ -25,18 +23,12 @@ import { NavItem } from '../components';
 import ConfirmModal from './confirm.modal';
 import CreateVoucherModal from './create-voucher-modal';
 
-type AddressType = {
-  donorAddress: `0x${string}`;
-  eyeVoucherAddress: `0x${string}`;
-  referralVoucherAddress: `0x${string}`;
-  elProjectAddress: `0x${string}`;
-};
-
 export const useNavItems = () => {
   const { id } = useParams();
   const contractSettings = useProjectSettingsStore(
     (state) => state.settings?.[id] || null,
   );
+
   const dialog = useSwal();
   const createTokenSummaryModal = useBoolean();
   const createTokenModal = useBoolean();
@@ -61,8 +53,6 @@ export const useNavItems = () => {
     createTokenModal.onToggle();
   };
 
-  const [addresses, setAddresses] = useState<AddressType>();
-
   const [voucherInputs, setVoucherInputs] = useState({
     tokens: '',
     amountInDollar: '',
@@ -77,6 +67,8 @@ export const useNavItems = () => {
     contractSettings?.elProjectAddress || '',
     contractSettings?.eyeVoucherAddress || '',
   );
+
+  console.log('contractSettings', contractSettings);
 
   useEffect(() => {
     if (projectVoucher.isSuccess) {
@@ -103,15 +95,15 @@ export const useNavItems = () => {
   // Free Voucher
   const handleCreateVoucherSubmit = async (e: any) => {
     e.preventDefault();
-    if (!addresses) return;
+    if (!contractSettings) return;
     const referralLimit = 3;
     voucherInputs.description.length === 0
       ? await createVoucher.writeContractAsync({
-          address: addresses?.donorAddress,
+          address: contractSettings?.rahatDonor?.address,
           args: [
-            addresses?.eyeVoucherAddress,
-            addresses.referralVoucherAddress,
-            addresses.elProjectAddress,
+            contractSettings?.eyevoucher?.address,
+            contractSettings?.referralvoucher?.address,
+            contractSettings?.elproject?.address,
             BigInt(voucherInputs.tokens),
             voucherInputs.description,
             voucherInputs.descriptionReferred,
@@ -122,11 +114,11 @@ export const useNavItems = () => {
           ],
         })
       : await createOnlyVoucher.writeContractAsync({
-          address: addresses?.donorAddress,
+          address: contractSettings?.rahatDonor?.address,
           args: [
-            addresses?.eyeVoucherAddress,
-            addresses.referralVoucherAddress,
-            addresses.elProjectAddress,
+            contractSettings?.eyevoucher?.address,
+            contractSettings?.referralvoucher?.address,
+            contractSettings?.elproject?.address,
             BigInt(voucherInputs.tokens),
             BigInt(referralLimit),
           ],

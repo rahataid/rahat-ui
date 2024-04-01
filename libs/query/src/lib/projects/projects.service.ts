@@ -155,7 +155,7 @@ export const useProjectSettings = (uuid: UUID) => {
   }));
 
   const query = useQuery({
-    queryKey: [TAGS.GET_PROJECT_SETTINGS],
+    queryKey: [TAGS.GET_PROJECT_SETTINGS, uuid],
     enabled: isEmpty(settings?.[uuid]),
     // enabled: !!settings[uuid],
     queryFn: async () => {

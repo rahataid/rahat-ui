@@ -3,22 +3,19 @@ import { useRSQuery } from '@rumsan/react-query';
 import { getBeneficiaryClient } from '@rahataid/community-tool-sdk/clients';
 import { TAGS } from '../config';
 import { Pagination } from '@rumsan/sdk/types';
-import { useEffect } from 'react';
 import Swal from 'sweetalert2';
-import { useCommunityBeneficiaryStore } from './beneficiary.store';
-import { Beneficiary } from '@rahataid/community-tool-sdk/beneficiary';
 
 export const useCommunityBeneficaryList = (
   payload: Pagination & { any?: string },
 ): UseQueryResult<any, Error> => {
   const { queryClient, rumsanService } = useRSQuery();
   const benClient = getBeneficiaryClient(rumsanService.client);
-  const { setBeneficiaries, setMeta } = useCommunityBeneficiaryStore(
-    (state) => ({
-      setBeneficiaries: state.setBeneficiaries,
-      setMeta: state.setMeta,
-    }),
-  );
+  // const { setBeneficiaries, setMeta } = useCommunityBeneficiaryStore(
+  //   (state) => ({
+  //     setBeneficiaries: state.setBeneficiaries,
+  //     setMeta: state.setMeta,
+  //   }),
+  // );
   const query = useQuery(
     {
       queryKey: [TAGS.LIST_COMMUNITY_BENFICIARIES, payload],
@@ -26,12 +23,12 @@ export const useCommunityBeneficaryList = (
     },
     queryClient,
   );
-  useEffect(() => {
-    if (query.data) {
-      setBeneficiaries(query.data.data as Beneficiary[]);
-      setMeta(query.data.response.meta);
-    }
-  }, [query.data, setBeneficiaries]);
+  // useEffect(() => {
+  //   if (query.data) {
+  //     setBeneficiaries(query.data.data as Beneficiary[]);
+  //     setMeta(query.data.response.meta);
+  //   }
+  // }, [query.data, setBeneficiaries]);
 
   return query;
 };

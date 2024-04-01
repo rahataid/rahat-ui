@@ -4,7 +4,6 @@ import { UseQueryResult, useMutation, useQuery } from '@tanstack/react-query';
 import Swal from 'sweetalert2';
 import { TAGS } from '../config';
 import { Pagination } from '@rumsan/sdk/types';
-import { useCommunityGroupStore } from './group.store';
 import { useEffect } from 'react';
 import { ListGroup } from '@rahataid/community-tool-sdk/groups';
 
@@ -40,10 +39,10 @@ export const useCommunityGroupList = (
 ): UseQueryResult<any, Error> => {
   const { queryClient, rumsanService } = useRSQuery();
   const groupClient = getGroupClient(rumsanService.client);
-  const { setGroups, setMeta } = useCommunityGroupStore((state) => ({
-    setGroups: state.setGroups,
-    setMeta: state.setMeta,
-  }));
+  // const { setGroups, setMeta } = useCommunityGroupStore((state) => ({
+  //   setGroups: state.setGroups,
+  //   setMeta: state.setMeta,
+  // }));
   const query = useQuery(
     {
       queryKey: [TAGS.LIST_COMMUNITY_GROUP, payload],
@@ -51,12 +50,12 @@ export const useCommunityGroupList = (
     },
     queryClient,
   );
-  useEffect(() => {
-    if (query.data) {
-      setGroups(query.data.data as ListGroup[]);
-      setMeta(query.data.response.meta);
-    }
-  }, [query.data, setGroups]);
+  // useEffect(() => {
+  //   if (query.data) {
+  //     setGroups(query.data.data as ListGroup[]);
+  //     setMeta(query.data.response.meta);
+  //   }
+  // }, [query.data, setGroups]);
   return query;
 };
 

@@ -1,12 +1,7 @@
 'use client';
-import { memo, useCallback, useState } from 'react';
+import { memo, useState } from 'react';
 
-import {
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
-} from '@rahat-ui/shadcn/components/resizable';
-import { Tabs, TabsContent } from '@rahat-ui/shadcn/components/tabs';
+import { TabsContent } from '@rahat-ui/shadcn/components/tabs';
 
 import {
   VisibilityState,
@@ -15,14 +10,10 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 
-import { usePagination } from '@rahat-ui/query';
+import { useBeneficiaryList, usePagination } from '@rahat-ui/query';
 import CustomPagination from '../../components/customPagination';
-import { BENEFICIARY_NAV_ROUTE } from '../../constants/beneficiary.const';
-import { useRumsanService } from '../../providers/service.provider';
 import BeneficiaryGridView from '../../sections/beneficiary/gridView';
 import BeneficiaryListView from '../../sections/beneficiary/listView';
-import BeneficiaryNav from '../../sections/beneficiary/nav';
-import ImportBeneficiary from './import.beneficiary';
 import { useBeneficiaryTableColumns } from './useBeneficiaryColumns';
 import { useSecondPanel } from '../../providers/second-panel-provider';
 
@@ -36,21 +27,23 @@ function BeneficiaryView() {
     setPerPage,
   } = usePagination();
 
-  const { beneficiaryQuery } = useRumsanService();
-  const { secondPanel, setSecondPanelComponent } = useSecondPanel();
-  const [active, setActive] = useState<string>(BENEFICIARY_NAV_ROUTE.DEFAULT);
+  // const { beneficiaryQuery } = useRumsanService();
+  // const { secondPanel, setSecondPanelComponent } = useSecondPanel();
+  // const [active, setActive] = useState<string>(BENEFICIARY_NAV_ROUTE.DEFAULT);
 
-  const handleNav = useCallback((item: string) => {
-    setActive(item);
-    setSecondPanelComponent(null);
-  }, []);
+  // const handleNav = useCallback((item: string) => {
+  //   setActive(item);
+  //   setSecondPanelComponent(null);
+  // }, []);
 
-  const { data } = beneficiaryQuery.useBeneficiaryList({
-    ...pagination,
-  });
+  // const { data } = beneficiaryQuery.useBeneficiaryList({
+  //   ...pagination,
+  // });
 
+  const { data } = useBeneficiaryList(pagination);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const columns = useBeneficiaryTableColumns();
+  const { closeSecondPanel, setSecondPanelComponent } = useSecondPanel();
 
   const table = useReactTable({
     manualPagination: true,
@@ -67,46 +60,37 @@ function BeneficiaryView() {
     },
   });
 
-  return (
-    <Tabs defaultValue="list" className="h-full">
-      <ResizablePanelGroup direction="horizontal" className="min-h-max bg-card">
-        <ResizablePanel minSize={20} defaultSize={20} maxSize={20}>
-          <BeneficiaryNav
-            handleNav={handleNav}
-            meta={data?.response?.meta}
-            active={active}
-            table={table}
-          />
-        </ResizablePanel>
-        <ResizableHandle />
-        <ResizablePanel minSize={28}>
-          {active === BENEFICIARY_NAV_ROUTE.IMPORT_BENEFICIARY ? (
-            <ImportBeneficiary />
-          ) : null}
+  const handleBeneficiaryClick = (row: any) => {
+    setSecondPanelComponent(
+      <BeneficiaryDetail data={row} handleClose={closeSecondPanel} />,
+    );
+  };
 
-          {active === BENEFICIARY_NAV_ROUTE.DEFAULT && (
-            <>
-              <TabsContent value="list">
-                <BeneficiaryListView table={table} meta={data?.meta} />
-              </TabsContent>
-              <TabsContent value="grid">
-                <BeneficiaryGridView data={data?.data} />
-              </TabsContent>
-              <CustomPagination
-                meta={data?.response?.meta || { total: 0, currentPage: 0 }}
-                handleNextPage={setNextPage}
-                handlePrevPage={setPrevPage}
-                handlePageSizeChange={setPerPage}
-                currentPage={pagination.page}
-                perPage={pagination.perPage}
-                total={data?.response?.meta.lastPage || 0}
-              />
-            </>
-          )}
-        </ResizablePanel>
-        {secondPanel && secondPanel}
-      </ResizablePanelGroup>
-    </Tabs>
+  return (
+    <>
+      <TabsContent value="list">
+        <BeneficiaryListView
+          table={table}
+          meta={data?.meta}
+          handleClick={handleBeneficiaryClick}
+        />
+      </TabsContent>
+      <TabsContent value="grid">
+        <BeneficiaryGridView
+          handleClick={handleBeneficiaryClick}
+          data={data?.data}
+        />
+      </TabsContent>
+      <CustomPagination
+        meta={data?.response?.meta || { total: 0, currentPage: 0 }}
+        handleNextPage={setNextPage}
+        handlePrevPage={setPrevPage}
+        handlePageSizeChange={setPerPage}
+        currentPage={pagination.page}
+        perPage={pagination.perPage}
+        total={data?.response?.meta.lastPage || 0}
+      />
+    </>
   );
 }
 

@@ -1,108 +1,117 @@
 'use client';
-import { BeneficiaryQuery, ProjectQuery, VendorQuery } from '@rahat-ui/query';
-import {
-  AuthQuery,
-  RoleQuery,
-  UserQuery,
-  useAuthStore,
-  CommunicationQuery,
-} from '@rumsan/react-query';
+
 import { RumsanService } from '@rumsan/sdk';
-
-import { CommunicationService } from '@rumsan/communication';
+import {
+  RSQueryContextType,
+  useAuthStore,
+  useRSQuery,
+} from '@rumsan/react-query';
 import { useQueryClient } from '@tanstack/react-query';
-import { createContext, useContext } from 'react';
+import { createContext, useContext, useEffect, useMemo } from 'react';
 import { useError } from '../utils/useErrors';
+import { useCommunicationQuery } from '@rumsan/communication-query';
+import { CommunicationService } from '@rumsan/communication/services/communication.client';
 
-export type ServiceContextType = {
-  rumsanService: RumsanService;
-  communicationService: CommunicationService;
-  communicationQuery: CommunicationQuery;
-  authQuery: AuthQuery;
-  userQuery: UserQuery;
-  beneficiaryQuery: BeneficiaryQuery;
-  vendorQuery: VendorQuery;
-  roleQuery: RoleQuery;
-  projectQuery: ProjectQuery;
-};
-
-export const ServiceContext = createContext<ServiceContextType | null>(null);
+export const ServiceContext = createContext<RSQueryContextType | null>(null);
 
 interface ServiceProviderProps {
   children: React.ReactNode;
 }
 
 export function ServiceProvider({ children }: ServiceProviderProps) {
-  const queryClient = useQueryClient();
-  const version = '/v1';
-  const rumsanService = new RumsanService({
-    baseURL: process.env.NEXT_PUBLIC_API_HOST_URL + version,
-  });
+  const qc = useQueryClient();
+  const { queryClient, rumsanService, setQueryClient, setRumsanService } =
+    useRSQuery();
+  const {
+    communicationService,
+    setCommunicationService,
+    queryClient: commsQueryClient,
+    setQueryClient: setCommsQueryClient,
+  } = useCommunicationQuery();
 
-  const communicationService = new CommunicationService({
-    baseURL: process.env.NEXT_PUBLIC_API_COMMUNICATION_URL + version,
-  });
+  const rsService = useMemo(
+    () =>
+      new RumsanService({
+        baseURL: process.env.NEXT_PUBLIC_API_HOST_URL + '/v1',
+      }),
+    [],
+  );
+
+  const commsService = useMemo(
+    () =>
+      new CommunicationService({
+        baseURL: process.env.NEXT_PUBLIC_API_COMMUNICATION_URL + '/v1',
+      }),
+    [],
+  );
+
+  useEffect(() => {
+    if (!queryClient) {
+      setQueryClient(qc);
+    }
+  }, [qc, queryClient, setQueryClient]);
+
+  useEffect(() => {
+    if (!rumsanService) {
+      setRumsanService(rsService);
+    }
+  }, [rsService, rumsanService, setRumsanService]);
+
+  useEffect(() => {
+    if (!commsQueryClient) {
+      setCommsQueryClient(qc);
+    }
+  }, [qc, commsQueryClient, setCommsQueryClient]);
+
+  useEffect(() => {
+    if (!communicationService) {
+      setCommunicationService(commsService);
+    }
+  }, [commsService, communicationService, setCommunicationService]);
 
   useError();
 
-  // set bearer token
-  rumsanService.client.interceptors.request.use(
-    (config) => {
-      const token = useAuthStore.getState().token;
-      if (token) {
-        config.headers['Authorization'] = 'Bearer ' + token;
-      }
-      return config;
-    },
-    (error) => {
-      return Promise.reject(error);
-    },
-  );
-  // set bearer token
-  communicationService.client.interceptors.request.use(
-    (config) => {
-      const token = useAuthStore.getState().token;
-      if (token) {
-        config.headers['Authorization'] = 'Bearer ' + token;
-      }
-      config.headers['appId'] = process.env.NEXT_PUBLIC_API_APPLICATION_ID;
-      return config;
-    },
-    (error) => {
-      return Promise.reject(error);
-    },
-  );
+  useEffect(() => {
+    if (rumsanService) {
+      rumsanService.client.interceptors.request.use(
+        (config) => {
+          const token = useAuthStore.getState().token;
+          if (token) {
+            config.headers['Authorization'] = 'Bearer ' + token;
+          }
+          return config;
+        },
+        (error) => {
+          return Promise.reject(error);
+        },
+      );
+    }
+  }, [rumsanService]);
 
-  const authQuery = new AuthQuery(rumsanService, queryClient);
-  const userQuery = new UserQuery(rumsanService, queryClient);
-  const beneficiaryQuery = new BeneficiaryQuery(rumsanService, queryClient);
-  const vendorQuery = new VendorQuery(rumsanService, queryClient);
-  const roleQuery = new RoleQuery(rumsanService, queryClient);
-  const projectQuery = new ProjectQuery(rumsanService, queryClient);
-  const communicationQuery = new CommunicationQuery(
-    communicationService,
-    queryClient,
-  );
+  useEffect(() => {
+    if (communicationService) {
+      communicationService.client.interceptors.request.use(
+        (config) => {
+          const token = useAuthStore.getState().token;
+          if (token) {
+            config.headers['Authorization'] = 'Bearer ' + token;
+          }
+          config.headers['appId'] = process.env.NEXT_PUBLIC_API_APPLICATION_ID;
+          return config;
+        },
+        (error) => {
+          return Promise.reject(error);
+        },
+      );
+    }
+  }, [communicationService]);
 
-  return (
-    <ServiceContext.Provider
-      value={{
-        rumsanService,
-        communicationService,
-        authQuery,
-        userQuery,
-        beneficiaryQuery,
-        vendorQuery,
-        projectQuery,
-        roleQuery,
-        communicationQuery,
-      }}
-    >
-      {children}
-    </ServiceContext.Provider>
-  );
+  if (!rumsanService || !queryClient || !communicationService)
+    return 'Setting up services...';
+
+  return children;
 }
 
-export const useRumsanService = (): ServiceContextType => {
-  return useContext(ServiceContext) as ServiceContextType;
+export const useRumsanService = () => {
+  return useContext(ServiceContext);
 };

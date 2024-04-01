@@ -1,7 +1,6 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
-import { useRouter } from 'next/router';
 import React, {
   createContext,
   ReactNode,

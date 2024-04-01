@@ -11,7 +11,7 @@ export const TAGS = {
   GET_ALL_TRANSPORT: 'get_all_transport',
   GET_ALL_AUDIENCE: 'get_all_audience',
   GET_BENEFICIARIES: 'get_beneficiaries',
-  GET_BENEFICIARIES_STATUS: 'get_beneficiaries_status',
+  GET_BENEFICIARIES_STATS: 'get_beneficiaries_stats',
   LIST_COMMUNITY_BENFICIARIES: 'list_community_beneficiaries',
   CREATE_COMMUNITY_BENEFICARY: 'create_community_beneficary',
   UPDATE_COMMUNITY_BENEFICARY: 'update_community_beneficary',
@@ -27,4 +27,5 @@ export const TAGS = {
   GET_VENDOR_DETAILS: 'get_vendors_details',
   GET_PROJECT_DETAILS: 'get_project_details',
   GET_BENFICIARY_STATS: 'get_beneficiary_stats',
+  GET_PROJECT_SETTINGS: 'get_project_settings',
 };

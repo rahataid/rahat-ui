@@ -1,5 +1,25 @@
 'use client';
-
+import {
+  useAssignBenToProject,
+  useBeneficiaryStore,
+  useProjectList,
+} from '@rahat-ui/query';
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@rahat-ui/shadcn/components/dialog';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@rahat-ui/shadcn/components/select';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
@@ -8,40 +28,67 @@ import {
   CardHeader,
 } from '@rahat-ui/shadcn/src/components/ui/card';
 import { truncateEthAddress } from '@rumsan/sdk/utils';
-import * as React from 'react';
-import { useProjectAction } from '../../../../../libs/query/src/lib/projects/projects';
-import { useSwal } from '../../components/swal';
-import { useBoolean } from '../../hooks/use-boolean';
+import { UUID } from 'crypto';
 import { useRouter } from 'next/navigation';
+import * as React from 'react';
+import { useBoolean } from '../../hooks/use-boolean';
 import AssignToProjectModal from './components/assignToProjectModal';
+import { useSwal } from '../../components/swal';
+import ProjectConfirm from './projects.assign.confirm';
+import ProjectAssign from './project.assign.modal';
 
-export default function InfoCards({ data, voucherData }: any) {
-  const addBeneficiary = useProjectAction();
+export default function InfoCards() {
+  const addBeneficiary = useAssignBenToProject();
+  const projectsList = useProjectList({});
+
+  const data = useBeneficiaryStore((state) => state.singleBeneficiary);
+  // const { projectQuery } = useRumsanService();
   const router = useRouter();
-  const alert = useSwal();
+
+  const [selectedProject, setSelectedProject] = React.useState<UUID>();
+
   const projectModal = useBoolean();
+
+  const projectConfirmModal = useBoolean();
+  const projectAssignModal = useBoolean();
+
+  const [selectedRow, setSelectedRow] = React.useState(null) as any;
+  const setId = (id: any) => setSelectedRow(id);
+
+  const alert = useSwal();
+
+  const handleProjectChange = (d: UUID) => setSelectedProject(d);
+
+  const handleAssignProject = async () => {
+    if (!selectedProject) {
+      return;
+    }
+    await addBeneficiary.mutateAsync({
+      beneficiaryUUID: data?.uuid as UUID,
+      projectUUID: selectedProject,
+    });
+  };
+  const handleOpenProjectAssignModal = () => {
+    projectAssignModal.onToggle();
+    projectConfirmModal.onFalse();
+  };
+
+  const handleSubmitProjectAssignModal = () => {
+    projectAssignModal.onFalse();
+    projectConfirmModal.onTrue();
+  };
+
+  const handleSubmitConfirmProjectModal = () => {
+    handleAssignProject();
+    projectConfirmModal.onFalse();
+  };
+  const handleCloseConfirmProjectModal = () => {
+    projectConfirmModal.onFalse();
+  };
 
   const handleAssignModalClick = () => {
     projectModal.onTrue();
   };
-
-  React.useEffect(() => {
-    if (!addBeneficiary) return;
-    if (addBeneficiary.isSuccess) {
-      alert.fire({
-        title: 'Beneficiary Assigned Successfully',
-        icon: 'success',
-      });
-      addBeneficiary.reset();
-    }
-    if (addBeneficiary.isError) {
-      alert.fire({
-        title: 'Error while updating Beneficiary',
-        icon: 'error',
-      });
-      addBeneficiary.reset();
-    }
-  }, [addBeneficiary, alert]);
 
   return (
     <>
@@ -61,7 +108,7 @@ export default function InfoCards({ data, voucherData }: any) {
                   Not Approved
                 </Badge>
               </div>
-              <Button onClick={handleAssignModalClick}>
+              <Button onClick={handleOpenProjectAssignModal}>
                 Assign To Project
               </Button>
             </div>
@@ -134,6 +181,17 @@ export default function InfoCards({ data, voucherData }: any) {
           </CardContent>
         </Card>
       </div>
+      <ProjectAssign
+        open={projectAssignModal.value}
+        setId={setId}
+        handleModal={handleOpenProjectAssignModal}
+        handleSubmit={handleSubmitProjectAssignModal}
+      />
+      <ProjectConfirm
+        open={projectConfirmModal.value}
+        handleClose={handleCloseConfirmProjectModal}
+        handleSubmit={handleSubmitConfirmProjectModal}
+      />
     </>
   );
 }

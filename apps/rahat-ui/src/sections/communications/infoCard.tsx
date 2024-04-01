@@ -21,14 +21,12 @@ import {
   DialogClose,
 } from '@rahat-ui/shadcn/components/dialog';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import {
-  ServiceContext,
-  ServiceContextType,
-} from 'apps/rahat-ui/src/providers/service.provider';
+
 import React from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { TAGS } from '@rumsan/react-query/utils/tags';
 import { toast } from 'react-toastify';
+import { useTriggerCampaign } from '@rumsan/communication-query';
 
 type IProps = {
   id?: number;
@@ -47,12 +45,9 @@ const InfoCard: React.FC<IProps> = ({
   status,
   totalAudience,
 }) => {
-  const { communicationQuery } = React.useContext(
-    ServiceContext,
-  ) as ServiceContextType;
   const queryClient = useQueryClient();
 
-  const triggerCampaign = communicationQuery.useTriggerCampaign();
+  const triggerCampaign = useTriggerCampaign();
   const handleChange = (e: string) => {
     if (e === 'trigger') {
       triggerCampaign

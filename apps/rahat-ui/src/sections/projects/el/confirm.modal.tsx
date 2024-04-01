@@ -1,9 +1,7 @@
-import { DialogClose } from '@radix-ui/react-dialog';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   Dialog,
   DialogContent,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from '@rahat-ui/shadcn/src/components/ui/dialog';
@@ -42,7 +40,6 @@ const SuccessModal = ({
   //   e.preventDefault();
   //   handleSubmit({ ...voucherInputs, description, price });
   // };
-  console.log('voucherInputs', voucherInputs);
   return (
     <Dialog open={open}>
       <DialogContent className="sm:max-w-[500px]">

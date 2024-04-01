@@ -1,5 +1,5 @@
 import { Pagination } from '@rumsan/sdk/types';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 
 const hashStorage = {
   getItem: (key: string): any => {
@@ -26,7 +26,7 @@ type usePaginationReturn = {
   };
   selectedListItems: any;
   setPagination: (pagination: Pagination) => void;
-  setFilters: (filters: { [key: string]: string }) => void;
+  setFilters: (filters: { [key: string]: any }) => void;
   setNextPage: () => void;
   setPrevPage: () => void;
   resetPagination: () => void;
@@ -46,15 +46,27 @@ export const usePagination = (): usePaginationReturn => {
   const [selectedListItems, setSelectedListItems] = useState<any>({});
 
   useEffect(() => {
-    hashStorage.setItem('pagination', pagination);
+    const storedPagination = hashStorage.getItem('pagination');
+    if (JSON.stringify(storedPagination) !== JSON.stringify(pagination)) {
+      hashStorage.setItem('pagination', pagination);
+    }
   }, [pagination]);
 
   useEffect(() => {
-    hashStorage.setItem('filters', filters);
+    const storedFilters = hashStorage.getItem('filters');
+    if (JSON.stringify(storedFilters) !== JSON.stringify(filters)) {
+      hashStorage.setItem('filters', filters);
+    }
   }, [filters]);
 
   useEffect(() => {
-    hashStorage.setItem('selectedListItems', selectedListItems);
+    const storedSelectedListItems = hashStorage.getItem('selectedListItems');
+    if (
+      JSON.stringify(storedSelectedListItems) !==
+      JSON.stringify(selectedListItems)
+    ) {
+      hashStorage.setItem('selectedListItems', selectedListItems);
+    }
   }, [selectedListItems]);
 
   const setNextPage = () =>
@@ -72,8 +84,8 @@ export const usePagination = (): usePaginationReturn => {
     }));
 
   return {
-    pagination,
-    filters,
+    pagination: useMemo(() => pagination, [pagination]),
+    filters: useMemo(() => filters, [filters]),
     setPagination,
     setFilters,
     setNextPage,

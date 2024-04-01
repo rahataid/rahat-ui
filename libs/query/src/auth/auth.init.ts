@@ -24,7 +24,6 @@ export const useAuthInitialization = (): UseAuthInitializationReturn => {
       try {
         const decodedToken = decode(token) as JwtPayload;
         const currentTime = Date.now() / 1000;
-
         if (
           decodedToken &&
           decodedToken.exp !== undefined &&

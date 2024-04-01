@@ -20,6 +20,12 @@ import { useProjectAction } from '@rahat-ui/query';
 import { useEffect, useState } from 'react';
 import { useVendorVoucher } from 'apps/rahat-ui/src/hooks/el/subgraph/querycall';
 import { useSearchParams } from 'next/navigation';
+import RedemptionTable from '../../../vendors/vendors.redemption.table';
+import {
+  useReadElProject,
+  useReadElProjectCheckVendorStatus,
+} from 'apps/rahat-ui/src/hooks/el/contracts/elProject';
+import { Card } from '@rahat-ui/shadcn/src/components/ui/card';
 
 interface IParams {
   uuid: any;
@@ -32,18 +38,24 @@ export default function VendorsDetailPage() {
   const phone = searchParams.get('phone');
   const name = searchParams.get('name');
   const vendorWallet = searchParams.get('walletAddress');
+  const vendorId = searchParams.get('vendorId');
 
   const { uuid: walletAddress, id: projectId } = useParams<IParams>();
   const [contractAddress, setContractAddress] = useState<any>('');
 
-  const updateVendor = useAddVendors(projectId, walletAddress);
+  const updateVendor = useAddVendors();
   const projectClient = useProjectAction();
   const { data } = useVendorVoucher(walletAddress);
 
+  const { data: vendorStatus } = useReadElProjectCheckVendorStatus({
+    address: contractAddress,
+    args: [walletAddress],
+  });
+
   const assignVendorToProjet = async () => {
     return updateVendor.writeContractAsync({
-      address: walletAddress,
-      args: [contractAddress, true],
+      address: contractAddress,
+      args: [walletAddress, true],
     });
   };
 
@@ -80,6 +92,7 @@ export default function VendorsDetailPage() {
     <div className="bg-secondary">
       {/* Data Cards */}
       <div className="grid md:grid-cols-4 gap-2 mx-2">
+        <VendorsInfo vendorData={{ name, phone, vendorWallet }} />
         <DataCard
           className="mt-2"
           title="Free Vouchers Redeemed"
@@ -98,26 +111,39 @@ export default function VendorsDetailPage() {
           number={data?.voucherDetailsByVendor?.beneficiaryReferred || '0'}
           subTitle="Beneficiaries"
         />
-        <VendorsInfo vendorData={{ name, phone, vendorWallet }} />
       </div>
-      <div className="mt-2 mx-2">
-        <Tabs defaultValue="transactions" className="w-full">
+      <div className="mt-2 mx-2 w-full">
+        <Tabs defaultValue="transactions">
           <div className="flex justify-between items-center">
-            <TabsList className="w-1/3 gap-14">
-              <TabsTrigger value="transactions">
-                Transaction History
-              </TabsTrigger>
-              <TabsTrigger value="referrals">Referrals List</TabsTrigger>
-            </TabsList>
-            <div>
-              <Button onClick={handleApproveVendor}>Approve Vendor</Button>
-            </div>
+            <Card className="rounded h-14 w-full mr-2 flex items-center justify-between">
+              <TabsList className="gap-2">
+                <TabsTrigger value="transactions">
+                  Transaction History
+                </TabsTrigger>
+                <TabsTrigger value="referrals">Referrals List</TabsTrigger>
+                <TabsTrigger value="redeem">Redemption List</TabsTrigger>
+              </TabsList>
+              {!vendorStatus && (
+                <div>
+                  <Button className="mr-3 h-1/2" onClick={handleApproveVendor}>
+                    Approve Vendor
+                  </Button>
+                </div>
+              )}
+            </Card>
           </div>
           <TabsContent value="transactions">
             <VendorTxnList walletAddress={walletAddress} />
           </TabsContent>
           <TabsContent value="referrals">
-            <ReferralTable />
+            <ReferralTable
+              projectId={projectId}
+              vendorId={vendorId}
+              walletAddress={walletAddress}
+            />
+          </TabsContent>
+          <TabsContent value="redeem">
+            <RedemptionTable projectId={projectId} vendorId={vendorId} />
           </TabsContent>
         </Tabs>
       </div>

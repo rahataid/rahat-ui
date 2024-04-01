@@ -20,19 +20,20 @@ export function useNavData() {
 
       {
         title: 'Communications',
+        path: paths.dashboard.communication.text,
 
-        children: [
-          {
-            title: 'Voice',
-            icon: <Phone />,
-            path: paths.dashboard.communication.voice,
-          },
-          {
-            title: 'Text',
-            icon: <MessageSquareMore />,
-            path: paths.dashboard.communication.text,
-          },
-        ],
+        // children: [
+        //   {
+        //     title: 'Voice',
+        //     icon: <Phone />,
+        //     path: paths.dashboard.communication.voice,
+        //   },
+        //   {
+        //     title: 'Text',
+        //     icon: <MessageSquareMore />,
+        //     path: paths.dashboard.communication.text,
+        //   },
+        // ],
       },
     ],
     [],

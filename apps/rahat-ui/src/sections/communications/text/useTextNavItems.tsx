@@ -1,11 +1,11 @@
 import { Speech, FilePenLine, Plus } from 'lucide-react';
 import { useParams } from 'next/navigation';
-
+import { useCampaignStore } from '@rumsan/communication-query';
 import { NavItem } from '../components/nav-items.types';
 
 export const useNavItems = () => {
   const params = useParams();
-
+  const totalTextCampaign = useCampaignStore().totalTextCampaign;
   const navItems: NavItem[] = [
     {
       title: 'Communications : Text',
@@ -13,7 +13,7 @@ export const useNavItems = () => {
         {
           title: 'Campaigns',
           path: '/communications/text',
-          subtitle: 20,
+          subtitle: totalTextCampaign || 0,
           icon: <Speech size={18} strokeWidth={1.5} />,
         },
       ],

@@ -16,6 +16,7 @@ const customColors = {
   fontWeightBold: 'bold',
 };
 
+// @ts-ignore
 const Chart: FC<Props> = styled(ApexChart)(() => ({
   '& .apexcharts-canvas': {
     // Tooltip

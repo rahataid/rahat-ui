@@ -1,6 +1,5 @@
 'use client';
 
-import { useProjectAction } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/components/button';
 import {
   DropdownMenu,
@@ -19,7 +18,6 @@ import {
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import { MS_ACTIONS } from '@rahataid/sdk/constants';
 import {
   ColumnFiltersState,
   SortingState,
@@ -53,9 +51,14 @@ import {
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { useBoolean } from '../../hooks/use-boolean';
-import { useRumsanService } from '../../providers/service.provider';
 import { useTableColumns } from './useTableColumns';
-import Swal from 'sweetalert2';
+import {
+  useVendorList,
+  usePagination,
+  useProjectList,
+  useAssignVendorToProject,
+} from '@rahat-ui/query';
+import { UUID } from 'crypto';
 
 export type IVendor = {
   id: string;
@@ -66,10 +69,13 @@ export type IVendor = {
 };
 
 export default function VendorsList() {
-  const { vendorQuery, projectQuery } = useRumsanService();
+  const { pagination } = usePagination();
+  const { data: vendorData } = useVendorList(pagination);
+  const projectList = useProjectList({});
+  const addVendor = useAssignVendorToProject();
 
   const projectModal = useBoolean();
-  const [selectedProject, setSelectedProject] = React.useState('');
+  const [selectedProject, setSelectedProject] = React.useState<UUID>();
   const [selectedRow, setSelectedRow] = React.useState(null) as any;
 
   const handleAssignModalClick = (row: any) => {
@@ -79,11 +85,6 @@ export default function VendorsList() {
 
   const columns = useTableColumns(handleAssignModalClick);
 
-  const projectClient = useProjectAction();
-  const projectsList = projectQuery.useProjectList({});
-  const d = projectsList.data;
-  const projectList = d?.data || [];
-
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
@@ -92,11 +93,6 @@ export default function VendorsList() {
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
-
-  const { data: vendorData } = vendorQuery.useVendorList({
-    perPage: 5,
-    page: 1,
-  });
 
   const table = useReactTable({
     data: vendorData?.data || [],
@@ -118,34 +114,14 @@ export default function VendorsList() {
   });
 
   const handleAssignProject = async () => {
-    if (!selectedProject) return;
-
-    await projectClient.mutateAsync({
-      uuid: selectedProject,
-      data: {
-        action: MS_ACTIONS.VENDOR.ASSIGN_TO_PROJECT,
-        payload: {
-          vendorUuid: selectedRow?.id,
-        },
-      },
+    if (!selectedProject) return alert('Please select a project');
+    await addVendor.mutateAsync({
+      vendorUUID: selectedRow?.uuid,
+      projectUUID: selectedProject,
     });
   };
 
-  React.useEffect(() => {
-    if (!projectClient) return;
-    if (projectClient.isSuccess) {
-      Swal.fire({ icon: 'success', title: 'Action performed successfully' });
-      projectClient.reset();
-    }
-    if (projectClient.isError) {
-      const error = projectClient.error as any;
-      const message = error?.response?.data?.message || 'Internal Server Error';
-      Swal.fire({ icon: 'error', title: message });
-      projectClient.reset();
-    }
-  }, [projectClient]);
-
-  const handleProjectChange = (d: string) => setSelectedProject(d);
+  const handleProjectChange = (d: UUID) => setSelectedProject(d);
 
   return (
     <>
@@ -315,11 +291,11 @@ export default function VendorsList() {
                     <SelectValue placeholder="--Select--" />
                   </SelectTrigger>
                   <SelectContent>
-                    {projectList.length > 0 &&
-                      projectList.map((project: any) => {
+                    {projectList.data?.data.length &&
+                      projectList.data?.data.map((project: any) => {
                         return (
-                          <SelectItem key={project.id} value={project.id}>
-                            {project.title}
+                          <SelectItem key={project.id} value={project.uuid}>
+                            {project.name}
                           </SelectItem>
                         );
                       })}

@@ -1,3 +1,4 @@
+import { useProjectAction } from '@rahat-ui/query';
 import { useSwal } from '../../../components/swal';
 import {
   useWriteRahatDonorMintTokenAndApprove,
@@ -10,7 +11,6 @@ import {
   useWriteElProjectUpdateVendor,
 } from './elProject';
 
-import { useProjectAction } from 'libs/query/src/lib/projects/projects';
 import { MS_ACTIONS } from '@rahataid/sdk';
 
 export const useAddBeneficiary = () => {
@@ -112,22 +112,12 @@ export const useOnlyMintVoucher = () => {
   });
 };
 
-export const useAddVendors = (uuid: string, vendorUuid: string) => {
+export const useAddVendors = () => {
   const alert = useSwal();
   const addVendor = useProjectAction();
   return useWriteElProjectUpdateVendor({
     mutation: {
       onSuccess: async () => {
-        // await addVendor.mutateAsync({
-        //   uuid: uuid,
-        //   data: {
-        //     action: MS_ACTIONS.VENDOR.ASSIGN_TO_PROJECT,
-        //     // 'vendor.assign_to_project',
-        //     payload: {
-        //       vendorUuid,
-        //     },
-        //   },
-        // });
         alert.fire({
           title: 'Vendor approved sucessfully',
           icon: 'success',

@@ -79,7 +79,7 @@ export default function ListView({ handleClick, table }: IProps) {
         </div>
         <div className="rounded border bg-card">
           <TableComponent>
-            <ScrollArea className="h-table1">
+            <ScrollArea className="h-[calc(100vh-180px)]">
               <TableHeader className="bg-card sticky top-0">
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow key={headerGroup.id}>

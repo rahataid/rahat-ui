@@ -6,7 +6,7 @@ on:
   pull_request:
     branches:
       - 'dev'
-  # workflow_dispatch:
+  workflow_dispatch:
 
 env:
   CI: false
@@ -17,7 +17,7 @@ jobs:
   deploy:
     name: build && push image to Docker hub
     runs-on: ubuntu-latest
-    if: contains(github.event.head_commit.message, 'action')
+    if: contains(github.event.head_commit.message, 'action') || contains(github.event.pull_request.title, 'action')
 
     steps:
       - uses: actions/checkout@v4
@@ -53,17 +53,16 @@ jobs:
         with:
           context: .
           file: Dockerfile.rahat-ui
-          push: ${{ github.event_name == 'push' && 'true' || 'false' }}
-          # push: false
+          # push: ${{ github.event_name == 'push' && 'true' || 'false' }}
+          push: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
           tags: esatya/rahat-ui:dev
 
       # Community-Tool-UI Image
-      - name: build && push community-tool-ui
-        id: build-push-community-tool-ui
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: Dockerfile.community-tool-ui
-          push: ${{ github.event_name == 'push' && 'true' || 'false' }}
-          # push: false
-          tags: esatya/community-tool-ui:dev
+      # - name: build && push community-tool-ui
+      #   id: build-push-community-tool-ui
+      #   uses: docker/build-push-action@v5
+      #   with:
+      #     context: .
+      #     file: Dockerfile.community-tool-ui
+      #     push: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
+      #     tags: esatya/community-tool-ui:dev

@@ -3,9 +3,10 @@ import Image from 'next/image';
 import { Card, CardContent } from '@rahat-ui/shadcn/components/card';
 import { useRouter } from 'next/navigation';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+import { UUID } from 'crypto';
 
 type CardProps = {
-  id: number;
+  address: UUID;
   title: string;
   subTitle: string;
   image: string;
@@ -13,7 +14,7 @@ type CardProps = {
 };
 
 export default function CommonCard({
-  id,
+  address,
   title,
   subTitle,
   image,
@@ -22,7 +23,7 @@ export default function CommonCard({
   const router = useRouter();
 
   const handleClick = () => {
-    router.push(`/projects/${badge.toLowerCase()}/${id}`);
+    router.push(`/projects/${badge.toLowerCase()}/${address}`);
   };
 
   return (

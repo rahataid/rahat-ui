@@ -18,11 +18,9 @@ import { MS_ACTIONS } from '@rahataid/sdk';
 import { PROJECT_SETTINGS } from 'apps/rahat-ui/src/constants/project.const';
 import { useProjectAction } from '@rahat-ui/query';
 import { useEffect, useState } from 'react';
-import { useVendorVoucher } from 'apps/rahat-ui/src/hooks/el/subgraph/querycall';
 import { useSearchParams } from 'next/navigation';
 import RedemptionTable from '../../../vendors/vendors.redemption.table';
 import {
-  useReadElProject,
   useReadElProjectCheckVendorStatus,
   useReadElProjectGetVendorVoucherDetail,
 } from 'apps/rahat-ui/src/hooks/el/contracts/elProject';

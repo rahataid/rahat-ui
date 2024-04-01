@@ -68,11 +68,9 @@ export const useNavItems = () => {
     contractSettings?.eyeVoucherAddress || '',
   );
 
-  console.log('contractSettings', contractSettings);
 
   useEffect(() => {
     if (projectVoucher.isSuccess) {
-      console.log('projectVoucher', projectVoucher.data);
       setVoucherInputs((prev) => ({
         ...prev,
       }));

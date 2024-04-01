@@ -1,10 +1,11 @@
 'use client';
 
+import { useState } from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import { ListBeneficiary } from '@rahat-ui/types';
 import { truncateEthAddress } from '@rumsan/core/utilities/string.utils';
 import UserDetail from './viewUser';
-import { Eye, Copy } from 'lucide-react';
+import { Eye, Copy, CopyCheck } from 'lucide-react';
 import { useSecondPanel } from '../../providers/second-panel-provider';
 import {
   Tooltip,
@@ -15,8 +16,11 @@ import {
 
 export const useUserTableColumns = () => {
   const { closeSecondPanel, setSecondPanelComponent } = useSecondPanel();
-  const clickToCopy = (walletAddress: string) => {
+  const [walletAddressCopied, setWalletAddressCopied] = useState<number>();
+
+  const clickToCopy = (walletAddress: string, index: number) => {
     navigator.clipboard.writeText(walletAddress);
+    setWalletAddressCopied(index);
   };
 
   const columns: ColumnDef<ListBeneficiary>[] = [
@@ -38,13 +42,19 @@ export const useUserTableColumns = () => {
           <Tooltip>
             <TooltipTrigger
               className="flex gap-3 cursor-pointer"
-              onClick={() => clickToCopy(row.getValue('wallet'))}
+              onClick={() => clickToCopy(row.getValue('wallet'), row.index)}
             >
               <p>{truncateEthAddress(row.getValue('wallet'))}</p>
-              <Copy size={20} strokeWidth={1.5} />
+              {walletAddressCopied === row.index ? (
+                <CopyCheck size={20} strokeWidth={1.5} />
+              ) : (
+                <Copy size={20} strokeWidth={1.5} />
+              )}
             </TooltipTrigger>
             <TooltipContent className="bg-secondary" side="bottom">
-              <p className="text-xs font-medium">click to copy</p>
+              <p className="text-xs font-medium">
+                {walletAddressCopied === row.index ? 'copied' : 'click to copy'}
+              </p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>

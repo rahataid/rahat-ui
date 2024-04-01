@@ -6,6 +6,7 @@ import { Pagination } from '@rumsan/sdk/types';
 import { useEffect } from 'react';
 import Swal from 'sweetalert2';
 import { useCommunityBeneficiaryStore } from './beneficiary.store';
+import { Beneficiary } from '@rahataid/community-tool-sdk/beneficiary';
 
 export const useCommunityBeneficaryList = (
   payload: Pagination & { any?: string },
@@ -27,8 +28,7 @@ export const useCommunityBeneficaryList = (
   );
   useEffect(() => {
     if (query.data) {
-      //TODO: fix this type @karun-rumsan
-      setBeneficiaries(query.data.data as any[]);
+      setBeneficiaries(query.data.data as Beneficiary[]);
       setMeta(query.data.response.meta);
     }
   }, [query.data, setBeneficiaries]);

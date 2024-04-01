@@ -1,5 +1,4 @@
 'use client';
-
 import { Table, flexRender } from '@tanstack/react-table';
 import { Settings2 } from 'lucide-react';
 
@@ -22,8 +21,6 @@ import {
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-
-import { UUID } from 'crypto';
 import { ListBeneficiary } from '@rahataid/community-tool-sdk/beneficiary';
 
 type IProps = {
@@ -79,10 +76,10 @@ export default function ListView({ handleClick, table }: IProps) {
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-        <div className="rounded border bg-white">
+        <div className="rounded border bg-card">
           <TableComponent>
-            <ScrollArea className="h-table1">
-              <TableHeader className="sticky top-0">
+            <ScrollArea className="h-[calc(100vh-180px)]">
+              <TableHeader className="bg-card sticky top-0">
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow key={headerGroup.id}>
                     {headerGroup.headers.map((header) => {

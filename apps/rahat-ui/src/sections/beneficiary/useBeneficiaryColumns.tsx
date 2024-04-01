@@ -1,11 +1,12 @@
 'use client';
 
+import { useState } from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import { Beneficiary } from '@rahataid/sdk/types';
 import { truncateEthAddress } from '@rumsan/sdk/utils';
 import { useSecondPanel } from '../../providers/second-panel-provider';
 import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
-import { Eye, Copy } from 'lucide-react';
+import { Eye, Copy, CopyCheck } from 'lucide-react';
 import BeneficiaryDetail from './beneficiaryDetail';
 import {
   Tooltip,
@@ -16,8 +17,11 @@ import {
 
 export const useBeneficiaryTableColumns = () => {
   const { setSecondPanelComponent, closeSecondPanel } = useSecondPanel();
-  const clickToCopy = (walletAddress: string) => {
+  const [walletAddressCopied, setWalletAddressCopied] = useState<number>();
+
+  const clickToCopy = (walletAddress: string, index: number) => {
     navigator.clipboard.writeText(walletAddress);
+    setWalletAddressCopied(index);
   };
 
   const columns: ColumnDef<Beneficiary>[] = [
@@ -62,13 +66,21 @@ export const useBeneficiaryTableColumns = () => {
           <Tooltip>
             <TooltipTrigger
               className="flex gap-3 cursor-pointer"
-              onClick={() => clickToCopy(row.getValue('walletAddress'))}
+              onClick={() =>
+                clickToCopy(row.getValue('walletAddress'), row.index)
+              }
             >
               <p>{truncateEthAddress(row.getValue('walletAddress'))}</p>
-              <Copy size={20} strokeWidth={1.5} />
+              {walletAddressCopied === row.index ? (
+                <CopyCheck size={20} strokeWidth={1.5} />
+              ) : (
+                <Copy size={20} strokeWidth={1.5} />
+              )}
             </TooltipTrigger>
             <TooltipContent className="bg-secondary" side="bottom">
-              <p className="text-xs font-medium">click to copy</p>
+              <p className="text-xs font-medium">
+                {walletAddressCopied === row.index ? 'copied' : 'click to copy'}
+              </p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>

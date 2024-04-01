@@ -23,7 +23,6 @@ const ProjectMainView = () => {
     (state) => state.settings?.[id] || null,
   );
   const beneficiaryStats = useGetBeneficiaryStats();
-  console.log('beneficiaryState.data', beneficiaryStats.data);
 
   const { data: beneficiaryDetails } = useBeneficiaryCount(
     contractSettings?.elproject?.address || null,

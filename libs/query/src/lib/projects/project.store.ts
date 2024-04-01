@@ -49,7 +49,7 @@ type ProjectSettingsState = {
 type ProjectSettingsStateAction = {
   setSettings: (settings: Record<string, any>) => void;
   resetSettings: () => void;
-  // getSettings:(uuid:UUID)=>void;
+  // projectBasedSettings: (uuid: UUID | string) => void;
 };
 
 type ProjectSettingsStore = ProjectSettingsState & ProjectSettingsStateAction;
@@ -59,6 +59,13 @@ export const useProjectSettingsStore = zustandStore<ProjectSettingsStore>(
     ...initialSettingsStore,
     setSettings: (settings) => set({ settings }),
     resetSettings: () => set({ ...initialSettingsStore }),
+    // projectBasedSettings: (uuid: string) => {
+    //   const settings = get().settings;
+    //   const projectSettings = settings?.[uuid];
+    //   if (projectSettings) return projectSettings;
+    //   return null;
+    //   // Fetch settings from api
+    // },
     // Fetch settings from api
   }),
   {

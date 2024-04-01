@@ -62,7 +62,7 @@ export default function BeneficiaryDetail({
 
   const [assignStatus, setAssignStatus] = useState(false);
   const[contractAddress,setContractAddress] = useState<any>()
-
+  
   const walletAddress = beneficiaryDetails.name;
 
   const {data:benFreeVoucher} = useReadElProjectBeneficiaryEyeVoucher({ 
@@ -85,7 +85,6 @@ export default function BeneficiaryDetail({
     args:[walletAddress,contractAddress?.referredVoucher]
 
   })
-
 
   const projectSettings = localStorage.getItem('projectSettingsStore');
 
@@ -116,9 +115,11 @@ export default function BeneficiaryDetail({
 
 
   useEffect(() => {
-    if(benFreeVoucher !== zeroAddress || benReferredVoucher !== zeroAddress)
+    if(benFreeVoucher === undefined || benReferredVoucher === undefined) return;
+    if((benFreeVoucher?.toString()) !== zeroAddress || benReferredVoucher?.toString() !== zeroAddress)
      {
       setAssignStatus(true);
+
     }
   }, [benFreeVoucher,benReferredVoucher]);
 
@@ -347,9 +348,9 @@ export default function BeneficiaryDetail({
                     <div className="flex justify-between items-center">
                       <p>Voucher Type</p>
                       <p className="text-sm font-light">
-                        {benFreeVoucher !== zeroAddress
+                        {benFreeVoucher !== undefined && benFreeVoucher !== zeroAddress
                           ? 'Free Voucher'
-                          : benReferredVoucher !== zeroAddress
+                          : benReferredVoucher !== undefined && benReferredVoucher !== zeroAddress
                           ? 'Discount Voucher'
                           : 'N/A'}
                       </p>
@@ -357,9 +358,9 @@ export default function BeneficiaryDetail({
                     <div className="flex justify-between items-center">
                       <p>ClaimStatus</p>
                       <p className="text-sm font-light">
-                        {benFreeVoucher !== zeroAddress
+                        {benFreeVoucher !== undefined  && benFreeVoucher !== zeroAddress
                           ? eyeVoucherClaimStatus?.toString()
-                          : benReferredVoucher !== zeroAddress
+                          :  benReferredVoucher !== undefined && benReferredVoucher !== zeroAddress
                           ? referredVoucherClaimStatus?.toString()
                           : 'N/A'}
                       </p>

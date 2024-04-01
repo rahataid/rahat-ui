@@ -16,16 +16,15 @@ import {
 } from '@tanstack/react-table';
 
 import { usePagination } from '@rahat-ui/query';
-import { Beneficiary } from '@rahataid/sdk/types';
 import CustomPagination from '../../components/customPagination';
 import { BENEFICIARY_NAV_ROUTE } from '../../constants/beneficiary.const';
 import { useRumsanService } from '../../providers/service.provider';
-import BeneficiaryDetail from '../../sections/beneficiary/beneficiaryDetail';
 import BeneficiaryGridView from '../../sections/beneficiary/gridView';
 import BeneficiaryListView from '../../sections/beneficiary/listView';
 import BeneficiaryNav from '../../sections/beneficiary/nav';
 import ImportBeneficiary from './import.beneficiary';
 import { useBeneficiaryTableColumns } from './useBeneficiaryColumns';
+import { useSecondPanel } from '../../providers/second-panel-provider';
 
 function BeneficiaryView() {
   const {
@@ -38,20 +37,12 @@ function BeneficiaryView() {
   } = usePagination();
 
   const { beneficiaryQuery } = useRumsanService();
-  const [selectedData, setSelectedData] = useState<Beneficiary>();
+  const { secondPanel, setSecondPanelComponent } = useSecondPanel();
   const [active, setActive] = useState<string>(BENEFICIARY_NAV_ROUTE.DEFAULT);
-
-  const handleBeneficiaryClick = useCallback((item: Beneficiary) => {
-    setSelectedData(item);
-  }, []);
-
-  const handleClose = () => {
-    setSelectedData(null);
-  };
 
   const handleNav = useCallback((item: string) => {
     setActive(item);
-    setSelectedData(null);
+    setSecondPanelComponent(null);
   }, []);
 
   const { data } = beneficiaryQuery.useBeneficiaryList({
@@ -96,17 +87,10 @@ function BeneficiaryView() {
           {active === BENEFICIARY_NAV_ROUTE.DEFAULT && (
             <>
               <TabsContent value="list">
-                <BeneficiaryListView
-                  table={table}
-                  meta={data?.meta}
-                  handleClick={handleBeneficiaryClick}
-                />
+                <BeneficiaryListView table={table} meta={data?.meta} />
               </TabsContent>
               <TabsContent value="grid">
-                <BeneficiaryGridView
-                  handleClick={handleBeneficiaryClick}
-                  data={data?.data}
-                />
+                <BeneficiaryGridView data={data?.data} />
               </TabsContent>
               <CustomPagination
                 meta={data?.response?.meta || { total: 0, currentPage: 0 }}
@@ -120,20 +104,7 @@ function BeneficiaryView() {
             </>
           )}
         </ResizablePanel>
-        {selectedData ? (
-          <>
-            <ResizableHandle />
-            <ResizablePanel minSize={28} defaultSize={28}>
-              {selectedData && (
-                <BeneficiaryDetail
-                  data={selectedData}
-                  handleClose={handleClose}
-                />
-              )}
-              {/* {addBeneficiary && <AddBeneficiary />} */}
-            </ResizablePanel>
-          </>
-        ) : null}
+        {secondPanel && secondPanel}
       </ResizablePanelGroup>
     </Tabs>
   );

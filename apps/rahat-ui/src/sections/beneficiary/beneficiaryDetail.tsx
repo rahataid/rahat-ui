@@ -26,7 +26,15 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
-import { Archive, Expand, Minus, Trash2, MoreVertical } from 'lucide-react';
+import {
+  Archive,
+  Expand,
+  Minus,
+  Trash2,
+  MoreVertical,
+  Copy,
+  CopyCheck,
+} from 'lucide-react';
 import { truncateEthAddress } from '@rumsan/sdk/utils';
 import ConfirmDialog from '../../components/dialog';
 import { useRumsanService } from '../../providers/service.provider';
@@ -40,31 +48,36 @@ import SplitViewDetailCards from './components/split.view.detail.cards';
 import BeneficiaryDetailTableView from './beneficiaryDetailTable';
 
 type IProps = {
-  data: IBeneficiaryItem;
-  handleClose: VoidFunction;
+  beneficiaryDetail: IBeneficiaryItem;
+  closeSecondPanel: VoidFunction;
 };
 
-export default function BeneficiaryDetail({ data, handleClose }: IProps) {
+export default function BeneficiaryDetail({
+  beneficiaryDetail,
+  closeSecondPanel,
+}: IProps) {
   const router = useRouter();
   const { beneficiaryQuery } = useRumsanService();
   const projectModal = useBoolean();
   const [activeTab, setActiveTab] = useState<'details' | 'edit' | null>(
     'details',
   );
+  const [walletAddressCopied, setWalletAddressCopied] =
+    useState<boolean>(false);
   let beneficiary = null;
-  const walletAddress = data.walletAddress || '';
+  const walletAddress = beneficiaryDetail.walletAddress || '';
 
   const beneficiaryDetails = useBeneficaryVoucher(walletAddress);
 
-  const changedDate = new Date(data?.updatedAt);
+  const changedDate = new Date(beneficiaryDetail?.updatedAt);
   const formattedDate = changedDate.toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
   });
 
-  if (data.uuid) {
-    const response = beneficiaryQuery.useBeneficiaryGet(data.uuid);
+  if (beneficiaryDetail.uuid) {
+    const response = beneficiaryQuery.useBeneficiaryGet(beneficiaryDetail.uuid);
     beneficiary = response.data?.data;
   }
 
@@ -75,6 +88,7 @@ export default function BeneficiaryDetail({ data, handleClose }: IProps) {
   const clickToCopy = () => {
     if (walletAddress) {
       navigator.clipboard.writeText(walletAddress);
+      setWalletAddressCopied(true);
     }
   };
 
@@ -85,14 +99,14 @@ export default function BeneficiaryDetail({ data, handleClose }: IProps) {
   return (
     <>
       <AssignToProjectModal
-        beneficiaryDetail={data}
+        beneficiaryDetail={beneficiaryDetail}
         projectModal={projectModal}
       />
       <div className="flex justify-between p-4 pt-5 bg-secondary">
         <div className="flex gap-3">
           <TooltipProvider delayDuration={100}>
             <Tooltip>
-              <TooltipTrigger onClick={handleClose}>
+              <TooltipTrigger onClick={closeSecondPanel}>
                 <Minus size={20} strokeWidth={1.5} />
               </TooltipTrigger>
               <TooltipContent className="bg-secondary ">
@@ -105,7 +119,9 @@ export default function BeneficiaryDetail({ data, handleClose }: IProps) {
               <TooltipTrigger
                 onClick={() => {
                   router.push(
-                    paths.dashboard.beneficiary.detail(data?.walletAddress),
+                    paths.dashboard.beneficiary.detail(
+                      beneficiaryDetail?.walletAddress,
+                    ),
                   );
                 }}
               >
@@ -175,18 +191,28 @@ export default function BeneficiaryDetail({ data, handleClose }: IProps) {
         />
         <div>
           <div className="flex gap-2 mb-1">
-            <h1 className="font-semibold text-xl">{data?.piiData?.name}</h1>
+            <h1 className="font-semibold text-xl">
+              {beneficiaryDetail?.piiData?.name}
+            </h1>
             <Badge>Active</Badge>
           </div>
           <TooltipProvider delayDuration={100}>
             <Tooltip>
-              <TooltipTrigger onClick={clickToCopy}>
+              <TooltipTrigger
+                className="flex gap-3 items-center"
+                onClick={clickToCopy}
+              >
                 <p className="text-slate-500 text-base">
                   {truncateEthAddress(walletAddress)}
                 </p>
+                {walletAddressCopied ? (
+                  <CopyCheck size={20} strokeWidth={1.5} />
+                ) : (
+                  <Copy size={20} strokeWidth={1.5} />
+                )}
               </TooltipTrigger>
               <TooltipContent className="bg-secondary" side="bottom">
-                <p className="text-xs font-medium">click to copy</p>
+                <p className="text-xs font-medium">{walletAddressCopied ? 'copied' : 'click to copy'}</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
@@ -205,7 +231,7 @@ export default function BeneficiaryDetail({ data, handleClose }: IProps) {
               </TabsList>
             </div>
             <TabsContent value="detail">
-              <SplitViewDetailCards beneficiaryDetail={data} />
+              <SplitViewDetailCards beneficiaryDetail={beneficiaryDetail} />
             </TabsContent>
             <TabsContent value="transaction-history">
               <div className="p-2">
@@ -217,8 +243,8 @@ export default function BeneficiaryDetail({ data, handleClose }: IProps) {
           </Tabs>
         </>
       )}
-      {activeTab === 'edit' && (data || beneficiary) && (
-        <EditBeneficiary beneficiary={data || beneficiary} />
+      {activeTab === 'edit' && (beneficiaryDetail || beneficiary) && (
+        <EditBeneficiary beneficiary={beneficiaryDetail || beneficiary} />
       )}
     </>
   );

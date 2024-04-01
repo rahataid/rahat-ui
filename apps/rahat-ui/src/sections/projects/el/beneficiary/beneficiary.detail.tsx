@@ -24,7 +24,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { Gender } from '@rahataid/sdk/enums';
 import { enumToObjectArray, truncateEthAddress } from '@rumsan/sdk/utils';
-import { MoreVertical, Minus } from 'lucide-react';
+import { MoreVertical, Minus, Copy, CopyCheck } from 'lucide-react';
 import Image from 'next/image';
 import { useState } from 'react';
 import TransactionTable from '../transactions/transactions.table';
@@ -72,6 +72,8 @@ export default function BeneficiaryDetail({
   const [activeTab, setActiveTab] = useState<'details' | 'edit' | null>(
     'details',
   );
+  const [walletAddressCopied, setWalletAddressCopied] =
+    useState<boolean>(false);
 
   const clickToCopy = () => {
     if (walletAddress) {
@@ -99,7 +101,7 @@ export default function BeneficiaryDetail({
   };
   return (
     <>
-      <div className="flex justify-between px-4 py-2 bg-secondary">
+      <div className="flex justify-between p-4 pt-5 bg-secondary">
         <TooltipProvider delayDuration={100}>
           <Tooltip>
             <TooltipTrigger onClick={closeSecondPanel}>
@@ -144,13 +146,21 @@ export default function BeneficiaryDetail({
             </div>
             <TooltipProvider delayDuration={100}>
               <Tooltip>
-                <TooltipTrigger onClick={clickToCopy}>
+                <TooltipTrigger
+                  className="flex gap-3 items-center"
+                  onClick={clickToCopy}
+                >
                   <p className="text-slate-500 text-base">
                     {truncateEthAddress(walletAddress)}
                   </p>
+                  {walletAddressCopied ? (
+                    <CopyCheck size={20} strokeWidth={1.5} />
+                  ) : (
+                    <Copy size={20} strokeWidth={1.5} />
+                  )}
                 </TooltipTrigger>
                 <TooltipContent className="bg-secondary" side="bottom">
-                  <p className="text-xs font-medium">click to copy</p>
+                  <p className="text-xs font-medium">{walletAddressCopied ? 'copied' : 'click to copy'}</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
@@ -164,49 +174,47 @@ export default function BeneficiaryDetail({
 
       {activeTab === 'details' && (
         <>
-          <div className="w-full h-full border-l bg-card">
-            <div className="border-t">
-              <Tabs defaultValue="details">
-                <TabsList className="grid w-full border-b grid-cols-2">
-                  <TabsTrigger value="details">Details</TabsTrigger>
-                  <TabsTrigger value="transaction">Transaction</TabsTrigger>
-                </TabsList>
-                <TabsContent value="details">
-                  <div className="grid grid-cols-2 gap-4 p-4 bg-card">
-                    <div>
-                      <p className="font-light text-base">Ben</p>
-                      <p className="text-sm font-normal text-muted-foreground">
-                        Beneficiary Type
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-light text-base">Male</p>
-                      <p className="text-sm font-normal text-muted-foreground ">
-                        Gender
-                      </p>
-                    </div>
-                    <div>
-                      <p className="font-light text-base">jd@mailinator.com</p>
-                      <p className="text-sm font-normal text-muted-foreground ">
-                        Email
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-light text-base">987876656778</p>
-                      <p className="text-sm font-normal text-muted-foreground ">
-                        Phone
-                      </p>
-                    </div>
-                  </div>
-                </TabsContent>
-                <TabsContent value="transaction">
-                  <div className="p-4">
-                    <TransactionTable walletAddress={walletAddress} />
-                  </div>
-                </TabsContent>
-              </Tabs>
+          <Tabs defaultValue="details">
+            <div className='p-2'>
+              <TabsList className="w-full grid grid-cols-2 border h-auto">
+                <TabsTrigger value="details">Details</TabsTrigger>
+                <TabsTrigger value="transaction">Transaction</TabsTrigger>
+              </TabsList>
             </div>
-          </div>
+            <TabsContent value="details">
+              <div className="grid grid-cols-2 gap-4 p-4 bg-card">
+                <div>
+                  <p className="font-light text-base">Ben</p>
+                  <p className="text-sm font-normal text-muted-foreground">
+                    Beneficiary Type
+                  </p>
+                </div>
+                <div className="text-right">
+                  <p className="font-light text-base">Male</p>
+                  <p className="text-sm font-normal text-muted-foreground ">
+                    Gender
+                  </p>
+                </div>
+                <div>
+                  <p className="font-light text-base">jd@mailinator.com</p>
+                  <p className="text-sm font-normal text-muted-foreground ">
+                    Email
+                  </p>
+                </div>
+                <div className="text-right">
+                  <p className="font-light text-base">987876656778</p>
+                  <p className="text-sm font-normal text-muted-foreground ">
+                    Phone
+                  </p>
+                </div>
+              </div>
+            </TabsContent>
+            <TabsContent value="transaction">
+              <div className="p-4">
+                <TransactionTable walletAddress={walletAddress} />
+              </div>
+            </TabsContent>
+          </Tabs>
           <Card className="shadow rounded">
             <CardHeader>
               <div className="flex justify-between items-center">

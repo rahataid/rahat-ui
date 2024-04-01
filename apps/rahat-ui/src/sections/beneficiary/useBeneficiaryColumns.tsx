@@ -12,7 +12,12 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/resizable';
 import { Eye, Copy, CopyCheck } from 'lucide-react';
 import BeneficiaryDetail from './beneficiaryDetail';
-import { Tooltip, TooltipProvider, TooltipTrigger, TooltipContent } from '@rahat-ui/shadcn/src/components/ui/tooltip';
+import {
+  Tooltip,
+  TooltipProvider,
+  TooltipTrigger,
+  TooltipContent,
+} from '@rahat-ui/shadcn/src/components/ui/tooltip';
 
 export const useBeneficiaryTableColumns = () => {
   const { setSecondPanelComponent, closeSecondPanel } = useSecondPanel();
@@ -75,7 +80,9 @@ export const useBeneficiaryTableColumns = () => {
               )}
             </TooltipTrigger>
             <TooltipContent className="bg-secondary" side="bottom">
-              <p className="text-xs font-medium">{walletAddressCopied ? 'copied' : 'click to copy'}</p>
+              <p className="text-xs font-medium">
+                {walletAddressCopied ? 'copied' : 'click to copy'}
+              </p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>

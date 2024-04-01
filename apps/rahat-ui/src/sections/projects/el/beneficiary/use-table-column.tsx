@@ -13,7 +13,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/components/dropdown-menu';
-import { Tooltip, TooltipProvider, TooltipTrigger, TooltipContent } from '@rahat-ui/shadcn/src/components/ui/tooltip';
+import {
+  Tooltip,
+  TooltipProvider,
+  TooltipTrigger,
+  TooltipContent,
+} from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { useSecondPanel } from '../../../../providers/second-panel-provider';
 import BeneficiaryDetail from '../../../../sections/projects/el/beneficiary/beneficiary.detail';
 import { truncateEthAddress } from '@rumsan/sdk/utils';
@@ -67,7 +72,9 @@ export const useProjectBeneficiaryTableColumns = () => {
               )}
             </TooltipTrigger>
             <TooltipContent className="bg-secondary" side="bottom">
-              <p className="text-xs font-medium">{walletAddressCopied ? 'copied' : 'click to copy'}</p>
+              <p className="text-xs font-medium">
+                {walletAddressCopied ? 'copied' : 'click to copy'}
+              </p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>

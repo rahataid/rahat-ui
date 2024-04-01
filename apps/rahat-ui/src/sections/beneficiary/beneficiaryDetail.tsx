@@ -212,7 +212,9 @@ export default function BeneficiaryDetail({
                 )}
               </TooltipTrigger>
               <TooltipContent className="bg-secondary" side="bottom">
-                <p className="text-xs font-medium">{walletAddressCopied ? 'copied' : 'click to copy'}</p>
+                <p className="text-xs font-medium">
+                  {walletAddressCopied ? 'copied' : 'click to copy'}
+                </p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>

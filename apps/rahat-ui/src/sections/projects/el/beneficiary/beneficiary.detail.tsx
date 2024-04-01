@@ -160,7 +160,9 @@ export default function BeneficiaryDetail({
                   )}
                 </TooltipTrigger>
                 <TooltipContent className="bg-secondary" side="bottom">
-                  <p className="text-xs font-medium">{walletAddressCopied ? 'copied' : 'click to copy'}</p>
+                  <p className="text-xs font-medium">
+                    {walletAddressCopied ? 'copied' : 'click to copy'}
+                  </p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
@@ -175,7 +177,7 @@ export default function BeneficiaryDetail({
       {activeTab === 'details' && (
         <>
           <Tabs defaultValue="details">
-            <div className='p-2'>
+            <div className="p-2">
               <TabsList className="w-full grid grid-cols-2 border h-auto">
                 <TabsTrigger value="details">Details</TabsTrigger>
                 <TabsTrigger value="transaction">Transaction</TabsTrigger>

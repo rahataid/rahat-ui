@@ -31,13 +31,13 @@ import {
   BENEFICIARY_NAV_ROUTE,
   GROUP_NAV_ROUTE,
 } from '../../constants/beneficiary.const';
-import { useRumsanService } from '../../providers/service.provider';
 import BeneficiaryDetail from '../../sections/beneficiary/beneficiaryDetail';
 import BeneficiaryGridView from '../../sections/beneficiary/gridView';
 import BeneficiaryListView from '../../sections/beneficiary/listView';
 import BeneficiaryNav from '../../sections/beneficiary/nav';
-import ViewGroup from '../group/group.view';
 import ImportBeneficiary from './import.beneficiary';
+import ViewGroup from '../group/group.view';
+import { useCommunityBeneficaryList } from '@rahat-ui/community-query';
 
 export const columns: ColumnDef<ListBeneficiary>[] = [
   {
@@ -127,7 +127,6 @@ function BeneficiaryView() {
   const handleNextPage = () => setCurrentPage(currentPage + 1);
   const handlePrevPage = () => setCurrentPage(currentPage - 1);
 
-  const { communityBenQuery } = useRumsanService();
   const [selectedData, setSelectedData] = useState<ListBeneficiary>();
   const [selectedBenefId, setSelectedBenefId] = useState<number[]>([]);
   const [active, setActive] = useState<string>(BENEFICIARY_NAV_ROUTE.DEFAULT);
@@ -161,11 +160,12 @@ function BeneficiaryView() {
     setActive(item);
   }, []);
 
-  const { data } = communityBenQuery.useCommunityBeneficiaryList({
+  const { data } = useCommunityBeneficaryList({
     perPage,
     page: currentPage,
   });
 
+  console.log(data);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
 

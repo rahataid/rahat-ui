@@ -11,26 +11,25 @@ export const useCommunityBeneficaryList = (
 ): UseQueryResult<any, Error> => {
   const { queryClient, rumsanService } = useRSQuery();
   const benClient = getBeneficiaryClient(rumsanService.client);
-
+  console.log(payload);
   const query = useQuery(
     {
       queryKey: [TAGS.LIST_COMMUNITY_BENFICIARIES, payload],
       queryFn: () => benClient.list(payload),
-      select(data) {
-        return {
-          ...data,
-          data: data.data.map((item) => {
-            return {
-              ...item,
-              benUUID: item.uuid,
-            };
-          }, []),
-        };
-      },
+      // select(data) {
+      //   return {
+      //     ...data,
+      //     data: data.data.map((item) => {
+      //       return {
+      //         ...item,
+      //         benUUID: item.uuid,
+      //       };
+      //     }, []),
+      //   };
+      // },
     },
     queryClient,
   );
-
   useEffect(() => {
     if (query.isSuccess && query.data) {
       console.log('data', query.data);
@@ -62,7 +61,7 @@ export const useCommunityBeneficiaryCreate = () => {
       onError: (error: any) => {
         Swal.fire(
           'Error',
-          error.message || 'Encounter error on Creating Data',
+          error.response.data.message || 'Encounter error on Creating Data',
           'error',
         );
       },
@@ -79,6 +78,24 @@ export const useCommunityBeneficiaryUpdate = () => {
     {
       mutationKey: [TAGS.UPDATE_COMMUNITY_BENEFICARY],
       mutationFn: benClient.update,
+      onSuccess: () => {
+        Swal.fire('Beneficiary Updated Successfully', '', 'success');
+        queryClient.invalidateQueries({
+          queryKey: [
+            TAGS.LIST_COMMUNITY_BENFICIARIES,
+            {
+              exact: true,
+            },
+          ],
+        });
+      },
+      onError: (error: any) => {
+        Swal.fire(
+          'Error',
+          error.response.data.message || 'Encounter error on Creating Data',
+          'error',
+        );
+      },
     },
     queryClient,
   );

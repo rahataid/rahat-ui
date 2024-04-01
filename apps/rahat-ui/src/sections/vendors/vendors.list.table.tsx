@@ -116,7 +116,7 @@ export default function VendorsList() {
   const handleAssignProject = async () => {
     if (!selectedProject) return alert('Please select a project');
     await addVendor.mutateAsync({
-      vendorUUID: selectedRow?.uuid,
+      vendorUUID: selectedRow?.id,
       projectUUID: selectedProject,
     });
   };

@@ -9,7 +9,6 @@ import {
 } from 'apps/community-tool-ui/src/constants/app.const';
 import React, { Fragment, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useRumsanService } from '../../../providers/service.provider';
 import {
   attachedRawData,
   includeOnlySelectedTarget,
@@ -26,9 +25,11 @@ import AddToQueue from './AddToQueue';
 import ErrorAlert from './ErrorAlert';
 import InfoBox from './InfoBox';
 
+import { useRSQuery } from '@rumsan/react-query';
+
 export default function BenImp() {
   const form = useForm({});
-  const { rumsanService } = useRumsanService();
+  const { rumsanService } = useRSQuery();
 
   const [uniqueField, setUniqueField] = useState('');
   const [importSource, setImportSource] = useState('');
@@ -44,22 +45,26 @@ export default function BenImp() {
   const [processedData, setProcessedData] = useState([]) as any;
   const [invalidFields, setInvalidFields] = useState([]) as any;
 
-  const fetchExistingMapping = async (importId: string) => {
-    const res = await rumsanService.client.get(`/sources/${importId}/mappings`);
-    if (!res) return;
-    if (res?.data?.data) {
-      const { fieldMapping } = res.data.data;
-      return setExistingMappings(fieldMapping?.sourceTargetMappings);
-    }
-  };
+  // const fetchExistingMapping = async (importId: string) => {
+  //   const res = await rumsanService.client.get(`/sources/${importId}/mappings`);
+  //   if (!res) return;
+  //   if (res?.data?.data) {
+  //     const { fieldMapping } = res.data.data;
+  //     return setExistingMappings(fieldMapping?.sourceTargetMappings);
+  //   }
+  // };
 
   const handleUniqueFieldChange = (value: string) => setUniqueField(value);
+
+  const fetchKoboSettings = async () => {
+    const res = await rumsanService.client.get('/app/settings/kobotool');
+    return res.data;
+  };
 
   const handleSourceChange = async (d: string) => {
     setRawData([]);
     setExistingMappings([]);
     if (d === IMPORT_SOURCE.KOBOTOOL) {
-      // Fetch kobotool settings and set
       setImportSource(IMPORT_SOURCE.KOBOTOOL);
       const data = await fetchKoboSettings();
       if (!data.data.length)
@@ -80,6 +85,11 @@ export default function BenImp() {
     if (d === IMPORT_SOURCE.EXCEL) setImportSource(IMPORT_SOURCE.EXCEL);
   };
 
+  const fetchKoboData = async (name: string) => {
+    const res = await rumsanService.client.get(`/app/kobo-import/${name}`);
+    return res.data;
+  };
+
   const handleKoboFormChange = async (value: string) => {
     try {
       setFetching(true);
@@ -90,12 +100,11 @@ export default function BenImp() {
       );
       if (!found) return alert('No form found');
       setImportId(found.formId);
-      await fetchExistingMapping(found.formId);
       const koboData = await fetchKoboData(value);
       if (!koboData)
         return Swal.fire({
           icon: 'error',
-          title: 'Failed to fetch kobotool settings',
+          title: 'Failed to fetch kobotool data',
         });
       const sanitized = removeFieldsWithUnderscore(koboData.data.results);
       setRawData(sanitized);
@@ -107,16 +116,6 @@ export default function BenImp() {
         title: 'Failed to fetch kobotool settings',
       });
     }
-  };
-
-  const fetchKoboSettings = async () => {
-    const res = await rumsanService.client.get('/app/settings/kobotool');
-    return res.data;
-  };
-
-  const fetchKoboData = async (name: string) => {
-    const res = await rumsanService.client.get(`/app/kobo-import/${name}`);
-    return res.data;
   };
 
   const handleTargetFieldChange = (
@@ -135,6 +134,14 @@ export default function BenImp() {
     }
   };
 
+  const handleExcelUpload = async (formData: any) => {
+    const res = await rumsanService.client.post(
+      'beneficiaries/upload',
+      formData,
+    );
+    return res.data;
+  };
+
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     setRawData([]);
     const { files } = e.target;
@@ -145,11 +152,7 @@ export default function BenImp() {
         title: 'Please select a file to upload',
       });
     formData.append('file', files[0]);
-    const res = await rumsanService.client.post(
-      'beneficiaries/upload',
-      formData,
-    );
-    const { data } = res;
+    const data = await handleExcelUpload(formData);
     if (!data)
       return Swal.fire({
         icon: 'error',
@@ -160,7 +163,7 @@ export default function BenImp() {
 
     setImportId(sheetId);
     setRawData(sanitized);
-    await fetchExistingMapping(sheetId);
+    // await fetchExistingMapping(sheetId);
   };
 
   const handleGoClick = () => {

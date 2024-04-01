@@ -22,6 +22,7 @@ import {
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import CustomPagination from '../../components/customPagination';
+import { useCommunitySettingList } from '@rahat-ui/community-query';
 
 interface BeneficiaryData {
   name: string;
@@ -79,8 +80,7 @@ export default function ListSetting() {
   const handleNextPage = () => setCurrentPage(currentPage + 1);
   const handlePrevPage = () => setCurrentPage(currentPage - 1);
 
-  const { communitySettingQuery } = useRumsanService();
-  const { data } = communitySettingQuery.useCommunitySettingList();
+  const { data } = useCommunitySettingList();
 
   const pagedData = useMemo(() => {
     return data?.data.slice(startIndex, endIndex) || [];

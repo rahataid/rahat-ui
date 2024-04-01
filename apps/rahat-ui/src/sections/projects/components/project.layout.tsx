@@ -52,8 +52,8 @@ const ProjectLayout: FC<ProjectLayoutProps> = ({ children, menuItems }) => {
           className="min-h-max border"
         >
           <ResizablePanel
-            defaultSize={20}
-            minSize={20}
+            defaultSize={10}
+            minSize={10}
             maxSize={20}
             className="h-full"
           >

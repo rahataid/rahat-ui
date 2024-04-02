@@ -1,3 +1,4 @@
+'use client'
 import React from 'react';
 import FreeVoucherInfo from './free.voucher.info';
 import DiscountVoucherInfo from './dicount.voucher.info';
@@ -12,8 +13,13 @@ import { FreeTransactionTable } from './free.transactions.table';
 import { FreeHoldersTable } from './free.holder.table';
 import { DiscountTransactionTable } from './discount.transactions.table';
 import { DiscountHoldersTable } from './discount.holder.table';
+import { useFreeVoucherHolder, useReferredVoucherHolder } from 'apps/rahat-ui/src/hooks/el/subgraph/querycall';
 
 const VoucherView = () => {
+
+  // const {data:freeVoucherHolder}= useFreeVoucherHolder()
+  // const {data:discountVoucherHolder} = useReferredVoucherHolder();
+
   return (
     <>
       <FreeVoucherInfo />
@@ -38,7 +44,7 @@ const VoucherView = () => {
                 <FreeTransactionTable />
               </div>
               <div className="h-full">
-                <FreeHoldersTable />
+                <FreeHoldersTable  />
               </div>
             </div>
           </TabsContent>
@@ -48,7 +54,7 @@ const VoucherView = () => {
                 <DiscountTransactionTable />
               </div>
               <div>
-                <DiscountHoldersTable />
+                <DiscountHoldersTable  data ={discountVoucherHolder}/>
               </div>
             </div>
           </TabsContent>

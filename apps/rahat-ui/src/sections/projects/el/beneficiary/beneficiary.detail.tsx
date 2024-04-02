@@ -38,14 +38,13 @@ import {
 import { Gender } from '@rahataid/sdk/enums';
 import { enumToObjectArray, truncateEthAddress } from '@rumsan/sdk/utils';
 import { useAssignClaims } from 'apps/rahat-ui/src/hooks/el/contracts/el-contracts';
-import { useBeneficaryVoucher } from 'apps/rahat-ui/src/hooks/el/subgraph/querycall';
 import { getProjectAddress } from 'apps/rahat-ui/src/utils/getProjectAddress';
 import { Minus, MoreVertical } from 'lucide-react';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import TransactionTable from '../transactions/transactions.table';
 import { useReadElProjectBeneficiaryClaimStatus, useReadElProjectBeneficiaryEyeVoucher, useReadElProjectBeneficiaryReferredVoucher } from 'apps/rahat-ui/src/hooks/el/contracts/elProject';
-import { checksumAddress, zeroAddress } from 'viem';
+import { zeroAddress } from 'viem';
 
 type IProps = {
   beneficiaryDetails: any;

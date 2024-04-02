@@ -35,39 +35,6 @@ import {
   TableRow,
 } from '@rahat-ui/shadcn/src/components/ui/table';
 
-const data: Payment[] = [
-  {
-    id: 'm5gr84i9',
-    amount: 316,
-    status: 'success',
-    email: 'ken99@yahoo.com',
-  },
-  {
-    id: '3u1reuv4',
-    amount: 242,
-    status: 'success',
-    email: 'Abe45@gmail.com',
-  },
-  {
-    id: 'derv1ws0',
-    amount: 837,
-    status: 'processing',
-    email: 'Monserrat44@gmail.com',
-  },
-  {
-    id: '5kma53ae',
-    amount: 874,
-    status: 'success',
-    email: 'Silas22@gmail.com',
-  },
-  {
-    id: 'bhqecj4p',
-    amount: 721,
-    status: 'failed',
-    email: 'carmella@hotmail.com',
-  },
-];
-
 export type Payment = {
   id: string;
   amount: number;
@@ -137,7 +104,7 @@ export const columns: ColumnDef<Payment>[] = [
   },
 ];
 
-export function FreeHoldersTable() {
+export function FreeHoldersTable(data) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
@@ -147,7 +114,7 @@ export function FreeHoldersTable() {
   const [rowSelection, setRowSelection] = React.useState({});
 
   const table = useReactTable({
-    data,
+    data :data?.eyeVoucherOwners || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -169,14 +136,14 @@ export function FreeHoldersTable() {
     <div className="w-full bg-card">
       <div className="flex items-center justify-between py-2 mx-2">
         <h1 className="text-primary">Holders</h1>
-        <Input
+        {/* <Input
           placeholder="Filter emails..."
           value={(table.getColumn('email')?.getFilterValue() as string) ?? ''}
           onChange={(event) =>
             table.getColumn('email')?.setFilterValue(event.target.value)
           }
           className="w-2/3 mr-2"
-        />
+        /> */}
       </div>
       <div className="rounded border h-[calc(100vh-600px)] bg-card">
         <Table>

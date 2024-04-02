@@ -34,6 +34,9 @@ import {
   TableHeader,
   TableRow,
 } from '@rahat-ui/shadcn/src/components/ui/table';
+import { useEffect, useState } from 'react';
+import { useParams } from 'next/navigation';
+import { useGetReferredVoucherTransaction } from 'apps/rahat-ui/src/hooks/el/subgraph/querycall';
 
 const data: Payment[] = [
   {
@@ -99,10 +102,10 @@ export const columns: ColumnDef<Payment>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: 'txnHash',
-    header: 'TxnHash',
+    accessorKey: 'transactionHash',
+    header: 'TransactionHash',
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue('txnHash')}</div>
+      <div className="capitalize">{row.getValue('transactionHash')}</div>
     ),
   },
   {
@@ -136,10 +139,10 @@ export const columns: ColumnDef<Payment>[] = [
     cell: ({ row }) => <div className="lowercase">{row.getValue('from')}</div>,
   },
   {
-    accessorKey: 'amount',
+    accessorKey: 'value',
     header: () => <div className="text-right">Amount</div>,
     cell: ({ row }) => {
-      const amount = parseFloat(row.getValue('amount'));
+      const amount = parseFloat(row.getValue('value'));
 
       // Format the amount as a dollar amount
       const formatted = new Intl.NumberFormat('en-US', {
@@ -190,8 +193,26 @@ export function DiscountTransactionTable() {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
+  const[contractAddress,setContractAddress] = useState<any>()
+
+  const { id } = useParams();
+
+  const projectSettings = localStorage.getItem('projectSettingsStore');
+
+  useEffect(()=>{
+    if(projectSettings){
+      const settings = JSON.parse(projectSettings)?.state?.settings?.[id]
+      setContractAddress({
+        referredVoucher:settings?.referralvoucher?.address
+      })
+    }
+
+  },[projectSettings])
+
+  const {data: vouchersTransactions} = useGetReferredVoucherTransaction(contractAddress?.referredVoucher)
+
   const table = useReactTable({
-    data,
+    data: vouchersTransactions?.transfers || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,

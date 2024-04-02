@@ -13,6 +13,7 @@ type CardProps = {
   subTitle: string;
   className: string;
   Icon?: LucideIcon;
+  refresh?: VoidFunction;
 };
 
 export default function DataCard({
@@ -21,6 +22,7 @@ export default function DataCard({
   subTitle,
   className,
   Icon,
+  refresh,
 }: CardProps) {
   return (
     <Card
@@ -50,11 +52,14 @@ export default function DataCard({
             <p className="text-xs text-muted-foreground space-y-0 pt-2">
               {subTitle}
             </p>
-            <RefreshCcw
-              size={14}
-              strokeWidth={1.5}
-              className="text-primary cursor-pointer"
-            />
+            {refresh && (
+              <RefreshCcw
+                size={14}
+                strokeWidth={1.5}
+                className="text-primary cursor-pointer"
+                onClick={refresh}
+              />
+            )}
           </div>
         </div>
       </CardContent>

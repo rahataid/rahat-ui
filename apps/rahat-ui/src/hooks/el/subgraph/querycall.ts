@@ -203,12 +203,26 @@ export const useVoucherHolder = () => {
   })
 }
 
-export const useGetVoucherTransaction = (tokenFree:string, tokenReferred:string) => {
+export const useGetFreeVoucherTransaction = (tokenFree:string) => {
   const { queryService } = useGraphService();
   return useQuery({
+    enabled: tokenFree ? true : false,
     queryKey:['free-voucher-transactions'],
     queryFn: async () =>{
-      const res = await queryService.getVoucherTransaction(tokenFree, tokenReferred);
+      const res = await queryService.getEyeVoucherTransaction(tokenFree);
+      return res
+     
+    }
+  })
+}
+
+export const useGetReferredVoucherTransaction = (tokenReferred:string) => {
+  const { queryService } = useGraphService();
+  return useQuery({
+    enabled: tokenReferred ? true : false,
+    queryKey:['referred-voucher-transactions'],
+    queryFn: async () =>{
+      const res = await queryService.getReferredVoucherTransaction(tokenReferred);
       return res
      
     }

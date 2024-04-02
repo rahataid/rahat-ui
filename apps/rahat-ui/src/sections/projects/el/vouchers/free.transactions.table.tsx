@@ -34,45 +34,15 @@ import {
   TableHeader,
   TableRow,
 } from '@rahat-ui/shadcn/src/components/ui/table';
-
-const data: Payment[] = [
-  {
-    id: 'm5gr84i9',
-    amount: 316,
-    status: 'success',
-    email: 'ken99@yahoo.com',
-  },
-  {
-    id: '3u1reuv4',
-    amount: 242,
-    status: 'success',
-    email: 'Abe45@gmail.com',
-  },
-  {
-    id: 'derv1ws0',
-    amount: 837,
-    status: 'processing',
-    email: 'Monserrat44@gmail.com',
-  },
-  {
-    id: '5kma53ae',
-    amount: 874,
-    status: 'success',
-    email: 'Silas22@gmail.com',
-  },
-  {
-    id: 'bhqecj4p',
-    amount: 721,
-    status: 'failed',
-    email: 'carmella@hotmail.com',
-  },
-];
+import { useGetFreeVoucherTransaction, useProjectVoucher } from 'apps/rahat-ui/src/hooks/el/subgraph/querycall';
+import { useEffect, useState } from 'react';
+import { useParams } from 'next/navigation';
 
 export type Payment = {
   id: string;
   amount: number;
   status: 'pending' | 'processing' | 'success' | 'failed';
-  email: string;
+  transactionHash: string;
 };
 
 export const columns: ColumnDef<Payment>[] = [
@@ -99,10 +69,10 @@ export const columns: ColumnDef<Payment>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: 'txnHash',
-    header: 'TxnHash',
+    accessorKey: 'transactionHash',
+    header: 'TransactionHash',
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue('txnHash')}</div>
+      <div className="capitalize">{row.getValue('transactionHash')}</div>
     ),
   },
   {
@@ -136,10 +106,10 @@ export const columns: ColumnDef<Payment>[] = [
     cell: ({ row }) => <div className="lowercase">{row.getValue('from')}</div>,
   },
   {
-    accessorKey: 'amount',
+    accessorKey: 'value',
     header: () => <div className="text-right">Amount</div>,
     cell: ({ row }) => {
-      const amount = parseFloat(row.getValue('amount'));
+      const amount = parseFloat(row.getValue('value'));
 
       // Format the amount as a dollar amount
       const formatted = new Intl.NumberFormat('en-US', {
@@ -190,8 +160,27 @@ export function FreeTransactionTable() {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
+  const[contractAddress,setContractAddress] = useState<any>()
+
+  const { id } = useParams();
+
+  const projectSettings = localStorage.getItem('projectSettingsStore');
+
+  useEffect(()=>{
+    if(projectSettings){
+      const settings = JSON.parse(projectSettings)?.state?.settings?.[id]
+      setContractAddress({
+        eyeVoucher:settings?.eyevoucher?.address
+      })
+    }
+
+  },[projectSettings])
+
+  const {data: vouchersTransactions} = useGetFreeVoucherTransaction(contractAddress?.eyeVoucher)
+
+ 
   const table = useReactTable({
-    data,
+    data: vouchersTransactions?.transfers || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,

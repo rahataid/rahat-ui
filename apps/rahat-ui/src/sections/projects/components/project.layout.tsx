@@ -21,7 +21,9 @@ const ProjectLayout: FC<ProjectLayoutProps> = ({ children, menuItems }) => {
   const renderResizablePanel = (children: React.ReactNode, index?: number) => {
     return (
       <ResizablePanel defaultSize={10} minSize={25} key={index}>
-        <ScrollArea className="h-[calc(100vh-66px)]">{children}</ScrollArea>
+        <ScrollArea className="h-[calc(100vh-66px)] bg-secondary">
+          {children}
+        </ScrollArea>
       </ResizablePanel>
     );
   };
@@ -52,9 +54,9 @@ const ProjectLayout: FC<ProjectLayoutProps> = ({ children, menuItems }) => {
           className="min-h-max border"
         >
           <ResizablePanel
-            defaultSize={10}
-            minSize={10}
-            maxSize={20}
+            defaultSize={18}
+            minSize={18}
+            maxSize={18}
             className="h-full"
           >
             {menuItems.map((item) => (

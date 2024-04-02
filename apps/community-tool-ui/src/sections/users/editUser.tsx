@@ -21,21 +21,23 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/form';
 
 import { Role, User } from '@rumsan/sdk/types';
-import { useRumsanService } from '../../providers/service.provider';
 import { UUID } from 'crypto';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
+import { useRSQuery } from '@rumsan/react-query';
 
 type IProps = {
   userData: User | undefined;
   handleClose: () => void;
 };
 export default function EditUser({ userData, handleClose }: IProps) {
-  const { roleQuery, rumsanService } = useRumsanService();
+  const { rumsanService } = useRSQuery();
 
-  const { data: roleData } = roleQuery.userRoleList({});
-  const roles: string[] =
-    roleData?.data.map((role: Role) => role.name).sort() || [];
+  const roleData = rumsanService.role.listRole;
+  console.log(roleData);
+  // const roles: string[] =
+  //   roleData?.data.map((role: Role) => role.name).sort() || [];
 
+  const roles = ['MANAGER', 'USER'];
   const FormSchema = z.object({
     name: z.string().min(2, { message: 'Name must be at least 4 character' }),
     email: z.string(),

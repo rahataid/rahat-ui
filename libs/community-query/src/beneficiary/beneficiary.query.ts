@@ -3,7 +3,6 @@ import { useRSQuery } from '@rumsan/react-query';
 import { getBeneficiaryClient } from '@rahataid/community-tool-sdk/clients';
 import { TAGS } from '../config';
 import { Pagination } from '@rumsan/sdk/types';
-import { useEffect } from 'react';
 import Swal from 'sweetalert2';
 
 export const useCommunityBeneficaryList = (
@@ -11,30 +10,25 @@ export const useCommunityBeneficaryList = (
 ): UseQueryResult<any, Error> => {
   const { queryClient, rumsanService } = useRSQuery();
   const benClient = getBeneficiaryClient(rumsanService.client);
-  console.log(payload);
+  // const { setBeneficiaries, setMeta } = useCommunityBeneficiaryStore(
+  //   (state) => ({
+  //     setBeneficiaries: state.setBeneficiaries,
+  //     setMeta: state.setMeta,
+  //   }),
+  // );
   const query = useQuery(
     {
       queryKey: [TAGS.LIST_COMMUNITY_BENFICIARIES, payload],
       queryFn: () => benClient.list(payload),
-      // select(data) {
-      //   return {
-      //     ...data,
-      //     data: data.data.map((item) => {
-      //       return {
-      //         ...item,
-      //         benUUID: item.uuid,
-      //       };
-      //     }, []),
-      //   };
-      // },
     },
     queryClient,
   );
-  useEffect(() => {
-    if (query.isSuccess && query.data) {
-      console.log('data', query.data);
-    }
-  }, [query.data]);
+  // useEffect(() => {
+  //   if (query.data) {
+  //     setBeneficiaries(query.data.data as Beneficiary[]);
+  //     setMeta(query.data.response.meta);
+  //   }
+  // }, [query.data, setBeneficiaries]);
 
   return query;
 };
@@ -95,6 +89,84 @@ export const useCommunityBeneficiaryUpdate = () => {
           error.response.data.message || 'Encounter error on Creating Data',
           'error',
         );
+      },
+    },
+    queryClient,
+  );
+};
+
+export const useCommunityBeneficiaryListByID = (): UseQueryResult<
+  any,
+  Error
+> => {
+  const { queryClient, rumsanService } = useRSQuery();
+  const benClient = getBeneficiaryClient(rumsanService.client);
+  return useQuery(
+    {
+      queryKey: [TAGS.GET_BENEFICIARY],
+      queryFn: () => benClient.listById,
+    },
+    queryClient,
+  );
+};
+
+export const useCommunityBeneficiaryRemove = () => {
+  const { queryClient, rumsanService } = useRSQuery();
+  const benClient = getBeneficiaryClient(rumsanService.client);
+  return useMutation(
+    {
+      mutationKey: [TAGS.REMOVE_COMMUNITY_BENEFICARY],
+      mutationFn: benClient.remove,
+      onSuccess: () => {
+        Swal.fire('Beneficiary Removed Successfully', '', 'success');
+        queryClient.invalidateQueries({
+          queryKey: [
+            TAGS.LIST_COMMUNITY_BENFICIARIES,
+            {
+              exact: true,
+            },
+          ],
+        });
+      },
+      onError: (error: any) => {
+        Swal.fire({
+          icon: 'error',
+          title:
+            error?.response?.data?.message ||
+            'Encounter error on Removing Data',
+        });
+      },
+    },
+    queryClient,
+  );
+};
+
+export const useCommunityBeneficiaryCreateBulk = () => {
+  const { queryClient, rumsanService } = useRSQuery();
+  const benClient = getBeneficiaryClient(rumsanService.client);
+
+  return useMutation(
+    {
+      mutationKey: [TAGS.CREATE_COMMUNITY_BENEFICARY],
+      mutationFn: benClient.createBulk,
+      onSuccess: () => {
+        Swal.fire('Beneficiary Created Successfully', '', 'success');
+        queryClient.invalidateQueries({
+          queryKey: [
+            TAGS.LIST_COMMUNITY_BENFICIARIES,
+            {
+              exact: true,
+            },
+          ],
+        });
+      },
+      onError: (error: any) => {
+        Swal.fire({
+          icon: 'error',
+          title:
+            error?.response?.data?.message ||
+            'Encounter error on Creating Data',
+        });
       },
     },
     queryClient,

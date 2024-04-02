@@ -16,7 +16,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { Settings2 } from 'lucide-react';
+import { ChevronDown, Settings2 } from 'lucide-react';
 
 import * as React from 'react';
 
@@ -25,6 +25,7 @@ import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
+  DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
@@ -120,7 +121,6 @@ function BeneficiaryDetailTableView() {
     },
     [filters, setFilters],
   );
-  console.log('contractAddress', contractAddress);
 
   const table = useReactTable({
     data: projectBeneficiaries.data || [],
@@ -212,14 +212,24 @@ function BeneficiaryDetailTableView() {
                   );
                 })}
             </DropdownMenuContent>
-            {selectedRowAddresses.length ? (
-              <Button
-                disabled={assignVoucher.isPending}
-                onClick={handleBulkAssign}
-              >
-                Bulk Assign Tokens
-              </Button>
-            ) : null}
+          </DropdownMenu>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              {selectedRowAddresses.length ? (
+                <Button
+                  disabled={assignVoucher.isPending}
+                  className="h-10 ml-2"
+                >
+                  {selectedRowAddresses.length} - Items Selected
+                  <ChevronDown strokeWidth={1.5} />
+                </Button>
+              ) : null}
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={handleBulkAssign}>
+                Assign Tokens To All
+              </DropdownMenuItem>
+            </DropdownMenuContent>
           </DropdownMenu>
         </div>
         <div className="rounded border h-[calc(100vh-180px)] bg-card">

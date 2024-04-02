@@ -27,4 +27,5 @@ export const TAGS = {
   ADD_COMMUNITY_GROUP: 'add_community_group',
   ADD_COMMUNITY_BENEFICIARY_GROUP: 'add_community_beneficiary_group',
   LIST_COMMUNITY_BENEFICIARY_GROUP: 'list_community_beneficiary_group',
+  LIST_ACTIVE_FIELD_DEFINITIONS: 'list_active_field_definitions',
 };

@@ -13,12 +13,16 @@ import { FreeTransactionTable } from './free.transactions.table';
 import { FreeHoldersTable } from './free.holder.table';
 import { DiscountTransactionTable } from './discount.transactions.table';
 import { DiscountHoldersTable } from './discount.holder.table';
-import { useVoucherHolder } from 'apps/rahat-ui/src/hooks/el/subgraph/querycall';
+import { useGetVoucherTransaction, useVoucherHolder } from 'apps/rahat-ui/src/hooks/el/subgraph/querycall';
 import AddVoucher from './add.voucher';
 
 const VoucherView = () => {
 
   const {data} = useVoucherHolder();
+
+  const {data: vouchersTransactions} = useGetVoucherTransaction('0xcDF83559a405484aac7ae6fCf769abb478370ca2', '0xad90eCf8536aAdf9FB0Bc9cB69CC24e18f98C130')
+
+  console.log(vouchersTransactions)
   
   return (
     <>

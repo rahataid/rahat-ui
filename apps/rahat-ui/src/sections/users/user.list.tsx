@@ -31,7 +31,7 @@ type IProps = {
 export default function UsersTable({ table }: IProps) {
   return (
     <>
-      <div className="w-full h-full -mt-2 p-2 bg-secondary">
+      <div className="p-2 bg-secondary">
         <div className="flex items-center mb-2">
           <Input
             placeholder="Search User..."

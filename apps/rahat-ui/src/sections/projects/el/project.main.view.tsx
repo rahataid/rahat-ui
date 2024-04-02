@@ -10,7 +10,10 @@ import { ProjectChart } from '..';
 import ProjectDataCard from './project.datacard';
 import ProjectInfo from './project.info';
 import { memo } from 'react';
-import { useReadElProjectGetProjectVoucherDetail, useReadElProjectGetTotalBeneficiaries } from 'apps/rahat-ui/src/hooks/el/contracts/elProject';
+import {
+  useReadElProjectGetProjectVoucherDetail,
+  useReadElProjectGetTotalBeneficiaries,
+} from 'apps/rahat-ui/src/hooks/el/contracts/elProject';
 
 const ProjectMainView = () => {
   const { id } = useParams();
@@ -20,15 +23,16 @@ const ProjectMainView = () => {
     (state) => state.settings?.[id] || null,
   );
 
-  const {data:beneficiaryDetails} = useReadElProjectGetTotalBeneficiaries({
-    address:contractSettings?.elproject?.address
-  })
+  const { data: beneficiaryDetails, refetch: refetchBeneficiary } =
+    useReadElProjectGetTotalBeneficiaries({
+      address: contractSettings?.elproject?.address,
+    });
 
-  const {data:projectVoucher} = useReadElProjectGetProjectVoucherDetail({
-    address:contractSettings?.elproject?.address
-  })
+  const { data: projectVoucher } = useReadElProjectGetProjectVoucherDetail({
+    address: contractSettings?.elproject?.address,
+  });
 
-  const { data: voucherDetails } = useProjectVoucher(
+  const { data: voucherDetails, refetch: refetchVoucher } = useProjectVoucher(
     contractSettings?.elproject?.address,
     contractSettings?.eyevoucher?.address,
   );
@@ -43,7 +47,9 @@ const ProjectMainView = () => {
       <ProjectDataCard
         beneficiaryDetails={beneficiaryDetails}
         projectVoucher={projectVoucher}
-        voucherDetails ={voucherDetails}
+        voucherDetails={voucherDetails}
+        refetchBeneficiary={refetchBeneficiary}
+        refetchVoucher={refetchVoucher}
       />
       <ProjectChart />
     </div>

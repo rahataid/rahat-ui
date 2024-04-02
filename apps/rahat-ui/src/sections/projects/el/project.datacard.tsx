@@ -6,15 +6,19 @@ import Activities from './projects.activity';
 type ProjectDataCardProps = {
   beneficiaryDetails: any;
   projectVoucher: any;
-  voucherDetails:any;
+  voucherDetails: any;
+  refetchBeneficiary: VoidFunction;
+  refetchVoucher: VoidFunction;
 };
 
 const ProjectDataCard: FC<ProjectDataCardProps> = ({
   beneficiaryDetails,
   projectVoucher,
   voucherDetails,
+  refetchBeneficiary,
+  refetchVoucher,
 }) => {
-  const data ={...projectVoucher,...voucherDetails}
+  const data = { ...projectVoucher, ...voucherDetails };
   return (
     <>
       <div className="mb-2 grid md:grid-cols-3 gap-2">
@@ -22,16 +26,18 @@ const ProjectDataCard: FC<ProjectDataCardProps> = ({
           <DataCard
             className=""
             title="Enrolled Beneficiary"
-            number={beneficiaryDetails?beneficiaryDetails[0].toString() : '-'}
+            number={beneficiaryDetails ? beneficiaryDetails[0].toString() : '-'}
             subTitle="Enrolled"
             Icon={Users}
+            refresh={refetchBeneficiary}
           />
           <DataCard
             className=""
             title="Referred Beneficiary"
-            number={beneficiaryDetails? beneficiaryDetails[1].toString() :'-'}
+            number={beneficiaryDetails ? beneficiaryDetails[1].toString() : '-'}
             subTitle="Referred"
             Icon={Users}
+            refresh={refetchBeneficiary}
           />
           <DataCard
             className=""
@@ -39,6 +45,7 @@ const ProjectDataCard: FC<ProjectDataCardProps> = ({
             number={projectVoucher?.eyeVoucherBudget?.toString() || '-'}
             subTitle="Free"
             Icon={Users}
+            refresh={refetchVoucher}
           />
           <DataCard
             className=""
@@ -46,6 +53,7 @@ const ProjectDataCard: FC<ProjectDataCardProps> = ({
             number={projectVoucher?.referredVoucherBudget?.toString() || '-'}
             subTitle="Discount"
             Icon={Users}
+            refresh={refetchVoucher}
           />
         </div>
         <div>

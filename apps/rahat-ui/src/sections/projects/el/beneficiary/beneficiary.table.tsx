@@ -1,6 +1,10 @@
 'use client';
 
-import { usePagination, useProjectBeneficiaries } from '@rahat-ui/query';
+import {
+  usePagination,
+  useProjectBeneficiaries,
+  useProjectSettingsStore,
+} from '@rahat-ui/query';
 import {
   ColumnFiltersState,
   SortingState,
@@ -46,6 +50,7 @@ import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
 import { useProjectBeneficiaryTableColumns } from './use-table-column';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
+import { useBulkAssignVoucher } from 'apps/rahat-ui/src/hooks/el/contracts/el-contracts';
 // import { useBeneficiaryTransaction } from '../../hooks/el/subgraph/querycall';
 
 export type Transaction = {
@@ -79,17 +84,18 @@ function BeneficiaryDetailTableView() {
   );
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = React.useState({});
   const uuid = useParams().id as UUID;
   const {
     pagination,
     filters,
     setFilters,
-    resetFilters,
     setNextPage,
     setPrevPage,
     setPerPage,
+    selectedListItems,
+    setSelectedListItems,
   } = usePagination();
+  const assignVoucher = useBulkAssignVoucher();
 
   const projectBeneficiaries = useProjectBeneficiaries({
     page: pagination.page,
@@ -97,6 +103,10 @@ function BeneficiaryDetailTableView() {
     projectUUID: uuid,
     ...filters,
   });
+
+  const contractAddress = useProjectSettingsStore(
+    (state) => state.settings?.[uuid],
+  );
 
   const columns = useProjectBeneficiaryTableColumns();
 
@@ -110,6 +120,7 @@ function BeneficiaryDetailTableView() {
     },
     [filters, setFilters],
   );
+  console.log('contractAddress', contractAddress);
 
   const table = useReactTable({
     data: projectBeneficiaries.data || [],
@@ -121,14 +132,26 @@ function BeneficiaryDetailTableView() {
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setRowSelection,
+    getRowId: (row) => row.name,
+    onRowSelectionChange: setSelectedListItems,
     state: {
       sorting,
       columnFilters,
       columnVisibility,
-      rowSelection,
+      rowSelection: selectedListItems,
     },
   });
+  // const assignToken =
+
+  const selectedRowAddresses = Object.keys(selectedListItems);
+
+  const handleBulkAssign = async () => {
+    await assignVoucher.mutateAsync({
+      addresses: selectedRowAddresses as `0x${string}`[],
+      noOfTokens: 1,
+      contractAddress: contractAddress.elproject.address,
+    });
+  };
 
   return (
     <>
@@ -189,6 +212,14 @@ function BeneficiaryDetailTableView() {
                   );
                 })}
             </DropdownMenuContent>
+            {selectedRowAddresses.length ? (
+              <Button
+                disabled={assignVoucher.isPending}
+                onClick={handleBulkAssign}
+              >
+                Bulk Assign Tokens
+              </Button>
+            ) : null}
           </DropdownMenu>
         </div>
         <div className="rounded border h-[calc(100vh-180px)] bg-card">

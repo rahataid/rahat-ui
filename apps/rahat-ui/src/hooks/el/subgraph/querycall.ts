@@ -190,3 +190,15 @@ export const useReferredVoucherHolder = () =>{
     }
   })
 }
+
+export const useVoucherHolder = () =>{
+  const { queryService } = useGraphService();
+  return useQuery({
+    queryKey:['voucher-holder'],
+    queryFn: async () =>{
+      const res = await queryService.getVoucherOwners();
+      return res
+     
+    }
+  })
+}

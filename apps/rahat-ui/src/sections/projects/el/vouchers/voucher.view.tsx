@@ -13,13 +13,12 @@ import { FreeTransactionTable } from './free.transactions.table';
 import { FreeHoldersTable } from './free.holder.table';
 import { DiscountTransactionTable } from './discount.transactions.table';
 import { DiscountHoldersTable } from './discount.holder.table';
-import { useFreeVoucherHolder, useReferredVoucherHolder } from 'apps/rahat-ui/src/hooks/el/subgraph/querycall';
+import { useFreeVoucherHolder, useReferredVoucherHolder, useVoucherHolder } from 'apps/rahat-ui/src/hooks/el/subgraph/querycall';
 
 const VoucherView = () => {
 
-  // const {data:freeVoucherHolder}= useFreeVoucherHolder()
-  // const {data:discountVoucherHolder} = useReferredVoucherHolder();
-
+  const {data} = useVoucherHolder();
+  
   return (
     <>
       <FreeVoucherInfo />
@@ -41,10 +40,10 @@ const VoucherView = () => {
           <TabsContent value="free">
             <div className="grid grid-cols-3 gap-2">
               <div className="col-span-2 h-full">
-                <FreeTransactionTable />
+                <FreeTransactionTable  />
               </div>
               <div className="h-full">
-                <FreeHoldersTable  />
+                <FreeHoldersTable  data={data?.eyeVoucherOwners} />
               </div>
             </div>
           </TabsContent>
@@ -54,7 +53,7 @@ const VoucherView = () => {
                 <DiscountTransactionTable />
               </div>
               <div>
-                <DiscountHoldersTable  data ={discountVoucherHolder}/>
+                <DiscountHoldersTable data={data?.referralVoucherOwners} />
               </div>
             </div>
           </TabsContent>

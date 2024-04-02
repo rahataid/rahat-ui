@@ -34,6 +34,7 @@ import {
   TableHeader,
   TableRow,
 } from '@rahat-ui/shadcn/src/components/ui/table';
+import { truncateEthAddress } from '@rumsan/sdk/utils';
 
 export type Payment = {
   id: string;
@@ -43,40 +44,40 @@ export type Payment = {
 };
 
 export const columns: ColumnDef<Payment>[] = [
+  // {
+  //   id: 'select',
+  //   header: ({ table }) => (
+  //     <Checkbox
+  //       checked={
+  //         table.getIsAllPageRowsSelected() ||
+  //         (table.getIsSomePageRowsSelected() && 'indeterminate')
+  //       }
+  //       onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+  //       aria-label="Select all"
+  //     />
+  //   ),
+  //   cell: ({ row }) => (
+  //     <Checkbox
+  //       checked={row.getIsSelected()}
+  //       onCheckedChange={(value) => row.toggleSelected(!!value)}
+  //       aria-label="Select row"
+  //     />
+  //   ),
+  //   enableSorting: false,
+  //   enableHiding: false,
+  // },
   {
-    id: 'select',
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && 'indeterminate')
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
-    accessorKey: 'walletaddress',
+    accessorKey: 'owner',
     header: 'Walletaddress',
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue('walletaddress')}</div>
+      <div className="capitalize">{truncateEthAddress(row.getValue('owner'))}</div>
     ),
   },
   {
-    accessorKey: 'quantity',
+    accessorKey: 'amount',
     header: 'Quantity',
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue('quantity')}</div>
+      <div className="capitalize">{row.getValue('amount')}</div>
     ),
   },
   {
@@ -104,7 +105,7 @@ export const columns: ColumnDef<Payment>[] = [
   },
 ];
 
-export function FreeHoldersTable(data) {
+export function FreeHoldersTable({data}) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
@@ -112,9 +113,8 @@ export function FreeHoldersTable(data) {
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
-
   const table = useReactTable({
-    data :data?.eyeVoucherOwners || [],
+    data:data || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,

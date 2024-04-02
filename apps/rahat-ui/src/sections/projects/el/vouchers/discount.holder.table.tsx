@@ -99,17 +99,17 @@ export const columns: ColumnDef<Payment>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: 'walletaddress',
+    accessorKey: 'owner',
     header: 'Walletaddress',
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue('walletaddress')}</div>
+      <div className="capitalize">{row.getValue('owner')}</div>
     ),
   },
   {
-    accessorKey: 'quantity',
+    accessorKey: 'amount',
     header: 'Quantity',
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue('quantity')}</div>
+      <div className="capitalize">{row.getValue('amount')}</div>
     ),
   },
   {
@@ -137,7 +137,7 @@ export const columns: ColumnDef<Payment>[] = [
   },
 ];
 
-export function DiscountHoldersTable() {
+export function DiscountHoldersTable({data}) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
@@ -147,7 +147,7 @@ export function DiscountHoldersTable() {
   const [rowSelection, setRowSelection] = React.useState({});
 
   const table = useReactTable({
-    data,
+    data: data || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -169,14 +169,14 @@ export function DiscountHoldersTable() {
     <div className="w-full bg-card">
       <div className="flex items-center justify-between py-2 mx-2">
         <h1 className="text-primary">Holders</h1>
-        <Input
+        {/* <Input
           placeholder="Filter emails..."
           value={(table.getColumn('email')?.getFilterValue() as string) ?? ''}
           onChange={(event) =>
             table.getColumn('email')?.setFilterValue(event.target.value)
           }
           className="w-2/3 mr-2"
-        />
+        /> */}
       </div>
       <div className="rounded border h-[calc(100vh-600px)] bg-card">
         <Table>

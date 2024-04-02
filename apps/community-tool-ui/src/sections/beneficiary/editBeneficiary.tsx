@@ -31,6 +31,7 @@ import React, { useEffect } from 'react';
 import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
 import { ListBeneficiary } from '@rahataid/community-tool-sdk/beneficiary';
 import { useCommunityBeneficiaryUpdate } from '@rahat-ui/community-query';
+import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 
 export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
   const updateBeneficiaryClient = useCommunityBeneficiaryUpdate();
@@ -94,6 +95,7 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
                 render={({ field }) => {
                   return (
                     <FormItem>
+                      <Label className="text-xs font-medium">Phone</Label>
                       <FormControl>
                         <Input
                           type="text"
@@ -115,6 +117,9 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
                 render={({ field }) => {
                   return (
                     <FormItem>
+                      <Label className="text-xs font-medium">
+                        Banked Status
+                      </Label>
                       <Select
                         onValueChange={field.onChange}
                         defaultValue={field.value}
@@ -151,6 +156,9 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
                 render={({ field }) => {
                   return (
                     <FormItem>
+                      <Label className="text-xs font-medium">
+                        Internet Status
+                      </Label>
                       <Select
                         onValueChange={field.onChange}
                         defaultValue={field.value}
@@ -186,6 +194,9 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
                 render={({ field }) => {
                   return (
                     <FormItem>
+                      <Label className="text-xs font-medium">
+                        Phone Status
+                      </Label>
                       <Select
                         onValueChange={field.onChange}
                         defaultValue={field.value}
@@ -222,6 +233,8 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
                 render={({ field }) => {
                   return (
                     <FormItem>
+                      <Label className="text-xs font-medium">Location</Label>
+
                       <FormControl>
                         <Input type="text" placeholder="Location" {...field} />
                       </FormControl>
@@ -237,6 +250,8 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
                 render={({ field }) => {
                   return (
                     <FormItem>
+                      <Label className="text-xs font-medium">Longitude</Label>
+
                       <FormControl>
                         <Input
                           type="number"
@@ -259,6 +274,7 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
                 render={({ field }) => {
                   return (
                     <FormItem>
+                      <Label className="text-xs font-medium">Latitude</Label>
                       <FormControl>
                         <Input
                           type="number"
@@ -281,6 +297,7 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
                 name="notes"
                 render={({ field }) => (
                   <FormItem>
+                    <Label className="text-xs font-medium">Notes</Label>
                     <FormControl>
                       <Textarea
                         placeholder="Notes"

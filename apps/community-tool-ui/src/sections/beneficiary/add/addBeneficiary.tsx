@@ -196,7 +196,7 @@ export default function AddBeneficiary() {
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Banked Status" />
+                            <SelectValue placeholder=" Select Banked Status" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -232,7 +232,7 @@ export default function AddBeneficiary() {
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Gender" />
+                            <SelectValue placeholder="Select Gender" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -259,7 +259,7 @@ export default function AddBeneficiary() {
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Internet Status" />
+                            <SelectValue placeholder="Select Internet Status" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -294,7 +294,7 @@ export default function AddBeneficiary() {
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Phone Status" />
+                            <SelectValue placeholder="Select  Phone Status" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -332,20 +332,7 @@ export default function AddBeneficiary() {
                   );
                 }}
               />
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => {
-                  return (
-                    <FormItem>
-                      <FormControl>
-                        <Input type="email" placeholder="Email" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  );
-                }}
-              />
+
               <FormField
                 control={form.control}
                 name="longitude"
@@ -354,7 +341,7 @@ export default function AddBeneficiary() {
                     <FormItem>
                       <FormControl>
                         <Input
-                          type="float"
+                          type="number"
                           placeholder="Longitude"
                           onChange={(e) => {
                             const numericValue = parseFloat(e.target.value);
@@ -375,7 +362,7 @@ export default function AddBeneficiary() {
                     <FormItem>
                       <FormControl>
                         <Input
-                          type="float"
+                          type="number"
                           placeholder="Latitude"
                           onChange={(e) => {
                             const numericValue = parseFloat(e.target.value);
@@ -388,7 +375,20 @@ export default function AddBeneficiary() {
                   );
                 }}
               />
-
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <FormControl>
+                        <Input type="email" placeholder="Email" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
               <FormField
                 control={form.control}
                 name="birthDate"

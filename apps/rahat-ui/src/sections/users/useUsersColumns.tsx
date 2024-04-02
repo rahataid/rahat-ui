@@ -41,14 +41,14 @@ export const useUserTableColumns = () => {
         <TooltipProvider delayDuration={100}>
           <Tooltip>
             <TooltipTrigger
-              className="flex gap-3 cursor-pointer"
+              className="flex items-center gap-3 cursor-pointer"
               onClick={() => clickToCopy(row.getValue('wallet'), row.index)}
             >
               <p>{truncateEthAddress(row.getValue('wallet'))}</p>
               {walletAddressCopied === row.index ? (
-                <CopyCheck size={20} strokeWidth={1.5} />
+                <CopyCheck size={15} strokeWidth={1.5} />
               ) : (
-                <Copy size={20} strokeWidth={1.5} />
+                <Copy className="text-slate-500" size={15} strokeWidth={1.5} />
               )}
             </TooltipTrigger>
             <TooltipContent className="bg-secondary" side="bottom">

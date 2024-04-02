@@ -28,9 +28,14 @@ const AddVoucher = () => {
   const [priceInUSD, setPriceInUSD] = useState('');
   const [description, setDescription] = useState('');
   const [selectedCurrencySymbol, setSelectedCurrencySymbol] = useState('');
+  const [currencyName, setCurrencyName] = useState('-');
 
   const handleCurrencySelect = (symbol: React.SetStateAction<string>) => {
     setSelectedCurrencySymbol(symbol);
+  };
+
+  const handleCurrencyName = (name: React.SetStateAction<string>) => {
+    setCurrencyName(name);
   };
 
   const handleSubmit = () => {
@@ -57,7 +62,7 @@ const AddVoucher = () => {
               />
             </div> */}
             <div>
-              <Label htmlFor="priceInUSD">Price in USD</Label>
+              <Label htmlFor="priceInUSD">Price in {currencyName}</Label>
               <div className="flex items-center">
                 <DropdownMenu>
                   <DropdownMenuTrigger className="w-1/4" asChild>
@@ -77,7 +82,10 @@ const AddVoucher = () => {
                         <DropdownMenuItem
                           key={index}
                           className="text-left px-3 py-2 hover:bg-gray-100 focus:outline-none"
-                          onClick={() => handleCurrencySelect(currency.symbol)}
+                          onClick={() => {
+                            handleCurrencySelect(currency.symbol);
+                            handleCurrencyName(currency.name);
+                          }}
                         >
                           {currency.name} - {currency.symbol}
                         </DropdownMenuItem>
@@ -128,7 +136,7 @@ const AddVoucher = () => {
               />
             </div> */}
             <div>
-              <Label htmlFor="priceInUSD">Price in USD</Label>
+              <Label htmlFor="priceInUSD">Price in {currencyName}</Label>
               <div className="flex items-center">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild className="w-1/4">

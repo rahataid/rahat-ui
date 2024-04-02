@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { ColumnDef } from '@tanstack/react-table';
-import { ListBeneficiary } from '@rahat-ui/types';
+import { User } from '@rumsan/sdk/types';
 import { truncateEthAddress } from '@rumsan/core/utilities/string.utils';
 import UserDetail from './viewUser';
 import { Eye, Copy, CopyCheck } from 'lucide-react';
@@ -23,7 +23,7 @@ export const useUserTableColumns = () => {
     setWalletAddressCopied(index);
   };
 
-  const columns: ColumnDef<ListBeneficiary>[] = [
+  const columns: ColumnDef<User>[] = [
     {
       accessorKey: 'name',
       header: 'Name',

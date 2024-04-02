@@ -60,9 +60,9 @@ const AddVoucher = () => {
               <Label htmlFor="priceInUSD">Price in USD</Label>
               <div className="flex items-center">
                 <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
+                  <DropdownMenuTrigger className="w-1/4" asChild>
                     <Button
-                      className="flex items-center gap-1 rounded"
+                      className="flex p-0 pl-1 items-center gap-1 rounded-l rounded-r-none border-r-white mr-0"
                       variant="outline"
                     >
                       {selectedCurrencySymbol || '$'}
@@ -89,6 +89,7 @@ const AddVoucher = () => {
                   type="text"
                   id="priceInUSD"
                   value={priceInUSD}
+                  className="rounded-r rounded-l-none"
                   onChange={(e) => setPriceInUSD(e.target.value)}
                 />
               </div>
@@ -130,9 +131,9 @@ const AddVoucher = () => {
               <Label htmlFor="priceInUSD">Price in USD</Label>
               <div className="flex items-center">
                 <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
+                  <DropdownMenuTrigger asChild className="w-1/4">
                     <Button
-                      className="flex items-center gap-1 rounded"
+                      className="flex p-0 pl-1 items-center gap-1 rounded-l rounded-r-none border-r-white mr-0"
                       variant="outline"
                     >
                       {selectedCurrencySymbol || '$'}
@@ -159,6 +160,7 @@ const AddVoucher = () => {
                   type="text"
                   id="priceInUSD"
                   value={priceInUSD}
+                  className="rounded-r rounded-l-none"
                   onChange={(e) => setPriceInUSD(e.target.value)}
                 />
               </div>

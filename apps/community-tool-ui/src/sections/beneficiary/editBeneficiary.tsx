@@ -32,6 +32,8 @@ import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
 import { ListBeneficiary } from '@rahataid/community-tool-sdk/beneficiary';
 import { useCommunityBeneficiaryUpdate } from '@rahat-ui/community-query';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
+import { ID_TYPE } from '../../constants/beneficiary.const';
+import { Switch } from '@rahat-ui/shadcn/src/components/ui/switch';
 
 export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
   const updateBeneficiaryClient = useCommunityBeneficiaryUpdate();
@@ -46,6 +48,10 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
     bankedStatus: z.string().toUpperCase().optional(),
     internetStatus: z.string().toUpperCase().optional(),
     phoneStatus: z.string().toUpperCase().optional(),
+
+    isVulnerable: z.boolean().optional(),
+    govtIDType: z.string().optional(),
+    govtIDNumber: z.string().optional(),
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -59,6 +65,9 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
       latitude: data?.latitude || 0,
       longitude: data?.longitude || 0,
       notes: data?.notes || '',
+      isVulnerable: data?.isVulnerable || false,
+      govtIDType: data?.govtIDType || '',
+      govtIDNumber: data?.govtIDNumber || '',
     },
   });
 
@@ -78,6 +87,9 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
         latitude: formData.latitude,
         longitude: formData.longitude,
         notes: formData.notes,
+        isVulnerable: formData.isVulnerable,
+        govtIDType: formData.govtIDType,
+        govtIDNumber: formData.govtIDNumber,
       },
     });
   };
@@ -292,6 +304,84 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
                 }}
               />
 
+              <FormField
+                control={form.control}
+                name="govtIDType"
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <Label className="text-xs font-medium">
+                        Government Id Type
+                      </Label>
+
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Government ID Type" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value={ID_TYPE.CITIZZENSHIP}>
+                            Citizenship
+                          </SelectItem>
+                          <SelectItem value={ID_TYPE.DRIVING_LICENSE}>
+                            Driving License
+                          </SelectItem>
+                          <SelectItem value={ID_TYPE.PASSPORT}>
+                            Passport
+                          </SelectItem>
+                          <SelectItem value={ID_TYPE.NATIONAL_ID_NUMBER}>
+                            National ID
+                          </SelectItem>
+                          <SelectItem value={ID_TYPE.OTHER}>Other</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
+              <FormField
+                control={form.control}
+                name="govtIDNumber"
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <Label className="text-xs font-medium">
+                        Government Id Number
+                      </Label>
+
+                      <FormControl>
+                        <Input
+                          type="text"
+                          placeholder="Government ID Number"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
+
+              <FormField
+                control={form.control}
+                name="isVulnerable"
+                render={({ field }) => (
+                  <div className="flex flex-col justify-evenly items-center">
+                    <Label> Vulnerable</Label>
+                    <Switch
+                      {...field}
+                      value={field.value ? 'false' : 'true'}
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </div>
+                )}
+              />
               <FormField
                 control={form.control}
                 name="notes"

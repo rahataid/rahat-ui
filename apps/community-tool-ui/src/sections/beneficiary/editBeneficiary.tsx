@@ -21,7 +21,6 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 
 import { z } from 'zod';
-import { useRumsanService } from '../../providers/service.provider';
 import {
   BankedStatus,
   InternetStatus,
@@ -31,10 +30,10 @@ import React, { useEffect } from 'react';
 
 import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
 import { ListBeneficiary } from '@rahataid/community-tool-sdk/beneficiary';
+import { useCommunityBeneficiaryUpdate } from '@rahat-ui/community-query';
 
 export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
-  const { communityBenQuery } = useRumsanService();
-  const benefClient = communityBenQuery.useCommunityBeneficiaryUpdate();
+  const updateBeneficiaryClient = useCommunityBeneficiaryUpdate();
 
   const FormSchema = z.object({
     phone: z.string(),
@@ -65,7 +64,21 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
   const handleEditBeneficiary = async (
     formData: z.infer<typeof FormSchema>,
   ) => {
-    await benefClient.mutateAsync({ uuid: data.uuid, payload: formData });
+    await updateBeneficiaryClient.mutateAsync({
+      uuid: data.uuid,
+      payload: {
+        firstName: data?.firstName,
+        lastName: data?.lastName,
+        phone: formData.phone,
+        bankedStatus: formData.bankedStatus as BankedStatus,
+        internetStatus: formData.internetStatus as InternetStatus,
+        phoneStatus: formData.phoneStatus as PhoneStatus,
+        location: formData.location,
+        latitude: formData.latitude,
+        longitude: formData.longitude,
+        notes: formData.notes,
+      },
+    });
   };
 
   return (

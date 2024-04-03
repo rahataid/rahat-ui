@@ -39,6 +39,9 @@ import { format } from 'date-fns';
 import { Calendar } from '@rahat-ui/shadcn/src/components/ui/calendar';
 import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
 import { useCommunityBeneficiaryCreate } from '@rahat-ui/community-query';
+import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
+import { Switch } from '@rahat-ui/shadcn/src/components/ui/switch';
+import { ID_TYPE } from 'apps/community-tool-ui/src/constants/beneficiary.const';
 
 export default function AddBeneficiary() {
   const addCommunityBeneficiary = useCommunityBeneficiaryCreate();
@@ -63,6 +66,9 @@ export default function AddBeneficiary() {
     bankedStatus: z.string().toUpperCase().optional(),
     internetStatus: z.string().toUpperCase().optional(),
     phoneStatus: z.string().toUpperCase().optional(),
+    isVulnerable: z.boolean().optional(),
+    govtIDType: z.string().optional(),
+    govtIDNumber: z.string().optional(),
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -81,6 +87,9 @@ export default function AddBeneficiary() {
       latitude: 0,
       longitude: 0,
       notes: '',
+      isVulnerable: false,
+      govtIDType: '',
+      govtIDNumber: '',
     },
   });
 
@@ -99,6 +108,9 @@ export default function AddBeneficiary() {
       latitude: data.latitude,
       longitude: data.longitude,
       notes: data.notes,
+      isVulnerable: data.isVulnerable,
+      govtIDType: data.govtIDType,
+      govtIDNumber: data.govtIDNumber,
     });
   };
 
@@ -196,7 +208,7 @@ export default function AddBeneficiary() {
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Banked Status" />
+                            <SelectValue placeholder=" Select Banked Status" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -232,7 +244,7 @@ export default function AddBeneficiary() {
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Gender" />
+                            <SelectValue placeholder="Select Gender" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -259,7 +271,7 @@ export default function AddBeneficiary() {
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Internet Status" />
+                            <SelectValue placeholder="Select Internet Status" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -294,7 +306,7 @@ export default function AddBeneficiary() {
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Phone Status" />
+                            <SelectValue placeholder="Select  Phone Status" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -332,20 +344,7 @@ export default function AddBeneficiary() {
                   );
                 }}
               />
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => {
-                  return (
-                    <FormItem>
-                      <FormControl>
-                        <Input type="email" placeholder="Email" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  );
-                }}
-              />
+
               <FormField
                 control={form.control}
                 name="longitude"
@@ -354,7 +353,7 @@ export default function AddBeneficiary() {
                     <FormItem>
                       <FormControl>
                         <Input
-                          type="float"
+                          type="number"
                           placeholder="Longitude"
                           onChange={(e) => {
                             const numericValue = parseFloat(e.target.value);
@@ -375,7 +374,7 @@ export default function AddBeneficiary() {
                     <FormItem>
                       <FormControl>
                         <Input
-                          type="float"
+                          type="number"
                           placeholder="Latitude"
                           onChange={(e) => {
                             const numericValue = parseFloat(e.target.value);
@@ -388,7 +387,20 @@ export default function AddBeneficiary() {
                   );
                 }}
               />
-
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <FormControl>
+                        <Input type="email" placeholder="Email" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
               <FormField
                 control={form.control}
                 name="birthDate"
@@ -421,6 +433,62 @@ export default function AddBeneficiary() {
                   </FormItem>
                 )}
               />
+
+              <FormField
+                control={form.control}
+                name="govtIDType"
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Government ID Type" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value={ID_TYPE.CITIZZENSHIP}>
+                            Citizenship
+                          </SelectItem>
+                          <SelectItem value={ID_TYPE.DRIVING_LICENSE}>
+                            Driving License
+                          </SelectItem>
+                          <SelectItem value={ID_TYPE.PASSPORT}>
+                            Passport
+                          </SelectItem>
+                          <SelectItem value={ID_TYPE.NATIONAL_ID_NUMBER}>
+                            National ID
+                          </SelectItem>
+                          <SelectItem value={ID_TYPE.OTHER}>Other</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
+              <FormField
+                control={form.control}
+                name="govtIDNumber"
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <FormControl>
+                        <Input
+                          type="text"
+                          placeholder="Government ID Number"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
+
               <FormField
                 control={form.control}
                 name="notes"
@@ -435,6 +503,22 @@ export default function AddBeneficiary() {
                     </FormControl>
                     <FormMessage />
                   </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="isVulnerable"
+                render={({ field }) => (
+                  <div className="flex flex-col justify-evenly items-center">
+                    <Label> Vulnerable</Label>
+                    <Switch
+                      {...field}
+                      value={field.value ? 'false' : 'true'}
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </div>
                 )}
               />
             </div>

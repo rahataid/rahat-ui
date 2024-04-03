@@ -70,7 +70,7 @@ export const useCommunityBeneficiaryUpdate = () => {
 
   return useMutation(
     {
-      mutationKey: [TAGS.UPDATE_COMMUNITY_BENEFICARY],
+      mutationKey: [TAGS.UPDATE_COMMUNITY_BENEFICARY, 'uuid'],
       mutationFn: benClient.update,
       onSuccess: () => {
         Swal.fire('Beneficiary Updated Successfully', '', 'success');

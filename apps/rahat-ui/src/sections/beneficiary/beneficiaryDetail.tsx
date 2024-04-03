@@ -26,7 +26,15 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
 import { truncateEthAddress } from '@rumsan/sdk/utils';
 import { UUID } from 'crypto';
-import { Archive, Expand, Minus, MoreVertical, Trash2, Copy, CopyCheck } from 'lucide-react';
+import {
+  Archive,
+  Expand,
+  Minus,
+  MoreVertical,
+  Trash2,
+  Copy,
+  CopyCheck,
+} from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -202,9 +210,13 @@ export default function BeneficiaryDetail({
                   {truncateEthAddress(walletAddress)}
                 </p>
                 {walletAddressCopied ? (
-                  <CopyCheck size={20} strokeWidth={1.5} />
+                  <CopyCheck size={15} strokeWidth={1.5} />
                 ) : (
-                  <Copy size={20} strokeWidth={1.5} />
+                  <Copy
+                    className="text-slate-500"
+                    size={15}
+                    strokeWidth={1.5}
+                  />
                 )}
               </TooltipTrigger>
               <TooltipContent className="bg-secondary" side="bottom">

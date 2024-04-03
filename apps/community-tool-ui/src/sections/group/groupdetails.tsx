@@ -67,7 +67,6 @@ export default function GroupDetail({ data, handleClose }: IProps) {
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
-
             <TooltipProvider delayDuration={100}>
               <Tooltip>
                 <TooltipTrigger>
@@ -86,6 +85,10 @@ export default function GroupDetail({ data, handleClose }: IProps) {
 
         <TabsContent value="detail">
           <GroupDetailTable table={table} />
+          <p className="text-xs font-medium text-right mr-5 mt-5">
+            Total beneficiary Count :
+            {responseByUUID?.data?.beneficiariesGroup.length}
+          </p>
         </TabsContent>
       </Tabs>
     </>

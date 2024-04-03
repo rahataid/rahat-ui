@@ -73,6 +73,7 @@ export default function BeneficiaryDetail({
   const clickToCopy = () => {
     if (walletAddress) {
       navigator.clipboard.writeText(walletAddress);
+      setWalletAddressCopied(true);
     }
   };
 
@@ -155,9 +156,13 @@ export default function BeneficiaryDetail({
                         {truncateEthAddress(walletAddress)}
                       </p>
                       {walletAddressCopied ? (
-                        <CopyCheck size={20} strokeWidth={1.5} />
+                        <CopyCheck size={15} strokeWidth={1.5} />
                       ) : (
-                        <Copy size={20} strokeWidth={1.5} />
+                        <Copy
+                          className="text-slate-500"
+                          size={15}
+                          strokeWidth={1.5}
+                        />
                       )}
                     </TooltipTrigger>
                     <TooltipContent className="bg-secondary" side="bottom">
@@ -322,8 +327,8 @@ export default function BeneficiaryDetail({
                         {benVoucher?.FreeVoucherAddress?.toString()
                           ? 'FreeVoucher'
                           : benVoucher?.ReferredVoucherAddress
-                            ? 'DiscountVoucher'
-                            : 'N/A'}
+                          ? 'DiscountVoucher'
+                          : 'N/A'}
                       </p>
                     </div>
                     <div className="flex justify-between items-center">
@@ -332,8 +337,8 @@ export default function BeneficiaryDetail({
                         {benVoucher?.FreeVoucherClaimStatus?.toString()
                           ? benVoucher?.FreeVoucherClaimStatus.toString()
                           : benVoucher?.ReferredVoucherClaimStatus
-                            ? benVoucher?.ReferredVoucherClaimStatus.toString()
-                            : 'N/A'}
+                          ? benVoucher?.ReferredVoucherClaimStatus.toString()
+                          : 'N/A'}
                       </p>
                     </div>
                     <div className="flex justify-between items-center">

@@ -20,9 +20,9 @@ export default function InfoCards({ data }) {
         <CardHeader>
           <div className="flex justify-between">
             <p>{`${data?.firstName} ${data?.lastName}`}</p>
-            <Badge variant="outline" color="red">
+            {/* <Badge variant="outline" color="red">
               Not Approved
-            </Badge>
+            </Badge> */}
           </div>
         </CardHeader>
         <CardContent>

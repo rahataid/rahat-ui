@@ -24,7 +24,9 @@ const BeneficiaryLayout: FC<BeneficiaryLayoutProps> = ({
   const renderResizablePanel = (children: React.ReactNode, index?: number) => {
     return (
       <ResizablePanel key={index}>
-        <ScrollArea className="h-[calc(100vh-66px)]">{children}</ScrollArea>
+        <ScrollArea className="h-[calc(100vh-66px)] bg-secondary">
+          {children}
+        </ScrollArea>
       </ResizablePanel>
     );
   };

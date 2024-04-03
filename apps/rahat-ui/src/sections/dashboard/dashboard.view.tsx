@@ -13,7 +13,7 @@ export default function DashboardView() {
   // const alert = useSwal();
   const beneficiaryStats = useGetBeneficiaryStats();
   return (
-    <div>
+    <div className="bg-secondary">
       <Tabs defaultValue="list">
         <ScrollArea className="h-[calc(100vh-68px)] px-2 py-2">
           <TabsContent value="list">

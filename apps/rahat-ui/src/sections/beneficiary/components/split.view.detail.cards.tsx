@@ -73,23 +73,29 @@ export default function SplitViewDetailCards({ beneficiaryDetail }: any) {
           <p className="font-mediun text-md">Projects Involved</p>
         </CardHeader>
         <CardContent>
-          {beneficiaryDetail?.BeneficiaryProject?.map((benProject: any) => {
-            return (
-              <Badge
-                key={benProject.id}
-                variant="outline"
-                color="primary"
-                className="rounded cursor-pointer"
-                onClick={() => {
-                  router.push(
-                    `/projects/${benProject.Project?.type}/${benProject.Project.uuid}`,
-                  );
-                }}
-              >
-                {benProject.Project.name}
-              </Badge>
-            );
-          })}
+          {beneficiaryDetail?.BeneficiaryProject?.length ? (
+            beneficiaryDetail?.BeneficiaryProject?.map((benProject: any) => {
+              return (
+                <Badge
+                  key={benProject.id}
+                  variant="outline"
+                  color="primary"
+                  className="rounded cursor-pointer"
+                  onClick={() => {
+                    router.push(
+                      `/projects/${benProject.Project?.type}/${benProject.Project.uuid}`,
+                    );
+                  }}
+                >
+                  {benProject.Project.name}
+                </Badge>
+              );
+            })
+          ) : (
+            <p className="text-sm text-muted-foreground">
+              No projects involved
+            </p>
+          )}
         </CardContent>
       </Card>
     </div>

@@ -35,11 +35,9 @@ export const useBeneficiaryNavItems = () => {
     {
       title: 'Beneficiaries',
       component: (
-        <div className={`flex justify-between items-center border-6 'p-2'`}>
-          <h1 className="font-semibold text-xl text-slate-600">
-            Beneficiaries
-          </h1>
-          <TabsList defaultValue={'list'}>
+        <div className="flex justify-between items-center border-6 w-full">
+          <h1 className="font-semibold text-xl text-primary">Beneficiaries</h1>
+          <TabsList defaultValue="list" className="border rounded">
             {tabs.map((tab) => (
               <TabsTrigger key={tab.value} value={tab.value}>
                 {tab.icon}

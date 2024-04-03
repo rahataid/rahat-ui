@@ -1,6 +1,5 @@
 'use client';
 
-import { Separator } from '@rahat-ui/shadcn/components/separator';
 import {
   ResizableHandle,
   ResizablePanel,
@@ -48,18 +47,10 @@ const BeneficiaryLayout: FC<BeneficiaryLayoutProps> = ({
   };
 
   return (
-    <div>
+    <>
       <Tabs defaultValue="list">
-        <ResizablePanelGroup
-          direction="horizontal"
-          className="min-h-max border"
-        >
-          <ResizablePanel
-            defaultSize={20}
-            minSize={20}
-            maxSize={20}
-            className="h-full"
-          >
+        <ResizablePanelGroup direction="horizontal">
+          <ResizablePanel defaultSize={20} minSize={20} maxSize={20}>
             {menuItems.map((item) => (
               <BeneficiaryNavView
                 key={item.title}
@@ -68,12 +59,11 @@ const BeneficiaryLayout: FC<BeneficiaryLayoutProps> = ({
                 item={item}
               />
             ))}
-            <Separator />
           </ResizablePanel>
           {renderChildren()}
         </ResizablePanelGroup>
       </Tabs>
-    </div>
+    </>
   );
 };
 

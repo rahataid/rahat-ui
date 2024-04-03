@@ -102,11 +102,11 @@ dependencies:
     specifier: ^8.11.8
     version: 8.11.8
   '@tanstack/react-query':
-    specifier: ^5.18.1
-    version: 5.18.1(react@18.2.0)
+    specifier: 5.22.2
+    version: 5.22.2(react@18.2.0)
   '@tanstack/react-query-devtools':
     specifier: ^5.18.1
-    version: 5.18.1(@tanstack/react-query@5.18.1)(react@18.2.0)
+    version: 5.28.10(@tanstack/react-query@5.22.2)(react@18.2.0)
   '@tanstack/react-table':
     specifier: ^8.12.0
     version: 8.12.0(react-dom@18.2.0)(react@18.2.0)
@@ -139,7 +139,7 @@ dependencies:
     version: 1.0.0(@types/react-dom@18.2.21)(@types/react@18.2.65)(react-dom@18.2.0)(react@18.2.0)
   connectkit:
     specifier: ^1.7.1
-    version: 1.7.1(@babel/core@7.24.3)(@tanstack/react-query@5.18.1)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(viem@2.8.5)(wagmi@2.5.7)
+    version: 1.7.3(@babel/core@7.24.3)(@tanstack/react-query@5.22.2)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(viem@2.9.6)(wagmi@2.5.16)
   currencies.json:
     specifier: ^1.0.2
     version: 1.0.2
@@ -259,7 +259,7 @@ dependencies:
     version: 2.8.5(typescript@5.4.2)(zod@3.22.4)
   wagmi:
     specifier: ^2.5.7
-    version: 2.5.7(@tanstack/react-query@5.18.1)(@types/react@18.2.65)(react-dom@18.2.0)(react-native@0.73.6)(react@18.2.0)(rollup@2.79.1)(typescript@5.4.2)(viem@2.8.5)(zod@3.22.4)
+    version: 2.5.16(@tanstack/react-query@5.22.2)(@types/react@18.2.73)(react-dom@18.2.0)(react-native@0.73.6)(react@18.2.0)(rollup@2.79.1)(typescript@5.4.3)(viem@2.9.6)(zod@3.22.4)
   zod:
     specifier: ^3.22.4
     version: 3.22.4
@@ -5936,8 +5936,8 @@ packages:
     dependencies:
       '@rumsan/communication': 0.0.7
       '@rumsan/sdk': 0.0.43
-      '@tanstack/react-query': 5.28.14(react@18.2.0)
-      axios: 1.6.7
+      '@tanstack/react-query': 5.22.2(react@18.2.0)
+      axios: 1.6.8
       react: 18.2.0
       tslib: 2.6.2
       zustand: 4.5.2(@types/react@18.2.65)(react@18.2.0)
@@ -5952,8 +5952,8 @@ packages:
     dependencies:
       '@rumsan/communication': 0.0.7
       '@rumsan/sdk': 0.0.43
-      '@tanstack/react-query': 5.28.14(react@18.2.0)
-      axios: 1.6.7
+      '@tanstack/react-query': 5.22.2(react@18.2.0)
+      axios: 1.6.8
       react: 18.2.0
       tslib: 2.6.2
       zustand: 4.5.2(@types/react@18.2.65)(react@18.2.0)
@@ -6641,26 +6641,35 @@ packages:
       remove-accents: 0.4.2
     dev: false
 
-  /@tanstack/query-core@5.18.1:
-    resolution: {integrity: sha512-fYhrG7bHgSNbnkIJF2R4VUXb4lF7EBiQjKkDc5wOlB7usdQOIN4LxxHpDxyE3qjqIst1WBGvDtL48T0sHJGKCw==}
+  /@tanstack/query-core@5.22.2:
+    resolution: {integrity: sha512-z3PwKFUFACMUqe1eyesCIKg3Jv1mysSrYfrEW5ww5DCDUD4zlpTKBvUDaEjsfZzL3ULrFLDM9yVUxI/fega1Qg==}
+    dev: false
+
+  /@tanstack/query-core@5.28.9:
+    resolution: {integrity: sha512-hNlfCiqZevr3GRVPXS3MhaGW5hjcxvCsIQ4q6ff7EPlvFwYZaS+0d9EIIgofnegDaU2BbCDlyURoYfRl5rmzow==}
     dev: false
 
   /@tanstack/query-core@5.28.13:
     resolution: {integrity: sha512-C3+CCOcza+mrZ7LglQbjeYEOTEC3LV0VN0eYaIN6GvqAZ8Foegdgch7n6QYPtT4FuLae5ALy+m+ZMEKpD6tMCQ==}
     dev: false
 
-  /@tanstack/query-devtools@5.18.1:
-    resolution: {integrity: sha512-U8bDnDGuwdVMT4ndegPTcjOHOmX/UOjjB7o7UalRIq3DMHLRf8Ufh4+xoAvk3LNK5GBmUBfFSw4osYe5l9n7Lw==}
-    dev: false
-
-  /@tanstack/react-query-devtools@5.18.1(@tanstack/react-query@5.18.1)(react@18.2.0):
-    resolution: {integrity: sha512-IrzAsodabSkEVBP0DHkuzcmqKFZ0EgG9ocuD/fRIrjYmbqqdHxzNmp2WmAZlkVo7hamA0ZdzvL5sjo1koFzjHA==}
+  /@tanstack/react-query-devtools@5.28.10(@tanstack/react-query@5.22.2)(react@18.2.0):
+    resolution: {integrity: sha512-D+SiHZTWhK2sNgBYj+xIvUOqonsKy74OLU/YHmRB5OZVLLTiekvZd12C3rKlU+WM69jid0hjEjuFqkULOMwc3A==}
     peerDependencies:
       '@tanstack/react-query': ^5.18.1
       react: ^18.0.0
     dependencies:
-      '@tanstack/query-devtools': 5.18.1
-      '@tanstack/react-query': 5.18.1(react@18.2.0)
+      '@tanstack/query-devtools': 5.28.10
+      '@tanstack/react-query': 5.22.2(react@18.2.0)
+      react: 18.2.0
+    dev: false
+
+  /@tanstack/react-query@5.22.2(react@18.2.0):
+    resolution: {integrity: sha512-TaxJDRzJ8/NWRT4lY2jguKCrNI6MRN+67dELzPjNUlvqzTxGANlMp68l7aC7hG8Bd1uHNxHl7ihv7MT50i/43A==}
+    peerDependencies:
+      react: ^18.0.0
+    dependencies:
+      '@tanstack/query-core': 5.22.2
       react: 18.2.0
     dev: false
 
@@ -9960,8 +9969,8 @@ packages:
       - supports-color
     dev: false
 
-  /connectkit@1.7.1(@babel/core@7.24.3)(@tanstack/react-query@5.18.1)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(viem@2.8.5)(wagmi@2.5.7):
-    resolution: {integrity: sha512-4w4KQADXm6CdbJPH3Q9pUO0YNjXnCQ0+vUpzQvlxDYSpZg48jDmRxcXSg2jgRPlacn32ZMh1RTIuiUsy1iOJiw==}
+  /connectkit@1.7.3(@babel/core@7.24.3)(@tanstack/react-query@5.22.2)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(viem@2.9.6)(wagmi@2.5.16):
+    resolution: {integrity: sha512-q357F3N2I0s+UyTzymWnijJnPp7yZp8z+Qg803OGE/p3TeAv9o9P4uLhiSavgOjeTOxLr0rj1pgPQc3yC7zApw==}
     engines: {node: '>=12.4'}
     peerDependencies:
       '@tanstack/react-query': '>=5.0.0'
@@ -9970,7 +9979,7 @@ packages:
       viem: 2.x
       wagmi: 2.x
     dependencies:
-      '@tanstack/react-query': 5.18.1(react@18.2.0)
+      '@tanstack/react-query': 5.22.2(react@18.2.0)
       buffer: 6.0.3
       detect-browser: 5.3.0
       framer-motion: 6.5.1(react-dom@18.2.0)(react@18.2.0)
@@ -9981,8 +9990,8 @@ packages:
       react-use-measure: 2.1.1(react-dom@18.2.0)(react@18.2.0)
       resize-observer-polyfill: 1.5.1
       styled-components: 5.3.11(@babel/core@7.24.3)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)
-      viem: 2.8.5(typescript@5.4.2)(zod@3.22.4)
-      wagmi: 2.5.7(@tanstack/react-query@5.18.1)(@types/react@18.2.65)(react-dom@18.2.0)(react-native@0.73.6)(react@18.2.0)(rollup@2.79.1)(typescript@5.4.2)(viem@2.8.5)(zod@3.22.4)
+      viem: 2.9.6(typescript@5.4.3)(zod@3.22.4)
+      wagmi: 2.5.16(@tanstack/react-query@5.22.2)(@types/react@18.2.73)(react-dom@18.2.0)(react-native@0.73.6)(react@18.2.0)(rollup@2.79.1)(typescript@5.4.3)(viem@2.9.6)(zod@3.22.4)
     transitivePeerDependencies:
       - '@babel/core'
       - react-is
@@ -20634,8 +20643,8 @@ packages:
       xml-name-validator: 4.0.0
     dev: true
 
-  /wagmi@2.5.7(@tanstack/react-query@5.18.1)(@types/react@18.2.65)(react-dom@18.2.0)(react-native@0.73.6)(react@18.2.0)(rollup@2.79.1)(typescript@5.4.2)(viem@2.8.5)(zod@3.22.4):
-    resolution: {integrity: sha512-xSuteMXFKvra4xDddqZbZv/gQlcg3X+To5AoZW7WoAm0iVlF8/vEGpQzCWy6KZs2z1szxPrr0YnH3Zr1Qj4E/A==}
+  /wagmi@2.5.16(@tanstack/react-query@5.22.2)(@types/react@18.2.73)(react-dom@18.2.0)(react-native@0.73.6)(react@18.2.0)(rollup@2.79.1)(typescript@5.4.3)(viem@2.9.6)(zod@3.22.4):
+    resolution: {integrity: sha512-nVSx65kGYcjvELJKoe+l1E78zHqtYwfg0nf2HuZkt1gVvqguo+hIQe534hSf1m+ivdtb0MPlwNCvj6K4QJ7FTw==}
     peerDependencies:
       '@tanstack/react-query': '>=5.0.0'
       react: '>=18'
@@ -20645,9 +20654,9 @@ packages:
       typescript:
         optional: true
     dependencies:
-      '@tanstack/react-query': 5.18.1(react@18.2.0)
-      '@wagmi/connectors': 4.1.14(@types/react@18.2.65)(@wagmi/core@2.6.5)(react-dom@18.2.0)(react-native@0.73.6)(react@18.2.0)(rollup@2.79.1)(typescript@5.4.2)(viem@2.8.5)(zod@3.22.4)
-      '@wagmi/core': 2.6.5(@types/react@18.2.65)(react@18.2.0)(typescript@5.4.2)(viem@2.8.5)(zod@3.22.4)
+      '@tanstack/react-query': 5.22.2(react@18.2.0)
+      '@wagmi/connectors': 4.1.22(@types/react@18.2.73)(@wagmi/core@2.6.13)(react-dom@18.2.0)(react-native@0.73.6)(react@18.2.0)(rollup@2.79.1)(typescript@5.4.3)(viem@2.9.6)(zod@3.22.4)
+      '@wagmi/core': 2.6.13(@types/react@18.2.73)(react@18.2.0)(typescript@5.4.3)(viem@2.9.6)(zod@3.22.4)
       react: 18.2.0
       typescript: 5.4.2
       use-sync-external-store: 1.2.0(react@18.2.0)

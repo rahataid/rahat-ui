@@ -53,6 +53,8 @@ export default function AddBeneficiaryForm() {
       .string()
       .toUpperCase()
       .min(4, { message: 'Must select Phone Status' }),
+    address: z.string().min(4, { message: 'Must be valid address.' }),
+    age: z.string().min(1, { message: 'Must be valid age.' }),
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -65,6 +67,8 @@ export default function AddBeneficiaryForm() {
       bankedStatus: '',
       internetStatus: '',
       phoneStatus: '',
+      age: '',
+      address: '',
     },
   });
 
@@ -146,6 +150,43 @@ export default function AddBeneficiaryForm() {
                   );
                 }}
               />
+            </div>
+            <div className="grid grid-cols-4 gap-4 mb-4">
+              <div className="col-span-3">
+                <FormField
+                  control={form.control}
+                  name="address"
+                  render={({ field }) => {
+                    return (
+                      <FormItem>
+                        <FormControl>
+                          <Input type="text" placeholder="Address" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    );
+                  }}
+                />
+              </div>
+              <div className="col-span-1">
+                <FormField
+                  control={form.control}
+                  name="age"
+                  render={({ field }) => {
+                    return (
+                      <FormItem>
+                        <FormControl>
+                          <Input type="text" placeholder="Age" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    );
+                  }}
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4 mb-4">
               <FormField
                 control={form.control}
                 name="bankedStatus"

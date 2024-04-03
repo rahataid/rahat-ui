@@ -5,7 +5,6 @@ import {
   useWriteRahatDonorMintTokenAndApproveDescription,
 } from './donor';
 import {
-  useReadElProjectGetProjectVoucherDetail,
   elProjectAbi,
   useWriteElProjectAddBeneficiary,
   useWriteElProjectAssignClaims,

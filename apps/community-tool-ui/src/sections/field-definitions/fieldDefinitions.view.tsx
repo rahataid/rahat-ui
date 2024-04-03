@@ -17,10 +17,7 @@ import {
 
 import { FieldDefinition } from '@rahataid/community-tool-sdk/fieldDefinitions';
 import CustomPagination from '../../components/customPagination';
-import {
-  BENEFICIARY_NAV_ROUTE,
-  GROUP_NAV_ROUTE,
-} from '../../constants/beneficiary.const';
+import { FIELD_DEFINITON_NAV_ROUTE } from '../../constants/fieldDefinition.const';
 import FieldDefinitionsDetail from '../../sections/field-definitions/fieldDefinitionsDetail';
 import BeneficiaryGridView from '../../sections/beneficiary/gridView';
 import FieldDefinitionsListView from '../../sections/field-definitions/listView';
@@ -41,6 +38,7 @@ export default function FieldDefinitionsView() {
   } = usePagination();
 
   const { data } = useFieldDefinitionsList(pagination);
+
   const columns = useFieldDefinitionsTableColumns();
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   // const { closeSecondPanel, setSecondPanelComponent } = useSecondPanel();
@@ -52,7 +50,7 @@ export default function FieldDefinitionsView() {
     getSortedRowModel: getSortedRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setSelectedListItems,
-    getRowId: (row) => row.uuid,
+    getRowId: (row) => String(row.id),
     state: {
       columnVisibility,
       rowSelection: selectedListItems,
@@ -61,7 +59,9 @@ export default function FieldDefinitionsView() {
 
   const [selectedData, setSelectedData] = useState<FieldDefinition>();
   const [selectedFieldDefId, setSelectedFieldDefId] = useState<number[]>([]);
-  const [active, setActive] = useState<string>(BENEFICIARY_NAV_ROUTE.DEFAULT);
+  const [active, setActive] = useState<string>(
+    FIELD_DEFINITON_NAV_ROUTE.DEFAULT,
+  );
 
   const handleFieldDefClick = useCallback((item: FieldDefinition) => {
     setSelectedData(item);
@@ -97,7 +97,7 @@ export default function FieldDefinitionsView() {
             <ImportBeneficiary />
           )} */}
 
-          {active === BENEFICIARY_NAV_ROUTE.DEFAULT && (
+          {active === FIELD_DEFINITON_NAV_ROUTE.DEFAULT && (
             <>
               <TabsContent value="list">
                 <FieldDefinitionsListView
@@ -106,10 +106,10 @@ export default function FieldDefinitionsView() {
                 />
               </TabsContent>
               <TabsContent value="grid">
-                <BeneficiaryGridView
+                {/* <BeneficiaryGridView
                   handleClick={handleFieldDefClick}
                   data={data?.data?.rows}
-                />
+                /> */}
               </TabsContent>
 
               <CustomPagination

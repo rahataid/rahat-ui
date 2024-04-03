@@ -42,24 +42,26 @@ export const useFieldDefinitionsTableColumns = () => {
       header: 'Field Type',
       cell: ({ row }) => <div>{row.getValue('fieldType')}</div>,
     },
-    // {
-    //   accessorKey: 'isActive',
-    //   header: 'isActive',
-    //   cell: ({ row }) => <div>{row.getValue('isActive')}</div>,
-    // },
-    // {
-    //   id: 'actions',
-    //   enableHiding: false,
-    //   cell: () => {
-    //     return (
-    //       <Eye
-    //         size={20}
-    //         strokeWidth={1.5}
-    //         className="cursor-pointer hover:text-primary"
-    //       />
-    //     );
-    //   },
-    // },
+    {
+      accessorKey: 'isActive',
+      header: 'isActive',
+      cell: ({ row }) => (
+        <div>{row.getValue('isActive') ? 'True' : 'False'}</div>
+      ),
+    },
+    {
+      id: 'actions',
+      enableHiding: false,
+      cell: () => {
+        return (
+          <Eye
+            size={20}
+            strokeWidth={1.5}
+            className="cursor-pointer hover:text-primary"
+          />
+        );
+      },
+    },
   ];
 
   return columns;

@@ -7,7 +7,6 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from '@rahat-ui/shadcn/src/components/ui/form';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
@@ -19,57 +18,69 @@ import {
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { useForm } from 'react-hook-form';
-import { toast } from 'react-toastify';
 
 import { z } from 'zod';
-// import { CalendarIcon, Check, ChevronsUpDown, Wallet } from 'lucide-react';
+import { FieldType } from '../../types/fieldDefinition';
 
-import React, { useEffect } from 'react';
-// import {
-//   Popover,
-//   PopoverContent,
-//   PopoverTrigger,
-// } from '@rahat-ui/shadcn/src/components/ui/popover';
-// import { format } from 'date-fns';
-// import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
-import { useFieldDefinitionsCreate } from '@rahat-ui/community-query';
-import { FieldType } from 'apps/community-tool-ui/src/types/fieldDefinition';
+import { FieldDefinition } from '@rahataid/community-tool-sdk/fieldDefinitions';
+import {
+  useFieldDefinitionsUpdate,
+  useFieldDefinitionsStatusUpdate,
+} from '@rahat-ui/community-query';
+import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
+import { Switch } from '@rahat-ui/shadcn/src/components/ui/switch';
 
-export default function AddFieldDefinitions() {
-  const addFieldDefinitions = useFieldDefinitionsCreate();
+export default function EditFieldDefinition({
+  data,
+}: {
+  data: FieldDefinition;
+}) {
+  const updateFieldDefinition = useFieldDefinitionsUpdate();
+  const updateFieldDefinitionStatus = useFieldDefinitionsStatusUpdate();
+
   const FormSchema = z.object({
     name: z.string(),
     fieldType: z.string().toUpperCase(),
+    isActive: z.boolean(),
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      name: '',
-      fieldType: FieldType.TEXT,
+      name: data?.name || '',
+      fieldType: data?.fieldType || '',
+      isActive: data?.isActive || false,
     },
   });
 
-  const handleCreateFieldDefinitions = async (
-    data: z.infer<typeof FormSchema>,
+  const handleEditFieldDefinition = async (
+    formData: z.infer<typeof FormSchema>,
   ) => {
-    await addFieldDefinitions.mutateAsync({
-      name: data.name,
-      fieldType: data.fieldType as FieldType,
+    await updateFieldDefinition.mutateAsync({
+      id: data?.id?.toString(),
+      data: {
+        id: data?.id,
+        name: formData?.name,
+        fieldType: formData?.fieldType as FieldType,
+        isActive: formData?.isActive,
+      },
     });
   };
 
-  useEffect(() => {
-    if (addFieldDefinitions.isSuccess) {
-      form.reset();
-    }
-  }, [addFieldDefinitions.isSuccess, form]);
+  const handleStatusChange = async (isActive: any) => {
+    await updateFieldDefinitionStatus.mutateAsync({
+      id: data?.id?.toString(),
+      isActive: isActive,
+    });
+  };
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleCreateFieldDefinitions)}>
+      <form onSubmit={form.handleSubmit(handleEditFieldDefinition)}>
         <div className="p-4 h-add">
-          <h1 className="text-lg font-semibold mb-6">Add Field Definition</h1>
+          <h1 className="text-lg font-semibold mb-6">
+            Update Field Definition
+          </h1>
           <div className="shadow-md p-4 rounded-sm">
             <div className="grid grid-cols-2 gap-4 mb-4">
               <FormField
@@ -78,21 +89,29 @@ export default function AddFieldDefinitions() {
                 render={({ field }) => {
                   return (
                     <FormItem>
+                      <Label className="text-xs font-medium">Name</Label>
                       <FormControl>
-                        <Input type="text" placeholder="Name" {...field} />
+                        <Input
+                          type="text"
+                          placeholder="Name"
+                          {...field}
+                          onChange={(e) => {
+                            form.setValue('name', e.target.value);
+                          }}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   );
                 }}
               />
-
               <FormField
                 control={form.control}
                 name="fieldType"
                 render={({ field }) => {
                   return (
                     <FormItem>
+                      <Label className="text-xs font-medium">Field Type</Label>
                       <Select
                         onValueChange={field.onChange}
                         defaultValue={field.value}
@@ -127,10 +146,30 @@ export default function AddFieldDefinitions() {
                   );
                 }}
               />
+
+              <FormField
+                control={form.control}
+                name="isActive"
+                render={({ field }) => (
+                  <div className="flex flex-col justify-evenly items-left">
+                    <Label className="text-xs font-medium">isActive</Label>
+                    <Switch
+                      {...field}
+                      value={field.value ? 'false' : 'true'}
+                      checked={field.value}
+                      onCheckedChange={(isChecked) => {
+                        handleStatusChange({
+                          isActive: isChecked,
+                        });
+                      }}
+                    />
+                  </div>
+                )}
+              />
             </div>
-            <div className="flex justify-end">
-              <Button>Create Field Definition</Button>
-            </div>
+            {/* <div className="flex justify-end">
+              <Button>Update Field Definition</Button>
+            </div> */}
           </div>
         </div>
       </form>

@@ -98,9 +98,9 @@ export default function ListView({ handleClick, table }: IProps) {
                     <TableRow
                       key={row.id}
                       data-state={row.getIsSelected() && 'selected'}
-                      // onClick={() => {
-                      //   handleClick(row.original);
-                      // }}
+                      onClick={() => {
+                        handleClick(row.original);
+                      }}
                     >
                       {row.getVisibleCells().map((cell) => (
                         <TableCell key={cell.id}>

@@ -133,7 +133,7 @@ export default function BeneficiaryDetail({
               <TooltipTrigger>
                 <Dialog>
                   <DialogTrigger asChild>
-                    <Trash2 size={20} strokeWidth={1.5} />
+                    <Trash2 color="#FF0000" size={20} strokeWidth={1.5} />
                   </DialogTrigger>
                   <ConfirmDialog name="beneficiary" />
                 </Dialog>

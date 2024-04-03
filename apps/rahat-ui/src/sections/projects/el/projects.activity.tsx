@@ -28,24 +28,24 @@ export default function Activities({ title, className, data }: CardProps) {
           </div>
           <div className="space-y-1">
             <div className="ml-auto font-light text-sm flex items-center justify-between gap-3">
-              {data?.freeVoucherBudget}
+              {data?.eyeVoucherBudget?.toString()}
               <span className="text-xs text-muted-foreground">
                 {data?.freeVoucherCurrency}{' '}
-                {data?.freeVoucherBudget * data?.freeVoucherPrice}
+                {data?.eyeVoucherBudget?.toString() * data?.freeVoucherPrice}
               </span>
             </div>
             <div className="ml-auto font-light text-sm flex items-center justify-between gap-3">
-              {data?.freeVoucherAssigned}{' '}
+              {data?.eyeVoucherAssigned?.toString()}{' '}
               <span className="text-xs text-muted-foreground">
                 {data?.freeVoucherCurrency}{' '}
-                {data?.freeVoucherAssigned * data?.freeVoucherPrice}
+                {data?.eyeVoucherAssigned?.toString() * data?.freeVoucherPrice}
               </span>
             </div>
             <div className="ml-auto font-light text-sm flex items-center justify-between gap-3">
-              {data?.freeVoucherClaimed}
+              {data?.eyeVoucherClaimed?.toString()}
               <span className="text-xs text-muted-foreground">
                 {data?.freeVoucherCurrency}{' '}
-                {data?.freeVoucherClaimed * data?.freeVoucherPrice}
+                {data?.eyeVoucherClaimed?.toString() * data?.freeVoucherPrice}
               </span>
             </div>
           </div>
@@ -59,24 +59,24 @@ export default function Activities({ title, className, data }: CardProps) {
           </div>
           <div className="space-y-1">
             <div className="ml-auto font-light text-sm flex items-center justify-between gap-3">
-              {data?.referredVoucherBudget}
+              {data?.referredVoucherBudget?.toString()}
               <span className="text-xs text-muted-foreground">
                 {data?.referredVoucherCurrency}{' '}
-                {data?.referredVoucherBudget * data?.referredVoucherPrice}
+                {data?.referredVoucherBudget?.toString() * data?.referredVoucherPrice}
               </span>
             </div>
             <div className="ml-auto font-light text-sm flex items-center justify-between gap-3">
-              {data?.referredVoucherAssigned}{' '}
+              {data?.referredVoucherAssigned?.toString()}{' '}
               <span className="text-xs text-muted-foreground">
                 {data?.referredVoucherCurrency}{' '}
-                {data?.referredVoucherAssigned * data?.referredVoucherPrice}
+                {data?.referredVoucherAssigned?.toString() * data?.referredVoucherPrice}
               </span>
             </div>
             <div className="ml-auto font-light text-sm flex items-center justify-between gap-3">
-              {data?.referredVoucherClaimed}
+              {data?.referredVoucherClaimed?.toString()}
               <span className="text-xs text-muted-foreground">
                 {data?.referredVoucherCurrency}{' '}
-                {data?.referredVoucherClaimed * data?.referredVoucherPrice}
+                {data?.referredVoucherClaimed?.toString() * data?.referredVoucherPrice}
               </span>
             </div>
           </div>

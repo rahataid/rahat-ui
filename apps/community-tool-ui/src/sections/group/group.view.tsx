@@ -64,10 +64,7 @@ function ViewGroup() {
 
   return (
     <Tabs defaultValue="groupList" className="h-full">
-      <ResizablePanelGroup
-        direction={'horizontal'}
-        className="min-h-max bg-card"
-      >
+      <ResizablePanelGroup direction="horizontal" className="min-h-max bg-card">
         <ResizablePanel minSize={20} defaultSize={20} maxSize={20}>
           <BenificiaryNav meta={data?.response?.meta} />
         </ResizablePanel>

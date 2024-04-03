@@ -28,4 +28,6 @@ export const TAGS = {
   ADD_COMMUNITY_BENEFICIARY_GROUP: 'add_community_beneficiary_group',
   LIST_COMMUNITY_BENEFICIARY_GROUP: 'list_community_beneficiary_group',
   LIST_ACTIVE_FIELD_DEFINITIONS: 'list_active_field_definitions',
+  LIST_COMMUNITY_FIELD_DEFINITIONS: 'list_community_field_definitions',
+  CREATE_COMMUNITY_FIELD_DEFINITIONS: 'create_community_field_definitions',
 };

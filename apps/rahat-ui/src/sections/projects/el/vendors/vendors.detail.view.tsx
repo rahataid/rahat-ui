@@ -18,12 +18,11 @@ import { MS_ACTIONS } from '@rahataid/sdk';
 import { PROJECT_SETTINGS } from 'apps/rahat-ui/src/constants/project.const';
 import { useProjectAction } from '@rahat-ui/query';
 import { useEffect, useState } from 'react';
-import { useVendorVoucher } from 'apps/rahat-ui/src/hooks/el/subgraph/querycall';
 import { useSearchParams } from 'next/navigation';
 import RedemptionTable from '../../../vendors/vendors.redemption.table';
 import {
-  useReadElProject,
   useReadElProjectCheckVendorStatus,
+  useReadElProjectGetVendorVoucherDetail,
 } from 'apps/rahat-ui/src/hooks/el/contracts/elProject';
 import { Card } from '@rahat-ui/shadcn/src/components/ui/card';
 
@@ -45,12 +44,17 @@ export default function VendorsDetailPage() {
 
   const updateVendor = useAddVendors();
   const projectClient = useProjectAction();
-  const { data } = useVendorVoucher(walletAddress);
 
   const { data: vendorStatus } = useReadElProjectCheckVendorStatus({
     address: contractAddress,
     args: [walletAddress],
   });
+
+  const {data:vendorVoucher} = useReadElProjectGetVendorVoucherDetail({
+    address:contractAddress,
+    args:[walletAddress],
+  });
+
 
   const assignVendorToProjet = async () => {
     return updateVendor.writeContractAsync({
@@ -96,19 +100,19 @@ export default function VendorsDetailPage() {
         <DataCard
           className="mt-2"
           title="Free Vouchers Redeemed"
-          number={data?.voucherDetailsByVendor?.freeVoucherRedeemed || '0'}
+          number={vendorVoucher?.freeVoucherRedeemed?.toString() || '0'}
           subTitle="Free Vouchers"
         />
         <DataCard
           className="mt-2"
           title="Referred Voucher Redeemed"
-          number={data?.voucherDetailsByVendor?.referredVoucherRedeemed || '0'}
+          number={vendorVoucher?.referredVoucherRedeemed?.toString() || '0'}
           subTitle="Discount Vouchers"
         />
         <DataCard
           className="mt-2"
           title="Referrals"
-          number={data?.voucherDetailsByVendor?.beneficiaryReferred || '0'}
+          number={vendorVoucher?.beneficiaryReferred?.toString() || '0'}
           subTitle="Beneficiaries"
         />
       </div>

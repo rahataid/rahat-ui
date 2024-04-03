@@ -101,6 +101,55 @@ export const useAssignBenToProject = () => {
   });
 };
 
+export const useBulkAssignBenToProject = () => {
+  const q = useProjectAction();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+  return useMutation({
+    mutationFn: async ({
+      beneficiaryUUIDs,
+      projectUUID,
+    }: {
+      projectUUID: UUID;
+      beneficiaryUUIDs: any[];
+    }) => {
+      const assign = beneficiaryUUIDs.map((beneficiaryUUID) => {
+        return q.mutateAsync({
+          uuid: projectUUID,
+          data: {
+            action: 'beneficiary.assign_to_project',
+            payload: {
+              beneficiaryId: beneficiaryUUID,
+            },
+          },
+        });
+      });
+      return Promise.all(assign);
+    },
+    onSuccess: () => {
+      q.reset();
+      toast.fire({
+        title: 'Beneficiary Assigned Successfully',
+        icon: 'success',
+      });
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || 'Error';
+      q.reset();
+      toast.fire({
+        title: 'Error while updating Beneficiary',
+        icon: 'error',
+        text: errorMessage,
+      });
+    },
+  });
+};
+
 export const useAssignVendorToProject = () => {
   const q = useProjectAction();
   const alert = useSwal();

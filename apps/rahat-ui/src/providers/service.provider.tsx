@@ -11,6 +11,7 @@ import { createContext, useContext, useEffect, useMemo } from 'react';
 import { useError } from '../utils/useErrors';
 import { useCommunicationQuery } from '@rumsan/communication-query';
 import { CommunicationService } from '@rumsan/communication/services/communication.client';
+import Image from 'next/image';
 
 export const ServiceContext = createContext<RSQueryContextType | null>(null);
 
@@ -107,7 +108,17 @@ export function ServiceProvider({ children }: ServiceProviderProps) {
   }, [communicationService]);
 
   if (!rumsanService || !queryClient || !communicationService)
-    return 'Setting up services...';
+    return (
+      <div className="h-screen flex items-center justify-center">
+        <Image
+          className="animate-pulse"
+          alt="rahat logo"
+          src={'/rahat_logo_standard.png'}
+          height={250}
+          width={550}
+        />
+      </div>
+    );
 
   return children;
 }

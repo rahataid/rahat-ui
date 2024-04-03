@@ -76,6 +76,8 @@ export default function AddBeneficiaryForm() {
     try {
       const result = await addBeneficiary.mutateAsync({
         gender: data.gender,
+        location:data.address,
+        ageRange:data.age,
         bankedStatus: data.bankedStatus,
         internetStatus: data.internetStatus,
         phoneStatus: data.phoneStatus,

@@ -3,7 +3,7 @@ import { useRSQuery } from '@rumsan/react-query';
 import { UseQueryResult, useQuery } from '@tanstack/react-query';
 import { TAGS } from '../config';
 
-export const useFieldDefinitionsList = (): UseQueryResult<any, Error> => {
+export const useActiveFieldDefinitionsList = (): UseQueryResult<any, Error> => {
   const { queryClient, rumsanService } = useRSQuery();
   const fdClient = getFieldDefinitionClient(rumsanService.client);
   const query = useQuery(

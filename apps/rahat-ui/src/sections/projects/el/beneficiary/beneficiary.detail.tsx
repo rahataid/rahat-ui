@@ -43,7 +43,7 @@ import { Minus, MoreVertical, Copy, CopyCheck } from 'lucide-react';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import TransactionTable from '../transactions/transactions.table';
-import { useReadElProjectBeneficiaryClaimStatus, useReadElProjectBeneficiaryEyeVoucher, useReadElProjectBeneficiaryReferredVoucher } from 'apps/rahat-ui/src/hooks/el/contracts/elProject';
+import { useReadElProjectGetBeneficiaryVoucherDetail } from 'apps/rahat-ui/src/hooks/el/contracts/elProject';
 import { zeroAddress } from 'viem';
 
 type IProps = {
@@ -64,26 +64,10 @@ export default function BeneficiaryDetail({
   
   const walletAddress = beneficiaryDetails.name;
 
-  const {data:benFreeVoucher} = useReadElProjectBeneficiaryEyeVoucher({ 
-    address:contractAddress?.el || '',
-    args:[walletAddress]}
-  )
-  const {data:benReferredVoucher} = useReadElProjectBeneficiaryReferredVoucher({ 
-    address:contractAddress?.el || '',
-    args:[walletAddress]}
-  )
-
-  const {data:eyeVoucherClaimStatus} = useReadElProjectBeneficiaryClaimStatus({
-    address:contractAddress?.el || '',
-    args:[walletAddress,contractAddress?.eyeVoucher]
-
-  })
-
-  const {data:referredVoucherClaimStatus,isLoading} = useReadElProjectBeneficiaryClaimStatus({
-    address:contractAddress?.el || '',
-    args:[walletAddress,contractAddress?.referredVoucher]
-
-  })
+  const{data:beneficiaryVoucherDetails,isLoading} = useReadElProjectGetBeneficiaryVoucherDetail({
+    address:contractAddress?.el,
+    args:[walletAddress]
+  });
 
   const projectSettings = localStorage.getItem('projectSettingsStore');
 
@@ -117,13 +101,13 @@ export default function BeneficiaryDetail({
 
 
   useEffect(() => {
-    if(benFreeVoucher === undefined || benReferredVoucher === undefined) return;
-    if((benFreeVoucher?.toString()) !== zeroAddress || benReferredVoucher?.toString() !== zeroAddress)
+    if(beneficiaryVoucherDetails?.freeVoucherAddress === undefined || beneficiaryVoucherDetails?.referredVoucherAddress === undefined) return;
+    if((beneficiaryVoucherDetails?.freeVoucherAddress?.toString()) !== zeroAddress || beneficiaryVoucherDetails?.referredVoucherAddress?.toString() !== zeroAddress)
      {
       setAssignStatus(true);
 
     }
-  }, [benFreeVoucher,benReferredVoucher]);
+  }, [beneficiaryVoucherDetails]);
 
   useEffect(()=>{
     if(projectSettings){
@@ -364,9 +348,9 @@ export default function BeneficiaryDetail({
                     <div className="flex justify-between items-center">
                       <p>Voucher Type</p>
                       <p className="text-sm font-light">
-                        {benFreeVoucher !== undefined && benFreeVoucher !== zeroAddress
+                        {beneficiaryVoucherDetails?.freeVoucherAddress !== undefined && beneficiaryVoucherDetails?.freeVoucherAddress !== zeroAddress
                           ? 'Free Voucher'
-                          : benReferredVoucher !== undefined && benReferredVoucher !== zeroAddress
+                          : beneficiaryVoucherDetails?.referredVoucherAddress !== undefined && beneficiaryVoucherDetails?.referredVoucherAddress !== zeroAddress
                           ? 'Discount Voucher'
                           : 'N/A'}
                       </p>
@@ -374,10 +358,10 @@ export default function BeneficiaryDetail({
                     <div className="flex justify-between items-center">
                       <p>ClaimStatus</p>
                       <p className="text-sm font-light">
-                        {benFreeVoucher !== undefined  && benFreeVoucher !== zeroAddress
-                          ? eyeVoucherClaimStatus?.toString()
-                          :  benReferredVoucher !== undefined && benReferredVoucher !== zeroAddress
-                          ? referredVoucherClaimStatus?.toString()
+                        {beneficiaryVoucherDetails?.freeVoucherAddress !== undefined  && beneficiaryVoucherDetails?.freeVoucherAddress !== zeroAddress
+                          ? beneficiaryVoucherDetails?.freeVoucherClaimStatus?.toString()
+                          :  beneficiaryVoucherDetails?.referredVoucherAddress !== undefined && beneficiaryVoucherDetails?.referredVoucherAddress !== zeroAddress
+                          ? beneficiaryVoucherDetails?.referredVoucherClaimStatus?.toString()
                           : 'N/A'}
                       </p>
                     </div>

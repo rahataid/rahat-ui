@@ -87,7 +87,9 @@ export default function VendorsDetailSplitView({
             width={80}
           />
           <div>
-            <h1 className="font-semibold text-xl">{vendorsDetail?.name}</h1>
+            <h1 className="font-semibold text-xl mb-1">
+              {vendorsDetail?.name}
+            </h1>
             <TooltipProvider delayDuration={100}>
               <Tooltip>
                 <TooltipTrigger

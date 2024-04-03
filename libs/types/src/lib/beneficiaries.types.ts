@@ -29,6 +29,7 @@ export interface ListBeneficiary {
   phoneStatus: string;
   createdAt: Date;
   updatedAt: Date;
+  piiData?: TPIIData;
 }
 
 export interface UpdateBeneficiaryPayload {

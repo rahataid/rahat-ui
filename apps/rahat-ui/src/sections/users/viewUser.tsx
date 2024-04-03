@@ -67,7 +67,7 @@ export default function UserDetail({ userDetail, closeSecondPanel }: IProps) {
   };
   return (
     <>
-      <div className="flex justify-between items-center p-4 pt-5 bg-secondary">
+      <div className="flex justify-between p-4 pt-5 bg-secondary">
         {/* Minimize  */}
         <TooltipProvider delayDuration={100}>
           <Tooltip>
@@ -176,7 +176,7 @@ export default function UserDetail({ userDetail, closeSecondPanel }: IProps) {
         </div>
       </div>
       <div className="flex justify-between p-2">
-        <div className="flex items-center">
+        <div className="flex items-center gap-2">
           <Image
             className="rounded-full"
             src="/svg/funny-cat.svg"
@@ -185,7 +185,7 @@ export default function UserDetail({ userDetail, closeSecondPanel }: IProps) {
             width={80}
           />
           <div>
-            <h1 className="font-semibold text-xl">{userDetail.name}</h1>
+            <h1 className="font-semibold text-xl mb-1">{userDetail.name}</h1>
             <p className="text-slate-500">
               {userDetail.email
                 ? userDetail.email

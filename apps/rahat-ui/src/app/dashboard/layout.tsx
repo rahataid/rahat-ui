@@ -16,15 +16,8 @@ export default function DashboardLayout({
     <AuthGuard>
       <Nav />
       <div className="mx-2">
-        <ResizablePanelGroup
-          direction="horizontal"
-          className="border"
-        >
-          <ResizablePanel
-            minSize={20}
-            defaultSize={20}
-            maxSize={20}
-          >
+        <ResizablePanelGroup direction="horizontal" className="border">
+          <ResizablePanel minSize={20} defaultSize={20} maxSize={20}>
             {children}
           </ResizablePanel>
         </ResizablePanelGroup>

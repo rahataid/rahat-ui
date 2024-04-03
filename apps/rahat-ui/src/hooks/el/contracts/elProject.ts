@@ -497,6 +497,41 @@ export const elProjectAbi = [
   },
   {
     type: 'function',
+    inputs: [{ name: '_benAddress', internalType: 'address', type: 'address' }],
+    name: 'getBeneficiaryVoucherDetail',
+    outputs: [
+      {
+        name: 'beneficiaryVoucherDetails',
+        internalType: 'struct IELProject.BeneficiaryVoucherDetails',
+        type: 'tuple',
+        components: [
+          {
+            name: 'freeVoucherAddress',
+            internalType: 'address',
+            type: 'address',
+          },
+          {
+            name: 'referredVoucherAddress',
+            internalType: 'address',
+            type: 'address',
+          },
+          {
+            name: 'freeVoucherClaimStatus',
+            internalType: 'bool',
+            type: 'bool',
+          },
+          {
+            name: 'referredVoucherClaimStatus',
+            internalType: 'bool',
+            type: 'bool',
+          },
+        ],
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
     inputs: [],
     name: 'getProjectVoucherDetail',
     outputs: [
@@ -964,6 +999,15 @@ export const useReadElProjectEyeVoucherReverted =
   /*#__PURE__*/ createUseReadContract({
     abi: elProjectAbi,
     functionName: 'eyeVoucherReverted',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link elProjectAbi}__ and `functionName` set to `"getBeneficiaryVoucherDetail"`
+ */
+export const useReadElProjectGetBeneficiaryVoucherDetail =
+  /*#__PURE__*/ createUseReadContract({
+    abi: elProjectAbi,
+    functionName: 'getBeneficiaryVoucherDetail',
   })
 
 /**

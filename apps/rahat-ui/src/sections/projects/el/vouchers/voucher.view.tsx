@@ -17,6 +17,7 @@ import { useGetFreeVoucherTransaction, useProjectVoucher, useVoucherHolder } fro
 import AddVoucher from './add.voucher';
 import { useProjectSettingsStore } from '@rahat-ui/query';
 import { useParams } from 'next/navigation';
+import { useReadRahatTokenDescription } from 'apps/rahat-ui/src/hooks/el/contracts/token';
 
 const VoucherView = () => {
 
@@ -34,7 +35,8 @@ const VoucherView = () => {
       setContractAddress({
         el: settings?.elproject?.address,
         eyeVoucher: settings?.eyevoucher?.address,
-        referredVoucher: settings?.referralvoucher?.address
+        referredVoucher: settings?.referralvoucher?.address,
+        rahatDonor: settings?.rahatdonor?.address
       })
     }
 
@@ -44,6 +46,8 @@ const VoucherView = () => {
     contractAddress?.el || '',
     contractAddress?.eyeVoucher || '',
   );
+
+  const {data:voucherdata} = useReadRahatTokenDescription({address: contractAddress?.eyeVoucher});
 
   return (
     <>

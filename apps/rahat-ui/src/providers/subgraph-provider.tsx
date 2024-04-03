@@ -16,7 +16,8 @@ interface QueryProviderProps {
 export function GraphQueryProvider({ children }: QueryProviderProps) {
   const queryService = new GraphQuery(
     // 'https://api.studio.thegraph.com/query/42205/el-dev/version/latest',
-    'https://api.thegraph.com/subgraphs/name/anupamakoirala-rumsan/el-dev',
+    // 'https://api.thegraph.com/subgraphs/name/anupamakoirala-rumsan/el-dev',
+    'https://api.thegraph.com/subgraphs/name/anupamakoirala-rumsan/ws-test',
 
     //'https://api.thegraph.com/subgraphs/name/anupamakoirala-rumsan/el',
   );

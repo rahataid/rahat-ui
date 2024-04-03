@@ -65,3 +65,7 @@ export function removeFieldsWithUnderscore(dataArray: []) {
     return newObj;
   });
 }
+
+export const truncatedText = (text: string, maxLen: number) => {
+  return text.length > maxLen ? text.substring(0, maxLen) + '...' : text;
+};

@@ -6,6 +6,7 @@ const ROOTS = {
   PROFILE: '/profile',
   SETTINGS: '/settings',
   GROUPS: '/group',
+  FIELD_DEFINITIONS: '/field-definitions',
 };
 
 export const paths = {
@@ -28,6 +29,12 @@ export const paths = {
       root: ROOTS.GROUPS,
       add: `${ROOTS.GROUPS}/add`,
       detail: (uuid: string) => `${ROOTS.GROUPS}/${uuid}`,
+    },
+    fieldDefinitions: {
+      add: `${ROOTS.FIELD_DEFINITIONS}/add`,
+      import: `${ROOTS.FIELD_DEFINITIONS}/import`,
+      root: ROOTS.FIELD_DEFINITIONS,
+      detail: (uuid: string) => `${ROOTS.FIELD_DEFINITIONS}/${uuid}`,
     },
   },
   settings: {

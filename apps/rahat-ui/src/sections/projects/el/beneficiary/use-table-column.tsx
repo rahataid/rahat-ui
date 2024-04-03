@@ -62,14 +62,14 @@ export const useProjectBeneficiaryTableColumns = () => {
         <TooltipProvider delayDuration={100}>
           <Tooltip>
             <TooltipTrigger
-              className="flex gap-3 cursor-pointer"
+              className="flex items-center gap-3 cursor-pointer"
               onClick={() => clickToCopy(row.getValue('name'), row.index)}
             >
               <p>{truncateEthAddress(row.getValue('name'))}</p>
               {walletAddressCopied === row.index ? (
-                <CopyCheck size={20} strokeWidth={1.5} />
+                <CopyCheck size={15} strokeWidth={1.5} />
               ) : (
-                <Copy size={20} strokeWidth={1.5} />
+                <Copy className="text-slate-500" size={15} strokeWidth={1.5} />
               )}
             </TooltipTrigger>
             <TooltipContent className="bg-secondary" side="bottom">

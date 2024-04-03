@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { ColumnDef } from '@tanstack/react-table';
-import { ListBeneficiary } from '@rahat-ui/types';
+import { User } from '@rumsan/sdk/types';
 import { truncateEthAddress } from '@rumsan/core/utilities/string.utils';
 import UserDetail from './viewUser';
 import { Eye, Copy, CopyCheck } from 'lucide-react';
@@ -23,7 +23,7 @@ export const useUserTableColumns = () => {
     setWalletAddressCopied(index);
   };
 
-  const columns: ColumnDef<ListBeneficiary>[] = [
+  const columns: ColumnDef<User>[] = [
     {
       accessorKey: 'name',
       header: 'Name',
@@ -41,14 +41,14 @@ export const useUserTableColumns = () => {
         <TooltipProvider delayDuration={100}>
           <Tooltip>
             <TooltipTrigger
-              className="flex gap-3 cursor-pointer"
+              className="flex items-center gap-3 cursor-pointer"
               onClick={() => clickToCopy(row.getValue('wallet'), row.index)}
             >
               <p>{truncateEthAddress(row.getValue('wallet'))}</p>
               {walletAddressCopied === row.index ? (
-                <CopyCheck size={20} strokeWidth={1.5} />
+                <CopyCheck size={15} strokeWidth={1.5} />
               ) : (
-                <Copy size={20} strokeWidth={1.5} />
+                <Copy className="text-slate-500" size={15} strokeWidth={1.5} />
               )}
             </TooltipTrigger>
             <TooltipContent className="bg-secondary" side="bottom">

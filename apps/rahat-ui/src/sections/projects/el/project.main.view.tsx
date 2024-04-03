@@ -14,6 +14,10 @@ import { ProjectChart } from '..';
 import ProjectDataCard from './project.datacard';
 import ProjectInfo from './project.info';
 import { memo } from 'react';
+import {
+  useReadElProjectGetProjectVoucherDetail,
+  useReadElProjectGetTotalBeneficiaries,
+} from 'apps/rahat-ui/src/hooks/el/contracts/elProject';
 
 const ProjectMainView = () => {
   const { id } = useParams();
@@ -24,11 +28,16 @@ const ProjectMainView = () => {
   );
   const beneficiaryStats = useGetBeneficiaryStats();
 
-  const { data: beneficiaryDetails } = useBeneficiaryCount(
-    contractSettings?.elproject?.address || null,
-  );
+  const { data: beneficiaryDetails, refetch: refetchBeneficiary } =
+    useReadElProjectGetTotalBeneficiaries({
+      address: contractSettings?.elproject?.address,
+    });
 
-  const { data: projectVoucher } = useProjectVoucher(
+  const { data: projectVoucher } = useReadElProjectGetProjectVoucherDetail({
+    address: contractSettings?.elproject?.address,
+  });
+
+  const { data: voucherDetails, refetch: refetchVoucher } = useProjectVoucher(
     contractSettings?.elproject?.address,
     contractSettings?.eyevoucher?.address,
   );
@@ -43,6 +52,9 @@ const ProjectMainView = () => {
       <ProjectDataCard
         beneficiaryDetails={beneficiaryDetails}
         projectVoucher={projectVoucher}
+        voucherDetails={voucherDetails}
+        refetchBeneficiary={refetchBeneficiary}
+        refetchVoucher={refetchVoucher}
       />
       <ProjectChart chartData={beneficiaryStats.data?.data} />
     </div>

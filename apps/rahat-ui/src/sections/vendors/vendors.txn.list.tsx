@@ -25,15 +25,15 @@ import * as React from 'react';
 
 import { useVendorTransaction } from '../../hooks/el/subgraph/querycall';
 
-export type Payment = {
-  id: string;
-  amount: number;
-  status: 'pending' | 'processing' | 'success' | 'failed';
-  email: string;
-  walletAddress: `0x${string}`;
-};
+// export type Payment = {
+//   id: string;
+//   amount: number;
+//   status: 'pending' | 'processing' | 'success' | 'failed';
+//   email: string;
+//   walletAddress: `0x${string}`;
+// };
 
-const columns: ColumnDef<Payment>[] = [
+const columns: ColumnDef<any>[] = [
   {
     accessorKey: 'topic',
     header: 'Topic',
@@ -64,7 +64,7 @@ interface VendorTxnListProps {
 }
 
 export default function VendorTxnList({ walletAddress }: VendorTxnListProps) {
-  const txns = useVendorTransaction(walletAddress);
+  const {data:txns} = useVendorTransaction(walletAddress);
 
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -76,7 +76,7 @@ export default function VendorTxnList({ walletAddress }: VendorTxnListProps) {
   const [rowSelection, setRowSelection] = React.useState({});
 
   const table = useReactTable({
-    data: txns?.data || [],
+    data: txns?.newData || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,

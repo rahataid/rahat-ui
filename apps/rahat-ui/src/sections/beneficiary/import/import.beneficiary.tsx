@@ -70,8 +70,8 @@ export default function ImportBeneficiary() {
 
   return (
     <div className="h-custom">
-      <div className="h-full p-4">
-        <div className="h-[calc(100vh-240px)] border-2 border-dashed border-primary grid place-items-center">
+      <div className="h-full p-2">
+        <div className="h-[calc(100vh-240px)] border-2 border-dashed border-primary grid place-items-center bg-card">
           <div className="">
             <div className="mb-2">
               Select beneficiary file to update (Excel, JSON or CSV file)

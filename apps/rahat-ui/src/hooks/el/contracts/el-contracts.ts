@@ -1,18 +1,19 @@
-import { useProjectAction } from '@rahat-ui/query';
+import { useMutation, useProjectAction } from '@rahat-ui/query';
 import { useSwal } from '../../../components/swal';
 import {
   useWriteRahatDonorMintTokenAndApprove,
   useWriteRahatDonorMintTokenAndApproveDescription,
 } from './donor';
 import {
-  useReadElProjectGetProjectVoucherDetail,
+  elProjectAbi,
   useWriteElProjectAddBeneficiary,
   useWriteElProjectAssignClaims,
   useWriteElProjectCloseProject,
+  useWriteElProjectMulticall,
   useWriteElProjectUpdateVendor,
 } from './elProject';
 
-import { MS_ACTIONS } from '@rahataid/sdk';
+import { encodeFunctionData } from 'viem';
 
 export const useAddBeneficiary = () => {
   const alert = useSwal();
@@ -155,3 +156,44 @@ export const useCloseProject = () => {
   });
 };
 
+export const useBulkAssignVoucher = () => {
+  const multi = useWriteElProjectMulticall();
+  const alert = useSwal();
+
+  const multicall = useMutation({
+    mutationFn: ({
+      addresses,
+      noOfTokens,
+      contractAddress,
+    }: {
+      addresses: `0x${string}`[];
+      noOfTokens: number;
+      contractAddress: `0x${string}`;
+    }): Promise<unknown> => {
+      const encoded = addresses.map((address) => {
+        return encodeFunctionData({
+          abi: elProjectAbi,
+          functionName: 'assignClaims',
+          args: [address],
+        });
+      });
+      return multi.writeContractAsync({
+        args: [encoded],
+        address: contractAddress,
+      });
+    },
+    onSuccess: (data) => {
+      alert.fire({
+        title: 'Vouchers assigned successfully',
+        icon: 'success',
+      });
+    },
+    onError(error, variables, context) {
+      alert.fire({
+        title: 'Error while assigning vouchers',
+        icon: 'error',
+      });
+    },
+  });
+  return multicall;
+};

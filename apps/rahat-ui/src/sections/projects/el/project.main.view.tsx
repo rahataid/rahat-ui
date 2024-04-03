@@ -1,6 +1,10 @@
 'use client';
 
-import { useProjectSettingsStore, useProjectStore } from '@rahat-ui/query';
+import {
+  useGetBeneficiaryStats,
+  useProjectSettingsStore,
+  useProjectStore,
+} from '@rahat-ui/query';
 import {
   useBeneficiaryCount,
   useProjectVoucher,
@@ -22,6 +26,7 @@ const ProjectMainView = () => {
   const contractSettings = useProjectSettingsStore(
     (state) => state.settings?.[id] || null,
   );
+  const beneficiaryStats = useGetBeneficiaryStats();
 
   const { data: beneficiaryDetails, refetch: refetchBeneficiary } =
     useReadElProjectGetTotalBeneficiaries({
@@ -51,7 +56,7 @@ const ProjectMainView = () => {
         refetchBeneficiary={refetchBeneficiary}
         refetchVoucher={refetchVoucher}
       />
-      <ProjectChart />
+      <ProjectChart chartData={beneficiaryStats.data?.data} />
     </div>
   );
 };

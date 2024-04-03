@@ -39,7 +39,7 @@ import { Gender } from '@rahataid/sdk/enums';
 import { enumToObjectArray, truncateEthAddress } from '@rumsan/sdk/utils';
 import { useAssignClaims } from 'apps/rahat-ui/src/hooks/el/contracts/el-contracts';
 import { getProjectAddress } from 'apps/rahat-ui/src/utils/getProjectAddress';
-import { Minus, MoreVertical } from 'lucide-react';
+import { Minus, MoreVertical, Copy, CopyCheck } from 'lucide-react';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import TransactionTable from '../transactions/transactions.table';
@@ -90,10 +90,13 @@ export default function BeneficiaryDetail({
   const [activeTab, setActiveTab] = useState<'details' | 'edit' | null>(
     'details',
   );
+  const [walletAddressCopied, setWalletAddressCopied] =
+    useState<boolean>(false);
 
   const clickToCopy = () => {
     if (walletAddress) {
       navigator.clipboard.writeText(walletAddress);
+      setWalletAddressCopied(true);
     }
   };
 
@@ -185,13 +188,27 @@ export default function BeneficiaryDetail({
                 </div>
                 <TooltipProvider delayDuration={100}>
                   <Tooltip>
-                    <TooltipTrigger onClick={clickToCopy}>
+                    <TooltipTrigger
+                      className="flex gap-3 items-center"
+                      onClick={clickToCopy}
+                    >
                       <p className="text-slate-500 text-base">
                         {truncateEthAddress(walletAddress)}
                       </p>
+                      {walletAddressCopied ? (
+                        <CopyCheck size={15} strokeWidth={1.5} />
+                      ) : (
+                        <Copy
+                          className="text-slate-500"
+                          size={15}
+                          strokeWidth={1.5}
+                        />
+                      )}
                     </TooltipTrigger>
                     <TooltipContent className="bg-secondary" side="bottom">
-                      <p className="text-xs font-medium">click to copy</p>
+                      <p className="text-xs font-medium">
+                        {walletAddressCopied ? 'copied' : 'click to copy'}
+                      </p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>

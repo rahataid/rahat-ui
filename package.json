@@ -5,6 +5,7 @@
   "scripts": {
     "rahat-ui": "npx nx serve rahat-ui",
     "community-ui": "npx nx serve community-tool-ui",
+    "nx:reset": "npx nx reset",
     "rahat:dev": "npx nx run rahat-ui:dev",
     "rahat:build": "npx nx run rahat-ui:build ",
     "rahat:serve": "npx nx run rahat-ui:start",

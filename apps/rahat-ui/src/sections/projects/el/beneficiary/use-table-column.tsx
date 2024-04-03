@@ -1,7 +1,8 @@
 'use client';
 
+import { useState } from 'react';
 import { ColumnDef } from '@tanstack/react-table';
-import { MoreHorizontal } from 'lucide-react';
+import { MoreHorizontal, Copy, CopyCheck } from 'lucide-react';
 
 import { Button } from '@rahat-ui/shadcn/components/button';
 import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
@@ -12,12 +13,24 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/components/dropdown-menu';
+import {
+  Tooltip,
+  TooltipProvider,
+  TooltipTrigger,
+  TooltipContent,
+} from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { useSecondPanel } from '../../../../providers/second-panel-provider';
 import BeneficiaryDetail from '../../../../sections/projects/el/beneficiary/beneficiary.detail';
 import { truncateEthAddress } from '@rumsan/sdk/utils';
 
 export const useProjectBeneficiaryTableColumns = () => {
   const { setSecondPanelComponent, closeSecondPanel } = useSecondPanel();
+  const [walletAddressCopied, setWalletAddressCopied] = useState<number>();
+
+  const clickToCopy = (walletAddress: string, index: number) => {
+    navigator.clipboard.writeText(walletAddress);
+    setWalletAddressCopied(index);
+  };
 
   const columns: ColumnDef<any>[] = [
     {
@@ -45,7 +58,28 @@ export const useProjectBeneficiaryTableColumns = () => {
     {
       accessorKey: 'name',
       header: 'Wallet',
-      cell: ({ row }) => <div>{truncateEthAddress(row.getValue('name'))}</div>,
+      cell: ({ row }) => (
+        <TooltipProvider delayDuration={100}>
+          <Tooltip>
+            <TooltipTrigger
+              className="flex items-center gap-3 cursor-pointer"
+              onClick={() => clickToCopy(row.getValue('name'), row.index)}
+            >
+              <p>{truncateEthAddress(row.getValue('name'))}</p>
+              {walletAddressCopied === row.index ? (
+                <CopyCheck size={15} strokeWidth={1.5} />
+              ) : (
+                <Copy className="text-slate-500" size={15} strokeWidth={1.5} />
+              )}
+            </TooltipTrigger>
+            <TooltipContent className="bg-secondary" side="bottom">
+              <p className="text-xs font-medium">
+                {walletAddressCopied === row.index ? 'copied' : 'click to copy'}
+              </p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      ),
     },
     {
       accessorKey: 'type',

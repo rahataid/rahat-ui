@@ -23,15 +23,31 @@ import {
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { ListBeneficiary } from '@rahat-ui/types';
+import BulkAssignToProjectModal from './components/bulkAssignToProjectModal';
+import { useBoolean } from '../../hooks/use-boolean';
 
 type IProps = {
-  handleClick: (item: ListBeneficiary) => void;
   table: Table<ListBeneficiary>;
+  handleBulkAssign: (selectedProject: string) => void;
+  isBulkAssigning: boolean;
+  projectModal: any;
 };
 
-export default function ListView({ handleClick, table }: IProps) {
+export default function ListView({
+  table,
+  handleBulkAssign,
+  isBulkAssigning,
+  projectModal,
+}: IProps) {
   return (
     <>
+      <BulkAssignToProjectModal
+        handleSubmit={handleBulkAssign}
+        projectModal={projectModal}
+        selectedBeneficiaries={table
+          .getSelectedRowModel()
+          .rows.map((row) => row.original.walletAddress)}
+      />
       <div className="w-full -mt-2 p-2 bg-secondary">
         <div className="flex items-center mb-2">
           <Input
@@ -76,6 +92,15 @@ export default function ListView({ handleClick, table }: IProps) {
                 })}
             </DropdownMenuContent>
           </DropdownMenu>
+          {table.getSelectedRowModel().rows.length ? (
+            <Button
+              onClick={projectModal.onTrue}
+              className="ml-auto"
+              disabled={isBulkAssigning}
+            >
+              Bulk Assign
+            </Button>
+          ) : null}
         </div>
         <div className="rounded border bg-card">
           <TableComponent>
@@ -104,9 +129,6 @@ export default function ListView({ handleClick, table }: IProps) {
                     <TableRow
                       key={row.id}
                       data-state={row.getIsSelected() && 'selected'}
-                      onClick={() => {
-                        handleClick(row.original);
-                      }}
                     >
                       {row.getVisibleCells().map((cell) => (
                         <TableCell key={cell.id}>

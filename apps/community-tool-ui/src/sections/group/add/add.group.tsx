@@ -1,5 +1,6 @@
 'use client';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useCommunityGroupCreate } from '@rahat-ui/community-query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   Form,
@@ -9,10 +10,9 @@ import {
   FormMessage,
 } from '@rahat-ui/shadcn/src/components/ui/form';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { useRumsanService } from '../../../providers/service.provider';
 
 function AddGroup() {
   const FormSchema = z.object({
@@ -25,18 +25,23 @@ function AddGroup() {
       name: '',
     },
   });
-  const { communityGroupQuery } = useRumsanService();
-  const communityGroup = communityGroupQuery.useCommunityGroupCreate();
+  const communityGroup = useCommunityGroupCreate();
 
   const handleForm = async (data: z.infer<typeof FormSchema>) => {
     await communityGroup.mutateAsync(data);
   };
+
+  useEffect(() => {
+    if (communityGroup.isSuccess) {
+      form.reset();
+    }
+  }, [communityGroup.isSuccess, form]);
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleForm)}>
         <div className="h-add p-4">
           <h1 className="text-lg font-semibold mb-6">Add Group</h1>
-          {/* <div className="w-full -mt-2 p-2 bg-secondary"> */}
           <div className="shadow-md p-4 rounded-sm">
             <div className="grid grid-cols-2 gap-4 mb-4">
               <FormField
@@ -59,7 +64,6 @@ function AddGroup() {
             </div>
           </div>
         </div>
-        {/* </div> */}
       </form>
     </Form>
   );

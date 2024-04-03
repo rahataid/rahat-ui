@@ -1,6 +1,10 @@
 'use client';
 
-import { usePagination, useProjectBeneficiaries } from '@rahat-ui/query';
+import {
+  usePagination,
+  useProjectBeneficiaries,
+  useProjectSettingsStore,
+} from '@rahat-ui/query';
 import {
   ColumnFiltersState,
   SortingState,
@@ -12,7 +16,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { Settings2 } from 'lucide-react';
+import { ChevronDown, Settings2 } from 'lucide-react';
 
 import * as React from 'react';
 
@@ -21,6 +25,7 @@ import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
+  DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
@@ -46,6 +51,10 @@ import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
 import { useProjectBeneficiaryTableColumns } from './use-table-column';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
+import { useBulkAssignVoucher } from 'apps/rahat-ui/src/hooks/el/contracts/el-contracts';
+import { useBoolean } from '../../../../hooks/use-boolean';
+import TokenAssingnConfirm from './token.assign.confirm';
+
 // import { useBeneficiaryTransaction } from '../../hooks/el/subgraph/querycall';
 
 export type Transaction = {
@@ -72,24 +81,36 @@ const benType = [
 ];
 
 function BeneficiaryDetailTableView() {
+  const tokenAssignModal = useBoolean();
+
   // TODO: Refactor it
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
   );
+
+  const handleTokenAssignModal = () => {
+    tokenAssignModal.onTrue();
+  };
+
+  const handleTokenAssignModalClose = () => {
+    tokenAssignModal.onFalse();
+  };
+
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = React.useState({});
   const uuid = useParams().id as UUID;
   const {
     pagination,
     filters,
     setFilters,
-    resetFilters,
     setNextPage,
     setPrevPage,
     setPerPage,
+    selectedListItems,
+    setSelectedListItems,
   } = usePagination();
+  const assignVoucher = useBulkAssignVoucher();
 
   const projectBeneficiaries = useProjectBeneficiaries({
     page: pagination.page,
@@ -97,6 +118,10 @@ function BeneficiaryDetailTableView() {
     projectUUID: uuid,
     ...filters,
   });
+
+  const contractAddress = useProjectSettingsStore(
+    (state) => state.settings?.[uuid],
+  );
 
   const columns = useProjectBeneficiaryTableColumns();
 
@@ -121,14 +146,26 @@ function BeneficiaryDetailTableView() {
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setRowSelection,
+    getRowId: (row) => row.name,
+    onRowSelectionChange: setSelectedListItems,
     state: {
       sorting,
       columnFilters,
       columnVisibility,
-      rowSelection,
+      rowSelection: selectedListItems,
     },
   });
+  // const assignToken =
+
+  const selectedRowAddresses = Object.keys(selectedListItems);
+
+  const handleBulkAssign = async () => {
+    await assignVoucher.mutateAsync({
+      addresses: selectedRowAddresses as `0x${string}`[],
+      noOfTokens: 1,
+      contractAddress: contractAddress.elproject.address,
+    });
+  };
 
   return (
     <>
@@ -188,6 +225,24 @@ function BeneficiaryDetailTableView() {
                     </DropdownMenuCheckboxItem>
                   );
                 })}
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              {selectedRowAddresses.length ? (
+                <Button
+                  disabled={assignVoucher.isPending}
+                  className="h-10 ml-2"
+                >
+                  {selectedRowAddresses.length} - Items Selected
+                  <ChevronDown strokeWidth={1.5} />
+                </Button>
+              ) : null}
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={handleTokenAssignModal}>
+                Assign Tokens To All
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
@@ -252,6 +307,12 @@ function BeneficiaryDetailTableView() {
         meta={projectBeneficiaries.data?.meta || {}}
         perPage={pagination.perPage}
         total={projectBeneficiaries.data?.meta?.total || 0}
+      />
+      <TokenAssingnConfirm
+        tokens={selectedRowAddresses.length}
+        open={tokenAssignModal.value}
+        handleClose={handleTokenAssignModalClose}
+        handleSubmit={handleBulkAssign}
       />
     </>
   );

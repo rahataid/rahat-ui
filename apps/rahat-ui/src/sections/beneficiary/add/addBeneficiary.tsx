@@ -31,9 +31,8 @@ export default function AddBeneficiaryForm() {
 
   const FormSchema = z.object({
     name: z.string().min(2, { message: 'Name must be at least 4 character' }),
-    walletAddress: z
-      .string()
-      .min(42, { message: 'The Ethereum address must be 42 characters long' }),
+    walletAddress: z.string(),
+
     phone: z
       .string()
       .refine(isValidPhoneNumber, { message: 'Invalid phone number' }),

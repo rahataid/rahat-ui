@@ -19,68 +19,54 @@ import {
   FormItem,
   FormMessage,
 } from '@rahat-ui/shadcn/src/components/ui/form';
-
-import { Role, User } from '@rumsan/sdk/types';
-import { UUID } from 'crypto';
+import { User } from '@rumsan/sdk/types';
 import { useEffect } from 'react';
-import { useRSQuery } from '@rumsan/react-query';
+import { useCommunityUserUpdate } from '@rahat-ui/community-query';
+import { UUID } from 'crypto';
 
-type IProps = {
-  userData: User | undefined;
-  handleClose: () => void;
+type Iprops = {
+  userDetail: User;
 };
-export default function EditUser({ userData, handleClose }: IProps) {
-  const { rumsanService } = useRSQuery();
-
-  const roleData = rumsanService.role.listRole;
-  console.log(roleData);
-  // const roles: string[] =
-  //   roleData?.data.map((role: Role) => role.name).sort() || [];
-
-  const roles = ['MANAGER', 'USER'];
+export default function EditUser({ userDetail }: Iprops) {
+  const updateUser = useCommunityUserUpdate();
   const FormSchema = z.object({
     name: z.string().min(2, { message: 'Name must be at least 4 character' }),
     email: z.string(),
-    roles: z.string().toUpperCase(),
     phone: z.string(),
     walletAddress: z
       .string()
       .min(42, { message: 'The Ethereum address must be 42 characters long' }),
   });
+
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      name: userData?.name || '',
-      email: userData?.email || '',
-      roles: '',
-      phone: userData?.phone || '',
-      walletAddress: userData?.wallet || '',
+      name: userDetail?.name || '',
+      email: userDetail?.email || '',
+      phone: userDetail?.phone || '',
+      walletAddress: userDetail?.wallet || '',
     },
   });
 
   useEffect(() => {
     form.reset({
-      name: userData?.name || '',
-      email: userData?.email || '',
-      roles: '',
-      walletAddress: userData?.wallet || '',
-      phone: userData?.phone || '',
+      name: userDetail?.name || '',
+      email: userDetail?.email || '',
+      phone: userDetail?.phone || '',
+      walletAddress: userDetail?.wallet || '',
     });
-  }, [userData, form]);
-
-  const handleEditUser = async (formData: any) => {
-    const res = await rumsanService.client.patch(
-      `/users/${userData?.uuid}`,
-      formData,
-    );
-    res && handleClose();
+  }, [form, userDetail]);
+  const handleEditUser = async (data: any) => {
+    await updateUser.mutateAsync({
+      uuid: userDetail.uuid as UUID,
+      payload: data,
+    });
   };
-
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleEditUser)}>
         <div className="p-4">
-          <h1 className="text-md font-semibold mb-6">Update User</h1>
+          <h1 className="text-md font-semibold mb-6">Edit User</h1>
           <div className="grid grid-cols-2 gap-4 mb-4">
             <FormField
               control={form.control}
@@ -110,6 +96,7 @@ export default function EditUser({ userData, handleClose }: IProps) {
                 );
               }}
             />
+
             <FormField
               control={form.control}
               name="phone"
@@ -124,9 +111,9 @@ export default function EditUser({ userData, handleClose }: IProps) {
                 );
               }}
             />
-            <FormField
+            {/* <FormField
               control={form.control}
-              name="roles"
+              name="role"
               render={({ field }) => {
                 return (
                   <FormItem>
@@ -141,12 +128,8 @@ export default function EditUser({ userData, handleClose }: IProps) {
                       </FormControl>
                       <SelectContent>
                         <SelectGroup>
-                          {roles.length &&
-                            roles.map((role) => (
-                              <SelectItem value={role} key={role}>
-                                {role}
-                              </SelectItem>
-                            ))}
+                          <SelectItem value="user">USER</SelectItem>
+                          <SelectItem value="admin">ADMIN</SelectItem>
                         </SelectGroup>
                       </SelectContent>
                     </Select>
@@ -154,7 +137,7 @@ export default function EditUser({ userData, handleClose }: IProps) {
                   </FormItem>
                 );
               }}
-            />
+            /> */}
             <FormField
               control={form.control}
               name="walletAddress"

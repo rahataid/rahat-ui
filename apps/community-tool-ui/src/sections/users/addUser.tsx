@@ -1,7 +1,13 @@
+'use client';
+
+// Import statements
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
+import { useUserCreate, useUserRoleList } from '@rumsan/react-query';
+import { enumToObjectArray } from '@rumsan/sdk/utils';
+import { Role } from '@rumsan/sdk/types';
 import {
   Select,
   SelectContent,
@@ -9,8 +15,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@rahat-ui/shadcn/components/select';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+} from '@rahat-ui/shadcn/src/components/ui/select';
 import {
   Form,
   FormControl,
@@ -19,37 +24,29 @@ import {
   FormMessage,
 } from '@rahat-ui/shadcn/src/components/ui/form';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
-import { Role } from '@rumsan/sdk/types';
-import { enumToObjectArray } from '@rumsan/sdk/utils';
-import { Gender } from '@rumsan/sdk/enums';
-import { useRSQuery, useUserCreate } from '@rumsan/react-query';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { Gender } from '@rahataid/community-tool-sdk/enums';
+import { useCommunityUserCreate } from '@rahat-ui/community-query';
 
-type Props = {
-  // onAddUsersClick: VoidFunction;
-  onSuccess: () => void;
-};
+const FormSchema = z.object({
+  name: z.string().min(2, { message: 'Name must be at least 4 character' }),
+  email: z.string().email(),
+  gender: z.string(),
+  role: z.string(),
+  phone: z.string(),
+  wallet: z
+    .string()
+    .min(42, { message: 'The Ethereum address must be 42 characters long' }),
+});
 
-export default function AddUser({ onSuccess }: Props) {
-  const { rumsanService } = useRSQuery();
-  const userCreate = useUserCreate();
-
-  const genderList = enumToObjectArray(Gender);
-  const FormSchema = z.object({
-    name: z.string().min(2, { message: 'Name must be at least 4 character' }),
-    email: z.string().email(),
-    gender: z.string(),
-    role: z.string(),
-    phone: z.string(),
-    wallet: z
-      .string()
-      .min(42, { message: 'The Ethereum address must be 42 characters long' }),
-  });
-
-  const form = useForm<z.infer<typeof FormSchema>>({
+// Component
+export default function AddUser() {
+  const userCreate = useCommunityUserCreate();
+  const form = useForm({
     resolver: zodResolver(FormSchema),
     defaultValues: {
       name: '',
-      gender: 'UNKNOWN',
+      gender: Gender.UKNOWN || '',
       email: '',
       phone: '',
       role: 'USER',
@@ -57,15 +54,12 @@ export default function AddUser({ onSuccess }: Props) {
     },
   });
 
-  // const roles: string[] =
-  //   roleData?.data.map((role: Role) => role.name).sort() || [];
+  const { data: roleData } = useUserRoleList({});
 
-  const roles = ['MANAGER', 'USER'];
+  const roles = roleData?.data.map((role: Role) => role.name).sort() || [];
+
   const handleAddUser = async (data: any) => {
-    console.log(data);
-    const res = await userCreate.mutateAsync(data);
-
-    onSuccess();
+    await userCreate.mutateAsync(data);
   };
   return (
     <Form {...form}>
@@ -74,20 +68,18 @@ export default function AddUser({ onSuccess }: Props) {
           <h1 className="text-md font-semibold mb-6">Add User</h1>
           <div className="grid grid-cols-2 gap-4 mb-4">
             <FormField
-              control={form.control}
               name="name"
-              render={({ field }) => {
-                return (
-                  <FormItem>
-                    <FormControl>
-                      <Input type="text" placeholder="Name" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
+              control={form.control}
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <Input type="text" placeholder="Name" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-            <FormField
+            {/* <FormField
               control={form.control}
               name="gender"
               render={({ field }) => {
@@ -104,12 +96,39 @@ export default function AddUser({ onSuccess }: Props) {
                       </FormControl>
                       <SelectContent>
                         <SelectGroup>
-                          {genderList.map((gender) => (
-                            <SelectItem value={gender.value} key={gender.value}>
+                          {genderList.map((gender, index) => (
+                            <SelectItem value={gender.value} key={index}>
                               {gender.label}
                             </SelectItem>
                           ))}
                         </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            /> */}
+            <FormField
+              control={form.control}
+              name="gender"
+              render={({ field }) => {
+                return (
+                  <FormItem>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select Gender" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value={Gender.MALE}>Male</SelectItem>
+                        <SelectItem value={Gender.FEMALE}>Female</SelectItem>
+                        <SelectItem value={Gender.OTHER}>Other</SelectItem>
+                        <SelectItem value={Gender.UKNOWN}>Unknown</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />

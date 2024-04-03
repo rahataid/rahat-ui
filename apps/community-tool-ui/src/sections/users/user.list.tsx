@@ -1,9 +1,6 @@
 'use client';
 
 import {
-  ColumnDef,
-  ColumnFiltersState,
-  SortingState,
   VisibilityState,
   flexRender,
   getCoreRowModel,
@@ -12,16 +9,14 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { MoreHorizontal, Settings2 } from 'lucide-react';
+import { Settings2 } from 'lucide-react';
 import * as React from 'react';
 
 import { Button } from '@rahat-ui/shadcn/components/button';
-import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
@@ -44,56 +39,17 @@ import {
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import { truncateEthAddress } from '@rumsan/core/utilities/string.utils';
-import { IUserItem } from '../../types/user';
-import { useUserList, useUserStore } from '@rumsan/react-query';
-import CustomPagination from '../../components/customPagination';
-import { usePagination } from '@rahat-ui/query';
+import { useUserTableColumns } from './useUsersColumns';
+import { useUserStore } from '@rumsan/react-query';
 
-type IProps = {
-  handleClick: (item: IUserItem) => void;
-};
+export default function ListView() {
+  const columns = useUserTableColumns();
+  const users = useUserStore((state) => state.users);
+  console.log(users);
 
-export type Beneficiary = {
-  name: string;
-  projectsInvolved: string;
-  internetAccess: string;
-  phone: string;
-  bank: string;
-};
-
-export const columns: ColumnDef<IUserItem>[] = [
-  {
-    accessorKey: 'name',
-    header: 'Name',
-    cell: ({ row }) => <div>{row.getValue('name')}</div>,
-  },
-  {
-    accessorKey: 'email',
-    header: 'Email',
-    cell: ({ row }) => <div>{row.getValue('email')}</div>,
-  },
-  {
-    accessorKey: 'wallet',
-    header: 'Wallet',
-    cell: ({ row }) => <div>{truncateEthAddress(row.getValue('wallet'))}</div>,
-  },
-];
-
-export default function ListView({ handleClick }: IProps) {
-  const {
-    pagination,
-    selectedListItems,
-    setSelectedListItems,
-    setNextPage,
-    setPrevPage,
-    setPerPage,
-  } = usePagination();
+  const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = React.useState({});
-
-  const users = useUserStore((state) => state.users);
 
   const table = useReactTable({
     data: users && users?.data?.length > 0 ? users.data : [],
@@ -108,10 +64,6 @@ export default function ListView({ handleClick }: IProps) {
       rowSelection,
       columnVisibility,
     },
-  });
-  const k = useUserList({
-    page: pagination.page as number,
-    perPage: pagination.perPage as number,
   });
 
   return (
@@ -156,10 +108,10 @@ export default function ListView({ handleClick }: IProps) {
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-        <div className="rounded border h-[calc(100vh-180px)]  bg-card">
+        <div className="rounded border h-[calc(100vh-180px)] bg-card">
           <Table>
             <ScrollArea className="h-table1">
-              <TableHeader className="sticky top-0">
+              <TableHeader className="bg-card sticky top-0">
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow key={headerGroup.id}>
                     {headerGroup.headers.map((header) => {
@@ -183,9 +135,9 @@ export default function ListView({ handleClick }: IProps) {
                     <TableRow
                       key={row.id}
                       data-state={row.getIsSelected() && 'selected'}
-                      onClick={() => {
-                        handleClick(row.original);
-                      }}
+                      // onClick={() => {
+                      //   handleClick(row.original);
+                      // }}
                     >
                       {row.getVisibleCells().map((cell) => (
                         <TableCell key={cell.id}>
@@ -212,15 +164,6 @@ export default function ListView({ handleClick }: IProps) {
           </Table>
         </div>
       </div>
-      <CustomPagination
-        currentPage={users && users?.response?.meta?.currentPage}
-        handleNextPage={setNextPage}
-        handlePrevPage={setPrevPage}
-        handlePageSizeChange={setPerPage}
-        meta={users && users?.response?.meta}
-        perPage={pagination.perPage}
-        total={users && users?.response?.meta?.total}
-      />
     </>
   );
 }

@@ -20,16 +20,16 @@ const ProjectNavView: FC<ProjectNavViewProps> = ({ title, items }) => {
   };
 
   return (
-    <div className="pb-2">
+    <div className="pb-2 bg-card h-full">
       <div className="flex items-center justify-between p-4">
         <h1 className="font-semibold text-xl text-slate-600">{title}</h1>
       </div>
-      <div className="px-2 ">
+      <div>
         <nav>
           {items?.map((item) => (
             <div key={item.title}>
               <div
-                className={`flex justify-between p-2 items-center rounded-md cursor-pointer hover:bg-primary hover:text-white`}
+                className={`flex justify-between p-2 items-center rounded-md cursor-pointer hover:bg-primary hover:mx-2 hover:text-white`}
                 onClick={() => handleNav(item)}
                 {...item}
               >

@@ -38,12 +38,13 @@ import {
 import { Gender } from '@rahataid/sdk/enums';
 import { enumToObjectArray, truncateEthAddress } from '@rumsan/sdk/utils';
 import { useAssignClaims } from 'apps/rahat-ui/src/hooks/el/contracts/el-contracts';
-import { useBeneficaryVoucher } from 'apps/rahat-ui/src/hooks/el/subgraph/querycall';
 import { getProjectAddress } from 'apps/rahat-ui/src/utils/getProjectAddress';
 import { Minus, MoreVertical, Copy, CopyCheck } from 'lucide-react';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import TransactionTable from '../transactions/transactions.table';
+import { useReadElProjectBeneficiaryClaimStatus, useReadElProjectBeneficiaryEyeVoucher, useReadElProjectBeneficiaryReferredVoucher } from 'apps/rahat-ui/src/hooks/el/contracts/elProject';
+import { zeroAddress } from 'viem';
 
 type IProps = {
   beneficiaryDetails: any;
@@ -59,10 +60,32 @@ export default function BeneficiaryDetail({
   const getProject = useProjectAction();
 
   const [assignStatus, setAssignStatus] = useState(false);
-
+  const[contractAddress,setContractAddress] = useState<any>()
+  
   const walletAddress = beneficiaryDetails.name;
 
-  const { data: benVoucher, isLoading } = useBeneficaryVoucher(walletAddress);
+  const {data:benFreeVoucher} = useReadElProjectBeneficiaryEyeVoucher({ 
+    address:contractAddress?.el || '',
+    args:[walletAddress]}
+  )
+  const {data:benReferredVoucher} = useReadElProjectBeneficiaryReferredVoucher({ 
+    address:contractAddress?.el || '',
+    args:[walletAddress]}
+  )
+
+  const {data:eyeVoucherClaimStatus} = useReadElProjectBeneficiaryClaimStatus({
+    address:contractAddress?.el || '',
+    args:[walletAddress,contractAddress?.eyeVoucher]
+
+  })
+
+  const {data:referredVoucherClaimStatus,isLoading} = useReadElProjectBeneficiaryClaimStatus({
+    address:contractAddress?.el || '',
+    args:[walletAddress,contractAddress?.referredVoucher]
+
+  })
+
+  const projectSettings = localStorage.getItem('projectSettingsStore');
 
   const [activeTab, setActiveTab] = useState<'details' | 'edit' | null>(
     'details',
@@ -91,11 +114,28 @@ export default function BeneficiaryDetail({
     });
   };
 
+
+
   useEffect(() => {
-    if (benVoucher?.FreeVoucherAddress || benVoucher?.ReferredVoucherAddress) {
+    if(benFreeVoucher === undefined || benReferredVoucher === undefined) return;
+    if((benFreeVoucher?.toString()) !== zeroAddress || benReferredVoucher?.toString() !== zeroAddress)
+     {
       setAssignStatus(true);
+
     }
-  }, [benVoucher]);
+  }, [benFreeVoucher,benReferredVoucher]);
+
+  useEffect(()=>{
+    if(projectSettings){
+      const settings = JSON.parse(projectSettings)?.state?.settings?.[id]
+      setContractAddress({
+        el:settings?.elproject?.address,
+        eyeVoucher:settings?.eyevoucher?.address,
+        referredVoucher:settings?.referralvoucher?.address
+      })
+    }
+
+  },[id,projectSettings])
 
   return (
     <>
@@ -324,20 +364,20 @@ export default function BeneficiaryDetail({
                     <div className="flex justify-between items-center">
                       <p>Voucher Type</p>
                       <p className="text-sm font-light">
-                        {benVoucher?.FreeVoucherAddress?.toString()
-                          ? 'FreeVoucher'
-                          : benVoucher?.ReferredVoucherAddress
-                          ? 'DiscountVoucher'
+                        {benFreeVoucher !== undefined && benFreeVoucher !== zeroAddress
+                          ? 'Free Voucher'
+                          : benReferredVoucher !== undefined && benReferredVoucher !== zeroAddress
+                          ? 'Discount Voucher'
                           : 'N/A'}
                       </p>
                     </div>
                     <div className="flex justify-between items-center">
                       <p>ClaimStatus</p>
                       <p className="text-sm font-light">
-                        {benVoucher?.FreeVoucherClaimStatus?.toString()
-                          ? benVoucher?.FreeVoucherClaimStatus.toString()
-                          : benVoucher?.ReferredVoucherClaimStatus
-                          ? benVoucher?.ReferredVoucherClaimStatus.toString()
+                        {benFreeVoucher !== undefined  && benFreeVoucher !== zeroAddress
+                          ? eyeVoucherClaimStatus?.toString()
+                          :  benReferredVoucher !== undefined && benReferredVoucher !== zeroAddress
+                          ? referredVoucherClaimStatus?.toString()
                           : 'N/A'}
                       </p>
                     </div>

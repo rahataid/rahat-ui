@@ -70,28 +70,6 @@ export const useBeneficaryVoucher = (beneficiary: string) => {
       return res;
     },
   });
-
-  // const fetchVoucher = useCallback(async () => {
-  // const res = await queryService.useBeneficiaryVoucher(beneficiary);
-  //   if (res.error) {
-  //     setError(res.error);
-  //     setData([]);
-  //   } else {
-  //     setData(res);
-  //   }
-  // }, [beneficiary, queryService]);
-
-  // useEffect(() => {
-  //   fetchVoucher();
-  // }, [fetchVoucher]);
-
-  // return useMemo(
-  //   () => ({
-  //     data,
-  //     error,
-  //   }),
-  //   [data, error],
-  // );
 };
 
 export const useBeneficiaryTransaction = (address: string) => {
@@ -111,37 +89,6 @@ export const useBeneficiaryTransaction = (address: string) => {
       return newData;
     },
   });
-
-  // const fetchData = useCallback(async () => {
-  // const res = await queryService.useBeneficiaryTransaction(address);
-
-  //   if (res.error) {
-  //     setError(res.error);
-  //     setData([]);
-  //   } else {
-  // const claimedAssigned = res?.claimAssigneds || [];
-  // const claimProcessed = res?.projectClaimProcesseds || [];
-  // const beneficiaryReferred = res?.beneficiaryReferreds || [];
-  // const newData = mapTransactions(
-  //   claimedAssigned.concat(claimProcessed, beneficiaryReferred),
-  // );
-
-  // setData(newData);
-  //     setError(null);
-  //   }
-  // }, [address, queryService]);
-
-  // useEffect(() => {
-  //   fetchData();
-  // }, [fetchData]);
-
-  // return useMemo(
-  //   () => ({
-  //     data,
-  //     error,
-  //   }),
-  //   [data, error],
-  // );
 };
 
 export const useProjectTransaction = () => {
@@ -168,36 +115,6 @@ export const useProjectTransaction = () => {
     },
   });
 
-  // const fetchData = useCallback(async () => {
-  //   const res = await queryService.useProjectTransaction();
-
-  //   if (res.error) {
-  //     setError(res.error);
-  //     setData([]);
-  //   } else {
-  //     const transactionTypes = [
-  //       'claimAssigneds',
-  //       'projectClaimProcesseds',
-  //       'beneficiaryReferreds',
-  //       'beneficiaryAddeds',
-  //       'claimCreateds',
-  //       'tokenBudgetIncreases',
-  //     ];
-  //     const newData = transactionTypes.reduce((acc, type) => {
-  //       const transactions = res?.data[type] || [];
-  //       return acc.concat(transactions.map(formatTransaction));
-  //     }, []);
-
-  //     setData(newData);
-  //     setError(null);
-  //   }
-  // }, [queryService]);
-
-  // useEffect(() => {
-  //   fetchData();
-  // }, [fetchData]);
-
-  // return { data, error };
 };
 
 export const useBeneficiaryCount = (projectAddress: string) => {
@@ -210,23 +127,6 @@ export const useBeneficiaryCount = (projectAddress: string) => {
       return res;
     },
   });
-
-  // const fetchBeneficiaries = useCallback(async () => {
-  //   const res = await queryService.getTotalBeneficiary(projectAddress);
-  //   if (res.error) {
-  //     setError(res.error);
-  //     setData([]);
-  //   } else {
-  //     setData(res);
-  //     setError(null);
-  //   }
-  // }, [projectAddress, queryService]);
-
-  // useEffect(() => {
-  //   fetchBeneficiaries();
-  // }, [fetchBeneficiaries]);
-
-  // return useMemo(() => ({ data, error }), [data, error]);
 };
 
 export const useVendorTransaction = (address: string) => {
@@ -257,9 +157,6 @@ export const useVendorTransaction = (address: string) => {
 
 export const useVendorVoucher = (address: string) => {
   const { queryService } = useGraphService();
-  // const [data, setData] = useState<any>();
-  // const [error, setError] = useState<string | null>(null);
-
   return useQuery({
     enabled: address ? true : false,
     queryKey: ['vendor-voucher', address],
@@ -269,25 +166,65 @@ export const useVendorVoucher = (address: string) => {
     },
   });
 
-  // const fetchVoucher = useCallback(async () => {
-  // const res = await queryService.useVendorVoucher(address);
-  //   if (res.error) {
-  //     setError(res.error);
-  //     setData([]);
-  //   } else {
-  //     setData(res);
-  //   }
-  // }, [address, queryService]);
-
-  // useEffect(() => {
-  //   fetchVoucher();
-  // }, [fetchVoucher]);
-
-  // return useMemo(
-  //   () => ({
-  //     data,
-  //     error,
-  //   }),
-  //   [data, error],
-  // );
 };
+
+export const useFreeVoucherHolder = () =>{
+  const { queryService } = useGraphService();
+  return useQuery({
+    queryKey:['free-holder'],
+    queryFn: async () =>{
+      const res = await queryService.getFreeVoucherOwners();
+      return res
+     
+    }
+  })
+}
+
+export const useReferredVoucherHolder = () =>{
+  const { queryService } = useGraphService();
+  return useQuery({
+    queryKey:['referred-holder'],
+    queryFn: async () =>{
+      const res = await queryService.getDiscountVoucherOwners();
+      return res;
+    }
+  })
+}
+
+export const useVoucherHolder = () => {
+  const { queryService } = useGraphService();
+  return useQuery({
+    queryKey:['voucher-holder'],
+    queryFn: async () =>{
+      const res = await queryService.getVoucherOwners();
+      return res
+     
+    }
+  })
+}
+
+export const useGetFreeVoucherTransaction = (tokenFree:string) => {
+  const { queryService } = useGraphService();
+  return useQuery({
+    enabled: tokenFree ? true : false,
+    queryKey:['free-voucher-transactions'],
+    queryFn: async () =>{
+      const res = await queryService.getEyeVoucherTransaction(tokenFree);
+      return res
+     
+    }
+  })
+}
+
+export const useGetReferredVoucherTransaction = (tokenReferred:string) => {
+  const { queryService } = useGraphService();
+  return useQuery({
+    enabled: tokenReferred ? true : false,
+    queryKey:['referred-voucher-transactions'],
+    queryFn: async () =>{
+      const res = await queryService.getReferredVoucherTransaction(tokenReferred);
+      return res
+     
+    }
+  })
+}

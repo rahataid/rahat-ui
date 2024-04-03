@@ -39,7 +39,6 @@ import ProjectAssign from './project.assign.modal';
 
 export default function InfoCards() {
   const addBeneficiary = useAssignBenToProject();
-  const projectsList = useProjectList({});
 
   const data = useBeneficiaryStore((state) => state.singleBeneficiary);
   // const { projectQuery } = useRumsanService();
@@ -55,9 +54,7 @@ export default function InfoCards() {
   const [selectedRow, setSelectedRow] = React.useState(null) as any;
   const setId = (id: any) => setSelectedRow(id);
 
-  const alert = useSwal();
 
-  const handleProjectChange = (d: UUID) => setSelectedProject(d);
 
   const handleAssignProject = async () => {
     if (!selectedProject) {
@@ -84,10 +81,6 @@ export default function InfoCards() {
   };
   const handleCloseConfirmProjectModal = () => {
     projectConfirmModal.onFalse();
-  };
-
-  const handleAssignModalClick = () => {
-    projectModal.onTrue();
   };
 
   return (

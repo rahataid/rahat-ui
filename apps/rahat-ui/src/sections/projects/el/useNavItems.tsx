@@ -10,6 +10,7 @@ import {
   LayoutDashboard,
   Pencil,
   Receipt,
+  ReceiptText,
   Speech,
   Store,
   TicketCheck,
@@ -68,11 +69,9 @@ export const useNavItems = () => {
     contractSettings?.eyeVoucherAddress || '',
   );
 
-  console.log('contractSettings', contractSettings);
 
   useEffect(() => {
     if (projectVoucher.isSuccess) {
-      console.log('projectVoucher', projectVoucher.data);
       setVoucherInputs((prev) => ({
         ...prev,
       }));
@@ -187,6 +186,11 @@ export const useNavItems = () => {
           title: 'Redemptions',
           path: `/projects/el/${id}/redemptions`,
           icon: <TicketCheck size={18} strokeWidth={1.5} />,
+        },
+        {
+          title: 'Vouchers',
+          path: `/projects/el/${id}/vouchers`,
+          icon: <ReceiptText size={18} strokeWidth={1.5} />,
         },
         {
           title: 'Campaigns',

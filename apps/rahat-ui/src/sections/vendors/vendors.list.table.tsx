@@ -74,7 +74,7 @@ export default function VendorsTable({
 
   return (
     <>
-      <div className="w-full -mt-2 p-2 bg-secondary">
+      <div className="p-2 bg-secondary">
         <div className="flex items-center mb-2">
           <Input
             placeholder="Search User..."
@@ -114,9 +114,9 @@ export default function VendorsTable({
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-        <div className="rounded border bg-card">
+        <div className="rounded border h-[calc(100vh-180px)] bg-card">
           <TableComponent>
-            <ScrollArea className="h-[calc(100vh-180px)]">
+            <ScrollArea className="h-table1">
               <TableHeader>
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow key={headerGroup.id}>

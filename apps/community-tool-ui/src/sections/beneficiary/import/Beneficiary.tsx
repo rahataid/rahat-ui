@@ -260,10 +260,10 @@ export default function BenImp({ extraFields }: IProps) {
       fieldMapping: { data: final_mapping, sourceTargetMappings: mappings },
     };
 
-    return createSourceAndImport(sourcePayload);
+    return validateAndCreateImportSource(sourcePayload);
   };
 
-  const createSourceAndImport = (sourcePayload: any) => {
+  const validateAndCreateImportSource = (sourcePayload: any) => {
     rumsanService.client
       .post('/sources', sourcePayload)
       .then((res) => {
@@ -312,8 +312,6 @@ export default function BenImp({ extraFields }: IProps) {
 
   const uniqueDBFields = [...new Set(BENEF_DB_FIELDS)];
 
-  console.log('uniqueDBFields==>', uniqueDBFields);
-
   return (
     <div className="h-custom">
       <div className="h-full p-4">
@@ -361,7 +359,7 @@ export default function BenImp({ extraFields }: IProps) {
 
             <hr />
             <div
-              style={{ maxHeight: '68vh' }}
+              style={{ maxHeight: '60vh' }}
               className="overflow-x-auto overflow-y-auto"
             >
               <ColumnMappingTable
@@ -376,11 +374,7 @@ export default function BenImp({ extraFields }: IProps) {
         {currentScreen === BENEF_IMPORT_SCREENS.IMPORT_DATA && (
           <>
             {invalidFields.length > 0 ? (
-              <ErrorAlert
-                message={`Validation failed for these fields: ${invalidFields
-                  .toString()
-                  .toUpperCase()}`}
-              />
+              <ErrorAlert message="Fieds with * have failed validation" />
             ) : (
               <InfoBox
                 title="Import Beneficiary"

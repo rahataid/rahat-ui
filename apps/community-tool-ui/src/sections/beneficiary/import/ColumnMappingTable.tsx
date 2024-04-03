@@ -14,7 +14,7 @@ export default function ColumnMappingTable({
   uniqueDBFields,
 }: ColumnMappingTableProps) {
   return (
-    <table className="w-full text-sm text-left rtl:text-right">
+    <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
       {rawData.map((item: string, index: number) => {
         const keys = Object.keys(item);
 
@@ -22,12 +22,12 @@ export default function ColumnMappingTable({
           <Fragment key={index}>
             <tbody>
               {index === 0 && (
-                <tr>
+                <tr className="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
                   {keys.map((key, i) => {
                     return (
-                      <td key={i + 1}>
+                      <td className="px-4 py-1.5" key={i + 1}>
                         <strong>
-                          {truncatedText(key.toLocaleUpperCase(), 15)}
+                          {truncatedText(key.toLocaleUpperCase(), 10)}
                         </strong>{' '}
                         <br />
                         <select
@@ -52,9 +52,9 @@ export default function ColumnMappingTable({
                 </tr>
               )}
 
-              <tr>
+              <tr className="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
                 {keys.map((key: any, i) => (
-                  <td key={i + 1}>
+                  <td className="px-4 py-1.5" key={i + 1}>
                     {typeof item[key] === 'object' ? (
                       <NestedObjectRenderer object={item[key]} />
                     ) : (

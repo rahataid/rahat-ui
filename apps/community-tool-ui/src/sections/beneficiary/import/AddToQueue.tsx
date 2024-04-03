@@ -15,6 +15,7 @@ export default function AddToQueue({
   handleImportClick,
   invalidFields,
 }: IProps) {
+  console.log('Invalid Fields', invalidFields);
   const mappedData =
     data.length > 0
       ? data.map((d: any) => {
@@ -42,14 +43,23 @@ export default function AddToQueue({
         </Button>
       </div>
       <hr />
-      <div className="overflow-x-auto overflow-y-auto">
-        <table className="w-full text-sm text-left rtl:text-right">
-          <thead>
+      <div
+        style={{ maxHeight: '60vh' }}
+        className="overflow-x-auto overflow-y-auto"
+      >
+        <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+          <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr>
               {/* Dynamically generated table headers */}
               {keys.map((key) => (
-                <th className="pt-2 pb-2" key={key}>
-                  {key.toUpperCase()}
+                <th className="px-4 py-1.5" key={key}>
+                  {invalidFields.find(
+                    (field: any) => field.fieldName === key,
+                  ) ? (
+                    <span className="text-red-500">{key}*</span>
+                  ) : (
+                    key
+                  )}
                 </th>
               ))}
             </tr>
@@ -57,11 +67,24 @@ export default function AddToQueue({
 
           <tbody>
             {data.map((item: any, index: number) => (
-              <tr key={index}>
+              <tr
+                className="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700"
+                key={index}
+              >
                 {/* Dynamically generated table cells */}
-                {keys.map((key) => (
-                  <td key={key}>{item[key]}</td>
-                ))}
+                {keys.map((key) =>
+                  invalidFields.find(
+                    (field: any) => field.fieldName === key,
+                  ) ? (
+                    <td className="px-4 bg-red-100 py-1.5" key={key}>
+                      {item[key]}
+                    </td>
+                  ) : (
+                    <td className="px-4 py-1.5" key={key}>
+                      {item[key]}
+                    </td>
+                  ),
+                )}
               </tr>
             ))}
           </tbody>

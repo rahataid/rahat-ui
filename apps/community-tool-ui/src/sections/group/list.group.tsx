@@ -12,11 +12,6 @@ import {
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-} from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
 
 import { ListGroup } from '@rahataid/community-tool-sdk/groups';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
@@ -41,10 +36,10 @@ export default function GroupList({ table, handleClick }: IProps) {
           className="rounded mr-2"
         />
       </div>
-      <div className="rounded border bg-white">
+      <div className="rounded border bg-card">
         <TableComponent>
-          <ScrollArea className="h-table1">
-            <TableHeader className="sticky top-0">
+          <ScrollArea className="h-[calc(100vh-180px)]">
+            <TableHeader className="bg-card sticky top-0">
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
                   {headerGroup.headers.map((header) => {

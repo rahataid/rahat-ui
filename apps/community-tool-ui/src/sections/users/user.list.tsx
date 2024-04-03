@@ -44,10 +44,11 @@ import {
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import { ListBeneficiary } from '@rahat-ui/types';
 import { truncateEthAddress } from '@rumsan/core/utilities/string.utils';
-import { useRumsanService } from '../../providers/service.provider';
 import { IUserItem } from '../../types/user';
+import { useUserList, useUserStore } from '@rumsan/react-query';
+import CustomPagination from '../../components/customPagination';
+import { usePagination } from '@rahat-ui/query';
 
 type IProps = {
   handleClick: (item: IUserItem) => void;
@@ -80,48 +81,38 @@ export const columns: ColumnDef<IUserItem>[] = [
 ];
 
 export default function ListView({ handleClick }: IProps) {
-  const { userQuery } = useRumsanService();
-  const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    [],
-  );
+  const {
+    pagination,
+    selectedListItems,
+    setSelectedListItems,
+    setNextPage,
+    setPrevPage,
+    setPerPage,
+  } = usePagination();
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
-  const [pagination, setPagination] = React.useState({
-    pageIndex: 0,
-    pageSize: 50,
-  });
 
-  const { data, isLoading, isError, isSuccess, isFetched, refetch } =
-    userQuery.useUserList();
+  const users = useUserStore((state) => state.users);
 
   const table = useReactTable({
-    data: data?.data || [],
+    data: users && users?.data?.length > 0 ? users.data : [],
     columns,
-    onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
-    onPaginationChange: setPagination,
+    onColumnVisibilityChange: setColumnVisibility,
     state: {
-      pagination,
-      sorting,
-      columnFilters,
-      columnVisibility,
       rowSelection,
+      columnVisibility,
     },
   });
-
-  React.useEffect(() => {
-    if (isFetched && isSuccess) {
-      refetch();
-    }
-  }, [isFetched, isSuccess, refetch]);
+  const k = useUserList({
+    page: pagination.page as number,
+    perPage: pagination.perPage as number,
+  });
 
   return (
     <>
@@ -221,54 +212,15 @@ export default function ListView({ handleClick }: IProps) {
           </Table>
         </div>
       </div>
-      <div className="sticky bottom-0 flex items-center justify-end space-x-4 px-4 py-1 border-t-2 bg-card">
-        <div className="flex-1 text-sm text-muted-foreground">
-          {table.getFilteredRowModel().rows.length} Users
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="text-sm font-medium">Rows per page</div>
-          <Select
-            defaultValue="50"
-            onValueChange={(value) => table.setPageSize(Number(value))}
-          >
-            <SelectTrigger className="w-16 h-8">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectItem value="5">5</SelectItem>
-                <SelectItem value="10">10</SelectItem>
-                <SelectItem value="20">20</SelectItem>
-                <SelectItem value="30">30</SelectItem>
-                <SelectItem value="40">40</SelectItem>
-                <SelectItem value="50">50</SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-        </div>
-        <div>
-          Page {table.getState().pagination.pageIndex + 1} of{' '}
-          {table.getPageCount()}
-        </div>
-        <div className="space-x-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            Previous
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            Next
-          </Button>
-        </div>
-      </div>
+      <CustomPagination
+        currentPage={users && users?.response?.meta?.currentPage}
+        handleNextPage={setNextPage}
+        handlePrevPage={setPrevPage}
+        handlePageSizeChange={setPerPage}
+        meta={users && users?.response?.meta}
+        perPage={pagination.perPage}
+        total={users && users?.response?.meta?.total}
+      />
     </>
   );
 }

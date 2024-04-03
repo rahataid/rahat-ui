@@ -7,8 +7,6 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from '@rahat-ui/shadcn/src/components/ui/resizable';
-import { ScrollArea } from '@radix-ui/react-scroll-area';
-
 export default function DashboardLayout({
   children,
 }: {
@@ -18,13 +16,8 @@ export default function DashboardLayout({
     <AuthGuard>
       <Nav />
       <div className="mx-2">
-        <ResizablePanelGroup direction="horizontal" className="min-h-max">
-          <ResizablePanel
-            minSize={20}
-            defaultSize={20}
-            maxSize={20}
-            className="w-full"
-          >
+        <ResizablePanelGroup direction="horizontal" className="border">
+          <ResizablePanel minSize={20} defaultSize={20} maxSize={20}>
             {children}
           </ResizablePanel>
         </ResizablePanelGroup>

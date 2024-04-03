@@ -1,33 +1,56 @@
 'use client';
 
-import { useUserList, useUserStore } from '@rumsan/react-query';
+import * as React from 'react';
+import {
+  VisibilityState,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  useReactTable,
+} from '@tanstack/react-table';
+import { useUserStore } from '@rumsan/react-query';
 import UsersTable from './user.list';
 import { usePagination } from '@rahat-ui/query';
 import CustomPagination from '../../components/customPagination';
+import { useUserTableColumns } from './useUsersColumns';
 
 export default function UserView() {
-  const { pagination, setNextPage, setPerPage, setPrevPage } = usePagination();
+  const { pagination, setNextPage, setPrevPage, setPerPage } = usePagination();
+  const columns = useUserTableColumns();
   const users = useUserStore((state) => state.users);
-  // useUserList({
-  //   page: +pagination.page,
-  //   perPage: +pagination.perPage,
-  // });
-  useUserList();
+
+  const [rowSelection, setRowSelection] = React.useState({});
+  const [columnVisibility, setColumnVisibility] =
+    React.useState<VisibilityState>({});
+
+  const table = useReactTable({
+    data: users && users?.data?.length > 0 ? users.data : [],
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    onRowSelectionChange: setRowSelection,
+    onColumnVisibilityChange: setColumnVisibility,
+    state: {
+      rowSelection,
+      columnVisibility,
+    },
+  });
 
   return (
-    <div>
-      <UsersTable />
+    <>
+      <UsersTable table={table} />
       <CustomPagination
-        currentPage={users && users?.response?.meta?.currentPage}
+        currentPage={pagination.page}
         handleNextPage={setNextPage}
         handlePrevPage={setPrevPage}
         handlePageSizeChange={setPerPage}
-        meta={users && users?.response?.meta}
+        meta={users?.response?.meta || { total: 0, currentPage: 0 }}
         perPage={pagination.perPage}
-        total={users && users?.response?.meta?.total}
+        total={users?.response?.meta?.lastPage || 0}
       />
-
-      {/* <UserDetails data={selectedUserData} /> */}
-    </div>
+    </>
   );
 }

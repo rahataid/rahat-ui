@@ -39,7 +39,7 @@ import {
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import EditUser from './editUser';
-import { useRumsanService } from '../../providers/service.provider';
+import { useRSQuery } from '@rumsan/react-query';
 
 type IProps = {
   data: User;
@@ -47,7 +47,7 @@ type IProps = {
 };
 
 export default function UserDetail({ data, handleClose }: IProps) {
-  const { rumsanService } = useRumsanService();
+  const { rumsanService } = useRSQuery();
 
   const [userData, setUserData] = useState<User | undefined>();
 

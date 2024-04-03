@@ -68,7 +68,7 @@ export type IVendor = {
   walletAddress: `0x${string}`;
 };
 
-export default function VendorsList() {
+export default function VendorsTable() {
   const { pagination } = usePagination();
   const { data: vendorData } = useVendorList(pagination);
   const projectList = useProjectList({});
@@ -116,7 +116,7 @@ export default function VendorsList() {
   const handleAssignProject = async () => {
     if (!selectedProject) return alert('Please select a project');
     await addVendor.mutateAsync({
-      vendorUUID: selectedRow?.uuid,
+      vendorUUID: selectedRow?.id,
       projectUUID: selectedProject,
     });
   };
@@ -125,7 +125,7 @@ export default function VendorsList() {
 
   return (
     <>
-      <div className="w-full h-full -mt-2 p-2 bg-secondary">
+      <div className="w-full -mt-2 p-2 bg-secondary">
         <div className="flex items-center mb-2">
           <Input
             placeholder="Search User..."
@@ -165,9 +165,9 @@ export default function VendorsList() {
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-        <div className="rounded border h-[calc(100vh-180px)]  bg-card">
+        <div className="rounded border bg-card">
           <Table>
-            <ScrollArea className="w-full h-withPage p-4">
+            <ScrollArea className='h-[calc(100vh-180px)]'>
               <TableHeader>
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow key={headerGroup.id}>
@@ -177,9 +177,9 @@ export default function VendorsList() {
                           {header.isPlaceholder
                             ? null
                             : flexRender(
-                                header.column.columnDef.header,
-                                header.getContext(),
-                              )}
+                              header.column.columnDef.header,
+                              header.getContext(),
+                            )}
                         </TableHead>
                       );
                     })}

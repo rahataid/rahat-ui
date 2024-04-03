@@ -126,7 +126,7 @@ export function UsersRoleTable() {
 
   return (
     <div className="w-full">
-      <div className="rounded-md border">
+      <div className="rounded border">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (

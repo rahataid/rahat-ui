@@ -21,8 +21,8 @@ import {
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { Role } from '@rumsan/sdk/types';
 import { enumToObjectArray } from '@rumsan/sdk/utils';
-import { useRumsanService } from '../../providers/service.provider';
 import { Gender } from '@rumsan/sdk/enums';
+import { useRSQuery, useUserCreate } from '@rumsan/react-query';
 
 type Props = {
   // onAddUsersClick: VoidFunction;
@@ -30,7 +30,9 @@ type Props = {
 };
 
 export default function AddUser({ onSuccess }: Props) {
-  const { roleQuery, userQuery } = useRumsanService();
+  const { rumsanService } = useRSQuery();
+  const userCreate = useUserCreate();
+
   const genderList = enumToObjectArray(Gender);
   const FormSchema = z.object({
     name: z.string().min(2, { message: 'Name must be at least 4 character' }),
@@ -55,16 +57,14 @@ export default function AddUser({ onSuccess }: Props) {
     },
   });
 
-  const { isPending, error, data: roleData } = roleQuery.userRoleList({});
+  // const roles: string[] =
+  //   roleData?.data.map((role: Role) => role.name).sort() || [];
 
-  const roles: string[] =
-    roleData?.data.map((role: Role) => role.name).sort() || [];
-
-  const userCreate = userQuery.useUserCreate();
-
+  const roles = ['MANAGER', 'USER'];
   const handleAddUser = async (data: any) => {
     console.log(data);
-    await userCreate.mutateAsync(data);
+    const res = await userCreate.mutateAsync(data);
+
     onSuccess();
   };
   return (

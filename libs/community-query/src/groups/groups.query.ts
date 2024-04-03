@@ -1,83 +1,74 @@
 import { getGroupClient } from '@rahataid/community-tool-sdk/clients';
-import { GroupClient } from '@rahataid/community-tool-sdk/types';
-
-import { RumsanService } from '@rumsan/sdk';
-import {
-  QueryClient,
-  useMutation,
-  useQuery,
-  UseQueryResult,
-} from '@tanstack/react-query';
-
-import { TAGS } from '../config';
+import { useRSQuery } from '@rumsan/react-query';
+import { UseQueryResult, useMutation, useQuery } from '@tanstack/react-query';
 import Swal from 'sweetalert2';
+import { TAGS } from '../config';
+import { Pagination } from '@rumsan/sdk/types';
+import { useEffect } from 'react';
+import { ListGroup } from '@rahataid/community-tool-sdk/groups';
 
-export class CommunityGroupQuery {
-  private client: GroupClient;
-  public qc;
+export const useCommunityGroupCreate = () => {
+  const { queryClient, rumsanService } = useRSQuery();
+  const groupClient = getGroupClient(rumsanService.client);
+  return useMutation({
+    mutationKey: [TAGS.ADD_COMMUNITY_GROUP],
+    mutationFn: groupClient.create,
+    onSuccess: () => {
+      Swal.fire('Group Created Successfully', '', 'success');
+      queryClient.invalidateQueries({
+        queryKey: [
+          TAGS.LIST_COMMUNITY_GROUP,
+          {
+            exact: true,
+          },
+        ],
+      });
+    },
+    onError: (error: any) => {
+      Swal.fire(
+        'Error',
+        error.response.data.message || 'Encounter error on Creating Data',
+        'error',
+      );
+    },
+  });
+};
 
-  constructor(rsService: RumsanService, reactQueryClient: QueryClient) {
-    this.client = getGroupClient(rsService.client);
-    this.qc = reactQueryClient;
-  }
-
-  useCommunityGroupList = (payload: any): UseQueryResult<any, Error> => {
-    return useQuery({
-      refetchOnMount: true,
+export const useCommunityGroupList = (
+  payload: Pagination & { any?: string },
+): UseQueryResult<any, Error> => {
+  const { queryClient, rumsanService } = useRSQuery();
+  const groupClient = getGroupClient(rumsanService.client);
+  // const { setGroups, setMeta } = useCommunityGroupStore((state) => ({
+  //   setGroups: state.setGroups,
+  //   setMeta: state.setMeta,
+  // }));
+  const query = useQuery(
+    {
       queryKey: [TAGS.LIST_COMMUNITY_GROUP, payload],
-      queryFn: async () => {
-        const k = await this.client.list(payload);
-        return k;
-      },
-    });
-  };
+      queryFn: () => groupClient.list(payload),
+    },
+    queryClient,
+  );
+  // useEffect(() => {
+  //   if (query.data) {
+  //     setGroups(query.data.data as ListGroup[]);
+  //     setMeta(query.data.response.meta);
+  //   }
+  // }, [query.data, setGroups]);
+  return query;
+};
 
-  // useCommunityGroupListALL = (payload: any): UseQueryResult<any, Error> => {
-  //   return useQuery({
-  //     refetchOnMount: true,
-  //     queryKey: [TAGS.LIST_COMMUNITY_GROUP, payload],
-  //     queryFn: async () => {
-  //       const k = await this.client.list(payload);
-  //       const perPage = k.response.meta?.['total'];
-  //       const fetchAll = await this.client.list(perPage);
-  //       console.log(fetchAll);
-  //       return fetchAll;
-  //     },
-  //   });
-  // };
-
-  useCommunityGroupListByID = (uuid: string): UseQueryResult<any, Error> => {
-    return useQuery({
-      refetchOnMount: true,
-      queryKey: [TAGS.LIST_COMMUNITY_GROUP, uuid],
-      queryFn: () => {
-        return this.client.listById(uuid);
-      },
-    });
-  };
-
-  useCommunityGroupCreate = () => {
-    return useMutation({
-      mutationKey: [TAGS.ADD_COMMUNITY_GROUP],
-      mutationFn: async (payload: any) => {
-        console.log(payload);
-        return this.client.create(payload);
-      },
-      onSuccess: async () => {
-        await this.qc.invalidateQueries({
-          queryKey: [TAGS.LIST_COMMUNITY_GROUP],
-        });
-        Swal.fire({
-          icon: 'success',
-          title: 'Group Created successfully',
-        });
-      },
-      onError: (error: any) => {
-        Swal.fire({
-          icon: 'error',
-          title: error.message || 'Encounter error on Creating Data',
-        });
-      },
-    });
-  };
-}
+export const useCommunityGroupListByID = (
+  uuid: string,
+): UseQueryResult<any, Error> => {
+  const { queryClient, rumsanService } = useRSQuery();
+  const groupClient = getGroupClient(rumsanService.client);
+  return useQuery(
+    {
+      queryKey: [TAGS.LIST_COMMUNITY_GROUP_BY_ID],
+      queryFn: () => groupClient.listById(uuid),
+    },
+    queryClient,
+  );
+};

@@ -18,15 +18,13 @@ interface ServiceProviderProps {
 }
 
 export function ServiceProvider({ children }: ServiceProviderProps) {
-  useState<CommunicationService>();
-
   const qc = useQueryClient();
   const { queryClient, rumsanService, setQueryClient, setRumsanService } =
     useRSQuery();
   const rsService = useMemo(
     () =>
       new RumsanService({
-        baseURL: process.env.NEXT_PUBLIC_API_HOST_URL + '/v1',
+        baseURL: process.env.NEXT_PUBLIC_COMMUNITY_API_URL + '/v1',
       }),
     [],
   );

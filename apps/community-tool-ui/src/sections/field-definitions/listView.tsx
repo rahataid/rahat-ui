@@ -1,4 +1,6 @@
 'use client';
+import { Table, flexRender } from '@tanstack/react-table';
+import { Settings2 } from 'lucide-react';
 
 import { Button } from '@rahat-ui/shadcn/components/button';
 import {
@@ -9,76 +11,31 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/components/dropdown-menu';
+import { Input } from '@rahat-ui/shadcn/components/input';
 import {
-  Table as TableComponent,
   TableBody,
   TableCell,
+  Table as TableComponent,
   TableHead,
   TableHeader,
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import { Table, flexRender } from '@tanstack/react-table';
-import { Settings2 } from 'lucide-react';
-
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@rahat-ui/shadcn/src/components/ui/dialog';
-import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@rahat-ui/shadcn/src/components/ui/select';
-import { useProjectList } from '@rahat-ui/query';
-import { UUID } from 'crypto';
-
-export type IVendor = {
-  id: string;
-  projectName: string;
-  status: 'pending' | 'processing' | 'success' | 'failed';
-  email: string;
-  walletAddress: `0x${string}`;
-};
-
-type ProjectModalType = {
-  value: boolean;
-  onToggle: () => void;
-};
+import { FieldDefinition } from '@rahataid/community-tool-sdk/fieldDefinitions';
 
 type IProps = {
-  table: Table<IVendor>;
-  selectedProject: UUID | undefined;
-  setSelectedProject: (id: UUID) => void;
-  handleAssignProject: VoidFunction;
-  projectModal: ProjectModalType;
+  handleClick: (item: FieldDefinition) => void;
+  table: Table<FieldDefinition>;
 };
 
-export default function VendorsTable({
-  table,
-  selectedProject,
-  setSelectedProject,
-  handleAssignProject,
-  projectModal,
-}: IProps) {
-  const projectList = useProjectList({});
-  const handleProjectChange = (d: UUID) => setSelectedProject(d);
-
+export default function ListView({ handleClick, table }: IProps) {
   return (
     <>
       <div className="w-full -mt-2 p-2 bg-secondary">
         <div className="flex items-center mb-2">
           <Input
-            placeholder="Search User..."
-            value=""
+            placeholder="Filter field definitions..."
+            value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
             onChange={(event) =>
               table.getColumn('name')?.setFilterValue(event.target.value)
             }
@@ -117,7 +74,7 @@ export default function VendorsTable({
         <div className="rounded border bg-card">
           <TableComponent>
             <ScrollArea className="h-[calc(100vh-180px)]">
-              <TableHeader>
+              <TableHeader className="bg-card sticky top-0">
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow key={headerGroup.id}>
                     {headerGroup.headers.map((header) => {
@@ -141,6 +98,9 @@ export default function VendorsTable({
                     <TableRow
                       key={row.id}
                       data-state={row.getIsSelected() && 'selected'}
+                      // onClick={() => {
+                      //   handleClick(row.original);
+                      // }}
                     >
                       {row.getVisibleCells().map((cell) => (
                         <TableCell key={cell.id}>
@@ -155,7 +115,7 @@ export default function VendorsTable({
                 ) : (
                   <TableRow>
                     <TableCell
-                      colSpan={table.getAllColumns.length}
+                      colSpan={table.getAllColumns().length}
                       className="h-24 text-center"
                     >
                       No results.
@@ -167,51 +127,6 @@ export default function VendorsTable({
           </TableComponent>
         </div>
       </div>
-
-      <Dialog open={projectModal.value} onOpenChange={projectModal.onToggle}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Assign Project</DialogTitle>
-            <DialogDescription>
-              {!selectedProject && (
-                <p className="text-orange-500">Select a project to assign</p>
-              )}
-            </DialogDescription>
-          </DialogHeader>
-          <div>
-            <Select onValueChange={handleProjectChange}>
-              <SelectTrigger>
-                <SelectValue placeholder="--Select--" />
-              </SelectTrigger>
-              <SelectContent>
-                {projectList.data?.data.length &&
-                  projectList.data?.data.map((project: any) => {
-                    return (
-                      <SelectItem key={project.id} value={project.uuid}>
-                        {project.name}
-                      </SelectItem>
-                    );
-                  })}
-              </SelectContent>
-            </Select>
-          </div>
-          <DialogFooter className="sm:justify-end">
-            <DialogClose asChild>
-              <Button type="button" variant="ghost">
-                Close
-              </Button>
-            </DialogClose>
-            <Button
-              onClick={handleAssignProject}
-              type="button"
-              variant="ghost"
-              className="text-primary"
-            >
-              Assign
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </>
   );
 }

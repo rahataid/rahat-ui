@@ -7,17 +7,9 @@ import {
 import { Tabs } from '@rahat-ui/shadcn/src/components/ui/tabs';
 import React from 'react';
 import BeneficiaryNav from '../../../sections/beneficiary/nav';
-import ImportBen from './Beneficiary';
-import { useFieldDefinitionsList } from '@rahat-ui/community-query';
+import FieldDefAdd from './addFieldDefinitions';
 
-export default function ImportBeneficiary() {
-  let extraFields = [];
-  const { data } = useFieldDefinitionsList();
-  if (data && data.data.length > 0) {
-    const myFields = data.data.map((obj: any) => obj.name);
-    extraFields = myFields;
-  }
-
+export default function AddFieldDefinitions() {
   return (
     <Tabs defaultValue="list" className="h-full">
       <ResizablePanelGroup direction="horizontal" className="min-h-max bg-card">
@@ -27,7 +19,7 @@ export default function ImportBeneficiary() {
         <ResizableHandle />
 
         <ResizablePanel minSize={28}>
-          <ImportBen extraFields={extraFields} />
+          <FieldDefAdd />
         </ResizablePanel>
       </ResizablePanelGroup>
     </Tabs>

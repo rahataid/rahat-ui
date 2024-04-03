@@ -14,7 +14,6 @@ export default function InfoCards({ data }) {
     day: 'numeric',
   });
 
-  console.log(formattedDate);
   return (
     <div className="grid grid-cols-1 gap-4 p-2">
       <Card className="shadow-md rounded-sm">

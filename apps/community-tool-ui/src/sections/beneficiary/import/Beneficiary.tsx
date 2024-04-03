@@ -1,5 +1,7 @@
 'use client';
 
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import Loader from 'apps/community-tool-ui/src/components/Loader';
 import {
   BENEF_DB_FIELDS,
   BENEF_IMPORT_SCREENS,
@@ -7,27 +9,29 @@ import {
   IMPORT_SOURCE,
   TARGET_FIELD,
 } from 'apps/community-tool-ui/src/constants/app.const';
-import React, { Fragment, useState } from 'react';
-import { useForm } from 'react-hook-form';
 import {
   attachedRawData,
   includeOnlySelectedTarget,
   removeFieldsWithUnderscore,
   splitFullName,
 } from 'apps/community-tool-ui/src/utils';
-import NestedObjectRenderer from './NestedObjectRenderer';
-import Loader from 'apps/community-tool-ui/src/components/Loader';
-import Swal from 'sweetalert2';
-import FilterBox from './FilterBox';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { ArrowBigLeft } from 'lucide-react';
+import React, { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import Swal from 'sweetalert2';
 import AddToQueue from './AddToQueue';
 import ErrorAlert from './ErrorAlert';
+import FilterBox from './FilterBox';
 import InfoBox from './InfoBox';
 
 import { useRSQuery } from '@rumsan/react-query';
+import ColumnMappingTable from './ColumnMappingTable';
 
-export default function BenImp() {
+interface IProps {
+  extraFields: string[];
+}
+
+export default function BenImp({ extraFields }: IProps) {
   const form = useForm({});
   const { rumsanService } = useRSQuery();
 
@@ -256,10 +260,10 @@ export default function BenImp() {
       fieldMapping: { data: final_mapping, sourceTargetMappings: mappings },
     };
 
-    return createSourceAndImport(sourcePayload);
+    return validateAndCreateImportSource(sourcePayload);
   };
 
-  const createSourceAndImport = (sourcePayload: any) => {
+  const validateAndCreateImportSource = (sourcePayload: any) => {
     rumsanService.client
       .post('/sources', sourcePayload)
       .then((res) => {
@@ -303,6 +307,10 @@ export default function BenImp() {
     setUniqueField('');
     setRawData([]);
   };
+
+  if (extraFields.length) BENEF_DB_FIELDS.push(...extraFields);
+
+  const uniqueDBFields = [...new Set(BENEF_DB_FIELDS)];
 
   return (
     <div className="h-custom">
@@ -351,66 +359,14 @@ export default function BenImp() {
 
             <hr />
             <div
-              style={{ maxHeight: '68vh' }}
+              style={{ maxHeight: '60vh' }}
               className="overflow-x-auto overflow-y-auto"
             >
-              <table className="w-full text-sm text-left rtl:text-right">
-                {rawData.map((item: string, index: number) => {
-                  const keys = Object.keys(item);
-
-                  return (
-                    <Fragment key={index}>
-                      <tbody>
-                        {index === 0 && (
-                          <tr>
-                            {keys.map((key, i) => {
-                              return (
-                                <td key={i + 1}>
-                                  <strong>{key.toLocaleUpperCase()}</strong>{' '}
-                                  <br />
-                                  <select
-                                    name="targetField"
-                                    id="targetField"
-                                    onChange={(e) =>
-                                      handleTargetFieldChange(
-                                        key,
-                                        e.target.value,
-                                      )
-                                    }
-                                  >
-                                    <option value="None">
-                                      --Choose Field--
-                                    </option>
-                                    {BENEF_DB_FIELDS.map((f) => {
-                                      return (
-                                        <option key={f} value={f}>
-                                          {f}
-                                        </option>
-                                      );
-                                    })}
-                                  </select>
-                                </td>
-                              );
-                            })}
-                          </tr>
-                        )}
-
-                        <tr>
-                          {keys.map((key: any, i) => (
-                            <td key={i + 1}>
-                              {typeof item[key] === 'object' ? (
-                                <NestedObjectRenderer object={item[key]} />
-                              ) : (
-                                item[key]
-                              )}
-                            </td>
-                          ))}
-                        </tr>
-                      </tbody>
-                    </Fragment>
-                  );
-                })}
-              </table>
+              <ColumnMappingTable
+                rawData={rawData}
+                uniqueDBFields={uniqueDBFields}
+                handleTargetFieldChange={handleTargetFieldChange}
+              />
             </div>
           </div>
         )}
@@ -418,11 +374,7 @@ export default function BenImp() {
         {currentScreen === BENEF_IMPORT_SCREENS.IMPORT_DATA && (
           <>
             {invalidFields.length > 0 ? (
-              <ErrorAlert
-                message={`Validation failed for these fields: ${invalidFields
-                  .toString()
-                  .toUpperCase()}`}
-              />
+              <ErrorAlert message="Fieds with * have failed validation" />
             ) : (
               <InfoBox
                 title="Import Beneficiary"

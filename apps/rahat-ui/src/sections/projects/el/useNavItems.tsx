@@ -96,24 +96,8 @@ export const useNavItems = () => {
     e.preventDefault();
     if (!contractSettings) return;
     const referralLimit = 3;
-    voucherInputs.description.length === 0
-      ? await createVoucher.writeContractAsync({
-          address: contractSettings?.rahatDonor?.address,
-          args: [
-            contractSettings?.eyevoucher?.address,
-            contractSettings?.referralvoucher?.address,
-            contractSettings?.elproject?.address,
-            BigInt(voucherInputs.tokens),
-            voucherInputs.description,
-            voucherInputs.descriptionReferred,
-            BigInt(voucherInputs.amountInDollar),
-            BigInt(voucherInputs.amountInDollarReferral),
-            BigInt(referralLimit),
-            voucherInputs.currency,
-          ],
-        })
-      : await createOnlyVoucher.writeContractAsync({
-          address: contractSettings?.rahatDonor?.address,
+      await createOnlyVoucher.writeContractAsync({
+          address: contractSettings?.rahatdonor?.address,
           args: [
             contractSettings?.eyevoucher?.address,
             contractSettings?.referralvoucher?.address,
@@ -124,22 +108,6 @@ export const useNavItems = () => {
         });
     handleCloseSummaryModal();
   };
-
-  // Referred Voucher
-  // const handleCreateTokenSubmit = async (value: any) => {
-  //   await createVoucher.writeContractAsync({
-  //     address: '0xA69f271c08700771765D911540D912C086f42F57',
-  //     args: [
-  //       `0xd7F992c60F8FDE06Df0b93276E2e43eb6555a5FA`,
-  //       '0x1B4D9FA12f3e1b1181b413979330c0afF9BbaAE5',
-  //       BigInt(+voucherInputs.tokens * 3),
-  //       value.description,
-  //       BigInt(value.price),
-  //       voucherInputs.currency,
-  //     ],
-  //   });
-  //   setCompleteTransaction(true);
-  // };
 
   const handleCloseProject = async () => {
     const { value } = await dialog.fire({
@@ -197,20 +165,6 @@ export const useNavItems = () => {
           icon: <Speech size={18} strokeWidth={1.5} />,
           path: `/projects/el/${id}/campaigns/text`,
 
-          // children: [
-          //   {
-          //     title: 'Voice',
-          //     subtitle: 10,
-          //     icon: <Phone size={18} strokeWidth={1.5} />,
-          //     path: `/projects/el/${params.id}/campaigns/voice`,
-          //   },
-          //   {
-          //     title: 'Text',
-          //     subtitle: 10,
-          //     icon: <MessageSquare size={18} strokeWidth={1.5} />,
-          //     path: `/projects/el/${params.id}/campaigns/text`,
-          //   },
-          // ],
         },
       ],
     },

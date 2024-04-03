@@ -40,19 +40,21 @@ import {
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { useUserTableColumns } from './useUsersColumns';
-import { useUserStore } from '@rumsan/react-query';
+import { User } from '@rumsan/sdk/types';
 
-export default function ListView() {
+type IProps = {
+  users: User[];
+};
+export default function ListView({ users }: IProps) {
   const columns = useUserTableColumns();
-  const users = useUserStore((state) => state.users);
-  console.log(users);
+  // const users = useUserStore((state) => state.users);
 
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
 
   const table = useReactTable({
-    data: users && users?.data?.length > 0 ? users.data : [],
+    data: users && users?.length > 0 ? users : [],
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -68,10 +70,10 @@ export default function ListView() {
 
   return (
     <>
-      <div className="w-full h-full -mt-2 p-2 bg-secondary">
+      <div className="w-full h-full mt-2 p-2 bg-secondary">
         <div className="flex items-center mb-2">
           <Input
-            placeholder="Search User..."
+            placeholder="Search User by name..."
             value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
             onChange={(event) =>
               table.getColumn('name')?.setFilterValue(event.target.value)

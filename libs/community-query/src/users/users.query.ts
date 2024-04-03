@@ -1,5 +1,5 @@
 import { useRSQuery } from '@rumsan/react-query';
-import { Pagination, User } from '@rumsan/sdk/types';
+import { User } from '@rumsan/sdk/types';
 import { UseQueryResult, useMutation, useQuery } from '@tanstack/react-query';
 import { TAGS } from '../config';
 import { getUserClient } from '@rumsan/sdk/clients';
@@ -7,7 +7,7 @@ import Swal from 'sweetalert2';
 import { UUID } from 'crypto';
 
 export const useCommunityUsersList = (
-  payload: Pagination,
+  payload: any,
 ): UseQueryResult<any, Error> => {
   const { queryClient, rumsanService } = useRSQuery();
   const userClient = getUserClient(rumsanService.client);
@@ -82,4 +82,17 @@ export const useCommunityUserUpdate = () => {
     },
     queryClient,
   );
+};
+
+export const useRoleList = () => {
+  const { queryClient, rumsanService } = useRSQuery();
+  const roleClient = getUserClient(rumsanService.client);
+  const query = useQuery(
+    {
+      queryKey: [TAGS.GET_ALL_ROLES],
+      queryFn: () => rumsanService.role.listRole(),
+    },
+    queryClient,
+  );
+  return query;
 };

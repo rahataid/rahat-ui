@@ -4,20 +4,23 @@ import { useUserList, useUserStore } from '@rumsan/react-query';
 import UsersTable from './user.list';
 import { usePagination } from '@rahat-ui/query';
 import CustomPagination from '../../components/customPagination';
+import { useCommunityUsersList } from '@rahat-ui/community-query';
 // import { useCommunityUsersList } from '@rahat-ui/community-query';
 
 export default function UserView() {
   const { pagination, setNextPage, setPerPage, setPrevPage } = usePagination();
-  const users = useUserStore((state) => state.users);
+  // const users = useUserStore((state) => state.users);
   // useUserList({
   //   page: +pagination.page,
   //   perPage: +pagination.perPage,
   // });
   // const usek = useCommunityUsersList(pagination);
   // console.log('users', usek);
+  const { data: users } = useCommunityUsersList({});
+
   return (
     <div>
-      <UsersTable />
+      <UsersTable users={users?.data} />
       <CustomPagination
         currentPage={users && users?.response?.meta?.currentPage}
         handleNextPage={setNextPage}

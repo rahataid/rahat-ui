@@ -26,7 +26,8 @@ import {
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Gender } from '@rahataid/community-tool-sdk/enums';
-import { useCommunityUserCreate } from '@rahat-ui/community-query';
+import { useCommunityUserCreate, useRoleList } from '@rahat-ui/community-query';
+import { useEffect } from 'react';
 
 const FormSchema = z.object({
   name: z.string().min(2, { message: 'Name must be at least 4 character' }),
@@ -49,18 +50,29 @@ export default function AddUser() {
       gender: Gender.UKNOWN || '',
       email: '',
       phone: '',
-      role: 'USER',
+      role: '',
       wallet: '',
     },
   });
 
-  const { data: roleData } = useUserRoleList({});
-
-  const roles = roleData?.data.map((role: Role) => role.name).sort() || [];
+  const { data: roleData } = useRoleList();
 
   const handleAddUser = async (data: any) => {
     await userCreate.mutateAsync(data);
   };
+  useEffect(() => {
+    if (userCreate.isSuccess) {
+      form.reset({
+        name: '',
+        gender: Gender.UKNOWN || '',
+        email: '',
+        phone: '',
+        role: '',
+        wallet: '',
+      });
+    }
+  }, [form, userCreate.isSuccess]);
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleAddUser)}>
@@ -79,36 +91,7 @@ export default function AddUser() {
                 </FormItem>
               )}
             />
-            {/* <FormField
-              control={form.control}
-              name="gender"
-              render={({ field }) => {
-                return (
-                  <FormItem>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select gender" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectGroup>
-                          {genderList.map((gender, index) => (
-                            <SelectItem value={gender.value} key={index}>
-                              {gender.label}
-                            </SelectItem>
-                          ))}
-                        </SelectGroup>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            /> */}
+
             <FormField
               control={form.control}
               name="gender"
@@ -164,6 +147,7 @@ export default function AddUser() {
                 );
               }}
             />
+
             <FormField
               control={form.control}
               name="role"
@@ -181,10 +165,10 @@ export default function AddUser() {
                       </FormControl>
                       <SelectContent>
                         <SelectGroup>
-                          {roles.length &&
-                            roles.map((role) => (
-                              <SelectItem value={role} key={role}>
-                                {role}
+                          {roleData?.data &&
+                            roleData?.data?.map((role: any) => (
+                              <SelectItem value={role} key={role.id}>
+                                {role.name}
                               </SelectItem>
                             ))}
                         </SelectGroup>

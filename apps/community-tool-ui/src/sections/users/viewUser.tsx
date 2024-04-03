@@ -330,35 +330,6 @@ export default function UserDetail({ userDetail, closeSecondPanel }: IProps) {
                 </Select>
               </div> */}
               <EditUser userDetail={userDetail} />
-              <div className="mt-4 mb-2">
-                <p className="text-slate-700">Auth & Comms</p>
-              </div>
-              <div className="grid grid-cols-3 gap-2">
-                <div className="grid grid-cols-subgrid col-span-2">
-                  <Input type="email" placeholder="Email" />
-                </div>
-                <div className="grid grid-cols-subgrid col-span-1">
-                  <Button
-                    variant={'outline'}
-                    className="border-primary text-primary"
-                  >
-                    Update
-                  </Button>
-                </div>
-              </div>
-              <div className="grid grid-cols-3 gap-2">
-                <div className="grid grid-cols-subgrid col-span-2">
-                  <Input className="mt-3" type="wallet" placeholder="Wallet" />
-                </div>
-                <div className="grid grid-cols-subgrid col-span-1 mt-3">
-                  <Button
-                    variant={'outline'}
-                    className="border-primary text-primary"
-                  >
-                    Update
-                  </Button>
-                </div>
-              </div>
             </div>
           </div>
         </>

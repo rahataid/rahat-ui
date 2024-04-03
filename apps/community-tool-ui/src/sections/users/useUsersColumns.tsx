@@ -13,6 +13,7 @@ import {
   TooltipTrigger,
   TooltipContent,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
+import { User } from '@rumsan/sdk/types';
 
 export const useUserTableColumns = () => {
   const { closeSecondPanel, setSecondPanelComponent } = useSecondPanel();
@@ -23,7 +24,7 @@ export const useUserTableColumns = () => {
     setWalletAddressCopied(index);
   };
 
-  const columns: ColumnDef<ListBeneficiary>[] = [
+  const columns: ColumnDef<User>[] = [
     {
       accessorKey: 'name',
       header: 'Name',

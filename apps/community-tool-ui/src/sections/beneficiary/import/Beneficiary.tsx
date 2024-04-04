@@ -1,5 +1,7 @@
 'use client';
 
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import Loader from 'apps/community-tool-ui/src/components/Loader';
 import {
   BENEF_DB_FIELDS,
   BENEF_IMPORT_SCREENS,
@@ -7,28 +9,31 @@ import {
   IMPORT_SOURCE,
   TARGET_FIELD,
 } from 'apps/community-tool-ui/src/constants/app.const';
-import React, { Fragment, useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { useRumsanService } from '../../../providers/service.provider';
 import {
   attachedRawData,
   includeOnlySelectedTarget,
   removeFieldsWithUnderscore,
   splitFullName,
 } from 'apps/community-tool-ui/src/utils';
-import NestedObjectRenderer from './NestedObjectRenderer';
-import Loader from 'apps/community-tool-ui/src/components/Loader';
-import Swal from 'sweetalert2';
-import FilterBox from './FilterBox';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { ArrowBigLeft } from 'lucide-react';
+import React, { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import Swal from 'sweetalert2';
 import AddToQueue from './AddToQueue';
 import ErrorAlert from './ErrorAlert';
+import FilterBox from './FilterBox';
 import InfoBox from './InfoBox';
 
-export default function BenImp() {
+import { useRSQuery } from '@rumsan/react-query';
+import ColumnMappingTable from './ColumnMappingTable';
+
+interface IProps {
+  extraFields: string[];
+}
+
+export default function BenImp({ extraFields }: IProps) {
   const form = useForm({});
-  const { rumsanService } = useRumsanService();
+  const { rumsanService } = useRSQuery();
 
   const [uniqueField, setUniqueField] = useState('');
   const [importSource, setImportSource] = useState('');
@@ -44,22 +49,26 @@ export default function BenImp() {
   const [processedData, setProcessedData] = useState([]) as any;
   const [invalidFields, setInvalidFields] = useState([]) as any;
 
-  const fetchExistingMapping = async (importId: string) => {
-    const res = await rumsanService.client.get(`/sources/${importId}/mappings`);
-    if (!res) return;
-    if (res?.data?.data) {
-      const { fieldMapping } = res.data.data;
-      return setExistingMappings(fieldMapping?.sourceTargetMappings);
-    }
-  };
+  // const fetchExistingMapping = async (importId: string) => {
+  //   const res = await rumsanService.client.get(`/sources/${importId}/mappings`);
+  //   if (!res) return;
+  //   if (res?.data?.data) {
+  //     const { fieldMapping } = res.data.data;
+  //     return setExistingMappings(fieldMapping?.sourceTargetMappings);
+  //   }
+  // };
 
   const handleUniqueFieldChange = (value: string) => setUniqueField(value);
+
+  const fetchKoboSettings = async () => {
+    const res = await rumsanService.client.get('/app/settings/kobotool');
+    return res.data;
+  };
 
   const handleSourceChange = async (d: string) => {
     setRawData([]);
     setExistingMappings([]);
     if (d === IMPORT_SOURCE.KOBOTOOL) {
-      // Fetch kobotool settings and set
       setImportSource(IMPORT_SOURCE.KOBOTOOL);
       const data = await fetchKoboSettings();
       if (!data.data.length)
@@ -80,6 +89,11 @@ export default function BenImp() {
     if (d === IMPORT_SOURCE.EXCEL) setImportSource(IMPORT_SOURCE.EXCEL);
   };
 
+  const fetchKoboData = async (name: string) => {
+    const res = await rumsanService.client.get(`/app/kobo-import/${name}`);
+    return res.data;
+  };
+
   const handleKoboFormChange = async (value: string) => {
     try {
       setFetching(true);
@@ -90,12 +104,11 @@ export default function BenImp() {
       );
       if (!found) return alert('No form found');
       setImportId(found.formId);
-      await fetchExistingMapping(found.formId);
       const koboData = await fetchKoboData(value);
       if (!koboData)
         return Swal.fire({
           icon: 'error',
-          title: 'Failed to fetch kobotool settings',
+          title: 'Failed to fetch kobotool data',
         });
       const sanitized = removeFieldsWithUnderscore(koboData.data.results);
       setRawData(sanitized);
@@ -107,16 +120,6 @@ export default function BenImp() {
         title: 'Failed to fetch kobotool settings',
       });
     }
-  };
-
-  const fetchKoboSettings = async () => {
-    const res = await rumsanService.client.get('/app/settings/kobotool');
-    return res.data;
-  };
-
-  const fetchKoboData = async (name: string) => {
-    const res = await rumsanService.client.get(`/app/kobo-import/${name}`);
-    return res.data;
   };
 
   const handleTargetFieldChange = (
@@ -135,6 +138,14 @@ export default function BenImp() {
     }
   };
 
+  const handleExcelUpload = async (formData: any) => {
+    const res = await rumsanService.client.post(
+      'beneficiaries/upload',
+      formData,
+    );
+    return res.data;
+  };
+
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     setRawData([]);
     const { files } = e.target;
@@ -145,11 +156,7 @@ export default function BenImp() {
         title: 'Please select a file to upload',
       });
     formData.append('file', files[0]);
-    const res = await rumsanService.client.post(
-      'beneficiaries/upload',
-      formData,
-    );
-    const { data } = res;
+    const data = await handleExcelUpload(formData);
     if (!data)
       return Swal.fire({
         icon: 'error',
@@ -160,7 +167,7 @@ export default function BenImp() {
 
     setImportId(sheetId);
     setRawData(sanitized);
-    await fetchExistingMapping(sheetId);
+    // await fetchExistingMapping(sheetId);
   };
 
   const handleGoClick = () => {
@@ -253,10 +260,10 @@ export default function BenImp() {
       fieldMapping: { data: final_mapping, sourceTargetMappings: mappings },
     };
 
-    return createSourceAndImport(sourcePayload);
+    return validateAndCreateImportSource(sourcePayload);
   };
 
-  const createSourceAndImport = (sourcePayload: any) => {
+  const validateAndCreateImportSource = (sourcePayload: any) => {
     rumsanService.client
       .post('/sources', sourcePayload)
       .then((res) => {
@@ -300,6 +307,10 @@ export default function BenImp() {
     setUniqueField('');
     setRawData([]);
   };
+
+  if (extraFields.length) BENEF_DB_FIELDS.push(...extraFields);
+
+  const uniqueDBFields = [...new Set(BENEF_DB_FIELDS)];
 
   return (
     <div className="h-custom">
@@ -348,66 +359,14 @@ export default function BenImp() {
 
             <hr />
             <div
-              style={{ maxHeight: '68vh' }}
+              style={{ maxHeight: '60vh' }}
               className="overflow-x-auto overflow-y-auto"
             >
-              <table className="w-full text-sm text-left rtl:text-right">
-                {rawData.map((item: string, index: number) => {
-                  const keys = Object.keys(item);
-
-                  return (
-                    <Fragment key={index}>
-                      <tbody>
-                        {index === 0 && (
-                          <tr>
-                            {keys.map((key, i) => {
-                              return (
-                                <td key={i + 1}>
-                                  <strong>{key.toLocaleUpperCase()}</strong>{' '}
-                                  <br />
-                                  <select
-                                    name="targetField"
-                                    id="targetField"
-                                    onChange={(e) =>
-                                      handleTargetFieldChange(
-                                        key,
-                                        e.target.value,
-                                      )
-                                    }
-                                  >
-                                    <option value="None">
-                                      --Choose Field--
-                                    </option>
-                                    {BENEF_DB_FIELDS.map((f) => {
-                                      return (
-                                        <option key={f} value={f}>
-                                          {f}
-                                        </option>
-                                      );
-                                    })}
-                                  </select>
-                                </td>
-                              );
-                            })}
-                          </tr>
-                        )}
-
-                        <tr>
-                          {keys.map((key: any, i) => (
-                            <td key={i + 1}>
-                              {typeof item[key] === 'object' ? (
-                                <NestedObjectRenderer object={item[key]} />
-                              ) : (
-                                item[key]
-                              )}
-                            </td>
-                          ))}
-                        </tr>
-                      </tbody>
-                    </Fragment>
-                  );
-                })}
-              </table>
+              <ColumnMappingTable
+                rawData={rawData}
+                uniqueDBFields={uniqueDBFields}
+                handleTargetFieldChange={handleTargetFieldChange}
+              />
             </div>
           </div>
         )}
@@ -415,11 +374,7 @@ export default function BenImp() {
         {currentScreen === BENEF_IMPORT_SCREENS.IMPORT_DATA && (
           <>
             {invalidFields.length > 0 ? (
-              <ErrorAlert
-                message={`Validation failed for these fields: ${invalidFields
-                  .toString()
-                  .toUpperCase()}`}
-              />
+              <ErrorAlert message="Fieds with * have failed validation" />
             ) : (
               <InfoBox
                 title="Import Beneficiary"

@@ -38,12 +38,13 @@ import {
 import { Gender } from '@rahataid/sdk/enums';
 import { enumToObjectArray, truncateEthAddress } from '@rumsan/sdk/utils';
 import { useAssignClaims } from 'apps/rahat-ui/src/hooks/el/contracts/el-contracts';
-import { useBeneficaryVoucher } from 'apps/rahat-ui/src/hooks/el/subgraph/querycall';
 import { getProjectAddress } from 'apps/rahat-ui/src/utils/getProjectAddress';
-import { Minus, MoreVertical } from 'lucide-react';
+import { Minus, MoreVertical, Copy, CopyCheck } from 'lucide-react';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import TransactionTable from '../transactions/transactions.table';
+import { useReadElProjectGetBeneficiaryVoucherDetail } from 'apps/rahat-ui/src/hooks/el/contracts/elProject';
+import { zeroAddress } from 'viem';
 
 type IProps = {
   beneficiaryDetails: any;
@@ -59,18 +60,27 @@ export default function BeneficiaryDetail({
   const getProject = useProjectAction();
 
   const [assignStatus, setAssignStatus] = useState(false);
-
+  const[contractAddress,setContractAddress] = useState<any>()
+  
   const walletAddress = beneficiaryDetails.name;
 
-  const { data: benVoucher, isLoading } = useBeneficaryVoucher(walletAddress);
+  const{data:beneficiaryVoucherDetails,isLoading} = useReadElProjectGetBeneficiaryVoucherDetail({
+    address:contractAddress?.el,
+    args:[walletAddress]
+  });
+
+  const projectSettings = localStorage.getItem('projectSettingsStore');
 
   const [activeTab, setActiveTab] = useState<'details' | 'edit' | null>(
     'details',
   );
+  const [walletAddressCopied, setWalletAddressCopied] =
+    useState<boolean>(false);
 
   const clickToCopy = () => {
     if (walletAddress) {
       navigator.clipboard.writeText(walletAddress);
+      setWalletAddressCopied(true);
     }
   };
 
@@ -88,11 +98,28 @@ export default function BeneficiaryDetail({
     });
   };
 
+
+
   useEffect(() => {
-    if (benVoucher?.FreeVoucherAddress || benVoucher?.ReferredVoucherAddress) {
+    if(beneficiaryVoucherDetails?.freeVoucherAddress === undefined || beneficiaryVoucherDetails?.referredVoucherAddress === undefined) return;
+    if((beneficiaryVoucherDetails?.freeVoucherAddress?.toString()) !== zeroAddress || beneficiaryVoucherDetails?.referredVoucherAddress?.toString() !== zeroAddress)
+     {
       setAssignStatus(true);
+
     }
-  }, [benVoucher]);
+  }, [beneficiaryVoucherDetails]);
+
+  useEffect(()=>{
+    if(projectSettings){
+      const settings = JSON.parse(projectSettings)?.state?.settings?.[id]
+      setContractAddress({
+        el:settings?.elproject?.address,
+        eyeVoucher:settings?.eyevoucher?.address,
+        referredVoucher:settings?.referralvoucher?.address
+      })
+    }
+
+  },[id,projectSettings])
 
   return (
     <>
@@ -145,13 +172,27 @@ export default function BeneficiaryDetail({
                 </div>
                 <TooltipProvider delayDuration={100}>
                   <Tooltip>
-                    <TooltipTrigger onClick={clickToCopy}>
+                    <TooltipTrigger
+                      className="flex gap-3 items-center"
+                      onClick={clickToCopy}
+                    >
                       <p className="text-slate-500 text-base">
                         {truncateEthAddress(walletAddress)}
                       </p>
+                      {walletAddressCopied ? (
+                        <CopyCheck size={15} strokeWidth={1.5} />
+                      ) : (
+                        <Copy
+                          className="text-slate-500"
+                          size={15}
+                          strokeWidth={1.5}
+                        />
+                      )}
                     </TooltipTrigger>
                     <TooltipContent className="bg-secondary" side="bottom">
-                      <p className="text-xs font-medium">click to copy</p>
+                      <p className="text-xs font-medium">
+                        {walletAddressCopied ? 'copied' : 'click to copy'}
+                      </p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
@@ -307,20 +348,20 @@ export default function BeneficiaryDetail({
                     <div className="flex justify-between items-center">
                       <p>Voucher Type</p>
                       <p className="text-sm font-light">
-                        {benVoucher?.FreeVoucherAddress?.toString()
-                          ? 'FreeVoucher'
-                          : benVoucher?.ReferredVoucherAddress
-                          ? 'DiscountVoucher'
+                        {beneficiaryVoucherDetails?.freeVoucherAddress !== undefined && beneficiaryVoucherDetails?.freeVoucherAddress !== zeroAddress
+                          ? 'Free Voucher'
+                          : beneficiaryVoucherDetails?.referredVoucherAddress !== undefined && beneficiaryVoucherDetails?.referredVoucherAddress !== zeroAddress
+                          ? 'Discount Voucher'
                           : 'N/A'}
                       </p>
                     </div>
                     <div className="flex justify-between items-center">
                       <p>ClaimStatus</p>
                       <p className="text-sm font-light">
-                        {benVoucher?.FreeVoucherClaimStatus?.toString()
-                          ? benVoucher?.FreeVoucherClaimStatus.toString()
-                          : benVoucher?.ReferredVoucherClaimStatus
-                          ? benVoucher?.ReferredVoucherClaimStatus.toString()
+                        {beneficiaryVoucherDetails?.freeVoucherAddress !== undefined  && beneficiaryVoucherDetails?.freeVoucherAddress !== zeroAddress
+                          ? beneficiaryVoucherDetails?.freeVoucherClaimStatus?.toString()
+                          :  beneficiaryVoucherDetails?.referredVoucherAddress !== undefined && beneficiaryVoucherDetails?.referredVoucherAddress !== zeroAddress
+                          ? beneficiaryVoucherDetails?.referredVoucherClaimStatus?.toString()
                           : 'N/A'}
                       </p>
                     </div>

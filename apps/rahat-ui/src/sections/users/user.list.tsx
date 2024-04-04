@@ -1,17 +1,8 @@
 'use client';
 
-import {
-  VisibilityState,
-  flexRender,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useReactTable,
-} from '@tanstack/react-table';
-import { Settings2 } from 'lucide-react';
 import * as React from 'react';
-
+import { Table, flexRender } from '@tanstack/react-table';
+import { Settings2 } from 'lucide-react';
 import { Button } from '@rahat-ui/shadcn/components/button';
 import {
   DropdownMenu,
@@ -23,15 +14,7 @@ import {
 } from '@rahat-ui/shadcn/components/dropdown-menu';
 import { Input } from '@rahat-ui/shadcn/components/input';
 import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@rahat-ui/shadcn/components/select';
-import {
-  Table,
+  Table as TableComponent,
   TableBody,
   TableCell,
   TableHead,
@@ -39,36 +22,16 @@ import {
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import { useUserTableColumns } from './useUsersColumns';
-import { useUserStore } from '@rumsan/react-query';
+import { User } from '@rumsan/sdk/types';
 
-export default function ListView() {
-  const columns = useUserTableColumns();
-  const users = useUserStore((state) => state.users);
-  console.log(users);
+type IProps = {
+  table: Table<User>;
+};
 
-  const [rowSelection, setRowSelection] = React.useState({});
-  const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({});
-
-  const table = useReactTable({
-    data: users && users?.data?.length > 0 ? users.data : [],
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    onRowSelectionChange: setRowSelection,
-    onColumnVisibilityChange: setColumnVisibility,
-    state: {
-      rowSelection,
-      columnVisibility,
-    },
-  });
-
+export default function UsersTable({ table }: IProps) {
   return (
     <>
-      <div className="w-full h-full -mt-2 p-2 bg-secondary">
+      <div className="p-2 bg-secondary">
         <div className="flex items-center mb-2">
           <Input
             placeholder="Search User..."
@@ -109,7 +72,7 @@ export default function ListView() {
           </DropdownMenu>
         </div>
         <div className="rounded border h-[calc(100vh-180px)] bg-card">
-          <Table>
+          <TableComponent>
             <ScrollArea className="h-table1">
               <TableHeader className="bg-card sticky top-0">
                 {table.getHeaderGroups().map((headerGroup) => (
@@ -135,9 +98,6 @@ export default function ListView() {
                     <TableRow
                       key={row.id}
                       data-state={row.getIsSelected() && 'selected'}
-                      // onClick={() => {
-                      //   handleClick(row.original);
-                      // }}
                     >
                       {row.getVisibleCells().map((cell) => (
                         <TableCell key={cell.id}>
@@ -152,7 +112,7 @@ export default function ListView() {
                 ) : (
                   <TableRow>
                     <TableCell
-                      colSpan={columns.length}
+                      colSpan={table.getAllColumns.length}
                       className="h-24 text-center"
                     >
                       No results.
@@ -161,7 +121,7 @@ export default function ListView() {
                 )}
               </TableBody>
             </ScrollArea>
-          </Table>
+          </TableComponent>
         </div>
       </div>
     </>

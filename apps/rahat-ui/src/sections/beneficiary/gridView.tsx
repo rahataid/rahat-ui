@@ -1,19 +1,23 @@
 'use client';
-
+import {
+  ResizableHandle,
+  ResizablePanel,
+} from '@rahat-ui/shadcn/src/components/ui/resizable';
 import { Input } from '@rahat-ui/shadcn/components/input';
 import { ScrollArea } from '@rahat-ui/shadcn/components/scroll-area';
 import { Search } from 'lucide-react';
-
+import { useSecondPanel } from '../../providers/second-panel-provider';
 import { ListBeneficiary } from '@rahat-ui/types';
 import BeneficiaryCard from '../../sections/beneficiary/card';
 import { IBeneficiaryItem } from '../../types/beneficiary';
+import BeneficiaryDetail from './beneficiaryDetail';
 
 type IProps = {
-  handleClick: (item: IBeneficiaryItem) => void;
   data: ListBeneficiary[];
 };
 
-export default function GridView({ handleClick, data }: IProps) {
+export default function GridView({ data }: IProps) {
+  const { setSecondPanelComponent, closeSecondPanel } = useSecondPanel();
   return (
     <>
       <ScrollArea className="px-4 pt-2 h-withPage">
@@ -23,7 +27,6 @@ export default function GridView({ handleClick, data }: IProps) {
               <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input placeholder="Search" className="pl-8 rounded" />
             </div>
-            {/* <Filter /> */}
           </div>
         </div>
 
@@ -34,7 +37,19 @@ export default function GridView({ handleClick, data }: IProps) {
               walletAddress={data.walletAddress}
               updatedAt={data.updatedAt}
               verified={data.verified}
-              handleClick={() => handleClick(data)}
+              handleClick={() =>
+                setSecondPanelComponent(
+                  <>
+                    <ResizableHandle />
+                    <ResizablePanel minSize={28} defaultSize={28}>
+                      <BeneficiaryDetail
+                        beneficiaryDetail={data}
+                        closeSecondPanel={closeSecondPanel}
+                      />
+                    </ResizablePanel>
+                  </>,
+                )
+              }
             />
           ))}
         </div>

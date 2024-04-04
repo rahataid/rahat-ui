@@ -1,7 +1,7 @@
 import { Pagination } from '@rumsan/sdk/types';
 import { useState, useEffect, useMemo } from 'react';
 
-const hashStorage = {
+export const hashStorage = {
   getItem: (key: string): any => {
     const searchParams = new URLSearchParams(window.location.hash.slice(1));
     const storedValue = searchParams.get(key);

@@ -97,7 +97,7 @@ const CreateVoucherModal: FC<CreateVoucherModalType> = ({
                   onChange={handleInputChange}
                 />
               </div>
-              <div>
+              {/* <div>
                 <Label htmlFor="description" className="text-right">
                   Description Free Voucher
                 </Label>
@@ -107,8 +107,8 @@ const CreateVoucherModal: FC<CreateVoucherModalType> = ({
                   name="description"
                   className="border rounded w-full p-1"
                 />
-              </div>
-              <div>
+              </div> */}
+              {/* <div>
                 <Label htmlFor="descriptionReferred" className="text-right">
                   Description Referred Voucher
                 </Label>
@@ -118,8 +118,8 @@ const CreateVoucherModal: FC<CreateVoucherModalType> = ({
                   name="descriptionReferred"
                   className="border rounded w-full p-1"
                 />
-              </div>
-              <div>
+              </div> */}
+              {/* <div>
                 <Label htmlFor="currency" className="">
                   Select Currency
                 </Label>
@@ -135,8 +135,8 @@ const CreateVoucherModal: FC<CreateVoucherModalType> = ({
                     </SelectGroup>
                   </SelectContent>
                 </Select>
-              </div>
-              <div>
+              </div> */}
+              {/* <div>
                 <Label htmlFor="amount" className="text-right text-sm">
                   Price of Referred voucher in{' '}
                   {voucherInputs.freeVoucherCurrency ||
@@ -148,8 +148,8 @@ const CreateVoucherModal: FC<CreateVoucherModalType> = ({
                   value={voucherInputs.referredVoucherPrice}
                   onChange={handleInputChange}
                 />
-              </div>
-              <div>
+              </div> */}
+              {/* <div>
                 <Label htmlFor="amount" className="text-right">
                   Price of Free voucher in{' '}
                   {voucherInputs.freeVoucherCurrency ||
@@ -161,7 +161,7 @@ const CreateVoucherModal: FC<CreateVoucherModalType> = ({
                   value={voucherInputs.freeVoucherPrice}
                   onChange={handleInputChange}
                 />
-              </div>
+              </div> */}
             </div>
             <DialogFooter>
               <DialogClose asChild>

@@ -8,6 +8,10 @@ import {
 } from '@rahat-ui/shadcn/components/accordion';
 // import { useSwal } from '/src/components/swal';
 import { useRumsanService } from '../../providers/service.provider';
+import {
+  useCommunityBeneficiaryGroupCreate,
+  useCommunityGroupList,
+} from '@rahat-ui/community-query';
 
 type IProps = {
   selectedData: number[];
@@ -19,12 +23,10 @@ export default function Filter({ selectedData, handleClose }: IProps) {
   //   const totalSelected = table.getFilteredSelectedRowModel().rows.length;
   const perPage = 15;
   const currentPage = 1;
-  const { communityGroupQuery, communityBeneficiaryGroupQuery } =
-    useRumsanService();
 
-  const beneficiaryGroup =
-    communityBeneficiaryGroupQuery.useCommunityBeneficiaryGroupCreate();
-  const { data: groupData } = communityGroupQuery.useCommunityGroupList({
+  const commuinityBeneficiaryGroupCreate = useCommunityBeneficiaryGroupCreate();
+
+  const { data: groupData } = useCommunityGroupList({
     perPage,
     page: currentPage,
   });
@@ -37,7 +39,7 @@ export default function Filter({ selectedData, handleClose }: IProps) {
   const totalSelected = selectedData.length;
 
   const handleAssignBeneficiariesGroup = async () => {
-    const res = await beneficiaryGroup.mutateAsync({
+    const res = await commuinityBeneficiaryGroupCreate.mutateAsync({
       inputOptions,
       selectedData,
     });

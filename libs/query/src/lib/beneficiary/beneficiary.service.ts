@@ -48,7 +48,6 @@ export const useBeneficiaryList = (
 
   useEffect(() => {
     if (ben.data) {
-      //TODO: fix this type @karun-rumsan
       setBeneficiaries(ben.data.data as any[]);
       setMeta(ben.data.response.meta);
     }

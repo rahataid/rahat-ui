@@ -5,7 +5,7 @@ import {
   CardTitle,
 } from '@rahat-ui/shadcn/components/card';
 import { cn } from '@rahat-ui/shadcn/src/utils';
-import { LucideIcon } from 'lucide-react';
+import { LucideIcon, RefreshCcw } from 'lucide-react';
 
 type CardProps = {
   title: string;
@@ -13,6 +13,7 @@ type CardProps = {
   subTitle: string;
   className: string;
   Icon?: LucideIcon;
+  refresh?: VoidFunction;
 };
 
 export default function DataCard({
@@ -21,6 +22,7 @@ export default function DataCard({
   subTitle,
   className,
   Icon,
+  refresh,
 }: CardProps) {
   return (
     <Card
@@ -29,22 +31,36 @@ export default function DataCard({
         className,
       )}
     >
-      <CardHeader className="flex items-start justify-between pb-2">
-        <CardTitle className="text-md font-medium">{title}</CardTitle>
-        {Icon && (
-          <Icon
-            size={20}
-            strokeWidth={1.5}
-            className="h-6 w-6 text-muted-foreground"
-          />
-        )}
+      <CardHeader className="pb-2">
+        <div className="flex items-start justify-between ">
+          <CardTitle className="text-md font-medium">{title}</CardTitle>
+          <div>
+            {Icon && (
+              <Icon
+                size={20}
+                strokeWidth={1.5}
+                className="text-muted-foreground"
+              />
+            )}
+          </div>
+        </div>
       </CardHeader>
       <CardContent className="flex items-center justify-between">
-        <div className="">
+        <div>
           <div className="text-4xl font-semibold text-primary">{number}</div>
-          <p className="text-xs text-muted-foreground space-y-0 pt-2">
-            {subTitle}
-          </p>
+          <div className="flex items-end gap-4">
+            <p className="text-xs text-muted-foreground space-y-0 pt-2">
+              {subTitle}
+            </p>
+            {refresh && (
+              <RefreshCcw
+                size={14}
+                strokeWidth={1.5}
+                className="text-primary cursor-pointer"
+                onClick={refresh}
+              />
+            )}
+          </div>
         </div>
       </CardContent>
     </Card>

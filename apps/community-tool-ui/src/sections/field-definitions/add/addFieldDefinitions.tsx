@@ -1,0 +1,152 @@
+'use client';
+
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from '@rahat-ui/shadcn/src/components/ui/form';
+import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@rahat-ui/shadcn/src/components/ui/select';
+import { useForm } from 'react-hook-form';
+import { toast } from 'react-toastify';
+import { Switch } from '@rahat-ui/shadcn/src/components/ui/switch';
+import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
+
+import { z } from 'zod';
+
+import React, { useEffect } from 'react';
+
+import { useFieldDefinitionsCreate } from '@rahat-ui/community-query';
+import { FieldType } from 'apps/community-tool-ui/src/types/fieldDefinition';
+
+export default function AddFieldDefinitions() {
+  const addFieldDefinitions = useFieldDefinitionsCreate();
+  const FormSchema = z.object({
+    name: z.string().min(1),
+    fieldType: z.string().toUpperCase(),
+    isActive: z.boolean(),
+  });
+
+  const form = useForm<z.infer<typeof FormSchema>>({
+    resolver: zodResolver(FormSchema),
+    defaultValues: {
+      name: '',
+      fieldType: FieldType.TEXT,
+      isActive: false,
+    },
+  });
+
+  const handleCreateFieldDefinitions = async (
+    data: z.infer<typeof FormSchema>,
+  ) => {
+    await addFieldDefinitions.mutateAsync({
+      name: data?.name,
+      fieldType: data.fieldType as FieldType,
+      isActive: data?.isActive,
+    });
+  };
+
+  useEffect(() => {
+    if (addFieldDefinitions.isSuccess) {
+      form.reset();
+    }
+  }, [addFieldDefinitions.isSuccess, form]);
+
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(handleCreateFieldDefinitions)}>
+        <div className="p-4 h-add">
+          <h1 className="text-lg font-semibold mb-6">Add Field Definition</h1>
+          <div className="shadow-md p-4 rounded-sm">
+            <div className="grid grid-cols-2 gap-4 mb-4">
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <FormControl>
+                        <Input type="text" placeholder="Name" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
+
+              <FormField
+                control={form.control}
+                name="fieldType"
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Field Type" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value={FieldType.TEXT}>TEXT</SelectItem>
+                          <SelectItem value={FieldType.NUMBER}>
+                            NUMBER
+                          </SelectItem>
+                          <SelectItem value={FieldType.CHECKBOX}>
+                            CHECKBOX
+                          </SelectItem>
+                          <SelectItem value={FieldType.DROPDOWN}>
+                            DROPDOWN
+                          </SelectItem>
+                          <SelectItem value={FieldType.PASSWORD}>
+                            PASSWORD
+                          </SelectItem>
+                          <SelectItem value={FieldType.RADIO}>RADIO</SelectItem>
+                          <SelectItem value={FieldType.TEXTAREA}>
+                            TEXTAREA
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
+
+              {/* <FormField
+                control={form.control}
+                name="isActive"
+                render={({ field }) => (
+                  <div className=" flex flex-row items-center gap-4 m-1">
+                    <Label>isActive</Label>
+                    <Switch
+                      {...field}
+                      value={field.value ? 'true' : 'false'}
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </div>
+                )}
+              /> */}
+            </div>
+            <div className="flex justify-end">
+              <Button>Create Field Definition</Button>
+            </div>
+          </div>
+        </div>
+      </form>
+    </Form>
+  );
+}

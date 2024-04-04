@@ -10,13 +10,18 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 
-import { useBeneficiaryList, usePagination } from '@rahat-ui/query';
+import {
+  useBeneficiaryList,
+  useBulkAssignBenToProject,
+  usePagination,
+} from '@rahat-ui/query';
 import CustomPagination from '../../components/customPagination';
 import BeneficiaryGridView from '../../sections/beneficiary/gridView';
 import BeneficiaryListView from '../../sections/beneficiary/listView';
 import { useBeneficiaryTableColumns } from './useBeneficiaryColumns';
 import { useSecondPanel } from '../../providers/second-panel-provider';
-import BeneficiaryDetail from './beneficiaryDetail';
+import { useBoolean } from '../../hooks/use-boolean';
+import { UUID } from 'crypto';
 
 function BeneficiaryView() {
   const {
@@ -32,6 +37,8 @@ function BeneficiaryView() {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const columns = useBeneficiaryTableColumns();
   const { closeSecondPanel, setSecondPanelComponent } = useSecondPanel();
+  const projectModal = useBoolean();
+  const bulkAssign = useBulkAssignBenToProject();
 
   const table = useReactTable({
     manualPagination: true,
@@ -54,6 +61,33 @@ function BeneficiaryView() {
     );
   };
 
+  const benUUIDs = Object.keys(selectedListItems);
+
+  const handleBulkAssign = async (selectedProject: string) => {
+    // from the list of selected beneficiaries, filter out the ones that are already assigned to the project
+
+    // TODO:Make this more cleaner
+    const benNotAssignedToTheProject = data?.data
+      ?.filter(
+        (ben) =>
+          !ben.BeneficiaryProject.some(
+            (project) => project.projectId === selectedProject,
+          ),
+      )
+      .filter((ben) => benUUIDs.includes(ben.uuid))
+      .map((ben) => ben.uuid);
+
+    if (!benNotAssignedToTheProject)
+      return alert(
+        'All selected beneficiaries are already assigned to the project',
+      );
+
+    await bulkAssign.mutateAsync({
+      projectUUID: selectedProject as UUID,
+      beneficiaryUUIDs: benNotAssignedToTheProject as any[],
+    });
+  };
+
   return (
     <>
       <TabsContent value="list">
@@ -61,6 +95,9 @@ function BeneficiaryView() {
           table={table}
           meta={data?.meta}
           handleClick={handleBeneficiaryClick}
+          handleBulkAssign={handleBulkAssign}
+          isBulkAssigning={false}
+          projectModal={projectModal}
         />
       </TabsContent>
       <TabsContent value="grid">

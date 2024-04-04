@@ -14,8 +14,8 @@ export default function ProjectListView() {
       <div className="p-2">
         <Filters />
       </div>
-      <ScrollArea className="px-2 h-withPage">
-        <div className="grid grid-cols-3 gap-6">
+      <ScrollArea className="px-2 h-[calc(100vh-171px)]">
+        <div className="grid grid-cols-3 gap-2">
           {data?.data?.map((project) => (
             <ProjectCard
               // TODO:Fix the return type

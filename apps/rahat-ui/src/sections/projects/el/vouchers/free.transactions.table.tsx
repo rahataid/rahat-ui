@@ -24,8 +24,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
-import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
-import { ArrowUpDown, ChevronDownIcon, GripVertical } from 'lucide-react';
+import { ArrowUpDown, GripVertical } from 'lucide-react';
 import {
   Table,
   TableBody,
@@ -34,9 +33,10 @@ import {
   TableHeader,
   TableRow,
 } from '@rahat-ui/shadcn/src/components/ui/table';
-import { useGetFreeVoucherTransaction, useProjectVoucher } from 'apps/rahat-ui/src/hooks/el/subgraph/querycall';
+import { useGetFreeVoucherTransaction } from 'apps/rahat-ui/src/hooks/el/subgraph/querycall';
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
+import { truncateEthAddress } from '@rumsan/sdk/utils';
 
 export type Payment = {
   id: string;
@@ -47,32 +47,10 @@ export type Payment = {
 
 export const columns: ColumnDef<Payment>[] = [
   {
-    id: 'select',
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && 'indeterminate')
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
     accessorKey: 'transactionHash',
     header: 'TransactionHash',
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue('transactionHash')}</div>
+      <div className="capitalize">{truncateEthAddress(row.getValue('transactionHash'))}</div>
     ),
   },
   {
@@ -88,7 +66,7 @@ export const columns: ColumnDef<Payment>[] = [
         </Button>
       );
     },
-    cell: ({ row }) => <div className="lowercase">{row.getValue('from')}</div>,
+    cell: ({ row }) => <div className="lowercase">{truncateEthAddress(row.getValue('from'))}</div>,
   },
   {
     accessorKey: 'to',
@@ -103,21 +81,14 @@ export const columns: ColumnDef<Payment>[] = [
         </Button>
       );
     },
-    cell: ({ row }) => <div className="lowercase">{row.getValue('from')}</div>,
+    cell: ({ row }) => <div className="lowercase">{truncateEthAddress(row.getValue('to'))}</div>,
   },
   {
     accessorKey: 'value',
-    header: () => <div className="text-right">Amount</div>,
+    header: () => <div className="text-right">Voucher</div>,
     cell: ({ row }) => {
       const amount = parseFloat(row.getValue('value'));
-
-      // Format the amount as a dollar amount
-      const formatted = new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-      }).format(amount);
-
-      return <div className="text-right font-medium">{formatted}</div>;
+      return <div className="text-right font-medium">{amount}</div>;
     },
   },
   {
@@ -142,8 +113,6 @@ export const columns: ColumnDef<Payment>[] = [
               Copy payment ID
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>View customer</DropdownMenuItem>
-            <DropdownMenuItem>View payment details</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );
@@ -174,7 +143,7 @@ export function FreeTransactionTable() {
       })
     }
 
-  },[projectSettings])
+  },[projectSettings,id])
 
   const {data: vouchersTransactions} = useGetFreeVoucherTransaction(contractAddress?.eyeVoucher)
 
@@ -202,14 +171,6 @@ export function FreeTransactionTable() {
     <div className="w-full h-full bg-card">
       <div className="flex items-center justify-between py-2 px-2">
         <h1 className="text-primary">Transactions</h1>
-        <Input
-          placeholder="Filter emails..."
-          value={(table.getColumn('email')?.getFilterValue() as string) ?? ''}
-          onChange={(event) =>
-            table.getColumn('email')?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm"
-        />
       </div>
       <div className="rounded border h-[calc(100vh-600px)] bg-card">
         <Table>

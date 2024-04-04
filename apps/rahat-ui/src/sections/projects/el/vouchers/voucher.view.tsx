@@ -13,11 +13,9 @@ import { FreeTransactionTable } from './free.transactions.table';
 import { FreeHoldersTable } from './free.holder.table';
 import { DiscountTransactionTable } from './discount.transactions.table';
 import { DiscountHoldersTable } from './discount.holder.table';
-import { useGetFreeVoucherTransaction, useProjectVoucher, useVoucherHolder } from 'apps/rahat-ui/src/hooks/el/subgraph/querycall';
+import { useProjectVoucher, useVoucherHolder } from 'apps/rahat-ui/src/hooks/el/subgraph/querycall';
 import AddVoucher from './add.voucher';
-import { useProjectSettingsStore } from '@rahat-ui/query';
 import { useParams } from 'next/navigation';
-import { useReadRahatTokenDescription } from 'apps/rahat-ui/src/hooks/el/contracts/token';
 
 const VoucherView = () => {
 
@@ -40,21 +38,21 @@ const VoucherView = () => {
       })
     }
 
-  }, [projectSettings])
+  }, [projectSettings,id])
 
-  const projectVoucher = useProjectVoucher(
+  const {data:projectVoucher} = useProjectVoucher(
     contractAddress?.el || '',
     contractAddress?.eyeVoucher || '',
   );
 
-  const {data:voucherdata} = useReadRahatTokenDescription({address: contractAddress?.eyeVoucher});
+
 
   return (
     <>
-      {projectVoucher?.data?.freeVoucherAddress ?
+      {projectVoucher?.freeVoucherAddress ?
         <>
-          <FreeVoucherInfo />
-          <DiscountVoucherInfo />
+          <FreeVoucherInfo data ={projectVoucher}/>
+          <DiscountVoucherInfo data ={projectVoucher} />
 
           <div className="mt-2 mr-2 ml-2 w-full">
             <Tabs defaultValue="free">

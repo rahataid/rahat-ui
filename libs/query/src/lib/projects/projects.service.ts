@@ -307,10 +307,9 @@ export const useProjectBeneficiaries = (payload: GetProjectBeneficiaries) => {
 
     select(data) {
       return data.map((row: any) => ({
-        name: row.Beneficiary.walletAddress,
+        name: row.piiData.name,
         gender: row.Beneficiary.gender,
-        phone: row.Beneficiary.notes || 'N/A',
-        redemption: 'N/A',
+        phone: row.piiData.phone || 'N/A',
         type: row.Beneficiary.type || 'N/A',
       }));
     },

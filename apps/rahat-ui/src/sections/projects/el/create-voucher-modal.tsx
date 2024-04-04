@@ -74,7 +74,7 @@ const CreateVoucherModal: FC<CreateVoucherModalType> = ({
         rahatDonor: settings?.rahatdonor?.address,
       });
     }
-  }, [projectSettings]);
+  }, [projectSettings,id]);
 
   const { data: projectVoucher, isLoading } = useProjectVoucher(
     contractAddress?.el || '',
@@ -85,7 +85,7 @@ const CreateVoucherModal: FC<CreateVoucherModalType> = ({
     route.push(`/projects/el/${id}/vouchers`);
   };
 
-  return (
+  return ( 
     <>
       <Dialog onOpenChange={handleModal}>
         <DialogTrigger asChild>
@@ -96,7 +96,7 @@ const CreateVoucherModal: FC<CreateVoucherModalType> = ({
             </div>
           </div>
         </DialogTrigger>
-        {projectVoucher?.voucherDescription ? (
+        {!isLoading && projectVoucher?.freeVoucherAddress ? (
           <DialogContent className="sm:max-w-[600px]">
             <DialogHeader>
               <DialogTitle>Mint Voucher</DialogTitle>

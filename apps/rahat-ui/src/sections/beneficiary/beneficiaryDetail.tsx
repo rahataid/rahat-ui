@@ -88,7 +88,7 @@ export default function BeneficiaryDetail({
         beneficiaryDetail={beneficiaryDetail}
         projectModal={projectModal}
       />
-      <div className="flex justify-between p-4 pt-5 bg-secondary">
+      <div className="flex justify-between p-4 pt-5 bg-secondary border-b">
         <div className="flex gap-3">
           <TooltipProvider delayDuration={100}>
             <Tooltip>

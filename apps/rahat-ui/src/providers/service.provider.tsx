@@ -60,6 +60,7 @@ export function ServiceProvider({ children }: ServiceProviderProps) {
 
   useEffect(() => {
     if (!commsQueryClient) {
+      // ts-ignore
       setCommsQueryClient(qc);
     }
   }, [qc, commsQueryClient, setCommsQueryClient]);

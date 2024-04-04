@@ -52,3 +52,69 @@ export const useFieldDefinitionsCreate = () => {
     queryClient,
   );
 };
+
+export const useFieldDefinitionsUpdate = () => {
+  const { queryClient, rumsanService } = useRSQuery();
+  const fieldDefClient = getFieldDefinitionClient(rumsanService.client);
+
+  return useMutation(
+    {
+      mutationKey: [TAGS.UPDATE_COMMUNITY_FIELD_DEFINITIONS, 'id'],
+      mutationFn: fieldDefClient.update,
+      onSuccess: () => {
+        Swal.fire('Field Definition Updated Successfully', '', 'success');
+        queryClient.invalidateQueries({
+          queryKey: [
+            TAGS.LIST_COMMUNITY_FIELD_DEFINITIONS,
+            {
+              exact: true,
+            },
+          ],
+        });
+      },
+      onError: (error: any) => {
+        Swal.fire(
+          'Error',
+          error.response.data.message || 'Encounter error on Creating Data',
+          'error',
+        );
+      },
+    },
+    queryClient,
+  );
+};
+
+export const useFieldDefinitionsStatusUpdate = () => {
+  const { queryClient, rumsanService } = useRSQuery();
+  const fieldDefClient = getFieldDefinitionClient(rumsanService.client);
+
+  return useMutation(
+    {
+      mutationKey: [TAGS.UPDATE_COMMUNITY_FIELD_DEFINITIONS_STATUS, 'id'],
+      mutationFn: fieldDefClient.toggleStatus,
+      onSuccess: () => {
+        Swal.fire(
+          'Field Definition Status Updated Successfully',
+          '',
+          'success',
+        );
+        queryClient.invalidateQueries({
+          queryKey: [
+            TAGS.LIST_COMMUNITY_FIELD_DEFINITIONS,
+            {
+              exact: true,
+            },
+          ],
+        });
+      },
+      onError: (error: any) => {
+        Swal.fire(
+          'Error',
+          error.response.data.message || 'Encounter error on Creating Data',
+          'error',
+        );
+      },
+    },
+    queryClient,
+  );
+};

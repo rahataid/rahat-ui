@@ -67,7 +67,7 @@ export default function UserDetail({ userDetail, closeSecondPanel }: IProps) {
   };
   return (
     <>
-      <div className="flex justify-between p-4 pt-5 bg-secondary">
+      <div className="flex justify-between p-4 pt-5 bg-secondary border-b">
         {/* Minimize  */}
         <TooltipProvider delayDuration={100}>
           <Tooltip>

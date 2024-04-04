@@ -168,7 +168,7 @@ export default function BeneficiaryDetail({
       <div className="p-2 flex items-center gap-2">
         <Image
           className="rounded-full"
-          src="/svg/funny-cat.svg"
+          src="/profile.png"
           alt="cat"
           height={80}
           width={80}

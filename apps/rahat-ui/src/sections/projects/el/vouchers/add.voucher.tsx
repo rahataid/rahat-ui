@@ -22,7 +22,7 @@ import { useMintVouchers } from 'apps/rahat-ui/src/hooks/el/contracts/el-contrac
 
 type Checked = DropdownMenuCheckboxItemProps['checked'];
 
-const AddVoucher = ({contractSettings}: {contractSettings:any}) => {
+const AddVoucher = ({ contractSettings }: { contractSettings: any }) => {
   const [voucherName, setVoucherName] = useState('');
   const [noOfVoucherMinted, setNoOfVoucherMinted] = useState('');
   const [priceInUSD, setPriceInUSD] = useState('');
@@ -42,30 +42,30 @@ const AddVoucher = ({contractSettings}: {contractSettings:any}) => {
 
   const createVoucher = useMintVouchers();
 
-  console.log("contract settings", contractSettings)
+  console.log('contract settings', contractSettings);
 
   const handleSubmit = async () => {
     const referralLimit = 3;
     await createVoucher.writeContractAsync({
-          address: contractSettings?.rahatDonor,
-          args: [
-            contractSettings?.eyeVoucher,
-            contractSettings?.referredVoucher,
-            contractSettings?.el,
-            BigInt(noOfVoucherMinted),
-            description,
-            descriptionReferred,
-            BigInt(priceInUSD),
-            BigInt(referredPriceInUSD),
-            BigInt(referralLimit),
-            selectedCurrencySymbol,
-          ],
-        })
+      address: contractSettings?.rahatDonor,
+      args: [
+        contractSettings?.eyeVoucher,
+        contractSettings?.referredVoucher,
+        contractSettings?.el,
+        BigInt(noOfVoucherMinted),
+        description,
+        descriptionReferred,
+        BigInt(priceInUSD),
+        BigInt(referredPriceInUSD),
+        BigInt(referralLimit),
+        selectedCurrencySymbol,
+      ],
+    });
   };
 
   return (
     <>
-      <div className="grid sm:grid-cols-2">
+      <div className="grid sm:grid-cols-2 mt-2">
         <div className="ml-2 rounded bg-card p-4 shadow">
           <h1 className="text-primary mb-2 font-medium">Free Voucher</h1>
           <div className="flex items-center gap-10 mt-5">

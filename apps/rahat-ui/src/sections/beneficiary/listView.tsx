@@ -24,7 +24,6 @@ import {
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { ListBeneficiary } from '@rahat-ui/types';
 import BulkAssignToProjectModal from './components/bulkAssignToProjectModal';
-import { useBoolean } from '../../hooks/use-boolean';
 
 type IProps = {
   table: Table<ListBeneficiary>;
@@ -48,7 +47,7 @@ export default function ListView({
           .getSelectedRowModel()
           .rows.map((row) => row.original.walletAddress)}
       />
-      <div className="w-full -mt-2 p-2 bg-secondary">
+      <div className="-mt-2 p-2 bg-secondary">
         <div className="flex items-center mb-2">
           <Input
             placeholder="Filter beneficiary..."
@@ -102,10 +101,10 @@ export default function ListView({
             </Button>
           ) : null}
         </div>
-        <div className="rounded border bg-card">
+        <div className="rounded border bg-card h-[calc(100vh-180px)]">
           <TableComponent>
-            <ScrollArea className="h-[calc(100vh-180px)]">
-              <TableHeader className="bg-card sticky top-0">
+            <ScrollArea className="h-table1">
+              <TableHeader className="sticky top-0">
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow key={headerGroup.id}>
                     {headerGroup.headers.map((header) => {

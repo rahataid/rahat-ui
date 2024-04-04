@@ -50,6 +50,7 @@ export const BENEF_DB_FIELDS = [
 export const UNIQUE_FIELD = {
   PHONE: 'phone',
   EMAIL: 'email',
+  GOVT_ID_NUMBER: 'govtIDNumber',
 };
 
 export const IMPORT_OPTIONS = [
@@ -71,6 +72,10 @@ export const UNIQUE_FIELD_OPTIONS = [
   {
     label: 'Email',
     value: UNIQUE_FIELD.EMAIL,
+  },
+  {
+    label: 'Govt ID Number',
+    value: UNIQUE_FIELD.GOVT_ID_NUMBER,
   },
 ];
 

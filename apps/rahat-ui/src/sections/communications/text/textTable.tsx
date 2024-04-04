@@ -42,9 +42,9 @@ import {
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { CAMPAIGN_TYPES } from '@rahat-ui/types';
-import { ICampaignItemApiResponse } from '@rumsan/communication';
 import { useCampaignStore, useListCampaign } from '@rumsan/communication-query';
 import useTextTableColumn from './useTextTableColumn';
+import { ICampaignItemApiResponse } from '@rumsan/communication/types';
 
 type IProps = {
   handleClick: (item: ICampaignItemApiResponse) => void;
@@ -53,7 +53,7 @@ type IProps = {
 export default function TextTableView({ handleClick }: IProps) {
   const columns = useTextTableColumn({ handleSplitDetail: handleClick });
   const campaignStore = useCampaignStore();
-  const { data, isSuccess } = useListCampaign({ page: 1, perPage: 10 });
+  const { data, isSuccess } = useListCampaign();
 
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(

@@ -125,6 +125,8 @@ const CreateVoucherModal: FC<CreateVoucherModalType> = ({
                       className="w-2/3"
                       value={voucherInputs.tokens}
                       onChange={handleInputChange}
+                      type='number'
+                      min='1'
                     />
                   </div>
                 </form>

@@ -41,14 +41,14 @@ import { useState } from 'react';
 import ConfirmDialog from '../../components/dialog';
 import { useBoolean } from '../../hooks/use-boolean';
 import { paths } from '../../routes/paths';
-import { IBeneficiaryItem } from '../../types/beneficiary';
 import BeneficiaryDetailTableView from './beneficiaryDetailTable';
 import AssignToProjectModal from './components/assignToProjectModal';
 import SplitViewDetailCards from './components/split.view.detail.cards';
 import EditBeneficiary from './editBeneficiary';
+import { ListBeneficiary } from '@rahat-ui/types';
 
 type IProps = {
-  beneficiaryDetail: IBeneficiaryItem;
+  beneficiaryDetail: ListBeneficiary;
   closeSecondPanel: VoidFunction;
 };
 
@@ -65,25 +65,7 @@ export default function BeneficiaryDetail({
   );
   const [walletAddressCopied, setWalletAddressCopied] =
     useState<boolean>(false);
-  // let beneficiary = null;
-  // const walletAddress = beneficiaryDetail.walletAddress || '';
-
-  // const beneficiaryDetails = useBeneficaryVoucher(walletAddress);
-
-  // const changedDate = new Date(beneficiaryDetail?.updatedAt);
-  // const formattedDate = changedDate.toLocaleDateString('en-US', {
-  //   year: 'numeric',
-  //   month: 'long',
-  //   day: 'numeric',
-  // });
-
-  // if (beneficiaryDetail.uuid) {
-  //   const response = beneficiaryQuery.useBeneficiaryGet(beneficiaryDetail.uuid);
-  //   beneficiary = response.data?.data;
-  // }
   const walletAddress = beneficiaryDetail.walletAddress || '';
-
-  // const beneficiaryDetails = useBeneficaryVoucher(walletAddress);
 
   const handleTabChange = (tab: 'details' | 'edit') => {
     setActiveTab(tab);
@@ -123,9 +105,7 @@ export default function BeneficiaryDetail({
               <TooltipTrigger
                 onClick={() => {
                   router.push(
-                    paths.dashboard.beneficiary.detail(
-                      beneficiaryDetail?.walletAddress,
-                    ),
+                    paths.dashboard.beneficiary.detail(walletAddress),
                   );
                 }}
               >
@@ -153,7 +133,7 @@ export default function BeneficiaryDetail({
               <TooltipTrigger>
                 <Dialog>
                   <DialogTrigger asChild>
-                    <Trash2 size={20} strokeWidth={1.5} />
+                    <Trash2 color="#FF0000" size={20} strokeWidth={1.5} />
                   </DialogTrigger>
                   <ConfirmDialog name="beneficiary" />
                 </Dialog>
@@ -206,14 +186,14 @@ export default function BeneficiaryDetail({
                 className="flex gap-3 items-center"
                 onClick={clickToCopy}
               >
-                <p className="text-slate-500 text-base">
+                <p className="text-muted-foreground text-base">
                   {truncateEthAddress(walletAddress)}
                 </p>
                 {walletAddressCopied ? (
                   <CopyCheck size={15} strokeWidth={1.5} />
                 ) : (
                   <Copy
-                    className="text-slate-500"
+                    className="text-muted-foreground"
                     size={15}
                     strokeWidth={1.5}
                   />

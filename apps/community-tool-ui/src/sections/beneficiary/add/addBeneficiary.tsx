@@ -7,7 +7,6 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from '@rahat-ui/shadcn/src/components/ui/form';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
@@ -19,29 +18,28 @@ import {
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { useForm } from 'react-hook-form';
-import { toast } from 'react-toastify';
 
-import { z } from 'zod';
-import { CalendarIcon, Check, ChevronsUpDown, Wallet } from 'lucide-react';
+import { useCommunityBeneficiaryCreate } from '@rahat-ui/community-query';
+import { Calendar } from '@rahat-ui/shadcn/src/components/ui/calendar';
+import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/popover';
+import { Switch } from '@rahat-ui/shadcn/src/components/ui/switch';
+import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
 import {
   BankedStatus,
   Gender,
   InternetStatus,
   PhoneStatus,
 } from '@rahataid/community-tool-sdk/enums/';
-import React, { useEffect } from 'react';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/popover';
-import { format } from 'date-fns';
-import { Calendar } from '@rahat-ui/shadcn/src/components/ui/calendar';
-import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
-import { useCommunityBeneficiaryCreate } from '@rahat-ui/community-query';
-import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
-import { Switch } from '@rahat-ui/shadcn/src/components/ui/switch';
 import { ID_TYPE } from 'apps/community-tool-ui/src/constants/beneficiary.const';
+import { format } from 'date-fns';
+import { CalendarIcon, Wallet } from 'lucide-react';
+import { useEffect } from 'react';
+import { z } from 'zod';
 
 export default function AddBeneficiary() {
   const addCommunityBeneficiary = useCommunityBeneficiaryCreate();

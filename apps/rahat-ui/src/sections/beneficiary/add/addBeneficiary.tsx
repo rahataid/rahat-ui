@@ -31,9 +31,7 @@ export default function AddBeneficiaryForm() {
 
   const FormSchema = z.object({
     name: z.string().min(2, { message: 'Name must be at least 4 character' }),
-    // walletAddress: z
-    //   .string()
-    //   .min(42, { message: 'The Ethereum address must be 42 characters long' }),
+    walletAddress: z.string(),
     phone: z
       .string()
       .refine(isValidPhoneNumber, { message: 'Invalid phone number' }),
@@ -76,8 +74,8 @@ export default function AddBeneficiaryForm() {
     try {
       const result = await addBeneficiary.mutateAsync({
         gender: data.gender,
-        location:data.address,
-        ageRange:data.age,
+        location: data.address,
+        ageRange: data.age,
         bankedStatus: data.bankedStatus,
         internetStatus: data.internetStatus,
         phoneStatus: data.phoneStatus,
@@ -309,10 +307,10 @@ export default function AddBeneficiaryForm() {
                             {...field}
                           />
                           {/* {!field.value ? ( */}
-                            <p className="text-xs text-amber-500 mt-2">
-                              * Wallet address is required. If not entered, it
-                              will be automatically filled.
-                            </p>
+                          <p className="text-xs text-amber-500 mt-2">
+                            * Wallet address is required. If not entered, it
+                            will be automatically filled.
+                          </p>
                           {/* ) : (
                             ''
                           )} */}

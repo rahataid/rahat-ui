@@ -3,3 +3,6 @@ export * from './beneficiary/beneficiary.query';
 export * from './settings/settings.query';
 export * from './groups/groups.query';
 export * from './beneficiaryGroup/beneficiary.group';
+export * from './fieldDefinitions/fieldDefinitions.query';
+export * from './users/users.query';
+export * from './fields/fields.query';

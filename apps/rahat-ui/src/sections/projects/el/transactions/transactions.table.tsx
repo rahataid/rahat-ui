@@ -162,7 +162,7 @@ export const columns: ColumnDef<Transaction>[] = [
   },
 ];
 
-export default function TransactionTable({ walletAddress }) {
+export default function TransactionTable({ }) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
@@ -171,7 +171,9 @@ export default function TransactionTable({ walletAddress }) {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
-  const { data } = useBeneficiaryTransaction(walletAddress);
+  const { data } = useProjectTransaction();
+
+  console.log("data", data)
 
   const table = useReactTable({
     data: data || [],

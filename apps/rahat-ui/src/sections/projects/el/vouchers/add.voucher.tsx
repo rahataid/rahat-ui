@@ -47,7 +47,7 @@ const AddVoucher = ({contractSettings}: {contractSettings:any}) => {
   const handleSubmit = async () => {
     const referralLimit = 3;
     await createVoucher.writeContractAsync({
-          address: contractSettings?.rahatDonor?.address,
+          address: contractSettings?.rahatDonor,
           args: [
             contractSettings?.eyeVoucher,
             contractSettings?.referredVoucher,

@@ -107,7 +107,12 @@ export function ServiceProvider({ children }: ServiceProviderProps) {
     }
   }, [communicationService]);
 
-  if (!rumsanService || !queryClient || !communicationService)
+  if (
+    !rumsanService ||
+    !queryClient ||
+    !communicationService ||
+    !commsQueryClient
+  )
     return (
       <div className="h-screen flex items-center justify-center">
         <Image

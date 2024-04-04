@@ -30,8 +30,6 @@ type IProps = {
 };
 
 export default function FieldDefinitionsDetail({ data, handleClose }: IProps) {
-  const router = useRouter();
-
   return (
     <>
       <Tabs defaultValue="detail">

@@ -66,8 +66,8 @@ dependencies:
     specifier: ^1.0.7
     version: 1.0.7(@types/react-dom@18.2.21)(@types/react@18.2.65)(react-dom@18.2.0)(react@18.2.0)
   '@rahataid/community-tool-sdk':
-    specifier: ^0.0.5
-    version: 0.0.5
+    specifier: ^0.0.7
+    version: 0.0.7
   '@rahataid/el-subgraph':
     specifier: 0.0.6
     version: 0.0.6
@@ -3530,7 +3530,7 @@ packages:
     hasBin: true
     dependencies:
       nx: 18.0.4(@swc-node/register@1.9.0)(@swc/core@1.4.7)
-      tslib: 2.3.0
+      tslib: 2.6.2
     transitivePeerDependencies:
       - '@swc-node/register'
       - '@swc/core'
@@ -5355,10 +5355,10 @@ packages:
       '@babel/runtime': 7.24.1
     dev: false
 
-  /@rahataid/community-tool-sdk@0.0.5:
-    resolution: {integrity: sha512-lWPIytunAkdas1DiUfQ299pbDf0SlqoqxMiQGFBF00Bs+cAR4Gl4WU9TvrnC6OpN9Pplwz4vAHr/E45yaO8QRQ==, tarball: https://npm.pkg.github.com/download/@rahataid/community-tool-sdk/0.0.5/d2427609516a5936d6c1a3c26c4f425d60ce08c7}
+  /@rahataid/community-tool-sdk@0.0.7:
+    resolution: {integrity: sha512-WgS0o2wxsawtx0Qv1Rcy9I5GyIzpZMUBekxN4AwiU+9RqFrnE8Lu0G8L3GUCXbI0yzUbMyoG08CBzrjdiycq1w==, tarball: https://npm.pkg.github.com/download/@rahataid/community-tool-sdk/0.0.7/e474dc59cef7aa85c5bb67ceffff82573c673030}
     dependencies:
-      tslib: 2.3.0
+      tslib: 2.6.2
     dev: false
 
   /@rahataid/el-subgraph@0.0.6:
@@ -8453,7 +8453,7 @@ packages:
     resolution: {integrity: sha512-y+CcFFwelSXpLZk/7fMB2mUbGtX9lKycf1MWJ7CaTIERyitVlyQx6C+sxcROU2BAJ24OiZyK+8wj2i8AlBoS3A==}
     engines: {node: '>=10'}
     dependencies:
-      tslib: 2.3.0
+      tslib: 2.6.2
     dev: false
 
   /aria-query@5.1.3:
@@ -8637,7 +8637,7 @@ packages:
     resolution: {integrity: sha512-6t10qk83GOG8p0vKmaCr8eiilZwO171AvbROMtvvNiwrTly62t+7XkA8RdIIVbpMhCASAsxgAzdRSwh6nw/5Dg==}
     engines: {node: '>=4'}
     dependencies:
-      tslib: 2.3.0
+      tslib: 2.6.2
     dev: false
 
   /astral-regex@1.0.0:
@@ -9456,7 +9456,7 @@ packages:
     resolution: {integrity: sha512-gxGWBrTT1JuMx6R+o5PTXMmUnhnVzLQ9SNutD4YqKtI6ap897t3tKECYla6gCWEkplXnlNybEkZg9GEGxKFCgw==}
     dependencies:
       pascal-case: 3.1.2
-      tslib: 2.3.0
+      tslib: 2.6.2
     dev: true
 
   /camelcase-css@2.0.1:
@@ -9498,7 +9498,7 @@ packages:
     resolution: {integrity: sha512-ds37W8CytHgwnhGGTi88pcPyR15qoNkOpYwmMMfnWqqWgESapLqvDx6huFjQ5vqWSn2Z06173XNA7LtMOeUh1A==}
     dependencies:
       no-case: 3.0.4
-      tslib: 2.3.0
+      tslib: 2.6.2
       upper-case-first: 2.0.2
     dev: true
 
@@ -9553,7 +9553,7 @@ packages:
       path-case: 3.0.4
       sentence-case: 3.0.4
       snake-case: 3.0.4
-      tslib: 2.3.0
+      tslib: 2.6.2
     dev: true
 
   /char-regex@1.0.2:
@@ -10001,7 +10001,7 @@ packages:
     resolution: {integrity: sha512-I2hSBi7Vvs7BEuJDr5dDHfzb/Ruj3FyvFyh7KLilAjNQw3Be+xgqUBA2W6scVEcL0hL1dwPRtIqEPVUCKkSsyQ==}
     dependencies:
       no-case: 3.0.4
-      tslib: 2.3.0
+      tslib: 2.6.2
       upper-case: 2.0.2
     dev: true
 
@@ -10881,7 +10881,7 @@ packages:
     resolution: {integrity: sha512-Kv5nKlh6yRrdrGvxeJ2e5y2eRUpkUosIW4A2AS38zwSz27zu7ufDwQPi5Jhs3XAlGNetl3bmnGhQsMtkKJnj3w==}
     dependencies:
       no-case: 3.0.4
-      tslib: 2.3.0
+      tslib: 2.6.2
     dev: true
 
   /dotenv-expand@10.0.0:
@@ -12479,7 +12479,7 @@ packages:
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
       style-value-types: 5.0.0
-      tslib: 2.3.0
+      tslib: 2.6.2
     optionalDependencies:
       '@emotion/is-prop-valid': 0.8.8
     dev: false
@@ -12487,7 +12487,7 @@ packages:
   /framesync@6.0.1:
     resolution: {integrity: sha512-fUY88kXvGiIItgNC7wcTOl0SNRCVXMKSWW2Yzfmn7EKNc+MpCzcz9DhdHcdjbrtN3c6R4H5dTY2jiCpPdysEjA==}
     dependencies:
-      tslib: 2.3.0
+      tslib: 2.6.2
     dev: false
 
   /fresh@0.5.2:
@@ -12998,7 +12998,7 @@ packages:
     resolution: {integrity: sha512-H/vuk5TEEVZwrR0lp2zed9OCo1uAILMlx0JEMgC26rzyJJ3N1v6XkwHHXJQdR2doSjcGPM6OKPYoJgf0plJ11Q==}
     dependencies:
       capital-case: 1.0.4
-      tslib: 2.3.0
+      tslib: 2.6.2
     dev: true
 
   /heimdalljs-logger@0.1.10:
@@ -15765,7 +15765,7 @@ packages:
     resolution: {integrity: sha512-fgAN3jGAh+RoxUGZHTSOLJIqUc2wmoBwGR4tbpNAKmmovFoWq0OdRkb0VkldReO2a2iBT/OEulG9XSUc10r3zg==}
     dependencies:
       lower-case: 2.0.2
-      tslib: 2.3.0
+      tslib: 2.6.2
     dev: true
 
   /nocache@2.0.0:
@@ -16447,7 +16447,7 @@ packages:
     resolution: {integrity: sha512-RXlj7zCYokReqWpOPH9oYivUzLYZ5vAPIfEmCTNViosC78F8F0H9y7T7gG2M39ymgutxF5gcFEsyZQSph9Bp3A==}
     dependencies:
       dot-case: 3.0.4
-      tslib: 2.3.0
+      tslib: 2.6.2
     dev: true
 
   /parent-module@1.0.1:
@@ -16491,7 +16491,7 @@ packages:
     resolution: {integrity: sha512-uWlGT3YSnK9x3BQJaOdcZwrnV6hPpd8jFH1/ucpiLRPh/2zCVJKS19E4GvYHvaCcACn3foXZ0cLB9Wrx1KGe5g==}
     dependencies:
       no-case: 3.0.4
-      tslib: 2.3.0
+      tslib: 2.6.2
     dev: true
 
   /passport-jwt@4.0.1:
@@ -16523,7 +16523,7 @@ packages:
     resolution: {integrity: sha512-qO4qCFjXqVTrcbPt/hQfhTQ+VhFsqNKOPtytgNKkKxSoEp3XPUQ8ObFuePylOIok5gjn69ry8XiULxCwot3Wfg==}
     dependencies:
       dot-case: 3.0.4
-      tslib: 2.3.0
+      tslib: 2.6.2
     dev: true
 
   /path-exists@3.0.0:
@@ -16765,7 +16765,7 @@ packages:
       framesync: 6.0.1
       hey-listen: 1.0.8
       style-value-types: 5.0.0
-      tslib: 2.3.0
+      tslib: 2.6.2
     dev: false
 
   /portfinder@1.0.32:
@@ -17769,7 +17769,7 @@ packages:
       '@types/react': 18.2.65
       react: 18.2.0
       react-style-singleton: 2.2.1(@types/react@18.2.65)(react@18.2.0)
-      tslib: 2.3.0
+      tslib: 2.6.2
     dev: false
 
   /react-remove-scroll@2.5.5(@types/react@18.2.65)(react@18.2.0):
@@ -17786,7 +17786,7 @@ packages:
       react: 18.2.0
       react-remove-scroll-bar: 2.3.6(@types/react@18.2.65)(react@18.2.0)
       react-style-singleton: 2.2.1(@types/react@18.2.65)(react@18.2.0)
-      tslib: 2.3.0
+      tslib: 2.6.2
       use-callback-ref: 1.3.2(@types/react@18.2.65)(react@18.2.0)
       use-sidecar: 1.1.2(@types/react@18.2.65)(react@18.2.0)
     dev: false
@@ -17825,7 +17825,7 @@ packages:
       get-nonce: 1.0.1
       invariant: 2.2.4
       react: 18.2.0
-      tslib: 2.3.0
+      tslib: 2.6.2
     dev: false
 
   /react-toastify@10.0.4(react-dom@18.2.0)(react@18.2.0):
@@ -17961,7 +17961,7 @@ packages:
       esprima: 4.0.1
       source-map: 0.6.1
       tiny-invariant: 1.3.3
-      tslib: 2.3.0
+      tslib: 2.6.2
     dev: false
 
   /reflect-metadata@0.2.2:
@@ -18330,7 +18330,7 @@ packages:
   /rxjs@7.8.1:
     resolution: {integrity: sha512-AA3TVj+0A2iuIoQkWEK/tqFjBq2j+6PO6Y0zJcvzLAFhEFIO3HL0vls9hWLncZbAAbK0mar7oZ4V079I/qPMxg==}
     dependencies:
-      tslib: 2.3.0
+      tslib: 2.6.2
 
   /safe-array-concat@1.1.2:
     resolution: {integrity: sha512-vj6RsCsWBCf19jIeHEfkRMw8DPiBb+DMXklQ/1SGDHOMlHdPUkZXFQ2YdplS23zESTijAcurb1aSgJA3AgMu1Q==}
@@ -18510,7 +18510,7 @@ packages:
     resolution: {integrity: sha512-8LS0JInaQMCRoQ7YUytAo/xUu5W2XnQxV2HI/6uM6U7CITS1RqPElr30V6uIqyMKM9lJGRVFy5/4CuzcixNYSg==}
     dependencies:
       no-case: 3.0.4
-      tslib: 2.3.0
+      tslib: 2.6.2
       upper-case-first: 2.0.2
     dev: true
 
@@ -18737,7 +18737,7 @@ packages:
     resolution: {integrity: sha512-LAOh4z89bGQvl9pFfNF8V146i7o7/CqFPbqzYgP+yYzDIDeS9HaNFtXABamRW+AQzEVODcvE79ljJ+8a9YSdMg==}
     dependencies:
       dot-case: 3.0.4
-      tslib: 2.3.0
+      tslib: 2.6.2
     dev: true
 
   /socket.io-client@4.7.5(bufferutil@4.0.8)(utf-8-validate@6.0.3):
@@ -19170,7 +19170,7 @@ packages:
     resolution: {integrity: sha512-08yq36Ikn4kx4YU6RD7jWEv27v4V+PUsOGa4n/as8Et3CuODMJQ00ENeAVXAeydX4Z2j1XHZF1K2sX4mGl18fA==}
     dependencies:
       hey-listen: 1.0.8
-      tslib: 2.3.0
+      tslib: 2.6.2
     dev: false
 
   /styled-components@5.3.11(@babel/core@7.24.3)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0):
@@ -20322,7 +20322,7 @@ packages:
     dependencies:
       '@types/react': 18.2.65
       react: 18.2.0
-      tslib: 2.3.0
+      tslib: 2.6.2
     dev: false
 
   /use-sidecar@1.1.2(@types/react@18.2.65)(react@18.2.0):
@@ -20338,7 +20338,7 @@ packages:
       '@types/react': 18.2.65
       detect-node-es: 1.1.0
       react: 18.2.0
-      tslib: 2.3.0
+      tslib: 2.6.2
     dev: false
 
   /use-sync-external-store@1.2.0(react@18.2.0):

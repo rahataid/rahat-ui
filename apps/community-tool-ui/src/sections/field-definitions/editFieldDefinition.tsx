@@ -36,7 +36,7 @@ export default function EditFieldDefinition({
   data: FieldDefinition;
 }) {
   const updateFieldDefinition = useFieldDefinitionsUpdate();
-  const updateFieldDefinitionStatus = useFieldDefinitionsStatusUpdate();
+  // const updateFieldDefinitionStatus = useFieldDefinitionsStatusUpdate();
 
   const FormSchema = z.object({
     name: z.string(),
@@ -59,7 +59,6 @@ export default function EditFieldDefinition({
     await updateFieldDefinition.mutateAsync({
       id: data?.id?.toString(),
       data: {
-        id: data?.id,
         name: formData?.name,
         fieldType: formData?.fieldType as FieldType,
         isActive: formData?.isActive,
@@ -67,12 +66,12 @@ export default function EditFieldDefinition({
     });
   };
 
-  const handleStatusChange = async (isActive: any) => {
-    await updateFieldDefinitionStatus.mutateAsync({
-      id: data?.id?.toString(),
-      isActive: isActive,
-    });
-  };
+  // const handleStatusChange = async (isActive: any) => {
+  //   await updateFieldDefinitionStatus.mutateAsync({
+  //     id: data?.id?.toString() as string,
+  //     isActive: isActive,
+  //   });
+  // };
 
   return (
     <Form {...form}>
@@ -147,7 +146,7 @@ export default function EditFieldDefinition({
                 }}
               />
 
-              {/* <FormField
+              <FormField
                 control={form.control}
                 name="isActive"
                 render={({ field }) => (
@@ -157,19 +156,20 @@ export default function EditFieldDefinition({
                       {...field}
                       value={field.value ? 'false' : 'true'}
                       checked={field.value}
-                      onCheckedChange={(isChecked) => {
-                        handleStatusChange({
-                          isActive: isChecked,
-                        });
-                      }}
+                      onCheckedChange={field.onChange}
+                      // onCheckedChange={(isChecked) => {
+                      //   handleStatusChange({
+                      //     isActive: isChecked,
+                      //   });
+                      // }}
                     />
                   </div>
                 )}
-              /> */}
+              />
             </div>
-            {/* <div className="flex justify-end">
+            <div className="flex justify-end">
               <Button>Update Field Definition</Button>
-            </div> */}
+            </div>
           </div>
         </div>
       </form>

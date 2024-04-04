@@ -42,7 +42,7 @@ export default function AddFieldDefinitions() {
     defaultValues: {
       name: '',
       fieldType: FieldType.TEXT,
-      isActive: false,
+      isActive: true,
     },
   });
 
@@ -125,7 +125,7 @@ export default function AddFieldDefinitions() {
                 }}
               />
 
-              {/* <FormField
+              <FormField
                 control={form.control}
                 name="isActive"
                 render={({ field }) => (
@@ -139,7 +139,7 @@ export default function AddFieldDefinitions() {
                     />
                   </div>
                 )}
-              /> */}
+              />
             </div>
             <div className="flex justify-end">
               <Button>Create Field Definition</Button>

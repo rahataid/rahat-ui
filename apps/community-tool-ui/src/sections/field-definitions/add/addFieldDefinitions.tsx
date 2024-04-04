@@ -32,7 +32,7 @@ import { FieldType } from 'apps/community-tool-ui/src/types/fieldDefinition';
 export default function AddFieldDefinitions() {
   const addFieldDefinitions = useFieldDefinitionsCreate();
   const FormSchema = z.object({
-    name: z.string(),
+    name: z.string().min(1),
     fieldType: z.string().toUpperCase(),
     isActive: z.boolean(),
   });

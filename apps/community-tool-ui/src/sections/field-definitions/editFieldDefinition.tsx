@@ -147,7 +147,7 @@ export default function EditFieldDefinition({
                 }}
               />
 
-              <FormField
+              {/* <FormField
                 control={form.control}
                 name="isActive"
                 render={({ field }) => (
@@ -165,7 +165,7 @@ export default function EditFieldDefinition({
                     />
                   </div>
                 )}
-              />
+              /> */}
             </div>
             {/* <div className="flex justify-end">
               <Button>Update Field Definition</Button>

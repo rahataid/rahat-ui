@@ -7,7 +7,6 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from '@rahat-ui/shadcn/src/components/ui/form';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
@@ -20,18 +19,13 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
+import { Switch } from '@rahat-ui/shadcn/src/components/ui/switch';
+import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 
 import { z } from 'zod';
-// import { CalendarIcon, Check, ChevronsUpDown, Wallet } from 'lucide-react';
 
 import React, { useEffect } from 'react';
-// import {
-//   Popover,
-//   PopoverContent,
-//   PopoverTrigger,
-// } from '@rahat-ui/shadcn/src/components/ui/popover';
-// import { format } from 'date-fns';
-// import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
+
 import { useFieldDefinitionsCreate } from '@rahat-ui/community-query';
 import { FieldType } from 'apps/community-tool-ui/src/types/fieldDefinition';
 
@@ -40,6 +34,7 @@ export default function AddFieldDefinitions() {
   const FormSchema = z.object({
     name: z.string(),
     fieldType: z.string().toUpperCase(),
+    isActive: z.boolean(),
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -47,6 +42,7 @@ export default function AddFieldDefinitions() {
     defaultValues: {
       name: '',
       fieldType: FieldType.TEXT,
+      isActive: false,
     },
   });
 
@@ -54,8 +50,9 @@ export default function AddFieldDefinitions() {
     data: z.infer<typeof FormSchema>,
   ) => {
     await addFieldDefinitions.mutateAsync({
-      name: data.name,
+      name: data?.name,
       fieldType: data.fieldType as FieldType,
+      isActive: data?.isActive,
     });
   };
 
@@ -127,6 +124,22 @@ export default function AddFieldDefinitions() {
                   );
                 }}
               />
+
+              {/* <FormField
+                control={form.control}
+                name="isActive"
+                render={({ field }) => (
+                  <div className=" flex flex-row items-center gap-4 m-1">
+                    <Label>isActive</Label>
+                    <Switch
+                      {...field}
+                      value={field.value ? 'true' : 'false'}
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </div>
+                )}
+              /> */}
             </div>
             <div className="flex justify-end">
               <Button>Create Field Definition</Button>

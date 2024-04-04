@@ -48,6 +48,7 @@ export default function BenImp({ extraFields }: IProps) {
   );
   const [processedData, setProcessedData] = useState([]) as any;
   const [invalidFields, setInvalidFields] = useState([]) as any;
+  const [duplicateCount, setDuplicateCount] = useState<number>(0);
 
   // const fetchExistingMapping = async (importId: string) => {
   //   const res = await rumsanService.client.get(`/sources/${importId}/mappings`);
@@ -176,12 +177,30 @@ export default function BenImp({ extraFields }: IProps) {
         icon: 'error',
         title: 'Please load data from data source!',
       });
-    setCurrentScreen(BENEF_IMPORT_SCREENS.VALIDATION);
+    if (uniqueField) return setCurrentScreen(BENEF_IMPORT_SCREENS.VALIDATION);
+
+    return Swal.fire({
+      icon: 'warning',
+      title: 'Continue without unique field?',
+      showCancelButton: true,
+      confirmButtonText: 'Continue',
+      cancelButtonText: 'No',
+      text: 'Duplicate data might be imported!',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        setCurrentScreen(BENEF_IMPORT_SCREENS.VALIDATION);
+      }
+    });
   };
 
   const handleImportNowClick = async () => {
+    const _text =
+      duplicateCount > 0
+        ? `${duplicateCount} existing beneficiaries will be updated!`
+        : 'No duplicate found!';
     const dialog = await Swal.fire({
       title: `${processedData.length} Beneficiaries will be imported!`,
+      text: _text,
       showCancelButton: true,
       confirmButtonText: 'Proceed',
     });
@@ -274,7 +293,8 @@ export default function BenImp({ extraFields }: IProps) {
             title: `${sourcePayload.fieldMapping.data.length} Beneficiaries imported successfully!`,
           });
         }
-        const { result, invalidFields } = res.data.data;
+        const { result, invalidFields, duplicateCount } = res.data.data;
+        setDuplicateCount(duplicateCount);
         setProcessedData(result);
         if (invalidFields.length) setInvalidFields(invalidFields);
         setCurrentScreen(BENEF_IMPORT_SCREENS.IMPORT_DATA);
@@ -338,6 +358,7 @@ export default function BenImp({ extraFields }: IProps) {
             <InfoBox
               title="Field Mapping"
               message="Select matching field for your data"
+              uniqueField={uniqueField}
             />
             {rawData.length > 0 && (
               <div className="flex mb-5 mt-5 justify-between m-2">

@@ -9,6 +9,7 @@ import './globals.css';
 import { ServiceProvider } from '../providers/service.provider';
 import { GeistSans } from 'geist/font/sans';
 import { RSQueryProvider } from '@rumsan/react-query/providers/rs-query-provider';
+import { SecondPanelProvider } from '../providers/second-panel-provider';
 
 export const metadata = {
   title: 'Welcome to Rahat',
@@ -30,16 +31,18 @@ export default function RootLayout({
             <QueryProvider>
               <RSQueryProvider>
                 <ServiceProvider>
-                  <ThemeProvider
-                    attribute="class"
-                    // defaultTheme="system"
-                    // enableSystem
-                    disableTransitionOnChange
-                  >
-                    <main className={GeistSans.className}>{children}</main>
-                    <ToastContainer />
-                    <Toaster />
-                  </ThemeProvider>
+                  <SecondPanelProvider>
+                    <ThemeProvider
+                      attribute="class"
+                      // defaultTheme="system"
+                      // enableSystem
+                      disableTransitionOnChange
+                    >
+                      <main className={GeistSans.className}>{children}</main>
+                      <ToastContainer />
+                      <Toaster />
+                    </ThemeProvider>
+                  </SecondPanelProvider>
                 </ServiceProvider>
               </RSQueryProvider>
             </QueryProvider>

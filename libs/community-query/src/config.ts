@@ -2,6 +2,8 @@ export const TAGS = {
   GET_BENEFICIARY: 'get_one_beneficiary',
   GET_ALL_USER: 'get_all_user',
   GET_USER: 'get_user',
+  UPDATE_USER: 'update_user',
+  CREATE_USER: 'create_user',
   GET_ALL_PROJECTS: 'get_all_projects',
   GET_ALL_ROLES: 'get_all_roles',
   GET_ROLE: 'get_role',

@@ -1,9 +1,13 @@
+'use client';
+
+import { useState } from 'react';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/components/tooltip';
+import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,7 +15,7 @@ import {
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
 import { truncateEthAddress } from '@rumsan/sdk/utils';
-import { Minus, MoreVertical, Trash2 } from 'lucide-react';
+import { Minus, MoreVertical, Trash2, Copy, CopyCheck } from 'lucide-react';
 import Image from 'next/image';
 
 type IProps = {
@@ -23,11 +27,58 @@ export default function VendorsDetailSplitView({
   vendorsDetail,
   closeSecondPanel,
 }: IProps) {
-  console.log('VD==>', vendorsDetail);
+  const [walletAddressCopied, setWalletAddressCopied] =
+    useState<boolean>(false);
+
+  const clickToCopy = (walletAddress: string) => {
+    navigator.clipboard.writeText(walletAddress);
+    setWalletAddressCopied(true);
+  };
   return (
     <>
-      <div className="p-4 bg-card">
-        <div className="flex">
+      <div className="flex justify-between p-4 pt-5 bg-secondary">
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger onClick={closeSecondPanel}>
+              <Minus size={20} strokeWidth={1.5} />
+            </TooltipTrigger>
+            <TooltipContent className="bg-secondary ">
+              <p className="text-xs font-medium">Close</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+        <div className="flex gap-3">
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Trash2
+                  className="cursor-pointer"
+                  size={18}
+                  strokeWidth={1.6}
+                  color="#FF0000"
+                />
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Delete</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+          <DropdownMenu>
+            <DropdownMenuTrigger>
+              <MoreVertical
+                className="cursor-pointer"
+                size={20}
+                strokeWidth={1.5}
+              />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem>Edit</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      </div>
+      <div className="p-2">
+        <div className="flex items-center gap-2">
           <Image
             className="rounded-full"
             src="/svg/funny-cat.svg"
@@ -35,73 +86,49 @@ export default function VendorsDetailSplitView({
             height={80}
             width={80}
           />
-          <div className="flex flex-col items-center justify-center w-full mr-2 gap-2">
-            <div className="flex align-center justify-between w-full ml-4">
-              <h1 className="font-semibold text-xl">{vendorsDetail?.name}</h1>
-              <div className="flex">
-                <div className="mr-3">
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger onClick={closeSecondPanel}>
-                        <Minus size={20} strokeWidth={1.5} />
-                      </TooltipTrigger>
-                      <TooltipContent className="bg-secondary ">
-                        <p className="text-xs font-medium">Close</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </div>
-                <div>
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Trash2
-                          className="cursor-pointer"
-                          size={18}
-                          strokeWidth={1.6}
-                          color="#FF0000"
-                        />
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>Delete</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </div>
-                <div className="pl-2">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger>
-                      <MoreVertical
-                        className="cursor-pointer"
-                        size={20}
-                        strokeWidth={1.5}
-                      />
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                      <DropdownMenuItem>Edit</DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
-              </div>
-            </div>
-            <div className="flex align-center justify-between w-full ml-4">
-              <p className="text-slate-500">
-                {truncateEthAddress(vendorsDetail?.walletAddress) || '-'}
-              </p>
-            </div>
+          <div>
+            <h1 className="font-semibold text-xl mb-1">
+              {vendorsDetail?.name}
+            </h1>
+            <TooltipProvider delayDuration={100}>
+              <Tooltip>
+                <TooltipTrigger
+                  className="flex gap-3 items-center"
+                  onClick={() => clickToCopy(vendorsDetail?.walletAddress)}
+                >
+                  <p className="text-muted-foreground text-base">
+                    {truncateEthAddress(vendorsDetail?.walletAddress)}
+                  </p>
+                  {walletAddressCopied ? (
+                    <CopyCheck size={15} strokeWidth={1.5} />
+                  ) : (
+                    <Copy
+                      className="text-muted-foreground"
+                      size={15}
+                      strokeWidth={1.5}
+                    />
+                  )}
+                </TooltipTrigger>
+                <TooltipContent className="bg-secondary" side="bottom">
+                  <p className="text-xs font-medium">
+                    {walletAddressCopied ? 'copied' : 'click to copy'}
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </div>
         </div>
       </div>
-      <div className="w-full bg-card">
-        <div className="border-t">
-          <div className="grid grid-cols-2 gap-4 p-8">
+      <Card className="shadow rounded m-2">
+        <CardContent className="pt-6">
+          <div className="grid grid-cols-2 gap-4">
             <div>
               <p className="font-light text-base">
                 {vendorsDetail?.name || '-'}
               </p>
               <p className="text-sm font-normal text-muted-foreground">Name</p>
             </div>
-            <div>
+            <div className="text-right">
               <p className="font-light text-base">
                 {vendorsDetail?.gender || '-'}
               </p>
@@ -109,8 +136,6 @@ export default function VendorsDetailSplitView({
                 Gender
               </p>
             </div>
-          </div>
-          <div className="border-b grid grid-cols-2 gap-4 p-8">
             <div>
               <p className="font-light text-base">
                 {vendorsDetail?.email || '-'}
@@ -119,7 +144,7 @@ export default function VendorsDetailSplitView({
                 Email
               </p>
             </div>
-            <div>
+            <div className="text-right">
               <p className="font-light text-base">
                 {vendorsDetail?.phone || '-'}
               </p>
@@ -128,8 +153,8 @@ export default function VendorsDetailSplitView({
               </p>
             </div>
           </div>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     </>
   );
 }

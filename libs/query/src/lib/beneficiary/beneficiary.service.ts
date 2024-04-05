@@ -12,6 +12,7 @@ import { useBeneficiaryStore } from './beneficiary.store';
 import { useEffect } from 'react';
 import { UUID } from 'crypto';
 import { useSwal } from '../../swal';
+import { Pagination } from '@rumsan/sdk/types';
 
 const createNewBeneficiary = async (payload: any) => {
   const response = await api.post('/beneficiaries', payload);
@@ -151,13 +152,15 @@ export const useUploadBeneficiary = () => {
   );
 };
 
-export const useBeneficiaryPii = (): UseQueryResult<any, Error> => {
+export const useBeneficiaryPii = (
+  padination: Pagination,
+): UseQueryResult<any, Error> => {
   const { rumsanService, queryClient } = useRSQuery();
   const benClient = getBeneficiaryClient(rumsanService.client);
   return useQuery(
     {
-      queryKey: [TAGS.GET_BENEFICIARIES],
-      queryFn: () => benClient.listPiiData(),
+      queryKey: [TAGS.GET_BENEFICIARIES, padination],
+      queryFn: () => benClient.listPiiData(padination),
     },
     queryClient,
   );

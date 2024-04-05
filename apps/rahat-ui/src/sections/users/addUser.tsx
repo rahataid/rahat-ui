@@ -1,13 +1,14 @@
 'use client';
 
 // Import statements
+import { useEffect } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-import { useUserCreate, useUserRoleList } from '@rumsan/react-query';
-import { enumToObjectArray } from '@rumsan/sdk/utils';
-import { Role } from '@rumsan/sdk/types';
+// import { useUserCreate, useUserRoleList } from '@rumsan/react-query';
+// import { enumToObjectArray } from '@rumsan/sdk/utils';
+// import { Role } from '@rumsan/sdk/types';
 import {
   Select,
   SelectContent,
@@ -16,7 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
-import { Gender } from '@rahat-ui/types';
+// import { Gender } from '@rahat-ui/types';
 import {
   Form,
   FormControl,
@@ -26,14 +27,17 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/form';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { useRoleList, useUserCreate } from '@rahat-ui/query';
 
 // Constants
-const genderList = enumToObjectArray(Gender);
+// const genderList = enumToObjectArray(Gender);
 
 const FormSchema = z.object({
   name: z.string().min(2, { message: 'Name must be at least 4 character' }),
   email: z.string().email(),
   gender: z.string(),
+  role: z.string(),
+  phone: z.string(),
   wallet: z
     .string()
     .min(42, { message: 'The Ethereum address must be 42 characters long' }),
@@ -45,151 +49,165 @@ export default function AddUser() {
     resolver: zodResolver(FormSchema),
     defaultValues: {
       name: '',
-      gender: 'UNKNOWN',
+      gender: 'UNKNOWN' || '',
       email: '',
       phone: '',
-      role: 'USER',
+      role: '',
       wallet: '',
     },
   });
 
-  const { data: roleData } = useUserRoleList({});
-  const roles = roleData?.data.map((role: Role) => role.name).sort() || [];
+  const { data: roleData } = useRoleList();
+
+  // const { data: roleData } = useUserRoleList({});
+
+  // const roles = roleData?.data.map((role: Role) => role.name).sort() || [];
   const userCreate = useUserCreate();
 
-  const handleAddUser = async () => {
-    await userCreate.mutateAsync(form.getValues());
+  const handleAddUser = async (data: any) => {
+    await userCreate.mutateAsync(data);
   };
+  useEffect(() => {
+    if (userCreate.isSuccess) {
+      form.reset({
+        name: '',
+        gender: 'UNKOWN' || '',
+        email: '',
+        phone: '',
+        role: '',
+        wallet: '',
+      });
+    }
+  }, [form, userCreate.isSuccess]);
 
   return (
-    <Form {...form} onSubmit={form.handleSubmit(handleAddUser)}>
-      <div className="p-4">
-        <h1 className="text-md font-semibold mb-6">Add User</h1>
-        <div className="grid grid-cols-2 gap-4 mb-4">
-          <FormField
-            name="name"
-            control={form.control}
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <Input type="text" placeholder="Name" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="gender"
-            render={({ field }) => {
-              return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(handleAddUser)}>
+        <div className="p-4">
+          <h1 className="text-md font-semibold mb-6">Add User</h1>
+          <div className="grid grid-cols-2 gap-4 mb-4">
+            <FormField
+              name="name"
+              control={form.control}
+              render={({ field }) => (
                 <FormItem>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
+                  <FormControl>
+                    <Input type="text" placeholder="Name" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="gender"
+              render={({ field }) => {
+                return (
+                  <FormItem>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select gender" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="MALE">Male</SelectItem>
+                        <SelectItem value="FEMALE">Female</SelectItem>
+                        <SelectItem value="OTHER">Other</SelectItem>
+                        <SelectItem value="UNKNOWN">Unknown</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+            <FormField
+              control={form.control}
+              name="phone"
+              render={({ field }) => {
+                return (
+                  <FormItem>
                     <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select gender" />
-                      </SelectTrigger>
+                      <Input type="text" placeholder="Phone" {...field} />
                     </FormControl>
-                    <SelectContent>
-                      <SelectGroup>
-                        {genderList.map((gender) => (
-                          <SelectItem value={gender.value} key={gender.value}>
-                            {gender.label}
-                          </SelectItem>
-                        ))}
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              );
-            }}
-          />
-          <FormField
-            control={form.control}
-            name="phone"
-            render={({ field }) => {
-              return (
-                <FormItem>
-                  <FormControl>
-                    <Input type="text" placeholder="Phone" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              );
-            }}
-          />
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => {
-              return (
-                <FormItem>
-                  <FormControl>
-                    <Input type="text" placeholder="Email" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              );
-            }}
-          />
-          <FormField
-            control={form.control}
-            name="role"
-            render={({ field }) => {
-              return (
-                <FormItem>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => {
+                return (
+                  <FormItem>
                     <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select role" />
-                      </SelectTrigger>
+                      <Input type="text" placeholder="Email" {...field} />
                     </FormControl>
-                    <SelectContent>
-                      <SelectGroup>
-                        {roles.length &&
-                          roles.map((role) => (
-                            <SelectItem value={role} key={role}>
-                              {role}
-                            </SelectItem>
-                          ))}
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              );
-            }}
-          />
-          <FormField
-            control={form.control}
-            name="wallet"
-            render={({ field }) => {
-              return (
-                <FormItem>
-                  <FormControl>
-                    <Input
-                      type="text"
-                      placeholder="Wallet Address"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              );
-            }}
-          />
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+            <FormField
+              control={form.control}
+              name="role"
+              render={({ field }) => {
+                return (
+                  <FormItem>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select role" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectGroup>
+                          {roleData?.data &&
+                            roleData?.data?.map((role: any) => (
+                              <SelectItem value={role.name} key={role.id}>
+                                {role.name}
+                              </SelectItem>
+                            ))}
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+            <FormField
+              control={form.control}
+              name="wallet"
+              render={({ field }) => {
+                return (
+                  <FormItem>
+                    <FormControl>
+                      <Input
+                        type="text"
+                        placeholder="Wallet Address"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+          </div>
+          <div className="flex justify-end">
+            <Button>Create User</Button>
+          </div>
         </div>
-        <div className="flex justify-end">
-          <Button>Create User</Button>
-        </div>
-      </div>
+      </form>
     </Form>
   );
 }

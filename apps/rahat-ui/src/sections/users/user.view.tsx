@@ -9,16 +9,18 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { useUserStore } from '@rumsan/react-query';
+// import { useUserStore } from '@rumsan/react-query';
 import UsersTable from './user.list';
 import { usePagination } from '@rahat-ui/query';
 import CustomPagination from '../../components/customPagination';
 import { useUserTableColumns } from './useUsersColumns';
+import { useUsersList } from '@rahat-ui/query';
 
 export default function UserView() {
   const { pagination, setNextPage, setPrevPage, setPerPage } = usePagination();
   const columns = useUserTableColumns();
-  const users = useUserStore((state) => state.users);
+  // const users = useUserStore((state) => state.users);
+  const { data: users } = useUsersList({});
 
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =

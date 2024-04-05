@@ -1,3 +1,6 @@
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
+
 export const includeOnlySelectedTarget = (array: [], selectedTargets: []) => {
   return array.map((item: any) => {
     const extractedFields = {} as any;
@@ -37,7 +40,6 @@ export function truncateEthereumAddress(address: string) {
 }
 
 export function splitFullName(fullName: string) {
-  // Split the full name into an array of words
   let nameArray = fullName.split(' ');
 
   // Extract the first and last names
@@ -68,4 +70,38 @@ export function removeFieldsWithUnderscore(dataArray: []) {
 
 export const truncatedText = (text: string, maxLen: number) => {
   return text.length > maxLen ? text.substring(0, maxLen) + '...' : text;
+};
+
+export const extractInvalidData = (payload: [], errors: []) => {
+  const invalidData = [] as any;
+  const validData = [] as any;
+
+  payload.forEach((p: any) => {
+    const error = errors.find((error: any) => error.uuid === p.uuid);
+    if (error) {
+      if (p.uuid) delete p.uuid;
+      if (p.rawData) delete p.rawData;
+      invalidData.push(p);
+    } else {
+      validData.push(p);
+    }
+  });
+
+  return { invalidData, validData };
+};
+
+export const exportInvalidDataToExcel = (data: []) => {
+  const currentDate = new Date().getTime();
+  const fileName = `Invalid_Beneficiary_${currentDate}.xlsx`;
+  const worksheet = XLSX.utils.json_to_sheet(data);
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
+
+  // Buffer to store the generated Excel file
+  const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+  const blob = new Blob([excelBuffer], {
+    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8',
+  });
+
+  saveAs(blob, fileName);
 };

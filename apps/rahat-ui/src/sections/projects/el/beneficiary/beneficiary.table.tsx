@@ -246,9 +246,9 @@ function BeneficiaryDetailTableView() {
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-        <div className="rounded border h-[calc(100vh-180px)] bg-card">
+        <div className="rounded border bg-card">
           <Table>
-            <ScrollArea className="h-table1">
+            <ScrollArea className="h-[calc(100vh-182px)]">
               <TableHeader className="bg-card sticky top-0">
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow key={headerGroup.id}>

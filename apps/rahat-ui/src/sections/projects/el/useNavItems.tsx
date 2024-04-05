@@ -80,7 +80,8 @@ export const useNavItems = () => {
 
   const handleCreateVoucherTokenChange = (e: any) => {
     const { name, value } = e.target;
-
+    const numericValue = Number(value)
+    if (isNaN(numericValue) || numericValue < 0) return;
     setVoucherInputs((prev) => ({
       ...prev,
       [name]: value,

@@ -24,14 +24,14 @@ import {
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@rahat-ui/shadcn/src/components/ui/select';
+// import {
+//   Select,
+//   SelectContent,
+//   SelectGroup,
+//   SelectItem,
+//   SelectTrigger,
+//   SelectValue,
+// } from '@rahat-ui/shadcn/src/components/ui/select';
 import {
   Tooltip,
   TooltipContent,
@@ -47,6 +47,7 @@ import { UsersRoleTable } from './usersRoleTable';
 import { enumToObjectArray } from '@rumsan/sdk/utils';
 import { Gender } from '@rahataid/sdk/enums';
 import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
+import EditUser from './editUser';
 
 type IProps = {
   userDetail: User;
@@ -67,7 +68,7 @@ export default function UserDetail({ userDetail, closeSecondPanel }: IProps) {
   };
   return (
     <>
-      <div className="flex justify-between p-4 pt-5 bg-secondary">
+      <div className="flex justify-between p-4 pt-5 bg-secondary border-b">
         {/* Minimize  */}
         <TooltipProvider delayDuration={100}>
           <Tooltip>
@@ -179,7 +180,7 @@ export default function UserDetail({ userDetail, closeSecondPanel }: IProps) {
         <div className="flex items-center gap-2">
           <Image
             className="rounded-full"
-            src="/svg/funny-cat.svg"
+            src="/profile.png"
             alt="cat"
             height={80}
             width={80}
@@ -295,7 +296,7 @@ export default function UserDetail({ userDetail, closeSecondPanel }: IProps) {
       {/* Edit View */}
       {activeTab === 'edit' && (
         <>
-          <div className="flex flex-col justify-between ">
+          {/* <div className="flex flex-col justify-between ">
             <div className="p-4 border-t">
               <div className="grid grid-cols-2 gap-4">
                 <Input type="name" placeholder="Name" />
@@ -344,7 +345,8 @@ export default function UserDetail({ userDetail, closeSecondPanel }: IProps) {
                 </div>
               </div>
             </div>
-          </div>
+          </div> */}
+          <EditUser userDetail={userDetail} />
         </>
       )}
     </>

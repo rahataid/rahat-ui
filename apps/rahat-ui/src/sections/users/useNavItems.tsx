@@ -15,6 +15,7 @@ export const useUsersNavItems = () => {
       children: [
         {
           title: 'Users',
+          path: '/users',
           icon: <KanbanSquare size={18} strokeWidth={1.5} />,
         },
         {

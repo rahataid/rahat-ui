@@ -84,7 +84,9 @@ export const columns: ColumnDef<Payment>[] = [
     accessorKey: 'transactionHash',
     header: 'TransactionHash',
     cell: ({ row }) => (
-      <div className="capitalize">{truncateEthAddress(row.getValue('transactionHash'))}</div>
+      <div className="capitalize">
+        {truncateEthAddress(row.getValue('transactionHash'))}
+      </div>
     ),
   },
   {
@@ -100,7 +102,11 @@ export const columns: ColumnDef<Payment>[] = [
         </Button>
       );
     },
-    cell: ({ row }) => <div className="lowercase">{truncateEthAddress(row.getValue('from'))}</div>,
+    cell: ({ row }) => (
+      <div className="lowercase">
+        {truncateEthAddress(row.getValue('from'))}
+      </div>
+    ),
   },
   {
     accessorKey: 'to',
@@ -115,7 +121,9 @@ export const columns: ColumnDef<Payment>[] = [
         </Button>
       );
     },
-    cell: ({ row }) => <div className="lowercase">{truncateEthAddress(row.getValue('to'))}</div>,
+    cell: ({ row }) => (
+      <div className="lowercase">{truncateEthAddress(row.getValue('to'))}</div>
+    ),
   },
   {
     accessorKey: 'value',
@@ -132,33 +140,6 @@ export const columns: ColumnDef<Payment>[] = [
       return <div className="text-right font-medium">{amount}</div>;
     },
   },
-  {
-    id: 'actions',
-    enableHiding: false,
-    cell: ({ row }) => {
-      const payment = row.original;
-
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <GripVertical className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(payment.id)}
-            >
-              Copy payment ID
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
-    },
-  },
 ];
 
 export function DiscountTransactionTable() {
@@ -170,23 +151,24 @@ export function DiscountTransactionTable() {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
-  const[contractAddress,setContractAddress] = useState<any>()
+  const [contractAddress, setContractAddress] = useState<any>();
 
   const { id } = useParams();
 
   const projectSettings = localStorage.getItem('projectSettingsStore');
 
-  useEffect(()=>{
-    if(projectSettings){
-      const settings = JSON.parse(projectSettings)?.state?.settings?.[id]
+  useEffect(() => {
+    if (projectSettings) {
+      const settings = JSON.parse(projectSettings)?.state?.settings?.[id];
       setContractAddress({
-        referredVoucher:settings?.referralvoucher?.address
-      })
+        referredVoucher: settings?.referralvoucher?.address,
+      });
     }
+  }, [projectSettings]);
 
-  },[projectSettings])
-
-  const {data: vouchersTransactions} = useGetReferredVoucherTransaction(contractAddress?.referredVoucher)
+  const { data: vouchersTransactions } = useGetReferredVoucherTransaction(
+    contractAddress?.referredVoucher,
+  );
 
   const table = useReactTable({
     data: vouchersTransactions?.transfers || [],

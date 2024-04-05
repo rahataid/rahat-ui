@@ -70,7 +70,9 @@ export const columns: ColumnDef<Payment>[] = [
     accessorKey: 'owner',
     header: 'Walletaddress',
     cell: ({ row }) => (
-      <div className="capitalize">{truncateEthAddress(row.getValue('owner'))}</div>
+      <div className="capitalize">
+        {truncateEthAddress(row.getValue('owner'))}
+      </div>
     ),
   },
   {
@@ -80,32 +82,9 @@ export const columns: ColumnDef<Payment>[] = [
       <div className="capitalize">{row.getValue('amount')}</div>
     ),
   },
-  {
-    id: 'actions',
-    enableHiding: false,
-    cell: ({ row }) => {
-      const payment = row.original;
-
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <GripVertical className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>View details</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
-    },
-  },
 ];
 
-export function FreeHoldersTable({data}) {
+export function FreeHoldersTable({ data }) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
@@ -114,7 +93,7 @@ export function FreeHoldersTable({data}) {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
   const table = useReactTable({
-    data:data || [],
+    data: data || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,

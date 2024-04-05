@@ -1,3 +1,5 @@
+'use client';
+
 import { useParams } from 'next/navigation';
 
 import { useProjectAction } from '@rahat-ui/query';
@@ -45,6 +47,8 @@ import { useEffect, useState } from 'react';
 import TransactionTable from '../transactions/transactions.table';
 import { useReadElProjectGetBeneficiaryVoucherDetail } from 'apps/rahat-ui/src/hooks/el/contracts/elProject';
 import { zeroAddress } from 'viem';
+import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
+import AssignVoucherConfirm from './assign.voucher.confirm';
 
 type IProps = {
   beneficiaryDetails: any;
@@ -107,13 +111,13 @@ export default function BeneficiaryDetail({
       return;
     if (
       beneficiaryVoucherDetails?.freeVoucherAddress?.toString() !==
-      zeroAddress ||
+        zeroAddress ||
       beneficiaryVoucherDetails?.referredVoucherAddress?.toString() !==
-      zeroAddress
+        zeroAddress
     ) {
       setAssignStatus(true);
     }
-    console.log({ beneficiaryVoucherDetails })
+    console.log({ beneficiaryVoucherDetails });
   }, [beneficiaryVoucherDetails]);
 
   useEffect(() => {
@@ -127,10 +131,27 @@ export default function BeneficiaryDetail({
     }
   }, [id, projectSettings]);
 
+  const voucherAssignModal = useBoolean();
+
+  const handleVoucherAssignModal = () => {
+    voucherAssignModal.onTrue();
+  };
+
+  const handleVoucherAssignModalClose = () => {
+    voucherAssignModal.onFalse();
+  };
+
   return (
     <>
       {isLoading ? (
-        <>Loading ben data........</>
+        <div className="flex items-center justify-center">
+          <Image
+            alt="rahat logo"
+            src="/rahat_logo_standard.png"
+            height={150}
+            width={300}
+          />
+        </div>
       ) : (
         <>
           <div className="flex justify-between px-4 py-2 bg-secondary">
@@ -206,10 +227,15 @@ export default function BeneficiaryDetail({
             </div>
             {/* {!assignStatus && beneficiaryDetails?.type === 'ENROLLED' && ( */}
             <div>
-              <Button onClick={handleAssignVoucher}>Assign Voucher</Button>
+              <Button onClick={handleVoucherAssignModal}>Assign Voucher</Button>
             </div>
             {/* )} */}
           </div>
+          <AssignVoucherConfirm
+            open={voucherAssignModal.value}
+            handleClose={handleVoucherAssignModalClose}
+            handleSubmit={handleAssignVoucher}
+          />
 
           {/* Details View */}
 
@@ -356,15 +382,15 @@ export default function BeneficiaryDetail({
                       <p className="text-sm font-light">
                         {beneficiaryVoucherDetails?.freeVoucherAddress !==
                           undefined &&
-                          beneficiaryVoucherDetails?.freeVoucherAddress !==
+                        beneficiaryVoucherDetails?.freeVoucherAddress !==
                           zeroAddress
                           ? 'Free Voucher'
                           : beneficiaryVoucherDetails?.referredVoucherAddress !==
-                            undefined &&
+                              undefined &&
                             beneficiaryVoucherDetails?.referredVoucherAddress !==
-                            zeroAddress
-                            ? 'Discount Voucher'
-                            : 'N/A'}
+                              zeroAddress
+                          ? 'Discount Voucher'
+                          : 'N/A'}
                       </p>
                     </div>
                     <div className="flex justify-between items-center">
@@ -372,15 +398,15 @@ export default function BeneficiaryDetail({
                       <p className="text-sm font-light">
                         {beneficiaryVoucherDetails?.freeVoucherAddress !==
                           undefined &&
-                          beneficiaryVoucherDetails?.freeVoucherAddress !==
+                        beneficiaryVoucherDetails?.freeVoucherAddress !==
                           zeroAddress
                           ? beneficiaryVoucherDetails?.freeVoucherClaimStatus?.toString()
                           : beneficiaryVoucherDetails?.referredVoucherAddress !==
-                            undefined &&
+                              undefined &&
                             beneficiaryVoucherDetails?.referredVoucherAddress !==
-                            zeroAddress
-                            ? beneficiaryVoucherDetails?.referredVoucherClaimStatus?.toString()
-                            : 'N/A'}
+                              zeroAddress
+                          ? beneficiaryVoucherDetails?.referredVoucherClaimStatus?.toString()
+                          : 'N/A'}
                       </p>
                     </div>
                     <div className="flex justify-between items-center">

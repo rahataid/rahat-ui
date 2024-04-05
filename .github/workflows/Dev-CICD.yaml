@@ -58,11 +58,11 @@ jobs:
           tags: esatya/rahat-ui:dev
 
       # Community-Tool-UI Image
-      # - name: build && push community-tool-ui
-      #   id: build-push-community-tool-ui
-      #   uses: docker/build-push-action@v5
-      #   with:
-      #     context: .
-      #     file: Dockerfile.community-tool-ui
-      #     push: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
-      #     tags: esatya/community-tool-ui:dev
+      - name: build && push community-tool-ui
+        id: build-push-community-tool-ui
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: Dockerfile.community-tool-ui
+          push: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
+          tags: esatya/community-tool-ui:dev

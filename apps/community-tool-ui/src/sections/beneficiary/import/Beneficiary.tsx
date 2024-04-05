@@ -11,6 +11,8 @@ import {
 } from 'apps/community-tool-ui/src/constants/app.const';
 import {
   attachedRawData,
+  exportInvalidDataToExcel,
+  extractInvalidData,
   includeOnlySelectedTarget,
   removeFieldsWithUnderscore,
   splitFullName,
@@ -49,6 +51,7 @@ export default function BenImp({ extraFields }: IProps) {
   const [processedData, setProcessedData] = useState([]) as any;
   const [invalidFields, setInvalidFields] = useState([]) as any;
   const [duplicateCount, setDuplicateCount] = useState<number>(0);
+  const [validBenef, setValidBenef] = useState([]) as any;
 
   // const fetchExistingMapping = async (importId: string) => {
   //   const res = await rumsanService.client.get(`/sources/${importId}/mappings`);
@@ -204,11 +207,25 @@ export default function BenImp({ extraFields }: IProps) {
       showCancelButton: true,
       confirmButtonText: 'Proceed',
     });
-    if (dialog.isConfirmed) return validateOrImport(IMPORT_ACTION.IMPORT);
+    if (dialog.isConfirmed) {
+      if (validBenef.length) {
+        const sourcePayload = {
+          action: IMPORT_ACTION.IMPORT,
+          name: importSource,
+          importId,
+          uniqueField,
+          fieldMapping: { data: validBenef, sourceTargetMappings: mappings },
+        };
+        return createImportSource(sourcePayload);
+      }
+      return validateOrImport(IMPORT_ACTION.IMPORT);
+    }
   };
 
   const validateOrImport = (action: string) => {
+    setValidBenef([]);
     let finalPayload = rawData;
+
     const selectedTargets = []; // Only submit selected target fields
     // const myMappings = existingMappings.length ? existingMappings : mappings;
 
@@ -271,6 +288,7 @@ export default function BenImp({ extraFields }: IProps) {
       selectedTargets,
     );
     const final_mapping = attachedRawData(selectedFieldsOnly, rawData);
+    console.log('Final_mapin', final_mapping);
     const sourcePayload = {
       action,
       name: importSource,
@@ -279,10 +297,10 @@ export default function BenImp({ extraFields }: IProps) {
       fieldMapping: { data: final_mapping, sourceTargetMappings: mappings },
     };
 
-    return validateAndCreateImportSource(sourcePayload);
+    return createImportSource(sourcePayload);
   };
 
-  const validateAndCreateImportSource = (sourcePayload: any) => {
+  const createImportSource = (sourcePayload: any) => {
     rumsanService.client
       .post('/sources', sourcePayload)
       .then((res) => {
@@ -308,6 +326,7 @@ export default function BenImp({ extraFields }: IProps) {
   };
 
   const handleRetargetClick = () => {
+    setValidBenef([]);
     setProcessedData([]);
     setCurrentScreen(BENEF_IMPORT_SCREENS.VALIDATION);
     setMappings([]);
@@ -315,6 +334,7 @@ export default function BenImp({ extraFields }: IProps) {
   };
 
   const resetStates = () => {
+    setValidBenef([]);
     setProcessedData([]);
     setCurrentScreen(BENEF_IMPORT_SCREENS.SELECTION);
     setRawData([]);
@@ -328,9 +348,21 @@ export default function BenImp({ extraFields }: IProps) {
     setRawData([]);
   };
 
-  if (extraFields.length) BENEF_DB_FIELDS.push(...extraFields);
+  const handleExportInvalidClick = () => {
+    const { invalidData, validData } = extractInvalidData(
+      processedData,
+      invalidFields,
+    );
+    setValidBenef(validData);
+    setProcessedData(validData);
+    setInvalidFields([]);
+    return exportInvalidDataToExcel(invalidData);
+  };
 
+  if (extraFields.length) BENEF_DB_FIELDS.push(...extraFields);
   const uniqueDBFields = [...new Set(BENEF_DB_FIELDS)];
+
+  console.log('Processed=>', processedData);
 
   return (
     <div className="h-custom">
@@ -404,6 +436,7 @@ export default function BenImp({ extraFields }: IProps) {
             )}
 
             <AddToQueue
+              handleExportInvalidClick={handleExportInvalidClick}
               handleRetargetClick={handleRetargetClick}
               data={processedData}
               handleImportClick={handleImportNowClick}

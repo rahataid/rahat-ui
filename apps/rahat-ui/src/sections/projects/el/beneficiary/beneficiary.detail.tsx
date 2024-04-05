@@ -144,13 +144,10 @@ export default function BeneficiaryDetail({
   return (
     <>
       {isLoading ? (
-        <div className="flex items-center justify-center">
-          <Image
-            alt="rahat logo"
-            src="/rahat_logo_standard.png"
-            height={150}
-            width={300}
-          />
+        <div className="h-screen flex items-center justify-center space-x-2">
+          <div className="h-5 w-5 animate-bounce rounded-full bg-primary [animation-delay:-0.3s]"></div>
+          <div className="h-5 w-5 animate-bounce rounded-full bg-primary [animation-delay:-0.13s]"></div>
+          <div className="h-5 w-5 animate-bounce rounded-full bg-primary"></div>
         </div>
       ) : (
         <>

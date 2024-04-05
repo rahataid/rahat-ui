@@ -60,14 +60,15 @@ export default function BeneficiaryDetail({
   const getProject = useProjectAction();
 
   const [assignStatus, setAssignStatus] = useState(false);
-  const[contractAddress,setContractAddress] = useState<any>()
-  
-  const walletAddress = beneficiaryDetails.name;
+  const [contractAddress, setContractAddress] = useState<any>();
 
-  const{data:beneficiaryVoucherDetails,isLoading} = useReadElProjectGetBeneficiaryVoucherDetail({
-    address:contractAddress?.el,
-    args:[walletAddress]
-  });
+  const walletAddress = beneficiaryDetails.wallet;
+
+  const { data: beneficiaryVoucherDetails, isLoading } =
+    useReadElProjectGetBeneficiaryVoucherDetail({
+      address: contractAddress?.el,
+      args: [walletAddress],
+    });
 
   const projectSettings = localStorage.getItem('projectSettingsStore');
 
@@ -98,28 +99,33 @@ export default function BeneficiaryDetail({
     });
   };
 
-
-
   useEffect(() => {
-    if(beneficiaryVoucherDetails?.freeVoucherAddress === undefined || beneficiaryVoucherDetails?.referredVoucherAddress === undefined) return;
-    if((beneficiaryVoucherDetails?.freeVoucherAddress?.toString()) !== zeroAddress || beneficiaryVoucherDetails?.referredVoucherAddress?.toString() !== zeroAddress)
-     {
+    if (
+      beneficiaryVoucherDetails?.freeVoucherAddress === undefined ||
+      beneficiaryVoucherDetails?.referredVoucherAddress === undefined
+    )
+      return;
+    if (
+      beneficiaryVoucherDetails?.freeVoucherAddress?.toString() !==
+      zeroAddress ||
+      beneficiaryVoucherDetails?.referredVoucherAddress?.toString() !==
+      zeroAddress
+    ) {
       setAssignStatus(true);
-
     }
+    console.log({ beneficiaryVoucherDetails })
   }, [beneficiaryVoucherDetails]);
 
-  useEffect(()=>{
-    if(projectSettings){
-      const settings = JSON.parse(projectSettings)?.state?.settings?.[id]
+  useEffect(() => {
+    if (projectSettings) {
+      const settings = JSON.parse(projectSettings)?.state?.settings?.[id];
       setContractAddress({
-        el:settings?.elproject?.address,
-        eyeVoucher:settings?.eyevoucher?.address,
-        referredVoucher:settings?.referralvoucher?.address
-      })
+        el: settings?.elproject?.address,
+        eyeVoucher: settings?.eyevoucher?.address,
+        referredVoucher: settings?.referralvoucher?.address,
+      });
     }
-
-  },[id,projectSettings])
+  }, [id, projectSettings]);
 
   return (
     <>
@@ -160,7 +166,7 @@ export default function BeneficiaryDetail({
             <div className="flex items-center gap-2">
               <Image
                 className="rounded-full"
-                src="/svg/funny-cat.svg"
+                src="/profile.png"
                 alt="cat"
                 height={80}
                 width={80}
@@ -198,11 +204,11 @@ export default function BeneficiaryDetail({
                 </TooltipProvider>
               </div>
             </div>
-            {!assignStatus && beneficiaryDetails?.type === 'ENROLLED' && (
-              <div>
-                <Button onClick={handleAssignVoucher}>Assign Voucher</Button>
-              </div>
-            )}
+            {/* {!assignStatus && beneficiaryDetails?.type === 'ENROLLED' && ( */}
+            <div>
+              <Button onClick={handleAssignVoucher}>Assign Voucher</Button>
+            </div>
+            {/* )} */}
           </div>
 
           {/* Details View */}
@@ -348,21 +354,33 @@ export default function BeneficiaryDetail({
                     <div className="flex justify-between items-center">
                       <p>Voucher Type</p>
                       <p className="text-sm font-light">
-                        {beneficiaryVoucherDetails?.freeVoucherAddress !== undefined && beneficiaryVoucherDetails?.freeVoucherAddress !== zeroAddress
+                        {beneficiaryVoucherDetails?.freeVoucherAddress !==
+                          undefined &&
+                          beneficiaryVoucherDetails?.freeVoucherAddress !==
+                          zeroAddress
                           ? 'Free Voucher'
-                          : beneficiaryVoucherDetails?.referredVoucherAddress !== undefined && beneficiaryVoucherDetails?.referredVoucherAddress !== zeroAddress
-                          ? 'Discount Voucher'
-                          : 'N/A'}
+                          : beneficiaryVoucherDetails?.referredVoucherAddress !==
+                            undefined &&
+                            beneficiaryVoucherDetails?.referredVoucherAddress !==
+                            zeroAddress
+                            ? 'Discount Voucher'
+                            : 'N/A'}
                       </p>
                     </div>
                     <div className="flex justify-between items-center">
                       <p>ClaimStatus</p>
                       <p className="text-sm font-light">
-                        {beneficiaryVoucherDetails?.freeVoucherAddress !== undefined  && beneficiaryVoucherDetails?.freeVoucherAddress !== zeroAddress
+                        {beneficiaryVoucherDetails?.freeVoucherAddress !==
+                          undefined &&
+                          beneficiaryVoucherDetails?.freeVoucherAddress !==
+                          zeroAddress
                           ? beneficiaryVoucherDetails?.freeVoucherClaimStatus?.toString()
-                          :  beneficiaryVoucherDetails?.referredVoucherAddress !== undefined && beneficiaryVoucherDetails?.referredVoucherAddress !== zeroAddress
-                          ? beneficiaryVoucherDetails?.referredVoucherClaimStatus?.toString()
-                          : 'N/A'}
+                          : beneficiaryVoucherDetails?.referredVoucherAddress !==
+                            undefined &&
+                            beneficiaryVoucherDetails?.referredVoucherAddress !==
+                            zeroAddress
+                            ? beneficiaryVoucherDetails?.referredVoucherClaimStatus?.toString()
+                            : 'N/A'}
                       </p>
                     </div>
                     <div className="flex justify-between items-center">

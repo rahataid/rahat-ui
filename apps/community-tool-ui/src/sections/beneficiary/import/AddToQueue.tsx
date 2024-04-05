@@ -23,7 +23,11 @@ export default function AddToQueue({
           return rest;
         })
       : []; // Omit rawData
-  const keys = mappedData.length > 0 ? Object.keys(mappedData[0]) : [];
+  const headerKeys = mappedData.length > 0 ? Object.keys(mappedData[0]) : [];
+
+  console.log('Data==>', data);
+
+  const renderErrorMessage = () => {};
 
   return (
     <div className="relative mt-5">
@@ -51,12 +55,16 @@ export default function AddToQueue({
           <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr>
               {/* Dynamically generated table headers */}
-              {keys.map((key) => (
+              {headerKeys.map((key) => (
                 <th className="px-4 py-1.5" key={key}>
                   {invalidFields.find(
                     (field: any) => field.fieldName === key,
                   ) ? (
-                    <span className="text-red-500">{key}*</span>
+                    <span className="text-red-500">
+                      {key === 'uuid' ? '' : key}*
+                    </span>
+                  ) : key === 'uuid' ? (
+                    ''
                   ) : (
                     key
                   )}
@@ -72,16 +80,17 @@ export default function AddToQueue({
                 key={index}
               >
                 {/* Dynamically generated table cells */}
-                {keys.map((key) =>
+                {headerKeys.map((key) =>
                   invalidFields.find(
-                    (field: any) => field.fieldName === key,
+                    (err: any) =>
+                      err.uuid === item['uuid'] && err.value === item[key],
                   ) ? (
                     <td className="px-4 bg-red-100 py-1.5" key={key}>
-                      {item[key]}
+                      {key === 'uuid' ? '' : item[key]}
                     </td>
                   ) : (
                     <td className="px-4 py-1.5" key={key}>
-                      {item[key]}
+                      {key === 'uuid' ? '' : item[key]}
                     </td>
                   ),
                 )}

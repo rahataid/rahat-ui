@@ -4,14 +4,14 @@ import { z } from 'zod';
 
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@rahat-ui/shadcn/components/select';
+// import {
+//   Select,
+//   SelectContent,
+//   SelectGroup,
+//   SelectItem,
+//   SelectTrigger,
+//   SelectValue,
+// } from '@rahat-ui/shadcn/components/select';
 import {
   Form,
   FormControl,
@@ -19,12 +19,22 @@ import {
   FormItem,
   FormMessage,
 } from '@rahat-ui/shadcn/src/components/ui/form';
+import { User } from '@rumsan/sdk/types';
+import { useEffect } from 'react';
+import { UUID } from 'crypto';
+import { useUserUpdate } from '@rahat-ui/query';
+import { useSecondPanel } from '../../providers/second-panel-provider';
 
-export default function EditUser() {
+type Iprops = {
+  userDetail: User;
+};
+export default function EditUser({ userDetail }: Iprops) {
+  const { closeSecondPanel } = useSecondPanel();
+  const updateUser = useUserUpdate();
   const FormSchema = z.object({
     name: z.string().min(2, { message: 'Name must be at least 4 character' }),
     email: z.string(),
-    role: z.string().toUpperCase(),
+    phone: z.string(),
     walletAddress: z
       .string()
       .min(42, { message: 'The Ethereum address must be 42 characters long' }),
@@ -33,19 +43,36 @@ export default function EditUser() {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      name: '',
-      email: '',
-      role: '',
-      walletAddress: '',
+      name: userDetail?.name || '',
+      email: userDetail?.email || '',
+      phone: userDetail?.phone || '',
+      walletAddress: userDetail?.wallet || '',
     },
   });
 
-  const handleEditUser = () => {};
+  useEffect(() => {
+    form.reset({
+      name: userDetail?.name || '',
+      email: userDetail?.email || '',
+      phone: userDetail?.phone || '',
+      walletAddress: userDetail?.wallet || '',
+    });
+  }, [form, userDetail]);
+
+  const handleEditUser = async (data: any) => {
+    const result = await updateUser.mutateAsync({
+      uuid: userDetail.uuid as UUID,
+      payload: data,
+    });
+    if (result?.response?.success) {
+      closeSecondPanel();
+    }
+  };
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleEditUser)}>
         <div className="p-4">
-          <h1 className="text-md font-semibold mb-6">Add User</h1>
+          <h1 className="text-md font-semibold mb-6">Edit User</h1>
           <div className="grid grid-cols-2 gap-4 mb-4">
             <FormField
               control={form.control}
@@ -75,7 +102,22 @@ export default function EditUser() {
                 );
               }}
             />
+
             <FormField
+              control={form.control}
+              name="phone"
+              render={({ field }) => {
+                return (
+                  <FormItem>
+                    <FormControl>
+                      <Input type="text" placeholder="Phone" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+            {/* <FormField
               control={form.control}
               name="role"
               render={({ field }) => {
@@ -101,7 +143,7 @@ export default function EditUser() {
                   </FormItem>
                 );
               }}
-            />
+            /> */}
             <FormField
               control={form.control}
               name="walletAddress"

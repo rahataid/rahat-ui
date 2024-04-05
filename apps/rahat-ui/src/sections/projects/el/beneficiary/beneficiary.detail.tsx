@@ -62,7 +62,7 @@ export default function BeneficiaryDetail({
   const [assignStatus, setAssignStatus] = useState(false);
   const [contractAddress, setContractAddress] = useState<any>();
 
-  const walletAddress = beneficiaryDetails.name;
+  const walletAddress = beneficiaryDetails.wallet;
 
   const { data: beneficiaryVoucherDetails, isLoading } =
     useReadElProjectGetBeneficiaryVoucherDetail({
@@ -107,12 +107,13 @@ export default function BeneficiaryDetail({
       return;
     if (
       beneficiaryVoucherDetails?.freeVoucherAddress?.toString() !==
-        zeroAddress ||
+      zeroAddress ||
       beneficiaryVoucherDetails?.referredVoucherAddress?.toString() !==
-        zeroAddress
+      zeroAddress
     ) {
       setAssignStatus(true);
     }
+    console.log({ beneficiaryVoucherDetails })
   }, [beneficiaryVoucherDetails]);
 
   useEffect(() => {
@@ -203,11 +204,11 @@ export default function BeneficiaryDetail({
                 </TooltipProvider>
               </div>
             </div>
-            {!assignStatus && beneficiaryDetails?.type === 'ENROLLED' && (
-              <div>
-                <Button onClick={handleAssignVoucher}>Assign Voucher</Button>
-              </div>
-            )}
+            {/* {!assignStatus && beneficiaryDetails?.type === 'ENROLLED' && ( */}
+            <div>
+              <Button onClick={handleAssignVoucher}>Assign Voucher</Button>
+            </div>
+            {/* )} */}
           </div>
 
           {/* Details View */}
@@ -355,15 +356,15 @@ export default function BeneficiaryDetail({
                       <p className="text-sm font-light">
                         {beneficiaryVoucherDetails?.freeVoucherAddress !==
                           undefined &&
-                        beneficiaryVoucherDetails?.freeVoucherAddress !==
+                          beneficiaryVoucherDetails?.freeVoucherAddress !==
                           zeroAddress
                           ? 'Free Voucher'
                           : beneficiaryVoucherDetails?.referredVoucherAddress !==
-                              undefined &&
+                            undefined &&
                             beneficiaryVoucherDetails?.referredVoucherAddress !==
-                              zeroAddress
-                          ? 'Discount Voucher'
-                          : 'N/A'}
+                            zeroAddress
+                            ? 'Discount Voucher'
+                            : 'N/A'}
                       </p>
                     </div>
                     <div className="flex justify-between items-center">
@@ -371,15 +372,15 @@ export default function BeneficiaryDetail({
                       <p className="text-sm font-light">
                         {beneficiaryVoucherDetails?.freeVoucherAddress !==
                           undefined &&
-                        beneficiaryVoucherDetails?.freeVoucherAddress !==
+                          beneficiaryVoucherDetails?.freeVoucherAddress !==
                           zeroAddress
                           ? beneficiaryVoucherDetails?.freeVoucherClaimStatus?.toString()
                           : beneficiaryVoucherDetails?.referredVoucherAddress !==
-                              undefined &&
+                            undefined &&
                             beneficiaryVoucherDetails?.referredVoucherAddress !==
-                              zeroAddress
-                          ? beneficiaryVoucherDetails?.referredVoucherClaimStatus?.toString()
-                          : 'N/A'}
+                            zeroAddress
+                            ? beneficiaryVoucherDetails?.referredVoucherClaimStatus?.toString()
+                            : 'N/A'}
                       </p>
                     </div>
                     <div className="flex justify-between items-center">

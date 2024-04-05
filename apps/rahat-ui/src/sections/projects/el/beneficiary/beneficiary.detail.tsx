@@ -42,7 +42,7 @@ import { getProjectAddress } from 'apps/rahat-ui/src/utils/getProjectAddress';
 import { Minus, MoreVertical, Copy, CopyCheck } from 'lucide-react';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
-import TransactionTable from '../transactions/transactions.table';
+import TransactionTable from './beneficiary.transaction.table';
 import { useReadElProjectGetBeneficiaryVoucherDetail } from 'apps/rahat-ui/src/hooks/el/contracts/elProject';
 import { zeroAddress } from 'viem';
 
@@ -204,11 +204,11 @@ export default function BeneficiaryDetail({
                 </TooltipProvider>
               </div>
             </div>
-            {/* {!assignStatus && beneficiaryDetails?.type === 'ENROLLED' && ( */}
+            {!assignStatus && beneficiaryDetails?.type === 'ENROLLED' && (
             <div>
               <Button onClick={handleAssignVoucher}>Assign Voucher</Button>
             </div>
-            {/* )} */}
+            )}
           </div>
 
           {/* Details View */}

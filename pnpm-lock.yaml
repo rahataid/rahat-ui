@@ -69,8 +69,8 @@ dependencies:
     specifier: ^0.0.7
     version: 0.0.7
   '@rahataid/el-subgraph':
-    specifier: 0.0.6
-    version: 0.0.6
+    specifier: 0.0.7
+    version: 0.0.7
   '@rahataid/sdk':
     specifier: 0.0.19
     version: 0.0.19
@@ -78,8 +78,8 @@ dependencies:
     specifier: ^0.0.9
     version: 0.0.9
   '@rumsan/communication-query':
-    specifier: ^0.0.2
-    version: 0.0.2(@types/react@18.2.65)
+    specifier: ^0.0.3
+    version: 0.0.3(@types/react@18.2.65)
   '@rumsan/core':
     specifier: ^3.0.133
     version: 3.0.133
@@ -5361,13 +5361,13 @@ packages:
       tslib: 2.6.2
     dev: false
 
-  /@rahataid/el-subgraph@0.0.6:
-    resolution: {integrity: sha512-QNEWdCTNxnfYBnoc7BYH+wpwiiKC/aNRntrsh3mH6yNxO9cZl/AHdI0bgxag2ppri3+slr8cLk/PMv/uWUjlMw==, tarball: https://npm.pkg.github.com/download/@rahataid/el-subgraph/0.0.6/975904f33257462f9522908dda0ddd99106d8b50}
+  /@rahataid/el-subgraph@0.0.7:
+    resolution: {integrity: sha512-AIcagvGWhlcrNdRh2hLAKytdIgOvoA3xgvL1mrb/BNmJj7cCQf5DhVuY7EwPRlp+LQ16WzW2gD03TdVFzKrAPQ==, tarball: https://npm.pkg.github.com/download/@rahataid/el-subgraph/0.0.7/a32316dc0d61046a2a16540f4981ec08541ebb48}
     dependencies:
       '@types/react': 18.2.65
       '@urql/core': 4.3.0
       react: 18.2.0
-      tslib: 2.3.0
+      tslib: 2.6.2
       typescript: 5.4.2
       urql: 4.0.7(react@18.2.0)
     transitivePeerDependencies:
@@ -5854,15 +5854,15 @@ packages:
       picomatch: 2.3.1
       rollup: 2.79.1
 
-  /@rumsan/communication-query@0.0.2(@types/react@18.2.65):
-    resolution: {integrity: sha512-m3vTQEJCfCFzkIdr2QqWCSBJ93BO/AlOBdwCqnYet3oPgkGRu6rg0pTdS8xvUkhf87WBOphw7wP5JxNMQ1lOjQ==, tarball: https://npm.pkg.github.com/download/@rumsan/communication-query/0.0.2/49bc6a3c6c404733fbbf88d7b757c7438dc84824}
+  /@rumsan/communication-query@0.0.3(@types/react@18.2.65):
+    resolution: {integrity: sha512-xAMczBe78iMnrAGLvYyyStOAkGK0FTWGwJNomfAYzBSMNTDRRjjx/0/UkPN9D2yAnr83LHs9hdLQe8XjvrNrNQ==, tarball: https://npm.pkg.github.com/download/@rumsan/communication-query/0.0.3/c1b4cc74abd260aeedb38029efd3f5a980e981ea}
     dependencies:
       '@rumsan/communication': 0.0.9
       '@rumsan/react-query': 0.0.34(@types/react@18.2.65)
-      '@tanstack/react-query': 5.28.14(react@18.2.0)
+      '@tanstack/react-query': 5.22.2(react@18.2.0)
       axios: 1.6.7
       react: 18.2.0
-      tslib: 2.3.0
+      tslib: 2.6.2
       zustand: 4.5.2(@types/react@18.2.65)(react@18.2.0)
     transitivePeerDependencies:
       - '@types/react'
@@ -6645,10 +6645,6 @@ packages:
     resolution: {integrity: sha512-z3PwKFUFACMUqe1eyesCIKg3Jv1mysSrYfrEW5ww5DCDUD4zlpTKBvUDaEjsfZzL3ULrFLDM9yVUxI/fega1Qg==}
     dev: false
 
-  /@tanstack/query-core@5.28.13:
-    resolution: {integrity: sha512-C3+CCOcza+mrZ7LglQbjeYEOTEC3LV0VN0eYaIN6GvqAZ8Foegdgch7n6QYPtT4FuLae5ALy+m+ZMEKpD6tMCQ==}
-    dev: false
-
   /@tanstack/query-devtools@5.28.10:
     resolution: {integrity: sha512-5UN629fKa5/1K/2Pd26gaU7epxRrYiT1gy+V+pW5K6hnf1DeUKK3pANSb2eHKlecjIKIhTwyF7k9XdyE2gREvQ==}
     dev: false
@@ -6670,15 +6666,6 @@ packages:
       react: ^18.0.0
     dependencies:
       '@tanstack/query-core': 5.22.2
-      react: 18.2.0
-    dev: false
-
-  /@tanstack/react-query@5.28.14(react@18.2.0):
-    resolution: {integrity: sha512-cZqt03Igb3I9tM72qNX5TAAmeYl75Z+k4Mv92VkXIXc2hCrv0fIywd7GN3JV1BBJl4mr7Cc+OOKKOPy8sNVOkA==}
-    peerDependencies:
-      react: ^18.0.0
-    dependencies:
-      '@tanstack/query-core': 5.28.13
       react: 18.2.0
     dev: false
 
@@ -9553,7 +9540,7 @@ packages:
       path-case: 3.0.4
       sentence-case: 3.0.4
       snake-case: 3.0.4
-      tslib: 2.3.0
+      tslib: 2.6.2
     dev: true
 
   /char-regex@1.0.2:
@@ -15999,7 +15986,7 @@ packages:
       tar-stream: 2.2.0
       tmp: 0.2.3
       tsconfig-paths: 4.2.0
-      tslib: 2.3.0
+      tslib: 2.6.2
       yargs: 17.7.2
       yargs-parser: 21.1.1
     optionalDependencies:

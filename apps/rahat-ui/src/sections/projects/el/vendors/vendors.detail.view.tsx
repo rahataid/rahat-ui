@@ -127,7 +127,7 @@ export default function VendorsDetailPage() {
                 <TabsTrigger value="referrals">Referrals List</TabsTrigger>
                 <TabsTrigger value="redeem">Redemption List</TabsTrigger>
               </TabsList>
-              {!vendorStatus && (
+              {vendorStatus === false && (
                 <div>
                   <Button className="mr-3 h-1/2" onClick={handleApproveVendor}>
                     Approve Vendor

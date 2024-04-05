@@ -39,22 +39,21 @@ import {
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import { useUserTableColumns } from './useUsersColumns';
-import { User } from '@rumsan/sdk/types';
+import { Role, User } from '@rumsan/sdk/types';
+import { useRoleTableColumns } from './useRoleTableColumns';
 
 type IProps = {
-  users: User[];
+  roleData: Role[];
 };
-export default function ListView({ users }: IProps) {
-  const columns = useUserTableColumns();
-  // const users = useUserStore((state) => state.users);
+export default function ListView({ roleData }: IProps) {
+  const columns = useRoleTableColumns();
 
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
 
   const table = useReactTable({
-    data: users && users?.length > 0 ? users : [],
+    data: roleData && roleData?.length > 0 ? roleData : [],
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),

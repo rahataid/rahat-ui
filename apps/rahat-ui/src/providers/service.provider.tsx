@@ -12,6 +12,7 @@ import { useError } from '../utils/useErrors';
 import { useCommunicationQuery } from '@rumsan/communication-query';
 import { CommunicationService } from '@rumsan/communication/services/communication.client';
 import Image from 'next/image';
+import { useChainSettings } from '@rahat-ui/query';
 
 export const ServiceContext = createContext<RSQueryContextType | null>(null);
 
@@ -30,6 +31,8 @@ export function ServiceProvider({ children }: ServiceProviderProps) {
     setQueryClient: setCommsQueryClient,
   } = useCommunicationQuery();
 
+  const { data } = useChainSettings();
+  console.log('data', data);
   const rsService = useMemo(
     () =>
       new RumsanService({
@@ -107,8 +110,6 @@ export function ServiceProvider({ children }: ServiceProviderProps) {
       );
     }
   }, [communicationService]);
-
-  console.log('first', commsQueryClient);
 
   if (
     !rumsanService &&

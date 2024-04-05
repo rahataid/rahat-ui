@@ -1,5 +1,5 @@
-import { useChainStore } from '@rahat-ui/query';
 import { defineChain } from 'viem';
+import { useChainStore } from '@rahat-ui/query';
 
 const chain = useChainStore.getInitialState().chainSettings;
 

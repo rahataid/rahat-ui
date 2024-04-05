@@ -1,3 +1,5 @@
+'use client';
+
 import { useParams } from 'next/navigation';
 
 import { useProjectAction } from '@rahat-ui/query';
@@ -46,6 +48,8 @@ import { useEffect, useState } from 'react';
 import TransactionTable from './beneficiary.transaction.table';
 import { useReadElProjectGetBeneficiaryVoucherDetail } from 'apps/rahat-ui/src/hooks/el/contracts/elProject';
 import { zeroAddress } from 'viem';
+import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
+import AssignVoucherConfirm from './assign.voucher.confirm';
 import ConfirmDialog from '../../../../components/dialog';
 import {
   Dialog,
@@ -132,10 +136,24 @@ export default function BeneficiaryDetail({
     }
   }, [id, projectSettings]);
 
+  const voucherAssignModal = useBoolean();
+
+  const handleVoucherAssignModal = () => {
+    voucherAssignModal.onTrue();
+  };
+
+  const handleVoucherAssignModalClose = () => {
+    voucherAssignModal.onFalse();
+  };
+
   return (
     <>
       {isLoading ? (
-        <>Loading ben data........</>
+        <div className="h-screen flex items-center justify-center space-x-2">
+          <div className="h-5 w-5 animate-bounce rounded-full bg-primary [animation-delay:-0.3s]"></div>
+          <div className="h-5 w-5 animate-bounce rounded-full bg-primary [animation-delay:-0.13s]"></div>
+          <div className="h-5 w-5 animate-bounce rounded-full bg-primary"></div>
+        </div>
       ) : (
         <>
           <div className="flex justify-between p-4 pt-5 bg-secondary border-b">
@@ -234,6 +252,11 @@ export default function BeneficiaryDetail({
               </div>
             )}
           </div>
+          <AssignVoucherConfirm
+            open={voucherAssignModal.value}
+            handleClose={handleVoucherAssignModalClose}
+            handleSubmit={handleAssignVoucher}
+          />
 
           {/* Details View */}
 

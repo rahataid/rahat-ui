@@ -173,8 +173,6 @@ export default function TransactionTable({ }) {
 
   const { data } = useProjectTransaction();
 
-  console.log("data", data)
-
   const table = useReactTable({
     data: data || [],
     columns,

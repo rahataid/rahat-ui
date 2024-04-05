@@ -229,9 +229,9 @@ export default function BeneficiaryDetail({
               </div>
             </div>
             {!assignStatus && beneficiaryDetails?.type === 'ENROLLED' && (
-            <div>
-              <Button onClick={handleAssignVoucher}>Assign Voucher</Button>
-            </div>
+              <div>
+                <Button onClick={handleAssignVoucher}>Assign Voucher</Button>
+              </div>
             )}
           </div>
 
@@ -349,7 +349,7 @@ export default function BeneficiaryDetail({
                   </div>
                 </TabsContent>
                 <TabsContent value="transaction">
-                  <div className="p-4">
+                  <div className="p-2 pb-0">
                     <TransactionTable walletAddress={walletAddress} />
                   </div>
                 </TabsContent>

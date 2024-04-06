@@ -2,7 +2,7 @@
 
 import { getDefaultConfig } from 'connectkit';
 import { createConfig, http } from 'wagmi';
-import { polygonMumbai, mainnet, sepolia } from 'wagmi/chains';
+import { mainnet, polygonMumbai, sepolia } from 'wagmi/chains';
 import { safe } from 'wagmi/connectors';
 import { rahatChain } from './src/chain-custom';
 
@@ -14,6 +14,7 @@ declare module 'wagmi' {
 
 export const config = createConfig(
   getDefaultConfig({
+    syncConnectedChain: true,
     chains: [
       // mainnet,
       // sepolia,
@@ -34,6 +35,7 @@ export const config = createConfig(
       safe(),
     ],
     transports: {
+      [rahatChain.id]: http(),
       [mainnet.id]: http(),
       [sepolia.id]: http(),
       // [arbitrumSepolia.id]: http(),

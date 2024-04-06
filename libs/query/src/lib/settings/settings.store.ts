@@ -1,19 +1,22 @@
 import { zustandStore } from '@rumsan/react-query';
 import { Chain, ChainFormatters } from 'viem';
+import { localPersistStorage } from '../../utils/zustand-store';
 
-export type ChainStoreState = {
+export type AppSettingsState = {
   chainSettings: Chain<ChainFormatters>;
+  subGraphUrl: string;
 };
 
-export type ChainStoreAction = {
+export type AppSettingsAction = {
   setChainSettings: (chainSettings: Chain<ChainFormatters>) => void;
+  setSubGraphUrlSettings: (subGraphUrlSettings: string) => void;
 };
 
-export type ChainStore = ChainStoreState & ChainStoreAction;
+export type AppSettings = AppSettingsState & AppSettingsAction;
 
-export const initialChainSettings: ChainStoreState = {
+export const initialAppSettings: AppSettingsState = {
   chainSettings: {
-    id: 1,
+    id: 5,
     name: 'Rahat',
     nativeCurrency: { name: 'Rahat', symbol: 'Rs.', decimals: 18 },
     rpcUrls: {
@@ -41,9 +44,22 @@ export const initialChainSettings: ChainStoreState = {
       },
     },
   },
+  subGraphUrl:
+    'https://api.studio.thegraph.com/query/42205/el-dev/version/latest',
 };
 
-export const useChainStore = zustandStore<ChainStore>((set) => ({
-  chainSettings: initialChainSettings.chainSettings,
-  setChainSettings: (chainSettings) => set({ chainSettings }),
-}));
+export const useSettingsStore = zustandStore<AppSettings>(
+  (set) => ({
+    chainSettings: initialAppSettings.chainSettings,
+    setChainSettings: (chainSettings) => set({ chainSettings }),
+    subGraphUrl: initialAppSettings.subGraphUrl,
+    setSubGraphUrlSettings: (subGraphUrl) => set({ subGraphUrl }),
+  }),
+  {
+    devtoolsEnabled: true,
+    persistOptions: {
+      name: 'appSettingsStore',
+      storage: localPersistStorage,
+    },
+  },
+);

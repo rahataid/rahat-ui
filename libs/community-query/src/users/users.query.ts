@@ -1,8 +1,8 @@
 import { useRSQuery } from '@rumsan/react-query';
-import { User } from '@rumsan/sdk/types';
+import { ListRole, User } from '@rumsan/sdk/types';
 import { UseQueryResult, useMutation, useQuery } from '@tanstack/react-query';
 import { TAGS } from '../config';
-import { getUserClient } from '@rumsan/sdk/clients';
+import { getRoleClient, getUserClient } from '@rumsan/sdk/clients';
 import Swal from 'sweetalert2';
 import { UUID } from 'crypto';
 
@@ -84,15 +84,77 @@ export const useCommunityUserUpdate = () => {
   );
 };
 
-export const useRoleList = () => {
+export const useRoleList = (payload?: ListRole) => {
   const { queryClient, rumsanService } = useRSQuery();
   const roleClient = getUserClient(rumsanService.client);
   const query = useQuery(
     {
       queryKey: [TAGS.GET_ALL_ROLES],
-      queryFn: () => rumsanService.role.listRole(),
+      queryFn: () => rumsanService.role.listRole(payload),
     },
     queryClient,
   );
   return query;
 };
+
+export const useCreateRole = () => {
+  const { queryClient, rumsanService } = useRSQuery();
+  const roleClient = getRoleClient(rumsanService.client);
+  const query = useMutation(
+    {
+      mutationKey: [TAGS.CREATE_ROLE],
+      mutationFn: roleClient.createRole,
+      onSuccess: () => {
+        Swal.fire('Roles Added Successfully', '', 'success');
+        queryClient.invalidateQueries({
+          queryKey: [
+            TAGS.GET_ALL_ROLES,
+            {
+              exact: true,
+            },
+          ],
+        });
+      },
+      onError: (error: any) => {
+        Swal.fire(
+          'Error',
+          error.response.data.message || 'Encounter error on Creating Data',
+          'error',
+        );
+      },
+    },
+    queryClient,
+  );
+  return query;
+};
+
+// export const useEditRole = () => {
+//   const { queryClient, rumsanService } = useRSQuery();
+//   const roleClient = getRoleClient(rumsanService.client);
+//   const query = useMutation(
+//     {
+//       mutationKey: [TAGS.EDIT_ROLE],
+//       mutationFn: roleClient.updateRole,
+//       onSuccess: () => {
+//         Swal.fire('Roles Added Successfully', '', 'success');
+//         queryClient.invalidateQueries({
+//           queryKey: [
+//             TAGS.GET_ALL_ROLES,
+//             {
+//               exact: true,
+//             },
+//           ],
+//         });
+//       },
+//       onError: (error: any) => {
+//         Swal.fire(
+//           'Error',
+//           error.response.data.message || 'Encounter error on Creating Data',
+//           'error',
+//         );
+//       },
+//     },
+//     queryClient,
+//   );
+//   return query;
+// };

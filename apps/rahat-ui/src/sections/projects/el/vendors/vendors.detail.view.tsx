@@ -25,6 +25,8 @@ import {
   useReadElProjectGetVendorVoucherDetail,
 } from 'apps/rahat-ui/src/hooks/el/contracts/elProject';
 import { Card } from '@rahat-ui/shadcn/src/components/ui/card';
+import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
+import AssignVoucherConfirm from './vendor.assign.confirm';
 
 interface IParams {
   uuid: any;
@@ -33,6 +35,16 @@ interface IParams {
 
 export default function VendorsDetailPage() {
   const searchParams = useSearchParams();
+
+  const assignVendor = useBoolean();
+
+  const handleAssignVendor = () => {
+    assignVendor.onTrue();
+  };
+
+  const handleAssignVendorClose = () => {
+    assignVendor.onFalse();
+  };
 
   const phone = searchParams.get('phone');
   const name = searchParams.get('name');
@@ -50,26 +62,15 @@ export default function VendorsDetailPage() {
     args: [walletAddress],
   });
 
-  const {data:vendorVoucher} = useReadElProjectGetVendorVoucherDetail({
-    address:contractAddress,
-    args:[walletAddress],
+  const { data: vendorVoucher } = useReadElProjectGetVendorVoucherDetail({
+    address: contractAddress,
+    args: [walletAddress],
   });
-
 
   const assignVendorToProjet = async () => {
     return updateVendor.writeContractAsync({
       address: contractAddress,
       args: [walletAddress, true],
-    });
-  };
-
-  const handleApproveVendor = () => {
-    Swal.fire({
-      title: 'Approve vendor?',
-      showCancelButton: true,
-      confirmButtonText: 'Yes',
-    }).then((result) => {
-      if (result.isConfirmed) return assignVendorToProjet();
     });
   };
 
@@ -129,7 +130,7 @@ export default function VendorsDetailPage() {
               </TabsList>
               {!vendorStatus && (
                 <div>
-                  <Button className="mr-3 h-1/2" onClick={handleApproveVendor}>
+                  <Button className="mr-3 h-1/2" onClick={handleAssignVendor}>
                     Approve Vendor
                   </Button>
                 </div>
@@ -150,6 +151,12 @@ export default function VendorsDetailPage() {
             <RedemptionTable projectId={projectId} vendorId={vendorId} />
           </TabsContent>
         </Tabs>
+        <AssignVoucherConfirm
+          name={name}
+          open={assignVendor.value}
+          handleClose={handleAssignVendorClose}
+          handleSubmit={assignVendorToProjet}
+        />
       </div>
     </div>
   );

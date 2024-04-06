@@ -19,7 +19,7 @@ import { useAudienceColumns } from './use-audience-columns';
 import { Separator } from '@rahat-ui/shadcn/src/components/ui/separator';
 import AddAudience from './add-audiences';
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
-import { CAMPAIGN_TYPES } from '@rahat-ui/types';
+import { Audience, CAMPAIGN_TYPES } from '@rahat-ui/types';
 import { toast } from 'react-toastify';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import {
@@ -36,7 +36,8 @@ import {
 } from '@tanstack/match-sorter-utils';
 import { useRouter } from 'next/navigation';
 import { paths } from 'apps/rahat-ui/src/routes/paths';
-import { useBeneficiaryPii } from '@rahat-ui/query';
+import { useBeneficiaryPii, usePagination } from '@rahat-ui/query';
+import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 const FormSchema = z.object({
   campaignName: z.string().min(2, {
     message: 'Campaign Name must be at least 2 characters.',
@@ -67,20 +68,26 @@ export type SelectedRowType = {
 };
 
 const AddCampaignView = () => {
+  const {
+    pagination,
+    selectedListItems,
+    setSelectedListItems,
+    setNextPage,
+    setPrevPage,
+    setPerPage,
+  } = usePagination();
   const { data: transportData } = useListTransport();
   const { data: audienceData } = useListAudience();
   const { data: audioData } = useGetAudio();
   const createCampaign = useCreateCampaign();
   const createAudience = useCreateAudience();
-  const { data: beneficiaryData } = useBeneficiaryPii();
-
+  const { data: beneficiaryData } = useBeneficiaryPii(pagination);
   const [rowSelection, setRowSelection] = React.useState({});
   const [selectedRows, setSelectedRows] = React.useState<SelectedRowType[]>([]);
   const [globalFilter, setGlobalFilter] = React.useState('');
-  const [pagination, setPagination] = React.useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: 10,
-  });
+
+  const [columnVisibility, setColumnVisibility] = React.useState({});
+
   const showAddAudienceView = useBoolean(false);
   const router = useRouter();
 
@@ -126,6 +133,7 @@ const AddCampaignView = () => {
     return itemRank.passed;
   };
   const table = useReactTable({
+    manualPagination: true,
     data: tableData || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
@@ -133,22 +141,26 @@ const AddCampaignView = () => {
     globalFilterFn: audienceFilter,
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
+    onColumnVisibilityChange: setColumnVisibility,
     getFilteredRowModel: getFilteredRowModel(),
     onRowSelectionChange: setRowSelection,
-    onPaginationChange: setPagination,
     getRowId: (row) => row.id,
 
     filterFns: {
       fuzzy: audienceFilter,
     },
     state: {
-      rowSelection,
       globalFilter,
-      pagination,
+      columnVisibility,
+      rowSelection,
     },
   });
 
-  const handleCreateCampaign = async (data: z.infer<typeof FormSchema>) => {
+  const handleCreateCampaign = async (
+    data: z.infer<typeof FormSchema>,
+    event: any,
+  ) => {
+    event.preventDefault();
     let transportId;
     transportData?.data.map((tdata) => {
       if (tdata.name.toLowerCase() === data.campaignType.toLowerCase()) {
@@ -157,13 +169,13 @@ const AddCampaignView = () => {
     });
 
     const audiences = audienceData?.data
-      .filter((audienceObject: any) =>
+      .filter((audienceObject: Audience) =>
         selectedRows?.some(
           (selectedObject) =>
             selectedObject.phone === audienceObject?.details?.phone,
         ),
       )
-      .map((filteredObject: any) => filteredObject.id);
+      .map((filteredObject: Audience) => filteredObject.id);
     type AdditionalData = {
       audio?: any;
       message?: string;
@@ -182,7 +194,7 @@ const AddCampaignView = () => {
     }
     createCampaign
       .mutateAsync({
-        audienceIds: audiences,
+        audienceIds: audiences || [],
         name: data.campaignName,
         startTime: data.startTime,
         transportId: Number(transportId),
@@ -218,7 +230,7 @@ const AddCampaignView = () => {
           <>
             <div className="flex justify-between m-2">
               <Input
-                placeholder="Filter campaigns..."
+                placeholder="Filter beneficiary..."
                 value={globalFilter ?? ''}
                 onChange={(value) => {
                   setGlobalFilter(value.target.value);
@@ -229,6 +241,17 @@ const AddCampaignView = () => {
             </div>
 
             <AddAudience table={table} columns={columns} form={form} />
+            <CustomPagination
+              meta={
+                beneficiaryData?.response?.meta || { total: 0, currentPage: 0 }
+              }
+              handleNextPage={setNextPage}
+              handlePrevPage={setPrevPage}
+              handlePageSizeChange={setPerPage}
+              currentPage={pagination.page}
+              perPage={pagination.perPage}
+              total={beneficiaryData?.response?.meta?.lastPage || 0}
+            />
           </>
         ) : null}
       </form>

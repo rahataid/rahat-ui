@@ -13,19 +13,8 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
-import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
-import { ArrowUpDown, ChevronDownIcon, GripVertical } from 'lucide-react';
+import { ArrowUpDown } from 'lucide-react';
 import {
   Table,
   TableBody,
@@ -38,39 +27,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { useGetReferredVoucherTransaction } from 'apps/rahat-ui/src/hooks/el/subgraph/querycall';
 import { truncateEthAddress } from '@rumsan/sdk/utils';
-
-const data: Payment[] = [
-  {
-    id: 'm5gr84i9',
-    amount: 316,
-    status: 'success',
-    email: 'ken99@yahoo.com',
-  },
-  {
-    id: '3u1reuv4',
-    amount: 242,
-    status: 'success',
-    email: 'Abe45@gmail.com',
-  },
-  {
-    id: 'derv1ws0',
-    amount: 837,
-    status: 'processing',
-    email: 'Monserrat44@gmail.com',
-  },
-  {
-    id: '5kma53ae',
-    amount: 874,
-    status: 'success',
-    email: 'Silas22@gmail.com',
-  },
-  {
-    id: 'bhqecj4p',
-    amount: 721,
-    status: 'failed',
-    email: 'carmella@hotmail.com',
-  },
-];
+import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 
 export type Payment = {
   id: string;
@@ -84,7 +41,9 @@ export const columns: ColumnDef<Payment>[] = [
     accessorKey: 'transactionHash',
     header: 'TransactionHash',
     cell: ({ row }) => (
-      <div className="capitalize">{truncateEthAddress(row.getValue('transactionHash'))}</div>
+      <div className="capitalize">
+        {truncateEthAddress(row.getValue('transactionHash'))}
+      </div>
     ),
   },
   {
@@ -100,7 +59,11 @@ export const columns: ColumnDef<Payment>[] = [
         </Button>
       );
     },
-    cell: ({ row }) => <div className="lowercase">{truncateEthAddress(row.getValue('from'))}</div>,
+    cell: ({ row }) => (
+      <div className="lowercase">
+        {truncateEthAddress(row.getValue('from'))}
+      </div>
+    ),
   },
   {
     accessorKey: 'to',
@@ -115,7 +78,9 @@ export const columns: ColumnDef<Payment>[] = [
         </Button>
       );
     },
-    cell: ({ row }) => <div className="lowercase">{truncateEthAddress(row.getValue('to'))}</div>,
+    cell: ({ row }) => (
+      <div className="lowercase">{truncateEthAddress(row.getValue('to'))}</div>
+    ),
   },
   {
     accessorKey: 'value',
@@ -132,33 +97,6 @@ export const columns: ColumnDef<Payment>[] = [
       return <div className="text-right font-medium">{amount}</div>;
     },
   },
-  {
-    id: 'actions',
-    enableHiding: false,
-    cell: ({ row }) => {
-      const payment = row.original;
-
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <GripVertical className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(payment.id)}
-            >
-              Copy payment ID
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
-    },
-  },
 ];
 
 export function DiscountTransactionTable() {
@@ -170,23 +108,24 @@ export function DiscountTransactionTable() {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
-  const[contractAddress,setContractAddress] = useState<any>()
+  const [contractAddress, setContractAddress] = useState<any>();
 
   const { id } = useParams();
 
   const projectSettings = localStorage.getItem('projectSettingsStore');
 
-  useEffect(()=>{
-    if(projectSettings){
-      const settings = JSON.parse(projectSettings)?.state?.settings?.[id]
+  useEffect(() => {
+    if (projectSettings) {
+      const settings = JSON.parse(projectSettings)?.state?.settings?.[id];
       setContractAddress({
-        referredVoucher:settings?.referralvoucher?.address
-      })
+        referredVoucher: settings?.referralvoucher?.address,
+      });
     }
+  }, [projectSettings]);
 
-  },[projectSettings])
-
-  const {data: vouchersTransactions} = useGetReferredVoucherTransaction(contractAddress?.referredVoucher)
+  const { data: vouchersTransactions } = useGetReferredVoucherTransaction(
+    contractAddress?.referredVoucher,
+  );
 
   const table = useReactTable({
     data: vouchersTransactions?.transfers || [],
@@ -212,79 +151,57 @@ export function DiscountTransactionTable() {
       <div className="flex items-center justify-between py-2 px-2">
         <h1 className="text-primary">Transactions</h1>
       </div>
-      <div className="rounded border h-[calc(100vh-600px)] bg-card">
+      <div className="rounded border">
         <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext(),
-                          )}
-                    </TableHead>
-                  );
-                })}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && 'selected'}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
-                      )}
-                    </TableCell>
-                  ))}
+          <ScrollArea className="h-[calc(100vh-494px)]">
+            <TableHeader className="top-0 sticky bg-card">
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => {
+                    return (
+                      <TableHead key={header.id}>
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext(),
+                            )}
+                      </TableHead>
+                    );
+                  })}
                 </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  No results.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
+              ))}
+            </TableHeader>
+            <TableBody>
+              {table.getRowModel().rows?.length ? (
+                table.getRowModel().rows.map((row) => (
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && 'selected'}
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-24 text-center"
+                  >
+                    No results.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </ScrollArea>
         </Table>
-      </div>
-      <div className="flex items-center justify-end space-x-2 py-4">
-        <div className="flex-1 text-sm text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length} of{' '}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
-        </div>
-        <div className="space-x-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            Previous
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            Next
-          </Button>
-        </div>
       </div>
     </div>
   );

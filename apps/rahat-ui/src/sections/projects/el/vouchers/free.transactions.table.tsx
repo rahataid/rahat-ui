@@ -13,18 +13,8 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
-import { ArrowUpDown, GripVertical } from 'lucide-react';
+import { ArrowUpDown } from 'lucide-react';
 import {
   Table,
   TableBody,
@@ -37,6 +27,7 @@ import { useGetFreeVoucherTransaction } from 'apps/rahat-ui/src/hooks/el/subgrap
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { truncateEthAddress } from '@rumsan/sdk/utils';
+import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 
 export type Payment = {
   id: string;
@@ -50,7 +41,9 @@ export const columns: ColumnDef<Payment>[] = [
     accessorKey: 'transactionHash',
     header: 'TransactionHash',
     cell: ({ row }) => (
-      <div className="capitalize">{truncateEthAddress(row.getValue('transactionHash'))}</div>
+      <div className="capitalize">
+        {truncateEthAddress(row.getValue('transactionHash'))}
+      </div>
     ),
   },
   {
@@ -66,7 +59,11 @@ export const columns: ColumnDef<Payment>[] = [
         </Button>
       );
     },
-    cell: ({ row }) => <div className="lowercase">{truncateEthAddress(row.getValue('from'))}</div>,
+    cell: ({ row }) => (
+      <div className="lowercase">
+        {truncateEthAddress(row.getValue('from'))}
+      </div>
+    ),
   },
   {
     accessorKey: 'to',
@@ -81,7 +78,9 @@ export const columns: ColumnDef<Payment>[] = [
         </Button>
       );
     },
-    cell: ({ row }) => <div className="lowercase">{truncateEthAddress(row.getValue('to'))}</div>,
+    cell: ({ row }) => (
+      <div className="lowercase">{truncateEthAddress(row.getValue('to'))}</div>
+    ),
   },
   {
     accessorKey: 'value',
@@ -89,33 +88,6 @@ export const columns: ColumnDef<Payment>[] = [
     cell: ({ row }) => {
       const amount = parseFloat(row.getValue('value'));
       return <div className="text-right font-medium">{amount}</div>;
-    },
-  },
-  {
-    id: 'actions',
-    enableHiding: false,
-    cell: ({ row }) => {
-      const payment = row.original;
-
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <GripVertical className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(payment.id)}
-            >
-              Copy payment ID
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
     },
   },
 ];
@@ -129,25 +101,25 @@ export function FreeTransactionTable() {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
-  const[contractAddress,setContractAddress] = useState<any>()
+  const [contractAddress, setContractAddress] = useState<any>();
 
   const { id } = useParams();
 
   const projectSettings = localStorage.getItem('projectSettingsStore');
 
-  useEffect(()=>{
-    if(projectSettings){
-      const settings = JSON.parse(projectSettings)?.state?.settings?.[id]
+  useEffect(() => {
+    if (projectSettings) {
+      const settings = JSON.parse(projectSettings)?.state?.settings?.[id];
       setContractAddress({
-        eyeVoucher:settings?.eyevoucher?.address
-      })
+        eyeVoucher: settings?.eyevoucher?.address,
+      });
     }
+  }, [projectSettings, id]);
 
-  },[projectSettings,id])
+  const { data: vouchersTransactions } = useGetFreeVoucherTransaction(
+    contractAddress?.eyeVoucher,
+  );
 
-  const {data: vouchersTransactions} = useGetFreeVoucherTransaction(contractAddress?.eyeVoucher)
-
- 
   const table = useReactTable({
     data: vouchersTransactions?.transfers || [],
     columns,
@@ -172,54 +144,56 @@ export function FreeTransactionTable() {
       <div className="flex items-center justify-between py-2 px-2">
         <h1 className="text-primary">Transactions</h1>
       </div>
-      <div className="rounded border h-[calc(100vh-600px)] bg-card">
+      <div className="rounded border">
         <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext(),
-                          )}
-                    </TableHead>
-                  );
-                })}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && 'selected'}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
-                      )}
-                    </TableCell>
-                  ))}
+          <ScrollArea className="h-[calc(100vh-494px)]">
+            <TableHeader className="top-0 sticky bg-card">
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => {
+                    return (
+                      <TableHead key={header.id}>
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext(),
+                            )}
+                      </TableHead>
+                    );
+                  })}
                 </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  No results.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
+              ))}
+            </TableHeader>
+            <TableBody>
+              {table.getRowModel().rows?.length ? (
+                table.getRowModel().rows.map((row) => (
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && 'selected'}
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-24 text-center"
+                  >
+                    No results.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </ScrollArea>
         </Table>
       </div>
     </div>

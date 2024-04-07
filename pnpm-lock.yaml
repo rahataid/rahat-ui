@@ -69,8 +69,8 @@ dependencies:
     specifier: ^0.0.7
     version: 0.0.7
   '@rahataid/el-subgraph':
-    specifier: 0.0.6
-    version: 0.0.6
+    specifier: 0.0.7
+    version: 0.0.7
   '@rahataid/sdk':
     specifier: 0.0.19
     version: 0.0.19
@@ -5197,13 +5197,13 @@ packages:
       tslib: 2.6.2
     dev: false
 
-  /@rahataid/el-subgraph@0.0.6:
-    resolution: {integrity: sha512-QNEWdCTNxnfYBnoc7BYH+wpwiiKC/aNRntrsh3mH6yNxO9cZl/AHdI0bgxag2ppri3+slr8cLk/PMv/uWUjlMw==, tarball: https://npm.pkg.github.com/download/@rahataid/el-subgraph/0.0.6/975904f33257462f9522908dda0ddd99106d8b50}
+  /@rahataid/el-subgraph@0.0.7:
+    resolution: {integrity: sha512-AIcagvGWhlcrNdRh2hLAKytdIgOvoA3xgvL1mrb/BNmJj7cCQf5DhVuY7EwPRlp+LQ16WzW2gD03TdVFzKrAPQ==, tarball: https://npm.pkg.github.com/download/@rahataid/el-subgraph/0.0.7/a32316dc0d61046a2a16540f4981ec08541ebb48}
     dependencies:
       '@types/react': 18.2.65
       '@urql/core': 4.3.0
       react: 18.2.0
-      tslib: 2.3.0
+      tslib: 2.6.2
       typescript: 5.4.2
       urql: 4.0.7(react@18.2.0)
     transitivePeerDependencies:
@@ -8851,7 +8851,7 @@ packages:
       path-case: 3.0.4
       sentence-case: 3.0.4
       snake-case: 3.0.4
-      tslib: 2.3.0
+      tslib: 2.6.2
     dev: true
 
   /char-regex@1.0.2:
@@ -14780,7 +14780,7 @@ packages:
       tar-stream: 2.2.0
       tmp: 0.2.3
       tsconfig-paths: 4.2.0
-      tslib: 2.3.0
+      tslib: 2.6.2
       yargs: 17.7.2
       yargs-parser: 21.1.1
     optionalDependencies:

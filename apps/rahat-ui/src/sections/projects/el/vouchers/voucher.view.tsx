@@ -1,7 +1,7 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import FreeVoucherInfo from './free.voucher.info';
-import DiscountVoucherInfo from './dicount.voucher.info';
+import DiscountVoucherInfo from './discount.voucher.info';
 import {
   Tabs,
   TabsContent,

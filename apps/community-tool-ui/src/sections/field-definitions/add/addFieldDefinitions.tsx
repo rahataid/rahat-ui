@@ -72,15 +72,12 @@ export default function AddFieldDefinitions() {
   const handleCreateFieldDefinitions = async (
     data: z.infer<typeof FormSchema>,
   ) => {
-    let result;
+    let fieldPopulatePayload;
     if (data.field && data.field.length > 0) {
-      result = data?.field?.reduce(
-        (acc: any, item: any) => {
-          acc.value[item.value.key] = item.value.value;
-          return acc;
-        },
-        { value: {} },
-      );
+      fieldPopulatePayload = data.field.map((item: any) => ({
+        key: item.value.key,
+        value: item.value.value,
+      }));
     }
 
     try {
@@ -88,8 +85,9 @@ export default function AddFieldDefinitions() {
         name: data.name,
         fieldType: data.fieldType as FieldType,
         isActive: data.isActive,
-        fieldPopulate: result?.value || [],
+        fieldPopulate: { data: fieldPopulatePayload } || [],
       };
+
       await addFieldDefinitions.mutateAsync(payload);
     } catch (error) {
       toast.error('Error creating Field Definition');

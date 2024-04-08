@@ -25,7 +25,7 @@ import { FieldType } from '../../types/fieldDefinition';
 import { FieldDefinition } from '@rahataid/community-tool-sdk/fieldDefinitions';
 import {
   useFieldDefinitionsUpdate,
-  useFieldDefinitionsStatusUpdate,
+  // useFieldDefinitionsStatusUpdate,
 } from '@rahat-ui/community-query';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { Switch } from '@rahat-ui/shadcn/src/components/ui/switch';
@@ -42,6 +42,14 @@ export default function EditFieldDefinition({
     name: z.string(),
     fieldType: z.string().toUpperCase(),
     isActive: z.boolean(),
+    fieldPopulate: z.array(
+      z.object({
+        data: z.object({
+          key: z.string(),
+          value: z.string(),
+        }),
+      }),
+    ),
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -50,6 +58,7 @@ export default function EditFieldDefinition({
       name: data?.name || '',
       fieldType: data?.fieldType || '',
       isActive: data?.isActive || false,
+      fieldPopulate: data?.fieldPopulate,
     },
   });
 

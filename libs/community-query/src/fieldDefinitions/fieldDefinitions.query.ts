@@ -118,3 +118,20 @@ export const useFieldDefinitionsStatusUpdate = () => {
     queryClient,
   );
 };
+
+export const useFieldDefinitionsListById = (
+  id: string,
+): UseQueryResult<any, Error> => {
+  const { queryClient, rumsanService } = useRSQuery();
+  const fieldDefClient = getFieldDefinitionClient(rumsanService.client);
+
+  const query = useQuery(
+    {
+      queryKey: [TAGS.LIST_COMMUNITY_FIELD_DEFINITIONS, id],
+      queryFn: () => fieldDefClient.listById(id),
+    },
+    queryClient,
+  );
+
+  return query;
+};

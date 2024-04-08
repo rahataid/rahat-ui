@@ -12,4 +12,4 @@ fi
 echo "Formatting files..."
 npx nx format:write --uncommitted
 echo "Builiding package to check for errors..."
-# pnpm build:all
+pnpm build:all

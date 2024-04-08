@@ -54,27 +54,29 @@ export const useAudienceColumns = (
           aria-label="Select all"
         />
       ),
-      cell: ({ row }) => (
-        <Checkbox
-          checked={
-            selectedRows &&
-            selectedRows.some((data) => data.id === row?.original.id)
-          }
-          aria-label="Select row"
-          onCheckedChange={(checked) => {
-            const item = row.original;
+      cell: ({ row }) => {
+        return (
+          <Checkbox
+            checked={
+              selectedRows &&
+              selectedRows.some((data) => data.phone === row?.original.phone)
+            }
+            aria-label="Select row"
+            onCheckedChange={(checked) => {
+              const item = row.original;
 
-            handleCreateAudience(item);
-            setSelectedRows((prevSelectedRows: SelectedRowType[]) =>
-              checked
-                ? [...prevSelectedRows, item]
-                : selectedRows?.filter(
-                    (value) => (value.id || value.beneficiaryId) !== item.id,
-                  ),
-            );
-          }}
-        />
-      ),
+              handleCreateAudience(item);
+              setSelectedRows((prevSelectedRows: SelectedRowType[]) =>
+                checked
+                  ? [...prevSelectedRows, item]
+                  : selectedRows?.filter(
+                      (value) => (value.id || value.beneficiaryId) !== item.id,
+                    ),
+              );
+            }}
+          />
+        );
+      },
       enableSorting: false,
       enableHiding: false,
     },

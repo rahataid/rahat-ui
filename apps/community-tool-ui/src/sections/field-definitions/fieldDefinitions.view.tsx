@@ -12,6 +12,7 @@ import {
   VisibilityState,
   getCoreRowModel,
   getSortedRowModel,
+  getFilteredRowModel,
   useReactTable,
 } from '@tanstack/react-table';
 
@@ -48,6 +49,7 @@ export default function FieldDefinitionsView() {
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setSelectedListItems,
     getRowId: (row) => String(row.id),
@@ -57,7 +59,7 @@ export default function FieldDefinitionsView() {
     },
   });
 
-  const [selectedData, setSelectedData] = useState<FieldDefinition>();
+  const [selectedData, setSelectedData] = useState<FieldDefinition | null>();
   const [selectedFieldDefId, setSelectedFieldDefId] = useState<number[]>([]);
   const [active, setActive] = useState<string>(
     FIELD_DEFINITON_NAV_ROUTE.DEFAULT,

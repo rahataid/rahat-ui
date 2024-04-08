@@ -2,8 +2,9 @@
 
 import { getDefaultConfig } from 'connectkit';
 import { createConfig, http } from 'wagmi';
-import { polygonMumbai, mainnet, sepolia } from 'wagmi/chains';
+import { mainnet, polygonMumbai, sepolia } from 'wagmi/chains';
 import { safe } from 'wagmi/connectors';
+import { rahatChain } from './src/chain-custom';
 
 declare module 'wagmi' {
   interface Register {
@@ -13,14 +14,16 @@ declare module 'wagmi' {
 
 export const config = createConfig(
   getDefaultConfig({
+    syncConnectedChain: true,
     chains: [
       // mainnet,
       // sepolia,
       // arbitrumGoerli,
       // polygon,
-      polygonMumbai,
+      rahatChain,
+
+      // polygonMumbai,
       // arbitrumSepolia,
-      // rahatChain,
     ],
     batch: {
       multicall: true,
@@ -32,6 +35,7 @@ export const config = createConfig(
       safe(),
     ],
     transports: {
+      [rahatChain.id]: http(),
       [mainnet.id]: http(),
       [sepolia.id]: http(),
       // [arbitrumSepolia.id]: http(),
@@ -44,8 +48,8 @@ export const config = createConfig(
     // Optional App Info
     appDescription:
       'An open-source blockchain-based financial access platform to support vulnerable communities.',
-    appUrl: 'https://family.co', // your app's url
-    appIcon: 'https://family.co/logo.png', // your app's icon, no bigger than 1024x1024px (max. 1MB)
+    appUrl: 'https://nx.dev.rahat.io/', // your app's url
+    appIcon: 'https://nx.dev.rahat.io/rahat-logo.png', // your app's icon, no bigger than 1024x1024px (max. 1MB)
   }),
 );
 

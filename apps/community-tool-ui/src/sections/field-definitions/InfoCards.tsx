@@ -28,6 +28,21 @@ export default function InfoCards({ data }) {
                 </p>
               </div>
             </div>
+            {/* <div className="flex flex-col gap-2">
+              <div>
+                {data?.fieldPopulate?.length > 0 && (
+                  <>
+                    {Object.values(data.fieldPopulate).map(
+                      (field: any, index: number) =>
+                        field && <li key={index}>{field}</li>,
+                    )}
+                    <p className="text-sm font-normal text-muted-foreground">
+                      Field Populate
+                    </p>
+                  </>
+                )}
+              </div>
+            </div> */}
           </div>
         </CardContent>
       </Card>

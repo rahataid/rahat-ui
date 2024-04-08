@@ -58,6 +58,7 @@ export default function AddUser() {
   const { data: roleData } = useRoleList();
 
   const handleAddUser = async (data: any) => {
+    console.log(data);
     await userCreate.mutateAsync(data);
   };
   useEffect(() => {
@@ -73,6 +74,7 @@ export default function AddUser() {
     }
   }, [form, userCreate.isSuccess]);
 
+  console.log(roleData);
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleAddUser)}>
@@ -133,6 +135,7 @@ export default function AddUser() {
                 );
               }}
             />
+
             <FormField
               control={form.control}
               name="email"
@@ -167,7 +170,7 @@ export default function AddUser() {
                         <SelectGroup>
                           {roleData?.data &&
                             roleData?.data?.map((role: any) => (
-                              <SelectItem value={role} key={role.id}>
+                              <SelectItem value={role.name} key={role.id}>
                                 {role.name}
                               </SelectItem>
                             ))}

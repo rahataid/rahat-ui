@@ -23,12 +23,15 @@ import { User } from '@rumsan/sdk/types';
 import { useEffect } from 'react';
 import { useCommunityUserUpdate } from '@rahat-ui/community-query';
 import { UUID } from 'crypto';
+import { useSecondPanel } from '../../providers/second-panel-provider';
 
 type Iprops = {
   userDetail: User;
 };
 export default function EditUser({ userDetail }: Iprops) {
   const updateUser = useCommunityUserUpdate();
+  const { closeSecondPanel } = useSecondPanel();
+
   const FormSchema = z.object({
     name: z.string().min(2, { message: 'Name must be at least 4 character' }),
     email: z.string(),
@@ -62,6 +65,11 @@ export default function EditUser({ userDetail }: Iprops) {
       payload: data,
     });
   };
+
+  useEffect(() => {
+    updateUser.data?.response.success && closeSecondPanel();
+  }, [closeSecondPanel, updateUser.data?.response.success]);
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleEditUser)}>

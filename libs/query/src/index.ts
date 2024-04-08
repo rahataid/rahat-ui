@@ -8,3 +8,4 @@ export { default as useErrorStore } from './utils/error-store';
 export * from './utils/use-pagination';
 export * from './lib/vendors';
 export * from './lib/users/users.query';
+export * from './lib/settings';

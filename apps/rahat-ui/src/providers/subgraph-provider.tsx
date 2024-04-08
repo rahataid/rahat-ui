@@ -1,5 +1,6 @@
 'use client';
 
+import { useSettingsStore } from '@rahat-ui/query';
 import { GraphQuery } from '@rahataid/el-subgraph';
 import { createContext, useContext } from 'react';
 
@@ -14,13 +15,10 @@ interface QueryProviderProps {
 }
 
 export function GraphQueryProvider({ children }: QueryProviderProps) {
-  const queryService = new GraphQuery(
-    // 'https://api.studio.thegraph.com/query/42205/el-dev/version/latest',
-    // 'https://api.thegraph.com/subgraphs/name/anupamakoirala-rumsan/el-dev',
-    'https://api.thegraph.com/subgraphs/name/anupamakoirala-rumsan/ws-test',
+  const subgraphURL = useSettingsStore((s) => s.subGraphUrl);
+  const queryService = new GraphQuery(subgraphURL);
 
-    //'https://api.thegraph.com/subgraphs/name/anupamakoirala-rumsan/el',
-  );
+  console.log("subgraph URL's", subgraphURL)
 
   return (
     <GraphContext.Provider

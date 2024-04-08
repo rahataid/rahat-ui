@@ -186,8 +186,7 @@ export default function BeneficiaryDetailTableView({walletAddress}:{walletAddres
 
   return (
     <>
-      <div className="w-full h-full p-2 bg-secondary">
-        <div className="flex items-center mb-2">
+      {/* <div className="flex items-center mb-2">
           <Input
             placeholder="Filter topic..."
             value={(table.getColumn('topic')?.getFilterValue() as string) ?? ''}
@@ -225,58 +224,63 @@ export default function BeneficiaryDetailTableView({walletAddress}:{walletAddres
                 })}
             </DropdownMenuContent>
           </DropdownMenu>
-        </div>
-        <div className="rounded border h-[calc(100vh-180px)]  bg-card">
-          <Table>
-            <ScrollArea className="h-table1">
-              <TableHeader className="bg-card sticky top-0">
-                {table.getHeaderGroups().map((headerGroup) => (
-                  <TableRow key={headerGroup.id}>
-                    {headerGroup.headers.map((header) => {
-                      return (
-                        <TableHead key={header.id}>
-                          {header.isPlaceholder
-                            ? null
-                            : flexRender(
+        </div> */}
+      <div className="rounded border">
+        <Table>
+          <ScrollArea className="h-[calc(100vh-368px)]">
+            <TableHeader className="bg-card sticky top-0">
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => {
+                    return (
+                      <TableHead key={header.id}>
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
                               header.column.columnDef.header,
                               header.getContext(),
                             )}
-                        </TableHead>
-                      );
-                    })}
+                      </TableHead>
+                    );
+                  })}
+                </TableRow>
+              ))}
+            </TableHeader>
+            <TableBody>
+              {table.getRowModel().rows?.length ? (
+                table.getRowModel().rows.map((row) => (
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && 'selected'}
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )}
+                      </TableCell>
+                    ))}
                   </TableRow>
-                ))}
-              </TableHeader>
-              <TableBody>
-                {table.getRowModel().rows?.length ? (
-                  table.getRowModel().rows.map((row) => (
-                    <TableRow
-                      key={row.id}
-                      data-state={row.getIsSelected() && 'selected'}
-                    >
-                      {row.getVisibleCells().map((cell) => (
-                        <TableCell key={cell.id}>
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext(),
-                          )}
-                        </TableCell>
-                      ))}
-                    </TableRow>
-                  ))
-                ) : (
-                  <TableRow>
-                    <TableCell
-                      colSpan={columns.length}
-                      className="h-24 text-center"
-                    >
-                      No results.
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </ScrollArea>
-          </Table>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-24 text-center"
+                  >
+                    No results.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </ScrollArea>
+        </Table>
+      </div>
+      <div className="sticky bottom-0 flex items-center justify-end space-x-4 px-4 py-1 mt-2">
+        <div className="flex-1 text-sm text-muted-foreground">
+          {table.getFilteredSelectedRowModel().rows.length} of{' '}
+          {table.getFilteredRowModel().rows.length} row(s) selected.
         </div>
         <div className="sticky bottom-0 flex items-center justify-end space-x-4 px-4 py-1 border-t-2 bg-card">
           <div className="flex-1 text-sm text-muted-foreground">

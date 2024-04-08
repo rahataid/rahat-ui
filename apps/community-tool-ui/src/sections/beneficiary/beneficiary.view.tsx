@@ -13,6 +13,7 @@ import {
   getCoreRowModel,
   getSortedRowModel,
   useReactTable,
+  getFilteredRowModel,
 } from '@tanstack/react-table';
 
 import { ListBeneficiary } from '@rahataid/community-tool-sdk/beneficiary';
@@ -52,9 +53,10 @@ function BeneficiaryView() {
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setSelectedListItems,
-    getRowId: (row) => row.uuid,
+    getRowId: (row) => row.uuid as string,
     state: {
       columnVisibility,
       rowSelection: selectedListItems,

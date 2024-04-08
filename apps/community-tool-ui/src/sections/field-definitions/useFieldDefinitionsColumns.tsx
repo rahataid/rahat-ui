@@ -4,7 +4,6 @@ import { ColumnDef } from '@tanstack/react-table';
 
 import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
 import { Eye } from 'lucide-react';
-import { truncateEthAddress } from '@rumsan/sdk/utils';
 import { FieldDefinition } from '@rahataid/community-tool-sdk/fieldDefinitions';
 
 export const useFieldDefinitionsTableColumns = () => {
@@ -48,6 +47,26 @@ export const useFieldDefinitionsTableColumns = () => {
       cell: ({ row }) => (
         <div>{row.getValue('isActive') ? 'True' : 'False'}</div>
       ),
+    },
+    {
+      accessorKey: 'fieldPopulate',
+      header: 'Field Populate',
+      cell: ({ row }) => {
+        const fieldPopulate =
+          row?.original?.fieldPopulate &&
+          row?.original?.fieldPopulate?.length > 0
+            ? Object.values(row.original.fieldPopulate)
+            : [];
+
+        return (
+          <div>
+            {fieldPopulate?.map(
+              (field: any, index: number) =>
+                field && <li key={index}>{field}</li>,
+            )}
+          </div>
+        );
+      },
     },
     {
       id: 'actions',

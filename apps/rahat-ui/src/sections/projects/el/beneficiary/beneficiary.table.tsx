@@ -137,7 +137,8 @@ function BeneficiaryDetailTableView() {
   );
 
   const table = useReactTable({
-    data: projectBeneficiaries.data || [],
+    manualPagination: true,
+    data: projectBeneficiaries?.data?.data || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -166,6 +167,9 @@ function BeneficiaryDetailTableView() {
       contractAddress: contractAddress.elproject.address,
     });
   };
+
+  console.log("Beneficiary data", projectBeneficiaries?.data?.data)
+  console.log("Table data", table.getRowModel().rows) 
 
   return (
     <>
@@ -306,7 +310,7 @@ function BeneficiaryDetailTableView() {
         handlePrevPage={setPrevPage}
         meta={projectBeneficiaries.data?.meta || {}}
         perPage={pagination.perPage}
-        total={projectBeneficiaries.data?.meta?.total || 0}
+        total={projectBeneficiaries?.data?.meta?.lastPage || 0}
       />
       <TokenAssingnConfirm
         tokens={selectedRowAddresses.length}
@@ -314,7 +318,7 @@ function BeneficiaryDetailTableView() {
         handleClose={handleTokenAssignModalClose}
         handleSubmit={handleBulkAssign}
       />
-    </>
+    </> 
   );
 }
 

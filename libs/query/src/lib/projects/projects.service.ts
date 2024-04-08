@@ -298,7 +298,7 @@ export const useProjectBeneficiaries = (payload: GetProjectBeneficiaries) => {
         payload: restPayload,
       },
     });
-    return mutate.data;
+    return mutate.httpReponse.data;
   }, [q, projectUUID, restPayloadString]);
 
   const query = useQuery({
@@ -306,16 +306,18 @@ export const useProjectBeneficiaries = (payload: GetProjectBeneficiaries) => {
     initialData: [],
 
     select(data) {
-      return data.map((row: any) => ({
-        wallet: row.Beneficiary.walletAddress,
-        name: row.piiData.name,
-        gender: row.Beneficiary.gender,
-        phone: row.piiData.phone || 'N/A',
-        type: row.Beneficiary.type || 'N/A',
+      console.log("Data map", data.data)
+      const beneficiaryData = data.data.map((row: any) => ({
+        wallet: row?.Beneficiary?.walletAddress || '',
+        name: row?.piiData?.name || '',
+        gender: row?.Beneficiary?.gender || '',
+        phone: row?.piiData?.phone || 'N/A',
+        type: row?.Beneficiary?.type || 'N/A',
       }));
+      console.log("ben mapped data", beneficiaryData)
+      return {data: beneficiaryData, meta: data.meta}      
     },
     queryFn,
   });
-
   return query;
 };

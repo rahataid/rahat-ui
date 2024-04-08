@@ -55,6 +55,7 @@ function ViewGroup() {
     },
   });
   const handleGroup = useCallback((item: ListGroup) => {
+    console.log(item);
     setSelectedData(item);
   }, []);
 

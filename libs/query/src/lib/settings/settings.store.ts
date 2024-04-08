@@ -16,7 +16,7 @@ export type AppSettings = AppSettingsState & AppSettingsAction;
 
 export const initialAppSettings: AppSettingsState = {
   chainSettings: {
-    id: 5,
+    id: 1,
     name: 'Rahat',
     nativeCurrency: { name: 'Rahat', symbol: 'Rs.', decimals: 18 },
     rpcUrls: {

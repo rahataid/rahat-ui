@@ -184,9 +184,8 @@ export function FreeTransactionTable() {
     }
   }, [projectSettings, id]);
 
-  const { data: vouchersTransactions } = useGetFreeVoucherTransaction(
-    contractAddress?.eyeVoucher,
-  );
+  const { data: vouchersTransactions, isFetching } =
+    useGetFreeVoucherTransaction(contractAddress?.eyeVoucher);
 
   const table = useReactTable({
     data: vouchersTransactions?.transfers || [],
@@ -256,7 +255,15 @@ export function FreeTransactionTable() {
                     colSpan={columns.length}
                     className="h-24 text-center"
                   >
-                    No results.
+                    {isFetching ? (
+                      <div className="flex items-center justify-center space-x-2">
+                        <div className="h-5 w-5 animate-bounce rounded-full bg-primary [animation-delay:-0.3s]"></div>
+                        <div className="h-5 w-5 animate-bounce rounded-full bg-primary [animation-delay:-0.13s]"></div>
+                        <div className="h-5 w-5 animate-bounce rounded-full bg-primary"></div>
+                      </div>
+                    ) : (
+                      'No data available.'
+                    )}
                   </TableCell>
                 </TableRow>
               )}

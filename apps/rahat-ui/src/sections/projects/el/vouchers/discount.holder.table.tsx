@@ -158,7 +158,15 @@ export function DiscountHoldersTable({ data }) {
                     colSpan={columns.length}
                     className="h-24 text-center"
                   >
-                    No results.
+                    {data ? (
+                      <div className="flex items-center justify-center space-x-2">
+                        <div className="h-3 w-3 animate-bounce rounded-full bg-primary [animation-delay:-0.3s]"></div>
+                        <div className="h-3 w-3 animate-bounce rounded-full bg-primary [animation-delay:-0.13s]"></div>
+                        <div className="h-3 w-3 animate-bounce rounded-full bg-primary"></div>
+                      </div>
+                    ) : (
+                      'No data available.'
+                    )}
                   </TableCell>
                 </TableRow>
               )}

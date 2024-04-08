@@ -186,9 +186,8 @@ export function DiscountTransactionTable() {
     }
   }, [projectSettings]);
 
-  const { data: vouchersTransactions } = useGetReferredVoucherTransaction(
-    contractAddress?.referredVoucher,
-  );
+  const { data: vouchersTransactions, isFetching } =
+    useGetReferredVoucherTransaction(contractAddress?.referredVoucher);
 
   const table = useReactTable({
     data: vouchersTransactions?.transfers || [],
@@ -258,7 +257,15 @@ export function DiscountTransactionTable() {
                     colSpan={columns.length}
                     className="h-24 text-center"
                   >
-                    No results.
+                    {isFetching ? (
+                      <div className="flex items-center justify-center space-x-2">
+                        <div className="h-5 w-5 animate-bounce rounded-full bg-primary [animation-delay:-0.3s]"></div>
+                        <div className="h-5 w-5 animate-bounce rounded-full bg-primary [animation-delay:-0.13s]"></div>
+                        <div className="h-5 w-5 animate-bounce rounded-full bg-primary"></div>
+                      </div>
+                    ) : (
+                      'No data available.'
+                    )}
                   </TableCell>
                 </TableRow>
               )}

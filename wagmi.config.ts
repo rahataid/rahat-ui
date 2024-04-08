@@ -2,10 +2,11 @@ import { defineConfig } from '@wagmi/cli';
 import { react } from '@wagmi/cli/plugins';
 import { ELAbi } from './abis/ELProject';
 import { RahatDonorAbi } from './abis/RahatDonor';
+import { RahatTokenAbi } from './abis/RahatToken';
 
 export default defineConfig([
   {
-    out: 'apps/rahat-ui/src/contract-hooks/elProject.ts',
+    out: 'apps/rahat-ui/src/hooks/el/contracts/elProject.ts',
     contracts: [
       {
         name: 'ELProject',
@@ -15,11 +16,21 @@ export default defineConfig([
     plugins: [react()],
   },
   {
-    out: 'apps/rahat-ui/src/contract-hooks/donor.ts',
+    out: 'apps/rahat-ui/src/hooks/el/contracts/donor.ts',
     contracts: [
       {
         name: 'RahatDonor',
         abi: RahatDonorAbi,
+      },
+    ],
+    plugins: [react()],
+  },
+  {
+    out: 'apps/rahat-ui/src/hooks/el/contracts/token.ts',
+    contracts: [
+      {
+        name: 'RahatToken',
+        abi: RahatTokenAbi,
       },
     ],
     plugins: [react()],

@@ -6,6 +6,13 @@ import {
 } from '@tanstack/react-query';
 import { TAGS } from '../../config';
 import { api } from '../../utils/api';
+import { useRSQuery } from '@rumsan/react-query';
+import { getBeneficiaryClient } from '@rahataid/sdk/clients';
+import { useBeneficiaryStore } from './beneficiary.store';
+import { useEffect } from 'react';
+import { UUID } from 'crypto';
+import { useSwal } from '../../swal';
+import { Pagination } from '@rumsan/sdk/types';
 
 const createNewBeneficiary = async (payload: any) => {
   const response = await api.post('/beneficiaries', payload);
@@ -22,24 +29,32 @@ export const useCreateBeneficiary = () => {
   });
 };
 
-const beneficiaryList = async (payload: any) => {
-  const searchParams = {
-    page: 1,
-    perPage: 10,
-    sort: 'createdAt',
-    order: 'desc',
-  };
-  const response = await api.get(`/beneficiaries`, { params: searchParams });
-  return response?.data;
-};
-
-export const usebeneficiaryList = (
+export const useBeneficiaryList = (
   payload: any,
 ): UseQueryResult<any, Error> => {
-  return useQuery({
-    queryKey: [TAGS.GET_BENEFICIARIES],
-    queryFn: () => beneficiaryList(payload),
-  });
+  const { rumsanService, queryClient } = useRSQuery();
+  const benClient = getBeneficiaryClient(rumsanService.client);
+  const { setBeneficiaries, setMeta } = useBeneficiaryStore((state) => ({
+    setBeneficiaries: state.setBeneficiaries,
+    setMeta: state.setMeta,
+  }));
+
+  const ben = useQuery(
+    {
+      queryKey: [TAGS.GET_BENEFICIARIES, payload],
+      queryFn: () => benClient.list(payload),
+    },
+    queryClient,
+  );
+
+  useEffect(() => {
+    if (ben.data) {
+      setBeneficiaries(ben.data.data as any[]);
+      setMeta(ben.data.response.meta);
+    }
+  }, [ben.data, setBeneficiaries]);
+
+  return ben;
 };
 
 const listBeneficiaryStatus = async () => {
@@ -47,9 +62,9 @@ const listBeneficiaryStatus = async () => {
   return response?.data;
 };
 
-export const useListBeneficiaryStatus = (): UseQueryResult<any, Error> => {
+export const useGetBeneficiaryStats = (): UseQueryResult<any, Error> => {
   return useQuery({
-    queryKey: [TAGS.GET_BENEFICIARIES_STATUS],
+    queryKey: [TAGS.GET_BENEFICIARIES_STATS],
     queryFn: () => listBeneficiaryStatus(),
   });
 };
@@ -84,17 +99,93 @@ export const useAddBulkBeneficiary = () => {
   });
 };
 
-const uploadBeneficiary = async (file: any) => {
-  const response = await api.post('/beneficiaries/upload', file);
+const uploadBeneficiary = async (
+  selectedFile: File,
+  doctype: string,
+  client: any,
+) => {
+  const formData = new FormData();
+  formData.append('file', selectedFile);
+  formData.append('doctype', doctype);
+
+  const response = await client.post('/beneficiaries/upload', formData);
   return response?.data;
 };
 
 export const useUploadBeneficiary = () => {
   const qc = useQueryClient();
-  return useMutation({
-    mutationFn: (file: any) => uploadBeneficiary(file),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: [TAGS.GET_BENEFICIARIES] });
-    },
+  const { rumsanService, queryClient } = useRSQuery();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-right',
+    showConfirmButton: false,
+    timer: 3000,
   });
+  return useMutation(
+    {
+      mutationFn: ({
+        selectedFile,
+        doctype,
+      }: {
+        selectedFile: File;
+        doctype: string;
+      }) => uploadBeneficiary(selectedFile, doctype, rumsanService.client),
+      onSuccess: () => {
+        qc.invalidateQueries({ queryKey: [TAGS.GET_BENEFICIARIES] });
+        toast.fire({
+          icon: 'success',
+          title: 'Beneficiary uploaded successfully',
+        });
+      },
+      onError: (error: any) => {
+        console.log('error', error);
+        const message = error.response?.data?.message || error.message;
+        toast.fire({
+          icon: 'error',
+          title: 'Something went wrong',
+          text: message,
+        });
+      },
+    },
+    queryClient,
+  );
+};
+
+export const useBeneficiaryPii = (
+  padination: Pagination,
+): UseQueryResult<any, Error> => {
+  const { rumsanService, queryClient } = useRSQuery();
+  const benClient = getBeneficiaryClient(rumsanService.client);
+  return useQuery(
+    {
+      queryKey: [TAGS.GET_BENEFICIARIES, padination],
+      queryFn: () => benClient.listPiiData(padination),
+    },
+    queryClient,
+  );
+};
+
+export const useSingleBeneficiary = (
+  uuid: UUID,
+): UseQueryResult<any, Error> => {
+  const { setSingleBeneficiary } = useBeneficiaryStore();
+  const { rumsanService, queryClient } = useRSQuery();
+  const benClient = getBeneficiaryClient(rumsanService.client);
+
+  const query = useQuery(
+    {
+      queryKey: [TAGS.GET_BENEFICIARY, uuid],
+      queryFn: () => benClient.get(uuid),
+    },
+    queryClient,
+  );
+
+  useEffect(() => {
+    if (query.data) {
+      setSingleBeneficiary(query.data.data);
+    }
+  }, [query.data, setSingleBeneficiary]);
+
+  return query;
 };

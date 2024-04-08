@@ -1,13 +1,11 @@
 'use client';
 
-import { Separator } from '@rahat-ui/shadcn/components/separator';
 import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
 } from '@rahat-ui/shadcn/src/components/ui/resizable';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import { Tabs } from '@rahat-ui/shadcn/src/components/ui/tabs';
 import { FC } from 'react';
 import { NavItem } from './nav-items.types';
 import ProjectNavView from './project.nav.view';
@@ -45,31 +43,26 @@ const ProjectLayout: FC<ProjectLayoutProps> = ({ children, menuItems }) => {
   };
 
   return (
-    <div>
-      <Tabs defaultValue="grid">
-        <ResizablePanelGroup
-          direction="horizontal"
-          className="min-h-max border"
+    <>
+      <ResizablePanelGroup
+        direction="horizontal"
+      >
+        <ResizablePanel
+          defaultSize={18}
+          minSize={18}
+          maxSize={18}
         >
-          <ResizablePanel
-            defaultSize={20}
-            minSize={20}
-            maxSize={20}
-            className="h-full"
-          >
-            {menuItems.map((item) => (
-              <ProjectNavView
-                key={item.title}
-                title={item.title}
-                items={item.children}
-              />
-            ))}
-            <Separator />
-          </ResizablePanel>
-          {renderChildren()}
-        </ResizablePanelGroup>
-      </Tabs>
-    </div>
+          {menuItems.map((item) => (
+            <ProjectNavView
+              key={item.title}
+              title={item.title}
+              items={item.children}
+            />
+          ))}
+        </ResizablePanel>
+        {renderChildren()}
+      </ResizablePanelGroup>
+    </>
   );
 };
 

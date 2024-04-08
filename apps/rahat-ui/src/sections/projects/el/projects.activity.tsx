@@ -14,7 +14,7 @@ type CardProps = {
 
 export default function Activities({ title, className, data }: CardProps) {
   return (
-    <Card className={cn('border-none shadow-sm', className || '')}>
+    <Card className={cn('border-none shadow-sm h-full', className || '')}>
       <CardHeader className="flex flex-row items-center justify-between space-y-0">
         <CardTitle className="text-md font-medium">{title}</CardTitle>
       </CardHeader>
@@ -26,22 +26,28 @@ export default function Activities({ title, className, data }: CardProps) {
             <p className="text-sm text-muted-foreground">Assigned</p>
             <p className="text-sm text-muted-foreground">Reedemed</p>
           </div>
-          <div>
-            <div className="ml-auto font-light text-sm">
-              {' '}
-              {data?.freeVoucherBudget}{' '}
+          <div className="space-y-1">
+            <div className="ml-auto font-light text-sm flex items-center justify-between gap-3">
+              {data?.eyeVoucherBudget?.toString()}
+              <span className="text-xs text-muted-foreground">
+                {data?.freeVoucherCurrency}{' '}
+                {data?.eyeVoucherBudget?.toString() * data?.freeVoucherPrice}
+              </span>
             </div>
-            <p className="text-xs text-muted-foreground">$5</p>
-            <div className="ml-auto font-light text-sm">
-              {' '}
-              {data?.freeVoucherAssigned}{' '}
+            <div className="ml-auto font-light text-sm flex items-center justify-between gap-3">
+              {data?.eyeVoucherAssigned?.toString()}{' '}
+              <span className="text-xs text-muted-foreground">
+                {data?.freeVoucherCurrency}{' '}
+                {data?.eyeVoucherAssigned?.toString() * data?.freeVoucherPrice}
+              </span>
             </div>
-            <p className="text-xs text-muted-foreground">$5</p>
-            <div className="ml-auto font-light text-sm">
-              {' '}
-              {data?.freeVoucherClaimed}{' '}
+            <div className="ml-auto font-light text-sm flex items-center justify-between gap-3">
+              {data?.eyeVoucherClaimed?.toString()}
+              <span className="text-xs text-muted-foreground">
+                {data?.freeVoucherCurrency}{' '}
+                {data?.eyeVoucherClaimed?.toString() * data?.freeVoucherPrice}
+              </span>
             </div>
-            <p className="text-xs text-muted-foreground">$5</p>
           </div>
         </div>
         <div className="flex items-center justify-between">
@@ -51,22 +57,28 @@ export default function Activities({ title, className, data }: CardProps) {
             <p className="text-sm text-muted-foreground">Assigned</p>
             <p className="text-sm text-muted-foreground">Reedemed</p>
           </div>
-          <div>
-            <div className="ml-auto font-light text-sm">
-              {' '}
-              {data?.refeeredVoucherBudget}{' '}
+          <div className="space-y-1">
+            <div className="ml-auto font-light text-sm flex items-center justify-between gap-3">
+              {data?.referredVoucherBudget?.toString()}
+              <span className="text-xs text-muted-foreground">
+                {data?.referredVoucherCurrency}{' '}
+                {data?.referredVoucherBudget?.toString() * data?.referredVoucherPrice}
+              </span>
             </div>
-            <p className="text-xs text-muted-foreground">$1,999.00</p>
-            <div className="ml-auto font-light text-sm">
-              {' '}
-              {data?.refeeredVoucherAssigned}{' '}
+            <div className="ml-auto font-light text-sm flex items-center justify-between gap-3">
+              {data?.referredVoucherAssigned?.toString()}{' '}
+              <span className="text-xs text-muted-foreground">
+                {data?.referredVoucherCurrency}{' '}
+                {data?.referredVoucherAssigned?.toString() * data?.referredVoucherPrice}
+              </span>
             </div>
-            <p className="text-xs text-muted-foreground">$5</p>
-            <div className="ml-auto font-light text-sm">
-              {' '}
-              {data?.refeeredVoucherClaimed}{' '}
+            <div className="ml-auto font-light text-sm flex items-center justify-between gap-3">
+              {data?.referredVoucherClaimed?.toString()}
+              <span className="text-xs text-muted-foreground">
+                {data?.referredVoucherCurrency}{' '}
+                {data?.referredVoucherClaimed?.toString() * data?.referredVoucherPrice}
+              </span>
             </div>
-            <p className="text-xs text-muted-foreground">$1,999.00</p>
           </div>
         </div>
       </CardContent>

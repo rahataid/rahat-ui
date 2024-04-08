@@ -1,7 +1,12 @@
 import { Button } from '@rahat-ui/shadcn/components/button';
 import { Label } from '@rahat-ui/shadcn/components/label';
 import { Switch } from '@rahat-ui/shadcn/components/switch';
-import { Card } from '@rahat-ui/shadcn/src/components/ui/card';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@rahat-ui/shadcn/components/tabs';
 import {
   Dialog,
   DialogClose,
@@ -19,204 +24,256 @@ import {
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@rahat-ui/shadcn/src/components/ui/select';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { truncateEthAddress } from '@rumsan/core/utilities/string.utils';
 import { User } from '@rumsan/sdk/types';
-import { MoreVertical, PlusCircle, Trash2 } from 'lucide-react';
+import { MoreVertical, PlusCircle, Trash2, Minus } from 'lucide-react';
 import Image from 'next/image';
 import { useState } from 'react';
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from '@rahat-ui/shadcn/components/tabs';
-import RoleTable from './role/roleTable';
 import { UsersRoleTable } from './usersRoleTable';
+import { enumToObjectArray } from '@rumsan/sdk/utils';
+import { Gender } from '@rahataid/sdk/enums';
+import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
+import EditUser from './editUser';
 
 type IProps = {
-  data: User;
+  userDetail: User;
+  closeSecondPanel: VoidFunction;
 };
 
-export default function UserDetail({ data }: IProps) {
+export default function UserDetail({ userDetail, closeSecondPanel }: IProps) {
   const [activeTab, setActiveTab] = useState<'details' | 'edit' | null>(
     'details',
   );
   const [activeUser, setActiveUser] = useState<boolean>(true);
-
+  const genderList = enumToObjectArray(Gender);
   const handleTabChange = (tab: 'details' | 'edit') => {
     setActiveTab(tab);
   };
   const toggleActiveUser = () => {
     setActiveUser(!activeUser);
   };
+
+  const changedDate = new Date(userDetail.createdAt as Date);
+  const formattedDate = changedDate.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
   return (
     <>
-      <div className="p-4">
-        <div className="flex">
+      <div className="flex justify-between items-center p-4 pt-5">
+        {/* Minimize  */}
+        <TooltipProvider delayDuration={100}>
+          <Tooltip>
+            <TooltipTrigger onClick={closeSecondPanel}>
+              <Minus size={20} strokeWidth={1.5} />
+            </TooltipTrigger>
+            <TooltipContent className="bg-secondary ">
+              <p className="text-xs font-medium">Close</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+        <div className="flex gap-3">
+          {/* Add Roles */}
+          <Dialog>
+            <DialogTrigger>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <PlusCircle
+                      className="cursor-pointer"
+                      size={18}
+                      strokeWidth={1.6}
+                      color="#007bb6"
+                    />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Add Role</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Add Role</DialogTitle>
+              </DialogHeader>
+              <DialogDescription>
+                <div className="grid w-full max-w-sm items-center gap-1.5">
+                  <Input type="role" id="role" placeholder="Role" />
+                </div>
+              </DialogDescription>
+              <DialogFooter>
+                <div className="flex items-center justify-center mt-2 gap-4">
+                  <Button variant="outline">Submit</Button>
+                  <DialogClose asChild>
+                    <Button variant="outline">Cancel</Button>
+                  </DialogClose>
+                </div>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+          {/* Delete User */}
+          <Dialog>
+            <DialogTrigger>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Trash2
+                      className="cursor-pointer"
+                      size={18}
+                      strokeWidth={1.6}
+                      color="#FF0000"
+                    />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Delete User</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Are you absolutely sure?</DialogTitle>
+                <DialogDescription>
+                  This action cannot be undone. This will permanently delete
+                  your user.
+                </DialogDescription>
+              </DialogHeader>
+              <DialogFooter>
+                <div className="flex items-center justify-center mt-2 gap-4">
+                  <Button variant="outline">Yes</Button>
+                  <DialogClose asChild>
+                    <Button variant="outline">No</Button>
+                  </DialogClose>
+                </div>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+          {/* Actions */}
+          <DropdownMenu>
+            <DropdownMenuTrigger>
+              <MoreVertical
+                className="cursor-pointer"
+                size={20}
+                strokeWidth={1.5}
+              />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem onClick={() => handleTabChange('details')}>
+                Details{' '}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleTabChange('edit')}>
+                Edit
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      </div>
+      <div className="flex justify-between p-2">
+        <div className="flex items-center space-x-2">
           <Image
             className="rounded-full"
-            src="/svg/funny-cat.svg"
+            src="/svg/PortraitPlaceholder.png"
             alt="cat"
             height={80}
             width={80}
           />
-          <div className="flex flex-col items-center justify-center w-full mr-2 gap-2">
-            <div className="flex align-center justify-between w-full ml-4">
-              <h1 className="font-semibold text-xl">{data.name}</h1>
-              <div className="flex">
-                <div className="mr-3">
-                  {/* Add Roles */}
-                  <Dialog>
-                    <DialogTrigger>
-                      <PlusCircle
-                        className="cursor-pointer"
-                        size={18}
-                        strokeWidth={1.6}
-                      />
-                    </DialogTrigger>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>Add Role</DialogTitle>
-                      </DialogHeader>
-                      <DialogDescription>
-                        <div className="grid w-full max-w-sm items-center gap-1.5">
-                          <Input type="role" id="role" placeholder="Role" />
-                        </div>
-                      </DialogDescription>
-                      <DialogFooter>
-                        <div className="flex items-center justify-center mt-2 gap-4">
-                          <Button variant="outline">Submit</Button>
-                          <DialogClose asChild>
-                            <Button variant="outline">Cancel</Button>
-                          </DialogClose>
-                        </div>
-                      </DialogFooter>
-                    </DialogContent>
-                  </Dialog>
-                </div>
-                <div>
-                  {/* Delete User */}
-                  <Dialog>
-                    <DialogTrigger>
-                      <Trash2
-                        className="cursor-pointer"
-                        size={18}
-                        strokeWidth={1.6}
-                      />
-                    </DialogTrigger>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>Are you absolutely sure?</DialogTitle>
-                        <DialogDescription>
-                          This action cannot be undone. This will permanently
-                          delete your user.
-                        </DialogDescription>
-                      </DialogHeader>
-                      <DialogFooter>
-                        <div className="flex items-center justify-center mt-2 gap-4">
-                          <Button variant="outline">Yes</Button>
-                          <DialogClose asChild>
-                            <Button variant="outline">No</Button>
-                          </DialogClose>
-                        </div>
-                      </DialogFooter>
-                    </DialogContent>
-                  </Dialog>
-                </div>
-                <div className="pl-2">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger>
-                      <MoreVertical
-                        className="cursor-pointer"
-                        size={20}
-                        strokeWidth={1.5}
-                      />
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                      <DropdownMenuItem
-                        onClick={() => handleTabChange('details')}
-                      >
-                        Details{' '}
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => handleTabChange('edit')}>
-                        Edit
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
-              </div>
-            </div>
-            <div className="flex align-center justify-between w-full ml-4">
-              <p className="text-slate-500">
-                {data.email
-                  ? data.email
-                  : truncateEthAddress(data.wallet || '-')}
-              </p>
-              <div className="flex items-center space-x-2">
-                <Label className="text-slate-500" htmlFor="activeUser">
-                  {activeUser ? 'Active' : 'Inactive'}
-                </Label>
-                <Switch
-                  id="activeUser"
-                  checked={activeUser}
-                  onCheckedChange={toggleActiveUser}
-                />
-              </div>
-            </div>
+          <div>
+            <h1 className="font-semibold text-xl">{userDetail.name}</h1>
+            <p className="text-slate-500">
+              {userDetail.email
+                ? userDetail.email
+                : truncateEthAddress(userDetail.wallet || '-')}
+            </p>
           </div>
+        </div>
+        <div className="flex items-center space-x-2">
+          <Label
+            className="text-slate-500 font-light text-sm"
+            htmlFor="activeUser"
+          >
+            {activeUser ? 'Active' : 'Inactive'}
+          </Label>
+          <Switch
+            className="data-[state=unchecked]:bg-red-600 data-[state=checked]:bg-green-600"
+            id="activeUser"
+            checked={activeUser}
+            onCheckedChange={toggleActiveUser}
+          />
         </div>
       </div>
       {/* Details View */}
-
       {activeTab === 'details' && (
-        <>
-          <div className="w-full">
-            <div className="border-t">
-              <Tabs defaultValue="details">
-                <TabsList className="grid w-full border-b grid-cols-2">
-                  <TabsTrigger value="details">Details</TabsTrigger>
-                  <TabsTrigger value="roles">Roles</TabsTrigger>
-                </TabsList>
-                <TabsContent value="details">
-                  <div className="grid grid-cols-2 gap-4 p-8">
-                    <div>
-                      <p className="font-light text-base">{data.name}</p>
-                      <p className="text-sm font-normal text-muted-foreground">
-                        Name
-                      </p>
-                    </div>
-                    <div>
-                      <p className="font-light text-base">
-                        {data.gender || '-'}
-                      </p>
-                      <p className="text-sm font-normal text-muted-foreground ">
-                        Gender
-                      </p>
-                    </div>
+        <Tabs defaultValue="details">
+          <div className="p-2">
+            <TabsList className="w-full grid grid-cols-2 border h-auto">
+              <TabsTrigger value="details">Details</TabsTrigger>
+              <TabsTrigger value="roles">Roles</TabsTrigger>
+            </TabsList>
+          </div>
+          <TabsContent value="details">
+            <Card className="shadow rounded m-2">
+              <CardContent className="pt-6">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="font-light text-base">{userDetail.name}</p>
+                    <p className="text-sm font-normal text-muted-foreground">
+                      Name
+                    </p>
                   </div>
-                  <div className="border-b grid grid-cols-2 gap-4 p-8">
-                    <div>
-                      <p className="font-light text-base">
-                        {data.email || '-'}
-                      </p>
-                      <p className="text-sm font-normal text-muted-foreground ">
-                        Email
-                      </p>
-                    </div>
-                    <div>
-                      <p className="font-light text-base">
-                        {data.phone || '-'}
-                      </p>
-                      <p className="text-sm font-normal text-muted-foreground ">
-                        Phone
-                      </p>
-                    </div>
+                  <div className="text-right">
+                    <p className="font-light text-base">
+                      {userDetail.gender || '-'}
+                    </p>
+                    <p className="text-sm font-normal text-muted-foreground ">
+                      Gender
+                    </p>
                   </div>
-                </TabsContent>
-                <TabsContent value="roles">
-                  <div className="p-8">
-                    <UsersRoleTable />
-                    {/* <Card className="p-4">
+                  <div>
+                    <p className="font-light text-base">
+                      {userDetail.email || '-'}
+                    </p>
+                    <p className="text-sm font-normal text-muted-foreground ">
+                      Email
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-light text-base">
+                      {userDetail.phone || '-'}
+                    </p>
+                    <p className="text-sm font-normal text-muted-foreground ">
+                      Phone
+                    </p>
+                  </div>
+
+                  <div>
+                    <p className="font-light text-base">{formattedDate}</p>
+                    <p className="text-sm font-normal text-muted-foreground">
+                      Created At
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+          <TabsContent value="roles">
+            <div className="px-2">
+              <UsersRoleTable />
+              {/* <Card className="p-4">
                       <div className="grid grid-cols-4">
                         <div className="grid grid-cols-subgrid gap-4 col-span-4">
                           <div className="flex items-center justify-between rounded-md border px-4 py-3 font-mono text-sm">
@@ -246,44 +303,34 @@ export default function UserDetail({ data }: IProps) {
                         </div>
                       </div>
                     </Card> */}
-                  </div>
-                </TabsContent>
-              </Tabs>
             </div>
-          </div>
-        </>
+          </TabsContent>
+        </Tabs>
       )}
       {/* Edit View */}
       {activeTab === 'edit' && (
         <>
-          <div className="flex flex-col justify-between min-h-[40vh] overflow-y-auto  max-h-[80vh]">
-            <div className="p-4 border-y">
-              <Input className="mt-1" type="name" placeholder="Name" />
-              <Input className="mt-3" type="email" placeholder="Email" />
-              <Input
-                className="mt-3"
-                type="walletaddress"
-                placeholder="Walletaddress"
-              />
+          <div className="flex flex-col justify-between ">
+            <div className="p-4 border-t">
+              {/* <div className="grid grid-cols-2 gap-4">
+                <Input type="name" placeholder="Name" />
+                <Select>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select gender" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      {genderList.map((gender, index) => (
+                        <SelectItem key={index} value={gender.value}>
+                          {gender.value}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </div> */}
+              <EditUser userDetail={userDetail} />
             </div>
-            <div className="p-4 flex items-center justify-start gap-24">
-              <div className="flex items-center gap-2">
-                <Switch id="approve" />
-                <Label htmlFor="airplane-mode">Approve</Label>
-              </div>
-              <div className="flex items-center gap-2">
-                <Switch id="disable" />
-                <Label htmlFor="airplane-mode">Disable</Label>
-              </div>
-            </div>
-          </div>
-
-          <div className="p-4 border-t flex justify-between">
-            <div className="flex items-center space-x-2">
-              <Switch id="disable-user" />
-              <Label htmlFor="disable-user">Add as owner</Label>
-            </div>
-            <Button>Confirm</Button>
           </div>
         </>
       )}

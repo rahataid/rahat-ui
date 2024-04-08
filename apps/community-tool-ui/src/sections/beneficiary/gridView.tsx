@@ -9,8 +9,8 @@ import BeneficiaryCard from '../../sections/beneficiary/card';
 import { IBeneficiaryItem } from '../../types/beneficiary';
 
 type IProps = {
-  handleClick: (item: IBeneficiaryItem) => void;
-  data: ListBeneficiary[];
+  handleClick: (item: any) => void;
+  data?: ListBeneficiary[];
 };
 
 export default function GridView({ handleClick, data }: IProps) {
@@ -27,13 +27,13 @@ export default function GridView({ handleClick, data }: IProps) {
           </div>
         </div>
 
-        <div className="flex flex-col gap-3">
-          {data?.map((data: IBeneficiaryItem) => (
+        <div className="flex flex-col gap-3 m-3">
+          {data?.map((data: any) => (
             <BeneficiaryCard
-              key={data?.uuid}
+              key={data.uuid}
               walletAddress={data.walletAddress}
               updatedAt={data.updatedAt}
-              verified={data.verified}
+              verified={data?.verified}
               handleClick={() => handleClick(data)}
             />
           ))}

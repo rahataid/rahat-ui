@@ -11,7 +11,7 @@ export function useNavData() {
       },
       {
         title: 'Project',
-        path: paths.dashboard.project,
+        path: paths.dashboard.project.root,
       },
       {
         title: 'Beneficiaries',
@@ -20,19 +20,20 @@ export function useNavData() {
 
       {
         title: 'Communications',
+        path: paths.dashboard.communication.text,
 
-        children: [
-          {
-            title: 'Voice',
-            icon: <Phone />,
-            path: paths.dashboard.communication.voice,
-          },
-          {
-            title: 'Text',
-            icon: <MessageSquareMore />,
-            path: paths.dashboard.communication.text,
-          },
-        ],
+        // children: [
+        //   {
+        //     title: 'Voice',
+        //     icon: <Phone />,
+        //     path: paths.dashboard.communication.voice,
+        //   },
+        //   {
+        //     title: 'Text',
+        //     icon: <MessageSquareMore />,
+        //     path: paths.dashboard.communication.text,
+        //   },
+        // ],
       },
     ],
     [],

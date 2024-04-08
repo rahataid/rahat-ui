@@ -1,35 +1,87 @@
+import { useProjectSettingsStore } from '@rahat-ui/query';
 import {
-  Lock,
-  MessageSquare,
+  useCloseProject,
+  useMintVouchers,
+  useOnlyMintVoucher,
+} from 'apps/rahat-ui/src/hooks/el/contracts/el-contracts';
+import { useProjectVoucher } from 'apps/rahat-ui/src/hooks/el/subgraph/querycall';
+import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
+import {
+  LayoutDashboard,
   Pencil,
-  Phone,
   Receipt,
+  ReceiptText,
   Speech,
   Store,
+  TicketCheck,
   UsersRound,
   XCircle,
 } from 'lucide-react';
 import { useParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import { useSwal } from '../../../components/swal';
 import { NavItem } from '../components';
+import ConfirmModal from './confirm.modal';
 import CreateVoucherModal from './create-voucher-modal';
-import CreateTokenModal from './create-token-modal';
-import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
-import { useState } from 'react';
-import { useMintVouchers } from 'apps/rahat-ui/src/hooks/el/contracts/el-contracts';
 
 export const useNavItems = () => {
-  const params = useParams();
+  const { id } = useParams();
+  const contractSettings = useProjectSettingsStore(
+    (state) => state.settings?.[id] || null,
+  );
+
   const dialog = useSwal();
+  const createTokenSummaryModal = useBoolean();
+  const createTokenModal = useBoolean();
+
+  const handleOpenCreateTokenModal = () => {
+    createTokenModal.onToggle();
+    createTokenSummaryModal.onFalse();
+  };
+  const handleSubmitCreateTokenModal = (e: any) => {
+    e.preventDefault();
+    createTokenModal.onFalse();
+    createTokenSummaryModal.onTrue();
+  };
+  const handleBackToCreateTokenModal = () => {
+    createTokenSummaryModal.onFalse();
+    createTokenModal.onTrue();
+  };
+  const handleCloseSummaryModal = () => {
+    createTokenSummaryModal.onFalse();
+  };
+  const handleSummaryModal = () => {
+    createTokenModal.onToggle();
+  };
+
   const [voucherInputs, setVoucherInputs] = useState({
     tokens: '',
     amountInDollar: '',
-    // description: '',
+    amountInDollarReferral: '',
+    description: '',
+    descriptionReferred: '',
+    currency: '',
+    tokenDescription: '',
   });
-  const [completeTransaction, setCompleteTransaction] = useState(false);
+
+  const projectVoucher = useProjectVoucher(
+    contractSettings?.elProjectAddress || '',
+    contractSettings?.eyeVoucherAddress || '',
+  );
+
+
+  useEffect(() => {
+    if (projectVoucher.isSuccess) {
+      setVoucherInputs((prev) => ({
+        ...prev,
+      }));
+    }
+  }, [projectVoucher.isSuccess]);
 
   const handleCreateVoucherTokenChange = (e: any) => {
     const { name, value } = e.target;
+    const numericValue = Number(value)
+    if (isNaN(numericValue) || numericValue < 0) return;
     setVoucherInputs((prev) => ({
       ...prev,
       [name]: value,
@@ -37,47 +89,37 @@ export const useNavItems = () => {
   };
 
   const createVoucher = useMintVouchers();
+  const createOnlyVoucher = useOnlyMintVoucher();
+  const closeProject = useCloseProject();
+
+  // Free Voucher
   const handleCreateVoucherSubmit = async (e: any) => {
     e.preventDefault();
-    await createVoucher.writeContractAsync({
-      address: '0x217A4bD7C3619B2d4Fd0625B1857fdCd9279d1b3',
-      args: [
-        `0x1a134Beafb9D79064c8C318F233AD7f46fF49D78`,
-        '0x9C8Ee9931BEc18EA883c8F23c7427016bBDeF171',
-        BigInt(voucherInputs.tokens),
-        // voucherInputs.description,
-      ],
-    });
+    if (!contractSettings) return;
+    const referralLimit = 3;
+      await createOnlyVoucher.writeContractAsync({
+          address: contractSettings?.rahatdonor?.address,
+          args: [
+            contractSettings?.eyevoucher?.address,
+            contractSettings?.referralvoucher?.address,
+            contractSettings?.elproject?.address,
+            BigInt(voucherInputs.tokens),
+            BigInt(referralLimit),
+          ],
+        });
+    handleCloseSummaryModal();
   };
 
-  const handleCreateTokenSubmit = async (e: any) => {
-    e.preventDefault();
-    await createVoucher.writeContractAsync({
-      address: '0x217A4bD7C3619B2d4Fd0625B1857fdCd9279d1b3',
-      args: [
-        `0x3BB2526e0B8f8bD46b0187Aa4d24b351cf434437`,
-        '0x9C8Ee9931BEc18EA883c8F23c7427016bBDeF171',
-        BigInt(voucherInputs.tokens),
-        // voucherInputs.description,
-      ],
-    });
-    setCompleteTransaction(true);
-  };
-
-  // const beneficiary = useBeneficiaryStore(state=>state.beneficiary)
-
-  const handleLockProject = async () => {
+  const handleCloseProject = async () => {
     const { value } = await dialog.fire({
-      title: 'Lock Project',
-      text: 'Are you sure you want to lock the project?',
+      title: 'Close Project',
+      text: "Are you sure you want to close the project? You won't be able to access any project actions",
       showCancelButton: true,
       confirmButtonText: 'Lock',
     });
     if (value) {
-      dialog.fire({
-        title: 'Project Locked',
-        text: 'Project has been locked successfully',
-        icon: 'success',
+      closeProject.writeContractAsync({
+        address: '0x9C8Ee9931BEc18EA883c8F23c7427016bBDeF171',
       });
     }
   };
@@ -87,41 +129,43 @@ export const useNavItems = () => {
       title: 'Project Details',
       children: [
         {
+          title: 'Dashboard',
+          path: `/projects/el/${id}`,
+          icon: <LayoutDashboard size={18} strokeWidth={1.5} />,
+        },
+        {
           title: 'Beneficiaries',
-          path: `/projects/el/${params.id}/beneficiary`,
+          path: `/projects/el/${id}/beneficiary`,
           subtitle: 20,
           icon: <UsersRound size={18} strokeWidth={1.5} />,
         },
         {
           title: 'Vendors',
-          path: `/projects/el/${params.id}/vendors`,
+          path: `/projects/el/${id}/vendors`,
           subtitle: 20,
           icon: <Store size={18} strokeWidth={1.5} />,
         },
         {
           title: 'Transactions',
-          path: `/projects/el/${params.id}/transactions`,
+          path: `/projects/el/${id}/transactions`,
           subtitle: 20,
           icon: <Receipt size={18} strokeWidth={1.5} />,
         },
         {
+          title: 'Redemptions',
+          path: `/projects/el/${id}/redemptions`,
+          icon: <TicketCheck size={18} strokeWidth={1.5} />,
+        },
+        {
+          title: 'Vouchers',
+          path: `/projects/el/${id}/vouchers`,
+          icon: <ReceiptText size={18} strokeWidth={1.5} />,
+        },
+        {
           title: 'Campaigns',
-          subtitle: 20,
           icon: <Speech size={18} strokeWidth={1.5} />,
-          children: [
-            {
-              title: 'Voice',
-              subtitle: 10,
-              icon: <Phone size={18} strokeWidth={1.5} />,
-              path: `/projects/el/${params.id}/campaigns/voice`,
-            },
-            {
-              title: 'Text',
-              subtitle: 10,
-              icon: <MessageSquare size={18} strokeWidth={1.5} />,
-              path: `/projects/el/${params.id}/campaigns/text`,
-            },
-          ],
+          path: `/projects/el/${id}/campaigns/text`,
+
         },
       ],
     },
@@ -133,26 +177,33 @@ export const useNavItems = () => {
             <>
               <CreateVoucherModal
                 voucherInputs={voucherInputs}
-                handleSubmit={handleCreateVoucherSubmit}
+                handleSubmit={handleSubmitCreateTokenModal}
                 handleInputChange={handleCreateVoucherTokenChange}
+                setVoucherInputs={setVoucherInputs}
+                open={createTokenModal.value}
+                handleModal={handleOpenCreateTokenModal}
               />
-              <CreateTokenModal
-                open={createVoucher.isSuccess && !completeTransaction}
+              <ConfirmModal
+                open={createTokenSummaryModal.value}
                 voucherInputs={voucherInputs}
-                handleSubmit={handleCreateTokenSubmit}
+                handleSubmit={handleCreateVoucherSubmit}
+                handleGoBack={handleBackToCreateTokenModal}
+                handleClose={handleCloseSummaryModal}
+                handleCreateVoucherSubmit={handleCreateVoucherSubmit}
+                isLoading={createVoucher.isPending}
               />
             </>
           ),
           title: 'Create Voucher',
         },
-        {
-          title: 'Lock Project',
-          icon: <Lock size={18} strokeWidth={1.5} />,
-          onClick: handleLockProject,
-        },
+        // {
+        //   title: 'Lock Project',
+        //   icon: <Lock size={18} strokeWidth={1.5} />,
+        //   onClick: handleLockProject,
+        // },
         {
           title: 'Close Project',
-          path: '/edit',
+          onClick: handleCloseProject,
           icon: <XCircle size={18} strokeWidth={1.5} />,
         },
         {
@@ -164,5 +215,5 @@ export const useNavItems = () => {
     },
   ];
 
-  return navItems;
+  return { navItems, createVoucher };
 };

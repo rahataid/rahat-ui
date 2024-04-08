@@ -7,7 +7,6 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from '@rahat-ui/shadcn/src/components/ui/resizable';
-import { ScrollArea } from '@radix-ui/react-scroll-area';
 
 export default function DashboardLayout({
   children,

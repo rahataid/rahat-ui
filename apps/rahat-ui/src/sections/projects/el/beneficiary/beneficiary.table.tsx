@@ -1,8 +1,11 @@
 'use client';
 
-import { usePagination } from '@rahat-ui/query';
 import {
-  ColumnDef,
+  usePagination,
+  useProjectBeneficiaries,
+  useProjectSettingsStore,
+} from '@rahat-ui/query';
+import {
   ColumnFiltersState,
   SortingState,
   VisibilityState,
@@ -13,11 +16,8 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { useRumsanService } from 'apps/rahat-ui/src/providers/service.provider';
-import { MoreHorizontal, Settings2 } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { ChevronDown, Settings2 } from 'lucide-react';
 
-import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
 import * as React from 'react';
 
 import { Button } from '@rahat-ui/shadcn/components/button';
@@ -34,7 +34,6 @@ import { Input } from '@rahat-ui/shadcn/components/input';
 import {
   Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
@@ -48,165 +47,97 @@ import {
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import { UUID } from 'crypto';
+import { useParams } from 'next/navigation';
 import { useProjectBeneficiaryTableColumns } from './use-table-column';
-import { useProjectAction } from 'libs/query/src/lib/projects/projects';
-// import { useBeneficiaryTransaction } from '../../hooks/el/subgraph/querycall';
+import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
+import { useBulkAssignVoucher } from 'apps/rahat-ui/src/hooks/el/contracts/el-contracts';
+import { useBoolean } from '../../../../hooks/use-boolean';
+import TokenAssingnConfirm from './token.assign.confirm';
 
-// const data: Transaction[] = TransactionTableData;
+// import { useBeneficiaryTransaction } from '../../hooks/el/subgraph/querycall';
 
 export type Transaction = {
   name: string;
-  vouvherType: string;
+  beneficaryType: string;
   timeStamp: string;
   transactionHash: string;
   amount: string;
 };
 
-export const columns: ColumnDef<Transaction>[] = [
+const benType = [
   {
-    id: 'select',
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && 'indeterminate')
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
+    key: 'ALL',
+    value: 'ALL',
   },
   {
-    accessorKey: 'name',
-    header: 'Name',
-    cell: ({ row }) => <div>{row.getValue('name')}</div>,
+    key: 'ENROLLED',
+    value: 'ENROLLED',
   },
   {
-    accessorKey: 'vouvherType',
-    header: 'Voucher Type',
-    cell: ({ row }) => (
-      <div className="capitalize">
-        {row.getValue('vouvherType')
-          ? `${row.getValue('vouvherType')?.toString().substring(0, 4)}....${row
-              .getValue('vouvherType')
-              ?.toString()
-              ?.slice(-3)}`
-          : 'N/A'}
-      </div>
-    ),
-  },
-  {
-    accessorKey: 'phone',
-    header: 'Phone',
-    cell: ({ row }) => <div> {row.getValue('phone')}</div>,
-  },
-  {
-    accessorKey: 'redemption',
-    header: 'Redemption',
-    cell: ({ row }) => <div> {row.getValue('redemption')}</div>,
-  },
-  {
-    accessorKey: 'gender',
-    header: 'Gender',
-    cell: ({ row }) => <div> {row.getValue('gender')}</div>,
-  },
-  {
-    id: 'actions',
-    enableHiding: false,
-    cell: () => {
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem>View Details</DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>Edit</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
-    },
+    key: 'REFERRED',
+    value: 'REFERRED',
   },
 ];
 
-// import { useBeneficiaryTransaction } from '../../hooks/el/subgraph/querycall';
+function BeneficiaryDetailTableView() {
+  const tokenAssignModal = useBoolean();
 
-export default function BeneficiaryDetailTableView() {
+  // TODO: Refactor it
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
   );
-  // const { data, error } = useBeneficiaryTransaction(
-  //   '0x082d43D30C31D054b1AEDbE08F50C2a1BBE76fC7',
-  // );
-  const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = React.useState({});
 
-  const { pagination, filters, setPagination } = usePagination((state) => ({
-    pagination: state.pagination,
-    filters: state.filters,
-    setPagination: state.setPagination,
-  }));
-
-  const [perPage, setPerPage] = useState<number>(5);
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const [tableData, setTableData] = useState<any>();
-
-  const { beneficiaryQuery } = useRumsanService();
-  const columns = useProjectBeneficiaryTableColumns();
-
-  const { data } = beneficiaryQuery.useProjectBeneficiaryList({
-    action: 'beneficiary.list_by_project',
-    payload: {
-      page: currentPage,
-      perPage,
-    },
-  });
-
-  const addBeneficiary = useProjectAction();
-
-  const handleAssignClaims = async () => {
-    const result = await addBeneficiary.mutateAsync({
-      uuid: 'bb32449c-fb10-4def-ade0-7710b567daab',
-      payload: {
-        action: 'beneficiary.list_by_project',
-        payload: {
-          page: currentPage,
-          perPage,
-        },
-      },
-    });
-
-    setTableData(result?.data);
+  const handleTokenAssignModal = () => {
+    tokenAssignModal.onTrue();
   };
 
-  useEffect(() => {
-    handleAssignClaims();
-  }, []);
+  const handleTokenAssignModalClose = () => {
+    tokenAssignModal.onFalse();
+  };
 
-  // const { data } = beneficiaryQuery.useProjectBeneficiaryList({
-  //   perPage,
-  //   page: currentPage,
-  // });
+  const [columnVisibility, setColumnVisibility] =
+    React.useState<VisibilityState>({});
+  const uuid = useParams().id as UUID;
+  const {
+    pagination,
+    filters,
+    setFilters,
+    setNextPage,
+    setPrevPage,
+    setPerPage,
+    selectedListItems,
+    setSelectedListItems,
+  } = usePagination();
+  const assignVoucher = useBulkAssignVoucher();
 
-  // console.log(data2)
+  const projectBeneficiaries = useProjectBeneficiaries({
+    page: pagination.page,
+    perPage: pagination.perPage,
+    projectUUID: uuid,
+    ...filters,
+  });
+
+  const contractAddress = useProjectSettingsStore(
+    (state) => state.settings?.[uuid],
+  );
+
+  const columns = useProjectBeneficiaryTableColumns();
+
+  const handleBenType = React.useCallback(
+    (type: string) => {
+      if (type === 'ALL') {
+        setFilters({ ...filters, status: undefined });
+        return;
+      }
+      setFilters({ ...filters, status: type });
+    },
+    [filters, setFilters],
+  );
 
   const table = useReactTable({
-    data: tableData || [],
+    data: projectBeneficiaries.data || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -215,14 +146,26 @@ export default function BeneficiaryDetailTableView() {
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setRowSelection,
+    getRowId: (row) => row.name,
+    onRowSelectionChange: setSelectedListItems,
     state: {
       sorting,
       columnFilters,
       columnVisibility,
-      rowSelection,
+      rowSelection: selectedListItems,
     },
   });
+  // const assignToken =
+
+  const selectedRowAddresses = Object.keys(selectedListItems);
+
+  const handleBulkAssign = async () => {
+    await assignVoucher.mutateAsync({
+      addresses: selectedRowAddresses as `0x${string}`[],
+      noOfTokens: 1,
+      contractAddress: contractAddress.elproject.address,
+    });
+  };
 
   return (
     <>
@@ -236,6 +179,25 @@ export default function BeneficiaryDetailTableView() {
             }
             className="max-w-sm rounded mr-2"
           />
+          <div className="max-w-sm rounded mr-2">
+            <Select
+              onValueChange={handleBenType}
+              defaultValue={filters?.status || 'ALL'}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Beneficiary Type" />
+              </SelectTrigger>
+              <SelectContent>
+                {benType.map((item) => {
+                  return (
+                    <SelectItem key={item.key} value={item.value}>
+                      {item.key}
+                    </SelectItem>
+                  );
+                })}
+              </SelectContent>
+            </Select>
+          </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="ml-auto">
@@ -265,11 +227,29 @@ export default function BeneficiaryDetailTableView() {
                 })}
             </DropdownMenuContent>
           </DropdownMenu>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              {selectedRowAddresses.length ? (
+                <Button
+                  disabled={assignVoucher.isPending}
+                  className="h-10 ml-2"
+                >
+                  {selectedRowAddresses.length} - Items Selected
+                  <ChevronDown strokeWidth={1.5} />
+                </Button>
+              ) : null}
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={handleTokenAssignModal}>
+                Assign Tokens To All
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
-        <div className="rounded border h-[calc(100vh-180px)] bg-card">
+        <div className="rounded border bg-card">
           <Table>
-            <ScrollArea className="h-table1">
-              <TableHeader className="sticky top-0">
+            <ScrollArea className="h-[calc(100vh-182px)]">
+              <TableHeader className="bg-card sticky top-0">
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow key={headerGroup.id}>
                     {headerGroup.headers.map((header) => {
@@ -319,55 +299,23 @@ export default function BeneficiaryDetailTableView() {
           </Table>
         </div>
       </div>
-      <div className="sticky bottom-0 flex items-center justify-end space-x-4 px-4 py-1 border-t-2 bg-card">
-        <div className="flex-1 text-sm text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length} of{' '}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="text-sm font-medium">Rows per page</div>
-          <Select
-            defaultValue="10"
-            onValueChange={(value) => table.setPageSize(Number(value))}
-          >
-            <SelectTrigger className="w-16">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectItem value="5">5</SelectItem>
-                <SelectItem value="10">10</SelectItem>
-                <SelectItem value="20">20</SelectItem>
-                <SelectItem value="30">30</SelectItem>
-                <SelectItem value="40">40</SelectItem>
-                <SelectItem value="50">50</SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-        </div>
-        <div>
-          Page {table.getState().pagination.pageIndex + 1} of{' '}
-          {table.getPageCount()}
-        </div>
-        <div className="space-x-4">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            Previous
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            Next
-          </Button>
-        </div>
-      </div>
+      <CustomPagination
+        currentPage={pagination.page}
+        handleNextPage={setNextPage}
+        handlePageSizeChange={setPerPage}
+        handlePrevPage={setPrevPage}
+        meta={projectBeneficiaries.data?.meta || {}}
+        perPage={pagination.perPage}
+        total={projectBeneficiaries.data?.meta?.total || 0}
+      />
+      <TokenAssingnConfirm
+        tokens={selectedRowAddresses.length}
+        open={tokenAssignModal.value}
+        handleClose={handleTokenAssignModalClose}
+        handleSubmit={handleBulkAssign}
+      />
     </>
   );
 }
+
+export default React.memo(BeneficiaryDetailTableView);

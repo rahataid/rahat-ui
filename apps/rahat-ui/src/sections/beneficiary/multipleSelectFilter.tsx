@@ -1,15 +1,14 @@
 'use client';
 
-import React from 'react';
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from '@rahat-ui/shadcn/components/accordion';
+import { ListBeneficiary } from '@rahat-ui/types';
 import { Table } from '@tanstack/react-table';
 import { useSwal } from '../../components/swal';
-import { ListBeneficiary } from '@rahat-ui/types';
 
 type IProps = {
   table: Table<ListBeneficiary>;
@@ -18,6 +17,11 @@ type IProps = {
 export default function Filter({ table }: IProps) {
   const dialog = useSwal();
   const totalSelected = table.getFilteredSelectedRowModel().rows.length;
+
+  const selectedAddresses = table
+    .getFilteredSelectedRowModel()
+    .rows.map((row) => row.original)
+    .map((r) => r.walletAddress);
 
   const handleAssignProject = async () => {
     const { value } = await dialog.fire({

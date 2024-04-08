@@ -1,55 +1,63 @@
-import React from 'react';
 import DataCard from 'apps/rahat-ui/src/components/dataCard';
 import { Users } from 'lucide-react';
-import {
-  useProjectVoucher,
-  useBeneficiaryCount,
-} from '../../../hooks/el/subgraph/querycall';
+import { FC } from 'react';
 import Activities from './projects.activity';
 
-const ProjectDataCard = () => {
-  const { data: projectVoucher } = useProjectVoucher(
-    '0x9C8Ee9931BEc18EA883c8F23c7427016bBDeF171',
-  );
+type ProjectDataCardProps = {
+  beneficiaryDetails: any;
+  projectVoucher: any;
+  voucherDetails: any;
+  refetchBeneficiary: VoidFunction;
+  refetchVoucher: VoidFunction;
+};
 
-  const { data: beneficiaryDetails } = useBeneficiaryCount(
-    '0x9C8Ee9931BEc18EA883c8F23c7427016bBDeF171',
-  );
+const ProjectDataCard: FC<ProjectDataCardProps> = ({
+  beneficiaryDetails,
+  projectVoucher,
+  voucherDetails,
+  refetchBeneficiary,
+  refetchVoucher,
+}) => {
+  const data = { ...projectVoucher, ...voucherDetails };
   return (
     <>
       <div className="mb-2 grid md:grid-cols-3 gap-2">
         <div className="grid grid-cols-2 col-span-2 gap-2">
           <DataCard
             className=""
-            title="Beneficiary"
-            number={beneficiaryDetails?.enrolledBen}
+            title="Enrolled Beneficiary"
+            number={beneficiaryDetails ? beneficiaryDetails[0].toString() : '-'}
             subTitle="Enrolled"
             Icon={Users}
+            refresh={refetchBeneficiary}
           />
           <DataCard
             className=""
-            title="Beneficiary"
-            number={beneficiaryDetails?.referredBen}
+            title="Referred Beneficiary"
+            number={beneficiaryDetails ? beneficiaryDetails[1].toString() : '-'}
             subTitle="Referred"
             Icon={Users}
+            refresh={refetchBeneficiary}
           />
           <DataCard
             className=""
             title="Vouchers"
-            number={projectVoucher?.freeVoucherBudget}
+            number={projectVoucher?.eyeVoucherBudget?.toString() || '-'}
             subTitle="Free"
             Icon={Users}
+            refresh={refetchVoucher}
           />
           <DataCard
             className=""
             title="Vouchers"
-            number={projectVoucher?.refeeredVoucherBudget}
+            number={projectVoucher?.referredVoucherBudget?.toString() || '-'}
             subTitle="Discount"
             Icon={Users}
+            refresh={refetchVoucher}
           />
         </div>
-        <div className="">
-          <Activities title="Vouchers" data={projectVoucher} />
+        <div>
+          <Activities title="Vouchers" data={data} />
         </div>
       </div>
     </>

@@ -1,136 +1,44 @@
 'use client';
-import { memo, useCallback, useState } from 'react';
+import { memo, useState } from 'react';
+
+import { TabsContent } from '@rahat-ui/shadcn/components/tabs';
 
 import {
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
-} from '@rahat-ui/shadcn/components/resizable';
-import { Tabs, TabsContent } from '@rahat-ui/shadcn/components/tabs';
-
-import {
-  ColumnDef,
   VisibilityState,
   getCoreRowModel,
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
 
-import { usePagination } from '@rahat-ui/query';
-import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
-import { Beneficiary } from '@rahataid/sdk/types';
-import { Eye } from 'lucide-react';
+import {
+  useBeneficiaryList,
+  useBulkAssignBenToProject,
+  usePagination,
+} from '@rahat-ui/query';
 import CustomPagination from '../../components/customPagination';
-import { BENEFICIARY_NAV_ROUTE } from '../../constants/beneficiary.const';
-import { useRumsanService } from '../../providers/service.provider';
-import BeneficiaryDetail from '../../sections/beneficiary/beneficiaryDetail';
 import BeneficiaryGridView from '../../sections/beneficiary/gridView';
 import BeneficiaryListView from '../../sections/beneficiary/listView';
-import BeneficiaryNav from '../../sections/beneficiary/nav';
-import AddBeneficiary from './addBeneficiary';
-import ImportBeneficiary from './import.beneficiary';
-
-export const columns: ColumnDef<Beneficiary>[] = [
-  {
-    id: 'select',
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && 'indeterminate')
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
-    accessorKey: 'walletAddress',
-    header: 'Wallet Address',
-    cell: ({ row }) => <div>{row.getValue('walletAddress')}</div>,
-  },
-  {
-    accessorKey: 'gender',
-    header: 'Gender',
-    cell: ({ row }) => <div>{row.getValue('gender')}</div>,
-  },
-  {
-    accessorKey: 'internetStatus',
-    header: 'Internet Access',
-    cell: ({ row }) => <div>{row.getValue('internetStatus')}</div>,
-  },
-  {
-    accessorKey: 'phoneStatus',
-    header: 'Phone Type',
-    cell: ({ row }) => <div>{row.getValue('phoneStatus')}</div>,
-  },
-  {
-    accessorKey: 'bankedStatus',
-    header: 'Banking Status',
-    cell: ({ row }) => <div>{row.getValue('bankedStatus')}</div>,
-  },
-  {
-    id: 'actions',
-    enableHiding: false,
-    cell: () => {
-      return (
-        <Eye
-          size={20}
-          strokeWidth={1.5}
-          className="cursor-pointer hover:text-primary"
-        />
-      );
-    },
-  },
-];
+import { useBeneficiaryTableColumns } from './useBeneficiaryColumns';
+import { useSecondPanel } from '../../providers/second-panel-provider';
+import { useBoolean } from '../../hooks/use-boolean';
+import { UUID } from 'crypto';
 
 function BeneficiaryView() {
-  const { pagination, filters, setPagination } = usePagination((state) => ({
-    pagination: state.pagination,
-    filters: state.filters,
-    setPagination: state.setPagination,
-  }));
+  const {
+    pagination,
+    selectedListItems,
+    setSelectedListItems,
+    setNextPage,
+    setPrevPage,
+    setPerPage,
+  } = usePagination();
 
-  const [perPage, setPerPage] = useState<number>(5);
-  const [currentPage, setCurrentPage] = useState<number>(1);
-
-  const handleNextPage = () => setCurrentPage(currentPage + 1);
-
-  const handlePrevPage = () => setCurrentPage(currentPage - 1);
-
-  const { beneficiaryQuery } = useRumsanService();
-  const [selectedData, setSelectedData] = useState<Beneficiary>();
-  const [active, setActive] = useState<string>(BENEFICIARY_NAV_ROUTE.DEFAULT);
-
-  const handleBeneficiaryClick = useCallback((item: Beneficiary) => {
-    setSelectedData(item);
-  }, []);
-
-  const handleClose = () => {
-    setSelectedData(null);
-  };
-
-  const handleNav = useCallback((item: string) => {
-    setActive(item);
-    setSelectedData(null);
-  }, []);
-
-  const { data } = beneficiaryQuery.useBeneficiaryList({
-    perPage,
-    page: currentPage,
-  });
-
+  const { data } = useBeneficiaryList(pagination);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = useState({});
+  const columns = useBeneficiaryTableColumns();
+  const { closeSecondPanel, setSecondPanelComponent } = useSecondPanel();
+  const projectModal = useBoolean();
+  const bulkAssign = useBulkAssignBenToProject();
 
   const table = useReactTable({
     manualPagination: true,
@@ -139,74 +47,75 @@ function BeneficiaryView() {
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setRowSelection,
+    onRowSelectionChange: setSelectedListItems,
+    getRowId: (row) => row.uuid,
     state: {
       columnVisibility,
-      rowSelection,
+      rowSelection: selectedListItems,
     },
   });
 
-  return (
-    <Tabs defaultValue="list" className="h-full">
-      <ResizablePanelGroup direction="horizontal" className="min-h-max bg-card">
-        <ResizablePanel minSize={20} defaultSize={20} maxSize={20}>
-          <BeneficiaryNav
-            handleNav={handleNav}
-            meta={data?.response?.meta}
-            active={active}
-            table={table}
-          />
-        </ResizablePanel>
-        <ResizableHandle />
-        <ResizablePanel minSize={28}>
-          {active === BENEFICIARY_NAV_ROUTE.ADD_BENEFICIARY ? (
-            <AddBeneficiary />
-          ) : active === BENEFICIARY_NAV_ROUTE.IMPORT_BENEFICIARY ? (
-            <ImportBeneficiary />
-          ) : null}
+  const handleBeneficiaryClick = (row: any) => {
+    setSecondPanelComponent(
+      <BeneficiaryDetail data={row} handleClose={closeSecondPanel} />,
+    );
+  };
 
-          {active === BENEFICIARY_NAV_ROUTE.DEFAULT && (
-            <>
-              <TabsContent value="list">
-                <BeneficiaryListView
-                  table={table}
-                  meta={data?.meta}
-                  handleClick={handleBeneficiaryClick}
-                />
-              </TabsContent>
-              <TabsContent value="grid">
-                <BeneficiaryGridView
-                  handleClick={handleBeneficiaryClick}
-                  data={data?.data}
-                />
-              </TabsContent>
-              <CustomPagination
-                meta={data?.response?.meta || { total: 0, currentPage: 0 }}
-                handleNextPage={handleNextPage}
-                handlePrevPage={handlePrevPage}
-                handlePageSizeChange={(value) =>
-                  setPagination({ perPage: Number(value) })
-                }
-              />
-            </>
-          )}
-        </ResizablePanel>
-        {selectedData ? (
-          <>
-            <ResizableHandle />
-            <ResizablePanel minSize={28} defaultSize={28}>
-              {selectedData && (
-                <BeneficiaryDetail
-                  data={selectedData}
-                  handleClose={handleClose}
-                />
-              )}
-              {/* {addBeneficiary && <AddBeneficiary />} */}
-            </ResizablePanel>
-          </>
-        ) : null}
-      </ResizablePanelGroup>
-    </Tabs>
+  const benUUIDs = Object.keys(selectedListItems);
+
+  const handleBulkAssign = async (selectedProject: string) => {
+    // from the list of selected beneficiaries, filter out the ones that are already assigned to the project
+
+    // TODO:Make this more cleaner
+    const benNotAssignedToTheProject = data?.data
+      ?.filter(
+        (ben) =>
+          !ben.BeneficiaryProject.some(
+            (project) => project.projectId === selectedProject,
+          ),
+      )
+      .filter((ben) => benUUIDs.includes(ben.uuid))
+      .map((ben) => ben.uuid);
+
+    if (!benNotAssignedToTheProject)
+      return alert(
+        'All selected beneficiaries are already assigned to the project',
+      );
+
+    await bulkAssign.mutateAsync({
+      projectUUID: selectedProject as UUID,
+      beneficiaryUUIDs: benNotAssignedToTheProject as any[],
+    });
+  };
+
+  return (
+    <>
+      <TabsContent value="list">
+        <BeneficiaryListView
+          table={table}
+          meta={data?.meta}
+          handleClick={handleBeneficiaryClick}
+          handleBulkAssign={handleBulkAssign}
+          isBulkAssigning={false}
+          projectModal={projectModal}
+        />
+      </TabsContent>
+      <TabsContent value="grid">
+        <BeneficiaryGridView
+          handleClick={handleBeneficiaryClick}
+          data={data?.data}
+        />
+      </TabsContent>
+      <CustomPagination
+        meta={data?.response?.meta || { total: 0, currentPage: 0 }}
+        handleNextPage={setNextPage}
+        handlePrevPage={setPrevPage}
+        handlePageSizeChange={setPerPage}
+        currentPage={pagination.page}
+        perPage={pagination.perPage}
+        total={data?.response?.meta.lastPage || 0}
+      />
+    </>
   );
 }
 

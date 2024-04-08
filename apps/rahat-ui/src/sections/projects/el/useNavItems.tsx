@@ -1,4 +1,4 @@
-import { useProjectSettingsStore } from '@rahat-ui/query';
+import { useProjectAction, useProjectSettingsStore } from '@rahat-ui/query';
 import {
   useCloseProject,
   useMintVouchers,
@@ -18,7 +18,7 @@ import {
   XCircle,
 } from 'lucide-react';
 import { useParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useSwal } from '../../../components/swal';
 import { NavItem } from '../components';
 import ConfirmModal from './confirm.modal';
@@ -33,6 +33,7 @@ export const useNavItems = () => {
   const dialog = useSwal();
   const createTokenSummaryModal = useBoolean();
   const createTokenModal = useBoolean();
+  const [projectStats,setProjectStats]= useState();
 
   const handleOpenCreateTokenModal = () => {
     createTokenModal.onToggle();
@@ -69,6 +70,19 @@ export const useNavItems = () => {
     contractSettings?.eyeVoucherAddress || '',
   );
 
+  const projectClient = useProjectAction();
+
+  const getProjectStats =  useCallback(async () =>{
+    const result = await projectClient.mutateAsync({
+      uuid :id,
+      data:{
+        action:'elProject.count_ben_vendor',
+        payload:{}
+      }
+    });
+    setProjectStats(result.data)
+
+  },[id])
 
   useEffect(() => {
     if (projectVoucher.isSuccess) {
@@ -77,6 +91,10 @@ export const useNavItems = () => {
       }));
     }
   }, [projectVoucher.isSuccess]);
+
+  useEffect(() =>{
+    getProjectStats()
+  },[getProjectStats])
 
   const handleCreateVoucherTokenChange = (e: any) => {
     const { name, value } = e.target;
@@ -115,11 +133,11 @@ export const useNavItems = () => {
       title: 'Close Project',
       text: "Are you sure you want to close the project? You won't be able to access any project actions",
       showCancelButton: true,
-      confirmButtonText: 'Lock',
+      confirmButtonText: 'Close',
     });
     if (value) {
       closeProject.writeContractAsync({
-        address: '0x9C8Ee9931BEc18EA883c8F23c7427016bBDeF171',
+        address: contractSettings?.elproject?.address,
       });
     }
   };
@@ -136,19 +154,18 @@ export const useNavItems = () => {
         {
           title: 'Beneficiaries',
           path: `/projects/el/${id}/beneficiary`,
-          subtitle: 20,
+          subtitle: projectStats?.benTotal,
           icon: <UsersRound size={18} strokeWidth={1.5} />,
         },
         {
           title: 'Vendors',
           path: `/projects/el/${id}/vendors`,
-          subtitle: 20,
+          subtitle: projectStats?.vendorTotal,
           icon: <Store size={18} strokeWidth={1.5} />,
         },
         {
           title: 'Transactions',
           path: `/projects/el/${id}/transactions`,
-          subtitle: 20,
           icon: <Receipt size={18} strokeWidth={1.5} />,
         },
         {

@@ -17,24 +17,41 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
-import { useForm } from 'react-hook-form';
+import { useForm, useFieldArray } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import { Switch } from '@rahat-ui/shadcn/src/components/ui/switch';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 
 import { z } from 'zod';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { useFieldDefinitionsCreate } from '@rahat-ui/community-query';
 import { FieldType } from 'apps/community-tool-ui/src/types/fieldDefinition';
+import { Minus, Plus } from 'lucide-react';
 
 export default function AddFieldDefinitions() {
   const addFieldDefinitions = useFieldDefinitionsCreate();
+  const [showKeyValueFields, setShowKeyValueFields] = useState(false);
+  const {
+    control,
+    formState: { errors },
+  } = useForm();
+
   const FormSchema = z.object({
     name: z.string().min(1),
     fieldType: z.string().toUpperCase(),
     isActive: z.boolean(),
+    field: z
+      .array(
+        z.object({
+          value: z.object({
+            key: z.string().min(1, { message: 'Key is required' }),
+            value: z.string().min(1, { message: 'Value is required' }),
+          }),
+        }),
+      )
+      .optional(),
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -43,18 +60,58 @@ export default function AddFieldDefinitions() {
       name: '',
       fieldType: FieldType.TEXT,
       isActive: true,
+      field: [],
     },
+  });
+
+  const { fields, append, remove } = useFieldArray({
+    name: 'field',
+    control: control,
   });
 
   const handleCreateFieldDefinitions = async (
     data: z.infer<typeof FormSchema>,
   ) => {
-    await addFieldDefinitions.mutateAsync({
-      name: data?.name,
-      fieldType: data.fieldType as FieldType,
-      isActive: data?.isActive,
-    });
+    let result;
+    if (data.field && data.field.length > 0) {
+      result = data?.field?.reduce(
+        (acc: any, item: any) => {
+          acc.value[item.value.key] = item.value.value;
+          return acc;
+        },
+        { value: {} },
+      );
+    }
+
+    try {
+      const payload = {
+        name: data.name,
+        fieldType: data.fieldType as FieldType,
+        isActive: data.isActive,
+        fieldPopulate: result?.value || [],
+      };
+      await addFieldDefinitions.mutateAsync(payload);
+    } catch (error) {
+      toast.error('Error creating Field Definition');
+      console.error('Error creating Field Definition:', error);
+    }
   };
+
+  const addKeyValueField = () => {
+    if (showKeyValueFields) {
+      append({
+        value: { key: '', value: '' },
+      });
+    }
+  };
+
+  useEffect(() => {
+    setShowKeyValueFields(
+      form.watch('fieldType') === FieldType.CHECKBOX ||
+        form.watch('fieldType') === FieldType.RADIO ||
+        form.watch('fieldType') === FieldType.DROPDOWN,
+    );
+  }, [form.watch('fieldType')]);
 
   useEffect(() => {
     if (addFieldDefinitions.isSuccess) {
@@ -141,8 +198,83 @@ export default function AddFieldDefinitions() {
                 )}
               />
             </div>
+            {showKeyValueFields && (
+              <>
+                <div className="grid grid-cols-5 gap-4 mb-4">
+                  <Label className="col-span-2">KEY</Label>
+                  <Label className="col-span-2">VALUE</Label>
+                </div>
+                <div className="grid grid-cols-5 gap-5 mb-4">
+                  {fields.map((fieldName, index) => {
+                    return (
+                      <React.Fragment key={index}>
+                        <FormField
+                          control={form.control}
+                          name={`field.${index}.value.key` as const}
+                          render={({ field }) => (
+                            <div className="col-span-2">
+                              <Input
+                                type="text"
+                                placeholder="eg: 1"
+                                {...field}
+                              />
+                              {/* {errors?.fieldPopulate?.[index]?.value?.key && (
+                                <Label className="text-red-500">
+                                  {errors?.fieldPopulate?.[index]?.value?.key?.message}
+                                </Label>
+                              )} */}
+                            </div>
+                          )}
+                        />
+
+                        <FormField
+                          control={form.control}
+                          name={`field.${index}.value.value` as const}
+                          render={({ field }) => (
+                            <div className="col-span-2">
+                              <Input
+                                type="text"
+                                placeholder="eg: Green"
+                                {...field}
+                              />
+                              {/* {errors?.fieldPopulate?.[index]?.value?.value && (
+                                <Label className="text-red-500">
+                                  {errors?.fieldPopulate?.[index]?.value?.value?.message}
+                                </Label>
+                              )} */}
+                            </div>
+                          )}
+                        />
+
+                        <div className="flex justify-center">
+                          <Button
+                            type="button"
+                            onClick={() => remove(index)}
+                            className="p-1 text-xs  w-10"
+                          >
+                            <Minus size={18} strokeWidth={1.5} />
+                          </Button>
+                        </div>
+                      </React.Fragment>
+                    );
+                  })}
+                </div>
+
+                <Button
+                  onClick={addKeyValueField}
+                  type="button"
+                  className="flex items-center p-2 gap-1 text-xs  w-15"
+                >
+                  <Plus size={18} strokeWidth={1.5} />
+                  Add Field
+                </Button>
+              </>
+            )}
             <div className="flex justify-end">
-              <Button>Create Field Definition</Button>
+              {/* <Button type="button" onClick={addKeyValueField}>
+                Add Key-Value Field
+              </Button> */}
+              <Button type="submit">Create Field Definition</Button>
             </div>
           </div>
         </div>

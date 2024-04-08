@@ -109,6 +109,7 @@ function BeneficiaryDetailTableView() {
     setPerPage,
     selectedListItems,
     setSelectedListItems,
+    resetSelectedListItems,
   } = usePagination();
   const assignVoucher = useBulkAssignVoucher();
 
@@ -127,6 +128,7 @@ function BeneficiaryDetailTableView() {
 
   const handleBenType = React.useCallback(
     (type: string) => {
+      resetSelectedListItems();
       if (type === 'ALL') {
         setFilters({ ...filters, status: undefined });
         return;
@@ -234,7 +236,7 @@ function BeneficiaryDetailTableView() {
                   disabled={assignVoucher.isPending}
                   className="h-10 ml-2"
                 >
-                  {selectedRowAddresses.length} - Items Selected
+                  {selectedRowAddresses.length} - Beneficiary Selected
                   <ChevronDown strokeWidth={1.5} />
                 </Button>
               ) : null}

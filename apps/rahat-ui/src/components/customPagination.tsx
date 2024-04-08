@@ -13,7 +13,7 @@ type IProps = {
   handlePrevPage: () => void;
   handlePageSizeChange: (value: string | number) => void;
   meta: PaginatedResult<any>['meta'];
-  total: number;
+  total?: number;
   perPage: number;
   currentPage: number;
 };
@@ -57,7 +57,7 @@ export default function CustomPagination({
         </div>
       )}
       <div>
-        Page {currentPage} of {total}
+        Page {currentPage} of {meta?.lastPage}
       </div>
       <div className="space-x-2">
         <Button

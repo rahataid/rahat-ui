@@ -1,5 +1,5 @@
 import { Pagination } from '@rumsan/sdk/types';
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 
 export const hashStorage = {
   getItem: (key: string): any => {
@@ -36,6 +36,8 @@ type usePaginationReturn = {
   setPerPage: (perPage: number | string) => void;
 };
 
+// ...existing code...
+
 export const usePagination = (): usePaginationReturn => {
   const [pagination, setPagination] = useState<Pagination>(
     hashStorage.getItem('pagination') || { page: 1, perPage: 20 },
@@ -69,23 +71,36 @@ export const usePagination = (): usePaginationReturn => {
     }
   }, [selectedListItems]);
 
-  const setNextPage = () =>
-    setPagination((prev) => ({ ...prev, page: prev.page + 1 }));
-  const setPrevPage = () =>
-    setPagination((prev) => ({ ...prev, page: prev.page - 1 }));
-  const resetPagination = () => setPagination({ page: 1, perPage: 10 });
-  const resetFilters = () => setFilters({});
-  const resetSelectedListItems = () => setSelectedListItems([]);
-  const setPerPage = (perPage: number | string) =>
-    setPagination((prev) => ({
-      ...prev,
-      perPage: Number(perPage),
-      page: 1,
-    }));
+  const setNextPage = useCallback(
+    () => setPagination((prev) => ({ ...prev, page: prev.page + 1 })),
+    [],
+  );
+  const setPrevPage = useCallback(
+    () => setPagination((prev) => ({ ...prev, page: prev.page - 1 })),
+    [],
+  );
+  const resetPagination = useCallback(
+    () => setPagination({ page: 1, perPage: 10 }),
+    [],
+  );
+  const resetFilters = useCallback(() => setFilters({}), []);
+  const resetSelectedListItems = useCallback(
+    () => setSelectedListItems([]),
+    [],
+  );
+  const setPerPage = useCallback(
+    (perPage: number | string) =>
+      setPagination((prev) => ({
+        ...prev,
+        perPage: Number(perPage),
+        page: 1,
+      })),
+    [],
+  );
 
   return {
-    pagination: useMemo(() => pagination, [pagination]),
-    filters: useMemo(() => filters, [filters]),
+    pagination,
+    filters,
     setPagination,
     setFilters,
     setNextPage,

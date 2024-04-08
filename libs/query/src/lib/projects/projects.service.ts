@@ -2,6 +2,7 @@ import { CreateProjectPayload } from '@rahat-ui/types';
 import { useRSQuery } from '@rumsan/react-query';
 import {
   UseQueryResult,
+  keepPreviousData,
   useMutation,
   useQuery,
   useQueryClient,
@@ -14,11 +15,11 @@ import { Pagination } from '@rumsan/sdk/types';
 import { FormattedResponse } from '@rumsan/sdk/utils';
 import { UUID } from 'crypto';
 import { isEmpty } from 'lodash';
-import { useCallback, useEffect, useMemo } from 'react';
+import { memo, useCallback, useEffect, useMemo } from 'react';
 import { useSwal } from '../../swal';
 import { api } from '../../utils/api';
 import { useProjectSettingsStore, useProjectStore } from './project.store';
-import { MS_ACTIONS } from '@rahataid/sdk';
+import { Beneficiary, MS_ACTIONS } from '@rahataid/sdk';
 
 const createProject = async (payload: CreateProjectPayload) => {
   const res = await api.post('/projects', payload);
@@ -36,11 +37,11 @@ export const useProjectCreateMutation = () => {
   });
 };
 
-export const useProjectAction = () => {
+export const useProjectAction = <T = any>() => {
   const { queryClient, rumsanService } = useRSQuery();
   const projectClient = getProjectClient(rumsanService.client);
   return useMutation<
-    FormattedResponse<any>,
+    FormattedResponse<T>,
     Error,
     {
       uuid: `${string}-${string}-${string}-${string}-${string}`;
@@ -280,7 +281,7 @@ type GetProjectBeneficiaries = Pagination & {
 };
 
 export const useProjectBeneficiaries = (payload: GetProjectBeneficiaries) => {
-  const q = useProjectAction();
+  const q = useProjectAction<Beneficiary[]>();
   const { projectUUID, ...restPayload } = payload;
 
   const restPayloadString = JSON.stringify(restPayload);
@@ -290,32 +291,49 @@ export const useProjectBeneficiaries = (payload: GetProjectBeneficiaries) => {
     [restPayloadString],
   );
 
-  const queryFn = useCallback(async () => {
-    const mutate = await q.mutateAsync({
-      uuid: projectUUID,
-      data: {
-        action: MS_ACTIONS.BENEFICIARY.LIST_BY_PROJECT,
-        payload: restPayload,
-      },
-    });
-    return mutate.data;
-  }, [q, projectUUID, restPayloadString]);
-
   const query = useQuery({
-    queryKey,
-    initialData: [],
+    queryKey: [MS_ACTIONS.BENEFICIARY.LIST_BY_PROJECT, restPayloadString],
 
-    select(data) {
-      return data.map((row: any) => ({
-        wallet: row.Beneficiary.walletAddress,
-        name: row.piiData.name,
-        gender: row.Beneficiary.gender,
-        phone: row.piiData.phone || 'N/A',
-        type: row.Beneficiary.type || 'N/A',
-      }));
+    // select(data) {
+    //   return {
+    //     ...data,
+    //     data: data.data.map((row: any) => ({
+    //       wallet: row.Beneficiary.walletAddress,
+    //       name: row.piiData.name,
+    //       gender: row.Beneficiary.gender,
+    //       phone: row.piiData.phone || 'N/A',
+    //       type: row.Beneficiary.type || 'N/A',
+    //     })),
+    //   };
+    // },
+    placeholderData: keepPreviousData,
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: MS_ACTIONS.BENEFICIARY.LIST_BY_PROJECT,
+          payload: restPayload,
+        },
+      });
+      return mutate;
     },
-    queryFn,
   });
 
-  return query;
+  return {
+    ...query,
+    data: useMemo(() => {
+      return {
+        ...query.data,
+        data: query.data?.data?.length
+          ? query.data.data.map((row: any) => ({
+              wallet: row?.Beneficiary?.walletAddress,
+              name: row?.piiData?.name,
+              gender: row?.Beneficiary?.gender,
+              phone: row?.piiData?.phone || 'N/A',
+              type: row?.Beneficiary?.type || 'N/A',
+            }))
+          : [],
+      };
+    }, [query.data]),
+  };
 };

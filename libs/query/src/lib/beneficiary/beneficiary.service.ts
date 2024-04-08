@@ -1,5 +1,6 @@
 import {
   UseQueryResult,
+  keepPreviousData,
   useMutation,
   useQuery,
   useQueryClient,
@@ -43,6 +44,7 @@ export const useBeneficiaryList = (
     {
       queryKey: [TAGS.GET_BENEFICIARIES, payload],
       queryFn: () => benClient.list(payload),
+      placeholderData: keepPreviousData,
     },
     queryClient,
   );

@@ -1,9 +1,13 @@
-import { UseQueryResult, useQuery } from '@tanstack/react-query';
+import {
+  UseQueryResult,
+  keepPreviousData,
+  useQuery,
+} from '@tanstack/react-query';
 import { useRSQuery } from '@rumsan/react-query';
 import { getVendorClient } from '@rahataid/sdk/clients';
 import { useVendorStore } from './vendors.store';
 import { TAGS } from '../../config';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 
 export const useVendorList = (payload: any): UseQueryResult<any, Error> => {
   const { rumsanService, queryClient } = useRSQuery();
@@ -13,9 +17,14 @@ export const useVendorList = (payload: any): UseQueryResult<any, Error> => {
     setMeta: state.setMeta,
   }));
 
+  const memoizedKey = useMemo(
+    () => [TAGS.GET_VENDORS, payload.page, payload.perPage],
+    [payload.page, payload.perPage],
+  );
+
   const vendor = useQuery(
     {
-      queryKey: [TAGS.GET_VENDORS, payload],
+      queryKey: memoizedKey,
       select: (data) => {
         return {
           ...data,
@@ -34,16 +43,17 @@ export const useVendorList = (payload: any): UseQueryResult<any, Error> => {
         };
       },
       queryFn: () => vendorClient.list(payload),
+      placeholderData: keepPreviousData,
     },
     queryClient,
   );
 
   useEffect(() => {
-    if (vendor.data) {
+    if (vendor.isSuccess) {
       setVendors(vendor.data.data as any[]);
       setMeta(vendor.data.response.meta);
     }
-  }, [vendor.data, setVendors]);
+  }, [vendor.isSuccess, setVendors]);
 
   return vendor;
 };

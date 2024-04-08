@@ -138,6 +138,8 @@ function BeneficiaryDetailTableView() {
     [filters, setFilters],
   );
 
+  console.log('projectBeneficiaries.data', projectBeneficiaries.data);
+
   const table = useReactTable({
     manualPagination: true,
     data: projectBeneficiaries?.data?.data || [],
@@ -145,11 +147,10 @@ function BeneficiaryDetailTableView() {
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
-    getRowId: (row) => row.name,
+    getRowId: (row) => row.wallet,
     onRowSelectionChange: setSelectedListItems,
     state: {
       sorting,
@@ -170,8 +171,8 @@ function BeneficiaryDetailTableView() {
     });
   };
 
-  console.log("Beneficiary data", projectBeneficiaries?.data?.data)
-  console.log("Table data", table.getRowModel().rows) 
+  console.log('Beneficiary data', projectBeneficiaries?.data?.data);
+  console.log('Table data', table.getRowModel().rows);
 
   return (
     <>
@@ -310,9 +311,8 @@ function BeneficiaryDetailTableView() {
         handleNextPage={setNextPage}
         handlePageSizeChange={setPerPage}
         handlePrevPage={setPrevPage}
-        meta={projectBeneficiaries.data?.meta || {}}
+        meta={projectBeneficiaries.data?.response?.meta || {}}
         perPage={pagination.perPage}
-        total={projectBeneficiaries?.data?.meta?.lastPage || 0}
       />
       <TokenAssingnConfirm
         tokens={selectedRowAddresses.length}
@@ -320,7 +320,7 @@ function BeneficiaryDetailTableView() {
         handleClose={handleTokenAssignModalClose}
         handleSubmit={handleBulkAssign}
       />
-    </> 
+    </>
   );
 }
 

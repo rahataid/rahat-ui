@@ -1,5 +1,6 @@
 import {
   UseQueryResult,
+  keepPreviousData,
   useMutation,
   useQuery,
   useQueryClient,
@@ -43,6 +44,7 @@ export const useBeneficiaryList = (
     {
       queryKey: [TAGS.GET_BENEFICIARIES, payload],
       queryFn: () => benClient.list(payload),
+      placeholderData: keepPreviousData,
     },
     queryClient,
   );
@@ -153,14 +155,14 @@ export const useUploadBeneficiary = () => {
 };
 
 export const useBeneficiaryPii = (
-  padination: Pagination,
+  pagination: Pagination,
 ): UseQueryResult<any, Error> => {
   const { rumsanService, queryClient } = useRSQuery();
   const benClient = getBeneficiaryClient(rumsanService.client);
   return useQuery(
     {
-      queryKey: [TAGS.GET_BENEFICIARIES, padination],
-      queryFn: () => benClient.listPiiData(padination),
+      queryKey: [TAGS.GET_BENEFICIARIES, pagination],
+      queryFn: () => benClient.listPiiData(pagination),
     },
     queryClient,
   );

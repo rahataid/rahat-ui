@@ -17,11 +17,9 @@ export default function ProjectLayoutRoot({
   return (
     <DashboardLayout>
       {!allowedPaths.includes(pathName) ? (
-        <div className="mx-2">{children}</div>
+        <>{children}</>
       ) : (
-        <ProjectLayout menuItems={menuItems}>
-          <div className="mx-2">{children}</div>
-        </ProjectLayout>
+        <ProjectLayout menuItems={menuItems}>{children}</ProjectLayout>
       )}
     </DashboardLayout>
   );

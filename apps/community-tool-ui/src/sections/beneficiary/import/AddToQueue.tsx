@@ -1,5 +1,5 @@
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { ArrowBigLeft } from 'lucide-react';
+import { ArrowBigLeft, ArrowBigUp, CloudDownloadIcon } from 'lucide-react';
 import React from 'react';
 
 interface IProps {
@@ -7,6 +7,7 @@ interface IProps {
   handleRetargetClick: any;
   handleImportClick: any;
   invalidFields: any;
+  handleExportInvalidClick: any;
 }
 
 export default function AddToQueue({
@@ -14,6 +15,7 @@ export default function AddToQueue({
   handleRetargetClick,
   handleImportClick,
   invalidFields,
+  handleExportInvalidClick,
 }: IProps) {
   console.log('Invalid Fields', invalidFields);
   const mappedData =
@@ -23,7 +25,7 @@ export default function AddToQueue({
           return rest;
         })
       : []; // Omit rawData
-  const keys = mappedData.length > 0 ? Object.keys(mappedData[0]) : [];
+  const headerKeys = mappedData.length > 0 ? Object.keys(mappedData[0]) : [];
 
   return (
     <div className="relative mt-5">
@@ -34,13 +36,24 @@ export default function AddToQueue({
         >
           <ArrowBigLeft size={18} strokeWidth={2} /> Re-Target
         </Button>
-        <Button
-          disabled={invalidFields.length}
-          onClick={handleImportClick}
-          className="w-40 bg-primary hover:ring-2 ring-primary"
-        >
-          Import Now
-        </Button>
+        <div>
+          <Button
+            disabled={!invalidFields.length}
+            onClick={handleExportInvalidClick}
+            className="w-40 mr-2 bg-secondary hover:ring-2bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow"
+          >
+            <ArrowBigUp size={18} strokeWidth={2} /> Export Invalid
+          </Button>
+
+          <Button
+            disabled={invalidFields.length}
+            onClick={handleImportClick}
+            className="w-40 bg-primary hover:ring-2 ring-primary py-2 px-4"
+          >
+            <CloudDownloadIcon size={18} strokeWidth={2} />
+            &nbsp; Import Now
+          </Button>
+        </div>
       </div>
       <hr />
       <div
@@ -51,12 +64,16 @@ export default function AddToQueue({
           <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr>
               {/* Dynamically generated table headers */}
-              {keys.map((key) => (
+              {headerKeys.map((key) => (
                 <th className="px-4 py-1.5" key={key}>
                   {invalidFields.find(
                     (field: any) => field.fieldName === key,
                   ) ? (
-                    <span className="text-red-500">{key}*</span>
+                    <span className="text-red-500">
+                      {key === 'uuid' ? '' : key}*
+                    </span>
+                  ) : key === 'uuid' ? (
+                    ''
                   ) : (
                     key
                   )}
@@ -72,16 +89,17 @@ export default function AddToQueue({
                 key={index}
               >
                 {/* Dynamically generated table cells */}
-                {keys.map((key) =>
+                {headerKeys.map((key) =>
                   invalidFields.find(
-                    (field: any) => field.fieldName === key,
+                    (err: any) =>
+                      err.uuid === item['uuid'] && err.value === item[key],
                   ) ? (
                     <td className="px-4 bg-red-100 py-1.5" key={key}>
-                      {item[key]}
+                      {key === 'uuid' ? '' : item[key]}
                     </td>
                   ) : (
                     <td className="px-4 py-1.5" key={key}>
-                      {item[key]}
+                      {key === 'uuid' ? '' : item[key]}
                     </td>
                   ),
                 )}

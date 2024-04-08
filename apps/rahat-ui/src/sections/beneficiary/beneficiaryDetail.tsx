@@ -88,7 +88,7 @@ export default function BeneficiaryDetail({
         beneficiaryDetail={beneficiaryDetail}
         projectModal={projectModal}
       />
-      <div className="flex justify-between p-4 pt-5 bg-secondary">
+      <div className="flex justify-between p-4 pt-5 bg-secondary border-b">
         <div className="flex gap-3">
           <TooltipProvider delayDuration={100}>
             <Tooltip>
@@ -168,7 +168,7 @@ export default function BeneficiaryDetail({
       <div className="p-2 flex items-center gap-2">
         <Image
           className="rounded-full"
-          src="/svg/funny-cat.svg"
+          src="/profile.png"
           alt="cat"
           height={80}
           width={80}

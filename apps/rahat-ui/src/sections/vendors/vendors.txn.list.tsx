@@ -24,6 +24,7 @@ import {
 import * as React from 'react';
 
 import { useVendorTransaction } from '../../hooks/el/subgraph/querycall';
+import { truncateEthAddress } from '@rumsan/sdk/utils';
 
 // export type Payment = {
 //   id: string;
@@ -44,7 +45,7 @@ const columns: ColumnDef<any>[] = [
   {
     accessorKey: 'transactionHash',
     header: 'Txn Hash',
-    cell: ({ row }) => <div>{row.getValue('transactionHash')}</div>,
+    cell: ({ row }) => <div>{truncateEthAddress(row.getValue('transactionHash'))}</div>,
   },
   {
     accessorKey: 'timeStamp',

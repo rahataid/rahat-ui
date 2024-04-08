@@ -42,7 +42,6 @@ const AddVoucher = ({contractSettings}: {contractSettings:any}) => {
 
   const createVoucher = useMintVouchers();
 
-  console.log("contract settings", contractSettings)
 
   const handleSubmit = async () => {
     const referralLimit = 3;

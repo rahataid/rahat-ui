@@ -4,7 +4,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { Button } from '@rahat-ui/shadcn/components/button';
-import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
 import { Input } from '@rahat-ui/shadcn/components/input';
 
 import {
@@ -16,87 +15,66 @@ import {
   FormMessage,
 } from '@rahat-ui/shadcn/components/form';
 import React, { useState } from 'react';
-import { toast } from 'react-toastify';
-import {
-  ServiceContext,
-  ServiceContextType,
-} from 'apps/rahat-ui/src/providers/service.provider';
+import { Switch } from '@rahat-ui/shadcn/src/components/ui/switch';
+import { Role } from '@rumsan/sdk/types';
 
-export default function AddRole() {
+type Iprops = {
+  roleDetail: Role;
+};
+export default function EditRole({ roleDetail }: Iprops) {
   const [roleName, setRoleName] = useState('');
-  const { roleQuery } = React.useContext(ServiceContext) as ServiceContextType;
 
-  const createRole = roleQuery.userRoleCreate();
-
-  const permissions = [
-    {
-      id: 'manage',
-      label: 'Manage',
-    },
-    {
-      id: 'create',
-      label: 'Create',
-    },
-    {
-      id: 'read',
-      label: 'Read',
-    },
-    {
-      id: 'update',
-      label: 'Update',
-    },
-    {
-      id: 'delete',
-      label: 'Delete',
-    },
-  ] as const;
+  //   const permissions = [
+  //     {
+  //       id: 'manage',
+  //       label: 'Manage',
+  //     },
+  //     {
+  //       id: 'create',
+  //       label: 'Create',
+  //     },
+  //     {
+  //       id: 'read',
+  //       label: 'Read',
+  //     },
+  //     {
+  //       id: 'update',
+  //       label: 'Update',
+  //     },
+  //     {
+  //       id: 'delete',
+  //       label: 'Delete',
+  //     },
+  //   ] as const;
 
   const FormSchema = z.object({
-    permissions: z
-      .array(z.string())
-      .refine((value) => value.some((item) => item), {
-        message: 'You have to select at least one permission.',
-      }),
+    // permissions: z
+    //   .array(z.string())
+    //   .refine((value) => value.some((item) => item), {
+    //     message: 'You have to select at least one permission.',
+    //   }),
     roleName: z.string().min(2, {
       message: 'Role Name must be at least 2 characters.',
     }),
+    isSystem: z.boolean(),
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      permissions: [''],
-      roleName: '',
+      roleName: roleDetail?.name || '',
+      isSystem: roleDetail?.isSystem || false,
     },
   });
 
-  const handleCreateRole = async (data: z.infer<typeof FormSchema>) => {
-    console.log(data);
-
-    createRole
-      .mutateAsync({
-        name: data.roleName,
-        isSystem: false,
-      })
-      .then((data) => {
-        if (data) {
-          toast.success('Role Created Success.');
-        }
-      })
-      .catch((e) => {
-        toast.error(e);
-      });
-  };
+  const handleEditRole = (data: z.infer<typeof FormSchema>) => {};
 
   return (
     <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(handleCreateRole)}
-        className="space-y-8"
-      >
-        <div className="max-w-md mx-auto mt-8 p-6 bg-white ">
-          <h2 className="text-2xl font-bold mb-4">Create New Role</h2>
-          <div className="mb-4">
+      <form onSubmit={form.handleSubmit(handleEditRole)}>
+        <h1 className="text-lg font-semibold mb-6">Edit Role</h1>
+        <div className="p-4 rounded-sm">
+          <div className="grid grid-cols-2 gap-4 mb-4">
             <FormField
               control={form.control}
               name="roleName"
@@ -114,6 +92,21 @@ export default function AddRole() {
           </div>
 
           <FormField
+            control={form.control}
+            name="isSystem"
+            render={({ field }) => (
+              <div className=" flex flex-col space-y-4">
+                <FormLabel>System</FormLabel>
+                <Switch
+                  {...field}
+                  value={field.value ? 'true' : 'false'}
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+              </div>
+            )}
+          />
+          {/* <FormField
             control={form.control}
             name="permissions"
             render={() => (
@@ -157,10 +150,10 @@ export default function AddRole() {
                 <FormMessage />
               </FormItem>
             )}
-          />
-          <Button className="bg-blue-500 mt-4 text-white px-4 py-2 rounded-md hover:bg-blue-600">
-            Create Role
-          </Button>
+          /> */}
+          <div className="flex justify-end">
+            <Button type="submit">Update Role</Button>
+          </div>
         </div>
       </form>
     </Form>

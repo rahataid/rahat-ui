@@ -36,7 +36,7 @@ export default function VendorsDetailSplitView({
   };
   return (
     <>
-      <div className="flex justify-between p-4 pt-5 bg-secondary">
+      <div className="flex justify-between p-4 pt-5 bg-secondary border-b">
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger onClick={closeSecondPanel}>
@@ -81,7 +81,7 @@ export default function VendorsDetailSplitView({
         <div className="flex items-center gap-2">
           <Image
             className="rounded-full"
-            src="/svg/funny-cat.svg"
+            src="/profile.png"
             alt="cat"
             height={80}
             width={80}

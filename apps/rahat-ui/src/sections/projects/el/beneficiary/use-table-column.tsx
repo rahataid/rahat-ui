@@ -56,16 +56,16 @@ export const useProjectBeneficiaryTableColumns = () => {
       enableHiding: false,
     },
     {
-      accessorKey: 'name',
+      accessorKey: 'wallet',
       header: 'Wallet',
       cell: ({ row }) => (
         <TooltipProvider delayDuration={100}>
           <Tooltip>
             <TooltipTrigger
               className="flex items-center gap-3 cursor-pointer"
-              onClick={() => clickToCopy(row.getValue('name'), row.index)}
+              onClick={() => clickToCopy(row.getValue('wallet'), row.index)}
             >
-              <p>{truncateEthAddress(row.getValue('name'))}</p>
+              <p>{truncateEthAddress(row.getValue('wallet'))}</p>
               {walletAddressCopied === row.index ? (
                 <CopyCheck size={15} strokeWidth={1.5} />
               ) : (
@@ -80,6 +80,11 @@ export const useProjectBeneficiaryTableColumns = () => {
           </Tooltip>
         </TooltipProvider>
       ),
+    },
+    {
+      accessorKey: 'name',
+      header: 'Name',
+      cell: ({ row }) => <div> {row.getValue('name')}</div>,
     },
     {
       accessorKey: 'type',
@@ -107,11 +112,6 @@ export const useProjectBeneficiaryTableColumns = () => {
       accessorKey: 'phone',
       header: 'Phone',
       cell: ({ row }) => <div> {row.getValue('phone')}</div>,
-    },
-    {
-      accessorKey: 'redemption',
-      header: 'Redemption',
-      cell: ({ row }) => <div> {row.getValue('redemption')}</div>,
     },
     {
       accessorKey: 'gender',

@@ -60,6 +60,7 @@ export function ServiceProvider({ children }: ServiceProviderProps) {
 
   useEffect(() => {
     if (!commsQueryClient) {
+      // ts-ignore
       setCommsQueryClient(qc);
     }
   }, [qc, commsQueryClient, setCommsQueryClient]);
@@ -107,7 +108,14 @@ export function ServiceProvider({ children }: ServiceProviderProps) {
     }
   }, [communicationService]);
 
-  if (!rumsanService || !queryClient || !communicationService)
+  console.log('first', commsQueryClient);
+
+  if (
+    !rumsanService &&
+    !queryClient &&
+    !communicationService &&
+    !commsQueryClient
+  )
     return (
       <div className="h-screen flex items-center justify-center">
         <Image

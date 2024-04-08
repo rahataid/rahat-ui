@@ -271,9 +271,6 @@ export default function AddFieldDefinitions() {
               </>
             )}
             <div className="flex justify-end">
-              {/* <Button type="button" onClick={addKeyValueField}>
-                Add Key-Value Field
-              </Button> */}
               <Button type="submit">Create Field Definition</Button>
             </div>
           </div>

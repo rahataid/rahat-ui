@@ -138,8 +138,6 @@ function BeneficiaryDetailTableView() {
     [filters, setFilters],
   );
 
-  console.log('projectBeneficiaries.data', projectBeneficiaries.data);
-
   const table = useReactTable({
     manualPagination: true,
     data: projectBeneficiaries?.data?.data || [],
@@ -170,9 +168,6 @@ function BeneficiaryDetailTableView() {
       contractAddress: contractAddress.elproject.address,
     });
   };
-
-  console.log('Beneficiary data', projectBeneficiaries?.data?.data);
-  console.log('Table data', table.getRowModel().rows);
 
   return (
     <>

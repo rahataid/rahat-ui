@@ -115,11 +115,11 @@ export const useNavItems = () => {
       title: 'Close Project',
       text: "Are you sure you want to close the project? You won't be able to access any project actions",
       showCancelButton: true,
-      confirmButtonText: 'Lock',
+      confirmButtonText: 'Close',
     });
     if (value) {
       closeProject.writeContractAsync({
-        address: '0x9C8Ee9931BEc18EA883c8F23c7427016bBDeF171',
+        address: contractSettings?.elproject?.address,
       });
     }
   };

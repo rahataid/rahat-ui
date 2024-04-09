@@ -159,7 +159,7 @@ export default function EditFieldDefinition({
                 control={form.control}
                 name="isActive"
                 render={({ field }) => (
-                  <div className="flex flex-col justify-evenly items-left">
+                  <div className="flex flex-col items-left">
                     <Label className="text-xs font-medium">isActive</Label>
                     <Switch
                       {...field}
@@ -175,8 +175,9 @@ export default function EditFieldDefinition({
                   </div>
                 )}
               />
-
-              <div className="grid grid-cols-2 gap-4">
+              <Label className="text-xs font-medium mt-3">Field Populate</Label>
+              <div></div>
+              <div className="grid grid-cols-2 gap-3">
                 {form.watch('fieldPopulate').map((item: any, index: number) => (
                   <React.Fragment key={index}>
                     <FormField

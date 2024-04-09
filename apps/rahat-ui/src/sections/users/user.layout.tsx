@@ -5,7 +5,7 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from '@rahat-ui/shadcn/src/components/ui/resizable';
-import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+// import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { FC } from 'react';
 import { NavItem } from './nav-items.types';
 import UserNavView from './user.nav.view';
@@ -18,8 +18,9 @@ type UserLayoutProps = {
 const UserLayout: FC<UserLayoutProps> = ({ children, menuItems }) => {
   const renderResizablePanel = (children: React.ReactNode, index?: number) => {
     return (
-      <ResizablePanel key={index}>
-        <ScrollArea className="h-[calc(100vh-66px)]">{children}</ScrollArea>
+      <ResizablePanel minSize={30} key={index}>
+        {children}
+        {/* <ScrollArea className="h-[calc(100vh-66px)]">{children}</ScrollArea> */}
       </ResizablePanel>
     );
   };

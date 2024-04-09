@@ -25,9 +25,8 @@ import {
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { CAMPAIGN_TYPES } from '@rahat-ui/types';
-import { Transport } from '@rumsan/communication';
 import { format } from 'date-fns';
-import { CalendarIcon } from 'lucide-react';
+import { CalendarIcon, Loader } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { FC } from 'react';
 import { UseFormReturn, useForm } from 'react-hook-form';
@@ -44,6 +43,7 @@ type CampaignFormProps = {
   setShowAddAudience: () => void;
   showAddAudience: boolean;
   data?: any;
+  isSubmitting?: boolean;
 
   // Add more props here
 };
@@ -56,6 +56,7 @@ const CampaignForm: FC<CampaignFormProps> = ({
   setShowAddAudience,
   showAddAudience,
   data,
+  isSubmitting,
 }) => {
   const router = useRouter();
   const includeMessage = ['sms', 'whatsapp', 'email'].includes(
@@ -222,9 +223,15 @@ const CampaignForm: FC<CampaignFormProps> = ({
             >
               {showAddAudience ? 'Hide Audiences' : 'Show Audiences'}
             </Button>
-            <Button type="submit" variant={'default'} disabled={loading}>
-              {title}
-            </Button>
+            {isSubmitting ? (
+              <Button variant={'default'} disabled={true}>
+                <Loader />
+              </Button>
+            ) : (
+              <Button type="submit" variant={'default'} disabled={loading}>
+                {title}
+              </Button>
+            )}
           </div>
         </div>
       </div>

@@ -38,6 +38,7 @@ export default function EditCampaign() {
     Array<{ id: number; phone: string; name: string }>
   >([]);
   const [globalFilter, setGlobalFilter] = React.useState('');
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
 
   const { data: transportData } = useListTransport();
   const { data: audienceData } = useListAudience();
@@ -115,6 +116,7 @@ export default function EditCampaign() {
   }, [data, form]);
 
   const handleEditCampaign = async (data: z.infer<typeof FormSchema>) => {
+    setIsSubmitting(true);
     let transportId;
     transportData?.data.map((tdata) => {
       if (tdata.name.toLowerCase() === data.campaignType.toLowerCase()) {
@@ -163,11 +165,15 @@ export default function EditCampaign() {
         id: params.id,
       })
       .then((data) => {
+        setIsSubmitting(false);
+
         if (data) {
           toast.success('Campaign Edit Success.');
         }
       })
       .catch((e) => {
+        setIsSubmitting(false);
+
         toast.error(e);
       });
   };
@@ -201,7 +207,6 @@ export default function EditCampaign() {
   });
 
   const showAddAudienceView = useBoolean(false);
-  console.log(selectedRows);
 
   return (
     <>
@@ -220,6 +225,7 @@ export default function EditCampaign() {
               showAddAudience={showAddAudienceView.value}
               form={form}
               data={data}
+              isSubmitting={isSubmitting}
             />
             {showAddAudienceView.value ? (
               <>

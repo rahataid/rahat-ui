@@ -72,10 +72,7 @@ const InfoCard: React.FC<IProps> = ({
             </SelectTrigger>
             <SelectContent>
               <Dialog>
-                <DialogTrigger
-                  disabled={true}
-                  className="hover:bg-muted p-1 rounded text-sm text-left w-full"
-                >
+                <DialogTrigger className="hover:bg-muted p-1 rounded text-sm text-left w-full">
                   Trigger Campaign
                 </DialogTrigger>
                 <DialogContent>

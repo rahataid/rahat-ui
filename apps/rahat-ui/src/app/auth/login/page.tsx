@@ -29,7 +29,7 @@ export default function AuthPage() {
       error: state.error,
     }));
 
-  const { mutateAsync: requestOtp, isSuccess } = useRequestOtp();
+  const { mutateAsync: requestOtp, isSuccess,isPending } = useRequestOtp();
   const { mutateAsync: verifyOtp } = useVerifyOtp();
 
   const onRequestOtp = async (e: React.SyntheticEvent) => {
@@ -98,7 +98,7 @@ export default function AuthPage() {
                     {error?.response?.data?.message}
                   </p>
                 )}
-                <Button type="submit">Send OTP</Button>
+                <Button type="submit" disabled={isPending }>Send OTP</Button>
               </div>
             </form>
           ) : (

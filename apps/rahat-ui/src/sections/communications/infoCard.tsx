@@ -65,39 +65,44 @@ const InfoCard: React.FC<IProps> = ({
     <Card className="shadow-md">
       <CardHeader className="flex flex-row justify-between">
         <CardTitle>{name}</CardTitle>
-        <Select>
-          <SelectTrigger className="w-24">
-            <SelectValue placeholder="Action" />
-          </SelectTrigger>
-          <SelectContent>
-            <Dialog>
-              <DialogTrigger className="hover:bg-muted p-1 rounded text-sm text-left w-full">
-                Trigger Campaign
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Trigger Campaign</DialogTitle>
-                  <DialogDescription>Are you sure??</DialogDescription>
-                </DialogHeader>
-                <DialogFooter className="sm:justify-end">
-                  <DialogClose asChild>
-                    <Button type="button" variant="ghost">
-                      Close
+        {status !== 'COMPLETED' && (
+          <Select>
+            <SelectTrigger className="w-24">
+              <SelectValue placeholder="Action" />
+            </SelectTrigger>
+            <SelectContent>
+              <Dialog>
+                <DialogTrigger
+                  disabled={true}
+                  className="hover:bg-muted p-1 rounded text-sm text-left w-full"
+                >
+                  Trigger Campaign
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Trigger Campaign</DialogTitle>
+                    <DialogDescription>Are you sure??</DialogDescription>
+                  </DialogHeader>
+                  <DialogFooter className="sm:justify-end">
+                    <DialogClose asChild>
+                      <Button type="button" variant="ghost">
+                        Close
+                      </Button>
+                    </DialogClose>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      className="text-primary"
+                      onClick={() => handleChange('trigger')}
+                    >
+                      Trigger
                     </Button>
-                  </DialogClose>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    className="text-primary"
-                    onClick={() => handleChange('trigger')}
-                  >
-                    Trigger
-                  </Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
-          </SelectContent>
-        </Select>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            </SelectContent>
+          </Select>
+        )}
       </CardHeader>
       <CardContent>
         <div className="flex justify-between gap-4 flex-wrap">

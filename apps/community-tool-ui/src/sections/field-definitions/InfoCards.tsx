@@ -1,6 +1,7 @@
 import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
+import { FieldDefinition } from '@rahataid/community-tool-sdk/fieldDefinitions';
 
-export default function InfoCards({ data }) {
+export default function InfoCards({ data }: { data: FieldDefinition }) {
   return (
     <div className="grid grid-cols-1 gap-4 p-2">
       <Card className="shadow-md rounded-sm">
@@ -28,21 +29,20 @@ export default function InfoCards({ data }) {
                 </p>
               </div>
             </div>
-            {/* <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-2">
               <div>
-                {data?.fieldPopulate?.length > 0 && (
+                {data?.fieldPopulate?.data?.length > 0 && (
                   <>
-                    {Object.values(data.fieldPopulate).map(
-                      (field: any, index: number) =>
-                        field && <li key={index}>{field}</li>,
-                    )}
+                    {data.fieldPopulate.data.map((item: any, key: number) => (
+                      <li key={key}>{item.value}</li>
+                    ))}
                     <p className="text-sm font-normal text-muted-foreground">
                       Field Populate
                     </p>
                   </>
                 )}
               </div>
-            </div> */}
+            </div>
           </div>
         </CardContent>
       </Card>

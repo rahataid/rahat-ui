@@ -12,7 +12,7 @@ import {
 import {
   attachedRawData,
   exportInvalidDataToExcel,
-  extractInvalidData,
+  splitValidAndInvalid,
   includeOnlySelectedTarget,
   removeFieldsWithUnderscore,
   splitFullName,
@@ -28,6 +28,7 @@ import InfoBox from './InfoBox';
 
 import { useRSQuery } from '@rumsan/react-query';
 import ColumnMappingTable from './ColumnMappingTable';
+import { isFn } from 'react-toastify/dist/utils';
 
 interface IProps {
   extraFields: string[];
@@ -197,28 +198,26 @@ export default function BenImp({ extraFields }: IProps) {
   };
 
   const handleImportNowClick = async () => {
-    const _text =
-      duplicateCount > 0
-        ? `${duplicateCount} existing beneficiaries will be updated!`
-        : 'No duplicate found!';
+    // let _text =
+    //   duplicateCount > 0
+    //     ? `${duplicateCount} existing beneficiaries will be updated!`
+    //     : 'No duplicate found!';
     const dialog = await Swal.fire({
       title: `${processedData.length} Beneficiaries will be imported!`,
-      text: _text,
       showCancelButton: true,
       confirmButtonText: 'Proceed',
     });
+    console.log('Valid Benef', validBenef);
     if (dialog.isConfirmed) {
-      if (validBenef.length) {
-        const sourcePayload = {
-          action: IMPORT_ACTION.IMPORT,
-          name: importSource,
-          importId,
-          uniqueField,
-          fieldMapping: { data: validBenef, sourceTargetMappings: mappings },
-        };
-        return createImportSource(sourcePayload);
-      }
-      return validateOrImport(IMPORT_ACTION.IMPORT);
+      if (!validBenef.length) return validateOrImport(IMPORT_ACTION.IMPORT);
+      const sourcePayload = {
+        action: IMPORT_ACTION.IMPORT,
+        name: importSource,
+        importId,
+        uniqueField,
+        fieldMapping: { data: validBenef, sourceTargetMappings: mappings },
+      };
+      return createImportSource(sourcePayload);
     }
   };
 
@@ -335,28 +334,35 @@ export default function BenImp({ extraFields }: IProps) {
 
   const resetStates = () => {
     setValidBenef([]);
+    setValidBenef([]);
     setProcessedData([]);
     setCurrentScreen(BENEF_IMPORT_SCREENS.SELECTION);
     setRawData([]);
     setMappings([]);
     setInvalidFields([]);
+    setUniqueField('');
   };
 
   const handleBackClick = () => {
+    setValidBenef([]);
     setCurrentScreen(BENEF_IMPORT_SCREENS.SELECTION);
     setUniqueField('');
     setRawData([]);
   };
 
-  const handleExportInvalidClick = () => {
-    const { invalidData, validData } = extractInvalidData(
+  const handleExportInvalidClick = async () => {
+    const { invalidData, validData } = splitValidAndInvalid(
       processedData,
       invalidFields,
     );
     setValidBenef(validData);
     setProcessedData(validData);
     setInvalidFields([]);
-    return exportInvalidDataToExcel(invalidData);
+    await exportInvalidDataToExcel(invalidData);
+    if (!validData.length) {
+      setUniqueField('');
+      setCurrentScreen(BENEF_IMPORT_SCREENS.SELECTION);
+    }
   };
 
   if (extraFields.length) BENEF_DB_FIELDS.push(...extraFields);
@@ -427,7 +433,7 @@ export default function BenImp({ extraFields }: IProps) {
         {currentScreen === BENEF_IMPORT_SCREENS.IMPORT_DATA && (
           <>
             {invalidFields.length > 0 ? (
-              <ErrorAlert message="Fieds with * have failed validation" />
+              <ErrorAlert message="Fieds with * have failed validation. Highlighted rows are duplicate!" />
             ) : (
               <InfoBox
                 title="Import Beneficiary"

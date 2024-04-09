@@ -182,7 +182,7 @@ export default function TextTable() {
         )
       : [];
 
-    campaignStore.setTotalTextCampaign(result?.length);
+    campaignStore.setTotalTextCampaign(data?.response?.meta?.total || 0);
     return result;
   }, [isSuccess]);
 

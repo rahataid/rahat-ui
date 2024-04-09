@@ -6,22 +6,12 @@ import AddForm from './add-form';
 import { z } from 'zod';
 import { FormProvider, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import {
-  FilterFn,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  PaginationState,
-  useReactTable,
-} from '@tanstack/react-table';
+
 import { useAudienceColumns } from './use-audience-columns';
-import { Separator } from '@rahat-ui/shadcn/src/components/ui/separator';
 import AddAudience from './add-audiences';
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 import { Audience, CAMPAIGN_TYPES } from '@rahat-ui/types';
 import { toast } from 'react-toastify';
-import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import {
   useListTransport,
   useListAudience,
@@ -29,15 +19,13 @@ import {
   useCreateCampaign,
   useCreateAudience,
 } from '@rumsan/communication-query';
-import {
-  RankingInfo,
-  rankItem,
-  compareItems,
-} from '@tanstack/match-sorter-utils';
+
 import { useRouter } from 'next/navigation';
 import { paths } from 'apps/rahat-ui/src/routes/paths';
 import { useBeneficiaryPii, usePagination } from '@rahat-ui/query';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
+import { useAudienceTable } from './use-audience-table';
+
 const FormSchema = z.object({
   campaignName: z.string().min(2, {
     message: 'Campaign Name must be at least 2 characters.',
@@ -70,18 +58,22 @@ export type SelectedRowType = {
 const AddCampaignView = () => {
   const {
     pagination,
-    selectedListItems,
-    setSelectedListItems,
+    filters,
+    setFilters,
     setNextPage,
     setPrevPage,
     setPerPage,
   } = usePagination();
   const { data: transportData } = useListTransport();
   const { data: audienceData } = useListAudience();
+
   const { data: audioData } = useGetAudio();
   const createCampaign = useCreateCampaign();
   const createAudience = useCreateAudience();
-  const { data: beneficiaryData } = useBeneficiaryPii(pagination);
+  const { data: beneficiaryData } = useBeneficiaryPii({
+    ...pagination,
+    ...filters,
+  });
   const [rowSelection, setRowSelection] = React.useState({});
   const [selectedRows, setSelectedRows] = React.useState<SelectedRowType[]>([]);
   const [globalFilter, setGlobalFilter] = React.useState('');
@@ -117,43 +109,16 @@ const AddCampaignView = () => {
       }))
     );
   }, [beneficiaryData]);
-  const audienceFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
-    // Rank the item
-    let itemRank = rankItem(row.getValue(columnId), value);
-    if (!itemRank.passed) {
-      itemRank = rankItem(row.getValue('phone'), value); //TODO:make dynamic
-    }
 
-    // Store the itemRank info
-    addMeta({
-      itemRank,
-    });
-
-    // Return if the item should be filtered in/out
-    return itemRank.passed;
-  };
-  const table = useReactTable({
-    manualPagination: true,
-    data: tableData || [],
+  const table = useAudienceTable({
+    columnVisibility,
     columns,
-    getCoreRowModel: getCoreRowModel(),
-    onGlobalFilterChange: setGlobalFilter,
-    globalFilterFn: audienceFilter,
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    onColumnVisibilityChange: setColumnVisibility,
-    getFilteredRowModel: getFilteredRowModel(),
-    onRowSelectionChange: setRowSelection,
-    getRowId: (row) => row.id,
-
-    filterFns: {
-      fuzzy: audienceFilter,
-    },
-    state: {
-      globalFilter,
-      columnVisibility,
-      rowSelection,
-    },
+    globalFilter,
+    rowSelection,
+    setColumnVisibility,
+    setGlobalFilter,
+    setRowSelection,
+    tableData,
   });
 
   const handleCreateCampaign = async (
@@ -220,7 +185,6 @@ const AddCampaignView = () => {
       >
         <AddForm
           title="Add Campaign"
-          transports={transportData?.data || []}
           audios={audioData?.data || []}
           setShowAddAudience={showAddAudienceView.onToggle}
           showAddAudience={showAddAudienceView.value}
@@ -228,19 +192,16 @@ const AddCampaignView = () => {
         />
         {showAddAudienceView.value ? (
           <>
-            <div className="flex justify-between m-2">
-              <Input
-                placeholder="Filter beneficiary..."
-                value={globalFilter ?? ''}
-                onChange={(value) => {
-                  setGlobalFilter(value.target.value);
-                }}
-                className="max-w-sm mr-3 ml-4"
-              />
-              <p className="mr-6">Audience selected: {selectedRows.length}</p>
-            </div>
-
-            <AddAudience table={table} columns={columns} form={form} />
+            <AddAudience
+              table={table}
+              columns={columns}
+              form={form}
+              filters={filters}
+              setFilters={setFilters}
+              globalFilter={globalFilter}
+              setGlobalFilter={setGlobalFilter}
+              selectedRows={selectedRows}
+            />
             <CustomPagination
               meta={
                 beneficiaryData?.response?.meta || { total: 0, currentPage: 0 }

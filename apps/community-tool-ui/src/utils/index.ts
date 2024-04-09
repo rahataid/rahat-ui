@@ -72,17 +72,19 @@ export const truncatedText = (text: string, maxLen: number) => {
   return text.length > maxLen ? text.substring(0, maxLen) + '...' : text;
 };
 
-export const extractInvalidData = (payload: [], errors: []) => {
+export const splitValidAndInvalid = (payload: [], errors: []) => {
   const invalidData = [] as any;
   const validData = [] as any;
 
   payload.forEach((p: any) => {
     const error = errors.find((error: any) => error.uuid === p.uuid);
-    if (error) {
+    if (error || p.isDuplicate) {
       if (p.uuid) delete p.uuid;
       if (p.rawData) delete p.rawData;
+      if (p.hasOwnProperty('isDuplicate')) delete p.isDuplicate;
       invalidData.push(p);
     } else {
+      if (p.hasOwnProperty('isDuplicate')) delete p.isDuplicate;
       validData.push(p);
     }
   });

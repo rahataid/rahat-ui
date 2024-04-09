@@ -276,6 +276,8 @@ export const useProject = (
 };
 
 type GetProjectBeneficiaries = Pagination & {
+  order?: 'asc' | 'desc';
+  sort?: string;
   status?: string;
   projectUUID: UUID;
 };
@@ -293,19 +295,6 @@ export const useProjectBeneficiaries = (payload: GetProjectBeneficiaries) => {
 
   const query = useQuery({
     queryKey: [MS_ACTIONS.BENEFICIARY.LIST_BY_PROJECT, restPayloadString],
-
-    // select(data) {
-    //   return {
-    //     ...data,
-    //     data: data.data.map((row: any) => ({
-    //       wallet: row.Beneficiary.walletAddress,
-    //       name: row.piiData.name,
-    //       gender: row.Beneficiary.gender,
-    //       phone: row.piiData.phone || 'N/A',
-    //       type: row.Beneficiary.type || 'N/A',
-    //     })),
-    //   };
-    // },
     placeholderData: keepPreviousData,
     queryFn: async () => {
       const mutate = await q.mutateAsync({

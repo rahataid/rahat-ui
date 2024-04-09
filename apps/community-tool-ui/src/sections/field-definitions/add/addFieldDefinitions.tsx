@@ -42,6 +42,7 @@ export default function AddFieldDefinitions() {
     name: z.string().min(1),
     fieldType: z.string().toUpperCase(),
     isActive: z.boolean(),
+    isTargeting: z.boolean(),
     field: z
       .array(
         z.object({
@@ -60,6 +61,7 @@ export default function AddFieldDefinitions() {
       name: '',
       fieldType: FieldType.TEXT,
       isActive: true,
+      isTargeting: false,
       field: [],
     },
   });
@@ -85,6 +87,7 @@ export default function AddFieldDefinitions() {
         name: data.name,
         fieldType: data.fieldType as FieldType,
         isActive: data.isActive,
+        isTargeting: data.isTargeting,
         fieldPopulate: { data: fieldPopulatePayload } || [],
       };
 
@@ -188,7 +191,22 @@ export default function AddFieldDefinitions() {
                     <Label>isActive</Label>
                     <Switch
                       {...field}
-                      value={field.value ? 'true' : 'false'}
+                      value={field.value ? 'false' : 'true'}
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </div>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="isTargeting"
+                render={({ field }) => (
+                  <div className=" flex flex-row items-center gap-4 m-1">
+                    <Label>isTargeting</Label>
+                    <Switch
+                      {...field}
+                      value={field.value ? 'false' : 'true'}
                       checked={field.value}
                       onCheckedChange={field.onChange}
                     />

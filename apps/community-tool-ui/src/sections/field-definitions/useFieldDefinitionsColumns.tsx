@@ -23,6 +23,13 @@ export const useFieldDefinitionsTableColumns = () => {
         <div>{row.getValue('isActive') ? 'True' : 'False'}</div>
       ),
     },
+    // {
+    //   accessorKey: 'isTargeting',
+    //   header: 'isTargeting',
+    //   cell: ({ row }) => (
+    //     <div>{row.getValue('isTargeting') ? 'True' : 'False'}</div>
+    //   ),
+    // },
     {
       id: 'actions',
       enableHiding: false,

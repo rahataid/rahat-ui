@@ -31,6 +31,14 @@ export default function InfoCards({ data }: { data: FieldDefinition }) {
             </div>
             <div className="flex flex-col gap-2">
               <div>
+                <p>{data?.isTargeting ? 'True' : 'False'}</p>
+                <p className="text-sm font-normal text-muted-foreground">
+                  isTargeting
+                </p>
+              </div>
+            </div>
+            <div className="flex flex-col gap-2">
+              <div>
                 {data?.fieldPopulate?.data?.length > 0 && (
                   <>
                     {data.fieldPopulate.data.map((item: any, key: number) => (

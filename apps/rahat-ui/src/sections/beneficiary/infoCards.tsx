@@ -188,8 +188,7 @@ export default function InfoCards() {
               })
             ) : (
               <p className="text-sm text-muted-foreground">
-                {/* No projects involved */}
-                Work in progress
+                No projects involved
               </p>
             )}
           </CardContent>

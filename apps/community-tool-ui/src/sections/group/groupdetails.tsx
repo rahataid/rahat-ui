@@ -59,12 +59,10 @@ export default function GroupDetail({ data, handleClose }: IProps) {
   });
 
   const handleClick = async () => {
-    const k = responseByUUID?.data?.beneficiariesGroup?.map(
-      (item) => item.beneficiary,
-    );
-    // const response = await rumsanService.client.post('/group/download', k, {
-    //   responseType: 'arraybuffer',
-    // });
+    const k = responseByUUID?.data?.beneficiariesGroup?.map((item) => {
+      const groupName = data?.name;
+      return { ...item.beneficiary, groupName };
+    });
     const response = await download.mutateAsync({
       groupedBeneficiaries: k,
       config: { responseType: 'arraybuffer' },

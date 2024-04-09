@@ -49,26 +49,6 @@ export const useFieldDefinitionsTableColumns = () => {
       ),
     },
     {
-      accessorKey: 'fieldPopulate',
-      header: 'Field Populate',
-      cell: ({ row }) => {
-        const fieldPopulate =
-          row?.original?.fieldPopulate &&
-          row?.original?.fieldPopulate?.length > 0
-            ? Object.values(row.original.fieldPopulate)
-            : [];
-
-        return (
-          <div>
-            {fieldPopulate?.map(
-              (field: any, index: number) =>
-                field && <li key={index}>{field}</li>,
-            )}
-          </div>
-        );
-      },
-    },
-    {
       id: 'actions',
       enableHiding: false,
       cell: () => {

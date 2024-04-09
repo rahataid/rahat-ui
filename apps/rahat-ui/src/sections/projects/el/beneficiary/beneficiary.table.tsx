@@ -171,7 +171,7 @@ function BeneficiaryDetailTableView() {
 
   return (
     <>
-      <div className="w-full h-full p-2 bg-secondary">
+      <div className="p-2 bg-secondary">
         <div className="flex items-center mb-2">
           <Input
             placeholder="Filter name..."

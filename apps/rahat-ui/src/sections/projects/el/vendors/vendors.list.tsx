@@ -104,79 +104,6 @@ export default function VendorsList() {
     setData(filteredData);
   };
 
-  // const fetchBeneficiary = React.useCallback(() => {
-  //   // const querRes = queryService.useProjectTransaction();
-
-  //   const querRes = queryService.useBeneficiaryTransaction(walletAddress);
-
-  //   querRes.then((res) => {
-  //     const claimedAssigned = res?.claimAssigneds;
-  //     const claimProcessed = res?.projectClaimProcesseds;
-  //     const beneficiaryReferred = res?.beneficiaryReferreds;
-  //     const beneficiaryAdded = res?.beneficiaryAddeds;
-  //     const claimCreated = res?.claimCreateds;
-  //     const tokenBudgetIncrease = res?.tokenBudgetIncreases;
-  //     const data: any = [];
-
-  //     claimedAssigned?.map((trans) => {
-  //       data.push({
-  //         beneficiary: trans.beneficiary,
-  //         topic: trans.eventType,
-  //         timestamp: formatDate(trans.blockTimestamp),
-  //         txHash: trans.transactionHash,
-  //         voucherId: trans.tokenAddress,
-  //       });
-  //       // const claimRes = queryService?.useClaimAssigned(trans.id);
-  //     });
-  //     claimProcessed?.map((trans) => {
-  //       data.push({
-  //         beneficiary: trans.beneficiary,
-  //         topic: trans.eventType,
-  //         timestamp: formatDate(trans.blockTimestamp),
-  //         txHash: trans.transactionHash,
-  //         voucherId: trans.token,
-  //       });
-  //     });
-  //     beneficiaryReferred?.map((trans) => {
-  //       data.push({
-  //         beneficiary: trans.referrerBeneficiaries,
-  //         topic: trans.eventType,
-  //         timestamp: formatDate(trans.blockTimestamp),
-  //         txHash: trans.transactionHash,
-  //       });
-  //     });
-
-  //     claimCreated?.map((trans) => {
-  //       data.push({
-  //         beneficiary: trans.claimer,
-  //         txHash: trans.transactionHash,
-  //         timestamp: formatDate(trans.blockTimestamp),
-  //         topic: trans?.eventType,
-  //         voucherId: trans.token,
-  //       });
-  //     });
-
-  //     beneficiaryAdded?.map((trans) => {
-  //       data.push({
-  //         topic: trans.eventType,
-  //         timestamp: formatDate(trans.blockTimestamp),
-  //         txHash: trans.transactionHash,
-  //         beneficiary: trans.beneficiaryAddress,
-  //       });
-  //     });
-
-  //     tokenBudgetIncrease?.map((trans) => {
-  //       data.push({
-  //         topic: trans.eventType,
-  //         txHash: trans.transactionHash,
-  //         timestamp: formatDate(trans.blockTimestamp),
-  //         voucherId: trans?.tokenAddress,
-  //       });
-  //     });
-  //     setData(data);
-  //   });
-  // }, [queryService]);
-
   React.useEffect(() => {
     fetchVendors();
   }, []);
@@ -239,7 +166,15 @@ export default function VendorsList() {
                     colSpan={columns.length}
                     className="h-24 text-center"
                   >
-                    No results.
+                    {getVendors.isPending ? (
+                      <div className="flex items-center justify-center space-x-2 h-full">
+                        <div className="h-5 w-5 animate-bounce rounded-full bg-primary [animation-delay:-0.3s]"></div>
+                        <div className="h-5 w-5 animate-bounce rounded-full bg-primary [animation-delay:-0.13s]"></div>
+                        <div className="h-5 w-5 animate-bounce rounded-full bg-primary"></div>
+                      </div>
+                    ) : (
+                      'No data available.'
+                    )}
                   </TableCell>
                 </TableRow>
               )}

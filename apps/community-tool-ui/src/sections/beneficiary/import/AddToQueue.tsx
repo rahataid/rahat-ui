@@ -8,6 +8,7 @@ interface IProps {
   handleImportClick: any;
   invalidFields: any;
   handleExportInvalidClick: any;
+  hasDuplicate: boolean;
 }
 
 export default function AddToQueue({
@@ -16,6 +17,7 @@ export default function AddToQueue({
   handleImportClick,
   invalidFields,
   handleExportInvalidClick,
+  hasDuplicate,
 }: IProps) {
   console.log('Invalid Fields', invalidFields);
   const mappedData =
@@ -33,8 +35,6 @@ export default function AddToQueue({
     } else return item[key];
   }
 
-  console.log('Processed Data', data);
-
   return (
     <div className="relative mt-5">
       <div className="flex mb-5 justify-between m-2">
@@ -46,7 +46,7 @@ export default function AddToQueue({
         </Button>
         <div>
           <Button
-            disabled={!invalidFields.length}
+            disabled={!invalidFields.length && !hasDuplicate}
             onClick={handleExportInvalidClick}
             className="w-40 mr-2 bg-secondary hover:ring-2bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow"
           >
@@ -54,7 +54,7 @@ export default function AddToQueue({
           </Button>
 
           <Button
-            disabled={invalidFields.length}
+            disabled={invalidFields.length || hasDuplicate}
             onClick={handleImportClick}
             className="w-40 bg-primary hover:ring-2 ring-primary py-2 px-4"
           >

@@ -92,7 +92,7 @@ export const splitValidAndInvalid = (payload: [], errors: []) => {
   return { invalidData, validData };
 };
 
-export const exportInvalidDataToExcel = (data: []) => {
+export const exportDataToExcel = (data: []) => {
   const currentDate = new Date().getTime();
   const fileName = `Invalid_Beneficiary_${currentDate}.xlsx`;
   const worksheet = XLSX.utils.json_to_sheet(data);
@@ -106,4 +106,17 @@ export const exportInvalidDataToExcel = (data: []) => {
   });
 
   saveAs(blob, fileName);
+};
+
+export const formatNameString = (inputString: string) => {
+  // Replace spaces with underscores
+  let stringWithUnderscores = inputString.replace(/ /g, '_');
+  // Replace '.' with underscore
+  let stringWithUnderscoresAndDots = stringWithUnderscores.replace(/\./g, '_');
+  // Remove special characters using regex
+  let stringWithoutSpecialChars = stringWithUnderscoresAndDots.replace(
+    /[^\w\s]/gi,
+    '',
+  );
+  return stringWithoutSpecialChars;
 };

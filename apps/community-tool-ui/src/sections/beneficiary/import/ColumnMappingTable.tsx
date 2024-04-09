@@ -6,13 +6,23 @@ interface ColumnMappingTableProps {
   rawData: any[];
   handleTargetFieldChange: (key: string, value: string) => void;
   uniqueDBFields: string[];
+  mappings: any[];
 }
 
 export default function ColumnMappingTable({
   rawData,
   handleTargetFieldChange,
   uniqueDBFields,
+  mappings,
 }: ColumnMappingTableProps) {
+  function isTargetInDbFields(dbField: string, key: string) {
+    const found = mappings.find((m) => {
+      return m.targetField === dbField && m.sourceField === key;
+    });
+    if (!found) return false;
+    return true;
+  }
+
   return (
     <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
       {rawData.map((item: string, index: number) => {
@@ -40,7 +50,11 @@ export default function ColumnMappingTable({
                           <option value="None">--Choose Field--</option>
                           {uniqueDBFields.map((f: string) => {
                             return (
-                              <option key={f} value={f}>
+                              <option
+                                key={f}
+                                value={f}
+                                selected={isTargetInDbFields(f, key)}
+                              >
                                 {f}
                               </option>
                             );

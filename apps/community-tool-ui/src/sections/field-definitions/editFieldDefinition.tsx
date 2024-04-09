@@ -29,6 +29,7 @@ import {
 } from '@rahat-ui/community-query';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { Switch } from '@rahat-ui/shadcn/src/components/ui/switch';
+import React from 'react';
 
 export default function EditFieldDefinition({
   data,
@@ -42,14 +43,12 @@ export default function EditFieldDefinition({
     name: z.string(),
     fieldType: z.string().toUpperCase(),
     isActive: z.boolean(),
-    // fieldPopulate: z.array(
-    //   z.object({
-    //     data: z.object({
-    //       key: z.string(),
-    //       value: z.string(),
-    //     }),
-    //   }),
-    // ),
+    fieldPopulate: z.array(
+      z.object({
+        key: z.string(),
+        value: z.string(),
+      }),
+    ),
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -58,7 +57,7 @@ export default function EditFieldDefinition({
       name: data?.name || '',
       fieldType: data?.fieldType || '',
       isActive: data?.isActive || false,
-      // fieldPopulate: data?.fieldPopulate,
+      fieldPopulate: data?.fieldPopulate?.data || [],
     },
   });
 
@@ -71,6 +70,7 @@ export default function EditFieldDefinition({
         name: formData?.name,
         fieldType: formData?.fieldType as FieldType,
         isActive: formData?.isActive,
+        fieldPopulate: { data: formData.fieldPopulate },
       },
     });
   };
@@ -175,6 +175,51 @@ export default function EditFieldDefinition({
                   </div>
                 )}
               />
+
+              <div className="grid grid-cols-2 gap-4">
+                {form.watch('fieldPopulate').map((item: any, index: number) => (
+                  <React.Fragment key={index}>
+                    <FormField
+                      control={form.control}
+                      name={`fieldPopulate.${index}.key`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <Label className="text-xs font-medium">{`Field ${
+                            index + 1
+                          } Key`}</Label>
+                          <FormControl>
+                            <Input
+                              type="text"
+                              placeholder={`Field ${index + 1} Key`}
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name={`fieldPopulate.${index}.value`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <Label className="text-xs font-medium">{`Field ${
+                            index + 1
+                          } Value`}</Label>
+                          <FormControl>
+                            <Input
+                              type="text"
+                              placeholder={`Field ${index + 1} Value`}
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </React.Fragment>
+                ))}
+              </div>
             </div>
             <div className="flex justify-end">
               <Button>Update Field Definition</Button>

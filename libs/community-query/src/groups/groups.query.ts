@@ -90,7 +90,8 @@ export const useCommunityGroupedBeneficiariesDownload = () => {
   return useMutation(
     {
       mutationKey: [TAGS.DOWNLOAD_COMMUNITY_GROUPED_BENEFICIARIES],
-      mutationFn: groupClient.download,
+      // mutationFn: groupClient.download, TODO
+      mutationFn: groupClient.remove,
     },
     queryClient,
   );

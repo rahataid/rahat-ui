@@ -43,16 +43,14 @@ export default function AddFieldDefinitions() {
     fieldType: z.string().toUpperCase(),
     isActive: z.boolean(),
     isTargeting: z.boolean(),
-    field: z
-      .array(
-        z.object({
-          value: z.object({
-            key: z.string().min(1, { message: 'Key is required' }),
-            value: z.string().min(1, { message: 'Value is required' }),
-          }),
+    field: z.array(
+      z.object({
+        value: z.object({
+          key: z.string().min(1, { message: 'Key is required' }),
+          value: z.string().min(1, { message: 'Value is required' }),
         }),
-      )
-      .optional(),
+      }),
+    ),
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -112,13 +110,25 @@ export default function AddFieldDefinitions() {
         form.watch('fieldType') === FieldType.RADIO ||
         form.watch('fieldType') === FieldType.DROPDOWN,
     );
-  }, [form.watch('fieldType')]);
+  }, [form.watch('fieldType'), form]);
 
   useEffect(() => {
     if (addFieldDefinitions.isSuccess) {
       form.reset();
     }
   }, [addFieldDefinitions.isSuccess, form]);
+
+  useEffect(() => {
+    if (showKeyValueFields) {
+      if (fields.length === 0) {
+        append({
+          value: { key: '', value: '' },
+        });
+      }
+    } else {
+      form.setValue('field', []);
+    }
+  }, [showKeyValueFields, fields, append, form]);
 
   return (
     <Form {...form}>
@@ -150,7 +160,7 @@ export default function AddFieldDefinitions() {
                     <FormItem>
                       <Select
                         onValueChange={field.onChange}
-                        defaultValue={field.value}
+                        defaultValue={FieldType.TEXT}
                       >
                         <FormControl>
                           <SelectTrigger>
@@ -267,6 +277,7 @@ export default function AddFieldDefinitions() {
                             type="button"
                             onClick={() => remove(index)}
                             className="p-1 text-xs  w-10"
+                            disabled={fields.length === 1}
                           >
                             <Minus size={18} strokeWidth={1.5} />
                           </Button>

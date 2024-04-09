@@ -1,25 +1,12 @@
 'use client';
+import * as React from 'react';
+import { useAssignBenToProject, useBeneficiaryStore } from '@rahat-ui/query';
 import {
-  useAssignBenToProject,
-  useBeneficiaryStore,
-  useProjectList,
-} from '@rahat-ui/query';
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@rahat-ui/shadcn/components/dialog';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@rahat-ui/shadcn/components/select';
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@rahat-ui/shadcn/components/tooltip';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
@@ -30,12 +17,11 @@ import {
 import { truncateEthAddress } from '@rumsan/sdk/utils';
 import { UUID } from 'crypto';
 import { useRouter } from 'next/navigation';
-import * as React from 'react';
 import { useBoolean } from '../../hooks/use-boolean';
 import AssignToProjectModal from './components/assignToProjectModal';
-import { useSwal } from '../../components/swal';
 import ProjectConfirm from './projects.assign.confirm';
 import ProjectAssign from './project.assign.modal';
+import { Copy, CopyCheck } from 'lucide-react';
 
 export default function InfoCards() {
   const addBeneficiary = useAssignBenToProject();
@@ -53,8 +39,8 @@ export default function InfoCards() {
 
   const [selectedRow, setSelectedRow] = React.useState(null) as any;
   const setId = (id: any) => setSelectedRow(id);
-
-
+  const [walletAddressCopied, setWalletAddressCopied] =
+    React.useState<boolean>(false);
 
   const handleAssignProject = async () => {
     if (!selectedProject) {
@@ -83,6 +69,11 @@ export default function InfoCards() {
     projectConfirmModal.onFalse();
   };
 
+  const clickToCopy = (walletAddress: string) => {
+    navigator.clipboard.writeText(walletAddress);
+    setWalletAddressCopied(true);
+  };
+
   return (
     <>
       <AssignToProjectModal
@@ -97,9 +88,7 @@ export default function InfoCards() {
                 <p className="text-xl font-semibold">
                   {data?.piiData?.name ?? 'Beneficiary Name'}
                 </p>
-                <Badge variant="outline" className="bg-secondary">
-                  Not Approved
-                </Badge>
+                <Badge>Active</Badge>
               </div>
               <Button onClick={handleOpenProjectAssignModal}>
                 Assign To Project
@@ -109,7 +98,32 @@ export default function InfoCards() {
           <CardContent>
             <div className="flex justify-between gap-8">
               <div>
-                <p>{truncateEthAddress(data?.walletAddress) ?? 'N/A'}</p>
+                <TooltipProvider delayDuration={100}>
+                  <Tooltip>
+                    <TooltipTrigger
+                      className="flex gap-3 items-center"
+                      onClick={() => clickToCopy(data?.walletAddress || '')}
+                    >
+                      <p className="text-base">
+                        {truncateEthAddress(data?.walletAddress || '-')}
+                      </p>
+                      {walletAddressCopied ? (
+                        <CopyCheck size={15} strokeWidth={1.5} />
+                      ) : (
+                        <Copy
+                          className="text-muted-foreground"
+                          size={15}
+                          strokeWidth={1.5}
+                        />
+                      )}
+                    </TooltipTrigger>
+                    <TooltipContent className="bg-secondary" side="bottom">
+                      <p className="text-xs font-medium">
+                        {walletAddressCopied ? 'copied' : 'click to copy'}
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 <p className="text-sm font-normal text-muted-foreground">
                   Wallet Address
                 </p>

@@ -4,6 +4,7 @@ import {
   GroupResponseById,
   ListGroup,
 } from '@rahataid/community-tool-sdk';
+import { truncateEthAddress } from '@rumsan/sdk/utils';
 import { ColumnDef } from '@tanstack/react-table';
 import { Eye } from 'lucide-react';
 
@@ -77,12 +78,25 @@ export const useCommunityGroupDeailsColumns = () => {
     },
     {
       accessorKey: 'beneficiary',
+      header: 'Phone',
+      cell: ({ row }) => {
+        if (row && row.getValue && typeof row.getValue === 'function') {
+          const beneficiary = row.getValue('beneficiary') as Beneficiary;
+          if (beneficiary && beneficiary.phone) {
+            return beneficiary.phone;
+          }
+        }
+        return 'null';
+      },
+    },
+    {
+      accessorKey: 'beneficiary',
       header: 'WalletAddress',
       cell: ({ row }) => {
         if (row && row.getValue && typeof row.getValue === 'function') {
           const beneficiary = row.getValue('beneficiary') as Beneficiary;
           if (beneficiary && beneficiary.walletAddress) {
-            return beneficiary.walletAddress;
+            return truncateEthAddress(beneficiary.walletAddress);
           }
         }
         return '';
@@ -90,21 +104,43 @@ export const useCommunityGroupDeailsColumns = () => {
     },
     {
       accessorKey: 'beneficiary',
-      header: 'customID',
+      header: 'Gender',
       cell: ({ row }) => {
         if (row && row.getValue && typeof row.getValue === 'function') {
           const beneficiary = row.getValue('beneficiary') as Beneficiary;
-          if (beneficiary && beneficiary.customId) {
-            return beneficiary.customId;
+          if (beneficiary && beneficiary.gender) {
+            return beneficiary.gender;
           }
         }
         return '';
       },
     },
     {
-      accessorKey: 'beneficiaryId',
-      header: 'id',
-      cell: ({ row }) => <div>{row.getValue('beneficiaryId')}</div>,
+      accessorKey: 'beneficiary',
+      header: 'GovernmentIdNumber',
+      cell: ({ row }) => {
+        if (row && row.getValue && typeof row.getValue === 'function') {
+          const beneficiary = row.getValue('beneficiary') as Beneficiary;
+          if (beneficiary && beneficiary.govtIDNumber) {
+            return beneficiary.govtIDNumber;
+          }
+        }
+        return 'null';
+      },
+    },
+    {
+      accessorKey: 'beneficiary',
+      header: 'CreatedAt',
+      cell: ({ row }) => {
+        const beneficiary = row.getValue('beneficiary') as Beneficiary;
+        const changedDate = new Date(beneficiary.createdAt as Date);
+        const formattedDate = changedDate.toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+        });
+        return <div>{formattedDate}</div>;
+      },
     },
   ];
 

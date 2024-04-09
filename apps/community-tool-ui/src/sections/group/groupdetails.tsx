@@ -12,7 +12,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/components/tooltip';
-import { Minus } from 'lucide-react';
+import { Download, Minus } from 'lucide-react';
 
 import { ListGroup } from '@rahataid/community-tool-sdk/groups';
 import {
@@ -25,18 +25,24 @@ import React, { useState } from 'react';
 
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import GroupDetailTable from './group.table';
-import { useCommunityGroupListByID } from '@rahat-ui/community-query';
+import {
+  useCommunityGroupListByID,
+  useCommunityGroupedBeneficiariesDownload,
+} from '@rahat-ui/community-query';
 import { useCommunityGroupDeailsColumns } from './useGroupColumns';
+import { useRSQuery } from '@rumsan/react-query';
 type IProps = {
   data: ListGroup;
   handleClose: VoidFunction;
 };
 
 export default function GroupDetail({ data, handleClose }: IProps) {
+  const { rumsanService } = useRSQuery();
   const { data: responseByUUID } = useCommunityGroupListByID(data?.uuid);
   const columns = useCommunityGroupDeailsColumns();
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
+  const download = useCommunityGroupedBeneficiariesDownload();
 
   const table = useReactTable({
     manualPagination: true,
@@ -51,6 +57,27 @@ export default function GroupDetail({ data, handleClose }: IProps) {
       rowSelection,
     },
   });
+
+  const handleClick = async () => {
+    const k = responseByUUID?.data?.beneficiariesGroup?.map((item) => {
+      const groupName = data?.name;
+      return { ...item.beneficiary, groupName };
+    });
+    const response = await download.mutateAsync({
+      groupedBeneficiaries: k,
+      config: { responseType: 'arraybuffer' },
+    });
+    const blob = new Blob([response.data], {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'beneficiaries.xlsx';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  };
 
   return (
     <>
@@ -74,6 +101,22 @@ export default function GroupDetail({ data, handleClose }: IProps) {
                 </TooltipTrigger>
                 <TooltipContent className="bg-secondary ">
                   <p className="text-xs font-medium">Group Name</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild onClick={handleClick}>
+                  <Download
+                    className="cursor-pointer"
+                    size={18}
+                    strokeWidth={1.6}
+                    color="#007bb6"
+                  />
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Download</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>

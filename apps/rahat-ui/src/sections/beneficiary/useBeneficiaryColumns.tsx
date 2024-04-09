@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { ColumnDef } from '@tanstack/react-table';
-import { Beneficiary } from '@rahataid/sdk/types';
 import { truncateEthAddress } from '@rumsan/sdk/utils';
 import { useSecondPanel } from '../../providers/second-panel-provider';
 import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
@@ -14,6 +13,7 @@ import {
   TooltipTrigger,
   TooltipContent,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
+import { ListBeneficiary } from '@rahat-ui/types';
 
 export const useBeneficiaryTableColumns = () => {
   const { setSecondPanelComponent, closeSecondPanel } = useSecondPanel();
@@ -24,7 +24,16 @@ export const useBeneficiaryTableColumns = () => {
     setWalletAddressCopied(index);
   };
 
-  const columns: ColumnDef<Beneficiary>[] = [
+  const openSplitDetailView = (rowDetail: ListBeneficiary) => {
+    setSecondPanelComponent(
+      <BeneficiaryDetail
+        beneficiaryDetail={rowDetail}
+        closeSecondPanel={closeSecondPanel}
+      />,
+    );
+  };
+
+  const columns: ColumnDef<ListBeneficiary>[] = [
     {
       id: 'select',
       header: ({ table }) => (
@@ -55,7 +64,14 @@ export const useBeneficiaryTableColumns = () => {
       header: 'Name',
       cell: ({ row }) => {
         const piiData = row.getValue('piiData') as any;
-        return <div>{piiData?.name || '-'}</div>;
+        return (
+          <div
+            className="cursor-pointer"
+            onClick={() => openSplitDetailView(row.original)}
+          >
+            {piiData?.name || '-'}
+          </div>
+        );
       },
     },
     {
@@ -115,14 +131,7 @@ export const useBeneficiaryTableColumns = () => {
             size={20}
             strokeWidth={1.5}
             className="cursor-pointer hover:text-primary"
-            onClick={() =>
-              setSecondPanelComponent(
-                <BeneficiaryDetail
-                  beneficiaryDetail={row.original}
-                  closeSecondPanel={closeSecondPanel}
-                />,
-              )
-            }
+            onClick={() => openSplitDetailView(row.original)}
           />
         );
       },

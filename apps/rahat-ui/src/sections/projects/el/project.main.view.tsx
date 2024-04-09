@@ -18,6 +18,7 @@ import {
   useReadElProjectGetProjectVoucherDetail,
   useReadElProjectGetTotalBeneficiaries,
 } from 'apps/rahat-ui/src/hooks/el/contracts/elProject';
+import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 
 const ProjectMainView = () => {
   const { id } = useParams();
@@ -48,15 +49,17 @@ const ProjectMainView = () => {
 
   return (
     <div className="p-2 bg-secondary">
-      <ProjectInfo project={project} />
-      <ProjectDataCard
-        beneficiaryDetails={beneficiaryDetails}
-        projectVoucher={projectVoucher}
-        voucherDetails={voucherDetails}
-        refetchBeneficiary={refetchBeneficiary}
-        refetchVoucher={refetchVoucher}
-      />
-      <ProjectChart chartData={beneficiaryStats.data?.data} />
+      <ScrollArea className="h-[calc(100vh-80px)]">
+        <ProjectInfo project={project} />
+        <ProjectDataCard
+          beneficiaryDetails={beneficiaryDetails}
+          projectVoucher={projectVoucher}
+          voucherDetails={voucherDetails}
+          refetchBeneficiary={refetchBeneficiary}
+          refetchVoucher={refetchVoucher}
+        />
+        <ProjectChart chartData={beneficiaryStats.data?.data} />
+      </ScrollArea>
     </div>
   );
 };

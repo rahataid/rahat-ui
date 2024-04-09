@@ -23,11 +23,24 @@ export const useUserTableColumns = () => {
     setWalletAddressCopied(index);
   };
 
+  const openSplitDetailView = (rowDetail: User) => {
+    setSecondPanelComponent(
+      <UserDetail userDetail={rowDetail} closeSecondPanel={closeSecondPanel} />,
+    );
+  };
+
   const columns: ColumnDef<User>[] = [
     {
       accessorKey: 'name',
       header: 'Name',
-      cell: ({ row }) => <div>{row.getValue('name')}</div>,
+      cell: ({ row }) => (
+        <div
+          className="cursor-pointer"
+          onClick={() => openSplitDetailView(row.original)}
+        >
+          {row.getValue('name')}
+        </div>
+      ),
     },
     {
       accessorKey: 'email',
@@ -69,16 +82,7 @@ export const useUserTableColumns = () => {
             size={20}
             strokeWidth={1.5}
             className="cursor-pointer hover:text-primary"
-            onClick={() =>
-              setSecondPanelComponent(
-                <>
-                  <UserDetail
-                    userDetail={row.original}
-                    closeSecondPanel={closeSecondPanel}
-                  />
-                </>,
-              )
-            }
+            onClick={() => openSplitDetailView(row.original)}
           />
         );
       },

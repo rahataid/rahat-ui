@@ -42,14 +42,14 @@ export default function EditFieldDefinition({
     name: z.string(),
     fieldType: z.string().toUpperCase(),
     isActive: z.boolean(),
-    fieldPopulate: z.array(
-      z.object({
-        data: z.object({
-          key: z.string(),
-          value: z.string(),
-        }),
-      }),
-    ),
+    // fieldPopulate: z.array(
+    //   z.object({
+    //     data: z.object({
+    //       key: z.string(),
+    //       value: z.string(),
+    //     }),
+    //   }),
+    // ),
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -58,7 +58,7 @@ export default function EditFieldDefinition({
       name: data?.name || '',
       fieldType: data?.fieldType || '',
       isActive: data?.isActive || false,
-      fieldPopulate: data?.fieldPopulate,
+      // fieldPopulate: data?.fieldPopulate,
     },
   });
 

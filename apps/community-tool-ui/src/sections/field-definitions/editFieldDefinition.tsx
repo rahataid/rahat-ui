@@ -193,58 +193,59 @@ export default function EditFieldDefinition({
                   </div>
                 )}
               />
-
-              <div className="mt-2">
-                <Label className="text-xs font-medium mt-2">
-                  Field Populate
-                </Label>
-                <div className="grid grid-cols-2 gap-3">
-                  {form
-                    .watch('fieldPopulate')
-                    .map((item: any, index: number) => (
-                      <React.Fragment key={index}>
-                        <FormField
-                          control={form.control}
-                          name={`fieldPopulate.${index}.key`}
-                          render={({ field }) => (
-                            <FormItem>
-                              <Label className="text-xs font-medium">{`Field ${
-                                index + 1
-                              } Key`}</Label>
-                              <FormControl>
-                                <Input
-                                  type="text"
-                                  placeholder={`Field ${index + 1} Key`}
-                                  {...field}
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <FormField
-                          control={form.control}
-                          name={`fieldPopulate.${index}.value`}
-                          render={({ field }) => (
-                            <FormItem>
-                              <Label className="text-xs font-medium">{`Field ${
-                                index + 1
-                              } Value`}</Label>
-                              <FormControl>
-                                <Input
-                                  type="text"
-                                  placeholder={`Field ${index + 1} Value`}
-                                  {...field}
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </React.Fragment>
-                    ))}
+              {form.getValues('fieldPopulate')?.length > 0 && (
+                <div className="mt-2">
+                  <Label className="text-xs font-medium mt-2">
+                    Field Populate
+                  </Label>
+                  <div className="grid grid-cols-2 gap-3">
+                    {form
+                      .watch('fieldPopulate')
+                      .map((item: any, index: number) => (
+                        <React.Fragment key={index}>
+                          <FormField
+                            control={form.control}
+                            name={`fieldPopulate.${index}.key`}
+                            render={({ field }) => (
+                              <FormItem>
+                                <Label className="text-xs font-medium">{`Field ${
+                                  index + 1
+                                } Key`}</Label>
+                                <FormControl>
+                                  <Input
+                                    type="text"
+                                    placeholder={`Field ${index + 1} Key`}
+                                    {...field}
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={form.control}
+                            name={`fieldPopulate.${index}.value`}
+                            render={({ field }) => (
+                              <FormItem>
+                                <Label className="text-xs font-medium">{`Field ${
+                                  index + 1
+                                } Value`}</Label>
+                                <FormControl>
+                                  <Input
+                                    type="text"
+                                    placeholder={`Field ${index + 1} Value`}
+                                    {...field}
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </React.Fragment>
+                      ))}
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
             <div className="flex justify-end">
               <Button>Update Field Definition</Button>

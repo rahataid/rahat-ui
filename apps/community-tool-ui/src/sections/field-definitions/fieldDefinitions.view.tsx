@@ -12,6 +12,7 @@ import {
   VisibilityState,
   getCoreRowModel,
   getSortedRowModel,
+  getFilteredRowModel,
   useReactTable,
 } from '@tanstack/react-table';
 
@@ -19,13 +20,11 @@ import { FieldDefinition } from '@rahataid/community-tool-sdk/fieldDefinitions';
 import CustomPagination from '../../components/customPagination';
 import { FIELD_DEFINITON_NAV_ROUTE } from '../../constants/fieldDefinition.const';
 import FieldDefinitionsDetail from '../../sections/field-definitions/fieldDefinitionsDetail';
-import BeneficiaryGridView from '../../sections/beneficiary/gridView';
 import FieldDefinitionsListView from '../../sections/field-definitions/listView';
 import BeneficiaryNav from '../../sections/beneficiary/nav';
-import { useFieldDefinitionsList } from '@rahat-ui/community-query'; // replace it
+import { useFieldDefinitionsList } from '@rahat-ui/community-query';
 import { usePagination } from '@rahat-ui/query';
 import { useFieldDefinitionsTableColumns } from './useFieldDefinitionsColumns';
-// import { useSecondPanel } from '../../providers/second-panel-provider';
 
 export default function FieldDefinitionsView() {
   const {
@@ -41,13 +40,13 @@ export default function FieldDefinitionsView() {
 
   const columns = useFieldDefinitionsTableColumns();
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-  // const { closeSecondPanel, setSecondPanelComponent } = useSecondPanel();
   const table = useReactTable({
     manualPagination: true,
     data: data?.data?.rows || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setSelectedListItems,
     getRowId: (row) => String(row.id),
@@ -57,23 +56,13 @@ export default function FieldDefinitionsView() {
     },
   });
 
-  const [selectedData, setSelectedData] = useState<FieldDefinition>();
-  const [selectedFieldDefId, setSelectedFieldDefId] = useState<number[]>([]);
+  const [selectedData, setSelectedData] = useState<FieldDefinition | null>();
   const [active, setActive] = useState<string>(
     FIELD_DEFINITON_NAV_ROUTE.DEFAULT,
   );
 
   const handleFieldDefClick = useCallback((item: FieldDefinition) => {
     setSelectedData(item);
-    setSelectedFieldDefId((prevSelectedData) => {
-      const isSelected = prevSelectedData?.includes(item.id);
-
-      if (isSelected) {
-        return prevSelectedData.filter((selectedId) => selectedId !== item.id);
-      } else {
-        return [...(prevSelectedData || []), item.id];
-      }
-    });
   }, []);
 
   const handleClose = () => {
@@ -84,19 +73,10 @@ export default function FieldDefinitionsView() {
     <Tabs defaultValue="list" className="h-full">
       <ResizablePanelGroup direction="horizontal" className="min-h-max bg-card">
         <ResizablePanel minSize={20} defaultSize={20} maxSize={20}>
-          <BeneficiaryNav
-            meta={data?.response?.meta}
-            selectedBenefID={selectedFieldDefId}
-            // handleClear={handleclear}
-            setSelectedBenefId={setSelectedFieldDefId}
-          />
+          <BeneficiaryNav meta={data?.response?.meta} />
         </ResizablePanel>
         <ResizableHandle />
         <ResizablePanel minSize={28}>
-          {/* {active === BENEFICIARY_NAV_ROUTE.UPLOAD_BENEFICIARY && (
-            <ImportBeneficiary />
-          )} */}
-
           {active === FIELD_DEFINITON_NAV_ROUTE.DEFAULT && (
             <>
               <TabsContent value="list">
@@ -104,12 +84,6 @@ export default function FieldDefinitionsView() {
                   table={table}
                   handleClick={handleFieldDefClick}
                 />
-              </TabsContent>
-              <TabsContent value="grid">
-                {/* <BeneficiaryGridView
-                  handleClick={handleFieldDefClick}
-                  data={data?.data?.rows}
-                /> */}
               </TabsContent>
 
               <CustomPagination
@@ -123,7 +97,6 @@ export default function FieldDefinitionsView() {
               />
             </>
           )}
-          {/* {active === GROUP_NAV_ROUTE.VIEW_GROUP && <ViewGroup />} */}
         </ResizablePanel>
         {selectedData ? (
           <>
@@ -131,7 +104,7 @@ export default function FieldDefinitionsView() {
             <ResizablePanel minSize={24}>
               <FieldDefinitionsDetail
                 handleClose={handleClose}
-                data={selectedData}
+                fieldDefinitionData={selectedData}
               />
             </ResizablePanel>
           </>

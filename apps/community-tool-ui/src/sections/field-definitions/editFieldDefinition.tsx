@@ -25,10 +25,11 @@ import { FieldType } from '../../types/fieldDefinition';
 import { FieldDefinition } from '@rahataid/community-tool-sdk/fieldDefinitions';
 import {
   useFieldDefinitionsUpdate,
-  useFieldDefinitionsStatusUpdate,
+  // useFieldDefinitionsStatusUpdate,
 } from '@rahat-ui/community-query';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { Switch } from '@rahat-ui/shadcn/src/components/ui/switch';
+import React from 'react';
 
 export default function EditFieldDefinition({
   data,
@@ -36,12 +37,18 @@ export default function EditFieldDefinition({
   data: FieldDefinition;
 }) {
   const updateFieldDefinition = useFieldDefinitionsUpdate();
-  const updateFieldDefinitionStatus = useFieldDefinitionsStatusUpdate();
+  // const updateFieldDefinitionStatus = useFieldDefinitionsStatusUpdate();
 
   const FormSchema = z.object({
     name: z.string(),
     fieldType: z.string().toUpperCase(),
     isActive: z.boolean(),
+    fieldPopulate: z.array(
+      z.object({
+        key: z.string(),
+        value: z.string(),
+      }),
+    ),
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -50,6 +57,7 @@ export default function EditFieldDefinition({
       name: data?.name || '',
       fieldType: data?.fieldType || '',
       isActive: data?.isActive || false,
+      fieldPopulate: data?.fieldPopulate?.data || [],
     },
   });
 
@@ -59,20 +67,20 @@ export default function EditFieldDefinition({
     await updateFieldDefinition.mutateAsync({
       id: data?.id?.toString(),
       data: {
-        id: data?.id,
         name: formData?.name,
         fieldType: formData?.fieldType as FieldType,
         isActive: formData?.isActive,
+        fieldPopulate: { data: formData.fieldPopulate },
       },
     });
   };
 
-  const handleStatusChange = async (isActive: any) => {
-    await updateFieldDefinitionStatus.mutateAsync({
-      id: data?.id?.toString(),
-      isActive: isActive,
-    });
-  };
+  // const handleStatusChange = async (isActive: any) => {
+  //   await updateFieldDefinitionStatus.mutateAsync({
+  //     id: data?.id?.toString() as string,
+  //     isActive: isActive,
+  //   });
+  // };
 
   return (
     <Form {...form}>
@@ -147,29 +155,76 @@ export default function EditFieldDefinition({
                 }}
               />
 
-              {/* <FormField
+              <FormField
                 control={form.control}
                 name="isActive"
                 render={({ field }) => (
-                  <div className="flex flex-col justify-evenly items-left">
+                  <div className="flex flex-col items-left">
                     <Label className="text-xs font-medium">isActive</Label>
                     <Switch
                       {...field}
                       value={field.value ? 'false' : 'true'}
                       checked={field.value}
-                      onCheckedChange={(isChecked) => {
-                        handleStatusChange({
-                          isActive: isChecked,
-                        });
-                      }}
+                      onCheckedChange={field.onChange}
+                      // onCheckedChange={(isChecked) => {
+                      //   handleStatusChange({
+                      //     isActive: isChecked,
+                      //   });
+                      // }}
                     />
                   </div>
                 )}
-              /> */}
+              />
+              <Label className="text-xs font-medium mt-3">Field Populate</Label>
+              <div></div>
+              <div className="grid grid-cols-2 gap-3">
+                {form.watch('fieldPopulate').map((item: any, index: number) => (
+                  <React.Fragment key={index}>
+                    <FormField
+                      control={form.control}
+                      name={`fieldPopulate.${index}.key`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <Label className="text-xs font-medium">{`Field ${
+                            index + 1
+                          } Key`}</Label>
+                          <FormControl>
+                            <Input
+                              type="text"
+                              placeholder={`Field ${index + 1} Key`}
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name={`fieldPopulate.${index}.value`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <Label className="text-xs font-medium">{`Field ${
+                            index + 1
+                          } Value`}</Label>
+                          <FormControl>
+                            <Input
+                              type="text"
+                              placeholder={`Field ${index + 1} Value`}
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </React.Fragment>
+                ))}
+              </div>
             </div>
-            {/* <div className="flex justify-end">
+            <div className="flex justify-end">
               <Button>Update Field Definition</Button>
-            </div> */}
+            </div>
           </div>
         </div>
       </form>

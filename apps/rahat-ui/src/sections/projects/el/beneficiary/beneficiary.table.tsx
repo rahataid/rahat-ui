@@ -109,6 +109,7 @@ function BeneficiaryDetailTableView() {
     setPerPage,
     selectedListItems,
     setSelectedListItems,
+    resetSelectedListItems,
   } = usePagination();
   const assignVoucher = useBulkAssignVoucher();
 
@@ -127,6 +128,7 @@ function BeneficiaryDetailTableView() {
 
   const handleBenType = React.useCallback(
     (type: string) => {
+      resetSelectedListItems();
       if (type === 'ALL') {
         setFilters({ ...filters, status: undefined });
         return;
@@ -137,16 +139,16 @@ function BeneficiaryDetailTableView() {
   );
 
   const table = useReactTable({
-    data: projectBeneficiaries.data || [],
+    manualPagination: true,
+    data: projectBeneficiaries?.data?.data || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
-    getRowId: (row) => row.name,
+    getRowId: (row) => row.wallet,
     onRowSelectionChange: setSelectedListItems,
     state: {
       sorting,
@@ -234,7 +236,7 @@ function BeneficiaryDetailTableView() {
                   disabled={assignVoucher.isPending}
                   className="h-10 ml-2"
                 >
-                  {selectedRowAddresses.length} - Items Selected
+                  {selectedRowAddresses.length} - Beneficiary Selected
                   <ChevronDown strokeWidth={1.5} />
                 </Button>
               ) : null}
@@ -304,9 +306,8 @@ function BeneficiaryDetailTableView() {
         handleNextPage={setNextPage}
         handlePageSizeChange={setPerPage}
         handlePrevPage={setPrevPage}
-        meta={projectBeneficiaries.data?.meta || {}}
+        meta={projectBeneficiaries.data?.response?.meta || {}}
         perPage={pagination.perPage}
-        total={projectBeneficiaries.data?.meta?.total || 0}
       />
       <TokenAssingnConfirm
         tokens={selectedRowAddresses.length}

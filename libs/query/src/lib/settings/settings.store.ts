@@ -1,6 +1,8 @@
 import { zustandStore } from '@rumsan/react-query';
 import { Chain, ChainFormatters } from 'viem';
 import { localPersistStorage } from '../../utils/zustand-store';
+import { useAppSettingsMutate } from './settings.service';
+
 
 export type AppSettingsState = {
   chainSettings: Chain<ChainFormatters>;
@@ -29,6 +31,7 @@ export const initialAppSettings: AppSettingsState = {
     blockExplorers: {
       default: { name: 'Etherscan', url: 'https://etherscan.io' },
     },
+
   },
   subGraphUrl:
     process.env['NEXT_PUBLIC_SUBGRAPH_URL'] || "http://localhost:8000/subgraphs/name/rahat/el",

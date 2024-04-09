@@ -1,5 +1,5 @@
 'use client';
-import { memo, useState } from 'react';
+import { memo, useEffect, useState } from 'react';
 
 import { TabsContent } from '@rahat-ui/shadcn/components/tabs';
 
@@ -33,7 +33,12 @@ function BeneficiaryView() {
     setNextPage,
     setPrevPage,
     setPerPage,
+    setPagination
   } = usePagination();
+
+  useEffect(() => {
+    setPagination({ page: 1, perPage: 10, order: 'desc', sort: 'createdAt' })
+  }, [])
 
   const { data } = useBeneficiaryList(pagination);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});

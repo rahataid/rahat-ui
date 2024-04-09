@@ -116,6 +116,8 @@ function BeneficiaryDetailTableView() {
   const projectBeneficiaries = useProjectBeneficiaries({
     page: pagination.page,
     perPage: pagination.perPage,
+    order: 'desc',
+    sort: 'updatedAt',
     projectUUID: uuid,
     ...filters,
   });
@@ -171,7 +173,7 @@ function BeneficiaryDetailTableView() {
 
   return (
     <>
-      <div className="w-full h-full p-2 bg-secondary">
+      <div className="p-2 bg-secondary">
         <div className="flex items-center mb-2">
           <Input
             placeholder="Filter name..."
@@ -292,7 +294,15 @@ function BeneficiaryDetailTableView() {
                       colSpan={columns.length}
                       className="h-24 text-center"
                     >
-                      No results.
+                      {projectBeneficiaries.isFetching ? (
+                        <div className="flex items-center justify-center space-x-2 h-full">
+                          <div className="h-5 w-5 animate-bounce rounded-full bg-primary [animation-delay:-0.3s]"></div>
+                          <div className="h-5 w-5 animate-bounce rounded-full bg-primary [animation-delay:-0.13s]"></div>
+                          <div className="h-5 w-5 animate-bounce rounded-full bg-primary"></div>
+                        </div>
+                      ) : (
+                        'No data available.'
+                      )}
                     </TableCell>
                   </TableRow>
                 )}

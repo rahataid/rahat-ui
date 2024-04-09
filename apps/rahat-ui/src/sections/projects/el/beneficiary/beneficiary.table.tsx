@@ -138,10 +138,9 @@ function BeneficiaryDetailTableView() {
     [filters, setFilters],
   );
 
-  console.log('projectBeneficiaries.data', projectBeneficiaries.data);
-
   const table = useReactTable({
-    data: projectBeneficiaries.data?.data || [],
+    manualPagination: true,
+    data: projectBeneficiaries?.data?.data || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,

@@ -9,17 +9,17 @@ import {
 } from '@tanstack/react-query';
 import { TAGS } from '../../config';
 
+import { Beneficiary, MS_ACTIONS } from '@rahataid/sdk';
 import { getProjectClient } from '@rahataid/sdk/clients';
 import { Project, ProjectActions } from '@rahataid/sdk/project/project.types';
 import { Pagination } from '@rumsan/sdk/types';
 import { FormattedResponse } from '@rumsan/sdk/utils';
 import { UUID } from 'crypto';
 import { isEmpty } from 'lodash';
-import { memo, useCallback, useEffect, useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useSwal } from '../../swal';
 import { api } from '../../utils/api';
 import { useProjectSettingsStore, useProjectStore } from './project.store';
-import { Beneficiary, MS_ACTIONS } from '@rahataid/sdk';
 
 const createProject = async (payload: CreateProjectPayload) => {
   const res = await api.post('/projects', payload);

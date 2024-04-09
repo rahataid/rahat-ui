@@ -18,6 +18,8 @@ export function GraphQueryProvider({ children }: QueryProviderProps) {
   const subgraphURL = useSettingsStore((s) => s.subGraphUrl);
   const queryService = new GraphQuery(subgraphURL);
 
+  console.log("subgraph URL's", subgraphURL)
+
   return (
     <GraphContext.Provider
       value={{

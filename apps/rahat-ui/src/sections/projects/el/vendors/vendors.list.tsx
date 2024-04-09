@@ -187,10 +187,10 @@ export default function VendorsList() {
         <Input
           placeholder="Filter Vendors..."
           value={
-            (table.getColumn('beneficiary')?.getFilterValue() as string) ?? ''
+            (table.getColumn('name')?.getFilterValue() as string) ?? ''
           }
           onChange={(event) =>
-            table.getColumn('beneficiary')?.setFilterValue(event.target.value)
+            table.getColumn('name')?.setFilterValue(event.target.value)
           }
           className="w-full"
         />

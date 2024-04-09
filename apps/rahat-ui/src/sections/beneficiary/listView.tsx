@@ -38,6 +38,7 @@ export default function ListView({
   isBulkAssigning,
   projectModal,
 }: IProps) {
+  console.log("table", table)
   return (
     <>
       <BulkAssignToProjectModal

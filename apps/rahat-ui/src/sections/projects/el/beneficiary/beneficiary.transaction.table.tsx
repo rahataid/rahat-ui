@@ -46,16 +46,21 @@ import {
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import TransactionTableData from './beneficiaryTransactionData.json';
 import { useBeneficiaryTransaction } from 'apps/rahat-ui/src/hooks/el/subgraph/querycall';
+import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 // import { useBeneficiaryTransaction } from '../../hooks/el/subgraph/querycall';
 
-const data: Transaction[] = TransactionTableData;
+// const data: Transaction[] = TransactionTableData;
 
 export type Transaction = {
-  topic: string;
-  processedBy: string;
+  beneficiary: any;
+  vendor: any;
+  processedBy: any;
+  topic: any;
   timeStamp: string;
-  transactionHash: string;
+  transactionHash: any;
   amount: string;
+  voucherId: any;
+  id: any;
 };
 
 export const columns: ColumnDef<Transaction>[] = [
@@ -93,9 +98,9 @@ export const columns: ColumnDef<Transaction>[] = [
       <div className="capitalize">
         {row.getValue('processedBy')
           ? `${row.getValue('processedBy')?.toString().substring(0, 4)}....${row
-              .getValue('processedBy')
-              ?.toString()
-              ?.slice(-3)}`
+            .getValue('processedBy')
+            ?.toString()
+            ?.slice(-3)}`
           : 'N/A'}
       </div>
     ),
@@ -115,9 +120,9 @@ export const columns: ColumnDef<Transaction>[] = [
           .getValue('transactionHash')
           ?.toString()
           .substring(0, 4)}....${row
-          .getValue('transactionHash')
-          ?.toString()
-          ?.slice(-3)}`}
+            .getValue('transactionHash')
+            ?.toString()
+            ?.slice(-3)}`}
       </div>
     ),
   },
@@ -149,20 +154,19 @@ export const columns: ColumnDef<Transaction>[] = [
   },
 ];
 
-export default function BeneficiaryDetailTableView() {
+export default function BeneficiaryDetailTableView({walletAddress}:{walletAddress: string}) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
   );
-    const { data:beneficiaryTransaction, error } = useBeneficiaryTransaction(
-    '0x082d43D30C31D054b1AEDbE08F50C2a1BBE76fC7',
-  );
+  const { data: beneficiaryTransaction, error } = useBeneficiaryTransaction(walletAddress);
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
   const table = useReactTable({
-    data,
+    manualPagination: true,
+    data: beneficiaryTransaction || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -278,48 +282,54 @@ export default function BeneficiaryDetailTableView() {
           {table.getFilteredSelectedRowModel().rows.length} of{' '}
           {table.getFilteredRowModel().rows.length} row(s) selected.
         </div>
-        <div className="flex items-center gap-2">
-          <div className="text-sm font-medium">Rows per page</div>
-          <Select
-            defaultValue="10"
-            onValueChange={(value) => table.setPageSize(Number(value))}
-          >
-            <SelectTrigger className="w-16 h-8">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectItem value="5">5</SelectItem>
-                <SelectItem value="10">10</SelectItem>
-                <SelectItem value="20">20</SelectItem>
-                <SelectItem value="30">30</SelectItem>
-                <SelectItem value="40">40</SelectItem>
-                <SelectItem value="50">50</SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-        </div>
-        <div>
-          Page {table.getState().pagination.pageIndex + 1} of{' '}
-          {table.getPageCount()}
-        </div>
-        <div className="space-x-4">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            Previous
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            Next
-          </Button>
+        <div className="sticky bottom-0 flex items-center justify-end space-x-4 px-4 py-1 border-t-2 bg-card">
+          <div className="flex-1 text-sm text-muted-foreground">
+            {table.getFilteredSelectedRowModel().rows.length} of{' '}
+            {table.getFilteredRowModel().rows.length} row(s) selected.
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="text-sm font-medium">Rows per page</div>
+            <Select
+              defaultValue="10"
+              onValueChange={(value) => table.setPageSize(Number(value))}
+            >
+              <SelectTrigger className="w-16 h-8">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectItem value="5">5</SelectItem>
+                  <SelectItem value="10">10</SelectItem>
+                  <SelectItem value="20">20</SelectItem>
+                  <SelectItem value="30">30</SelectItem>
+                  <SelectItem value="40">40</SelectItem>
+                  <SelectItem value="50">50</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div>
+          <div> 
+            Page {table.getState().pagination.pageIndex + 1} of{' '}
+            {table.getPageCount()}
+          </div>
+          <div className="space-x-4">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => table.previousPage()}
+              disabled={!table.getCanPreviousPage()}
+            >
+              Previous
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => table.nextPage()}
+              disabled={!table.getCanNextPage()}
+            >
+              Next
+            </Button>
+          </div>
         </div>
       </div>
     </>

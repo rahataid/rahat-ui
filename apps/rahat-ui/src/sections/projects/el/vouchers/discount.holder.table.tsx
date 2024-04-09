@@ -30,6 +30,7 @@ import {
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { Copy, CopyCheck } from 'lucide-react';
+import { useVoucherHolder } from 'apps/rahat-ui/src/hooks/el/subgraph/querycall';
 
 export type Payment = {
   id: string;
@@ -38,7 +39,7 @@ export type Payment = {
   email: string;
 };
 
-export function DiscountHoldersTable({ data }) {
+export function DiscountHoldersTable() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
@@ -49,6 +50,7 @@ export function DiscountHoldersTable({ data }) {
   const [walletAddressCopied, setWalletAddressCopied] =
     React.useState<number>();
 
+  const { data, isFetching } = useVoucherHolder();
   const clickToCopy = (walletAddress: string, index: number) => {
     navigator.clipboard.writeText(walletAddress);
     setWalletAddressCopied(index);
@@ -91,7 +93,7 @@ export function DiscountHoldersTable({ data }) {
   ];
 
   const table = useReactTable({
-    data: data || [],
+    data: data?.referralVoucherOwners || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -158,7 +160,7 @@ export function DiscountHoldersTable({ data }) {
                     colSpan={columns.length}
                     className="h-24 text-center"
                   >
-                    {data ? (
+                    {isFetching ? (
                       <div className="flex items-center justify-center space-x-2">
                         <div className="h-3 w-3 animate-bounce rounded-full bg-primary [animation-delay:-0.3s]"></div>
                         <div className="h-3 w-3 animate-bounce rounded-full bg-primary [animation-delay:-0.13s]"></div>

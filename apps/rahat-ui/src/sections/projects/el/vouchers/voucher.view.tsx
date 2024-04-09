@@ -20,8 +20,6 @@ import AddVoucher from './add.voucher';
 import { useParams } from 'next/navigation';
 
 const VoucherView = () => {
-  const { data } = useVoucherHolder();
-
   const [contractAddress, setContractAddress] = useState<any>();
 
   const { id } = useParams();
@@ -78,7 +76,7 @@ const VoucherView = () => {
                         <FreeTransactionTable />
                       </div>
                       <div>
-                        <FreeHoldersTable data={data?.eyeVoucherOwners} />
+                        <FreeHoldersTable />
                       </div>
                     </div>
                   </TabsContent>
@@ -88,9 +86,7 @@ const VoucherView = () => {
                         <DiscountTransactionTable />
                       </div>
                       <div>
-                        <DiscountHoldersTable
-                          data={data?.referralVoucherOwners}
-                        />
+                        <DiscountHoldersTable />
                       </div>
                     </div>
                   </TabsContent>

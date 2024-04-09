@@ -30,7 +30,7 @@ export const useAppSettingsMutate = (settingsName?: string) => {
 export const useChainSettings = () => {
   const { queryClient } = useRSQuery();
   // TODO:NEW is a temp name, will be changed to CHAIN_SETTINGS
-  const appSettings = useAppSettingsMutate('CHAIN_SETTINGS_NET');
+  const appSettings = useAppSettingsMutate('CHAIN_SETTINGS');
   const { setChainSettings } = useSettingsStore();
 
   const query = useQuery(

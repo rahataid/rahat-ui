@@ -116,6 +116,8 @@ function BeneficiaryDetailTableView() {
   const projectBeneficiaries = useProjectBeneficiaries({
     page: pagination.page,
     perPage: pagination.perPage,
+    order: 'desc',
+    sort: 'updatedAt',
     projectUUID: uuid,
     ...filters,
   });

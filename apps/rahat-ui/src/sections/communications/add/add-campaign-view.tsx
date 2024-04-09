@@ -25,6 +25,7 @@ import { paths } from 'apps/rahat-ui/src/routes/paths';
 import { useBeneficiaryPii, usePagination } from '@rahat-ui/query';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import { useAudienceTable } from './use-audience-table';
+import { debounce } from 'lodash';
 
 const FormSchema = z.object({
   campaignName: z.string().min(2, {
@@ -77,6 +78,7 @@ const AddCampaignView = () => {
   const [rowSelection, setRowSelection] = React.useState({});
   const [selectedRows, setSelectedRows] = React.useState<SelectedRowType[]>([]);
   const [globalFilter, setGlobalFilter] = React.useState('');
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
 
   const [columnVisibility, setColumnVisibility] = React.useState({});
 
@@ -121,11 +123,7 @@ const AddCampaignView = () => {
     tableData,
   });
 
-  const handleCreateCampaign = async (
-    data: z.infer<typeof FormSchema>,
-    event: any,
-  ) => {
-    event.preventDefault();
+  const debouncedHandleSubmit = debounce((data) => {
     let transportId;
     transportData?.data.map((tdata) => {
       if (tdata.name.toLowerCase() === data.campaignType.toLowerCase()) {
@@ -169,13 +167,26 @@ const AddCampaignView = () => {
       })
       .then((data) => {
         if (data) {
+          setIsSubmitting(false);
+
           toast.success('Campaign Created Success.');
           router.push(paths.dashboard.communication.text);
         }
       })
       .catch((e) => {
+        setIsSubmitting(false);
+
         toast.error(e);
       });
+  }, 1000);
+
+  const handleCreateCampaign = async (
+    data: z.infer<typeof FormSchema>,
+    event: any,
+  ) => {
+    setIsSubmitting(true);
+    event.preventDefault();
+    debouncedHandleSubmit(data);
   };
   return (
     <FormProvider {...form}>
@@ -189,6 +200,7 @@ const AddCampaignView = () => {
           setShowAddAudience={showAddAudienceView.onToggle}
           showAddAudience={showAddAudienceView.value}
           form={form}
+          isSubmitting={isSubmitting}
         />
         {showAddAudienceView.value ? (
           <>

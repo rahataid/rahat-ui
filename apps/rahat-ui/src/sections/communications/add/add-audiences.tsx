@@ -15,6 +15,7 @@ import {
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
+import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import {
   Select,
   SelectContent,
@@ -65,90 +66,89 @@ const AddAudience: FC<AddAudienceProps> = ({
   return (
     <>
       {/* header area start  */}
-      <div className="flex justify-between m-2">
+      <div className="flex items-center gap-2 pb-2">
         <Input
           placeholder="Filter audience..."
           value={globalFilter ?? ''}
           onChange={(value) => {
             setGlobalFilter(value.target.value);
           }}
-          className="max-w-sm mr-3 ml-4"
+          className="max-w-sm"
         />
-        <div>
-          <Select onValueChange={filterBenByAudience}>
-            <SelectTrigger>
-              <SelectValue placeholder="Projects" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value={'ALL'}>ALL</SelectItem>
-              {projectsList.data?.data.length &&
-                projectsList.data.data.map((project) => {
-                  return (
-                    <SelectItem key={project.uuid} value={project.uuid || ''}>
-                      {project.name}
-                    </SelectItem>
-                  );
-                })}
-            </SelectContent>
-          </Select>
-        </div>
-
-        <p className="mr-6">Audience selected: {selectedRows.length}</p>
-      </div>{' '}
+        <Select onValueChange={filterBenByAudience}>
+          <SelectTrigger className='max-w-32'>
+            <SelectValue placeholder="Projects" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value={'ALL'}>ALL</SelectItem>
+            {projectsList.data?.data.length &&
+              projectsList.data.data.map((project) => {
+                return (
+                  <SelectItem key={project.uuid} value={project.uuid || ''}>
+                    {project.name}
+                  </SelectItem>
+                );
+              })}
+          </SelectContent>
+        </Select>
+        <div className={`border rounded px-3 py-2 h-10 text-sm ${selectedRows.length ? 'bg-primary text-white font-medium' : 'bg-card'}`}>{selectedRows.length} - Audience selected</div>
+      </div>
       {/* header area end  */}
       <FormField
         control={form.control}
         name="audiences"
         render={() => (
           <FormItem>
-            <div className="rounded-md border max-h-[300px] overflow-y-auto">
+            <div className="rounded border mb-2 bg-card">
               <Table>
-                <TableHeader>
-                  {table.getHeaderGroups().map((headerGroup) => (
-                    <TableRow key={headerGroup.id}>
-                      {headerGroup.headers.map((header) => {
-                        return (
-                          <TableHead key={header.id}>
-                            {header.isPlaceholder
-                              ? null
-                              : flexRender(
+                <ScrollArea className='h-[calc(100vh-376px)]'>
+                  <TableHeader>
+                    {table.getHeaderGroups().map((headerGroup) => (
+                      <TableRow key={headerGroup.id}>
+                        {headerGroup.headers.map((header) => {
+                          return (
+                            <TableHead key={header.id}>
+                              {header.isPlaceholder
+                                ? null
+                                : flexRender(
                                   header.column.columnDef.header,
                                   header.getContext(),
                                 )}
-                          </TableHead>
-                        );
-                      })}
-                    </TableRow>
-                  ))}
-                </TableHeader>
-                <TableBody>
-                  {table.getRowModel().rows?.length ? (
-                    table.getRowModel()?.rows.map((row) => (
-                      <TableRow
-                        key={row.id}
-                        data-state={row?.getIsSelected() && 'selected'}
-                      >
-                        {row.getVisibleCells().map((cell) => (
-                          <TableCell key={cell.id}>
-                            {flexRender(
-                              cell.column.columnDef.cell,
-                              cell.getContext(),
-                            )}
-                          </TableCell>
-                        ))}
+                            </TableHead>
+                          );
+                        })}
                       </TableRow>
-                    ))
-                  ) : (
-                    <TableRow>
-                      <TableCell
-                        colSpan={columns.length}
-                        className="h-24 text-center"
-                      >
-                        No results.
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
+                    ))}
+                  </TableHeader>
+                  <TableBody>
+                    {table.getRowModel().rows?.length ? (
+                      table.getRowModel()?.rows.map((row) => (
+                        <TableRow
+                          key={row.id}
+                          data-state={row?.getIsSelected() && 'selected'}
+                        >
+                          {row.getVisibleCells().map((cell) => (
+                            <TableCell key={cell.id}>
+                              {flexRender(
+                                cell.column.columnDef.cell,
+                                cell.getContext(),
+                              )}
+                            </TableCell>
+                          ))}
+                        </TableRow>
+                      ))
+                    ) : (
+                      <TableRow>
+                        <TableCell
+                          colSpan={columns.length}
+                          className="h-24 text-center"
+                        >
+                          No results.
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </ScrollArea>
               </Table>
             </div>
             <FormMessage />

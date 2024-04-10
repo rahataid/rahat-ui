@@ -192,7 +192,7 @@ const AddCampaignView = () => {
     <FormProvider {...form}>
       <form
         onSubmit={form.handleSubmit(handleCreateCampaign)}
-        className="h-add"
+        className="h-add bg-secondary"
       >
         <AddForm
           title="Add Campaign"
@@ -203,7 +203,7 @@ const AddCampaignView = () => {
           isSubmitting={isSubmitting}
         />
         {showAddAudienceView.value ? (
-          <>
+          <div className='p-2'>
             <AddAudience
               table={table}
               columns={columns}
@@ -225,7 +225,7 @@ const AddCampaignView = () => {
               perPage={pagination.perPage}
               total={beneficiaryData?.response?.meta?.lastPage || 0}
             />
-          </>
+          </div>
         ) : null}
       </form>
     </FormProvider>

@@ -183,7 +183,9 @@ export default function EditFieldDefinition({
                 name="isTargeting"
                 render={({ field }) => (
                   <div className="flex flex-col items-right">
-                    <Label className="text-xs font-medium">isTargeting</Label>
+                    <Label className="text-xs font-medium">
+                      User for Targeting
+                    </Label>
                     <Switch
                       {...field}
                       value={field.value ? 'false' : 'true'}

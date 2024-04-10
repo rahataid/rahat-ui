@@ -84,7 +84,7 @@ export default function AddFieldDefinitions() {
       const payload = {
         name: data.name,
         fieldType: data.fieldType as FieldType,
-        isActive: data.isActive,
+        isActive: true,
         isTargeting: data.isTargeting,
         fieldPopulate: { data: fieldPopulatePayload } || [],
       };
@@ -195,25 +195,10 @@ export default function AddFieldDefinitions() {
 
               <FormField
                 control={form.control}
-                name="isActive"
-                render={({ field }) => (
-                  <div className=" flex flex-row items-center gap-4 m-1">
-                    <Label>isActive</Label>
-                    <Switch
-                      {...field}
-                      value={field.value ? 'false' : 'true'}
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </div>
-                )}
-              />
-              <FormField
-                control={form.control}
                 name="isTargeting"
                 render={({ field }) => (
                   <div className=" flex flex-row items-center gap-4 m-1">
-                    <Label>isTargeting</Label>
+                    <Label>User for Targeting</Label>
                     <Switch
                       {...field}
                       value={field.value ? 'false' : 'true'}

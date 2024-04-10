@@ -1,7 +1,7 @@
 'use client';
 
 import { Table, flexRender } from '@tanstack/react-table';
-import { Settings2 } from 'lucide-react';
+import { Settings2, ChevronDown } from 'lucide-react';
 
 import { Button } from '@rahat-ui/shadcn/components/button';
 import {
@@ -11,6 +11,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuItem,
 } from '@rahat-ui/shadcn/components/dropdown-menu';
 import { Input } from '@rahat-ui/shadcn/components/input';
 import {
@@ -92,13 +93,23 @@ export default function ListView({
             </DropdownMenuContent>
           </DropdownMenu>
           {table.getSelectedRowModel().rows.length ? (
-            <Button
-              onClick={projectModal.onTrue}
-              className="ml-auto"
-              disabled={isBulkAssigning}
-            >
-              Bulk Assign
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button className="ml-2">
+                  {table.getSelectedRowModel().rows.length} - Beneficiary
+                  Selected
+                  <ChevronDown className="ml-1" strokeWidth={1.5} />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem
+                  onClick={projectModal.onTrue}
+                  disabled={isBulkAssigning}
+                >
+                  Bulk Assign Project
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           ) : null}
         </div>
         <div className="rounded border bg-card h-[calc(100vh-180px)]">

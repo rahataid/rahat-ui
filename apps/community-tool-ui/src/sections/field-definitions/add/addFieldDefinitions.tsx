@@ -133,7 +133,7 @@ export default function AddFieldDefinitions() {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleCreateFieldDefinitions)}>
-        <div className="p-4 h-add">
+        <div className="p-4 h-add overflow-scroll">
           <h1 className="text-lg font-semibold mb-6">Add Field Definition</h1>
           <div className="shadow-md p-4 rounded-sm">
             <div className="grid grid-cols-2 gap-4 mb-4">
@@ -282,7 +282,7 @@ export default function AddFieldDefinitions() {
                 </Button>
               </>
             )}
-            <div className="flex justify-end">
+            <div className="flex justify-end mb-10">
               <Button type="submit">Create Field Definition</Button>
             </div>
           </div>

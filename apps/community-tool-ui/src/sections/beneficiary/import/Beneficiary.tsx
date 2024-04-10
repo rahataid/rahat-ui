@@ -359,10 +359,13 @@ export default function BenImp({ extraFields }: IProps) {
       processedData,
       invalidFields,
     );
+    console.log('ValidData=>', validData);
+    console.log('InvalidData', invalidData);
     setValidBenef(validData);
     setProcessedData(validData);
     setInvalidFields([]);
     setHasDuplicate(false);
+
     await exportDataToExcel(invalidData);
     if (!validData.length) {
       setUniqueField('');

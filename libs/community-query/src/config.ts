@@ -39,4 +39,5 @@ export const TAGS = {
     'update_community_field_definitions_status',
   DOWNLOAD_COMMUNITY_GROUPED_BENEFICIARIES:
     'download_community_grouped_beneficiaries',
+  GET_COMMUNITY_BENEFICARY_STATS: 'get_community_beneficiary_stats',
 };

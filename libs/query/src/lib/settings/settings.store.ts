@@ -1,3 +1,5 @@
+'use client';
+
 import { zustandStore } from '@rumsan/react-query';
 import { Chain, ChainFormatters } from 'viem';
 import { localPersistStorage } from '../../utils/zustand-store';
@@ -16,7 +18,7 @@ export type AppSettings = AppSettingsState & AppSettingsAction;
 
 export const initialAppSettings: AppSettingsState = {
   chainSettings: {
-    id: 5,
+    id: 50,
     name: 'Rahat',
     nativeCurrency: { name: 'Rahat', symbol: 'Rs.', decimals: 18 },
     rpcUrls: {

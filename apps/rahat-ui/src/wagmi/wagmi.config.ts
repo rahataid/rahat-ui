@@ -1,10 +1,10 @@
 'use client';
 
 import { getDefaultConfig } from 'connectkit';
-import { createConfig, http } from 'wagmi';
+import { cookieStorage, createConfig, createStorage, http } from 'wagmi';
 import { mainnet, polygonMumbai, sepolia } from 'wagmi/chains';
 import { safe } from 'wagmi/connectors';
-import { rahatChain } from './src/chain-custom';
+import { rahatChain } from './chain-custom';
 
 declare module 'wagmi' {
   interface Register {
@@ -15,14 +15,17 @@ declare module 'wagmi' {
 export const config = createConfig(
   getDefaultConfig({
     syncConnectedChain: true,
+    ssr: true,
+    storage: createStorage({
+      storage: cookieStorage,
+    }),
     chains: [
       // mainnet,
       // sepolia,
       // arbitrumGoerli,
       // polygon,
-      rahatChain,
-
-      // polygonMumbai,
+      // rahatChain,
+      polygonMumbai,
       // arbitrumSepolia,
     ],
     batch: {
@@ -35,11 +38,18 @@ export const config = createConfig(
       safe(),
     ],
     transports: {
-      [rahatChain.id]: http(),
+      [rahatChain.id]: http(
+        'https://polygon-mumbai.infura.io/v3/627efc2e63b5449eaf60728ea083fa9d',
+        {
+          fetchOptions: {},
+        },
+      ),
       [mainnet.id]: http(),
       [sepolia.id]: http(),
       // [arbitrumSepolia.id]: http(),
-      [polygonMumbai.id]: http(),
+      [polygonMumbai.id]: http(
+        'https://polygon-mumbai.infura.io/v3/627efc2e63b5449eaf60728ea083fa9d',
+      ),
     },
     walletConnectProjectId: '',
     // Required App Info

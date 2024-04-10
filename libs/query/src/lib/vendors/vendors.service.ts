@@ -1,4 +1,10 @@
-import { UseQueryResult, useQuery } from '@tanstack/react-query';
+'use client';
+
+import {
+  UseQueryResult,
+  keepPreviousData,
+  useQuery,
+} from '@tanstack/react-query';
 import { useRSQuery } from '@rumsan/react-query';
 import { getVendorClient } from '@rahataid/sdk/clients';
 import { useVendorStore } from './vendors.store';

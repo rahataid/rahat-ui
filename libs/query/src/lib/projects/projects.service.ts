@@ -1,3 +1,5 @@
+'use client';
+
 import { CreateProjectPayload } from '@rahat-ui/types';
 import { useRSQuery } from '@rumsan/react-query';
 import {

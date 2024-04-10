@@ -1,3 +1,5 @@
+'use client';
+
 import { useRSQuery } from '@rumsan/react-query';
 import { useQuery, useMutation, UseQueryResult } from '@tanstack/react-query';
 import { getUserClient } from '@rumsan/sdk/clients';

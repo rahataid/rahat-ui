@@ -1,3 +1,5 @@
+'use client';
+
 import { defineChain } from 'viem';
 import { useSettingsStore } from '@rahat-ui/query';
 

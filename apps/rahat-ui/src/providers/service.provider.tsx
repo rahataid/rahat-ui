@@ -1,10 +1,6 @@
 'use client';
 
-import {
-  useChainSettings,
-  useSettingsStore,
-  useSubGraphUrlSettings,
-} from '@rahat-ui/query';
+import { useSettingsStore, useSubGraphUrlSettings } from '@rahat-ui/query';
 import { useCommunicationQuery } from '@rumsan/communication-query';
 import { CommunicationService } from '@rumsan/communication/services/communication.client';
 import {
@@ -16,6 +12,8 @@ import { RumsanService } from '@rumsan/sdk';
 import { useQueryClient } from '@tanstack/react-query';
 import Image from 'next/image';
 import { createContext, useContext, useEffect, useMemo } from 'react';
+import { useSwitchChain } from 'wagmi';
+import { config } from '../wagmi/wagmi.config';
 import { useError } from '../utils/useErrors';
 
 export const ServiceContext = createContext<RSQueryContextType | null>(null);
@@ -35,8 +33,14 @@ export function ServiceProvider({ children }: ServiceProviderProps) {
     setQueryClient: setCommsQueryClient,
   } = useCommunicationQuery();
 
-  useChainSettings();
   useSubGraphUrlSettings();
+
+  const result = useSwitchChain({
+    config,
+  });
+
+  console.log('result', result);
+  // useEffect(() => {}, [result]);
 
   const chainSettings = useSettingsStore((s) => s.chainSettings);
   const rsService = useMemo(

@@ -1,5 +1,7 @@
+'use client';
+
 import { Pagination } from '@rumsan/sdk/types';
-import { useState, useEffect, useMemo } from 'react';
+import { useEffect, useState } from 'react';
 
 export const hashStorage = {
   getItem: (key: string): any => {

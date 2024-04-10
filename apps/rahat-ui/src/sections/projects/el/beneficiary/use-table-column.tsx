@@ -148,12 +148,18 @@ export const useProjectBeneficiaryTableColumns = () => {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem
-                onClick={() => openSplitDetailView(row.original)}
+                className="cursor-pointer"
+                onClick={() => {
+                  setSecondPanelComponent(
+                    <BeneficiaryDetail
+                      closeSecondPanel={closeSecondPanel}
+                      beneficiaryDetails={row.original}
+                    />,
+                  );
+                }}
               >
                 View Beneficiary
               </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>Edit</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         );

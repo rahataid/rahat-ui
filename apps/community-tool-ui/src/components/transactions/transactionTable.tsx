@@ -35,6 +35,7 @@ import {
   TableHeader,
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
+import { useProjectTransaction } from 'apps/rahat-ui/src/hooks/el/subgraph/querycall';
 
 const data: Payment[] = [
   {
@@ -48,25 +49,7 @@ const data: Payment[] = [
     amount: 242,
     status: 'success',
     email: 'Abe45@gmail.com',
-  },
-  {
-    id: 'derv1ws0',
-    amount: 837,
-    status: 'processing',
-    email: 'Monserrat44@gmail.com',
-  },
-  {
-    id: '5kma53ae',
-    amount: 874,
-    status: 'success',
-    email: 'Silas22@gmail.com',
-  },
-  {
-    id: 'bhqecj4p',
-    amount: 721,
-    status: 'failed',
-    email: 'carmella@hotmail.com',
-  },
+  }
 ];
 
 export type Payment = {
@@ -178,8 +161,13 @@ export default function DataTableDemo() {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
+
+  const {data: projectTransaction} = useProjectTransaction();
+
+  console.log(projectTransaction)
+
   const table = useReactTable({
-    data,
+    data: projectTransaction?.data || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,

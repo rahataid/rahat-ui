@@ -147,7 +147,6 @@ export default function RoleTable({ handleClick }: IProps) {
       },
     },
   });
-  console.log(data?.data);
 
   return (
     <div>

@@ -25,7 +25,7 @@ export default function InfoBox({
           <p className="text-sm">
             {message}.{' '}
             {uniqueField
-              ? `${uniqueField} is your unique field!`
+              ? `${uniqueField.toUpperCase()} is your unique field!`
               : 'No Unique field selected'}
           </p>
         </div>

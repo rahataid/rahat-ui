@@ -25,9 +25,8 @@ import {
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { CAMPAIGN_TYPES } from '@rahat-ui/types';
-import { Transport } from '@rumsan/communication';
 import { format } from 'date-fns';
-import { CalendarIcon } from 'lucide-react';
+import { CalendarIcon, Loader } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { FC } from 'react';
 import { UseFormReturn, useForm } from 'react-hook-form';
@@ -39,11 +38,12 @@ type CampaignFormProps = {
   defaultValues?: z.infer<any>;
   loading?: boolean;
   error?: string;
-  transports: Transport[];
   audios: any;
   form: UseFormReturn<z.infer<any>>;
   setShowAddAudience: () => void;
   showAddAudience: boolean;
+  data?: any;
+  isSubmitting?: boolean;
 
   // Add more props here
 };
@@ -52,10 +52,11 @@ const CampaignForm: FC<CampaignFormProps> = ({
   audios,
   title,
   loading,
-  transports,
   form,
   setShowAddAudience,
   showAddAudience,
+  data,
+  isSubmitting,
 }) => {
   const router = useRouter();
   const includeMessage = ['sms', 'whatsapp', 'email'].includes(
@@ -100,13 +101,7 @@ const CampaignForm: FC<CampaignFormProps> = ({
                   <Popover>
                     <PopoverTrigger asChild>
                       <FormControl>
-                        <Button
-                          variant={'outline'}
-                          // className={cn(
-                          //   '!mt-[15px] w-[240px] pl-3 text-left font-normal',
-                          //   !field.value && 'text-muted-foreground'
-                          // )}
-                        >
+                        <Button variant={'outline'}>
                           {field.value ? (
                             format(field.value, 'PPP')
                           ) : (
@@ -137,10 +132,9 @@ const CampaignForm: FC<CampaignFormProps> = ({
               name="campaignType"
               render={({ field, fieldState }) => (
                 <FormItem>
-                  {/* <FormLabel>Campaign Type</FormLabel> */}
                   <Select
                     onValueChange={field.onChange}
-                    defaultValue={field.value}
+                    defaultValue={field.value || data?.data?.type}
                   >
                     <FormControl>
                       <SelectTrigger className="rounded">
@@ -169,13 +163,7 @@ const CampaignForm: FC<CampaignFormProps> = ({
                 name="message"
                 render={({ field }) => (
                   <FormItem>
-                    {/* <FormLabel>Message</FormLabel> */}
                     <FormControl>
-                      {/* <Input
-                        placeholder="Message"
-                        {...field}
-                        className="rounded"
-                      /> */}
                       <Textarea
                         {...field}
                         placeholder="Type your message here."
@@ -235,9 +223,15 @@ const CampaignForm: FC<CampaignFormProps> = ({
             >
               {showAddAudience ? 'Hide Audiences' : 'Show Audiences'}
             </Button>
-            <Button type="submit" variant={'default'} disabled={loading}>
-              {title}
-            </Button>
+            {isSubmitting ? (
+              <Button variant={'default'} disabled={true}>
+                <Loader />
+              </Button>
+            ) : (
+              <Button type="submit" variant={'default'} disabled={loading}>
+                {title}
+              </Button>
+            )}
           </div>
         </div>
       </div>

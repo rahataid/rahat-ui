@@ -1,6 +1,6 @@
 'use client';
 
-import { Nav } from '../../components/nav';
+import DashboardLayout from '../dashboard/layout';
 
 export default function TransactionsLayout({
   children,
@@ -9,8 +9,9 @@ export default function TransactionsLayout({
 }) {
   return (
     <>
-      <Nav />
+      <DashboardLayout >
       <div className="mx-2">{children}</div>
+      </DashboardLayout>
     </>
   );
 }

@@ -1,11 +1,13 @@
 'use client';
-import { memo, useState } from 'react';
+import { memo, useEffect, useState } from 'react';
 
 import { TabsContent } from '@rahat-ui/shadcn/components/tabs';
 
 import {
   VisibilityState,
   getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
@@ -31,7 +33,12 @@ function BeneficiaryView() {
     setNextPage,
     setPrevPage,
     setPerPage,
+    setPagination
   } = usePagination();
+
+  useEffect(() => {
+    setPagination({ page: 1, perPage: 10, order: 'desc', sort: 'createdAt' })
+  }, [])
 
   const { data } = useBeneficiaryList(pagination);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
@@ -42,10 +49,12 @@ function BeneficiaryView() {
 
   const table = useReactTable({
     manualPagination: true,
-    data: data?.data || [],
+    data: data?.data || [], 
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setSelectedListItems,
     getRowId: (row) => row.uuid,
@@ -102,7 +111,7 @@ function BeneficiaryView() {
       </TabsContent>
       <TabsContent value="grid">
         <BeneficiaryGridView
-          handleClick={handleBeneficiaryClick}
+          handleClick={handleBeneficiaryClick} 
           data={data?.data}
         />
       </TabsContent>
@@ -115,7 +124,7 @@ function BeneficiaryView() {
         perPage={pagination.perPage}
         total={data?.response?.meta.lastPage || 0}
       />
-    </>
+    </> 
   );
 }
 

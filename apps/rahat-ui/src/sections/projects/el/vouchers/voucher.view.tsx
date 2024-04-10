@@ -1,7 +1,7 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import FreeVoucherInfo from './free.voucher.info';
-import DiscountVoucherInfo from './dicount.voucher.info';
+import DiscountVoucherInfo from './discount.voucher.info';
 import {
   Tabs,
   TabsContent,
@@ -20,8 +20,6 @@ import AddVoucher from './add.voucher';
 import { useParams } from 'next/navigation';
 
 const VoucherView = () => {
-  const { data } = useVoucherHolder();
-
   const [contractAddress, setContractAddress] = useState<any>();
 
   const { id } = useParams();
@@ -48,7 +46,13 @@ const VoucherView = () => {
   return (
     <>
       {isLoading ? (
-        'Loading'
+        <div className="flex items-center justify-center h-screen">
+          <div className="flex items-center justify-center space-x-2">
+            <div className="h-5 w-5 animate-bounce rounded-full bg-primary [animation-delay:-0.3s]"></div>
+            <div className="h-5 w-5 animate-bounce rounded-full bg-primary [animation-delay:-0.13s]"></div>
+            <div className="h-5 w-5 animate-bounce rounded-full bg-primary"></div>
+          </div>
+        </div>
       ) : (
         <>
           {projectVoucher?.freeVoucherAddress ? (
@@ -72,7 +76,7 @@ const VoucherView = () => {
                         <FreeTransactionTable />
                       </div>
                       <div>
-                        <FreeHoldersTable data={data?.eyeVoucherOwners} />
+                        <FreeHoldersTable />
                       </div>
                     </div>
                   </TabsContent>
@@ -82,9 +86,7 @@ const VoucherView = () => {
                         <DiscountTransactionTable />
                       </div>
                       <div>
-                        <DiscountHoldersTable
-                          data={data?.referralVoucherOwners}
-                        />
+                        <DiscountHoldersTable />
                       </div>
                     </div>
                   </TabsContent>

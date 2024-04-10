@@ -78,7 +78,10 @@ export default function VendorsTable({
         <div className="flex items-center mb-2">
           <Input
             placeholder="Search User..."
-            value=""
+            value={
+              (table.getColumn('name')?.getFilterValue() as string) ??
+              ''
+            }
             onChange={(event) =>
               table.getColumn('name')?.setFilterValue(event.target.value)
             }

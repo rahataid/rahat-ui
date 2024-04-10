@@ -116,8 +116,6 @@ export default function TextDetailTableView({ data, type }: IProps) {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
-  console.log('data', data);
-
   const tableData = React.useMemo(() => {
     return data?.map((item: any) => ({
       createdAt: new Date(item.createdAt).toLocaleString(),
@@ -151,37 +149,6 @@ export default function TextDetailTableView({ data, type }: IProps) {
     <div>
       {data?.length > 0 && (
         <>
-          {/* <div className="flex items-center py-4">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="ml-auto">
-                  <Settings2 className="mr-2 h-4 w-5" />
-                  View
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuLabel>Toggle Columns</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                {table
-                  .getAllColumns()
-                  .filter((column) => column.getCanHide())
-                  .map((column) => {
-                    return (
-                      <DropdownMenuCheckboxItem
-                        key={column.id}
-                        className="capitalize"
-                        checked={column.getIsVisible()}
-                        onCheckedChange={(value) =>
-                          column.toggleVisibility(!!value)
-                        }
-                      >
-                        {column.id}
-                      </DropdownMenuCheckboxItem>
-                    );
-                  })}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div> */}
           <div className="rounded-md border mt-4 bg-card">
             <Table>
               <ScrollArea className="h-[calc(100vh-370px)]">

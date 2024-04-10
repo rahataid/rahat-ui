@@ -32,6 +32,15 @@ export const useProjectBeneficiaryTableColumns = () => {
     setWalletAddressCopied(index);
   };
 
+  const openSplitDetailView = (rowDetail: any) => {
+    setSecondPanelComponent(
+      <BeneficiaryDetail
+        closeSecondPanel={closeSecondPanel}
+        beneficiaryDetails={rowDetail}
+      />,
+    );
+  };
+
   const columns: ColumnDef<any>[] = [
     {
       id: 'select',
@@ -84,7 +93,14 @@ export const useProjectBeneficiaryTableColumns = () => {
     {
       accessorKey: 'name',
       header: 'Name',
-      cell: ({ row }) => <div> {row.getValue('name')}</div>,
+      cell: ({ row }) => (
+        <div
+          className="cursor-pointer"
+          onClick={() => openSplitDetailView(row.original)}
+        >
+          {row.getValue('name')}
+        </div>
+      ),
     },
     {
       accessorKey: 'type',
@@ -132,14 +148,7 @@ export const useProjectBeneficiaryTableColumns = () => {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem
-                onClick={() => {
-                  setSecondPanelComponent(
-                    <BeneficiaryDetail
-                      closeSecondPanel={closeSecondPanel}
-                      beneficiaryDetails={row.original}
-                    />,
-                  );
-                }}
+                onClick={() => openSplitDetailView(row.original)}
               >
                 View Beneficiary
               </DropdownMenuItem>

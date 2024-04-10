@@ -72,17 +72,19 @@ export const truncatedText = (text: string, maxLen: number) => {
   return text.length > maxLen ? text.substring(0, maxLen) + '...' : text;
 };
 
-export const extractInvalidData = (payload: [], errors: []) => {
+export const splitValidAndInvalid = (payload: [], errors: []) => {
   const invalidData = [] as any;
   const validData = [] as any;
 
   payload.forEach((p: any) => {
     const error = errors.find((error: any) => error.uuid === p.uuid);
-    if (error) {
+    if (error || p.isDuplicate) {
       if (p.uuid) delete p.uuid;
       if (p.rawData) delete p.rawData;
+      if (p.hasOwnProperty('isDuplicate')) delete p.isDuplicate;
       invalidData.push(p);
     } else {
+      if (p.hasOwnProperty('isDuplicate')) delete p.isDuplicate;
       validData.push(p);
     }
   });
@@ -90,7 +92,7 @@ export const extractInvalidData = (payload: [], errors: []) => {
   return { invalidData, validData };
 };
 
-export const exportInvalidDataToExcel = (data: []) => {
+export const exportDataToExcel = (data: []) => {
   const currentDate = new Date().getTime();
   const fileName = `Invalid_Beneficiary_${currentDate}.xlsx`;
   const worksheet = XLSX.utils.json_to_sheet(data);
@@ -104,4 +106,17 @@ export const exportInvalidDataToExcel = (data: []) => {
   });
 
   saveAs(blob, fileName);
+};
+
+export const formatNameString = (inputString: string) => {
+  // Replace spaces with underscores
+  let stringWithUnderscores = inputString.replace(/ /g, '_');
+  // Replace '.' with underscore
+  let stringWithUnderscoresAndDots = stringWithUnderscores.replace(/\./g, '_');
+  // Remove special characters using regex
+  let stringWithoutSpecialChars = stringWithUnderscoresAndDots.replace(
+    /[^\w\s]/gi,
+    '',
+  );
+  return stringWithoutSpecialChars;
 };

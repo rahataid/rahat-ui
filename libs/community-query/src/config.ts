@@ -37,4 +37,6 @@ export const TAGS = {
   UPDATE_COMMUNITY_FIELD_DEFINITIONS: 'update_community_field_definitions',
   UPDATE_COMMUNITY_FIELD_DEFINITIONS_STATUS:
     'update_community_field_definitions_status',
+  DOWNLOAD_COMMUNITY_GROUPED_BENEFICIARIES:
+    'download_community_grouped_beneficiaries',
 };

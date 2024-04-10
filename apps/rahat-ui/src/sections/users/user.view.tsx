@@ -14,20 +14,26 @@ import UsersTable from './user.list';
 import { usePagination } from '@rahat-ui/query';
 import CustomPagination from '../../components/customPagination';
 import { useUserTableColumns } from './useUsersColumns';
-import { useUsersList } from '@rahat-ui/query';
+import { useUserList } from '@rumsan/react-query';
 
 export default function UserView() {
   const { pagination, setNextPage, setPrevPage, setPerPage } = usePagination();
   const columns = useUserTableColumns();
   // const users = useUserStore((state) => state.users);
-  const { data: users } = useUsersList({});
+  const { data: users, isSuccess } = useUserList(pagination);
 
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
 
+  const tableData = React.useMemo(() => {
+    if (isSuccess) return users?.data;
+    else return [];
+  }, [isSuccess, users?.data]);
+
   const table = useReactTable({
-    data: users && users?.data?.length > 0 ? users.data : [],
+    manualPagination: true,
+    data: tableData || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),

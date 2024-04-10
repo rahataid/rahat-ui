@@ -109,12 +109,15 @@ function BeneficiaryDetailTableView() {
     setPerPage,
     selectedListItems,
     setSelectedListItems,
+    resetSelectedListItems,
   } = usePagination();
   const assignVoucher = useBulkAssignVoucher();
 
   const projectBeneficiaries = useProjectBeneficiaries({
     page: pagination.page,
     perPage: pagination.perPage,
+    order: 'desc',
+    sort: 'updatedAt',
     projectUUID: uuid,
     ...filters,
   });
@@ -127,6 +130,7 @@ function BeneficiaryDetailTableView() {
 
   const handleBenType = React.useCallback(
     (type: string) => {
+      resetSelectedListItems();
       if (type === 'ALL') {
         setFilters({ ...filters, status: undefined });
         return;
@@ -137,16 +141,16 @@ function BeneficiaryDetailTableView() {
   );
 
   const table = useReactTable({
-    data: projectBeneficiaries.data || [],
+    manualPagination: true,
+    data: projectBeneficiaries?.data?.data || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
-    getRowId: (row) => row.name,
+    getRowId: (row) => row.wallet,
     onRowSelectionChange: setSelectedListItems,
     state: {
       sorting,
@@ -169,7 +173,7 @@ function BeneficiaryDetailTableView() {
 
   return (
     <>
-      <div className="w-full h-full p-2 bg-secondary">
+      <div className="p-2 bg-secondary">
         <div className="flex items-center mb-2">
           <Input
             placeholder="Filter name..."
@@ -234,7 +238,7 @@ function BeneficiaryDetailTableView() {
                   disabled={assignVoucher.isPending}
                   className="h-10 ml-2"
                 >
-                  {selectedRowAddresses.length} - Items Selected
+                  {selectedRowAddresses.length} - Beneficiary Selected
                   <ChevronDown strokeWidth={1.5} />
                 </Button>
               ) : null}
@@ -290,7 +294,15 @@ function BeneficiaryDetailTableView() {
                       colSpan={columns.length}
                       className="h-24 text-center"
                     >
-                      No results.
+                      {projectBeneficiaries.isFetching ? (
+                        <div className="flex items-center justify-center space-x-2 h-full">
+                          <div className="h-5 w-5 animate-bounce rounded-full bg-primary [animation-delay:-0.3s]"></div>
+                          <div className="h-5 w-5 animate-bounce rounded-full bg-primary [animation-delay:-0.13s]"></div>
+                          <div className="h-5 w-5 animate-bounce rounded-full bg-primary"></div>
+                        </div>
+                      ) : (
+                        'No data available.'
+                      )}
                     </TableCell>
                   </TableRow>
                 )}
@@ -304,9 +316,8 @@ function BeneficiaryDetailTableView() {
         handleNextPage={setNextPage}
         handlePageSizeChange={setPerPage}
         handlePrevPage={setPrevPage}
-        meta={projectBeneficiaries.data?.meta || {}}
+        meta={projectBeneficiaries.data?.response?.meta || {}}
         perPage={pagination.perPage}
-        total={projectBeneficiaries.data?.meta?.total || 0}
       />
       <TokenAssingnConfirm
         tokens={selectedRowAddresses.length}

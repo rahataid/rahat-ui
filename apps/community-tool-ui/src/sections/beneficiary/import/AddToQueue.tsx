@@ -8,6 +8,7 @@ interface IProps {
   handleImportClick: any;
   invalidFields: any;
   handleExportInvalidClick: any;
+  hasDuplicate: boolean;
 }
 
 export default function AddToQueue({
@@ -16,6 +17,7 @@ export default function AddToQueue({
   handleImportClick,
   invalidFields,
   handleExportInvalidClick,
+  hasDuplicate,
 }: IProps) {
   console.log('Invalid Fields', invalidFields);
   const mappedData =
@@ -26,6 +28,12 @@ export default function AddToQueue({
         })
       : []; // Omit rawData
   const headerKeys = mappedData.length > 0 ? Object.keys(mappedData[0]) : [];
+
+  function renderItemKey(item: any, key: string) {
+    if (key === 'uuid' || key === 'isDuplicate') {
+      return '';
+    } else return item[key];
+  }
 
   return (
     <div className="relative mt-5">
@@ -38,7 +46,7 @@ export default function AddToQueue({
         </Button>
         <div>
           <Button
-            disabled={!invalidFields.length}
+            disabled={!invalidFields.length && !hasDuplicate}
             onClick={handleExportInvalidClick}
             className="w-40 mr-2 bg-secondary hover:ring-2bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow"
           >
@@ -46,7 +54,7 @@ export default function AddToQueue({
           </Button>
 
           <Button
-            disabled={invalidFields.length}
+            disabled={invalidFields.length || hasDuplicate}
             onClick={handleImportClick}
             className="w-40 bg-primary hover:ring-2 ring-primary py-2 px-4"
           >
@@ -72,7 +80,7 @@ export default function AddToQueue({
                     <span className="text-red-500">
                       {key === 'uuid' ? '' : key}*
                     </span>
-                  ) : key === 'uuid' ? (
+                  ) : key === 'uuid' || key === 'isDuplicate' ? (
                     ''
                   ) : (
                     key
@@ -85,7 +93,10 @@ export default function AddToQueue({
           <tbody>
             {data.map((item: any, index: number) => (
               <tr
-                className="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700"
+                style={{
+                  backgroundColor: item.isDuplicate ? 'rgb(254 215 170)' : '',
+                }}
+                className="bg-red-400 odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700"
                 key={index}
               >
                 {/* Dynamically generated table cells */}
@@ -95,11 +106,11 @@ export default function AddToQueue({
                       err.uuid === item['uuid'] && err.value === item[key],
                   ) ? (
                     <td className="px-4 bg-red-100 py-1.5" key={key}>
-                      {key === 'uuid' ? '' : item[key]}
+                      {renderItemKey(item, key)}
                     </td>
                   ) : (
                     <td className="px-4 py-1.5" key={key}>
-                      {key === 'uuid' ? '' : item[key]}
+                      {renderItemKey(item, key)}
                     </td>
                   ),
                 )}

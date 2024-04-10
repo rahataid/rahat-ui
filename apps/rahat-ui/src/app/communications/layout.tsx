@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { Nav } from '../../components/nav';
+import DashboardLayout from '../dashboard/layout';
 
 export default function CommunicationLayout({
   children,
@@ -10,8 +10,9 @@ export default function CommunicationLayout({
 }) {
   return (
     <>
-      <Nav />
+      <DashboardLayout >
       <div className="mx-2">{children}</div>
+      </DashboardLayout>
     </>
   );
 }

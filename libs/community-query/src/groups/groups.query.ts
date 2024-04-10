@@ -72,3 +72,26 @@ export const useCommunityGroupListByID = (
     queryClient,
   );
 };
+
+// export const useCommunityGroupedBeneficiariesDownload = ()=>{
+
+//   const { queryClient, rumsanService } = useRSQuery();
+//   const groupClient = getGroupClient(rumsanService.client);
+//   return useQuery({
+//     queryKey: [TAGS.DOWNLOAD_COMMUNITY_GROUPED_BENEFICIARIES],
+//     queryFn: () => groupClient.download(),
+//     enabled: false
+//   })
+// }
+
+export const useCommunityGroupedBeneficiariesDownload = () => {
+  const { queryClient, rumsanService } = useRSQuery();
+  const groupClient = getGroupClient(rumsanService.client);
+  return useMutation(
+    {
+      mutationKey: [TAGS.DOWNLOAD_COMMUNITY_GROUPED_BENEFICIARIES],
+      mutationFn: groupClient.download,
+    },
+    queryClient,
+  );
+};

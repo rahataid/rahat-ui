@@ -14,7 +14,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { ArrowUpDown } from 'lucide-react';
+import { ArrowUpDown, Copy, CopyCheck } from 'lucide-react';
 import {
   Table,
   TableBody,
@@ -28,6 +28,12 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { truncateEthAddress } from '@rumsan/sdk/utils';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/tooltip';
 
 export type Payment = {
   id: string;
@@ -35,62 +41,6 @@ export type Payment = {
   status: 'pending' | 'processing' | 'success' | 'failed';
   transactionHash: string;
 };
-
-export const columns: ColumnDef<Payment>[] = [
-  {
-    accessorKey: 'transactionHash',
-    header: 'TransactionHash',
-    cell: ({ row }) => (
-      <div className="capitalize">
-        {truncateEthAddress(row.getValue('transactionHash'))}
-      </div>
-    ),
-  },
-  {
-    accessorKey: 'from',
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-        >
-          From
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
-    cell: ({ row }) => (
-      <div className="lowercase">
-        {truncateEthAddress(row.getValue('from'))}
-      </div>
-    ),
-  },
-  {
-    accessorKey: 'to',
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-        >
-          To
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
-    cell: ({ row }) => (
-      <div className="lowercase">{truncateEthAddress(row.getValue('to'))}</div>
-    ),
-  },
-  {
-    accessorKey: 'value',
-    header: () => <div className="text-right">Voucher</div>,
-    cell: ({ row }) => {
-      const amount = parseFloat(row.getValue('value'));
-      return <div className="text-right font-medium">{amount}</div>;
-    },
-  },
-];
 
 export function FreeTransactionTable() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -106,6 +56,124 @@ export function FreeTransactionTable() {
   const { id } = useParams();
 
   const projectSettings = localStorage.getItem('projectSettingsStore');
+  const [transactionHash, setTransactionHash] = useState<number>();
+  const [fromCopied, setFromCopied] = useState<number>();
+  const [toCopied, setToCopied] = useState<number>();
+
+  const clickToCopy = (transactionHash: string, index: number) => {
+    navigator.clipboard.writeText(transactionHash);
+  };
+
+  const columns: ColumnDef<Payment>[] = [
+    {
+      accessorKey: 'transactionHash',
+      header: 'TransactionHash',
+      cell: ({ row }) => (
+        <TooltipProvider delayDuration={100}>
+          <Tooltip>
+            <TooltipTrigger
+              className="flex items-center gap-3 cursor-pointer"
+              onClick={() =>
+                clickToCopy(row.getValue('transactionHash'), row.index)
+              }
+            >
+              <p>{truncateEthAddress(row.getValue('transactionHash'))}</p>
+              {transactionHash === row.index ? (
+                <CopyCheck size={15} strokeWidth={1.5} />
+              ) : (
+                <Copy className="text-slate-500" size={15} strokeWidth={1.5} />
+              )}
+            </TooltipTrigger>
+            <TooltipContent className="bg-secondary" side="bottom">
+              <p className="text-xs font-medium">
+                {transactionHash === row.index ? 'copied' : 'click to copy'}
+              </p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      ),
+    },
+    {
+      accessorKey: 'from',
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          >
+            From
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        );
+      },
+      cell: ({ row }) => (
+        <TooltipProvider delayDuration={100}>
+          <Tooltip>
+            <TooltipTrigger
+              className="flex items-center gap-3 cursor-pointer"
+              onClick={() => clickToCopy(row.getValue('from'), row.index)}
+            >
+              <p>{truncateEthAddress(row.getValue('from'))}</p>
+              {fromCopied === row.index ? (
+                <CopyCheck size={15} strokeWidth={1.5} />
+              ) : (
+                <Copy className="text-slate-500" size={15} strokeWidth={1.5} />
+              )}
+            </TooltipTrigger>
+            <TooltipContent className="bg-secondary" side="bottom">
+              <p className="text-xs font-medium">
+                {fromCopied === row.index ? 'copied' : 'click to copy'}
+              </p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      ),
+    },
+    {
+      accessorKey: 'to',
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          >
+            To
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        );
+      },
+      cell: ({ row }) => (
+        <TooltipProvider delayDuration={100}>
+          <Tooltip>
+            <TooltipTrigger
+              className="flex items-center gap-3 cursor-pointer"
+              onClick={() => clickToCopy(row.getValue('to'), row.index)}
+            >
+              <p>{truncateEthAddress(row.getValue('to'))}</p>
+              {toCopied === row.index ? (
+                <CopyCheck size={15} strokeWidth={1.5} />
+              ) : (
+                <Copy className="text-slate-500" size={15} strokeWidth={1.5} />
+              )}
+            </TooltipTrigger>
+            <TooltipContent className="bg-secondary" side="bottom">
+              <p className="text-xs font-medium">
+                {toCopied === row.index ? 'copied' : 'click to copy'}
+              </p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      ),
+    },
+    {
+      accessorKey: 'value',
+      header: () => <div className="text-right">Voucher</div>,
+      cell: ({ row }) => {
+        const amount = parseFloat(row.getValue('value'));
+        return <div className="text-right font-medium">{amount}</div>;
+      },
+    },
+  ];
 
   useEffect(() => {
     if (projectSettings) {
@@ -116,9 +184,8 @@ export function FreeTransactionTable() {
     }
   }, [projectSettings, id]);
 
-  const { data: vouchersTransactions } = useGetFreeVoucherTransaction(
-    contractAddress?.eyeVoucher,
-  );
+  const { data: vouchersTransactions, isFetching } =
+    useGetFreeVoucherTransaction(contractAddress?.eyeVoucher);
 
   const table = useReactTable({
     data: vouchersTransactions?.transfers || [],
@@ -188,7 +255,15 @@ export function FreeTransactionTable() {
                     colSpan={columns.length}
                     className="h-24 text-center"
                   >
-                    No results.
+                    {isFetching ? (
+                      <div className="flex items-center justify-center space-x-2">
+                        <div className="h-5 w-5 animate-bounce rounded-full bg-primary [animation-delay:-0.3s]"></div>
+                        <div className="h-5 w-5 animate-bounce rounded-full bg-primary [animation-delay:-0.13s]"></div>
+                        <div className="h-5 w-5 animate-bounce rounded-full bg-primary"></div>
+                      </div>
+                    ) : (
+                      'No data available.'
+                    )}
                   </TableCell>
                 </TableRow>
               )}

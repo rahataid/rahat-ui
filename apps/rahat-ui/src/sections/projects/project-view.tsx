@@ -3,7 +3,7 @@ import { usePagination, useProjectList } from '@rahat-ui/query';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { ProjectCard } from '../../sections/projects';
 import Filters from './filter';
-import CustomPagination from '../../components/customPagination';
+// import CustomPagination from '../../components/customPagination';
 
 export default function ProjectListView() {
   const { pagination, setNextPage, setPrevPage, setPerPage } = usePagination();
@@ -14,7 +14,7 @@ export default function ProjectListView() {
       <div className="p-2">
         <Filters />
       </div>
-      <ScrollArea className="px-2 h-[calc(100vh-171px)]">
+      <ScrollArea className="px-2 pb-2 h-[calc(100vh-122px)]">
         <div className="grid grid-cols-3 gap-2">
           {data?.data?.map((project) => (
             <ProjectCard
@@ -30,7 +30,7 @@ export default function ProjectListView() {
         </div>
       </ScrollArea>
       {/* TODO:fix project list meta */}
-      <CustomPagination
+      {/* <CustomPagination
         currentPage={pagination.page}
         handleNextPage={setNextPage}
         handlePrevPage={setPrevPage}
@@ -38,7 +38,7 @@ export default function ProjectListView() {
         meta={{ total: 0, currentPage: 0 }}
         perPage={pagination.perPage}
         total={0}
-      />
+      /> */}
     </div>
   );
 }

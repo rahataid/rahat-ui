@@ -1,12 +1,12 @@
 'use client';
 
 import { useBeneficiaryStore, useSingleBeneficiary } from '@rahat-ui/query';
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from '@rahat-ui/shadcn/components/tabs';
+// import {
+//   Tabs,
+//   TabsContent,
+//   TabsList,
+//   TabsTrigger,
+// } from '@rahat-ui/shadcn/components/tabs';
 import {
   Tooltip,
   TooltipContent,
@@ -41,7 +41,7 @@ import { useState } from 'react';
 import ConfirmDialog from '../../components/dialog';
 import { useBoolean } from '../../hooks/use-boolean';
 import { paths } from '../../routes/paths';
-import BeneficiaryDetailTableView from './beneficiaryDetailTable';
+// import BeneficiaryDetailTableView from './beneficiaryDetailTable';
 import AssignToProjectModal from './components/assignToProjectModal';
 import SplitViewDetailCards from './components/split.view.detail.cards';
 import EditBeneficiary from './editBeneficiary';
@@ -211,7 +211,7 @@ export default function BeneficiaryDetail({
 
       {activeTab === 'details' && (
         <>
-          <Tabs defaultValue="detail">
+          {/* <Tabs defaultValue="detail">
             <div className="p-2">
               <TabsList className="w-full grid grid-cols-2 border h-auto">
                 <TabsTrigger value="detail">Details </TabsTrigger>
@@ -220,9 +220,9 @@ export default function BeneficiaryDetail({
                 </TabsTrigger>
               </TabsList>
             </div>
-            <TabsContent value="detail">
-              <SplitViewDetailCards beneficiaryDetail={beneficiaryDetail} />
-            </TabsContent>
+            <TabsContent value="detail"> */}
+          <SplitViewDetailCards beneficiaryDetail={beneficiaryDetail} />
+          {/* </TabsContent>
             <TabsContent value="transaction-history">
               <div className="p-2">
                 <BeneficiaryDetailTableView
@@ -230,7 +230,7 @@ export default function BeneficiaryDetail({
                 />
               </div>
             </TabsContent>
-          </Tabs>
+          </Tabs> */}
         </>
       )}
       {activeTab === 'edit' && (beneficiaryDetail || beneficiary) && (

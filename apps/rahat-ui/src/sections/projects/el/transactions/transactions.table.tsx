@@ -162,7 +162,7 @@ export const columns: ColumnDef<Transaction>[] = [
   },
 ];
 
-export default function TransactionTable({ }) {
+export default function TransactionTable({}) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
@@ -171,7 +171,7 @@ export default function TransactionTable({ }) {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
-  const { data } = useProjectTransaction();
+  const { data, isFetching } = useProjectTransaction();
 
   const table = useReactTable({
     data: data || [],
@@ -250,7 +250,15 @@ export default function TransactionTable({ }) {
                     colSpan={columns.length}
                     className="h-24 text-center"
                   >
-                    No results.
+                    {isFetching ? (
+                      <div className="flex items-center justify-center space-x-2 h-full">
+                        <div className="h-5 w-5 animate-bounce rounded-full bg-primary [animation-delay:-0.3s]"></div>
+                        <div className="h-5 w-5 animate-bounce rounded-full bg-primary [animation-delay:-0.13s]"></div>
+                        <div className="h-5 w-5 animate-bounce rounded-full bg-primary"></div>
+                      </div>
+                    ) : (
+                      'No data available.'
+                    )}
                   </TableCell>
                 </TableRow>
               )}

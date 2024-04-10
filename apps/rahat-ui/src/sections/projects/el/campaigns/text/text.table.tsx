@@ -172,7 +172,7 @@ export default function TextTable() {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
-  const { data, isLoading, isError, isSuccess, isFetched } =
+  const { data, isLoading, isError, isSuccess, isFetching } =
     useListCampaignQuery({});
 
   const tableData = React.useMemo(() => {
@@ -182,7 +182,7 @@ export default function TextTable() {
         )
       : [];
 
-    campaignStore.setTotalTextCampaign(result?.length);
+    campaignStore.setTotalTextCampaign(data?.response?.meta?.total || 0);
     return result;
   }, [isSuccess]);
 
@@ -292,7 +292,15 @@ export default function TextTable() {
                     colSpan={columns.length}
                     className="h-24 text-center"
                   >
-                    No results.
+                    {isFetching ? (
+                      <div className="flex items-center justify-center space-x-2 h-full">
+                        <div className="h-5 w-5 animate-bounce rounded-full bg-primary [animation-delay:-0.3s]"></div>
+                        <div className="h-5 w-5 animate-bounce rounded-full bg-primary [animation-delay:-0.13s]"></div>
+                        <div className="h-5 w-5 animate-bounce rounded-full bg-primary"></div>
+                      </div>
+                    ) : (
+                      'No data available.'
+                    )}
                   </TableCell>
                 </TableRow>
               )}

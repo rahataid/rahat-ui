@@ -20,6 +20,15 @@ export const useTableColumns = (handleAssignClick: any) => {
     handleAssignClick(row);
   };
 
+  const openSplitDetailView = (rowDetail: IVendor) => {
+    setSecondPanelComponent(
+      <VendorsDetailSplitView
+        closeSecondPanel={closeSecondPanel}
+        vendorsDetail={rowDetail}
+      />,
+    );
+  };
+
   const columns: ColumnDef<IVendor>[] = [
     {
       id: 'select',
@@ -60,7 +69,12 @@ export const useTableColumns = (handleAssignClick: any) => {
         );
       },
       cell: ({ row }) => (
-        <div className="lowercase">{row.getValue('name')}</div>
+        <div
+          className="lowercase cursor-pointer"
+          onClick={() => openSplitDetailView(row.original)}
+        >
+          {row.getValue('name')}
+        </div>
       ),
     },
     {
@@ -98,14 +112,7 @@ export const useTableColumns = (handleAssignClick: any) => {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="bg-white">
               <DropdownMenuItem
-                onClick={() =>
-                  setSecondPanelComponent(
-                    <VendorsDetailSplitView
-                      closeSecondPanel={closeSecondPanel}
-                      vendorsDetail={row.original}
-                    />,
-                  )
-                }
+                onClick={() => openSplitDetailView(row.original)}
               >
                 View Details
               </DropdownMenuItem>

@@ -22,8 +22,9 @@ import { useTableColumns } from './useTableColumns';
 import VendorsTable from './vendors.list.table';
 import CustomPagination from '../../components/customPagination';
 
-export default function VendorsView() {
+function VendorsView() {
   const { pagination, setNextPage, setPrevPage, setPerPage } = usePagination();
+
   const projectModal = useBoolean();
   const addVendor = useAssignVendorToProject();
   const { data: vendorData } = useVendorList(pagination);
@@ -90,3 +91,5 @@ export default function VendorsView() {
     </>
   );
 }
+
+export default React.memo(VendorsView);

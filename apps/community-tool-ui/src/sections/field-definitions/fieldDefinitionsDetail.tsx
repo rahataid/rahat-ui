@@ -1,5 +1,3 @@
-import { useRouter } from 'next/navigation';
-
 import {
   Tabs,
   TabsContent,
@@ -12,25 +10,25 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/components/tooltip';
-import {
-  Dialog,
-  DialogTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/dialog';
-import { Archive, Expand, FilePenLine, Minus, Trash2 } from 'lucide-react';
-import ConfirmDialog from '../../components/dialog';
-import { paths } from '../../routes/paths';
+
+import { Minus } from 'lucide-react';
 import EditFieldDefinition from './editFieldDefinition';
 import InfoCards from './InfoCards';
 import { FieldDefinition } from '@rahataid/community-tool-sdk/fieldDefinitions';
+import { useFieldDefinitionsListById } from '@rahat-ui/community-query';
 
 type IProps = {
-  data: FieldDefinition;
+  fieldDefinitionData: FieldDefinition;
   // handleDefault: VoidFunction;
   handleClose: VoidFunction;
 };
 
-export default function FieldDefinitionsDetail({ data, handleClose }: IProps) {
-  const router = useRouter();
+export default function FieldDefinitionsDetail({
+  fieldDefinitionData,
+  handleClose,
+}: IProps) {
+  const { data } = useFieldDefinitionsListById(String(fieldDefinitionData?.id));
+  const singleFieldDefinition = data && data.data;
 
   return (
     <>
@@ -55,11 +53,11 @@ export default function FieldDefinitionsDetail({ data, handleClose }: IProps) {
           </TabsList>
         </div>
         <TabsContent value="detail">
-          <InfoCards data={data} />
+          <InfoCards data={singleFieldDefinition} />
         </TabsContent>
 
         <TabsContent value="edit">
-          <EditFieldDefinition data={data} />
+          <EditFieldDefinition data={singleFieldDefinition} />
         </TabsContent>
       </Tabs>
     </>

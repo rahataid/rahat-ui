@@ -45,6 +45,8 @@ import { CAMPAIGN_TYPES } from '@rahat-ui/types';
 import { useCampaignStore, useListCampaign } from '@rumsan/communication-query';
 import useTextTableColumn from './useTextTableColumn';
 import { ICampaignItemApiResponse } from '@rumsan/communication/types';
+import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
+import { usePagination } from '@rahat-ui/query';
 
 type IProps = {
   handleClick: (item: ICampaignItemApiResponse) => void;
@@ -53,15 +55,23 @@ type IProps = {
 export default function TextTableView({ handleClick }: IProps) {
   const columns = useTextTableColumn({ handleSplitDetail: handleClick });
   const campaignStore = useCampaignStore();
-  const { data, isSuccess } = useListCampaign();
+  const {
+    pagination,
+    selectedListItems,
+    setSelectedListItems,
+    setNextPage,
+    setPrevPage,
+    setPerPage,
+  } = usePagination();
+  const { data, isSuccess } = useListCampaign(pagination);
 
-  const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    [],
-  );
+  // const [sorting, setSorting] = React.useState<SortingState>([]);
+  // const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+  //   [],
+  // );
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = React.useState({});
+  // const [rowSelection, setRowSelection] = React.useState({});
 
   const tableData = React.useMemo(() => {
     const result = Array.isArray(data?.data?.rows)
@@ -70,26 +80,22 @@ export default function TextTableView({ handleClick }: IProps) {
         )
       : [];
 
-    campaignStore.setTotalTextCampaign(result?.length || 0);
+    campaignStore.setTotalTextCampaign(data?.response?.meta?.total || 0);
     return result as ICampaignItemApiResponse[];
   }, [isSuccess, data?.data]);
 
   const table = useReactTable({
+    manualPagination: true,
     data: tableData,
     columns,
-    onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setRowSelection,
+    onRowSelectionChange: setSelectedListItems,
+    getRowId: (row) => row.uuid,
     state: {
-      sorting,
-      columnFilters,
       columnVisibility,
-      rowSelection,
+      rowSelection: selectedListItems,
     },
   });
 
@@ -186,51 +192,15 @@ export default function TextTableView({ handleClick }: IProps) {
           </ScrollArea>
         </Table>
       </div>
-      <div className="flex items-center justify-end space-x-8 p-2 border-t">
-        <div className="flex items-center gap-2">
-          <div className="text-sm font-medium">Rows per page</div>
-          <Select
-            defaultValue="10"
-            onValueChange={(value) => table.setPageSize(Number(value))}
-          >
-            <SelectTrigger className="w-16">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectItem value="5">5</SelectItem>
-                <SelectItem value="10">10</SelectItem>
-                <SelectItem value="20">20</SelectItem>
-                <SelectItem value="30">30</SelectItem>
-                <SelectItem value="40">40</SelectItem>
-                <SelectItem value="50">50</SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-        </div>
-        <div>
-          Page {table.getState().pagination.pageIndex + 1} of{' '}
-          {table.getPageCount()}
-        </div>
-        <div className="space-x-4">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            Previous
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            Next
-          </Button>
-        </div>
-      </div>
+      <CustomPagination
+        meta={data?.response?.meta || { total: 0, currentPage: 0 }}
+        handleNextPage={setNextPage}
+        handlePrevPage={setPrevPage}
+        handlePageSizeChange={setPerPage}
+        currentPage={pagination.page}
+        perPage={pagination.perPage}
+        total={data?.response?.meta?.lastPage || 0}
+      />
     </div>
   );
 }

@@ -17,18 +17,21 @@ import InfoCard from '../infoCard';
 import { paths } from 'apps/rahat-ui/src/routes/paths';
 
 type IProps = {
-  data: ICampaignItemApiResponse;
-  handleClose: VoidFunction;
+  details: ICampaignItemApiResponse;
+  closeSecondPanel: VoidFunction;
 };
 
-export default function TextDetailSplitView({ data, handleClose }: IProps) {
+export default function TextDetailSplitView({
+  details,
+  closeSecondPanel,
+}: IProps) {
   const router = useRouter();
   return (
     <div className="px-2 py-4">
       <div className="flex gap-4">
         <TooltipProvider delayDuration={100}>
           <Tooltip>
-            <TooltipTrigger onClick={handleClose}>
+            <TooltipTrigger onClick={closeSecondPanel}>
               <Minus size={20} strokeWidth={1.5} />
             </TooltipTrigger>
             <TooltipContent className="bg-secondary ">
@@ -43,7 +46,9 @@ export default function TextDetailSplitView({ data, handleClose }: IProps) {
                 size={20}
                 strokeWidth={1.5}
                 onClick={() =>
-                  router.push(paths.dashboard.communication.textDetail(data.id))
+                  router.push(
+                    paths.dashboard.communication.textDetail(details.id),
+                  )
                 }
               />
             </TooltipTrigger>
@@ -60,7 +65,7 @@ export default function TextDetailSplitView({ data, handleClose }: IProps) {
                 strokeWidth={1.5}
                 onClick={() =>
                   router.push(
-                    paths.dashboard.communication.editTextCampaign(data.id),
+                    paths.dashboard.communication.editTextCampaign(details.id),
                   )
                 }
               />
@@ -83,14 +88,14 @@ export default function TextDetailSplitView({ data, handleClose }: IProps) {
       </div>
       <div className="mt-5 flex flex-col gap-5">
         <InfoCard
-          id={data?.id}
-          name={data?.name}
+          id={details?.id}
+          name={details?.name}
           startTime={
-            data?.startTime && new Date(data?.startTime).toLocaleString()
+            details?.startTime && new Date(details?.startTime).toLocaleString()
           }
-          status={data?.status}
-          totalAudience={data?.totalAudiences ?? 0}
-          type={data?.type}
+          status={details?.status}
+          totalAudience={details?.totalAudiences ?? 0}
+          type={details?.type}
         />
         <Card className="shadow-md">
           <CardHeader>
@@ -98,10 +103,10 @@ export default function TextDetailSplitView({ data, handleClose }: IProps) {
           </CardHeader>
           <CardContent>
             <p>
-              {data?.details?.body
-                ? data?.details?.body
-                : data?.details?.message
-                ? data?.details?.message
+              {details?.details?.body
+                ? details?.details?.body
+                : details?.details?.message
+                ? details?.details?.message
                 : 'No message'}
             </p>
           </CardContent>

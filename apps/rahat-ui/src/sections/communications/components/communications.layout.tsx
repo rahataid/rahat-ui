@@ -19,7 +19,11 @@ const CommunicationLayout: FC<CommunicationLayoutProps> = ({
   menuItems,
 }) => {
   const renderResizablePanel = (children: React.ReactNode, index?: number) => {
-    return <ResizablePanel key={index}>{children}</ResizablePanel>;
+    return (
+      <ResizablePanel minSize={30} key={index}>
+        {children}
+      </ResizablePanel>
+    );
   };
   const renderChildren = () => {
     if (Array.isArray(children)) {

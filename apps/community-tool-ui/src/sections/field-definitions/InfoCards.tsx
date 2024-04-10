@@ -35,20 +35,22 @@ export default function InfoCards({ data }: { data: FieldDefinition }) {
                 </p>
               </div>
             </div>
-            <div className="col-span-3">
-              <div className="flex flex-col gap-2">
-                {data?.fieldPopulate?.data?.length > 0 && (
+            {data?.fieldPopulate?.data?.length > 0 && (
+              <div className="col-span-3">
+                <div className="flex flex-col gap-2">
                   <ul className="list-disc pl-4">
-                    {data.fieldPopulate.data.map((item: any, key: number) => (
-                      <li key={key}>{item.value}</li>
-                    ))}
+                    {data?.fieldPopulate?.data?.map(
+                      (item: any, key: number) => (
+                        <li key={key}>{item.value}</li>
+                      ),
+                    )}
                   </ul>
-                )}
-                <p className="text-sm font-normal text-muted-foreground">
-                  Field Populate
-                </p>
+                  <p className="text-sm font-normal text-muted-foreground">
+                    Field Populate
+                  </p>
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </CardContent>
       </Card>

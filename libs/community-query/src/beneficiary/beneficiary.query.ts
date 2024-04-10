@@ -172,3 +172,15 @@ export const useCommunityBeneficiaryCreateBulk = () => {
     queryClient,
   );
 };
+
+export const useCommunityBeneficiaryStatsList = () => {
+  const { queryClient, rumsanService } = useRSQuery();
+  const benClient = getBeneficiaryClient(rumsanService.client);
+  return useQuery(
+    {
+      queryKey: [TAGS.GET_COMMUNITY_BENEFICARY_STATS],
+      queryFn: benClient.getBeneficiaryStats,
+    },
+    queryClient,
+  );
+};

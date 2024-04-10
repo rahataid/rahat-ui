@@ -32,7 +32,7 @@ export const useNavItems = () => {
           : [
               {
                 title: 'Add Campaign',
-                path: `/communications/add`,
+                path: '/communications/add',
                 icon: <Plus size={18} strokeWidth={1.5} />,
               },
             ]),

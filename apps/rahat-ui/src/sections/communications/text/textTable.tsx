@@ -48,12 +48,8 @@ import { ICampaignItemApiResponse } from '@rumsan/communication/types';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import { usePagination } from '@rahat-ui/query';
 
-type IProps = {
-  handleClick: (item: ICampaignItemApiResponse) => void;
-};
-
-export default function TextTableView({ handleClick }: IProps) {
-  const columns = useTextTableColumn({ handleSplitDetail: handleClick });
+export default function TextTableView() {
+  const columns = useTextTableColumn();
   const campaignStore = useCampaignStore();
   const {
     pagination,

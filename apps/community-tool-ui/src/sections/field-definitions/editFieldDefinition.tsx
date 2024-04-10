@@ -133,23 +133,34 @@ export default function EditFieldDefinition({
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value={FieldType.TEXT}>TEXT</SelectItem>
-                          <SelectItem value={FieldType.NUMBER}>
-                            NUMBER
-                          </SelectItem>
-                          <SelectItem value={FieldType.CHECKBOX}>
-                            CHECKBOX
-                          </SelectItem>
-                          <SelectItem value={FieldType.DROPDOWN}>
-                            DROPDOWN
-                          </SelectItem>
-                          <SelectItem value={FieldType.PASSWORD}>
-                            PASSWORD
-                          </SelectItem>
-                          <SelectItem value={FieldType.RADIO}>RADIO</SelectItem>
-                          <SelectItem value={FieldType.TEXTAREA}>
-                            TEXTAREA
-                          </SelectItem>
+                          {form.getValues('fieldPopulate')?.length > 0 ? (
+                            <>
+                              <SelectItem value={FieldType.CHECKBOX}>
+                                CHECKBOX
+                              </SelectItem>
+                              <SelectItem value={FieldType.DROPDOWN}>
+                                DROPDOWN
+                              </SelectItem>
+                              <SelectItem value={FieldType.RADIO}>
+                                RADIO
+                              </SelectItem>
+                            </>
+                          ) : (
+                            <>
+                              <SelectItem value={FieldType.TEXT}>
+                                TEXT
+                              </SelectItem>
+                              <SelectItem value={FieldType.NUMBER}>
+                                NUMBER
+                              </SelectItem>
+                              <SelectItem value={FieldType.PASSWORD}>
+                                PASSWORD
+                              </SelectItem>
+                              <SelectItem value={FieldType.TEXTAREA}>
+                                TEXTAREA
+                              </SelectItem>
+                            </>
+                          )}
                         </SelectContent>
                       </Select>
                       <FormMessage />

@@ -111,6 +111,7 @@ export default function RedemptionTable({}) {
         tokenAmount: row.voucherNumber,
         status: row.status,
         uuid: row.uuid,
+        name:row.Vendor.name
       };
     });
     setData(filterData);

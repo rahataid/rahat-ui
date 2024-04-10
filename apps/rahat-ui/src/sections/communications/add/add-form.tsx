@@ -70,9 +70,9 @@ const CampaignForm: FC<CampaignFormProps> = ({
   if (!form) return 'loading...';
   return (
     <>
-      <div className="w-full p-4 bg-white">
+      <div className="w-full p-2">
         <h2 className="text-lg font-semibold mb-4">Campaign: Add</h2>
-        <div className="shadow-md p-4 rounded-sm">
+        <div className="shadow-md p-4 rounded-sm bg-card">
           <div className="mb-4 w-full grid grid-cols-3 gap-4 ">
             <FormField
               control={form.control}

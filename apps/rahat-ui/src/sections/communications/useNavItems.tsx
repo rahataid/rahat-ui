@@ -14,7 +14,7 @@ export const useNavItems = () => {
             title: 'Communications',
             children: [
                 {
-                    title: 'Campaigns',
+                    title: 'Text Campaigns',
                     onClick: handleGoBack,
                     subtitle: totalTextCampaign || 0,
                     icon: <Speech size={18} strokeWidth={1.5} />,

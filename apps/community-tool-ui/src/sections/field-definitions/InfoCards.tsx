@@ -36,7 +36,7 @@ export default function InfoCards({ data }: { data: FieldDefinition }) {
               </div>
             </div>
             {data?.fieldPopulate?.data?.length > 0 && (
-              <div className="col-span-3">
+              <div className="col-span-3 overflow-hidden">
                 <div className="flex flex-col gap-2">
                   <ul className="list-disc pl-4">
                     {data?.fieldPopulate?.data?.map(

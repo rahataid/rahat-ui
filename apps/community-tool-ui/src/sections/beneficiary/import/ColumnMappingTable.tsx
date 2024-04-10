@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react';
 import NestedObjectRenderer from './NestedObjectRenderer';
-import { truncatedText } from 'apps/community-tool-ui/src/utils';
+import { isURL, truncatedText } from 'apps/community-tool-ui/src/utils';
 
 interface ColumnMappingTableProps {
   rawData: any[];
@@ -21,6 +21,17 @@ export default function ColumnMappingTable({
     });
     if (!found) return false;
     return true;
+  }
+
+  function renderField(item: any, key: string) {
+    const isUrl = isURL(item[key]);
+    if (isUrl)
+      return (
+        <a className="text-blue-400" href={item[key]} target="_blank">
+          Open Link
+        </a>
+      );
+    return item[key];
   }
 
   return (
@@ -72,7 +83,7 @@ export default function ColumnMappingTable({
                     {typeof item[key] === 'object' ? (
                       <NestedObjectRenderer object={item[key]} />
                     ) : (
-                      item[key]
+                      renderField(item, key)
                     )}
                   </td>
                 ))}

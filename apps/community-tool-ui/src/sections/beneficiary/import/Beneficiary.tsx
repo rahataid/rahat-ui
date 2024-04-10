@@ -270,7 +270,6 @@ export default function BenImp({ extraFields }: IProps) {
         finalPayload = replaced;
       }
     }
-    console.log('FinalPayload', finalPayload);
     return validateAndImortBeneficiary(finalPayload, selectedTargets, action);
   };
 
@@ -363,7 +362,7 @@ export default function BenImp({ extraFields }: IProps) {
     setProcessedData(validData);
     setInvalidFields([]);
     setHasDuplicate(false);
-    await exportDataToExcel(invalidData);
+    exportDataToExcel(invalidData);
     if (!validData.length) {
       setUniqueField('');
       setCurrentScreen(BENEF_IMPORT_SCREENS.SELECTION);

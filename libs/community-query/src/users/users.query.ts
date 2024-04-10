@@ -84,7 +84,7 @@ export const useCommunityUserUpdate = () => {
   );
 };
 
-export const useRoleList = (payload?: ListRole) => {
+export const useRoleList = (payload?: ListRole): any => {
   const { queryClient, rumsanService } = useRSQuery();
   const roleClient = getUserClient(rumsanService.client);
   const query = useQuery(

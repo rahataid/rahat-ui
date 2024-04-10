@@ -33,7 +33,7 @@ export const useNavItems = () => {
   const dialog = useSwal();
   const createTokenSummaryModal = useBoolean();
   const createTokenModal = useBoolean();
-  const [projectStats,setProjectStats]= useState();
+  const [projectStats, setProjectStats] = useState();
 
   const handleOpenCreateTokenModal = () => {
     createTokenModal.onToggle();
@@ -72,17 +72,16 @@ export const useNavItems = () => {
 
   const projectClient = useProjectAction();
 
-  const getProjectStats =  useCallback(async () =>{
+  const getProjectStats = useCallback(async () => {
     const result = await projectClient.mutateAsync({
-      uuid :id,
-      data:{
-        action:'elProject.count_ben_vendor',
-        payload:{}
-      }
+      uuid: id,
+      data: {
+        action: 'elProject.count_ben_vendor',
+        payload: {},
+      },
     });
-    setProjectStats(result.data)
-
-  },[id])
+    setProjectStats(result.data);
+  }, [id]);
 
   useEffect(() => {
     if (projectVoucher.isSuccess) {
@@ -92,13 +91,13 @@ export const useNavItems = () => {
     }
   }, [projectVoucher.isSuccess]);
 
-  useEffect(() =>{
-    getProjectStats()
-  },[getProjectStats])
+  useEffect(() => {
+    getProjectStats();
+  }, [getProjectStats]);
 
   const handleCreateVoucherTokenChange = (e: any) => {
     const { name, value } = e.target;
-    const numericValue = Number(value)
+    const numericValue = Number(value);
     if (isNaN(numericValue) || numericValue < 0) return;
     setVoucherInputs((prev) => ({
       ...prev,
@@ -115,16 +114,16 @@ export const useNavItems = () => {
     e.preventDefault();
     if (!contractSettings) return;
     const referralLimit = 3;
-      await createOnlyVoucher.writeContractAsync({
-          address: contractSettings?.rahatdonor?.address,
-          args: [
-            contractSettings?.eyevoucher?.address,
-            contractSettings?.referralvoucher?.address,
-            contractSettings?.elproject?.address,
-            BigInt(voucherInputs.tokens),
-            BigInt(referralLimit),
-          ],
-        });
+    await createOnlyVoucher.writeContractAsync({
+      address: contractSettings?.rahatdonor?.address,
+      args: [
+        contractSettings?.eyevoucher?.address,
+        contractSettings?.referralvoucher?.address,
+        contractSettings?.elproject?.address,
+        BigInt(voucherInputs.tokens),
+        BigInt(referralLimit),
+      ],
+    });
     handleCloseSummaryModal();
   };
 
@@ -183,7 +182,6 @@ export const useNavItems = () => {
           title: 'Campaigns',
           icon: <Speech size={18} strokeWidth={1.5} />,
           path: `/projects/el/${id}/campaigns/text`,
-
         },
       ],
     },
@@ -226,7 +224,7 @@ export const useNavItems = () => {
         },
         {
           title: 'Edit Project',
-          path: '/edit',
+          path: `/projects/el/${id}/edit`,
           icon: <Pencil size={18} strokeWidth={1.5} />,
         },
       ],

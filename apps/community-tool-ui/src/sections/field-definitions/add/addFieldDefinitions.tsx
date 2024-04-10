@@ -84,7 +84,7 @@ export default function AddFieldDefinitions() {
       const payload = {
         name: data.name,
         fieldType: data.fieldType as FieldType,
-        isActive: data.isActive,
+        isActive: true,
         isTargeting: data.isTargeting,
         fieldPopulate: { data: fieldPopulatePayload } || [],
       };
@@ -133,7 +133,7 @@ export default function AddFieldDefinitions() {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleCreateFieldDefinitions)}>
-        <div className="p-4 h-add">
+        <div className="p-4 h-add overflow-scroll">
           <h1 className="text-lg font-semibold mb-6">Add Field Definition</h1>
           <div className="shadow-md p-4 rounded-sm">
             <div className="grid grid-cols-2 gap-4 mb-4">
@@ -195,25 +195,10 @@ export default function AddFieldDefinitions() {
 
               <FormField
                 control={form.control}
-                name="isActive"
-                render={({ field }) => (
-                  <div className=" flex flex-row items-center gap-4 m-1">
-                    <Label>isActive</Label>
-                    <Switch
-                      {...field}
-                      value={field.value ? 'false' : 'true'}
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </div>
-                )}
-              />
-              <FormField
-                control={form.control}
                 name="isTargeting"
                 render={({ field }) => (
                   <div className=" flex flex-row items-center gap-4 m-1">
-                    <Label>isTargeting</Label>
+                    <Label>User for Targeting</Label>
                     <Switch
                       {...field}
                       value={field.value ? 'false' : 'true'}
@@ -297,7 +282,7 @@ export default function AddFieldDefinitions() {
                 </Button>
               </>
             )}
-            <div className="flex justify-end">
+            <div className="flex justify-end mb-10">
               <Button type="submit">Create Field Definition</Button>
             </div>
           </div>

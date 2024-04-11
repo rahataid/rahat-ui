@@ -7,7 +7,6 @@ import { z } from 'zod';
 import { FormProvider, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
-import { useAudienceColumns } from './use-audience-columns';
 import AddAudience from './add-audiences';
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 import { Audience, CAMPAIGN_TYPES } from '@rahat-ui/types';
@@ -17,14 +16,10 @@ import {
   useListAudience,
   useGetAudio,
   useCreateCampaign,
-  useCreateAudience,
 } from '@rumsan/communication-query';
 
 import { useRouter } from 'next/navigation';
 import { paths } from 'apps/rahat-ui/src/routes/paths';
-import { useBeneficiaryPii, usePagination } from '@rahat-ui/query';
-import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
-import { useAudienceTable } from './use-audience-table';
 import { debounce } from 'lodash';
 
 const FormSchema = z.object({
@@ -57,30 +52,14 @@ export type SelectedRowType = {
 };
 
 const AddCampaignView = () => {
-  const {
-    pagination,
-    filters,
-    setFilters,
-    setNextPage,
-    setPrevPage,
-    setPerPage,
-  } = usePagination();
   const { data: transportData } = useListTransport();
   const { data: audienceData } = useListAudience();
 
   const { data: audioData } = useGetAudio();
   const createCampaign = useCreateCampaign();
-  const createAudience = useCreateAudience();
-  const { data: beneficiaryData } = useBeneficiaryPii({
-    ...pagination,
-    ...filters,
-  });
-  const [rowSelection, setRowSelection] = React.useState({});
   const [selectedRows, setSelectedRows] = React.useState<SelectedRowType[]>([]);
   const [globalFilter, setGlobalFilter] = React.useState('');
   const [isSubmitting, setIsSubmitting] = React.useState(false);
-
-  const [columnVisibility, setColumnVisibility] = React.useState({});
 
   const showAddAudienceView = useBoolean(false);
   const router = useRouter();
@@ -92,35 +71,6 @@ const AddCampaignView = () => {
       audiences: [],
     },
     mode: 'onChange',
-  });
-  const columns = useAudienceColumns(
-    beneficiaryData,
-    selectedRows,
-    audienceData,
-    createAudience,
-    setSelectedRows,
-  );
-
-  const tableData = React.useMemo(() => {
-    return (
-      beneficiaryData &&
-      beneficiaryData?.data?.map((item: any) => ({
-        name: item?.name,
-        id: item?.beneficiaryId,
-        phone: item?.phone,
-      }))
-    );
-  }, [beneficiaryData]);
-
-  const table = useAudienceTable({
-    columnVisibility,
-    columns,
-    globalFilter,
-    rowSelection,
-    setColumnVisibility,
-    setGlobalFilter,
-    setRowSelection,
-    tableData,
   });
 
   const debouncedHandleSubmit = debounce((data) => {
@@ -203,27 +153,14 @@ const AddCampaignView = () => {
           isSubmitting={isSubmitting}
         />
         {showAddAudienceView.value ? (
-          <div className='p-2'>
+          <div className="p-2">
             <AddAudience
-              table={table}
-              columns={columns}
               form={form}
-              filters={filters}
-              setFilters={setFilters}
               globalFilter={globalFilter}
               setGlobalFilter={setGlobalFilter}
               selectedRows={selectedRows}
-            />
-            <CustomPagination
-              meta={
-                beneficiaryData?.response?.meta || { total: 0, currentPage: 0 }
-              }
-              handleNextPage={setNextPage}
-              handlePrevPage={setPrevPage}
-              handlePageSizeChange={setPerPage}
-              currentPage={pagination.page}
-              perPage={pagination.perPage}
-              total={beneficiaryData?.response?.meta?.lastPage || 0}
+              setSelectedRows={setSelectedRows}
+              audienceData={audienceData}
             />
           </div>
         ) : null}

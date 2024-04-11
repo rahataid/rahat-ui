@@ -13,27 +13,18 @@ import { Audience, CAMPAIGN_TYPES } from '@rahat-ui/types';
 import {
   useListTransport,
   useListAudience,
-  useCreateAudience,
   useUpdateCampaign,
   useGetCampaign,
   useGetAudio,
 } from '@rumsan/communication-query';
-import { useBeneficiaryPii, usePagination } from '@rahat-ui/query';
-import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import AddForm from '../add/add-form';
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 import AddAudience from '../add/add-audiences';
-import { useAudienceColumns } from '../add/use-audience-columns';
-import { useAudienceTable } from '../add/use-audience-table';
 import { Form } from '@rahat-ui/shadcn/src/components/ui/form';
 
 export default function EditCampaign() {
   const params = useParams<{ tag: string; id: string }>();
-  const [showAudiences, setShowAudiences] = useState(false);
 
-  const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = React.useState({});
   const [selectedRows, setSelectedRows] = useState<
     Array<{ id: number; phone: string; name: string }>
   >([]);
@@ -44,23 +35,9 @@ export default function EditCampaign() {
   const { data: audienceData } = useListAudience();
   const { data: audioData } = useGetAudio();
 
-  const {
-    filters,
-    setFilters,
-    pagination,
-    selectedListItems,
-    setSelectedListItems,
-    setNextPage,
-    setPrevPage,
-    setPerPage,
-  } = usePagination();
-
-  const { data: beneficiaryData } = useBeneficiaryPii(pagination);
-
   const { data, isSuccess, isLoading } = useGetCampaign({
     id: Number(params.id),
   });
-  const createAudience = useCreateAudience();
 
   const editCampaign = useUpdateCampaign();
 
@@ -178,34 +155,6 @@ export default function EditCampaign() {
       });
   };
 
-  const columns = useAudienceColumns(
-    beneficiaryData,
-    selectedRows,
-    audienceData || [],
-    createAudience,
-    setSelectedRows,
-  );
-  const tableData = React.useMemo(() => {
-    return (
-      beneficiaryData &&
-      beneficiaryData?.data?.map((item: any) => ({
-        name: item?.name,
-        id: item?.beneficiaryId,
-        phone: item?.phone,
-      }))
-    );
-  }, [beneficiaryData]);
-  const table = useAudienceTable({
-    columnVisibility,
-    columns,
-    globalFilter,
-    rowSelection,
-    setColumnVisibility,
-    setGlobalFilter,
-    setRowSelection,
-    tableData,
-  });
-
   const showAddAudienceView = useBoolean(false);
 
   return (
@@ -224,34 +173,18 @@ export default function EditCampaign() {
               setShowAddAudience={showAddAudienceView.onToggle}
               showAddAudience={showAddAudienceView.value}
               form={form}
-              data={data}
+              data={data.data}
               isSubmitting={isSubmitting}
             />
             {showAddAudienceView.value ? (
               <>
                 <AddAudience
-                  table={table}
-                  columns={columns}
                   form={form}
-                  filters={filters}
-                  setFilters={setFilters}
                   globalFilter={globalFilter}
                   setGlobalFilter={setGlobalFilter}
                   selectedRows={selectedRows}
-                />
-                <CustomPagination
-                  meta={
-                    beneficiaryData?.response?.meta || {
-                      total: 0,
-                      currentPage: 0,
-                    }
-                  }
-                  handleNextPage={setNextPage}
-                  handlePrevPage={setPrevPage}
-                  handlePageSizeChange={setPerPage}
-                  currentPage={pagination.page}
-                  perPage={pagination.perPage}
-                  total={beneficiaryData?.response?.meta?.lastPage || 0}
+                  setSelectedRows={setSelectedRows}
+                  audienceData={audienceData}
                 />
               </>
             ) : null}

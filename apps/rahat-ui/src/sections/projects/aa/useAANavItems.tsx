@@ -8,7 +8,9 @@ import {
   Plus,
   Phone,
   MessageSquare,
+  Database,
 } from 'lucide-react';
+
 
 export type NavItem = {
   title: string;
@@ -27,7 +29,7 @@ export const useNavItems = () => {
       children: [
         {
           title: 'Beneficiaries',
-          path: `/projects/aa/${params.id}/beneficiary`,
+          // path: `/projects/aa/${params.id}/beneficiary`,
           subtitle: 20,
           icon: <UsersRound size={18} strokeWidth={1.5} />,
         },
@@ -35,6 +37,12 @@ export const useNavItems = () => {
           title: 'Distributions',
           subtitle: 0,
           icon: <AlignVerticalJustifyCenter size={18} strokeWidth={1.5} />,
+        },
+        {
+          title: 'Data Sources',
+          path: `/projects/aa/${params.id}/datasources`,
+          subtitle: 0,
+          icon: <Database size={18} strokeWidth={1.5} />,
         },
         {
           title: 'Communications',

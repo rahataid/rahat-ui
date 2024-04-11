@@ -4,18 +4,34 @@ import * as React from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import { Eye } from 'lucide-react';
 import { Badge } from '@rahat-ui/shadcn/components/badge';
-import { ICampaignItemApiResponse } from '@rumsan/communication';
+import { ICampaignItemApiResponse } from '@rahat-ui/types';
+import { useSecondPanel } from 'apps/rahat-ui/src/providers/second-panel-provider';
+import TextDetailSplitView from './text.detail.split.view';
 
-type IProps = {
-  handleSplitDetail: (item: ICampaignItemApiResponse) => void;
-};
+export default function useTextTableColumn() {
+  const { setSecondPanelComponent, closeSecondPanel } = useSecondPanel();
 
-export default function useTextTableColumn({ handleSplitDetail }: IProps) {
+  const openSplitDetailView = (rowDetail: ICampaignItemApiResponse) => {
+    setSecondPanelComponent(
+      <TextDetailSplitView
+        details={rowDetail}
+        closeSecondPanel={closeSecondPanel}
+      />,
+    );
+  };
+
   const columns: ColumnDef<ICampaignItemApiResponse>[] = [
     {
       accessorKey: 'name',
       header: 'Campaigns',
-      cell: ({ row }) => <div>{row.getValue('name')}</div>,
+      cell: ({ row }) => (
+        <div
+          className="cursor-pointer"
+          onClick={() => openSplitDetailView(row.original)}
+        >
+          {row.getValue('name')}
+        </div>
+      ),
     },
     {
       accessorKey: 'startTime',
@@ -58,7 +74,7 @@ export default function useTextTableColumn({ handleSplitDetail }: IProps) {
             className="hover:text-primary cursor-pointer"
             size={20}
             strokeWidth={1.5}
-            onClick={() => handleSplitDetail(row.original)}
+            onClick={() => openSplitDetailView(row.original)}
           />
         );
       },

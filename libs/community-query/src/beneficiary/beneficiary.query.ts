@@ -179,6 +179,7 @@ export const useCommunityBeneficiaryStatsList = () => {
   return useQuery(
     {
       queryKey: [TAGS.GET_COMMUNITY_BENEFICARY_STATS],
+      //
       queryFn: benClient.getBeneficiaryStats,
     },
     queryClient,

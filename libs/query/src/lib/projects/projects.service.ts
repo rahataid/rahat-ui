@@ -315,11 +315,15 @@ export const useProjectBeneficiaries = (payload: GetProjectBeneficiaries) => {
         ...query.data,
         data: query.data?.data?.length
           ? query.data.data.map((row: any) => ({
+              uuid: row?.Beneficiary?.uuid,
               wallet: row?.Beneficiary?.walletAddress,
               name: row?.piiData?.name,
               gender: row?.Beneficiary?.gender,
               phone: row?.piiData?.phone || 'N/A',
               type: row?.Beneficiary?.type || 'N/A',
+              phoneStatus: row?.Beneficiary?.phoneStatus,
+              bankedStatus: row?.Beneficiary?.bankedStatus,
+              internetStatus: row?.Beneficiary?.internetStatus,
             }))
           : [],
       };

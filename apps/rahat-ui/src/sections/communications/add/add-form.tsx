@@ -73,6 +73,10 @@ const CampaignForm: FC<CampaignFormProps> = ({
   //   const excludeFile = includeMessage ? 'file' : 'message';
   if (!form) return 'loading...';
   const campaignConfirmModal = useBoolean();
+  const handleOpenModal = (e: any) => {
+    e.preventDefault();
+    campaignConfirmModal.onTrue();
+  };
   const handleCampaignAssignModalClose = () => {
     campaignConfirmModal.onFalse();
   };
@@ -233,7 +237,7 @@ const CampaignForm: FC<CampaignFormProps> = ({
               {showAddAudience ? 'Hide Audiences' : 'Show Audiences'}
             </Button>
             <Button
-              onClick={campaignConfirmModal.onTrue}
+              onClick={handleOpenModal}
               variant={'default'}
               disabled={loading}
             >

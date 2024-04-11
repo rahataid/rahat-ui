@@ -48,6 +48,9 @@ import { enumToObjectArray } from '@rumsan/sdk/utils';
 import { Gender } from '@rahataid/sdk/enums';
 import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
 import EditUser from './editUser';
+import { useUserCurrentUser, useUserRemove } from '@rumsan/react-query';
+import { ROLE_TYPE } from './role/const';
+import { UUID } from 'crypto';
 
 type IProps = {
   userDetail: User;
@@ -55,6 +58,10 @@ type IProps = {
 };
 
 export default function UserDetail({ userDetail, closeSecondPanel }: IProps) {
+  const { data } = useUserCurrentUser();
+  const removeUser = useUserRemove();
+
+  const isAdmin = data?.data?.roles.includes(ROLE_TYPE.ADMIN);
   const [activeTab, setActiveTab] = useState<'details' | 'edit' | null>(
     'details',
   );
@@ -66,6 +73,11 @@ export default function UserDetail({ userDetail, closeSecondPanel }: IProps) {
   const toggleActiveUser = () => {
     setActiveUser(!activeUser);
   };
+  const handleDeleteUser = () => {
+    removeUser.mutateAsync(userDetail.uuid as UUID);
+    closeSecondPanel();
+  };
+
   return (
     <>
       <div className="flex justify-between p-4 pt-5 bg-secondary border-b">
@@ -120,42 +132,46 @@ export default function UserDetail({ userDetail, closeSecondPanel }: IProps) {
             </DialogContent>
           </Dialog>
           {/* Delete User */}
-          <Dialog>
-            <DialogTrigger>
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Trash2
-                      className="cursor-pointer"
-                      size={18}
-                      strokeWidth={1.6}
-                      color="#FF0000"
-                    />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Delete User</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Are you absolutely sure?</DialogTitle>
-                <DialogDescription>
-                  This action cannot be undone. This will permanently delete
-                  your user.
-                </DialogDescription>
-              </DialogHeader>
-              <DialogFooter>
-                <div className="flex items-center justify-center mt-2 gap-4">
-                  <Button variant="outline">Yes</Button>
-                  <DialogClose asChild>
-                    <Button variant="outline">No</Button>
-                  </DialogClose>
-                </div>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+          {isAdmin && (
+            <Dialog>
+              <DialogTrigger>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Trash2
+                        className="cursor-pointer"
+                        size={18}
+                        strokeWidth={1.6}
+                        color="#FF0000"
+                      />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Delete User</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Are you absolutely sure?</DialogTitle>
+                  <DialogDescription>
+                    This action cannot be undone. This will permanently delete
+                    your user.
+                  </DialogDescription>
+                </DialogHeader>
+                <DialogFooter>
+                  <div className="flex items-center justify-center mt-2 gap-4">
+                    <Button onClick={handleDeleteUser} variant="outline">
+                      Yes
+                    </Button>
+                    <DialogClose asChild>
+                      <Button variant="outline">No</Button>
+                    </DialogClose>
+                  </div>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          )}
           {/* Actions */}
           <DropdownMenu>
             <DropdownMenuTrigger>

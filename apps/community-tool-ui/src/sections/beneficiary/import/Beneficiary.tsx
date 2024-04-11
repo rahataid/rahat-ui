@@ -21,6 +21,7 @@ import {
 import { ArrowBigLeft } from 'lucide-react';
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import * as xlsx from 'xlsx';
 import Swal from 'sweetalert2';
 import AddToQueue from './AddToQueue';
 import ErrorAlert from './ErrorAlert';
@@ -134,6 +135,9 @@ export default function BenImp({ extraFields }: IProps) {
     sourceField: string,
     targetField: string,
   ) => {
+    console.log({ sourceField });
+    console.log({ targetField });
+    if (targetField === 'None') return;
     const index = mappings.findIndex(
       (item: any) => item.sourceField === sourceField,
     );
@@ -146,36 +150,23 @@ export default function BenImp({ extraFields }: IProps) {
     }
   };
 
-  const handleExcelUpload = async (formData: any) => {
-    const res = await rumsanService.client.post(
-      'beneficiaries/upload',
-      formData,
-    );
-    return res.data;
-  };
-
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     setRawData([]);
-    const { files } = e.target;
-    const formData = new FormData();
-    if (!files?.length)
-      return Swal.fire({
-        icon: 'error',
-        title: 'Please select a file to upload',
-      });
+    const files = e.target.files || [];
     const fileName = formatNameString(files[0].name);
-    formData.append('file', files[0]);
-    const data = await handleExcelUpload(formData);
-    if (!data)
-      return Swal.fire({
-        icon: 'error',
-        title: 'Failed to upload a file',
-      });
-    const { workbookData } = data?.data;
-    const sanitized = removeFieldsWithUnderscore(workbookData || []);
-
+    if (!files.length) return;
+    const reader = new FileReader();
+    reader.onload = (e: any) => {
+      const data = e.target.result;
+      const workbook = xlsx.read(data, { type: 'array' });
+      const sheetName = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[sheetName];
+      const json = xlsx.utils.sheet_to_json(worksheet) as any;
+      const sanitized = removeFieldsWithUnderscore(json || []);
+      setRawData(sanitized);
+    };
+    reader.readAsArrayBuffer(files[0]);
     setImportId(fileName);
-    setRawData(sanitized);
     await fetchExistingMapping(fileName);
   };
 
@@ -202,10 +193,6 @@ export default function BenImp({ extraFields }: IProps) {
   };
 
   const handleImportNowClick = async () => {
-    // let _text =
-    //   duplicateCount > 0
-    //     ? `${duplicateCount} existing beneficiaries will be updated!`
-    //     : 'No duplicate found!';
     const dialog = await Swal.fire({
       title: `${processedData.length} Beneficiaries will be imported!`,
       showCancelButton: true,
@@ -228,6 +215,8 @@ export default function BenImp({ extraFields }: IProps) {
     setValidBenef([]);
     let finalPayload = rawData;
     const selectedTargets = []; // Only submit selected target fields
+
+    console.log({ mappings });
 
     for (let m of mappings) {
       if (m.targetField === TARGET_FIELD.FIRSTNAME) {
@@ -254,6 +243,8 @@ export default function BenImp({ extraFields }: IProps) {
         selectedTargets.push(TARGET_FIELD.LASTNAME);
         const replaced = finalPayload.map((item: any) => {
           const { firstName, lastName } = splitFullName(item[m.sourceField]);
+          console.log({ firstName });
+          console.log({ lastName });
           const newItem = { ...item, firstName, lastName };
           if (m.sourceField !== m.targetField) delete newItem[m.sourceField];
           return newItem;

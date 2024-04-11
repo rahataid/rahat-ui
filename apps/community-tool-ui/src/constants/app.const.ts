@@ -89,3 +89,5 @@ export const IMPORT_ACTION = {
   VALIDATE: 'VALIDATE',
   IMPORT: 'IMPORT',
 };
+
+export const MAX_EXPORT_COUNT = 100;

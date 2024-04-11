@@ -93,20 +93,39 @@ function moveErrorMsgToFirstKey(data: any) {
   return result;
 }
 
+function createInvalidFieldError(errFields: any) {
+  const errFieldsArr = errFields.map((err: any) => err.fieldName);
+  return `Invalid fields: ${errFieldsArr.join(', ')}`;
+}
+
 export const splitValidAndInvalid = (payload: any, errors: []) => {
   const invalidData = [] as any;
   const validData = [] as any;
 
   payload.forEach((p: any) => {
     const error = errors.find((error: any) => error.uuid === p.uuid);
+
     if (error || p.isDuplicate) {
+      const errFields = errors.filter((err: any) => err.uuid === p.uuid);
       if (p.uuid) delete p.uuid;
       if (p.rawData) delete p.rawData;
       if (p.hasOwnProperty('isDuplicate')) {
-        p.errorMessage = p.isDuplicate ? 'Dulicate Data' : 'Invalid Data';
-        p.errorMessage = error ? 'Invalid Data' : 'Duplicate Data';
-        if (error && p.isDuplicate)
-          p.errorMessage = 'Duplicate and Invalid Data';
+        // 1. If there is duplicate data
+        if (p.isDuplicate) p.errorMessage = 'Duplicate Data';
+        // 2. If there is an error
+        if (error) {
+          if (errFields.length) {
+            p.errorMessage = createInvalidFieldError(errFields);
+          }
+        }
+        // 3. If there is both duplicate and error
+        if (error && p.isDuplicate) {
+          p.errorMessage = 'Duplicate data';
+          if (errFields.length) {
+            const invalidFieldMsg = createInvalidFieldError(errFields);
+            p.errorMessage = `Duplicate & ${invalidFieldMsg}`;
+          }
+        }
 
         delete p.isDuplicate;
       }

@@ -71,7 +71,9 @@ const CampaignForm: FC<CampaignFormProps> = ({
   return (
     <>
       <div className="w-full p-2">
-        <h2 className="text-lg font-semibold mb-4">Campaign: Add</h2>
+        <h2 className="text-lg font-semibold mb-4">
+          Campaign: {data ? 'Edit' : 'Add'}
+        </h2>
         <div className="shadow-md p-4 rounded-sm bg-card">
           <div className="mb-4 w-full grid grid-cols-3 gap-4 ">
             <FormField
@@ -134,7 +136,7 @@ const CampaignForm: FC<CampaignFormProps> = ({
                 <FormItem>
                   <Select
                     onValueChange={field.onChange}
-                    defaultValue={field.value || data?.data?.type}
+                    defaultValue={field.value || data?.type}
                   >
                     <FormControl>
                       <SelectTrigger className="rounded">
@@ -228,7 +230,11 @@ const CampaignForm: FC<CampaignFormProps> = ({
                 <Loader />
               </Button>
             ) : (
-              <Button type="submit" variant={'default'} disabled={loading}>
+              <Button
+                type="submit"
+                variant={'default'}
+                disabled={data?.status === 'COMPLETED' ? true : loading}
+              >
                 {title}
               </Button>
             )}

@@ -70,7 +70,7 @@ export const useAudienceColumns = (
                 checked
                   ? [...prevSelectedRows, item]
                   : selectedRows?.filter(
-                      (value) => (value.id || value.beneficiaryId) !== item.id,
+                      (value) => value?.phone !== item?.phone,
                     ),
               );
             }}

@@ -24,9 +24,8 @@ export default function InfoBox({
           <p className="font-bold">{title}</p>
           <p className="text-sm">
             {message}.{' '}
-            {uniqueField
-              ? `${uniqueField.toUpperCase()} is your unique field!`
-              : 'No Unique field selected'}
+            {uniqueField &&
+              `${uniqueField.toUpperCase()} is your unique field!`}
           </p>
         </div>
       </div>

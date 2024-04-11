@@ -1,6 +1,6 @@
+import { isURL, truncatedText } from 'apps/community-tool-ui/src/utils';
 import React, { useState } from 'react';
 import NestedObjectRenderer from './NestedObjectRenderer';
-import { isURL, truncatedText } from 'apps/community-tool-ui/src/utils';
 
 interface ColumnMappingTableProps {
   rawData: any[];

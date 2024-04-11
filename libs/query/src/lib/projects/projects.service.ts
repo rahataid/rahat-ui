@@ -8,7 +8,7 @@ import {
   useQueryClient,
 } from '@tanstack/react-query';
 import { TAGS } from '../../config';
-
+import { toast } from 'sonner';
 import { Beneficiary, MS_ACTIONS } from '@rahataid/sdk';
 import { getProjectClient } from '@rahataid/sdk/clients';
 import { Project, ProjectActions } from '@rahataid/sdk/project/project.types';
@@ -37,7 +37,7 @@ export const useProjectCreateMutation = () => {
   });
 };
 
-export const useProjectAction = <T = any>() => {
+export const useProjectAction = <T = any>(key?: string[]) => {
   const { queryClient, rumsanService } = useRSQuery();
   const projectClient = getProjectClient(rumsanService.client);
   return useMutation<
@@ -50,6 +50,7 @@ export const useProjectAction = <T = any>() => {
     unknown
   >(
     {
+      mutationKey: key || ['projectAction'],
       mutationFn: projectClient.projectActions,
     },
     queryClient,
@@ -325,4 +326,66 @@ export const useProjectBeneficiaries = (payload: GetProjectBeneficiaries) => {
       };
     }, [query.data]),
   };
+};
+
+export const useListELRedemption = (
+  payload: Pagination & { uuid: UUID },
+): any => {
+  const projectAction = useProjectAction(['redemptionList']);
+  const query = useQuery({
+    queryKey: ['elProject.listRedemption'],
+    placeholderData: keepPreviousData,
+    queryFn: async () => {
+      const d = await projectAction.mutateAsync({
+        uuid: payload.uuid,
+        data: {
+          action: 'elProject.listRedemption',
+          payload: {
+            page: payload.page,
+            perPage: payload.perPage,
+          },
+        },
+      });
+      return d;
+    },
+  });
+
+  return query;
+};
+
+export const useUpdateElRedemption = () => {
+  const projectAction = useProjectAction();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+  return useMutation({
+    onSuccess: () => {
+      toast.fire({
+        title: 'Redemption Successful.',
+        icon: 'success',
+      });
+    },
+    mutationFn: async ({
+      projectUUID,
+      redemptionUUID,
+    }: {
+      projectUUID: UUID;
+      redemptionUUID: UUID;
+    }) => {
+      const m = await projectAction.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: MS_ACTIONS.ELPROJECT.UPDATE_REDEMPTION,
+          payload: {
+            uuid: redemptionUUID,
+          },
+        },
+      });
+      return m;
+    },
+  });
 };

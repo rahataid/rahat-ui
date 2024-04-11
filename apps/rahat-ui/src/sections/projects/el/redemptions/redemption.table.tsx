@@ -12,7 +12,7 @@ import {
 } from '@tanstack/react-table';
 import * as React from 'react';
 
-import { useProjectAction } from '@rahat-ui/query';
+import { useProjectAction, useUpdateElRedemption } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/components/button';
 import { Input } from '@rahat-ui/shadcn/components/input';
 import {
@@ -54,6 +54,7 @@ export default function RedemptionTable({}) {
   );
 
   const projectModal = useBoolean();
+
   const [selectedRow, setSelectedRow] = React.useState(null);
 
   const handleAssignModalClick = (row: any) => {
@@ -64,7 +65,7 @@ export default function RedemptionTable({}) {
   const columns = useTableColumns(handleAssignModalClick);
 
   const [perPage, setPerPage] = React.useState<number>(10);
-  const [currentPage, setCurrentPage] = React.useState<number>(1);
+  const [currentPage, setCurrentPage] = React.useState<number>(2);
 
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
@@ -93,7 +94,7 @@ export default function RedemptionTable({}) {
   });
 
   const getRedemption = useProjectAction();
-  console.log('getRedemption', getRedemption.data);
+  const updateRedemption = useUpdateElRedemption();
 
   const getRedemptionList = async () => {
     const result = await getRedemption.mutateAsync({
@@ -124,16 +125,15 @@ export default function RedemptionTable({}) {
   }, []);
 
   const handleApprove = async () => {
-    const res = await getRedemption.mutateAsync({
-      uuid,
-      data: {
-        action: 'elProject.updateRedemption',
-        payload: {
-          uuid: selectedRow?.uuid,
-        },
-      },
+    await updateRedemption.mutateAsync({
+      projectUUID: uuid,
+      redemptionUUID: selectedRow?.uuid,
     });
+    projectModal.onFalse();
   };
+  React.useEffect(() => {
+    getRedemptionList();
+  }, []);
 
   return (
     <>

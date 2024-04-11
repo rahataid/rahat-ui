@@ -17,6 +17,7 @@ import { Redemption } from './redemption.table';
 
 export const useTableColumns = (handleAssignClick: any) => {
   const { closeSecondPanel, setSecondPanelComponent } = useSecondPanel();
+
   const handleAssign = (row: any) => {
     handleAssignClick(row);
   };

@@ -147,14 +147,6 @@ export default function BenImp({ extraFields }: IProps) {
     }
   };
 
-  const handleExcelUpload = async (formData: any) => {
-    const res = await rumsanService.client.post(
-      'beneficiaries/upload',
-      formData,
-    );
-    return res.data;
-  };
-
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     setRawData([]);
     const files = e.target.files || [];
@@ -168,7 +160,6 @@ export default function BenImp({ extraFields }: IProps) {
       const worksheet = workbook.Sheets[sheetName];
       const json = xlsx.utils.sheet_to_json(worksheet) as any;
       const sanitized = removeFieldsWithUnderscore(json || []);
-      console.log('Sanitized', sanitized);
       setRawData(sanitized);
     };
     reader.readAsArrayBuffer(files[0]);

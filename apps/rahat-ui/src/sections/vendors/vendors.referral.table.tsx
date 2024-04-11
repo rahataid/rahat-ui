@@ -93,25 +93,6 @@ export const columns: ColumnDef<Transaction>[] = [
     ),
   },
 
-  // {
-  //   accessorKey: 'phoneNumber',
-  //   header: ({ column }) => {
-  //     return (
-  //       <Button
-  //         variant="ghost"
-  //         onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-  //       >
-  //         Phone Number
-  //         <ArrowUpDown className="ml-2 h-4 w-4" />
-  //       </Button>
-  //     );
-  //   },
-  //   cell: ({ row }) => (
-  //     <div className="lowercase">
-  //       {truncateEthAddress(row.getValue('phoneNumber'))}
-  //     </div>
-  //   ),
-  // },
   {
     accessorKey: 'timeStamp',
     header: ({ column }) => {

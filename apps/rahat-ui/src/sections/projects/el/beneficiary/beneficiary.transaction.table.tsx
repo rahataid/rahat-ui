@@ -162,7 +162,7 @@ export default function BeneficiaryDetailTableView({
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
   );
-  const { data: beneficiaryTransaction, error } =
+  const { data: beneficiaryTransaction, isFetching } =
     useBeneficiaryTransaction(walletAddress);
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
@@ -190,45 +190,6 @@ export default function BeneficiaryDetailTableView({
 
   return (
     <>
-      {/* <div className="flex items-center mb-2">
-          <Input
-            placeholder="Filter topic..."
-            value={(table.getColumn('topic')?.getFilterValue() as string) ?? ''}
-            onChange={(event) =>
-              table.getColumn('topic')?.setFilterValue(event.target.value)
-            }
-            className="max-w-sm mr-3"
-          />
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="ml-auto">
-                <Settings2 className="mr-2 h-4 w-5" />
-                View
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Toggle Columns</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              {table
-                .getAllColumns()
-                .filter((column) => column.getCanHide())
-                .map((column) => {
-                  return (
-                    <DropdownMenuCheckboxItem
-                      key={column.id}
-                      className="capitalize"
-                      checked={column.getIsVisible()}
-                      onCheckedChange={(value) =>
-                        column.toggleVisibility(!!value)
-                      }
-                    >
-                      {column.id}
-                    </DropdownMenuCheckboxItem>
-                  );
-                })}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div> */}
       <div className="rounded border">
         <Table>
           <ScrollArea className="h-[calc(100vh-368px)]">
@@ -273,7 +234,15 @@ export default function BeneficiaryDetailTableView({
                     colSpan={columns.length}
                     className="h-24 text-center"
                   >
-                    No results.
+                    {isFetching ? (
+                      <div className="flex items-center justify-center space-x-2 h-full">
+                        <div className="h-5 w-5 animate-bounce rounded-full bg-primary [animation-delay:-0.3s]"></div>
+                        <div className="h-5 w-5 animate-bounce rounded-full bg-primary [animation-delay:-0.13s]"></div>
+                        <div className="h-5 w-5 animate-bounce rounded-full bg-primary"></div>
+                      </div>
+                    ) : (
+                      'No data available.'
+                    )}
                   </TableCell>
                 </TableRow>
               )}

@@ -56,11 +56,17 @@ const VoucherView = () => {
       ) : (
         <>
           {projectVoucher?.freeVoucherAddress ? (
-            <>
-              <FreeVoucherInfo data={projectVoucher} />
-              <DiscountVoucherInfo data={projectVoucher} />
+            <div className="bg-secondary">
+              <div className="grid grid-cols-2">
+                <div>
+                  <FreeVoucherInfo data={projectVoucher} />
+                </div>
+                <div>
+                  <DiscountVoucherInfo data={projectVoucher} />
+                </div>
+              </div>
 
-              <div className="m-2">
+              <div className="mt-2 mx-2">
                 <Tabs defaultValue="free">
                   <TabsList className="w-full grid grid-cols-2 border h-auto">
                     <TabsTrigger value="free">
@@ -92,7 +98,7 @@ const VoucherView = () => {
                   </TabsContent>
                 </Tabs>
               </div>
-            </>
+            </div>
           ) : (
             <AddVoucher contractSettings={contractAddress} />
           )}

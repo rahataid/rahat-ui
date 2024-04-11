@@ -140,7 +140,7 @@ export default function TextTableView({ handleClick }: IProps) {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <div className="rounded border bg-white">
+      <div className="rounded border bg-card">
         <Table>
           <ScrollArea className="h-table1">
             <TableHeader>

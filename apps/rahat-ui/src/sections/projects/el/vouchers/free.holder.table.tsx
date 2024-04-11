@@ -113,13 +113,13 @@ export function FreeHoldersTable() {
   });
 
   return (
-    <div className="w-full bg-card">
+    <div className="w-full h-[calc(100vh-280px)] bg-card">
       <div className="flex items-center justify-between py-2 mx-2">
         <h1 className="text-primary">Holders</h1>
       </div>
       <div className="rounded border">
         <Table>
-          <ScrollArea className="h-[calc(100vh-494px)]">
+          <ScrollArea className="h-full">
             <TableHeader className="top-0 sticky bg-card">
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>

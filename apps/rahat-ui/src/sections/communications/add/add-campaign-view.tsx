@@ -184,14 +184,16 @@ const AddCampaignView = () => {
     data: z.infer<typeof FormSchema>,
     event: any,
   ) => {
+    event.preventDefault();
     setIsSubmitting(true);
     event.preventDefault();
     debouncedHandleSubmit(data);
   };
+
   return (
     <FormProvider {...form}>
       <form
-        onSubmit={form.handleSubmit(handleCreateCampaign)}
+        // onSubmit={form.handleSubmit(handleCreateCampaign)}
         className="h-add"
       >
         <AddForm
@@ -201,7 +203,9 @@ const AddCampaignView = () => {
           showAddAudience={showAddAudienceView.value}
           form={form}
           isSubmitting={isSubmitting}
+          handleSubmit={handleCreateCampaign}
         />
+
         {showAddAudienceView.value ? (
           <>
             <AddAudience

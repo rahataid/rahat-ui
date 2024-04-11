@@ -17,7 +17,7 @@ import {
   UsersRound,
   XCircle,
 } from 'lucide-react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 import { useSwal } from '../../../components/swal';
 import { NavItem } from '../components';
@@ -26,6 +26,7 @@ import CreateVoucherModal from './create-voucher-modal';
 
 export const useNavItems = () => {
   const { id } = useParams();
+  const route = useRouter();
   const contractSettings = useProjectSettingsStore(
     (state) => state.settings?.[id] || null,
   );
@@ -125,6 +126,7 @@ export const useNavItems = () => {
       ],
     });
     handleCloseSummaryModal();
+    route.push(`/projects/el/${id}/vouchers`);
   };
 
   const handleCloseProject = async () => {

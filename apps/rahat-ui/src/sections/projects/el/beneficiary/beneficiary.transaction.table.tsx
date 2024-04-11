@@ -47,6 +47,7 @@ import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import TransactionTableData from './beneficiaryTransactionData.json';
 import { useBeneficiaryTransaction } from 'apps/rahat-ui/src/hooks/el/subgraph/querycall';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
+import TableLoader from 'apps/rahat-ui/src/components/table.loader';
 // import { useBeneficiaryTransaction } from '../../hooks/el/subgraph/querycall';
 
 // const data: Transaction[] = TransactionTableData;
@@ -234,15 +235,7 @@ export default function BeneficiaryDetailTableView({
                     colSpan={columns.length}
                     className="h-24 text-center"
                   >
-                    {isFetching ? (
-                      <div className="flex items-center justify-center space-x-2 h-full">
-                        <div className="h-5 w-5 animate-bounce rounded-full bg-primary [animation-delay:-0.3s]"></div>
-                        <div className="h-5 w-5 animate-bounce rounded-full bg-primary [animation-delay:-0.13s]"></div>
-                        <div className="h-5 w-5 animate-bounce rounded-full bg-primary"></div>
-                      </div>
-                    ) : (
-                      'No data available.'
-                    )}
+                    {isFetching ? <TableLoader /> : 'No data available.'}
                   </TableCell>
                 </TableRow>
               )}

@@ -36,6 +36,7 @@ import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 import { useParams } from 'next/navigation';
 import { useTableColumns } from './useTableColumns';
+import TableLoader from 'apps/rahat-ui/src/components/table.loader';
 
 export type Redemption = {
   id: string;
@@ -192,11 +193,7 @@ export default function RedemptionTable({}) {
                       className="h-24 text-center"
                     >
                       {getRedemption.isPending ? (
-                        <div className="flex items-center justify-center space-x-2 h-full">
-                          <div className="h-5 w-5 animate-bounce rounded-full bg-primary [animation-delay:-0.3s]"></div>
-                          <div className="h-5 w-5 animate-bounce rounded-full bg-primary [animation-delay:-0.13s]"></div>
-                          <div className="h-5 w-5 animate-bounce rounded-full bg-primary"></div>
-                        </div>
+                        <TableLoader />
                       ) : (
                         'No data available.'
                       )}

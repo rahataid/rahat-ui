@@ -32,6 +32,7 @@ import {
 import { Copy, CopyCheck } from 'lucide-react';
 import { useVoucherHolder } from 'apps/rahat-ui/src/hooks/el/subgraph/querycall';
 import { collectGenerateParams } from 'next/dist/build/utils';
+import TableLoader from 'apps/rahat-ui/src/components/table.loader';
 
 export type Payment = {
   id: string;
@@ -161,15 +162,7 @@ export function FreeHoldersTable() {
                     colSpan={columns.length}
                     className="h-24 text-center"
                   >
-                    {isFetching ? (
-                      <div className="flex items-center justify-center space-x-2">
-                        <div className="h-5 w-5 animate-bounce rounded-full bg-primary [animation-delay:-0.3s]"></div>
-                        <div className="h-5 w-5 animate-bounce rounded-full bg-primary [animation-delay:-0.13s]"></div>
-                        <div className="h-5 w-5 animate-bounce rounded-full bg-primary"></div>
-                      </div>
-                    ) : (
-                      'No data available.'
-                    )}
+                    {isFetching ? <TableLoader /> : 'No data available.'}
                   </TableCell>
                 </TableRow>
               )}

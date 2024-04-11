@@ -55,6 +55,7 @@ import {
   Dialog,
   DialogTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dialog';
+import TableLoader from 'apps/rahat-ui/src/components/table.loader';
 
 type IProps = {
   beneficiaryDetails: any;
@@ -149,11 +150,7 @@ export default function BeneficiaryDetail({
   return (
     <>
       {isLoading ? (
-        <div className="h-screen flex items-center justify-center space-x-2">
-          <div className="h-5 w-5 animate-bounce rounded-full bg-primary [animation-delay:-0.3s]"></div>
-          <div className="h-5 w-5 animate-bounce rounded-full bg-primary [animation-delay:-0.13s]"></div>
-          <div className="h-5 w-5 animate-bounce rounded-full bg-primary"></div>
-        </div>
+        <TableLoader />
       ) : (
         <>
           <div className="flex justify-between p-4 pt-5 bg-secondary border-b">

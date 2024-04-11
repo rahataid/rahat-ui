@@ -42,6 +42,7 @@ import {
   useBeneficiaryTransaction,
   useProjectTransaction,
 } from 'apps/rahat-ui/src/hooks/el/subgraph/querycall';
+import TableLoader from 'apps/rahat-ui/src/components/table.loader';
 
 export type Transaction = {
   id: string;
@@ -250,15 +251,7 @@ export default function TransactionTable({}) {
                     colSpan={columns.length}
                     className="h-24 text-center"
                   >
-                    {isFetching ? (
-                      <div className="flex items-center justify-center space-x-2 h-full">
-                        <div className="h-5 w-5 animate-bounce rounded-full bg-primary [animation-delay:-0.3s]"></div>
-                        <div className="h-5 w-5 animate-bounce rounded-full bg-primary [animation-delay:-0.13s]"></div>
-                        <div className="h-5 w-5 animate-bounce rounded-full bg-primary"></div>
-                      </div>
-                    ) : (
-                      'No data available.'
-                    )}
+                    {isFetching ? <TableLoader /> : 'No data available.'}
                   </TableCell>
                 </TableRow>
               )}

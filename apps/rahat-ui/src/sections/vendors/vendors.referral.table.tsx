@@ -38,6 +38,7 @@ import { truncateEthAddress } from '@rumsan/sdk/utils';
 import { useProjectAction } from '@rahat-ui/query';
 import { MS_ACTIONS } from '@rahataid/sdk';
 import { formatdbDate } from '../../utils';
+import TableLoader from '../../components/table.loader';
 
 export type Transaction = {
   id: string;
@@ -244,12 +245,8 @@ export default function ReferralTable({ projectId, vendorId, walletAddress }) {
                     colSpan={columns.length}
                     className="h-24 text-center"
                   >
-                    {data ? (
-                      <div className="flex items-center justify-center space-x-2 h-full">
-                        <div className="h-5 w-5 animate-bounce rounded-full bg-primary [animation-delay:-0.3s]"></div>
-                        <div className="h-5 w-5 animate-bounce rounded-full bg-primary [animation-delay:-0.13s]"></div>
-                        <div className="h-5 w-5 animate-bounce rounded-full bg-primary"></div>
-                      </div>
+                    {getVendorRedemption.isPending ? (
+                      <TableLoader />
                     ) : (
                       'No data available.'
                     )}

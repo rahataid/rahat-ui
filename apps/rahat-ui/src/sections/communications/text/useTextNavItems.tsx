@@ -6,6 +6,8 @@ import { NavItem } from '../components/nav-items.types';
 export const useNavItems = () => {
   const params = useParams();
   const totalTextCampaign = useCampaignStore().totalTextCampaign;
+  const campaign = useCampaignStore().campaign;
+
   const navItems: NavItem[] = [
     {
       title: 'Communications : Text',
@@ -21,7 +23,7 @@ export const useNavItems = () => {
     {
       title: 'Actions',
       children: [
-        ...(params.id?.length
+        ...(params.id?.length && campaign.data.status !== 'COMPLETED'
           ? [
               {
                 title: 'Edit Campaign',

@@ -1,5 +1,6 @@
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
+import { MAX_EXPORT_COUNT } from '../constants/app.const';
 
 export const includeOnlySelectedTarget = (array: [], selectedTargets: []) => {
   return array.map((item: any) => {
@@ -40,19 +41,12 @@ export function truncateEthereumAddress(address: string) {
 }
 
 export function splitFullName(fullName: string) {
-  let nameArray = fullName.split(' ');
+  if (!fullName) return { firstName: '', lastName: '' };
+  const names = fullName.trim().split(' ');
+  const firstName = names[0];
+  const lastName = names.length > 1 ? names.slice(1).join(' ') : '';
 
-  // Extract the first and last names
-  let firstName = nameArray[0];
-  let lastName = nameArray[nameArray.length - 1];
-
-  // Create an object to hold the result
-  let result = {
-    firstName: firstName,
-    lastName: lastName,
-  };
-
-  return result;
+  return { firstName, lastName };
 }
 
 function removeKeyFromArrayObjects(arr: any, keyToRemove: string) {
@@ -63,7 +57,12 @@ function removeKeyFromArrayObjects(arr: any, keyToRemove: string) {
 }
 
 export function removeFieldsWithUnderscore(dataArray: []) {
-  dataArray.map((item) => {
+  let splittedData = [] as any;
+  splittedData =
+    dataArray.length > MAX_EXPORT_COUNT
+      ? dataArray.splice(0, MAX_EXPORT_COUNT)
+      : dataArray;
+  splittedData.map((item: any) => {
     const newObj = {} as any;
     Object.keys(item).forEach((key) => {
       if (!key.startsWith('_')) {
@@ -73,7 +72,7 @@ export function removeFieldsWithUnderscore(dataArray: []) {
     });
     return newObj;
   });
-  return removeKeyFromArrayObjects(dataArray, 'errorMessage');
+  return removeKeyFromArrayObjects(splittedData, 'errorMessage');
 }
 
 export const truncatedText = (text: string, maxLen: number) => {
@@ -94,20 +93,39 @@ function moveErrorMsgToFirstKey(data: any) {
   return result;
 }
 
+function createInvalidFieldError(errFields: any) {
+  const errFieldsArr = errFields.map((err: any) => err.fieldName);
+  return `Invalid fields: ${errFieldsArr.join(', ')}`;
+}
+
 export const splitValidAndInvalid = (payload: any, errors: []) => {
   const invalidData = [] as any;
   const validData = [] as any;
 
   payload.forEach((p: any) => {
     const error = errors.find((error: any) => error.uuid === p.uuid);
+
     if (error || p.isDuplicate) {
+      const errFields = errors.filter((err: any) => err.uuid === p.uuid);
       if (p.uuid) delete p.uuid;
       if (p.rawData) delete p.rawData;
       if (p.hasOwnProperty('isDuplicate')) {
-        p.errorMessage = p.isDuplicate ? 'Dulicate Data' : 'Invalid Data';
-        p.errorMessage = error ? 'Invalid Data' : 'Duplicate Data';
-        if (error && p.isDuplicate)
-          p.errorMessage = 'Duplicate and Invalid Data';
+        // 1. If there is duplicate data
+        if (p.isDuplicate) p.errorMessage = 'Duplicate Data';
+        // 2. If there is an error
+        if (error) {
+          if (errFields.length) {
+            p.errorMessage = createInvalidFieldError(errFields);
+          }
+        }
+        // 3. If there is both duplicate and error
+        if (error && p.isDuplicate) {
+          p.errorMessage = 'Duplicate data';
+          if (errFields.length) {
+            const invalidFieldMsg = createInvalidFieldError(errFields);
+            p.errorMessage = `Duplicate & ${invalidFieldMsg}`;
+          }
+        }
 
         delete p.isDuplicate;
       }

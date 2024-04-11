@@ -42,16 +42,15 @@ export default function AddFieldDefinitions() {
     name: z.string().min(1),
     fieldType: z.string().toUpperCase(),
     isActive: z.boolean(),
-    field: z
-      .array(
-        z.object({
-          value: z.object({
-            key: z.string().min(1, { message: 'Key is required' }),
-            value: z.string().min(1, { message: 'Value is required' }),
-          }),
+    isTargeting: z.boolean(),
+    field: z.array(
+      z.object({
+        value: z.object({
+          key: z.string().min(1, { message: 'Key is required' }),
+          value: z.string().min(1, { message: 'Value is required' }),
         }),
-      )
-      .optional(),
+      }),
+    ),
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -60,6 +59,7 @@ export default function AddFieldDefinitions() {
       name: '',
       fieldType: FieldType.TEXT,
       isActive: true,
+      isTargeting: false,
       field: [],
     },
   });
@@ -84,7 +84,8 @@ export default function AddFieldDefinitions() {
       const payload = {
         name: data.name,
         fieldType: data.fieldType as FieldType,
-        isActive: data.isActive,
+        isActive: true,
+        isTargeting: data.isTargeting,
         fieldPopulate: { data: fieldPopulatePayload } || [],
       };
 
@@ -109,7 +110,7 @@ export default function AddFieldDefinitions() {
         form.watch('fieldType') === FieldType.RADIO ||
         form.watch('fieldType') === FieldType.DROPDOWN,
     );
-  }, [form.watch('fieldType')]);
+  }, [form.watch('fieldType'), form]);
 
   useEffect(() => {
     if (addFieldDefinitions.isSuccess) {
@@ -117,10 +118,22 @@ export default function AddFieldDefinitions() {
     }
   }, [addFieldDefinitions.isSuccess, form]);
 
+  useEffect(() => {
+    if (showKeyValueFields) {
+      if (fields.length === 0) {
+        append({
+          value: { key: '', value: '' },
+        });
+      }
+    } else {
+      form.setValue('field', []);
+    }
+  }, [showKeyValueFields, fields, append, form]);
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleCreateFieldDefinitions)}>
-        <div className="p-4 h-add">
+        <div className="p-4 h-add overflow-scroll">
           <h1 className="text-lg font-semibold mb-6">Add Field Definition</h1>
           <div className="shadow-md p-4 rounded-sm">
             <div className="grid grid-cols-2 gap-4 mb-4">
@@ -147,7 +160,7 @@ export default function AddFieldDefinitions() {
                     <FormItem>
                       <Select
                         onValueChange={field.onChange}
-                        defaultValue={field.value}
+                        defaultValue={FieldType.TEXT}
                       >
                         <FormControl>
                           <SelectTrigger>
@@ -182,13 +195,13 @@ export default function AddFieldDefinitions() {
 
               <FormField
                 control={form.control}
-                name="isActive"
+                name="isTargeting"
                 render={({ field }) => (
                   <div className=" flex flex-row items-center gap-4 m-1">
-                    <Label>isActive</Label>
+                    <Label>User for Targeting</Label>
                     <Switch
                       {...field}
-                      value={field.value ? 'true' : 'false'}
+                      value={field.value ? 'false' : 'true'}
                       checked={field.value}
                       onCheckedChange={field.onChange}
                     />
@@ -249,6 +262,7 @@ export default function AddFieldDefinitions() {
                             type="button"
                             onClick={() => remove(index)}
                             className="p-1 text-xs  w-10"
+                            disabled={fields.length === 1}
                           >
                             <Minus size={18} strokeWidth={1.5} />
                           </Button>
@@ -268,7 +282,7 @@ export default function AddFieldDefinitions() {
                 </Button>
               </>
             )}
-            <div className="flex justify-end">
+            <div className="flex justify-end mb-10">
               <Button type="submit">Create Field Definition</Button>
             </div>
           </div>

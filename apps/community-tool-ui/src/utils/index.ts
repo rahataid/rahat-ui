@@ -55,8 +55,15 @@ export function splitFullName(fullName: string) {
   return result;
 }
 
+function removeKeyFromArrayObjects(arr: any, keyToRemove: string) {
+  return arr.map((obj: any) => {
+    const { [keyToRemove]: deletedKey, ...rest } = obj;
+    return rest;
+  });
+}
+
 export function removeFieldsWithUnderscore(dataArray: []) {
-  return dataArray.map((item) => {
+  dataArray.map((item) => {
     const newObj = {} as any;
     Object.keys(item).forEach((key) => {
       if (!key.startsWith('_')) {
@@ -66,13 +73,28 @@ export function removeFieldsWithUnderscore(dataArray: []) {
     });
     return newObj;
   });
+  return removeKeyFromArrayObjects(dataArray, 'errorMessage');
 }
 
 export const truncatedText = (text: string, maxLen: number) => {
   return text.length > maxLen ? text.substring(0, maxLen) + '...' : text;
 };
 
-export const splitValidAndInvalid = (payload: [], errors: []) => {
+function moveErrorMsgToFirstKey(data: any) {
+  let result = [] as any;
+  data.forEach((obj: any) => {
+    if ('errorMessage' in obj) {
+      const val = obj.errorMessage;
+      delete obj.errorMessage;
+      obj = { errorMessage: val, ...obj };
+      result.push(obj);
+    }
+  });
+
+  return result;
+}
+
+export const splitValidAndInvalid = (payload: any, errors: []) => {
   const invalidData = [] as any;
   const validData = [] as any;
 
@@ -81,15 +103,26 @@ export const splitValidAndInvalid = (payload: [], errors: []) => {
     if (error || p.isDuplicate) {
       if (p.uuid) delete p.uuid;
       if (p.rawData) delete p.rawData;
-      if (p.hasOwnProperty('isDuplicate')) delete p.isDuplicate;
+      if (p.hasOwnProperty('isDuplicate')) {
+        p.errorMessage = p.isDuplicate ? 'Dulicate Data' : 'Invalid Data';
+        p.errorMessage = error ? 'Invalid Data' : 'Duplicate Data';
+        if (error && p.isDuplicate)
+          p.errorMessage = 'Duplicate and Invalid Data';
+
+        delete p.isDuplicate;
+      }
+
       invalidData.push(p);
     } else {
-      if (p.hasOwnProperty('isDuplicate')) delete p.isDuplicate;
+      if (p.hasOwnProperty('isDuplicate')) {
+        delete p.isDuplicate;
+      }
       validData.push(p);
     }
   });
 
-  return { invalidData, validData };
+  const swapped = moveErrorMsgToFirstKey(invalidData);
+  return { invalidData: swapped, validData };
 };
 
 export const exportDataToExcel = (data: []) => {
@@ -119,4 +152,9 @@ export const formatNameString = (inputString: string) => {
     '',
   );
   return stringWithoutSpecialChars;
+};
+
+export const isURL = (value: string) => {
+  let urlPattern = /^(?:\w+:)?\/\/([^\s\.]+\.\S{2}|localhost[\:?\d]*)\S*$/;
+  return urlPattern.test(value);
 };

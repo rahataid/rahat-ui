@@ -5,7 +5,7 @@ import Swal from 'sweetalert2';
 import { UUID } from 'crypto';
 import { User } from '@rumsan/sdk/types';
 
-export const useRoleList = () => {
+export const useRoleList = (): any => {
   const { queryClient, rumsanService } = useRSQuery();
   const query = useQuery(
     {

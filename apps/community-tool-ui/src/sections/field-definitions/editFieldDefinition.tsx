@@ -43,6 +43,7 @@ export default function EditFieldDefinition({
     name: z.string(),
     fieldType: z.string().toUpperCase(),
     isActive: z.boolean(),
+    isTargeting: z.boolean(),
     fieldPopulate: z.array(
       z.object({
         key: z.string(),
@@ -57,6 +58,7 @@ export default function EditFieldDefinition({
       name: data?.name || '',
       fieldType: data?.fieldType || '',
       isActive: data?.isActive || false,
+      isTargeting: data?.isTargeting || false,
       fieldPopulate: data?.fieldPopulate?.data || [],
     },
   });
@@ -70,6 +72,7 @@ export default function EditFieldDefinition({
         name: formData?.name,
         fieldType: formData?.fieldType as FieldType,
         isActive: formData?.isActive,
+        isTargeting: formData?.isTargeting,
         fieldPopulate: { data: formData.fieldPopulate },
       },
     });
@@ -85,7 +88,7 @@ export default function EditFieldDefinition({
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleEditFieldDefinition)}>
-        <div className="p-4 h-add">
+        <div className="p-4 h-add overflow-scroll">
           <h1 className="text-lg font-semibold mb-6">
             Update Field Definition
           </h1>
@@ -130,23 +133,34 @@ export default function EditFieldDefinition({
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value={FieldType.TEXT}>TEXT</SelectItem>
-                          <SelectItem value={FieldType.NUMBER}>
-                            NUMBER
-                          </SelectItem>
-                          <SelectItem value={FieldType.CHECKBOX}>
-                            CHECKBOX
-                          </SelectItem>
-                          <SelectItem value={FieldType.DROPDOWN}>
-                            DROPDOWN
-                          </SelectItem>
-                          <SelectItem value={FieldType.PASSWORD}>
-                            PASSWORD
-                          </SelectItem>
-                          <SelectItem value={FieldType.RADIO}>RADIO</SelectItem>
-                          <SelectItem value={FieldType.TEXTAREA}>
-                            TEXTAREA
-                          </SelectItem>
+                          {form.getValues('fieldPopulate')?.length > 0 ? (
+                            <>
+                              <SelectItem value={FieldType.CHECKBOX}>
+                                CHECKBOX
+                              </SelectItem>
+                              <SelectItem value={FieldType.DROPDOWN}>
+                                DROPDOWN
+                              </SelectItem>
+                              <SelectItem value={FieldType.RADIO}>
+                                RADIO
+                              </SelectItem>
+                            </>
+                          ) : (
+                            <>
+                              <SelectItem value={FieldType.TEXT}>
+                                TEXT
+                              </SelectItem>
+                              <SelectItem value={FieldType.NUMBER}>
+                                NUMBER
+                              </SelectItem>
+                              <SelectItem value={FieldType.PASSWORD}>
+                                PASSWORD
+                              </SelectItem>
+                              <SelectItem value={FieldType.TEXTAREA}>
+                                TEXTAREA
+                              </SelectItem>
+                            </>
+                          )}
                         </SelectContent>
                       </Select>
                       <FormMessage />
@@ -175,54 +189,78 @@ export default function EditFieldDefinition({
                   </div>
                 )}
               />
-              <Label className="text-xs font-medium mt-3">Field Populate</Label>
-              <div></div>
-              <div className="grid grid-cols-2 gap-3">
-                {form.watch('fieldPopulate').map((item: any, index: number) => (
-                  <React.Fragment key={index}>
-                    <FormField
-                      control={form.control}
-                      name={`fieldPopulate.${index}.key`}
-                      render={({ field }) => (
-                        <FormItem>
-                          <Label className="text-xs font-medium">{`Field ${
-                            index + 1
-                          } Key`}</Label>
-                          <FormControl>
-                            <Input
-                              type="text"
-                              placeholder={`Field ${index + 1} Key`}
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
+              <FormField
+                control={form.control}
+                name="isTargeting"
+                render={({ field }) => (
+                  <div className="flex flex-col items-right">
+                    <Label className="text-xs font-medium">
+                      User for Targeting
+                    </Label>
+                    <Switch
+                      {...field}
+                      value={field.value ? 'false' : 'true'}
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
                     />
-                    <FormField
-                      control={form.control}
-                      name={`fieldPopulate.${index}.value`}
-                      render={({ field }) => (
-                        <FormItem>
-                          <Label className="text-xs font-medium">{`Field ${
-                            index + 1
-                          } Value`}</Label>
-                          <FormControl>
-                            <Input
-                              type="text"
-                              placeholder={`Field ${index + 1} Value`}
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </React.Fragment>
-                ))}
-              </div>
+                  </div>
+                )}
+              />
             </div>
-            <div className="flex justify-end">
+            {form.getValues('fieldPopulate')?.length > 0 && (
+              <div className="mt-5 mb-2 over">
+                <Label className="text-xs font-medium mt-2">
+                  Field Populate
+                </Label>
+                <div className="grid grid-cols-2 gap-3">
+                  {form
+                    .watch('fieldPopulate')
+                    .map((item: any, index: number) => (
+                      <React.Fragment key={index}>
+                        <FormField
+                          control={form.control}
+                          name={`fieldPopulate.${index}.key`}
+                          render={({ field }) => (
+                            <FormItem>
+                              <Label className="text-xs font-medium">{`Field ${
+                                index + 1
+                              } Key`}</Label>
+                              <FormControl>
+                                <Input
+                                  type="text"
+                                  placeholder={`Field ${index + 1} Key`}
+                                  {...field}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name={`fieldPopulate.${index}.value`}
+                          render={({ field }) => (
+                            <FormItem>
+                              <Label className="text-xs font-medium">{`Field ${
+                                index + 1
+                              } Value`}</Label>
+                              <FormControl>
+                                <Input
+                                  type="text"
+                                  placeholder={`Field ${index + 1} Value`}
+                                  {...field}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </React.Fragment>
+                    ))}
+                </div>
+              </div>
+            )}
+            <div className="flex justify-end mb-10">
               <Button>Update Field Definition</Button>
             </div>
           </div>

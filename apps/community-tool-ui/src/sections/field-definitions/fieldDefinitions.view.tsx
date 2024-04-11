@@ -101,7 +101,7 @@ export default function FieldDefinitionsView() {
         {selectedData ? (
           <>
             <ResizableHandle />
-            <ResizablePanel minSize={24}>
+            <ResizablePanel minSize={36}>
               <FieldDefinitionsDetail
                 handleClose={handleClose}
                 fieldDefinitionData={selectedData}

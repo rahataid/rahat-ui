@@ -17,7 +17,7 @@ import MultipleSelectFilter from './multipleSelectorFilter';
 import { Meta } from '@rahat-ui/types';
 
 type IProps = {
-  meta: Meta | undefined;
+  meta?: Meta | undefined;
   selectedBenefID?: number[];
   // handleClear: () => void | null;
   setSelectedBenefId?: any;

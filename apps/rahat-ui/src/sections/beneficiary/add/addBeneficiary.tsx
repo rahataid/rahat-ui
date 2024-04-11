@@ -25,9 +25,12 @@ import { toast } from 'react-toastify';
 import { isValidPhoneNumber } from 'react-phone-number-input';
 import { z } from 'zod';
 import { Wallet } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 
 export default function AddBeneficiaryForm() {
   const addBeneficiary = useCreateBeneficiary();
+  const router = useRouter();
 
   const FormSchema = z.object({
     name: z.string().min(2, { message: 'Name must be at least 4 character' }),
@@ -93,6 +96,13 @@ export default function AddBeneficiaryForm() {
       toast.error('Failed to add beneficiary');
     }
   };
+
+  useEffect(() => {
+    if (addBeneficiary.isSuccess) {
+      router.push('/beneficiary');
+    }
+  }, [addBeneficiary.isSuccess]);
+
   return (
     <>
       <Form {...form}>
@@ -321,7 +331,6 @@ export default function AddBeneficiaryForm() {
                   );
                 }}
               />
-
               <div className="flex justify-end">
                 <Button>Create Beneficiary</Button>
               </div>

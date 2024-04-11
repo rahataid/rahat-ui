@@ -21,6 +21,7 @@ import {
 import { ArrowBigLeft } from 'lucide-react';
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import * as xlsx from 'xlsx';
 import Swal from 'sweetalert2';
 import AddToQueue from './AddToQueue';
 import ErrorAlert from './ErrorAlert';
@@ -156,26 +157,22 @@ export default function BenImp({ extraFields }: IProps) {
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     setRawData([]);
-    const { files } = e.target;
-    const formData = new FormData();
-    if (!files?.length)
-      return Swal.fire({
-        icon: 'error',
-        title: 'Please select a file to upload',
-      });
+    const files = e.target.files || [];
     const fileName = formatNameString(files[0].name);
-    formData.append('file', files[0]);
-    const data = await handleExcelUpload(formData);
-    if (!data)
-      return Swal.fire({
-        icon: 'error',
-        title: 'Failed to upload a file',
-      });
-    const { workbookData } = data?.data;
-    const sanitized = removeFieldsWithUnderscore(workbookData || []);
-
+    if (!files.length) return;
+    const reader = new FileReader();
+    reader.onload = (e: any) => {
+      const data = e.target.result;
+      const workbook = xlsx.read(data, { type: 'array' });
+      const sheetName = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[sheetName];
+      const json = xlsx.utils.sheet_to_json(worksheet) as any;
+      const sanitized = removeFieldsWithUnderscore(json || []);
+      console.log('Sanitized', sanitized);
+      setRawData(sanitized);
+    };
+    reader.readAsArrayBuffer(files[0]);
     setImportId(fileName);
-    setRawData(sanitized);
     await fetchExistingMapping(fileName);
   };
 
@@ -202,10 +199,6 @@ export default function BenImp({ extraFields }: IProps) {
   };
 
   const handleImportNowClick = async () => {
-    // let _text =
-    //   duplicateCount > 0
-    //     ? `${duplicateCount} existing beneficiaries will be updated!`
-    //     : 'No duplicate found!';
     const dialog = await Swal.fire({
       title: `${processedData.length} Beneficiaries will be imported!`,
       showCancelButton: true,

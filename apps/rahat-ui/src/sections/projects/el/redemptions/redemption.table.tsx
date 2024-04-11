@@ -93,6 +93,7 @@ export default function RedemptionTable({}) {
   });
 
   const getRedemption = useProjectAction();
+  console.log('getRedemption', getRedemption.data);
 
   const getRedemptionList = async () => {
     const result = await getRedemption.mutateAsync({
@@ -108,6 +109,7 @@ export default function RedemptionTable({}) {
 
     const filterData = result?.data.map((row: any) => {
       return {
+        name: row.Vendor.name,
         walletAddress: row.Vendor.walletAddress,
         tokenAmount: row.voucherNumber,
         status: row.status,

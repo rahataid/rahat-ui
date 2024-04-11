@@ -8,13 +8,12 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger,
   DropdownMenuLabel,
+  DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/components/dropdown-menu';
-import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
+import { truncateEthAddress } from '@rumsan/sdk/utils';
 import { useSecondPanel } from '../../../../providers/second-panel-provider';
 import { Redemption } from './redemption.table';
-import { truncateEthAddress } from '@rumsan/sdk/utils';
 
 export const useTableColumns = (handleAssignClick: any) => {
   const { closeSecondPanel, setSecondPanelComponent } = useSecondPanel();

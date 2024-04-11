@@ -135,6 +135,9 @@ export default function BenImp({ extraFields }: IProps) {
     sourceField: string,
     targetField: string,
   ) => {
+    console.log({ sourceField });
+    console.log({ targetField });
+    if (targetField === 'None') return;
     const index = mappings.findIndex(
       (item: any) => item.sourceField === sourceField,
     );
@@ -213,6 +216,8 @@ export default function BenImp({ extraFields }: IProps) {
     let finalPayload = rawData;
     const selectedTargets = []; // Only submit selected target fields
 
+    console.log({ mappings });
+
     for (let m of mappings) {
       if (m.targetField === TARGET_FIELD.FIRSTNAME) {
         selectedTargets.push(TARGET_FIELD.FIRSTNAME);
@@ -238,6 +243,8 @@ export default function BenImp({ extraFields }: IProps) {
         selectedTargets.push(TARGET_FIELD.LASTNAME);
         const replaced = finalPayload.map((item: any) => {
           const { firstName, lastName } = splitFullName(item[m.sourceField]);
+          console.log({ firstName });
+          console.log({ lastName });
           const newItem = { ...item, firstName, lastName };
           if (m.sourceField !== m.targetField) delete newItem[m.sourceField];
           return newItem;

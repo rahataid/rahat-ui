@@ -41,19 +41,12 @@ export function truncateEthereumAddress(address: string) {
 }
 
 export function splitFullName(fullName: string) {
-  let nameArray = fullName.split(' ');
+  if (!fullName) return { firstName: '', lastName: '' };
+  const names = fullName.trim().split(' ');
+  const firstName = names[0];
+  const lastName = names.length > 1 ? names.slice(1).join(' ') : '';
 
-  // Extract the first and last names
-  let firstName = nameArray[0];
-  let lastName = nameArray[nameArray.length - 1];
-
-  // Create an object to hold the result
-  let result = {
-    firstName: firstName,
-    lastName: lastName,
-  };
-
-  return result;
+  return { firstName, lastName };
 }
 
 function removeKeyFromArrayObjects(arr: any, keyToRemove: string) {

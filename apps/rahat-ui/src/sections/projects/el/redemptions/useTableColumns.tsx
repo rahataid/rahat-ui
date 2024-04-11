@@ -91,6 +91,13 @@ export const useTableColumns = (handleAssignClick: any) => {
       ),
     },
     {
+      accessorKey: 'voucherType',
+      header: 'Voucher Type ',
+      cell: ({ row }) => (
+        <div className="capitalize">{row.getValue('voucherType')}</div>
+      ),
+    },
+    {
       accessorKey: 'status',
       header: ({ column }) => {
         return (

@@ -90,8 +90,8 @@ dependencies:
     specifier: ^1.0.125
     version: 1.0.125(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1)
   '@rumsan/react-query':
-    specifier: 0.0.35
-    version: 0.0.35(@types/react@18.2.65)
+    specifier: 0.0.36
+    version: 0.0.36(@types/react@18.2.65)(typescript@5.4.2)(zod@3.22.4)
   '@rumsan/sdk':
     specifier: ^0.0.44
     version: 0.0.44
@@ -5887,6 +5887,14 @@ packages:
       - debug
     dev: false
 
+  /@rumsan/communication@0.0.8:
+    resolution: {integrity: sha512-Ht+vIdZVabacljbIO54QDm2FXYSH5CAKyDQ68/NcvQdqQz39x3wZLt4DWuliTGY6ZpaniddVyql57NTdcmae6Q==, tarball: https://npm.pkg.github.com/download/@rumsan/communication/0.0.8/b11e20c168799814e0d5058533ec77ed35f2d505}
+    dependencies:
+      axios: 1.6.7
+    transitivePeerDependencies:
+      - debug
+    dev: false
+
   /@rumsan/communication@0.0.9:
     resolution: {integrity: sha512-PrioZi1tpD7tOMMZ1g3mGADCX2brKvarJV5dB3E8H21ncWwlYBS+XyfYBebnoRBQ9HjELH9VIBTKVhnYThdhIQ==, tarball: https://npm.pkg.github.com/download/@rumsan/communication/0.0.9/e9528ec698dbb494851f84bfeac7667a2a8789e5}
     dependencies:
@@ -5956,20 +5964,26 @@ packages:
       - immer
     dev: false
 
-  /@rumsan/react-query@0.0.35(@types/react@18.2.65):
-    resolution: {integrity: sha512-vIIZOjneL4HcKtZNpHviILf3DTmssovX9f3rkAM3pfz0ALXUvtbporqKORhutUUSIUs3DGmusET5PY/p45XH6g==, tarball: https://npm.pkg.github.com/download/@rumsan/react-query/0.0.35/8d9e78c914ebc98854badead9c9c673c919bca02}
+  /@rumsan/react-query@0.0.36(@types/react@18.2.65)(typescript@5.4.2)(zod@3.22.4):
+    resolution: {integrity: sha512-o2oEok2jWz60x3Ak9Mz3yl61bF1L4O+HUgoc237DkDeXSvG5RsBPhTpWiZXJCNqD35s0ddqn5O7arhlxewlQtw==, tarball: https://npm.pkg.github.com/download/@rumsan/react-query/0.0.36/19ba1cc805fab439af1513ae38b5778316fb1817}
     dependencies:
-      '@rumsan/communication': 0.0.7
-      '@rumsan/sdk': 0.0.43
+      '@rumsan/communication': 0.0.8
+      '@rumsan/sdk': 0.0.44
       '@tanstack/react-query': 5.22.2(react@18.2.0)
       axios: 1.6.7
+      http-status-codes: 2.3.0
       react: 18.2.0
       tslib: 2.6.2
+      viem: 2.8.5(typescript@5.4.2)(zod@3.22.4)
       zustand: 4.5.2(@types/react@18.2.65)(react@18.2.0)
     transitivePeerDependencies:
       - '@types/react'
+      - bufferutil
       - debug
       - immer
+      - typescript
+      - utf-8-validate
+      - zod
     dev: false
 
   /@rumsan/sdk@0.0.39:

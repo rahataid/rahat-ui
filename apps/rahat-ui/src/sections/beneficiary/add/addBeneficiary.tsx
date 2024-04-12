@@ -90,7 +90,7 @@ export default function AddBeneficiaryForm() {
         form.reset();
       }
     } catch (e) {
-      toast.error('Failed to add beneficiary');
+      toast.error(e?.response?.data?.message||'Failed to add beneficiary');
     }
   };
   return (

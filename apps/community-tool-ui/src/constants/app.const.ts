@@ -90,4 +90,4 @@ export const IMPORT_ACTION = {
   IMPORT: 'IMPORT',
 };
 
-export const MAX_EXPORT_COUNT = 1000;
+export const MAX_EXPORT_COUNT = 500;

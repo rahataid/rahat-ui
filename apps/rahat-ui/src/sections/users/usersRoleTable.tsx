@@ -24,28 +24,9 @@ import {
   TableHeader,
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
-import { useUserAddRoles, useUserRolesRemove } from '@rumsan/react-query';
+import { useUserRoleList, useUserRolesRemove } from '@rumsan/react-query';
 import { UUID } from 'crypto';
-
-const data: Role[] = [
-  {
-    id: 'm5gr84i9',
-    role: 'admin',
-  },
-  {
-    id: 'm5gr84i9',
-    role: 'manager',
-  },
-  {
-    id: 'm5gr84i9',
-    role: 'donor',
-  },
-];
-
-export type Role = {
-  id: string;
-  role: string;
-};
+import { UserRole } from '@rumsan/sdk/types';
 
 export function UsersRoleTable({
   uuid,
@@ -62,14 +43,14 @@ export function UsersRoleTable({
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
   const removeUserRole = useUserRolesRemove();
-
-  const addUserRole = useUserAddRoles();
+  const { data } = useUserRoleList(uuid);
 
   const handleRemoveRole = (data: any) => {
-    if (isAdmin) removeUserRole.mutateAsync({ uuid: uuid, roles: [data.role] });
+    if (isAdmin)
+      removeUserRole.mutateAsync({ uuid: uuid, roles: [data?.name] });
   };
 
-  const columns: ColumnDef<Role>[] = [
+  const columns: ColumnDef<UserRole>[] = [
     {
       id: 'select',
       header: ({ table }) => (
@@ -87,12 +68,6 @@ export function UsersRoleTable({
           checked={row.getIsSelected()}
           onCheckedChange={(value) => {
             row.toggleSelected(!!value);
-            if (value && isAdmin) {
-              addUserRole.mutateAsync({
-                uuid: uuid,
-                roles: [row.original.role],
-              });
-            }
           }}
           aria-label="Select row"
         />
@@ -101,10 +76,10 @@ export function UsersRoleTable({
       enableHiding: false,
     },
     {
-      accessorKey: 'role',
+      accessorKey: 'name',
       header: 'Role',
       cell: ({ row }) => (
-        <div className="capitalize">{row.getValue('role')}</div>
+        <div className="capitalize">{row.getValue('name')}</div>
       ),
     },
 
@@ -125,8 +100,13 @@ export function UsersRoleTable({
     },
   ];
 
+  const tableData = React.useMemo(() => {
+    return data?.data;
+  }, [data]);
+  console.log(tableData);
+
   const table = useReactTable({
-    data,
+    data: tableData || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,

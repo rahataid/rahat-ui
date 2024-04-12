@@ -48,9 +48,21 @@ import { enumToObjectArray } from '@rumsan/sdk/utils';
 import { Gender } from '@rahataid/sdk/enums';
 import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
 import EditUser from './editUser';
-import { useUserCurrentUser, useUserRemove } from '@rumsan/react-query';
+import {
+  useUserAddRoles,
+  useUserCurrentUser,
+  useUserRemove,
+} from '@rumsan/react-query';
 import { ROLE_TYPE } from './role/const';
 import { UUID } from 'crypto';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@rahat-ui/shadcn/src/components/ui/select';
+import { useRoleList } from '@rahat-ui/query';
 
 type IProps = {
   userDetail: User;
@@ -60,12 +72,16 @@ type IProps = {
 export default function UserDetail({ userDetail, closeSecondPanel }: IProps) {
   const { data } = useUserCurrentUser();
   const removeUser = useUserRemove();
+  const { data: roleData } = useRoleList(); //TODO:fetch from store
+  const addUserRole = useUserAddRoles();
 
   const isAdmin = data?.data?.roles.includes(ROLE_TYPE.ADMIN);
   const [activeTab, setActiveTab] = useState<'details' | 'edit' | null>(
     'details',
   );
   const [activeUser, setActiveUser] = useState<boolean>(true);
+  const [selectedRole, setSelectedRole] = useState<string>('');
+
   const genderList = enumToObjectArray(Gender);
   const handleTabChange = (tab: 'details' | 'edit') => {
     setActiveTab(tab);
@@ -73,9 +89,19 @@ export default function UserDetail({ userDetail, closeSecondPanel }: IProps) {
   const toggleActiveUser = () => {
     setActiveUser(!activeUser);
   };
+  console.log(userDetail);
+
   const handleDeleteUser = () => {
+    // if (userDetail.roles?.some((role) => role.))
     removeUser.mutateAsync(userDetail.uuid as UUID);
     closeSecondPanel();
+  };
+
+  const handleRoleAssign = () => {
+    addUserRole.mutateAsync({
+      uuid: userDetail.uuid as UUID,
+      roles: [selectedRole],
+    });
   };
 
   return (
@@ -94,43 +120,64 @@ export default function UserDetail({ userDetail, closeSecondPanel }: IProps) {
         </TooltipProvider>
         <div className="flex gap-3">
           {/* Add Roles */}
-          <Dialog>
-            <DialogTrigger>
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <PlusCircle
-                      className="cursor-pointer"
-                      size={18}
-                      strokeWidth={1.6}
-                      color="#007bb6"
-                    />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Add Role</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Add Role</DialogTitle>
-              </DialogHeader>
-              <DialogDescription>
-                <div className="grid w-full max-w-sm items-center gap-1.5">
-                  <Input type="role" id="role" placeholder="Role" />
-                </div>
-              </DialogDescription>
-              <DialogFooter>
-                <div className="flex items-center justify-center mt-2 gap-4">
-                  <Button variant="outline">Submit</Button>
-                  <DialogClose asChild>
-                    <Button variant="outline">Cancel</Button>
-                  </DialogClose>
-                </div>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+          {isAdmin && (
+            <Dialog>
+              <DialogTrigger>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <PlusCircle
+                        className="cursor-pointer"
+                        size={18}
+                        strokeWidth={1.6}
+                        color="#007bb6"
+                      />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Add Role</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Add Role</DialogTitle>
+                </DialogHeader>
+                <DialogDescription>
+                  <div className="grid w-full max-w-sm items-center gap-1.5">
+                    <Select onValueChange={(value) => setSelectedRole(value)}>
+                      <SelectTrigger className="max-w-32">
+                        <SelectValue placeholder="Role" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {roleData &&
+                          roleData?.data?.map((role: any) => {
+                            return (
+                              <SelectItem key={role.id} value={role.name || ''}>
+                                {role.name}
+                              </SelectItem>
+                            );
+                          })}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </DialogDescription>
+                <DialogFooter>
+                  <div className="flex items-center justify-center mt-2 gap-4">
+                    <Button
+                      onClick={() => handleRoleAssign()}
+                      variant="outline"
+                    >
+                      Submit
+                    </Button>
+                    <DialogClose asChild>
+                      <Button variant="outline">Cancel</Button>
+                    </DialogClose>
+                  </div>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          )}
           {/* Delete User */}
           {isAdmin && (
             <Dialog>

@@ -121,7 +121,7 @@ export const splitValidAndDuplicates = (
   duplicateData: any[],
 ) => {
   const sanitized = [] as any;
-  const nonDuplicate = payload.filter((d: any) => d.isDuplicate !== true);
+  const nonDuplicate = payload.filter((d: any) => !d.isDuplicate);
   const duplicates = duplicateData.filter((d: any) => d.isDuplicate);
   for (let p of duplicates) {
     p = checkPropertyAndDelete(p, 'isDuplicate');
@@ -145,10 +145,9 @@ function createInvalidFieldError(errFields: any) {
   return `Invalid fields: ${errFieldsArr.join(', ')}`;
 }
 
-export const splitValidAndInvalid = (payload: any, errors: []) => {
+export const splitValidAndInvalid = (payload: [], errors: []) => {
   const invalidData = [] as any;
   const validData = [] as any;
-
   payload.forEach((p: any) => {
     const error = errors.find((error: any) => error.uuid === p.uuid);
     // if (p.hasOwnProperty('isDuplicate')) {

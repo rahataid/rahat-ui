@@ -17,7 +17,7 @@ import {
   removeFieldsWithUnderscore,
   splitFullName,
   formatNameString,
-  splitNonDuplicateData,
+  splitValidAndDuplicates,
 } from 'apps/community-tool-ui/src/utils';
 import { ArrowBigLeft } from 'lucide-react';
 import React, { useState } from 'react';
@@ -193,13 +193,18 @@ export default function BenImp({ extraFields }: IProps) {
     });
   };
 
-  const exportDuplicateData = (duplicateData: any) => {
-    const { nonDuplicate, sanitized } = splitNonDuplicateData(duplicateData);
-    setValidBenef(nonDuplicate);
-    setProcessedData(nonDuplicate);
+  const exportDuplicateData = (data: any, duplicateData: any) => {
+    const { validData, sanitized } = splitValidAndDuplicates(
+      data,
+      duplicateData,
+    );
+    setValidBenef(validData);
+    setProcessedData(validData);
     setInvalidFields([]);
     exportDataToExcel(sanitized);
-    if (!nonDuplicate.length) {
+    setDuplicateData([]);
+    if (!validData.length) {
+      setHasExistingMapping(false);
       setUniqueField('');
       setCurrentScreen(BENEF_IMPORT_SCREENS.SELECTION);
     }
@@ -211,7 +216,6 @@ export default function BenImp({ extraFields }: IProps) {
           processedData.length
         } duplicates found.<b>Import Anyway?</b>`
       : '';
-    console.log({ msg });
     const dialog = await Swal.fire({
       title: `${processedData.length} Beneficiaries will be imported!`,
       text: msg,
@@ -233,7 +237,8 @@ export default function BenImp({ extraFields }: IProps) {
         fieldMapping: { data: validBenef, sourceTargetMappings: mappings },
       };
       return createImportSource(sourcePayload);
-    } else if (dialog.isDenied) return exportDuplicateData(duplicateData);
+    } else if (dialog.isDenied)
+      return exportDuplicateData(processedData, duplicateData);
   };
 
   const validateOrImport = (action: string) => {
@@ -352,6 +357,7 @@ export default function BenImp({ extraFields }: IProps) {
   };
 
   const resetStates = () => {
+    setHasExistingMapping(false);
     setValidBenef([]);
     setValidBenef([]);
     setProcessedData([]);
@@ -381,6 +387,7 @@ export default function BenImp({ extraFields }: IProps) {
     setInvalidFields([]);
     exportDataToExcel(invalidData);
     if (!validData.length) {
+      setHasExistingMapping(false);
       setUniqueField('');
       setCurrentScreen(BENEF_IMPORT_SCREENS.SELECTION);
     }

@@ -100,10 +100,29 @@ function checkPropertyAndDelete(item: any, propertyName: string) {
   return item;
 }
 
-export const splitNonDuplicateData = (payload: any[]) => {
+function cleanupNonDuplicateFields(payload: any[]) {
+  let data = [];
+  for (let p of payload) {
+    p = checkPropertyAndDelete(p, 'isDuplicate');
+    p = checkPropertyAndDelete(p, 'exportOnly');
+    p = checkPropertyAndDelete(p, 'rawData');
+    p = checkPropertyAndDelete(p, 'uuid');
+    p = checkPropertyAndDelete(p, 'id');
+    p = checkPropertyAndDelete(p, 'customId');
+    p = checkPropertyAndDelete(p, 'createdAt');
+    p = checkPropertyAndDelete(p, 'updatedAt');
+    data.push(p);
+  }
+  return data;
+}
+
+export const splitValidAndDuplicates = (
+  payload: any[],
+  duplicateData: any[],
+) => {
   const sanitized = [] as any;
-  const nonDuplicate = payload.filter((d: any) => !d.isDuplicate);
-  const duplicates = payload.filter((d: any) => d.isDuplicate);
+  const nonDuplicate = payload.filter((d: any) => d.isDuplicate !== true);
+  const duplicates = duplicateData.filter((d: any) => d.isDuplicate);
   for (let p of duplicates) {
     p = checkPropertyAndDelete(p, 'isDuplicate');
     p = checkPropertyAndDelete(p, 'exportOnly');
@@ -117,7 +136,8 @@ export const splitNonDuplicateData = (payload: any[]) => {
     sanitized.push(p);
   }
   const swapped = moveErrorMsgToFirstKey(sanitized);
-  return { nonDuplicate, sanitized: swapped };
+  const validData = cleanupNonDuplicateFields(nonDuplicate);
+  return { validData, sanitized: swapped };
 };
 
 function createInvalidFieldError(errFields: any) {
@@ -131,9 +151,9 @@ export const splitValidAndInvalid = (payload: any, errors: []) => {
 
   payload.forEach((p: any) => {
     const error = errors.find((error: any) => error.uuid === p.uuid);
-    if (p.hasOwnProperty('isDuplicate')) {
-      delete p.isDuplicate;
-    }
+    // if (p.hasOwnProperty('isDuplicate')) {
+    //   delete p.isDuplicate;
+    // }
     if (error) {
       const errFields = errors.filter((err: any) => err.uuid === p.uuid);
       if (p.uuid) delete p.uuid;

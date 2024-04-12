@@ -1,9 +1,9 @@
-import { AADataSourcesView } from 'apps/rahat-ui/src/sections/projects/aa/datasources';
+import { AADataSourcesView } from "apps/rahat-ui/src/sections/projects/aa/datasources";
 
 const Page = () => {
   return (
     <>
-      <p>lalal</p>
+      <AADataSourcesView />
     </>
   )
 };

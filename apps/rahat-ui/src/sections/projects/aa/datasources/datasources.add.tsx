@@ -25,7 +25,7 @@ import { z } from 'zod';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
 
-export default function AddDatasource() {
+export default function AddDataSource() {
   const params = useParams();
   const createDataSource = useCreateDataSource();
   const projectID = params.id as UUID;
@@ -81,7 +81,9 @@ export default function AddDatasource() {
           <div className="p-4 h-add">
             <div className="shadow-md p-4 rounded-sm bg-card">
               <h1 className="text-lg font-semibold mb-6">Add Data Source</h1>
+              <h3 className="text-lg font-semibold mb-6"> Trigger Activity: EMAIL</h3>
               <div className="grid grid-cols-2 gap-4 mb-4">
+
                 <FormField
                   control={form.control}
                   name="dataSource"
@@ -96,54 +98,7 @@ export default function AddDatasource() {
                     );
                   }}
                 />
-                <FormField
-                  control={form.control}
-                  name="dangerLevel"
-                  render={({ field }) => {
-                    return (
-                      <FormItem>
-                        <FormControl>
-                          <Input type='number' placeholder="Danger Level" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    );
-                  }}
-                />
-              </div>
-              <div className="grid grid-cols-4 gap-4 mb-4">
-                <div className="col-span-3">
-                  <FormField
-                    control={form.control}
-                    name="warningLevel"
-                    render={({ field }) => {
-                      return (
-                        <FormItem>
-                          <FormControl>
-                            <Input type='number' placeholder="Warning Level" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      );
-                    }}
-                  />
-                </div>
-                <div className="col-span-1">
-                  <FormField
-                    control={form.control}
-                    name="repeatEvery"
-                    render={({ field }) => {
-                      return (
-                        <FormItem>
-                          <FormControl>
-                            <Input type='number' placeholder="Repeat Duration (in milli seconds)" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      );
-                    }}
-                  />
-                </div>
+
               </div>
 
               <div className="grid grid-cols-2 gap-4 mb-4">
@@ -180,6 +135,57 @@ export default function AddDatasource() {
                   }}
                 />
               </div>
+              <div className="grid grid-cols-4 gap-4 mb-4">
+                <div className="col-span-2">
+                  <FormField
+                    control={form.control}
+                    name="dangerLevel"
+                    render={({ field }) => {
+                      return (
+                        <FormItem>
+                          <FormControl>
+                            <Input type='number' placeholder="Danger Level" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      );
+                    }}
+                  />
+                </div>
+                <div className="col-span-2">
+                  <FormField
+                    control={form.control}
+                    name="warningLevel"
+                    render={({ field }) => {
+                      return (
+                        <FormItem>
+                          <FormControl>
+                            <Input type='number' placeholder="Warning Level" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      );
+                    }}
+                  />
+                </div>
+                <div className="col-span-1">
+                  <FormField
+                    control={form.control}
+                    name="repeatEvery"
+                    render={({ field }) => {
+                      return (
+                        <FormItem>
+                          <FormControl>
+                            <Input type='number' placeholder="Repeat Duration (in milli seconds)" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      );
+                    }}
+                  />
+                </div>
+              </div>
+
               <div className="flex justify-end">
                 <Button>Add Data Source</Button>
               </div>

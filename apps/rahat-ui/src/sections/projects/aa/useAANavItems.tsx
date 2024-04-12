@@ -41,7 +41,7 @@ export const useNavItems = () => {
         {
           title: 'Data Sources',
           path: `/projects/aa/${params.id}/datasources`,
-          subtitle: 0,
+          // subtitle: 0,
           icon: <Database size={18} strokeWidth={1.5} />,
         },
         {

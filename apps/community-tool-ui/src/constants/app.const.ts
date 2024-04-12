@@ -90,11 +90,11 @@ export const IMPORT_ACTION = {
   IMPORT: 'IMPORT',
 };
 
-export const MAX_EXPORT_COUNT = 100;
-
 export const SUBJECTS = [
   { label: 'All', value: 'all' },
   { label: 'Role', value: 'role' },
   { label: 'User', value: 'user' },
   { label: 'Public', value: 'public' },
 ];
+
+export const MAX_EXPORT_COUNT = 500;

@@ -13,20 +13,9 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { ArrowUpDown, ChevronDown, MoreHorizontal, Trash2 } from 'lucide-react';
-
-import { Button } from '@rahat-ui/shadcn/components/button';
+import { Trash2 } from 'lucide-react';
 import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@rahat-ui/shadcn/components/dropdown-menu';
-import { Input } from '@rahat-ui/shadcn/components/input';
+
 import {
   Table,
   TableBody,
@@ -35,68 +24,17 @@ import {
   TableHeader,
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
+import { useUserRoleList, useUserRolesRemove } from '@rumsan/react-query';
+import { UUID } from 'crypto';
+import { UserRole } from '@rumsan/sdk/types';
 
-const data: Role[] = [
-  {
-    id: 'm5gr84i9',
-    role: 'admin',
-  },
-  {
-    id: 'm5gr84i9',
-    role: 'manager',
-  },
-  {
-    id: 'm5gr84i9',
-    role: 'donor',
-  },
-];
-
-export type Role = {
-  id: string;
-  role: string;
-};
-
-export const columns: ColumnDef<Role>[] = [
-  {
-    id: 'select',
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && 'indeterminate')
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
-    accessorKey: 'role',
-    header: 'Role',
-    cell: ({ row }) => <div className="capitalize">{row.getValue('role')}</div>,
-  },
-
-  {
-    id: 'actions',
-    enableHiding: false,
-    cell: ({ row }) => {
-      const payment = row.original;
-
-      return <Trash2 strokeWidth={1.6} size={16} />;
-    },
-  },
-];
-
-export function UsersRoleTable() {
+export function UsersRoleTable({
+  uuid,
+  isAdmin,
+}: {
+  uuid: UUID;
+  isAdmin: boolean;
+}) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
@@ -104,9 +42,71 @@ export function UsersRoleTable() {
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
+  const removeUserRole = useUserRolesRemove();
+  const { data } = useUserRoleList(uuid);
+
+  const handleRemoveRole = (data: any) => {
+    if (isAdmin)
+      removeUserRole.mutateAsync({ uuid: uuid, roles: [data?.name] });
+  };
+
+  const columns: ColumnDef<UserRole>[] = [
+    {
+      id: 'select',
+      header: ({ table }) => (
+        <Checkbox
+          checked={
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && 'indeterminate')
+          }
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          aria-label="Select all"
+        />
+      ),
+      cell: ({ row }) => (
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => {
+            row.toggleSelected(!!value);
+          }}
+          aria-label="Select row"
+        />
+      ),
+      enableSorting: false,
+      enableHiding: false,
+    },
+    {
+      accessorKey: 'name',
+      header: 'Role',
+      cell: ({ row }) => (
+        <div className="capitalize">{row.getValue('name')}</div>
+      ),
+    },
+
+    {
+      id: 'actions',
+      enableHiding: false,
+      cell: ({ row }) => {
+        const payment = row.original;
+
+        return (
+          <Trash2
+            onClick={() => handleRemoveRole(row.original)}
+            strokeWidth={1.6}
+            size={16}
+          />
+        );
+      },
+    },
+  ];
+
+  const tableData = React.useMemo(() => {
+    return data?.data;
+  }, [data]);
+  console.log(tableData);
 
   const table = useReactTable({
-    data,
+    data: tableData || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,

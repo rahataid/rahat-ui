@@ -54,7 +54,7 @@ export default function ListView({ users }: IProps) {
     React.useState<VisibilityState>({});
 
   const table = useReactTable({
-    data: users && users?.length > 0 ? users : [],
+    data: users || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),

@@ -48,13 +48,34 @@ import { enumToObjectArray } from '@rumsan/sdk/utils';
 import { Gender } from '@rahataid/sdk/enums';
 import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
 import EditUser from './editUser';
+import { z } from 'zod';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useRoleList } from '@rahat-ui/community-query';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from '@rahat-ui/shadcn/src/components/ui/form';
 
 type IProps = {
   userDetail: User;
   closeSecondPanel: VoidFunction;
 };
 
+const FormSchema = z.object({
+  role: z.string(),
+});
 export default function UserDetail({ userDetail, closeSecondPanel }: IProps) {
+  const form = useForm({
+    resolver: zodResolver(FormSchema),
+    defaultValues: {
+      role: '',
+    },
+  });
+  const { data: roleData } = useRoleList();
   const [activeTab, setActiveTab] = useState<'details' | 'edit' | null>(
     'details',
   );
@@ -73,6 +94,11 @@ export default function UserDetail({ userDetail, closeSecondPanel }: IProps) {
     month: 'long',
     day: 'numeric',
   });
+
+  const handleAssignRole = (data: any) => {
+    console.log(data);
+  };
+
   return (
     <>
       <div className="flex justify-between items-center p-4 pt-5">
@@ -102,29 +128,67 @@ export default function UserDetail({ userDetail, closeSecondPanel }: IProps) {
                     />
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>Add Role</p>
+                    <h1>Add Role</h1>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
             </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Add Role</DialogTitle>
-              </DialogHeader>
-              <DialogDescription>
-                <div className="grid w-full max-w-sm items-center gap-1.5">
-                  <Input type="role" id="role" placeholder="Role" />
-                </div>
-              </DialogDescription>
-              <DialogFooter>
-                <div className="flex items-center justify-center mt-2 gap-4">
-                  <Button variant="outline">Submit</Button>
-                  <DialogClose asChild>
-                    <Button variant="outline">Cancel</Button>
-                  </DialogClose>
-                </div>
-              </DialogFooter>
-            </DialogContent>
+
+            <Form {...form}>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Add Role</DialogTitle>
+                </DialogHeader>
+                <form onSubmit={form.handleSubmit(handleAssignRole)}>
+                  <DialogDescription>
+                    <FormField
+                      control={form.control}
+                      name="role"
+                      render={({ field }) => {
+                        return (
+                          <FormItem>
+                            <Select
+                              onValueChange={field.onChange}
+                              defaultValue={field.value}
+                            >
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select role" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectGroup>
+                                  {roleData?.data &&
+                                    roleData?.data?.map((role: any) => (
+                                      <SelectItem
+                                        value={role.name}
+                                        key={role.id}
+                                      >
+                                        {role.name}
+                                      </SelectItem>
+                                    ))}
+                                </SelectGroup>
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        );
+                      }}
+                    />
+                  </DialogDescription>
+                  <DialogFooter>
+                    <div className="flex items-center justify-center mt-2 gap-4">
+                      <Button variant="outline" type="submit">
+                        Assign
+                      </Button>
+                      <DialogClose asChild>
+                        <Button variant="outline">Cancel</Button>
+                      </DialogClose>
+                    </div>
+                  </DialogFooter>
+                </form>
+              </DialogContent>
+            </Form>
           </Dialog>
           {/* Delete User */}
           <Dialog>

@@ -68,7 +68,8 @@ export const useNavItems = () => {
       title: 'Actions',
       children: [
         {
-          title: 'Add Beneficiary',
+          title: 'Add Data Source',
+          path: `/projects/aa/${params.id}/datasources/add`,
           icon: <Plus size={18} strokeWidth={1.5} />,
         },
         {

@@ -1,6 +1,6 @@
 import { UUID } from "crypto";
-import { useAAStationsStore } from "./aa.project.store";
-import { useProjectAction } from "./projects.service";
+import { useAAStationsStore } from "./datasource.store";
+import { useProjectAction } from "../projects/projects.service";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { useSwal } from "../../swal";
@@ -57,7 +57,6 @@ export const useAAStations = (uuid: UUID) => {
 
   const query = useQuery({
     queryKey: ['dhm', uuid],
-    //   enabled: isEmpty(settings?.[uuid]),
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid,
@@ -76,5 +75,6 @@ export const useAAStations = (uuid: UUID) => {
         [uuid]: query?.data,
       });
     }
-  }, []);
+  }, [query.data]);
+  return query
 };

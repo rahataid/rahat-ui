@@ -1,7 +1,7 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useAAStations, useCreateBeneficiary, useCreateDataSource } from '@rahat-ui/query';
+import { useAAStationsStore, useCreateDataSource } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 
 import {
@@ -23,14 +23,12 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import { z } from 'zod';
 import { useParams } from 'next/navigation';
-import { useAAStationsStore } from 'libs/query/src/lib/projects/aa.project.store';
 import { UUID } from 'crypto';
 
 export default function AddDatasource() {
   const params = useParams();
   const createDataSource = useCreateDataSource();
   const projectID = params.id as UUID;
-  useAAStations(projectID)
   const dhmStations = useAAStationsStore((state) => state.dhmStations![projectID]);
 
   const FormSchema = z.object({
@@ -55,17 +53,17 @@ export default function AddDatasource() {
       warningLevel: '',
       location: '',
       repeatEvery: ''
-    } 
+    }
   });
 
   const handleCreateDataSource = async (data: z.infer<typeof FormSchema>) => {
     try {
       const result = await createDataSource.mutateAsync({
-       projectUUID: projectID,
-       dataSourcePayload: {
-        ...data,
-        triggerActivity: 'EMAIL'
-       }
+        projectUUID: projectID,
+        dataSourcePayload: {
+          ...data,
+          triggerActivity: 'EMAIL'
+        }
       });
       if (result) {
         toast.success('Data source added successfully!');
@@ -75,6 +73,7 @@ export default function AddDatasource() {
       toast.error('Failed to add data source.');
     }
   };
+
   return (
     <>
       <Form {...form}>
@@ -165,7 +164,7 @@ export default function AddDatasource() {
                           </FormControl>
                           <SelectContent>
                             {
-                              dhmStations.results.map((r: any) => {
+                              dhmStations?.results?.map((r: any) => {
                                 return (
                                   <SelectItem value={r.title}>
                                     {r.title}

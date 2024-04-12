@@ -1,5 +1,5 @@
 import { useRSQuery } from '@rumsan/react-query';
-import { ListRole, User } from '@rumsan/sdk/types';
+import { EditRole, ListRole, User } from '@rumsan/sdk/types';
 import { UseQueryResult, useMutation, useQuery } from '@tanstack/react-query';
 import { TAGS } from '../config';
 import { getRoleClient, getUserClient } from '@rumsan/sdk/clients';
@@ -128,36 +128,35 @@ export const useCreateRole = () => {
   return query;
 };
 
-// export const useEditRole = () => {
-//   const { queryClient, rumsanService } = useRSQuery();
-//   const roleClient = getRoleClient(rumsanService.client);
-//   const query = useMutation(
-//     {
-//       mutationKey: [TAGS.EDIT_ROLE],
-//       // mutationFn: ({ name, data }: { name: string; data: any }) =>
-//       //   rumsanService.client.patch(`roles/${name}`, { ...data }),
-//       mutationFn: ({ uuid, data }: { uuid: string; data: any }) =>
-//         roleClient.updateRole(uuid, data),
-//       onSuccess: () => {
-//         Swal.fire('Role Updated Successfully', '', 'success');
-//         queryClient.invalidateQueries({
-//           queryKey: [
-//             TAGS.GET_ALL_ROLES,
-//             {
-//               exact: true,
-//             },
-//           ],
-//         });
-//       },
-//       onError: (error: any) => {
-//         Swal.fire(
-//           'Error',
-//           error.response.data.message || 'Encounter error on Creating Data',
-//           'error',
-//         );
-//       },
-//     },
-//     queryClient,
-//   );
-//   return query;
-// };
+export const useEditRole = () => {
+  const { queryClient, rumsanService } = useRSQuery();
+  const roleClient = getRoleClient(rumsanService.client);
+  const query = useMutation(
+    {
+      mutationKey: [TAGS.EDIT_ROLE],
+
+      mutationFn: ({ name, data }: { name: string; data: any }) =>
+        roleClient.updateRole(name, data),
+      onSuccess: () => {
+        Swal.fire('Role Updated Successfully', '', 'success');
+        queryClient.invalidateQueries({
+          queryKey: [
+            TAGS.GET_ALL_ROLES,
+            {
+              exact: true,
+            },
+          ],
+        });
+      },
+      onError: (error: any) => {
+        Swal.fire(
+          'Error',
+          error.response.data.message || 'Encounter error on Creating Data',
+          'error',
+        );
+      },
+    },
+    queryClient,
+  );
+  return query;
+};

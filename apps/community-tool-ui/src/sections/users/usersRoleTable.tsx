@@ -35,6 +35,8 @@ import {
   TableHeader,
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
+import { useUserRoleList } from '@rumsan/react-query';
+import { UUID } from 'crypto';
 
 const data: Role[] = [
   {
@@ -56,47 +58,48 @@ export type Role = {
   role: string;
 };
 
-export const columns: ColumnDef<Role>[] = [
+export const columns: ColumnDef<any>[] = [
+  // {
+  //   id: 'select',
+  //   header: ({ table }) => (
+  //     <Checkbox
+  //       checked={
+  //         table.getIsAllPageRowsSelected() ||
+  //         (table.getIsSomePageRowsSelected() && 'indeterminate')
+  //       }
+  //       onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+  //       aria-label="Select all"
+  //     />
+  //   ),
+  //   cell: ({ row }) => (
+  //     <Checkbox
+  //       checked={row.getIsSelected()}
+  //       onCheckedChange={(value) => row.toggleSelected(!!value)}
+  //       aria-label="Select row"
+  //     />
+  //   ),
+  //   enableSorting: false,
+  //   enableHiding: false,
+  // },
   {
-    id: 'select',
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && 'indeterminate')
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
-    accessorKey: 'role',
+    accessorKey: 'name',
     header: 'Role',
-    cell: ({ row }) => <div className="capitalize">{row.getValue('role')}</div>,
+    cell: ({ row }) => <div className="capitalize">{row.getValue('name')}</div>,
   },
 
-  {
-    id: 'actions',
-    enableHiding: false,
-    cell: ({ row }) => {
-      const payment = row.original;
+  // {
+  //   id: 'actions',
+  //   enableHiding: false,
+  //   cell: ({ row }) => {
+  //     const payment = row.original;
 
-      return <Trash2 strokeWidth={1.6} size={16} />;
-    },
-  },
+  //     return <Trash2 strokeWidth={1.6} size={16} />;
+  //   },
+  // },
 ];
 
-export function UsersRoleTable() {
+export function UsersRoleTable({ userRole }: any) {
+  const { data: userRoleList } = useUserRoleList(userRole.uuid as UUID);
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
@@ -106,7 +109,7 @@ export function UsersRoleTable() {
   const [rowSelection, setRowSelection] = React.useState({});
 
   const table = useReactTable({
-    data,
+    data: userRoleList?.data || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,

@@ -59,6 +59,8 @@ import {
   FormItem,
   FormMessage,
 } from '@rahat-ui/shadcn/src/components/ui/form';
+import { useUserAddRoles, useUserEdit } from '@rumsan/react-query';
+import { UUID } from 'crypto';
 
 type IProps = {
   userDetail: User;
@@ -69,6 +71,7 @@ const FormSchema = z.object({
   role: z.string(),
 });
 export default function UserDetail({ userDetail, closeSecondPanel }: IProps) {
+  const updateUserRole = useUserAddRoles();
   const form = useForm({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -96,7 +99,13 @@ export default function UserDetail({ userDetail, closeSecondPanel }: IProps) {
   });
 
   const handleAssignRole = (data: any) => {
-    console.log(data);
+    // const roles= [data.role],
+
+    // console.log(roles);
+    updateUserRole.mutateAsync({
+      uuid: userDetail.uuid as UUID,
+      roles: [data.role],
+    });
   };
 
   return (
@@ -128,7 +137,7 @@ export default function UserDetail({ userDetail, closeSecondPanel }: IProps) {
                     />
                   </TooltipTrigger>
                   <TooltipContent>
-                    <h1>Add Role</h1>
+                    <h1>Assign Role</h1>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
@@ -137,7 +146,7 @@ export default function UserDetail({ userDetail, closeSecondPanel }: IProps) {
             <Form {...form}>
               <DialogContent>
                 <DialogHeader>
-                  <DialogTitle>Add Role</DialogTitle>
+                  <DialogTitle>Assign Role</DialogTitle>
                 </DialogHeader>
                 <form onSubmit={form.handleSubmit(handleAssignRole)}>
                   <DialogDescription>
@@ -149,7 +158,7 @@ export default function UserDetail({ userDetail, closeSecondPanel }: IProps) {
                           <FormItem>
                             <Select
                               onValueChange={field.onChange}
-                              defaultValue={field.value}
+                              defaultValue={field.value[0]}
                             >
                               <FormControl>
                                 <SelectTrigger>
@@ -336,37 +345,7 @@ export default function UserDetail({ userDetail, closeSecondPanel }: IProps) {
           </TabsContent>
           <TabsContent value="roles">
             <div className="px-2">
-              <UsersRoleTable />
-              {/* <Card className="p-4">
-                      <div className="grid grid-cols-4">
-                        <div className="grid grid-cols-subgrid gap-4 col-span-4">
-                          <div className="flex items-center justify-between rounded-md border px-4 py-3 font-mono text-sm">
-                            Admin
-                            <Trash2
-                              className="cursor-pointer"
-                              size={18}
-                              strokeWidth={1.6}
-                            />
-                          </div>
-                          <div className="flex items-center justify-between rounded-md border px-4 py-3 font-mono text-sm">
-                            User
-                            <Trash2
-                              className="cursor-pointer"
-                              size={18}
-                              strokeWidth={1.6}
-                            />
-                          </div>
-                          <div className="flex items-center justify-between rounded-md border px-4 py-3 font-mono text-sm">
-                            Manager
-                            <Trash2
-                              className="cursor-pointer"
-                              size={18}
-                              strokeWidth={1.6}
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    </Card> */}
+              <UsersRoleTable userRole={userDetail} />
             </div>
           </TabsContent>
         </Tabs>
@@ -376,23 +355,6 @@ export default function UserDetail({ userDetail, closeSecondPanel }: IProps) {
         <>
           <div className="flex flex-col justify-between ">
             <div className="p-4 border-t">
-              {/* <div className="grid grid-cols-2 gap-4">
-                <Input type="name" placeholder="Name" />
-                <Select>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select gender" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      {genderList.map((gender, index) => (
-                        <SelectItem key={index} value={gender.value}>
-                          {gender.value}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              </div> */}
               <EditUser userDetail={userDetail} />
             </div>
           </div>

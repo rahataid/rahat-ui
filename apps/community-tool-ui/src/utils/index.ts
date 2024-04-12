@@ -93,6 +93,53 @@ function moveErrorMsgToFirstKey(data: any) {
   return result;
 }
 
+function checkPropertyAndDelete(item: any, propertyName: string) {
+  if (item.hasOwnProperty(propertyName)) {
+    delete item[propertyName];
+  }
+  return item;
+}
+
+function cleanupNonDuplicateFields(payload: any[]) {
+  let data = [];
+  for (let p of payload) {
+    p = checkPropertyAndDelete(p, 'isDuplicate');
+    p = checkPropertyAndDelete(p, 'exportOnly');
+    p = checkPropertyAndDelete(p, 'rawData');
+    p = checkPropertyAndDelete(p, 'uuid');
+    p = checkPropertyAndDelete(p, 'id');
+    p = checkPropertyAndDelete(p, 'customId');
+    p = checkPropertyAndDelete(p, 'createdAt');
+    p = checkPropertyAndDelete(p, 'updatedAt');
+    data.push(p);
+  }
+  return data;
+}
+
+export const splitValidAndDuplicates = (
+  payload: any[],
+  duplicateData: any[],
+) => {
+  const sanitized = [] as any;
+  const nonDuplicate = payload.filter((d: any) => d.isDuplicate !== true);
+  const duplicates = duplicateData.filter((d: any) => d.isDuplicate);
+  for (let p of duplicates) {
+    p = checkPropertyAndDelete(p, 'isDuplicate');
+    p = checkPropertyAndDelete(p, 'exportOnly');
+    p = checkPropertyAndDelete(p, 'rawData');
+    p = checkPropertyAndDelete(p, 'uuid');
+    p = checkPropertyAndDelete(p, 'id');
+    p = checkPropertyAndDelete(p, 'customId');
+    p = checkPropertyAndDelete(p, 'createdAt');
+    p = checkPropertyAndDelete(p, 'updatedAt');
+    p.errorMessage = 'Duplicate data';
+    sanitized.push(p);
+  }
+  const swapped = moveErrorMsgToFirstKey(sanitized);
+  const validData = cleanupNonDuplicateFields(nonDuplicate);
+  return { validData, sanitized: swapped };
+};
+
 function createInvalidFieldError(errFields: any) {
   const errFieldsArr = errFields.map((err: any) => err.fieldName);
   return `Invalid fields: ${errFieldsArr.join(', ')}`;
@@ -104,37 +151,18 @@ export const splitValidAndInvalid = (payload: any, errors: []) => {
 
   payload.forEach((p: any) => {
     const error = errors.find((error: any) => error.uuid === p.uuid);
-
-    if (error || p.isDuplicate) {
+    // if (p.hasOwnProperty('isDuplicate')) {
+    //   delete p.isDuplicate;
+    // }
+    if (error) {
       const errFields = errors.filter((err: any) => err.uuid === p.uuid);
       if (p.uuid) delete p.uuid;
       if (p.rawData) delete p.rawData;
-      if (p.hasOwnProperty('isDuplicate')) {
-        // 1. If there is duplicate data
-        if (p.isDuplicate) p.errorMessage = 'Duplicate Data';
-        // 2. If there is an error
-        if (error) {
-          if (errFields.length) {
-            p.errorMessage = createInvalidFieldError(errFields);
-          }
-        }
-        // 3. If there is both duplicate and error
-        if (error && p.isDuplicate) {
-          p.errorMessage = 'Duplicate data';
-          if (errFields.length) {
-            const invalidFieldMsg = createInvalidFieldError(errFields);
-            p.errorMessage = `Duplicate & ${invalidFieldMsg}`;
-          }
-        }
-
-        delete p.isDuplicate;
+      if (errFields.length) {
+        p.errorMessage = createInvalidFieldError(errFields);
       }
-
       invalidData.push(p);
     } else {
-      if (p.hasOwnProperty('isDuplicate')) {
-        delete p.isDuplicate;
-      }
       validData.push(p);
     }
   });

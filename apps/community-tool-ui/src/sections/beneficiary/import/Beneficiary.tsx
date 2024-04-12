@@ -17,6 +17,7 @@ import {
   removeFieldsWithUnderscore,
   splitFullName,
   formatNameString,
+  splitNonDuplicateData,
 } from 'apps/community-tool-ui/src/utils';
 import { ArrowBigLeft } from 'lucide-react';
 import React, { useState } from 'react';
@@ -54,7 +55,7 @@ export default function BenImp({ extraFields }: IProps) {
   const [invalidFields, setInvalidFields] = useState([]) as any;
   const [validBenef, setValidBenef] = useState([]) as any;
   const [hasExistingMapping, setHasExistingMapping] = useState(false);
-  const [hasDuplicate, setHasDuplicate] = useState(false);
+  const [duplicateData, setDuplicateData] = useState([]) as any;
 
   const fetchExistingMapping = async (importId: string) => {
     setMappings([]);
@@ -192,11 +193,35 @@ export default function BenImp({ extraFields }: IProps) {
     });
   };
 
+  const exportDuplicateData = (duplicateData: any) => {
+    const { nonDuplicate, sanitized } = splitNonDuplicateData(duplicateData);
+    setValidBenef(nonDuplicate);
+    setProcessedData(nonDuplicate);
+    setInvalidFields([]);
+    exportDataToExcel(sanitized);
+    if (!nonDuplicate.length) {
+      setUniqueField('');
+      setCurrentScreen(BENEF_IMPORT_SCREENS.SELECTION);
+    }
+  };
+
   const handleImportNowClick = async () => {
+    const msg = duplicateData.length
+      ? `${duplicateData.length / 2} / ${
+          processedData.length
+        } duplicates found.<b>Import Anyway?</b>`
+      : '';
+    console.log({ msg });
     const dialog = await Swal.fire({
       title: `${processedData.length} Beneficiaries will be imported!`,
+      text: msg,
       showCancelButton: true,
-      confirmButtonText: 'Proceed',
+      confirmButtonText: 'Import Now',
+      cancelButtonText: 'No',
+      showDenyButton: duplicateData.length ? true : false,
+      denyButtonColor: 'orange',
+      denyButtonText: 'Export Duplicates',
+      html: msg,
     });
     if (dialog.isConfirmed) {
       if (!validBenef.length) return validateOrImport(IMPORT_ACTION.IMPORT);
@@ -208,7 +233,7 @@ export default function BenImp({ extraFields }: IProps) {
         fieldMapping: { data: validBenef, sourceTargetMappings: mappings },
       };
       return createImportSource(sourcePayload);
-    }
+    } else if (dialog.isDenied) return exportDuplicateData(duplicateData);
   };
 
   const validateOrImport = (action: string) => {
@@ -302,11 +327,12 @@ export default function BenImp({ extraFields }: IProps) {
             title: `${sourcePayload.fieldMapping.data.length} Beneficiaries imported successfully!`,
           });
         }
-        const { result, invalidFields, containsDuplicate } = res.data.data;
-        setHasDuplicate(containsDuplicate);
-        // setDuplicateCount(duplicateCount);
+        const { result, invalidFields, duplicates } = res.data.data;
+        setDuplicateData(duplicates);
         setProcessedData(result);
-        if (invalidFields.length) setInvalidFields(invalidFields);
+        if (invalidFields.length) {
+          setInvalidFields(invalidFields);
+        }
         setCurrentScreen(BENEF_IMPORT_SCREENS.IMPORT_DATA);
       })
       .catch((err) => {
@@ -318,6 +344,7 @@ export default function BenImp({ extraFields }: IProps) {
   };
 
   const handleRetargetClick = () => {
+    setDuplicateData([]);
     setValidBenef([]);
     setProcessedData([]);
     setCurrentScreen(BENEF_IMPORT_SCREENS.VALIDATION);
@@ -352,7 +379,6 @@ export default function BenImp({ extraFields }: IProps) {
     setValidBenef(validData);
     setProcessedData(validData);
     setInvalidFields([]);
-    setHasDuplicate(false);
     exportDataToExcel(invalidData);
     if (!validData.length) {
       setUniqueField('');
@@ -448,7 +474,6 @@ export default function BenImp({ extraFields }: IProps) {
               data={processedData}
               handleImportClick={handleImportNowClick}
               invalidFields={invalidFields}
-              hasDuplicate={hasDuplicate}
             />
           </>
         )}

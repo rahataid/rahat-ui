@@ -36,10 +36,6 @@ const SuccessModal = ({
   handleClose,
   isLoading,
 }: Iprops) => {
-  // const submitForm = (e: React.FormEvent<HTMLFormElement>) => {
-  //   e.preventDefault();
-  //   handleSubmit({ ...voucherInputs, description, price });
-  // };
   return (
     <Dialog open={open}>
       <DialogContent className="sm:max-w-[500px]">

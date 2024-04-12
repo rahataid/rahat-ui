@@ -34,7 +34,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/dialog';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { useTableColumns } from './useTableColumns';
 import TableLoader from 'apps/rahat-ui/src/components/table.loader';
 
@@ -73,6 +73,8 @@ export default function RedemptionTable({}) {
   const [data, setData] = React.useState([]);
 
   const uuid = useParams().id;
+  const id = useParams();
+  const route = useRouter();
 
   const table = useReactTable({
     data,
@@ -115,9 +117,8 @@ export default function RedemptionTable({}) {
         tokenAmount: row.voucherNumber,
         status: row.status,
         uuid: row.uuid,
-        name:row.Vendor.name,
-        voucherType:row.voucherType
-
+        name: row.Vendor.name,
+        voucherType: row.voucherType,
       };
     });
     setData(filterData);
@@ -134,6 +135,13 @@ export default function RedemptionTable({}) {
     });
     projectModal.onFalse();
   };
+
+  React.useEffect(() => {
+    if (updateRedemption.isSuccess) {
+      route.push(`/projects/el/${id}/redemptions`);
+    }
+  }, []);
+
   React.useEffect(() => {
     getRedemptionList();
   }, []);

@@ -55,6 +55,7 @@ import { useBulkAssignVoucher } from 'apps/rahat-ui/src/hooks/el/contracts/el-co
 import { useBoolean } from '../../../../hooks/use-boolean';
 import TokenAssingnConfirm from './token.assign.confirm';
 import TableLoader from '../../../../components/table.loader';
+import { useRouter } from 'next/navigation';
 
 // import { useBeneficiaryTransaction } from '../../hooks/el/subgraph/querycall';
 
@@ -83,7 +84,8 @@ const benType = [
 
 function BeneficiaryDetailTableView() {
   const tokenAssignModal = useBoolean();
-
+  const route = useRouter();
+  const id = useParams();
   // TODO: Refactor it
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -171,6 +173,12 @@ function BeneficiaryDetailTableView() {
       contractAddress: contractAddress.elproject.address,
     });
   };
+
+  React.useEffect(() => {
+    if (assignVoucher.isSuccess) {
+      route.push(`/projects/el/${id}`);
+    }
+  }, []);
 
   return (
     <>

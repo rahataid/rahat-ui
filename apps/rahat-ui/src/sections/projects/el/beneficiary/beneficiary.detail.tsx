@@ -56,6 +56,7 @@ import {
   DialogTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dialog';
 import TableLoader from 'apps/rahat-ui/src/components/table.loader';
+import { useRouter } from 'next/navigation';
 
 type IProps = {
   beneficiaryDetails: any;
@@ -69,7 +70,7 @@ export default function BeneficiaryDetail({
   const assignClaims = useAssignClaims();
   const { id } = useParams();
   const getProject = useProjectAction();
-
+  const route = useRouter();
   const [assignStatus, setAssignStatus] = useState(false);
   const [contractAddress, setContractAddress] = useState<any>();
 
@@ -111,6 +112,12 @@ export default function BeneficiaryDetail({
   };
 
   useEffect(() => {
+    if (assignClaims.isSuccess) {
+      route.push(`/projects/el/${id}/beneficiary`);
+    }
+  }, [assignClaims.isSuccess]);
+
+  useEffect(() => {
     if (
       beneficiaryVoucherDetails?.freeVoucherAddress === undefined ||
       beneficiaryVoucherDetails?.referredVoucherAddress === undefined
@@ -138,10 +145,6 @@ export default function BeneficiaryDetail({
   }, [id, projectSettings]);
 
   const voucherAssignModal = useBoolean();
-
-  const handleVoucherAssignModal = () => {
-    voucherAssignModal.onTrue();
-  };
 
   const handleVoucherAssignModalClose = () => {
     voucherAssignModal.onFalse();

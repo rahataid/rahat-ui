@@ -134,9 +134,12 @@ export const useCreateRole = () => {
 //   const query = useMutation(
 //     {
 //       mutationKey: [TAGS.EDIT_ROLE],
-//       mutationFn: roleClient.updateRole,
+//       // mutationFn: ({ name, data }: { name: string; data: any }) =>
+//       //   rumsanService.client.patch(`roles/${name}`, { ...data }),
+//       mutationFn: ({ uuid, data }: { uuid: string; data: any }) =>
+//         roleClient.updateRole(uuid, data),
 //       onSuccess: () => {
-//         Swal.fire('Roles Added Successfully', '', 'success');
+//         Swal.fire('Role Updated Successfully', '', 'success');
 //         queryClient.invalidateQueries({
 //           queryKey: [
 //             TAGS.GET_ALL_ROLES,

@@ -45,7 +45,7 @@
     "@rumsan/communication-query": "^0.0.3",
     "@rumsan/core": "^3.0.133",
     "@rumsan/prisma": "^1.0.125",
-    "@rumsan/react-query": "0.0.35",
+    "@rumsan/react-query": "0.0.36",
     "@rumsan/sdk": "^0.0.44",
     "@rahataid/community-tool-sdk": "^0.0.10",
     "@rumsan/extensions": "^0.0.22",

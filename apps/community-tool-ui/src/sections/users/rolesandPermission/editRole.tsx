@@ -9,6 +9,7 @@ import { Input } from '@rahat-ui/shadcn/components/input';
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -17,42 +18,51 @@ import {
 import React, { useState } from 'react';
 import { Switch } from '@rahat-ui/shadcn/src/components/ui/switch';
 import { Role } from '@rumsan/sdk/types';
+import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@rahat-ui/shadcn/src/components/ui/select';
 
 type Iprops = {
   roleDetail: Role;
 };
 export default function EditRole({ roleDetail }: Iprops) {
-  const [roleName, setRoleName] = useState('');
-
-  //   const permissions = [
-  //     {
-  //       id: 'manage',
-  //       label: 'Manage',
-  //     },
-  //     {
-  //       id: 'create',
-  //       label: 'Create',
-  //     },
-  //     {
-  //       id: 'read',
-  //       label: 'Read',
-  //     },
-  //     {
-  //       id: 'update',
-  //       label: 'Update',
-  //     },
-  //     {
-  //       id: 'delete',
-  //       label: 'Delete',
-  //     },
-  //   ] as const;
+  const permissions = [
+    {
+      id: 'manage',
+      label: 'Manage',
+    },
+    {
+      id: 'create',
+      label: 'Create',
+    },
+    {
+      id: 'read',
+      label: 'Read',
+    },
+    {
+      id: 'update',
+      label: 'Update',
+    },
+    {
+      id: 'delete',
+      label: 'Delete',
+    },
+  ] as const;
 
   const FormSchema = z.object({
-    // permissions: z
-    //   .array(z.string())
-    //   .refine((value) => value.some((item) => item), {
-    //     message: 'You have to select at least one permission.',
-    //   }),
+    permission: z
+      .array(z.string())
+      .refine((value) => value.some((item) => item), {
+        message: 'You have to select at least one permission.',
+      }),
+    subject: z.string().min(2, {
+      message: 'Subject must be selected',
+    }),
     roleName: z.string().min(2, {
       message: 'Role Name must be at least 2 characters.',
     }),
@@ -64,10 +74,22 @@ export default function EditRole({ roleDetail }: Iprops) {
     defaultValues: {
       roleName: roleDetail?.name || '',
       isSystem: roleDetail?.isSystem || false,
+      permission: [],
+      subject: '',
     },
   });
 
-  const handleEditRole = (data: z.infer<typeof FormSchema>) => {};
+  const handleEditRole = (data: any) => {
+    const validateData = FormSchema.parse(data);
+
+    const permissions = {
+      [validateData.subject]: validateData.permission,
+    };
+    const k = {
+      permissions,
+    };
+    console.log(k);
+  };
 
   return (
     <Form {...form}>
@@ -106,9 +128,9 @@ export default function EditRole({ roleDetail }: Iprops) {
               </div>
             )}
           />
-          {/* <FormField
+          <FormField
             control={form.control}
-            name="permissions"
+            name="permission"
             render={() => (
               <FormItem>
                 <div className="mb-4">
@@ -118,7 +140,7 @@ export default function EditRole({ roleDetail }: Iprops) {
                   <FormField
                     key={item.id}
                     control={form.control}
-                    name="permissions"
+                    name="permission"
                     render={({ field }) => {
                       return (
                         <FormItem
@@ -150,7 +172,34 @@ export default function EditRole({ roleDetail }: Iprops) {
                 <FormMessage />
               </FormItem>
             )}
-          /> */}
+          />
+          <FormField
+            control={form.control}
+            name="subject"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Subject</FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a respective subject" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="ALL">All</SelectItem>
+                    <SelectItem value="ROLE">ROLE</SelectItem>
+                    <SelectItem value="PUBLIC">PUBLIC</SelectItem>
+                    <SelectItem value="USER">USER</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                <FormMessage />
+              </FormItem>
+            )}
+          />
           <div className="flex justify-end">
             <Button type="submit">Update Role</Button>
           </div>

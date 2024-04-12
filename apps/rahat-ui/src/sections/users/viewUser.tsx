@@ -274,7 +274,10 @@ export default function UserDetail({ userDetail, closeSecondPanel }: IProps) {
           </TabsContent>
           <TabsContent value="roles">
             <div className="px-2">
-              <UsersRoleTable />
+              <UsersRoleTable
+                uuid={userDetail.uuid as UUID}
+                isAdmin={isAdmin}
+              />
               {/* <Card className="p-4">
                       <div className="grid grid-cols-4">
                         <div className="grid grid-cols-subgrid gap-4 col-span-4">

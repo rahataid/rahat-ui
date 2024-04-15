@@ -70,6 +70,7 @@ export default function EditUser({ userDetail }: Iprops) {
     updateUser.data?.response.success && closeSecondPanel();
   }, [closeSecondPanel, updateUser.data?.response.success]);
 
+  console.log('do', userDetail);
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleEditUser)}>

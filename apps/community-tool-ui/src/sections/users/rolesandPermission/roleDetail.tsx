@@ -26,15 +26,21 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
-import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+} from '@rahat-ui/shadcn/src/components/ui/card';
 import EditRole from './editRole';
+import { useGetRole } from '@rahat-ui/community-query';
 
 type IProps = {
-  roleDetail: Role;
+  roleData: Role;
   closeSecondPanel: VoidFunction;
 };
 
-export default function RoleDetail({ roleDetail, closeSecondPanel }: IProps) {
+export default function RoleDetail({ roleData, closeSecondPanel }: IProps) {
+  const { data: roleDetail } = useGetRole(roleData.name);
   const [activeTab, setActiveTab] = useState<'details' | 'edit' | null>(
     'details',
   );
@@ -42,12 +48,13 @@ export default function RoleDetail({ roleDetail, closeSecondPanel }: IProps) {
     setActiveTab(tab);
   };
 
-  const changedDate = new Date(roleDetail.createdAt as Date);
+  const changedDate = new Date(roleDetail?.data?.role?.createdAt as Date);
   const formattedDate = changedDate.toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
   });
+  console.log(roleDetail?.data?.permissions);
   return (
     <>
       <div className="flex justify-between items-center p-4 pt-5">
@@ -122,43 +129,88 @@ export default function RoleDetail({ roleDetail, closeSecondPanel }: IProps) {
       </div>
       {/* Details View */}
       {activeTab === 'details' && (
-        <Card className="shadow rounded m-2">
-          <CardContent className="pt-6">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <p className="font-light text-base">{roleDetail.name}</p>
-                <p className="text-sm font-normal text-muted-foreground">
-                  Name
-                </p>
+        <>
+          {/* Role Details */}
+          <Card className="shadow rounded m-2">
+            <CardHeader className="mb-0 pb-0">Role Details</CardHeader>
+
+            <CardContent className="pt-6">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="font-light text-base">
+                    {roleDetail?.data?.role?.name}
+                  </p>
+                  <p className="text-sm font-normal text-muted-foreground">
+                    Name
+                  </p>
+                </div>
+
+                <div className="text-right">
+                  <p className="font-light text-base">{formattedDate}</p>
+                  <p className="text-sm font-normal text-muted-foreground ">
+                    CreatedAt
+                  </p>
+                </div>
+
+                <div>
+                  <p className="font-light text-base">
+                    {roleDetail?.data?.role?.createdBy ?? 'N/A'}
+                  </p>
+                  <p className="text-sm font-normal text-muted-foreground">
+                    Created By
+                  </p>
+                </div>
+
+                <div className="text-right">
+                  <p className="font-light text-base">
+                    {roleDetail?.data?.role?.isSystem ? 'true' : 'false'}
+                  </p>
+                  <p className="text-sm font-normal text-muted-foreground ">
+                    Is System
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          {/* Permission Details */}
+          <Card className="shadow rounded m-2">
+            <CardHeader className="mb-0 pb-0">Permission Details</CardHeader>
+            <CardContent className="pt-6">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <h3 className="font-medium text-base">Subject</h3>
+                </div>
+                <div className="text-right">
+                  <h3 className="font-medium text-base">Actions</h3>
+                </div>
               </div>
 
-              <div className="text-right">
-                <p className="font-light text-base">{formattedDate}</p>
-                <p className="text-sm font-normal text-muted-foreground ">
-                  CreatedAt
-                </p>
-              </div>
-
-              <div>
-                <p className="font-light text-base">
-                  {roleDetail.createdBy ?? 'N/A'}
-                </p>
-                <p className="text-sm font-normal text-muted-foreground">
-                  Created By
-                </p>
-              </div>
-
-              <div className="text-right">
-                <p className="font-light text-base">
-                  {roleDetail.isSystem ? 'true' : 'false'}
-                </p>
-                <p className="text-sm font-normal text-muted-foreground ">
-                  Is System
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+              {roleDetail?.data?.permissions &&
+                Object.keys(roleDetail?.data?.permissions).map((key) => (
+                  <div
+                    key={key}
+                    className="grid grid-cols-2 gap-4 mt-2 text-sm"
+                  >
+                    <div>
+                      <p className="font-light text-base">
+                        {key.toUpperCase().charAt(0) + key.slice(1)}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p key={key} className="font-light text-base">
+                        {roleDetail?.data?.permissions[key]
+                          .map(
+                            (value) =>
+                              value.charAt(0).toUpperCase() + value.slice(1),
+                          )
+                          .join(', ')}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+            </CardContent>
+          </Card>
+        </>
       )}
       {/* Edit View */}
       {activeTab === 'edit' && (

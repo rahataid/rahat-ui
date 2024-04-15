@@ -108,6 +108,7 @@ export default function UserDetail({ userDetail, closeSecondPanel }: IProps) {
     });
   };
 
+  console.log('up', userDetail);
   return (
     <>
       <div className="flex justify-between items-center p-4 pt-5">

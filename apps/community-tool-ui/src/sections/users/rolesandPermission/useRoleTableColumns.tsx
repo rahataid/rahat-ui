@@ -46,7 +46,7 @@ export const useRoleTableColumns = () => {
               setSecondPanelComponent(
                 <>
                   <RoleDetail
-                    roleDetail={row.original}
+                    roleData={row.original}
                     closeSecondPanel={closeSecondPanel}
                   />
                 </>,

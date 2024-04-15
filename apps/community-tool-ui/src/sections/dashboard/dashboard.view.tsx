@@ -11,9 +11,10 @@ import { DashboardCharts } from '.';
 export default function DashboardView() {
   const { data } = useCommunityBeneficiaryStatsList();
 
-  const totalBeneficiaries = data?.data
-    ?.filter((name) => name.name === 'BENEFICIARY_TOTAL')
-    .map((item) => item.data)[0].count;
+  const totalBeneficiaries =
+    data?.data
+      ?.filter((name) => name.name === 'BENEFICIARY_TOTAL')
+      .map((item) => item?.data)[0].count || 0;
   console.log(totalBeneficiaries);
   return (
     <div>

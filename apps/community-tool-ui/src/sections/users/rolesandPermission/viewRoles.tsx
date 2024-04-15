@@ -8,7 +8,7 @@ import CustomPagination from 'apps/community-tool-ui/src/components/customPagina
 export default function RoleView() {
   const { pagination, setNextPage, setPerPage, setPrevPage } = usePagination();
 
-  const { data: roleData } = useRoleList();
+  const { data: roleData } = useRoleList({});
 
   return (
     <div>

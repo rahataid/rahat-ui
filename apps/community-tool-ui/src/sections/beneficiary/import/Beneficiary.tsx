@@ -17,6 +17,7 @@ import {
   removeFieldsWithUnderscore,
   splitFullName,
   formatNameString,
+  splitValidAndDuplicates,
 } from 'apps/community-tool-ui/src/utils';
 import { ArrowBigLeft } from 'lucide-react';
 import React, { useState } from 'react';
@@ -46,7 +47,7 @@ export default function BenImp({ extraFields }: IProps) {
   const [mappings, setMappings] = useState([]) as any;
   const [koboForms, setKoboForms] = useState([]);
   const [importId, setImportId] = useState(''); // Kobo form id or excel sheetID
-  const [fetching, setFetching] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [currentScreen, setCurrentScreen] = useState(
     BENEF_IMPORT_SCREENS.SELECTION,
   );
@@ -54,7 +55,7 @@ export default function BenImp({ extraFields }: IProps) {
   const [invalidFields, setInvalidFields] = useState([]) as any;
   const [validBenef, setValidBenef] = useState([]) as any;
   const [hasExistingMapping, setHasExistingMapping] = useState(false);
-  const [hasDuplicate, setHasDuplicate] = useState(false);
+  const [duplicateData, setDuplicateData] = useState([]) as any;
 
   const fetchExistingMapping = async (importId: string) => {
     setMappings([]);
@@ -105,7 +106,7 @@ export default function BenImp({ extraFields }: IProps) {
 
   const handleKoboFormChange = async (value: string) => {
     try {
-      setFetching(true);
+      setLoading(true);
       setRawData([]);
       const found: any | undefined = koboForms.find(
         (f: any) => f.value === value,
@@ -121,9 +122,9 @@ export default function BenImp({ extraFields }: IProps) {
       const sanitized = removeFieldsWithUnderscore(koboData.data.results);
       setRawData(sanitized);
       await fetchExistingMapping(found.imported);
-      setFetching(false);
+      setLoading(false);
     } catch (err) {
-      setFetching(false);
+      setLoading(false);
       return Swal.fire({
         icon: 'error',
         title: 'Failed to fetch kobotool settings',
@@ -151,6 +152,7 @@ export default function BenImp({ extraFields }: IProps) {
   };
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    setLoading(true);
     setRawData([]);
     const files = e.target.files || [];
     const fileName = formatNameString(files[0].name);
@@ -168,6 +170,7 @@ export default function BenImp({ extraFields }: IProps) {
     reader.readAsArrayBuffer(files[0]);
     setImportId(fileName);
     await fetchExistingMapping(fileName);
+    setLoading(false);
   };
 
   const handleGoClick = () => {
@@ -192,11 +195,39 @@ export default function BenImp({ extraFields }: IProps) {
     });
   };
 
+  const exportDuplicateData = (data: any, duplicateData: any) => {
+    const { validData, sanitized } = splitValidAndDuplicates(
+      data,
+      duplicateData,
+    );
+    setValidBenef(validData);
+    setProcessedData(validData);
+    setInvalidFields([]);
+    exportDataToExcel(sanitized);
+    setDuplicateData([]);
+    if (!validData.length) {
+      setHasExistingMapping(false);
+      setUniqueField('');
+      setCurrentScreen(BENEF_IMPORT_SCREENS.SELECTION);
+    }
+  };
+
   const handleImportNowClick = async () => {
+    const msg = duplicateData.length
+      ? `${duplicateData.length / 2} / ${
+          processedData.length
+        } duplicates found.<b>Import Anyway?</b>`
+      : '';
     const dialog = await Swal.fire({
       title: `${processedData.length} Beneficiaries will be imported!`,
+      text: msg,
       showCancelButton: true,
-      confirmButtonText: 'Proceed',
+      confirmButtonText: 'Import Now',
+      cancelButtonText: 'No',
+      showDenyButton: duplicateData.length ? true : false,
+      denyButtonColor: 'orange',
+      denyButtonText: 'Export Duplicates',
+      html: msg,
     });
     if (dialog.isConfirmed) {
       if (!validBenef.length) return validateOrImport(IMPORT_ACTION.IMPORT);
@@ -208,7 +239,8 @@ export default function BenImp({ extraFields }: IProps) {
         fieldMapping: { data: validBenef, sourceTargetMappings: mappings },
       };
       return createImportSource(sourcePayload);
-    }
+    } else if (dialog.isDenied)
+      return exportDuplicateData(processedData, duplicateData);
   };
 
   const validateOrImport = (action: string) => {
@@ -292,9 +324,11 @@ export default function BenImp({ extraFields }: IProps) {
   };
 
   const createImportSource = (sourcePayload: any) => {
+    setLoading(true);
     rumsanService.client
       .post('/sources', sourcePayload)
       .then((res) => {
+        setLoading(false);
         if (sourcePayload.action === IMPORT_ACTION.IMPORT) {
           resetStates();
           return Swal.fire({
@@ -302,14 +336,16 @@ export default function BenImp({ extraFields }: IProps) {
             title: `${sourcePayload.fieldMapping.data.length} Beneficiaries imported successfully!`,
           });
         }
-        const { result, invalidFields, containsDuplicate } = res.data.data;
-        setHasDuplicate(containsDuplicate);
-        // setDuplicateCount(duplicateCount);
+        const { result, invalidFields, duplicates } = res.data.data;
+        setDuplicateData(duplicates);
         setProcessedData(result);
-        if (invalidFields.length) setInvalidFields(invalidFields);
+        if (invalidFields.length) {
+          setInvalidFields(invalidFields);
+        }
         setCurrentScreen(BENEF_IMPORT_SCREENS.IMPORT_DATA);
       })
       .catch((err) => {
+        setLoading(false);
         Swal.fire({
           icon: 'error',
           title: 'Failed to add to the queue!',
@@ -318,6 +354,7 @@ export default function BenImp({ extraFields }: IProps) {
   };
 
   const handleRetargetClick = () => {
+    setDuplicateData([]);
     setValidBenef([]);
     setProcessedData([]);
     setCurrentScreen(BENEF_IMPORT_SCREENS.VALIDATION);
@@ -325,6 +362,7 @@ export default function BenImp({ extraFields }: IProps) {
   };
 
   const resetStates = () => {
+    setHasExistingMapping(false);
     setValidBenef([]);
     setValidBenef([]);
     setProcessedData([]);
@@ -352,9 +390,9 @@ export default function BenImp({ extraFields }: IProps) {
     setValidBenef(validData);
     setProcessedData(validData);
     setInvalidFields([]);
-    setHasDuplicate(false);
     exportDataToExcel(invalidData);
     if (!validData.length) {
+      setHasExistingMapping(false);
       setUniqueField('');
       setCurrentScreen(BENEF_IMPORT_SCREENS.SELECTION);
     }
@@ -380,7 +418,7 @@ export default function BenImp({ extraFields }: IProps) {
               selectedUniqueField={uniqueField}
               handleUniqueFieldChange={handleUniqueFieldChange}
             />
-            <div className="pt-10">{fetching && <Loader />}</div>
+            <div className="pt-10">{loading && <Loader />}</div>
           </>
         )}
 
@@ -401,6 +439,7 @@ export default function BenImp({ extraFields }: IProps) {
                 </Button>
 
                 <Button
+                  disabled={loading}
                   onClick={() => validateOrImport(IMPORT_ACTION.VALIDATE)}
                   className="w-40 bg-primary hover:ring-2 ring-primary"
                 >
@@ -448,7 +487,6 @@ export default function BenImp({ extraFields }: IProps) {
               data={processedData}
               handleImportClick={handleImportNowClick}
               invalidFields={invalidFields}
-              hasDuplicate={hasDuplicate}
             />
           </>
         )}

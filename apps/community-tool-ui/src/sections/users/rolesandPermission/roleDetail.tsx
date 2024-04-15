@@ -33,6 +33,9 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/card';
 import EditRole from './editRole';
 import { useGetRole } from '@rahat-ui/community-query';
+import { TabsList, TabsTrigger } from '@rahat-ui/shadcn/src/components/ui/tabs';
+import { useUserCurrentUser } from '@rumsan/react-query';
+import { ROLE_TYPE } from 'apps/community-tool-ui/src/constants/user.const';
 
 type IProps = {
   roleData: Role;
@@ -41,6 +44,9 @@ type IProps = {
 
 export default function RoleDetail({ roleData, closeSecondPanel }: IProps) {
   const { data: roleDetail } = useGetRole(roleData.name);
+  const { data: currentUser } = useUserCurrentUser();
+
+  const isAdmin = currentUser?.data?.roles.includes(ROLE_TYPE.ADMIN);
   const [activeTab, setActiveTab] = useState<'details' | 'edit' | null>(
     'details',
   );
@@ -107,24 +113,20 @@ export default function RoleDetail({ roleData, closeSecondPanel }: IProps) {
               </DialogFooter>
             </DialogContent>
           </Dialog>
-          {/* Actions  */}
-          <DropdownMenu>
-            <DropdownMenuTrigger>
-              <MoreVertical
-                className="cursor-pointer"
-                size={20}
-                strokeWidth={1.5}
-              />
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuItem onClick={() => handleTabChange('details')}>
-                Details
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleTabChange('edit')}>
+
+          <TabsList className="w-full grid grid-cols-2 bg-transparent">
+            <TabsTrigger
+              onClick={() => handleTabChange('details')}
+              value="details"
+            >
+              Details
+            </TabsTrigger>
+            {isAdmin && (
+              <TabsTrigger onClick={() => handleTabChange('edit')} value="edit">
                 Edit
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+              </TabsTrigger>
+            )}
+          </TabsList>
         </div>
       </div>
       {/* Details View */}

@@ -13,20 +13,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { ArrowUpDown, ChevronDown, MoreHorizontal, Trash2 } from 'lucide-react';
-
-import { Button } from '@rahat-ui/shadcn/components/button';
-import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@rahat-ui/shadcn/components/dropdown-menu';
-import { Input } from '@rahat-ui/shadcn/components/input';
+import { Trash2 } from 'lucide-react';
 import {
   Table,
   TableBody,
@@ -35,71 +22,32 @@ import {
   TableHeader,
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
-import { useUserRoleList } from '@rumsan/react-query';
+import { useUserRoleList, useUserRolesRemove } from '@rumsan/react-query';
 import { UUID } from 'crypto';
-
-const data: Role[] = [
-  {
-    id: 'm5gr84i9',
-    role: 'admin',
-  },
-  {
-    id: 'm5gr84i9',
-    role: 'manager',
-  },
-  {
-    id: 'm5gr84i9',
-    role: 'donor',
-  },
-];
+import { useSecondPanel } from '../../providers/second-panel-provider';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/tooltip';
 
 export type Role = {
   id: string;
   role: string;
 };
 
-export const columns: ColumnDef<any>[] = [
-  // {
-  //   id: 'select',
-  //   header: ({ table }) => (
-  //     <Checkbox
-  //       checked={
-  //         table.getIsAllPageRowsSelected() ||
-  //         (table.getIsSomePageRowsSelected() && 'indeterminate')
-  //       }
-  //       onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-  //       aria-label="Select all"
-  //     />
-  //   ),
-  //   cell: ({ row }) => (
-  //     <Checkbox
-  //       checked={row.getIsSelected()}
-  //       onCheckedChange={(value) => row.toggleSelected(!!value)}
-  //       aria-label="Select row"
-  //     />
-  //   ),
-  //   enableSorting: false,
-  //   enableHiding: false,
-  // },
-  {
-    accessorKey: 'name',
-    header: 'Role',
-    cell: ({ row }) => <div className="capitalize">{row.getValue('name')}</div>,
-  },
+export function UsersRoleTable({
+  userRole,
+  isAdmin,
+}: {
+  userRole: UUID;
+  isAdmin: boolean;
+}) {
+  const { data: userRoleList } = useUserRoleList(userRole);
+  const removeUserRole = useUserRolesRemove();
+  const { closeSecondPanel } = useSecondPanel();
 
-  // {
-  //   id: 'actions',
-  //   enableHiding: false,
-  //   cell: ({ row }) => {
-  //     const payment = row.original;
-
-  //     return <Trash2 strokeWidth={1.6} size={16} />;
-  //   },
-  // },
-];
-
-export function UsersRoleTable({ userRole }: any) {
-  const { data: userRoleList } = useUserRoleList(userRole.uuid as UUID);
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
@@ -107,6 +55,44 @@ export function UsersRoleTable({ userRole }: any) {
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
+
+  const handleRemoveRole = (data: any) => {
+    if (isAdmin)
+      removeUserRole.mutateAsync({ uuid: userRole, roles: [data?.name] });
+  };
+
+  const columns: ColumnDef<any>[] = [
+    {
+      accessorKey: 'name',
+      header: 'Role',
+      cell: ({ row }) => (
+        <div className="capitalize">{row.getValue('name')}</div>
+      ),
+    },
+
+    {
+      id: 'actions',
+      enableHiding: false,
+      cell: ({ row }) => {
+        return (
+          <TooltipProvider delayDuration={100}>
+            <Tooltip>
+              <TooltipTrigger>
+                <Trash2
+                  onClick={() => handleRemoveRole(row.original)}
+                  strokeWidth={1.6}
+                  size={16}
+                />
+              </TooltipTrigger>
+              <TooltipContent className="bg-secondary ">
+                <p className="text-xs font-medium">Delete</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        );
+      },
+    },
+  ];
 
   const table = useReactTable({
     data: userRoleList?.data || [],

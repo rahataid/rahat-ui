@@ -4,3 +4,8 @@ export const USER_NAV_ROUTE = {
   DEFAULT: 'default',
   ADD_USER: 'add_user',
 };
+
+export const ROLE_TYPE = {
+  ADMIN: 'Admin',
+  USER: 'User',
+};

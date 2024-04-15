@@ -42,7 +42,7 @@ import { truncateEthAddress } from '@rumsan/core/utilities/string.utils';
 import { User } from '@rumsan/sdk/types';
 import { MoreVertical, PlusCircle, Trash2, Minus } from 'lucide-react';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { UsersRoleTable } from './usersRoleTable';
 import { enumToObjectArray } from '@rumsan/sdk/utils';
 import { Gender } from '@rahataid/sdk/enums';
@@ -59,8 +59,13 @@ import {
   FormItem,
   FormMessage,
 } from '@rahat-ui/shadcn/src/components/ui/form';
-import { useUserAddRoles, useUserEdit } from '@rumsan/react-query';
+import {
+  useUserAddRoles,
+  useUserCurrentUser,
+  useUserEdit,
+} from '@rumsan/react-query';
 import { UUID } from 'crypto';
+import { ROLE_TYPE } from '../../constants/user.const';
 
 type IProps = {
   userDetail: User;
@@ -72,18 +77,27 @@ const FormSchema = z.object({
 });
 export default function UserDetail({ userDetail, closeSecondPanel }: IProps) {
   const updateUserRole = useUserAddRoles();
+  const { data } = useUserCurrentUser();
+
+  const isAdmin = data?.data?.roles.includes(ROLE_TYPE.ADMIN);
+
   const form = useForm({
     resolver: zodResolver(FormSchema),
     defaultValues: {
       role: '',
     },
   });
+
+  const [open, setOpen] = useState(false);
+
+  const { reset } = form;
+  const { isSubmitting, isSubmitSuccessful } = form.formState;
+
   const { data: roleData } = useRoleList();
   const [activeTab, setActiveTab] = useState<'details' | 'edit' | null>(
     'details',
   );
   const [activeUser, setActiveUser] = useState<boolean>(true);
-  const genderList = enumToObjectArray(Gender);
   const handleTabChange = (tab: 'details' | 'edit') => {
     setActiveTab(tab);
   };
@@ -99,16 +113,15 @@ export default function UserDetail({ userDetail, closeSecondPanel }: IProps) {
   });
 
   const handleAssignRole = (data: any) => {
-    // const roles= [data.role],
-
-    // console.log(roles);
     updateUserRole.mutateAsync({
       uuid: userDetail.uuid as UUID,
       roles: [data.role],
     });
+    setOpen(false);
   };
-
-  console.log('up', userDetail);
+  useEffect(() => {
+    isSubmitSuccessful && reset();
+  }, [isSubmitSuccessful, reset]);
   return (
     <>
       <div className="flex justify-between items-center p-4 pt-5">
@@ -125,118 +138,121 @@ export default function UserDetail({ userDetail, closeSecondPanel }: IProps) {
         </TooltipProvider>
         <div className="flex gap-3">
           {/* Add Roles */}
-          <Dialog>
-            <DialogTrigger>
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <PlusCircle
-                      className="cursor-pointer"
-                      size={18}
-                      strokeWidth={1.6}
-                      color="#007bb6"
-                    />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <h1>Assign Role</h1>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </DialogTrigger>
+          {isAdmin && (
+            <>
+              <Dialog open={open} onOpenChange={setOpen}>
+                <DialogTrigger>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <PlusCircle
+                          className="cursor-pointer"
+                          size={18}
+                          strokeWidth={1.6}
+                          color="#007bb6"
+                        />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <h1>Assign Role</h1>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </DialogTrigger>
 
-            <Form {...form}>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Assign Role</DialogTitle>
-                </DialogHeader>
-                <form onSubmit={form.handleSubmit(handleAssignRole)}>
-                  <DialogDescription>
-                    <FormField
-                      control={form.control}
-                      name="role"
-                      render={({ field }) => {
-                        return (
-                          <FormItem>
-                            <Select
-                              onValueChange={field.onChange}
-                              defaultValue={field.value[0]}
-                            >
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select role" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                <SelectGroup>
-                                  {roleData?.data &&
-                                    roleData?.data?.map((role: any) => (
-                                      <SelectItem
-                                        value={role.name}
-                                        key={role.id}
-                                      >
-                                        {role.name}
-                                      </SelectItem>
-                                    ))}
-                                </SelectGroup>
-                              </SelectContent>
-                            </Select>
-                            <FormMessage />
-                          </FormItem>
-                        );
-                      }}
-                    />
-                  </DialogDescription>
+                <Form {...form}>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Assign Role</DialogTitle>
+                    </DialogHeader>
+                    <form onSubmit={form.handleSubmit(handleAssignRole)}>
+                      <DialogDescription>
+                        <FormField
+                          control={form.control}
+                          name="role"
+                          render={({ field }) => {
+                            return (
+                              <FormItem>
+                                <Select
+                                  onValueChange={field.onChange}
+                                  defaultValue={field.value[0]}
+                                >
+                                  <FormControl>
+                                    <SelectTrigger>
+                                      <SelectValue placeholder="Select role" />
+                                    </SelectTrigger>
+                                  </FormControl>
+                                  <SelectContent>
+                                    <SelectGroup>
+                                      {roleData?.data &&
+                                        roleData?.data?.map((role: any) => (
+                                          <SelectItem
+                                            value={role.name}
+                                            key={role.id}
+                                          >
+                                            {role.name}
+                                          </SelectItem>
+                                        ))}
+                                    </SelectGroup>
+                                  </SelectContent>
+                                </Select>
+                                <FormMessage />
+                              </FormItem>
+                            );
+                          }}
+                        />
+                      </DialogDescription>
+                      <DialogFooter>
+                        <div className="flex items-center justify-center mt-2 gap-4">
+                          <Button variant="outline" type="submit">
+                            Assign
+                          </Button>
+                          <DialogClose asChild>
+                            <Button variant="outline">Cancel</Button>
+                          </DialogClose>
+                        </div>
+                      </DialogFooter>
+                    </form>
+                  </DialogContent>
+                </Form>
+              </Dialog>
+              <Dialog>
+                <DialogTrigger>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Trash2
+                          className="cursor-pointer"
+                          size={18}
+                          strokeWidth={1.6}
+                          color="#FF0000"
+                        />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Delete User</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Are you absolutely sure?</DialogTitle>
+                    <DialogDescription>
+                      This action cannot be undone. This will permanently delete
+                      your user.
+                    </DialogDescription>
+                  </DialogHeader>
                   <DialogFooter>
                     <div className="flex items-center justify-center mt-2 gap-4">
-                      <Button variant="outline" type="submit">
-                        Assign
-                      </Button>
+                      <Button variant="outline">Yes</Button>
                       <DialogClose asChild>
-                        <Button variant="outline">Cancel</Button>
+                        <Button variant="outline">No</Button>
                       </DialogClose>
                     </div>
                   </DialogFooter>
-                </form>
-              </DialogContent>
-            </Form>
-          </Dialog>
-          {/* Delete User */}
-          <Dialog>
-            <DialogTrigger>
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Trash2
-                      className="cursor-pointer"
-                      size={18}
-                      strokeWidth={1.6}
-                      color="#FF0000"
-                    />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Delete User</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Are you absolutely sure?</DialogTitle>
-                <DialogDescription>
-                  This action cannot be undone. This will permanently delete
-                  your user.
-                </DialogDescription>
-              </DialogHeader>
-              <DialogFooter>
-                <div className="flex items-center justify-center mt-2 gap-4">
-                  <Button variant="outline">Yes</Button>
-                  <DialogClose asChild>
-                    <Button variant="outline">No</Button>
-                  </DialogClose>
-                </div>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+                </DialogContent>
+              </Dialog>
+            </>
+          )}
           {/* Actions */}
           <DropdownMenu>
             <DropdownMenuTrigger>
@@ -346,7 +362,10 @@ export default function UserDetail({ userDetail, closeSecondPanel }: IProps) {
           </TabsContent>
           <TabsContent value="roles">
             <div className="px-2">
-              <UsersRoleTable userRole={userDetail} />
+              <UsersRoleTable
+                userRole={userDetail?.uuid as UUID}
+                isAdmin={isAdmin}
+              />
             </div>
           </TabsContent>
         </Tabs>

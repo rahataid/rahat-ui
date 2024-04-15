@@ -78,8 +78,8 @@ dependencies:
     specifier: ^0.0.9
     version: 0.0.9
   '@rumsan/communication-query':
-    specifier: ^0.0.3
-    version: 0.0.3(@types/react@18.2.65)
+    specifier: ^0.0.4
+    version: 0.0.4(@types/react@18.2.65)
   '@rumsan/core':
     specifier: ^3.0.133
     version: 3.0.133
@@ -5908,8 +5908,8 @@ packages:
       picomatch: 2.3.1
       rollup: 2.79.1
 
-  /@rumsan/communication-query@0.0.3(@types/react@18.2.65):
-    resolution: {integrity: sha512-xAMczBe78iMnrAGLvYyyStOAkGK0FTWGwJNomfAYzBSMNTDRRjjx/0/UkPN9D2yAnr83LHs9hdLQe8XjvrNrNQ==, tarball: https://npm.pkg.github.com/download/@rumsan/communication-query/0.0.3/c1b4cc74abd260aeedb38029efd3f5a980e981ea}
+  /@rumsan/communication-query@0.0.4(@types/react@18.2.65):
+    resolution: {integrity: sha512-e+ZUuBx5lM3avHyhsLOEAolFBOBWhFXEgnobGOJH00Zx8YfjjA/RWqJfB1hOhK2kEoNkPY56oi8/OxEcC1ieoA==, tarball: https://npm.pkg.github.com/download/@rumsan/communication-query/0.0.4/9a25bd2dc83adf60103a9d5ea524837fae1078fd}
     dependencies:
       '@rumsan/communication': 0.0.9
       '@rumsan/react-query': 0.0.34(@types/react@18.2.65)

@@ -55,7 +55,7 @@ export const useDataSourcesTableColumns = () => {
     {
       accessorKey: 'repeatEvery',
       header: 'Repeat Every',
-      cell: ({ row }) => <div>{row.getValue('repeatEvery')} ms</div>,
+      cell: ({ row }) => <div>{Number(row.getValue('repeatEvery'))/60000} minutes</div>,
     },
     {
       accessorKey: 'triggerActivity',

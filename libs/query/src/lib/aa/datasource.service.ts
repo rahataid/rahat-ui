@@ -129,12 +129,35 @@ export const useAAStations = (uuid: UUID) => {
   return query
 };
 
+export const useDhmWaterLevels = (uuid: UUID) => {
+  const q = useProjectAction();
+  
+  const query = useQuery({
+    queryKey: ['dhmwaterlevels', uuid],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'aaProject.waterLevels.getDhm',
+          payload: {}
+        },
+      });
+      return mutate.data;
+    },
+  });
+
+  // useEffect(() => {
+  //   if (query.data) {
+  //     setDhmStations({
+  //       [uuid]: query?.data,
+  //     });
+  //   }
+  // }, [query.data]);
+  return query
+};
+
 export const useAASources = (uuid: UUID) => {
   const q = useProjectAction();
-  // const { setDhmStations } = useAAStationsStore((state) => ({
-  //   dhmStations: state.dhmStations,
-  //   setDhmStations: state.setDhmStations,
-  // }));
 
   const query = useQuery({
     queryKey: ['datasources', uuid],
@@ -150,12 +173,5 @@ export const useAASources = (uuid: UUID) => {
     },
   });
 
-  // useEffect(() => {
-  //   if (query.data) {
-  //     setDhmStations({
-  //       [uuid]: query?.data,
-  //     });
-  //   }
-  // }, [query.data]);
   return query
 };

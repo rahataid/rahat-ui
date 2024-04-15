@@ -9,6 +9,7 @@ import { Input } from '@rahat-ui/shadcn/components/input';
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -17,46 +18,61 @@ import {
 import React, { useState } from 'react';
 import { Switch } from '@rahat-ui/shadcn/src/components/ui/switch';
 import { Role } from '@rumsan/sdk/types';
+import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@rahat-ui/shadcn/src/components/ui/select';
+import { SUBJECTS } from 'apps/community-tool-ui/src/constants/app.const';
+import { useEditRole } from '@rahat-ui/community-query';
+import { useSecondPanel } from 'apps/community-tool-ui/src/providers/second-panel-provider';
 
 type Iprops = {
   roleDetail: Role;
 };
 export default function EditRole({ roleDetail }: Iprops) {
-  const [roleName, setRoleName] = useState('');
-
-  //   const permissions = [
-  //     {
-  //       id: 'manage',
-  //       label: 'Manage',
-  //     },
-  //     {
-  //       id: 'create',
-  //       label: 'Create',
-  //     },
-  //     {
-  //       id: 'read',
-  //       label: 'Read',
-  //     },
-  //     {
-  //       id: 'update',
-  //       label: 'Update',
-  //     },
-  //     {
-  //       id: 'delete',
-  //       label: 'Delete',
-  //     },
-  //   ] as const;
+  const { closeSecondPanel } = useSecondPanel();
+  const edit = useEditRole();
+  const permissions = [
+    {
+      id: 'manage',
+      label: 'Manage',
+    },
+    {
+      id: 'create',
+      label: 'Create',
+    },
+    {
+      id: 'read',
+      label: 'Read',
+    },
+    {
+      id: 'update',
+      label: 'Update',
+    },
+    {
+      id: 'delete',
+      label: 'Delete',
+    },
+  ] as const;
 
   const FormSchema = z.object({
-    // permissions: z
-    //   .array(z.string())
-    //   .refine((value) => value.some((item) => item), {
-    //     message: 'You have to select at least one permission.',
-    //   }),
+    permission: z
+      .array(z.string())
+      .refine((value) => value.some((item) => item), {
+        message: 'You have to select at least one permission.',
+      })
+      .optional(),
+    subject: z.string().min(2, {
+      message: 'Subject must be selected',
+    }),
     roleName: z.string().min(2, {
       message: 'Role Name must be at least 2 characters.',
     }),
-    isSystem: z.boolean(),
+    isSystem: z.boolean().optional(),
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -64,10 +80,24 @@ export default function EditRole({ roleDetail }: Iprops) {
     defaultValues: {
       roleName: roleDetail?.name || '',
       isSystem: roleDetail?.isSystem || false,
+      permission: [],
+      subject: '',
     },
   });
+  const handleEditRole = (data: any) => {
+    const validateData = FormSchema.parse(data);
 
-  const handleEditRole = (data: z.infer<typeof FormSchema>) => {};
+    const k = {
+      name: validateData.roleName,
+      isSystem: validateData.isSystem,
+      permissions: {
+        [validateData.subject]: validateData.permission,
+      },
+    };
+
+    edit.mutateAsync({ name: roleDetail?.name, data: k });
+    closeSecondPanel();
+  };
 
   return (
     <Form {...form}>
@@ -106,52 +136,101 @@ export default function EditRole({ roleDetail }: Iprops) {
               </div>
             )}
           />
-          {/* <FormField
+
+          <FormField
             control={form.control}
-            name="permissions"
-            render={() => (
+            name="subject"
+            render={({ field }) => (
               <FormItem>
-                <div className="mb-4">
-                  <FormLabel className="text-base">Permission</FormLabel>
-                </div>
-                {permissions.map((item) => (
-                  <FormField
-                    key={item.id}
-                    control={form.control}
-                    name="permissions"
-                    render={({ field }) => {
+                <FormLabel>Subject</FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a respective subject" />
+                    </SelectTrigger>
+                  </FormControl>
+
+                  <SelectContent>
+                    {SUBJECTS.map((item) => {
                       return (
-                        <FormItem
-                          key={item.id}
-                          className="flex flex-row items-start space-x-3 space-y-0"
-                        >
-                          <FormControl>
-                            <Checkbox
-                              checked={field.value?.includes(item.id)}
-                              onCheckedChange={(checked) => {
-                                return checked
-                                  ? field.onChange([...field.value, item.id])
-                                  : field.onChange(
-                                      field.value?.filter(
-                                        (value) => value !== item.id,
-                                      ),
-                                    );
-                              }}
-                            />
-                          </FormControl>
-                          <FormLabel className="font-normal">
-                            {item.label}
-                          </FormLabel>
-                        </FormItem>
+                        <SelectItem key={item.value} value={item.value}>
+                          {item.label}
+                        </SelectItem>
                       );
-                    }}
-                  />
-                ))}
+                    })}
+                  </SelectContent>
+                </Select>
+
                 <FormMessage />
               </FormItem>
             )}
-          /> */}
-          <div className="flex justify-end">
+          />
+
+          <FormField
+            control={form.control}
+            name="permission"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Permission</FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value[0]}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a permisssion" />
+                    </SelectTrigger>
+                  </FormControl>
+
+                  <SelectContent>
+                    {permissions.map((item) => (
+                      <FormField
+                        key={item.id}
+                        control={form.control}
+                        name="permission"
+                        render={({ field }) => {
+                          return (
+                            <FormItem
+                              key={item.id}
+                              className="flex flex-row items-start space-x-3 space-y-0 mt-2"
+                            >
+                              <FormControl>
+                                <Checkbox
+                                  checked={field.value?.includes(item.id)}
+                                  onCheckedChange={(checked) => {
+                                    return checked
+                                      ? field.onChange([
+                                          ...field.value,
+                                          item.id,
+                                        ])
+                                      : field.onChange(
+                                          field.value?.filter(
+                                            (value) => value !== item.id,
+                                          ),
+                                        );
+                                  }}
+                                />
+                              </FormControl>
+                              <FormLabel className="font-normal">
+                                {item.label}
+                              </FormLabel>
+                            </FormItem>
+                          );
+                        }}
+                      />
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <div className="flex justify-end mt-3">
             <Button type="submit">Update Role</Button>
           </div>
         </div>

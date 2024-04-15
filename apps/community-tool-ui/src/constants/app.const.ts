@@ -89,3 +89,12 @@ export const IMPORT_ACTION = {
   VALIDATE: 'VALIDATE',
   IMPORT: 'IMPORT',
 };
+
+export const SUBJECTS = [
+  { label: 'All', value: 'all' },
+  { label: 'Role', value: 'role' },
+  { label: 'User', value: 'user' },
+  { label: 'Public', value: 'public' },
+];
+
+export const MAX_EXPORT_COUNT = 500;

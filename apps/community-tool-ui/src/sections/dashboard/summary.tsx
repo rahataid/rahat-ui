@@ -2,7 +2,7 @@ import { BadgeCent, HeartHandshake, Home, Users } from 'lucide-react';
 import DataCard from '../../components/dataCard';
 
 const DashboardSummary = ({
-  totalBeneficiaries,
+  totalBeneficiaries = 0,
 }: {
   totalBeneficiaries: any;
 }) => {
@@ -12,7 +12,7 @@ const DashboardSummary = ({
         <DataCard
           className=""
           title="Total beneficiaries"
-          number={totalBeneficiaries ? totalBeneficiaries : 0}
+          number={totalBeneficiaries.toString()}
           subTitle="+20% from last month"
           Icon={Users}
         />

@@ -11,17 +11,22 @@ import { DashboardCharts } from '.';
 export default function DashboardView() {
   const { data } = useCommunityBeneficiaryStatsList();
 
-  const totalBeneficiaries =
-    data?.data
-      ?.filter((name) => name.name === 'BENEFICIARY_TOTAL')
-      .map((item) => item?.data)[0].count || 0;
-  console.log(totalBeneficiaries);
+  console.log('DD=>', data?.data);
+
+  const totalBenef =
+    data?.data.find((f) => f.name === 'BENEFICIARY_TOTAL') || ([] as any);
+  console.log('totalBenef', totalBenef);
+
+  // const totalBeneficiaries = data?.data
+  //   ?.filter((name) => name.name === 'BENEFICIARY_TOTAL')
+  //   .map((item) => (item && item.data ? item.data.count[0] : 0));
+
   return (
     <div>
       <Tabs defaultValue="list">
         <ScrollArea className="h-[calc(100vh-68px)] px-4 py-2">
           <TabsContent value="list">
-            <DashboardSummary totalBeneficiaries={totalBeneficiaries} />
+            <DashboardSummary totalBeneficiaries={totalBenef?.data?.count} />
             <DashboardCharts charts={data?.data} />
           </TabsContent>
           {/* <StyledMapContainer>

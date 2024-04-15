@@ -18,22 +18,19 @@ import {
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { useForm } from 'react-hook-form';
-import { toast } from 'react-toastify';
 
-import { z } from 'zod';
 import {
   BankedStatus,
   InternetStatus,
   PhoneStatus,
 } from '@rahataid/community-tool-sdk/enums/';
-import React, { useEffect } from 'react';
+import { z } from 'zod';
 
-import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
-import { ListBeneficiary } from '@rahataid/community-tool-sdk/beneficiary';
 import { useCommunityBeneficiaryUpdate } from '@rahat-ui/community-query';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
+import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
+import { ListBeneficiary } from '@rahataid/community-tool-sdk/beneficiary';
 import { ID_TYPE } from '../../constants/beneficiary.const';
-import { Switch } from '@rahat-ui/shadcn/src/components/ui/switch';
 
 export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
   const updateBeneficiaryClient = useCommunityBeneficiaryUpdate();
@@ -49,7 +46,6 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
     internetStatus: z.string().toUpperCase().optional(),
     phoneStatus: z.string().toUpperCase().optional(),
 
-    isVulnerable: z.boolean().optional(),
     govtIDType: z.string().optional(),
     govtIDNumber: z.string().optional(),
   });
@@ -65,7 +61,6 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
       latitude: data?.latitude || 0,
       longitude: data?.longitude || 0,
       notes: data?.notes || '',
-      isVulnerable: data?.isVulnerable || false,
       govtIDType: data?.govtIDType || '',
       govtIDNumber: data?.govtIDNumber || '',
     },
@@ -87,7 +82,6 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
         latitude: formData.latitude,
         longitude: formData.longitude,
         notes: formData.notes,
-        isVulnerable: formData.isVulnerable,
         govtIDType: formData.govtIDType,
         govtIDNumber: formData.govtIDNumber,
       },
@@ -367,21 +361,6 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
                 }}
               />
 
-              <FormField
-                control={form.control}
-                name="isVulnerable"
-                render={({ field }) => (
-                  <div className="flex flex-col justify-evenly items-center">
-                    <Label> Vulnerable</Label>
-                    <Switch
-                      {...field}
-                      value={field.value ? 'false' : 'true'}
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </div>
-                )}
-              />
               <FormField
                 control={form.control}
                 name="notes"

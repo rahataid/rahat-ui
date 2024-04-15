@@ -48,13 +48,37 @@ import { enumToObjectArray } from '@rumsan/sdk/utils';
 import { Gender } from '@rahataid/sdk/enums';
 import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
 import EditUser from './editUser';
+import { z } from 'zod';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useRoleList } from '@rahat-ui/community-query';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from '@rahat-ui/shadcn/src/components/ui/form';
+import { useUserAddRoles, useUserEdit } from '@rumsan/react-query';
+import { UUID } from 'crypto';
 
 type IProps = {
   userDetail: User;
   closeSecondPanel: VoidFunction;
 };
 
+const FormSchema = z.object({
+  role: z.string(),
+});
 export default function UserDetail({ userDetail, closeSecondPanel }: IProps) {
+  const updateUserRole = useUserAddRoles();
+  const form = useForm({
+    resolver: zodResolver(FormSchema),
+    defaultValues: {
+      role: '',
+    },
+  });
+  const { data: roleData } = useRoleList();
   const [activeTab, setActiveTab] = useState<'details' | 'edit' | null>(
     'details',
   );
@@ -73,6 +97,17 @@ export default function UserDetail({ userDetail, closeSecondPanel }: IProps) {
     month: 'long',
     day: 'numeric',
   });
+
+  const handleAssignRole = (data: any) => {
+    // const roles= [data.role],
+
+    // console.log(roles);
+    updateUserRole.mutateAsync({
+      uuid: userDetail.uuid as UUID,
+      roles: [data.role],
+    });
+  };
+
   return (
     <>
       <div className="flex justify-between items-center p-4 pt-5">
@@ -102,29 +137,67 @@ export default function UserDetail({ userDetail, closeSecondPanel }: IProps) {
                     />
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>Add Role</p>
+                    <h1>Assign Role</h1>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
             </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Add Role</DialogTitle>
-              </DialogHeader>
-              <DialogDescription>
-                <div className="grid w-full max-w-sm items-center gap-1.5">
-                  <Input type="role" id="role" placeholder="Role" />
-                </div>
-              </DialogDescription>
-              <DialogFooter>
-                <div className="flex items-center justify-center mt-2 gap-4">
-                  <Button variant="outline">Submit</Button>
-                  <DialogClose asChild>
-                    <Button variant="outline">Cancel</Button>
-                  </DialogClose>
-                </div>
-              </DialogFooter>
-            </DialogContent>
+
+            <Form {...form}>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Assign Role</DialogTitle>
+                </DialogHeader>
+                <form onSubmit={form.handleSubmit(handleAssignRole)}>
+                  <DialogDescription>
+                    <FormField
+                      control={form.control}
+                      name="role"
+                      render={({ field }) => {
+                        return (
+                          <FormItem>
+                            <Select
+                              onValueChange={field.onChange}
+                              defaultValue={field.value[0]}
+                            >
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select role" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectGroup>
+                                  {roleData?.data &&
+                                    roleData?.data?.map((role: any) => (
+                                      <SelectItem
+                                        value={role.name}
+                                        key={role.id}
+                                      >
+                                        {role.name}
+                                      </SelectItem>
+                                    ))}
+                                </SelectGroup>
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        );
+                      }}
+                    />
+                  </DialogDescription>
+                  <DialogFooter>
+                    <div className="flex items-center justify-center mt-2 gap-4">
+                      <Button variant="outline" type="submit">
+                        Assign
+                      </Button>
+                      <DialogClose asChild>
+                        <Button variant="outline">Cancel</Button>
+                      </DialogClose>
+                    </div>
+                  </DialogFooter>
+                </form>
+              </DialogContent>
+            </Form>
           </Dialog>
           {/* Delete User */}
           <Dialog>
@@ -272,37 +345,7 @@ export default function UserDetail({ userDetail, closeSecondPanel }: IProps) {
           </TabsContent>
           <TabsContent value="roles">
             <div className="px-2">
-              <UsersRoleTable />
-              {/* <Card className="p-4">
-                      <div className="grid grid-cols-4">
-                        <div className="grid grid-cols-subgrid gap-4 col-span-4">
-                          <div className="flex items-center justify-between rounded-md border px-4 py-3 font-mono text-sm">
-                            Admin
-                            <Trash2
-                              className="cursor-pointer"
-                              size={18}
-                              strokeWidth={1.6}
-                            />
-                          </div>
-                          <div className="flex items-center justify-between rounded-md border px-4 py-3 font-mono text-sm">
-                            User
-                            <Trash2
-                              className="cursor-pointer"
-                              size={18}
-                              strokeWidth={1.6}
-                            />
-                          </div>
-                          <div className="flex items-center justify-between rounded-md border px-4 py-3 font-mono text-sm">
-                            Manager
-                            <Trash2
-                              className="cursor-pointer"
-                              size={18}
-                              strokeWidth={1.6}
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    </Card> */}
+              <UsersRoleTable userRole={userDetail} />
             </div>
           </TabsContent>
         </Tabs>
@@ -312,23 +355,6 @@ export default function UserDetail({ userDetail, closeSecondPanel }: IProps) {
         <>
           <div className="flex flex-col justify-between ">
             <div className="p-4 border-t">
-              {/* <div className="grid grid-cols-2 gap-4">
-                <Input type="name" placeholder="Name" />
-                <Select>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select gender" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      {genderList.map((gender, index) => (
-                        <SelectItem key={index} value={gender.value}>
-                          {gender.value}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              </div> */}
               <EditUser userDetail={userDetail} />
             </div>
           </div>

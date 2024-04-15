@@ -21,9 +21,37 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
-import { z } from 'zod';
+import { number, z } from 'zod';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
+
+const WATER_LEVELS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12']
+const TIME_INTERVAL = [
+  {
+    time: 'Every 5 seconds.',
+    seconds: '5000'
+  },
+  {
+    time: 'Every 30 seconds.',
+    seconds: '30000'
+  },
+  {
+    time: 'Every 1 minute.',
+    seconds: '60000'
+  },
+  {
+    time: 'Every 5 minutes.',
+    seconds: '300000'
+  },
+  {
+    time: 'Every 10 minutes.',
+    seconds: '600000'
+  },
+  {
+    time: 'Every 30 minutes',
+    seconds: '60000'
+  }
+]
 
 export default function AddDataSource() {
   const params = useParams();
@@ -32,17 +60,11 @@ export default function AddDataSource() {
   const dhmStations = useAAStationsStore((state) => state.dhmStations![projectID]);
 
   const FormSchema = z.object({
-    dataSource: z.string(),
-    location: z.string(),
-    repeatEvery: z.string().refine((val) => !Number.isNaN(parseInt(val, 10)), {
-      message: "Expected number, received a string"
-    }),
-    dangerLevel: z.string().refine((val) => !Number.isNaN(parseInt(val, 10)), {
-      message: "Expected number, received a string"
-    }),
-    warningLevel: z.string().refine((val) => !Number.isNaN(parseInt(val, 10)), {
-      message: "Expected number, received a string"
-    }),
+    dataSource: z.string({ required_error: 'Required.' }),
+    location: z.string().min(1, { message: 'Required.' }),
+    repeatEvery: z.string().min(1, { message: 'Required.' }),
+    dangerLevel: z.string().min(1, { message: 'Required.' }),
+    warningLevel: z.string().min(1, { message: 'Required.' }),
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -143,9 +165,27 @@ export default function AddDataSource() {
                     render={({ field }) => {
                       return (
                         <FormItem>
-                          <FormControl>
-                            <Input type='number' placeholder="Danger Level" {...field} />
-                          </FormControl>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Danger Level" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {
+                                WATER_LEVELS.map((d: string) => {
+                                  return (
+                                    <SelectItem value={d}>
+                                      {d}
+                                    </SelectItem>
+                                  )
+                                })
+                              }
+                            </SelectContent>
+                          </Select>
                           <FormMessage />
                         </FormItem>
                       );
@@ -159,9 +199,27 @@ export default function AddDataSource() {
                     render={({ field }) => {
                       return (
                         <FormItem>
-                          <FormControl>
-                            <Input type='number' placeholder="Warning Level" {...field} />
-                          </FormControl>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Warning Level" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {
+                                WATER_LEVELS.map((d: string) => {
+                                  return (
+                                    <SelectItem value={d}>
+                                      {d}
+                                    </SelectItem>
+                                  )
+                                })
+                              }
+                            </SelectContent>
+                          </Select>
                           <FormMessage />
                         </FormItem>
                       );
@@ -175,9 +233,27 @@ export default function AddDataSource() {
                     render={({ field }) => {
                       return (
                         <FormItem>
-                          <FormControl>
-                            <Input type='number' placeholder="Repeat Duration (in milli seconds)" {...field} />
-                          </FormControl>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Repeat Duration" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {
+                                TIME_INTERVAL.map((d: { time: string, seconds: string }) => {
+                                  return (
+                                    <SelectItem value={d.seconds}>
+                                      {d.time}
+                                    </SelectItem>
+                                  )
+                                })
+                              }
+                            </SelectContent>
+                          </Select>
                           <FormMessage />
                         </FormItem>
                       );

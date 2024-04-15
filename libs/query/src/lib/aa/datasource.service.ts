@@ -66,7 +66,7 @@ export const useDeleteDataSource = () => {
     }: {
       projectUUID: UUID;
       dataSourcePayload: {
-        uuid: UUID
+        repeatKey: string
       };
     }) => {
       return q.mutateAsync({

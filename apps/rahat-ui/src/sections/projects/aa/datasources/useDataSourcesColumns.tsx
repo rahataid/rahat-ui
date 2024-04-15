@@ -14,7 +14,7 @@ export const useDataSourcesTableColumns = () => {
      deleteDataSource.mutateAsync({
       projectUUID: projectID as UUID,
       dataSourcePayload: {
-        uuid: row.uuid as UUID
+        repeatKey: row.repeatKey
       }
      })
   }

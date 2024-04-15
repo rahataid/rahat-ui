@@ -54,7 +54,7 @@ export default function RoleDetail({ roleData, closeSecondPanel }: IProps) {
     month: 'long',
     day: 'numeric',
   });
-  console.log(roleDetail?.data?.permissions);
+
   return (
     <>
       <div className="flex justify-between items-center p-4 pt-5">

@@ -27,6 +27,7 @@ export default function UserView() {
     if (isSuccess) return data?.data;
     else return [];
   }, [isSuccess, data?.data]);
+
   return (
     <div>
       <UsersTable users={users} />

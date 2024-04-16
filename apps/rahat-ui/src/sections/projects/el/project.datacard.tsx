@@ -2,6 +2,7 @@ import DataCard from 'apps/rahat-ui/src/components/dataCard';
 import { Users } from 'lucide-react';
 import { FC } from 'react';
 import Activities from './projects.activity';
+import SmallDataCard from './project.datacard.small';
 
 type ProjectDataCardProps = {
   beneficiaryDetails: any;
@@ -21,6 +22,32 @@ const ProjectDataCard: FC<ProjectDataCardProps> = ({
   const data = { ...projectVoucher, ...voucherDetails };
   return (
     <>
+      <div className="my-2 grid md:grid-cols-4 gap-2">
+        <SmallDataCard
+          className=""
+          title="Beneficiaries"
+          number={'12'}
+          subTitle="Total Beneficiaries"
+        />
+        <SmallDataCard
+          className=""
+          title="Vendors"
+          number={'12'}
+          subTitle="No. of Optical stores"
+        />
+        <SmallDataCard
+          className=""
+          title="Reconcile Request Pending"
+          number={'12'}
+          subTitle="Request from Vendors"
+        />
+        <SmallDataCard
+          className=""
+          title="Reconcile Request Proceeded"
+          number={'12'}
+          subTitle="Reconciliation Proceeded"
+        />
+      </div>
       <div className="mb-2 grid md:grid-cols-3 gap-2">
         <div className="grid grid-cols-2 col-span-2 gap-2">
           <DataCard

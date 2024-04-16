@@ -1,24 +1,22 @@
 'use client';
 
 import {
+  useBeneficiaryList,
   useGetBeneficiaryStats,
   useProjectSettingsStore,
   useProjectStore,
 } from '@rahat-ui/query';
-import {
-  useBeneficiaryCount,
-  useProjectVoucher,
-} from 'apps/rahat-ui/src/hooks/el/subgraph/querycall';
-import { useParams } from 'next/navigation';
-import { ProjectChart } from '..';
-import ProjectDataCard from './project.datacard';
-import ProjectInfo from './project.info';
-import { memo } from 'react';
+import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import {
   useReadElProjectGetProjectVoucherDetail,
   useReadElProjectGetTotalBeneficiaries,
 } from 'apps/rahat-ui/src/hooks/el/contracts/elProject';
-import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import { useProjectVoucher } from 'apps/rahat-ui/src/hooks/el/subgraph/querycall';
+import { useParams } from 'next/navigation';
+import { memo } from 'react';
+import { ProjectChart } from '..';
+import ProjectDataCard from './project.datacard';
+import ProjectInfo from './project.info';
 
 const ProjectMainView = () => {
   const { id } = useParams();

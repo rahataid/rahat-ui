@@ -6,6 +6,7 @@ import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
 import { Eye } from 'lucide-react';
 import { truncateEthAddress } from '@rumsan/sdk/utils';
 import { ListBeneficiary } from '@rahataid/community-tool-sdk';
+import { humanizeString } from '../../utils';
 
 export const useCommunityBeneficiaryTableColumns = () => {
   const columns: ColumnDef<ListBeneficiary>[] = [
@@ -52,22 +53,28 @@ export const useCommunityBeneficiaryTableColumns = () => {
     {
       accessorKey: 'gender',
       header: 'Gender',
-      cell: ({ row }) => <div>{row.getValue('gender')}</div>,
+      cell: ({ row }) => <div>{humanizeString(row.getValue('gender'))}</div>,
     },
     {
       accessorKey: 'internetStatus',
       header: 'Internet Access',
-      cell: ({ row }) => <div>{row.getValue('internetStatus')}</div>,
+      cell: ({ row }) => (
+        <div>{humanizeString(row.getValue('internetStatus'))}</div>
+      ),
     },
     {
       accessorKey: 'phoneStatus',
       header: 'Phone Type',
-      cell: ({ row }) => <div>{row.getValue('phoneStatus')}</div>,
+      cell: ({ row }) => (
+        <div>{humanizeString(row.getValue('phoneStatus'))}</div>
+      ),
     },
     {
       accessorKey: 'bankedStatus',
       header: 'Banking Status',
-      cell: ({ row }) => <div>{row.getValue('bankedStatus')}</div>,
+      cell: ({ row }) => (
+        <div>{humanizeString(row.getValue('bankedStatus'))}</div>
+      ),
     },
     {
       id: 'actions',

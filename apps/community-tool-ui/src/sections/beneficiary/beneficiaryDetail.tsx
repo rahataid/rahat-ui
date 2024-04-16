@@ -12,16 +12,10 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/components/tooltip';
-import {
-  Dialog,
-  DialogTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/dialog';
-import { Archive, Expand, FilePenLine, Minus, Trash2 } from 'lucide-react';
-import ConfirmDialog from '../../components/dialog';
-import { paths } from '../../routes/paths';
+import { ListBeneficiary } from '@rahataid/community-tool-sdk/beneficiary';
+import { Minus } from 'lucide-react';
 import EditBeneficiary from './editBeneficiary';
 import InfoCards from './infoCards';
-import { ListBeneficiary } from '@rahataid/community-tool-sdk/beneficiary';
 
 type IProps = {
   data: ListBeneficiary;
@@ -47,56 +41,13 @@ export default function BeneficiaryDetail({ data, handleClose }: IProps) {
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
-            {/* <TooltipProvider delayDuration={100}>
-              <Tooltip>
-                <TooltipTrigger
-                  onClick={() => {
-                    router.push(paths.dashboard.beneficiary.detail(data?.uuid));
-                  }}
-                >
-                  <Expand size={20} strokeWidth={1.5} />
-                </TooltipTrigger>
-                <TooltipContent className="bg-secondary ">
-                  <p className="text-xs font-medium">Expand</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider> */}
-            {/* <TooltipProvider delayDuration={100}>
-              <Tooltip>
-                <TooltipTrigger>
-                  <FilePenLine size={20} strokeWidth={1.5} />
-                </TooltipTrigger>
-                <TooltipContent className="bg-secondary ">
-                  <p className="text-xs font-medium">Edit</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider> */}
-            {/* <TooltipProvider delayDuration={100}>
-              <Tooltip>
-                <TooltipTrigger>
-                  <Archive size={20} strokeWidth={1.5} />
-                </TooltipTrigger>
-                <TooltipContent className="bg-secondary ">
-                  <p className="text-xs font-medium">Archive</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider> */}
-            {/* <Button variant="outline">Delete User</Button> */}
-            {/* <TooltipProvider delayDuration={100}>
-              <Tooltip>
-                <TooltipTrigger>
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Trash2 size={20} strokeWidth={1.5} />
-                    </DialogTrigger>
-                    <ConfirmDialog name="beneficiary" />
-                  </Dialog>
-                </TooltipTrigger>
-                <TooltipContent className="bg-secondary ">
-                  <p className="text-xs font-medium">Delete</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider> */}
+            <div>
+              <p>
+                <b>
+                  {data.firstName} {data.lastName}
+                </b>
+              </p>
+            </div>
           </div>
           <TabsList>
             <TabsTrigger value="detail">Details </TabsTrigger>

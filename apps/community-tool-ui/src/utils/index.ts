@@ -203,3 +203,19 @@ export const isURL = (value: string) => {
   let urlPattern = /^(?:\w+:)?\/\/([^\s\.]+\.\S{2}|localhost[\:?\d]*)\S*$/;
   return urlPattern.test(value);
 };
+
+export const humanizeString = (inputString: string) => {
+  // Replace underscore with space
+  inputString = inputString.replace(/_/g, ' ');
+
+  // Convert the string to lowercase and split into words
+  let words = inputString.toLowerCase().split(' ');
+
+  // Capitalize the first letter of each word
+  for (let i = 0; i < words.length; i++) {
+    words[i] = words[i].charAt(0).toUpperCase() + words[i].slice(1);
+  }
+
+  // Join the words back together with spaces and return the result
+  return words.join(' ');
+};

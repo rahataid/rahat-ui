@@ -1,6 +1,6 @@
 import React from 'react';
 import { ScrollArea } from '@rahat-ui/shadcn/components/scroll-area';
-import { MultiSelectDropdown } from './multiSelectDropDown';
+import TargetSelectForm from './TargetSelectForm';
 
 export default function Nav() {
   return (
@@ -10,7 +10,7 @@ export default function Nav() {
           <h1 className="font-semibold text-xl text-primary">Targeting</h1>
         </div>
         <ScrollArea className="h-auto mb-4">
-          <MultiSelectDropdown />
+          <TargetSelectForm />
         </ScrollArea>
       </div>
     </>

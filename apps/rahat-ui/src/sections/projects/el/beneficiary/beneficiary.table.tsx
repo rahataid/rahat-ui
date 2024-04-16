@@ -65,7 +65,7 @@ export type Transaction = {
   amount: string;
 };
 
-const benType = [
+export const benType = [
   {
     key: 'ALL',
     value: 'ALL',

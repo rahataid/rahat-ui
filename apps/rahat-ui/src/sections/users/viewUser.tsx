@@ -89,7 +89,6 @@ export default function UserDetail({ userDetail, closeSecondPanel }: IProps) {
   const toggleActiveUser = () => {
     setActiveUser(!activeUser);
   };
-  console.log(userDetail);
 
   const handleDeleteUser = () => {
     // if (userDetail.roles?.some((role) => role.))

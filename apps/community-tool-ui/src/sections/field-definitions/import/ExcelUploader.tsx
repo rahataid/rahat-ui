@@ -1,3 +1,4 @@
+import { useAddBulkFile } from '@rahat-ui/community-query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import React, { useState } from 'react';
@@ -7,15 +8,20 @@ type Irops = {
 };
 
 export default function ExcelUploader({ handleTabChange }: Irops) {
-  const [importFile, setImportFile] = useState<File | null>(null);
+  const addBulk = useAddBulkFile();
+  const [importFile, setImportFile] = useState<any>(null);
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files || [];
-    const fileName = files[0];
-    setImportFile(fileName);
+    if (e.target.files && e.target.files.length > 0) {
+      const file = e.target.files[0];
+      setImportFile(file);
+    }
   };
 
   const handleImportFile = () => {
-    console.log(importFile);
+    const formData = new FormData();
+    formData.append('file', importFile);
+
+    addBulk.mutateAsync({ file: formData });
   };
   return (
     <>
@@ -34,7 +40,9 @@ export default function ExcelUploader({ handleTabChange }: Irops) {
       </div>
       <div className="flex justify-end mt-6 space-x-4 mr-5">
         <Button onClick={() => handleTabChange('add')}>Add </Button>
-        <Button onClick={() => handleImportFile()}>Import</Button>
+        <Button onClick={handleImportFile} disabled={!importFile}>
+          Import
+        </Button>
       </div>
     </>
   );

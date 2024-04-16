@@ -160,6 +160,5 @@
     "ts-node": "10.9.2",
     "typescript": "~5.4.2",
     "verdaccio": "^5.29.2"
-  },
-  "packageManager": "pnpm@9.0.0"
+  }
 }

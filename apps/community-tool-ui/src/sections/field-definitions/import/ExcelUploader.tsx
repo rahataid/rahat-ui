@@ -1,16 +1,18 @@
 import { useAddBulkFile } from '@rahat-ui/community-query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
-import React, { useState } from 'react';
+import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
 
-type Irops = {
+type IProps = {
   handleTabChange: (tab: 'add' | 'import') => void;
 };
 
-export default function ExcelUploader({ handleTabChange }: Irops) {
+export default function ExcelUploader({ handleTabChange }: IProps) {
   const addBulk = useAddBulkFile();
-  const [importFile, setImportFile] = useState<any>(null);
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const [importFile, setImportFile] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileSelect = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
       setImportFile(file);
@@ -18,11 +20,27 @@ export default function ExcelUploader({ handleTabChange }: Irops) {
   };
 
   const handleImportFile = () => {
-    const formData = new FormData();
-    formData.append('file', importFile);
+    if (importFile) {
+      const formData = new FormData();
+      formData.append('file', importFile);
 
-    addBulk.mutateAsync({ file: formData });
+      addBulk.mutateAsync({ file: formData });
+      setImportFile(null);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
   };
+
+  useEffect(() => {
+    if (addBulk?.data?.response?.success) {
+      setImportFile(null);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  }, [addBulk?.data?.response?.success]);
+
   return (
     <>
       <div className="h-[calc(20vh-5px)] border-2 border-dashed border-secondary grid place-items-center">
@@ -31,6 +49,7 @@ export default function ExcelUploader({ handleTabChange }: Irops) {
             Select file to upload (Excel or CSV file)
           </div>
           <Input
+            ref={fileInputRef}
             onChange={handleFileSelect}
             id="file"
             type="file"
@@ -39,7 +58,7 @@ export default function ExcelUploader({ handleTabChange }: Irops) {
         </div>
       </div>
       <div className="flex justify-end mt-6 space-x-4 mr-5">
-        <Button onClick={() => handleTabChange('add')}>Add </Button>
+        <Button onClick={() => handleTabChange('add')}>Add</Button>
         <Button onClick={handleImportFile} disabled={!importFile}>
           Import
         </Button>

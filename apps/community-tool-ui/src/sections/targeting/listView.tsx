@@ -35,7 +35,7 @@ export default function ListView({ handleClick, table }: IProps) {
         <div className="flex items-center mb-2">
           <Input
             placeholder="Filter beneficiary..."
-            value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
+            // value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
             onChange={(event) =>
               table.getColumn('name')?.setFilterValue(event.target.value)
             }

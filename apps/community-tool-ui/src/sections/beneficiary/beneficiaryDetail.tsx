@@ -12,16 +12,10 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/components/tooltip';
-import {
-  Dialog,
-  DialogTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/dialog';
-import { Archive, Expand, FilePenLine, Minus, Trash2 } from 'lucide-react';
-import ConfirmDialog from '../../components/dialog';
-import { paths } from '../../routes/paths';
+import { ListBeneficiary } from '@rahataid/community-tool-sdk/beneficiary';
+import { Minus } from 'lucide-react';
 import EditBeneficiary from './editBeneficiary';
 import InfoCards from './infoCards';
-import { ListBeneficiary } from '@rahataid/community-tool-sdk/beneficiary';
 
 type IProps = {
   data: ListBeneficiary;

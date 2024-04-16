@@ -5,6 +5,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/card';
 import { truncateEthAddress } from '@rumsan/sdk/utils';
 import { humanizeString } from '../../utils';
+import ExtraInfoCard from './ExtraInfo';
 
 export default function InfoCards({ data }) {
   return (
@@ -112,6 +113,7 @@ export default function InfoCards({ data }) {
           </div>
         </CardContent>
       </Card>
+      {data.extras && <ExtraInfoCard data={data.extras} />}
     </div>
   );
 }

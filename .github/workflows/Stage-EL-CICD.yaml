@@ -1,4 +1,4 @@
-name: Stage CI/CD
+name: Stage EL CI/CD
 on:
   push:
     branches:
@@ -10,7 +10,7 @@ on:
 
 env:
   CI: false
-  env_stage: ${{ secrets.ENV_STAGE }}
+  env_stage: ${{ secrets.ENV_STAGE_EL }}
   env_npmrc: ${{ secrets.ENV_NPMRC }}
 
 jobs:
@@ -55,9 +55,7 @@ jobs:
           file: Dockerfile.rahat-ui
           # push: ${{ github.event_name == 'push' && 'true' || 'false' }}
           push: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
-
-          # push: true
-          tags: esatya/rahat-ui:stage
+          tags: esatya/rahat-ui:stage-el
 
       # Community-Tool-UI Image
       - name: build && push community-tool-ui
@@ -66,6 +64,5 @@ jobs:
         with:
           context: .
           file: Dockerfile.community-tool-ui
-          # push: ${{ github.event_name == 'push' && 'true' || 'false' }}
           push: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
           tags: esatya/community-tool-ui:stage

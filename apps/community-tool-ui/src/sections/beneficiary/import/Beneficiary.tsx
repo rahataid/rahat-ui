@@ -47,7 +47,7 @@ export default function BenImp({ extraFields }: IProps) {
   const [mappings, setMappings] = useState([]) as any;
   const [koboForms, setKoboForms] = useState([]);
   const [importId, setImportId] = useState(''); // Kobo form id or excel sheetID
-  const [fetching, setFetching] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [currentScreen, setCurrentScreen] = useState(
     BENEF_IMPORT_SCREENS.SELECTION,
   );
@@ -106,7 +106,7 @@ export default function BenImp({ extraFields }: IProps) {
 
   const handleKoboFormChange = async (value: string) => {
     try {
-      setFetching(true);
+      setLoading(true);
       setRawData([]);
       const found: any | undefined = koboForms.find(
         (f: any) => f.value === value,
@@ -122,9 +122,9 @@ export default function BenImp({ extraFields }: IProps) {
       const sanitized = removeFieldsWithUnderscore(koboData.data.results);
       setRawData(sanitized);
       await fetchExistingMapping(found.imported);
-      setFetching(false);
+      setLoading(false);
     } catch (err) {
-      setFetching(false);
+      setLoading(false);
       return Swal.fire({
         icon: 'error',
         title: 'Failed to fetch kobotool settings',
@@ -152,6 +152,7 @@ export default function BenImp({ extraFields }: IProps) {
   };
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    setLoading(true);
     setRawData([]);
     const files = e.target.files || [];
     const fileName = formatNameString(files[0].name);
@@ -169,6 +170,7 @@ export default function BenImp({ extraFields }: IProps) {
     reader.readAsArrayBuffer(files[0]);
     setImportId(fileName);
     await fetchExistingMapping(fileName);
+    setLoading(false);
   };
 
   const handleGoClick = () => {
@@ -322,9 +324,11 @@ export default function BenImp({ extraFields }: IProps) {
   };
 
   const createImportSource = (sourcePayload: any) => {
+    setLoading(true);
     rumsanService.client
       .post('/sources', sourcePayload)
       .then((res) => {
+        setLoading(false);
         if (sourcePayload.action === IMPORT_ACTION.IMPORT) {
           resetStates();
           return Swal.fire({
@@ -341,6 +345,7 @@ export default function BenImp({ extraFields }: IProps) {
         setCurrentScreen(BENEF_IMPORT_SCREENS.IMPORT_DATA);
       })
       .catch((err) => {
+        setLoading(false);
         Swal.fire({
           icon: 'error',
           title: 'Failed to add to the queue!',
@@ -413,7 +418,7 @@ export default function BenImp({ extraFields }: IProps) {
               selectedUniqueField={uniqueField}
               handleUniqueFieldChange={handleUniqueFieldChange}
             />
-            <div className="pt-10">{fetching && <Loader />}</div>
+            <div className="pt-10">{loading && <Loader />}</div>
           </>
         )}
 
@@ -434,6 +439,7 @@ export default function BenImp({ extraFields }: IProps) {
                 </Button>
 
                 <Button
+                  disabled={loading}
                   onClick={() => validateOrImport(IMPORT_ACTION.VALIDATE)}
                   className="w-40 bg-primary hover:ring-2 ring-primary"
                 >

@@ -23,15 +23,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
-import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@rahat-ui/shadcn/src/components/ui/select';
 import {
   Tooltip,
   TooltipContent,
@@ -55,6 +46,7 @@ import {
   Dialog,
   DialogTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dialog';
+import EditBeneficiary from './beneficiary.edit';
 
 type IProps = {
   beneficiaryDetails: any;
@@ -381,62 +373,7 @@ export default function BeneficiaryDetail({
           )}
           {/* Edit View */}
           {activeTab === 'edit' && (
-            <>
-              <div className="flex flex-col justify-between bg-card">
-                <div className="p-4 border-t">
-                  <div className="grid grid-cols-2 gap-4">
-                    <Input type="name" placeholder="Name" />
-                    <Select>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select gender" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectGroup>
-                          {genderList.map((gender) => (
-                            <SelectItem key={gender.value} value={gender.value}>
-                              {gender.value}
-                            </SelectItem>
-                          ))}
-                        </SelectGroup>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="mt-4 mb-2">
-                    <p className="text-slate-700">Auth & Comms</p>
-                  </div>
-                  <div className="grid grid-cols-3 gap-2">
-                    <div className="grid grid-cols-subgrid col-span-2">
-                      <Input type="email" placeholder="Email" />
-                    </div>
-                    <div className="grid grid-cols-subgrid col-span-1">
-                      <Button
-                        variant={'outline'}
-                        className="border-primary text-primary"
-                      >
-                        Update
-                      </Button>
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-3 gap-2">
-                    <div className="grid grid-cols-subgrid col-span-2">
-                      <Input
-                        className="mt-3"
-                        type="wallet"
-                        placeholder="Wallet"
-                      />
-                    </div>
-                    <div className="grid grid-cols-subgrid col-span-1 mt-3">
-                      <Button
-                        variant={'outline'}
-                        className="border-primary text-primary"
-                      >
-                        Update
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </>
+            <EditBeneficiary beneficiary={beneficiaryDetails} />
           )}
         </>
       )}

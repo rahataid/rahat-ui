@@ -21,13 +21,11 @@ import { useForm } from 'react-hook-form';
 
 import { useCommunityBeneficiaryCreate } from '@rahat-ui/community-query';
 import { Calendar } from '@rahat-ui/shadcn/src/components/ui/calendar';
-import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/popover';
-import { Switch } from '@rahat-ui/shadcn/src/components/ui/switch';
 import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
 import {
   BankedStatus,
@@ -53,10 +51,10 @@ export default function AddBeneficiary() {
     walletAddress: z
       .string()
       .min(42, { message: 'The Ethereum address must be 42 characters long' }),
-    phone: z.string(),
-    email: z.string().email().optional(),
+    phone: z.string().min(10, { message: 'Phone number must be 10 digits' }),
+    email: z.string().email().optional().nullable(),
     birthDate: z.date().optional(),
-    location: z.string().optional(),
+    location: z.string().optional().or(z.literal('')),
     latitude: z.number().optional(),
     longitude: z.number().optional(),
     notes: z.string().optional(),
@@ -64,7 +62,6 @@ export default function AddBeneficiary() {
     bankedStatus: z.string().toUpperCase().optional(),
     internetStatus: z.string().toUpperCase().optional(),
     phoneStatus: z.string().toUpperCase().optional(),
-    isVulnerable: z.boolean().optional(),
     govtIDType: z.string().optional(),
     govtIDNumber: z.string().optional(),
   });
@@ -85,7 +82,6 @@ export default function AddBeneficiary() {
       latitude: 0,
       longitude: 0,
       notes: '',
-      isVulnerable: false,
       govtIDType: '',
       govtIDNumber: '',
     },
@@ -106,7 +102,6 @@ export default function AddBeneficiary() {
       latitude: data.latitude,
       longitude: data.longitude,
       notes: data.notes,
-      isVulnerable: data.isVulnerable,
       govtIDType: data.govtIDType,
       govtIDNumber: data.govtIDNumber,
     });
@@ -501,22 +496,6 @@ export default function AddBeneficiary() {
                     </FormControl>
                     <FormMessage />
                   </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="isVulnerable"
-                render={({ field }) => (
-                  <div className="flex flex-col justify-evenly items-center">
-                    <Label> Vulnerable</Label>
-                    <Switch
-                      {...field}
-                      value={field.value ? 'false' : 'true'}
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </div>
                 )}
               />
             </div>

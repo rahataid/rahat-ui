@@ -1,16 +1,6 @@
 'use client';
-
-import {
-  VisibilityState,
-  flexRender,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useReactTable,
-} from '@tanstack/react-table';
+import { Table, flexRender } from '@tanstack/react-table';
 import { Settings2 } from 'lucide-react';
-import * as React from 'react';
 
 import { Button } from '@rahat-ui/shadcn/components/button';
 import {
@@ -23,57 +13,28 @@ import {
 } from '@rahat-ui/shadcn/components/dropdown-menu';
 import { Input } from '@rahat-ui/shadcn/components/input';
 import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@rahat-ui/shadcn/components/select';
-import {
-  Table,
   TableBody,
   TableCell,
+  Table as TableComponent,
   TableHead,
   TableHeader,
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import { useUserTableColumns } from './useUsersColumns';
-import { User } from '@rumsan/sdk/types';
+import { ListBeneficiary } from '@rahataid/community-tool-sdk';
 
 type IProps = {
-  users: User[];
+  handleClick: (item: ListBeneficiary) => void;
+  table: Table<ListBeneficiary>;
 };
-export default function ListView({ users }: IProps) {
-  const columns = useUserTableColumns();
-  // const users = useUserStore((state) => state.users);
 
-  const [rowSelection, setRowSelection] = React.useState({});
-  const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({});
-
-  const table = useReactTable({
-    data: users || [],
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    onRowSelectionChange: setRowSelection,
-    onColumnVisibilityChange: setColumnVisibility,
-    state: {
-      rowSelection,
-      columnVisibility,
-    },
-  });
-
+export default function ListView({ handleClick, table }: IProps) {
   return (
     <>
-      <div className="w-full h-full mt-1 p-1 bg-secondary">
+      <div className="w-full -mt-2 p-2 bg-secondary">
         <div className="flex items-center mb-2">
           <Input
-            placeholder="Search User by name..."
+            placeholder="Filter beneficiary..."
             value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
             onChange={(event) =>
               table.getColumn('name')?.setFilterValue(event.target.value)
@@ -110,9 +71,9 @@ export default function ListView({ users }: IProps) {
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-        <div className="rounded border h-[calc(100vh-180px)] bg-card">
-          <Table>
-            <ScrollArea className="h-table1">
+        <div className="rounded border bg-card">
+          <TableComponent>
+            <ScrollArea className="h-[calc(100vh-180px)]">
               <TableHeader className="bg-card sticky top-0">
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow key={headerGroup.id}>
@@ -137,9 +98,9 @@ export default function ListView({ users }: IProps) {
                     <TableRow
                       key={row.id}
                       data-state={row.getIsSelected() && 'selected'}
-                      // onClick={() => {
-                      //   handleClick(row.original);
-                      // }}
+                      onClick={() => {
+                        handleClick(row.original);
+                      }}
                     >
                       {row.getVisibleCells().map((cell) => (
                         <TableCell key={cell.id}>
@@ -154,7 +115,7 @@ export default function ListView({ users }: IProps) {
                 ) : (
                   <TableRow>
                     <TableCell
-                      colSpan={columns.length}
+                      colSpan={table.getAllColumns().length}
                       className="h-24 text-center"
                     >
                       No results.
@@ -163,7 +124,7 @@ export default function ListView({ users }: IProps) {
                 )}
               </TableBody>
             </ScrollArea>
-          </Table>
+          </TableComponent>
         </div>
       </div>
     </>

@@ -82,7 +82,7 @@ export default function ListView({
             name="nickName"
             value={
               (table.getColumn('nickName')?.getFilterValue() as string) ??
-              filters?.firstName
+              filters?.nickName
             }
             onChange={(event) => handleFilterChange(event)}
             className="rounded mr-2"

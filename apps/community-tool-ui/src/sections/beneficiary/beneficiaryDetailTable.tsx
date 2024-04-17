@@ -44,9 +44,8 @@ import {
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import TransactionTableData from '../../app/beneficiary/beneficiaryTransactionData.json';
 
-const data: Transaction[] = TransactionTableData;
+const data: Transaction[] = [];
 
 export type Transaction = {
   topic: string;

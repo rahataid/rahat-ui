@@ -1,3 +1,7 @@
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
+import { MAX_EXPORT_COUNT } from '../constants/app.const';
+
 export const includeOnlySelectedTarget = (array: [], selectedTargets: []) => {
   return array.map((item: any) => {
     const extractedFields = {} as any;
@@ -37,24 +41,28 @@ export function truncateEthereumAddress(address: string) {
 }
 
 export function splitFullName(fullName: string) {
-  // Split the full name into an array of words
-  let nameArray = fullName.split(' ');
+  if (!fullName) return { firstName: '', lastName: '' };
+  const names = fullName.trim().split(' ');
+  const firstName = names[0];
+  const lastName = names.length > 1 ? names.slice(1).join(' ') : '';
 
-  // Extract the first and last names
-  let firstName = nameArray[0];
-  let lastName = nameArray[nameArray.length - 1];
+  return { firstName, lastName };
+}
 
-  // Create an object to hold the result
-  let result = {
-    firstName: firstName,
-    lastName: lastName,
-  };
-
-  return result;
+function removeKeyFromArrayObjects(arr: any, keyToRemove: string) {
+  return arr.map((obj: any) => {
+    const { [keyToRemove]: deletedKey, ...rest } = obj;
+    return rest;
+  });
 }
 
 export function removeFieldsWithUnderscore(dataArray: []) {
-  return dataArray.map((item) => {
+  let splittedData = [] as any;
+  splittedData =
+    dataArray.length > MAX_EXPORT_COUNT
+      ? dataArray.splice(0, MAX_EXPORT_COUNT)
+      : dataArray;
+  splittedData.map((item: any) => {
     const newObj = {} as any;
     Object.keys(item).forEach((key) => {
       if (!key.startsWith('_')) {
@@ -64,4 +72,150 @@ export function removeFieldsWithUnderscore(dataArray: []) {
     });
     return newObj;
   });
+  return removeKeyFromArrayObjects(splittedData, 'errorMessage');
 }
+
+export const truncatedText = (text: string, maxLen: number) => {
+  return text.length > maxLen ? text.substring(0, maxLen) + '...' : text;
+};
+
+function moveErrorMsgToFirstKey(data: any) {
+  let result = [] as any;
+  data.forEach((obj: any) => {
+    if ('errorMessage' in obj) {
+      const val = obj.errorMessage;
+      delete obj.errorMessage;
+      obj = { errorMessage: val, ...obj };
+      result.push(obj);
+    }
+  });
+
+  return result;
+}
+
+function checkPropertyAndDelete(item: any, propertyName: string) {
+  if (item.hasOwnProperty(propertyName)) {
+    delete item[propertyName];
+  }
+  return item;
+}
+
+function cleanupNonDuplicateFields(payload: any[]) {
+  let data = [];
+  for (let p of payload) {
+    p = checkPropertyAndDelete(p, 'isDuplicate');
+    p = checkPropertyAndDelete(p, 'exportOnly');
+    p = checkPropertyAndDelete(p, 'rawData');
+    p = checkPropertyAndDelete(p, 'uuid');
+    p = checkPropertyAndDelete(p, 'id');
+    p = checkPropertyAndDelete(p, 'customId');
+    p = checkPropertyAndDelete(p, 'createdAt');
+    p = checkPropertyAndDelete(p, 'updatedAt');
+    data.push(p);
+  }
+  return data;
+}
+
+export const splitValidAndDuplicates = (
+  payload: any[],
+  duplicateData: any[],
+) => {
+  const sanitized = [] as any;
+  const nonDuplicate = payload.filter((d: any) => !d.isDuplicate);
+  const duplicates = duplicateData.filter((d: any) => d.isDuplicate);
+  for (let p of duplicates) {
+    p = checkPropertyAndDelete(p, 'isDuplicate');
+    p = checkPropertyAndDelete(p, 'exportOnly');
+    p = checkPropertyAndDelete(p, 'rawData');
+    p = checkPropertyAndDelete(p, 'uuid');
+    p = checkPropertyAndDelete(p, 'id');
+    p = checkPropertyAndDelete(p, 'customId');
+    p = checkPropertyAndDelete(p, 'createdAt');
+    p = checkPropertyAndDelete(p, 'updatedAt');
+    p.errorMessage = 'Duplicate data';
+    sanitized.push(p);
+  }
+  const swapped = moveErrorMsgToFirstKey(sanitized);
+  const validData = cleanupNonDuplicateFields(nonDuplicate);
+  return { validData, sanitized: swapped };
+};
+
+function createInvalidFieldError(errFields: any) {
+  const errFieldsArr = errFields.map((err: any) => err.fieldName);
+  return `Invalid fields: ${errFieldsArr.join(', ')}`;
+}
+
+export const splitValidAndInvalid = (payload: [], errors: []) => {
+  const invalidData = [] as any;
+  const validData = [] as any;
+  payload.forEach((p: any) => {
+    const error = errors.find((error: any) => error.uuid === p.uuid);
+    // if (p.hasOwnProperty('isDuplicate')) {
+    //   delete p.isDuplicate;
+    // }
+    if (error) {
+      const errFields = errors.filter((err: any) => err.uuid === p.uuid);
+      if (p.uuid) delete p.uuid;
+      if (p.rawData) delete p.rawData;
+      if (errFields.length) {
+        p.errorMessage = createInvalidFieldError(errFields);
+      }
+      invalidData.push(p);
+    } else {
+      validData.push(p);
+    }
+  });
+
+  const swapped = moveErrorMsgToFirstKey(invalidData);
+  return { invalidData: swapped, validData };
+};
+
+export const exportDataToExcel = (data: []) => {
+  const currentDate = new Date().getTime();
+  const fileName = `Invalid_Beneficiary_${currentDate}.xlsx`;
+  const worksheet = XLSX.utils.json_to_sheet(data);
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
+
+  // Buffer to store the generated Excel file
+  const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+  const blob = new Blob([excelBuffer], {
+    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8',
+  });
+
+  saveAs(blob, fileName);
+};
+
+export const formatNameString = (inputString: string) => {
+  // Replace spaces with underscores
+  let stringWithUnderscores = inputString.replace(/ /g, '_');
+  // Replace '.' with underscore
+  let stringWithUnderscoresAndDots = stringWithUnderscores.replace(/\./g, '_');
+  // Remove special characters using regex
+  let stringWithoutSpecialChars = stringWithUnderscoresAndDots.replace(
+    /[^\w\s]/gi,
+    '',
+  );
+  return stringWithoutSpecialChars;
+};
+
+export const isURL = (value: string) => {
+  let urlPattern = /^(?:\w+:)?\/\/([^\s\.]+\.\S{2}|localhost[\:?\d]*)\S*$/;
+  return urlPattern.test(value);
+};
+
+export const humanizeString = (inputString: string) => {
+  // Replace underscore with space
+  inputString = inputString.replace(/_/g, ' ');
+
+  // Convert the string to lowercase and split into words
+  let words = inputString.toLowerCase().split(' ');
+
+  // Capitalize the first letter of each word
+  for (let i = 0; i < words.length; i++) {
+    words[i] = words[i].charAt(0).toUpperCase() + words[i].slice(1);
+  }
+
+  // Join the words back together with spaces and return the result
+  return words.join(' ');
+};

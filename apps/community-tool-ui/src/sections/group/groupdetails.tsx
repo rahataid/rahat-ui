@@ -12,95 +12,41 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/components/tooltip';
+import { Download, Minus } from 'lucide-react';
+
+import { ListGroup } from '@rahataid/community-tool-sdk/groups';
 import {
-  Dialog,
-  DialogTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/dialog';
-import { Expand, Minus, Trash2 } from 'lucide-react';
-import ConfirmDialog from '../../components/dialog';
-import { paths } from '../../routes/paths';
-import {
-  GroupResponseById,
-  ListGroup,
-} from '@rahataid/community-tool-sdk/groups';
-import { useRumsanService } from '../../providers/service.provider';
-import {
-  ColumnDef,
   VisibilityState,
   getCoreRowModel,
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
 import React, { useState } from 'react';
-import { Beneficiary } from '@rahataid/community-tool-sdk/beneficiary';
 
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import GroupDetailTable from './group.table';
+import {
+  useCommunityGroupListByID,
+  useCommunityGroupedBeneficiariesDownload,
+} from '@rahat-ui/community-query';
+import { useCommunityGroupDeailsColumns } from './useGroupColumns';
+import { useRSQuery } from '@rumsan/react-query';
 type IProps = {
   data: ListGroup;
   handleClose: VoidFunction;
 };
 
-export const columns: ColumnDef<GroupResponseById[]>[] = [
-  {
-    accessorKey: 'beneficiary',
-    header: 'FullName',
-    cell: ({ row }) => {
-      if (row && row.getValue && typeof row.getValue === 'function') {
-        const beneficiary = row.getValue('beneficiary') as Beneficiary;
-        if (beneficiary && beneficiary.firstName && beneficiary.lastName) {
-          return beneficiary.firstName + beneficiary.lastName;
-        }
-      }
-      return '';
-    },
-  },
-  {
-    accessorKey: 'beneficiary',
-    header: 'WalletAddress',
-    cell: ({ row }) => {
-      if (row && row.getValue && typeof row.getValue === 'function') {
-        const beneficiary = row.getValue('beneficiary') as Beneficiary;
-        if (beneficiary && beneficiary.walletAddress) {
-          return beneficiary.walletAddress;
-        }
-      }
-      return '';
-    },
-  },
-  {
-    accessorKey: 'beneficiary',
-    header: 'customID',
-    cell: ({ row }) => {
-      if (row && row.getValue && typeof row.getValue === 'function') {
-        const beneficiary = row.getValue('beneficiary') as Beneficiary;
-        if (beneficiary && beneficiary.customId) {
-          return beneficiary.customId;
-        }
-      }
-      return '';
-    },
-  },
-  {
-    accessorKey: 'beneficiaryId',
-    header: 'id',
-    cell: ({ row }) => <div>{row.getValue('beneficiaryId')}</div>,
-  },
-];
-
 export default function GroupDetail({ data, handleClose }: IProps) {
-  const router = useRouter();
-  const { communityGroupQuery } = useRumsanService();
-  const { data: responseByID } = communityGroupQuery.useCommunityGroupListByID(
-    data.id.toString(),
-  );
-
+  const { rumsanService } = useRSQuery();
+  const { data: responseByUUID } = useCommunityGroupListByID(data?.uuid);
+  const columns = useCommunityGroupDeailsColumns();
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
+  const download = useCommunityGroupedBeneficiariesDownload();
 
   const table = useReactTable({
     manualPagination: true,
-    data: responseByID?.data?.beneficiariesGroup || [],
+    data: responseByUUID?.data?.beneficiariesGroup || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -111,6 +57,27 @@ export default function GroupDetail({ data, handleClose }: IProps) {
       rowSelection,
     },
   });
+
+  const handleClick = async () => {
+    const k = responseByUUID?.data?.beneficiariesGroup?.map((item) => {
+      const groupName = data?.name;
+      return { ...item.beneficiary, groupName };
+    });
+    const response = await download.mutateAsync({
+      groupedBeneficiaries: k,
+      config: { responseType: 'arraybuffer' },
+    });
+    const blob = new Blob([response.data], {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'beneficiaries.xlsx';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  };
 
   return (
     <>
@@ -129,43 +96,27 @@ export default function GroupDetail({ data, handleClose }: IProps) {
             </TooltipProvider>
             <TooltipProvider delayDuration={100}>
               <Tooltip>
-                <TooltipTrigger
-                  onClick={() => {
-                    router.push(
-                      paths.dashboard.beneficiary.detail(data?.id.toString()),
-                    );
-                  }}
-                >
-                  <Expand size={20} strokeWidth={1.5} />
-                </TooltipTrigger>
-                <TooltipContent className="bg-secondary ">
-                  <p className="text-xs font-medium">Expand</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-
-            <TooltipProvider delayDuration={100}>
-              <Tooltip>
-                <TooltipTrigger>
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Trash2 size={20} strokeWidth={1.5} />
-                    </DialogTrigger>
-                    <ConfirmDialog name="beneficiary" />
-                  </Dialog>
-                </TooltipTrigger>
-                <TooltipContent className="bg-secondary ">
-                  <p className="text-xs font-medium">Delete</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-            <TooltipProvider delayDuration={100}>
-              <Tooltip>
                 <TooltipTrigger>
                   <Label>{data.name}</Label>
                 </TooltipTrigger>
                 <TooltipContent className="bg-secondary ">
                   <p className="text-xs font-medium">Group Name</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild onClick={handleClick}>
+                  <Download
+                    className="cursor-pointer"
+                    size={18}
+                    strokeWidth={1.6}
+                    color="#007bb6"
+                  />
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Download</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
@@ -177,6 +128,10 @@ export default function GroupDetail({ data, handleClose }: IProps) {
 
         <TabsContent value="detail">
           <GroupDetailTable table={table} />
+          <p className="text-xs font-medium text-right mr-5 mt-5">
+            Total beneficiary Count :
+            {responseByUUID?.data?.beneficiariesGroup.length}
+          </p>
         </TabsContent>
       </Tabs>
     </>

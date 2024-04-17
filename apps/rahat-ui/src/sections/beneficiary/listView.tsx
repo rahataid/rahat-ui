@@ -1,7 +1,7 @@
 'use client';
 
 import { Table, flexRender } from '@tanstack/react-table';
-import { Settings2 } from 'lucide-react';
+import { Settings2, ChevronDown } from 'lucide-react';
 
 import { Button } from '@rahat-ui/shadcn/components/button';
 import {
@@ -11,6 +11,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuItem,
 } from '@rahat-ui/shadcn/components/dropdown-menu';
 import { Input } from '@rahat-ui/shadcn/components/input';
 import {
@@ -23,16 +24,31 @@ import {
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { ListBeneficiary } from '@rahat-ui/types';
+import BulkAssignToProjectModal from './components/bulkAssignToProjectModal';
 
 type IProps = {
-  handleClick: (item: ListBeneficiary) => void;
   table: Table<ListBeneficiary>;
+  handleBulkAssign: (selectedProject: string) => void;
+  isBulkAssigning: boolean;
+  projectModal: any;
 };
 
-export default function ListView({ handleClick, table }: IProps) {
+export default function ListView({
+  table,
+  handleBulkAssign,
+  isBulkAssigning,
+  projectModal,
+}: IProps) {
   return (
     <>
-      <div className="w-full -mt-2 p-2 bg-secondary">
+      <BulkAssignToProjectModal
+        handleSubmit={handleBulkAssign}
+        projectModal={projectModal}
+        selectedBeneficiaries={table
+          .getSelectedRowModel()
+          .rows.map((row) => row.original.walletAddress)}
+      />
+      <div className="-mt-2 p-2 bg-secondary">
         <div className="flex items-center mb-2">
           <Input
             placeholder="Filter beneficiary..."
@@ -76,11 +92,30 @@ export default function ListView({ handleClick, table }: IProps) {
                 })}
             </DropdownMenuContent>
           </DropdownMenu>
+          {table.getSelectedRowModel().rows.length ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button className="ml-2">
+                  {table.getSelectedRowModel().rows.length} - Beneficiary
+                  Selected
+                  <ChevronDown className="ml-1" strokeWidth={1.5} />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem
+                  onClick={projectModal.onTrue}
+                  disabled={isBulkAssigning}
+                >
+                  Bulk Assign Project
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : null}
         </div>
-        <div className="rounded border bg-white">
+        <div className="rounded border bg-card h-[calc(100vh-180px)]">
           <TableComponent>
             <ScrollArea className="h-table1">
-              <TableHeader className="sticky top-0">
+              <TableHeader className="sticky top-0 bg-card">
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow key={headerGroup.id}>
                     {headerGroup.headers.map((header) => {
@@ -104,9 +139,6 @@ export default function ListView({ handleClick, table }: IProps) {
                     <TableRow
                       key={row.id}
                       data-state={row.getIsSelected() && 'selected'}
-                      onClick={() => {
-                        handleClick(row.original);
-                      }}
                     >
                       {row.getVisibleCells().map((cell) => (
                         <TableCell key={cell.id}>

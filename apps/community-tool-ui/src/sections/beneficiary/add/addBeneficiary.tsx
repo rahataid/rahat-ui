@@ -7,7 +7,6 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from '@rahat-ui/shadcn/src/components/ui/form';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
@@ -19,32 +18,29 @@ import {
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { useForm } from 'react-hook-form';
-import { toast } from 'react-toastify';
 
-import { z } from 'zod';
-import { CalendarIcon, Check, ChevronsUpDown, Wallet } from 'lucide-react';
-import { useRumsanService } from '../../../providers/service.provider';
+import { useCommunityBeneficiaryCreate } from '@rahat-ui/community-query';
+import { Calendar } from '@rahat-ui/shadcn/src/components/ui/calendar';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/popover';
+import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
 import {
   BankedStatus,
   Gender,
   InternetStatus,
   PhoneStatus,
 } from '@rahataid/community-tool-sdk/enums/';
-import React, { useEffect } from 'react';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/popover';
+import { ID_TYPE } from 'apps/community-tool-ui/src/constants/beneficiary.const';
 import { format } from 'date-fns';
-import { Calendar } from '@rahat-ui/shadcn/src/components/ui/calendar';
-import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
+import { CalendarIcon, Wallet } from 'lucide-react';
+import { useEffect } from 'react';
+import { z } from 'zod';
 
 export default function AddBeneficiary() {
-  const { communityBenQuery } = useRumsanService();
-
-  const benefClient = communityBenQuery.useCommunityBeneficiaryCreate();
-
+  const addCommunityBeneficiary = useCommunityBeneficiaryCreate();
   const FormSchema = z.object({
     firstName: z
       .string()
@@ -55,10 +51,10 @@ export default function AddBeneficiary() {
     walletAddress: z
       .string()
       .min(42, { message: 'The Ethereum address must be 42 characters long' }),
-    phone: z.string(),
-    email: z.string().email().optional(),
+    phone: z.string().min(10, { message: 'Phone number must be 10 digits' }),
+    email: z.string().email().optional().nullable(),
     birthDate: z.date().optional(),
-    location: z.string().optional(),
+    location: z.string().optional().or(z.literal('')),
     latitude: z.number().optional(),
     longitude: z.number().optional(),
     notes: z.string().optional(),
@@ -66,6 +62,8 @@ export default function AddBeneficiary() {
     bankedStatus: z.string().toUpperCase().optional(),
     internetStatus: z.string().toUpperCase().optional(),
     phoneStatus: z.string().toUpperCase().optional(),
+    govtIDType: z.string().optional(),
+    govtIDNumber: z.string().optional(),
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -84,18 +82,36 @@ export default function AddBeneficiary() {
       latitude: 0,
       longitude: 0,
       notes: '',
+      govtIDType: '',
+      govtIDNumber: '',
     },
   });
 
   const handleCreateBeneficiary = async (data: z.infer<typeof FormSchema>) => {
-    await benefClient.mutateAsync(data);
+    await addCommunityBeneficiary.mutateAsync({
+      firstName: data.firstName,
+      lastName: data.lastName,
+      gender: data.gender as Gender,
+      walletAddress: data.walletAddress,
+      phone: data.phone,
+      bankedStatus: data.bankedStatus as BankedStatus,
+      internetStatus: data.internetStatus as InternetStatus,
+      phoneStatus: data.phoneStatus as PhoneStatus,
+      email: data.email,
+      location: data.location,
+      latitude: data.latitude,
+      longitude: data.longitude,
+      notes: data.notes,
+      govtIDType: data.govtIDType,
+      govtIDNumber: data.govtIDNumber,
+    });
   };
 
   useEffect(() => {
-    if (benefClient.isSuccess) {
+    if (addCommunityBeneficiary.isSuccess) {
       form.reset();
     }
-  }, [benefClient.isSuccess, form]);
+  }, [addCommunityBeneficiary.isSuccess, form]);
 
   return (
     <Form {...form}>
@@ -185,7 +201,7 @@ export default function AddBeneficiary() {
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Banked Status" />
+                            <SelectValue placeholder=" Select Banked Status" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -221,7 +237,7 @@ export default function AddBeneficiary() {
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Gender" />
+                            <SelectValue placeholder="Select Gender" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -248,7 +264,7 @@ export default function AddBeneficiary() {
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Internet Status" />
+                            <SelectValue placeholder="Select Internet Status" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -283,7 +299,7 @@ export default function AddBeneficiary() {
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Phone Status" />
+                            <SelectValue placeholder="Select  Phone Status" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -321,20 +337,7 @@ export default function AddBeneficiary() {
                   );
                 }}
               />
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => {
-                  return (
-                    <FormItem>
-                      <FormControl>
-                        <Input type="email" placeholder="Email" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  );
-                }}
-              />
+
               <FormField
                 control={form.control}
                 name="longitude"
@@ -343,7 +346,7 @@ export default function AddBeneficiary() {
                     <FormItem>
                       <FormControl>
                         <Input
-                          type="float"
+                          type="number"
                           placeholder="Longitude"
                           onChange={(e) => {
                             const numericValue = parseFloat(e.target.value);
@@ -364,7 +367,7 @@ export default function AddBeneficiary() {
                     <FormItem>
                       <FormControl>
                         <Input
-                          type="float"
+                          type="number"
                           placeholder="Latitude"
                           onChange={(e) => {
                             const numericValue = parseFloat(e.target.value);
@@ -377,7 +380,20 @@ export default function AddBeneficiary() {
                   );
                 }}
               />
-
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <FormControl>
+                        <Input type="email" placeholder="Email" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
               <FormField
                 control={form.control}
                 name="birthDate"
@@ -410,6 +426,62 @@ export default function AddBeneficiary() {
                   </FormItem>
                 )}
               />
+
+              <FormField
+                control={form.control}
+                name="govtIDType"
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Government ID Type" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value={ID_TYPE.CITIZZENSHIP}>
+                            Citizenship
+                          </SelectItem>
+                          <SelectItem value={ID_TYPE.DRIVING_LICENSE}>
+                            Driving License
+                          </SelectItem>
+                          <SelectItem value={ID_TYPE.PASSPORT}>
+                            Passport
+                          </SelectItem>
+                          <SelectItem value={ID_TYPE.NATIONAL_ID_NUMBER}>
+                            National ID
+                          </SelectItem>
+                          <SelectItem value={ID_TYPE.OTHER}>Other</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
+              <FormField
+                control={form.control}
+                name="govtIDNumber"
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <FormControl>
+                        <Input
+                          type="text"
+                          placeholder="Government ID Number"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
+
               <FormField
                 control={form.control}
                 name="notes"

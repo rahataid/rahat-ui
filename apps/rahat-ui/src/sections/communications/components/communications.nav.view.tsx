@@ -25,7 +25,7 @@ const CommunicationNavView: FC<CommunicationNavViewProps> = ({
   return (
     <div className="pb-2">
       <div className="flex items-center justify-between p-4">
-        <h1 className="font-semibold text-xl text-slate-600">{title}</h1>
+        <h1 className="font-semibold text-xl text-primary">{title}</h1>
       </div>
       <div className="px-2 ">
         <nav>

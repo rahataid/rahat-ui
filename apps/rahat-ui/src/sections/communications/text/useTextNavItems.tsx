@@ -1,10 +1,12 @@
 import { Speech, FilePenLine, Plus } from 'lucide-react';
 import { useParams } from 'next/navigation';
-
+import { useCampaignStore } from '@rumsan/communication-query';
 import { NavItem } from '../components/nav-items.types';
 
 export const useNavItems = () => {
   const params = useParams();
+  const totalTextCampaign = useCampaignStore().totalTextCampaign;
+  const campaign = useCampaignStore().campaign;
 
   const navItems: NavItem[] = [
     {
@@ -13,7 +15,7 @@ export const useNavItems = () => {
         {
           title: 'Campaigns',
           path: '/communications/text',
-          subtitle: 20,
+          subtitle: totalTextCampaign || 0,
           icon: <Speech size={18} strokeWidth={1.5} />,
         },
       ],
@@ -21,7 +23,7 @@ export const useNavItems = () => {
     {
       title: 'Actions',
       children: [
-        ...(params.id?.length
+        ...(params.id?.length && campaign.data.status !== 'COMPLETED'
           ? [
               {
                 title: 'Edit Campaign',
@@ -32,7 +34,7 @@ export const useNavItems = () => {
           : [
               {
                 title: 'Add Campaign',
-                path: `/communications/add`,
+                path: '/communications/add',
                 icon: <Plus size={18} strokeWidth={1.5} />,
               },
             ]),

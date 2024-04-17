@@ -1,60 +1,48 @@
 import { getSettingsClient } from '@rahataid/community-tool-sdk/clients';
-import { SettingClient } from '@rahataid/community-tool-sdk/types';
-
-import { RumsanService } from '@rumsan/sdk';
-import {
-  QueryClient,
-  UseQueryResult,
-  useMutation,
-  useQuery,
-} from '@tanstack/react-query';
-
+import { useRSQuery } from '@rumsan/react-query';
+import { UseQueryResult, useMutation, useQuery } from '@tanstack/react-query';
 import { TAGS } from '../config';
-import Swal from 'sweetalert2';
 import { SettingInput } from '@rahataid/community-tool-sdk/settings/settings.types';
+import Swal from 'sweetalert2';
 
-export class Settings {
-  private client: SettingClient;
-  public qc;
-
-  constructor(rsService: RumsanService, reactQueryClient: QueryClient) {
-    this.client = getSettingsClient(rsService.client);
-    this.qc = reactQueryClient;
-  }
-
-  useCommunitySettingList = (): UseQueryResult<any, Error> => {
-    return useQuery({
+export const useCommunitySettingList = (): UseQueryResult<any, Error> => {
+  const { queryClient, rumsanService } = useRSQuery();
+  const settingClient = getSettingsClient(rumsanService.client);
+  return useQuery(
+    {
       queryKey: [TAGS.LIST_COMMUNITY_SETTINGS],
-      queryFn: () => {
-        return this.client.list();
-      },
-    });
-  };
+      queryFn: () => settingClient.list(),
+    },
+    queryClient,
+  );
+};
 
-  useCommunitySettingCreate = () => {
-    return useMutation({
+export const useCommunitySettingCreate = () => {
+  const { queryClient, rumsanService } = useRSQuery();
+  const settingClient = getSettingsClient(rumsanService.client);
+  return useMutation(
+    {
       mutationKey: [TAGS.CREATE_COMMUNITY_SETTINGS],
-      mutationFn: async (payload: SettingInput) => {
-        return this.client.create(payload);
-      },
-      onSuccess: async (data) => {
-        console.log(data);
-        await this.qc.invalidateQueries({
-          queryKey: [TAGS.LIST_COMMUNITY_SETTINGS],
+      mutationFn: settingClient.create,
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: [
+            TAGS.LIST_COMMUNITY_SETTINGS,
+            {
+              exact: true,
+            },
+          ],
         });
-        Swal.fire({
-          icon: 'success',
-          title: 'Settings Created successfully',
-        });
+        Swal.fire('Settings Created Successfully', '', 'success');
       },
       onError: (error: any) => {
-        Swal.fire({
-          icon: 'error',
-          title:
-            error.response.data.message ||
-            'Encounter error on creating Settings',
-        });
+        Swal.fire(
+          'Error',
+          error.response.data.message || 'Encounter error on Creating Data',
+          'error',
+        );
       },
-    });
-  };
-}
+    },
+    queryClient,
+  );
+};

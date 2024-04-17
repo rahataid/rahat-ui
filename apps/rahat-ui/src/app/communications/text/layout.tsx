@@ -5,7 +5,7 @@ import { useSecondPanel } from '../../../providers/second-panel-provider';
 import { useNavItems } from '../../../sections/communications/text/useTextNavItems';
 import { CommunicationLayout } from '../../../sections/communications/components';
 
-export default function CommunicationLayoutRoot({
+export default function TextLayout({
   children,
 }: {
   children: React.ReactNode;

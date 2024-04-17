@@ -1,24 +1,18 @@
 'use client';
 import React from 'react';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-} from '@rahat-ui/shadcn/src/components/ui/form';
+import { FormField } from '@rahat-ui/shadcn/src/components/ui/form';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { Form, useFieldArray, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { Minus, Plus } from 'lucide-react';
-import { useRumsanService } from '../../providers/service.provider';
 import { Switch } from '@rahat-ui/shadcn/src/components/ui/switch';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useCommunitySettingCreate } from '@rahat-ui/community-query';
 
 export default function AddSetting() {
-  const { communitySettingQuery } = useRumsanService();
-  const communitySetting = communitySettingQuery.useCommunitySettingCreate();
+  const communitySetting = useCommunitySettingCreate();
   const FormSchema = z.object({
     name: z.string().min(1, { message: 'Name is required' }),
     field: z.array(
@@ -46,7 +40,7 @@ export default function AddSetting() {
       name: '',
       requiredFields: [''],
       field: [{ value: { key: '', value: '' } }],
-      isPrivate: true,
+      isPrivate: false,
       isReadOnly: false,
     },
   });
@@ -88,7 +82,7 @@ export default function AddSetting() {
         <div className="shadow-md p-4 rounded-sm">
           <div className="grid grid-cols-5 gap-4 mb-4">
             <Label className="col-span-2">Name</Label>
-            <Label className="col-span-2">RequiredFields</Label>
+            <Label className="col-span-2">Required Fields</Label>
           </div>
           <div className="grid grid-cols-5 gap-5 mb-4">
             <FormField
@@ -114,7 +108,7 @@ export default function AddSetting() {
                 <div className="col-span-2">
                   <Input
                     type="text"
-                    placeholder="SAME AS KEY eg: CLIENT_ID "
+                    placeholder="Comma separated keys EG: key1, key2"
                     {...field}
                     onChange={(e) => {
                       const uppercaseValue = e.target.value.toUpperCase();

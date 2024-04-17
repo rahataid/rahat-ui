@@ -38,25 +38,10 @@ import { useGraphService } from '../../../../providers/subgraph-provider';
 import { truncateEthAddress } from '@rumsan/sdk/utils';
 import { formatDate } from '../../../../utils';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-
-const data: Transaction[] = [
-  {
-    id: 'm5gr84i9',
-    topic: 'Claim Processed',
-    beneficiary: 1234567890,
-    voucherId: 'ABC123',
-    timestamp: '2024-02-27T08:00:00Z',
-    txHash: '0x123456789abcdef',
-  },
-  {
-    id: '3u1reuv4',
-    topic: 'Claim Approved',
-    beneficiary: 5678234324,
-    voucherId: 'DEF456',
-    timestamp: '2024-02-27T09:00:00Z',
-    txHash: '0x987654321abcdef',
-  },
-];
+import {
+  useBeneficiaryTransaction,
+  useProjectTransaction,
+} from 'apps/rahat-ui/src/hooks/el/subgraph/querycall';
 
 export type Transaction = {
   id: string;
@@ -68,30 +53,6 @@ export type Transaction = {
 };
 
 export const columns: ColumnDef<Transaction>[] = [
-  {
-    id: 'select',
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && 'indeterminate')
-        }
-        onCheckedChange={(value: any) =>
-          table.toggleAllPageRowsSelected(!!value)
-        }
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value: any) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
   {
     accessorKey: 'topic',
     header: 'Topic',
@@ -138,7 +99,7 @@ export const columns: ColumnDef<Transaction>[] = [
     ),
   },
   {
-    accessorKey: 'timestamp',
+    accessorKey: 'timeStamp',
     header: ({ column }) => {
       return (
         <Button
@@ -151,11 +112,11 @@ export const columns: ColumnDef<Transaction>[] = [
       );
     },
     cell: ({ row }) => (
-      <div className="lowercase">{row.getValue('timestamp')}</div>
+      <div className="lowercase">{row.getValue('timeStamp')}</div>
     ),
   },
   {
-    accessorKey: 'txHash',
+    accessorKey: 'transactionHash',
     header: ({ column }) => {
       return (
         <Button
@@ -169,7 +130,7 @@ export const columns: ColumnDef<Transaction>[] = [
     },
     cell: ({ row }) => (
       <div className="lowercase">
-        {truncateEthAddress(row.getValue('txHash'))}
+        {truncateEthAddress(row.getValue('transactionHash'))}
       </div>
     ),
   },
@@ -201,7 +162,7 @@ export const columns: ColumnDef<Transaction>[] = [
   },
 ];
 
-export default function TransactionTable({ walletAddress }) {
+export default function TransactionTable({}) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
@@ -209,10 +170,11 @@ export default function TransactionTable({ walletAddress }) {
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
-  const [data, setData] = React.useState([]);
+
+  const { data, isFetching } = useProjectTransaction();
 
   const table = useReactTable({
-    data,
+    data: data || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -229,82 +191,6 @@ export default function TransactionTable({ walletAddress }) {
       rowSelection,
     },
   });
-  const { queryService } = useGraphService();
-  const fetchBeneficiary = React.useCallback(() => {
-    // const querRes = queryService.useProjectTransaction();
-    const querRes = queryService.useBeneficiaryTransaction(walletAddress);
-
-    querRes.then((res) => {
-      const claimedAssigned = res?.claimAssigneds;
-      const claimProcessed = res?.projectClaimProcesseds;
-      const beneficiaryReferred = res?.beneficiaryReferreds;
-      const beneficiaryAdded = res?.beneficiaryAddeds;
-      const claimCreated = res?.claimCreateds;
-      const tokenBudgetIncrease = res?.tokenBudgetIncreases;
-      const data: any = [];
-
-      claimedAssigned?.map((trans) => {
-        data.push({
-          beneficiary: trans.beneficiary,
-          topic: trans.eventType,
-          timestamp: formatDate(trans.blockTimestamp),
-          txHash: trans.transactionHash,
-          voucherId: trans.tokenAddress,
-        });
-        // const claimRes = queryService?.useClaimAssigned(trans.id);
-      });
-      claimProcessed?.map((trans) => {
-        data.push({
-          beneficiary: trans.beneficiary,
-          topic: trans.eventType,
-          timestamp: formatDate(trans.blockTimestamp),
-          txHash: trans.transactionHash,
-          voucherId: trans.token,
-        });
-      });
-      beneficiaryReferred?.map((trans) => {
-        data.push({
-          beneficiary: trans.referrerBeneficiaries,
-          topic: trans.eventType,
-          timestamp: formatDate(trans.blockTimestamp),
-          txHash: trans.transactionHash,
-        });
-      });
-
-      claimCreated?.map((trans) => {
-        data.push({
-          beneficiary: trans.claimer,
-          txHash: trans.transactionHash,
-          timestamp: formatDate(trans.blockTimestamp),
-          topic: trans?.eventType,
-          voucherId: trans.token,
-        });
-      });
-
-      beneficiaryAdded?.map((trans) => {
-        data.push({
-          topic: trans.eventType,
-          timestamp: formatDate(trans.blockTimestamp),
-          txHash: trans.transactionHash,
-          beneficiary: trans.beneficiaryAddress,
-        });
-      });
-
-      tokenBudgetIncrease?.map((trans) => {
-        data.push({
-          topic: trans.eventType,
-          txHash: trans.transactionHash,
-          timestamp: formatDate(trans.blockTimestamp),
-          voucherId: trans?.tokenAddress,
-        });
-      });
-      setData(data);
-    });
-  }, [queryService]);
-
-  React.useEffect(() => {
-    fetchBeneficiary();
-  }, [fetchBeneficiary]);
 
   return (
     <div className="w-full h-full p-2 bg-secondary">
@@ -323,7 +209,7 @@ export default function TransactionTable({ walletAddress }) {
       <div className="rounded border h-[calc(100vh-180px)] bg-card">
         <Table>
           <ScrollArea className="h-table1">
-            <TableHeader className="sticky top-0">
+            <TableHeader className="bg-card sticky top-0">
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
                   {headerGroup.headers.map((header) => {
@@ -364,7 +250,15 @@ export default function TransactionTable({ walletAddress }) {
                     colSpan={columns.length}
                     className="h-24 text-center"
                   >
-                    No results.
+                    {isFetching ? (
+                      <div className="flex items-center justify-center space-x-2 h-full">
+                        <div className="h-5 w-5 animate-bounce rounded-full bg-primary [animation-delay:-0.3s]"></div>
+                        <div className="h-5 w-5 animate-bounce rounded-full bg-primary [animation-delay:-0.13s]"></div>
+                        <div className="h-5 w-5 animate-bounce rounded-full bg-primary"></div>
+                      </div>
+                    ) : (
+                      'No data available.'
+                    )}
                   </TableCell>
                 </TableRow>
               )}

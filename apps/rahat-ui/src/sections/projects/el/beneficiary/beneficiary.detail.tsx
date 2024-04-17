@@ -1,5 +1,8 @@
-import { useRouter } from 'next/navigation';
+'use client';
 
+import { useParams } from 'next/navigation';
+
+import { useProjectAction } from '@rahat-ui/query';
 import {
   Tabs,
   TabsContent,
@@ -7,212 +10,371 @@ import {
   TabsTrigger,
 } from '@rahat-ui/shadcn/components/tabs';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@rahat-ui/shadcn/src/components/ui/card';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
-import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@rahat-ui/shadcn/src/components/ui/select';
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { Gender } from '@rahataid/sdk/enums';
-import { User } from '@rumsan/sdk/types';
 import { enumToObjectArray, truncateEthAddress } from '@rumsan/sdk/utils';
-import { MoreVertical } from 'lucide-react';
+import { useAssignClaims } from 'apps/rahat-ui/src/hooks/el/contracts/el-contracts';
+import { getProjectAddress } from 'apps/rahat-ui/src/utils/getProjectAddress';
+import { Minus, MoreVertical, Copy, CopyCheck, Trash2 } from 'lucide-react';
 import Image from 'next/image';
-import { useState } from 'react';
-import TransactionTable from '../transactions/transactions.table';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { useAssignClaims } from '../../../../hooks/el/contracts/el-contracts';
+import { useEffect, useState } from 'react';
+import TransactionTable from './beneficiary.transaction.table';
+import { useReadElProjectGetBeneficiaryVoucherDetail } from 'apps/rahat-ui/src/hooks/el/contracts/elProject';
+import { zeroAddress } from 'viem';
+import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
+import AssignVoucherConfirm from './assign.voucher.confirm';
+import ConfirmDialog from '../../../../components/dialog';
+import {
+  Dialog,
+  DialogTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/dialog';
+import EditBeneficiary from './beneficiary.edit';
 
 type IProps = {
-  data: User;
+  beneficiaryDetails: any;
+  closeSecondPanel: VoidFunction;
 };
 
-export default function UserDetail({ beneficiaryDetails }: any) {
+export default function BeneficiaryDetail({
+  beneficiaryDetails,
+  closeSecondPanel,
+}: IProps) {
   const assignClaims = useAssignClaims();
+  const { id } = useParams();
+  const getProject = useProjectAction();
 
-  const walletAddress = beneficiaryDetails.name;
+  const [assignStatus, setAssignStatus] = useState(false);
+  const [contractAddress, setContractAddress] = useState<any>();
+
+  const walletAddress = beneficiaryDetails.wallet;
+
+  const { data: beneficiaryVoucherDetails, isLoading } =
+    useReadElProjectGetBeneficiaryVoucherDetail({
+      address: contractAddress?.el,
+      args: [walletAddress],
+    });
+
+  const projectSettings = localStorage.getItem('projectSettingsStore');
 
   const [activeTab, setActiveTab] = useState<'details' | 'edit' | null>(
     'details',
   );
-  const [activeUser, setActiveUser] = useState<boolean>(true);
+  const [walletAddressCopied, setWalletAddressCopied] =
+    useState<boolean>(false);
+
+  const clickToCopy = () => {
+    if (walletAddress) {
+      navigator.clipboard.writeText(walletAddress);
+      setWalletAddressCopied(true);
+    }
+  };
+
   const genderList = enumToObjectArray(Gender);
   const handleTabChange = (tab: 'details' | 'edit') => {
     setActiveTab(tab);
   };
-  const toggleActiveUser = () => {
-    setActiveUser(!activeUser);
-  };
 
   const handleAssignVoucher = () => {
-    assignClaims.writeContractAsync({
-      address: '0x1B4D9FA12f3e1b1181b413979330c0afF9BbaAE5',
-      args: [walletAddress],
+    getProjectAddress(getProject, id as string).then((res) => {
+      assignClaims.writeContractAsync({
+        address: res.value.elproject.address,
+        args: [walletAddress],
+      });
     });
   };
+
+  useEffect(() => {
+    if (
+      beneficiaryVoucherDetails?.freeVoucherAddress === undefined ||
+      beneficiaryVoucherDetails?.referredVoucherAddress === undefined
+    )
+      return;
+    if (
+      beneficiaryVoucherDetails?.freeVoucherAddress?.toString() !==
+        zeroAddress ||
+      beneficiaryVoucherDetails?.referredVoucherAddress?.toString() !==
+        zeroAddress
+    ) {
+      setAssignStatus(true);
+    }
+  }, [beneficiaryVoucherDetails]);
+
+  useEffect(() => {
+    if (projectSettings) {
+      const settings = JSON.parse(projectSettings)?.state?.settings?.[id];
+      setContractAddress({
+        el: settings?.elproject?.address,
+        eyeVoucher: settings?.eyevoucher?.address,
+        referredVoucher: settings?.referralvoucher?.address,
+      });
+    }
+  }, [id, projectSettings]);
+
+  const voucherAssignModal = useBoolean();
+
+  const handleVoucherAssignModal = () => {
+    voucherAssignModal.onTrue();
+  };
+
+  const handleVoucherAssignModalClose = () => {
+    voucherAssignModal.onFalse();
+  };
+
   return (
     <>
-      <div className="p-4 bg-card mt-2">
-        <div className="flex">
-          <Image
-            className="rounded-full"
-            src="/svg/funny-cat.svg"
-            alt="cat"
-            height={80}
-            width={80}
-          />
-          <div className="flex flex-col items-center justify-center w-full mr-2 gap-2">
-            <div className="flex align-center justify-between w-full ml-4">
-              <h1 className="font-semibold text-xl">
-                {truncateEthAddress(walletAddress)}
-              </h1>
-              <div className="flex">
-                <div className="pl-2">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger>
-                      <MoreVertical
-                        className="cursor-pointer"
-                        size={20}
-                        strokeWidth={1.5}
-                      />
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                      <DropdownMenuItem
-                        onClick={() => handleTabChange('details')}
-                      >
-                        Details{' '}
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => handleTabChange('edit')}>
-                        Edit
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
-              </div>
-            </div>
-            <div className="flex align-center justify-between w-full ml-4">
-              <p className="text-slate-500">
-                {truncateEthAddress(walletAddress)}
-              </p>
-              <Button onClick={handleAssignVoucher}>Assign Voucher</Button>
-              <Badge>Active</Badge>
+      {isLoading ? (
+        <div className="h-screen flex items-center justify-center space-x-2">
+          <div className="h-5 w-5 animate-bounce rounded-full bg-primary [animation-delay:-0.3s]"></div>
+          <div className="h-5 w-5 animate-bounce rounded-full bg-primary [animation-delay:-0.13s]"></div>
+          <div className="h-5 w-5 animate-bounce rounded-full bg-primary"></div>
+        </div>
+      ) : (
+        <>
+          <div className="flex justify-between p-4 pt-5 bg-secondary border-b">
+            <TooltipProvider delayDuration={100}>
+              <Tooltip>
+                <TooltipTrigger onClick={closeSecondPanel}>
+                  <Minus size={20} strokeWidth={1.5} />
+                </TooltipTrigger>
+                <TooltipContent className="bg-secondary ">
+                  <p className="text-xs font-medium">Close</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+            <div className="flex gap-3">
+              <TooltipProvider delayDuration={100}>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Trash2 color="#FF0000" size={20} strokeWidth={1.5} />
+                      </DialogTrigger>
+                      <ConfirmDialog name="beneficiary" />
+                    </Dialog>
+                  </TooltipTrigger>
+                  <TooltipContent className="bg-secondary ">
+                    <p className="text-xs font-medium">Delete</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              <DropdownMenu>
+                <DropdownMenuTrigger>
+                  <MoreVertical
+                    className="cursor-pointer"
+                    size={20}
+                    strokeWidth={1.5}
+                  />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem onClick={() => handleTabChange('details')}>
+                    Details
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleTabChange('edit')}>
+                    Edit
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
-        </div>
-      </div>
-      {/* Details View */}
+          <div className="p-4 bg-card flex gap-2 justify-between items-center flex-wrap">
+            <div className="flex items-center gap-2">
+              <Image
+                className="rounded-full"
+                src="/profile.png"
+                alt="cat"
+                height={80}
+                width={80}
+              />
+              <div>
+                <div className="flex gap-2 mb-1">
+                  <h1 className="font-semibold text-xl">
+                    {beneficiaryDetails?.name}
+                  </h1>
+                  <Badge>Active</Badge>
+                </div>
+                <TooltipProvider delayDuration={100}>
+                  <Tooltip>
+                    <TooltipTrigger
+                      className="flex gap-3 items-center"
+                      onClick={clickToCopy}
+                    >
+                      <p className="text-muted-foreground text-base">
+                        {truncateEthAddress(walletAddress)}
+                      </p>
+                      {walletAddressCopied ? (
+                        <CopyCheck size={15} strokeWidth={1.5} />
+                      ) : (
+                        <Copy
+                          className="text-muted-foreground"
+                          size={15}
+                          strokeWidth={1.5}
+                        />
+                      )}
+                    </TooltipTrigger>
+                    <TooltipContent className="bg-secondary" side="bottom">
+                      <p className="text-xs font-medium">
+                        {walletAddressCopied ? 'copied' : 'click to copy'}
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
+            </div>
+            {!assignStatus && beneficiaryDetails?.type === 'ENROLLED' && (
+              <div>
+                <Button onClick={handleAssignVoucher}>Assign Voucher</Button>
+              </div>
+            )}
+          </div>
+          <AssignVoucherConfirm
+            open={voucherAssignModal.value}
+            handleClose={handleVoucherAssignModalClose}
+            handleSubmit={handleAssignVoucher}
+          />
 
-      {activeTab === 'details' && (
-        <>
-          <div className="w-full h-full border-l bg-card">
-            <div className="border-t">
+          {/* Details View */}
+
+          {activeTab === 'details' && (
+            <>
               <Tabs defaultValue="details">
-                <TabsList className="grid w-full border-b grid-cols-2">
-                  <TabsTrigger value="details">Details</TabsTrigger>
-                  <TabsTrigger value="transaction">Transaction</TabsTrigger>
-                </TabsList>
+                <div className="p-2">
+                  <TabsList className="w-full grid grid-cols-2 border h-auto">
+                    <TabsTrigger value="details">Details</TabsTrigger>
+                    <TabsTrigger value="transaction">Transaction</TabsTrigger>
+                  </TabsList>
+                </div>
                 <TabsContent value="details">
-                  <div className="grid grid-cols-2 gap-4 p-8 bg-card">
-                    <div>
-                      <p className="font-light text-base">Ben</p>
-                      <p className="text-sm font-normal text-muted-foreground">
-                        Beneficiary Type
-                      </p>
-                    </div>
-                    <div>
-                      <p className="font-light text-base">Male</p>
-                      <p className="text-sm font-normal text-muted-foreground ">
-                        Gender
-                      </p>
-                    </div>
-                  </div>
-                  <div className="border-b grid grid-cols-2 gap-4 p-8 bg-card">
-                    <div>
-                      <p className="font-light text-base">jd@mailinator.com</p>
-                      <p className="text-sm font-normal text-muted-foreground ">
-                        Email
-                      </p>
-                    </div>
-                    <div>
-                      <p className="font-light text-base">987876656778</p>
-                      <p className="text-sm font-normal text-muted-foreground ">
-                        Phone
-                      </p>
-                    </div>
+                  <div className="flex flex-col gap-2 p-2">
+                    <Card className="shadow rounded">
+                      <CardContent className="pt-6">
+                        <div className="grid grid-cols-2 gap-3">
+                          <div>
+                            <p className="font-light text-base">
+                              {beneficiaryDetails?.type}
+                            </p>
+                            <p className="text-sm font-normal text-muted-foreground">
+                              Beneficiary Type
+                            </p>
+                          </div>
+                          <div className="text-right">
+                            <p className="font-light text-base">
+                              {beneficiaryDetails?.gender}
+                            </p>
+                            <p className="text-sm font-normal text-muted-foreground ">
+                              Gender
+                            </p>
+                          </div>
+                          <div>
+                            <p className="font-light text-base">
+                              {beneficiaryDetails?.email || 'N/A'}
+                            </p>
+                            <p className="text-sm font-normal text-muted-foreground ">
+                              Email
+                            </p>
+                          </div>
+                          <div className="text-right">
+                            <p className="font-light text-base">
+                              {beneficiaryDetails?.phone}
+                            </p>
+                            <p className="text-sm font-normal text-muted-foreground ">
+                              Phone
+                            </p>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                    <Card className="shadow rounded">
+                      <CardHeader>
+                        <CardTitle className="text-lg">
+                          Voucher Details
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="flex flex-col gap-4">
+                          <div className="flex justify-between items-center">
+                            <p>Voucher Type</p>
+                            <p className="text-sm font-light">
+                              {beneficiaryVoucherDetails?.freeVoucherAddress !==
+                                undefined &&
+                              beneficiaryVoucherDetails?.freeVoucherAddress !==
+                                zeroAddress
+                                ? 'Free Voucher'
+                                : beneficiaryVoucherDetails?.referredVoucherAddress !==
+                                    undefined &&
+                                  beneficiaryVoucherDetails?.referredVoucherAddress !==
+                                    zeroAddress
+                                ? 'Discount Voucher'
+                                : 'N/A'}
+                            </p>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <p>ClaimStatus</p>
+                            <p className="text-sm font-light">
+                              {beneficiaryVoucherDetails?.freeVoucherAddress !==
+                                undefined &&
+                              beneficiaryVoucherDetails?.freeVoucherAddress !==
+                                zeroAddress
+                                ? beneficiaryVoucherDetails?.freeVoucherClaimStatus?.toString()
+                                : beneficiaryVoucherDetails?.referredVoucherAddress !==
+                                    undefined &&
+                                  beneficiaryVoucherDetails?.referredVoucherAddress !==
+                                    zeroAddress
+                                ? beneficiaryVoucherDetails?.referredVoucherClaimStatus?.toString()
+                                : 'N/A'}
+                            </p>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <p>Wallet Address</p>
+                            <TooltipProvider delayDuration={100}>
+                              <Tooltip>
+                                <TooltipTrigger>
+                                  <p className="text-sm font-medium">
+                                    {truncateEthAddress(walletAddress)}
+                                  </p>
+                                </TooltipTrigger>
+                                <TooltipContent className="bg-secondary ">
+                                  <p className="text-xs font-medium">
+                                    click to copy
+                                  </p>
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
                   </div>
                 </TabsContent>
                 <TabsContent value="transaction">
-                  <div className="p-8">
+                  <div className="p-2 pb-0">
                     <TransactionTable walletAddress={walletAddress} />
                   </div>
                 </TabsContent>
               </Tabs>
-            </div>
-          </div>
-        </>
-      )}
-      {/* Edit View */}
-      {activeTab === 'edit' && (
-        <>
-          <div className="flex flex-col justify-between bg-card">
-            <div className="p-4 border-t">
-              <div className="grid grid-cols-2 gap-4">
-                <Input type="name" placeholder="Name" />
-                <Select>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select gender" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      {genderList.map((gender) => (
-                        <SelectItem value={gender.value}>
-                          {gender.value}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="mt-4 mb-2">
-                <p className="text-slate-700">Auth & Comms</p>
-              </div>
-              <div className="grid grid-cols-3 gap-2">
-                <div className="grid grid-cols-subgrid col-span-2">
-                  <Input type="email" placeholder="Email" />
-                </div>
-                <div className="grid grid-cols-subgrid col-span-1">
-                  <Button
-                    variant={'outline'}
-                    className="border-primary text-primary"
-                  >
-                    Update
-                  </Button>
-                </div>
-              </div>
-              <div className="grid grid-cols-3 gap-2">
-                <div className="grid grid-cols-subgrid col-span-2">
-                  <Input className="mt-3" type="wallet" placeholder="Wallet" />
-                </div>
-                <div className="grid grid-cols-subgrid col-span-1 mt-3">
-                  <Button
-                    variant={'outline'}
-                    className="border-primary text-primary"
-                  >
-                    Update
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </div>
+            </>
+          )}
+          {/* Edit View */}
+          {activeTab === 'edit' && (
+            <EditBeneficiary beneficiary={beneficiaryDetails} />
+          )}
         </>
       )}
     </>

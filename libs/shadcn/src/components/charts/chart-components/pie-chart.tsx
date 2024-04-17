@@ -43,7 +43,6 @@ export default function PieChart({ title, subheader, chart }: Props) {
     series = [],
     options = {},
   } = chart;
-  console.log('series', series);
   const chartSeries = series.map((i) => i.value);
 
   const chartOptions = useChart({

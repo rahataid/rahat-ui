@@ -12,13 +12,9 @@ import {
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-} from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
 
 import { ListGroup } from '@rahataid/community-tool-sdk/groups';
+import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 
 type IProps = {
   handleClick: (index: any) => void;
@@ -29,32 +25,21 @@ export default function GroupList({ table, handleClick }: IProps) {
   return (
     <div className="w-full -mt-2 p-2 bg-secondary">
       <div className="flex items-center mb-2">
-        <DropdownMenu>
-          <DropdownMenuContent align="end">
-            {table
-              .getAllColumns()
-              .filter((column) => column.getCanHide())
-              .map((column) => {
-                return (
-                  <DropdownMenuCheckboxItem
-                    key={column.id}
-                    className="capitalize"
-                    checked={column.getIsVisible()}
-                    onCheckedChange={(value) =>
-                      column.toggleVisibility(!!value)
-                    }
-                  >
-                    {column.id}
-                  </DropdownMenuCheckboxItem>
-                );
-              })}
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <Input
+          placeholder="Filter group..."
+          value={
+            (table.getColumn('walletAddress')?.getFilterValue() as string) ?? ''
+          }
+          onChange={(event) =>
+            table.getColumn('walletAddress')?.setFilterValue(event.target.value)
+          }
+          className="rounded mr-2"
+        />
       </div>
-      <div className="rounded border bg-white">
+      <div className="rounded border bg-card">
         <TableComponent>
-          <ScrollArea className="h-table1">
-            <TableHeader className="sticky top-0">
+          <ScrollArea className="h-[calc(100vh-180px)]">
+            <TableHeader className="bg-card sticky top-0">
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
                   {headerGroup.headers.map((header) => {

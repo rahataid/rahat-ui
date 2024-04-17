@@ -1,32 +1,44 @@
 'use client';
+import { usePagination, useProjectList } from '@rahat-ui/query';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import { useRumsanService } from '../../providers/service.provider';
 import { ProjectCard } from '../../sections/projects';
 import Filters from './filter';
+// import CustomPagination from '../../components/customPagination';
 
 export default function ProjectListView() {
-  const { projectQuery } = useRumsanService();
-  const projectsList = projectQuery.useProjectList({});
+  const { pagination, setNextPage, setPrevPage, setPerPage } = usePagination();
+  const { data } = useProjectList(pagination);
 
   return (
-    <div>
-      <div className="p-3">
+    <div className="bg-secondary">
+      <div className="p-2">
         <Filters />
       </div>
-      <ScrollArea className="px-3 h-withPage">
-        <div className="grid grid-cols-3 gap-6">
-          {projectsList?.data?.data?.map((project: any) => (
+      <ScrollArea className="px-2 pb-2 h-[calc(100vh-122px)]">
+        <div className="grid grid-cols-3 gap-2">
+          {data?.data?.map((project) => (
             <ProjectCard
-              id={project.id}
-              key={project.id}
-              title={project.title}
+              // TODO:Fix the return type
+              address={project?.uuid}
+              key={project.uuid}
+              title={project.name}
               image={project.image}
-              subTitle={project.subTitle}
-              badge={project.badge}
+              subTitle={project.description as string}
+              badge={project.type}
             />
           ))}
         </div>
       </ScrollArea>
+      {/* TODO:fix project list meta */}
+      {/* <CustomPagination
+        currentPage={pagination.page}
+        handleNextPage={setNextPage}
+        handlePrevPage={setPrevPage}
+        handlePageSizeChange={setPerPage}
+        meta={{ total: 0, currentPage: 0 }}
+        perPage={pagination.perPage}
+        total={0}
+      /> */}
     </div>
   );
 }

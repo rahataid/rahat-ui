@@ -5,12 +5,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@rahat-ui/shadcn/src/components/ui/card';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/tooltip';
 type CardProps = {
   title: string;
   image?: string;
@@ -20,7 +14,7 @@ type CardProps = {
 
 export default function Activities({ title, className, data }: CardProps) {
   return (
-    <Card className={cn('border-none shadow-sm', className || '')}>
+    <Card className={cn('border-none shadow-sm h-full', className || '')}>
       <CardHeader className="flex flex-row items-center justify-between space-y-0">
         <CardTitle className="text-md font-medium">{title}</CardTitle>
       </CardHeader>
@@ -34,16 +28,25 @@ export default function Activities({ title, className, data }: CardProps) {
           </div>
           <div className="space-y-1">
             <div className="ml-auto font-light text-sm flex items-center justify-between gap-3">
-              {data?.freeVoucherBudget}
-              <span className="text-xs text-muted-foreground">$45</span>
+              {data?.eyeVoucherBudget?.toString()}
+              <span className="text-xs text-muted-foreground">
+                {data?.freeVoucherCurrency}{' '}
+                {data?.eyeVoucherBudget?.toString() * data?.freeVoucherPrice}
+              </span>
             </div>
             <div className="ml-auto font-light text-sm flex items-center justify-between gap-3">
-              {data?.freeVoucherAssigned}{' '}
-              <span className="text-xs text-muted-foreground">$45</span>
+              {data?.eyeVoucherAssigned?.toString()}{' '}
+              <span className="text-xs text-muted-foreground">
+                {data?.freeVoucherCurrency}{' '}
+                {data?.eyeVoucherAssigned?.toString() * data?.freeVoucherPrice}
+              </span>
             </div>
             <div className="ml-auto font-light text-sm flex items-center justify-between gap-3">
-              {data?.freeVoucherClaimed}
-              <span className="text-xs text-muted-foreground">$45</span>
+              {data?.eyeVoucherClaimed?.toString()}
+              <span className="text-xs text-muted-foreground">
+                {data?.freeVoucherCurrency}{' '}
+                {data?.eyeVoucherClaimed?.toString() * data?.freeVoucherPrice}
+              </span>
             </div>
           </div>
         </div>
@@ -56,16 +59,25 @@ export default function Activities({ title, className, data }: CardProps) {
           </div>
           <div className="space-y-1">
             <div className="ml-auto font-light text-sm flex items-center justify-between gap-3">
-              {data?.refeeredVoucherBudget}
-              <span className="text-xs text-muted-foreground">$45</span>
+              {data?.referredVoucherBudget?.toString()}
+              <span className="text-xs text-muted-foreground">
+                {data?.referredVoucherCurrency}{' '}
+                {data?.referredVoucherBudget?.toString() * data?.referredVoucherPrice}
+              </span>
             </div>
             <div className="ml-auto font-light text-sm flex items-center justify-between gap-3">
-              {data?.refeeredVoucherAssigned}{' '}
-              <span className="text-xs text-muted-foreground">$45</span>
+              {data?.referredVoucherAssigned?.toString()}{' '}
+              <span className="text-xs text-muted-foreground">
+                {data?.referredVoucherCurrency}{' '}
+                {data?.referredVoucherAssigned?.toString() * data?.referredVoucherPrice}
+              </span>
             </div>
             <div className="ml-auto font-light text-sm flex items-center justify-between gap-3">
-              {data?.refeeredVoucherClaimed}
-              <span className="text-xs text-muted-foreground">$45</span>
+              {data?.referredVoucherClaimed?.toString()}
+              <span className="text-xs text-muted-foreground">
+                {data?.referredVoucherCurrency}{' '}
+                {data?.referredVoucherClaimed?.toString() * data?.referredVoucherPrice}
+              </span>
             </div>
           </div>
         </div>

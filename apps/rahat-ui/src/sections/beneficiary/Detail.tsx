@@ -1,6 +1,6 @@
 'use client';
 import { useBeneficaryVoucher } from '../../hooks/el/subgraph/querycall';
-import BeneficiaryDetailTableView from './beneficiaryDetailTable';
+// import BeneficiaryDetailTableView from './beneficiaryDetailTable';
 import InfoCards from './infoCards';
 
 export default function BeneficiaryDetailPageView() {
@@ -10,16 +10,11 @@ export default function BeneficiaryDetailPageView() {
 
   return (
     <>
-      <div>
-        <div className="flex justify-between gap-2">
-          <div className="w-96">
-            <InfoCards voucherData={voucherData} voucherError={voucherError} />
-          </div>
-          <div className="w-full flex-1 ">
-            <BeneficiaryDetailTableView />
-          </div>
-        </div>
-      </div>
+      <InfoCards voucherData={voucherData} voucherError={voucherError} />
+      {/* <BeneficiaryDetailTableView
+        tableSpacing="p-2"
+        tableScrollAreaHeight="h-[calc(100vh-303px)]"
+      /> */}
     </>
   );
 }

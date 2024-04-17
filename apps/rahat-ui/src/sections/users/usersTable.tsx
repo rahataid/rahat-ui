@@ -52,6 +52,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
+import { useUserList } from '@rumsan/react-query';
 
 type IProps = {
   handleClick: (item: IUserItem) => void;
@@ -128,8 +129,7 @@ export default function UserTable({ handleClick }: IProps) {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
-  const { data, isLoading, isError, isSuccess, isFetched } =
-    userQuery.useUserList();
+  const { data, isLoading, isError, isSuccess, isFetched } = useUserList();
 
   const tableData = React.useMemo(() => {
     return Array.isArray(data?.data) ? data?.data : [];
@@ -215,7 +215,7 @@ export default function UserTable({ handleClick }: IProps) {
             <div className="rounded border w-full">
               <ScrollArea className="h-table1">
                 <Table className="w-full">
-                  <TableHeader className="sticky top-0">
+                  <TableHeader className="bg-card sticky top-0">
                     {table.getHeaderGroups().map((headerGroup) => (
                       <TableRow key={headerGroup.id}>
                         {headerGroup.headers.map((header) => {

@@ -1,91 +1,70 @@
 'use client';
-import {
-  BeneficiaryQuery,
-  Settings,
-  CommunityGroupQuery,
-  CommunityBeneficiaryGroupQuery,
-} from '@rahat-ui/community-query';
-import {
-  AuthQuery,
-  RoleQuery,
-  UserQuery,
-  useAuthStore,
-} from '@rumsan/react-query';
 import { RumsanService } from '@rumsan/sdk';
+
+import { CommunicationService } from '@rumsan/communication';
+import {
+  RSQueryContextType,
+  useAuthStore,
+  useRSQuery,
+} from '@rumsan/react-query';
 import { useQueryClient } from '@tanstack/react-query';
-import { createContext, useContext } from 'react';
+import { createContext, useEffect, useMemo, useState } from 'react';
 import { useError } from '../utils/useErrors';
 
-export type ServiceContextType = {
-  rumsanService: RumsanService;
-  authQuery: AuthQuery;
-  userQuery: UserQuery;
-  communityBenQuery: BeneficiaryQuery;
-  roleQuery: RoleQuery;
-  communitySettingQuery: Settings;
-  communityGroupQuery: CommunityGroupQuery;
-  communityBeneficiaryGroupQuery: CommunityBeneficiaryGroupQuery;
-};
-
-export const ServiceContext = createContext<ServiceContextType | null>(null);
+export const ServiceContext = createContext<RSQueryContextType | null>(null);
 
 interface ServiceProviderProps {
   children: React.ReactNode;
 }
 
 export function ServiceProvider({ children }: ServiceProviderProps) {
-  const queryClient = useQueryClient();
-  const rumsanService = new RumsanService({
-    baseURL: process.env.NEXT_PUBLIC_COMMUNITY_API_URL,
-  });
+  const qc = useQueryClient();
+  const { queryClient, rumsanService, setQueryClient, setRumsanService } =
+    useRSQuery();
+  const rsService = useMemo(
+    () =>
+      new RumsanService({
+        baseURL: process.env.NEXT_PUBLIC_COMMUNITY_API_URL + '/v1',
+      }),
+    [],
+  );
+
+  useEffect(() => {
+    if (!queryClient) {
+      setQueryClient(qc);
+    }
+  }, [qc, queryClient, setQueryClient]);
+
+  useEffect(() => {
+    if (!rumsanService) {
+      setRumsanService(rsService);
+    }
+  }, [rsService, rumsanService, setRumsanService]);
 
   useError();
 
-  // set bearer token
-  rumsanService.client.interceptors.request.use(
-    (config) => {
-      const token = useAuthStore.getState().token;
-      if (token) {
-        config.headers['Authorization'] = 'Bearer ' + token;
-      }
-      return config;
-    },
-    (error) => {
-      return Promise.reject(error);
-    },
-  );
+  useEffect(() => {
+    if (rumsanService) {
+      rumsanService.client.interceptors.request.use(
+        (config) => {
+          const token = useAuthStore.getState().token;
+          if (token) {
+            config.headers['Authorization'] = 'Bearer ' + token;
+          }
+          return config;
+        },
+        (error) => {
+          return Promise.reject(error);
+        },
+      );
+    }
+  }, [rumsanService]);
 
-  const authQuery = new AuthQuery(rumsanService, queryClient);
-  const userQuery = new UserQuery(rumsanService, queryClient);
-  const communityBenQuery = new BeneficiaryQuery(rumsanService, queryClient);
-  const roleQuery = new RoleQuery(rumsanService, queryClient);
-  const communitySettingQuery = new Settings(rumsanService, queryClient);
-  const communityGroupQuery = new CommunityGroupQuery(
-    rumsanService,
-    queryClient,
-  );
-  const communityBeneficiaryGroupQuery = new CommunityBeneficiaryGroupQuery(
-    rumsanService,
-    queryClient,
-  );
-  return (
-    <ServiceContext.Provider
-      value={{
-        rumsanService,
-        authQuery,
-        userQuery,
-        communityBenQuery,
-        roleQuery,
-        communitySettingQuery,
-        communityGroupQuery,
-        communityBeneficiaryGroupQuery,
-      }}
-    >
-      {children}
-    </ServiceContext.Provider>
-  );
+  if (!rumsanService || !queryClient) return 'Setting up services...';
+
+  return children;
 }
 
-export const useRumsanService = (): ServiceContextType => {
-  return useContext(ServiceContext) as ServiceContextType;
-};
+// export const useRumsanService = (): RSQueryContextType => {
+//   return useContext(ServiceContext) as RSQueryContextType;
+// };

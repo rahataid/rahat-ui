@@ -1,3 +1,4 @@
+import { useCampaignStore } from '@rumsan/react-query';
 import { Speech, Plus, FilePenLine } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
@@ -5,6 +6,7 @@ import { NavItem } from '.';
 
 export const useNavItems = () => {
   const router = useRouter();
+  const totalTextCampaign = useCampaignStore().totalTextCampaign;
 
   const handleGoBack = () => {
     router.back();
@@ -17,7 +19,7 @@ export const useNavItems = () => {
         {
           title: 'Campaigns',
           onClick: handleGoBack,
-          subtitle: 20,
+          subtitle: totalTextCampaign,
           icon: <Speech size={18} strokeWidth={1.5} />,
         },
       ],

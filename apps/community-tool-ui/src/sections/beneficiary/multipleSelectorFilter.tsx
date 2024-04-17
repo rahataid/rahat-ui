@@ -1,17 +1,17 @@
 'use client';
 
-import React, { useEffect } from 'react';
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from '@rahat-ui/shadcn/components/accordion';
-import { Table } from '@tanstack/react-table';
-import { ListBeneficiary } from '@rahataid/community-tool-sdk/beneficiary';
 // import { useSwal } from '/src/components/swal';
-import Swal from 'sweetalert2';
 import { useRumsanService } from '../../providers/service.provider';
+import {
+  useCommunityBeneficiaryGroupCreate,
+  useCommunityGroupList,
+} from '@rahat-ui/community-query';
 
 type IProps = {
   selectedData: number[];
@@ -23,28 +23,28 @@ export default function Filter({ selectedData, handleClose }: IProps) {
   //   const totalSelected = table.getFilteredSelectedRowModel().rows.length;
   const perPage = 15;
   const currentPage = 1;
-  const { communityGroupQuery, communityBeneficiaryGroupQuery } =
-    useRumsanService();
 
-  const beneficiaryGroup =
-    communityBeneficiaryGroupQuery.useCommunityBeneficiaryGroupCreate();
-  const { data: groupData } = communityGroupQuery.useCommunityGroupList({
+  const commuinityBeneficiaryGroupCreate = useCommunityBeneficiaryGroupCreate();
+
+  const { data: groupData } = useCommunityGroupList({
     perPage,
     page: currentPage,
   });
 
   const inputOptions: { [key: string]: string } = {};
-
   groupData?.data?.rows.forEach((row: { id: string; name: string }) => {
     inputOptions[row.id] = row.name;
   });
+
   const totalSelected = selectedData.length;
+
   const handleAssignBeneficiariesGroup = async () => {
-    await beneficiaryGroup.mutateAsync({
+    const res = await commuinityBeneficiaryGroupCreate.mutateAsync({
       inputOptions,
       selectedData,
     });
-    handleClose();
+
+    res?.response?.success && handleClose();
   };
 
   return (
@@ -63,7 +63,7 @@ export default function Filter({ selectedData, handleClose }: IProps) {
             className="p-2 hover:bg-muted rounded cursor-pointer"
             onClick={handleAssignBeneficiariesGroup}
           >
-            Create Beneficiarries Group
+            Assign Group
           </div>
         </AccordionContent>
       </AccordionItem>

@@ -1,27 +1,6 @@
 'use client';
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@rahat-ui/shadcn/components/dialog';
-import { useProjectAction } from '../../../../../libs/query/src/lib/projects/projects';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from '@rahat-ui/shadcn/components/dropdown-menu';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@rahat-ui/shadcn/components/select';
+import * as React from 'react';
+import { useAssignBenToProject, useBeneficiaryStore } from '@rahat-ui/query';
 import {
   Tooltip,
   TooltipContent,
@@ -35,225 +14,197 @@ import {
   CardContent,
   CardHeader,
 } from '@rahat-ui/shadcn/src/components/ui/card';
-import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
-import { MoreVertical } from 'lucide-react';
 import { truncateEthAddress } from '@rumsan/sdk/utils';
-import { MS_ACTIONS } from '@rahataid/sdk';
+import { UUID } from 'crypto';
+import { useRouter } from 'next/navigation';
+import { useBoolean } from '../../hooks/use-boolean';
+import AssignToProjectModal from './components/assignToProjectModal';
+import ProjectConfirm from './projects.assign.confirm';
+import ProjectAssign from './project.assign.modal';
+import { Copy, CopyCheck } from 'lucide-react';
 
-export default function InfoCards({ data, voucherData }) {
-  const addBeneficiary = useProjectAction();
+export default function InfoCards() {
+  const addBeneficiary = useAssignBenToProject();
 
-  const handleAssignClaims = async () => {
-    const walletAddress = data.walletAddress || '';
+  const data = useBeneficiaryStore((state) => state.singleBeneficiary);
+  // const { projectQuery } = useRumsanService();
+  const router = useRouter();
 
-    // Remove fetching uuid from env
-    const uuid = process.env.NEXT_PUBLIC_PROJECT_UUID;
+  const [selectedProject, setSelectedProject] = React.useState<UUID>();
 
-    const result = await addBeneficiary.mutateAsync({
-      uuid,
-      payload: {
-        action: MS_ACTIONS.BENEFICIARY.ASSGIN_TO_PROJECT,
-        payload: {
-          beneficiaryId: data?.uuid,
-        },
-      },
+  const projectModal = useBoolean();
+
+  const projectConfirmModal = useBoolean();
+  const projectAssignModal = useBoolean();
+
+  const [selectedRow, setSelectedRow] = React.useState(null) as any;
+  const setId = (id: any) => setSelectedRow(id);
+  const [walletAddressCopied, setWalletAddressCopied] =
+    React.useState<boolean>(false);
+
+  const handleAssignProject = async () => {
+    if (!selectedProject) {
+      return;
+    }
+    await addBeneficiary.mutateAsync({
+      beneficiaryUUID: data?.uuid as UUID,
+      projectUUID: selectedProject,
     });
+  };
+  const handleOpenProjectAssignModal = () => {
+    projectAssignModal.onToggle();
+    projectConfirmModal.onFalse();
+  };
+
+  const handleSubmitProjectAssignModal = () => {
+    projectAssignModal.onFalse();
+    projectConfirmModal.onTrue();
+  };
+
+  const handleSubmitConfirmProjectModal = () => {
+    handleAssignProject();
+    projectConfirmModal.onFalse();
+  };
+  const handleCloseConfirmProjectModal = () => {
+    projectConfirmModal.onFalse();
+  };
+
+  const clickToCopy = (walletAddress: string) => {
+    navigator.clipboard.writeText(walletAddress);
+    setWalletAddressCopied(true);
   };
 
   return (
-    <div className="flex flex-col gap-2 py-2 pl-2">
-      <Card className="shadow rounded">
-        <CardHeader>
-          <div className="flex justify-between">
-            <div className="flex flex-col items-start justify-start">
-              <p>Beneficiary Name</p>
-              <Badge variant="outline" className="bg-secondary">
-                Not Approved
-              </Badge>
-            </div>
-            <Button onClick={handleAssignClaims}>Assign To Project</Button>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="flex justify-between gap-8">
-            <div className="flex flex-col gap-2">
-              <div>
-                <p className="text-xs">
-                  {truncateEthAddress(data?.walletAddress) ?? 'N/A'}
+    <>
+      <AssignToProjectModal
+        beneficiaryDetail={data}
+        projectModal={projectModal}
+      />
+      <div className="p-2 grid grid-cols-3 gap-2">
+        <Card className="shadow rounded col-span-2">
+          <CardHeader>
+            <div className="flex justify-between">
+              <div className="flex gap-2 items-center">
+                <p className="text-xl font-semibold">
+                  {data?.piiData?.name ?? 'Beneficiary Name'}
                 </p>
+                <Badge>Active</Badge>
+              </div>
+              <Button onClick={handleOpenProjectAssignModal}>
+                Assign To Project
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="flex justify-between gap-8">
+              <div>
+                <TooltipProvider delayDuration={100}>
+                  <Tooltip>
+                    <TooltipTrigger
+                      className="flex gap-3 items-center"
+                      onClick={() => clickToCopy(data?.walletAddress || '')}
+                    >
+                      <p className="text-base">
+                        {truncateEthAddress(data?.walletAddress || '-')}
+                      </p>
+                      {walletAddressCopied ? (
+                        <CopyCheck size={15} strokeWidth={1.5} />
+                      ) : (
+                        <Copy
+                          className="text-muted-foreground"
+                          size={15}
+                          strokeWidth={1.5}
+                        />
+                      )}
+                    </TooltipTrigger>
+                    <TooltipContent className="bg-secondary" side="bottom">
+                      <p className="text-xs font-medium">
+                        {walletAddressCopied ? 'copied' : 'click to copy'}
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 <p className="text-sm font-normal text-muted-foreground">
                   Wallet Address
                 </p>
               </div>
               <div>
-                <p>{data?.bankStatus ?? 'test'}</p>
+                <p>{data?.bankedStatus ?? '-'}</p>
                 <p className="text-sm font-normal text-muted-foreground">
                   Bank Status
                 </p>
               </div>
               <div>
-                <p>{data?.internetStatus ?? 'test'}</p>
+                <p>{data?.internetStatus ?? '-'}</p>
                 <p className="text-sm font-normal text-muted-foreground">
                   Internet Status
                 </p>
               </div>
-            </div>
-            <div className="flex flex-col gap-2">
               <div>
-                <p>{data?.gender ?? 'test'}</p>
+                <p>{data?.gender ?? '-'}</p>
                 <p className="text-sm font-normal text-muted-foreground">
                   Gender
                 </p>
               </div>
 
               <div>
-                <p>{data?.location ?? 'test'}</p>
+                <p>{data?.location ?? '-'}</p>
                 <p className="text-sm font-normal text-muted-foreground">
                   Location
                 </p>
               </div>
               <div>
-                <p>{data?.phoneStatus ?? 'test'}</p>
+                <p>{data?.phoneStatus ?? '-'}</p>
                 <p className="text-sm font-normal text-muted-foreground">
                   Phone Status
                 </p>
               </div>
             </div>
-          </div>
-        </CardContent>
-      </Card>
-      <Card className="shadow rounded">
-        <CardHeader>
-          <div className="flex justify-between items-center">
-            <p>Claim Details</p>
-            <DropdownMenu>
-              <DropdownMenuTrigger>
-                <MoreVertical size={20} strokeWidth={1.5} />
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <div className="p-1 flex flex-col gap-0.5 text-sm">
-                  <Dialog>
-                    <DialogTrigger className="hover:bg-muted p-1 rounded text-left">
-                      Assign Project
-                    </DialogTrigger>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>Assign Project</DialogTitle>
-                        <DialogDescription>
-                          Select the project to be assigned to the beneficiary
-                        </DialogDescription>
-                      </DialogHeader>
-                      <div>
-                        <Select>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Projects" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="1">Project 1</SelectItem>
-                            <SelectItem value="2">Project 2</SelectItem>
-                            <SelectItem value="3">Project 3</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <DialogFooter className="sm:justify-end">
-                        <DialogClose asChild>
-                          <Button type="button" variant="ghost">
-                            Close
-                          </Button>
-                        </DialogClose>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          className="text-primary"
-                        >
-                          Assign
-                        </Button>
-                      </DialogFooter>
-                    </DialogContent>
-                  </Dialog>
-                  <Dialog>
-                    <DialogTrigger className="hover:bg-muted p-1 rounded text-left">
-                      Assign Token
-                    </DialogTrigger>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>Assign Token</DialogTitle>
-                        <DialogDescription>
-                          Enter Token to the beneficiary
-                        </DialogDescription>
-                      </DialogHeader>
-                      <Input type="text" placeholder="Token" />
-                      <DialogFooter className="sm:justify-end">
-                        <DialogClose asChild>
-                          <Button type="button" variant="ghost">
-                            Close
-                          </Button>
-                        </DialogClose>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          className="text-primary"
-                        >
-                          Assign
-                        </Button>
-                      </DialogFooter>
-                    </DialogContent>
-                  </Dialog>
-                </div>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-col gap-4">
-            <div className="flex justify-between items-center">
-              <p>ClaimStatus</p>
-              <p className="text-sm font-light">
-                {voucherData?.FreeVoucherClaimStatus?.toString()
-                  ? voucherData?.FreeVoucherClaimStatus?.toString()
-                  : voucherData?.ReferredVoucherClaimStatus?.toString()}
+          </CardContent>
+        </Card>
+
+        <Card className="shadow rounded">
+          <CardHeader>
+            <p className="font-mediun text-md">Projects Involved</p>
+          </CardHeader>
+          <CardContent>
+            {data?.BeneficiaryProject?.length ? (
+              data?.BeneficiaryProject?.map((benProject: any) => {
+                return (
+                  <Badge
+                    key={benProject.id}
+                    variant="outline"
+                    color="primary"
+                    className="rounded cursor-pointer"
+                    onClick={() => {
+                      router.push(
+                        `/projects/${benProject.Project?.type}/${benProject.Project.uuid}`,
+                      );
+                    }}
+                  >
+                    {benProject.Project.name}
+                  </Badge>
+                );
+              })
+            ) : (
+              <p className="text-sm text-muted-foreground">
+                No projects involved
               </p>
-            </div>
-            <div className="flex justify-between items-center">
-              <p>Received</p>
-              <p className="text-sm font-light">
-                {voucherData?.FreeVoucherAddress
-                  ? 'Free Voucher'
-                  : voucherData?.ReferredVoucherAddress
-                  ? 'Discount Voucher'
-                  : 'Not Assigned'}
-              </p>
-            </div>
-            <div className="flex justify-between items-center">
-              <p>Wallet Address</p>
-              <TooltipProvider delayDuration={100}>
-                <Tooltip>
-                  <TooltipTrigger>
-                    <p className="text-sm font-medium">
-                      {truncateEthAddress(
-                        voucherData?.beneficiaryAddress || 'N/A',
-                      )}
-                    </p>
-                  </TooltipTrigger>
-                  <TooltipContent className="bg-secondary ">
-                    <p className="text-xs font-medium">click to copy</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-      <Card className="shadow rounded">
-        <CardHeader>
-          <p className="font-mediun text-md">Projects Involved</p>
-        </CardHeader>
-        <CardContent>
-          <Badge variant="outline" color="secondary" className="rounded">
-            Test Project
-          </Badge>
-        </CardContent>
-      </Card>
-    </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+      <ProjectAssign
+        open={projectAssignModal.value}
+        setId={setId}
+        handleModal={handleOpenProjectAssignModal}
+        handleSubmit={handleSubmitProjectAssignModal}
+      />
+      <ProjectConfirm
+        open={projectConfirmModal.value}
+        handleClose={handleCloseConfirmProjectModal}
+        handleSubmit={handleSubmitConfirmProjectModal}
+      />
+    </>
   );
 }

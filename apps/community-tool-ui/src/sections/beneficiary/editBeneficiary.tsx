@@ -18,23 +18,22 @@ import {
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { useForm } from 'react-hook-form';
-import { toast } from 'react-toastify';
 
-import { z } from 'zod';
-import { useRumsanService } from '../../providers/service.provider';
 import {
   BankedStatus,
   InternetStatus,
   PhoneStatus,
 } from '@rahataid/community-tool-sdk/enums/';
-import React, { useEffect } from 'react';
+import { z } from 'zod';
 
+import { useCommunityBeneficiaryUpdate } from '@rahat-ui/community-query';
+import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
 import { ListBeneficiary } from '@rahataid/community-tool-sdk/beneficiary';
+import { ID_TYPE } from '../../constants/beneficiary.const';
 
 export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
-  const { communityBenQuery } = useRumsanService();
-  const benefClient = communityBenQuery.useCommunityBeneficiaryUpdate();
+  const updateBeneficiaryClient = useCommunityBeneficiaryUpdate();
 
   const FormSchema = z.object({
     phone: z.string(),
@@ -46,6 +45,9 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
     bankedStatus: z.string().toUpperCase().optional(),
     internetStatus: z.string().toUpperCase().optional(),
     phoneStatus: z.string().toUpperCase().optional(),
+
+    govtIDType: z.string().optional(),
+    govtIDNumber: z.string().optional(),
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -59,13 +61,31 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
       latitude: data?.latitude || 0,
       longitude: data?.longitude || 0,
       notes: data?.notes || '',
+      govtIDType: data?.govtIDType || '',
+      govtIDNumber: data?.govtIDNumber || '',
     },
   });
 
   const handleEditBeneficiary = async (
     formData: z.infer<typeof FormSchema>,
   ) => {
-    await benefClient.mutateAsync({ uuid: data.uuid, payload: formData });
+    await updateBeneficiaryClient.mutateAsync({
+      uuid: data.uuid,
+      payload: {
+        firstName: data?.firstName,
+        lastName: data?.lastName,
+        phone: formData.phone,
+        bankedStatus: formData.bankedStatus as BankedStatus,
+        internetStatus: formData.internetStatus as InternetStatus,
+        phoneStatus: formData.phoneStatus as PhoneStatus,
+        location: formData.location,
+        latitude: formData.latitude,
+        longitude: formData.longitude,
+        notes: formData.notes,
+        govtIDType: formData.govtIDType,
+        govtIDNumber: formData.govtIDNumber,
+      },
+    });
   };
 
   return (
@@ -81,6 +101,7 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
                 render={({ field }) => {
                   return (
                     <FormItem>
+                      <Label className="text-xs font-medium">Phone</Label>
                       <FormControl>
                         <Input
                           type="text"
@@ -102,6 +123,9 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
                 render={({ field }) => {
                   return (
                     <FormItem>
+                      <Label className="text-xs font-medium">
+                        Banked Status
+                      </Label>
                       <Select
                         onValueChange={field.onChange}
                         defaultValue={field.value}
@@ -138,6 +162,9 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
                 render={({ field }) => {
                   return (
                     <FormItem>
+                      <Label className="text-xs font-medium">
+                        Internet Status
+                      </Label>
                       <Select
                         onValueChange={field.onChange}
                         defaultValue={field.value}
@@ -173,6 +200,9 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
                 render={({ field }) => {
                   return (
                     <FormItem>
+                      <Label className="text-xs font-medium">
+                        Phone Status
+                      </Label>
                       <Select
                         onValueChange={field.onChange}
                         defaultValue={field.value}
@@ -209,6 +239,8 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
                 render={({ field }) => {
                   return (
                     <FormItem>
+                      <Label className="text-xs font-medium">Location</Label>
+
                       <FormControl>
                         <Input type="text" placeholder="Location" {...field} />
                       </FormControl>
@@ -224,9 +256,11 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
                 render={({ field }) => {
                   return (
                     <FormItem>
+                      <Label className="text-xs font-medium">Longitude</Label>
+
                       <FormControl>
                         <Input
-                          type="float"
+                          type="number"
                           placeholder="Longitude"
                           {...field}
                           onChange={(e) => {
@@ -246,9 +280,10 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
                 render={({ field }) => {
                   return (
                     <FormItem>
+                      <Label className="text-xs font-medium">Latitude</Label>
                       <FormControl>
                         <Input
-                          type="float"
+                          type="number"
                           placeholder="Latitude"
                           {...field}
                           onChange={(e) => {
@@ -265,9 +300,73 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
 
               <FormField
                 control={form.control}
+                name="govtIDType"
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <Label className="text-xs font-medium">
+                        Government Id Type
+                      </Label>
+
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Government ID Type" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value={ID_TYPE.CITIZZENSHIP}>
+                            Citizenship
+                          </SelectItem>
+                          <SelectItem value={ID_TYPE.DRIVING_LICENSE}>
+                            Driving License
+                          </SelectItem>
+                          <SelectItem value={ID_TYPE.PASSPORT}>
+                            Passport
+                          </SelectItem>
+                          <SelectItem value={ID_TYPE.NATIONAL_ID_NUMBER}>
+                            National ID
+                          </SelectItem>
+                          <SelectItem value={ID_TYPE.OTHER}>Other</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
+              <FormField
+                control={form.control}
+                name="govtIDNumber"
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <Label className="text-xs font-medium">
+                        Government Id Number
+                      </Label>
+
+                      <FormControl>
+                        <Input
+                          type="text"
+                          placeholder="Government ID Number"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
+
+              <FormField
+                control={form.control}
                 name="notes"
                 render={({ field }) => (
                   <FormItem>
+                    <Label className="text-xs font-medium">Notes</Label>
                     <FormControl>
                       <Textarea
                         placeholder="Notes"

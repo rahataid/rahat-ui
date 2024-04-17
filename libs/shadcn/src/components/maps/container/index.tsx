@@ -10,6 +10,7 @@ export const THEMES = {
   satelliteStreets: 'mapbox://styles/mapbox/satellite-streets-v11',
 };
 
+// @ts-ignore
 export const StyledMapContainer: FC = styled('div')(() => ({
   zIndex: 0,
   height: 560,

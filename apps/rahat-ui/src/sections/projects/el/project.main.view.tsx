@@ -1,31 +1,33 @@
 'use client';
 
 import {
+  PROJECT_SETTINGS_KEYS,
   useGetBeneficiaryStats,
   useProjectSettingsStore,
   useProjectStore,
 } from '@rahat-ui/query';
-import {
-  useBeneficiaryCount,
-  useProjectVoucher,
-} from 'apps/rahat-ui/src/hooks/el/subgraph/querycall';
-import { useParams } from 'next/navigation';
-import { ProjectChart } from '..';
-import ProjectDataCard from './project.datacard';
-import ProjectInfo from './project.info';
-import { memo } from 'react';
+import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import {
   useReadElProjectGetProjectVoucherDetail,
   useReadElProjectGetTotalBeneficiaries,
 } from 'apps/rahat-ui/src/hooks/el/contracts/elProject';
-import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import { useProjectVoucher } from 'apps/rahat-ui/src/hooks/el/subgraph/querycall';
+import { useParams } from 'next/navigation';
+import { memo } from 'react';
+import { ProjectChart } from '..';
+import ProjectDataCard from './project.datacard';
+import ProjectInfo from './project.info';
 
 const ProjectMainView = () => {
   const { id } = useParams();
 
   const project = useProjectStore((state) => state.singleProject);
   const contractSettings = useProjectSettingsStore(
-    (state) => state.settings?.[id] || null,
+    (state) => state.settings?.[id][PROJECT_SETTINGS_KEYS.CONTRACT] || null,
+  );
+  console.log(
+    'state.settings?.[id][PROJECT_SETTINGS_KEYS.CONTRACT]',
+    contractSettings,
   );
   const beneficiaryStats = useGetBeneficiaryStats();
 

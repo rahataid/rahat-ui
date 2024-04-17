@@ -1,6 +1,7 @@
 'use client';
 
 import {
+  PROJECT_SETTINGS_KEYS,
   usePagination,
   useProjectBeneficiaries,
   useProjectSettingsStore,
@@ -123,7 +124,7 @@ function BeneficiaryDetailTableView() {
   });
 
   const contractAddress = useProjectSettingsStore(
-    (state) => state.settings?.[uuid],
+    (state) => state.settings?.[uuid][PROJECT_SETTINGS_KEYS.CONTRACT] || null,
   );
 
   const columns = useProjectBeneficiaryTableColumns();

@@ -18,29 +18,21 @@ import {
 } from 'apps/rahat-ui/src/hooks/el/subgraph/querycall';
 import AddVoucher from './add.voucher';
 import { useParams } from 'next/navigation';
+import {
+  PROJECT_SETTINGS_KEYS,
+  useProjectSettingsStore,
+} from '@rahat-ui/query';
 
 const VoucherView = () => {
-  const [contractAddress, setContractAddress] = useState<any>();
-
   const { id } = useParams();
 
-  const projectSettings = localStorage.getItem('projectSettingsStore');
-
-  useEffect(() => {
-    if (projectSettings) {
-      const settings = JSON.parse(projectSettings)?.state?.settings?.[id];
-      setContractAddress({
-        el: settings?.elproject?.address,
-        eyeVoucher: settings?.eyevoucher?.address,
-        referredVoucher: settings?.referralvoucher?.address,
-        rahatDonor: settings?.rahatdonor?.address,
-      });
-    }
-  }, [projectSettings, id]);
+  const contractSettings = useProjectSettingsStore(
+    (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT] || null,
+  );
 
   const { data: projectVoucher, isLoading } = useProjectVoucher(
-    contractAddress?.el || '',
-    contractAddress?.eyeVoucher || '',
+    contractSettings?.el?.address || '',
+    contractSettings?.eyevoucher?.address || '',
   );
 
   return (
@@ -94,7 +86,7 @@ const VoucherView = () => {
               </div>
             </>
           ) : (
-            <AddVoucher contractSettings={contractAddress} />
+            <AddVoucher contractSettings={contractSettings} />
           )}
         </>
       )}

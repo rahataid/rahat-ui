@@ -173,7 +173,7 @@ export default function EditCampaign() {
               setShowAddAudience={showAddAudienceView.onToggle}
               showAddAudience={showAddAudienceView.value}
               form={form}
-              data={data.data}
+              data={data?.data}
               isSubmitting={isSubmitting}
             />
             {showAddAudienceView.value ? (

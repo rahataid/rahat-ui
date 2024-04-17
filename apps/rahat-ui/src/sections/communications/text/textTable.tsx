@@ -46,28 +46,43 @@ import { useCampaignStore, useListCampaign } from '@rumsan/communication-query';
 import useTextTableColumn from './useTextTableColumn';
 import { ICampaignItemApiResponse } from '@rumsan/communication/types';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
-import { usePagination } from '@rahat-ui/query';
+import { usePagination, useProjectList } from '@rahat-ui/query';
 
 export default function TextTableView() {
   const columns = useTextTableColumn();
   const campaignStore = useCampaignStore();
+  const projectsList = useProjectList({});
+
   const {
     pagination,
+    filters,
+    setFilters,
     selectedListItems,
     setSelectedListItems,
     setNextPage,
     setPrevPage,
     setPerPage,
   } = usePagination();
-  const { data, isSuccess } = useListCampaign(pagination);
+  const filterBenByProjectId = React.useCallback(
+    (id: string) => {
+      console.log(id);
+      if (id !== 'ALL') {
+        setFilters({ ...filters, projectId: id });
+        return;
+      }
+      setFilters({ ...filters, projectId: undefined });
+    },
+    [filters, setFilters],
+  );
+  console.log(pagination, filters);
 
-  // const [sorting, setSorting] = React.useState<SortingState>([]);
-  // const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-  //   [],
-  // );
+  const { data, isSuccess } = useListCampaign({
+    ...pagination,
+    ...filters,
+  });
+
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
-  // const [rowSelection, setRowSelection] = React.useState({});
 
   const tableData = React.useMemo(() => {
     const result = Array.isArray(data?.data?.rows)
@@ -106,6 +121,24 @@ export default function TextTableView() {
           }
           className="mr-3"
         />
+        <Select onValueChange={filterBenByProjectId}>
+          <SelectTrigger className="max-w-32">
+            <SelectValue placeholder="Projects" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value={'ALL'}>ALL</SelectItem>
+
+            {projectsList.data?.data.length &&
+              projectsList.data.data.map((project) => {
+                return (
+                  <SelectItem key={project.uuid} value={project.uuid || ''}>
+                    {project.name}
+                  </SelectItem>
+                );
+              })}
+          </SelectContent>
+        </Select>
+
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">

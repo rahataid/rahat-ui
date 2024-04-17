@@ -32,7 +32,7 @@ const FormSchema = z.object({
   campaignType: z.string({
     required_error: 'Camapign Type is required.',
   }),
-
+  projectId: z.string().optional(),
   message: z.string().optional(),
   audiences: z.array(
     z.object({
@@ -114,6 +114,7 @@ const AddCampaignView = () => {
         type: data.campaignType,
         details: additionalData,
         status: 'ONGOING',
+        projectId: data.projectId,
       })
       .then((data) => {
         if (data) {

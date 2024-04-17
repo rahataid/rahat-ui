@@ -31,6 +31,8 @@ import { useRouter } from 'next/navigation';
 import { FC } from 'react';
 import { UseFormReturn, useForm } from 'react-hook-form';
 import { z } from 'zod';
+import { paths } from '../../../routes/paths';
+import { useProjectList } from '@rahat-ui/query';
 
 type CampaignFormProps = {
   // Add props here
@@ -59,6 +61,7 @@ const CampaignForm: FC<CampaignFormProps> = ({
   isSubmitting,
 }) => {
   const router = useRouter();
+  const projectsList = useProjectList({});
   const includeMessage = ['sms', 'whatsapp', 'email'].includes(
     form.getValues().campaignType?.toLowerCase(),
   );
@@ -126,6 +129,34 @@ const CampaignForm: FC<CampaignFormProps> = ({
 
                   <FormMessage />
                 </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="projectId"
+              render={({ field }) => (
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value || data?.projectId}
+                >
+                  <SelectTrigger className="max-w-32">
+                    <SelectValue placeholder="Projects" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value={'ALL'}>ALL</SelectItem>
+                    {projectsList.data?.data.length &&
+                      projectsList.data.data.map((project) => {
+                        return (
+                          <SelectItem
+                            key={project.uuid}
+                            value={project.uuid || ''}
+                          >
+                            {project.name}
+                          </SelectItem>
+                        );
+                      })}
+                  </SelectContent>
+                </Select>
               )}
             />
 
@@ -212,7 +243,7 @@ const CampaignForm: FC<CampaignFormProps> = ({
             <Button
               type="button"
               variant="outline"
-              onClick={router.back}
+              onClick={() => router.push(paths.dashboard.communication.text)}
               className="mr-2"
             >
               Cancel

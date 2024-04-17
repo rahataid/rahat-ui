@@ -78,11 +78,11 @@ export default function ListView({
       <div className="w-full -mt-2 p-2 bg-secondary">
         <div className="flex items-center mb-2">
           <Input
-            placeholder="Search beneficiary by nickName..."
-            name="nickName"
+            placeholder="Search beneficiary by firstName..."
+            name="firstName"
             value={
-              (table.getColumn('nickName')?.getFilterValue() as string) ??
-              filters?.nickName
+              (table.getColumn('firstName')?.getFilterValue() as string) ??
+              filters?.firstName
             }
             onChange={(event) => handleFilterChange(event)}
             className="rounded mr-2"

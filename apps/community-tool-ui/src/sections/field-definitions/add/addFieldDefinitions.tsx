@@ -30,7 +30,10 @@ import { useFieldDefinitionsCreate } from '@rahat-ui/community-query';
 import { FieldType } from 'apps/community-tool-ui/src/types/fieldDefinition';
 import { Minus, Plus } from 'lucide-react';
 
-export default function AddFieldDefinitions() {
+type Iprops = {
+  handleTabChange: (tab: 'add' | 'import') => void;
+};
+export default function AddFieldDefinitions({ handleTabChange }: Iprops) {
   const addFieldDefinitions = useFieldDefinitionsCreate();
   const [showKeyValueFields, setShowKeyValueFields] = useState(false);
   const {
@@ -282,7 +285,11 @@ export default function AddFieldDefinitions() {
                 </Button>
               </>
             )}
-            <div className="flex justify-end mb-10">
+
+            <div className="flex justify-end mb-10 space-x-4">
+              <Button onClick={() => handleTabChange('import')}>
+                Add Bulk
+              </Button>
               <Button type="submit">Create Field Definition</Button>
             </div>
           </div>

@@ -79,9 +79,9 @@ export default function ListView({
         <div className="flex items-center mb-2">
           <Input
             placeholder="Search beneficiary by nickName..."
-            name="firstName"
+            name="nickName"
             value={
-              (table.getColumn('firstName')?.getFilterValue() as string) ??
+              (table.getColumn('nickName')?.getFilterValue() as string) ??
               filters?.firstName
             }
             onChange={(event) => handleFilterChange(event)}

@@ -44,6 +44,8 @@ import useFormStore from '../../formBuilder/form.store';
 export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
   const { extras }: any = useFormStore();
 
+  console.log('Extras', extras);
+
   const updateBeneficiaryClient = useCommunityBeneficiaryUpdate();
   const { pagination } = usePagination();
   const { data: definitions } = useFieldDefinitionsList({
@@ -102,12 +104,12 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
     await updateBeneficiaryClient.mutateAsync({
       uuid: data.uuid,
       payload: {
-        walletAddress: data?.walletAddress,
-        firstName: data?.firstName,
-        lastName: data?.lastName,
-        email: data?.email,
+        walletAddress: formData?.walletAddress,
+        firstName: formData?.firstName,
+        lastName: formData?.lastName,
+        email: formData?.email,
         phone: formData.phone,
-        gender: data?.gender,
+        gender: formData?.gender as Gender,
         bankedStatus: formData.bankedStatus as BankedStatus,
         internetStatus: formData.internetStatus as InternetStatus,
         phoneStatus: formData.phoneStatus as PhoneStatus,
@@ -122,15 +124,13 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
     });
   };
 
-  console.log('data=>', definitions?.data.rows);
-
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleEditBeneficiary)}>
         <div className="p-4 h-add">
           {/* <h1 className="text-lg font-semibold mb-6">Basic Details</h1> */}
           <div
-            style={{ maxHeight: '55vh' }}
+            style={{ maxHeight: '62vh' }}
             className="grid grid-cols-2 gap-4 mb- overflow-y-auto"
           >
             <FormField
@@ -200,7 +200,7 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
             />
             <FormField
               control={form.control}
-              name="bankedStatus"
+              name="gender"
               render={({ field }) => {
                 return (
                   <FormItem>

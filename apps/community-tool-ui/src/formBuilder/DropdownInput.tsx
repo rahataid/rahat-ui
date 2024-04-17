@@ -22,6 +22,8 @@ export default function DropDownInput({ formField }: any) {
     setExtras(formData);
   };
 
+  const options = formField?.fieldPopulate?.data || ([] as any);
+
   return (
     <div>
       <Label>{humanizeString(formField.name)}</Label>
@@ -31,12 +33,15 @@ export default function DropDownInput({ formField }: any) {
         </SelectTrigger>
         <SelectContent>
           <SelectGroup>
-            <SelectLabel>{humanizeString(formField.name)}</SelectLabel>
-            <SelectItem value="apple">Apple</SelectItem>
-            <SelectItem value="banana">Banana</SelectItem>
-            <SelectItem value="blueberry">Blueberry</SelectItem>
-            <SelectItem value="grapes">Grapes</SelectItem>
-            <SelectItem value="pineapple">Pineapple</SelectItem>
+            {options.length > 0
+              ? options.map((d: any) => {
+                  return (
+                    <SelectItem value={d.value}>
+                      {humanizeString(d.label)}
+                    </SelectItem>
+                  );
+                })
+              : 'No Options'}
           </SelectGroup>
         </SelectContent>
       </Select>

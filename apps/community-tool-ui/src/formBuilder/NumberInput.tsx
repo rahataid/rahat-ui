@@ -1,0 +1,20 @@
+import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
+import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
+import React from 'react';
+import useFormStore from './form.store';
+
+export default function NumberInput({ formField }: any) {
+  const { extras, setExtras }: any = useFormStore();
+  const handleInputChange = (e: any) => {
+    let item = {} as any;
+    item[formField.name] = e.target.value;
+    const formData = { ...extras, ...item };
+    setExtras(formData);
+  };
+  return (
+    <div>
+      <Label>{formField.name}</Label>
+      <Input type="number" onChange={handleInputChange} />
+    </div>
+  );
+}

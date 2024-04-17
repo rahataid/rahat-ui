@@ -26,16 +26,32 @@ import {
 } from '@rahataid/community-tool-sdk/enums/';
 import { z } from 'zod';
 
-import { useCommunityBeneficiaryUpdate } from '@rahat-ui/community-query';
+import {
+  useCommunityBeneficiaryUpdate,
+  useFieldDefinitionsList,
+} from '@rahat-ui/community-query';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
 import { ListBeneficiary } from '@rahataid/community-tool-sdk/beneficiary';
 import { GOVERNMENT_ID_TYPE } from '../../constants/beneficiary.const';
 import { Gender } from '@rumsan/sdk/enums';
 import { Wallet } from 'lucide-react';
+import { usePagination } from '@rahat-ui/query';
+import FormBuilder from '../../formBuilder';
+
+import useFormStore from '../../formBuilder/form.store';
 
 export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
+  const { extras }: any = useFormStore();
+
+  console.log('extras=>', extras);
+
   const updateBeneficiaryClient = useCommunityBeneficiaryUpdate();
+  const { pagination } = usePagination();
+  const { data: definitions } = useFieldDefinitionsList({
+    ...pagination,
+    perPage: 100,
+  });
 
   const FormSchema = z.object({
     firstName: z
@@ -107,6 +123,8 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
     });
   };
 
+  console.log('data=>', definitions?.data.rows);
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleEditBeneficiary)}>
@@ -137,7 +155,6 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
                 );
               }}
             />
-
             <FormField
               control={form.control}
               name="firstName"
@@ -232,7 +249,6 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
                 );
               }}
             />
-
             <FormField
               control={form.control}
               name="phoneStatus"
@@ -269,7 +285,6 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
                 );
               }}
             />
-
             <FormField
               control={form.control}
               name="phone"
@@ -292,7 +307,6 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
                 );
               }}
             />
-
             <FormField
               control={form.control}
               name="internetStatus"
@@ -331,7 +345,6 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
                 );
               }}
             />
-
             <FormField
               control={form.control}
               name="bankedStatus"
@@ -368,7 +381,6 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
                 );
               }}
             />
-
             <FormField
               control={form.control}
               name="govtIDType"
@@ -439,7 +451,6 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
                 );
               }}
             />
-
             <FormField
               control={form.control}
               name="longitude"
@@ -464,7 +475,6 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
                 );
               }}
             />
-
             <FormField
               control={form.control}
               name="latitude"
@@ -488,7 +498,6 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
                 );
               }}
             />
-
             <FormField
               control={form.control}
               name="location"
@@ -505,7 +514,6 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
                 );
               }}
             />
-
             <FormField
               control={form.control}
               name="notes"
@@ -523,7 +531,12 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
                 </FormItem>
               )}
             />
+            <h3>Extra Fields</h3> <br />
+            {definitions?.data?.rows.map((definition: any) => {
+              return <FormBuilder formField={definition} />;
+            })}
           </div>
+
           <div className="flex justify-end mt-5">
             <Button>Update Beneficiary</Button>
           </div>

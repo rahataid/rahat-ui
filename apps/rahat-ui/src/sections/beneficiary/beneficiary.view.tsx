@@ -18,13 +18,13 @@ import {
   usePagination,
   useProjectList,
 } from '@rahat-ui/query';
+import { UUID } from 'crypto';
 import CustomPagination from '../../components/customPagination';
+import { useBoolean } from '../../hooks/use-boolean';
+import { useSecondPanel } from '../../providers/second-panel-provider';
 import BeneficiaryGridView from '../../sections/beneficiary/gridView';
 import BeneficiaryListView from '../../sections/beneficiary/listView';
 import { useBeneficiaryTableColumns } from './useBeneficiaryColumns';
-import { useSecondPanel } from '../../providers/second-panel-provider';
-import { useBoolean } from '../../hooks/use-boolean';
-import { UUID } from 'crypto';
 
 function BeneficiaryView() {
   const {

@@ -1,3 +1,4 @@
+'use client';
 import DataCard from 'apps/rahat-ui/src/components/dataCard';
 import { Users } from 'lucide-react';
 import { FC } from 'react';
@@ -8,12 +9,16 @@ type ProjectDataCardProps = {
   beneficiaryDetails: any;
   projectVoucher: any;
   voucherDetails: any;
+  totalBeneficiary: any;
+  totalVendor: any;
   refetchBeneficiary: VoidFunction;
   refetchVoucher: VoidFunction;
 };
 
 const ProjectDataCard: FC<ProjectDataCardProps> = ({
   beneficiaryDetails,
+  totalBeneficiary,
+  totalVendor,
   projectVoucher,
   voucherDetails,
   refetchBeneficiary,
@@ -26,13 +31,13 @@ const ProjectDataCard: FC<ProjectDataCardProps> = ({
         <SmallDataCard
           className=""
           title="Beneficiaries"
-          number={'12'}
+          number={totalBeneficiary}
           subTitle="Total Beneficiaries"
         />
         <SmallDataCard
           className=""
           title="Vendors"
-          number={'12'}
+          number={totalVendor}
           subTitle="No. of Optical stores"
         />
         <SmallDataCard

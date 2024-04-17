@@ -44,8 +44,6 @@ import useFormStore from '../../formBuilder/form.store';
 export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
   const { extras }: any = useFormStore();
 
-  console.log('extras=>', extras);
-
   const updateBeneficiaryClient = useCommunityBeneficiaryUpdate();
   const { pagination } = usePagination();
   const { data: definitions } = useFieldDefinitionsList({
@@ -119,6 +117,7 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
         notes: formData.notes,
         govtIDType: formData.govtIDType,
         govtIDNumber: formData.govtIDNumber,
+        extras,
       },
     });
   };

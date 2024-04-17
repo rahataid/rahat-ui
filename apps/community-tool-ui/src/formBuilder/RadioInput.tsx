@@ -9,23 +9,25 @@ import { humanizeString } from '../utils';
 
 export default function RadioInput({ formField }: any) {
   const { extras, setExtras }: any = useFormStore();
+
   const handleInputChange = (e: any) => {
     let item = {} as any;
     item[formField.name] = e.target.value;
     const formData = { ...extras, ...item };
     setExtras(formData);
   };
+
   return (
     <div>
       <Label>{humanizeString(formField.name)}</Label>
-      <RadioGroup>
+      <RadioGroup onChange={handleInputChange}>
         <div className="flex items-center space-x-2">
           <RadioGroupItem value="option-one" id="option-one" />
           <Label htmlFor="option-one">Option One</Label>
         </div>
         <div className="flex items-center space-x-2">
-          <RadioGroupItem value="option-one" id="option-one" />
-          <Label htmlFor="option-one">Option Two</Label>
+          <RadioGroupItem value="option-two" id="option-two" />
+          <Label htmlFor="option-two">Option Two</Label>
         </div>
       </RadioGroup>
     </div>

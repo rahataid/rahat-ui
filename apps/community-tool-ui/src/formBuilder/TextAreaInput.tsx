@@ -6,12 +6,14 @@ import { humanizeString } from '../utils';
 
 export default function TextAreaInput({ formField }: any) {
   const { extras, setExtras }: any = useFormStore();
+
   const handleInputChange = (e: any) => {
     let item = {} as any;
     item[formField.name] = e.target.value;
     const formData = { ...extras, ...item };
     setExtras(formData);
   };
+
   return (
     <div>
       <Label>{humanizeString(formField.name)}</Label>

@@ -65,9 +65,29 @@ export default function ActivitiesTable() {
 
   return (
     <div className="p-2 bg-secondary">
+      <div className="max-w-sm pb-2">
+        <Select>
+          <SelectTrigger>
+            <SelectValue placeholder="Select a category" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectItem value="a">General Actions</SelectItem>
+              <SelectItem value="b">Early Warning Communication</SelectItem>
+              <SelectItem value="c">Cleaning the drains</SelectItem>
+              <SelectItem value="d">
+                Strengthening embankments by placing sand bags
+              </SelectItem>
+              <SelectItem value="e">Support for early harvesting</SelectItem>
+              <SelectItem value="f">Managing drinking water</SelectItem>
+              <SelectItem value="g">Cash transfer</SelectItem>
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+      </div>
       <div className="rounded border bg-card">
         <Table>
-          <ScrollArea className="h-[calc(100vh-327px)]">
+          <ScrollArea className="h-[calc(100vh-365px)]">
             <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
@@ -117,7 +137,7 @@ export default function ActivitiesTable() {
           </ScrollArea>
         </Table>
       </div>
-      <div className="flex items-center justify-end space-x-8 p-2 border-t">
+      <div className="flex items-center justify-end space-x-8 p-2 pb-0">
         <div className="flex items-center gap-2">
           <div className="text-sm font-medium">Rows per page</div>
           <Select

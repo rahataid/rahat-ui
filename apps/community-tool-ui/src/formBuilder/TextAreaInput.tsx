@@ -1,8 +1,8 @@
-import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import React from 'react';
 import useFormStore from './form.store';
 import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
+import { humanizeString } from '../utils';
 
 export default function TextAreaInput({ formField }: any) {
   const { extras, setExtras }: any = useFormStore();
@@ -14,7 +14,7 @@ export default function TextAreaInput({ formField }: any) {
   };
   return (
     <div>
-      <Label>{formField.name}</Label>
+      <Label>{humanizeString(formField.name)}</Label>
       <Textarea onChange={handleInputChange} />
     </div>
   );

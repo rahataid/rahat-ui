@@ -5,6 +5,7 @@ import {
   RadioGroup,
   RadioGroupItem,
 } from '@rahat-ui/shadcn/src/components/ui/radio-group';
+import { humanizeString } from '../utils';
 
 export default function RadioInput({ formField }: any) {
   const { extras, setExtras }: any = useFormStore();
@@ -16,7 +17,7 @@ export default function RadioInput({ formField }: any) {
   };
   return (
     <div>
-      <Label>{formField.name}</Label>
+      <Label>{humanizeString(formField.name)}</Label>
       <RadioGroup>
         <div className="flex items-center space-x-2">
           <RadioGroupItem value="option-one" id="option-one" />

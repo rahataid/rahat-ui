@@ -10,6 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
+import { humanizeString } from '../utils';
 
 export default function DropDownInput({ formField }: any) {
   const { extras, setExtras }: any = useFormStore();
@@ -21,7 +22,7 @@ export default function DropDownInput({ formField }: any) {
   };
   return (
     <div>
-      <Label>{formField.name}</Label>
+      <Label>{humanizeString(formField.name)}</Label>
       <Select>
         <SelectTrigger className="w-[180px]">
           <SelectValue placeholder="Select a fruit" />

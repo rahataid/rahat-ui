@@ -4,6 +4,7 @@ import React from 'react';
 import useFormStore from './form.store';
 import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
 import { FormLabel } from '@rahat-ui/shadcn/src/components/ui/form';
+import { humanizeString } from '../utils';
 
 export default function CheckboxInput({ formField }: any) {
   const { extras, setExtras }: any = useFormStore();
@@ -15,7 +16,7 @@ export default function CheckboxInput({ formField }: any) {
   };
   return (
     <div>
-      <Label>{formField.name}</Label> <br />
+      <Label>{humanizeString(formField.name)}</Label> <br />
       <Checkbox checked={false} onCheckedChange={handleInputChange} />{' '}
       <FormLabel className="font-normal">Option 1</FormLabel>
     </div>

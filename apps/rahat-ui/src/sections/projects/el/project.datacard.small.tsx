@@ -6,6 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@rahat-ui/shadcn/src/components/ui/card';
+import TableLoader from 'apps/rahat-ui/src/components/table.loader';
 import { ImgProps } from 'next/dist/shared/lib/get-img-props';
 
 type CardProps = {
@@ -13,10 +14,19 @@ type CardProps = {
   number: string;
   subTitle: string;
   className: string;
+  currency: string;
   refresh?: VoidFunction;
+  loading: boolean;
 };
 
-const SmallDataCard = ({ title, number, subTitle, className }: CardProps) => {
+const SmallDataCard = ({
+  title,
+  number,
+  subTitle,
+  className,
+  currency,
+  loading,
+}: CardProps) => {
   return (
     <Card
       className={
@@ -26,7 +36,16 @@ const SmallDataCard = ({ title, number, subTitle, className }: CardProps) => {
     >
       <CardHeader className="pb-2">
         <CardDescription>{title}</CardDescription>
-        <CardTitle className="text-4xl text-primary">{number}</CardTitle>
+        {loading ? (
+          <TableLoader />
+        ) : (
+          <CardTitle className="text-xl text-primary">
+            <span className="text-xs text-muted-foreground">
+              {currency || ' '}
+            </span>
+            {number}
+          </CardTitle>
+        )}
       </CardHeader>
       <CardContent>
         <div className="text-xs text-muted-foreground">{subTitle}</div>

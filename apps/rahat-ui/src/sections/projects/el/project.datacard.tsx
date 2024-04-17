@@ -11,6 +11,7 @@ type ProjectDataCardProps = {
   voucherDetails: any;
   totalBeneficiary: any;
   totalVendor: any;
+  loading: any;
   refetchBeneficiary: VoidFunction;
   refetchVoucher: VoidFunction;
 };
@@ -18,39 +19,73 @@ type ProjectDataCardProps = {
 const ProjectDataCard: FC<ProjectDataCardProps> = ({
   beneficiaryDetails,
   totalBeneficiary,
-  totalVendor,
+  loading,
   projectVoucher,
   voucherDetails,
   refetchBeneficiary,
   refetchVoucher,
 }) => {
   const data = { ...projectVoucher, ...voucherDetails };
+
+  const totalVoucherRedeemed =
+    data?.eyeVoucherBudget?.toString() * data?.freeVoucherPrice +
+    data?.referredVoucherBudget?.toString() * data?.referredVoucherPrice;
+
+  const estimatedBudget =
+    data?.eyeVoucherAssigned?.toString() * data?.freeVoucherPrice +
+    data?.referredVoucherAssigned?.toString() * data?.referredVoucherPrice;
+
+  const actualBudget =
+    data?.eyeVoucherClaimed?.toString() * data?.freeVoucherPrice +
+    data?.referredVoucherClaimed?.toString() * data?.referredVoucherPrice;
+
   return (
     <>
-      <div className="my-2 grid md:grid-cols-4 gap-2">
+      <div className="my-2 grid md:grid-cols-6 gap-2">
         <SmallDataCard
           className=""
           title="Beneficiaries"
           number={totalBeneficiary}
           subTitle="Total Beneficiaries"
+          loading={loading}
         />
         <SmallDataCard
           className=""
-          title="Vendors"
-          number={totalVendor}
-          subTitle="No. of Optical stores"
+          title="Voucher Redeemed"
+          number={totalVoucherRedeemed}
+          subTitle="Total Vouchers Claimed"
+          loading={loading}
         />
         <SmallDataCard
           className=""
-          title="Reconcile Request Pending"
+          title="Estimated Budget"
+          number={estimatedBudget}
+          currency={data?.referredVoucherCurrency}
+          subTitle="Vouchers Assigned"
+          loading={loading}
+        />
+        <SmallDataCard
+          className=""
+          title="Actual Budget"
+          number={actualBudget}
+          currency={data?.referredVoucherCurrency}
+          subTitle="Vouchers Redeemed Value"
+          loading={loading}
+        />
+
+        <SmallDataCard
+          className=""
+          title="Reconcile Pending"
           number={'12'}
           subTitle="Request from Vendors"
+          loading={loading}
         />
         <SmallDataCard
           className=""
-          title="Reconcile Request Proceeded"
+          title="Reconcile Proceeded"
           number={'12'}
           subTitle="Reconciliation Proceeded"
+          loading={loading}
         />
       </div>
       <div className="mb-2 grid md:grid-cols-3 gap-2">

@@ -37,7 +37,11 @@ const ProjectMainView = () => {
     address: contractSettings?.elproject?.address,
   });
 
-  const { data: voucherDetails, refetch: refetchVoucher } = useProjectVoucher(
+  const {
+    data: voucherDetails,
+    refetch: refetchVoucher,
+    isLoading,
+  } = useProjectVoucher(
     contractSettings?.elproject?.address,
     contractSettings?.eyevoucher?.address,
   );
@@ -66,7 +70,11 @@ const ProjectMainView = () => {
   return (
     <div className="p-2 bg-secondary">
       <ScrollArea className="h-[calc(100vh-80px)]">
-        <ProjectInfo project={project} />
+        <ProjectInfo
+          project={project}
+          totalBeneficiary={projectStats?.benTotal}
+          totalVendor={projectStats?.vendorTotal}
+        />
         <ProjectDataCard
           beneficiaryDetails={beneficiaryDetails}
           totalBeneficiary={projectStats?.benTotal}
@@ -75,6 +83,7 @@ const ProjectMainView = () => {
           voucherDetails={voucherDetails}
           refetchBeneficiary={refetchBeneficiary}
           refetchVoucher={refetchVoucher}
+          loading={isLoading}
         />
         <ProjectChart chartData={beneficiaryStats.data?.data} />
       </ScrollArea>

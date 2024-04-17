@@ -28,7 +28,7 @@ import React, { useEffect, useState } from 'react';
 
 import { useFieldDefinitionsCreate } from '@rahat-ui/community-query';
 import { FieldType } from 'apps/community-tool-ui/src/types/fieldDefinition';
-import { Minus, Plus } from 'lucide-react';
+import { Link, LucideUpload, Minus, Plus } from 'lucide-react';
 
 type Iprops = {
   handleTabChange: (tab: 'add' | 'import') => void;
@@ -137,7 +137,23 @@ export default function AddFieldDefinitions({ handleTabChange }: Iprops) {
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleCreateFieldDefinitions)}>
         <div className="p-4 h-add overflow-scroll">
-          <h1 className="text-lg font-semibold mb-6">Add Field Definition</h1>
+          <div style={{ justifyContent: 'space-between' }} className="flex">
+            <div>
+              <h1 className="text-lg ml-2 font-semibold mb-6">
+                Add Field Definition
+              </h1>
+            </div>
+            <div>
+              <a
+                href="#"
+                onClick={() => handleTabChange('import')}
+                className="font-medium mt-2 mr-2 text-blue-600 dark:text-blue-500 hover:underline"
+              >
+                Bulk Upload?
+              </a>
+            </div>
+          </div>
+
           <div className="shadow-md p-4 rounded-sm">
             <div className="grid grid-cols-2 gap-4 mb-4">
               <FormField
@@ -287,10 +303,7 @@ export default function AddFieldDefinitions({ handleTabChange }: Iprops) {
             )}
 
             <div className="flex justify-end mb-10 space-x-4">
-              <Button onClick={() => handleTabChange('import')}>
-                Add Bulk
-              </Button>
-              <Button type="submit">Create Field Definition</Button>
+              <Button type="submit">Submit</Button>
             </div>
           </div>
         </div>

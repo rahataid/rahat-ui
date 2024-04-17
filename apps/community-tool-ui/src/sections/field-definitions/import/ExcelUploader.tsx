@@ -58,9 +58,9 @@ export default function ExcelUploader({ handleTabChange }: IProps) {
         </div>
       </div>
       <div className="flex justify-end mt-6 space-x-4 mr-5">
-        <Button onClick={() => handleTabChange('add')}>Add</Button>
+        <Button onClick={() => handleTabChange('add')}>Go Back</Button>
         <Button onClick={handleImportFile} disabled={!importFile}>
-          Import
+          Upload Now
         </Button>
       </div>
     </>

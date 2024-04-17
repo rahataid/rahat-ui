@@ -2,7 +2,9 @@
 
 import {
   useGetBeneficiaryStats,
+  useGetProjectBeneficiaryStats,
   useProjectAction,
+  useProjectBeneficiaries,
   useProjectSettingsStore,
   useProjectStore,
 } from '@rahat-ui/query';
@@ -17,16 +19,18 @@ import { memo, useCallback, useEffect, useState } from 'react';
 import { ProjectChart } from '..';
 import ProjectDataCard from './project.datacard';
 import ProjectInfo from './project.info';
+import { BarChart } from '@rahat-ui/shadcn/charts';
 
 const ProjectMainView = () => {
   const { id } = useParams();
   const [projectStats, setProjectStats] = useState();
+  const [ELProjectStats, setELProjectStats] = useState();
 
   const project = useProjectStore((state) => state.singleProject);
   const contractSettings = useProjectSettingsStore(
     (state) => state.settings?.[id] || null,
   );
-  const beneficiaryStats = useGetBeneficiaryStats();
+  const beneficiaryStats = useGetProjectBeneficiaryStats();
 
   const { data: beneficiaryDetails, refetch: refetchBeneficiary } =
     useReadElProjectGetTotalBeneficiaries({
@@ -51,6 +55,7 @@ const ProjectMainView = () => {
   }
 
   const projectClient = useProjectAction();
+  const statsClient = useProjectAction(['stats']);
 
   const getProjectStats = useCallback(async () => {
     const result = await projectClient.mutateAsync({
@@ -63,9 +68,31 @@ const ProjectMainView = () => {
     setProjectStats(result.data);
   }, [id]);
 
+  const getElProjectStats = useCallback(async () => {
+    const result = await statsClient.mutateAsync({
+      uuid: id,
+      data: {
+        action: 'elProject.getAllStats',
+        payload: {},
+      },
+    });
+    setELProjectStats(result?.data);
+  }, [id]);
+
   useEffect(() => {
     getProjectStats();
-  }, [getProjectStats]);
+    getElProjectStats();
+  }, [getProjectStats, getElProjectStats]);
+
+  const filteredChartData = beneficiaryStats.data?.data.filter((item) => {
+    const name = item.name;
+    return name === 'BENEFICIARY_AGE_RANGE';
+  });
+
+  const filterdELChartData = ELProjectStats?.filter((item) => {
+    const name = item.name;
+    return name === 'BENEFICIARY_TYPE';
+  });
 
   return (
     <div className="p-2 bg-secondary">
@@ -85,7 +112,10 @@ const ProjectMainView = () => {
           refetchVoucher={refetchVoucher}
           loading={isLoading}
         />
-        <ProjectChart chartData={beneficiaryStats.data?.data} />
+        <ProjectChart
+          chartData={[...filteredChartData, ...filterdELChartData]}
+        />
+        <BarChart series={[1, 2, 3, 4, 5, 6]} categories={['helllo']} />
       </ScrollArea>
     </div>
   );

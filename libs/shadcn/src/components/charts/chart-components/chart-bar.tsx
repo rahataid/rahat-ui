@@ -7,27 +7,17 @@ import useChart from '../use-chart';
 
 type Props = {
   series: number[];
+  categories: string[];
 };
 
-export default function ChartBar({ series }: Props) {
+export default function ChartBar({ series, categories = [] }: Props) {
   const chartOptions = useChart({
     stroke: { show: false },
     plotOptions: {
       bar: { horizontal: true, barHeight: '30%' },
     },
     xaxis: {
-      categories: [
-        'Italy',
-        'Japan',
-        'China',
-        'Canada',
-        'France',
-        'Germany',
-        'South Korea',
-        'Netherlands',
-        'United States',
-        'United Kingdom',
-      ],
+      categories,
     },
   });
 

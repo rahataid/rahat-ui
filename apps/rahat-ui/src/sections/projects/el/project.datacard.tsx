@@ -28,8 +28,8 @@ const ProjectDataCard: FC<ProjectDataCardProps> = ({
   const data = { ...projectVoucher, ...voucherDetails };
 
   const totalVoucherRedeemed =
-    data?.eyeVoucherBudget?.toString() * data?.freeVoucherPrice +
-    data?.referredVoucherBudget?.toString() * data?.referredVoucherPrice;
+    Number(data?.eyeVoucherBudget?.toString()) +
+    Number(data?.referredVoucherBudget?.toString());
 
   const estimatedBudget =
     data?.eyeVoucherAssigned?.toString() * data?.freeVoucherPrice +

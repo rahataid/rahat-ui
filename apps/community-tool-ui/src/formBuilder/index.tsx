@@ -8,12 +8,6 @@ import RadioInput from './RadioInput';
 import DropDownInput from './DropdownInput';
 import CheckboxInput from './CheckboxInput';
 
-// interface IndexProps {
-//   name: string;
-//   fieldType: string;
-//   fieldPopulate: any[];
-// }
-
 export default function Index({ formField }: any) {
   return (
     <>

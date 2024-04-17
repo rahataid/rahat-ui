@@ -20,11 +20,12 @@ export default function RadioInput({ formField }: any) {
   };
 
   const options = formField?.fieldPopulate?.data || ([] as any);
+  const defaultData = extras[formField.name] || '';
 
   return (
     <div>
       <Label>{humanizeString(formField.name)}</Label>
-      <RadioGroup onChange={handleInputChange}>
+      <RadioGroup defaultValue={defaultData} onChange={handleInputChange}>
         {options.length > 0 ? (
           options.map((d: any) => {
             return (

@@ -14,10 +14,12 @@ export default function TextAreaInput({ formField }: any) {
     setExtras(formData);
   };
 
+  const defaultData = extras[formField.name] || '';
+
   return (
     <div>
       <Label>{humanizeString(formField.name)}</Label>
-      <Textarea onChange={handleInputChange} />
+      <Textarea defaultValue={defaultData} onChange={handleInputChange} />
     </div>
   );
 }

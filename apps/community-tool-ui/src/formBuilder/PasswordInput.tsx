@@ -6,16 +6,24 @@ import { humanizeString } from '../utils';
 
 export default function PasswordInput({ formField }: any) {
   const { extras, setExtras }: any = useFormStore();
+
   const handleInputChange = (e: any) => {
     let item = {} as any;
     item[formField.name] = e.target.value;
     const formData = { ...extras, ...item };
     setExtras(formData);
   };
+
+  const defaultData = extras[formField.name] || '';
+
   return (
     <div>
       <Label>{humanizeString(formField.name)}</Label>
-      <Input type="password" onChange={handleInputChange} />
+      <Input
+        defaultValue={defaultData}
+        type="password"
+        onChange={handleInputChange}
+      />
     </div>
   );
 }

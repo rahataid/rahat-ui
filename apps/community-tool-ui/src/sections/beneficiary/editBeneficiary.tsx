@@ -40,11 +40,17 @@ import { usePagination } from '@rahat-ui/query';
 import FormBuilder from '../../formBuilder';
 
 import useFormStore from '../../formBuilder/form.store';
+import { useEffect } from 'react';
+import { UUID } from 'crypto';
 
-export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
-  const { extras }: any = useFormStore();
-
-  console.log('Extras', extras);
+export default function EditBeneficiary({
+  uuid,
+  data,
+}: {
+  data: ListBeneficiary;
+  uuid: UUID;
+}) {
+  const { extras, setExtras }: any = useFormStore();
 
   const updateBeneficiaryClient = useCommunityBeneficiaryUpdate();
   const { pagination } = usePagination();
@@ -123,6 +129,11 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
       },
     });
   };
+
+  useEffect(() => {
+    setExtras({});
+    if (data.extras) setExtras(data.extras);
+  }, [uuid]);
 
   return (
     <Form {...form}>
@@ -533,7 +544,7 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
             <h3>Extra Fields</h3> <br />
             {definitions?.data?.rows.map((definition: any) => {
               return <FormBuilder formField={definition} />;
-            })}
+            }) || 'No field definitions found!'}
           </div>
 
           <div className="flex justify-end mt-5">

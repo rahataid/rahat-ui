@@ -6,16 +6,24 @@ import { humanizeString } from '../utils';
 
 export default function NumberInput({ formField }: any) {
   const { extras, setExtras }: any = useFormStore();
+
   const handleInputChange = (e: any) => {
     let item = {} as any;
     item[formField.name] = e.target.value;
     const formData = { ...extras, ...item };
     setExtras(formData);
   };
+
+  const defaultData = extras[formField.name] || '';
+
   return (
     <div>
       <Label>{humanizeString(formField.name)}</Label>
-      <Input type="number" onChange={handleInputChange} />
+      <Input
+        defaultValue={defaultData}
+        type="number"
+        onChange={handleInputChange}
+      />
     </div>
   );
 }

@@ -14,10 +14,16 @@ export default function TextInput({ formField }: any) {
     setExtras(formData);
   };
 
+  const defaultData = extras[formField.name] || '';
+
   return (
     <div>
       <Label>{humanizeString(formField.name)}</Label>
-      <Input type="text" onChange={handleInputChange} />
+      <Input
+        defaultValue={defaultData}
+        type="text"
+        onChange={handleInputChange}
+      />
     </div>
   );
 }

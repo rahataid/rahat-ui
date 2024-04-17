@@ -68,16 +68,19 @@ export default function TargetSelectForm() {
   return (
     <Form {...form}>
       <form onSubmit={handleSubmit(handleTargetSubmit)}>
-        <div className="m-2">
+        <div style={{ maxHeight: '80vh' }} className="m-2 overflow-y-auto">
           <FormField
             control={control}
             name="ssa"
             render={({ field }) => {
               return (
-                <div className="mb-2">
+                <div className="mb-4">
                   <Label>SSA</Label>
                   <FormItem>
-                    <Select onValueChange={field.onChange}>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder={`Select SSA`} />
@@ -105,10 +108,13 @@ export default function TargetSelectForm() {
             name="vulnerability"
             render={({ field }) => {
               return (
-                <div className="mb-2">
+                <div className="mb-4">
                   <Label>Vulnerability</Label>
                   <FormItem>
-                    <Select onValueChange={field.onChange}>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder={`Select Vulnerability`} />
@@ -131,10 +137,13 @@ export default function TargetSelectForm() {
             name="gender"
             render={({ field }) => {
               return (
-                <div className="mb-2">
+                <div className="mb-4">
                   <Label>Gender</Label>
                   <FormItem>
-                    <Select onValueChange={field.onChange}>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder={`Select Gender`} />
@@ -159,10 +168,13 @@ export default function TargetSelectForm() {
             name="phoneStatus"
             render={({ field }) => {
               return (
-                <div className="mb-2">
+                <div className="mb-4">
                   <Label>Phone Status</Label>
                   <FormItem>
-                    <Select onValueChange={field.onChange}>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder={`Select Phone Status`} />
@@ -195,10 +207,13 @@ export default function TargetSelectForm() {
             name="bankedStatus"
             render={({ field }) => {
               return (
-                <div className="mb-2">
+                <div className="mb-4">
                   <Label>Banked Status</Label>
                   <FormItem>
-                    <Select onValueChange={field.onChange}>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder={`Select Banked Status`} />
@@ -235,7 +250,12 @@ export default function TargetSelectForm() {
                   <Label>Location</Label>
                   <FormItem>
                     <FormControl>
-                      <Input type="text" placeholder="Location" {...field} />
+                      <Input
+                        type="text"
+                        placeholder="Location"
+                        defaultValue={field.value}
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -243,6 +263,7 @@ export default function TargetSelectForm() {
               );
             }}
           />
+
           <div className="mt-4">
             <Button type="submit">Submit</Button>
           </div>

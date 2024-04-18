@@ -1,4 +1,8 @@
-import { useProjectAction, useProjectSettingsStore } from '@rahat-ui/query';
+import {
+  PROJECT_SETTINGS_KEYS,
+  useProjectAction,
+  useProjectSettingsStore,
+} from '@rahat-ui/query';
 import {
   useCloseProject,
   useMintVouchers,
@@ -28,7 +32,7 @@ export const useNavItems = () => {
   const { id } = useParams();
   const route = useRouter();
   const contractSettings = useProjectSettingsStore(
-    (state) => state.settings?.[id] || null,
+    (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT] || null,
   );
 
   const dialog = useSwal();

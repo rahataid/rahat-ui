@@ -6,7 +6,7 @@ import { Pagination } from '@rumsan/sdk/types';
 import Swal from 'sweetalert2';
 
 export const useCommunityBeneficaryList = (
-  payload: Pagination & { any?: string },
+  payload: Pagination & { [key: string]: string },
 ): UseQueryResult<any, Error> => {
   const { queryClient, rumsanService } = useRSQuery();
   const benClient = getBeneficiaryClient(rumsanService.client);

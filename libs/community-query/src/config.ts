@@ -41,4 +41,6 @@ export const TAGS = {
     'download_community_grouped_beneficiaries',
   GET_COMMUNITY_BENEFICARY_STATS: 'get_community_beneficiary_stats',
   LIST_TARGETING: 'list_targeting',
+  ADD_BULK_FIELD_DEFINITIONS: 'add_bulk_field_definitions',
+  CREATE_TARGETING: 'create_targeting',
 };

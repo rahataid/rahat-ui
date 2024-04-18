@@ -46,7 +46,7 @@ export default function EditFieldDefinition({
     isTargeting: z.boolean(),
     fieldPopulate: z.array(
       z.object({
-        key: z.string(),
+        label: z.string(),
         value: z.string(),
       }),
     ),
@@ -133,34 +133,28 @@ export default function EditFieldDefinition({
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {form.getValues('fieldPopulate')?.length > 0 ? (
-                            <>
-                              <SelectItem value={FieldType.CHECKBOX}>
-                                CHECKBOX
-                              </SelectItem>
-                              <SelectItem value={FieldType.DROPDOWN}>
-                                DROPDOWN
-                              </SelectItem>
-                              <SelectItem value={FieldType.RADIO}>
-                                RADIO
-                              </SelectItem>
-                            </>
-                          ) : (
-                            <>
-                              <SelectItem value={FieldType.TEXT}>
-                                TEXT
-                              </SelectItem>
-                              <SelectItem value={FieldType.NUMBER}>
-                                NUMBER
-                              </SelectItem>
-                              <SelectItem value={FieldType.PASSWORD}>
-                                PASSWORD
-                              </SelectItem>
-                              <SelectItem value={FieldType.TEXTAREA}>
-                                TEXTAREA
-                              </SelectItem>
-                            </>
-                          )}
+                          <>
+                            <SelectItem value={FieldType.TEXT}>TEXT</SelectItem>
+                            <SelectItem value={FieldType.NUMBER}>
+                              NUMBER
+                            </SelectItem>
+                            <SelectItem value={FieldType.CHECKBOX}>
+                              CHECKBOX
+                            </SelectItem>
+                            <SelectItem value={FieldType.DROPDOWN}>
+                              DROPDOWN
+                            </SelectItem>
+                            <SelectItem value={FieldType.PASSWORD}>
+                              PASSWORD
+                            </SelectItem>
+                            <SelectItem value={FieldType.RADIO}>
+                              RADIO
+                            </SelectItem>
+
+                            <SelectItem value={FieldType.TEXTAREA}>
+                              TEXTAREA
+                            </SelectItem>
+                          </>
                         </SelectContent>
                       </Select>
                       <FormMessage />
@@ -219,16 +213,16 @@ export default function EditFieldDefinition({
                       <React.Fragment key={index}>
                         <FormField
                           control={form.control}
-                          name={`fieldPopulate.${index}.key`}
+                          name={`fieldPopulate.${index}.label`}
                           render={({ field }) => (
                             <FormItem>
-                              <Label className="text-xs font-medium">{`Field ${
-                                index + 1
-                              } Key`}</Label>
+                              <Label className="text-xs font-medium">
+                                Label
+                              </Label>
                               <FormControl>
                                 <Input
                                   type="text"
-                                  placeholder={`Field ${index + 1} Key`}
+                                  placeholder="Label"
                                   {...field}
                                 />
                               </FormControl>
@@ -241,13 +235,13 @@ export default function EditFieldDefinition({
                           name={`fieldPopulate.${index}.value`}
                           render={({ field }) => (
                             <FormItem>
-                              <Label className="text-xs font-medium">{`Field ${
-                                index + 1
-                              } Value`}</Label>
+                              <Label className="text-xs font-medium">
+                                Value
+                              </Label>
                               <FormControl>
                                 <Input
                                   type="text"
-                                  placeholder={`Field ${index + 1} Value`}
+                                  placeholder="Value"
                                   {...field}
                                 />
                               </FormControl>

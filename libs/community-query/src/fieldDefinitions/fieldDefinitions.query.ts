@@ -135,3 +135,34 @@ export const useFieldDefinitionsListById = (
 
   return query;
 };
+
+export const useAddBulkFile = () => {
+  const { queryClient, rumsanService } = useRSQuery();
+  const fieldDefClient = getFieldDefinitionClient(rumsanService.client);
+
+  return useMutation(
+    {
+      mutationKey: [TAGS.ADD_BULK_FIELD_DEFINITIONS],
+      mutationFn: fieldDefClient.addBulk,
+      onSuccess: () => {
+        Swal.fire('Field Definition Imported Successfully', '', 'success');
+        queryClient.invalidateQueries({
+          queryKey: [
+            TAGS.LIST_COMMUNITY_FIELD_DEFINITIONS,
+            {
+              exact: true,
+            },
+          ],
+        });
+      },
+      onError: (error: any) => {
+        Swal.fire(
+          'Error',
+          error?.response?.data?.message || 'Encounter error on Creating Data',
+          'error',
+        );
+      },
+    },
+    queryClient,
+  );
+};

@@ -10,6 +10,7 @@ import {
   FormMessage,
 } from '@rahat-ui/shadcn/src/components/ui/form';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
+import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import {
   Select,
   SelectContent,
@@ -17,10 +18,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
-import { useForm, useFieldArray } from 'react-hook-form';
-import { toast } from 'react-toastify';
 import { Switch } from '@rahat-ui/shadcn/src/components/ui/switch';
-import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
+import { useFieldArray, useForm } from 'react-hook-form';
+import { toast } from 'react-toastify';
 
 import { z } from 'zod';
 
@@ -30,9 +30,12 @@ import { useFieldDefinitionsCreate } from '@rahat-ui/community-query';
 import { FieldType } from 'apps/community-tool-ui/src/types/fieldDefinition';
 import { Minus, Plus } from 'lucide-react';
 
-export default function AddFieldDefinitions() {
+type Iprops = {
+  handleTabChange: (tab: 'add' | 'import') => void;
+};
+export default function AddFieldDefinitions({ handleTabChange }: Iprops) {
   const addFieldDefinitions = useFieldDefinitionsCreate();
-  const [showKeyValueFields, setShowKeyValueFields] = useState(false);
+  const [showLabelValue, setShowLabelValue] = useState(false);
   const {
     control,
     formState: { errors },
@@ -46,7 +49,7 @@ export default function AddFieldDefinitions() {
     field: z.array(
       z.object({
         value: z.object({
-          key: z.string().min(1, { message: 'Key is required' }),
+          label: z.string().min(1, { message: 'Label is required' }),
           value: z.string().min(1, { message: 'Value is required' }),
         }),
       }),
@@ -75,7 +78,7 @@ export default function AddFieldDefinitions() {
     let fieldPopulatePayload;
     if (data.field && data.field.length > 0) {
       fieldPopulatePayload = data.field.map((item: any) => ({
-        key: item.value.key,
+        label: item.value.label,
         value: item.value.value,
       }));
     }
@@ -96,16 +99,16 @@ export default function AddFieldDefinitions() {
     }
   };
 
-  const addKeyValueField = () => {
-    if (showKeyValueFields) {
+  const addLabelAndValue = () => {
+    if (showLabelValue) {
       append({
-        value: { key: '', value: '' },
+        value: { label: '', value: '' },
       });
     }
   };
 
   useEffect(() => {
-    setShowKeyValueFields(
+    setShowLabelValue(
       form.watch('fieldType') === FieldType.CHECKBOX ||
         form.watch('fieldType') === FieldType.RADIO ||
         form.watch('fieldType') === FieldType.DROPDOWN,
@@ -119,22 +122,38 @@ export default function AddFieldDefinitions() {
   }, [addFieldDefinitions.isSuccess, form]);
 
   useEffect(() => {
-    if (showKeyValueFields) {
+    if (showLabelValue) {
       if (fields.length === 0) {
         append({
-          value: { key: '', value: '' },
+          value: { label: '', value: '' },
         });
       }
     } else {
       form.setValue('field', []);
     }
-  }, [showKeyValueFields, fields, append, form]);
+  }, [showLabelValue, fields, append, form]);
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleCreateFieldDefinitions)}>
         <div className="p-4 h-add overflow-scroll">
-          <h1 className="text-lg font-semibold mb-6">Add Field Definition</h1>
+          <div style={{ justifyContent: 'space-between' }} className="flex">
+            <div>
+              <h1 className="text-lg ml-2 font-semibold mb-6">
+                Add Field Definition
+              </h1>
+            </div>
+            <div>
+              <a
+                href="#"
+                onClick={() => handleTabChange('import')}
+                className="font-medium mt-2 mr-2 text-blue-600 dark:text-blue-500 hover:underline"
+              >
+                Bulk Upload?
+              </a>
+            </div>
+          </div>
+
           <div className="shadow-md p-4 rounded-sm">
             <div className="grid grid-cols-2 gap-4 mb-4">
               <FormField
@@ -209,10 +228,10 @@ export default function AddFieldDefinitions() {
                 )}
               />
             </div>
-            {showKeyValueFields && (
+            {showLabelValue && (
               <>
                 <div className="grid grid-cols-5 gap-4 mb-4">
-                  <Label className="col-span-2">KEY</Label>
+                  <Label className="col-span-2">LABEL</Label>
                   <Label className="col-span-2">VALUE</Label>
                 </div>
                 <div className="grid grid-cols-5 gap-5 mb-4">
@@ -221,19 +240,14 @@ export default function AddFieldDefinitions() {
                       <React.Fragment key={index}>
                         <FormField
                           control={form.control}
-                          name={`field.${index}.value.key` as const}
+                          name={`field.${index}.value.label` as const}
                           render={({ field }) => (
                             <div className="col-span-2">
                               <Input
                                 type="text"
-                                placeholder="eg: 1"
+                                placeholder="eg: Green"
                                 {...field}
                               />
-                              {/* {errors?.fieldPopulate?.[index]?.value?.key && (
-                                <Label className="text-red-500">
-                                  {errors?.fieldPopulate?.[index]?.value?.key?.message}
-                                </Label>
-                              )} */}
                             </div>
                           )}
                         />
@@ -245,7 +259,7 @@ export default function AddFieldDefinitions() {
                             <div className="col-span-2">
                               <Input
                                 type="text"
-                                placeholder="eg: Green"
+                                placeholder="eg: GREEN"
                                 {...field}
                               />
                               {/* {errors?.fieldPopulate?.[index]?.value?.value && (
@@ -273,7 +287,7 @@ export default function AddFieldDefinitions() {
                 </div>
 
                 <Button
-                  onClick={addKeyValueField}
+                  onClick={addLabelAndValue}
                   type="button"
                   className="flex items-center p-2 gap-1 text-xs  w-15"
                 >
@@ -282,8 +296,9 @@ export default function AddFieldDefinitions() {
                 </Button>
               </>
             )}
-            <div className="flex justify-end mb-10">
-              <Button type="submit">Create Field Definition</Button>
+
+            <div className="flex justify-end mb-10 space-x-4">
+              <Button type="submit">Submit</Button>
             </div>
           </div>
         </div>

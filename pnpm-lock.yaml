@@ -66,8 +66,8 @@ dependencies:
     specifier: ^1.0.7
     version: 1.0.7(@types/react-dom@18.2.21)(@types/react@18.2.65)(react-dom@18.2.0)(react@18.2.0)
   '@rahataid/community-tool-sdk':
-    specifier: ^0.0.10
-    version: 0.0.10
+    specifier: ^0.0.11
+    version: 0.0.11
   '@rahataid/el-subgraph':
     specifier: 0.0.7
     version: 0.0.7
@@ -90,8 +90,8 @@ dependencies:
     specifier: ^1.0.125
     version: 1.0.125(reflect-metadata@0.2.2)(rxjs@7.8.1)
   '@rumsan/react-query':
-    specifier: 0.0.37
-    version: 0.0.37(@types/react@18.2.65)(typescript@5.4.2)(zod@3.22.4)
+    specifier: 0.0.38
+    version: 0.0.38(@types/react@18.2.65)(typescript@5.4.2)(zod@3.22.4)
   '@rumsan/sdk':
     specifier: ^0.0.45
     version: 0.0.45
@@ -5412,8 +5412,8 @@ packages:
       '@babel/runtime': 7.24.1
     dev: false
 
-  /@rahataid/community-tool-sdk@0.0.10:
-    resolution: {integrity: sha512-AqKAh9nwUQAaxDRw9R/saG+XgufNVae3SDGHesc6kZBxAR7yWis718OiZmOfN1TpzPes5u24Oxv8lXPq5foM4w==, tarball: https://npm.pkg.github.com/download/@rahataid/community-tool-sdk/0.0.10/153bca06769bc8b75fc5bb6fbdbfb1185b0c810b}
+  /@rahataid/community-tool-sdk@0.0.11:
+    resolution: {integrity: sha512-taGaj9tkJaWcHOLrMwKNiT3Ol13hrgJJoenn0jjdwPNIiXwfS9UqAQxoCpqSEodwFbCeOIcBft0jrYshQiPayA==, tarball: https://npm.pkg.github.com/download/@rahataid/community-tool-sdk/0.0.11/db3b676b9a9be6f3ceed04a270da0397109252f6}
     dependencies:
       tslib: 2.6.2
     dev: false
@@ -6046,11 +6046,11 @@ packages:
       - immer
     dev: false
 
-  /@rumsan/react-query@0.0.37(@types/react@18.2.65)(typescript@5.4.2)(zod@3.22.4):
-    resolution: {integrity: sha512-jQBWvmu/hWlzpYm3GwQ1a8PbhnKO+Q/S9QEHv3dm3wrMJJntPloiG9eKloklMYJCpq7T32505Gfv7NQX9HceEA==, tarball: https://npm.pkg.github.com/download/@rumsan/react-query/0.0.37/4d19fc0b752581388dd2755661e3265bdea10297}
+  /@rumsan/react-query@0.0.38(@types/react@18.2.65)(typescript@5.4.2)(zod@3.22.4):
+    resolution: {integrity: sha512-SRmOH1E0s0NtFGKxnWty3dQB/kauLx+s88+J1PsaF5g/cCZxb5QwkdJmL6t2C9zz2UWlnfriD0p+bkBtguWBSw==, tarball: https://npm.pkg.github.com/download/@rumsan/react-query/0.0.38/8764cc38cc8e391048fb3fe1a46ddc5e2664cfc1}
     dependencies:
       '@rumsan/communication': 0.0.8
-      '@rumsan/sdk': 0.0.44
+      '@rumsan/sdk': 0.0.45
       '@tanstack/react-query': 5.22.2(react@18.2.0)
       axios: 1.6.7
       http-status-codes: 2.3.0

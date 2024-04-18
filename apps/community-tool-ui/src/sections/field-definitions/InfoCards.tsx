@@ -1,5 +1,6 @@
 import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
 import { FieldDefinition } from '@rahataid/community-tool-sdk/fieldDefinitions';
+import { humanizeString } from '../../utils';
 
 export default function InfoCards({ data }: { data: FieldDefinition }) {
   return (
@@ -9,7 +10,7 @@ export default function InfoCards({ data }: { data: FieldDefinition }) {
           <div className="grid grid-cols-3 gap-4">
             <div className="col-span-2 flex flex-col gap-4">
               <div>
-                <p>{data?.name ?? ''}</p>
+                <p>{data && data.name ? humanizeString(data.name) : ''}</p>
                 <p className="text-sm font-normal text-muted-foreground">
                   Name
                 </p>

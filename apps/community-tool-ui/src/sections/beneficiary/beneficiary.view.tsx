@@ -41,9 +41,14 @@ function BeneficiaryView() {
     setNextPage,
     setPrevPage,
     setPerPage,
+    filters,
+    setFilters,
   } = usePagination();
 
-  const { data } = useCommunityBeneficaryList(pagination);
+  const { data } = useCommunityBeneficaryList({
+    ...pagination,
+    ...(filters as any),
+  });
   const columns = useCommunityBeneficiaryTableColumns();
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   // const { closeSecondPanel, setSecondPanelComponent } = useSecondPanel();
@@ -63,7 +68,7 @@ function BeneficiaryView() {
     },
   });
 
-  const [selectedData, setSelectedData] = useState<ListBeneficiary>();
+  const [selectedData, setSelectedData] = useState(null) as any;
   const [selectedBenefId, setSelectedBenefId] = useState<number[]>([]);
   const [active, setActive] = useState<string>(BENEFICIARY_NAV_ROUTE.DEFAULT);
 
@@ -107,6 +112,8 @@ function BeneficiaryView() {
                 <BeneficiaryListView
                   table={table}
                   handleClick={handleBeneficiaryClick}
+                  setFilters={setFilters}
+                  filters={filters}
                 />
               </TabsContent>
               <TabsContent value="grid">

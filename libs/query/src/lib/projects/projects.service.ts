@@ -21,6 +21,11 @@ import { useSwal } from '../../swal';
 import { api } from '../../utils/api';
 import { useProjectSettingsStore, useProjectStore } from './project.store';
 
+export const PROJECT_SETTINGS_KEYS = {
+  CONTRACT: 'CONTRACT',
+  SUBGRAPH: 'SUBGRAPH',
+};
+
 const createProject = async (payload: CreateProjectPayload) => {
   const res = await api.post('/projects', payload);
   return res.data;
@@ -198,7 +203,7 @@ export const useAssignVendorToProject = () => {
   });
 };
 
-export const useProjectSettings = (uuid: UUID) => {
+export const useProjectContractSettings = (uuid: UUID) => {
   const q = useProjectAction();
   const { setSettings, settings } = useProjectSettingsStore((state) => ({
     settings: state.settings,
@@ -206,8 +211,8 @@ export const useProjectSettings = (uuid: UUID) => {
   }));
 
   const query = useQuery({
-    queryKey: [TAGS.GET_PROJECT_SETTINGS, uuid],
-    enabled: isEmpty(settings?.[uuid]),
+    queryKey: [TAGS.GET_PROJECT_SETTINGS, uuid, PROJECT_SETTINGS_KEYS.CONTRACT],
+    enabled: isEmpty(settings?.[uuid][PROJECT_SETTINGS_KEYS.CONTRACT]),
     // enabled: !!settings[uuid],
     queryFn: async () => {
       const mutate = await q.mutateAsync({
@@ -215,7 +220,7 @@ export const useProjectSettings = (uuid: UUID) => {
         data: {
           action: 'settings.get',
           payload: {
-            name: 'CONTRACT',
+            name: PROJECT_SETTINGS_KEYS.CONTRACT,
           },
         },
       });
@@ -226,10 +231,67 @@ export const useProjectSettings = (uuid: UUID) => {
 
   useEffect(() => {
     if (query.isSuccess) {
-      setSettings({
+      const settingsToUpdate = {
         ...settings,
-        [uuid]: query?.data,
+        [uuid]: {
+          ...settings?.[uuid],
+          [PROJECT_SETTINGS_KEYS.CONTRACT]: query?.data,
+        },
+      };
+      setSettings(settingsToUpdate);
+      // setSettings({
+      //   [uuid]: {
+      //     [PROJECT_SETTINGS_KEYS.CONTRACT]: query?.data,
+      //   },
+      // });
+    }
+  }, [query.data]);
+
+  return query;
+};
+
+export const useProjectSubgraphSettings = (uuid: UUID) => {
+  const q = useProjectAction();
+  const { setSettings, settings } = useProjectSettingsStore((state) => ({
+    settings: state.settings,
+    setSettings: state.setSettings,
+  }));
+
+  const query = useQuery({
+    queryKey: [TAGS.GET_PROJECT_SETTINGS, uuid, PROJECT_SETTINGS_KEYS.SUBGRAPH],
+    enabled: isEmpty(settings?.[uuid][PROJECT_SETTINGS_KEYS.SUBGRAPH]),
+    // enabled: !!settings[uuid],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'settings.get',
+          payload: {
+            name: PROJECT_SETTINGS_KEYS.SUBGRAPH,
+          },
+        },
       });
+      return mutate.data.value;
+    },
+    // initialData: settings?.[uuid],
+  });
+
+  useEffect(() => {
+    if (query.isSuccess) {
+      const settingsToUpdate = {
+        ...settings,
+        [uuid]: {
+          ...settings?.[uuid],
+          [PROJECT_SETTINGS_KEYS.SUBGRAPH]: query?.data,
+        },
+      };
+      setSettings(settingsToUpdate);
+      window.location.reload();
+      // setSettings({
+      //   [uuid]: {
+      //     [PROJECT_SETTINGS_KEYS.SUBGRAPH]: query?.data,
+      //   },
+      // });
     }
   }, [query.data]);
 

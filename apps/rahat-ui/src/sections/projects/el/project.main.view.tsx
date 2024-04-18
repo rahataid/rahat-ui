@@ -7,6 +7,11 @@ import {
   useProjectStore,
 } from '@rahat-ui/query';
 import { ChartColumnStacked } from '@rahat-ui/shadcn/charts';
+  PROJECT_SETTINGS_KEYS,
+  useGetBeneficiaryStats,
+  useProjectSettingsStore,
+  useProjectStore,
+} from '@rahat-ui/query';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import {
   useReadElProjectGetProjectVoucherDetail,
@@ -26,7 +31,11 @@ const ProjectMainView = () => {
 
   const project = useProjectStore((state) => state.singleProject);
   const contractSettings = useProjectSettingsStore(
-    (state) => state.settings?.[id] || null,
+    (state) => state.settings?.[id][PROJECT_SETTINGS_KEYS.CONTRACT] || null,
+  );
+  console.log(
+    'state.settings?.[id][PROJECT_SETTINGS_KEYS.CONTRACT]',
+    contractSettings,
   );
   const beneficiaryStats = useGetProjectBeneficiaryStats();
 
@@ -149,7 +158,7 @@ const ProjectMainView = () => {
   const glassData = [
     {
       name: 'Glass Required',
-      data: [enrolledGlass?.count || 0, referredGlass?.count || 0],
+      data: [enrolledGlass?.count || 0, referredGlass?‚.count || 0],
     },
     {
       name: 'Glass Not Required',

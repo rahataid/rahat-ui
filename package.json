@@ -45,9 +45,9 @@
     "@rumsan/communication-query": "^0.0.4",
     "@rumsan/core": "^3.0.133",
     "@rumsan/prisma": "^1.0.125",
-    "@rumsan/react-query": "0.0.37",
+    "@rumsan/react-query": "0.0.38",
     "@rumsan/sdk": "^0.0.45",
-    "@rahataid/community-tool-sdk": "^0.0.10",
+    "@rahataid/community-tool-sdk": "^0.0.11",
     "@rumsan/extensions": "^0.0.22",
     "@rumsan/user": "^3.0.153",
     "@tanstack/match-sorter-utils": "^8.11.8",
@@ -161,6 +161,5 @@
     "ts-node": "10.9.2",
     "typescript": "~5.4.2",
     "verdaccio": "^5.29.2"
-  },
-  "packageManager": "pnpm@8.15.5+sha1.a58c038faac410c947dbdb93eb30994037d0fce2"
+  }
 }

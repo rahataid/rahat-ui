@@ -2,22 +2,21 @@
 
 import {
   PROJECT_SETTINGS_KEYS,
-  useProjectContractSettings,
   useProjectSettingsStore,
   useProjectSubgraphSettings,
-  useSettingsStore,
 } from '@rahat-ui/query';
 import { GraphQuery } from '@rahataid/el-subgraph';
 import { UUID } from 'crypto';
-import { isEmpty } from 'lodash';
 import { useParams } from 'next/navigation';
-import { createContext, useContext } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 
 export type GraphContextType = {
-  queryService: GraphQuery;
+  queryService: GraphQuery | null;
 };
 
-export const GraphContext = createContext<GraphContextType | null>(null);
+export const GraphContext = createContext<GraphContextType | null>({
+  queryService: null,
+});
 
 interface QueryProviderProps {
   children: React.ReactNode;
@@ -28,17 +27,15 @@ export function GraphQueryProvider({ children }: QueryProviderProps) {
   useProjectSubgraphSettings(uuid);
 
   const subgraphSettings = useProjectSettingsStore(
-    (s) => s.settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.SUBGRAPH] || null,
+    (s) => s.settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.SUBGRAPH]?.url,
   );
-
-  if (isEmpty(subgraphSettings)) return null;
-
-  const queryService = new GraphQuery(subgraphSettings?.url);
 
   return (
     <GraphContext.Provider
       value={{
-        queryService,
+        queryService: new GraphQuery(
+          subgraphSettings || 'http://localhost:8000',
+        ),
       }}
     >
       {children}

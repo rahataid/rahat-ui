@@ -285,6 +285,7 @@ export const useProjectSubgraphSettings = (uuid: UUID) => {
         },
       };
       setSettings(settingsToUpdate);
+      window.location.reload();
       // setSettings({
       //   [uuid]: {
       //     [PROJECT_SETTINGS_KEYS.SUBGRAPH]: query?.data,

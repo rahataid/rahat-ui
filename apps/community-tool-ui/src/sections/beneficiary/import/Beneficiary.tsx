@@ -473,7 +473,7 @@ export default function BenImp({ extraFields }: IProps) {
         {currentScreen === BENEF_IMPORT_SCREENS.IMPORT_DATA && (
           <>
             {invalidFields.length > 0 ? (
-              <ErrorAlert message="Fieds with * have failed validation. Highlighted rows are duplicate!" />
+              <ErrorAlert message="Fieds with * have failed validation!" />
             ) : (
               <InfoBox
                 title="Import Beneficiary"

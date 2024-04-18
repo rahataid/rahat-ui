@@ -48,6 +48,9 @@ export default function ColumnMappingTable({
     extractColumns();
   }, [rawData]);
 
+  console.log('uniqueDBFields==>', uniqueDBFields);
+  const sortedData = uniqueDBFields?.sort() || [];
+
   return (
     <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
       <thead>
@@ -57,6 +60,7 @@ export default function ColumnMappingTable({
               {truncatedText(column, 25)}
               <br />
               <select
+                className="p-2"
                 name="targetField"
                 id="targetField"
                 onChange={(e) =>
@@ -64,7 +68,7 @@ export default function ColumnMappingTable({
                 }
               >
                 <option value="None">--Choose Field--</option>
-                {uniqueDBFields.map((f: string) => {
+                {sortedData.map((f: string) => {
                   return (
                     <option
                       key={f}

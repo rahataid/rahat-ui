@@ -57,7 +57,10 @@ type ProjectSettingsStore = ProjectSettingsState & ProjectSettingsStateAction;
 export const useProjectSettingsStore = zustandStore<ProjectSettingsStore>(
   (set) => ({
     ...initialSettingsStore,
-    setSettings: (settings) => set({ settings }),
+    setSettings: (settings) =>
+      set({
+        settings,
+      }),
     resetSettings: () => set({ ...initialSettingsStore }),
     // projectBasedSettings: (uuid: string) => {
     //   const settings = get().settings;

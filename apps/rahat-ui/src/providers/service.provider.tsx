@@ -35,7 +35,6 @@ export function ServiceProvider({ children }: ServiceProviderProps) {
     setQueryClient: setCommsQueryClient,
   } = useCommunicationQuery();
 
-  useChainSettings();
   useSubGraphUrlSettings();
 
   const chainSettings = useSettingsStore((s) => s.chainSettings);

@@ -153,7 +153,7 @@ const ProjectMainView = () => {
   const glassData = [
     {
       name: 'Glass Required',
-      data: [enrolledGlass?.count || 0, referredGlass?‚.count || 0],
+      data: [enrolledGlass?.count || 0, referredGlass?.count || 0],
     },
     {
       name: 'Glass Not Required',

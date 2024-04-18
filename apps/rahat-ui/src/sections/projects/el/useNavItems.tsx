@@ -31,7 +31,7 @@ import CreateVoucherModal from './create-voucher-modal';
 export const useNavItems = () => {
   const { id } = useParams();
   const contractSettings = useProjectSettingsStore(
-    (state) => state.settings?.[id][PROJECT_SETTINGS_KEYS.CONTRACT] || null,
+    (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT] || null,
   );
 
   const dialog = useSwal();

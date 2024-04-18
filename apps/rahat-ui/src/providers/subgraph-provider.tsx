@@ -28,7 +28,7 @@ export function GraphQueryProvider({ children }: QueryProviderProps) {
   useProjectSubgraphSettings(uuid);
 
   const subgraphSettings = useProjectSettingsStore(
-    (s) => s.settings?.[uuid][PROJECT_SETTINGS_KEYS.SUBGRAPH] || null,
+    (s) => s.settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.SUBGRAPH] || null,
   );
 
   if (isEmpty(subgraphSettings)) return null;

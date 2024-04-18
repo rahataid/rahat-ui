@@ -137,8 +137,6 @@ export default function EditBeneficiary({
     return () => setExtras({});
   }, [uuid]);
 
-  console.log('Extras=>', extras);
-
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleEditBeneficiary)}>

@@ -19,7 +19,7 @@ export default function TextAreaInput({ formField }: any) {
   return (
     <div>
       <Label>{humanizeString(formField.name)}</Label>
-      <Textarea defaultValue={defaultData} onChange={handleInputChange} />
+      <Textarea value={defaultData} onChange={handleInputChange} />
     </div>
   );
 }

@@ -19,11 +19,7 @@ export default function PasswordInput({ formField }: any) {
   return (
     <div>
       <Label>{humanizeString(formField.name)}</Label>
-      <Input
-        defaultValue={defaultData}
-        type="password"
-        onChange={handleInputChange}
-      />
+      <Input value={defaultData} type="password" onChange={handleInputChange} />
     </div>
   );
 }

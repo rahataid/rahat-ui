@@ -19,11 +19,7 @@ export default function TextInput({ formField }: any) {
   return (
     <div>
       <Label>{humanizeString(formField.name)}</Label>
-      <Input
-        defaultValue={defaultData}
-        type="text"
-        onChange={handleInputChange}
-      />
+      <Input value={defaultData} type="text" onChange={handleInputChange} />
     </div>
   );
 }

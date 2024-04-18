@@ -19,11 +19,7 @@ export default function NumberInput({ formField }: any) {
   return (
     <div>
       <Label>{humanizeString(formField.name)}</Label>
-      <Input
-        defaultValue={defaultData}
-        type="number"
-        onChange={handleInputChange}
-      />
+      <Input value={defaultData} type="number" onChange={handleInputChange} />
     </div>
   );
 }

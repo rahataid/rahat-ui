@@ -33,7 +33,7 @@ import {
   InternetStatus,
   PhoneStatus,
 } from '@rahataid/community-tool-sdk/enums/';
-import { ID_TYPE } from 'apps/community-tool-ui/src/constants/beneficiary.const';
+import { GOVERNMENT_ID_TYPE } from 'apps/community-tool-ui/src/constants/beneficiary.const';
 import { format } from 'date-fns';
 import { CalendarIcon, Wallet } from 'lucide-react';
 import { useEffect } from 'react';
@@ -82,7 +82,7 @@ export default function AddBeneficiary() {
       latitude: 0,
       longitude: 0,
       notes: '',
-      govtIDType: '',
+      govtIDType: GOVERNMENT_ID_TYPE.UNKNOWN,
       govtIDNumber: '',
     },
   });
@@ -443,19 +443,31 @@ export default function AddBeneficiary() {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value={ID_TYPE.CITIZZENSHIP}>
+                          <SelectItem value={GOVERNMENT_ID_TYPE.CITIZENSHIP}>
                             Citizenship
                           </SelectItem>
-                          <SelectItem value={ID_TYPE.DRIVING_LICENSE}>
+                          <SelectItem
+                            value={GOVERNMENT_ID_TYPE.DRIVING_LICENSE}
+                          >
                             Driving License
                           </SelectItem>
-                          <SelectItem value={ID_TYPE.PASSPORT}>
+                          <SelectItem value={GOVERNMENT_ID_TYPE.PASSPORT}>
                             Passport
                           </SelectItem>
-                          <SelectItem value={ID_TYPE.NATIONAL_ID_NUMBER}>
+                          <SelectItem
+                            value={GOVERNMENT_ID_TYPE.NATIONAL_ID_CARD}
+                          >
                             National ID
                           </SelectItem>
-                          <SelectItem value={ID_TYPE.OTHER}>Other</SelectItem>
+                          <SelectItem value={GOVERNMENT_ID_TYPE.VOTER_CARD}>
+                            Voter Card
+                          </SelectItem>
+                          <SelectItem value={GOVERNMENT_ID_TYPE.OTHER}>
+                            Other
+                          </SelectItem>
+                          <SelectItem value={GOVERNMENT_ID_TYPE.UNKNOWN}>
+                            Unknown
+                          </SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />

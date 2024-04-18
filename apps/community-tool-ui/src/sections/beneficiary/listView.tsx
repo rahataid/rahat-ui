@@ -22,28 +22,80 @@ import {
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { ListBeneficiary } from '@rahataid/community-tool-sdk/beneficiary';
+import { ChangeEvent, useEffect, useState } from 'react';
+import { debounce, useDebounce } from '../../utils/debounceHooks';
 
 type IProps = {
   handleClick: (item: ListBeneficiary) => void;
   table: Table<ListBeneficiary>;
+  setFilters: (fiters: Record<string, any>) => void;
+  filters: Record<string, any>;
 };
 
-export default function ListView({ handleClick, table }: IProps) {
+export default function ListView({
+  handleClick,
+  table,
+  setFilters,
+  filters,
+}: IProps) {
+  // const [filter, setFilter] = useState<{ [key: string]: string }>({});
+
+  const handleFilterChange = (event: any) => {
+    if (event && event.target) {
+      const { name, value } = event.target;
+      console.log(name);
+      table.getColumn(name)?.setFilterValue(value);
+      setFilters({
+        ...filters,
+        [name]: value,
+      });
+    }
+  };
+
+  // ** toDo: need to refactor for the debounce effect**
+
+  // const debouncedFilters = useDebounce(filter, 300);
+
+  // const handleFilterChange = (event: any) => {
+  //   if (event && event.target) {
+  //     const { name, value } = event.target;
+  //     table.getColumn(name)?.setFilterValue(value);
+  //     setFilter({
+  //       ...filter,
+  //       [name]: value,
+  //     });
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   setFilters(debouncedFilters);
+  // }, [debouncedFilters, setFilters]);
+
+  // console.log(debouncedFilters);
+
   return (
     <>
       <div className="w-full -mt-2 p-2 bg-secondary">
         <div className="flex items-center mb-2">
           <Input
-            placeholder="Filter beneficiary..."
+            placeholder="Search beneficiary by firstName..."
+            name="firstName"
             value={
-              (table.getColumn('walletAddress')?.getFilterValue() as string) ??
-              ''
+              (table.getColumn('firstName')?.getFilterValue() as string) ??
+              filters?.firstName
             }
-            onChange={(event) =>
-              table
-                .getColumn('walletAddress')
-                ?.setFilterValue(event.target.value)
+            onChange={(event) => handleFilterChange(event)}
+            className="rounded mr-2"
+          />
+
+          <Input
+            placeholder="Search beneficiary by location..."
+            name="location"
+            value={
+              (table.getColumn('location')?.getFilterValue() as string) ??
+              filters?.location
             }
+            onChange={(event) => handleFilterChange(event)}
             className="rounded mr-2"
           />
           <DropdownMenu>

@@ -64,7 +64,7 @@ export default function BeneficiaryDetail({ data, handleClose }: IProps) {
           <div className="p-4 border-y">Transaction History View</div>
         </TabsContent> */}
         <TabsContent value="edit">
-          <EditBeneficiary data={data} />
+          <EditBeneficiary uuid={data.uuid} data={data} />
         </TabsContent>
       </Tabs>
     </>

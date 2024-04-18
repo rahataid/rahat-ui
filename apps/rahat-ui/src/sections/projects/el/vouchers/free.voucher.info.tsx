@@ -8,7 +8,7 @@ import {
 
 const FreeVoucherInfo = ({ data }) => {
   return (
-    <>
+    <div>
       <div className="mx-2 mt-2 rounded bg-card p-4 shadow">
         <div className="flex items-center justify-end">
           <DropdownMenu>

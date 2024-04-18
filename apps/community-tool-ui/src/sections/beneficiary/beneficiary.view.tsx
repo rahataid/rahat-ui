@@ -63,7 +63,7 @@ function BeneficiaryView() {
     },
   });
 
-  const [selectedData, setSelectedData] = useState<ListBeneficiary>();
+  const [selectedData, setSelectedData] = useState(null) as any;
   const [selectedBenefId, setSelectedBenefId] = useState<number[]>([]);
   const [active, setActive] = useState<string>(BENEFICIARY_NAV_ROUTE.DEFAULT);
 

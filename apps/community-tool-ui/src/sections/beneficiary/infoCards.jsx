@@ -59,15 +59,15 @@ export default function InfoCards({ data }) {
                 </p>
               </div>
               <div>
-                <p>{data?.location || 'N/A'}</p>
-                <p className="text-sm font-normal text-muted-foreground">
-                  Location
-                </p>
-              </div>
-              <div>
                 <p>{data?.latitude || 'N/A'}</p>
                 <p className="text-sm font-normal text-muted-foreground">
                   Latitude
+                </p>
+              </div>
+              <div>
+                <p>{data?.location || 'N/A'}</p>
+                <p className="text-sm font-normal text-muted-foreground">
+                  Location
                 </p>
               </div>
             </div>
@@ -98,15 +98,15 @@ export default function InfoCards({ data }) {
                 </p>
               </div>
               <div>
-                <p>{data?.notes || 'N/A'}</p>
-                <p className="text-sm font-normal text-muted-foreground">
-                  Notes
-                </p>
-              </div>
-              <div>
                 <p>{data?.longitude || 'N/A'}</p>
                 <p className="text-sm font-normal text-muted-foreground">
                   Longitude
+                </p>
+              </div>
+              <div>
+                <p>{data?.notes || 'N/A'}</p>
+                <p className="text-sm font-normal text-muted-foreground">
+                  Notes
                 </p>
               </div>
             </div>

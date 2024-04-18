@@ -10,10 +10,12 @@ export const GROUP_NAV_ROUTE = {
   ADD_GROUP: 'add_group',
 };
 
-export const ID_TYPE = {
-  CITIZZENSHIP: 'citizenship',
-  PASSPORT: 'passport',
-  DRIVING_LICENSE: 'driving_license',
-  OTHER: 'other',
-  NATIONAL_ID_NUMBER: 'national_id_number',
+export const GOVERNMENT_ID_TYPE = {
+  CITIZENSHIP: 'CITIZENSHIP',
+  PASSPORT: 'PASSPORT',
+  DRIVING_LICENSE: 'DRIVING_LICENSE',
+  NATIONAL_ID_CARD: 'NATIONAL_ID_CARD',
+  VOTER_CARD: 'VOTER_CARD',
+  OTHER: 'OTHER',
+  UNKNOWN: 'UNKNOWN',
 };

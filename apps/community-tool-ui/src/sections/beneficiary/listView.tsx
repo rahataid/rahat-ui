@@ -78,7 +78,7 @@ export default function ListView({
       <div className="w-full -mt-2 p-2 bg-secondary">
         <div className="flex items-center mb-2">
           <Input
-            placeholder="Search beneficiary by firstName..."
+            placeholder="Search by firstName..."
             name="firstName"
             value={
               (table.getColumn('firstName')?.getFilterValue() as string) ??
@@ -89,7 +89,7 @@ export default function ListView({
           />
 
           <Input
-            placeholder="Search beneficiary by location..."
+            placeholder="Search by location..."
             name="location"
             value={
               (table.getColumn('location')?.getFilterValue() as string) ??

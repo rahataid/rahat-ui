@@ -44,10 +44,15 @@ export const useCommunityBeneficiaryTableColumns = () => {
       cell: ({ row }) => <div>{row.getValue('lastName')}</div>,
     },
     {
+      accessorKey: 'location',
+      header: 'Location',
+      cell: ({ row }) => <div>{row.getValue('location') || '-'}</div>,
+    },
+    {
       accessorKey: 'walletAddress',
-      header: 'Wallet Address',
+      header: 'Wallet',
       cell: ({ row }) => (
-        <div>{truncateEthAddress(row.getValue('walletAddress'))}</div>
+        <div>{truncateEthAddress(row.getValue('walletAddress')) || '-'}</div>
       ),
     },
     {

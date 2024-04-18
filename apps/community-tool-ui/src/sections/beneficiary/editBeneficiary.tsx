@@ -43,6 +43,8 @@ import useFormStore from '../../formBuilder/form.store';
 import { useEffect } from 'react';
 import { UUID } from 'crypto';
 
+const FIELD_DEF_FETCH_LIMIT = 200;
+
 export default function EditBeneficiary({
   uuid,
   data,
@@ -56,7 +58,7 @@ export default function EditBeneficiary({
   const { pagination } = usePagination();
   const { data: definitions } = useFieldDefinitionsList({
     ...pagination,
-    perPage: 100,
+    perPage: FIELD_DEF_FETCH_LIMIT,
   });
 
   const FormSchema = z.object({
@@ -136,6 +138,8 @@ export default function EditBeneficiary({
 
     return () => setExtras({});
   }, [uuid]);
+
+  console.log('definitions', definitions);
 
   return (
     <Form {...form}>

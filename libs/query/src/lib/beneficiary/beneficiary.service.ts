@@ -30,17 +30,16 @@ export const useCreateBeneficiary = () => {
   });
 };
 
+// Todo: Change type of return
 export const useBeneficiaryList = (
   payload: any,
-): UseQueryResult<any, Error> => {
+): any => {
   const { rumsanService, queryClient } = useRSQuery();
   const benClient = getBeneficiaryClient(rumsanService.client);
   const { setBeneficiaries, setMeta } = useBeneficiaryStore((state) => ({
     setBeneficiaries: state.setBeneficiaries,
     setMeta: state.setMeta,
   }));
-
-  console.log(payload)
 
   const ben = useQuery(
     {
@@ -58,7 +57,23 @@ export const useBeneficiaryList = (
     }
   }, [ben.data, setBeneficiaries]);
 
-  return ben;
+  console.log(ben)
+
+  const filteredBenData = {
+    ...ben,
+    data: {
+    ...ben?.data,
+    data: ben?.data?.data.map((row) => {
+      return({
+        ...row,
+        name: row?.piiData?.name || ''
+      })
+    })},
+  }
+
+  console.log("filteredBenData", filteredBenData)
+
+  return filteredBenData;
 };
 
 const listBeneficiaryStatus = async () => {

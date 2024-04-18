@@ -47,6 +47,7 @@ function BeneficiaryView() {
   const projectModal = useBoolean();
   const bulkAssign = useBulkAssignBenToProject();
 
+  console.log(data?.data)
   const table = useReactTable({
     manualPagination: true,
     data: data?.data || [], 

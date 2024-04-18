@@ -1,27 +1,23 @@
 'use client';
-import React, { useEffect, useState } from 'react';
-import FreeVoucherInfo from './free.voucher.info';
-import DiscountVoucherInfo from './discount.voucher.info';
+import {
+  PROJECT_SETTINGS_KEYS,
+  useProjectSettingsStore,
+} from '@rahat-ui/query';
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tabs';
-import { FreeTransactionTable } from './free.transactions.table';
-import { FreeHoldersTable } from './free.holder.table';
-import { DiscountTransactionTable } from './discount.transactions.table';
-import { DiscountHoldersTable } from './discount.holder.table';
-import {
-  useProjectVoucher,
-  useVoucherHolder,
-} from 'apps/rahat-ui/src/hooks/el/subgraph/querycall';
-import AddVoucher from './add.voucher';
+import { useProjectVoucher } from 'apps/rahat-ui/src/hooks/el/subgraph/querycall';
 import { useParams } from 'next/navigation';
-import {
-  PROJECT_SETTINGS_KEYS,
-  useProjectSettingsStore,
-} from '@rahat-ui/query';
+import AddVoucher from './add.voucher';
+import { DiscountHoldersTable } from './discount.holder.table';
+import { DiscountTransactionTable } from './discount.transactions.table';
+import DiscountVoucherInfo from './discount.voucher.info';
+import { FreeHoldersTable } from './free.holder.table';
+import { FreeTransactionTable } from './free.transactions.table';
+import FreeVoucherInfo from './free.voucher.info';
 
 const VoucherView = () => {
   const { id } = useParams();

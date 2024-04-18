@@ -1,6 +1,7 @@
 'use client';
 
 import {
+  PROJECT_SETTINGS_KEYS,
   useGetProjectBeneficiaryStats,
   useProjectAction,
   useProjectSettingsStore,
@@ -14,10 +15,11 @@ import {
 } from 'apps/rahat-ui/src/hooks/el/contracts/elProject';
 import { useProjectVoucher } from 'apps/rahat-ui/src/hooks/el/subgraph/querycall';
 import { useParams } from 'next/navigation';
-import { memo, useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { ProjectChart } from '..';
 import ProjectDataCard from './project.datacard';
 import ProjectInfo from './project.info';
+import { ChartColumnStacked } from '@rahat-ui/shadcn/src/components/charts';
 
 const ProjectMainView = () => {
   const { id } = useParams();

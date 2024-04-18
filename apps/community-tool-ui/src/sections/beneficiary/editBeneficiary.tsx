@@ -131,9 +131,12 @@ export default function EditBeneficiary({
   };
 
   useEffect(() => {
-    setExtras({});
     if (data.extras) setExtras(data.extras);
+
+    return () => setExtras({});
   }, [uuid]);
+
+  console.log('Extras=>', extras);
 
   return (
     <Form {...form}>

@@ -1,13 +1,12 @@
 'use client';
 
 import {
-  useGetBeneficiaryStats,
   useGetProjectBeneficiaryStats,
   useProjectAction,
-  useProjectBeneficiaries,
   useProjectSettingsStore,
   useProjectStore,
 } from '@rahat-ui/query';
+import { BarChart, ChartColumnStacked } from '@rahat-ui/shadcn/charts';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import {
   useReadElProjectGetProjectVoucherDetail,
@@ -19,7 +18,6 @@ import { memo, useCallback, useEffect, useState } from 'react';
 import { ProjectChart } from '..';
 import ProjectDataCard from './project.datacard';
 import ProjectInfo from './project.info';
-import { BarChart } from '@rahat-ui/shadcn/charts';
 
 const ProjectMainView = () => {
   const { id } = useParams();
@@ -84,16 +82,31 @@ const ProjectMainView = () => {
     getElProjectStats();
   }, [getProjectStats, getElProjectStats]);
 
-  const filteredChartData = beneficiaryStats.data?.data.filter((item) => {
-    const name = item.name;
-    return name === 'BENEFICIARY_AGE_RANGE';
-  });
+  const filteredChartData = beneficiaryStats?.data?.data
+    ? beneficiaryStats.data.data.filter((item) => {
+        const name = item?.name;
+        return name === 'BENEFICIARY_AGE_RANGE';
+      })
+    : [];
 
-  const filterdELChartData = ELProjectStats?.filter((item) => {
-    const name = item.name;
-    return name === 'BENEFICIARY_TYPE';
-  });
+  const filterdELChartData =
+    ELProjectStats?.filter((item) => {
+      const name = item?.name;
+      return name === 'BENEFICIARY_TYPE' || name === 'FOOTFALL';
+    }) || [];
 
+  const seriesData = [
+    {
+      name: 'Enrolled',
+      data: [10, 20, 30, 40, 50, 60],
+    },
+    {
+      name: 'Referred',
+      data: [15, 25, 35, 45, 55, 65],
+    },
+  ];
+
+  console.log('ELProjectStats', ELProjectStats);
   return (
     <div className="p-2 bg-secondary">
       <ScrollArea className="h-[calc(100vh-80px)]">
@@ -115,7 +128,18 @@ const ProjectMainView = () => {
         <ProjectChart
           chartData={[...filteredChartData, ...filterdELChartData]}
         />
-        <BarChart series={[1, 2, 3, 4, 5, 6]} categories={['helllo']} />
+        <div className="grid grid-cols-2 gap-2 mt-2">
+          <div className="bg-card rounded">
+            <ChartColumnStacked series={seriesData} />
+
+            <p className="mt-2 mb-1 ml-4">Eye Checkup Reporting</p>
+          </div>
+          <div className="bg-card rounded">
+            <ChartColumnStacked series={seriesData} />
+
+            <p className="mt-2 mb-1 ml-4">Glasses Required</p>
+          </div>
+        </div>
       </ScrollArea>
     </div>
   );

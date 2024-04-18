@@ -14,7 +14,7 @@ export default function ChartBar({ series, categories = [] }: Props) {
   const chartOptions = useChart({
     stroke: { show: false },
     plotOptions: {
-      bar: { horizontal: true, barHeight: '30%' },
+      bar: { horizontal: false, barHeight: '30%' },
     },
     xaxis: {
       categories,

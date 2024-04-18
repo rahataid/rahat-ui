@@ -15,7 +15,7 @@ type Props = {
 export default function ChartColumnStacked({ series }: Props) {
   const chartOptions = useChart({
     chart: {
-      stacked: true,
+      stacked: false,
       zoom: {
         enabled: true,
       },
@@ -29,7 +29,7 @@ export default function ChartColumnStacked({ series }: Props) {
     },
     plotOptions: {
       bar: {
-        columnWidth: '16%',
+        columnWidth: '50%',
       },
     },
     stroke: {

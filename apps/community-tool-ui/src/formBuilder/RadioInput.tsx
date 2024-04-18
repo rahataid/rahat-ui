@@ -25,7 +25,7 @@ export default function RadioInput({ formField }: any) {
   return (
     <div>
       <Label>{humanizeString(formField.name)}</Label>
-      <RadioGroup defaultValue={defaultData} onChange={handleInputChange}>
+      <RadioGroup value={defaultData} onChange={handleInputChange}>
         {options.length > 0 ? (
           options.map((d: any) => {
             return (

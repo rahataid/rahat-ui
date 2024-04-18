@@ -1,16 +1,14 @@
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
-import React from 'react';
-import useFormStore from './form.store';
 import {
   Select,
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { humanizeString } from '../utils';
+import useFormStore from './form.store';
 
 export default function DropDownInput({ formField }: any) {
   const { extras, setExtras }: any = useFormStore();
@@ -23,11 +21,12 @@ export default function DropDownInput({ formField }: any) {
   };
 
   const options = formField?.fieldPopulate?.data || ([] as any);
+  const defaultData = extras[formField.name] || '';
 
   return (
     <div>
       <Label>{humanizeString(formField.name)}</Label>
-      <Select onValueChange={handleInputChange}>
+      <Select value={defaultData} onValueChange={handleInputChange}>
         <SelectTrigger className="w-[180px]">
           <SelectValue placeholder="Select Option" />
         </SelectTrigger>

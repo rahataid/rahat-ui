@@ -102,6 +102,22 @@ const ProjectMainView = () => {
     return item.name === 'EYE_CHECKUP';
   })?.[0]?.data?.find((i) => i.id === 'ENROLLED_EYE_CHECKUP');
 
+  const enrolledNoGlass = ELProjectStats?.filter((item) => {
+    return item.name === 'GLASS_STATUS';
+  })?.[0]?.data?.find((i) => i.id === 'ENROLLED_no_glass');
+
+  const enrolledGlass = ELProjectStats?.filter((item) => {
+    return item.name === 'GLASS_STATUS';
+  })?.[0]?.data?.find((i) => i.id === 'ENROLLED_require_glass');
+
+  const referredGlass = ELProjectStats?.filter((item) => {
+    return item.name === 'GLASS_STATUS';
+  })?.[0]?.data?.find((i) => i.id === 'REFERRED_require_glass');
+
+  const referredNoGlass = ELProjectStats?.filter((item) => {
+    return item.name === 'GLASS_STATUS';
+  })?.[0]?.data?.find((i) => i.id === 'REFERRED_no_glass');
+
   const referredEyeCheckupData = ELProjectStats?.filter((item) => {
     return item.name === 'EYE_CHECKUP';
   })?.[0]?.data?.find((i) => i.id === 'REFERRED_EYE_CHECKUP');
@@ -133,11 +149,11 @@ const ProjectMainView = () => {
   const glassData = [
     {
       name: 'Glass Required',
-      data: [10, 20],
+      data: [enrolledGlass?.count || 0, referredGlass?.count || 0],
     },
     {
       name: 'Glass Not Required',
-      data: [15, 65],
+      data: [enrolledNoGlass?.count || 0, referredNoGlass?.count || 0],
     },
   ];
 

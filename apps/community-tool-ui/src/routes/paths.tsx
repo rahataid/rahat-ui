@@ -4,6 +4,10 @@ const ROOTS = {
   BENEFICIARY: '/beneficiary',
   USER: '/users',
   PROFILE: '/profile',
+  SETTINGS: '/settings',
+  GROUPS: '/group',
+  FIELD_DEFINITIONS: '/field-definitions',
+  TARGETING: '/targeting',
 };
 
 export const paths = {
@@ -16,9 +20,30 @@ export const paths = {
   dashboard: {
     root: ROOTS.DASHBOARD,
     beneficiary: {
+      add: `${ROOTS.BENEFICIARY}/add`,
+      import: `${ROOTS.BENEFICIARY}/import`,
       root: ROOTS.BENEFICIARY,
-      detail: (uuid: string) => `${ROOTS.BENEFICIARY}/${id}`,
+      detail: (uuid: string) => `${ROOTS.BENEFICIARY}/${uuid}`,
     },
     user: ROOTS.USER,
+    group: {
+      root: ROOTS.GROUPS,
+      add: `${ROOTS.GROUPS}/add`,
+      detail: (uuid: string) => `${ROOTS.GROUPS}/${uuid}`,
+    },
+    fieldDefinitions: {
+      add: `${ROOTS.FIELD_DEFINITIONS}/add`,
+      import: `${ROOTS.FIELD_DEFINITIONS}/import`,
+      root: ROOTS.FIELD_DEFINITIONS,
+      detail: (uuid: string) => `${ROOTS.FIELD_DEFINITIONS}/${uuid}`,
+    },
+    targeting: {
+      add: `${ROOTS.TARGETING}/add`,
+      root: ROOTS.TARGETING,
+      detail: (uuid: string) => `${ROOTS.TARGETING}/${uuid}`,
+    },
+  },
+  settings: {
+    root: ROOTS.SETTINGS,
   },
 };

@@ -19,6 +19,7 @@ export default function ItemSelector({
   handleItemChange,
   id,
   options,
+  defaultData,
 }: any) {
   return (
     <div>
@@ -31,7 +32,7 @@ export default function ItemSelector({
               <FormItem>
                 <Select
                   onValueChange={handleItemChange}
-                  defaultValue={field.value}
+                  defaultValue={defaultData || field.value}
                 >
                   <FormControl>
                     <SelectTrigger>

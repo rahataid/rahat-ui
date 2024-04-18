@@ -39,11 +39,10 @@ interface Props {
 
 export default function PieChart({ title, subheader, chart }: Props) {
   const {
-    colors = ['#FFC107', '#FF7043', '#FFC107', '#FF7043'],
+    colors = ['#4682B4', '#FFBF00', '#ffff99', '#2B4EBD', '#CEB180'],
     series = [],
     options = {},
   } = chart;
-
   const chartSeries = series.map((i) => i.value);
 
   const chartOptions = useChart({
@@ -92,7 +91,7 @@ export default function PieChart({ title, subheader, chart }: Props) {
   });
 
   return (
-    <div className="bg-card shadow rounded-lg p-6">
+    <div className="bg-card shadow rounded p-4 flex flex-col items-center justify-center">
       <h2 className="text-lg font-semibold">{title}</h2>
       <p className="text-sm text-gray-500">{subheader}</p>
 

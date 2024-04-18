@@ -1,19 +1,18 @@
 'use client';
 
-import { useState } from 'react';
+import { useBeneficiaryStore, usePagination } from '@rahat-ui/query';
 import { flexRender } from '@tanstack/react-table';
 import { Settings2 } from 'lucide-react';
-import { usePagination } from '@rahat-ui/query';
-import { useRumsanService } from 'apps/rahat-ui/src/providers/service.provider';
-
+import { useState } from 'react';
 import { Button } from '@rahat-ui/shadcn/components/button';
+import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
+  DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/components/dropdown-menu';
 import { Input } from '@rahat-ui/shadcn/components/input';
@@ -33,9 +32,10 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
-import { MoreHorizontal } from 'lucide-react';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
+import { MoreHorizontal } from 'lucide-react';
+import { useSecondPanel } from 'apps/rahat-ui/src/providers/second-panel-provider';
+import BeneficiaryDetail from './beneficiary.detail';
 
 type IProps = {
   handleClick: (item: Beneficiary) => void;
@@ -120,34 +120,28 @@ export const columns: ColumnDef<Beneficiary>[] = [
   },
 ];
 
-export default function BeneficiaryTable({
-  handleClick,
-}: //   table,
-IProps) {
+export default function BeneficiaryTable() {
   const { pagination, filters, setPagination } = usePagination((state) => ({
     pagination: state.pagination,
     filters: state.filters,
     setPagination: state.setPagination,
   }));
+  const { setSecondPanelComponent, closeSecondPanel } = useSecondPanel();
 
-  const [perPage, setPerPage] = useState<number>(5);
   const [currentPage, setCurrentPage] = useState<number>(1);
 
   const handleNextPage = () => setCurrentPage(currentPage + 1);
 
   const handlePrevPage = () => setCurrentPage(currentPage - 1);
-  const { beneficiaryQuery } = useRumsanService();
+  const beneficiaries = useBeneficiaryStore((state) => state.beneficiaries);
+  const meta = useBeneficiaryStore((state) => state.meta);
 
-  const { data } = beneficiaryQuery.useBeneficiaryList({
-    perPage,
-    page: currentPage,
-  });
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
 
   const table = useReactTable({
     manualPagination: true,
-    data: data?.data || [],
+    data: beneficiaries || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -205,10 +199,10 @@ IProps) {
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-        <div className="rounded border bg-white">
+        <div className="rounded border bg-card">
           <TableComponent>
             <ScrollArea className="h-[calc(100vh-182px)]">
-              <TableHeader className="sticky top-0">
+              <TableHeader className="bg-card sticky top-0">
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow key={headerGroup.id}>
                     {headerGroup.headers.map((header) => {
@@ -233,7 +227,12 @@ IProps) {
                       key={row.id}
                       data-state={row.getIsSelected() && 'selected'}
                       onClick={() => {
-                        handleClick(row.original);
+                        setSecondPanelComponent(
+                          <BeneficiaryDetail
+                            data={row}
+                            handleClose={closeSecondPanel}
+                          />,
+                        );
                       }}
                     >
                       {row.getVisibleCells().map((cell) => (
@@ -260,7 +259,7 @@ IProps) {
             </ScrollArea>
           </TableComponent>
           <CustomPagination
-            meta={data?.response?.meta || { total: 0, currentPage: 0 }}
+            meta={meta || { total: 0, currentPage: 0 }}
             handleNextPage={handleNextPage}
             handlePrevPage={handlePrevPage}
             handlePageSizeChange={(value) =>

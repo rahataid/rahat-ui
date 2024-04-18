@@ -37,10 +37,6 @@ import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
 import { MoreHorizontal } from 'lucide-react';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 
-type IProps = {
-  handleClick: (item: Beneficiary) => void;
-};
-
 export type Beneficiary = {
   name: string;
   projectsInvolved: string;
@@ -120,10 +116,7 @@ export const columns: ColumnDef<Beneficiary>[] = [
   },
 ];
 
-export default function BeneficiaryTable({
-  handleClick,
-}: //   table,
-IProps) {
+export default function BeneficiaryTable() {
   const { pagination, filters, setPagination } = usePagination((state) => ({
     pagination: state.pagination,
     filters: state.filters,
@@ -205,10 +198,10 @@ IProps) {
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-        <div className="rounded border bg-white">
+        <div className="rounded border bg-card">
           <TableComponent>
             <ScrollArea className="h-[calc(100vh-182px)]">
-              <TableHeader className="sticky top-0">
+              <TableHeader className="bg-card sticky top-0">
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow key={headerGroup.id}>
                     {headerGroup.headers.map((header) => {

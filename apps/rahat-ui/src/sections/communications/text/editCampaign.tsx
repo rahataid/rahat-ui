@@ -1,60 +1,45 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { z } from 'zod';
 import { format } from 'date-fns';
 import { toast } from 'react-toastify';
 import { useForm } from 'react-hook-form';
 import { useParams } from 'next/navigation';
-import { CalendarIcon } from 'lucide-react';
-import { cn } from '@rahat-ui/shadcn/src/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@rahat-ui/shadcn/components/popover';
+import { Audience, CAMPAIGN_TYPES } from '@rahat-ui/types';
 
 import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@rahat-ui/shadcn/components/form';
-
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@rahat-ui/shadcn/src/components/ui/select';
-
-import { CAMPAIGN_TYPES } from '@rahat-ui/types';
-import { Button } from '@rahat-ui/shadcn/components/button';
-import { Input } from '@rahat-ui/shadcn/components/input';
-import { Calendar } from '@rahat-ui/shadcn/components/calendar';
-import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
-import {
-  ServiceContext,
-  ServiceContextType,
-} from 'apps/rahat-ui/src/providers/service.provider';
+  useListTransport,
+  useListAudience,
+  useUpdateCampaign,
+  useGetCampaign,
+  useGetAudio,
+} from '@rumsan/communication-query';
+import AddForm from '../add/add-form';
+import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
+import AddAudience from '../add/add-audiences';
+import { Form } from '@rahat-ui/shadcn/src/components/ui/form';
 
 export default function EditCampaign() {
   const params = useParams<{ tag: string; id: string }>();
-  const { communicationQuery } = React.useContext(
-    ServiceContext,
-  ) as ServiceContextType;
-  const { data: transportData } = communicationQuery.useListTransport();
-  const { data: audienceData } = communicationQuery.useListAudience();
 
-  const { data, isSuccess, isLoading } = communicationQuery.useGetCampaign({
+  const [selectedRows, setSelectedRows] = useState<
+    Array<{ id: number; phone: string; name: string }>
+  >([]);
+  const [globalFilter, setGlobalFilter] = React.useState('');
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+
+  const { data: transportData } = useListTransport();
+  const { data: audienceData } = useListAudience();
+  const { data: audioData } = useGetAudio();
+
+  const { data, isSuccess, isLoading } = useGetCampaign({
     id: Number(params.id),
   });
-  const editCampaign = communicationQuery.useUpdateCampaign();
+
+  const editCampaign = useUpdateCampaign();
 
   const FormSchema = z.object({
     campaignName: z.string().min(2, {
@@ -66,9 +51,7 @@ export default function EditCampaign() {
     campaignType: z.string({
       required_error: 'Camapign Type is required.',
     }),
-    transport: z.string({
-      required_error: 'Transport is required.',
-    }),
+
     message: z.string({}),
     audiences: z.array(z.number()),
   });
@@ -82,8 +65,19 @@ export default function EditCampaign() {
   });
   useEffect(() => {
     if (data) {
-      const audienceIds =
-        data?.data?.audiences?.map((audience) => audience?.id) || [];
+      // const audienceIds =
+      //   data?.data?.audiences?.map((audience) => audience?.id) || [];
+
+      data?.data?.audiences?.map((audience) => {
+        setSelectedRows((prevSelectedRows) => [
+          ...prevSelectedRows,
+          {
+            name: audience?.details.name,
+            id: audience?.id,
+            phone: audience?.details?.phone,
+          },
+        ]);
+      });
 
       form.setValue('campaignName', data?.data?.name);
       form.setValue(
@@ -92,15 +86,29 @@ export default function EditCampaign() {
           ? data?.data?.details.body
           : data?.data?.details.message || '',
       );
+
       form.setValue('campaignType', data?.data?.type);
       form.setValue('startTime', new Date(data?.data?.startTime));
-      form.setValue('transport', data?.data?.transport?.id.toString());
-      form.setValue('audiences', audienceIds);
     }
   }, [data, form]);
 
   const handleEditCampaign = async (data: z.infer<typeof FormSchema>) => {
-    const audiences = data.audiences.map((data) => Number(data));
+    setIsSubmitting(true);
+    let transportId;
+    transportData?.data.map((tdata) => {
+      if (tdata.name.toLowerCase() === data.campaignType.toLowerCase()) {
+        transportId = tdata.id;
+      }
+    });
+
+    const audiences = audienceData?.data
+      .filter((audienceObject: any) =>
+        selectedRows?.some(
+          (selectedObject) =>
+            selectedObject.phone === audienceObject?.details?.phone,
+        ),
+      )
+      .map((filteredObject: any) => filteredObject.id);
     type AdditionalData = {
       audio?: any;
       message?: string;
@@ -113,32 +121,41 @@ export default function EditCampaign() {
     //   additionalData.audio = data.file;
     // }
 
-    if (data?.campaignType === 'SMS' && data?.message) {
-      additionalData.message = data?.message;
-    }
-
     if (data?.campaignType === 'WHATSAPP' && data?.message) {
       additionalData.body = data?.message;
+    }
+    if (
+      data?.campaignType !==
+        (CAMPAIGN_TYPES.PHONE && CAMPAIGN_TYPES.WHATSAPP) &&
+      data?.message
+    ) {
+      additionalData.message = data?.message;
     }
     editCampaign
       .mutateAsync({
         audienceIds: audiences,
         name: data.campaignName,
         startTime: data.startTime,
-        transportId: Number(data.transport),
+        transportId: Number(transportId),
         type: data.campaignType,
         details: additionalData,
         id: params.id,
       })
       .then((data) => {
+        setIsSubmitting(false);
+
         if (data) {
           toast.success('Campaign Edit Success.');
         }
       })
       .catch((e) => {
+        setIsSubmitting(false);
+
         toast.error(e);
       });
   };
+
+  const showAddAudienceView = useBoolean(false);
 
   return (
     <>
@@ -148,217 +165,29 @@ export default function EditCampaign() {
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(handleEditCampaign)}
-            className="space-y-8"
+            className="h-add"
           >
-            <div className=" w-full mt-4 p-6 bg-white ">
-              <h2 className="text-2xl font-bold mb-4">Campaign: Edit</h2>
-              <div className="mb-4 w-full grid grid-cols-3 gap-5 ">
-                <div className="">
-                  <FormField
-                    control={form.control}
-                    name="campaignName"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Campaign Name</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Campaign Name" {...field} />
-                        </FormControl>
-
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <div className="">
-                  <FormField
-                    control={form.control}
-                    name="startTime"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-col">
-                        <FormLabel>Start time</FormLabel>
-                        <Popover>
-                          <PopoverTrigger asChild>
-                            <FormControl>
-                              <Button
-                                variant={'outline'}
-                                className={cn(
-                                  'w-[240px] pl-3 text-left font-normal',
-                                  !field.value && 'text-muted-foreground',
-                                )}
-                              >
-                                {field.value ? (
-                                  format(field.value, 'PPP')
-                                ) : (
-                                  <span>Pick a date</span>
-                                )}
-                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                              </Button>
-                            </FormControl>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-auto p-0" align="start">
-                            <Calendar
-                              mode="single"
-                              selected={field.value}
-                              onSelect={field.onChange}
-                              disabled={(date) =>
-                                date > new Date() ||
-                                date < new Date('1900-01-01')
-                              }
-                              initialFocus
-                            />
-                          </PopoverContent>
-                        </Popover>
-
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <div className="">
-                  <FormField
-                    control={form.control}
-                    name="campaignType"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Campaign Type</FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                          // value={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select campaign type" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {Object.keys(CAMPAIGN_TYPES).map((key, index) => {
-                              return (
-                                <SelectItem key={index} value={key}>
-                                  {key}
-                                </SelectItem>
-                              );
-                            })}
-                          </SelectContent>
-                        </Select>
-
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-                {/* show only if selected is sms */}
-                <div className="">
-                  <FormField
-                    control={form.control}
-                    name="message"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Message</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Message" {...field} />
-                        </FormControl>
-
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <div className="">
-                  <FormField
-                    control={form.control}
-                    name="transport"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Transport</FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value && field.value.toString()}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select transport" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {transportData?.data?.map((data) => {
-                              return (
-                                <SelectItem
-                                  key={data.id}
-                                  value={data.id.toString()}
-                                >
-                                  {data.name}
-                                </SelectItem>
-                              );
-                            })}
-                          </SelectContent>
-                        </Select>
-
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-                <div className="">
-                  <FormField
-                    control={form.control}
-                    name="audiences"
-                    render={() => (
-                      <FormItem>
-                        <div className="mb-4">
-                          <FormLabel className="text-base">Audiences</FormLabel>
-                        </div>
-                        {audienceData &&
-                          audienceData?.data?.map((item) => (
-                            <FormField
-                              key={item.id}
-                              control={form.control}
-                              name="audiences"
-                              render={({ field }) => {
-                                return (
-                                  <FormItem
-                                    key={item.id}
-                                    className="flex flex-row items-start space-x-3 space-y-0"
-                                  >
-                                    <FormControl>
-                                      <Checkbox
-                                        checked={field.value?.includes(item.id)}
-                                        onCheckedChange={(checked) => {
-                                          return checked
-                                            ? field.onChange([
-                                                ...field.value,
-                                                item.id,
-                                              ])
-                                            : field.onChange(
-                                                field.value?.filter(
-                                                  (value) => value !== item.id,
-                                                ),
-                                              );
-                                        }}
-                                      />
-                                    </FormControl>
-                                    <FormLabel className="font-normal">
-                                      {item.details.name}
-                                    </FormLabel>
-                                  </FormItem>
-                                );
-                              }}
-                            />
-                          ))}
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-              </div>
-
-              <Button className="bg-blue-500 mt-4 text-white px-4 py-2 rounded-md hover:bg-blue-600">
-                Edit Campaign
-              </Button>
-            </div>
+            <AddForm
+              title="Edit Campaign"
+              audios={audioData?.data || []}
+              setShowAddAudience={showAddAudienceView.onToggle}
+              showAddAudience={showAddAudienceView.value}
+              form={form}
+              data={data.data}
+              isSubmitting={isSubmitting}
+            />
+            {showAddAudienceView.value ? (
+              <>
+                <AddAudience
+                  form={form}
+                  globalFilter={globalFilter}
+                  setGlobalFilter={setGlobalFilter}
+                  selectedRows={selectedRows}
+                  setSelectedRows={setSelectedRows}
+                  audienceData={audienceData}
+                />
+              </>
+            ) : null}
           </form>
         </Form>
       )}

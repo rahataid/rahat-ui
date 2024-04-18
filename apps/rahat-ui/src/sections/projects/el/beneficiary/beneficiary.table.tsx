@@ -1,6 +1,12 @@
 'use client';
 
 import {
+  PROJECT_SETTINGS_KEYS,
+  usePagination,
+  useProjectBeneficiaries,
+  useProjectSettingsStore,
+} from '@rahat-ui/query';
+import {
   ColumnFiltersState,
   SortingState,
   VisibilityState,
@@ -11,7 +17,8 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { Settings2 } from 'lucide-react';
+import { ChevronDown, Settings2 } from 'lucide-react';
+
 import * as React from 'react';
 
 import { Button } from '@rahat-ui/shadcn/components/button';
@@ -19,6 +26,7 @@ import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
+  DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
@@ -27,7 +35,6 @@ import { Input } from '@rahat-ui/shadcn/components/input';
 import {
   Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
@@ -41,48 +48,133 @@ import {
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import TransactionTableData from './beneficiaryTransactionData.json';
+import { UUID } from 'crypto';
+import { useParams } from 'next/navigation';
 import { useProjectBeneficiaryTableColumns } from './use-table-column';
+import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
+import { useBulkAssignVoucher } from 'apps/rahat-ui/src/hooks/el/contracts/el-contracts';
+import { useBoolean } from '../../../../hooks/use-boolean';
+import TokenAssingnConfirm from './token.assign.confirm';
+
 // import { useBeneficiaryTransaction } from '../../hooks/el/subgraph/querycall';
 
-const data: Transaction[] = TransactionTableData;
+export type Transaction = {
+  name: string;
+  beneficaryType: string;
+  timeStamp: string;
+  transactionHash: string;
+  amount: string;
+};
 
-export default function BeneficiaryDetailTableView() {
+export const benType = [
+  {
+    key: 'ALL',
+    value: 'ALL',
+  },
+  {
+    key: 'ENROLLED',
+    value: 'ENROLLED',
+  },
+  {
+    key: 'REFERRED',
+    value: 'REFERRED',
+  },
+];
+
+function BeneficiaryDetailTableView() {
+  const tokenAssignModal = useBoolean();
+
+  // TODO: Refactor it
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
   );
-  // const { data, error } = useBeneficiaryTransaction(
-  //   '0x082d43D30C31D054b1AEDbE08F50C2a1BBE76fC7',
-  // );
+
+  const handleTokenAssignModal = () => {
+    tokenAssignModal.onTrue();
+  };
+
+  const handleTokenAssignModalClose = () => {
+    tokenAssignModal.onFalse();
+  };
+
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = React.useState({});
+  const uuid = useParams().id as UUID;
+  const {
+    pagination,
+    filters,
+    setFilters,
+    setNextPage,
+    setPrevPage,
+    setPerPage,
+    selectedListItems,
+    setSelectedListItems,
+    resetSelectedListItems,
+  } = usePagination();
+  const assignVoucher = useBulkAssignVoucher();
+
+  const projectBeneficiaries = useProjectBeneficiaries({
+    page: pagination.page,
+    perPage: pagination.perPage,
+    order: 'desc',
+    sort: 'updatedAt',
+    projectUUID: uuid,
+    ...filters,
+  });
+
+  const contractAddress = useProjectSettingsStore(
+    (state) => state.settings?.[uuid][PROJECT_SETTINGS_KEYS.CONTRACT] || null,
+  );
 
   const columns = useProjectBeneficiaryTableColumns();
 
+  const handleBenType = React.useCallback(
+    (type: string) => {
+      resetSelectedListItems();
+      if (type === 'ALL') {
+        setFilters({ ...filters, status: undefined });
+        return;
+      }
+      setFilters({ ...filters, status: type });
+    },
+    [filters, setFilters],
+  );
+
   const table = useReactTable({
-    data,
+    manualPagination: true,
+    data: projectBeneficiaries?.data?.data || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setRowSelection,
+    getRowId: (row) => row.wallet,
+    onRowSelectionChange: setSelectedListItems,
     state: {
       sorting,
       columnFilters,
       columnVisibility,
-      rowSelection,
+      rowSelection: selectedListItems,
     },
   });
+  // const assignToken =
+
+  const selectedRowAddresses = Object.keys(selectedListItems);
+
+  const handleBulkAssign = async () => {
+    await assignVoucher.mutateAsync({
+      addresses: selectedRowAddresses as `0x${string}`[],
+      noOfTokens: 1,
+      contractAddress: contractAddress.elproject.address,
+    });
+  };
 
   return (
     <>
-      <div className="w-full h-full p-2 bg-secondary">
+      <div className="p-2 bg-secondary">
         <div className="flex items-center mb-2">
           <Input
             placeholder="Filter name..."
@@ -92,6 +184,25 @@ export default function BeneficiaryDetailTableView() {
             }
             className="max-w-sm rounded mr-2"
           />
+          <div className="max-w-sm rounded mr-2">
+            <Select
+              onValueChange={handleBenType}
+              defaultValue={filters?.status || 'ALL'}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Beneficiary Type" />
+              </SelectTrigger>
+              <SelectContent>
+                {benType.map((item) => {
+                  return (
+                    <SelectItem key={item.key} value={item.value}>
+                      {item.key}
+                    </SelectItem>
+                  );
+                })}
+              </SelectContent>
+            </Select>
+          </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="ml-auto">
@@ -121,11 +232,29 @@ export default function BeneficiaryDetailTableView() {
                 })}
             </DropdownMenuContent>
           </DropdownMenu>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              {selectedRowAddresses.length ? (
+                <Button
+                  disabled={assignVoucher.isPending}
+                  className="h-10 ml-2"
+                >
+                  {selectedRowAddresses.length} - Beneficiary Selected
+                  <ChevronDown strokeWidth={1.5} />
+                </Button>
+              ) : null}
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={handleTokenAssignModal}>
+                Assign Tokens To All
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
-        <div className="rounded border h-[calc(100vh-180px)] bg-card">
+        <div className="rounded border bg-card">
           <Table>
-            <ScrollArea className="h-table1">
-              <TableHeader className="sticky top-0">
+            <ScrollArea className="h-[calc(100vh-182px)]">
+              <TableHeader className="bg-card sticky top-0">
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow key={headerGroup.id}>
                     {headerGroup.headers.map((header) => {
@@ -166,7 +295,15 @@ export default function BeneficiaryDetailTableView() {
                       colSpan={columns.length}
                       className="h-24 text-center"
                     >
-                      No results.
+                      {projectBeneficiaries.isFetching ? (
+                        <div className="flex items-center justify-center space-x-2 h-full">
+                          <div className="h-5 w-5 animate-bounce rounded-full bg-primary [animation-delay:-0.3s]"></div>
+                          <div className="h-5 w-5 animate-bounce rounded-full bg-primary [animation-delay:-0.13s]"></div>
+                          <div className="h-5 w-5 animate-bounce rounded-full bg-primary"></div>
+                        </div>
+                      ) : (
+                        'No data available.'
+                      )}
                     </TableCell>
                   </TableRow>
                 )}
@@ -175,55 +312,22 @@ export default function BeneficiaryDetailTableView() {
           </Table>
         </div>
       </div>
-      <div className="sticky bottom-0 flex items-center justify-end space-x-4 px-4 py-1 border-t-2 bg-card">
-        <div className="flex-1 text-sm text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length} of{' '}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="text-sm font-medium">Rows per page</div>
-          <Select
-            defaultValue="10"
-            onValueChange={(value) => table.setPageSize(Number(value))}
-          >
-            <SelectTrigger className="w-16">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectItem value="5">5</SelectItem>
-                <SelectItem value="10">10</SelectItem>
-                <SelectItem value="20">20</SelectItem>
-                <SelectItem value="30">30</SelectItem>
-                <SelectItem value="40">40</SelectItem>
-                <SelectItem value="50">50</SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-        </div>
-        <div>
-          Page {table.getState().pagination.pageIndex + 1} of{' '}
-          {table.getPageCount()}
-        </div>
-        <div className="space-x-4">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            Previous
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            Next
-          </Button>
-        </div>
-      </div>
+      <CustomPagination
+        currentPage={pagination.page}
+        handleNextPage={setNextPage}
+        handlePageSizeChange={setPerPage}
+        handlePrevPage={setPrevPage}
+        meta={projectBeneficiaries.data?.response?.meta || {}}
+        perPage={pagination.perPage}
+      />
+      <TokenAssingnConfirm
+        tokens={selectedRowAddresses.length}
+        open={tokenAssignModal.value}
+        handleClose={handleTokenAssignModalClose}
+        handleSubmit={handleBulkAssign}
+      />
     </>
   );
 }
+
+export default React.memo(BeneficiaryDetailTableView);

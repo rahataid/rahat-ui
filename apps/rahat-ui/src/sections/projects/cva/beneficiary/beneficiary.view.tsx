@@ -1,37 +1,12 @@
 'use client';
 
-import {
-  ResizablePanel,
-  ResizablePanelGroup,
-} from '@rahat-ui/shadcn/src/components/ui/resizable';
-import { Beneficiary } from '@rahataid/sdk';
-import { useState } from 'react';
-import BeneficiaryDetail from './beneficiary.detail';
+import { useBeneficiaryList } from '@rahat-ui/query';
 import BeneficiaryTable from './beneficiary.table';
 
 export default function BeneficiaryView() {
-  const [selectedBeneficiary, setSelectedBeneficiary] = useState<Beneficiary>();
-
-  const handleRowClick = (selected: Beneficiary) => {
-    setSelectedBeneficiary(selected);
-  };
-
-  const handleClose = () => {
-    setSelectedBeneficiary(undefined);
-  };
-  return (
-    <ResizablePanelGroup direction="horizontal">
-      <ResizablePanel>
-        <BeneficiaryTable handleClick={handleRowClick} />
-      </ResizablePanel>
-      {selectedBeneficiary && (
-        <ResizablePanel defaultSize={32}>
-          <BeneficiaryDetail
-            data={selectedBeneficiary}
-            handleClose={handleClose}
-          />
-        </ResizablePanel>
-      )}
-    </ResizablePanelGroup>
-  );
+  const ben = useBeneficiaryList({
+    page: 1,
+    perPage: 10,
+  });
+  return <BeneficiaryTable />;
 }

@@ -112,27 +112,6 @@ export const columns: ColumnDef<VoiceDetail>[] = [
       <div className="capitalize">{row.getValue('attempts')}</div>
     ),
   },
-  {
-    id: 'actions',
-    enableHiding: false,
-    cell: () => {
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem>View Details</DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>Edit</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
-    },
-  },
 ];
 
 export default function VoiceDetailTableView({ data }: IProps) {
@@ -175,14 +154,6 @@ export default function VoiceDetailTableView({ data }: IProps) {
   return (
     <div>
       <div className="flex items-center py-4">
-        <Input
-          placeholder="Filter Logs..."
-          value={(table.getColumn('to')?.getFilterValue() as string) ?? ''}
-          onChange={(event) =>
-            table.getColumn('to')?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm mr-3"
-        />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">

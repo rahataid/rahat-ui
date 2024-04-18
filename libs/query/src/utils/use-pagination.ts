@@ -1,73 +1,115 @@
-import { zustandStore } from '@rumsan/react-query';
 import { Pagination } from '@rumsan/sdk/types';
-import { StateStorage, createJSONStorage } from 'zustand/middleware';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 
-const hashStorage: StateStorage = {
-  getItem: (key): string => {
+export const hashStorage = {
+  getItem: (key: string): any => {
     const searchParams = new URLSearchParams(window.location.hash.slice(1));
-    const storedValue = searchParams.get(key) ?? '';
-    return JSON.parse(storedValue);
+    const storedValue = searchParams.get(key);
+    return storedValue ? JSON.parse(storedValue) : null;
   },
-  setItem: (key, newValue): void => {
+  setItem: (key: string, newValue: any): void => {
     const searchParams = new URLSearchParams(window.location.hash.slice(1));
     searchParams.set(key, JSON.stringify(newValue));
     window.location.hash = searchParams.toString();
   },
-  removeItem: (key): void => {
+  removeItem: (key: string): void => {
     const searchParams = new URLSearchParams(window.location.hash.slice(1));
     searchParams.delete(key);
     window.location.hash = searchParams.toString();
   },
 };
 
-type LocalAndUrlStore = {
+type usePaginationReturn = {
   pagination: Pagination;
   filters: {
     [key: string]: string;
   };
-  setPagination: (pagination: { page: number; perPage: number }) => void;
-  setFilters: (filters: { [key: string]: string }) => void;
+  selectedListItems: any;
+  setPagination: (pagination: Pagination) => void;
+  setFilters: (filters: { [key: string]: any }) => void;
   setNextPage: () => void;
   setPrevPage: () => void;
+  resetPagination: () => void;
+  resetFilters: () => void;
+  setSelectedListItems: (selectedListItems: any) => void;
+  resetSelectedListItems: () => void;
+  setPerPage: (perPage: number | string) => void;
 };
 
-const storageOptions = {
-  name: 'paginationStore',
-  storage: createJSONStorage<LocalAndUrlStore>(() => hashStorage),
-};
+// ...existing code...
 
-export const usePagination = zustandStore<LocalAndUrlStore>(
-  (set) => ({
-    pagination: {
-      page: 1,
-      perPage: 20,
-    },
-    filters: {
-      orderBy: 'createdAt',
-      orderType: 'desc',
-    },
-    setNextPage: () => {
-      set((state) => ({
-        pagination: {
-          ...state.pagination,
-          page: state.pagination.page + 1,
-        },
-      }));
-    },
-    setPrevPage: () => {
-      set((state) => ({
-        pagination: {
-          ...state.pagination,
-          page: state.pagination.page - 1,
-        },
-      }));
-    },
-    setPagination: (pagination: any) => set({ pagination }),
-    setFilters: (filters: LocalAndUrlStore['filters']) => set({ filters }),
-    resetPagination: () => set({ pagination: { page: 1, perPage: 10 } }),
-    resetFilters: () => set({ filters: {} }),
-  }),
-  {
-    persistOptions: storageOptions,
-  },
-);
+export const usePagination = (): usePaginationReturn => {
+  const [pagination, setPagination] = useState<Pagination>(
+    hashStorage.getItem('pagination') || { page: 1, perPage: 20 },
+  );
+  const [filters, setFilters] = useState<{ [key: string]: string }>(
+    hashStorage.getItem('filters') || {},
+  );
+  const [selectedListItems, setSelectedListItems] = useState<any>({});
+
+  useEffect(() => {
+    const storedPagination = hashStorage.getItem('pagination');
+    if (JSON.stringify(storedPagination) !== JSON.stringify(pagination)) {
+      hashStorage.setItem('pagination', pagination);
+    }
+  }, [pagination]);
+
+  useEffect(() => {
+    const storedFilters = hashStorage.getItem('filters');
+    if (JSON.stringify(storedFilters) !== JSON.stringify(filters)) {
+      hashStorage.setItem('filters', filters);
+    }
+  }, [filters]);
+
+  useEffect(() => {
+    const storedSelectedListItems = hashStorage.getItem('selectedListItems');
+    if (
+      JSON.stringify(storedSelectedListItems) !==
+      JSON.stringify(selectedListItems)
+    ) {
+      hashStorage.setItem('selectedListItems', selectedListItems);
+    }
+  }, [selectedListItems]);
+
+  const setNextPage = useCallback(
+    () => setPagination((prev) => ({ ...prev, page: prev.page + 1 })),
+    [],
+  );
+  const setPrevPage = useCallback(
+    () => setPagination((prev) => ({ ...prev, page: prev.page - 1 })),
+    [],
+  );
+  const resetPagination = useCallback(
+    () => setPagination({ page: 1, perPage: 10 }),
+    [],
+  );
+  const resetFilters = useCallback(() => setFilters({}), []);
+  const resetSelectedListItems = useCallback(
+    () => setSelectedListItems([]),
+    [],
+  );
+  const setPerPage = useCallback(
+    (perPage: number | string) =>
+      setPagination((prev) => ({
+        ...prev,
+        perPage: Number(perPage),
+        page: 1,
+      })),
+    [],
+  );
+
+  return {
+    pagination,
+    filters,
+    setPagination,
+    setFilters,
+    setNextPage,
+    setPrevPage,
+    resetPagination,
+    resetFilters,
+    selectedListItems,
+    setSelectedListItems,
+    resetSelectedListItems,
+    setPerPage,
+  };
+};

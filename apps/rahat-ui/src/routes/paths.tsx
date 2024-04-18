@@ -18,7 +18,11 @@ export const paths = {
     root: ROOTS.PROFILE,
   },
   dashboard: {
-    project: ROOTS.PROJECT,
+    project: {
+      root: ROOTS.PROJECT,
+      add: `${ROOTS.PROJECT}/add`,
+      detail: (id: string) => `${ROOTS.PROJECT}/${id}`,
+    },
     root: ROOTS.DASHBOARD,
     beneficiary: {
       root: ROOTS.BENEFICIARY,
@@ -33,7 +37,7 @@ export const paths = {
       text: `${ROOTS.COMMUNICATION}/text`,
       textDetail: (id: number) => `${ROOTS.COMMUNICATION}/text/${id}`,
       editTextCampaign: (id: number) =>
-        `${ROOTS.COMMUNICATION}/text/edit/${id}`,
+        `${ROOTS.COMMUNICATION}/text/${id}/edit`,
     },
   },
 };

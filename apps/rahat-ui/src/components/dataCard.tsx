@@ -5,54 +5,62 @@ import {
   CardTitle,
 } from '@rahat-ui/shadcn/components/card';
 import { cn } from '@rahat-ui/shadcn/src/utils';
-import { LucideIcon } from 'lucide-react';
+import { LucideIcon, RefreshCcw } from 'lucide-react';
 
 type CardProps = {
   title: string;
-  number1: string;
-  number2: string;
-  subTitle1: string;
-  subTitle2: string;
+  number: string;
+  subTitle: string;
   className: string;
-  Icon: LucideIcon;
+  Icon?: LucideIcon;
+  refresh?: VoidFunction;
 };
 
 export default function DataCard({
   title,
-  number1,
-  number2,
-  subTitle1,
-  subTitle2,
+  number,
+  subTitle,
   className,
   Icon,
+  refresh,
 }: CardProps) {
   return (
     <Card
       className={cn(
-        'flex flex-col rounded-sm justify-center border-none shadow',
+        'flex flex-col rounded justify-center border-none shadow',
         className,
       )}
     >
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-md font-medium">{title}</CardTitle>
-        <Icon
-          size={20}
-          strokeWidth={1.5}
-          className="h-6 w-6 text-muted-foreground"
-        />
+      <CardHeader className="pb-2">
+        <div className="flex items-start justify-between ">
+          <CardTitle className="text-md font-medium">{title}</CardTitle>
+          <div>
+            {Icon && (
+              <Icon
+                size={20}
+                strokeWidth={1.5}
+                className="text-muted-foreground"
+              />
+            )}
+          </div>
+        </div>
       </CardHeader>
       <CardContent className="flex items-center justify-between">
-        <div className="">
-          <div className="text-4xl font-semibold text-primary">{number1}</div>
-          <p className="text-xs text-muted-foreground space-y-0 pt-2">
-            {subTitle1}
-          </p>
-        </div>
-        <div className="">
-          <div className="text-4xl font-semibold text-primary">{number2}</div>
-          <p className="text-xs text-muted-foreground space-y-0 pt-2">
-            {subTitle2}
-          </p>
+        <div>
+          <div className="text-4xl font-semibold text-primary">{number}</div>
+          <div className="flex items-end gap-4">
+            <p className="text-xs text-muted-foreground space-y-0 pt-2">
+              {subTitle}
+            </p>
+            {refresh && (
+              <RefreshCcw
+                size={14}
+                strokeWidth={1.5}
+                className="text-primary cursor-pointer"
+                onClick={refresh}
+              />
+            )}
+          </div>
         </div>
       </CardContent>
     </Card>

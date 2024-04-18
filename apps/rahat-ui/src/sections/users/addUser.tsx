@@ -1,7 +1,14 @@
+'use client';
+
+// Import statements
+import { useEffect } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
+// import { useUserCreate, useUserRoleList } from '@rumsan/react-query';
+// import { enumToObjectArray } from '@rumsan/sdk/utils';
+// import { Role } from '@rumsan/sdk/types';
 import {
   Select,
   SelectContent,
@@ -9,8 +16,8 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@rahat-ui/shadcn/components/select';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+} from '@rahat-ui/shadcn/src/components/ui/select';
+// import { Gender } from '@rahat-ui/types';
 import {
   Form,
   FormControl,
@@ -19,51 +26,60 @@ import {
   FormMessage,
 } from '@rahat-ui/shadcn/src/components/ui/form';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
-import { Role } from '@rumsan/sdk/types';
-import { enumToObjectArray } from '@rumsan/sdk/utils';
-import { useRumsanService } from '../../providers/service.provider';
-import { Gender } from '@rumsan/sdk/enums';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { useRoleList, useUserCreate } from '@rahat-ui/query';
 
-type Props = {
-  // onAddUsersClick: VoidFunction;
-  onSuccess: () => void;
-};
+// Constants
+// const genderList = enumToObjectArray(Gender);
 
-export default function AddUser({ onSuccess }: Props) {
-  const { roleQuery, userQuery } = useRumsanService();
-  const genderList = enumToObjectArray(Gender);
-  const FormSchema = z.object({
-    name: z.string().min(2, { message: 'Name must be at least 4 character' }),
-    email: z.string().email(),
-    gender: z.string(),
-    wallet: z
-      .string()
-      .min(42, { message: 'The Ethereum address must be 42 characters long' }),
-  });
+const FormSchema = z.object({
+  name: z.string().min(2, { message: 'Name must be at least 4 character' }),
+  email: z.string().email(),
+  gender: z.string(),
+  role: z.string(),
+  phone: z.string(),
+  wallet: z
+    .string()
+    .min(42, { message: 'The Ethereum address must be 42 characters long' }),
+});
 
-  const form = useForm<z.infer<typeof FormSchema>>({
+// Component
+export default function AddUser() {
+  const form = useForm({
     resolver: zodResolver(FormSchema),
     defaultValues: {
       name: '',
-      gender: 'UNKNOWN',
+      gender: 'UNKNOWN' || '',
       email: '',
       phone: '',
-      role: 'USER',
+      role: '',
       wallet: '',
     },
   });
 
-  const { isPending, error, data: roleData } = roleQuery.userRoleList({});
+  const { data: roleData } = useRoleList();
 
-  const roles: string[] =
-    roleData?.data.map((role: Role) => role.name).sort() || [];
+  // const { data: roleData } = useUserRoleList({});
 
-  const userCreate = userQuery.useUserCreate();
+  // const roles = roleData?.data.map((role: Role) => role.name).sort() || [];
+  const userCreate = useUserCreate();
 
-  const handleAddUser = async () => {
-    await userCreate.mutateAsync(form.getValues());
-    onSuccess();
+  const handleAddUser = async (data: any) => {
+    await userCreate.mutateAsync(data);
   };
+  useEffect(() => {
+    if (userCreate.isSuccess) {
+      form.reset({
+        name: '',
+        gender: 'UNKOWN' || '',
+        email: '',
+        phone: '',
+        role: '',
+        wallet: '',
+      });
+    }
+  }, [form, userCreate.isSuccess]);
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleAddUser)}>
@@ -71,18 +87,16 @@ export default function AddUser({ onSuccess }: Props) {
           <h1 className="text-md font-semibold mb-6">Add User</h1>
           <div className="grid grid-cols-2 gap-4 mb-4">
             <FormField
-              control={form.control}
               name="name"
-              render={({ field }) => {
-                return (
-                  <FormItem>
-                    <FormControl>
-                      <Input type="text" placeholder="Name" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
+              control={form.control}
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <Input type="text" placeholder="Name" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
             <FormField
               control={form.control}
@@ -100,13 +114,10 @@ export default function AddUser({ onSuccess }: Props) {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectGroup>
-                          {genderList.map((gender) => (
-                            <SelectItem value={gender.value} key={gender.value}>
-                              {gender.label}
-                            </SelectItem>
-                          ))}
-                        </SelectGroup>
+                        <SelectItem value="MALE">Male</SelectItem>
+                        <SelectItem value="FEMALE">Female</SelectItem>
+                        <SelectItem value="OTHER">Other</SelectItem>
+                        <SelectItem value="UNKNOWN">Unknown</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -159,10 +170,10 @@ export default function AddUser({ onSuccess }: Props) {
                       </FormControl>
                       <SelectContent>
                         <SelectGroup>
-                          {roles.length &&
-                            roles.map((role) => (
-                              <SelectItem value={role} key={role}>
-                                {role}
+                          {roleData?.data &&
+                            roleData?.data?.map((role: any) => (
+                              <SelectItem value={role.name} key={role.id}>
+                                {role.name}
                               </SelectItem>
                             ))}
                         </SelectGroup>

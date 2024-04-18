@@ -10,10 +10,10 @@ import { useProjectVoucher } from '../../hooks/el/subgraph/querycall';
 // };
 
 export default function TransactionsPage() {
-  const { data: transactionData, error } = useProjectVoucher(
+  const { data: transactionData, error, refetch } = useProjectVoucher(
     '0x38BFDCCAc556ED026706EE21b4945cE86718D4D1',
+    'Free'
   );
-  console.log('data', transactionData);
 
   return (
     <div className="max-h-mx">
@@ -30,6 +30,7 @@ export default function TransactionsPage() {
           number2={''}
           subTitle2=""
           Icon={Users}
+          refresh={refetch}
         />
         <DataCard
           className="border-yellow-500"

@@ -182,7 +182,7 @@ export default function TextTable() {
         )
       : [];
 
-    campaignStore.setTotalTextCampaign(result?.length);
+    campaignStore.setTotalTextCampaign(data?.response?.meta?.total || 0);
     return result;
   }, [isSuccess]);
 
@@ -206,7 +206,7 @@ export default function TextTable() {
   });
 
   return (
-    <div className="p-2 bg-secondary">
+    <div className="w-full h-full p-2 bg-secondary">
       <div className="flex items-center mb-2">
         <Input
           placeholder="Filter campaigns..."
@@ -248,9 +248,9 @@ export default function TextTable() {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <div className="rounded border bg-white">
+      <div className="rounded border h-[calc(100vh-180px)]  bg-card">
         <Table>
-          <ScrollArea className="h-table1">
+          <ScrollArea className="w-full h-[calc(100vh-184px)]">
             <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
@@ -300,37 +300,12 @@ export default function TextTable() {
           </ScrollArea>
         </Table>
       </div>
-      <div className="flex items-center justify-end space-x-8 p-2 border-t">
+      <div className="flex items-center justify-end space-x-2 p-2 border-t bg-card">
         <div className="flex-1 text-sm text-muted-foreground">
           {table.getFilteredSelectedRowModel().rows.length} of{' '}
           {table.getFilteredRowModel().rows.length} row(s) selected.
         </div>
-        <div className="flex items-center gap-2">
-          <div className="text-sm font-medium">Rows per page</div>
-          <Select
-            defaultValue="10"
-            onValueChange={(value) => table.setPageSize(Number(value))}
-          >
-            <SelectTrigger className="w-16">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectItem value="5">5</SelectItem>
-                <SelectItem value="10">10</SelectItem>
-                <SelectItem value="20">20</SelectItem>
-                <SelectItem value="30">30</SelectItem>
-                <SelectItem value="40">40</SelectItem>
-                <SelectItem value="50">50</SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-        </div>
-        <div>
-          Page {table.getState().pagination.pageIndex + 1} of{' '}
-          {table.getPageCount()}
-        </div>
-        <div className="space-x-4">
+        <div className="space-x-2">
           <Button
             variant="outline"
             size="sm"

@@ -34,7 +34,7 @@ export default function Nav({ onTabChange }: IProps) {
                 <Eye size={18} strokeWidth={1.5} />
                 <p>Users </p>
               </div>
-              <p>{totalUser || 0}</p>
+              {/* <p>{totalUser || 0}</p> */}
             </div>
           </nav>
         </div>

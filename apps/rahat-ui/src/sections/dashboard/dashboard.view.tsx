@@ -7,18 +7,18 @@ import { DashboardCharts } from '.';
 // import { useSwal } from '../../components/swal';
 import { mapboxBasicConfig } from '../../constants/config';
 import DashboardSummary from './summary';
+import { useGetBeneficiaryStats } from '@rahat-ui/query';
 
 export default function DashboardView() {
   // const alert = useSwal();
+  const beneficiaryStats = useGetBeneficiaryStats();
   return (
-    <div>
+    <div className="bg-secondary">
       <Tabs defaultValue="list">
-        <ScrollArea className="h-[calc(100vh-68px)] px-4 py-2">
+        <ScrollArea className="h-[calc(100vh-68px)] px-2 py-2">
           <TabsContent value="list">
             <DashboardSummary />
-            <DashboardCharts />
-            <DashboardCharts />
-            <DashboardCharts />
+            <DashboardCharts charts={beneficiaryStats.data?.data} />
           </TabsContent>
           <StyledMapContainer>
             <ClusterMap {...mapboxBasicConfig} mapStyle={THEMES.light} />

@@ -6,7 +6,7 @@ import {
   useProjectSettingsStore,
   useProjectStore,
 } from '@rahat-ui/query';
-import { BarChart, ChartColumnStacked } from '@rahat-ui/shadcn/charts';
+import { ChartColumnStacked } from '@rahat-ui/shadcn/charts';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import {
   useReadElProjectGetProjectVoucherDetail,
@@ -95,18 +95,52 @@ const ProjectMainView = () => {
       return name === 'BENEFICIARY_TYPE' || name === 'FOOTFALL';
     }) || [];
 
-  const seriesData = [
+  const filteredEyeCheckupData = ELProjectStats || [];
+  console.log('filteredEyeCheckupData', filteredEyeCheckupData);
+
+  const enrolledEyeCheckupData = ELProjectStats?.filter((item) => {
+    return item.name === 'EYE_CHECKUP';
+  })?.[0]?.data?.find((i) => i.id === 'ENROLLED_EYE_CHECKUP');
+
+  const referredEyeCheckupData = ELProjectStats?.filter((item) => {
+    return item.name === 'EYE_CHECKUP';
+  })?.[0]?.data?.find((i) => i.id === 'REFERRED_EYE_CHECKUP');
+
+  const enrolledNoEyeCheckupData = ELProjectStats?.filter((item) => {
+    return item.name === 'EYE_CHECKUP';
+  })?.[0]?.data?.find((i) => i.id === 'ENROLLED_NO_EYE_CHECKUP');
+
+  const referredNoEyeCheckupData = ELProjectStats?.filter((item) => {
+    return item.name === 'EYE_CHECKUP';
+  })?.[0]?.data?.find((i) => i.id === 'REFERRED_NO_EYE_CHECKUP');
+
+  const eyeCheckupData = [
     {
-      name: 'Enrolled',
-      data: [10, 20, 30, 40, 50, 60],
+      name: 'Eye Checkup',
+      data: [
+        enrolledEyeCheckupData?.count || 0,
+        referredEyeCheckupData?.count || 0,
+      ],
     },
     {
-      name: 'Referred',
-      data: [15, 25, 35, 45, 55, 65],
+      name: 'No Eye Checkup',
+      data: [
+        enrolledNoEyeCheckupData?.count || 0,
+        referredNoEyeCheckupData?.count || 0,
+      ],
+    },
+  ];
+  const glassData = [
+    {
+      name: 'Glass Required',
+      data: [10, 20],
+    },
+    {
+      name: 'Glass Not Required',
+      data: [15, 65],
     },
   ];
 
-  console.log('ELProjectStats', ELProjectStats);
   return (
     <div className="p-2 bg-secondary">
       <ScrollArea className="h-[calc(100vh-80px)]">
@@ -130,12 +164,12 @@ const ProjectMainView = () => {
         />
         <div className="grid grid-cols-2 gap-2 mt-2">
           <div className="bg-card rounded">
-            <ChartColumnStacked series={seriesData} />
+            <ChartColumnStacked series={eyeCheckupData} />
 
             <p className="mt-2 mb-1 ml-4">Eye Checkup Reporting</p>
           </div>
           <div className="bg-card rounded">
-            <ChartColumnStacked series={seriesData} />
+            <ChartColumnStacked series={glassData} />
 
             <p className="mt-2 mb-1 ml-4">Glasses Required</p>
           </div>
@@ -144,5 +178,4 @@ const ProjectMainView = () => {
     </div>
   );
 };
-
-export default memo(ProjectMainView);
+export default ProjectMainView;

@@ -2,7 +2,7 @@
 
 import { useParams } from 'next/navigation';
 
-import { useProjectAction } from '@rahat-ui/query';
+import { PROJECT_SETTINGS_KEYS, useProjectAction, useProjectSettingsStore } from '@rahat-ui/query';
 import {
   Tabs,
   TabsContent,
@@ -62,17 +62,19 @@ export default function BeneficiaryDetail({
   const getProject = useProjectAction();
 
   const [assignStatus, setAssignStatus] = useState(false);
-  const [contractAddress, setContractAddress] = useState<any>();
 
   const walletAddress = beneficiaryDetails.wallet;
 
+  const contractSettings = useProjectSettingsStore(
+    (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT] || null,
+  )
+
   const { data: beneficiaryVoucherDetails, isLoading } =
     useReadElProjectGetBeneficiaryVoucherDetail({
-      address: contractAddress?.el,
+      address: contractSettings?.elproject?.address,
       args: [walletAddress],
     });
 
-  const projectSettings = localStorage.getItem('projectSettingsStore');
 
   const [activeTab, setActiveTab] = useState<'details' | 'edit' | null>(
     'details',
@@ -117,16 +119,7 @@ export default function BeneficiaryDetail({
     }
   }, [beneficiaryVoucherDetails]);
 
-  useEffect(() => {
-    if (projectSettings) {
-      const settings = JSON.parse(projectSettings)?.state?.settings?.[id];
-      setContractAddress({
-        el: settings?.elproject?.address,
-        eyeVoucher: settings?.eyevoucher?.address,
-        referredVoucher: settings?.referralvoucher?.address,
-      });
-    }
-  }, [id, projectSettings]);
+ 
 
   const voucherAssignModal = useBoolean();
 

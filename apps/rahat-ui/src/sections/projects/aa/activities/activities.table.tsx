@@ -33,8 +33,10 @@ import {
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import useActivitiesTableColumn from './useActivitiesTableColumn';
 import ActivitiesData from './activities.json';
+import { useActivitiesFields } from './useActivitiesFields';
 
 export default function ActivitiesTable() {
+  const { hazardType, category } = useActivitiesFields();
   const columns = useActivitiesTableColumn();
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -65,22 +67,34 @@ export default function ActivitiesTable() {
 
   return (
     <div className="p-2 bg-secondary">
-      <div className="max-w-sm pb-2">
+      <div className="flex items-center gap-2 mb-2 w-1/2">
+        {/* Filter Category */}
         <Select>
           <SelectTrigger>
             <SelectValue placeholder="Select a category" />
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
-              <SelectItem value="a">General Actions</SelectItem>
-              <SelectItem value="b">Early Warning Communication</SelectItem>
-              <SelectItem value="c">Cleaning the drains</SelectItem>
-              <SelectItem value="d">
-                Strengthening embankments by placing sand bags
-              </SelectItem>
-              <SelectItem value="e">Support for early harvesting</SelectItem>
-              <SelectItem value="f">Managing drinking water</SelectItem>
-              <SelectItem value="g">Cash transfer</SelectItem>
+              {category.map((item) => (
+                <SelectItem key={item.label} value={item.value}>
+                  {item.label}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+        {/* Filter Hazard type */}
+        <Select>
+          <SelectTrigger>
+            <SelectValue placeholder="Select a hazard type" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              {hazardType.map((item) => (
+                <SelectItem key={item.label} value={item.value}>
+                  {item.label}
+                </SelectItem>
+              ))}
             </SelectGroup>
           </SelectContent>
         </Select>

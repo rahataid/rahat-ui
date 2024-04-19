@@ -20,8 +20,10 @@ import {
 
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
+import { useActivitiesFields } from './useActivitiesFields';
 
 export default function AddActivities() {
+  const { hazardType, category, phase } = useActivitiesFields();
   const FormSchema = z.object({
     title: z.string().min(2, { message: 'Title must be at least 4 character' }),
     responsibility: z
@@ -33,6 +35,9 @@ export default function AddActivities() {
     }),
     category: z.string({
       required_error: 'Please select category',
+    }),
+    hazardType: z.string({
+      required_error: 'Please select hazard type',
     }),
     description: z
       .string()
@@ -48,6 +53,7 @@ export default function AddActivities() {
       source: '',
       phase: '',
       category: '',
+      hazardType: '',
       description: '',
     },
   });
@@ -121,11 +127,11 @@ export default function AddActivities() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="preparedness">
-                          Preparedness
-                        </SelectItem>
-                        <SelectItem value="readiness">Readiness</SelectItem>
-                        <SelectItem value="activation">Activation</SelectItem>
+                        {phase.map((item) => (
+                          <SelectItem key={item.label} value={item.value}>
+                            {item.label}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -147,21 +153,37 @@ export default function AddActivities() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="a">General Actions</SelectItem>
-                        <SelectItem value="b">
-                          Early Warning Communication
-                        </SelectItem>
-                        <SelectItem value="c">Cleaning the drains</SelectItem>
-                        <SelectItem value="d">
-                          Strengthening embankments by placing sand bags
-                        </SelectItem>
-                        <SelectItem value="e">
-                          Support for early harvesting
-                        </SelectItem>
-                        <SelectItem value="f">
-                          Managing drinking water
-                        </SelectItem>
-                        <SelectItem value="g">Cash transfer</SelectItem>
+                        {category.map((item) => (
+                          <SelectItem key={item.label} value={item.value}>
+                            {item.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="hazardType"
+                render={({ field }) => (
+                  <FormItem>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select hazard type" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {hazardType.map((item) => (
+                          <SelectItem key={item.label} value={item.value}>
+                            {item.label}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                     <FormMessage />

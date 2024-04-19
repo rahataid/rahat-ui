@@ -34,6 +34,9 @@ export default function AddActivities() {
     category: z.string({
       required_error: 'Please select category',
     }),
+    hazardType: z.string({
+      required_error: 'Please select hazard type',
+    }),
     description: z
       .string()
       .toUpperCase()
@@ -48,6 +51,7 @@ export default function AddActivities() {
       source: '',
       phase: '',
       category: '',
+      hazardType: '',
       description: '',
     },
   });
@@ -162,6 +166,30 @@ export default function AddActivities() {
                           Managing drinking water
                         </SelectItem>
                         <SelectItem value="g">Cash transfer</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="hazardType"
+                render={({ field }) => (
+                  <FormItem>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select hazard type" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="a">hazard 1</SelectItem>
+                        <SelectItem value="b">hazard 2</SelectItem>
+                        <SelectItem value="c">hazard 3</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />

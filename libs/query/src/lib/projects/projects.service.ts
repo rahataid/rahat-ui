@@ -23,7 +23,7 @@ import { useProjectSettingsStore, useProjectStore } from './project.store';
 
 export const PROJECT_SETTINGS_KEYS = {
   CONTRACT: 'CONTRACT',
-  SUBGRAPH: 'SUBGRAPH',
+  SUBGRAPH: 'SUBGRAPH_URL',
 };
 
 const createProject = async (payload: CreateProjectPayload) => {

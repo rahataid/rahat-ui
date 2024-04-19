@@ -20,8 +20,10 @@ import {
 
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
+import { useActivitiesFields } from './useActivitiesFields';
 
 export default function AddActivities() {
+  const { hazardType, category, phase } = useActivitiesFields();
   const FormSchema = z.object({
     title: z.string().min(2, { message: 'Title must be at least 4 character' }),
     responsibility: z
@@ -125,11 +127,11 @@ export default function AddActivities() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="preparedness">
-                          Preparedness
-                        </SelectItem>
-                        <SelectItem value="readiness">Readiness</SelectItem>
-                        <SelectItem value="activation">Activation</SelectItem>
+                        {phase.map((item) => (
+                          <SelectItem key={item.label} value={item.value}>
+                            {item.label}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -151,21 +153,11 @@ export default function AddActivities() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="a">General Actions</SelectItem>
-                        <SelectItem value="b">
-                          Early Warning Communication
-                        </SelectItem>
-                        <SelectItem value="c">Cleaning the drains</SelectItem>
-                        <SelectItem value="d">
-                          Strengthening embankments by placing sand bags
-                        </SelectItem>
-                        <SelectItem value="e">
-                          Support for early harvesting
-                        </SelectItem>
-                        <SelectItem value="f">
-                          Managing drinking water
-                        </SelectItem>
-                        <SelectItem value="g">Cash transfer</SelectItem>
+                        {category.map((item) => (
+                          <SelectItem key={item.label} value={item.value}>
+                            {item.label}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -187,9 +179,11 @@ export default function AddActivities() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="a">hazard 1</SelectItem>
-                        <SelectItem value="b">hazard 2</SelectItem>
-                        <SelectItem value="c">hazard 3</SelectItem>
+                        {hazardType.map((item) => (
+                          <SelectItem key={item.label} value={item.value}>
+                            {item.label}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                     <FormMessage />

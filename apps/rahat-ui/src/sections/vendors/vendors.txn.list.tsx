@@ -25,6 +25,7 @@ import * as React from 'react';
 
 import { useVendorTransaction } from '../../hooks/el/subgraph/querycall';
 import { truncateEthAddress } from '@rumsan/sdk/utils';
+import TableLoader from '../../components/table.loader';
 
 // export type Payment = {
 //   id: string;
@@ -144,15 +145,7 @@ export default function VendorTxnList({ walletAddress }: VendorTxnListProps) {
                       colSpan={columns.length}
                       className="h-24 text-center"
                     >
-                      {isFetching ? (
-                        <div className="flex items-center justify-center space-x-2 h-full">
-                          <div className="h-5 w-5 animate-bounce rounded-full bg-primary [animation-delay:-0.3s]"></div>
-                          <div className="h-5 w-5 animate-bounce rounded-full bg-primary [animation-delay:-0.13s]"></div>
-                          <div className="h-5 w-5 animate-bounce rounded-full bg-primary"></div>
-                        </div>
-                      ) : (
-                        'No data available.'
-                      )}
+                      {isFetching ? <TableLoader /> : 'No data available.'}
                     </TableCell>
                   </TableRow>
                 )}

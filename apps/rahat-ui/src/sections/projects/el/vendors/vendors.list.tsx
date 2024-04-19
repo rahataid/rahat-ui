@@ -27,6 +27,7 @@ import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { MS_ACTIONS } from '@rahataid/sdk';
 import { useParams, useRouter } from 'next/navigation';
 import { useVendorTable } from './useVendorTable';
+import TableLoader from 'apps/rahat-ui/src/components/table.loader';
 
 export type Transaction = {
   id: string;
@@ -113,9 +114,7 @@ export default function VendorsList() {
       <div className="flex items-center mb-2">
         <Input
           placeholder="Filter Vendors..."
-          value={
-            (table.getColumn('name')?.getFilterValue() as string) ?? ''
-          }
+          value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
           onChange={(event) =>
             table.getColumn('name')?.setFilterValue(event.target.value)
           }
@@ -167,11 +166,7 @@ export default function VendorsList() {
                     className="h-24 text-center"
                   >
                     {getVendors.isPending ? (
-                      <div className="flex items-center justify-center space-x-2 h-full">
-                        <div className="h-5 w-5 animate-bounce rounded-full bg-primary [animation-delay:-0.3s]"></div>
-                        <div className="h-5 w-5 animate-bounce rounded-full bg-primary [animation-delay:-0.13s]"></div>
-                        <div className="h-5 w-5 animate-bounce rounded-full bg-primary"></div>
-                      </div>
+                      <TableLoader />
                     ) : (
                       'No data available.'
                     )}

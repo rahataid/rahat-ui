@@ -7,13 +7,8 @@ type ChartData = {
 };
 
 const Charts: FC<ChartData> = ({ chartData = [] }) => {
-  // const { beneficiaryQuery } = useRumsanService();
-  // const { data, isLoading } = beneficiaryQuery.useBeneficiaryStats();
-
-  // if (isLoading) return null;
-
   return (
-    <div className="grid md:grid-cols-3 gap-2 mt-2">
+    <div className="grid md:grid-cols-3 gap-2 mt-1">
       {chartData?.map((d: any) => {
         const series = Array.isArray(d?.data)
           ? d?.data.map((item: any) => ({

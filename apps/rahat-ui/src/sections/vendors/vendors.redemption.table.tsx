@@ -29,6 +29,7 @@ import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { useProjectAction } from '@rahat-ui/query';
 import { MS_ACTIONS } from '@rahataid/sdk';
 import { formatdbDate } from '../../utils';
+import TableLoader from '../../components/table.loader';
 
 export type Transaction = {
   id: string;
@@ -162,18 +163,6 @@ export default function RedemptionTable({ projectId, vendorId }) {
 
   return (
     <div className="w-full h-full bg-secondary">
-      {/* <div className="flex items-center mb-2">
-        <Input
-          placeholder="Filter Referrals..."
-          value={
-            (table.getColumn('beneficiary')?.getFilterValue() as string) ?? ''
-          }
-          onChange={(event) =>
-            table.getColumn('beneficiary')?.setFilterValue(event.target.value)
-          }
-          className="w-full"
-        />
-      </div> */}
       <div className="rounded border h-[calc(100vh-180px)] bg-card">
         <Table>
           <ScrollArea className="h-table1">
@@ -218,12 +207,8 @@ export default function RedemptionTable({ projectId, vendorId }) {
                     colSpan={columns.length}
                     className="h-24 text-center"
                   >
-                    {data ? (
-                      <div className="flex items-center justify-center space-x-2 h-full">
-                        <div className="h-5 w-5 animate-bounce rounded-full bg-primary [animation-delay:-0.3s]"></div>
-                        <div className="h-5 w-5 animate-bounce rounded-full bg-primary [animation-delay:-0.13s]"></div>
-                        <div className="h-5 w-5 animate-bounce rounded-full bg-primary"></div>
-                      </div>
+                    {getVendorRedemption.isPending ? (
+                      <TableLoader />
                     ) : (
                       'No data available.'
                     )}

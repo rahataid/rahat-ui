@@ -38,6 +38,7 @@ import { truncateEthAddress } from '@rumsan/sdk/utils';
 import { useProjectAction } from '@rahat-ui/query';
 import { MS_ACTIONS } from '@rahataid/sdk';
 import { formatdbDate } from '../../utils';
+import TableLoader from '../../components/table.loader';
 
 export type Transaction = {
   id: string;
@@ -93,25 +94,6 @@ export const columns: ColumnDef<Transaction>[] = [
     ),
   },
 
-  // {
-  //   accessorKey: 'phoneNumber',
-  //   header: ({ column }) => {
-  //     return (
-  //       <Button
-  //         variant="ghost"
-  //         onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-  //       >
-  //         Phone Number
-  //         <ArrowUpDown className="ml-2 h-4 w-4" />
-  //       </Button>
-  //     );
-  //   },
-  //   cell: ({ row }) => (
-  //     <div className="lowercase">
-  //       {truncateEthAddress(row.getValue('phoneNumber'))}
-  //     </div>
-  //   ),
-  // },
   {
     accessorKey: 'timeStamp',
     header: ({ column }) => {
@@ -263,12 +245,8 @@ export default function ReferralTable({ projectId, vendorId, walletAddress }) {
                     colSpan={columns.length}
                     className="h-24 text-center"
                   >
-                    {data ? (
-                      <div className="flex items-center justify-center space-x-2 h-full">
-                        <div className="h-5 w-5 animate-bounce rounded-full bg-primary [animation-delay:-0.3s]"></div>
-                        <div className="h-5 w-5 animate-bounce rounded-full bg-primary [animation-delay:-0.13s]"></div>
-                        <div className="h-5 w-5 animate-bounce rounded-full bg-primary"></div>
-                      </div>
+                    {getVendorRedemption.isPending ? (
+                      <TableLoader />
                     ) : (
                       'No data available.'
                     )}

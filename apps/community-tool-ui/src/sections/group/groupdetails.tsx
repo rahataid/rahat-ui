@@ -10,7 +10,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/components/tooltip';
-import { Download, Minus } from 'lucide-react';
+import { Download, Minus, Trash2 } from 'lucide-react';
 
 import { ListGroup } from '@rahataid/community-tool-sdk/groups';
 import {
@@ -28,7 +28,6 @@ import {
   useCommunityGroupedBeneficiariesDownload,
 } from '@rahat-ui/community-query';
 import { useCommunityGroupDeailsColumns } from './useGroupColumns';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import Swal from 'sweetalert2';
 import { toast } from 'react-toastify';
 import { useCommunityGroupRemove } from '@rahat-ui/community-query';
@@ -84,26 +83,40 @@ export default function GroupDetail({ data, handleClose }: IProps) {
   const handleGroupDelete = () => {
     Swal.fire({
       title: 'Are you sure?',
-      text: 'Deleting this group will delete all its associated beneficiaries. Proceed with deletion?',
+      text: 'Choose what you want to do with the beneficiaries:',
       icon: 'question',
+      showCancelButton: true,
       showDenyButton: true,
-      confirmButtonText: 'Yes, I am sure!',
-      denyButtonText: 'No, cancel it!',
+      denyButtonText: 'Permanently delete beneficiaries',
+      confirmButtonText: 'Remove beneficiaries from the group',
       customClass: {
         actions: 'my-actions',
-        cancelButton: 'order-1 right-gap',
+        cancelButton: 'order-1',
         confirmButton: 'order-2',
         denyButton: 'order-3',
       },
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          await removeCommunityGroup.mutateAsync(data?.uuid);
+          await removeCommunityGroup.mutateAsync({
+            uuid: data?.uuid,
+            deleteBeneficiaryFlag: false,
+          });
         } catch (error) {
           toast.error('Error deleting Group');
           console.error('Error deleting Group:', error);
         }
       } else if (result.isDenied) {
+        try {
+          await removeCommunityGroup.mutateAsync({
+            uuid: data?.uuid,
+            deleteBeneficiaryFlag: true,
+          });
+        } catch (error) {
+          toast.error('Error deleting Group');
+          console.error('Error deleting Group:', error);
+        }
+      } else {
         Swal.fire('Cancelled', `The Group wasn't deleted.`, 'error');
       }
     });
@@ -152,13 +165,21 @@ export default function GroupDetail({ data, handleClose }: IProps) {
             </TooltipProvider>
           </div>
           <TabsList>
-            <Button
-              variant={'destructive'}
-              className="mr-3"
-              onClick={handleGroupDelete}
-            >
-              Delete
-            </Button>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild onClick={handleGroupDelete}>
+                  <Trash2
+                    className="cursor-pointer mr-3"
+                    size={20}
+                    strokeWidth={1.6}
+                    color="#FF0000"
+                  />
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Delete Group</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
             <TabsTrigger value="detail">Details </TabsTrigger>
           </TabsList>
         </div>

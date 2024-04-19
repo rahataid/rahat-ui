@@ -56,7 +56,7 @@ export default function ColumnMappingTable({
         <tr>
           {columns.map((column: any, index: number) => (
             <th className="px-4 py-1.5" key={index}>
-              {truncatedText(column, 25)}
+              {truncatedText(column, 50)}
               <br />
               <select
                 className="p-2"
@@ -84,7 +84,7 @@ export default function ColumnMappingTable({
         </tr>
       </thead>
       <tbody>
-        {rawData.map((item: any, index: number) => (
+        {rawData.slice(0, 8).map((item: any, index: number) => (
           <tr
             key={index}
             className="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700"

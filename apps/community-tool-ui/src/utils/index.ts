@@ -215,7 +215,7 @@ export const humanizeString = (inputString: string) => {
   }
 
   const result = words.join(' ');
-  return truncateString(result, 20);
+  return truncateString(result, 50);
 };
 
 function truncateString(inputStr: string, length: number) {

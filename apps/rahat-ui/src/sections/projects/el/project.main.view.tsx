@@ -28,9 +28,10 @@ const ProjectMainView = () => {
 
   const project = useProjectStore((state) => state.singleProject);
   const contractSettings = useProjectSettingsStore(
-    (state) => state.settings?.[id][PROJECT_SETTINGS_KEYS.CONTRACT] || null,
+    (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT] || null,
   );
-  const beneficiaryStats = useGetProjectBeneficiaryStats();
+
+  const beneficiaryStats = useGetBeneficiaryStats();
 
   const { data: beneficiaryDetails, refetch: refetchBeneficiary } =
     useReadElProjectGetTotalBeneficiaries({

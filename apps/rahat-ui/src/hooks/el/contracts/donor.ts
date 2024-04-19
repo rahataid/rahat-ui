@@ -12,7 +12,10 @@ import {
 export const rahatDonorAbi = [
   {
     type: 'constructor',
-    inputs: [{ name: '_admin', internalType: 'address', type: 'address' }],
+    inputs: [
+      { name: '_admin', internalType: 'address', type: 'address' },
+      { name: '_accessManager', internalType: 'address', type: 'address' },
+    ],
     stateMutability: 'nonpayable',
   },
   {
@@ -74,6 +77,15 @@ export const rahatDonorAbi = [
       },
     ],
     name: 'TokenMintedAndApproved',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'AccessManager',
+    outputs: [
+      { name: '', internalType: 'contract IAccessManager', type: 'address' },
+    ],
+    stateMutability: 'view',
   },
   {
     type: 'function',
@@ -285,6 +297,15 @@ export const rahatDonorAbi = [
 export const useReadRahatDonor = /*#__PURE__*/ createUseReadContract({
   abi: rahatDonorAbi,
 })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link rahatDonorAbi}__ and `functionName` set to `"AccessManager"`
+ */
+export const useReadRahatDonorAccessManager =
+  /*#__PURE__*/ createUseReadContract({
+    abi: rahatDonorAbi,
+    functionName: 'AccessManager',
+  })
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link rahatDonorAbi}__ and `functionName` set to `"IID_RAHAT_DONOR"`

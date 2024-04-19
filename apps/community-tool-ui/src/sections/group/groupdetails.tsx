@@ -1,5 +1,3 @@
-import { useRouter } from 'next/navigation';
-
 import {
   Tabs,
   TabsContent,
@@ -30,19 +28,23 @@ import {
   useCommunityGroupedBeneficiariesDownload,
 } from '@rahat-ui/community-query';
 import { useCommunityGroupDeailsColumns } from './useGroupColumns';
-import { useRSQuery } from '@rumsan/react-query';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import Swal from 'sweetalert2';
+import { toast } from 'react-toastify';
+import { useCommunityGroupRemove } from '@rahat-ui/community-query';
+
 type IProps = {
   data: ListGroup;
   handleClose: VoidFunction;
 };
 
 export default function GroupDetail({ data, handleClose }: IProps) {
-  const { rumsanService } = useRSQuery();
   const { data: responseByUUID } = useCommunityGroupListByID(data?.uuid);
   const columns = useCommunityGroupDeailsColumns();
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
   const download = useCommunityGroupedBeneficiariesDownload();
+  const removeCommunityGroup = useCommunityGroupRemove();
 
   const table = useReactTable({
     manualPagination: true,
@@ -77,6 +79,34 @@ export default function GroupDetail({ data, handleClose }: IProps) {
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
+  };
+
+  const handleGroupDelete = () => {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'Deleting this group will delete all its associated beneficiaries. Proceed with deletion?',
+      icon: 'question',
+      showDenyButton: true,
+      confirmButtonText: 'Yes, I am sure!',
+      denyButtonText: 'No, cancel it!',
+      customClass: {
+        actions: 'my-actions',
+        cancelButton: 'order-1 right-gap',
+        confirmButton: 'order-2',
+        denyButton: 'order-3',
+      },
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          await removeCommunityGroup.mutateAsync(data?.uuid);
+        } catch (error) {
+          toast.error('Error deleting Group');
+          console.error('Error deleting Group:', error);
+        }
+      } else if (result.isDenied) {
+        Swal.fire('Cancelled', `The Group wasn't deleted.`, 'error');
+      }
+    });
   };
 
   return (
@@ -122,6 +152,13 @@ export default function GroupDetail({ data, handleClose }: IProps) {
             </TooltipProvider>
           </div>
           <TabsList>
+            <Button
+              variant={'destructive'}
+              className="mr-3"
+              onClick={handleGroupDelete}
+            >
+              Delete
+            </Button>
             <TabsTrigger value="detail">Details </TabsTrigger>
           </TabsList>
         </div>

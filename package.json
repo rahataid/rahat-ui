@@ -40,7 +40,7 @@
     "@radix-ui/react-toast": "^1.1.5",
     "@radix-ui/react-tooltip": "^1.0.7",
     "@rahataid/el-subgraph": "0.0.7",
-    "@rahataid/sdk": "0.0.19",
+    "@rahataid/sdk": "0.0.22",
     "@rumsan/communication": "^0.0.9",
     "@rumsan/communication-query": "^0.0.4",
     "@rumsan/core": "^3.0.133",

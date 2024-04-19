@@ -34,7 +34,10 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
-import TableLoader from 'apps/rahat-ui/src/components/table.loader';
+import {
+  PROJECT_SETTINGS_KEYS,
+  useProjectSettingsStore,
+} from '@rahat-ui/query';
 
 export type Payment = {
   id: string;
@@ -52,11 +55,7 @@ export function DiscountTransactionTable() {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
-  const [contractAddress, setContractAddress] = useState<any>();
-
   const { id } = useParams();
-
-  const projectSettings = localStorage.getItem('projectSettingsStore');
 
   const [transactionHash, setTransactionHash] = useState<number>();
   const [fromCopied, setFromCopied] = useState<number>();
@@ -178,17 +177,14 @@ export function DiscountTransactionTable() {
     },
   ];
 
-  useEffect(() => {
-    if (projectSettings) {
-      const settings = JSON.parse(projectSettings)?.state?.settings?.[id];
-      setContractAddress({
-        referredVoucher: settings?.referralvoucher?.address,
-      });
-    }
-  }, [projectSettings]);
+  const contractSettings = useProjectSettingsStore(
+    (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT] || null,
+  );
 
   const { data: vouchersTransactions, isFetching } =
-    useGetReferredVoucherTransaction(contractAddress?.referredVoucher);
+    useGetReferredVoucherTransaction(
+      contractSettings?.referralvoucher?.address || '',
+    );
 
   const table = useReactTable({
     data: vouchersTransactions?.transfers || [],

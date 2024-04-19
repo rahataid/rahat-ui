@@ -23,7 +23,7 @@ import { useProjectSettingsStore, useProjectStore } from './project.store';
 
 export const PROJECT_SETTINGS_KEYS = {
   CONTRACT: 'CONTRACT',
-  SUBGRAPH: 'SUBGRAPH',
+  SUBGRAPH: 'SUBGRAPH_URL',
 };
 
 const createProject = async (payload: CreateProjectPayload) => {
@@ -212,7 +212,7 @@ export const useProjectContractSettings = (uuid: UUID) => {
 
   const query = useQuery({
     queryKey: [TAGS.GET_PROJECT_SETTINGS, uuid, PROJECT_SETTINGS_KEYS.CONTRACT],
-    enabled: isEmpty(settings?.[uuid][PROJECT_SETTINGS_KEYS.CONTRACT]),
+    enabled: isEmpty(settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.CONTRACT]),
     // enabled: !!settings[uuid],
     queryFn: async () => {
       const mutate = await q.mutateAsync({
@@ -259,7 +259,7 @@ export const useProjectSubgraphSettings = (uuid: UUID) => {
 
   const query = useQuery({
     queryKey: [TAGS.GET_PROJECT_SETTINGS, uuid, PROJECT_SETTINGS_KEYS.SUBGRAPH],
-    enabled: isEmpty(settings?.[uuid][PROJECT_SETTINGS_KEYS.SUBGRAPH]),
+    enabled: isEmpty(settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.SUBGRAPH]),
     // enabled: !!settings[uuid],
     queryFn: async () => {
       const mutate = await q.mutateAsync({

@@ -30,10 +30,6 @@ const ProjectMainView = () => {
   const contractSettings = useProjectSettingsStore(
     (state) => state.settings?.[id][PROJECT_SETTINGS_KEYS.CONTRACT] || null,
   );
-  console.log(
-    'state.settings?.[id][PROJECT_SETTINGS_KEYS.CONTRACT]',
-    contractSettings,
-  );
   const beneficiaryStats = useGetProjectBeneficiaryStats();
 
   const { data: beneficiaryDetails, refetch: refetchBeneficiary } =
@@ -98,7 +94,13 @@ const ProjectMainView = () => {
   const filterdELChartData =
     ELProjectStats?.filter((item) => {
       const name = item?.name;
-      return name === 'BENEFICIARY_TYPE' || name === 'FOOTFALL';
+      return name === 'BENEFICIARY_TYPE';
+    }) || [];
+
+  const filteredFootfallData =
+    ELProjectStats?.filter((item) => {
+      const name = item?.name;
+      return name === 'FOOTFALL';
     }) || [];
 
   const enrolledEyeCheckupData = ELProjectStats?.filter((item) => {
@@ -179,7 +181,11 @@ const ProjectMainView = () => {
           loading={isLoading}
         />
         <ProjectChart
-          chartData={[...filteredChartData, ...filterdELChartData]}
+          chartData={[
+            ...filteredChartData,
+            ...filteredFootfallData,
+            ...filterdELChartData,
+          ]}
         />
         <div className="grid md:grid-cols-1 lg:grid-cols-2 gap-2 mt-2">
           <div className="bg-card rounded">

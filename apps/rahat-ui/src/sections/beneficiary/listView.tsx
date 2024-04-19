@@ -1,7 +1,7 @@
 'use client';
 
 import { Table, flexRender } from '@tanstack/react-table';
-import { Check, ChevronDown, ChevronsUpDown, Settings2 } from 'lucide-react';
+import { ChevronDown, Settings2 } from 'lucide-react';
 
 import { Button } from '@rahat-ui/shadcn/components/button';
 import {
@@ -22,24 +22,9 @@ import {
   TableHeader,
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
-import { cn } from '@rahat-ui/shadcn/src';
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-  CommandSeparator,
-} from '@rahat-ui/shadcn/src/components/ui/command';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/popover';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { ListBeneficiary } from '@rahat-ui/types';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import BulkAssignToProjectModal from './components/bulkAssignToProjectModal';
 
 type IProps = {
@@ -78,8 +63,6 @@ export default function ListView({
       value: p.uuid,
     })),
   ];
-
-  console.log('selectFilterProjectItems', selectFilterProjectItems);
 
   return (
     <>

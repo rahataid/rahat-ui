@@ -79,5 +79,5 @@ export const useNavItems = () => {
     },
   ];
 
-  return navItems;
+  return { navItems };
 };

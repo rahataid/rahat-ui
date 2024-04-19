@@ -27,7 +27,7 @@ const VoucherView = () => {
   );
 
   const { data: projectVoucher, isLoading } = useProjectVoucher(
-    contractSettings?.el?.address || '',
+    contractSettings?.elproject?.address || '',
     contractSettings?.eyevoucher?.address || '',
   );
 

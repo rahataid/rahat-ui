@@ -34,6 +34,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
+import { useProjectSettingsStore,PROJECT_SETTINGS_KEYS } from '@rahat-ui/query';
 
 export type Payment = {
   id: string;
@@ -51,11 +52,9 @@ export function FreeTransactionTable() {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
-  const [contractAddress, setContractAddress] = useState<any>();
 
   const { id } = useParams();
 
-  const projectSettings = localStorage.getItem('projectSettingsStore');
   const [transactionHash, setTransactionHash] = useState<number>();
   const [fromCopied, setFromCopied] = useState<number>();
   const [toCopied, setToCopied] = useState<number>();
@@ -175,17 +174,13 @@ export function FreeTransactionTable() {
     },
   ];
 
-  useEffect(() => {
-    if (projectSettings) {
-      const settings = JSON.parse(projectSettings)?.state?.settings?.[id];
-      setContractAddress({
-        eyeVoucher: settings?.eyevoucher?.address,
-      });
-    }
-  }, [projectSettings, id]);
+  const contractSettings = useProjectSettingsStore(
+    (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT] || null,
+  )
+
 
   const { data: vouchersTransactions, isFetching } =
-    useGetFreeVoucherTransaction(contractAddress?.eyeVoucher);
+    useGetFreeVoucherTransaction(contractSettings?.eyevoucher?.address || '');
 
   const table = useReactTable({
     data: vouchersTransactions?.transfers || [],

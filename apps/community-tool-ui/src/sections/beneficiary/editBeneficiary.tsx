@@ -227,7 +227,7 @@ export default function EditBeneficiary({
                       </FormControl>
                       <SelectContent>
                         <SelectItem value={Gender.MALE}>Male</SelectItem>
-                        <SelectItem value={Gender.FEMALE}>Femail</SelectItem>
+                        <SelectItem value={Gender.FEMALE}>Female</SelectItem>
                         <SelectItem value={Gender.OTHER}>Other</SelectItem>
                         <SelectItem value={Gender.UKNOWN}>Unknown</SelectItem>
                       </SelectContent>

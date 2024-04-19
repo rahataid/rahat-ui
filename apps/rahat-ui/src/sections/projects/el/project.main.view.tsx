@@ -25,6 +25,8 @@ const ProjectMainView = () => {
   const { id } = useParams();
   const [projectStats, setProjectStats] = useState();
   const [ELProjectStats, setELProjectStats] = useState();
+  const projectClient = useProjectAction(['count_ben_vendor']);
+  const statsClient = useProjectAction(['stats']);
 
   const project = useProjectStore((state) => state.singleProject);
   const contractSettings = useProjectSettingsStore(
@@ -50,13 +52,6 @@ const ProjectMainView = () => {
     contractSettings?.elproject?.address,
     contractSettings?.eyevoucher?.address,
   );
-
-  if (!contractSettings) {
-    return 'Loading Project Settings';
-  }
-
-  const projectClient = useProjectAction();
-  const statsClient = useProjectAction(['stats']);
 
   const getProjectStats = useCallback(async () => {
     const result = await projectClient.mutateAsync({

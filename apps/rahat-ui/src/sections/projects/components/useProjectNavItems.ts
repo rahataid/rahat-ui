@@ -6,25 +6,20 @@ import { useProjectListNavItems } from '../useNavItems';
 import { useProjectNavItemsType } from './nav-items.types';
 import { useNavItems as useC2CNavItems } from '../c2c/useNavItems';
 
-export const useProjectNavItems: useProjectNavItemsType = (projectType) => {
-  const aaNavItems = useAANavItems();
-  const elNavItems = useELNavItems();
-  const cvaNavItems = useCVANavItems();
-  const listNavItems = useProjectListNavItems();
-  const c2cNavItems = useC2CNavItems();
+const hooks = {
+  [ProjectTypes.ANTICIPATORY_ACTION]: useAANavItems,
+  [ProjectTypes.EL]: useELNavItems,
+  [ProjectTypes.CVA]: useCVANavItems,
+  C2C: useC2CNavItems,
+  ALL: useProjectListNavItems,
+};
 
-  switch (projectType) {
-    case ProjectTypes.ANTICIPATORY_ACTION:
-      return aaNavItems;
-    case ProjectTypes.EL:
-      return elNavItems;
-    case ProjectTypes.CVA:
-      return cvaNavItems;
-    case 'C2C':
-      return c2cNavItems;
-    case 'ALL':
-      return listNavItems;
-    default:
-      throw new Error(`Invalid project type: ${projectType}`);
+export const useProjectNavItems: useProjectNavItemsType = (projectType) => {
+  const useNavItems = hooks[projectType];
+
+  if (!useNavItems) {
+    throw new Error(`Invalid project type: ${projectType}`);
   }
+
+  return useNavItems();
 };

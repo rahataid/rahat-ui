@@ -1,6 +1,5 @@
 'use client';
 
-import * as React from 'react';
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -13,28 +12,18 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { MoreHorizontal, Settings2, Eye } from 'lucide-react';
+import { Eye } from 'lucide-react';
+import * as React from 'react';
 
 import { Button } from '@rahat-ui/shadcn/components/button';
-import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@rahat-ui/shadcn/components/dropdown-menu';
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
-  SelectGroup,
 } from '@rahat-ui/shadcn/components/select';
-import { Input } from '@rahat-ui/shadcn/components/input';
 import {
   Table,
   TableBody,
@@ -43,8 +32,8 @@ import {
   TableHeader,
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
-import { CAMPAIGN_TYPES } from '@rahat-ui/types';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import { CAMPAIGN_TYPES } from '@rahat-ui/types';
 
 export type TextDetail = {
   _id: string;

@@ -9,8 +9,8 @@ export default function TransactionsLayout({
 }) {
   return (
     <>
-      <DashboardLayout >
-      <div className="mx-2">{children}</div>
+      <DashboardLayout>
+        <div className="mx-2">{children}</div>
       </DashboardLayout>
     </>
   );

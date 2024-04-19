@@ -1,2 +1,3 @@
 export { default as PieChart } from './pie-chart';
 export { default as RadialChart } from './chart-radial-bar';
+export { default as LineChart } from './chart-line';

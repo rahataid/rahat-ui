@@ -33,6 +33,9 @@ export default function ChartLine({ series }: Props) {
       },
       marker: { show: false },
     },
+    dataLabels: {
+      enabled: true,
+    },
   });
 
   return (
@@ -41,7 +44,7 @@ export default function ChartLine({ series }: Props) {
       type="line"
       series={series}
       options={chartOptions}
-      height={320}
+      height={'100%'}
     />
   );
 }

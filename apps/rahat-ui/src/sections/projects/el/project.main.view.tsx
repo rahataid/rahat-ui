@@ -25,10 +25,7 @@ const ProjectMainView = () => {
   const contractSettings = useProjectSettingsStore(
     (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT] || null,
   );
-  console.log(
-    'state.settings?.[id][PROJECT_SETTINGS_KEYS.CONTRACT]',
-    contractSettings,
-  );
+
   const beneficiaryStats = useGetBeneficiaryStats();
 
   const { data: beneficiaryDetails, refetch: refetchBeneficiary } =

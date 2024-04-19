@@ -6,7 +6,8 @@
     "description": "This activity involves general preparedness actions.",
     "source": "Source 1",
     "phase": "Preparedness",
-    "responsibility": "Responsibility 1"
+    "responsibility": "Responsibility 1",
+    "hazardType": "Hazard 1"
   },
   {
     "id": 2,
@@ -15,7 +16,8 @@
     "description": "Communicating early warnings to the public and relevant stakeholders.",
     "source": "Source 2",
     "phase": "Readiness",
-    "responsibility": "Responsibility 2"
+    "responsibility": "Responsibility 2",
+    "hazardType": "Hazard 2"
   },
   {
     "id": 3,
@@ -24,7 +26,8 @@
     "description": "Cleaning drains to prevent flooding.",
     "source": "Source 3",
     "phase": "Activation",
-    "responsibility": "Responsibility 3"
+    "responsibility": "Responsibility 3",
+    "hazardType": "Hazard 3"
   },
   {
     "id": 4,
@@ -33,7 +36,8 @@
     "description": "Reinforcing embankments with sandbags to prevent erosion.",
     "source": "Source 4",
     "phase": "Preparedness",
-    "responsibility": "Responsibility 4"
+    "responsibility": "Responsibility 4",
+    "hazardType": "Hazard 4"
   },
   {
     "id": 5,
@@ -42,7 +46,8 @@
     "description": "Providing assistance for early harvesting of crops.",
     "source": "Source 5",
     "phase": "Readiness",
-    "responsibility": "Responsibility 5"
+    "responsibility": "Responsibility 5",
+    "hazardType": "Hazard 5"
   },
   {
     "id": 6,
@@ -51,7 +56,8 @@
     "description": "Managing the supply of clean drinking water during emergencies.",
     "source": "Source 6",
     "phase": "Activation",
-    "responsibility": "Responsibility 6"
+    "responsibility": "Responsibility 6",
+    "hazardType": "Hazard 6"
   },
   {
     "id": 7,
@@ -60,6 +66,7 @@
     "description": "Providing cash transfers to affected populations for relief.",
     "source": "Source 7",
     "phase": "Preparedness",
-    "responsibility": "Responsibility 7"
+    "responsibility": "Responsibility 7",
+    "hazardType": "Hazard 7"
   }
 ]

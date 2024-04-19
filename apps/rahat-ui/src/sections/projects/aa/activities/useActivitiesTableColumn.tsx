@@ -61,6 +61,11 @@ export default function useActivitiesTableColumn() {
       cell: ({ row }) => <div>{row.getValue('source')}</div>,
     },
     {
+      accessorKey: 'hazardType',
+      header: 'Hazard Type',
+      cell: ({ row }) => <div>{row.getValue('hazardType')}</div>,
+    },
+    {
       id: 'actions',
       enableHiding: false,
       cell: ({ row }) => {

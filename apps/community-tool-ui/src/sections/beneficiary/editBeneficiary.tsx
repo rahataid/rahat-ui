@@ -109,24 +109,17 @@ export default function EditBeneficiary({
   const handleEditBeneficiary = async (
     formData: z.infer<typeof FormSchema>,
   ) => {
+    const nonEmptyFields: any = {};
+    Object.entries(formData).forEach(([key, value]) => {
+      if (value !== undefined && value !== '') {
+        nonEmptyFields[key] = value;
+      }
+    });
+
     await updateBeneficiaryClient.mutateAsync({
-      uuid: data.uuid,
+      uuid: uuid,
       payload: {
-        walletAddress: formData?.walletAddress,
-        firstName: formData?.firstName,
-        lastName: formData?.lastName,
-        email: formData?.email,
-        phone: formData.phone,
-        gender: formData?.gender as Gender,
-        bankedStatus: formData.bankedStatus as BankedStatus,
-        internetStatus: formData.internetStatus as InternetStatus,
-        phoneStatus: formData.phoneStatus as PhoneStatus,
-        location: formData.location,
-        latitude: formData.latitude,
-        longitude: formData.longitude,
-        notes: formData.notes,
-        govtIDType: formData.govtIDType,
-        govtIDNumber: formData.govtIDNumber,
+        ...nonEmptyFields,
         extras,
       },
     });
@@ -138,8 +131,6 @@ export default function EditBeneficiary({
 
     return () => setExtras({});
   }, [uuid]);
-
-  console.log('definitions', definitions);
 
   return (
     <Form {...form}>
@@ -163,6 +154,9 @@ export default function EditBeneficiary({
                           type="text"
                           placeholder="Wallet Address"
                           {...field}
+                          onChange={(e) => {
+                            form.setValue('walletAddress', e.target.value);
+                          }}
                         />
                       </div>
                     </FormControl>
@@ -481,7 +475,10 @@ export default function EditBeneficiary({
                         placeholder="Longitude"
                         {...field}
                         onChange={(e) => {
-                          const numericValue = parseFloat(e.target.value);
+                          let numericValue = parseFloat(e.target.value);
+                          if (isNaN(numericValue)) {
+                            numericValue = 0;
+                          }
                           form.setValue('longitude', numericValue);
                         }}
                       />
@@ -504,7 +501,10 @@ export default function EditBeneficiary({
                         placeholder="Latitude"
                         {...field}
                         onChange={(e) => {
-                          const numericValue = parseFloat(e.target.value);
+                          let numericValue = parseFloat(e.target.value);
+                          if (isNaN(numericValue)) {
+                            numericValue = 0;
+                          }
                           form.setValue('latitude', numericValue);
                         }}
                       />

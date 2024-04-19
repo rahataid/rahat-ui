@@ -1,13 +1,12 @@
 'use client';
 
 import { useProjectContractSettings } from '@rahat-ui/query';
+import { useSecondPanel } from 'apps/rahat-ui/src/providers/second-panel-provider';
 import { GraphQueryProvider } from 'apps/rahat-ui/src/providers/subgraph-provider';
+import { ProjectLayout } from 'apps/rahat-ui/src/sections/projects/components';
 import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
 import * as React from 'react';
-import { useSecondPanel } from '../../../../providers/second-panel-provider';
-import { ProjectLayout } from '../../../../sections/projects/components';
-import { ProjectTypes } from '@rahataid/sdk/enums';
 
 export default function ProjectLayoutRoot({
   children,
@@ -32,9 +31,7 @@ export default function ProjectLayoutRoot({
 
   return (
     <GraphQueryProvider>
-      <ProjectLayout projectType={ProjectTypes.EL}>
-        {renderChildren()}
-      </ProjectLayout>
+      <ProjectLayout projectType="C2C">{renderChildren()}</ProjectLayout>
     </GraphQueryProvider>
   );
 }

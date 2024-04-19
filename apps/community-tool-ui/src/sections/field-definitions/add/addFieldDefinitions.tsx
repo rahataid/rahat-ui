@@ -216,7 +216,7 @@ export default function AddFieldDefinitions({ handleTabChange }: Iprops) {
                 control={form.control}
                 name="isTargeting"
                 render={({ field }) => (
-                  <div className=" flex flex-row items-center gap-4 m-1">
+                  <div className="flex flex-row items-center gap-4 m-1">
                     <Label>User for Targeting</Label>
                     <Switch
                       {...field}

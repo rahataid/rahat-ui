@@ -2,12 +2,13 @@
 
 import {
   PROJECT_SETTINGS_KEYS,
-  useGetProjectBeneficiaryStats,
+  useGetBeneficiaryStats,
   useProjectAction,
   useProjectSettingsStore,
   useProjectStore,
 } from '@rahat-ui/query';
 
+import { ChartColumnStacked } from '@rahat-ui/shadcn/src/components/charts';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import {
   useReadElProjectGetProjectVoucherDetail,
@@ -19,7 +20,6 @@ import { useCallback, useEffect, useState } from 'react';
 import { ProjectChart } from '..';
 import ProjectDataCard from './project.datacard';
 import ProjectInfo from './project.info';
-import { ChartColumnStacked } from '@rahat-ui/shadcn/src/components/charts';
 
 const ProjectMainView = () => {
   const { id } = useParams();

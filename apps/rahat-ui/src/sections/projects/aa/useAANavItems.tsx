@@ -12,6 +12,7 @@ import {
   ClipboardCheck,
   BookCheck,
   ShieldCheck,
+  HardDrive,
 } from 'lucide-react';
 
 export type NavItem = {
@@ -89,6 +90,12 @@ export const useNavItems = () => {
                 path: `/projects/aa/${params.id}/activities`,
                 subtitle: 0,
                 icon: <Activity size={18} strokeWidth={1.5} />,
+              },
+              {
+                title: 'Data Sources',
+                path: `/projects/aa/${params.id}/data-sources`,
+                subtitle: 0,
+                icon: <HardDrive size={18} strokeWidth={1.5} />,
               },
             ]),
       ],

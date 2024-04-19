@@ -21,6 +21,7 @@ import { Info, PlusSquare, TicketCheck } from 'lucide-react';
 import { FC, useEffect, useState } from 'react';
 import { useProjectVoucher } from '../../../hooks/el/subgraph/querycall';
 import { useParams, useRouter } from 'next/navigation';
+import { PROJECT_SETTINGS_KEYS, useProjectSettingsStore } from '@rahat-ui/query';
 
 interface CreateVoucherModalType {
   voucherInputs: {
@@ -60,25 +61,14 @@ const CreateVoucherModal: FC<CreateVoucherModalType> = ({
   const { id } = useParams();
   const route = useRouter();
 
-  const [contractAddress, setContractAddress] = useState<any>();
 
-  const projectSettings = localStorage.getItem('projectSettingsStore');
-
-  useEffect(() => {
-    if (projectSettings) {
-      const settings = JSON.parse(projectSettings)?.state?.settings?.[id];
-      setContractAddress({
-        el: settings?.elproject?.address,
-        eyeVoucher: settings?.eyevoucher?.address,
-        referredVoucher: settings?.referralvoucher?.address,
-        rahatDonor: settings?.rahatdonor?.address,
-      });
-    }
-  }, [projectSettings,id]);
+  const contractSettings = useProjectSettingsStore(
+    (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT] || null
+  )
 
   const { data: projectVoucher, isLoading } = useProjectVoucher(
-    contractAddress?.el || '',
-    contractAddress?.eyeVoucher || '',
+    contractSettings?.elproject?.address || '',
+    contractSettings?.eyevoucher?.address || '',
   );
 
   const handleVoucherCreate = () => {

@@ -90,10 +90,11 @@ export default function AddBeneficiaryForm() {
       });
       if (result) {
         toast.success('Beneficiary added successfully!');
+        router.push('/beneficiary');
         form.reset();
       }
     } catch (e) {
-      toast.error(e?.response?.data?.message||'Failed to add beneficiary');
+      toast.error(e?.response?.data?.message || 'Failed to add beneficiary');
     }
   };
 

@@ -101,9 +101,6 @@ const ProjectMainView = () => {
       return name === 'BENEFICIARY_TYPE' || name === 'FOOTFALL';
     }) || [];
 
-  const filteredEyeCheckupData = ELProjectStats || [];
-  console.log('filteredEyeCheckupData', filteredEyeCheckupData);
-
   const enrolledEyeCheckupData = ELProjectStats?.filter((item) => {
     return item.name === 'EYE_CHECKUP';
   })?.[0]?.data?.find((i) => i.id === 'ENROLLED_EYE_CHECKUP');
@@ -184,7 +181,7 @@ const ProjectMainView = () => {
         <ProjectChart
           chartData={[...filteredChartData, ...filterdELChartData]}
         />
-        <div className="grid grid-cols-2 gap-2 mt-2">
+        <div className="grid md:grid-cols-1 lg:grid-cols-2 gap-2 mt-2">
           <div className="bg-card rounded">
             <ChartColumnStacked series={eyeCheckupData} />
 

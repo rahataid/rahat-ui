@@ -41,7 +41,7 @@ const ProjectDataCard: FC<ProjectDataCardProps> = ({
 
   return (
     <>
-      <div className="my-2 grid md:grid-cols-6 gap-2">
+      <div className="my-2 grid lg:grid-cols-6 md:grid-cols-4 sm:grid-cols-2 gap-2">
         <SmallDataCard
           className=""
           title="Beneficiaries"
@@ -89,7 +89,7 @@ const ProjectDataCard: FC<ProjectDataCardProps> = ({
         />
       </div>
       <div className="mb-2 grid md:grid-cols-3 gap-2">
-        <div className="grid grid-cols-2 col-span-2 gap-2">
+        <div className="grid md:grid-cols-1 lg:grid-cols-2 col-span-2 gap-2">
           <DataCard
             className=""
             title="Enrolled Beneficiary"

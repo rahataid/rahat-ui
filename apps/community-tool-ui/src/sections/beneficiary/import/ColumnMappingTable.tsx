@@ -48,7 +48,6 @@ export default function ColumnMappingTable({
     extractColumns();
   }, [rawData]);
 
-  console.log('uniqueDBFields==>', uniqueDBFields);
   const sortedData = uniqueDBFields?.sort() || [];
 
   return (

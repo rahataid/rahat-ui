@@ -23,6 +23,7 @@ export const TARGET_FIELD = {
   PHONE_STATUS: 'phoneStatus',
   BANKED_STATUS: 'bankedStatus',
   INTERNET_STATUS: 'internetStatus',
+  RAHAT_UUID: 'rahat_uuid',
 };
 
 export const BENEF_DB_FIELDS = [
@@ -45,6 +46,7 @@ export const BENEF_DB_FIELDS = [
   TARGET_FIELD.PHONE_STATUS,
   TARGET_FIELD.BANKED_STATUS,
   TARGET_FIELD.INTERNET_STATUS,
+  TARGET_FIELD.RAHAT_UUID,
 ];
 
 export const UNIQUE_FIELD = {

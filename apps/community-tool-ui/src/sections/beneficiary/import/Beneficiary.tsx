@@ -345,10 +345,11 @@ export default function BenImp({ extraFields }: IProps) {
         setCurrentScreen(BENEF_IMPORT_SCREENS.IMPORT_DATA);
       })
       .catch((err) => {
+        const msg = err?.response?.data?.message || 'Something went wrong!';
         setLoading(false);
         Swal.fire({
           icon: 'error',
-          title: 'Failed to add to the queue!',
+          title: msg,
         });
       });
   };

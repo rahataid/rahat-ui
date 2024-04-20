@@ -86,14 +86,11 @@ export default function GroupDetail({ data, handleClose }: IProps) {
       text: 'Choose what you want to do with the beneficiaries:',
       icon: 'question',
       showCancelButton: true,
-      showDenyButton: true,
-      denyButtonText: 'Permanently delete beneficiaries',
-      confirmButtonText: 'Remove beneficiaries from the group',
+      confirmButtonText: 'Remove beneficiary',
       customClass: {
         actions: 'my-actions',
-        cancelButton: 'order-1',
-        confirmButton: 'order-2',
-        denyButton: 'order-3',
+        cancelButton: 'order-3',
+        confirmButton: 'order-1',
       },
     }).then(async (result) => {
       if (result.isConfirmed) {
@@ -103,21 +100,11 @@ export default function GroupDetail({ data, handleClose }: IProps) {
             deleteBeneficiaryFlag: false,
           });
         } catch (error) {
-          toast.error('Error deleting Group');
-          console.error('Error deleting Group:', error);
-        }
-      } else if (result.isDenied) {
-        try {
-          await removeCommunityGroup.mutateAsync({
-            uuid: data?.uuid,
-            deleteBeneficiaryFlag: true,
-          });
-        } catch (error) {
-          toast.error('Error deleting Group');
-          console.error('Error deleting Group:', error);
+          toast.error('Error deleting Beneficiary');
+          console.error('Error deleting Beneficiary:', error);
         }
       } else {
-        Swal.fire('Cancelled', `The Group wasn't deleted.`, 'error');
+        Swal.fire('Cancelled', `The beneficiary wasn't deleted.`, 'error');
       }
     });
   };
@@ -176,7 +163,7 @@ export default function GroupDetail({ data, handleClose }: IProps) {
                   />
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>Delete Group</p>
+                  <p>Delete Beneficiary</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>

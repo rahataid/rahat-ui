@@ -1,6 +1,7 @@
 import { isURL, truncatedText } from 'apps/community-tool-ui/src/utils';
 import React, { useState } from 'react';
 import NestedObjectRenderer from './NestedObjectRenderer';
+import { ComboboxDemo } from './Combobox';
 
 interface ColumnMappingTableProps {
   rawData: any[];
@@ -25,13 +26,13 @@ export default function ColumnMappingTable({
     }
   };
 
-  function isTargetInDbFields(dbField: string, key: string) {
-    const found = mappings.find((m) => {
-      return m.targetField === dbField && m.sourceField === key;
-    });
-    if (!found) return false;
-    return true;
-  }
+  // function isFieldSelected(dbField: string, key: string) {
+  //   const found = mappings.find((m) => {
+  //     return m.targetField === dbField && m.sourceField === key;
+  //   });
+  //   if (!found) return '';
+  //   return found.targetField;
+  // }
 
   function renderField(item: any, key: string) {
     const isUrl = isURL(item[key]);
@@ -50,6 +51,14 @@ export default function ColumnMappingTable({
 
   const sortedData = uniqueDBFields?.sort() || [];
 
+  function getSelectedField(sourceField: string) {
+    const found = mappings.find((m) => {
+      return m.sourceField === sourceField;
+    });
+    if (!found) return '';
+    return found.targetField;
+  }
+
   return (
     <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
       <thead>
@@ -58,7 +67,13 @@ export default function ColumnMappingTable({
             <th className="px-4 py-1.5" key={index}>
               {truncatedText(column, 50)}
               <br />
-              <select
+              <ComboboxDemo
+                data={sortedData}
+                handleTargetFieldChange={handleTargetFieldChange}
+                column={column}
+                selectedField={getSelectedField(column)}
+              />
+              {/* <select
                 className="p-2"
                 name="targetField"
                 id="targetField"
@@ -72,13 +87,13 @@ export default function ColumnMappingTable({
                     <option
                       key={f}
                       value={f}
-                      selected={isTargetInDbFields(f, column)}
+                      selected={isFieldSelected(f, column)}
                     >
                       {f}
                     </option>
                   );
                 })}
-              </select>
+              </select> */}
             </th>
           ))}
         </tr>

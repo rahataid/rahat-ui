@@ -30,29 +30,21 @@ import {
   useCommunityBeneficiaryUpdate,
   useFieldDefinitionsList,
 } from '@rahat-ui/community-query';
+import { usePagination } from '@rahat-ui/query';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
 import { ListBeneficiary } from '@rahataid/community-tool-sdk/beneficiary';
-import { GOVERNMENT_ID_TYPE } from '../../constants/beneficiary.const';
 import { Gender } from '@rumsan/sdk/enums';
 import { Wallet } from 'lucide-react';
-import { usePagination } from '@rahat-ui/query';
+import { GOVERNMENT_ID_TYPE } from '../../constants/beneficiary.const';
 import FormBuilder from '../../formBuilder';
 
 import useFormStore from '../../formBuilder/form.store';
-import { useEffect } from 'react';
-import { UUID } from 'crypto';
 
 const FIELD_DEF_FETCH_LIMIT = 200;
 
-export default function EditBeneficiary({
-  uuid,
-  data,
-}: {
-  data: ListBeneficiary;
-  uuid: UUID;
-}) {
-  const { extras, setExtras }: any = useFormStore();
+export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
+  const { extras }: any = useFormStore();
 
   const updateBeneficiaryClient = useCommunityBeneficiaryUpdate();
   const { pagination } = usePagination();
@@ -117,19 +109,13 @@ export default function EditBeneficiary({
     });
 
     await updateBeneficiaryClient.mutateAsync({
-      uuid: uuid,
+      uuid: data.uuid,
       payload: {
         ...nonEmptyFields,
         extras,
       },
     });
   };
-
-  useEffect(() => {
-    if (data.extras) setExtras(data.extras);
-
-    return () => setExtras({});
-  }, [uuid]);
 
   return (
     <Form {...form}>

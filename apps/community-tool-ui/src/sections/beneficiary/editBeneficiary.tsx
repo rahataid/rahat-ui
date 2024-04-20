@@ -36,7 +36,6 @@ import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
 import { ListBeneficiary } from '@rahataid/community-tool-sdk/beneficiary';
 import { Gender } from '@rumsan/sdk/enums';
 import { Wallet } from 'lucide-react';
-import { GOVERNMENT_ID_TYPE } from '../../constants/beneficiary.const';
 import FormBuilder from '../../formBuilder';
 
 import useFormStore from '../../formBuilder/form.store';
@@ -93,7 +92,6 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
       latitude: data?.latitude || 0,
       longitude: data?.longitude || 0,
       notes: data?.notes || '',
-      govtIDType: data?.govtIDType || GOVERNMENT_ID_TYPE.UNKNOWN,
       govtIDNumber: data?.govtIDNumber || '',
     },
   });
@@ -378,54 +376,6 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
             />
             <FormField
               control={form.control}
-              name="govtIDType"
-              render={({ field }) => {
-                return (
-                  <FormItem>
-                    <Label className="text-xs font-medium">
-                      Government ID Type
-                    </Label>
-
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select One" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value={GOVERNMENT_ID_TYPE.CITIZENSHIP}>
-                          Citizenship
-                        </SelectItem>
-                        <SelectItem value={GOVERNMENT_ID_TYPE.DRIVING_LICENSE}>
-                          Driving License
-                        </SelectItem>
-                        <SelectItem value={GOVERNMENT_ID_TYPE.PASSPORT}>
-                          Passport
-                        </SelectItem>
-                        <SelectItem value={GOVERNMENT_ID_TYPE.NATIONAL_ID_CARD}>
-                          National ID
-                        </SelectItem>
-                        <SelectItem value={GOVERNMENT_ID_TYPE.VOTER_CARD}>
-                          Voter Card
-                        </SelectItem>
-                        <SelectItem value={GOVERNMENT_ID_TYPE.OTHER}>
-                          Other
-                        </SelectItem>
-                        <SelectItem value={GOVERNMENT_ID_TYPE.UNKNOWN}>
-                          Unknown
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            />
-            <FormField
-              control={form.control}
               name="govtIDNumber"
               render={({ field }) => {
                 return (
@@ -448,25 +398,14 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
             />
             <FormField
               control={form.control}
-              name="longitude"
+              name="location"
               render={({ field }) => {
                 return (
                   <FormItem>
-                    <Label className="text-xs font-medium">Longitude</Label>
+                    <Label className="text-xs font-medium">Location</Label>
 
                     <FormControl>
-                      <Input
-                        type="number"
-                        placeholder="Longitude"
-                        {...field}
-                        onChange={(e) => {
-                          let numericValue = parseFloat(e.target.value);
-                          if (isNaN(numericValue)) {
-                            numericValue = 0;
-                          }
-                          form.setValue('longitude', numericValue);
-                        }}
-                      />
+                      <Input type="text" placeholder="Location" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -501,14 +440,25 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
             />
             <FormField
               control={form.control}
-              name="location"
+              name="longitude"
               render={({ field }) => {
                 return (
                   <FormItem>
-                    <Label className="text-xs font-medium">Location</Label>
+                    <Label className="text-xs font-medium">Longitude</Label>
 
                     <FormControl>
-                      <Input type="text" placeholder="Location" {...field} />
+                      <Input
+                        type="number"
+                        placeholder="Longitude"
+                        {...field}
+                        onChange={(e) => {
+                          let numericValue = parseFloat(e.target.value);
+                          if (isNaN(numericValue)) {
+                            numericValue = 0;
+                          }
+                          form.setValue('longitude', numericValue);
+                        }}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

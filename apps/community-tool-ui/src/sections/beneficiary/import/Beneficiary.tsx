@@ -263,7 +263,7 @@ export default function BenImp({ extraFields }: IProps) {
           return newItem;
         });
         finalPayload = replaced;
-      } else if (m.targetField === TARGET_FIELD.FULL_NAME) {
+      } else if (m.targetField === TARGET_FIELD.HOUSE_HEAD_NAME) {
         // Split fullName, update target_key:value and delete old_source_key
         selectedTargets.push(TARGET_FIELD.FIRSTNAME);
         selectedTargets.push(TARGET_FIELD.LASTNAME);

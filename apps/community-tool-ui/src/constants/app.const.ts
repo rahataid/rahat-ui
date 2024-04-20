@@ -4,7 +4,7 @@ export const IMPORT_SOURCE = {
 };
 
 export const TARGET_FIELD = {
-  FULL_NAME: 'fullName',
+  HOUSE_HEAD_NAME: 'houseHeadName',
   FIRSTNAME: 'firstName',
   LASTNAME: 'lastName',
   GENDER: 'gender',
@@ -16,9 +16,7 @@ export const TARGET_FIELD = {
   LATITUDE: 'latitude',
   LONGITUDE: 'longitude',
   IS_VULNERABLE: 'isVulnerable',
-  GOVT_ID_TYPE: 'govtIDType',
   GOVT_ID_NUMBER: 'govtIDNumber',
-  GOVT_ID_PHOTO: 'govtIDPhoto',
   NOTES: 'notes',
   PHONE_STATUS: 'phoneStatus',
   BANKED_STATUS: 'bankedStatus',
@@ -27,7 +25,7 @@ export const TARGET_FIELD = {
 };
 
 export const BENEF_DB_FIELDS = [
-  TARGET_FIELD.FULL_NAME,
+  TARGET_FIELD.HOUSE_HEAD_NAME,
   TARGET_FIELD.FIRSTNAME,
   TARGET_FIELD.LASTNAME,
   TARGET_FIELD.GENDER,
@@ -39,9 +37,7 @@ export const BENEF_DB_FIELDS = [
   TARGET_FIELD.LATITUDE,
   TARGET_FIELD.LONGITUDE,
   TARGET_FIELD.IS_VULNERABLE,
-  TARGET_FIELD.GOVT_ID_TYPE,
   TARGET_FIELD.GOVT_ID_NUMBER,
-  TARGET_FIELD.GOVT_ID_PHOTO,
   TARGET_FIELD.NOTES,
   TARGET_FIELD.PHONE_STATUS,
   TARGET_FIELD.BANKED_STATUS,

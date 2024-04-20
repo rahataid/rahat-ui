@@ -20,6 +20,8 @@ import Swal from 'sweetalert2';
 import { useCommunityBeneficiaryRemove } from '@rahat-ui/community-query';
 import { toast } from 'react-toastify';
 import { UUID } from 'crypto';
+import useFormStore from '../../formBuilder/form.store';
+import { useEffect } from 'react';
 
 type IProps = {
   data: ListBeneficiary;
@@ -29,6 +31,15 @@ type IProps = {
 
 export default function BeneficiaryDetail({ data, handleClose }: IProps) {
   const router = useRouter();
+  const { setExtras }: any = useFormStore();
+
+  useEffect(() => {
+    if (data.extras) {
+      setExtras(data.extras);
+    }
+
+    return () => setExtras({});
+  }, [data.uuid]);
 
   const deleteCommunityBeneficiary = useCommunityBeneficiaryRemove();
 
@@ -113,7 +124,7 @@ export default function BeneficiaryDetail({ data, handleClose }: IProps) {
           <div className="p-4 border-y">Transaction History View</div>
         </TabsContent> */}
         <TabsContent value="edit">
-          <EditBeneficiary uuid={data.uuid} data={data} />
+          <EditBeneficiary data={data} />
         </TabsContent>
       </Tabs>
     </>

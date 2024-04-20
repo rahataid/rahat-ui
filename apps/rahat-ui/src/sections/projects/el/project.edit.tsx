@@ -23,7 +23,7 @@ import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-export default function AddProject() {
+export default function EditProject() {
   const router = useRouter();
   const handleGoBack = () => {
     router.back();
@@ -71,10 +71,9 @@ export default function AddProject() {
     },
   });
 
-  const handleCreateProject = () => {};
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleCreateProject)}>
+      <form>
         <div className="p-4 h-add bg-card">
           <div className="shadow-md p-4 rounded-sm">
             <h1 className="text-lg font-semibold mb-6">Add Project</h1>

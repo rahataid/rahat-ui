@@ -30,29 +30,20 @@ import {
   useCommunityBeneficiaryUpdate,
   useFieldDefinitionsList,
 } from '@rahat-ui/community-query';
+import { usePagination } from '@rahat-ui/query';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
 import { ListBeneficiary } from '@rahataid/community-tool-sdk/beneficiary';
-import { GOVERNMENT_ID_TYPE } from '../../constants/beneficiary.const';
 import { Gender } from '@rumsan/sdk/enums';
 import { Wallet } from 'lucide-react';
-import { usePagination } from '@rahat-ui/query';
 import FormBuilder from '../../formBuilder';
 
 import useFormStore from '../../formBuilder/form.store';
-import { useEffect } from 'react';
-import { UUID } from 'crypto';
 
 const FIELD_DEF_FETCH_LIMIT = 200;
 
-export default function EditBeneficiary({
-  uuid,
-  data,
-}: {
-  data: ListBeneficiary;
-  uuid: UUID;
-}) {
-  const { extras, setExtras }: any = useFormStore();
+export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
+  const { extras }: any = useFormStore();
 
   const updateBeneficiaryClient = useCommunityBeneficiaryUpdate();
   const { pagination } = usePagination();
@@ -101,7 +92,6 @@ export default function EditBeneficiary({
       latitude: data?.latitude || 0,
       longitude: data?.longitude || 0,
       notes: data?.notes || '',
-      govtIDType: data?.govtIDType || GOVERNMENT_ID_TYPE.UNKNOWN,
       govtIDNumber: data?.govtIDNumber || '',
     },
   });
@@ -109,37 +99,21 @@ export default function EditBeneficiary({
   const handleEditBeneficiary = async (
     formData: z.infer<typeof FormSchema>,
   ) => {
+    const nonEmptyFields: any = {};
+    Object.entries(formData).forEach(([key, value]) => {
+      if (value !== undefined && value !== '') {
+        nonEmptyFields[key] = value;
+      }
+    });
+
     await updateBeneficiaryClient.mutateAsync({
       uuid: data.uuid,
       payload: {
-        walletAddress: formData?.walletAddress,
-        firstName: formData?.firstName,
-        lastName: formData?.lastName,
-        email: formData?.email,
-        phone: formData.phone,
-        gender: formData?.gender as Gender,
-        bankedStatus: formData.bankedStatus as BankedStatus,
-        internetStatus: formData.internetStatus as InternetStatus,
-        phoneStatus: formData.phoneStatus as PhoneStatus,
-        location: formData.location,
-        latitude: formData.latitude,
-        longitude: formData.longitude,
-        notes: formData.notes,
-        govtIDType: formData.govtIDType,
-        govtIDNumber: formData.govtIDNumber,
+        ...nonEmptyFields,
         extras,
       },
     });
   };
-
-  useEffect(() => {
-    setExtras({});
-    if (data.extras) setExtras(data.extras);
-
-    return () => setExtras({});
-  }, [uuid]);
-
-  console.log('definitions', definitions);
 
   return (
     <Form {...form}>
@@ -163,6 +137,9 @@ export default function EditBeneficiary({
                           type="text"
                           placeholder="Wallet Address"
                           {...field}
+                          onChange={(e) => {
+                            form.setValue('walletAddress', e.target.value);
+                          }}
                         />
                       </div>
                     </FormControl>
@@ -233,7 +210,7 @@ export default function EditBeneficiary({
                       </FormControl>
                       <SelectContent>
                         <SelectItem value={Gender.MALE}>Male</SelectItem>
-                        <SelectItem value={Gender.FEMALE}>Femail</SelectItem>
+                        <SelectItem value={Gender.FEMALE}>Female</SelectItem>
                         <SelectItem value={Gender.OTHER}>Other</SelectItem>
                         <SelectItem value={Gender.UKNOWN}>Unknown</SelectItem>
                       </SelectContent>
@@ -399,54 +376,6 @@ export default function EditBeneficiary({
             />
             <FormField
               control={form.control}
-              name="govtIDType"
-              render={({ field }) => {
-                return (
-                  <FormItem>
-                    <Label className="text-xs font-medium">
-                      Government ID Type
-                    </Label>
-
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select One" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value={GOVERNMENT_ID_TYPE.CITIZENSHIP}>
-                          Citizenship
-                        </SelectItem>
-                        <SelectItem value={GOVERNMENT_ID_TYPE.DRIVING_LICENSE}>
-                          Driving License
-                        </SelectItem>
-                        <SelectItem value={GOVERNMENT_ID_TYPE.PASSPORT}>
-                          Passport
-                        </SelectItem>
-                        <SelectItem value={GOVERNMENT_ID_TYPE.NATIONAL_ID_CARD}>
-                          National ID
-                        </SelectItem>
-                        <SelectItem value={GOVERNMENT_ID_TYPE.VOTER_CARD}>
-                          Voter Card
-                        </SelectItem>
-                        <SelectItem value={GOVERNMENT_ID_TYPE.OTHER}>
-                          Other
-                        </SelectItem>
-                        <SelectItem value={GOVERNMENT_ID_TYPE.UNKNOWN}>
-                          Unknown
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            />
-            <FormField
-              control={form.control}
               name="govtIDNumber"
               render={({ field }) => {
                 return (
@@ -469,22 +398,14 @@ export default function EditBeneficiary({
             />
             <FormField
               control={form.control}
-              name="longitude"
+              name="location"
               render={({ field }) => {
                 return (
                   <FormItem>
-                    <Label className="text-xs font-medium">Longitude</Label>
+                    <Label className="text-xs font-medium">Location</Label>
 
                     <FormControl>
-                      <Input
-                        type="number"
-                        placeholder="Longitude"
-                        {...field}
-                        onChange={(e) => {
-                          const numericValue = parseFloat(e.target.value);
-                          form.setValue('longitude', numericValue);
-                        }}
-                      />
+                      <Input type="text" placeholder="Location" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -504,7 +425,10 @@ export default function EditBeneficiary({
                         placeholder="Latitude"
                         {...field}
                         onChange={(e) => {
-                          const numericValue = parseFloat(e.target.value);
+                          let numericValue = parseFloat(e.target.value);
+                          if (isNaN(numericValue)) {
+                            numericValue = 0;
+                          }
                           form.setValue('latitude', numericValue);
                         }}
                       />
@@ -516,14 +440,25 @@ export default function EditBeneficiary({
             />
             <FormField
               control={form.control}
-              name="location"
+              name="longitude"
               render={({ field }) => {
                 return (
                   <FormItem>
-                    <Label className="text-xs font-medium">Location</Label>
+                    <Label className="text-xs font-medium">Longitude</Label>
 
                     <FormControl>
-                      <Input type="text" placeholder="Location" {...field} />
+                      <Input
+                        type="number"
+                        placeholder="Longitude"
+                        {...field}
+                        onChange={(e) => {
+                          let numericValue = parseFloat(e.target.value);
+                          if (isNaN(numericValue)) {
+                            numericValue = 0;
+                          }
+                          form.setValue('longitude', numericValue);
+                        }}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

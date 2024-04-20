@@ -33,7 +33,6 @@ import {
   InternetStatus,
   PhoneStatus,
 } from '@rahataid/community-tool-sdk/enums/';
-import { GOVERNMENT_ID_TYPE } from 'apps/community-tool-ui/src/constants/beneficiary.const';
 import { format } from 'date-fns';
 import { CalendarIcon, Wallet } from 'lucide-react';
 import { useEffect } from 'react';
@@ -62,7 +61,6 @@ export default function AddBeneficiary() {
     bankedStatus: z.string().toUpperCase().optional(),
     internetStatus: z.string().toUpperCase().optional(),
     phoneStatus: z.string().toUpperCase().optional(),
-    govtIDType: z.string().optional(),
     govtIDNumber: z.string().optional(),
   });
 
@@ -82,7 +80,6 @@ export default function AddBeneficiary() {
       latitude: 0,
       longitude: 0,
       notes: '',
-      govtIDType: GOVERNMENT_ID_TYPE.UNKNOWN,
       govtIDNumber: '',
     },
   });
@@ -427,54 +424,6 @@ export default function AddBeneficiary() {
                 )}
               />
 
-              <FormField
-                control={form.control}
-                name="govtIDType"
-                render={({ field }) => {
-                  return (
-                    <FormItem>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Government ID Type" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value={GOVERNMENT_ID_TYPE.CITIZENSHIP}>
-                            Citizenship
-                          </SelectItem>
-                          <SelectItem
-                            value={GOVERNMENT_ID_TYPE.DRIVING_LICENSE}
-                          >
-                            Driving License
-                          </SelectItem>
-                          <SelectItem value={GOVERNMENT_ID_TYPE.PASSPORT}>
-                            Passport
-                          </SelectItem>
-                          <SelectItem
-                            value={GOVERNMENT_ID_TYPE.NATIONAL_ID_CARD}
-                          >
-                            National ID
-                          </SelectItem>
-                          <SelectItem value={GOVERNMENT_ID_TYPE.VOTER_CARD}>
-                            Voter Card
-                          </SelectItem>
-                          <SelectItem value={GOVERNMENT_ID_TYPE.OTHER}>
-                            Other
-                          </SelectItem>
-                          <SelectItem value={GOVERNMENT_ID_TYPE.UNKNOWN}>
-                            Unknown
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  );
-                }}
-              />
               <FormField
                 control={form.control}
                 name="govtIDNumber"

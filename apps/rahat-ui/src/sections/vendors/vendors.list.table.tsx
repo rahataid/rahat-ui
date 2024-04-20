@@ -40,6 +40,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { useProjectList } from '@rahat-ui/query';
 import { UUID } from 'crypto';
+import TableLoader from '../../components/table.loader';
 
 export type IVendor = {
   id: string;
@@ -78,10 +79,7 @@ export default function VendorsTable({
         <div className="flex items-center mb-2">
           <Input
             placeholder="Search User..."
-            value={
-              (table.getColumn('name')?.getFilterValue() as string) ??
-              ''
-            }
+            value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
             onChange={(event) =>
               table.getColumn('name')?.setFilterValue(event.target.value)
             }
@@ -161,7 +159,11 @@ export default function VendorsTable({
                       colSpan={table.getAllColumns.length}
                       className="h-24 text-center"
                     >
-                      No results.
+                      {projectList.isFetching ? (
+                        <TableLoader />
+                      ) : (
+                        'No data available.'
+                      )}
                     </TableCell>
                   </TableRow>
                 )}

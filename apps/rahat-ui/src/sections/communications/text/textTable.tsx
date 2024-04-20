@@ -136,7 +136,7 @@ export default function TextTableView() {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <div className="rounded border bg-white">
+      <div className="rounded border bg-card">
         <Table>
           <ScrollArea className="h-table1">
             <TableHeader>

@@ -19,7 +19,10 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { useForm } from 'react-hook-form';
 
-import { useCommunityBeneficiaryCreate } from '@rahat-ui/community-query';
+import {
+  useCommunityBeneficiaryCreate,
+  useFieldDefinitionsList,
+} from '@rahat-ui/community-query';
 import { Calendar } from '@rahat-ui/shadcn/src/components/ui/calendar';
 import {
   Popover,
@@ -37,8 +40,21 @@ import { format } from 'date-fns';
 import { CalendarIcon, Wallet } from 'lucide-react';
 import { useEffect } from 'react';
 import { z } from 'zod';
+import { usePagination } from '@rahat-ui/query';
+import useFormStore from '../../../formBuilder/form.store';
+import FormBuilder from '../../../formBuilder';
+import { formatDate } from 'apps/community-tool-ui/src/utils';
+
+const FIELD_DEF_FETCH_LIMIT = 200;
 
 export default function AddBeneficiary() {
+  const { extras }: any = useFormStore();
+
+  const { pagination } = usePagination();
+  const { data: definitions } = useFieldDefinitionsList({
+    ...pagination,
+    perPage: FIELD_DEF_FETCH_LIMIT,
+  });
   const addCommunityBeneficiary = useCommunityBeneficiaryCreate();
   const FormSchema = z.object({
     firstName: z
@@ -47,11 +63,9 @@ export default function AddBeneficiary() {
     lastName: z
       .string()
       .min(2, { message: 'LastName must be at least 4 character' }),
-    walletAddress: z
-      .string()
-      .min(42, { message: 'The Ethereum address must be 42 characters long' }),
+    walletAddress: z.string(),
     phone: z.string().min(10, { message: 'Phone number must be 10 digits' }),
-    email: z.string().email().optional().nullable(),
+    email: z.string().optional(),
     birthDate: z.date().optional(),
     location: z.string().optional().or(z.literal('')),
     latitude: z.number().optional(),
@@ -62,6 +76,7 @@ export default function AddBeneficiary() {
     internetStatus: z.string().toUpperCase().optional(),
     phoneStatus: z.string().toUpperCase().optional(),
     govtIDNumber: z.string().optional(),
+    govtIDType: z.string().optional(),
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -81,26 +96,23 @@ export default function AddBeneficiary() {
       longitude: 0,
       notes: '',
       govtIDNumber: '',
+      govtIDType: '',
     },
   });
 
   const handleCreateBeneficiary = async (data: z.infer<typeof FormSchema>) => {
+    const formattedDate = formatDate(data.birthDate as Date);
+
+    const nonEmptyFields: any = {};
+    Object.entries(data).forEach(([key, value]) => {
+      if (value !== undefined && value !== '') {
+        nonEmptyFields[key] = value;
+      }
+    });
     await addCommunityBeneficiary.mutateAsync({
-      firstName: data.firstName,
-      lastName: data.lastName,
-      gender: data.gender as Gender,
-      walletAddress: data.walletAddress,
-      phone: data.phone,
-      bankedStatus: data.bankedStatus as BankedStatus,
-      internetStatus: data.internetStatus as InternetStatus,
-      phoneStatus: data.phoneStatus as PhoneStatus,
-      email: data.email,
-      location: data.location,
-      latitude: data.latitude,
-      longitude: data.longitude,
-      notes: data.notes,
-      govtIDType: data.govtIDType,
-      govtIDNumber: data.govtIDNumber,
+      ...nonEmptyFields,
+      birthDate: formattedDate,
+      extras,
     });
   };
 
@@ -116,7 +128,10 @@ export default function AddBeneficiary() {
         <div className="p-4 h-add">
           <h1 className="text-lg font-semibold mb-6">Add Beneficiary</h1>
           <div className="shadow-md p-4 rounded-sm">
-            <div className="grid grid-cols-2 gap-4 mb-4">
+            <div
+              style={{ maxHeight: '70vh' }}
+              className="grid grid-cols-2 gap-4 p-2 overflow-y-auto"
+            >
               <FormField
                 control={form.control}
                 name="walletAddress"
@@ -131,6 +146,10 @@ export default function AddBeneficiary() {
                             placeholder="Wallet Address"
                             {...field}
                           />
+                          {/* <p className="text-xs text-amber-500 mt-2">
+                            * Wallet address is required. If not entered, it
+                            will be automatically filled.
+                          </p> */}
                         </div>
                       </FormControl>
                       <FormMessage />
@@ -156,7 +175,6 @@ export default function AddBeneficiary() {
                   );
                 }}
               />
-
               <FormField
                 control={form.control}
                 name="lastName"
@@ -171,7 +189,6 @@ export default function AddBeneficiary() {
                   );
                 }}
               />
-
               <FormField
                 control={form.control}
                 name="phone"
@@ -221,7 +238,6 @@ export default function AddBeneficiary() {
                   );
                 }}
               />
-
               <FormField
                 control={form.control}
                 name="gender"
@@ -319,7 +335,6 @@ export default function AddBeneficiary() {
                   );
                 }}
               />
-
               <FormField
                 control={form.control}
                 name="location"
@@ -334,7 +349,6 @@ export default function AddBeneficiary() {
                   );
                 }}
               />
-
               <FormField
                 control={form.control}
                 name="longitude"
@@ -423,7 +437,6 @@ export default function AddBeneficiary() {
                   </FormItem>
                 )}
               />
-
               <FormField
                 control={form.control}
                 name="govtIDNumber"
@@ -442,7 +455,6 @@ export default function AddBeneficiary() {
                   );
                 }}
               />
-
               <FormField
                 control={form.control}
                 name="notes"
@@ -459,6 +471,12 @@ export default function AddBeneficiary() {
                   </FormItem>
                 )}
               />
+              <h3>Extra Fields</h3> <br />
+              {definitions?.data?.rows.map((definition: any) => {
+                return (
+                  <FormBuilder key={definition.id} formField={definition} />
+                );
+              }) || 'No field definitions found!'}
             </div>
             <div className="flex justify-end">
               <Button>Create Beneficiary</Button>

@@ -116,6 +116,8 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
     });
   };
 
+  console.log('definitions', definitions);
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleEditBeneficiary)}>

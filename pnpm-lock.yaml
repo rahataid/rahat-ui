@@ -66,8 +66,8 @@ dependencies:
     specifier: ^1.0.7
     version: 1.0.7(@types/react-dom@18.2.21)(@types/react@18.2.65)(react-dom@18.2.0)(react@18.2.0)
   '@rahataid/community-tool-sdk':
-    specifier: ^0.0.11
-    version: 0.0.11
+    specifier: ^0.0.12
+    version: 0.0.12
   '@rahataid/el-subgraph':
     specifier: 0.0.7
     version: 0.0.7
@@ -5412,8 +5412,8 @@ packages:
       '@babel/runtime': 7.24.1
     dev: false
 
-  /@rahataid/community-tool-sdk@0.0.11:
-    resolution: {integrity: sha512-taGaj9tkJaWcHOLrMwKNiT3Ol13hrgJJoenn0jjdwPNIiXwfS9UqAQxoCpqSEodwFbCeOIcBft0jrYshQiPayA==, tarball: https://npm.pkg.github.com/download/@rahataid/community-tool-sdk/0.0.11/db3b676b9a9be6f3ceed04a270da0397109252f6}
+  /@rahataid/community-tool-sdk@0.0.12:
+    resolution: {integrity: sha512-RPUDktjtrzlIwcsdvJ+F+Tm4IGDWcsQQutYJeYU3TmaC1iNUva8k2/3UI1M/gB4FVsAlxToiqp1Ts0QvH9c+1A==, tarball: https://npm.pkg.github.com/download/@rahataid/community-tool-sdk/0.0.12/d684c41fb2aed1854390350776292de6f8c71c72}
     dependencies:
       tslib: 2.6.2
     dev: false

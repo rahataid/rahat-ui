@@ -87,8 +87,7 @@ export const useCommunityBeneficiaryUpdate = () => {
         console.log(error);
         Swal.fire(
           'Error',
-          error?.response?.data?.message[0] ||
-            'Encounter error on Creating Data',
+          error?.response?.data?.message || 'Encounter error on Creating Data',
           'error',
         );
       },

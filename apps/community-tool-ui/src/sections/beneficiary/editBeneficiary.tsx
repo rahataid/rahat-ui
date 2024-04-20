@@ -39,6 +39,7 @@ import { Wallet } from 'lucide-react';
 import FormBuilder from '../../formBuilder';
 
 import useFormStore from '../../formBuilder/form.store';
+import { UUID } from 'crypto';
 
 const FIELD_DEF_FETCH_LIMIT = 200;
 
@@ -107,7 +108,7 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
     });
 
     await updateBeneficiaryClient.mutateAsync({
-      uuid: data.uuid,
+      uuid: data.uuid as UUID,
       payload: {
         ...nonEmptyFields,
         extras,

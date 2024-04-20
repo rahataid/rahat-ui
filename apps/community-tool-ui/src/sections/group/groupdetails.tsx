@@ -163,7 +163,7 @@ export default function GroupDetail({ data, handleClose }: IProps) {
                   />
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>Delete Beneficiary</p>
+                  <p>Remove Beneficiary</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>

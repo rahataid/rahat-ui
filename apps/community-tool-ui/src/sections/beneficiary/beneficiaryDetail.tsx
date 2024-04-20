@@ -46,7 +46,7 @@ export default function BeneficiaryDetail({ data, handleClose }: IProps) {
   const handleBeneficiaryDelete = () => {
     Swal.fire({
       title: 'Are you sure?',
-      text: 'Deleting this beneficiary will remove it permanently from the system.',
+      text: 'Deleting this beneficiary will remove it from the system.',
       icon: 'question',
       showDenyButton: true,
       confirmButtonText: 'Yes, I am sure!',

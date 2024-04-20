@@ -1,7 +1,13 @@
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { isURL, truncatedText } from 'apps/community-tool-ui/src/utils';
 import React, { useState } from 'react';
+import { ComboBox } from './Combobox';
 import NestedObjectRenderer from './NestedObjectRenderer';
-import { ComboboxDemo } from './Combobox';
 
 interface ColumnMappingTableProps {
   rawData: any[];
@@ -65,35 +71,23 @@ export default function ColumnMappingTable({
         <tr>
           {columns.map((column: any, index: number) => (
             <th className="px-4 py-1.5" key={index}>
-              {truncatedText(column, 50)}
-              <br />
-              <ComboboxDemo
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <span>{truncatedText(column, 40)}</span>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>{column}</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+
+              <ComboBox
                 data={sortedData}
                 handleTargetFieldChange={handleTargetFieldChange}
                 column={column}
                 selectedField={getSelectedField(column)}
               />
-              {/* <select
-                className="p-2"
-                name="targetField"
-                id="targetField"
-                onChange={(e) =>
-                  handleTargetFieldChange(column, e.target.value)
-                }
-              >
-                <option value="None">--Choose Field--</option>
-                {sortedData.map((f: string) => {
-                  return (
-                    <option
-                      key={f}
-                      value={f}
-                      selected={isFieldSelected(f, column)}
-                    >
-                      {f}
-                    </option>
-                  );
-                })}
-              </select> */}
             </th>
           ))}
         </tr>

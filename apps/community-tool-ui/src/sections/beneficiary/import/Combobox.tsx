@@ -20,7 +20,7 @@ import { CommandList } from 'cmdk';
 import { cn } from '@rahat-ui/shadcn/src';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 
-export function ComboboxDemo({
+export function ComboBox({
   data,
   handleTargetFieldChange,
   column,

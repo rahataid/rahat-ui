@@ -105,7 +105,7 @@ export const useCommunityGroupRemove = () => {
       mutationKey: [TAGS.REMOVE_COMMUNITY_GROUP],
       mutationFn: groupClient.remove,
       onSuccess: () => {
-        Swal.fire('Group Deleted Successfully', '', 'success');
+        Swal.fire('Beneficiary Deleted Successfully', '', 'success');
         queryClient.invalidateQueries({
           queryKey: [
             TAGS.LIST_COMMUNITY_GROUP,

@@ -140,6 +140,7 @@ export default function BenImp({ extraFields }: IProps) {
     const index = mappings.findIndex(
       (item: any) => item.sourceField === sourceField,
     );
+    console.log({ index });
     if (index !== -1) {
       // Update mapping
       mappings[index] = { ...mappings[index], targetField };

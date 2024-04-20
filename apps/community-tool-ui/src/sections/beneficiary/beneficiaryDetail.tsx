@@ -46,7 +46,7 @@ export default function BeneficiaryDetail({ data, handleClose }: IProps) {
   const handleBeneficiaryDelete = () => {
     Swal.fire({
       title: 'Are you sure?',
-      text: 'Deleting this beneficiary will remove it from the system.',
+      text: 'You are deleting beneficiary',
       icon: 'question',
       showDenyButton: true,
       confirmButtonText: 'Yes, I am sure!',
@@ -61,6 +61,7 @@ export default function BeneficiaryDetail({ data, handleClose }: IProps) {
       if (result.isConfirmed) {
         try {
           await deleteCommunityBeneficiary.mutateAsync(data?.uuid as UUID);
+          handleClose();
         } catch (error) {
           toast.error('Error deleting Beneficiary');
           console.error('Error deleting Beneficiary:', error);

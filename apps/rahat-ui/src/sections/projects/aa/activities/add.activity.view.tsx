@@ -20,10 +20,22 @@ import {
 
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { useActivitiesFields } from './useActivitiesFields';
+// import { useActivitiesFields } from './useActivitiesFields';
+import {
+  useActivitiesCategories,
+  useActivitiesFieldStore,
+  useActivitiesHazardTypes,
+  useActivitiesPhase,
+} from '@rahat-ui/query';
 
 export default function AddActivities() {
-  const { hazardType, category, phase } = useActivitiesFields();
+  useActivitiesCategories('45606343-e6f5-475f-a2b3-f31d6ab10733');
+  const categories = useActivitiesFieldStore((state) => state.categories);
+  useActivitiesPhase('45606343-e6f5-475f-a2b3-f31d6ab10733');
+  const phases = useActivitiesFieldStore((state) => state.phases);
+  useActivitiesHazardTypes('45606343-e6f5-475f-a2b3-f31d6ab10733');
+  const hazardTypes = useActivitiesFieldStore((state) => state.hazardTypes);
+  // const { hazardType, category, phase } = useActivitiesFields();
   const FormSchema = z.object({
     title: z.string().min(2, { message: 'Title must be at least 4 character' }),
     responsibility: z
@@ -127,9 +139,9 @@ export default function AddActivities() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {phase.map((item) => (
-                          <SelectItem key={item.label} value={item.value}>
-                            {item.label}
+                        {phases.map((item) => (
+                          <SelectItem key={item.id} value={item.uuid}>
+                            {item.name}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -153,9 +165,9 @@ export default function AddActivities() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {category.map((item) => (
-                          <SelectItem key={item.label} value={item.value}>
-                            {item.label}
+                        {categories.map((item) => (
+                          <SelectItem key={item.id} value={item.uuid}>
+                            {item.name}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -179,9 +191,9 @@ export default function AddActivities() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {hazardType.map((item) => (
-                          <SelectItem key={item.label} value={item.value}>
-                            {item.label}
+                        {hazardTypes.map((item) => (
+                          <SelectItem key={item.id} value={item.uuid}>
+                            {item.name}
                           </SelectItem>
                         ))}
                       </SelectContent>

@@ -1,6 +1,7 @@
 'use client';
 
 import {
+  PROJECT_SETTINGS_KEYS,
   usePagination,
   useProjectBeneficiaries,
   useProjectSettingsStore,
@@ -54,6 +55,8 @@ import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import { useBulkAssignVoucher } from 'apps/rahat-ui/src/hooks/el/contracts/el-contracts';
 import { useBoolean } from '../../../../hooks/use-boolean';
 import TokenAssingnConfirm from './token.assign.confirm';
+import TableLoader from '../../../../components/table.loader';
+import { useRouter } from 'next/navigation';
 
 // import { useBeneficiaryTransaction } from '../../hooks/el/subgraph/querycall';
 
@@ -82,7 +85,8 @@ export const benType = [
 
 function BeneficiaryDetailTableView() {
   const tokenAssignModal = useBoolean();
-
+  const route = useRouter();
+  const id = useParams();
   // TODO: Refactor it
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -123,7 +127,7 @@ function BeneficiaryDetailTableView() {
   });
 
   const contractAddress = useProjectSettingsStore(
-    (state) => state.settings?.[uuid],
+    (state) => state.settings?.[uuid][PROJECT_SETTINGS_KEYS.CONTRACT] || null,
   );
 
   const columns = useProjectBeneficiaryTableColumns();
@@ -170,6 +174,12 @@ function BeneficiaryDetailTableView() {
       contractAddress: contractAddress.elproject.address,
     });
   };
+
+  React.useEffect(() => {
+    if (assignVoucher.isSuccess) {
+      route.push(`/projects/el/${id}`);
+    }
+  }, []);
 
   return (
     <>
@@ -295,11 +305,7 @@ function BeneficiaryDetailTableView() {
                       className="h-24 text-center"
                     >
                       {projectBeneficiaries.isFetching ? (
-                        <div className="flex items-center justify-center space-x-2 h-full">
-                          <div className="h-5 w-5 animate-bounce rounded-full bg-primary [animation-delay:-0.3s]"></div>
-                          <div className="h-5 w-5 animate-bounce rounded-full bg-primary [animation-delay:-0.13s]"></div>
-                          <div className="h-5 w-5 animate-bounce rounded-full bg-primary"></div>
-                        </div>
+                        <TableLoader />
                       ) : (
                         'No data available.'
                       )}

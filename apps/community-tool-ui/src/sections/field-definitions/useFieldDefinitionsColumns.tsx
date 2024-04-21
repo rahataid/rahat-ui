@@ -3,13 +3,14 @@
 import { ColumnDef } from '@tanstack/react-table';
 import { Eye } from 'lucide-react';
 import { FieldDefinition } from '@rahataid/community-tool-sdk/fieldDefinitions';
+import { humanizeString } from '../../utils';
 
 export const useFieldDefinitionsTableColumns = () => {
   const columns: ColumnDef<FieldDefinition>[] = [
     {
       accessorKey: 'name',
       header: 'Name',
-      cell: ({ row }) => <div>{row.getValue('name')}</div>,
+      cell: ({ row }) => <div>{humanizeString(row.getValue('name'))}</div>,
     },
     {
       accessorKey: 'fieldType',
@@ -18,10 +19,8 @@ export const useFieldDefinitionsTableColumns = () => {
     },
     {
       accessorKey: 'isActive',
-      header: 'isActive',
-      cell: ({ row }) => (
-        <div>{row.getValue('isActive') ? 'True' : 'False'}</div>
-      ),
+      header: 'Is Active',
+      cell: ({ row }) => <div>{row.getValue('isActive') ? 'Yes' : 'No'}</div>,
     },
     // {
     //   accessorKey: 'isTargeting',
@@ -33,6 +32,7 @@ export const useFieldDefinitionsTableColumns = () => {
     {
       id: 'actions',
       enableHiding: false,
+      header: 'Actions',
       cell: () => {
         return (
           <Eye

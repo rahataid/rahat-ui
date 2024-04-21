@@ -40,8 +40,6 @@ export const useBeneficiaryList = (
     setMeta: state.setMeta,
   }));
 
-  console.log(payload)
-
   const ben = useQuery(
     {
       queryKey: [TAGS.GET_BENEFICIARIES, payload],
@@ -70,6 +68,18 @@ export const useGetBeneficiaryStats = (): UseQueryResult<any, Error> => {
   return useQuery({
     queryKey: [TAGS.GET_BENEFICIARIES_STATS],
     queryFn: () => listBeneficiaryStatus(),
+  });
+};
+
+const listProjectBeneficiaryStats = async () => {
+  const response = await api.get('/beneficiaries/table-stats');
+  return response?.data;
+};
+
+export const useGetProjectBeneficiaryStats = () => {
+  return useQuery({
+    queryKey: [TAGS.GET_PROJECT_BENEFICIARIES_STATS],
+    queryFn: () => listProjectBeneficiaryStats(),
   });
 };
 

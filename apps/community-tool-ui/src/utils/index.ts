@@ -208,14 +208,30 @@ export const humanizeString = (inputString: string) => {
   // Replace underscore with space
   inputString = inputString.replace(/_/g, ' ');
 
-  // Convert the string to lowercase and split into words
   let words = inputString.toLowerCase().split(' ');
-
   // Capitalize the first letter of each word
   for (let i = 0; i < words.length; i++) {
     words[i] = words[i].charAt(0).toUpperCase() + words[i].slice(1);
   }
 
-  // Join the words back together with spaces and return the result
-  return words.join(' ');
+  const result = words.join(' ');
+  return truncateString(result, 50);
 };
+
+function truncateString(inputStr: string, length: number) {
+  if (!length) length = 10;
+  if (inputStr.length > length) {
+    return inputStr.slice(0, length) + '...';
+  }
+  return inputStr;
+}
+
+export function formatDate(date: Date) {
+  const changedDate = new Date(date);
+  const year = changedDate.getFullYear();
+  const month = (changedDate.getMonth() + 1).toString().padStart(2, '0');
+  const day = changedDate.getDate().toString().padStart(2, '0');
+  const formattedDate = `${year}-${month}-${day}`;
+
+  return formattedDate;
+}

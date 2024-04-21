@@ -34,6 +34,10 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
+import {
+  useProjectSettingsStore,
+  PROJECT_SETTINGS_KEYS,
+} from '@rahat-ui/query';
 
 export type Payment = {
   id: string;
@@ -51,11 +55,8 @@ export function FreeTransactionTable() {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
-  const [contractAddress, setContractAddress] = useState<any>();
-
   const { id } = useParams();
 
-  const projectSettings = localStorage.getItem('projectSettingsStore');
   const [transactionHash, setTransactionHash] = useState<number>();
   const [fromCopied, setFromCopied] = useState<number>();
   const [toCopied, setToCopied] = useState<number>();
@@ -175,17 +176,12 @@ export function FreeTransactionTable() {
     },
   ];
 
-  useEffect(() => {
-    if (projectSettings) {
-      const settings = JSON.parse(projectSettings)?.state?.settings?.[id];
-      setContractAddress({
-        eyeVoucher: settings?.eyevoucher?.address,
-      });
-    }
-  }, [projectSettings, id]);
+  const contractSettings = useProjectSettingsStore(
+    (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT] || null,
+  );
 
   const { data: vouchersTransactions, isFetching } =
-    useGetFreeVoucherTransaction(contractAddress?.eyeVoucher);
+    useGetFreeVoucherTransaction(contractSettings?.eyevoucher?.address || '');
 
   const table = useReactTable({
     data: vouchersTransactions?.transfers || [],
@@ -207,13 +203,13 @@ export function FreeTransactionTable() {
   });
 
   return (
-    <div className="w-full h-full bg-card">
+    <div className="w-full h-[calc(100vh-280px)] bg-card">
       <div className="flex items-center justify-between py-2 px-2">
         <h1 className="text-primary">Transactions</h1>
       </div>
       <div className="rounded border">
         <Table>
-          <ScrollArea className="h-[calc(100vh-494px)]">
+          <ScrollArea className="h-full">
             <TableHeader className="top-0 sticky bg-card">
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
@@ -255,15 +251,7 @@ export function FreeTransactionTable() {
                     colSpan={columns.length}
                     className="h-24 text-center"
                   >
-                    {isFetching ? (
-                      <div className="flex items-center justify-center space-x-2">
-                        <div className="h-5 w-5 animate-bounce rounded-full bg-primary [animation-delay:-0.3s]"></div>
-                        <div className="h-5 w-5 animate-bounce rounded-full bg-primary [animation-delay:-0.13s]"></div>
-                        <div className="h-5 w-5 animate-bounce rounded-full bg-primary"></div>
-                      </div>
-                    ) : (
-                      'No data available.'
-                    )}
+                    {isFetching ? <TableLoader /> : 'No data available.'}
                   </TableCell>
                 </TableRow>
               )}

@@ -95,3 +95,35 @@ export const useCommunityGroupedBeneficiariesDownload = () => {
     queryClient,
   );
 };
+
+export const useCommunityGroupRemove = () => {
+  const { queryClient, rumsanService } = useRSQuery();
+  const groupClient = getGroupClient(rumsanService.client);
+
+  return useMutation(
+    {
+      mutationKey: [TAGS.REMOVE_COMMUNITY_GROUP],
+      mutationFn: groupClient.remove,
+      onSuccess: () => {
+        Swal.fire('Beneficiary Deleted Successfully', '', 'success');
+        queryClient.invalidateQueries({
+          queryKey: [
+            TAGS.LIST_COMMUNITY_GROUP,
+            {
+              exact: true,
+            },
+          ],
+        });
+      },
+      onError: (error: any) => {
+        Swal.fire({
+          icon: 'error',
+          title:
+            error?.response?.data?.message ||
+            'Encounter error on Removing Data',
+        });
+      },
+    },
+    queryClient,
+  );
+};

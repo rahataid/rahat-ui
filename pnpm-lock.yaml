@@ -66,14 +66,14 @@ dependencies:
     specifier: ^1.0.7
     version: 1.0.7(@types/react-dom@18.2.25)(@types/react@18.2.79)(react-dom@18.2.0)(react@18.2.0)
   '@rahataid/community-tool-sdk':
-    specifier: ^0.0.11
-    version: 0.0.11
+    specifier: ^0.0.12
+    version: 0.0.12
   '@rahataid/el-subgraph':
     specifier: 0.0.7
     version: 0.0.7
   '@rahataid/sdk':
-    specifier: 0.0.19
-    version: 0.0.19
+    specifier: 0.0.22
+    version: 0.0.22(typescript@5.4.2)(zod@3.22.4)
   '@rumsan/communication':
     specifier: ^0.0.9
     version: 0.0.9
@@ -232,7 +232,10 @@ dependencies:
     version: 10.0.5(react-dom@18.2.0)(react@18.2.0)
   shadcn-ui:
     specifier: ^0.8.0
-    version: 0.8.0(typescript@5.4.5)
+    version: 0.8.0(typescript@5.4.2)
+  sonner:
+    specifier: ^1.4.41
+    version: 1.4.41(react-dom@18.2.0)(react@18.2.0)
   sweetalert2:
     specifier: ^11.10.6
     version: 11.10.7
@@ -5436,8 +5439,8 @@ packages:
       '@babel/runtime': 7.24.4
     dev: false
 
-  /@rahataid/community-tool-sdk@0.0.11:
-    resolution: {integrity: sha512-taGaj9tkJaWcHOLrMwKNiT3Ol13hrgJJoenn0jjdwPNIiXwfS9UqAQxoCpqSEodwFbCeOIcBft0jrYshQiPayA==, tarball: https://npm.pkg.github.com/download/@rahataid/community-tool-sdk/0.0.11/db3b676b9a9be6f3ceed04a270da0397109252f6}
+  /@rahataid/community-tool-sdk@0.0.12:
+    resolution: {integrity: sha512-RPUDktjtrzlIwcsdvJ+F+Tm4IGDWcsQQutYJeYU3TmaC1iNUva8k2/3UI1M/gB4FVsAlxToiqp1Ts0QvH9c+1A==, tarball: https://npm.pkg.github.com/download/@rahataid/community-tool-sdk/0.0.12/d684c41fb2aed1854390350776292de6f8c71c72}
     dependencies:
       tslib: 2.6.2
     dev: false
@@ -5455,14 +5458,19 @@ packages:
       - graphql
     dev: false
 
-  /@rahataid/sdk@0.0.19:
-    resolution: {integrity: sha512-vsNH2/V4IAuYqOPoqBylYgzwCX8ud2vMIMukAEoPMP8ncu7KzRnmeyiMBsTS5KFtNwzAPABlrAYhX+md+GAgGA==, tarball: https://npm.pkg.github.com/download/@rahataid/sdk/0.0.19/9d861920d611fe776181fc9cfab60a83b58bef0c}
+  /@rahataid/sdk@0.0.22(typescript@5.4.2)(zod@3.22.4):
+    resolution: {integrity: sha512-91TmhtAxBSvI74Z9lz3rXDWOp5RSU1uHwoFbHqGIXgBEU4huoVY9gCEnOsI7ZKztZsa3Jwop2GSLGmA/VSt/rg==, tarball: https://npm.pkg.github.com/download/@rahataid/sdk/0.0.22/54abaea208dd58aa1fc11798703b915cef7c2c92}
     dependencies:
-      '@rumsan/sdk': 0.0.41
-      axios: 1.6.8
-      tslib: 2.5.0
+      '@rumsan/sdk': 0.0.44
+      axios: 1.6.7
+      tslib: 2.4.0
+      viem: 2.8.5(typescript@5.4.2)(zod@3.22.4)
     transitivePeerDependencies:
+      - bufferutil
       - debug
+      - typescript
+      - utf-8-validate
+      - zod
     dev: false
 
   /@react-native-async-storage/async-storage@1.23.1(react-native@0.73.6):
@@ -6069,10 +6077,10 @@ packages:
       - zod
     dev: false
 
-  /@rumsan/sdk@0.0.41:
-    resolution: {integrity: sha512-trrVSzK57ZJraXu4wFEyzBM63omLowxPF1qJT8yOIgovuIS0LK3CM1rocE6p0kG6HWkm/nCqpUvhQKJogCkRrg==, tarball: https://npm.pkg.github.com/download/@rumsan/sdk/0.0.41/1662146719ff5aef7871d89b1de5a76869b94038}
+  /@rumsan/sdk@0.0.39:
+    resolution: {integrity: sha512-C5y8TnoGJmywzSNl8tAuz7C/vQH70AJp/CCJXIbwPU6bmmQt06NB6YUi4p8ICh86mRX29gfXHo3INKW+UlBogw==, tarball: https://npm.pkg.github.com/download/@rumsan/sdk/0.0.39/8e180ca43cb298f9d0862e97a1e00e6809789ac4}
     dependencies:
-      axios: 1.6.8
+      axios: 1.6.7
       tslib: 2.6.2
     transitivePeerDependencies:
       - debug
@@ -18904,6 +18912,16 @@ packages:
       atomic-sleep: 1.0.0
     dev: false
 
+  /sonner@1.4.41(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-uG511ggnnsw6gcn/X+YKkWPo5ep9il9wYi3QJxHsYe7yTZ4+cOd1wuodOUmOpFuXL+/RE3R04LczdNCDygTDgQ==}
+    peerDependencies:
+      react: ^18.0.0
+      react-dom: ^18.0.0
+    dependencies:
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+    dev: false
+
   /sort-asc@0.2.0:
     resolution: {integrity: sha512-umMGhjPeHAI6YjABoSTrFp2zaBtXBej1a0yKkuMUyjjqu6FJsTF+JYwCswWDg+zJfk/5npWUUbd33HH/WLzpaA==}
     engines: {node: '>=0.10.0'}
@@ -20038,8 +20056,11 @@ packages:
     resolution: {integrity: sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg==}
     dev: false
 
-  /tslib@2.5.0:
-    resolution: {integrity: sha512-336iVw3rtn2BUK7ORdIAHTyxHGRIHVReokCR3XjbckJMK7ms8FysBfhLR8IXnAgy7T0PTPNBWKiH514FOW/WSg==}
+  /tslib@2.3.0:
+    resolution: {integrity: sha512-N82ooyxVNm6h1riLCoyS9e3fuJ3AMG2zIZs2Gd1ATcSFjSA23Q0fzjjZeh0jbJvWVDZ0cJT8yaNNaaXHzueNjg==}
+
+  /tslib@2.4.0:
+    resolution: {integrity: sha512-d6xOpEDfsi2CZVlPQzGeux8XMwLT9hssAsaPYExaQMuYskwb+x1x7J371tWlbBdWHroy99KnVB6qIkUbs5X3UQ==}
     dev: false
 
   /tslib@2.6.2:

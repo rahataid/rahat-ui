@@ -17,7 +17,6 @@ export default function AddToQueue({
   invalidFields,
   handleExportInvalidClick,
 }: IProps) {
-  console.log('Invalid Fields', invalidFields);
   const mappedData =
     data.length > 0
       ? data.map((d: any) => {
@@ -101,7 +100,9 @@ export default function AddToQueue({
                 {headerKeys.map((key) =>
                   invalidFields.find(
                     (err: any) =>
-                      err.uuid === item['uuid'] && err.value === item[key],
+                      err.uuid === item['uuid'] &&
+                      err.value === item[key] &&
+                      key === err.fieldName,
                   ) ? (
                     <td className="px-4 bg-red-100 py-1.5" key={key}>
                       {renderItemKey(item, key)}

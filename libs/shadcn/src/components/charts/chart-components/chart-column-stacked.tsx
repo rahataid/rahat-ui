@@ -15,7 +15,7 @@ type Props = {
 export default function ChartColumnStacked({ series }: Props) {
   const chartOptions = useChart({
     chart: {
-      stacked: true,
+      stacked: false,
       zoom: {
         enabled: true,
       },
@@ -29,22 +29,14 @@ export default function ChartColumnStacked({ series }: Props) {
     },
     plotOptions: {
       bar: {
-        columnWidth: '16%',
+        columnWidth: '50%',
       },
     },
     stroke: {
       show: false,
     },
     xaxis: {
-      type: 'datetime',
-      categories: [
-        '01/01/2011 GMT',
-        '01/02/2011 GMT',
-        '01/03/2011 GMT',
-        '01/04/2011 GMT',
-        '01/05/2011 GMT',
-        '01/06/2011 GMT',
-      ],
+      categories: ['Enrolled', 'Referred'],
     },
   });
 

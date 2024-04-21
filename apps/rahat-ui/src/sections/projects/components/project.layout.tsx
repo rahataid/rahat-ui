@@ -7,15 +7,17 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/resizable';
 // import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { FC } from 'react';
-import { NavItem } from './nav-items.types';
 import ProjectNavView from './project.nav.view';
+import { useProjectNavItems } from './useProjectNavItems';
+import { ProjectType } from './nav-items.types';
 
 type ProjectLayoutProps = {
   children: React.ReactNode | React.ReactNode[];
-  menuItems: NavItem[];
+  projectType: ProjectType;
 };
 
-const ProjectLayout: FC<ProjectLayoutProps> = ({ children, menuItems }) => {
+const ProjectLayout: FC<ProjectLayoutProps> = ({ children, projectType }) => {
+  const { navItems: menuItems } = useProjectNavItems(projectType);
   const renderResizablePanel = (children: React.ReactNode, index?: number) => {
     return (
       <ResizablePanel minSize={40} key={index}>
@@ -45,14 +47,8 @@ const ProjectLayout: FC<ProjectLayoutProps> = ({ children, menuItems }) => {
 
   return (
     <>
-      <ResizablePanelGroup
-        direction="horizontal"
-      >
-        <ResizablePanel
-          defaultSize={18}
-          minSize={18}
-          maxSize={18}
-        >
+      <ResizablePanelGroup direction="horizontal">
+        <ResizablePanel defaultSize={18} minSize={18} maxSize={18}>
           {menuItems.map((item) => (
             <ProjectNavView
               key={item.title}

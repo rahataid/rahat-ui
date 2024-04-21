@@ -10,6 +10,7 @@ import {
   FormMessage,
 } from '@rahat-ui/shadcn/src/components/ui/form';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
+import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import {
   Select,
   SelectContent,
@@ -17,10 +18,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
-import { useForm, useFieldArray } from 'react-hook-form';
-import { toast } from 'react-toastify';
 import { Switch } from '@rahat-ui/shadcn/src/components/ui/switch';
-import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
+import { useFieldArray, useForm } from 'react-hook-form';
+import { toast } from 'react-toastify';
 
 import { z } from 'zod';
 
@@ -28,14 +28,14 @@ import React, { useEffect, useState } from 'react';
 
 import { useFieldDefinitionsCreate } from '@rahat-ui/community-query';
 import { FieldType } from 'apps/community-tool-ui/src/types/fieldDefinition';
-import { Link, LucideUpload, Minus, Plus } from 'lucide-react';
+import { Minus, Plus } from 'lucide-react';
 
 type Iprops = {
   handleTabChange: (tab: 'add' | 'import') => void;
 };
 export default function AddFieldDefinitions({ handleTabChange }: Iprops) {
   const addFieldDefinitions = useFieldDefinitionsCreate();
-  const [showKeyValueFields, setShowKeyValueFields] = useState(false);
+  const [showLabelValue, setShowLabelValue] = useState(false);
   const {
     control,
     formState: { errors },
@@ -49,7 +49,7 @@ export default function AddFieldDefinitions({ handleTabChange }: Iprops) {
     field: z.array(
       z.object({
         value: z.object({
-          key: z.string().min(1, { message: 'Key is required' }),
+          label: z.string().min(1, { message: 'Label is required' }),
           value: z.string().min(1, { message: 'Value is required' }),
         }),
       }),
@@ -78,7 +78,7 @@ export default function AddFieldDefinitions({ handleTabChange }: Iprops) {
     let fieldPopulatePayload;
     if (data.field && data.field.length > 0) {
       fieldPopulatePayload = data.field.map((item: any) => ({
-        key: item.value.key,
+        label: item.value.label,
         value: item.value.value,
       }));
     }
@@ -99,16 +99,16 @@ export default function AddFieldDefinitions({ handleTabChange }: Iprops) {
     }
   };
 
-  const addKeyValueField = () => {
-    if (showKeyValueFields) {
+  const addLabelAndValue = () => {
+    if (showLabelValue) {
       append({
-        value: { key: '', value: '' },
+        value: { label: '', value: '' },
       });
     }
   };
 
   useEffect(() => {
-    setShowKeyValueFields(
+    setShowLabelValue(
       form.watch('fieldType') === FieldType.CHECKBOX ||
         form.watch('fieldType') === FieldType.RADIO ||
         form.watch('fieldType') === FieldType.DROPDOWN,
@@ -122,16 +122,16 @@ export default function AddFieldDefinitions({ handleTabChange }: Iprops) {
   }, [addFieldDefinitions.isSuccess, form]);
 
   useEffect(() => {
-    if (showKeyValueFields) {
+    if (showLabelValue) {
       if (fields.length === 0) {
         append({
-          value: { key: '', value: '' },
+          value: { label: '', value: '' },
         });
       }
     } else {
       form.setValue('field', []);
     }
-  }, [showKeyValueFields, fields, append, form]);
+  }, [showLabelValue, fields, append, form]);
 
   return (
     <Form {...form}>
@@ -216,7 +216,7 @@ export default function AddFieldDefinitions({ handleTabChange }: Iprops) {
                 control={form.control}
                 name="isTargeting"
                 render={({ field }) => (
-                  <div className=" flex flex-row items-center gap-4 m-1">
+                  <div className="flex flex-row items-center gap-4 m-1">
                     <Label>User for Targeting</Label>
                     <Switch
                       {...field}
@@ -228,10 +228,10 @@ export default function AddFieldDefinitions({ handleTabChange }: Iprops) {
                 )}
               />
             </div>
-            {showKeyValueFields && (
+            {showLabelValue && (
               <>
                 <div className="grid grid-cols-5 gap-4 mb-4">
-                  <Label className="col-span-2">KEY</Label>
+                  <Label className="col-span-2">LABEL</Label>
                   <Label className="col-span-2">VALUE</Label>
                 </div>
                 <div className="grid grid-cols-5 gap-5 mb-4">
@@ -240,19 +240,14 @@ export default function AddFieldDefinitions({ handleTabChange }: Iprops) {
                       <React.Fragment key={index}>
                         <FormField
                           control={form.control}
-                          name={`field.${index}.value.key` as const}
+                          name={`field.${index}.value.label` as const}
                           render={({ field }) => (
                             <div className="col-span-2">
                               <Input
                                 type="text"
-                                placeholder="eg: 1"
+                                placeholder="eg: Green"
                                 {...field}
                               />
-                              {/* {errors?.fieldPopulate?.[index]?.value?.key && (
-                                <Label className="text-red-500">
-                                  {errors?.fieldPopulate?.[index]?.value?.key?.message}
-                                </Label>
-                              )} */}
                             </div>
                           )}
                         />
@@ -264,7 +259,7 @@ export default function AddFieldDefinitions({ handleTabChange }: Iprops) {
                             <div className="col-span-2">
                               <Input
                                 type="text"
-                                placeholder="eg: Green"
+                                placeholder="eg: GREEN"
                                 {...field}
                               />
                               {/* {errors?.fieldPopulate?.[index]?.value?.value && (
@@ -292,7 +287,7 @@ export default function AddFieldDefinitions({ handleTabChange }: Iprops) {
                 </div>
 
                 <Button
-                  onClick={addKeyValueField}
+                  onClick={addLabelAndValue}
                   type="button"
                   className="flex items-center p-2 gap-1 text-xs  w-15"
                 >

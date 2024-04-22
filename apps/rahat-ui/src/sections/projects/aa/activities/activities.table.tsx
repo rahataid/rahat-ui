@@ -47,7 +47,7 @@ export default function ActivitiesTable({ activitiesData }: any) {
   const [rowSelection, setRowSelection] = React.useState({});
   // const data = ActivitiesData;
   const table = useReactTable({
-    data: activitiesData,
+    data: activitiesData ?? [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,

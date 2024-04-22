@@ -1,2 +1,2 @@
-export * from './activities.field.store'
-export * from './activities.service'
+export * from './activities.store';
+export * from './activities.service';

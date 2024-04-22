@@ -2,7 +2,7 @@
 
 import { useParams } from 'next/navigation';
 
-import { useProjectAction } from '@rahat-ui/query';
+import { PROJECT_SETTINGS_KEYS, useProjectAction, useProjectSettingsStore } from '@rahat-ui/query';
 import {
   Tabs,
   TabsContent,
@@ -46,6 +46,8 @@ import {
   Dialog,
   DialogTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dialog';
+import TableLoader from 'apps/rahat-ui/src/components/table.loader';
+import { useRouter } from 'next/navigation';
 import EditBeneficiary from './beneficiary.edit';
 
 type IProps = {
@@ -60,19 +62,21 @@ export default function BeneficiaryDetail({
   const assignClaims = useAssignClaims();
   const { id } = useParams();
   const getProject = useProjectAction();
-
+  const route = useRouter();
   const [assignStatus, setAssignStatus] = useState(false);
-  const [contractAddress, setContractAddress] = useState<any>();
 
   const walletAddress = beneficiaryDetails.wallet;
 
+  const contractSettings = useProjectSettingsStore(
+    (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT] || null,
+  )
+
   const { data: beneficiaryVoucherDetails, isLoading } =
     useReadElProjectGetBeneficiaryVoucherDetail({
-      address: contractAddress?.el,
+      address: contractSettings?.elproject?.address,
       args: [walletAddress],
     });
 
-  const projectSettings = localStorage.getItem('projectSettingsStore');
 
   const [activeTab, setActiveTab] = useState<'details' | 'edit' | null>(
     'details',
@@ -102,6 +106,12 @@ export default function BeneficiaryDetail({
   };
 
   useEffect(() => {
+    if (assignClaims.isSuccess) {
+      route.push(`/projects/el/${id}/beneficiary`);
+    }
+  }, [assignClaims.isSuccess]);
+
+  useEffect(() => {
     if (
       beneficiaryVoucherDetails?.freeVoucherAddress === undefined ||
       beneficiaryVoucherDetails?.referredVoucherAddress === undefined
@@ -117,22 +127,9 @@ export default function BeneficiaryDetail({
     }
   }, [beneficiaryVoucherDetails]);
 
-  useEffect(() => {
-    if (projectSettings) {
-      const settings = JSON.parse(projectSettings)?.state?.settings?.[id];
-      setContractAddress({
-        el: settings?.elproject?.address,
-        eyeVoucher: settings?.eyevoucher?.address,
-        referredVoucher: settings?.referralvoucher?.address,
-      });
-    }
-  }, [id, projectSettings]);
+ 
 
   const voucherAssignModal = useBoolean();
-
-  const handleVoucherAssignModal = () => {
-    voucherAssignModal.onTrue();
-  };
 
   const handleVoucherAssignModalClose = () => {
     voucherAssignModal.onFalse();
@@ -141,11 +138,7 @@ export default function BeneficiaryDetail({
   return (
     <>
       {isLoading ? (
-        <div className="h-screen flex items-center justify-center space-x-2">
-          <div className="h-5 w-5 animate-bounce rounded-full bg-primary [animation-delay:-0.3s]"></div>
-          <div className="h-5 w-5 animate-bounce rounded-full bg-primary [animation-delay:-0.13s]"></div>
-          <div className="h-5 w-5 animate-bounce rounded-full bg-primary"></div>
-        </div>
+        <TableLoader />
       ) : (
         <>
           <div className="flex justify-between p-4 pt-5 bg-secondary border-b">

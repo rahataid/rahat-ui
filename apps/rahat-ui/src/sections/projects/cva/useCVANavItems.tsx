@@ -1,8 +1,6 @@
 import {
   Lock,
-  MessageSquare,
   Pencil,
-  Phone,
   PlusSquare,
   Receipt,
   Speech,
@@ -149,5 +147,5 @@ export const useNavItems = () => {
     },
   ];
 
-  return navItems;
+  return { navItems };
 };

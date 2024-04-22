@@ -9,7 +9,7 @@ export const useProjectListNavItems = () => {
     setFilters({ type });
   };
 
-  const menuItems: NavItem[] = [
+  const navItems: NavItem[] = [
     {
       title: 'Projects',
       children: [
@@ -33,6 +33,10 @@ export const useProjectListNavItems = () => {
               title: 'EL',
               onClick: () => handleFilter('el'),
             },
+            {
+              title: 'C2C',
+              onClick: () => handleFilter('c2c'),
+            },
           ],
         },
         {
@@ -53,5 +57,5 @@ export const useProjectListNavItems = () => {
       ],
     },
   ];
-  return menuItems;
+  return { navItems };
 };

@@ -122,7 +122,7 @@ export function Nav() {
         </nav>
       </div>
       <div className="flex gap-4 items-center">
-        <ConnectWallet />
+        {/* <ConnectWallet /> */}
 
         <DropdownMenu>
           <DropdownMenuTrigger>

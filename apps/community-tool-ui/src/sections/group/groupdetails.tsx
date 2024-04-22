@@ -1,5 +1,3 @@
-import { useRouter } from 'next/navigation';
-
 import {
   Tabs,
   TabsContent,
@@ -12,7 +10,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/components/tooltip';
-import { Download, Minus } from 'lucide-react';
+import { Download, Minus, Trash2 } from 'lucide-react';
 
 import { ListGroup } from '@rahataid/community-tool-sdk/groups';
 import {
@@ -30,19 +28,22 @@ import {
   useCommunityGroupedBeneficiariesDownload,
 } from '@rahat-ui/community-query';
 import { useCommunityGroupDeailsColumns } from './useGroupColumns';
-import { useRSQuery } from '@rumsan/react-query';
+import Swal from 'sweetalert2';
+import { toast } from 'react-toastify';
+import { useCommunityGroupRemove } from '@rahat-ui/community-query';
+
 type IProps = {
   data: ListGroup;
   handleClose: VoidFunction;
 };
 
 export default function GroupDetail({ data, handleClose }: IProps) {
-  const { rumsanService } = useRSQuery();
   const { data: responseByUUID } = useCommunityGroupListByID(data?.uuid);
   const columns = useCommunityGroupDeailsColumns();
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
   const download = useCommunityGroupedBeneficiariesDownload();
+  const removeCommunityGroup = useCommunityGroupRemove();
 
   const table = useReactTable({
     manualPagination: true,
@@ -77,6 +78,35 @@ export default function GroupDetail({ data, handleClose }: IProps) {
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
+  };
+
+  const handleGroupDelete = () => {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'Choose what you want to do with the beneficiaries:',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Remove beneficiary',
+      customClass: {
+        actions: 'my-actions',
+        cancelButton: 'order-3',
+        confirmButton: 'order-1',
+      },
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          await removeCommunityGroup.mutateAsync({
+            uuid: data?.uuid,
+            deleteBeneficiaryFlag: false,
+          });
+        } catch (error) {
+          toast.error('Error deleting Beneficiary');
+          console.error('Error deleting Beneficiary:', error);
+        }
+      } else {
+        Swal.fire('Cancelled', `The beneficiary wasn't deleted.`, 'error');
+      }
+    });
   };
 
   return (
@@ -122,6 +152,21 @@ export default function GroupDetail({ data, handleClose }: IProps) {
             </TooltipProvider>
           </div>
           <TabsList>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild onClick={handleGroupDelete}>
+                  <Trash2
+                    className="cursor-pointer mr-3"
+                    size={20}
+                    strokeWidth={1.6}
+                    color="#FF0000"
+                  />
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Remove Beneficiary</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
             <TabsTrigger value="detail">Details </TabsTrigger>
           </TabsList>
         </div>

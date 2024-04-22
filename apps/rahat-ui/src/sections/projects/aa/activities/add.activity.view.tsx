@@ -1,5 +1,6 @@
 'use client';
 
+import { useParams } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
@@ -27,13 +28,15 @@ import {
   useActivitiesHazardTypes,
   useActivitiesPhase,
 } from '@rahat-ui/query';
+import { UUID } from 'crypto';
 
 export default function AddActivities() {
-  useActivitiesCategories('45606343-e6f5-475f-a2b3-f31d6ab10733');
+  const { id } = useParams();
+  useActivitiesCategories(id as UUID);
   const categories = useActivitiesFieldStore((state) => state.categories);
-  useActivitiesPhase('45606343-e6f5-475f-a2b3-f31d6ab10733');
+  useActivitiesPhase(id as UUID);
   const phases = useActivitiesFieldStore((state) => state.phases);
-  useActivitiesHazardTypes('45606343-e6f5-475f-a2b3-f31d6ab10733');
+  useActivitiesHazardTypes(id as UUID);
   const hazardTypes = useActivitiesFieldStore((state) => state.hazardTypes);
   // const { hazardType, category, phase } = useActivitiesFields();
   const FormSchema = z.object({

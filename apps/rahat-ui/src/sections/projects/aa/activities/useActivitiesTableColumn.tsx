@@ -5,6 +5,17 @@ import { useParams } from 'next/navigation';
 import { ColumnDef } from '@tanstack/react-table';
 import { useSecondPanel } from '../../../../providers/second-panel-provider';
 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/alert-dialog';
 import { Eye, Trash2 } from 'lucide-react';
 import { IActivitiesItem } from '../../../../types/activities';
 import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
@@ -98,13 +109,31 @@ export default function useActivitiesTableColumn() {
                 );
               }}
             />
-            <Trash2
-              className="cursor-pointer"
-              color="red"
-              size={20}
-              strokeWidth={1.5}
-              onClick={() => deleteRow(row.original)}
-            />
+            <AlertDialog>
+              <AlertDialogTrigger>
+                <Trash2
+                  className="cursor-pointer"
+                  color="red"
+                  size={20}
+                  strokeWidth={1.5}
+                />
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This action cannot be undone. This will permanently delete
+                    this activity.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={() => deleteRow(row.original)}>
+                    Continue
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
         );
       },

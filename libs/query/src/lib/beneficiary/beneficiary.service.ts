@@ -57,8 +57,6 @@ export const useBeneficiaryList = (
     }
   }, [ben.data, setBeneficiaries]);
 
-  console.log(ben)
-
   const filteredBenData = {
     ...ben,
     data: {
@@ -70,8 +68,6 @@ export const useBeneficiaryList = (
       })
     })},
   }
-
-  console.log("filteredBenData", filteredBenData)
 
   return filteredBenData;
 };

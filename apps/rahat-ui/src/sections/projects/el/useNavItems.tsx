@@ -145,6 +145,8 @@ export const useNavItems = () => {
     }
   };
 
+  console.log("project stats", projectStats)
+
   const navItems: NavItem[] = [
     {
       title: 'Project Details',
@@ -174,7 +176,7 @@ export const useNavItems = () => {
         {
           title: 'Redemptions',
           path: `/projects/el/${id}/redemptions`,
-          subtitle: 10,
+          subtitle: projectStats?.redemptionTotal,
           icon: <TicketCheck size={18} strokeWidth={1.5} />,
         },
         {

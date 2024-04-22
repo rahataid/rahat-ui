@@ -10,8 +10,11 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
+import {
+  usePagination,
+} from '@rahat-ui/query';
 import * as React from 'react';
-
+import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import { useProjectAction } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/components/button';
 import { Input } from '@rahat-ui/shadcn/components/input';
@@ -32,6 +35,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@rahat-ui/shadcn/src/components/ui/dialog';
+
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 import { useParams } from 'next/navigation';
@@ -60,9 +64,21 @@ export default function RedemptionTable({}) {
     projectModal.onTrue();
   };
 
+  const {
+    pagination,
+    filters,
+    setFilters,
+    setNextPage,
+    setPrevPage,
+    setPerPage,
+    selectedListItems,
+    setSelectedListItems,
+    resetSelectedListItems,
+  } = usePagination();
+
   const columns = useTableColumns(handleAssignModalClick);
 
-  const [perPage, setPerPage] = React.useState<number>(10);
+  // const [perPage, setPerPage] = React.useState<number>(10);
   const [currentPage, setCurrentPage] = React.useState<number>(1);
 
   const [columnVisibility, setColumnVisibility] =
@@ -91,6 +107,9 @@ export default function RedemptionTable({}) {
     },
   });
 
+  console.log("page", pagination.page)
+  console.log("per page", pagination.perPage)
+
   const getRedemption = useProjectAction();
 
   const getRedemptionList = async () => {
@@ -99,8 +118,8 @@ export default function RedemptionTable({}) {
       data: {
         action: 'elProject.listRedemption',
         payload: {
-          page: currentPage,
-          perPage,
+          page: pagination.page,
+          perPage: pagination.perPage,
         },
       },
     });
@@ -210,7 +229,15 @@ export default function RedemptionTable({}) {
             </ScrollArea>
           </Table>
         </div>
-        <div className="sticky bottom-0 flex items-center justify-end space-x-4 px-4 py-1 border-t-2 bg-card">
+        <CustomPagination
+        currentPage={pagination.page}
+        handleNextPage={setNextPage}
+        handlePageSizeChange={setPerPage}
+        handlePrevPage={setPrevPage}
+        meta={{}}
+        perPage={pagination.perPage}
+        />
+        {/* <div className="sticky bottom-0 flex items-center justify-end space-x-4 px-4 py-1 border-t-2 bg-card">
           <div className="flex-1 text-sm text-muted-foreground">
             {table.getFilteredSelectedRowModel().rows.length} of{' '}
             {table.getFilteredRowModel().rows.length} row(s) selected.
@@ -233,7 +260,7 @@ export default function RedemptionTable({}) {
               Next
             </Button>
           </div>
-        </div>
+        </div> */}
       </div>
       <div className="py-2 w-full border-t">
         <div className="p-4 flex flex-col gap-0.5 text-sm">
@@ -268,7 +295,9 @@ export default function RedemptionTable({}) {
             </DialogContent>
           </Dialog>
         </div>
+        
       </div>
+      
     </>
   );
 }

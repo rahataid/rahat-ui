@@ -34,9 +34,14 @@ export default function FieldDefinitionsView() {
     setNextPage,
     setPrevPage,
     setPerPage,
+    filters,
+    setFilters,
   } = usePagination();
 
-  const { data } = useFieldDefinitionsList(pagination);
+  const { data } = useFieldDefinitionsList({
+    ...pagination,
+    ...(filters as any),
+  });
 
   const columns = useFieldDefinitionsTableColumns();
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
@@ -83,6 +88,8 @@ export default function FieldDefinitionsView() {
                 <FieldDefinitionsListView
                   table={table}
                   handleClick={handleFieldDefClick}
+                  setFilters={setFilters}
+                  filters={filters}
                 />
               </TabsContent>
 

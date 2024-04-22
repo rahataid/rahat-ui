@@ -26,19 +26,38 @@ import { FieldDefinition } from '@rahataid/community-tool-sdk/fieldDefinitions';
 type IProps = {
   handleClick: (item: FieldDefinition) => void;
   table: Table<FieldDefinition>;
+  setFilters: (fiters: Record<string, any>) => void;
+  filters: Record<string, any>;
 };
 
-export default function ListView({ handleClick, table }: IProps) {
+export default function ListView({
+  handleClick,
+  table,
+  setFilters,
+  filters,
+}: IProps) {
+  const handleFilterChange = (event: any) => {
+    if (event && event.target) {
+      const { name, value } = event.target;
+      table.getColumn(name)?.setFilterValue(value);
+      setFilters({
+        ...filters,
+        [name]: value,
+      });
+    }
+  };
   return (
     <>
       <div className="w-full -mt-2 p-2 bg-secondary">
         <div className="flex items-center mb-2">
           <Input
             placeholder="Filter field definitions..."
-            value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
-            onChange={(event) =>
-              table.getColumn('name')?.setFilterValue(event.target.value)
+            name="name"
+            value={
+              (table.getColumn('name')?.getFilterValue() as string) ??
+              filters?.name
             }
+            onChange={(event) => handleFilterChange(event)}
             className="rounded mr-2"
           />
           <DropdownMenu>

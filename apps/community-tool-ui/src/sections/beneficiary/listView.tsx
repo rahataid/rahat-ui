@@ -43,7 +43,6 @@ export default function ListView({
   const handleFilterChange = (event: any) => {
     if (event && event.target) {
       const { name, value } = event.target;
-      console.log(name);
       table.getColumn(name)?.setFilterValue(value);
       setFilters({
         ...filters,

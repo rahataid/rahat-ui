@@ -34,9 +34,14 @@ function ViewGroup() {
     setNextPage,
     setPrevPage,
     setPerPage,
+    filters,
+    setFilters,
   } = usePagination();
 
-  const { data } = useCommunityGroupList(pagination);
+  const { data } = useCommunityGroupList({
+    ...pagination,
+    ...(filters as any),
+  });
   const columns = useCommunityGroupTableColumns();
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   // const { closeSecondPanel, setSecondPanelComponent } = useSecondPanel();
@@ -71,7 +76,12 @@ function ViewGroup() {
         <ResizableHandle />
         <ResizablePanel minSize={25}>
           <TabsContent value="groupList">
-            <GroupList table={table} handleClick={handleGroup} />
+            <GroupList
+              table={table}
+              handleClick={handleGroup}
+              filters={filters}
+              setFilters={setFilters}
+            />
           </TabsContent>
           <CustomPagination
             meta={data?.response?.meta || { total: 0, currentPage: 0 }}

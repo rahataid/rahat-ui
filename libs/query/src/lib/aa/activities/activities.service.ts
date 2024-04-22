@@ -1,13 +1,13 @@
 import { useEffect } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useProjectAction } from '../../projects';
-import { useActivitiesFieldStore } from './activities.field.store';
+import { useActivitiesStore } from './activities.store';
 import { UUID } from 'crypto';
 import { useSwal } from 'libs/query/src/swal';
 
 export const useActivitiesCategories = (uuid: UUID) => {
   const q = useProjectAction();
-  const { setCategories } = useActivitiesFieldStore((state) => ({
+  const { setCategories } = useActivitiesStore((state) => ({
     setCategories: state.setCategories,
   }));
 
@@ -35,7 +35,7 @@ export const useActivitiesCategories = (uuid: UUID) => {
 
 export const useActivitiesPhase = (uuid: UUID) => {
   const q = useProjectAction();
-  const { setPhase } = useActivitiesFieldStore((state) => ({
+  const { setPhase } = useActivitiesStore((state) => ({
     setPhase: state.setPhases,
   }));
 
@@ -62,7 +62,7 @@ export const useActivitiesPhase = (uuid: UUID) => {
 
 export const useActivitiesHazardTypes = (uuid: UUID) => {
   const q = useProjectAction();
-  const { setHazardTypes } = useActivitiesFieldStore((state) => ({
+  const { setHazardTypes } = useActivitiesStore((state) => ({
     setHazardTypes: state.setHazardTypes,
   }));
 
@@ -89,8 +89,8 @@ export const useActivitiesHazardTypes = (uuid: UUID) => {
 
 export const useActivities = (uuid: UUID) => {
   const q = useProjectAction();
-  const { setDemoActivities } = useActivitiesFieldStore((state) => ({
-    setDemoActivities: state.setDemoActivities,
+  const { setActivities } = useActivitiesStore((state) => ({
+    setActivities: state.setActivities,
   }));
   const query = useQuery({
     queryKey: ['activities', uuid],
@@ -121,7 +121,7 @@ export const useActivities = (uuid: UUID) => {
   });
   useEffect(() => {
     if (query.data) {
-      setDemoActivities(query?.data);
+      setActivities(query?.data);
     }
   }, [query.data]);
   return query;

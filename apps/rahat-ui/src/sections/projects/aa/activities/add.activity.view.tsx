@@ -24,7 +24,7 @@ import { z } from 'zod';
 // import { useActivitiesFields } from './useActivitiesFields';
 import {
   useActivitiesCategories,
-  useActivitiesFieldStore,
+  useActivitiesStore,
   useActivitiesHazardTypes,
   useActivitiesPhase,
   useCreateActivities,
@@ -34,11 +34,11 @@ import { UUID } from 'crypto';
 export default function AddActivities() {
   const { id } = useParams();
   useActivitiesCategories(id as UUID);
-  const categories = useActivitiesFieldStore((state) => state.categories);
+  const categories = useActivitiesStore((state) => state.categories);
   useActivitiesPhase(id as UUID);
-  const phases = useActivitiesFieldStore((state) => state.phases);
+  const phases = useActivitiesStore((state) => state.phases);
   useActivitiesHazardTypes(id as UUID);
-  const hazardTypes = useActivitiesFieldStore((state) => state.hazardTypes);
+  const hazardTypes = useActivitiesStore((state) => state.hazardTypes);
   // const { hazardType, category, phase } = useActivitiesFields();
 
   const createActivity = useCreateActivities();

@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useProjectAction } from '../../projects';
 import { useActivitiesStore } from './activities.store';
 import { UUID } from 'crypto';
@@ -160,11 +160,58 @@ export const useCreateActivities = () => {
       });
     },
     onError: (error: any) => {
-      console.log('error;;', error);
       const errorMessage = error?.response?.data?.message || 'Error';
       q.reset();
       toast.fire({
         title: 'Error while adding activity.',
+        icon: 'error',
+        text: errorMessage,
+      });
+    },
+  });
+};
+
+export const useDeleteActivities = () => {
+  const qc = useQueryClient();
+  const q = useProjectAction();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+  return useMutation({
+    mutationFn: async ({
+      projectUUID,
+      activityPayload,
+    }: {
+      projectUUID: UUID;
+      activityPayload: {
+        uuid: string;
+      };
+    }) => {
+      return q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'aaProject.activities.remove',
+          payload: activityPayload,
+        },
+      });
+    },
+    onSuccess: () => {
+      q.reset();
+      qc.invalidateQueries({ queryKey: ['activities'] });
+      toast.fire({
+        title: 'Activity removed successfully',
+        icon: 'success',
+      });
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || 'Error';
+      q.reset();
+      toast.fire({
+        title: 'Error while removing activity.',
         icon: 'error',
         text: errorMessage,
       });

@@ -32,10 +32,10 @@ import {
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import useActivitiesTableColumn from './useActivitiesTableColumn';
-import ActivitiesData from './activities.json';
+// import ActivitiesData from './activities.json';
 import { useActivitiesFields } from './useActivitiesFields';
 
-export default function ActivitiesTable() {
+export default function ActivitiesTable({ activitiesData }: any) {
   const { hazardType, category } = useActivitiesFields();
   const columns = useActivitiesTableColumn();
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -45,9 +45,9 @@ export default function ActivitiesTable() {
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
-  const data = ActivitiesData;
+  // const data = ActivitiesData;
   const table = useReactTable({
-    data: data,
+    data: activitiesData,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,

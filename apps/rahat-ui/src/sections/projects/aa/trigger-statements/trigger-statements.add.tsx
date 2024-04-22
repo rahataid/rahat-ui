@@ -1,7 +1,7 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useAAStationsStore, useActivitiesFieldStore, useActivitiesHazardTypes, useCreateTriggerStatement } from '@rahat-ui/query';
+import { useAAStationsStore, useActivitiesStore, useActivitiesHazardTypes, useCreateTriggerStatement } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 
 import {
@@ -33,7 +33,7 @@ export default function AddTriggerStatement() {
   const dhmStations = useAAStationsStore((state) => state.dhmStations![projectID]);
 
   useActivitiesHazardTypes(projectID);
-  const hazardTypes = useActivitiesFieldStore((state) => state.hazardTypes);
+  const hazardTypes = useActivitiesStore((state) => state.hazardTypes);
 
   const FormSchema = z.object({
     dataSource: z.string().min(1, { message: 'Required.' }),

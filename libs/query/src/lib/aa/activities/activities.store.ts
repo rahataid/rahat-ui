@@ -12,37 +12,37 @@ const initialStore = {
   categories: [],
   phases: [],
   hazardTypes: [],
-  demoActivities: [],
+  activities: [],
 };
 
-type ActivitiesFieldState = {
+type ActivitiesState = {
   categories: I[];
   phases: I[];
   hazardTypes: I[];
-  demoActivities: any;
+  activities: any;
 };
 
-type ActivitiesFieldStateAction = {
+type ActivitiesStateAction = {
   setCategories: (categories: I[]) => void;
   setPhases: (phases: I[]) => void;
   setHazardTypes: (hazardTypes: I[]) => void;
-  setDemoActivities: (demoActivities: any) => void;
+  setActivities: (activities: any) => void;
 };
 
-type ActivitiesFieldStore = ActivitiesFieldState & ActivitiesFieldStateAction;
+type ActivitiesStore = ActivitiesState & ActivitiesStateAction;
 
-export const useActivitiesFieldStore = zustandStore<ActivitiesFieldStore>(
+export const useActivitiesStore = zustandStore<ActivitiesStore>(
   (set) => ({
     ...initialStore,
     setCategories: (categories) => set({ categories }),
     setPhases: (phases) => set({ phases }),
     setHazardTypes: (hazardTypes) => set({ hazardTypes }),
-    setDemoActivities: (demoActivities) => set({ demoActivities }),
+    setActivities: (activities) => set({ activities }),
   }),
   {
     devtoolsEnabled: true,
     persistOptions: {
-      name: 'aaActivitiesFieldStore',
+      name: 'aaActivitiesStore',
       storage: localStore,
     },
   },

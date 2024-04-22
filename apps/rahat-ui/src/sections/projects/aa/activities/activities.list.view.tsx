@@ -1,5 +1,6 @@
 'use client';
 
+import { useParams } from 'next/navigation';
 import ActivitiesTable from './activities.table';
 import {
   ResizablePanelGroup,
@@ -8,15 +9,14 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/resizable';
 import { useSecondPanel } from 'apps/rahat-ui/src/providers/second-panel-provider';
 import ActivitiesPhaseCard from './activities.phase.card';
-import { useActivities, useActivitiesFieldStore } from '@rahat-ui/query';
-import { useParams } from 'next/navigation';
+import { useActivities, useActivitiesStore } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 
 export default function ActivitiesList() {
   const { secondPanel } = useSecondPanel();
-  const { id:projectID } = useParams()
-  useActivities(projectID as UUID);
-  const activities = useActivitiesFieldStore((state) => state.demoActivities);
+  const { id } = useParams();
+  useActivities(id as UUID);
+  const activities = useActivitiesStore((state) => state.activities);
   return (
     <>
       <ActivitiesPhaseCard />

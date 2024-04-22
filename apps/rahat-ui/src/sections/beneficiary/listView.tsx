@@ -1,17 +1,17 @@
 'use client';
 
 import { Table, flexRender } from '@tanstack/react-table';
-import { Settings2, ChevronDown } from 'lucide-react';
+import { ChevronDown, Settings2 } from 'lucide-react';
 
 import { Button } from '@rahat-ui/shadcn/components/button';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
+  DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-  DropdownMenuItem,
 } from '@rahat-ui/shadcn/components/dropdown-menu';
 import { Input } from '@rahat-ui/shadcn/components/input';
 import {
@@ -24,13 +24,17 @@ import {
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { ListBeneficiary } from '@rahat-ui/types';
+import { useState } from 'react';
 import BulkAssignToProjectModal from './components/bulkAssignToProjectModal';
 
 type IProps = {
   table: Table<ListBeneficiary>;
   handleBulkAssign: (selectedProject: string) => void;
   isBulkAssigning: boolean;
+  loading: boolean;
   projectModal: any;
+  projects: any;
+  handleFilterProjectSelect: (selectedProject: string) => void;
 };
 
 export default function ListView({
@@ -38,7 +42,28 @@ export default function ListView({
   handleBulkAssign,
   isBulkAssigning,
   projectModal,
+  projects,
+  loading,
+  handleFilterProjectSelect,
 }: IProps) {
+  const [selectedProject, setSelectedProject] = useState(null);
+
+  const handleProjectSelect = (projectName: any) => {
+    setSelectedProject(projectName);
+    handleFilterProjectSelect(projectName);
+  };
+
+  const selectFilterProjectItems = [
+    {
+      name: 'All',
+      value: undefined,
+    },
+    ...projects.map((p: any) => ({
+      name: p.name,
+      value: p.uuid,
+    })),
+  ];
+
   return (
     <>
       <BulkAssignToProjectModal
@@ -61,8 +86,28 @@ export default function ListView({
                 .getColumn('name')
                 ?.setFilterValue(event.target.value)
             }
-            className="rounded mr-2"
+            className="rounded"
           />
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="ml-auto">
+                {selectedProject ? selectedProject : 'Select Project'}
+                <ChevronDown className="mr-2 h-4 w-5" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {selectFilterProjectItems.map((project: any) => (
+                <DropdownMenuItem
+                  key={project.name}
+                  onClick={() => handleProjectSelect(project.uuid)}
+                >
+                  {project.name}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="ml-auto">

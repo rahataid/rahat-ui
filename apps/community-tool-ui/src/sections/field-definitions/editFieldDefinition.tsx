@@ -17,7 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
-import { useForm } from 'react-hook-form';
+import { useForm, useFieldArray } from 'react-hook-form';
 
 import { z } from 'zod';
 import { FieldType } from '../../types/fieldDefinition';
@@ -29,7 +29,8 @@ import {
 } from '@rahat-ui/community-query';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { Switch } from '@rahat-ui/shadcn/src/components/ui/switch';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { Minus, Plus } from 'lucide-react';
 
 export default function EditFieldDefinition({
   data,
@@ -37,7 +38,8 @@ export default function EditFieldDefinition({
   data: FieldDefinition;
 }) {
   const updateFieldDefinition = useFieldDefinitionsUpdate();
-  // const updateFieldDefinitionStatus = useFieldDefinitionsStatusUpdate();
+
+  const [showLabelValue, setShowLabelValue] = useState(false);
 
   const FormSchema = z.object({
     name: z.string(),
@@ -63,9 +65,27 @@ export default function EditFieldDefinition({
     },
   });
 
+  const { fields, append, remove } = useFieldArray({
+    name: 'fieldPopulate',
+    control: form.control,
+  });
+
+  const addLabelAndValue = () => {
+    if (showLabelValue) {
+      append({ label: '', value: '' });
+    }
+  };
+
   const handleEditFieldDefinition = async (
     formData: z.infer<typeof FormSchema>,
   ) => {
+    let fieldPopulateBody: Array<{ label: string; value: string }> | [] = [];
+    if (!showLabelValue) {
+      fieldPopulateBody = [];
+    } else {
+      fieldPopulateBody = formData?.fieldPopulate;
+    }
+
     await updateFieldDefinition.mutateAsync({
       id: data?.id?.toString(),
       data: {
@@ -73,17 +93,26 @@ export default function EditFieldDefinition({
         fieldType: formData?.fieldType as FieldType,
         isActive: formData?.isActive,
         isTargeting: formData?.isTargeting,
-        fieldPopulate: { data: formData.fieldPopulate },
+        fieldPopulate: { data: fieldPopulateBody },
       },
     });
   };
 
-  // const handleStatusChange = async (isActive: any) => {
-  //   await updateFieldDefinitionStatus.mutateAsync({
-  //     id: data?.id?.toString() as string,
-  //     isActive: isActive,
-  //   });
-  // };
+  useEffect(() => {
+    setShowLabelValue(
+      form.watch('fieldType') === FieldType.CHECKBOX ||
+        form.watch('fieldType') === FieldType.RADIO ||
+        form.watch('fieldType') === FieldType.DROPDOWN,
+    );
+  }, [form.watch('fieldType'), form]);
+
+  useEffect(() => {
+    if (showLabelValue) {
+      if (fields.length === 0) {
+        append({ label: '', value: '' });
+      }
+    }
+  }, [showLabelValue, fields, append, form]);
 
   return (
     <Form {...form}>
@@ -168,17 +197,12 @@ export default function EditFieldDefinition({
                 name="isActive"
                 render={({ field }) => (
                   <div className="flex flex-col items-left">
-                    <Label className="text-xs font-medium">isActive</Label>
+                    <Label className="text-xs font-medium mb-1">isActive</Label>
                     <Switch
                       {...field}
                       value={field.value ? 'false' : 'true'}
                       checked={field.value}
                       onCheckedChange={field.onChange}
-                      // onCheckedChange={(isChecked) => {
-                      //   handleStatusChange({
-                      //     isActive: isChecked,
-                      //   });
-                      // }}
                     />
                   </div>
                 )}
@@ -188,7 +212,7 @@ export default function EditFieldDefinition({
                 name="isTargeting"
                 render={({ field }) => (
                   <div className="flex flex-col items-right">
-                    <Label className="text-xs font-medium">
+                    <Label className="text-xs font-medium mb-1">
                       User for Targeting
                     </Label>
                     <Switch
@@ -201,59 +225,85 @@ export default function EditFieldDefinition({
                 )}
               />
             </div>
-            {form.getValues('fieldPopulate')?.length > 0 && (
-              <div className="mt-5 mb-2 over">
+
+            {showLabelValue && form.getValues('fieldPopulate')?.length > 0 && (
+              <div>
                 <Label className="text-xs font-medium mt-2">
                   Field Populate
                 </Label>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid gap-3">
                   {form
                     .watch('fieldPopulate')
                     .map((item: any, index: number) => (
-                      <React.Fragment key={index}>
-                        <FormField
-                          control={form.control}
-                          name={`fieldPopulate.${index}.label`}
-                          render={({ field }) => (
-                            <FormItem>
-                              <Label className="text-xs font-medium">
-                                Label
-                              </Label>
-                              <FormControl>
-                                <Input
-                                  type="text"
-                                  placeholder="Label"
-                                  {...field}
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <FormField
-                          control={form.control}
-                          name={`fieldPopulate.${index}.value`}
-                          render={({ field }) => (
-                            <FormItem>
-                              <Label className="text-xs font-medium">
-                                Value
-                              </Label>
-                              <FormControl>
-                                <Input
-                                  type="text"
-                                  placeholder="Value"
-                                  {...field}
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </React.Fragment>
+                      <div key={index} className="flex items-center">
+                        <div className="flex-1">
+                          <FormField
+                            control={form.control}
+                            name={`fieldPopulate.${index}.label`}
+                            render={({ field }) => (
+                              <FormItem>
+                                <Label className="text-xs font-medium">
+                                  Label
+                                </Label>
+                                <FormControl>
+                                  <Input
+                                    type="text"
+                                    placeholder="Label"
+                                    {...field}
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+                        <div className="flex-1 ml-2">
+                          <FormField
+                            control={form.control}
+                            name={`fieldPopulate.${index}.value`}
+                            render={({ field }) => (
+                              <FormItem>
+                                <Label className="text-xs font-medium">
+                                  Value
+                                </Label>
+                                <FormControl>
+                                  <Input
+                                    type="text"
+                                    placeholder="Value"
+                                    {...field}
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+                        <div>
+                          <Button
+                            type="button"
+                            onClick={() => remove(index)}
+                            className="mt-8 ml-3 text-xs"
+                            // disabled={fields.length === 1}
+                          >
+                            <Minus size={10} strokeWidth={1.5} />
+                          </Button>
+                        </div>
+                      </div>
                     ))}
+                </div>
+                <div className="flex justify-start mb-4">
+                  <Button
+                    onClick={addLabelAndValue}
+                    type="button"
+                    className="flex items-center p-2 gap-1 text-xs mt-3"
+                  >
+                    <Plus size={18} strokeWidth={1.5} />
+                    Add Field
+                  </Button>
                 </div>
               </div>
             )}
+
             <div className="flex justify-end mb-10">
               <Button>Update Field Definition</Button>
             </div>

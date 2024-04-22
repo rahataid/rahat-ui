@@ -1,5 +1,4 @@
 'use client';
-import * as React from 'react';
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -12,17 +11,15 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from 'lucide-react';
+import { ArrowUpDown, Copy, CopyCheck, MoreHorizontal } from 'lucide-react';
+import * as React from 'react';
 
 import { Button } from '@rahat-ui/shadcn/components/button';
-import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
 import {
   DropdownMenu,
-  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/components/dropdown-menu';
 import { Input } from '@rahat-ui/shadcn/components/input';
@@ -34,14 +31,16 @@ import {
   TableHeader,
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
-import { useGraphService } from '../../../../providers/subgraph-provider';
-import { truncateEthAddress } from '@rumsan/sdk/utils';
-import { formatDate } from '../../../../utils';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import { truncateEthAddress } from '@rumsan/sdk/utils';
+import TableLoader from 'apps/rahat-ui/src/components/table.loader';
+import { useProjectTransaction } from 'apps/rahat-ui/src/hooks/el/subgraph/querycall';
 import {
-  useBeneficiaryTransaction,
-  useProjectTransaction,
-} from 'apps/rahat-ui/src/hooks/el/subgraph/querycall';
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/tooltip';
 
 export type Transaction = {
   id: string;
@@ -51,116 +50,6 @@ export type Transaction = {
   timestamp: string;
   txHash: string;
 };
-
-export const columns: ColumnDef<Transaction>[] = [
-  {
-    accessorKey: 'topic',
-    header: 'Topic',
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue('topic')}</div>
-    ),
-  },
-  {
-    accessorKey: 'beneficiary',
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-        >
-          Beneficiary
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
-    cell: ({ row }) => (
-      <div className="lowercase">
-        {truncateEthAddress(row.getValue('beneficiary'))}
-      </div>
-    ),
-  },
-  {
-    accessorKey: 'voucherId',
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-        >
-          VoucherId
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
-    cell: ({ row }) => (
-      <div className="lowercase">
-        {truncateEthAddress(row.getValue('voucherId'))}
-      </div>
-    ),
-  },
-  {
-    accessorKey: 'timeStamp',
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-        >
-          Timestamp
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
-    cell: ({ row }) => (
-      <div className="lowercase">{row.getValue('timeStamp')}</div>
-    ),
-  },
-  {
-    accessorKey: 'transactionHash',
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-        >
-          TxHash
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
-    cell: ({ row }) => (
-      <div className="lowercase">
-        {truncateEthAddress(row.getValue('transactionHash'))}
-      </div>
-    ),
-  },
-  {
-    id: 'actions',
-    enableHiding: false,
-    cell: ({ row }) => {
-      const payment = row.original;
-
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(payment.id)}
-            >
-              Copy payment Txhash
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
-    },
-  },
-];
 
 export default function TransactionTable({}) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -172,6 +61,143 @@ export default function TransactionTable({}) {
   const [rowSelection, setRowSelection] = React.useState({});
 
   const { data, isFetching } = useProjectTransaction();
+
+  const [walletAddressCopied, setWalletAddressCopied] =
+    React.useState<number>();
+
+  const clickToCopy = (walletAddress: string, index: number) => {
+    navigator.clipboard.writeText(walletAddress);
+    setWalletAddressCopied(index);
+  };
+
+  const columns: ColumnDef<Transaction>[] = [
+    {
+      accessorKey: 'topic',
+      header: 'Topic',
+      cell: ({ row }) => (
+        <div className="capitalize">{row.getValue('topic')}</div>
+      ),
+    },
+    {
+      accessorKey: 'beneficiary',
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          >
+            Beneficiary
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        );
+      },
+      cell: ({ row }) => (
+        <TooltipProvider delayDuration={100}>
+          <Tooltip>
+            <TooltipTrigger
+              className="flex items-center gap-3 cursor-pointer"
+              onClick={() =>
+                clickToCopy(row.getValue('beneficiary'), row.index)
+              }
+            >
+              <p>{truncateEthAddress(row.getValue('beneficiary'))}</p>
+              {walletAddressCopied === row.index ? (
+                <CopyCheck size={15} strokeWidth={1.5} />
+              ) : (
+                <Copy className="text-slate-500" size={15} strokeWidth={1.5} />
+              )}
+            </TooltipTrigger>
+            <TooltipContent className="bg-secondary" side="bottom">
+              <p className="text-xs font-medium">
+                {walletAddressCopied === row.index ? 'copied' : 'click to copy'}
+              </p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      ),
+    },
+    {
+      accessorKey: 'voucherId',
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          >
+            VoucherId
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        );
+      },
+      cell: ({ row }) => (
+        <div className="lowercase">
+          {truncateEthAddress(row.getValue('voucherId'))}
+        </div>
+      ),
+    },
+    {
+      accessorKey: 'timeStamp',
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          >
+            Timestamp
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        );
+      },
+      cell: ({ row }) => (
+        <div className="lowercase">{row.getValue('timeStamp')}</div>
+      ),
+    },
+    {
+      accessorKey: 'transactionHash',
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          >
+            TxHash
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        );
+      },
+      cell: ({ row }) => (
+        <div className="lowercase">
+          {truncateEthAddress(row.getValue('transactionHash'))}
+        </div>
+      ),
+    },
+    {
+      id: 'actions',
+      enableHiding: false,
+      cell: ({ row }) => {
+        const payment = row.original;
+
+        return (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                <span className="sr-only">Open menu</span>
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+              <DropdownMenuItem
+                onClick={() => navigator.clipboard.writeText(payment.id)}
+              >
+                Copy payment Txhash
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        );
+      },
+    },
+  ];
 
   const table = useReactTable({
     data: data || [],
@@ -232,7 +258,7 @@ export default function TransactionTable({}) {
                 table.getRowModel().rows.map((row) => (
                   <TableRow
                     key={row.id}
-                    data-state={row.getIsSelected() && 'selected'}
+                    // data-state={row.getIsSelected() && 'selected'}
                   >
                     {row.getVisibleCells().map((cell) => (
                       <TableCell key={cell.id}>
@@ -250,15 +276,7 @@ export default function TransactionTable({}) {
                     colSpan={columns.length}
                     className="h-24 text-center"
                   >
-                    {isFetching ? (
-                      <div className="flex items-center justify-center space-x-2 h-full">
-                        <div className="h-5 w-5 animate-bounce rounded-full bg-primary [animation-delay:-0.3s]"></div>
-                        <div className="h-5 w-5 animate-bounce rounded-full bg-primary [animation-delay:-0.13s]"></div>
-                        <div className="h-5 w-5 animate-bounce rounded-full bg-primary"></div>
-                      </div>
-                    ) : (
-                      'No data available.'
-                    )}
+                    {isFetching ? <TableLoader /> : 'No data available.'}
                   </TableCell>
                 </TableRow>
               )}

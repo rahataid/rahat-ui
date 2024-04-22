@@ -7,16 +7,14 @@ import { useParams } from 'next/navigation';
 import * as React from 'react';
 import { useSecondPanel } from '../../../../providers/second-panel-provider';
 import { ProjectLayout } from '../../../../sections/projects/components';
+import { ProjectTypes } from '@rahataid/sdk/enums';
 
-export default function ProjectLayoutRoot({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+const ProjectLayoutRoot = ({ children }: { children: React.ReactNode }) => {
   const { secondPanel } = useSecondPanel();
   const { id } = useParams();
 
   useProjectContractSettings(id as UUID);
+  console.log('here');
 
   const renderChildren = () => {
     // if (createVoucher.isPending) {
@@ -31,7 +29,11 @@ export default function ProjectLayoutRoot({
 
   return (
     <GraphQueryProvider>
-      <ProjectLayout>{renderChildren()}</ProjectLayout>
+      <ProjectLayout projectType={ProjectTypes.EL}>
+        {renderChildren()}
+      </ProjectLayout>
     </GraphQueryProvider>
   );
-}
+};
+
+export default React.memo(ProjectLayoutRoot);

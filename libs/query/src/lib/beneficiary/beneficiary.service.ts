@@ -84,6 +84,18 @@ export const useGetBeneficiaryStats = (): UseQueryResult<any, Error> => {
   });
 };
 
+const listProjectBeneficiaryStats = async () => {
+  const response = await api.get('/beneficiaries/table-stats');
+  return response?.data;
+};
+
+export const useGetProjectBeneficiaryStats = () => {
+  return useQuery({
+    queryKey: [TAGS.GET_PROJECT_BENEFICIARIES_STATS],
+    queryFn: () => listProjectBeneficiaryStats(),
+  });
+};
+
 const updateBeneficiary = async (payload: any) => {
   const response = await api.patch(`/beneficiaries/${payload.uuid}`, payload);
   return response?.data;

@@ -16,14 +16,16 @@ import {
   useBeneficiaryList,
   useBulkAssignBenToProject,
   usePagination,
+  useProjectList,
 } from '@rahat-ui/query';
+import { UUID } from 'crypto';
 import CustomPagination from '../../components/customPagination';
+import { useBoolean } from '../../hooks/use-boolean';
+import { useSecondPanel } from '../../providers/second-panel-provider';
 import BeneficiaryGridView from '../../sections/beneficiary/gridView';
 import BeneficiaryListView from '../../sections/beneficiary/listView';
 import { useBeneficiaryTableColumns } from './useBeneficiaryColumns';
-import { useSecondPanel } from '../../providers/second-panel-provider';
-import { useBoolean } from '../../hooks/use-boolean';
-import { UUID } from 'crypto';
+import { useRouter } from 'next/navigation';
 
 function BeneficiaryView() {
   const {
@@ -33,23 +35,32 @@ function BeneficiaryView() {
     setNextPage,
     setPrevPage,
     setPerPage,
-    setPagination
+    setPagination,
+    setFilters,
+    filters,
   } = usePagination();
 
   useEffect(() => {
-    setPagination({ page: 1, perPage: 10, order: 'desc', sort: 'createdAt' })
-  }, [])
+    setPagination({ page: 1, perPage: 10, order: 'desc', sort: 'createdAt' });
+  }, []);
 
-  const { data } = useBeneficiaryList(pagination);
+  const router = useRouter();
+
+  const { data } = useBeneficiaryList({
+    ...pagination,
+
+    ...filters,
+  });
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const columns = useBeneficiaryTableColumns();
   const { closeSecondPanel, setSecondPanelComponent } = useSecondPanel();
   const projectModal = useBoolean();
   const bulkAssign = useBulkAssignBenToProject();
+  const projectsList = useProjectList({});
 
   const table = useReactTable({
     manualPagination: true,
-    data: data?.data || [], 
+    data: data?.data || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -63,6 +74,12 @@ function BeneficiaryView() {
       rowSelection: selectedListItems,
     },
   });
+
+  const handleFilterProjectSelect = (project: string | UUID) => {
+    setFilters({
+      project: project,
+    });
+  };
 
   const handleBeneficiaryClick = (row: any) => {
     setSecondPanelComponent(
@@ -107,11 +124,14 @@ function BeneficiaryView() {
           handleBulkAssign={handleBulkAssign}
           isBulkAssigning={false}
           projectModal={projectModal}
+          projects={projectsList?.data?.data || []}
+          loading={projectsList.isLoading}
+          handleFilterProjectSelect={handleFilterProjectSelect}
         />
       </TabsContent>
       <TabsContent value="grid">
         <BeneficiaryGridView
-          handleClick={handleBeneficiaryClick} 
+          handleClick={handleBeneficiaryClick}
           data={data?.data}
         />
       </TabsContent>
@@ -124,7 +144,7 @@ function BeneficiaryView() {
         perPage={pagination.perPage}
         total={data?.response?.meta.lastPage || 0}
       />
-    </> 
+    </>
   );
 }
 

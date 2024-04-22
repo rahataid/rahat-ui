@@ -1,22 +1,22 @@
 'use client';
 
-import { useDeleteDataSource } from '@rahat-ui/query';
+import { useDeleteTriggerStatement } from '@rahat-ui/query';
 import { ColumnDef } from '@tanstack/react-table';
 import { UUID } from 'crypto';
 import { TrashIcon } from 'lucide-react';
 import { useParams } from 'next/navigation';
 
-export const useDataSourcesTableColumns = () => {
-  const {id: projectID} = useParams()
-  const deleteDataSource = useDeleteDataSource()
+export const useTriggerStatementTableColumns = () => {
+  const { id: projectID } = useParams()
+  const deleteTriggerStatement = useDeleteTriggerStatement()
 
   const deleteRow = (row: any) => {
-     deleteDataSource.mutateAsync({
+    deleteTriggerStatement.mutateAsync({
       projectUUID: projectID as UUID,
-      dataSourcePayload: {
+      triggerStatementPayload: {
         repeatKey: row.repeatKey
       }
-     })
+    })
   }
 
   const columns: ColumnDef<any>[] = [
@@ -33,7 +33,7 @@ export const useDataSourcesTableColumns = () => {
     },
     {
       accessorKey: 'location',
-      header: 'Location',
+      header: 'River Basin',
       cell: ({ row }) => (
         <div
           className="cursor-pointer"
@@ -43,19 +43,18 @@ export const useDataSourcesTableColumns = () => {
       ),
     },
     {
-      accessorKey: 'warningLevel',
-      header: 'Warning Level',
-      cell: ({ row }) => <div>{row.getValue('warningLevel')}</div>,
-    },
-    {
-      accessorKey: 'dangerLevel',
-      header: 'Danger Level',
-      cell: ({ row }) => <div>{row.getValue('dangerLevel')}</div>,
-    },
-    {
-      accessorKey: 'repeatEvery',
-      header: 'Repeat Every',
-      cell: ({ row }) => <div>{Number(row.getValue('repeatEvery'))/60000} minutes</div>,
+      accessorKey: 'triggerStatement',
+      header: 'Trigger Statement',
+      cell: ({ row }) => {
+        if (row.getValue('dataSource') === 'DHM') {
+          return (
+            <>
+              <div>Danger Level: {row.original.triggerStatement.dangerLevel}</div>
+              <div>Warning Level: {row.original.triggerStatement.warningLevel}</div>
+            </>
+          )
+        }
+      },
     },
     {
       accessorKey: 'triggerActivity',

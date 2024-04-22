@@ -27,13 +27,16 @@ import {
   useActivitiesHazardTypes,
   useActivitiesPhase,
 } from '@rahat-ui/query';
+import { useParams } from 'next/navigation';
+import { UUID } from 'crypto';
 
 export default function AddActivities() {
-  useActivitiesCategories('45606343-e6f5-475f-a2b3-f31d6ab10733');
+  const { id:projectID } = useParams()
+  useActivitiesCategories(projectID as UUID);
   const categories = useActivitiesFieldStore((state) => state.categories);
-  useActivitiesPhase('45606343-e6f5-475f-a2b3-f31d6ab10733');
+  useActivitiesPhase(projectID as UUID);
   const phases = useActivitiesFieldStore((state) => state.phases);
-  useActivitiesHazardTypes('45606343-e6f5-475f-a2b3-f31d6ab10733');
+  useActivitiesHazardTypes(projectID as UUID);
   const hazardTypes = useActivitiesFieldStore((state) => state.hazardTypes);
   // const { hazardType, category, phase } = useActivitiesFields();
   const FormSchema = z.object({

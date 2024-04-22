@@ -27,6 +27,7 @@ import {
   useActivitiesFieldStore,
   useActivitiesHazardTypes,
   useActivitiesPhase,
+  useCreateActivities,
 } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 
@@ -39,21 +40,18 @@ export default function AddActivities() {
   useActivitiesHazardTypes(id as UUID);
   const hazardTypes = useActivitiesFieldStore((state) => state.hazardTypes);
   // const { hazardType, category, phase } = useActivitiesFields();
+
+  const createActivity = useCreateActivities();
+
   const FormSchema = z.object({
     title: z.string().min(2, { message: 'Title must be at least 4 character' }),
     responsibility: z
       .string()
       .min(2, { message: 'Please enter responsibility' }),
     source: z.string().min(2, { message: 'Please enter source' }),
-    phase: z.string({
-      required_error: 'Please select phase',
-    }),
-    category: z.string({
-      required_error: 'Please select category',
-    }),
-    hazardType: z.string({
-      required_error: 'Please select hazard type',
-    }),
+    phaseId: z.string().min(1, { message: 'Please select phase' }),
+    categoryId: z.string().min(1, { message: 'Please select category' }),
+    hazardTypeId: z.string().min(1, { message: 'Please select hazard type' }),
     description: z
       .string()
       .toUpperCase()
@@ -66,14 +64,25 @@ export default function AddActivities() {
       title: '',
       responsibility: '',
       source: '',
-      phase: '',
-      category: '',
-      hazardType: '',
+      phaseId: '',
+      categoryId: '',
+      hazardTypeId: '',
       description: '',
     },
   });
 
-  const handleCreateActivities = () => {};
+  const handleCreateActivities = async (data: z.infer<typeof FormSchema>) => {
+    try {
+      await createActivity.mutateAsync({
+        projectUUID: id as UUID,
+        activityPayload: data,
+      });
+    } catch (e) {
+      console.error('Error::', e);
+    } finally {
+      form.reset();
+    }
+  };
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleCreateActivities)}>
@@ -129,7 +138,7 @@ export default function AddActivities() {
               />
               <FormField
                 control={form.control}
-                name="phase"
+                name="phaseId"
                 render={({ field }) => (
                   <FormItem>
                     <Select
@@ -155,7 +164,7 @@ export default function AddActivities() {
               />
               <FormField
                 control={form.control}
-                name="category"
+                name="categoryId"
                 render={({ field }) => (
                   <FormItem>
                     <Select
@@ -181,7 +190,7 @@ export default function AddActivities() {
               />
               <FormField
                 control={form.control}
-                name="hazardType"
+                name="hazardTypeId"
                 render={({ field }) => (
                   <FormItem>
                     <Select

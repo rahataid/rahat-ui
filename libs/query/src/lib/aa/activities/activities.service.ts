@@ -1,8 +1,9 @@
 import { useEffect } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { useProjectAction } from '../../projects';
 import { useActivitiesFieldStore } from './activities.field.store';
 import { UUID } from 'crypto';
+import { useSwal } from 'libs/query/src/swal';
 
 export const useActivitiesCategories = (uuid: UUID) => {
   const q = useProjectAction();
@@ -124,4 +125,49 @@ export const useActivities = (uuid: UUID) => {
     }
   }, [query.data]);
   return query;
+};
+
+export const useCreateActivities = () => {
+  const q = useProjectAction();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+  return useMutation({
+    mutationFn: async ({
+      projectUUID,
+      activityPayload,
+    }: {
+      projectUUID: UUID;
+      activityPayload: any;
+    }) => {
+      return q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'aaProject.activities.add',
+          payload: activityPayload,
+        },
+      });
+    },
+    onSuccess: () => {
+      q.reset();
+      toast.fire({
+        title: 'Activity added successfully',
+        icon: 'success',
+      });
+    },
+    onError: (error: any) => {
+      console.log('error;;', error);
+      const errorMessage = error?.response?.data?.message || 'Error';
+      q.reset();
+      toast.fire({
+        title: 'Error while adding activity.',
+        icon: 'error',
+        text: errorMessage,
+      });
+    },
+  });
 };

@@ -41,7 +41,11 @@ export default function AddTriggerStatement() {
     dangerLevel: z.string().min(1, { message: 'Required.' }),
     warningLevel: z.string().min(1, { message: 'Required.' }),
     hazardTypeId: z.string().min(1, { message: 'Required.' })
-  });
+  })
+    .refine((data) => Number(data.dangerLevel) > Number(data.warningLevel), {
+      message: "Danger level must me higher than warning level.",
+      path: ["dangerLevel"],
+    });
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -57,7 +61,7 @@ export default function AddTriggerStatement() {
   const handleCreateTriggerStatement = async (data: z.infer<typeof FormSchema>) => {
     try {
       let payload;
-      if(data.dataSource === 'DHM'){
+      if (data.dataSource === 'DHM') {
         payload = {
           dataSource: data.dataSource,
           location: data.location,
@@ -91,7 +95,6 @@ export default function AddTriggerStatement() {
             <div className="shadow-md p-4 rounded-sm bg-card">
               <h1 className="text-lg font-semibold mb-6">Add Trigger Statement</h1>
               <div className="grid grid-cols-2 gap-4 mb-4">
-
                 <FormField
                   control={form.control}
                   name="dataSource"
@@ -109,7 +112,7 @@ export default function AddTriggerStatement() {
                           </FormControl>
                           <SelectContent>
                             <SelectItem value={'DHM'}>
-                              DHM
+                              Department of Hydrology and Meteorology (DHM)
                             </SelectItem>
                           </SelectContent>
                         </Select>

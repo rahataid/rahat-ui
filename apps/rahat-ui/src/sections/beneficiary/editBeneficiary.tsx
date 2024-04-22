@@ -21,8 +21,10 @@ import {
 import { toast } from 'react-toastify';
 import { z } from 'zod';
 import { useUpdateBeneficiary } from '@rahat-ui/query';
+import { useSecondPanel } from '../../providers/second-panel-provider';
 
 export default function EditBeneficiary({ beneficiary }: any) {
+  const { closeSecondPanel } = useSecondPanel();
   const updateBeneficiary = useUpdateBeneficiary();
 
   const FormSchema = z.object({
@@ -76,7 +78,10 @@ export default function EditBeneficiary({ beneficiary }: any) {
         },
         walletAddress: data.walletAddress,
       });
-      if (result) toast.success('Benificiary updated successfully!');
+      if (result.success) {
+        toast.success('Beneficiary updated successfully!');
+        closeSecondPanel();
+      }
     } catch (e) {
       toast.error('Failed to update beneficiary!');
     }

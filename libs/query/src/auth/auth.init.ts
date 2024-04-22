@@ -3,6 +3,7 @@
 import { JwtPayload, decode } from 'jsonwebtoken';
 import { useEffect } from 'react';
 import { useUserStore, useAuthStore } from '@rumsan/react-query';
+import { toast } from 'react-toastify';
 
 export type UseAuthInitializationReturn = [boolean, boolean, any];
 
@@ -36,7 +37,8 @@ export const useAuthInitialization = (): UseAuthInitializationReturn => {
             isAuthenticated: true,
           });
         } else {
-          alert('Token is expired');
+          toast.error('Token is expired');
+          window.location.reload();
           throw new Error('Token is expired');
         }
       } catch (error) {

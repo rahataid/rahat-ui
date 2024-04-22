@@ -1,10 +1,6 @@
 'use client';
 
-import {
-  useChainSettings,
-  useSettingsStore,
-  useSubGraphUrlSettings,
-} from '@rahat-ui/query';
+import { useSettingsStore } from '@rahat-ui/query';
 import { useCommunicationQuery } from '@rumsan/communication-query';
 import { CommunicationService } from '@rumsan/communication/services/communication.client';
 import {
@@ -34,9 +30,6 @@ export function ServiceProvider({ children }: ServiceProviderProps) {
     queryClient: commsQueryClient,
     setQueryClient: setCommsQueryClient,
   } = useCommunicationQuery();
-
-  useChainSettings();
-  useSubGraphUrlSettings();
 
   const chainSettings = useSettingsStore((s) => s.chainSettings);
   const rsService = useMemo(

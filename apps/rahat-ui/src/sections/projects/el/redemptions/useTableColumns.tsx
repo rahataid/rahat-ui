@@ -1,52 +1,35 @@
 'use client';
 
 import { ColumnDef } from '@tanstack/react-table';
-import { ArrowUpDown, MoreHorizontal } from 'lucide-react';
+import { ArrowUpDown, Copy, CopyCheck } from 'lucide-react';
 
 import { Button } from '@rahat-ui/shadcn/components/button';
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-  DropdownMenuLabel,
-} from '@rahat-ui/shadcn/components/dropdown-menu';
-import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/tooltip';
+import { truncateEthAddress } from '@rumsan/sdk/utils';
+import React from 'react';
 import { useSecondPanel } from '../../../../providers/second-panel-provider';
 import { Redemption } from './redemption.table';
-import { truncateEthAddress } from '@rumsan/sdk/utils';
 
 export const useTableColumns = (handleAssignClick: any) => {
   const { closeSecondPanel, setSecondPanelComponent } = useSecondPanel();
+
   const handleAssign = (row: any) => {
     handleAssignClick(row);
   };
+  const [walletAddressCopied, setWalletAddressCopied] =
+    React.useState<number>();
+
+  const clickToCopy = (walletAddress: string, index: number) => {
+    navigator.clipboard.writeText(walletAddress);
+    setWalletAddressCopied(index);
+  };
 
   const columns: ColumnDef<Redemption>[] = [
-    {
-      id: 'select',
-      header: ({ table }) => (
-        <Checkbox
-          checked={
-            table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && 'indeterminate')
-          }
-          onCheckedChange={(value: any) =>
-            table.toggleAllPageRowsSelected(!!value)
-          }
-          aria-label="Select all"
-        />
-      ),
-      cell: ({ row }) => (
-        <Checkbox
-          checked={row.getIsSelected()}
-          onCheckedChange={(value: any) => row.toggleSelected(!!value)}
-          aria-label="Select row"
-        />
-      ),
-      enableSorting: false,
-      enableHiding: false,
-    },
     {
       accessorKey: 'name',
       header: 'Name',
@@ -68,9 +51,28 @@ export const useTableColumns = (handleAssignClick: any) => {
         );
       },
       cell: ({ row }) => (
-        <div className="lowercase">
-          {truncateEthAddress(row.getValue('walletAddress'))}
-        </div>
+        <TooltipProvider delayDuration={100}>
+          <Tooltip>
+            <TooltipTrigger
+              className="flex items-center gap-3 cursor-pointer"
+              onClick={() =>
+                clickToCopy(row.getValue('walletAddress'), row.index)
+              }
+            >
+              <p>{truncateEthAddress(row.getValue('walletAddress'))}</p>
+              {walletAddressCopied === row.index ? (
+                <CopyCheck size={15} strokeWidth={1.5} />
+              ) : (
+                <Copy className="text-slate-500" size={15} strokeWidth={1.5} />
+              )}
+            </TooltipTrigger>
+            <TooltipContent className="bg-secondary" side="bottom">
+              <p className="text-xs font-medium">
+                {walletAddressCopied === row.index ? 'copied' : 'click to copy'}
+              </p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       ),
     },
     {
@@ -91,6 +93,13 @@ export const useTableColumns = (handleAssignClick: any) => {
       ),
     },
     {
+      accessorKey: 'voucherType',
+      header: 'Voucher Type ',
+      cell: ({ row }) => (
+        <div className="capitalize">{row.getValue('voucherType')}</div>
+      ),
+    },
+    {
       accessorKey: 'status',
       header: ({ column }) => {
         return (
@@ -104,31 +113,6 @@ export const useTableColumns = (handleAssignClick: any) => {
         );
       },
       cell: ({ row }) => <div>{row.getValue('status')}</div>,
-    },
-
-    {
-      id: 'actions',
-      enableHiding: false,
-      cell: ({ row }) => {
-        return (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0">
-                <span className="sr-only">Open menu</span>
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              {row.getValue('status') === 'REQUESTED' && (
-                <DropdownMenuItem onClick={() => handleAssign(row.original)}>
-                  Approve Request
-                </DropdownMenuItem>
-              )}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        );
-      },
     },
   ];
 

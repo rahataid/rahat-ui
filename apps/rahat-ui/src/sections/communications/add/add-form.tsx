@@ -31,6 +31,8 @@ import { useRouter } from 'next/navigation';
 import { FC } from 'react';
 import { UseFormReturn, useForm } from 'react-hook-form';
 import { z } from 'zod';
+import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
+import ConfirmModal from './confirm.modal';
 
 type CampaignFormProps = {
   // Add props here
@@ -44,6 +46,7 @@ type CampaignFormProps = {
   showAddAudience: boolean;
   data?: any;
   isSubmitting?: boolean;
+  handleSubmit: () => void;
 
   // Add more props here
 };
@@ -55,6 +58,7 @@ const CampaignForm: FC<CampaignFormProps> = ({
   form,
   setShowAddAudience,
   showAddAudience,
+  handleSubmit,
   data,
   isSubmitting,
 }) => {
@@ -68,10 +72,21 @@ const CampaignForm: FC<CampaignFormProps> = ({
   //   const includeFile = includeMessage ? 'message' : 'file';
   //   const excludeFile = includeMessage ? 'file' : 'message';
   if (!form) return 'loading...';
+  const campaignConfirmModal = useBoolean();
+  const handleOpenModal = (e: any) => {
+    e.preventDefault();
+    campaignConfirmModal.onTrue();
+  };
+  const handleCampaignAssignModalClose = () => {
+    campaignConfirmModal.onFalse();
+  };
+
   return (
     <>
       <div className="w-full p-2">
-        <h2 className="text-lg font-semibold mb-4">Campaign: Add</h2>
+        <h2 className="text-lg font-semibold mb-4">
+          Campaign: {data ? 'Edit' : 'Add'}
+        </h2>
         <div className="shadow-md p-4 rounded-sm bg-card">
           <div className="mb-4 w-full grid grid-cols-3 gap-4 ">
             <FormField
@@ -134,7 +149,7 @@ const CampaignForm: FC<CampaignFormProps> = ({
                 <FormItem>
                   <Select
                     onValueChange={field.onChange}
-                    defaultValue={field.value || data?.data?.type}
+                    defaultValue={field.value || data?.type}
                   >
                     <FormControl>
                       <SelectTrigger className="rounded">
@@ -223,17 +238,33 @@ const CampaignForm: FC<CampaignFormProps> = ({
             >
               {showAddAudience ? 'Hide Audiences' : 'Show Audiences'}
             </Button>
-            {isSubmitting ? (
+            <Button
+              onClick={handleOpenModal}
+              variant={'default'}
+              disabled={loading}
+            >
+              {title}
+            </Button>
+            {/* {isSubmitting ? (
               <Button variant={'default'} disabled={true}>
                 <Loader />
               </Button>
             ) : (
-              <Button type="submit" variant={'default'} disabled={loading}>
+              <Button
+                onClick={() => handleCampaignAssignModal}
+                variant={'default'}
+                disabled={loading}
+              >
                 {title}
               </Button>
-            )}
+            )} */}
           </div>
         </div>
+        <ConfirmModal
+          open={campaignConfirmModal.value}
+          handleClose={handleCampaignAssignModalClose}
+          handleSubmit={handleSubmit}
+        />
       </div>
     </>
   );

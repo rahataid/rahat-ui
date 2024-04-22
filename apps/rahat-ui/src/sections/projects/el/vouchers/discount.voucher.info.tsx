@@ -1,9 +1,30 @@
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
+import { CirclePlus, Ellipsis } from 'lucide-react';
 import React from 'react';
 
 const DiscountVoucherInfo = ({ data }) => {
   return (
-    <div className="m-2 rounded bg-card p-4 shadow">
-      <div className="flex items-center flex-wrap mt-2 gap-10 md:gap-32">
+    <div className="mx-2 mt-2 rounded bg-card p-4 shadow">
+      <div className="flex items-center justify-end">
+        <DropdownMenu>
+          <DropdownMenuTrigger>
+            {' '}
+            <Ellipsis />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuLabel className="flex items-center justify-between">
+              <CirclePlus size={16} strokeWidth={0.95} />
+              Create Voucher
+            </DropdownMenuLabel>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+      <div className="flex items-center justify-between mt-2">
         <div>
           <p className="font-medium text-primary">Discount</p>
           <p className="font-light">Voucher Name</p>

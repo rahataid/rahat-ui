@@ -39,7 +39,7 @@ interface Props {
 
 export default function PieChart({ title, subheader, chart }: Props) {
   const {
-    colors = ['#4682B4', '#FFBF00', '#ffff99', '#2B4EBD', '#CEB180'],
+    colors = ['#00b67a', '#b67a00', '#b6007b', '#007bb6', '#7a00b6'],
     series = [],
     options = {},
   } = chart;
@@ -47,9 +47,9 @@ export default function PieChart({ title, subheader, chart }: Props) {
 
   const chartOptions = useChart({
     chart: {
-      sparkline: {
-        enabled: true,
-      },
+      // sparkline: {
+      //   enabled: true,
+      // },
     },
     colors,
     labels: series.map((i) => i.label),
@@ -92,15 +92,15 @@ export default function PieChart({ title, subheader, chart }: Props) {
 
   return (
     <div className="bg-card shadow rounded p-4 flex flex-col items-center justify-center">
-      <h2 className="text-lg font-semibold">{title}</h2>
-      <p className="text-sm text-gray-500">{subheader}</p>
+      <h2 className="text-lg text-white font-semibold">{title}</h2>
+      <p className="text-sm text-white">{subheader}</p>
 
       <StyledChart
         dir="ltr"
         type="pie"
         series={chartSeries}
         options={chartOptions}
-        height={280}
+        height={320}
         width={400}
       />
     </div>

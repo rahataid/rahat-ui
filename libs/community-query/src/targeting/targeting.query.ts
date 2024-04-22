@@ -1,0 +1,51 @@
+import { UseQueryResult, useQuery, useMutation } from '@tanstack/react-query';
+import { useRSQuery } from '@rumsan/react-query';
+import { getTargetClient } from '@rahataid/community-tool-sdk/clients';
+import { TAGS } from '../config';
+import Swal from 'sweetalert2';
+
+export const useTargetingList = (): UseQueryResult<any, Error> => {
+  const { queryClient, rumsanService } = useRSQuery();
+  const targetingClient = getTargetClient(rumsanService.client);
+
+  const query = useQuery(
+    {
+      queryKey: [TAGS.LIST_TARGETING],
+      queryFn: () => targetingClient.list(),
+    },
+    queryClient,
+  );
+
+  return query;
+};
+
+export const useTargetingCreate = () => {
+  const { queryClient, rumsanService } = useRSQuery();
+  const targetingClient = getTargetClient(rumsanService.client);
+
+  return useMutation(
+    {
+      mutationKey: [TAGS.CREATE_TARGETING],
+      mutationFn: targetingClient.create,
+      onSuccess: () => {
+        Swal.fire('Targeting Created Successfully', '', 'success');
+        queryClient.invalidateQueries({
+          queryKey: [
+            TAGS.LIST_TARGETING,
+            {
+              exact: true,
+            },
+          ],
+        });
+      },
+      onError: (error: any) => {
+        Swal.fire(
+          'Error',
+          error.response.data.message || 'Encounter error on Creating Data',
+          'error',
+        );
+      },
+    },
+    queryClient,
+  );
+};

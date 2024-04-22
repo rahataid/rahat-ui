@@ -1,5 +1,6 @@
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
+import { MAX_EXPORT_COUNT } from '../constants/app.const';
 
 export const includeOnlySelectedTarget = (array: [], selectedTargets: []) => {
   return array.map((item: any) => {
@@ -40,19 +41,12 @@ export function truncateEthereumAddress(address: string) {
 }
 
 export function splitFullName(fullName: string) {
-  let nameArray = fullName.split(' ');
+  if (!fullName) return { firstName: '', lastName: '' };
+  const names = fullName.trim().split(' ');
+  const firstName = names[0];
+  const lastName = names.length > 1 ? names.slice(1).join(' ') : '';
 
-  // Extract the first and last names
-  let firstName = nameArray[0];
-  let lastName = nameArray[nameArray.length - 1];
-
-  // Create an object to hold the result
-  let result = {
-    firstName: firstName,
-    lastName: lastName,
-  };
-
-  return result;
+  return { firstName, lastName };
 }
 
 function removeKeyFromArrayObjects(arr: any, keyToRemove: string) {
@@ -63,7 +57,12 @@ function removeKeyFromArrayObjects(arr: any, keyToRemove: string) {
 }
 
 export function removeFieldsWithUnderscore(dataArray: []) {
-  dataArray.map((item) => {
+  let splittedData = [] as any;
+  splittedData =
+    dataArray.length > MAX_EXPORT_COUNT
+      ? dataArray.splice(0, MAX_EXPORT_COUNT)
+      : dataArray;
+  splittedData.map((item: any) => {
     const newObj = {} as any;
     Object.keys(item).forEach((key) => {
       if (!key.startsWith('_')) {
@@ -73,7 +72,7 @@ export function removeFieldsWithUnderscore(dataArray: []) {
     });
     return newObj;
   });
-  return removeKeyFromArrayObjects(dataArray, 'errorMessage');
+  return removeKeyFromArrayObjects(splittedData, 'errorMessage');
 }
 
 export const truncatedText = (text: string, maxLen: number) => {
@@ -94,29 +93,75 @@ function moveErrorMsgToFirstKey(data: any) {
   return result;
 }
 
-export const splitValidAndInvalid = (payload: any, errors: []) => {
+function checkPropertyAndDelete(item: any, propertyName: string) {
+  if (item.hasOwnProperty(propertyName)) {
+    delete item[propertyName];
+  }
+  return item;
+}
+
+function cleanupNonDuplicateFields(payload: any[]) {
+  let data = [];
+  for (let p of payload) {
+    p = checkPropertyAndDelete(p, 'isDuplicate');
+    p = checkPropertyAndDelete(p, 'exportOnly');
+    p = checkPropertyAndDelete(p, 'rawData');
+    p = checkPropertyAndDelete(p, 'uuid');
+    p = checkPropertyAndDelete(p, 'id');
+    p = checkPropertyAndDelete(p, 'customId');
+    p = checkPropertyAndDelete(p, 'createdAt');
+    p = checkPropertyAndDelete(p, 'updatedAt');
+    data.push(p);
+  }
+  return data;
+}
+
+export const splitValidAndDuplicates = (
+  payload: any[],
+  duplicateData: any[],
+) => {
+  const sanitized = [] as any;
+  const nonDuplicate = payload.filter((d: any) => !d.isDuplicate);
+  const duplicates = duplicateData.filter((d: any) => d.isDuplicate);
+  for (let p of duplicates) {
+    p = checkPropertyAndDelete(p, 'isDuplicate');
+    p = checkPropertyAndDelete(p, 'exportOnly');
+    p = checkPropertyAndDelete(p, 'rawData');
+    p = checkPropertyAndDelete(p, 'uuid');
+    p = checkPropertyAndDelete(p, 'id');
+    p = checkPropertyAndDelete(p, 'customId');
+    p = checkPropertyAndDelete(p, 'createdAt');
+    p = checkPropertyAndDelete(p, 'updatedAt');
+    p.errorMessage = 'Duplicate data';
+    sanitized.push(p);
+  }
+  const swapped = moveErrorMsgToFirstKey(sanitized);
+  const validData = cleanupNonDuplicateFields(nonDuplicate);
+  return { validData, sanitized: swapped };
+};
+
+function createInvalidFieldError(errFields: any) {
+  const errFieldsArr = errFields.map((err: any) => err.fieldName);
+  return `Invalid fields: ${errFieldsArr.join(', ')}`;
+}
+
+export const splitValidAndInvalid = (payload: [], errors: []) => {
   const invalidData = [] as any;
   const validData = [] as any;
-
   payload.forEach((p: any) => {
     const error = errors.find((error: any) => error.uuid === p.uuid);
-    if (error || p.isDuplicate) {
+    // if (p.hasOwnProperty('isDuplicate')) {
+    //   delete p.isDuplicate;
+    // }
+    if (error) {
+      const errFields = errors.filter((err: any) => err.uuid === p.uuid);
       if (p.uuid) delete p.uuid;
       if (p.rawData) delete p.rawData;
-      if (p.hasOwnProperty('isDuplicate')) {
-        p.errorMessage = p.isDuplicate ? 'Dulicate Data' : 'Invalid Data';
-        p.errorMessage = error ? 'Invalid Data' : 'Duplicate Data';
-        if (error && p.isDuplicate)
-          p.errorMessage = 'Duplicate and Invalid Data';
-
-        delete p.isDuplicate;
+      if (errFields.length) {
+        p.errorMessage = createInvalidFieldError(errFields);
       }
-
       invalidData.push(p);
     } else {
-      if (p.hasOwnProperty('isDuplicate')) {
-        delete p.isDuplicate;
-      }
       validData.push(p);
     }
   });
@@ -158,3 +203,35 @@ export const isURL = (value: string) => {
   let urlPattern = /^(?:\w+:)?\/\/([^\s\.]+\.\S{2}|localhost[\:?\d]*)\S*$/;
   return urlPattern.test(value);
 };
+
+export const humanizeString = (inputString: string) => {
+  // Replace underscore with space
+  inputString = inputString.replace(/_/g, ' ');
+
+  let words = inputString.toLowerCase().split(' ');
+  // Capitalize the first letter of each word
+  for (let i = 0; i < words.length; i++) {
+    words[i] = words[i].charAt(0).toUpperCase() + words[i].slice(1);
+  }
+
+  const result = words.join(' ');
+  return truncateString(result, 50);
+};
+
+function truncateString(inputStr: string, length: number) {
+  if (!length) length = 10;
+  if (inputStr.length > length) {
+    return inputStr.slice(0, length) + '...';
+  }
+  return inputStr;
+}
+
+export function formatDate(date: Date) {
+  const changedDate = new Date(date);
+  const year = changedDate.getFullYear();
+  const month = (changedDate.getMonth() + 1).toString().padStart(2, '0');
+  const day = changedDate.getDate().toString().padStart(2, '0');
+  const formattedDate = `${year}-${month}-${day}`;
+
+  return formattedDate;
+}

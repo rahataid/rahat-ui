@@ -5,6 +5,7 @@ import UsersTable from './user.list';
 import { usePagination } from '@rahat-ui/query';
 import CustomPagination from '../../components/customPagination';
 import { useCommunityUsersList } from '@rahat-ui/community-query';
+import React from 'react';
 // import { useCommunityUsersList } from '@rahat-ui/community-query';
 
 export default function UserView() {
@@ -16,19 +17,28 @@ export default function UserView() {
   // });
   // const usek = useCommunityUsersList(pagination);
   // console.log('users', usek);
-  const { data: users } = useCommunityUsersList({});
+  // const { data: users } = useCommunityUsersList({});
+  const { data, isSuccess } = useCommunityUsersList({
+    page: pagination.page,
+    perPage: pagination.perPage,
+  });
+
+  const users = React.useMemo(() => {
+    if (isSuccess) return data?.data;
+    else return [];
+  }, [isSuccess, data?.data]);
 
   return (
     <div>
-      <UsersTable users={users?.data} />
+      <UsersTable users={users} />
       <CustomPagination
-        currentPage={users && users?.response?.meta?.currentPage}
+        currentPage={pagination.page}
         handleNextPage={setNextPage}
         handlePrevPage={setPrevPage}
         handlePageSizeChange={setPerPage}
-        meta={users && users?.response?.meta}
-        perPage={pagination.perPage}
-        total={users && users?.response?.meta?.total}
+        meta={data?.response?.meta || { total: 0, currentPage: 0 }}
+        perPage={pagination?.perPage}
+        total={data?.response?.meta?.total || 0}
       />
 
       {/* <UserDetails data={selectedUserData} /> */}

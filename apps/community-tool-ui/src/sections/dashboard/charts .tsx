@@ -9,12 +9,12 @@ const Charts = ({ charts }: { charts: any }) => {
         const series = Array.isArray(d?.data)
           ? d?.data.map((item: any) => ({
               label: formatUnderScoredString(item.id),
-              value: item.count,
+              value: item?.count || 0,
             }))
           : [
               {
                 label: formatUnderScoredString(d.name),
-                value: d?.data?.count,
+                value: d?.data?.count || 0,
               },
             ];
         return (

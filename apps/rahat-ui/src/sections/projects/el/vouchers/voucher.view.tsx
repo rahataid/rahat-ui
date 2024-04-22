@@ -1,66 +1,57 @@
 'use client';
-import React, { useEffect, useState } from 'react';
-import FreeVoucherInfo from './free.voucher.info';
-import DiscountVoucherInfo from './discount.voucher.info';
+import {
+  PROJECT_SETTINGS_KEYS,
+  useProjectSettingsStore,
+} from '@rahat-ui/query';
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tabs';
-import { FreeTransactionTable } from './free.transactions.table';
-import { FreeHoldersTable } from './free.holder.table';
-import { DiscountTransactionTable } from './discount.transactions.table';
-import { DiscountHoldersTable } from './discount.holder.table';
-import {
-  useProjectVoucher,
-  useVoucherHolder,
-} from 'apps/rahat-ui/src/hooks/el/subgraph/querycall';
-import AddVoucher from './add.voucher';
+import { useProjectVoucher } from 'apps/rahat-ui/src/hooks/el/subgraph/querycall';
 import { useParams } from 'next/navigation';
+import TableLoader from 'apps/rahat-ui/src/components/table.loader';
+import AddVoucher from './add.voucher';
+import { DiscountHoldersTable } from './discount.holder.table';
+import { DiscountTransactionTable } from './discount.transactions.table';
+import DiscountVoucherInfo from './discount.voucher.info';
+import { FreeHoldersTable } from './free.holder.table';
+import { FreeTransactionTable } from './free.transactions.table';
+import FreeVoucherInfo from './free.voucher.info';
 
 const VoucherView = () => {
-  const [contractAddress, setContractAddress] = useState<any>();
-
   const { id } = useParams();
 
-  const projectSettings = localStorage.getItem('projectSettingsStore');
-
-  useEffect(() => {
-    if (projectSettings) {
-      const settings = JSON.parse(projectSettings)?.state?.settings?.[id];
-      setContractAddress({
-        el: settings?.elproject?.address,
-        eyeVoucher: settings?.eyevoucher?.address,
-        referredVoucher: settings?.referralvoucher?.address,
-        rahatDonor: settings?.rahatdonor?.address,
-      });
-    }
-  }, [projectSettings, id]);
+  const contractSettings = useProjectSettingsStore(
+    (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT] || null,
+  );
 
   const { data: projectVoucher, isLoading } = useProjectVoucher(
-    contractAddress?.el || '',
-    contractAddress?.eyeVoucher || '',
+    contractSettings?.elproject?.address || '',
+    contractSettings?.eyevoucher?.address || '',
   );
 
   return (
     <>
       {isLoading ? (
         <div className="flex items-center justify-center h-screen">
-          <div className="flex items-center justify-center space-x-2">
-            <div className="h-5 w-5 animate-bounce rounded-full bg-primary [animation-delay:-0.3s]"></div>
-            <div className="h-5 w-5 animate-bounce rounded-full bg-primary [animation-delay:-0.13s]"></div>
-            <div className="h-5 w-5 animate-bounce rounded-full bg-primary"></div>
-          </div>
+          <TableLoader />
         </div>
       ) : (
         <>
           {projectVoucher?.freeVoucherAddress ? (
-            <>
-              <FreeVoucherInfo data={projectVoucher} />
-              <DiscountVoucherInfo data={projectVoucher} />
+            <div className="bg-secondary">
+              <div className="grid grid-cols-2">
+                <div>
+                  <FreeVoucherInfo data={projectVoucher} />
+                </div>
+                <div>
+                  <DiscountVoucherInfo data={projectVoucher} />
+                </div>
+              </div>
 
-              <div className="m-2">
+              <div className="mt-2 mx-2">
                 <Tabs defaultValue="free">
                   <TabsList className="w-full grid grid-cols-2 border h-auto">
                     <TabsTrigger value="free">
@@ -92,9 +83,9 @@ const VoucherView = () => {
                   </TabsContent>
                 </Tabs>
               </div>
-            </>
+            </div>
           ) : (
-            <AddVoucher contractSettings={contractAddress} />
+            <AddVoucher contractSettings={contractSettings} />
           )}
         </>
       )}

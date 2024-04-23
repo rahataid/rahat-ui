@@ -16,6 +16,7 @@ import {
   useListAudience,
   useGetAudio,
   useCreateCampaign,
+  useGetApprovedTemplate,
 } from '@rumsan/communication-query';
 
 import { useRouter } from 'next/navigation';
@@ -34,6 +35,7 @@ const FormSchema = z.object({
   }),
 
   message: z.string().optional(),
+  messageSid: z.string().optional(),
   audiences: z.array(
     z.object({
       name: z.string(),
@@ -102,6 +104,11 @@ const AddCampaignView = () => {
       data?.message
     ) {
       additionalData.body = data?.message;
+    } else if (
+      data?.campaignType === CAMPAIGN_TYPES.WHATSAPP &&
+      data?.messageSid
+    ) {
+      additionalData.messageSid = data?.messageSid;
     } else {
       additionalData.message = data?.message;
     }

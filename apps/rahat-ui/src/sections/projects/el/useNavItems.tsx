@@ -71,8 +71,8 @@ export const useNavItems = () => {
   });
 
   const projectVoucher = useProjectVoucher(
-    contractSettings?.elProjectAddress || '',
-    contractSettings?.eyeVoucherAddress || '',
+    contractSettings?.elproject?.address || '',
+    contractSettings?.eyevoucher?.address || '',
   );
 
   const projectClient = useProjectAction();

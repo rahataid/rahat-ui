@@ -70,7 +70,7 @@ export default function ListView({ users }: IProps) {
 
   return (
     <>
-      <div className="w-full h-full mt-1 p-1 bg-secondary">
+      <div className="w-full  mt-1 p-1 bg-secondary">
         <div className="flex items-center mb-2">
           <Input
             placeholder="Search User by name..."
@@ -110,9 +110,9 @@ export default function ListView({ users }: IProps) {
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-        <div className="rounded border h-[calc(100vh-180px)] bg-card">
+        <div className="rounded border bg-card">
           <Table>
-            <ScrollArea className="h-table1">
+            <ScrollArea className="h-[calc(100vh-180px)]">
               <TableHeader className="bg-card sticky top-0">
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow key={headerGroup.id}>

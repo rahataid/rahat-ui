@@ -4,7 +4,7 @@ export const IMPORT_SOURCE = {
 };
 
 export const TARGET_FIELD = {
-  FULL_NAME: 'fullName',
+  HOUSE_HEAD_NAME: 'householdHeadName',
   FIRSTNAME: 'firstName',
   LASTNAME: 'lastName',
   GENDER: 'gender',
@@ -16,17 +16,16 @@ export const TARGET_FIELD = {
   LATITUDE: 'latitude',
   LONGITUDE: 'longitude',
   IS_VULNERABLE: 'isVulnerable',
-  GOVT_ID_TYPE: 'govtIDType',
   GOVT_ID_NUMBER: 'govtIDNumber',
-  GOVT_ID_PHOTO: 'govtIDPhoto',
   NOTES: 'notes',
   PHONE_STATUS: 'phoneStatus',
   BANKED_STATUS: 'bankedStatus',
   INTERNET_STATUS: 'internetStatus',
+  RAHAT_UUID: 'uuid',
 };
 
 export const BENEF_DB_FIELDS = [
-  TARGET_FIELD.FULL_NAME,
+  TARGET_FIELD.HOUSE_HEAD_NAME,
   TARGET_FIELD.FIRSTNAME,
   TARGET_FIELD.LASTNAME,
   TARGET_FIELD.GENDER,
@@ -38,13 +37,12 @@ export const BENEF_DB_FIELDS = [
   TARGET_FIELD.LATITUDE,
   TARGET_FIELD.LONGITUDE,
   TARGET_FIELD.IS_VULNERABLE,
-  TARGET_FIELD.GOVT_ID_TYPE,
   TARGET_FIELD.GOVT_ID_NUMBER,
-  TARGET_FIELD.GOVT_ID_PHOTO,
   TARGET_FIELD.NOTES,
   TARGET_FIELD.PHONE_STATUS,
   TARGET_FIELD.BANKED_STATUS,
   TARGET_FIELD.INTERNET_STATUS,
+  TARGET_FIELD.RAHAT_UUID,
 ];
 
 export const UNIQUE_FIELD = {
@@ -95,6 +93,14 @@ export const SUBJECTS = [
   { label: 'Role', value: 'role' },
   { label: 'User', value: 'user' },
   { label: 'Public', value: 'public' },
+  { label: 'Beneficiary', value: 'beneficiary' },
+  { label: 'Beneficiary Group', value: 'beneficiaryGroup' },
+  { label: 'Beneficiary Source', value: 'beneficiarySource' },
+  { label: 'Target', value: 'target' },
+  { label: 'Field Definition', value: 'fieldDefinition' },
+  { label: 'Settings', value: 'settings' },
+  { label: 'Source', value: 'source' },
+  { label: 'Group', value: 'group' },
 ];
 
 export const MAX_EXPORT_COUNT = 500;

@@ -22,7 +22,7 @@ export default function ProjectListView() {
               address={project?.uuid}
               key={project.uuid}
               title={project.name}
-              image={project.image}
+              image={project.image || '/rahat-logo.png'}
               subTitle={project.description as string}
               badge={project.type}
             />

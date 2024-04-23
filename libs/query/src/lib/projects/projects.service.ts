@@ -204,7 +204,7 @@ export const useAssignVendorToProject = () => {
 };
 
 export const useProjectContractSettings = (uuid: UUID) => {
-  const q = useProjectAction();
+  const q = useProjectAction(['PROJECT_SETTINGS_KEYS.CONTRACT']);
   const { setSettings, settings } = useProjectSettingsStore((state) => ({
     settings: state.settings,
     setSettings: state.setSettings,
@@ -251,7 +251,7 @@ export const useProjectContractSettings = (uuid: UUID) => {
 };
 
 export const useProjectSubgraphSettings = (uuid: UUID) => {
-  const q = useProjectAction();
+  const q = useProjectAction(['PROJECT_SETTINGS_KEYS.SUBGRAPH']);
   const { setSettings, settings } = useProjectSettingsStore((state) => ({
     settings: state.settings,
     setSettings: state.setSettings,
@@ -277,7 +277,7 @@ export const useProjectSubgraphSettings = (uuid: UUID) => {
   });
 
   useEffect(() => {
-    if (query.isSuccess) {
+    if (!isEmpty(query.data)) {
       const settingsToUpdate = {
         ...settings,
         [uuid]: {

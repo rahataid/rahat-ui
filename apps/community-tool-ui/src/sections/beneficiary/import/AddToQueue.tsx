@@ -17,7 +17,6 @@ export default function AddToQueue({
   invalidFields,
   handleExportInvalidClick,
 }: IProps) {
-  console.log('Invalid Fields', invalidFields);
   const mappedData =
     data.length > 0
       ? data.map((d: any) => {
@@ -28,7 +27,7 @@ export default function AddToQueue({
   const headerKeys = mappedData.length > 0 ? Object.keys(mappedData[0]) : [];
 
   function renderItemKey(item: any, key: string) {
-    if (key === 'uuid' || key === 'isDuplicate') {
+    if (key === 'isDuplicate') {
       return '';
     } else return item[key];
   }
@@ -75,10 +74,8 @@ export default function AddToQueue({
                   {invalidFields.find(
                     (field: any) => field.fieldName === key,
                   ) ? (
-                    <span className="text-red-500">
-                      {key === 'uuid' ? '' : key}*
-                    </span>
-                  ) : key === 'uuid' || key === 'isDuplicate' ? (
+                    <span className="text-red-500">{key}*</span>
+                  ) : key === 'isDuplicate' ? (
                     ''
                   ) : (
                     key
@@ -101,7 +98,9 @@ export default function AddToQueue({
                 {headerKeys.map((key) =>
                   invalidFields.find(
                     (err: any) =>
-                      err.uuid === item['uuid'] && err.value === item[key],
+                      err.uuid === item['uuid'] &&
+                      err.value === item[key] &&
+                      key === err.fieldName,
                   ) ? (
                     <td className="px-4 bg-red-100 py-1.5" key={key}>
                       {renderItemKey(item, key)}

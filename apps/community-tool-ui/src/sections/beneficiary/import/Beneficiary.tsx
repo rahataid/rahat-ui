@@ -136,8 +136,6 @@ export default function BenImp({ extraFields }: IProps) {
     sourceField: string,
     targetField: string,
   ) => {
-    console.log({ sourceField });
-    console.log({ targetField });
     if (targetField === 'None') return;
     const index = mappings.findIndex(
       (item: any) => item.sourceField === sourceField,
@@ -179,20 +177,22 @@ export default function BenImp({ extraFields }: IProps) {
         icon: 'error',
         title: 'Please load data from data source!',
       });
-    if (uniqueField) return setCurrentScreen(BENEF_IMPORT_SCREENS.VALIDATION);
 
-    return Swal.fire({
-      icon: 'warning',
-      title: 'Continue without unique field?',
-      showCancelButton: true,
-      confirmButtonText: 'Continue',
-      cancelButtonText: 'No',
-      text: 'Duplicate data might be imported!',
-    }).then((result) => {
-      if (result.isConfirmed) {
-        setCurrentScreen(BENEF_IMPORT_SCREENS.VALIDATION);
-      }
-    });
+    // if (uniqueField) return setCurrentScreen(BENEF_IMPORT_SCREENS.VALIDATION);
+    return setCurrentScreen(BENEF_IMPORT_SCREENS.VALIDATION);
+
+    // return Swal.fire({
+    //   icon: 'warning',
+    //   title: 'Continue without unique field?',
+    //   showCancelButton: true,
+    //   confirmButtonText: 'Continue',
+    //   cancelButtonText: 'No',
+    //   text: 'Duplicate data might be imported!',
+    // }).then((result) => {
+    //   if (result.isConfirmed) {
+    //     setCurrentScreen(BENEF_IMPORT_SCREENS.VALIDATION);
+    //   }
+    // });
   };
 
   const exportDuplicateData = (data: any, duplicateData: any) => {
@@ -214,9 +214,7 @@ export default function BenImp({ extraFields }: IProps) {
 
   const handleImportNowClick = async () => {
     const msg = duplicateData.length
-      ? `${duplicateData.length / 2} / ${
-          processedData.length
-        } duplicates found.<b>Import Anyway?</b>`
+      ? `Duplicate data found!.<b>Import Anyway?</b>`
       : '';
     const dialog = await Swal.fire({
       title: `${processedData.length} Beneficiaries will be imported!`,
@@ -248,8 +246,6 @@ export default function BenImp({ extraFields }: IProps) {
     let finalPayload = rawData;
     const selectedTargets = []; // Only submit selected target fields
 
-    console.log({ mappings });
-
     for (let m of mappings) {
       if (m.targetField === TARGET_FIELD.FIRSTNAME) {
         selectedTargets.push(TARGET_FIELD.FIRSTNAME);
@@ -269,16 +265,14 @@ export default function BenImp({ extraFields }: IProps) {
           return newItem;
         });
         finalPayload = replaced;
-      } else if (m.targetField === TARGET_FIELD.FULL_NAME) {
+      } else if (m.targetField === TARGET_FIELD.HOUSE_HEAD_NAME) {
         // Split fullName, update target_key:value and delete old_source_key
         selectedTargets.push(TARGET_FIELD.FIRSTNAME);
         selectedTargets.push(TARGET_FIELD.LASTNAME);
         const replaced = finalPayload.map((item: any) => {
           const { firstName, lastName } = splitFullName(item[m.sourceField]);
-          console.log({ firstName });
-          console.log({ lastName });
           const newItem = { ...item, firstName, lastName };
-          if (m.sourceField !== m.targetField) delete newItem[m.sourceField];
+          // if (m.sourceField !== m.targetField) delete newItem[m.sourceField];
           return newItem;
         });
         finalPayload = replaced;
@@ -311,7 +305,6 @@ export default function BenImp({ extraFields }: IProps) {
       selectedTargets,
     );
     const final_mapping = attachedRawData(selectedFieldsOnly, rawData);
-    console.log('Final_mapin', final_mapping);
     const sourcePayload = {
       action,
       name: importSource,
@@ -345,10 +338,11 @@ export default function BenImp({ extraFields }: IProps) {
         setCurrentScreen(BENEF_IMPORT_SCREENS.IMPORT_DATA);
       })
       .catch((err) => {
+        const msg = err?.response?.data?.message || 'Something went wrong!';
         setLoading(false);
         Swal.fire({
           icon: 'error',
-          title: 'Failed to add to the queue!',
+          title: msg,
         });
       });
   };
@@ -456,10 +450,7 @@ export default function BenImp({ extraFields }: IProps) {
             )}
 
             <hr />
-            <div
-              style={{ maxHeight: '60vh' }}
-              className="overflow-x-auto overflow-y-auto"
-            >
+            <div className="overflow-x-auto">
               <ColumnMappingTable
                 rawData={rawData}
                 uniqueDBFields={uniqueDBFields}

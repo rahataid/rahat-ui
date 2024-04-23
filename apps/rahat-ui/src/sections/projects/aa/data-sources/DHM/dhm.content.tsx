@@ -22,6 +22,10 @@ const renderStatus = ({ warningLevel, dangerLevel, waterLevel }: any) => {
 };
 
 export default function DHMContent({ data }: any) {
+
+    if(!data.length){
+        return <p>Data not found for DHM.</p>
+    }
     
     const latestData = data[0]
     const recentEight = data.slice(0, 8)

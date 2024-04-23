@@ -77,7 +77,7 @@ export default function AddSetting() {
   };
   return (
     <form onSubmit={handleSubmit(handleAddSetting)}>
-      <div className="p-4 h-add">
+      <div className="p-4 h-add rounded border bg-white">
         <h1 className="text-lg font-semibold mb-6">Add Settings</h1>
         <div className="shadow-md p-4 rounded-sm">
           <div className="grid grid-cols-5 gap-4 mb-4">

@@ -22,14 +22,15 @@ import {
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { ListBeneficiary } from '@rahataid/community-tool-sdk/beneficiary';
-import { ChangeEvent, useEffect, useState } from 'react';
-import { debounce, useDebounce } from '../../utils/debounceHooks';
+import { Pagination } from '@rumsan/sdk/types';
 
 type IProps = {
   handleClick: (item: ListBeneficiary) => void;
   table: Table<ListBeneficiary>;
   setFilters: (fiters: Record<string, any>) => void;
   filters: Record<string, any>;
+  setPagination: (pagination: Pagination) => void;
+  pagination: Pagination;
 };
 
 export default function ListView({
@@ -37,41 +38,23 @@ export default function ListView({
   table,
   setFilters,
   filters,
+  setPagination,
+  pagination,
 }: IProps) {
-  // const [filter, setFilter] = useState<{ [key: string]: string }>({});
-
   const handleFilterChange = (event: any) => {
     if (event && event.target) {
       const { name, value } = event.target;
-      console.log(name);
       table.getColumn(name)?.setFilterValue(value);
       setFilters({
         ...filters,
         [name]: value,
       });
     }
+    setPagination({
+      ...pagination,
+      page: 1,
+    });
   };
-
-  // ** toDo: need to refactor for the debounce effect**
-
-  // const debouncedFilters = useDebounce(filter, 300);
-
-  // const handleFilterChange = (event: any) => {
-  //   if (event && event.target) {
-  //     const { name, value } = event.target;
-  //     table.getColumn(name)?.setFilterValue(value);
-  //     setFilter({
-  //       ...filter,
-  //       [name]: value,
-  //     });
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   setFilters(debouncedFilters);
-  // }, [debouncedFilters, setFilters]);
-
-  // console.log(debouncedFilters);
 
   return (
     <>

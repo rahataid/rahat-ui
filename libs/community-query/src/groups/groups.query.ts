@@ -126,3 +126,29 @@ export const useCommunityGroupRemove = () => {
     queryClient,
   );
 };
+
+export const useCommunityGroupPurge = () => {
+  const { queryClient, rumsanService } = useRSQuery();
+  const qc = useQueryClient();
+  const groupClient = getGroupClient(rumsanService.client);
+
+  return useMutation(
+    {
+      mutationKey: [TAGS.PURGE_COMMUNITY_GROUP],
+      mutationFn: groupClient.purgeGroup,
+      onSuccess: () => {
+        Swal.fire('Group Purge Successfully', '', 'success');
+        qc.invalidateQueries({ queryKey: [TAGS.LIST_COMMUNITY_GROUP] });
+      },
+      onError: (error: any) => {
+        Swal.fire({
+          icon: 'error',
+          title:
+            error?.response?.data?.message ||
+            'Encounter error on Removing Data',
+        });
+      },
+    },
+    queryClient,
+  );
+};

@@ -4,7 +4,7 @@ export const IMPORT_SOURCE = {
 };
 
 export const TARGET_FIELD = {
-  HOUSE_HEAD_NAME: 'houseHeadName',
+  HOUSE_HEAD_NAME: 'householdHeadName',
   FIRSTNAME: 'firstName',
   LASTNAME: 'lastName',
   GENDER: 'gender',
@@ -21,7 +21,7 @@ export const TARGET_FIELD = {
   PHONE_STATUS: 'phoneStatus',
   BANKED_STATUS: 'bankedStatus',
   INTERNET_STATUS: 'internetStatus',
-  RAHAT_UUID: 'rahat_uuid',
+  RAHAT_UUID: 'uuid',
 };
 
 export const BENEF_DB_FIELDS = [

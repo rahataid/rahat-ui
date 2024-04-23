@@ -106,7 +106,7 @@ function cleanupNonDuplicateFields(payload: any[]) {
     p = checkPropertyAndDelete(p, 'isDuplicate');
     p = checkPropertyAndDelete(p, 'exportOnly');
     p = checkPropertyAndDelete(p, 'rawData');
-    p = checkPropertyAndDelete(p, 'uuid');
+    // p = checkPropertyAndDelete(p, 'uuid');
     p = checkPropertyAndDelete(p, 'id');
     p = checkPropertyAndDelete(p, 'customId');
     p = checkPropertyAndDelete(p, 'createdAt');
@@ -127,7 +127,7 @@ export const splitValidAndDuplicates = (
     p = checkPropertyAndDelete(p, 'isDuplicate');
     p = checkPropertyAndDelete(p, 'exportOnly');
     p = checkPropertyAndDelete(p, 'rawData');
-    p = checkPropertyAndDelete(p, 'uuid');
+    // p = checkPropertyAndDelete(p, 'uuid');
     p = checkPropertyAndDelete(p, 'id');
     p = checkPropertyAndDelete(p, 'customId');
     p = checkPropertyAndDelete(p, 'createdAt');

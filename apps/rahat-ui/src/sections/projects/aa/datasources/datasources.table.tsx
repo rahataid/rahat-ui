@@ -1,7 +1,8 @@
 'use client';
+
+import * as React from 'react';
 import { Table, flexRender } from '@tanstack/react-table';
 import { Settings2 } from 'lucide-react';
-
 import { Button } from '@rahat-ui/shadcn/components/button';
 import {
   DropdownMenu,
@@ -13,72 +14,35 @@ import {
 } from '@rahat-ui/shadcn/components/dropdown-menu';
 import { Input } from '@rahat-ui/shadcn/components/input';
 import {
+  Table as TableComponent,
   TableBody,
   TableCell,
-  Table as TableComponent,
   TableHead,
   TableHeader,
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import { ListBeneficiary } from '@rahataid/community-tool-sdk/beneficiary';
-import { Pagination } from '@rumsan/sdk/types';
+import { useDeleteDataSource } from '@rahat-ui/query';
+// import { User } from '@rumsan/sdk/types';
 
 type IProps = {
-  handleClick: (item: ListBeneficiary) => void;
-  table: Table<ListBeneficiary>;
-  setFilters: (fiters: Record<string, any>) => void;
-  filters: Record<string, any>;
-  setPagination: (pagination: Pagination) => void;
-  pagination: Pagination;
+  table: Table<any>;
 };
 
-export default function ListView({
-  handleClick,
-  table,
-  setFilters,
-  filters,
-  setPagination,
-  pagination,
-}: IProps) {
-  const handleFilterChange = (event: any) => {
-    if (event && event.target) {
-      const { name, value } = event.target;
-      table.getColumn(name)?.setFilterValue(value);
-      setFilters({
-        ...filters,
-        [name]: value,
-      });
-    }
-    setPagination({
-      ...pagination,
-      page: 1,
-    });
-  };
+export default function DataSourcesTable({ table }: IProps) {
+
+
 
   return (
     <>
-      <div className="w-full -mt-2 p-2 bg-secondary">
+      <div className="p-2 bg-secondary">
         <div className="flex items-center mb-2">
           <Input
-            placeholder="Search by firstName..."
-            name="firstName"
-            value={
-              (table.getColumn('firstName')?.getFilterValue() as string) ??
-              filters?.firstName
+            placeholder="Search Data Sources..."
+            value={(table.getColumn('dataSource')?.getFilterValue() as string) ?? ''}
+            onChange={(event) =>
+              table.getColumn('dataSource')?.setFilterValue(event.target.value)
             }
-            onChange={(event) => handleFilterChange(event)}
-            className="rounded mr-2"
-          />
-
-          <Input
-            placeholder="Search by location..."
-            name="location"
-            value={
-              (table.getColumn('location')?.getFilterValue() as string) ??
-              filters?.location
-            }
-            onChange={(event) => handleFilterChange(event)}
             className="rounded mr-2"
           />
           <DropdownMenu>
@@ -111,9 +75,9 @@ export default function ListView({
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-        <div className="rounded border bg-card">
+        <div className="rounded border h-[calc(100vh-180px)] bg-card">
           <TableComponent>
-            <ScrollArea className="h-[calc(100vh-180px)]">
+            <ScrollArea className="h-table1">
               <TableHeader className="bg-card sticky top-0">
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow key={headerGroup.id}>
@@ -138,9 +102,6 @@ export default function ListView({
                     <TableRow
                       key={row.id}
                       data-state={row.getIsSelected() && 'selected'}
-                      onClick={() => {
-                        handleClick(row.original);
-                      }}
                     >
                       {row.getVisibleCells().map((cell) => (
                         <TableCell key={cell.id}>
@@ -155,7 +116,7 @@ export default function ListView({
                 ) : (
                   <TableRow>
                     <TableCell
-                      colSpan={table.getAllColumns().length}
+                      colSpan={table.getAllColumns.length}
                       className="h-24 text-center"
                     >
                       No results.

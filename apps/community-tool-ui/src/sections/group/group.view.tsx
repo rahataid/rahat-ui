@@ -24,6 +24,7 @@ import { Tabs, TabsContent } from '@rahat-ui/shadcn/src/components/ui/tabs';
 import { useCommunityGroupList } from '@rahat-ui/community-query';
 import { usePagination } from '@rahat-ui/query';
 import { useCommunityGroupTableColumns } from './useGroupColumns';
+import { useDebounce } from '../../utils/debounceHooks';
 
 function ViewGroup() {
   const [selectedData, setSelectedData] = useState<ListGroup>();
@@ -36,11 +37,13 @@ function ViewGroup() {
     setPerPage,
     filters,
     setFilters,
+    setPagination,
   } = usePagination();
 
+  const debouncedFilters = useDebounce(filters, 500);
   const { data } = useCommunityGroupList({
     ...pagination,
-    ...(filters as any),
+    ...(debouncedFilters as any),
   });
   const columns = useCommunityGroupTableColumns();
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
@@ -79,8 +82,10 @@ function ViewGroup() {
             <GroupList
               table={table}
               handleClick={handleGroup}
-              filters={filters}
               setFilters={setFilters}
+              filters={filters}
+              pagination={pagination}
+              setPagination={setPagination}
             />
           </TabsContent>
           <CustomPagination

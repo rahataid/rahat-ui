@@ -32,6 +32,7 @@ import {
 import { Copy, CopyCheck } from 'lucide-react';
 import { useVoucherHolder } from 'apps/rahat-ui/src/hooks/el/subgraph/querycall';
 import { collectGenerateParams } from 'next/dist/build/utils';
+import TableLoader from 'apps/rahat-ui/src/components/table.loader';
 
 export type Payment = {
   id: string;
@@ -113,13 +114,13 @@ export function FreeHoldersTable() {
   });
 
   return (
-    <div className="w-full bg-card">
+    <div className="w-full h-[calc(100vh-280px)] bg-card">
       <div className="flex items-center justify-between py-2 mx-2">
         <h1 className="text-primary">Holders</h1>
       </div>
       <div className="rounded border">
         <Table>
-          <ScrollArea className="h-[calc(100vh-494px)]">
+          <ScrollArea className="h-full">
             <TableHeader className="top-0 sticky bg-card">
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
@@ -161,15 +162,7 @@ export function FreeHoldersTable() {
                     colSpan={columns.length}
                     className="h-24 text-center"
                   >
-                    {isFetching ? (
-                      <div className="flex items-center justify-center space-x-2">
-                        <div className="h-5 w-5 animate-bounce rounded-full bg-primary [animation-delay:-0.3s]"></div>
-                        <div className="h-5 w-5 animate-bounce rounded-full bg-primary [animation-delay:-0.13s]"></div>
-                        <div className="h-5 w-5 animate-bounce rounded-full bg-primary"></div>
-                      </div>
-                    ) : (
-                      'No data available.'
-                    )}
+                    {isFetching ? <TableLoader /> : 'No data available.'}
                   </TableCell>
                 </TableRow>
               )}

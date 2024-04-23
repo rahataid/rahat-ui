@@ -1,8 +1,6 @@
 import {
   Lock,
-  MessageSquare,
   Pencil,
-  Phone,
   PlusSquare,
   Receipt,
   Speech,

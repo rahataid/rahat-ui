@@ -110,7 +110,7 @@ export const useTableColumns = (handleAssignClick: any) => {
                 </Button>
               </div>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="bg-white">
+            <DropdownMenuContent align="end" className="bg-card">
               <DropdownMenuItem
                 onClick={() => openSplitDetailView(row.original)}
               >

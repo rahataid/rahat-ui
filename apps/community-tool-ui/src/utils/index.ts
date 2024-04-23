@@ -215,7 +215,7 @@ export const humanizeString = (inputString: string) => {
   }
 
   const result = words.join(' ');
-  return truncateString(result, 20);
+  return truncateString(result, 50);
 };
 
 function truncateString(inputStr: string, length: number) {
@@ -224,4 +224,14 @@ function truncateString(inputStr: string, length: number) {
     return inputStr.slice(0, length) + '...';
   }
   return inputStr;
+}
+
+export function formatDate(date: Date) {
+  const changedDate = new Date(date);
+  const year = changedDate.getFullYear();
+  const month = (changedDate.getMonth() + 1).toString().padStart(2, '0');
+  const day = changedDate.getDate().toString().padStart(2, '0');
+  const formattedDate = `${year}-${month}-${day}`;
+
+  return formattedDate;
 }

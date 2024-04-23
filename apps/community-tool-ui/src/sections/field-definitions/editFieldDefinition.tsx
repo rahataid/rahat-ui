@@ -29,7 +29,7 @@ import {
 } from '@rahat-ui/community-query';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { Switch } from '@rahat-ui/shadcn/src/components/ui/switch';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Minus, Plus } from 'lucide-react';
 
 export default function EditFieldDefinition({
@@ -38,7 +38,8 @@ export default function EditFieldDefinition({
   data: FieldDefinition;
 }) {
   const updateFieldDefinition = useFieldDefinitionsUpdate();
-  // const updateFieldDefinitionStatus = useFieldDefinitionsStatusUpdate();
+
+  const [showLabelValue, setShowLabelValue] = useState(false);
 
   const FormSchema = z.object({
     name: z.string(),
@@ -70,12 +71,21 @@ export default function EditFieldDefinition({
   });
 
   const addLabelAndValue = () => {
-    append({ label: '', value: '' });
+    if (showLabelValue) {
+      append({ label: '', value: '' });
+    }
   };
 
   const handleEditFieldDefinition = async (
     formData: z.infer<typeof FormSchema>,
   ) => {
+    let fieldPopulateBody: Array<{ label: string; value: string }> | [] = [];
+    if (!showLabelValue) {
+      fieldPopulateBody = [];
+    } else {
+      fieldPopulateBody = formData?.fieldPopulate;
+    }
+
     await updateFieldDefinition.mutateAsync({
       id: data?.id?.toString(),
       data: {
@@ -83,17 +93,26 @@ export default function EditFieldDefinition({
         fieldType: formData?.fieldType as FieldType,
         isActive: formData?.isActive,
         isTargeting: formData?.isTargeting,
-        fieldPopulate: { data: formData.fieldPopulate },
+        fieldPopulate: { data: fieldPopulateBody },
       },
     });
   };
 
-  // const handleStatusChange = async (isActive: any) => {
-  //   await updateFieldDefinitionStatus.mutateAsync({
-  //     id: data?.id?.toString() as string,
-  //     isActive: isActive,
-  //   });
-  // };
+  useEffect(() => {
+    setShowLabelValue(
+      form.watch('fieldType') === FieldType.CHECKBOX ||
+        form.watch('fieldType') === FieldType.RADIO ||
+        form.watch('fieldType') === FieldType.DROPDOWN,
+    );
+  }, [form.watch('fieldType'), form]);
+
+  useEffect(() => {
+    if (showLabelValue) {
+      if (fields.length === 0) {
+        append({ label: '', value: '' });
+      }
+    }
+  }, [showLabelValue, fields, append, form]);
 
   return (
     <Form {...form}>
@@ -184,11 +203,6 @@ export default function EditFieldDefinition({
                       value={field.value ? 'false' : 'true'}
                       checked={field.value}
                       onCheckedChange={field.onChange}
-                      // onCheckedChange={(isChecked) => {
-                      //   handleStatusChange({
-                      //     isActive: isChecked,
-                      //   });
-                      // }}
                     />
                   </div>
                 )}
@@ -212,7 +226,7 @@ export default function EditFieldDefinition({
               />
             </div>
 
-            {form.getValues('fieldPopulate')?.length > 0 && (
+            {showLabelValue && form.getValues('fieldPopulate')?.length > 0 && (
               <div>
                 <Label className="text-xs font-medium mt-2">
                   Field Populate
@@ -269,7 +283,7 @@ export default function EditFieldDefinition({
                             type="button"
                             onClick={() => remove(index)}
                             className="mt-8 ml-3 text-xs"
-                            disabled={fields.length === 1}
+                            // disabled={fields.length === 1}
                           >
                             <Minus size={10} strokeWidth={1.5} />
                           </Button>

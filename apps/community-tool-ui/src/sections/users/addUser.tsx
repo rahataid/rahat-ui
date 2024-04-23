@@ -58,13 +58,10 @@ export default function AddUser() {
   const { data: roleData } = useRoleList();
 
   const handleAddUser = async (data: any) => {
-    console.log(data);
-
     const d = {
       ...data,
       roles: [data.role],
     };
-    console.log(d);
     await userCreate.mutateAsync(d);
   };
   useEffect(() => {

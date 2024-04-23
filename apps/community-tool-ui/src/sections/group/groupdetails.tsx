@@ -10,7 +10,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/components/tooltip';
-import { Download, Minus, Trash2 } from 'lucide-react';
+import { Download, Minus, Trash2, MoreVertical } from 'lucide-react';
 
 import { ListGroup } from '@rahataid/community-tool-sdk/groups';
 import {
@@ -25,12 +25,19 @@ import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import GroupDetailTable from './group.table';
 import {
   useCommunityGroupListByID,
+  useCommunityGroupPurge,
   useCommunityGroupedBeneficiariesDownload,
 } from '@rahat-ui/community-query';
 import { useCommunityGroupDeailsColumns } from './useGroupColumns';
 import Swal from 'sweetalert2';
 import { toast } from 'react-toastify';
 import { useCommunityGroupRemove } from '@rahat-ui/community-query';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
 
 type IProps = {
   data: ListGroup;
@@ -44,6 +51,7 @@ export default function GroupDetail({ data, handleClose }: IProps) {
   const [rowSelection, setRowSelection] = useState({});
   const download = useCommunityGroupedBeneficiariesDownload();
   const removeCommunityGroup = useCommunityGroupRemove();
+  const purgeCommunityGroup = useCommunityGroupPurge();
 
   const table = useReactTable({
     manualPagination: true,
@@ -80,17 +88,18 @@ export default function GroupDetail({ data, handleClose }: IProps) {
     document.body.removeChild(a);
   };
 
-  const handleGroupDelete = () => {
+  const removeBeneficiaryFromGroup = () => {
     Swal.fire({
       title: 'Are you sure?',
-      text: 'Choose what you want to do with the beneficiaries:',
+      text: 'Confirm beneficiary removal from this group',
       icon: 'question',
-      showCancelButton: true,
-      confirmButtonText: 'Remove beneficiary',
+      showDenyButton: true,
+      confirmButtonText: 'Yes, I am sure!',
+      denyButtonText: 'No, cancel it!',
       customClass: {
         actions: 'my-actions',
-        cancelButton: 'order-3',
         confirmButton: 'order-1',
+        denyButton: 'order-2',
       },
     }).then(async (result) => {
       if (result.isConfirmed) {
@@ -100,11 +109,68 @@ export default function GroupDetail({ data, handleClose }: IProps) {
             deleteBeneficiaryFlag: false,
           });
         } catch (error) {
+          toast.error('Error removing Beneficiary');
+          console.error('Error removing Beneficiary:', error);
+        }
+      } else if (result.isDenied) {
+        Swal.fire('Cancelled', `The beneficiary wasn't removed.`, 'error');
+      }
+    });
+  };
+
+  const handleDelete = () => {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'Confirm beneficiary delete',
+      icon: 'question',
+      showDenyButton: true,
+      confirmButtonText: 'Yes, I am sure!',
+      denyButtonText: 'No, cancel it!',
+      customClass: {
+        actions: 'my-actions',
+        confirmButton: 'order-1',
+        denyButton: 'order-2',
+      },
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          await removeCommunityGroup.mutateAsync({
+            uuid: data?.uuid,
+            deleteBeneficiaryFlag: true,
+          });
+        } catch (error) {
           toast.error('Error deleting Beneficiary');
           console.error('Error deleting Beneficiary:', error);
         }
-      } else {
+      } else if (result.isDenied) {
         Swal.fire('Cancelled', `The beneficiary wasn't deleted.`, 'error');
+      }
+    });
+  };
+
+  const handlePurge = () => {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'Confirm group purge',
+      icon: 'question',
+      showDenyButton: true,
+      confirmButtonText: 'Yes, I am sure!',
+      denyButtonText: 'No, cancel it!',
+      customClass: {
+        actions: 'my-actions',
+        confirmButton: 'order-1',
+        denyButton: 'order-2',
+      },
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          await purgeCommunityGroup.mutateAsync(data?.uuid);
+        } catch (error) {
+          toast.error('Error purging Beneficiary');
+          console.error('Error purging Beneficiary:', error);
+        }
+      } else if (result.isDenied) {
+        Swal.fire('Cancelled', `The group wasn't purged.`, 'error');
       }
     });
   };
@@ -154,7 +220,7 @@ export default function GroupDetail({ data, handleClose }: IProps) {
           <TabsList>
             <TooltipProvider>
               <Tooltip>
-                <TooltipTrigger asChild onClick={handleGroupDelete}>
+                <TooltipTrigger asChild onClick={removeBeneficiaryFromGroup}>
                   <Trash2
                     className="cursor-pointer mr-3"
                     size={20}
@@ -163,11 +229,29 @@ export default function GroupDetail({ data, handleClose }: IProps) {
                   />
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>Remove Beneficiary</p>
+                  <p>Remove from Group</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
-            <TabsTrigger value="detail">Details </TabsTrigger>
+            <TabsTrigger value="detail" className="mr-2">
+              Details{' '}
+            </TabsTrigger>
+            {/* </TabsList> */}
+            <DropdownMenu>
+              <DropdownMenuTrigger>
+                <MoreVertical
+                  className="cursor-pointer"
+                  size={20}
+                  strokeWidth={1.5}
+                />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem onClick={handleDelete}>
+                  Delete
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handlePurge}>Purge</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </TabsList>
         </div>
 

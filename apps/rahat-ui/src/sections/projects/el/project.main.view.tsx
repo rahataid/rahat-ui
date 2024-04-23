@@ -27,6 +27,7 @@ const ProjectMainView = () => {
   const [projectStats, setProjectStats] = useState();
   const [ELProjectStats, setELProjectStats] = useState();
 
+  const stats = useGetProjectBeneficiaryStats(id);
   const project = useProjectStore((state) => state.singleProject);
   const contractSettings = useProjectSettingsStore(
     (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT] || null,
@@ -86,10 +87,10 @@ const ProjectMainView = () => {
     getElProjectStats();
   }, [getProjectStats, getElProjectStats]);
 
-  const filteredChartData = beneficiaryStats?.data?.data
-    ? beneficiaryStats.data.data.filter((item) => {
+  const filteredChartData = stats?.data?.data
+    ? stats.data.data.filter((item) => {
         const name = item?.name;
-        return name === 'BENEFICIARY_AGE_RANGE';
+        return name === `BENEFICIARY_AGE_RANGE${id}`;
       })
     : [];
 

@@ -25,6 +25,7 @@ export default function ProjectListView() {
               image={project.image}
               subTitle={project.description as string}
               badge={project.type}
+              status ={project.status}
             />
           ))}
         </div>

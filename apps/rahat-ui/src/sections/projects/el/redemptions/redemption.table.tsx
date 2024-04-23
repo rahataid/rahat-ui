@@ -12,7 +12,7 @@ import {
 } from '@tanstack/react-table';
 import * as React from 'react';
 
-import { useProjectAction } from '@rahat-ui/query';
+import { useProjectAction, useUpdateElRedemption } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/components/button';
 import { Input } from '@rahat-ui/shadcn/components/input';
 import {
@@ -34,8 +34,9 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/dialog';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { useTableColumns } from './useTableColumns';
+import TableLoader from 'apps/rahat-ui/src/components/table.loader';
 
 export type Redemption = {
   id: string;
@@ -53,6 +54,7 @@ export default function RedemptionTable({}) {
   );
 
   const projectModal = useBoolean();
+
   const [selectedRow, setSelectedRow] = React.useState(null);
 
   const handleAssignModalClick = (row: any) => {
@@ -63,7 +65,7 @@ export default function RedemptionTable({}) {
   const columns = useTableColumns(handleAssignModalClick);
 
   const [perPage, setPerPage] = React.useState<number>(10);
-  const [currentPage, setCurrentPage] = React.useState<number>(1);
+  const [currentPage, setCurrentPage] = React.useState<number>(2);
 
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
@@ -71,6 +73,8 @@ export default function RedemptionTable({}) {
   const [data, setData] = React.useState([]);
 
   const uuid = useParams().id;
+  const id = useParams();
+  const route = useRouter();
 
   const table = useReactTable({
     data,
@@ -92,6 +96,7 @@ export default function RedemptionTable({}) {
   });
 
   const getRedemption = useProjectAction();
+  const updateRedemption = useUpdateElRedemption();
 
   const getRedemptionList = async () => {
     const result = await getRedemption.mutateAsync({
@@ -107,13 +112,13 @@ export default function RedemptionTable({}) {
 
     const filterData = result?.data.map((row: any) => {
       return {
+        name: row.Vendor.name,
         walletAddress: row.Vendor.walletAddress,
         tokenAmount: row.voucherNumber,
         status: row.status,
         uuid: row.uuid,
-        name:row.Vendor.name,
-        voucherType:row.voucherType
-
+        name: row.Vendor.name,
+        voucherType: row.voucherType,
       };
     });
     setData(filterData);
@@ -124,16 +129,22 @@ export default function RedemptionTable({}) {
   }, []);
 
   const handleApprove = async () => {
-    const res = await getRedemption.mutateAsync({
-      uuid,
-      data: {
-        action: 'elProject.updateRedemption',
-        payload: {
-          uuid: selectedRow?.uuid,
-        },
-      },
+    await updateRedemption.mutateAsync({
+      projectUUID: uuid,
+      redemptionUUID: selectedRow?.uuid,
     });
+    projectModal.onFalse();
   };
+
+  React.useEffect(() => {
+    if (updateRedemption.isSuccess) {
+      route.push(`/projects/el/${id}/redemptions`);
+    }
+  }, []);
+
+  React.useEffect(() => {
+    getRedemptionList();
+  }, []);
 
   return (
     <>
@@ -195,11 +206,7 @@ export default function RedemptionTable({}) {
                       className="h-24 text-center"
                     >
                       {getRedemption.isPending ? (
-                        <div className="flex items-center justify-center space-x-2 h-full">
-                          <div className="h-5 w-5 animate-bounce rounded-full bg-primary [animation-delay:-0.3s]"></div>
-                          <div className="h-5 w-5 animate-bounce rounded-full bg-primary [animation-delay:-0.13s]"></div>
-                          <div className="h-5 w-5 animate-bounce rounded-full bg-primary"></div>
-                        </div>
+                        <TableLoader />
                       ) : (
                         'No data available.'
                       )}

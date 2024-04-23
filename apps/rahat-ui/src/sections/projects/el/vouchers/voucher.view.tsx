@@ -11,6 +11,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/tabs';
 import { useProjectVoucher } from 'apps/rahat-ui/src/hooks/el/subgraph/querycall';
 import { useParams } from 'next/navigation';
+import TableLoader from 'apps/rahat-ui/src/components/table.loader';
 import AddVoucher from './add.voucher';
 import { DiscountHoldersTable } from './discount.holder.table';
 import { DiscountTransactionTable } from './discount.transactions.table';
@@ -35,20 +36,22 @@ const VoucherView = () => {
     <>
       {isLoading ? (
         <div className="flex items-center justify-center h-screen">
-          <div className="flex items-center justify-center space-x-2">
-            <div className="h-5 w-5 animate-bounce rounded-full bg-primary [animation-delay:-0.3s]"></div>
-            <div className="h-5 w-5 animate-bounce rounded-full bg-primary [animation-delay:-0.13s]"></div>
-            <div className="h-5 w-5 animate-bounce rounded-full bg-primary"></div>
-          </div>
+          <TableLoader />
         </div>
       ) : (
         <>
           {projectVoucher?.freeVoucherAddress ? (
-            <>
-              <FreeVoucherInfo data={projectVoucher} />
-              <DiscountVoucherInfo data={projectVoucher} />
+            <div className="bg-secondary">
+              <div className="grid grid-cols-2">
+                <div>
+                  <FreeVoucherInfo data={projectVoucher} />
+                </div>
+                <div>
+                  <DiscountVoucherInfo data={projectVoucher} />
+                </div>
+              </div>
 
-              <div className="m-2">
+              <div className="mt-2 mx-2">
                 <Tabs defaultValue="free">
                   <TabsList className="w-full grid grid-cols-2 border h-auto">
                     <TabsTrigger value="free">
@@ -80,7 +83,7 @@ const VoucherView = () => {
                   </TabsContent>
                 </Tabs>
               </div>
-            </>
+            </div>
           ) : (
             <AddVoucher contractSettings={contractSettings} />
           )}

@@ -38,6 +38,7 @@ import {
   useProjectSettingsStore,
   PROJECT_SETTINGS_KEYS,
 } from '@rahat-ui/query';
+import TableLoader from 'apps/rahat-ui/src/components/table.loader';
 
 export type Payment = {
   id: string;

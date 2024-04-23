@@ -14,6 +14,9 @@ import {
 } from './elProject';
 
 import { encodeFunctionData } from 'viem';
+import { useWriteAccessManagerUpdateAdmin, useWriteAccessManagerUpdateProjectManager } from './access';
+import { useUserCreate } from '@rumsan/react-query';
+import { User } from '@rumsan/sdk/types';
 
 export const useAddBeneficiary = () => {
   const alert = useSwal();
@@ -116,7 +119,6 @@ export const useOnlyMintVoucher = () => {
 
 export const useAddVendors = () => {
   const alert = useSwal();
-  const addVendor = useProjectAction();
   return useWriteElProjectUpdateVendor({
     mutation: {
       onSuccess: async () => {
@@ -197,3 +199,146 @@ export const useBulkAssignVoucher = () => {
   });
   return multicall;
 };
+
+export const useAddManager = () =>{
+
+  const contract = useWriteAccessManagerUpdateProjectManager();
+  const addUser = useUserCreate()
+  const alert = useSwal();
+
+  const functionCall = useMutation({mutationFn:({
+    data,
+    walletAddress,
+    contractAddress,
+  }:{
+    data:User,
+    walletAddress:`0x${string}`,
+    contractAddress: `0x${string}`
+  }):Promise<unknown> =>{
+    console.log({walletAddress,contractAddress})
+    return contract.writeContractAsync({
+      args:[walletAddress,true],
+      address:contractAddress
+    });
+  },
+  onSuccess:(result,variables) =>{
+    console.log(variables)
+    addUser.mutateAsync(variables.data)
+  },
+  onError:(err) =>{
+    alert.fire({
+      title: 'Error to add  user',
+      icon: 'error',
+    });
+  }
+
+})
+return functionCall;
+}
+
+
+export const useAddAdmin = () =>{
+  const contract = useWriteAccessManagerUpdateAdmin();
+  const addUser = useUserCreate()
+  const alert = useSwal();
+
+  const functionCall = useMutation({mutationFn:({
+    data,
+    walletAddress,
+    contractAddress,
+  }:{
+    data:User,
+    walletAddress:`0x${string}`,
+    contractAddress: `0x${string}`
+  }):Promise<unknown> =>{
+    return contract.writeContractAsync({
+      args:[walletAddress,true],
+      address:contractAddress
+    });
+  },
+  onSuccess:(data,variables) =>{
+    addUser.mutateAsync(variables.data)
+
+  },
+  onError:(err) =>{
+    alert.fire({
+      title: 'Error add Project',
+      icon: 'error',
+    });
+  }
+  
+})
+return functionCall;
+}
+
+
+export const useAddManagerRole = () =>{
+
+  const contract = useWriteAccessManagerUpdateProjectManager();
+  const addUser = useUserCreate()
+  const alert = useSwal();
+
+  const functionCall = useMutation({mutationFn:({
+    data,
+    walletAddress,
+    contractAddress,
+  }:{
+    data:User,
+    walletAddress:`0x${string}`,
+    contractAddress: `0x${string}`
+  }):Promise<unknown> =>{
+    console.log({walletAddress,contractAddress})
+    return contract.writeContractAsync({
+      args:[walletAddress,true],
+      address:contractAddress
+    });
+  },
+  onSuccess:(result,variables) =>{
+    console.log(variables)
+    addUser.mutateAsync(variables.data)
+  },
+  onError:(err) =>{
+    alert.fire({
+      title: 'Error to add  user',
+      icon: 'error',
+    });
+  }
+
+})
+return functionCall;
+}
+
+
+export const useAddAdminRole = () =>{
+  const contract = useWriteAccessManagerUpdateAdmin();
+  const addUser = useUserCreate()
+  const alert = useSwal();
+
+  const functionCall = useMutation({mutationFn:({
+    data,
+    walletAddress,
+    contractAddress,
+  }:{
+    data:User,
+    walletAddress:`0x${string}`,
+    contractAddress: `0x${string}`
+  }):Promise<unknown> =>{
+    return contract.writeContractAsync({
+      args:[walletAddress,true],
+      address:contractAddress
+    });
+  },
+  onSuccess:(data,variables) =>{
+    addUser.mutateAsync(variables.data)
+
+  },
+  onError:(err) =>{
+    alert.fire({
+      title: 'Error add Project',
+      icon: 'error',
+    });
+  }
+  
+})
+return functionCall;
+}

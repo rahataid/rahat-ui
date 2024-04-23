@@ -222,13 +222,13 @@ export const useAddManager = () =>{
       address:contractAddress
     });
   },
-  onSuccess:(result,variables) =>{
-
-    addUser.mutateAsync(variables.data)
+  onSuccess:async (result,variables) =>{
+    await addUser.mutateAsync(variables.data)
   },
   onError:(err) =>{
     alert.fire({
-      title: 'Error to add  user',
+      title: 'Error adding manager',
+      text:err.message,
       icon: 'error',
     });
   }
@@ -257,13 +257,14 @@ export const useAddAdmin = () =>{
       address:contractAddress
     });
   },
-  onSuccess:(data,variables) =>{
-    addUser.mutateAsync(variables.data)
+  onSuccess:async (data,variables) =>{
+    await addUser.mutateAsync(variables.data)
 
   },
   onError:(err) =>{
     alert.fire({
-      title: 'Error add Project',
+      title: 'Error adding admin',
+      text:err.message,
       icon: 'error',
     });
   }
@@ -291,15 +292,16 @@ export const useAddManagerRole = () =>{
       address:contractAddress
     });
   },
-  onSuccess:(result,variables) =>{
-    addUserRole.mutateAsync({
+  onSuccess:async(result,variables) =>{
+    await addUserRole.mutateAsync({
       uuid:variables.data.uuid,
       roles: [variables.data.role]
     })
   },
   onError:(err) =>{
     alert.fire({
-      title: 'Error to add  user',
+      title: 'Error adding roles',
+      text:err.message,
       icon: 'error',
     });
   }
@@ -326,8 +328,8 @@ export const useAddAdminRole = () =>{
       address:contractAddress
     });
   },
-  onSuccess:(data,variables) =>{
-    addUserRole.mutateAsync({
+  onSuccess:async (data,variables) =>{
+   await addUserRole.mutateAsync({
       uuid:variables.data.uuid,
       roles: [variables.data.role]
     })
@@ -335,7 +337,8 @@ export const useAddAdminRole = () =>{
   },
   onError:(err) =>{
     alert.fire({
-      title: 'Error add Project',
+      title: 'Error adding roles',
+      text:err.message,
       icon: 'error',
     });
   }

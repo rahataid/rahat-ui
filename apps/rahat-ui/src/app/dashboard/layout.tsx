@@ -7,11 +7,14 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from '@rahat-ui/shadcn/src/components/ui/resizable';
+import { useAcessManagerSettings } from '@rahat-ui/query';
+
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  useAcessManagerSettings();
   return (
     <AuthGuard>
       <Nav />

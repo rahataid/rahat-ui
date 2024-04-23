@@ -15,8 +15,9 @@ import {
 
 import { encodeFunctionData } from 'viem';
 import { useWriteAccessManagerUpdateAdmin, useWriteAccessManagerUpdateProjectManager } from './access';
-import { useUserCreate } from '@rumsan/react-query';
+import { useUserAddRoles, useUserCreate } from '@rumsan/react-query';
 import { User } from '@rumsan/sdk/types';
+import { UUID } from 'crypto';
 
 export const useAddBeneficiary = () => {
   const alert = useSwal();
@@ -215,14 +216,14 @@ export const useAddManager = () =>{
     walletAddress:`0x${string}`,
     contractAddress: `0x${string}`
   }):Promise<unknown> =>{
-    console.log({walletAddress,contractAddress})
+    
     return contract.writeContractAsync({
       args:[walletAddress,true],
       address:contractAddress
     });
   },
   onSuccess:(result,variables) =>{
-    console.log(variables)
+
     addUser.mutateAsync(variables.data)
   },
   onError:(err) =>{
@@ -275,27 +276,26 @@ return functionCall;
 export const useAddManagerRole = () =>{
 
   const contract = useWriteAccessManagerUpdateProjectManager();
-  const addUser = useUserCreate()
+  const addUserRole  = useUserAddRoles()
   const alert = useSwal();
 
   const functionCall = useMutation({mutationFn:({
     data,
-    walletAddress,
     contractAddress,
   }:{
-    data:User,
-    walletAddress:`0x${string}`,
+    data:{role:string,uuid: UUID,wallet:`0X${string}`},
     contractAddress: `0x${string}`
   }):Promise<unknown> =>{
-    console.log({walletAddress,contractAddress})
     return contract.writeContractAsync({
-      args:[walletAddress,true],
+      args:[data.wallet,true],
       address:contractAddress
     });
   },
   onSuccess:(result,variables) =>{
-    console.log(variables)
-    addUser.mutateAsync(variables.data)
+    addUserRole.mutateAsync({
+      uuid:variables.data.uuid,
+      roles: [variables.data.role]
+    })
   },
   onError:(err) =>{
     alert.fire({
@@ -311,25 +311,26 @@ return functionCall;
 
 export const useAddAdminRole = () =>{
   const contract = useWriteAccessManagerUpdateAdmin();
-  const addUser = useUserCreate()
+  const addUserRole  = useUserAddRoles()
   const alert = useSwal();
 
   const functionCall = useMutation({mutationFn:({
     data,
-    walletAddress,
     contractAddress,
   }:{
-    data:User,
-    walletAddress:`0x${string}`,
+    data:{role:string,uuid: UUID,wallet:`0X${string}`},
     contractAddress: `0x${string}`
   }):Promise<unknown> =>{
     return contract.writeContractAsync({
-      args:[walletAddress,true],
+      args:[data.wallet,true],
       address:contractAddress
     });
   },
   onSuccess:(data,variables) =>{
-    addUser.mutateAsync(variables.data)
+    addUserRole.mutateAsync({
+      uuid:variables.data.uuid,
+      roles: [variables.data.role]
+    })
 
   },
   onError:(err) =>{

@@ -20,7 +20,9 @@ export default function AddFieldDefinitions() {
       {activeTab === 'add' && <FieldDefAdd handleTabChange={handleTabChange} />}
 
       {activeTab === 'import' && (
-        <ExcelUploader handleTabChange={handleTabChange} />
+        <div className="p-4 h-add rounded border bg-white">
+          <ExcelUploader handleTabChange={handleTabChange} />
+        </div>
       )}
     </>
   );

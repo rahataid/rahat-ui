@@ -146,10 +146,10 @@ export default function AddBeneficiary() {
                             placeholder="Wallet Address"
                             {...field}
                           />
-                          {/* <p className="text-xs text-amber-500 mt-2">
+                          <p className="text-xs text-amber-500 mt-2">
                             * Wallet address is required. If not entered, it
                             will be automatically filled.
-                          </p> */}
+                          </p>
                         </div>
                       </FormControl>
                       <FormMessage />

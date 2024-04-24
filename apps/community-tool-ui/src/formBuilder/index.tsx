@@ -10,7 +10,6 @@ import CheckboxInput from './CheckboxInput';
 import DateInput from './DateInput';
 
 export default function Index({ formField }: any) {
-  console.log('formField', formField);
   return (
     <>
       {formField.fieldType === FieldType.TEXT && (

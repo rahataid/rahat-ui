@@ -11,7 +11,6 @@ export default function ProjectLayoutRoot({
 }) {
   return (
     <ProjectLayout projectType={ProjectTypes.ANTICIPATORY_ACTION}>
-      {' '}
       {children}
     </ProjectLayout>
   );

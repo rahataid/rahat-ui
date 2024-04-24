@@ -1,12 +1,18 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { useBeneficiaryStore, useSingleBeneficiary } from '@rahat-ui/query';
-// import {
-//   Tabs,
-//   TabsContent,
-//   TabsList,
-//   TabsTrigger,
-// } from '@rahat-ui/shadcn/components/tabs';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/alert-dialog';
 import {
   Tooltip,
   TooltipContent,
@@ -14,10 +20,6 @@ import {
   TooltipTrigger,
 } from '@rahat-ui/shadcn/components/tooltip';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
-import {
-  Dialog,
-  DialogTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/dialog';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -37,15 +39,13 @@ import {
 } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
-import ConfirmDialog from '../../components/dialog';
 import { useBoolean } from '../../hooks/use-boolean';
 import { paths } from '../../routes/paths';
-// import BeneficiaryDetailTableView from './beneficiaryDetailTable';
 import AssignToProjectModal from './components/assignToProjectModal';
 import SplitViewDetailCards from './components/split.view.detail.cards';
 import EditBeneficiary from './editBeneficiary';
 import { ListBeneficiary } from '@rahat-ui/types';
+import { useRemoveBeneficiary } from '@rahat-ui/query';
 
 type IProps = {
   beneficiaryDetail: ListBeneficiary;
@@ -59,6 +59,7 @@ export default function BeneficiaryDetail({
   const router = useRouter();
   useSingleBeneficiary(beneficiaryDetail.uuid as UUID);
   const beneficiary = useBeneficiaryStore((state) => state.singleBeneficiary);
+  const deleteBeneficiary = useRemoveBeneficiary();
   const projectModal = useBoolean();
   const [activeTab, setActiveTab] = useState<'details' | 'edit' | null>(
     'details',
@@ -81,6 +82,20 @@ export default function BeneficiaryDetail({
   const handleAssignModalClick = () => {
     projectModal.onTrue();
   };
+
+  const removeBeneficiary = (id: string | undefined) => {
+    try {
+      deleteBeneficiary.mutateAsync({
+        uuid: id as UUID,
+      });
+    } catch (e) {
+      console.error('Error::', e);
+    }
+  };
+
+  useEffect(() => {
+    deleteBeneficiary.isSuccess && closeSecondPanel();
+  }, [deleteBeneficiary]);
 
   return (
     <>
@@ -131,12 +146,35 @@ export default function BeneficiaryDetail({
           <TooltipProvider delayDuration={100}>
             <Tooltip>
               <TooltipTrigger>
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <Trash2 color="#FF0000" size={20} strokeWidth={1.5} />
-                  </DialogTrigger>
-                  <ConfirmDialog name="beneficiary" />
-                </Dialog>
+                <AlertDialog>
+                  <AlertDialogTrigger className="flex items-center">
+                    <Trash2
+                      className="cursor-pointer"
+                      color="red"
+                      size={20}
+                      strokeWidth={1.5}
+                    />
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>
+                        Are you absolutely sure?
+                      </AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This action cannot be undone. This will permanently
+                        delete this beneficiary.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={() => removeBeneficiary(beneficiary?.uuid)}
+                      >
+                        Continue
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               </TooltipTrigger>
               <TooltipContent className="bg-secondary ">
                 <p className="text-xs font-medium">Delete</p>
@@ -210,28 +248,7 @@ export default function BeneficiaryDetail({
       </div>
 
       {activeTab === 'details' && (
-        <>
-          {/* <Tabs defaultValue="detail">
-            <div className="p-2">
-              <TabsList className="w-full grid grid-cols-2 border h-auto">
-                <TabsTrigger value="detail">Details </TabsTrigger>
-                <TabsTrigger value="transaction-history">
-                  Transaction History
-                </TabsTrigger>
-              </TabsList>
-            </div>
-            <TabsContent value="detail"> */}
-          <SplitViewDetailCards beneficiaryDetail={beneficiaryDetail} />
-          {/* </TabsContent>
-            <TabsContent value="transaction-history">
-              <div className="p-2">
-                <BeneficiaryDetailTableView
-                  tableScrollAreaHeight={'h-[calc(100vh-375px)]'}
-                />
-              </div>
-            </TabsContent>
-          </Tabs> */}
-        </>
+        <SplitViewDetailCards beneficiaryDetail={beneficiaryDetail} />
       )}
       {activeTab === 'edit' && (beneficiaryDetail || beneficiary) && (
         <EditBeneficiary beneficiary={beneficiaryDetail || beneficiary} />

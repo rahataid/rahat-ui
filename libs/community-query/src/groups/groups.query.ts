@@ -135,7 +135,8 @@ export const useCommunityGroupPurge = () => {
   return useMutation(
     {
       mutationKey: [TAGS.PURGE_COMMUNITY_GROUP],
-      mutationFn: groupClient.purgeGroup,
+      // TODO
+      mutationFn: groupClient.listById,
       onSuccess: () => {
         Swal.fire('Group Purge Successfully', '', 'success');
         qc.invalidateQueries({ queryKey: [TAGS.LIST_COMMUNITY_GROUP] });

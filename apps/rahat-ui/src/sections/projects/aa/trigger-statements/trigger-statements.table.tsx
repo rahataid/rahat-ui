@@ -22,23 +22,18 @@ import {
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import { useDeleteDataSource } from '@rahat-ui/query';
-// import { User } from '@rumsan/sdk/types';
 
 type IProps = {
   table: Table<any>;
 };
 
-export default function DataSourcesTable({ table }: IProps) {
-
-
-
+export default function TriggerStatementsTable({ table }: IProps) {
   return (
     <>
       <div className="p-2 bg-secondary">
         <div className="flex items-center mb-2">
           <Input
-            placeholder="Search Data Sources..."
+            placeholder="Search Trigger Statements..."
             value={(table.getColumn('dataSource')?.getFilterValue() as string) ?? ''}
             onChange={(event) =>
               table.getColumn('dataSource')?.setFilterValue(event.target.value)

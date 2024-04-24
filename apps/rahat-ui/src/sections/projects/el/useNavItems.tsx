@@ -191,50 +191,50 @@ export const useNavItems = () => {
         },
       ],
     },
-    {
-      title: 'Actions',
-      children: [
-        {
-          component: (
-            <>
-              <CreateVoucherModal
-                voucherInputs={voucherInputs}
-                handleSubmit={handleSubmitCreateTokenModal}
-                handleInputChange={handleCreateVoucherTokenChange}
-                setVoucherInputs={setVoucherInputs}
-                open={createTokenModal.value}
-                handleModal={handleOpenCreateTokenModal}
-              />
-              <ConfirmModal
-                open={createTokenSummaryModal.value}
-                voucherInputs={voucherInputs}
-                handleSubmit={handleCreateVoucherSubmit}
-                handleGoBack={handleBackToCreateTokenModal}
-                handleClose={handleCloseSummaryModal}
-                handleCreateVoucherSubmit={handleCreateVoucherSubmit}
-                isLoading={createVoucher.isPending}
-              />
-            </>
-          ),
-          title: 'Create Voucher',
-        },
-        // {
-        //   title: 'Lock Project',
-        //   icon: <Lock size={18} strokeWidth={1.5} />,
-        //   onClick: handleLockProject,
-        // },
-        {
-          title: 'Close Project',
-          onClick: handleCloseProject,
-          icon: <XCircle size={18} strokeWidth={1.5} />,
-        },
-        {
-          title: 'Edit Project',
-          path: `/projects/el/${id}/edit`,
-          icon: <Pencil size={18} strokeWidth={1.5} />,
-        },
-      ],
-    },
+    // {
+    //   title: 'Actions',
+    //   children: [
+    //     {
+    //       component: (
+    //         <>
+    //           <CreateVoucherModal
+    //             voucherInputs={voucherInputs}
+    //             handleSubmit={handleSubmitCreateTokenModal}
+    //             handleInputChange={handleCreateVoucherTokenChange}
+    //             setVoucherInputs={setVoucherInputs}
+    //             open={createTokenModal.value}
+    //             handleModal={handleOpenCreateTokenModal}
+    //           />
+    //           <ConfirmModal
+    //             open={createTokenSummaryModal.value}
+    //             voucherInputs={voucherInputs}
+    //             handleSubmit={handleCreateVoucherSubmit}
+    //             handleGoBack={handleBackToCreateTokenModal}
+    //             handleClose={handleCloseSummaryModal}
+    //             handleCreateVoucherSubmit={handleCreateVoucherSubmit}
+    //             isLoading={createVoucher.isPending}
+    //           />
+    //         </>
+    //       ),
+    //       title: 'Create Voucher',
+    //     },
+    //     // {
+    //     //   title: 'Lock Project',
+    //     //   icon: <Lock size={18} strokeWidth={1.5} />,
+    //     //   onClick: handleLockProject,
+    //     // },
+    //     {
+    //       title: 'Close Project',
+    //       onClick: handleCloseProject,
+    //       icon: <XCircle size={18} strokeWidth={1.5} />,
+    //     },
+    //     {
+    //       title: 'Edit Project',
+    //       path: `/projects/el/${id}/edit`,
+    //       icon: <Pencil size={18} strokeWidth={1.5} />,
+    //     },
+    //   ],
+    // },
   ];
 
   return { navItems, createVoucher };

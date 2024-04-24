@@ -58,8 +58,11 @@ export default function AddUser() {
   const { data: roleData } = useRoleList();
 
   const handleAddUser = async (data: any) => {
-    console.log(data);
-    await userCreate.mutateAsync(data);
+    const d = {
+      ...data,
+      roles: [data.role],
+    };
+    await userCreate.mutateAsync(d);
   };
   useEffect(() => {
     if (userCreate.isSuccess) {
@@ -74,7 +77,6 @@ export default function AddUser() {
     }
   }, [form, userCreate.isSuccess]);
 
-  console.log(roleData);
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleAddUser)}>

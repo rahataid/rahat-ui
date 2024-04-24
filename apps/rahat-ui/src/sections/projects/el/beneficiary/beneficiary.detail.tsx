@@ -2,7 +2,7 @@
 
 import { useParams } from 'next/navigation';
 
-import { useProjectAction } from '@rahat-ui/query';
+import { PROJECT_SETTINGS_KEYS, useProjectAction, useProjectSettingsStore } from '@rahat-ui/query';
 import {
   Tabs,
   TabsContent,
@@ -23,15 +23,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
-import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@rahat-ui/shadcn/src/components/ui/select';
 import {
   Tooltip,
   TooltipContent,
@@ -55,6 +46,9 @@ import {
   Dialog,
   DialogTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dialog';
+import TableLoader from 'apps/rahat-ui/src/components/table.loader';
+import { useRouter } from 'next/navigation';
+import EditBeneficiary from './beneficiary.edit';
 
 type IProps = {
   beneficiaryDetails: any;
@@ -68,19 +62,21 @@ export default function BeneficiaryDetail({
   const assignClaims = useAssignClaims();
   const { id } = useParams();
   const getProject = useProjectAction();
-
+  const route = useRouter();
   const [assignStatus, setAssignStatus] = useState(false);
-  const [contractAddress, setContractAddress] = useState<any>();
 
   const walletAddress = beneficiaryDetails.wallet;
 
+  const contractSettings = useProjectSettingsStore(
+    (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT] || null,
+  )
+
   const { data: beneficiaryVoucherDetails, isLoading } =
     useReadElProjectGetBeneficiaryVoucherDetail({
-      address: contractAddress?.el,
+      address: contractSettings?.elproject?.address,
       args: [walletAddress],
     });
 
-  const projectSettings = localStorage.getItem('projectSettingsStore');
 
   const [activeTab, setActiveTab] = useState<'details' | 'edit' | null>(
     'details',
@@ -110,6 +106,12 @@ export default function BeneficiaryDetail({
   };
 
   useEffect(() => {
+    if (assignClaims.isSuccess) {
+      route.push(`/projects/el/${id}/beneficiary`);
+    }
+  }, [assignClaims.isSuccess]);
+
+  useEffect(() => {
     if (
       beneficiaryVoucherDetails?.freeVoucherAddress === undefined ||
       beneficiaryVoucherDetails?.referredVoucherAddress === undefined
@@ -125,22 +127,9 @@ export default function BeneficiaryDetail({
     }
   }, [beneficiaryVoucherDetails]);
 
-  useEffect(() => {
-    if (projectSettings) {
-      const settings = JSON.parse(projectSettings)?.state?.settings?.[id];
-      setContractAddress({
-        el: settings?.elproject?.address,
-        eyeVoucher: settings?.eyevoucher?.address,
-        referredVoucher: settings?.referralvoucher?.address,
-      });
-    }
-  }, [id, projectSettings]);
+ 
 
   const voucherAssignModal = useBoolean();
-
-  const handleVoucherAssignModal = () => {
-    voucherAssignModal.onTrue();
-  };
 
   const handleVoucherAssignModalClose = () => {
     voucherAssignModal.onFalse();
@@ -149,11 +138,7 @@ export default function BeneficiaryDetail({
   return (
     <>
       {isLoading ? (
-        <div className="h-screen flex items-center justify-center space-x-2">
-          <div className="h-5 w-5 animate-bounce rounded-full bg-primary [animation-delay:-0.3s]"></div>
-          <div className="h-5 w-5 animate-bounce rounded-full bg-primary [animation-delay:-0.13s]"></div>
-          <div className="h-5 w-5 animate-bounce rounded-full bg-primary"></div>
-        </div>
+        <TableLoader />
       ) : (
         <>
           <div className="flex justify-between p-4 pt-5 bg-secondary border-b">
@@ -381,62 +366,7 @@ export default function BeneficiaryDetail({
           )}
           {/* Edit View */}
           {activeTab === 'edit' && (
-            <>
-              <div className="flex flex-col justify-between bg-card">
-                <div className="p-4 border-t">
-                  <div className="grid grid-cols-2 gap-4">
-                    <Input type="name" placeholder="Name" />
-                    <Select>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select gender" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectGroup>
-                          {genderList.map((gender) => (
-                            <SelectItem key={gender.value} value={gender.value}>
-                              {gender.value}
-                            </SelectItem>
-                          ))}
-                        </SelectGroup>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="mt-4 mb-2">
-                    <p className="text-slate-700">Auth & Comms</p>
-                  </div>
-                  <div className="grid grid-cols-3 gap-2">
-                    <div className="grid grid-cols-subgrid col-span-2">
-                      <Input type="email" placeholder="Email" />
-                    </div>
-                    <div className="grid grid-cols-subgrid col-span-1">
-                      <Button
-                        variant={'outline'}
-                        className="border-primary text-primary"
-                      >
-                        Update
-                      </Button>
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-3 gap-2">
-                    <div className="grid grid-cols-subgrid col-span-2">
-                      <Input
-                        className="mt-3"
-                        type="wallet"
-                        placeholder="Wallet"
-                      />
-                    </div>
-                    <div className="grid grid-cols-subgrid col-span-1 mt-3">
-                      <Button
-                        variant={'outline'}
-                        className="border-primary text-primary"
-                      >
-                        Update
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </>
+            <EditBeneficiary beneficiary={beneficiaryDetails} />
           )}
         </>
       )}

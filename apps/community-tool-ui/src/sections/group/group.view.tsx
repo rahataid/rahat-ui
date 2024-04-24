@@ -24,6 +24,7 @@ import { Tabs, TabsContent } from '@rahat-ui/shadcn/src/components/ui/tabs';
 import { useCommunityGroupList } from '@rahat-ui/community-query';
 import { usePagination } from '@rahat-ui/query';
 import { useCommunityGroupTableColumns } from './useGroupColumns';
+import { useDebounce } from '../../utils/debounceHooks';
 
 function ViewGroup() {
   const [selectedData, setSelectedData] = useState<ListGroup>();
@@ -34,9 +35,16 @@ function ViewGroup() {
     setNextPage,
     setPrevPage,
     setPerPage,
+    filters,
+    setFilters,
+    setPagination,
   } = usePagination();
 
-  const { data } = useCommunityGroupList(pagination);
+  const debouncedFilters = useDebounce(filters, 500);
+  const { data } = useCommunityGroupList({
+    ...pagination,
+    ...(debouncedFilters as any),
+  });
   const columns = useCommunityGroupTableColumns();
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   // const { closeSecondPanel, setSecondPanelComponent } = useSecondPanel();
@@ -71,7 +79,14 @@ function ViewGroup() {
         <ResizableHandle />
         <ResizablePanel minSize={25}>
           <TabsContent value="groupList">
-            <GroupList table={table} handleClick={handleGroup} />
+            <GroupList
+              table={table}
+              handleClick={handleGroup}
+              setFilters={setFilters}
+              filters={filters}
+              pagination={pagination}
+              setPagination={setPagination}
+            />
           </TabsContent>
           <CustomPagination
             meta={data?.response?.meta || { total: 0, currentPage: 0 }}

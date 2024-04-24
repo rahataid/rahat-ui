@@ -31,6 +31,8 @@ import { useRouter } from 'next/navigation';
 import { FC } from 'react';
 import { UseFormReturn, useForm } from 'react-hook-form';
 import { z } from 'zod';
+import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
+import ConfirmModal from './confirm.modal';
 
 type CampaignFormProps = {
   // Add props here
@@ -44,6 +46,7 @@ type CampaignFormProps = {
   showAddAudience: boolean;
   data?: any;
   isSubmitting?: boolean;
+  handleSubmit: () => void;
 
   // Add more props here
 };
@@ -55,6 +58,7 @@ const CampaignForm: FC<CampaignFormProps> = ({
   form,
   setShowAddAudience,
   showAddAudience,
+  handleSubmit,
   data,
   isSubmitting,
 }) => {
@@ -68,6 +72,15 @@ const CampaignForm: FC<CampaignFormProps> = ({
   //   const includeFile = includeMessage ? 'message' : 'file';
   //   const excludeFile = includeMessage ? 'file' : 'message';
   if (!form) return 'loading...';
+  const campaignConfirmModal = useBoolean();
+  const handleOpenModal = (e: any) => {
+    e.preventDefault();
+    campaignConfirmModal.onTrue();
+  };
+  const handleCampaignAssignModalClose = () => {
+    campaignConfirmModal.onFalse();
+  };
+
   return (
     <>
       <div className="w-full p-2">
@@ -225,21 +238,33 @@ const CampaignForm: FC<CampaignFormProps> = ({
             >
               {showAddAudience ? 'Hide Audiences' : 'Show Audiences'}
             </Button>
-            {isSubmitting ? (
+            <Button
+              onClick={handleOpenModal}
+              variant={'default'}
+              disabled={loading}
+            >
+              {title}
+            </Button>
+            {/* {isSubmitting ? (
               <Button variant={'default'} disabled={true}>
                 <Loader />
               </Button>
             ) : (
               <Button
-                type="submit"
+                onClick={() => handleCampaignAssignModal}
                 variant={'default'}
-                disabled={data?.status === 'COMPLETED' ? true : loading}
+                disabled={loading}
               >
                 {title}
               </Button>
-            )}
+            )} */}
           </div>
         </div>
+        <ConfirmModal
+          open={campaignConfirmModal.value}
+          handleClose={handleCampaignAssignModalClose}
+          handleSubmit={handleSubmit}
+        />
       </div>
     </>
   );

@@ -8,7 +8,6 @@ interface IProps {
   handleImportClick: any;
   invalidFields: any;
   handleExportInvalidClick: any;
-  hasDuplicate: boolean;
 }
 
 export default function AddToQueue({
@@ -17,9 +16,7 @@ export default function AddToQueue({
   handleImportClick,
   invalidFields,
   handleExportInvalidClick,
-  hasDuplicate,
 }: IProps) {
-  console.log('Invalid Fields', invalidFields);
   const mappedData =
     data.length > 0
       ? data.map((d: any) => {
@@ -30,7 +27,7 @@ export default function AddToQueue({
   const headerKeys = mappedData.length > 0 ? Object.keys(mappedData[0]) : [];
 
   function renderItemKey(item: any, key: string) {
-    if (key === 'uuid' || key === 'isDuplicate') {
+    if (key === 'isDuplicate') {
       return '';
     } else return item[key];
   }
@@ -46,7 +43,7 @@ export default function AddToQueue({
         </Button>
         <div>
           <Button
-            disabled={!invalidFields.length && !hasDuplicate}
+            disabled={!invalidFields.length}
             onClick={handleExportInvalidClick}
             className="w-40 mr-2 bg-secondary hover:ring-2bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow"
           >
@@ -54,7 +51,7 @@ export default function AddToQueue({
           </Button>
 
           <Button
-            disabled={invalidFields.length || hasDuplicate}
+            disabled={invalidFields.length}
             onClick={handleImportClick}
             className="w-40 bg-primary hover:ring-2 ring-primary py-2 px-4"
           >
@@ -77,10 +74,8 @@ export default function AddToQueue({
                   {invalidFields.find(
                     (field: any) => field.fieldName === key,
                   ) ? (
-                    <span className="text-red-500">
-                      {key === 'uuid' ? '' : key}*
-                    </span>
-                  ) : key === 'uuid' || key === 'isDuplicate' ? (
+                    <span className="text-red-500">{key}*</span>
+                  ) : key === 'isDuplicate' ? (
                     ''
                   ) : (
                     key
@@ -93,9 +88,9 @@ export default function AddToQueue({
           <tbody>
             {data.map((item: any, index: number) => (
               <tr
-                style={{
-                  backgroundColor: item.isDuplicate ? 'rgb(254 215 170)' : '',
-                }}
+                // style={{
+                //   backgroundColor: item.isDuplicate ? 'rgb(254 215 170)' : '',
+                // }}
                 className="bg-red-400 odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700"
                 key={index}
               >
@@ -103,7 +98,9 @@ export default function AddToQueue({
                 {headerKeys.map((key) =>
                   invalidFields.find(
                     (err: any) =>
-                      err.uuid === item['uuid'] && err.value === item[key],
+                      err.uuid === item['uuid'] &&
+                      err.value === item[key] &&
+                      key === err.fieldName,
                   ) ? (
                     <td className="px-4 bg-red-100 py-1.5" key={key}>
                       {renderItemKey(item, key)}

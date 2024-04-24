@@ -5,23 +5,25 @@ import {
   ResizablePanelGroup,
 } from '@rahat-ui/shadcn/src/components/ui/resizable';
 import { Tabs } from '@rahat-ui/shadcn/src/components/ui/tabs';
-import React from 'react';
+import React, { useState } from 'react';
 import BeneficiaryNav from '../../../sections/beneficiary/nav';
 import FieldDefAdd from './addFieldDefinitions';
+import ExcelUploader from '../import/ExcelUploader';
 
 export default function AddFieldDefinitions() {
+  const [activeTab, setActiveTab] = useState<'add' | 'import' | null>('add');
+  const handleTabChange = (tab: 'add' | 'import') => {
+    setActiveTab(tab);
+  };
   return (
-    <Tabs defaultValue="list" className="h-full">
-      <ResizablePanelGroup direction="horizontal" className="min-h-max bg-card">
-        <ResizablePanel minSize={20} defaultSize={20} maxSize={20}>
-          <BeneficiaryNav />
-        </ResizablePanel>
-        <ResizableHandle />
+    <>
+      {activeTab === 'add' && <FieldDefAdd handleTabChange={handleTabChange} />}
 
-        <ResizablePanel minSize={28}>
-          <FieldDefAdd />
-        </ResizablePanel>
-      </ResizablePanelGroup>
-    </Tabs>
+      {activeTab === 'import' && (
+        <div className="p-4 h-add rounded border bg-white">
+          <ExcelUploader handleTabChange={handleTabChange} />
+        </div>
+      )}
+    </>
   );
 }

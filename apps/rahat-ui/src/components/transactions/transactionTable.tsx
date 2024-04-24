@@ -24,6 +24,7 @@ import {
 } from '@rahat-ui/shadcn/components/table';
 import { useProjectTransaction } from '../../hooks/el/subgraph/querycall';
 import { useTransactionTableColumns } from './useTransactionTableColumns';
+import TableLoader from '../table.loader';
 
 export default function DataTableDemo() {
   const columns = useTransactionTableColumns();
@@ -58,8 +59,8 @@ export default function DataTableDemo() {
   });
 
   return isLoading ? (
-    <div className='flex justify-center mt-10'>
-      <h1 className='font-medium'>Loading transaction data....</h1>
+    <div className="w-full flex justify-center mt-10">
+      <TableLoader />
     </div>
   ) : (
     <div className="w-full">
@@ -86,9 +87,9 @@ export default function DataTableDemo() {
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext(),
-                        )}
+                            header.column.columnDef.header,
+                            header.getContext(),
+                          )}
                     </TableHead>
                   );
                 })}

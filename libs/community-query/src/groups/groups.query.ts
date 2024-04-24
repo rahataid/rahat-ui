@@ -1,6 +1,11 @@
 import { getGroupClient } from '@rahataid/community-tool-sdk/clients';
 import { useRSQuery } from '@rumsan/react-query';
-import { UseQueryResult, useMutation, useQuery } from '@tanstack/react-query';
+import {
+  UseQueryResult,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
 import Swal from 'sweetalert2';
 import { TAGS } from '../config';
 import { Pagination } from '@rumsan/sdk/types';
@@ -91,6 +96,59 @@ export const useCommunityGroupedBeneficiariesDownload = () => {
     {
       mutationKey: [TAGS.DOWNLOAD_COMMUNITY_GROUPED_BENEFICIARIES],
       mutationFn: groupClient.download,
+    },
+    queryClient,
+  );
+};
+
+export const useCommunityGroupRemove = () => {
+  const { queryClient, rumsanService } = useRSQuery();
+  const qc = useQueryClient();
+  const groupClient = getGroupClient(rumsanService.client);
+
+  return useMutation(
+    {
+      mutationKey: [TAGS.REMOVE_COMMUNITY_GROUP],
+      mutationFn: groupClient.remove,
+      onSuccess: () => {
+        Swal.fire('Beneficiary Deleted Successfully', '', 'success');
+        qc.invalidateQueries({ queryKey: [TAGS.LIST_COMMUNITY_GROUP] });
+      },
+      onError: (error: any) => {
+        Swal.fire({
+          icon: 'error',
+          title:
+            error?.response?.data?.message ||
+            'Encounter error on Removing Data',
+        });
+      },
+    },
+    queryClient,
+  );
+};
+
+export const useCommunityGroupPurge = () => {
+  const { queryClient, rumsanService } = useRSQuery();
+  const qc = useQueryClient();
+  const groupClient = getGroupClient(rumsanService.client);
+
+  return useMutation(
+    {
+      mutationKey: [TAGS.PURGE_COMMUNITY_GROUP],
+      // TODO
+      mutationFn: groupClient.listById,
+      onSuccess: () => {
+        Swal.fire('Group Purge Successfully', '', 'success');
+        qc.invalidateQueries({ queryKey: [TAGS.LIST_COMMUNITY_GROUP] });
+      },
+      onError: (error: any) => {
+        Swal.fire({
+          icon: 'error',
+          title:
+            error?.response?.data?.message ||
+            'Encounter error on Removing Data',
+        });
+      },
     },
     queryClient,
   );

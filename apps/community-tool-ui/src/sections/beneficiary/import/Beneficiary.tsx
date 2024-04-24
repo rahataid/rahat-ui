@@ -17,10 +17,12 @@ import {
   removeFieldsWithUnderscore,
   splitFullName,
   formatNameString,
+  splitValidAndDuplicates,
 } from 'apps/community-tool-ui/src/utils';
 import { ArrowBigLeft } from 'lucide-react';
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import * as xlsx from 'xlsx';
 import Swal from 'sweetalert2';
 import AddToQueue from './AddToQueue';
 import ErrorAlert from './ErrorAlert';
@@ -45,7 +47,7 @@ export default function BenImp({ extraFields }: IProps) {
   const [mappings, setMappings] = useState([]) as any;
   const [koboForms, setKoboForms] = useState([]);
   const [importId, setImportId] = useState(''); // Kobo form id or excel sheetID
-  const [fetching, setFetching] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [currentScreen, setCurrentScreen] = useState(
     BENEF_IMPORT_SCREENS.SELECTION,
   );
@@ -53,7 +55,7 @@ export default function BenImp({ extraFields }: IProps) {
   const [invalidFields, setInvalidFields] = useState([]) as any;
   const [validBenef, setValidBenef] = useState([]) as any;
   const [hasExistingMapping, setHasExistingMapping] = useState(false);
-  const [hasDuplicate, setHasDuplicate] = useState(false);
+  const [duplicateData, setDuplicateData] = useState([]) as any;
 
   const fetchExistingMapping = async (importId: string) => {
     setMappings([]);
@@ -104,7 +106,7 @@ export default function BenImp({ extraFields }: IProps) {
 
   const handleKoboFormChange = async (value: string) => {
     try {
-      setFetching(true);
+      setLoading(true);
       setRawData([]);
       const found: any | undefined = koboForms.find(
         (f: any) => f.value === value,
@@ -120,9 +122,9 @@ export default function BenImp({ extraFields }: IProps) {
       const sanitized = removeFieldsWithUnderscore(koboData.data.results);
       setRawData(sanitized);
       await fetchExistingMapping(found.imported);
-      setFetching(false);
+      setLoading(false);
     } catch (err) {
-      setFetching(false);
+      setLoading(false);
       return Swal.fire({
         icon: 'error',
         title: 'Failed to fetch kobotool settings',
@@ -134,6 +136,7 @@ export default function BenImp({ extraFields }: IProps) {
     sourceField: string,
     targetField: string,
   ) => {
+    if (targetField === 'None') return;
     const index = mappings.findIndex(
       (item: any) => item.sourceField === sourceField,
     );
@@ -146,37 +149,26 @@ export default function BenImp({ extraFields }: IProps) {
     }
   };
 
-  const handleExcelUpload = async (formData: any) => {
-    const res = await rumsanService.client.post(
-      'beneficiaries/upload',
-      formData,
-    );
-    return res.data;
-  };
-
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    setLoading(true);
     setRawData([]);
-    const { files } = e.target;
-    const formData = new FormData();
-    if (!files?.length)
-      return Swal.fire({
-        icon: 'error',
-        title: 'Please select a file to upload',
-      });
+    const files = e.target.files || [];
     const fileName = formatNameString(files[0].name);
-    formData.append('file', files[0]);
-    const data = await handleExcelUpload(formData);
-    if (!data)
-      return Swal.fire({
-        icon: 'error',
-        title: 'Failed to upload a file',
-      });
-    const { workbookData } = data?.data;
-    const sanitized = removeFieldsWithUnderscore(workbookData || []);
-
+    if (!files.length) return;
+    const reader = new FileReader();
+    reader.onload = (e: any) => {
+      const data = e.target.result;
+      const workbook = xlsx.read(data, { type: 'array' });
+      const sheetName = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[sheetName];
+      const json = xlsx.utils.sheet_to_json(worksheet) as any;
+      const sanitized = removeFieldsWithUnderscore(json || []);
+      setRawData(sanitized);
+    };
+    reader.readAsArrayBuffer(files[0]);
     setImportId(fileName);
-    setRawData(sanitized);
     await fetchExistingMapping(fileName);
+    setLoading(false);
   };
 
   const handleGoClick = () => {
@@ -185,31 +177,55 @@ export default function BenImp({ extraFields }: IProps) {
         icon: 'error',
         title: 'Please load data from data source!',
       });
-    if (uniqueField) return setCurrentScreen(BENEF_IMPORT_SCREENS.VALIDATION);
 
-    return Swal.fire({
-      icon: 'warning',
-      title: 'Continue without unique field?',
-      showCancelButton: true,
-      confirmButtonText: 'Continue',
-      cancelButtonText: 'No',
-      text: 'Duplicate data might be imported!',
-    }).then((result) => {
-      if (result.isConfirmed) {
-        setCurrentScreen(BENEF_IMPORT_SCREENS.VALIDATION);
-      }
-    });
+    // if (uniqueField) return setCurrentScreen(BENEF_IMPORT_SCREENS.VALIDATION);
+    return setCurrentScreen(BENEF_IMPORT_SCREENS.VALIDATION);
+
+    // return Swal.fire({
+    //   icon: 'warning',
+    //   title: 'Continue without unique field?',
+    //   showCancelButton: true,
+    //   confirmButtonText: 'Continue',
+    //   cancelButtonText: 'No',
+    //   text: 'Duplicate data might be imported!',
+    // }).then((result) => {
+    //   if (result.isConfirmed) {
+    //     setCurrentScreen(BENEF_IMPORT_SCREENS.VALIDATION);
+    //   }
+    // });
+  };
+
+  const exportDuplicateData = (data: any, duplicateData: any) => {
+    const { validData, sanitized } = splitValidAndDuplicates(
+      data,
+      duplicateData,
+    );
+    setValidBenef(validData);
+    setProcessedData(validData);
+    setInvalidFields([]);
+    exportDataToExcel(sanitized);
+    setDuplicateData([]);
+    if (!validData.length) {
+      setHasExistingMapping(false);
+      setUniqueField('');
+      setCurrentScreen(BENEF_IMPORT_SCREENS.SELECTION);
+    }
   };
 
   const handleImportNowClick = async () => {
-    // let _text =
-    //   duplicateCount > 0
-    //     ? `${duplicateCount} existing beneficiaries will be updated!`
-    //     : 'No duplicate found!';
+    const msg = duplicateData.length
+      ? `Duplicate data found!.<b>Import Anyway?</b>`
+      : '';
     const dialog = await Swal.fire({
       title: `${processedData.length} Beneficiaries will be imported!`,
+      text: msg,
       showCancelButton: true,
-      confirmButtonText: 'Proceed',
+      confirmButtonText: 'Import Now',
+      cancelButtonText: 'No',
+      showDenyButton: duplicateData.length ? true : false,
+      denyButtonColor: 'orange',
+      denyButtonText: 'Export Duplicates',
+      html: msg,
     });
     if (dialog.isConfirmed) {
       if (!validBenef.length) return validateOrImport(IMPORT_ACTION.IMPORT);
@@ -221,7 +237,8 @@ export default function BenImp({ extraFields }: IProps) {
         fieldMapping: { data: validBenef, sourceTargetMappings: mappings },
       };
       return createImportSource(sourcePayload);
-    }
+    } else if (dialog.isDenied)
+      return exportDuplicateData(processedData, duplicateData);
   };
 
   const validateOrImport = (action: string) => {
@@ -248,14 +265,14 @@ export default function BenImp({ extraFields }: IProps) {
           return newItem;
         });
         finalPayload = replaced;
-      } else if (m.targetField === TARGET_FIELD.FULL_NAME) {
+      } else if (m.targetField === TARGET_FIELD.HOUSE_HEAD_NAME) {
         // Split fullName, update target_key:value and delete old_source_key
         selectedTargets.push(TARGET_FIELD.FIRSTNAME);
         selectedTargets.push(TARGET_FIELD.LASTNAME);
         const replaced = finalPayload.map((item: any) => {
           const { firstName, lastName } = splitFullName(item[m.sourceField]);
           const newItem = { ...item, firstName, lastName };
-          if (m.sourceField !== m.targetField) delete newItem[m.sourceField];
+          // if (m.sourceField !== m.targetField) delete newItem[m.sourceField];
           return newItem;
         });
         finalPayload = replaced;
@@ -288,7 +305,6 @@ export default function BenImp({ extraFields }: IProps) {
       selectedTargets,
     );
     const final_mapping = attachedRawData(selectedFieldsOnly, rawData);
-    console.log('Final_mapin', final_mapping);
     const sourcePayload = {
       action,
       name: importSource,
@@ -301,9 +317,11 @@ export default function BenImp({ extraFields }: IProps) {
   };
 
   const createImportSource = (sourcePayload: any) => {
+    setLoading(true);
     rumsanService.client
       .post('/sources', sourcePayload)
       .then((res) => {
+        setLoading(false);
         if (sourcePayload.action === IMPORT_ACTION.IMPORT) {
           resetStates();
           return Swal.fire({
@@ -311,22 +329,26 @@ export default function BenImp({ extraFields }: IProps) {
             title: `${sourcePayload.fieldMapping.data.length} Beneficiaries imported successfully!`,
           });
         }
-        const { result, invalidFields, containsDuplicate } = res.data.data;
-        setHasDuplicate(containsDuplicate);
-        // setDuplicateCount(duplicateCount);
+        const { result, invalidFields, duplicates } = res.data.data;
+        setDuplicateData(duplicates);
         setProcessedData(result);
-        if (invalidFields.length) setInvalidFields(invalidFields);
+        if (invalidFields.length) {
+          setInvalidFields(invalidFields);
+        }
         setCurrentScreen(BENEF_IMPORT_SCREENS.IMPORT_DATA);
       })
       .catch((err) => {
+        const msg = err?.response?.data?.message || 'Something went wrong!';
+        setLoading(false);
         Swal.fire({
           icon: 'error',
-          title: 'Failed to add to the queue!',
+          title: msg,
         });
       });
   };
 
   const handleRetargetClick = () => {
+    setDuplicateData([]);
     setValidBenef([]);
     setProcessedData([]);
     setCurrentScreen(BENEF_IMPORT_SCREENS.VALIDATION);
@@ -334,6 +356,7 @@ export default function BenImp({ extraFields }: IProps) {
   };
 
   const resetStates = () => {
+    setHasExistingMapping(false);
     setValidBenef([]);
     setValidBenef([]);
     setProcessedData([]);
@@ -361,9 +384,9 @@ export default function BenImp({ extraFields }: IProps) {
     setValidBenef(validData);
     setProcessedData(validData);
     setInvalidFields([]);
-    setHasDuplicate(false);
     exportDataToExcel(invalidData);
     if (!validData.length) {
+      setHasExistingMapping(false);
       setUniqueField('');
       setCurrentScreen(BENEF_IMPORT_SCREENS.SELECTION);
     }
@@ -389,7 +412,7 @@ export default function BenImp({ extraFields }: IProps) {
               selectedUniqueField={uniqueField}
               handleUniqueFieldChange={handleUniqueFieldChange}
             />
-            <div className="pt-10">{fetching && <Loader />}</div>
+            <div className="pt-10">{loading && <Loader />}</div>
           </>
         )}
 
@@ -410,6 +433,7 @@ export default function BenImp({ extraFields }: IProps) {
                 </Button>
 
                 <Button
+                  disabled={loading}
                   onClick={() => validateOrImport(IMPORT_ACTION.VALIDATE)}
                   className="w-40 bg-primary hover:ring-2 ring-primary"
                 >
@@ -426,10 +450,7 @@ export default function BenImp({ extraFields }: IProps) {
             )}
 
             <hr />
-            <div
-              style={{ maxHeight: '60vh' }}
-              className="overflow-x-auto overflow-y-auto"
-            >
+            <div className="overflow-x-auto">
               <ColumnMappingTable
                 rawData={rawData}
                 uniqueDBFields={uniqueDBFields}
@@ -443,7 +464,7 @@ export default function BenImp({ extraFields }: IProps) {
         {currentScreen === BENEF_IMPORT_SCREENS.IMPORT_DATA && (
           <>
             {invalidFields.length > 0 ? (
-              <ErrorAlert message="Fieds with * have failed validation. Highlighted rows are duplicate!" />
+              <ErrorAlert message="Fieds with * have failed validation!" />
             ) : (
               <InfoBox
                 title="Import Beneficiary"
@@ -457,7 +478,6 @@ export default function BenImp({ extraFields }: IProps) {
               data={processedData}
               handleImportClick={handleImportNowClick}
               invalidFields={invalidFields}
-              hasDuplicate={hasDuplicate}
             />
           </>
         )}

@@ -7,16 +7,18 @@ import PasswordInput from './PasswordInput';
 import RadioInput from './RadioInput';
 import DropDownInput from './DropdownInput';
 import CheckboxInput from './CheckboxInput';
+import DateInput from './DateInput';
 
 export default function Index({ formField }: any) {
+  console.log('formField', formField);
   return (
     <>
       {formField.fieldType === FieldType.TEXT && (
         <TextInput formField={formField} />
       )}
 
-      {formField.fieldType === FieldType.TEXT && (
-        <TextInput formField={formField} />
+      {formField.fieldType === FieldType.DATE && (
+        <DateInput formField={formField} />
       )}
 
       {formField.fieldType === FieldType.NUMBER && (

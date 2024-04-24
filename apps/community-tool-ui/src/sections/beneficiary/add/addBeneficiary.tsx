@@ -102,16 +102,18 @@ export default function AddBeneficiary() {
 
   const handleCreateBeneficiary = async (data: z.infer<typeof FormSchema>) => {
     const formattedDate = formatDate(data.birthDate as Date);
-
+    const formData = {
+      ...data,
+      birthDate: data.birthDate && formattedDate,
+    };
     const nonEmptyFields: any = {};
-    Object.entries(data).forEach(([key, value]) => {
+    Object.entries(formData).forEach(([key, value]) => {
       if (value !== undefined && value !== '') {
         nonEmptyFields[key] = value;
       }
     });
     await addCommunityBeneficiary.mutateAsync({
       ...nonEmptyFields,
-      birthDate: formattedDate,
       extras,
     });
   };
@@ -146,10 +148,10 @@ export default function AddBeneficiary() {
                             placeholder="Wallet Address"
                             {...field}
                           />
-                          {/* <p className="text-xs text-amber-500 mt-2">
+                          <p className="text-xs text-amber-500 mt-2">
                             * Wallet address is required. If not entered, it
                             will be automatically filled.
-                          </p> */}
+                          </p>
                         </div>
                       </FormControl>
                       <FormMessage />

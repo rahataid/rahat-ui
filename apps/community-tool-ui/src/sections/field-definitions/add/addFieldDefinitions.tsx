@@ -136,7 +136,7 @@ export default function AddFieldDefinitions({ handleTabChange }: Iprops) {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleCreateFieldDefinitions)}>
-        <div className="p-4 h-add overflow-scroll">
+        <div className="p-4 h-add overflow-scroll rounded border bg-white">
           <div style={{ justifyContent: 'space-between' }} className="flex">
             <div>
               <h1 className="text-lg ml-2 font-semibold mb-6">

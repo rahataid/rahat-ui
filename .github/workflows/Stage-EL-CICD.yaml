@@ -30,10 +30,12 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 20.10.0
+          node-version: 20.10.0
 
       - name: install dependencies and build apps
         run: |
           npm install -g pnpm@8.14.1
+          npx nx reset
           pnpm install
           npx nx reset
           pnpm build:all

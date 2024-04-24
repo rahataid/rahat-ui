@@ -11,11 +11,13 @@ import { Tabs, TabsContent } from '@rahat-ui/shadcn/components/tabs';
 import {
   VisibilityState,
   getCoreRowModel,
+  getFilteredRowModel,
   getSortedRowModel,
   useReactTable,
-  getFilteredRowModel,
 } from '@tanstack/react-table';
 
+import { useCommunityBeneficaryList } from '@rahat-ui/community-query';
+import { usePagination } from '@rahat-ui/query';
 import { ListBeneficiary } from '@rahataid/community-tool-sdk/beneficiary';
 import CustomPagination from '../../components/customPagination';
 import {
@@ -26,12 +28,10 @@ import BeneficiaryDetail from '../../sections/beneficiary/beneficiaryDetail';
 import BeneficiaryGridView from '../../sections/beneficiary/gridView';
 import BeneficiaryListView from '../../sections/beneficiary/listView';
 import BeneficiaryNav from '../../sections/beneficiary/nav';
-import ImportBeneficiary from './import.beneficiary';
+import { useDebounce } from '../../utils/debounceHooks';
 import ViewGroup from '../group/group.view';
-import { useCommunityBeneficaryList } from '@rahat-ui/community-query';
-import { usePagination } from '@rahat-ui/query';
+import ImportBeneficiary from './import.beneficiary';
 import { useCommunityBeneficiaryTableColumns } from './useBeneficiaryColumns';
-// import { useSecondPanel } from '../../providers/second-panel-provider';
 
 function BeneficiaryView() {
   const {
@@ -43,11 +43,14 @@ function BeneficiaryView() {
     setPerPage,
     filters,
     setFilters,
+    setPagination,
   } = usePagination();
+
+  const debouncedFilters = useDebounce(filters, 500);
 
   const { data } = useCommunityBeneficaryList({
     ...pagination,
-    ...(filters as any),
+    ...(debouncedFilters as any),
   });
   const columns = useCommunityBeneficiaryTableColumns();
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
@@ -69,18 +72,20 @@ function BeneficiaryView() {
   });
 
   const [selectedData, setSelectedData] = useState(null) as any;
-  const [selectedBenefId, setSelectedBenefId] = useState<number[]>([]);
+  const [selectedBenefId, setSelectedBenefId] = useState<string[]>([]);
   const [active, setActive] = useState<string>(BENEFICIARY_NAV_ROUTE.DEFAULT);
 
   const handleBeneficiaryClick = useCallback((item: ListBeneficiary) => {
     setSelectedData(item);
     setSelectedBenefId((prevSelectedData) => {
-      const isSelected = prevSelectedData?.includes(item.id);
+      const isSelected = prevSelectedData?.includes(item.uuid);
 
       if (isSelected) {
-        return prevSelectedData.filter((selectedId) => selectedId !== item.id);
+        return prevSelectedData.filter(
+          (selectedUUID) => selectedUUID !== item.uuid,
+        );
       } else {
-        return [...(prevSelectedData || []), item.id];
+        return [...(prevSelectedData || []), item.uuid];
       }
     });
   }, []);
@@ -114,6 +119,8 @@ function BeneficiaryView() {
                   handleClick={handleBeneficiaryClick}
                   setFilters={setFilters}
                   filters={filters}
+                  pagination={pagination}
+                  setPagination={setPagination}
                 />
               </TabsContent>
               <TabsContent value="grid">
@@ -124,13 +131,13 @@ function BeneficiaryView() {
               </TabsContent>
 
               <CustomPagination
-                meta={data?.response?.meta || { total: 0, currentPage: 0 }}
+                currentPage={pagination.page}
                 handleNextPage={setNextPage}
                 handlePrevPage={setPrevPage}
                 handlePageSizeChange={setPerPage}
-                currentPage={pagination.page}
-                perPage={pagination.perPage}
-                total={data?.response?.meta.lastPage || 0}
+                meta={data?.response?.meta || { total: 0, currentPage: 0 }}
+                perPage={pagination?.perPage}
+                total={data?.response?.meta?.total || 0}
               />
             </>
           )}

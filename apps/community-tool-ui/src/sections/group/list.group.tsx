@@ -15,24 +15,50 @@ import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 
 import { ListGroup } from '@rahataid/community-tool-sdk/groups';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
+import { Pagination } from '@rumsan/sdk/types';
 
 type IProps = {
   handleClick: (index: any) => void;
   table: Table<ListGroup>;
+  setFilters: (fiters: Record<string, any>) => void;
+  filters: Record<string, any>;
+  setPagination: (pagination: Pagination) => void;
+  pagination: Pagination;
 };
 
-export default function GroupList({ table, handleClick }: IProps) {
+export default function GroupList({
+  table,
+  handleClick,
+  filters,
+  setFilters,
+  setPagination,
+  pagination,
+}: IProps) {
+  const handleFilterChange = (event: any) => {
+    if (event && event.target) {
+      const { name, value } = event.target;
+      table.getColumn(name)?.setFilterValue(value);
+      setFilters({
+        ...filters,
+        [name]: value,
+      });
+    }
+    setPagination({
+      ...pagination,
+      page: 1,
+    });
+  };
   return (
     <div className="w-full -mt-2 p-2 bg-secondary">
       <div className="flex items-center mb-2">
         <Input
-          placeholder="Filter group..."
+          placeholder="Search by Group Name..."
+          name="name"
           value={
-            (table.getColumn('walletAddress')?.getFilterValue() as string) ?? ''
+            (table.getColumn('name')?.getFilterValue() as string) ??
+            filters?.name
           }
-          onChange={(event) =>
-            table.getColumn('walletAddress')?.setFilterValue(event.target.value)
-          }
+          onChange={(event) => handleFilterChange(event)}
           className="rounded mr-2"
         />
       </div>

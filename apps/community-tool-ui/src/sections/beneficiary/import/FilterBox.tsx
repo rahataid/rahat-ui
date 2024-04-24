@@ -37,10 +37,7 @@ export default function FilterBox({
 }: FilterBoxProps) {
   return (
     <>
-      <InfoBox
-        title="Load Beneficiary"
-        message="Select EMAIL or PHONE as an unique ID to avoid duplicate import"
-      />
+      <InfoBox title="Load Beneficiary" message="Select your import source" />
 
       <div className="flex mt-10 justify-between m-2">
         <ItemSelector
@@ -64,14 +61,14 @@ export default function FilterBox({
           )}
         </div>
         <div>
-          <ItemSelector
+          {/* <ItemSelector
             form={form}
             placeholder="--Beneficiary Unique Identifier--"
             id="selectUniqueField"
             options={UNIQUE_FIELD_OPTIONS}
             defaultData={selectedUniqueField}
             handleItemChange={handleUniqueFieldChange}
-          />
+          /> */}
         </div>
         <div>
           {rawData.length > 0 && (

@@ -7,7 +7,7 @@ export default function InfoCards({ data }: { data: FieldDefinition }) {
     <div className="p-2">
       <Card className="shadow-md rounded-sm">
         <CardContent>
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-3 gap-4 mt-2">
             <div className="col-span-2 flex flex-col gap-4">
               <div>
                 <p>{data && data.name ? humanizeString(data.name) : ''}</p>

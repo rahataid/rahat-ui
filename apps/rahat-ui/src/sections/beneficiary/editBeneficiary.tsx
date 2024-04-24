@@ -19,7 +19,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
-import { toast } from 'react-toastify';
 import { z } from 'zod';
 import { useUpdateBeneficiary } from '@rahat-ui/query';
 import { useSecondPanel } from '../../providers/second-panel-provider';
@@ -67,7 +66,7 @@ export default function EditBeneficiary({ beneficiary }: any) {
 
   const handleEditBeneficiary = async (data: z.infer<typeof FormSchema>) => {
     try {
-      const result = await updateBeneficiary.mutateAsync({
+      await updateBeneficiary.mutateAsync({
         uuid: beneficiary.uuid,
         gender: data.gender,
         bankedStatus: data.bankedStatus,

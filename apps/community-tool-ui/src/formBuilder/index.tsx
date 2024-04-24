@@ -1,6 +1,6 @@
 import React from 'react';
 import TextInput from './TextInput';
-import { FORM_FIELD } from '../constants/fieldDefinition.const';
+import { FieldType } from '../constants/fieldDefinition.const';
 import NumberInput from './NumberInput';
 import TextAreaInput from './TextAreaInput';
 import PasswordInput from './PasswordInput';
@@ -11,31 +11,35 @@ import CheckboxInput from './CheckboxInput';
 export default function Index({ formField }: any) {
   return (
     <>
-      {formField.fieldType === FORM_FIELD.TEXT && (
+      {formField.fieldType === FieldType.TEXT && (
         <TextInput formField={formField} />
       )}
 
-      {formField.fieldType === FORM_FIELD.NUMBER && (
+      {formField.fieldType === FieldType.TEXT && (
+        <TextInput formField={formField} />
+      )}
+
+      {formField.fieldType === FieldType.NUMBER && (
         <NumberInput formField={formField} />
       )}
 
-      {formField.fieldType === FORM_FIELD.PASSWORD && (
+      {formField.fieldType === FieldType.PASSWORD && (
         <PasswordInput formField={formField} />
       )}
 
-      {formField.fieldType === FORM_FIELD.RADIO && (
+      {formField.fieldType === FieldType.RADIO && (
         <RadioInput formField={formField} />
       )}
 
-      {formField.fieldType === FORM_FIELD.DROPDOWN && (
+      {formField.fieldType === FieldType.DROPDOWN && (
         <DropDownInput formField={formField} />
       )}
 
-      {formField.fieldType === FORM_FIELD.CHECKBOX && (
+      {formField.fieldType === FieldType.CHECKBOX && (
         <CheckboxInput formField={formField} />
       )}
 
-      {formField.fieldType === FORM_FIELD.TEXTAREA && (
+      {formField.fieldType === FieldType.TEXTAREA && (
         <TextAreaInput formField={formField} />
       )}
     </>

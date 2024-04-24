@@ -40,6 +40,7 @@ import FormBuilder from '../../formBuilder';
 
 import useFormStore from '../../formBuilder/form.store';
 import { UUID } from 'crypto';
+import { indexOf } from 'lodash';
 
 const FIELD_DEF_FETCH_LIMIT = 200;
 
@@ -115,8 +116,6 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
       },
     });
   };
-
-  console.log('definitions', definitions);
 
   return (
     <Form {...form}>
@@ -486,8 +485,8 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
               )}
             />
             <h3>Extra Fields</h3> <br />
-            {definitions?.data?.rows.map((definition: any) => {
-              return <FormBuilder formField={definition} />;
+            {definitions?.data?.rows.map((definition: any, index: number) => {
+              return <FormBuilder key={index} formField={definition} />;
             }) || 'No field definitions found!'}
           </div>
 

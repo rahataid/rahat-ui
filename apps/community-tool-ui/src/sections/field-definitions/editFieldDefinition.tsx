@@ -20,8 +20,6 @@ import {
 import { useForm, useFieldArray } from 'react-hook-form';
 
 import { z } from 'zod';
-import { FieldType } from '../../types/fieldDefinition';
-
 import { FieldDefinition } from '@rahataid/community-tool-sdk/fieldDefinitions';
 import {
   useFieldDefinitionsUpdate,
@@ -31,6 +29,7 @@ import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { Switch } from '@rahat-ui/shadcn/src/components/ui/switch';
 import React, { useEffect, useState } from 'react';
 import { Minus, Plus } from 'lucide-react';
+import { FieldType } from '../../constants/fieldDefinition.const';
 
 export default function EditFieldDefinition({
   data,
@@ -179,7 +178,7 @@ export default function EditFieldDefinition({
                             <SelectItem value={FieldType.RADIO}>
                               RADIO
                             </SelectItem>
-
+                            <SelectItem value={FieldType.DATE}>DATE</SelectItem>
                             <SelectItem value={FieldType.TEXTAREA}>
                               TEXTAREA
                             </SelectItem>

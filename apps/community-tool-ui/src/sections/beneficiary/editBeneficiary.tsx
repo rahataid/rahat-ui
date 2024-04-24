@@ -35,12 +35,19 @@ import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
 import { ListBeneficiary } from '@rahataid/community-tool-sdk/beneficiary';
 import { Gender } from '@rumsan/sdk/enums';
-import { Wallet } from 'lucide-react';
+import { CalendarIcon, Wallet } from 'lucide-react';
 import FormBuilder from '../../formBuilder';
 
 import useFormStore from '../../formBuilder/form.store';
 import { UUID } from 'crypto';
-import { indexOf } from 'lodash';
+import { format } from 'date-fns';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/popover';
+import { Calendar } from '@rahat-ui/shadcn/src/components/ui/calendar';
+import { formatDate } from '../../utils';
 
 const FIELD_DEF_FETCH_LIMIT = 200;
 
@@ -64,6 +71,7 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
     walletAddress: z.string().optional(),
     gender: z.string().toUpperCase().optional(),
     email: z.string().optional(),
+    birthDate: z.date().optional(),
     phone: z.string(),
     location: z.string().optional(),
     latitude: z.number().optional(),
@@ -101,6 +109,11 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
   const handleEditBeneficiary = async (
     formData: z.infer<typeof FormSchema>,
   ) => {
+    if (formData.birthDate) {
+      const formattedDate = formatDate(formData.birthDate as Date);
+      formData.birthDate = formattedDate;
+    }
+
     const nonEmptyFields: any = {};
     Object.entries(formData).forEach(([key, value]) => {
       if (value !== undefined && value !== '') {
@@ -441,6 +454,40 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
               }}
             />
             <FormField
+              defaultValue={data?.birthDate}
+              control={form.control}
+              name="birthDate"
+              render={({ field }) => (
+                <FormItem className="flex flex-col">
+                  <Label className="text-xs font-medium">Date of Birth</Label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button variant={'outline'}>
+                          {field.value ? (
+                            format(field.value, 'PPP')
+                          ) : (
+                            <span>Birth Date</span>
+                          )}
+                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={field.value}
+                        onSelect={field.onChange}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
               control={form.control}
               name="longitude"
               render={({ field }) => {
@@ -484,9 +531,12 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
                 </FormItem>
               )}
             />
-            <h3>Extra Fields</h3> <br />
-            {definitions?.data?.rows.map((definition: any, index: number) => {
-              return <FormBuilder key={index} formField={definition} />;
+            <h3>
+              <b>Extra Fields:</b>
+            </h3>
+            <br />
+            {definitions?.data?.rows.map((definition: any) => {
+              return <FormBuilder formField={definition} />;
             }) || 'No field definitions found!'}
           </div>
 

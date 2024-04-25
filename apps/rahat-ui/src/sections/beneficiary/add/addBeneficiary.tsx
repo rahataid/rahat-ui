@@ -35,12 +35,10 @@ export default function AddBeneficiaryForm() {
   const FormSchema = z.object({
     name: z.string().min(2, { message: 'Name must be at least 4 character' }),
     walletAddress: z.string(),
-    email: z.string(),
     phone: z
       .string()
       .refine(isValidPhoneNumber, { message: 'Invalid phone number' }),
     email: z.string().optional(),
-
     gender: z
       .string()
       .toUpperCase()
@@ -90,7 +88,6 @@ export default function AddBeneficiaryForm() {
           email: data.email,
           name: data.name,
           phone: data.phone,
-          email: data.email,
         },
         walletAddress: data.walletAddress,
       });
@@ -132,20 +129,7 @@ export default function AddBeneficiaryForm() {
                     );
                   }}
                 />
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => {
-                    return (
-                      <FormItem>
-                        <FormControl>
-                          <Input type="email" placeholder="Email" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    );
-                  }}
-                />
+           
                 <FormField
                   control={form.control}
                   name="phone"

@@ -19,13 +19,13 @@ export default function ProjectDetails() {
   return (
     <div className="p-4 bg-slate-100">
       <ProjectInfo project={project} />
-      {
+      {/* {
         isLoadingWaterLevels? (
           "Loading recent water levels..."
         ) : (
           <WaterLevelInfo data={data[0]} />
         )
-      }
+      } */}
     </div>
   );
 }

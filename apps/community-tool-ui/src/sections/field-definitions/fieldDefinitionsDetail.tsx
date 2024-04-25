@@ -19,13 +19,13 @@ import { useFieldDefinitionsListById } from '@rahat-ui/community-query';
 
 type IProps = {
   fieldDefinitionData: FieldDefinition;
-  // handleDefault: VoidFunction;
-  handleClose: VoidFunction;
+
+  closeSecondPanel: VoidFunction;
 };
 
 export default function FieldDefinitionsDetail({
   fieldDefinitionData,
-  handleClose,
+  closeSecondPanel,
 }: IProps) {
   const { data } = useFieldDefinitionsListById(String(fieldDefinitionData?.id));
   const singleFieldDefinition = data && data.data;
@@ -37,7 +37,7 @@ export default function FieldDefinitionsDetail({
           <div className="flex gap-4">
             <TooltipProvider delayDuration={100}>
               <Tooltip>
-                <TooltipTrigger onClick={handleClose}>
+                <TooltipTrigger onClick={closeSecondPanel}>
                   <Minus size={20} strokeWidth={1.5} />
                 </TooltipTrigger>
                 <TooltipContent className="bg-secondary ">

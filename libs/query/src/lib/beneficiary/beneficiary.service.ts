@@ -90,10 +90,62 @@ const updateBeneficiary = async (payload: any) => {
 
 export const useUpdateBeneficiary = () => {
   const qc = useQueryClient();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
   return useMutation({
     mutationFn: (payload: any) => updateBeneficiary(payload),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: [TAGS.GET_BENEFICIARIES] });
+      toast.fire({
+        title: 'Beneficiary updated successfully.',
+        icon: 'success',
+      });
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || 'Error';
+      toast.fire({
+        title: 'Error while updating beneficiary.',
+        icon: 'error',
+        text: errorMessage,
+      });
+    },
+  });
+};
+
+const removeBeneficiary = async (payload: any) => {
+  await api.patch(`/beneficiaries/remove/${payload.uuid}`, payload);
+};
+
+export const useRemoveBeneficiary = () => {
+  const qc = useQueryClient();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+  return useMutation({
+    mutationFn: (payload: any) => removeBeneficiary(payload),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: [TAGS.GET_BENEFICIARIES] });
+      toast.fire({
+        title: 'Beneficiary removed successfully',
+        icon: 'success',
+      });
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || 'Error';
+      toast.fire({
+        title: 'Error while removing beneficiary.',
+        icon: 'error',
+        text: errorMessage,
+      });
     },
   });
 };

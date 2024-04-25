@@ -49,7 +49,7 @@ export default function ListView({
   return (
     <>
       <div className="w-full -mt-2 p-2 bg-secondary">
-        <div className="flex items-center mb-2">
+        <div className="flex items-center mb-2 mt-2">
           <Input
             placeholder="Filter field definitions..."
             name="name"
@@ -92,7 +92,7 @@ export default function ListView({
         </div>
         <div className="rounded border bg-card">
           <TableComponent>
-            <ScrollArea className="h-[calc(100vh-180px)]">
+            <ScrollArea className="h-[calc(100vh-190px)]">
               <TableHeader className="bg-card sticky top-0">
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow key={headerGroup.id}>

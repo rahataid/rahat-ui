@@ -27,7 +27,8 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/form';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { useRoleList, useUserCreate } from '@rahat-ui/query';
+import { useRoleList, useSettingsStore, useUserCreate } from '@rahat-ui/query';
+import { useAddAdmin, useAddManager } from '../../hooks/el/contracts/el-contracts';
 
 // Constants
 // const genderList = enumToObjectArray(Gender);
@@ -58,14 +59,34 @@ export default function AddUser() {
   });
 
   const { data: roleData } = useRoleList();
+  const contractSettings = useSettingsStore(
+    (state) => state.accessManager
+  )
 
-  // const { data: roleData } = useUserRoleList({});
 
-  // const roles = roleData?.data.map((role: Role) => role.name).sort() || [];
   const userCreate = useUserCreate();
+  const addManager = useAddManager();
+  const addAdmin = useAddAdmin()
 
   const handleAddUser = async (data: any) => {
-    await userCreate.mutateAsync(data);
+    if(data.role === 'Manager') {
+        addManager.mutateAsync({
+          data:data,
+          walletAddress: data?.wallet,
+          contractAddress: contractSettings
+
+        })
+    }
+    else if(data.role === 'Admin'){
+      addAdmin.mutateAsync({
+        data:data,
+        walletAddress: data?.wallet,
+        contractAddress: contractSettings
+
+      })
+    }
+
+    else await userCreate.mutateAsync(data);
   };
   useEffect(() => {
     if (userCreate.isSuccess) {

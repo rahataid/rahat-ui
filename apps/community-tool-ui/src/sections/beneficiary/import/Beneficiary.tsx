@@ -41,7 +41,6 @@ export default function BenImp({ extraFields }: IProps) {
   const form = useForm({});
   const { rumsanService } = useRSQuery();
 
-  const [uniqueField, setUniqueField] = useState('');
   const [importSource, setImportSource] = useState('');
   const [rawData, setRawData] = useState([]) as any;
   const [mappings, setMappings] = useState([]) as any;
@@ -67,8 +66,6 @@ export default function BenImp({ extraFields }: IProps) {
       return setMappings(fieldMapping?.sourceTargetMappings);
     }
   };
-
-  const handleUniqueFieldChange = (value: string) => setUniqueField(value);
 
   const fetchKoboSettings = async () => {
     const res = await rumsanService.client.get('/app/settings/kobotool');
@@ -207,7 +204,6 @@ export default function BenImp({ extraFields }: IProps) {
     setDuplicateData([]);
     if (!validData.length) {
       setHasExistingMapping(false);
-      setUniqueField('');
       setCurrentScreen(BENEF_IMPORT_SCREENS.SELECTION);
     }
   };
@@ -233,7 +229,6 @@ export default function BenImp({ extraFields }: IProps) {
         action: IMPORT_ACTION.IMPORT,
         name: importSource,
         importId,
-        uniqueField,
         fieldMapping: { data: validBenef, sourceTargetMappings: mappings },
       };
       return createImportSource(sourcePayload);
@@ -309,7 +304,6 @@ export default function BenImp({ extraFields }: IProps) {
       action,
       name: importSource,
       importId,
-      uniqueField,
       fieldMapping: { data: final_mapping, sourceTargetMappings: mappings },
     };
 
@@ -364,7 +358,6 @@ export default function BenImp({ extraFields }: IProps) {
     setRawData([]);
     setMappings([]);
     setInvalidFields([]);
-    setUniqueField('');
   };
 
   const handleBackClick = () => {
@@ -372,7 +365,6 @@ export default function BenImp({ extraFields }: IProps) {
     setMappings([]);
     setValidBenef([]);
     setCurrentScreen(BENEF_IMPORT_SCREENS.SELECTION);
-    setUniqueField('');
     setRawData([]);
   };
 
@@ -387,7 +379,6 @@ export default function BenImp({ extraFields }: IProps) {
     exportDataToExcel(invalidData);
     if (!validData.length) {
       setHasExistingMapping(false);
-      setUniqueField('');
       setCurrentScreen(BENEF_IMPORT_SCREENS.SELECTION);
     }
   };
@@ -409,8 +400,6 @@ export default function BenImp({ extraFields }: IProps) {
               koboForms={koboForms}
               handleKoboFormChange={handleKoboFormChange}
               handleGoClick={handleGoClick}
-              selectedUniqueField={uniqueField}
-              handleUniqueFieldChange={handleUniqueFieldChange}
             />
             <div className="pt-10">{loading && <Loader />}</div>
           </>
@@ -421,7 +410,6 @@ export default function BenImp({ extraFields }: IProps) {
             <InfoBox
               title="Field Mapping"
               message="Select matching field for your data"
-              uniqueField={uniqueField}
             />
             {rawData.length > 0 && (
               <div className="flex mb-5 mt-5 justify-between m-2">

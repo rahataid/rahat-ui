@@ -1,14 +1,9 @@
-import React from 'react';
-import ItemSelector from './ItemSelector';
-import {
-  IMPORT_OPTIONS,
-  IMPORT_SOURCE,
-  UNIQUE_FIELD_OPTIONS,
-} from '../../../constants/app.const';
-import ExcelUploader from './ExcelUploader';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { ArrowBigRight } from 'lucide-react';
+import { IMPORT_OPTIONS, IMPORT_SOURCE } from '../../../constants/app.const';
+import ExcelUploader from './ExcelUploader';
 import InfoBox from './InfoBox';
+import ItemSelector from './ItemSelector';
 
 interface FilterBoxProps {
   form: any;
@@ -19,8 +14,7 @@ interface FilterBoxProps {
   handleKoboFormChange: any;
   handleGoClick: any;
   rawData: any;
-  selectedUniqueField: string;
-  handleUniqueFieldChange: any;
+  // handleUniqueFieldChange: any;
 }
 
 export default function FilterBox({
@@ -32,8 +26,6 @@ export default function FilterBox({
   handleKoboFormChange,
   handleGoClick,
   rawData,
-  selectedUniqueField,
-  handleUniqueFieldChange,
 }: FilterBoxProps) {
   return (
     <>

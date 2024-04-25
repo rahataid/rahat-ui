@@ -12,6 +12,7 @@ type ProjectDataCardProps = {
   totalBeneficiary: any;
   totalVendor: any;
   loading: any;
+  ELProjectStats: any;
   refetchBeneficiary: VoidFunction;
   refetchVoucher: VoidFunction;
 };
@@ -22,6 +23,7 @@ const ProjectDataCard: FC<ProjectDataCardProps> = ({
   loading,
   projectVoucher,
   voucherDetails,
+  ELProjectStats,
   refetchBeneficiary,
   refetchVoucher,
 }) => {
@@ -38,6 +40,14 @@ const ProjectDataCard: FC<ProjectDataCardProps> = ({
   const actualBudget =
     data?.eyeVoucherClaimed?.toString() * data?.freeVoucherPrice +
     data?.referredVoucherClaimed?.toString() * data?.referredVoucherPrice;
+
+  const reconciliationRequested = ELProjectStats?.find(
+    (entry) => entry.name === 'RECONCILIATION',
+  )?.data.find((dataItem) => dataItem.id === 'REQUESTED')?.count;
+
+  const reconciliationApproved = ELProjectStats?.find(
+    (entry) => entry.name === 'RECONCILIATION',
+  )?.data.find((dataItem) => dataItem.id === 'APPROVED')?.count;
 
   return (
     <>
@@ -76,14 +86,14 @@ const ProjectDataCard: FC<ProjectDataCardProps> = ({
         <SmallDataCard
           className=""
           title="Reconcile Pending"
-          number={'12'}
+          number={reconciliationRequested || 0}
           subTitle="Request from Vendors"
           loading={loading}
         />
         <SmallDataCard
           className=""
           title="Reconcile Proceeded"
-          number={'12'}
+          number={reconciliationApproved || 'N/A'}
           subTitle="Reconciliation Proceeded"
           loading={loading}
         />

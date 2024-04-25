@@ -35,8 +35,6 @@ const ProjectMainView = () => {
     (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT] || null,
   );
 
-  const beneficiaryStats = useGetBeneficiaryStats();
-
   const { data: beneficiaryDetails, refetch: refetchBeneficiary } =
     useReadElProjectGetTotalBeneficiaries({
       address: contractSettings?.elproject?.address,
@@ -177,6 +175,7 @@ const ProjectMainView = () => {
           refetchBeneficiary={refetchBeneficiary}
           refetchVoucher={refetchVoucher}
           loading={isLoading}
+          ELProjectStats={ELProjectStats}
         />
         <ProjectChart
           chartData={[

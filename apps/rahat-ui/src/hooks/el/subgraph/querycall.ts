@@ -215,25 +215,26 @@ export const useGetReferredVoucherTransaction = (tokenReferred: string) => {
   const { queryService } = useGraphService();
   return useQuery({
     enabled: tokenReferred ? true : false,
-    queryKey:['referred-voucher-transactions'],
-    queryFn: async () =>{
-      const res = await queryService.getReferredVoucherTransaction(tokenReferred);
-      return res
-     
-    }
-  })
-}
+    queryKey: ['referred-voucher-transactions'],
+    queryFn: async () => {
+      const res = await queryService.getReferredVoucherTransaction(
+        tokenReferred,
+      );
+      return res;
+    },
+  });
+};
 
 export const useGetBeneficiaryVouchers = () => {
   const { queryService } = useGraphService();
   return useQuery({
-    queryKey:['beneficiary-vouchers'],
-    queryFn: async () =>{
+    queryKey: ['beneficiary-vouchers'],
+    queryFn: async () => {
       const res = await queryService.useAllBeneficiariesVoucher();
-      return res
-    }
-  })
-}
+      return res;
+    },
+  });
+};
 
 export const useVendorFilteredTransaction = (
   address: string,

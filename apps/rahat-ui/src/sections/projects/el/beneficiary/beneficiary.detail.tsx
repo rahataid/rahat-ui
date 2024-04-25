@@ -2,7 +2,11 @@
 
 import { useParams } from 'next/navigation';
 
-import { PROJECT_SETTINGS_KEYS, useProjectAction, useProjectSettingsStore } from '@rahat-ui/query';
+import {
+  PROJECT_SETTINGS_KEYS,
+  useProjectAction,
+  useProjectSettingsStore,
+} from '@rahat-ui/query';
 import {
   Tabs,
   TabsContent,
@@ -78,14 +82,13 @@ export default function BeneficiaryDetail({
 
   const contractSettings = useProjectSettingsStore(
     (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT] || null,
-  )
+  );
 
   const { data: beneficiaryVoucherDetails, isLoading } =
     useReadElProjectGetBeneficiaryVoucherDetail({
       address: contractSettings?.elproject?.address,
       args: [walletAddress],
     });
-
 
   const [activeTab, setActiveTab] = useState<'details' | 'edit' | null>(
     'details',
@@ -128,15 +131,13 @@ export default function BeneficiaryDetail({
       return;
     if (
       beneficiaryVoucherDetails?.freeVoucherAddress?.toString() !==
-      zeroAddress ||
+        zeroAddress ||
       beneficiaryVoucherDetails?.referredVoucherAddress?.toString() !==
-      zeroAddress
+        zeroAddress
     ) {
       setAssignStatus(true);
     }
   }, [beneficiaryVoucherDetails]);
-
-
 
   const voucherAssignModal = useBoolean();
 
@@ -201,7 +202,9 @@ export default function BeneficiaryDetail({
                         <AlertDialogFooter>
                           <AlertDialogCancel>Cancel</AlertDialogCancel>
                           <AlertDialogAction
-                            onClick={() => removeBeneficiary(beneficiaryDetails?.uuid)}
+                            onClick={() =>
+                              removeBeneficiary(beneficiaryDetails?.uuid)
+                            }
                           >
                             Continue
                           </AlertDialogAction>
@@ -353,15 +356,15 @@ export default function BeneficiaryDetail({
                             <p className="text-sm font-light">
                               {beneficiaryVoucherDetails?.freeVoucherAddress !==
                                 undefined &&
-                                beneficiaryVoucherDetails?.freeVoucherAddress !==
+                              beneficiaryVoucherDetails?.freeVoucherAddress !==
                                 zeroAddress
                                 ? 'Free Voucher'
                                 : beneficiaryVoucherDetails?.referredVoucherAddress !==
-                                  undefined &&
+                                    undefined &&
                                   beneficiaryVoucherDetails?.referredVoucherAddress !==
-                                  zeroAddress
-                                  ? 'Discount Voucher'
-                                  : 'N/A'}
+                                    zeroAddress
+                                ? 'Discount Voucher'
+                                : 'N/A'}
                             </p>
                           </div>
                           <div className="flex justify-between items-center">
@@ -369,15 +372,15 @@ export default function BeneficiaryDetail({
                             <p className="text-sm font-light">
                               {beneficiaryVoucherDetails?.freeVoucherAddress !==
                                 undefined &&
-                                beneficiaryVoucherDetails?.freeVoucherAddress !==
+                              beneficiaryVoucherDetails?.freeVoucherAddress !==
                                 zeroAddress
                                 ? beneficiaryVoucherDetails?.freeVoucherClaimStatus?.toString()
                                 : beneficiaryVoucherDetails?.referredVoucherAddress !==
-                                  undefined &&
+                                    undefined &&
                                   beneficiaryVoucherDetails?.referredVoucherAddress !==
-                                  zeroAddress
-                                  ? beneficiaryVoucherDetails?.referredVoucherClaimStatus?.toString()
-                                  : 'N/A'}
+                                    zeroAddress
+                                ? beneficiaryVoucherDetails?.referredVoucherClaimStatus?.toString()
+                                : 'N/A'}
                             </p>
                           </div>
                           <div className="flex justify-between items-center">

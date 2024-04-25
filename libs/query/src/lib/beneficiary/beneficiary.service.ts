@@ -31,9 +31,7 @@ export const useCreateBeneficiary = () => {
 };
 
 // Todo: Change type of return
-export const useBeneficiaryList = (
-  payload: any,
-): any => {
+export const useBeneficiaryList = (payload: any): any => {
   const { rumsanService, queryClient } = useRSQuery();
   const benClient = getBeneficiaryClient(rumsanService.client);
   const { setBeneficiaries, setMeta } = useBeneficiaryStore((state) => ({
@@ -60,14 +58,15 @@ export const useBeneficiaryList = (
   const filteredBenData = {
     ...ben,
     data: {
-    ...ben?.data,
-    data: ben?.data?.data.map((row) => {
-      return({
-        ...row,
-        name: row?.piiData?.name || ''
-      })
-    })},
-  }
+      ...ben?.data,
+      data: ben?.data?.data.map((row) => {
+        return {
+          ...row,
+          name: row?.piiData?.name || '',
+        };
+      }),
+    },
+  };
 
   return filteredBenData;
 };

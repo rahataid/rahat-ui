@@ -75,11 +75,11 @@ dependencies:
     specifier: 0.0.22
     version: 0.0.22(typescript@5.4.5)(zod@3.23.4)
   '@rumsan/communication':
-    specifier: ^0.0.9
-    version: 0.0.9
+    specifier: ^0.0.10
+    version: 0.0.10
   '@rumsan/communication-query':
-    specifier: ^0.0.4
-    version: 0.0.4(@types/react@18.2.79)
+    specifier: ^0.0.5
+    version: 0.0.5(@types/react@18.2.79)
   '@rumsan/core':
     specifier: ^3.0.133
     version: 3.0.140
@@ -5986,11 +5986,10 @@ packages:
       picomatch: 2.3.1
       rollup: 2.79.1
 
-  /@rumsan/communication-query@0.0.4(@types/react@18.2.79):
-    resolution: {integrity: sha512-e+ZUuBx5lM3avHyhsLOEAolFBOBWhFXEgnobGOJH00Zx8YfjjA/RWqJfB1hOhK2kEoNkPY56oi8/OxEcC1ieoA==, tarball: https://npm.pkg.github.com/download/@rumsan/communication-query/0.0.4/9a25bd2dc83adf60103a9d5ea524837fae1078fd}
+  /@rumsan/communication-query@0.0.5(@types/react@18.2.79):
+    resolution: {integrity: sha512-IVRw61CNG9AbpH5Bbhtde7iXL/bJ3yzbHGRXydo103hFRi+3IdRXcwd254KPLF+/cIbLlF2u0AYVqJ0zuweiFQ==, tarball: https://npm.pkg.github.com/download/@rumsan/communication-query/0.0.5/486e3273499dc2f9d8b78e547a13061262ebfc8b}
     dependencies:
-      '@rumsan/communication': 0.0.9
-      '@rumsan/react-query': 0.0.34(@types/react@18.2.79)
+      '@rumsan/communication': 0.0.10
       '@tanstack/react-query': 5.22.2(react@18.2.0)
       axios: 1.6.8
       react: 18.2.0
@@ -6002,8 +6001,8 @@ packages:
       - immer
     dev: false
 
-  /@rumsan/communication@0.0.7:
-    resolution: {integrity: sha512-QS62ou8/nPaoWXb++qMPp6mLdqgiJSlo8/RAkV/FdaKX89e3YWIHdPdoebtTaUYPFPbiA0x35K92nd7C6+V9Ww==, tarball: https://npm.pkg.github.com/download/@rumsan/communication/0.0.7/de8921789c08cc72ef6c106fc96057370ad218aa}
+  /@rumsan/communication@0.0.10:
+    resolution: {integrity: sha512-WiKCIuvooyjSetPeKxJcXGlv11i6Wc2vEM1b2dSm6Lbae2XBgbrjReI/3xphrntroRAhgJN0SV76n4qCV7f8oA==, tarball: https://npm.pkg.github.com/download/@rumsan/communication/0.0.10/4d06dce956623ec62ba2542e0e25f28a7f188c9c}
     dependencies:
       axios: 1.6.8
     transitivePeerDependencies:
@@ -6012,14 +6011,6 @@ packages:
 
   /@rumsan/communication@0.0.8:
     resolution: {integrity: sha512-Ht+vIdZVabacljbIO54QDm2FXYSH5CAKyDQ68/NcvQdqQz39x3wZLt4DWuliTGY6ZpaniddVyql57NTdcmae6Q==, tarball: https://npm.pkg.github.com/download/@rumsan/communication/0.0.8/b11e20c168799814e0d5058533ec77ed35f2d505}
-    dependencies:
-      axios: 1.6.8
-    transitivePeerDependencies:
-      - debug
-    dev: false
-
-  /@rumsan/communication@0.0.9:
-    resolution: {integrity: sha512-PrioZi1tpD7tOMMZ1g3mGADCX2brKvarJV5dB3E8H21ncWwlYBS+XyfYBebnoRBQ9HjELH9VIBTKVhnYThdhIQ==, tarball: https://npm.pkg.github.com/download/@rumsan/communication/0.0.9/e9528ec698dbb494851f84bfeac7667a2a8789e5}
     dependencies:
       axios: 1.6.8
     transitivePeerDependencies:
@@ -6082,22 +6073,6 @@ packages:
       - rxjs
     dev: false
 
-  /@rumsan/react-query@0.0.34(@types/react@18.2.79):
-    resolution: {integrity: sha512-Sd5XsThQaI8IN+KSNdqQqZWmlbRR8BNzBLlojPOGCqM9QLKskjyPREpIyOT3JTSmH+ITU3yocW4lDt1IJqlVJA==, tarball: https://npm.pkg.github.com/download/@rumsan/react-query/0.0.34/1559e5a8544466ab164a070649ed8fb0570d28b8}
-    dependencies:
-      '@rumsan/communication': 0.0.7
-      '@rumsan/sdk': 0.0.43
-      '@tanstack/react-query': 5.22.2(react@18.2.0)
-      axios: 1.6.8
-      react: 18.2.0
-      tslib: 2.6.2
-      zustand: 4.5.2(@types/react@18.2.79)(react@18.2.0)
-    transitivePeerDependencies:
-      - '@types/react'
-      - debug
-      - immer
-    dev: false
-
   /@rumsan/react-query@0.0.38(@types/react@18.2.79)(typescript@5.4.5)(zod@3.23.4):
     resolution: {integrity: sha512-SRmOH1E0s0NtFGKxnWty3dQB/kauLx+s88+J1PsaF5g/cCZxb5QwkdJmL6t2C9zz2UWlnfriD0p+bkBtguWBSw==, tarball: https://npm.pkg.github.com/download/@rumsan/react-query/0.0.38/8764cc38cc8e391048fb3fe1a46ddc5e2664cfc1}
     dependencies:
@@ -6122,15 +6097,6 @@ packages:
 
   /@rumsan/sdk@0.0.42:
     resolution: {integrity: sha512-/u9Oj9UtyZxMqpQoYZijoVq2mdO/ejxUYB2Bevxc5jAySo5Qb9rwmIraki2vNhXoZTnNwD8asaV46621o+1ZxQ==, tarball: https://npm.pkg.github.com/download/@rumsan/sdk/0.0.42/88f1ecdcfbe72064f64782ae015c94178c35a1a7}
-    dependencies:
-      axios: 1.6.8
-      tslib: 2.6.2
-    transitivePeerDependencies:
-      - debug
-    dev: false
-
-  /@rumsan/sdk@0.0.43:
-    resolution: {integrity: sha512-p+SlGBC70VVxlRACfpiAwIR/MTJCAQNG0eKwyM5pa/fRvIn1gkKV+k4czg3hyrup7tEBTUDeB0SUli+Q5VwVFQ==, tarball: https://npm.pkg.github.com/download/@rumsan/sdk/0.0.43/7203e57ded302577c92395b09a8fd3d6051c4071}
     dependencies:
       axios: 1.6.8
       tslib: 2.6.2

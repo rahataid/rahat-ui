@@ -26,10 +26,10 @@ import { useEffect } from 'react';
 type IProps = {
   data: ListBeneficiary;
   // handleDefault: VoidFunction;
-  handleClose: VoidFunction;
+  closeSecondPanel: VoidFunction;
 };
 
-export default function BeneficiaryDetail({ data, handleClose }: IProps) {
+export default function BeneficiaryDetail({ data, closeSecondPanel }: IProps) {
   const router = useRouter();
   const { setExtras }: any = useFormStore();
 
@@ -61,7 +61,7 @@ export default function BeneficiaryDetail({ data, handleClose }: IProps) {
       if (result.isConfirmed) {
         try {
           await deleteCommunityBeneficiary.mutateAsync(data?.uuid as UUID);
-          handleClose();
+          closeSecondPanel();
         } catch (error) {
           toast.error('Error deleting Beneficiary');
           console.error('Error deleting Beneficiary:', error);
@@ -79,7 +79,7 @@ export default function BeneficiaryDetail({ data, handleClose }: IProps) {
           <div className="flex gap-4">
             <TooltipProvider delayDuration={100}>
               <Tooltip>
-                <TooltipTrigger onClick={handleClose}>
+                <TooltipTrigger onClick={closeSecondPanel}>
                   <Minus size={20} strokeWidth={1.5} />
                 </TooltipTrigger>
                 <TooltipContent className="bg-secondary ">

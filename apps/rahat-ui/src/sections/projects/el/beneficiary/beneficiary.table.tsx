@@ -52,7 +52,7 @@ import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
 import { useProjectBeneficiaryTableColumns } from './use-table-column';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
-import { useBulkAssignVoucher } from 'apps/rahat-ui/src/hooks/el/contracts/el-contracts';
+import { useBulkAssignVoucher, useGetVoucherDetails } from 'apps/rahat-ui/src/hooks/el/contracts/el-contracts';
 import { useBoolean } from '../../../../hooks/use-boolean';
 import TokenAssingnConfirm from './token.assign.confirm';
 import TableLoader from '../../../../components/table.loader';
@@ -133,6 +133,7 @@ function BeneficiaryDetailTableView() {
     selectedListItems,
     setSelectedListItems,
     resetSelectedListItems,
+    resetFilters
   } = usePagination();
   const assignVoucher = useBulkAssignVoucher();
   const { queryService } = useGraphService();
@@ -151,9 +152,8 @@ function BeneficiaryDetailTableView() {
   });
 
   const [projectVoucherBeneficiaries, setProjectVoucherBeneficiaries] = useState<any>()
-  const [projectFilteredVoucherBeneficiaries, setProjectFilteredVoucherBeneficiaries] = useState<any>()
-
-  console.log(projectBeneficiaries)
+  const [filteredProjectVoucherBeneficiaries, setFilteredProjectVoucherBeneficiaries] = useState<any>()
+  const [voucherFilter, setVoucherFilter] = useState<any>()
 
   useEffect(() => {
     if (projectBeneficiaries) {
@@ -181,20 +181,20 @@ function BeneficiaryDetailTableView() {
 
 
   useEffect(() => {
-    if(projectVoucherBeneficiaries && filters.voucher) {
-      if(filters.voucher === 'ALL'){
-        setProjectFilteredVoucherBeneficiaries(projectVoucherBeneficiaries)
+    if(projectVoucherBeneficiaries && voucherFilter) {
+      if(voucherFilter.voucher === 'ALL'){
+        setFilteredProjectVoucherBeneficiaries(projectVoucherBeneficiaries)
       }
-      if(filters.voucher === 'REFERRED'){
+      if(voucherFilter.voucher === 'REFERRED'){
         const filteredData = projectVoucherBeneficiaries.filter(item => item.voucher === 'Referred voucher')
-        setProjectFilteredVoucherBeneficiaries(filteredData)
+        setFilteredProjectVoucherBeneficiaries(filteredData)
       }
-      if(filters.voucher === 'FREE'){
+      if(voucherFilter.voucher === 'FREE'){
         const filteredData = projectVoucherBeneficiaries.filter(item => item.voucher === 'Free voucher')
-        setProjectFilteredVoucherBeneficiaries(filteredData)
+        setFilteredProjectVoucherBeneficiaries(filteredData)
       }
     }
-  }, [filters.voucher])
+  }, [voucherFilter, projectBeneficiaries?.fetchStatus])
   
 
   const contractAddress = useProjectSettingsStore(
@@ -205,28 +205,29 @@ function BeneficiaryDetailTableView() {
 
   const handleBenType = React.useCallback(
     (type: string) => {
+      resetFilters()
       resetSelectedListItems();
-      setProjectFilteredVoucherBeneficiaries(undefined);
+      setFilteredProjectVoucherBeneficiaries(undefined)
       if (type === 'ALL') {
         setFilters({ ...filters, status: undefined });
         return;
       }
-      setFilters({ ...filters, status: type });
+      setFilters({ ...filters, status: type, voucher: 'ALL' });
     },
     [filters, setFilters],
   );
 
   const handleFilterType = React.useCallback(
     (type: string) => {
-      resetSelectedListItems();
-      setFilters({ ...filters, status: undefined, voucher: type });
+      // resetSelectedListItems();
+      setVoucherFilter({ voucher: type });
     },
     [filters, setFilters],
   );
 
   const table = useReactTable({
     manualPagination: true,
-    data: projectFilteredVoucherBeneficiaries || projectVoucherBeneficiaries ||  [],
+    data: filteredProjectVoucherBeneficiaries || projectVoucherBeneficiaries ||  [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,

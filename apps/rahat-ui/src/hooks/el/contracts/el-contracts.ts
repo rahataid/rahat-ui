@@ -6,6 +6,7 @@ import {
 } from './donor';
 import {
   elProjectAbi,
+  useReadElProjectGetProjectVoucherDetail,
   useWriteElProjectAddBeneficiary,
   useWriteElProjectAssignClaims,
   useWriteElProjectCloseProject,

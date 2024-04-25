@@ -32,6 +32,7 @@ import InfoBox from './InfoBox';
 import { useRSQuery } from '@rumsan/react-query';
 import ColumnMappingTable from './ColumnMappingTable';
 import MyAlert from './MyAlert';
+import { useFetchKoboSettings } from '@rahat-ui/community-query';
 
 interface IProps {
   extraFields: string[];
@@ -40,6 +41,7 @@ interface IProps {
 export default function BenImp({ extraFields }: IProps) {
   const form = useForm({});
   const { rumsanService } = useRSQuery();
+  const { data: kbSettings } = useFetchKoboSettings();
 
   const [importSource, setImportSource] = useState('');
   const [rawData, setRawData] = useState([]) as any;
@@ -67,23 +69,18 @@ export default function BenImp({ extraFields }: IProps) {
     }
   };
 
-  const fetchKoboSettings = async () => {
-    const res = await rumsanService.client.get('/app/settings/kobotool');
-    return res.data;
-  };
-
   const handleSourceChange = async (d: string) => {
     setRawData([]);
     setMappings([]);
     if (d === IMPORT_SOURCE.KOBOTOOL) {
       setImportSource(IMPORT_SOURCE.KOBOTOOL);
-      const data = await fetchKoboSettings();
-      if (!data.data.length)
+      console.log('KBO SETTINGS', kbSettings);
+      if (!kbSettings || !kbSettings.data.length)
         return Swal.fire({
           icon: 'warning',
           title: 'Please setup kobotool settings first!',
         });
-      const sanitizedOptions = data.data.map((d: any) => {
+      const sanitizedOptions = kbSettings.data.map((d: any) => {
         return {
           label: d.name,
           value: d.name,

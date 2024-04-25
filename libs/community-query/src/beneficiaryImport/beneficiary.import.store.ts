@@ -1,8 +1,8 @@
 import { create } from 'zustand';
 
 const useStore = create((set) => ({
-  extras: {},
-  setExtras: (newExtras: any) => set({ extras: newExtras }),
+  importSource: '',
+  setImportSource: (d: string) => set({ importSource: d }),
 }));
 
 export default useStore;

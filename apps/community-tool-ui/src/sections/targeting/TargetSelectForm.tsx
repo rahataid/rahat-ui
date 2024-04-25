@@ -23,7 +23,6 @@ import { useTargetingCreate } from '@rahat-ui/community-query';
 import TargetingFormBuilder from '../../targetingFormBuilder';
 import useTargetingFormStore from '../../targetingFormBuilder/form.store';
 import { usePagination } from '@rahat-ui/query';
-
 import { useFieldDefinitionsList } from '@rahat-ui/community-query';
 
 import {
@@ -43,6 +42,7 @@ export default function TargetSelectForm() {
   const { data: definitions } = useFieldDefinitionsList({
     ...pagination,
     perPage: FIELD_DEF_FETCH_LIMIT,
+    isTargeting: true,
   });
 
   const { handleSubmit, control } = useForm();

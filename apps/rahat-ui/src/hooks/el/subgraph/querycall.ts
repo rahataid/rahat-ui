@@ -114,7 +114,6 @@ export const useProjectTransaction = () => {
       return newData;
     },
   });
-
 };
 
 export const useBeneficiaryCount = (projectAddress: string) => {
@@ -165,58 +164,54 @@ export const useVendorVoucher = (address: string) => {
       return res;
     },
   });
-
 };
 
-export const useFreeVoucherHolder = () =>{
+export const useFreeVoucherHolder = () => {
   const { queryService } = useGraphService();
   return useQuery({
-    queryKey:['free-holder'],
-    queryFn: async () =>{
+    queryKey: ['free-holder'],
+    queryFn: async () => {
       const res = await queryService.getFreeVoucherOwners();
-      return res
-     
-    }
-  })
-}
+      return res;
+    },
+  });
+};
 
-export const useReferredVoucherHolder = () =>{
+export const useReferredVoucherHolder = () => {
   const { queryService } = useGraphService();
   return useQuery({
-    queryKey:['referred-holder'],
-    queryFn: async () =>{
+    queryKey: ['referred-holder'],
+    queryFn: async () => {
       const res = await queryService.getDiscountVoucherOwners();
       return res;
-    }
-  })
-}
+    },
+  });
+};
 
 export const useVoucherHolder = () => {
   const { queryService } = useGraphService();
   return useQuery({
-    queryKey:['voucher-holder'],
-    queryFn: async () =>{
+    queryKey: ['voucher-holder'],
+    queryFn: async () => {
       const res = await queryService.getVoucherOwners();
-      return res
-     
-    }
-  })
-}
+      return res;
+    },
+  });
+};
 
-export const useGetFreeVoucherTransaction = (tokenFree:string) => {
+export const useGetFreeVoucherTransaction = (tokenFree: string) => {
   const { queryService } = useGraphService();
   return useQuery({
     enabled: tokenFree ? true : false,
-    queryKey:['free-voucher-transactions'],
-    queryFn: async () =>{
+    queryKey: ['free-voucher-transactions'],
+    queryFn: async () => {
       const res = await queryService.getEyeVoucherTransaction(tokenFree);
-      return res
-     
-    }
-  })
-}
+      return res;
+    },
+  });
+};
 
-export const useGetReferredVoucherTransaction = (tokenReferred:string) => {
+export const useGetReferredVoucherTransaction = (tokenReferred: string) => {
   const { queryService } = useGraphService();
   return useQuery({
     enabled: tokenReferred ? true : false,

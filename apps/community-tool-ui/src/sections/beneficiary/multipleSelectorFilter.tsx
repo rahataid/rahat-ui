@@ -32,8 +32,9 @@ export default function Filter({ selectedData, handleClose }: IProps) {
   });
 
   const inputOptions: { [key: string]: string } = {};
-  groupData?.data?.rows.forEach((row: { id: string; name: string }) => {
-    inputOptions[row.id] = row.name;
+
+  groupData?.data?.rows.forEach((row: { uuid: string; name: string }) => {
+    inputOptions[row.uuid] = row.name;
   });
 
   const totalSelected = selectedData.length;

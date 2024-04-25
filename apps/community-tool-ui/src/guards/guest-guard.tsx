@@ -1,11 +1,12 @@
 'use client';
 
-// import { useAuthInitialization } from '@rahat-ui/query';
-// import { useRouter, useSearchParams } from 'next/navigation';
-// // routes
-// import { useCallback, useEffect } from 'react';
-// import { paths } from '../routes/paths';
-// //
+import { useAuthInitialization } from '@rahat-ui/query';
+import { useRouter, useSearchParams } from 'next/navigation';
+// routes
+import { useCallback, useEffect } from 'react';
+import { paths } from '../routes/paths';
+import { DEBUG_MODE } from '../constants/config';
+//
 
 // ----------------------------------------------------------------------
 
@@ -14,28 +15,29 @@ type Props = {
 };
 
 export default function GuestGuard({ children }: Props) {
-  // const router = useRouter();
-  // const searchParams = useSearchParams();
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
-  // const [authenticated, initialized] = useAuthInitialization();
+  const [authenticated, initialized] = useAuthInitialization();
 
-  // const returnTo = searchParams.get('returnTo');
+  const returnTo = searchParams.get('returnTo');
 
-  // // const { isActive } = useWeb3React();
+  // const { isActive } = useWeb3React();
 
-  // const check = useCallback(() => {
-  //   if (authenticated) {
-  //     router.replace(returnTo || paths.dashboard.root);
-  //   }
-  // }, [authenticated, returnTo, router]);
+  const check = useCallback(() => {
+    if (authenticated) {
+      router.replace(returnTo || paths.dashboard.root);
+    }
+  }, [authenticated, returnTo, router]);
 
-  // useEffect(() => {
-  //   check();
-  // }, [check]);
+  useEffect(() => {
+    check();
+  }, [check]);
 
-  // if (!initialized) {
-  //   return 'Loading';
-  // }
+  if (DEBUG_MODE) return <>{children}</>;
+  if (!initialized) {
+    return 'Loading';
+  }
 
   return <>{children}</>;
 }

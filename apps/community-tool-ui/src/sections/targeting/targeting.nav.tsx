@@ -10,7 +10,7 @@ export default function Nav() {
           <h1 className="font-semibold text-xl text-primary">Targeting</h1>
         </div>
         <div className="px-4">
-          <ScrollArea className="h-auto mb-4">
+          <ScrollArea className="h-auto m-4">
             <TargetSelectForm />
           </ScrollArea>
         </div>

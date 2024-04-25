@@ -23,54 +23,56 @@ import {
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import CustomPagination from '../../components/customPagination';
 import { useCommunitySettingList } from '@rahat-ui/community-query';
+import { usesettingTableColumns } from './useSettingColumns';
 
-interface BeneficiaryData {
-  name: string;
-  dataType: string;
-  isPrivate: boolean;
-  isReadOnly: boolean;
-  requiredFields: [];
-}
+// interface BeneficiaryData {
+//   name: string;
+//   dataType: string;
+//   isPrivate: boolean;
+//   isReadOnly: boolean;
+//   requiredFields: [];
+// }
 
-const columns: ColumnDef<BeneficiaryData>[] = [
-  {
-    header: 'Name',
-    accessorKey: 'name',
-    cell: ({ row }) => <div>{row.getValue('name')}</div>,
-  },
-  {
-    header: 'DataType',
-    accessorKey: 'dataType',
-    cell: ({ row }) => <div>{row.getValue('dataType')}</div>,
-  },
-  {
-    header: 'IsPrivate',
-    accessorKey: 'isPrivate',
-    cell: ({ row }) => <div>{row.original.isPrivate ? 'Yes' : 'No'}</div>,
-  },
-  {
-    header: 'IsReadOnly',
-    accessorKey: 'isReadOnly',
-    cell: ({ row }) => <div>{row.original.isReadOnly ? 'Yes' : 'No'}</div>,
-  },
-  {
-    header: 'RequiredFields',
-    accessorKey: 'requiredFields',
-    cell: ({ row }) => {
-      return (
-        <div>
-          {row.original.requiredFields.map((field, index) => (
-            <li key={index}>{field}</li>
-          ))}
-        </div>
-      );
-    },
-  },
-];
+// const columns: ColumnDef<BeneficiaryData>[] = [
+//   {
+//     header: 'Name',
+//     accessorKey: 'name',
+//     cell: ({ row }) => <div>{row.getValue('name')}</div>,
+//   },
+//   {
+//     header: 'DataType',
+//     accessorKey: 'dataType',
+//     cell: ({ row }) => <div>{row.getValue('dataType')}</div>,
+//   },
+//   {
+//     header: 'IsPrivate',
+//     accessorKey: 'isPrivate',
+//     cell: ({ row }) => <div>{row.original.isPrivate ? 'Yes' : 'No'}</div>,
+//   },
+//   {
+//     header: 'IsReadOnly',
+//     accessorKey: 'isReadOnly',
+//     cell: ({ row }) => <div>{row.original.isReadOnly ? 'Yes' : 'No'}</div>,
+//   },
+//   {
+//     header: 'RequiredFields',
+//     accessorKey: 'requiredFields',
+//     cell: ({ row }) => {
+//       return (
+//         <div>
+//           {row.original.requiredFields.map((field, index) => (
+//             <li key={index}>{field}</li>
+//           ))}
+//         </div>
+//       );
+//     },
+//   },
+// ];
 
 export default function ListSetting() {
   const [perPage, setPerPage] = useState<number>(5);
   const [currentPage, setCurrentPage] = useState<number>(1);
+  const columns = usesettingTableColumns();
 
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
@@ -83,7 +85,7 @@ export default function ListSetting() {
   const { data } = useCommunitySettingList();
 
   const pagedData = useMemo(() => {
-    return data?.data.slice(startIndex, endIndex) || [];
+    return data?.data?.slice(startIndex, endIndex) || [];
   }, [data?.data, startIndex, endIndex]);
 
   const meta = {
@@ -107,69 +109,67 @@ export default function ListSetting() {
   });
 
   return (
-    <div className="h-custom">
-      <div className="h-full p-4">
-        <h1 className="text-lg font-semibold mb-6">List Settings</h1>
-        <div className="w-full -mt-2 p-2 bg-secondary">
-          <div className="rounded border bg-white">
-            <TableComponent>
-              <ScrollArea className="h-table1">
-                <TableHeader className="sticky top-0">
-                  {table.getHeaderGroups().map((headerGroup) => (
-                    <TableRow key={headerGroup.id}>
-                      {headerGroup.headers.map((header) => {
-                        return (
-                          <TableHead key={header.id}>
-                            {header.isPlaceholder
-                              ? null
-                              : flexRender(
-                                  header.column.columnDef.header,
-                                  header.getContext(),
-                                )}
-                          </TableHead>
-                        );
-                      })}
-                    </TableRow>
-                  ))}
-                </TableHeader>
-                <TableBody>
-                  {table.getRowModel().rows?.length ? (
-                    table.getRowModel().rows.map((row) => (
-                      <TableRow
-                        key={row.id}
-                        data-state={row.getIsSelected() && 'selected'}
-                      >
-                        {row.getVisibleCells().map((cell) => (
-                          <TableCell key={cell.id}>
-                            {flexRender(
-                              cell.column.columnDef.cell,
-                              cell.getContext(),
+    <div className="w-full mt-1 p-1 bg-secondary">
+      <div className="rounded border bg-white">
+        <TableComponent>
+          <ScrollArea className="h-[calc(100vh-135px)]">
+            <TableHeader className="bg-card sticky top-0">
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => {
+                    return (
+                      <TableHead key={header.id}>
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext(),
                             )}
-                          </TableCell>
-                        ))}
-                      </TableRow>
-                    ))
-                  ) : (
-                    <TableRow>
-                      <TableCell
-                        colSpan={table.getAllColumns().length}
-                        className="h-24 text-center"
-                      >
-                        No results.
+                      </TableHead>
+                    );
+                  })}
+                </TableRow>
+              ))}
+            </TableHeader>
+            <TableBody>
+              {table.getRowModel().rows?.length ? (
+                table.getRowModel().rows.map((row) => (
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && 'selected'}
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )}
                       </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </ScrollArea>
-              <CustomPagination
-                meta={data?.response?.meta || meta}
-                handleNextPage={handleNextPage}
-                handlePrevPage={handlePrevPage}
-                handlePageSizeChange={(value) => setPerPage(Number(value))}
-              />
-            </TableComponent>
-          </div>
-        </div>
+                    ))}
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={table.getAllColumns().length}
+                    className="h-24 text-center"
+                  >
+                    No results.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </ScrollArea>
+          <CustomPagination
+            meta={data?.response?.meta || meta}
+            handleNextPage={handleNextPage}
+            handlePrevPage={handlePrevPage}
+            handlePageSizeChange={(value) => setPerPage(Number(value))}
+            currentPage={currentPage}
+            perPage={perPage}
+            total={data?.response?.meta?.total || 0}
+          />
+        </TableComponent>
       </div>
     </div>
   );

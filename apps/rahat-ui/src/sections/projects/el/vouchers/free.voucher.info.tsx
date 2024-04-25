@@ -40,20 +40,9 @@ const FreeVoucherInfo = ({ data }) => {
             <p className="font-light">No. of Voucher Minted</p>
           </div>
         </div>
-        <div>
-          <p className="font-medium text-primary">{data?.freeVoucherPrice}</p>
-          <p className="font-light">Price in {data?.freeVoucherCurrency}</p>
-        </div>
-        <div>
-          <p className="font-medium text-primary">
-            {data?.freeVoucherBudget || 0}
-          </p>
-          <p className="font-light">No. of Voucher Minted</p>
-        </div>
-      </div>
-      <div>
         <p className="mt-4 sm:mt-8 sm:w-2/3">{data?.freeVoucherDescription}</p>
       </div>
+      <div></div>
     </div>
   );
 };

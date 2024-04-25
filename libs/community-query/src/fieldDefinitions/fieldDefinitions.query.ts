@@ -1,4 +1,9 @@
-import { UseQueryResult, useMutation, useQuery } from '@tanstack/react-query';
+import {
+  UseQueryResult,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
 import { useRSQuery } from '@rumsan/react-query';
 import { getFieldDefinitionClient } from '@rahataid/community-tool-sdk/clients';
 import { TAGS } from '../config';
@@ -6,7 +11,7 @@ import { Pagination } from '@rumsan/sdk/types';
 import Swal from 'sweetalert2';
 
 export const useFieldDefinitionsList = (
-  payload: Pagination & { any?: string },
+  payload: Pagination & { isTargeting?: boolean },
 ): UseQueryResult<any, Error> => {
   const { queryClient, rumsanService } = useRSQuery();
   const fieldDefClient = getFieldDefinitionClient(rumsanService.client);
@@ -55,6 +60,7 @@ export const useFieldDefinitionsCreate = () => {
 
 export const useFieldDefinitionsUpdate = () => {
   const { queryClient, rumsanService } = useRSQuery();
+  const qc = useQueryClient();
   const fieldDefClient = getFieldDefinitionClient(rumsanService.client);
 
   return useMutation(
@@ -63,13 +69,8 @@ export const useFieldDefinitionsUpdate = () => {
       mutationFn: fieldDefClient.update,
       onSuccess: () => {
         Swal.fire('Field Definition Updated Successfully', '', 'success');
-        queryClient.invalidateQueries({
-          queryKey: [
-            TAGS.LIST_COMMUNITY_FIELD_DEFINITIONS,
-            {
-              exact: true,
-            },
-          ],
+        qc.invalidateQueries({
+          queryKey: [TAGS.LIST_COMMUNITY_FIELD_DEFINITIONS],
         });
       },
       onError: (error: any) => {

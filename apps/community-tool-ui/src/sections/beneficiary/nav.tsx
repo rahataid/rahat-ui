@@ -62,12 +62,6 @@ export default function Nav({
                 <Group size={18} strokeWidth={1.5} />
                 <Link href={paths.dashboard.group.root}>Group List</Link>
               </div>
-              <div className="flex items-center p-2 gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white text-muted-foreground">
-                <ClipboardList size={18} strokeWidth={1.5} />
-                <Link href={paths.dashboard.fieldDefinitions.root}>
-                  Field Definition List
-                </Link>
-              </div>
             </nav>
           </div>
         </ScrollArea>
@@ -93,13 +87,6 @@ export default function Nav({
             <div className="flex items-center p-2 gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white">
               <Plus size={18} strokeWidth={1.5} />
               <Link href={paths.dashboard.group.add}>Add Group</Link>
-            </div>
-
-            <div className="flex items-center p-2 gap-3 rounded-md cursor-pointer hover:bg-primary hover:text-white">
-              <Plus size={18} strokeWidth={1.5} />
-              <Link href={paths.dashboard.fieldDefinitions.add}>
-                Add Field Definition
-              </Link>
             </div>
           </nav>
         </div>

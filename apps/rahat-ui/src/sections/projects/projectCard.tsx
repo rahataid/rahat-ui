@@ -11,6 +11,7 @@ type CardProps = {
   subTitle: string;
   image: string;
   badge: string;
+  status: string;
 };
 
 export default function CommonCard({
@@ -19,10 +20,13 @@ export default function CommonCard({
   subTitle,
   image,
   badge,
+  status,
+
 }: CardProps) {
   const router = useRouter();
 
   const handleClick = () => {
+    if(status === 'NOT_READY') return alert("Project not ready")
     router.push(`/projects/${badge.toLowerCase()}/${address}`);
   };
 

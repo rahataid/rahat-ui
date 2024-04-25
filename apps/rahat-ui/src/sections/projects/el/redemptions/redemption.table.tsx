@@ -65,7 +65,7 @@ export default function RedemptionTable({}) {
   const columns = useTableColumns(handleAssignModalClick);
 
   const [perPage, setPerPage] = React.useState<number>(10);
-  const [currentPage, setCurrentPage] = React.useState<number>(2);
+  const [currentPage, setCurrentPage] = React.useState<number>(1);
 
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});

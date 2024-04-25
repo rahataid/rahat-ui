@@ -140,7 +140,6 @@ export default function BenImp({ extraFields }: IProps) {
     const index = mappings.findIndex(
       (item: any) => item.sourceField === sourceField,
     );
-    console.log({ index });
     if (index !== -1) {
       // Update mapping
       mappings[index] = { ...mappings[index], targetField };
@@ -178,20 +177,22 @@ export default function BenImp({ extraFields }: IProps) {
         icon: 'error',
         title: 'Please load data from data source!',
       });
-    if (uniqueField) return setCurrentScreen(BENEF_IMPORT_SCREENS.VALIDATION);
 
-    return Swal.fire({
-      icon: 'warning',
-      title: 'Continue without unique field?',
-      showCancelButton: true,
-      confirmButtonText: 'Continue',
-      cancelButtonText: 'No',
-      text: 'Duplicate data might be imported!',
-    }).then((result) => {
-      if (result.isConfirmed) {
-        setCurrentScreen(BENEF_IMPORT_SCREENS.VALIDATION);
-      }
-    });
+    // if (uniqueField) return setCurrentScreen(BENEF_IMPORT_SCREENS.VALIDATION);
+    return setCurrentScreen(BENEF_IMPORT_SCREENS.VALIDATION);
+
+    // return Swal.fire({
+    //   icon: 'warning',
+    //   title: 'Continue without unique field?',
+    //   showCancelButton: true,
+    //   confirmButtonText: 'Continue',
+    //   cancelButtonText: 'No',
+    //   text: 'Duplicate data might be imported!',
+    // }).then((result) => {
+    //   if (result.isConfirmed) {
+    //     setCurrentScreen(BENEF_IMPORT_SCREENS.VALIDATION);
+    //   }
+    // });
   };
 
   const exportDuplicateData = (data: any, duplicateData: any) => {
@@ -213,7 +214,7 @@ export default function BenImp({ extraFields }: IProps) {
 
   const handleImportNowClick = async () => {
     const msg = duplicateData.length
-      ? `${duplicateData.length / 2} duplicates found.<b>Import Anyway?</b>`
+      ? `Duplicate data found!.<b>Import Anyway?</b>`
       : '';
     const dialog = await Swal.fire({
       title: `${processedData.length} Beneficiaries will be imported!`,
@@ -271,7 +272,7 @@ export default function BenImp({ extraFields }: IProps) {
         const replaced = finalPayload.map((item: any) => {
           const { firstName, lastName } = splitFullName(item[m.sourceField]);
           const newItem = { ...item, firstName, lastName };
-          if (m.sourceField !== m.targetField) delete newItem[m.sourceField];
+          // if (m.sourceField !== m.targetField) delete newItem[m.sourceField];
           return newItem;
         });
         finalPayload = replaced;

@@ -69,7 +69,7 @@ export default function TargetingView() {
   return (
     <Tabs defaultValue="list" className="h-full">
       <ResizablePanelGroup direction="horizontal" className="min-h-max bg-card">
-        <ResizablePanel minSize={20} defaultSize={20} maxSize={20}>
+        <ResizablePanel minSize={20} defaultSize={30} maxSize={30}>
           <TargetingNav />
         </ResizablePanel>
         <ResizableHandle />

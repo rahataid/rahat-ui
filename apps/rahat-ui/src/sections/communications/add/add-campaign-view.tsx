@@ -78,7 +78,7 @@ const AddCampaignView = () => {
   const debouncedHandleSubmit = debounce((data) => {
     let transportId;
     transportData?.data.map((tdata) => {
-      if (tdata.name.toLowerCase() === data.campaignType.toLowerCase()) {
+      if (tdata.name.toLowerCase() === data?.campaignType.toLowerCase()) {
         transportId = tdata.id;
       }
     });
@@ -95,6 +95,7 @@ const AddCampaignView = () => {
       audio?: any;
       message?: string;
       body?: string;
+      messageSid?: string;
     };
     const additionalData: AdditionalData = {};
     if (data?.campaignType === CAMPAIGN_TYPES.PHONE && data?.file) {
@@ -141,18 +142,13 @@ const AddCampaignView = () => {
     data: z.infer<typeof FormSchema>,
     event: any,
   ) => {
-    event.preventDefault();
     setIsSubmitting(true);
-    event.preventDefault();
     debouncedHandleSubmit(data);
   };
 
   return (
     <FormProvider {...form}>
-      <form
-        // onSubmit={form.handleSubmit(handleCreateCampaign)}
-        className="h-add"
-      >
+      <form className="h-add">
         <AddForm
           title="Add Campaign"
           audios={audioData?.data || []}
@@ -160,7 +156,7 @@ const AddCampaignView = () => {
           showAddAudience={showAddAudienceView.value}
           form={form}
           isSubmitting={isSubmitting}
-          handleSubmit={handleCreateCampaign}
+          handleSubmit={form.handleSubmit(handleCreateCampaign)}
         />
 
         {showAddAudienceView.value ? (

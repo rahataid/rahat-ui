@@ -55,6 +55,33 @@ export const useChainSettings = () => {
   return query;
 };
 
+export const useAcessManagerSettings = () => {
+  const { queryClient } = useRSQuery();
+  // TODO:NEW is a temp name, will be changed to CHAIN_SETTINGS
+  const appSettings = useAppSettingsMutate('ACCESS_MANAGER');
+  const { setAccessManagerSettings } = useSettingsStore();
+
+  const query = useQuery(
+    {
+      queryKey: ['ACCESS_MANAGER'],
+      queryFn: async () => {
+        const d = await appSettings.mutateAsync();
+        return d.data.data?.value;
+      },
+
+      enabled: !!queryClient,
+    },
+    queryClient,
+  );
+
+  useEffect(() => {
+    if (query.isSuccess) {
+      setAccessManagerSettings(query.data);
+    }
+  }, [query.isSuccess, query.data, setAccessManagerSettings]);
+
+  return query;
+};
 // export const useSubGraphUrlSettings = () => {
 //   const { queryClient } = useRSQuery();
 //   const appSettings = useAppSettingsMutate('SUBGRAPH_URL');

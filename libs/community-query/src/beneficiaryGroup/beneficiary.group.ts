@@ -31,8 +31,8 @@ export const useCommunityBeneficiaryGroupCreate = () => {
 
       if (value !== undefined && value !== '') {
         const inputData = {
-          beneficiariesId: payload?.selectedData,
-          groupId: parseInt(value),
+          beneficiaryUID: payload?.selectedData,
+          groupUID: value,
         };
         return await beneficiaryGroupClient.create(inputData as any);
       }

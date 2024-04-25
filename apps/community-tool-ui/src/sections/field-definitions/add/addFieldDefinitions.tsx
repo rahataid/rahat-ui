@@ -27,8 +27,8 @@ import { z } from 'zod';
 import React, { useEffect, useState } from 'react';
 
 import { useFieldDefinitionsCreate } from '@rahat-ui/community-query';
-import { FieldType } from 'apps/community-tool-ui/src/types/fieldDefinition';
 import { Minus, Plus } from 'lucide-react';
+import { FieldType } from 'apps/community-tool-ui/src/constants/fieldDefinition.const';
 
 type Iprops = {
   handleTabChange: (tab: 'add' | 'import') => void;
@@ -136,7 +136,7 @@ export default function AddFieldDefinitions({ handleTabChange }: Iprops) {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleCreateFieldDefinitions)}>
-        <div className="p-4 h-add overflow-scroll">
+        <div className="p-4 h-add overflow-scroll rounded border bg-white">
           <div style={{ justifyContent: 'space-between' }} className="flex">
             <div>
               <h1 className="text-lg ml-2 font-semibold mb-6">
@@ -201,6 +201,7 @@ export default function AddFieldDefinitions({ handleTabChange }: Iprops) {
                             PASSWORD
                           </SelectItem>
                           <SelectItem value={FieldType.RADIO}>RADIO</SelectItem>
+                          <SelectItem value={FieldType.DATE}>DATE</SelectItem>
                           <SelectItem value={FieldType.TEXTAREA}>
                             TEXTAREA
                           </SelectItem>

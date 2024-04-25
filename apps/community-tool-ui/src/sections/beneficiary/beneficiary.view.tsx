@@ -71,21 +71,21 @@ function BeneficiaryView() {
     },
   });
 
-  console.log('beneflist', data);
-
   const [selectedData, setSelectedData] = useState(null) as any;
-  const [selectedBenefId, setSelectedBenefId] = useState<number[]>([]);
+  const [selectedBenefId, setSelectedBenefId] = useState<string[]>([]);
   const [active, setActive] = useState<string>(BENEFICIARY_NAV_ROUTE.DEFAULT);
 
   const handleBeneficiaryClick = useCallback((item: ListBeneficiary) => {
     setSelectedData(item);
     setSelectedBenefId((prevSelectedData) => {
-      const isSelected = prevSelectedData?.includes(item.id);
+      const isSelected = prevSelectedData?.includes(item.uuid);
 
       if (isSelected) {
-        return prevSelectedData.filter((selectedId) => selectedId !== item.id);
+        return prevSelectedData.filter(
+          (selectedUUID) => selectedUUID !== item.uuid,
+        );
       } else {
-        return [...(prevSelectedData || []), item.id];
+        return [...(prevSelectedData || []), item.uuid];
       }
     });
   }, []);

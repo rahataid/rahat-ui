@@ -16,23 +16,14 @@ export default function AddFieldDefinitions() {
     setActiveTab(tab);
   };
   return (
-    <Tabs defaultValue="list" className="h-full">
-      <ResizablePanelGroup direction="horizontal" className="min-h-max bg-card">
-        <ResizablePanel minSize={20} defaultSize={20} maxSize={20}>
-          <BeneficiaryNav />
-        </ResizablePanel>
-        <ResizableHandle />
+    <>
+      {activeTab === 'add' && <FieldDefAdd handleTabChange={handleTabChange} />}
 
-        <ResizablePanel minSize={28}>
-          {activeTab === 'add' && (
-            <FieldDefAdd handleTabChange={handleTabChange} />
-          )}
-
-          {activeTab === 'import' && (
-            <ExcelUploader handleTabChange={handleTabChange} />
-          )}
-        </ResizablePanel>
-      </ResizablePanelGroup>
-    </Tabs>
+      {activeTab === 'import' && (
+        <div className="p-4 h-add rounded border bg-white">
+          <ExcelUploader handleTabChange={handleTabChange} />
+        </div>
+      )}
+    </>
   );
 }

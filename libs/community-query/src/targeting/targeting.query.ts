@@ -56,7 +56,7 @@ export const useTargetedBeneficiaryList = (target_uuid: string) => {
 
   const query = useQuery(
     {
-      queryKey: [TAGS.GET_TARGETING_BENEFICIARIES],
+      queryKey: [TAGS.GET_TARGETING_BENEFICIARIES, target_uuid],
       enabled: !!target_uuid,
       queryFn: () => targetingClient.listByTargetUuid(target_uuid),
     },

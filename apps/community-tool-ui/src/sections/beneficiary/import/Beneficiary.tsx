@@ -12,28 +12,30 @@ import {
 import {
   attachedRawData,
   exportDataToExcel,
-  splitValidAndInvalid,
+  formatNameString,
   includeOnlySelectedTarget,
   removeFieldsWithUnderscore,
   splitFullName,
-  formatNameString,
   splitValidAndDuplicates,
+  splitValidAndInvalid,
 } from 'apps/community-tool-ui/src/utils';
 import { ArrowBigLeft } from 'lucide-react';
-import React, { useState } from 'react';
+import React from 'react';
 import { useForm } from 'react-hook-form';
-import * as xlsx from 'xlsx';
 import Swal from 'sweetalert2';
+import * as xlsx from 'xlsx';
 import AddToQueue from './AddToQueue';
 import ErrorAlert from './ErrorAlert';
 import FilterBox from './FilterBox';
 import InfoBox from './InfoBox';
 
+import {
+  useBeneficiaryImportStore,
+  useFetchKoboSettings,
+} from '@rahat-ui/community-query';
 import { useRSQuery } from '@rumsan/react-query';
 import ColumnMappingTable from './ColumnMappingTable';
 import MyAlert from './MyAlert';
-import { useFetchKoboSettings } from '@rahat-ui/community-query';
-import { useBeneficiaryImportStore } from '@rahat-ui/community-query';
 
 interface IProps {
   extraFields: string[];
@@ -88,7 +90,6 @@ export default function BenImp({ extraFields }: IProps) {
     setMappings([]);
     if (d === IMPORT_SOURCE.KOBOTOOL) {
       setImportSource(IMPORT_SOURCE.KOBOTOOL);
-      console.log('KBO SETTINGS', kbSettings);
       if (!kbSettings || !kbSettings.data.length)
         return Swal.fire({
           icon: 'warning',
@@ -186,21 +187,7 @@ export default function BenImp({ extraFields }: IProps) {
         title: 'Please load data from data source!',
       });
 
-    // if (uniqueField) return setCurrentScreen(BENEF_IMPORT_SCREENS.VALIDATION);
     return setCurrentScreen(BENEF_IMPORT_SCREENS.VALIDATION);
-
-    // return Swal.fire({
-    //   icon: 'warning',
-    //   title: 'Continue without unique field?',
-    //   showCancelButton: true,
-    //   confirmButtonText: 'Continue',
-    //   cancelButtonText: 'No',
-    //   text: 'Duplicate data might be imported!',
-    // }).then((result) => {
-    //   if (result.isConfirmed) {
-    //     setCurrentScreen(BENEF_IMPORT_SCREENS.VALIDATION);
-    //   }
-    // });
   };
 
   const exportDuplicateData = (data: any, duplicateData: any) => {
@@ -249,7 +236,7 @@ export default function BenImp({ extraFields }: IProps) {
 
   const validateOrImport = (action: string) => {
     setValidBenef([]);
-    let finalPayload = rawData;
+    let finalPayload = rawData as any[];
     const selectedTargets = []; // Only submit selected target fields
 
     for (let m of mappings) {
@@ -310,7 +297,7 @@ export default function BenImp({ extraFields }: IProps) {
       finalPayload,
       selectedTargets,
     );
-    const final_mapping = attachedRawData(selectedFieldsOnly, rawData);
+    const final_mapping = attachedRawData(selectedFieldsOnly, rawData as []);
     const sourcePayload = {
       action,
       name: importSource,
@@ -381,8 +368,8 @@ export default function BenImp({ extraFields }: IProps) {
 
   const handleExportInvalidClick = async () => {
     const { invalidData, validData } = splitValidAndInvalid(
-      processedData,
-      invalidFields,
+      processedData as [],
+      invalidFields as [],
     );
     setValidBenef(validData);
     setProcessedData(validData);

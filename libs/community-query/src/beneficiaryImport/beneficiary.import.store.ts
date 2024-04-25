@@ -22,10 +22,10 @@ type Store = {
   setImportSource: (importSource: string) => void;
   setKoboForms: (koboForms: []) => void;
   setLoading: (loading: boolean) => void;
-  setMappings: (mappings: []) => void;
-  setProcessedData: (processedData: []) => void;
-  setRawData: (rawData: []) => void;
-  setValidBenef: (validBenef: []) => void;
+  setMappings: (mappings: any[]) => void;
+  setProcessedData: (processedData: any[]) => void;
+  setRawData: (rawData: any[]) => void;
+  setValidBenef: (validBenef: any[]) => void;
 };
 
 const initialState = {
@@ -54,8 +54,8 @@ export const useBeneficiaryImportStore = create<Store>((set) => ({
   setImportSource: (importSource: string) => set({ importSource }),
   setKoboForms: (koboForms: []) => set({ koboForms }),
   setLoading: (loading: boolean) => set({ loading }),
-  setMappings: (mappings: []) => set({ mappings }),
-  setProcessedData: (processedData: []) => set({ processedData }),
-  setRawData: (rawData: []) => set({ rawData }),
-  setValidBenef: (validBenef: []) => set({ validBenef }),
+  setMappings: (mappings: any[]) => set({ mappings }),
+  setProcessedData: (processedData: any[]) => set({ processedData }),
+  setRawData: (rawData: any[]) => set({ rawData }),
+  setValidBenef: (validBenef: any[]) => set({ validBenef }),
 }));

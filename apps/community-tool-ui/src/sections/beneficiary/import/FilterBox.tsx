@@ -52,16 +52,7 @@ export default function FilterBox({
             />
           )}
         </div>
-        <div>
-          {/* <ItemSelector
-            form={form}
-            placeholder="--Beneficiary Unique Identifier--"
-            id="selectUniqueField"
-            options={UNIQUE_FIELD_OPTIONS}
-            defaultData={selectedUniqueField}
-            handleItemChange={handleUniqueFieldChange}
-          /> */}
-        </div>
+        <div></div>
         <div>
           {rawData.length > 0 && (
             <Button

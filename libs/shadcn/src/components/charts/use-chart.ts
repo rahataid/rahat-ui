@@ -34,6 +34,15 @@ export default function useChart(options?: ApexOptions) {
     lineHeight: customColors.lineHeightSubtitle2,
   };
 
+  const RADIAL_LABEL_TOTAL = {
+    show: true,
+    label: 'Status',
+    color: customColors.textSecondary,
+    fontSize: customColors.fontSizeSubtitle2,
+    fontWeight: customColors.fontWeightSubtitle2,
+    lineHeight: customColors.lineHeightSubtitle2,
+  };
+
   const LABEL_VALUE = {
     offsetY: 8,
     color: customColors.textPrimary,
@@ -126,7 +135,7 @@ export default function useChart(options?: ApexOptions) {
         },
         dataLabels: {
           value: LABEL_VALUE,
-          total: LABEL_TOTAL,
+          total: RADIAL_LABEL_TOTAL,
         },
       },
 

@@ -7,9 +7,9 @@ import { fNumber } from '../../../utils/fNumber';
 
 // ----------------------------------------------------------------------
 
-const CHART_HEIGHT = 380;
+const CHART_HEIGHT = 152;
 
-const LEGEND_HEIGHT = 72;
+const LEGEND_HEIGHT = 30;
 
 const StyledChart = styled(Chart)(({ theme }) => ({
   height: CHART_HEIGHT,
@@ -27,16 +27,18 @@ const StyledChart = styled(Chart)(({ theme }) => ({
 
 type Props = {
   series: number[];
+  total: number;
+  label: string;
 };
 
-export default function ChartRadialBar({ series }: Props) {
+export default function ChartRadialBar({ series, total, label }: Props) {
   const chartOptions = useChart({
     chart: {
       sparkline: {
         enabled: true,
       },
     },
-    labels: ['Apples', 'Oranges'],
+    labels: [label],
     legend: {
       floating: true,
       position: 'bottom',
@@ -45,14 +47,14 @@ export default function ChartRadialBar({ series }: Props) {
     plotOptions: {
       radialBar: {
         hollow: {
-          size: '68%',
+          size: '60%',
         },
         dataLabels: {
           value: {
-            offsetY: 16,
+            offsetY: 10,
           },
           total: {
-            formatter: () => fNumber(2324),
+            formatter: () => fNumber(total),
           },
         },
       },
@@ -65,7 +67,8 @@ export default function ChartRadialBar({ series }: Props) {
       type="radialBar"
       series={series}
       options={chartOptions}
-      height={280}
+      height={110}
+      width={130}
     />
   );
 }

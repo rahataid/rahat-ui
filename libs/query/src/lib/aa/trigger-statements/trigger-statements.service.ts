@@ -1,11 +1,11 @@
 import { UUID } from "crypto";
-import { useAAStationsStore } from "./datasource.store";
-import { useProjectAction } from "../projects/projects.service";
+import { useAAStationsStore } from "./trigger-statements.store";
+import { useProjectAction } from "../../projects/projects.service";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
-import { useSwal } from "../../swal";
+import { useSwal } from "../../../swal";
 
-export const useCreateDataSource = () => {
+export const useCreateTriggerStatement = () => {
   const q = useProjectAction();
   const alert = useSwal();
   const toast = alert.mixin({
@@ -17,23 +17,23 @@ export const useCreateDataSource = () => {
   return useMutation({
     mutationFn: async ({
       projectUUID,
-      dataSourcePayload
+      triggerStatementPayload
     }: {
       projectUUID: UUID;
-      dataSourcePayload: any;
+      triggerStatementPayload: any;
     }) => {
       return q.mutateAsync({
         uuid: projectUUID,
         data: {
           action: 'aaProject.schedule.add',
-          payload: dataSourcePayload,
+          payload: triggerStatementPayload,
         },
       });
     },
     onSuccess: () => {
       q.reset();
       toast.fire({
-        title: 'Data source added successfully',
+        title: 'Trigger statement added successfully.',
         icon: 'success',
       });
     },
@@ -41,7 +41,7 @@ export const useCreateDataSource = () => {
       const errorMessage = error?.response?.data?.message || 'Error';
       q.reset();
       toast.fire({
-        title: 'Error while adding data source.',
+        title: 'Error while adding trigger statement.',
         icon: 'error',
         text: errorMessage,
       });
@@ -49,7 +49,7 @@ export const useCreateDataSource = () => {
   });
 };
 
-export const useDeleteDataSource = () => {
+export const useDeleteTriggerStatement = () => {
   const qc =  useQueryClient()
   const q = useProjectAction();
   const alert = useSwal();
@@ -62,10 +62,10 @@ export const useDeleteDataSource = () => {
   return useMutation({
     mutationFn: async ({
       projectUUID,
-      dataSourcePayload
+      triggerStatementPayload
     }: {
       projectUUID: UUID;
-      dataSourcePayload: {
+      triggerStatementPayload: {
         repeatKey: string
       };
     }) => {
@@ -73,16 +73,16 @@ export const useDeleteDataSource = () => {
         uuid: projectUUID,
         data: {
           action: 'aaProject.schedule.remove',
-          payload: dataSourcePayload,
+          payload: triggerStatementPayload,
         },
       });
     },
     
     onSuccess: () => {
       q.reset();
-      qc.invalidateQueries({queryKey: ['datasources']})
+      qc.invalidateQueries({queryKey: ['triggerstatements']})
       toast.fire({
-        title: 'Data source removed successfully.',
+        title: 'Trigger statement removed successfully.',
         icon: 'success',
       });
     },
@@ -90,7 +90,7 @@ export const useDeleteDataSource = () => {
       const errorMessage = error?.response?.data?.message || 'Error';
       q.reset();
       toast.fire({
-        title: 'Error while removing data source.',
+        title: 'Error while removing trigger statement.',
         icon: 'error',
         text: errorMessage,
       });
@@ -156,11 +156,11 @@ export const useDhmWaterLevels = (uuid: UUID) => {
   return query
 };
 
-export const useAASources = (uuid: UUID) => {
+export const useAATriggerStatements = (uuid: UUID) => {
   const q = useProjectAction();
 
   const query = useQuery({
-    queryKey: ['datasources', uuid],
+    queryKey: ['triggerstatements', uuid],
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid,

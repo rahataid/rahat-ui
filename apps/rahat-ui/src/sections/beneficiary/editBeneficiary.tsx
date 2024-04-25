@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { useForm } from 'react-hook-form';
@@ -18,7 +19,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
-import { toast } from 'react-toastify';
 import { z } from 'zod';
 import { useUpdateBeneficiary } from '@rahat-ui/query';
 import { useSecondPanel } from '../../providers/second-panel-provider';
@@ -66,7 +66,7 @@ export default function EditBeneficiary({ beneficiary }: any) {
 
   const handleEditBeneficiary = async (data: z.infer<typeof FormSchema>) => {
     try {
-      const result = await updateBeneficiary.mutateAsync({
+      await updateBeneficiary.mutateAsync({
         uuid: beneficiary.uuid,
         gender: data.gender,
         bankedStatus: data.bankedStatus,
@@ -78,14 +78,15 @@ export default function EditBeneficiary({ beneficiary }: any) {
         },
         walletAddress: data.walletAddress,
       });
-      if (result.success) {
-        toast.success('Beneficiary updated successfully!');
-        closeSecondPanel();
-      }
     } catch (e) {
-      toast.error('Failed to update beneficiary!');
+      console.error('Error::', e);
     }
   };
+
+  useEffect(() => {
+    updateBeneficiary.isSuccess && closeSecondPanel();
+  }, [updateBeneficiary]);
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleEditBeneficiary)}>

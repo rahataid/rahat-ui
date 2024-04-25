@@ -11,7 +11,7 @@ import { Pagination } from '@rumsan/sdk/types';
 import Swal from 'sweetalert2';
 
 export const useFieldDefinitionsList = (
-  payload: Pagination & { any?: string },
+  payload: Pagination & { isTargeting?: boolean },
 ): UseQueryResult<any, Error> => {
   const { queryClient, rumsanService } = useRSQuery();
   const fieldDefClient = getFieldDefinitionClient(rumsanService.client);

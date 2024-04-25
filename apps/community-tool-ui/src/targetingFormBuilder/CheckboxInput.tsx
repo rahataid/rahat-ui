@@ -1,0 +1,75 @@
+import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+} from '@rahat-ui/shadcn/src/components/ui/form';
+import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
+import { humanizeString } from '../utils';
+import useTargetingFormStore from './form.store';
+
+export default function CheckboxInput({ formField }: any) {
+  const { targetingQueries, setTargetingQueries }: any =
+    useTargetingFormStore();
+
+  const handleCheckedChange = (checked: boolean, data: any) => {
+    let item = {} as any;
+    if (checked) {
+      const existing = targetingQueries[formField.name];
+      item[formField.name] = existing
+        ? `${existing},${data.value}`
+        : data.value;
+    }
+    if (!checked) {
+      const existing = targetingQueries[formField.name];
+      const arrData = existing.split(',');
+      const filtered = arrData.filter((f: any) => f !== data.value);
+      item[formField.name] = filtered.toString();
+    }
+    const formData = { ...targetingQueries, ...item };
+    setTargetingQueries(formData);
+  };
+
+  const options = formField?.fieldPopulate?.data || ([] as any);
+  const defaultData = targetingQueries[formField.name] || '';
+
+  return (
+    <div>
+      <Label>{humanizeString(formField.name)}</Label> <br />
+      <FormItem>
+        {options.length > 0
+          ? options.map((item: any) => (
+              <FormField
+                key={item.value}
+                name={formField.name}
+                render={({ field }) => {
+                  const arrayData = defaultData ? defaultData.split(',') : [];
+                  const isChecked = arrayData.includes(item.value);
+
+                  return (
+                    <FormItem
+                      key={item.value}
+                      className="flex flex-row items-start space-x-3 space-y-0"
+                    >
+                      <FormControl>
+                        <Checkbox
+                          onCheckedChange={(checked: boolean) =>
+                            handleCheckedChange(checked, item)
+                          }
+                          checked={isChecked}
+                        />
+                      </FormControl>
+                      <FormLabel className="font-normal">
+                        {item.label}
+                      </FormLabel>
+                    </FormItem>
+                  );
+                }}
+              />
+            ))
+          : 'No Options!'}
+      </FormItem>{' '}
+    </div>
+  );
+}

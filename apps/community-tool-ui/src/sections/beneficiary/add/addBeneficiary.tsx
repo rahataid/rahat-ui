@@ -419,7 +419,7 @@ export default function AddBeneficiary() {
                             {field.value ? (
                               format(field.value, 'PPP')
                             ) : (
-                              <span>Birth Date</span>
+                              <span>Date of Birth</span>
                             )}
                             <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                           </Button>
@@ -473,7 +473,11 @@ export default function AddBeneficiary() {
                   </FormItem>
                 )}
               />
-              <h3>Extra Fields</h3> <br />
+
+              <h3>
+                <b>Extra Fields:</b>
+              </h3>
+              <br />
               {definitions?.data?.rows.map((definition: any) => {
                 return (
                   <FormBuilder key={definition.id} formField={definition} />

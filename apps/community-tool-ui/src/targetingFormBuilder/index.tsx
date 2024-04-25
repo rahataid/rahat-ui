@@ -7,41 +7,36 @@ import PasswordInput from './PasswordInput';
 import RadioInput from './RadioInput';
 import DropDownInput from './DropdownInput';
 import CheckboxInput from './CheckboxInput';
-import DateInput from './DateInput';
 
 export default function Index({ formField }: any) {
   return (
     <>
       {formField.fieldType === FieldType.TEXT && (
-        <TextInput formField={formField} />
-      )}
-
-      {formField.fieldType === FieldType.DATE && (
-        <DateInput formField={formField} />
+        <TextInput formField={formField} className="mt-8" />
       )}
 
       {formField.fieldType === FieldType.NUMBER && (
-        <NumberInput formField={formField} />
+        <NumberInput formField={formField} className="mt-8" />
       )}
 
       {formField.fieldType === FieldType.PASSWORD && (
-        <PasswordInput formField={formField} />
+        <PasswordInput formField={formField} className="mt-8" />
       )}
 
       {formField.fieldType === FieldType.RADIO && (
-        <RadioInput formField={formField} />
+        <RadioInput formField={formField} className="mt-8" />
       )}
 
       {formField.fieldType === FieldType.DROPDOWN && (
-        <DropDownInput formField={formField} />
+        <DropDownInput formField={formField} className="mt-8" />
       )}
 
       {formField.fieldType === FieldType.CHECKBOX && (
-        <CheckboxInput formField={formField} />
+        <CheckboxInput formField={formField} className="mt-8" />
       )}
 
       {formField.fieldType === FieldType.TEXTAREA && (
-        <TextAreaInput formField={formField} />
+        <TextAreaInput formField={formField} className="mt-8" />
       )}
     </>
   );

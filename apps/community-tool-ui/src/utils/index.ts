@@ -15,7 +15,7 @@ export const includeOnlySelectedTarget = (array: [], selectedTargets: []) => {
 };
 
 export const attachedRawData = (payload: any, rawDataSource: []) => {
-  let result = [];
+  let result = [] as any[];
   for (let i = 0; i < payload.length; i++) {
     let newItem = { ...payload[i], rawData: rawDataSource[i] };
     result.push(newItem);

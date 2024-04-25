@@ -7,7 +7,6 @@ import {
 import { isURL, truncatedText } from 'apps/community-tool-ui/src/utils';
 import React, { useState } from 'react';
 import { ComboBox } from './Combobox';
-import NestedObjectRenderer from './NestedObjectRenderer';
 
 interface ColumnMappingTableProps {
   rawData: any[];
@@ -100,11 +99,9 @@ export default function ColumnMappingTable({
           >
             {columns.map((column: any, columnIndex: number) => (
               <td className="px-4 py-1.5" key={columnIndex}>
-                {typeof item[column] === 'object' ? (
-                  <NestedObjectRenderer object={item[column]} />
-                ) : (
-                  renderField(item, column)
-                )}
+                {typeof item[column] === 'object'
+                  ? ''
+                  : renderField(item, column)}
               </td>
             ))}
           </tr>

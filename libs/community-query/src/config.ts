@@ -45,4 +45,5 @@ export const TAGS = {
   CREATE_TARGETING: 'create_targeting',
   REMOVE_COMMUNITY_GROUP: 'remove_community_group',
   PURGE_COMMUNITY_GROUP: 'purge_community_group',
+  LIST_KOBO_SETTINGS: 'list_kobo_settings',
 };

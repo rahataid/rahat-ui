@@ -56,7 +56,7 @@ export default function AuthPage() {
         href="/"
         className={cn(
           buttonVariants({ variant: 'ghost' }),
-          'absolute right-4 top-4 md:right-8 md:top-8'
+          'absolute right-4 top-4 md:right-8 md:top-8',
         )}
       >
         Get Started
@@ -65,11 +65,11 @@ export default function AuthPage() {
         <div className="flex flex-col gap-4 w-96">
           <div className="flex flex-col space-y-2 text-center">
             <h1 className="text-2xl font-semibold tracking-tight">
-              {!optSent ? 'Sign in' : 'OTP has been sent'}
+              Welcome to Community Tool
             </h1>
             <p className="text-sm text-muted-foreground">
               {!optSent
-                ? 'Enter your email address.'
+                ? 'Enter your email address to login'
                 : `OTP has been sent to ${address}`}
             </p>
           </div>
@@ -125,7 +125,7 @@ export default function AuthPage() {
             </form>
           )}
           <p className="px-8 text-center text-sm text-muted-foreground">
-            {!optSent ? "Don't have an account" : "Didn't get one"}?
+            {/* {!optSent ? "Don't have an account" : "Didn't get one"}? */}
             {/* <Button
               disabled={sendOtpMutation.isPending}
               onClick={onSendOtpFormSubmit}
@@ -133,12 +133,12 @@ export default function AuthPage() {
             >
               {!challenge.length ? 'Get Started' : 'Resend'}
             </Button> */}
-            <span
+            {/* <span
               className="underline font-medium ml-2 cursor-pointer"
               onClick={() => optSent && setOtpSent(false)}
             >
               {!optSent ? 'Get Started' : 'Resend'}
-            </span>
+            </span> */}
             {/* {optSent ? (
               <Button
                 className="ml-2"

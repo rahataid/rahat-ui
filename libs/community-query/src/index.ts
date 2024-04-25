@@ -7,3 +7,4 @@ export * from './fieldDefinitions/fieldDefinitions.query';
 export * from './users/users.query';
 export * from './fields/fields.query';
 export * from './targeting/targeting.query';
+export * from './beneficiary/beneficiary.store';

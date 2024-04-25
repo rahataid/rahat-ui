@@ -75,11 +75,11 @@ dependencies:
     specifier: 0.0.22
     version: 0.0.22(typescript@5.4.5)(zod@3.23.0)
   '@rumsan/communication':
-    specifier: ^0.0.9
-    version: 0.0.9
+    specifier: ^0.0.10
+    version: 0.0.10
   '@rumsan/communication-query':
-    specifier: ^0.0.4
-    version: 0.0.4(@types/react@18.2.79)
+    specifier: ^0.0.5
+    version: 0.0.5(@types/react@18.2.79)
   '@rumsan/core':
     specifier: ^3.0.133
     version: 3.0.140
@@ -7323,8 +7323,7 @@ packages:
         tarball: https://npm.pkg.github.com/download/@rumsan/communication-query/0.0.4/9a25bd2dc83adf60103a9d5ea524837fae1078fd,
       }
     dependencies:
-      '@rumsan/communication': 0.0.9
-      '@rumsan/react-query': 0.0.34(@types/react@18.2.79)
+      '@rumsan/communication': 0.0.10
       '@tanstack/react-query': 5.22.2(react@18.2.0)
       axios: 1.6.8
       react: 18.2.0

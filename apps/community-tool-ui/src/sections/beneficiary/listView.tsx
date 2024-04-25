@@ -25,7 +25,7 @@ import { ListBeneficiary } from '@rahataid/community-tool-sdk/beneficiary';
 import { Pagination } from '@rumsan/sdk/types';
 
 type IProps = {
-  handleClick: (item: ListBeneficiary) => void;
+  // handleClick: (item: ListBeneficiary) => void;
   table: Table<ListBeneficiary>;
   setFilters: (fiters: Record<string, any>) => void;
   filters: Record<string, any>;
@@ -34,7 +34,7 @@ type IProps = {
 };
 
 export default function ListView({
-  handleClick,
+  // handleClick,
   table,
   setFilters,
   filters,
@@ -138,9 +138,6 @@ export default function ListView({
                     <TableRow
                       key={row.id}
                       data-state={row.getIsSelected() && 'selected'}
-                      onClick={() => {
-                        handleClick(row.original);
-                      }}
                     >
                       {row.getVisibleCells().map((cell) => (
                         <TableCell key={cell.id}>

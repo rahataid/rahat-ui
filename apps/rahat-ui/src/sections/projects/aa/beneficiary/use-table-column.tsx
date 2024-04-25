@@ -10,12 +10,13 @@ import {
   TooltipTrigger,
   TooltipContent,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
-// import { useSecondPanel } from '../../../../providers/second-panel-provider';
-// import BeneficiaryDetail from '../../../../sections/projects/el/beneficiary/beneficiary.detail';
+import { useSecondPanel } from '../../../../providers/second-panel-provider';
+
+// import BeneficiaryDetail from './beneficiary.detail';
 import { truncateEthAddress } from '@rumsan/sdk/utils';
 
 export const useProjectBeneficiaryTableColumns = () => {
-  // const { setSecondPanelComponent, closeSecondPanel } = useSecondPanel();
+  const { setSecondPanelComponent, closeSecondPanel } = useSecondPanel();
   const [walletAddressCopied, setWalletAddressCopied] = useState<number>();
 
   const clickToCopy = (walletAddress: string, index: number) => {
@@ -94,27 +95,10 @@ export const useProjectBeneficiaryTableColumns = () => {
       ),
     },
     {
-      accessorKey: 'type',
-      header: 'Type',
-      cell: ({ row }) => <div> {row.getValue('type')}</div>,
+      accessorKey: 'email',
+      header: 'Email',
+      cell: ({ row }) => <div> {row.getValue('email') || 'N/A'}</div>,
     },
-    // {
-    //   accessorKey: 'Type',
-    //   header: 'Type',
-    //   cell: ({ row }) => (
-    //     <div className="capitalize">
-    //       {row.getValue('vouvherType')
-    //         ? `${row
-    //             .getValue('vouvherType')
-    //             ?.toString()
-    //             .substring(0, 4)}....${row
-    //             .getValue('vouvherType')
-    //             ?.toString()
-    //             ?.slice(-3)}`
-    //         : 'N/A'}
-    //     </div>
-    //   ),
-    // },
     {
       accessorKey: 'phone',
       header: 'Phone',
@@ -125,20 +109,20 @@ export const useProjectBeneficiaryTableColumns = () => {
       header: 'Gender',
       cell: ({ row }) => <div> {row.getValue('gender')}</div>,
     },
-    {
-      id: 'actions',
-      enableHiding: false,
-      cell: ({ row }) => {
-        return (
-          <Eye
-            size={20}
-            strokeWidth={1.5}
-            className="cursor-pointer hover:text-primary"
-            // onClick={() => openSplitDetailView(row.original)}
-          />
-        );
-      },
-    },
+    // {
+    //   id: 'actions',
+    //   enableHiding: false,
+    //   cell: ({ row }) => {
+    //     return (
+    //       <Eye
+    //         size={20}
+    //         strokeWidth={1.5}
+    //         className="cursor-pointer hover:text-primary"
+    //         onClick={() => openSplitDetailView(row.original)}
+    //       />
+    //     );
+    //   },
+    // },
   ];
 
   return columns;

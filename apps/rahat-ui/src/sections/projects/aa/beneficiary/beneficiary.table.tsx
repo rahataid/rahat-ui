@@ -68,21 +68,6 @@ export type Transaction = {
   amount: string;
 };
 
-export const benType = [
-  {
-    key: 'ALL',
-    value: 'ALL',
-  },
-  {
-    key: 'ENROLLED',
-    value: 'ENROLLED',
-  },
-  {
-    key: 'REFERRED',
-    value: 'REFERRED',
-  },
-];
-
 function BeneficiaryDetailTableView() {
   const tokenAssignModal = useBoolean();
   const route = useRouter();
@@ -126,23 +111,8 @@ function BeneficiaryDetailTableView() {
     ...filters,
   });
 
-  // const contractAddress = useProjectSettingsStore(
-  //   (state) => state.settings?.[uuid][PROJECT_SETTINGS_KEYS.CONTRACT] || null,
-  // );
 
   const columns = useProjectBeneficiaryTableColumns();
-
-  const handleBenType = React.useCallback(
-    (type: string) => {
-      resetSelectedListItems();
-      if (type === 'ALL') {
-        setFilters({ ...filters, status: undefined });
-        return;
-      }
-      setFilters({ ...filters, status: type });
-    },
-    [filters, setFilters],
-  );
 
   const table = useReactTable({
     manualPagination: true,
@@ -193,25 +163,6 @@ function BeneficiaryDetailTableView() {
             }
             className="max-w-sm rounded mr-2"
           />
-          <div className="max-w-sm rounded mr-2">
-            <Select
-              onValueChange={handleBenType}
-              defaultValue={filters?.status || 'ALL'}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Beneficiary Type" />
-              </SelectTrigger>
-              <SelectContent>
-                {benType.map((item) => {
-                  return (
-                    <SelectItem key={item.key} value={item.value}>
-                      {item.key}
-                    </SelectItem>
-                  );
-                })}
-              </SelectContent>
-            </Select>
-          </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="ml-auto">

@@ -26,7 +26,7 @@ export default function CommonCard({
   const router = useRouter();
 
   const handleClick = () => {
-    if(status === 'NOT_READY') return alert("Project not ready")
+    // if(status === 'NOT_READY') return alert("Project not ready")
     router.push(`/projects/${badge.toLowerCase()}/${address}`);
   };
 

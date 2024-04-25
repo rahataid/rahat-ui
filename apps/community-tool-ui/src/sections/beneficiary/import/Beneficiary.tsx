@@ -33,6 +33,7 @@ import { useRSQuery } from '@rumsan/react-query';
 import ColumnMappingTable from './ColumnMappingTable';
 import MyAlert from './MyAlert';
 import { useFetchKoboSettings } from '@rahat-ui/community-query';
+import { useBeneficiaryImportStore } from '@rahat-ui/community-query';
 
 interface IProps {
   extraFields: string[];
@@ -43,20 +44,33 @@ export default function BenImp({ extraFields }: IProps) {
   const { rumsanService } = useRSQuery();
   const { data: kbSettings } = useFetchKoboSettings();
 
-  const [importSource, setImportSource] = useState('');
-  const [rawData, setRawData] = useState([]) as any;
-  const [mappings, setMappings] = useState([]) as any;
-  const [koboForms, setKoboForms] = useState([]);
-  const [importId, setImportId] = useState(''); // Kobo form id or excel sheetID
-  const [loading, setLoading] = useState(false);
-  const [currentScreen, setCurrentScreen] = useState(
-    BENEF_IMPORT_SCREENS.SELECTION,
-  );
-  const [processedData, setProcessedData] = useState([]) as any;
-  const [invalidFields, setInvalidFields] = useState([]) as any;
-  const [validBenef, setValidBenef] = useState([]) as any;
-  const [hasExistingMapping, setHasExistingMapping] = useState(false);
-  const [duplicateData, setDuplicateData] = useState([]) as any;
+  const {
+    currentScreen,
+    setCurrentScreen,
+    duplicateData,
+    setDuplicateData,
+    hasExistingMapping,
+    setHasExistingMapping,
+    importId,
+    setImportId,
+    importSource,
+    setImportSource,
+    invalidFields,
+    setInvalidFields,
+    koboForms,
+    setKoboForms,
+    loading,
+    setLoading,
+    mappings,
+    setMappings,
+    processedData,
+    setProcessedData,
+    rawData,
+    setRawData,
+    validBenef,
+    setValidBenef,
+  } = useBeneficiaryImportStore();
+  // ==========States=============
 
   const fetchExistingMapping = async (importId: string) => {
     setMappings([]);

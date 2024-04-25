@@ -39,6 +39,8 @@ export default function AddBeneficiaryForm() {
     phone: z
       .string()
       .refine(isValidPhoneNumber, { message: 'Invalid phone number' }),
+    email: z.string().optional(),
+
     gender: z
       .string()
       .toUpperCase()
@@ -88,6 +90,7 @@ export default function AddBeneficiaryForm() {
           email: data.email,
           name: data.name,
           phone: data.phone,
+          email: data.email,
         },
         walletAddress: data.walletAddress,
       });
@@ -123,6 +126,20 @@ export default function AddBeneficiaryForm() {
                       <FormItem>
                         <FormControl>
                           <Input type="text" placeholder="Name" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    );
+                  }}
+                />
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => {
+                    return (
+                      <FormItem>
+                        <FormControl>
+                          <Input type="email" placeholder="Email" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>

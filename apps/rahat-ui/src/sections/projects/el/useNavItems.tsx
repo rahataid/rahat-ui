@@ -100,52 +100,51 @@ export const useNavItems = () => {
     getProjectStats();
   }, [getProjectStats]);
 
-  // const handleCreateVoucherTokenChange = (e: any) => {
-  //   const { name, value } = e.target;
-  //   const numericValue = Number(value);
-  //   if (isNaN(numericValue) || numericValue < 0) return;
-  //   setVoucherInputs((prev) => ({
-  //     ...prev,
-  //     [name]: value,
-  //   }));
-  // };
+  const handleCreateVoucherTokenChange = (e: any) => {
+    const { name, value } = e.target;
+    const numericValue = Number(value);
+    if (isNaN(numericValue) || numericValue < 0) return;
+    setVoucherInputs((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
 
   const createVoucher = useMintVouchers();
-  // const createOnlyVoucher = useOnlyMintVoucher();
-  // const closeProject = useCloseProject();
+  const createOnlyVoucher = useOnlyMintVoucher();
+  const closeProject = useCloseProject();
 
-  // Free Voucher
-  // const handleCreateVoucherSubmit = async (e: any) => {
-  //   e.preventDefault();
-  //   if (!contractSettings) return;
-  //   const referralLimit = 3;
-  //   await createOnlyVoucher.writeContractAsync({
-  //     address: contractSettings?.rahatdonor?.address,
-  //     args: [
-  //       contractSettings?.eyevoucher?.address,
-  //       contractSettings?.referralvoucher?.address,
-  //       contractSettings?.elproject?.address,
-  //       BigInt(voucherInputs.tokens),
-  //       BigInt(referralLimit),
-  //     ],
-  //   });
-  //   handleCloseSummaryModal();
-  //   route.push(`/projects/el/${id}/vouchers`);
-  // };
+  const handleCreateVoucherSubmit = async (e: any) => {
+    e.preventDefault();
+    if (!contractSettings) return;
+    const referralLimit = 3;
+    await createOnlyVoucher.writeContractAsync({
+      address: contractSettings?.rahatdonor?.address,
+      args: [
+        contractSettings?.eyevoucher?.address,
+        contractSettings?.referralvoucher?.address,
+        contractSettings?.elproject?.address,
+        BigInt(voucherInputs.tokens),
+        BigInt(referralLimit),
+      ],
+    });
+    handleCloseSummaryModal();
+    route.push(`/projects/el/${id}/vouchers`);
+  };
 
-  // const handleCloseProject = async () => {
-  //   const { value } = await dialog.fire({
-  //     title: 'Close Project',
-  //     text: "Are you sure you want to close the project? You won't be able to access any project actions",
-  //     showCancelButton: true,
-  //     confirmButtonText: 'Close',
-  //   });
-  //   if (value) {
-  //     closeProject.writeContractAsync({
-  //       address: contractSettings?.elproject?.address,
-  //     });
-  //   }
-  // };
+  const handleCloseProject = async () => {
+    const { value } = await dialog.fire({
+      title: 'Close Project',
+      text: "Are you sure you want to close the project? You won't be able to access any project actions",
+      showCancelButton: true,
+      confirmButtonText: 'Close',
+    });
+    if (value) {
+      closeProject.writeContractAsync({
+        address: contractSettings?.elproject?.address,
+      });
+    }
+  };
 
   const navItems: NavItem[] = [
     {
@@ -191,50 +190,50 @@ export const useNavItems = () => {
         },
       ],
     },
-    // {
-    //   title: 'Actions',
-    //   children: [
-    //     {
-    //       component: (
-    //         <>
-    //           <CreateVoucherModal
-    //             voucherInputs={voucherInputs}
-    //             handleSubmit={handleSubmitCreateTokenModal}
-    //             handleInputChange={handleCreateVoucherTokenChange}
-    //             setVoucherInputs={setVoucherInputs}
-    //             open={createTokenModal.value}
-    //             handleModal={handleOpenCreateTokenModal}
-    //           />
-    //           <ConfirmModal
-    //             open={createTokenSummaryModal.value}
-    //             voucherInputs={voucherInputs}
-    //             handleSubmit={handleCreateVoucherSubmit}
-    //             handleGoBack={handleBackToCreateTokenModal}
-    //             handleClose={handleCloseSummaryModal}
-    //             handleCreateVoucherSubmit={handleCreateVoucherSubmit}
-    //             isLoading={createVoucher.isPending}
-    //           />
-    //         </>
-    //       ),
-    //       title: 'Create Voucher',
-    //     },
-    //     // {
-    //     //   title: 'Lock Project',
-    //     //   icon: <Lock size={18} strokeWidth={1.5} />,
-    //     //   onClick: handleLockProject,
-    //     // },
-    //     {
-    //       title: 'Close Project',
-    //       onClick: handleCloseProject,
-    //       icon: <XCircle size={18} strokeWidth={1.5} />,
-    //     },
-    //     {
-    //       title: 'Edit Project',
-    //       path: `/projects/el/${id}/edit`,
-    //       icon: <Pencil size={18} strokeWidth={1.5} />,
-    //     },
-    //   ],
-    // },
+    {
+      title: 'Actions',
+      children: [
+        {
+          component: (
+            <>
+              <CreateVoucherModal
+                voucherInputs={voucherInputs}
+                handleSubmit={handleSubmitCreateTokenModal}
+                handleInputChange={handleCreateVoucherTokenChange}
+                setVoucherInputs={setVoucherInputs}
+                open={createTokenModal.value}
+                handleModal={handleOpenCreateTokenModal}
+              />
+              <ConfirmModal
+                open={createTokenSummaryModal.value}
+                voucherInputs={voucherInputs}
+                handleSubmit={handleCreateVoucherSubmit}
+                handleGoBack={handleBackToCreateTokenModal}
+                handleClose={handleCloseSummaryModal}
+                handleCreateVoucherSubmit={handleCreateVoucherSubmit}
+                isLoading={createVoucher.isPending}
+              />
+            </>
+          ),
+          title: 'Create Voucher',
+        },
+        // {
+        //   title: 'Lock Project',
+        //   icon: <Lock size={18} strokeWidth={1.5} />,
+        //   onClick: handleLockProject,
+        // },
+        {
+          title: 'Close Project',
+          onClick: handleCloseProject,
+          icon: <XCircle size={18} strokeWidth={1.5} />,
+        },
+        {
+          title: 'Edit Project',
+          path: `/projects/el/${id}/edit`,
+          icon: <Pencil size={18} strokeWidth={1.5} />,
+        },
+      ],
+    },
   ];
 
   return { navItems, createVoucher };

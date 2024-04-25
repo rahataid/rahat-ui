@@ -71,15 +71,15 @@ export const useGetBeneficiaryStats = (): UseQueryResult<any, Error> => {
   });
 };
 
-const listProjectBeneficiaryStats = async () => {
-  const response = await api.get('/beneficiaries/table-stats');
+const listProjectBeneficiaryStats = async (id: any) => {
+  const response = await api.get(`/projects/${id}/stats`);
   return response?.data;
 };
 
-export const useGetProjectBeneficiaryStats = () => {
+export const useGetProjectBeneficiaryStats = (id: any) => {
   return useQuery({
     queryKey: [TAGS.GET_PROJECT_BENEFICIARIES_STATS],
-    queryFn: () => listProjectBeneficiaryStats(),
+    queryFn: () => listProjectBeneficiaryStats(id),
   });
 };
 

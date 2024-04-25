@@ -3,6 +3,7 @@
 import {
   PROJECT_SETTINGS_KEYS,
   useGetBeneficiaryStats,
+  useGetProjectBeneficiaryStats,
   useProjectAction,
   useProjectSettingsStore,
   useProjectStore,
@@ -28,6 +29,7 @@ const ProjectMainView = () => {
   const projectClient = useProjectAction(['count_ben_vendor']);
   const statsClient = useProjectAction(['stats']);
 
+  const stats = useGetProjectBeneficiaryStats(id);
   const project = useProjectStore((state) => state.singleProject);
   const contractSettings = useProjectSettingsStore(
     (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT] || null,
@@ -80,10 +82,10 @@ const ProjectMainView = () => {
     getElProjectStats();
   }, [getProjectStats, getElProjectStats]);
 
-  const filteredChartData = beneficiaryStats?.data?.data
-    ? beneficiaryStats.data.data.filter((item) => {
+  const filteredChartData = stats?.data?.data
+    ? stats.data.data.filter((item) => {
         const name = item?.name;
-        return name === 'BENEFICIARY_AGE_RANGE';
+        return name === `BENEFICIARY_AGE_RANGE${id}`;
       })
     : [];
 

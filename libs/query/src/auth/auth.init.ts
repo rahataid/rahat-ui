@@ -2,7 +2,11 @@
 
 import { JwtPayload, decode } from 'jsonwebtoken';
 import { useEffect } from 'react';
-import { useUserStore, useAuthStore } from '@rumsan/react-query';
+import {
+  useUserStore,
+  useAuthStore,
+  useUserCurrentUser,
+} from '@rumsan/react-query';
 import { toast } from 'react-toastify';
 
 export type UseAuthInitializationReturn = [boolean, boolean, any];
@@ -16,7 +20,9 @@ export const useAuthInitialization = (): UseAuthInitializationReturn => {
       setInitialization: state.setInitialization,
     }));
 
-  const currentUser = {}; //useGetCurrentUser(!!token);
+  const currentUser = useUserCurrentUser(!!token);
+
+  console.log('currentUser', currentUser);
 
   const setUser = useUserStore((state) => state.setUser);
 

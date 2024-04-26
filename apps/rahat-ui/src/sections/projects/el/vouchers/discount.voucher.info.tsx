@@ -39,7 +39,7 @@ const DiscountVoucherInfo = ({ data }) => {
         </div>
         <div>
           <p className="font-medium text-primary">
-            {data?.referredVoucherBudget || 0}
+            {Number(data?.referredVoucherBudget) || 0}
           </p>
           <p className="font-light">No. of Voucher Minted</p>
         </div>

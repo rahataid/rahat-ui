@@ -1,24 +1,29 @@
 'use client';
 
 import { useDeleteTriggerStatement } from '@rahat-ui/query';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@rahat-ui/shadcn/src/components/ui/tooltip';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { ColumnDef } from '@tanstack/react-table';
 import { UUID } from 'crypto';
 import { TrashIcon } from 'lucide-react';
 import { useParams } from 'next/navigation';
 
 export const useTriggerStatementTableColumns = () => {
-  const { id: projectID } = useParams()
-  const deleteTriggerStatement = useDeleteTriggerStatement()
+  const { id: projectID } = useParams();
+  const deleteTriggerStatement = useDeleteTriggerStatement();
 
   const deleteRow = (row: any) => {
     deleteTriggerStatement.mutateAsync({
       projectUUID: projectID as UUID,
       triggerStatementPayload: {
-        repeatKey: row.repeatKey
-      }
-    })
-  }
+        repeatKey: row.repeatKey,
+      },
+    });
+  };
 
   const columns: ColumnDef<any>[] = [
     {
@@ -30,16 +35,16 @@ export const useTriggerStatementTableColumns = () => {
             <>
               <TooltipProvider delayDuration={100}>
                 <Tooltip>
-                  <TooltipTrigger>
-                    DHM
-                  </TooltipTrigger>
+                  <TooltipTrigger>DHM</TooltipTrigger>
                   <TooltipContent className="bg-secondary ">
-                    <p className="text-xs font-medium">Department of Hydrology and Meteorology</p>
+                    <p className="text-xs font-medium">
+                      Department of Hydrology and Meteorology
+                    </p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
             </>
-          )
+          );
         }
       },
     },
@@ -47,11 +52,7 @@ export const useTriggerStatementTableColumns = () => {
       accessorKey: 'location',
       header: 'River Basin',
       cell: ({ row }) => (
-        <div
-          className="cursor-pointer"
-        >
-          {row.getValue('location')}
-        </div>
+        <div className="cursor-pointer">{row.getValue('location')}</div>
       ),
     },
     {
@@ -61,10 +62,14 @@ export const useTriggerStatementTableColumns = () => {
         if (row.getValue('dataSource') === 'DHM') {
           return (
             <>
-              <div>Danger Level: {row.original.triggerStatement.dangerLevel}</div>
-              <div>Warning Level: {row.original.triggerStatement.warningLevel}</div>
+              <div>
+                Danger Level: {row.original.triggerStatement.dangerLevel}
+              </div>
+              <div>
+                Warning Level: {row.original.triggerStatement.warningLevel}
+              </div>
             </>
-          )
+          );
         }
       },
     },
@@ -91,4 +96,3 @@ export const useTriggerStatementTableColumns = () => {
 
   return columns;
 };
-

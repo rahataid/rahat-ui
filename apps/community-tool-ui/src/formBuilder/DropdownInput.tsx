@@ -26,7 +26,7 @@ export default function DropDownInput({ formField }: any) {
   return (
     <div>
       <Label>{humanizeString(formField.name)}</Label>
-      <Select value={defaultData} onValueChange={handleInputChange}>
+      <Select value={defaultData.toString()} onValueChange={handleInputChange}>
         <SelectTrigger className="w-[180px]">
           <SelectValue placeholder="Select Option" />
         </SelectTrigger>

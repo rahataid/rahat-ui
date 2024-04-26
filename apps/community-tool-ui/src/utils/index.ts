@@ -15,7 +15,7 @@ export const includeOnlySelectedTarget = (array: [], selectedTargets: []) => {
 };
 
 export const attachedRawData = (payload: any, rawDataSource: []) => {
-  let result = [];
+  let result = [] as any[];
   for (let i = 0; i < payload.length; i++) {
     let newItem = { ...payload[i], rawData: rawDataSource[i] };
     result.push(newItem);
@@ -235,3 +235,13 @@ export function formatDate(date: Date) {
 
   return formattedDate;
 }
+
+export const selectNonEmptyFields = (data: any) => {
+  const nonEmptyFields: any = {};
+  Object.entries(data).forEach(([key, value]) => {
+    if (value !== undefined && value !== '') {
+      nonEmptyFields[key] = value;
+    }
+  });
+  return nonEmptyFields;
+};

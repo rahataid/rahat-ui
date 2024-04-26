@@ -53,21 +53,18 @@ const ProjectDataCard: FC<ProjectDataCardProps> = ({
     <>
       <div className="my-2 grid lg:grid-cols-6 md:grid-cols-4 sm:grid-cols-2 gap-2">
         <SmallDataCard
-          className=""
           title="Beneficiaries"
           number={totalBeneficiary}
           subTitle="Total Beneficiaries"
           loading={loading}
         />
         <SmallDataCard
-          className=""
           title="Voucher Redeemed"
           number={totalVoucherRedeemed}
           subTitle="Total Vouchers Claimed"
           loading={loading}
         />
         <SmallDataCard
-          className=""
           title="Estimated Budget"
           number={estimatedBudget}
           currency={data?.referredVoucherCurrency}
@@ -75,7 +72,6 @@ const ProjectDataCard: FC<ProjectDataCardProps> = ({
           loading={loading}
         />
         <SmallDataCard
-          className=""
           title="Actual Budget"
           number={actualBudget}
           currency={data?.referredVoucherCurrency}
@@ -84,16 +80,16 @@ const ProjectDataCard: FC<ProjectDataCardProps> = ({
         />
 
         <SmallDataCard
-          className=""
           title="Reconcile Pending"
-          number={reconciliationRequested || 0}
+          number={reconciliationRequested}
+          currency=""
           subTitle="Request from Vendors"
           loading={loading}
         />
         <SmallDataCard
-          className=""
           title="Reconcile Proceeded"
-          number={reconciliationApproved || 'N/A'}
+          number={reconciliationApproved}
+          currency=""
           subTitle="Reconciliation Proceeded"
           loading={loading}
         />

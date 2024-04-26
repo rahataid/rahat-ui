@@ -186,14 +186,12 @@ const ProjectMainView = () => {
         />
         <div className="grid md:grid-cols-1 lg:grid-cols-2 gap-2 mt-2">
           <div className="bg-card rounded">
-            <ChartColumnStacked series={eyeCheckupData} />
-
             <p className="mt-2 mb-1 ml-4">Eye Checkup Reporting</p>
+            <ChartColumnStacked series={eyeCheckupData} />
           </div>
           <div className="bg-card rounded">
-            <ChartColumnStacked series={glassData} />
-
             <p className="mt-2 mb-1 ml-4">Glasses Required</p>
+            <ChartColumnStacked series={glassData} />
           </div>
         </div>
       </ScrollArea>

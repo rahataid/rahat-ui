@@ -24,7 +24,7 @@ const ProjectInfo: FC<ProjectInfoProps> = ({ project }) => {
   return (
     <div className="grid grid-cols-1 rounded-sm bg-card p-4 mb-2 shadow">
       <div>
-        <p className="font-medium text-primary">{project.name}</p>
+        <p className="font-medium text-primary">{project?.name}</p>
       </div>
       <div className="flex items-center flex-wrap mt-4 sm:mt-6 gap-10 md:gap-32">
         {renderExtras(project?.extras || {})}

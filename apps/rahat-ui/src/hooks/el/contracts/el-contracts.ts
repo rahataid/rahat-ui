@@ -19,7 +19,8 @@ import {
   useWriteAccessManagerUpdateAdmin,
   useWriteAccessManagerUpdateProjectManager,
 } from './access';
-import { useUserAddRoles, useUserCreate } from '@rumsan/react-query';
+import { useUserAddRoles } from '@rumsan/react-query';
+import { useUserCreate } from '@rahat-ui/query';
 import { User } from '@rumsan/sdk/types';
 import { UUID } from 'crypto';
 

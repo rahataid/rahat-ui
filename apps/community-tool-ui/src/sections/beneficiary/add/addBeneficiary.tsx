@@ -1,5 +1,4 @@
 'use client';
-
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
@@ -20,8 +19,8 @@ import {
 import { useForm } from 'react-hook-form';
 
 import {
+  useActiveFieldDefList,
   useCommunityBeneficiaryCreate,
-  useFieldDefinitionsList,
 } from '@rahat-ui/community-query';
 import { Calendar } from '@rahat-ui/shadcn/src/components/ui/calendar';
 import {
@@ -51,7 +50,7 @@ export default function AddBeneficiary() {
   const { extras }: any = useFormStore();
 
   const { pagination } = usePagination();
-  const { data: definitions } = useFieldDefinitionsList({
+  const { data: definitions } = useActiveFieldDefList({
     ...pagination,
     perPage: FIELD_DEF_FETCH_LIMIT,
   });
@@ -478,7 +477,7 @@ export default function AddBeneficiary() {
                 <b>Extra Fields:</b>
               </h3>
               <br />
-              {definitions?.data?.rows.map((definition: any) => {
+              {definitions?.data?.map((definition: any) => {
                 return (
                   <FormBuilder key={definition.id} formField={definition} />
                 );

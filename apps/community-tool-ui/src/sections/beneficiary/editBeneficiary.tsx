@@ -27,8 +27,8 @@ import {
 import { z } from 'zod';
 
 import {
+  useActiveFieldDefList,
   useCommunityBeneficiaryUpdate,
-  useFieldDefinitionsList,
 } from '@rahat-ui/community-query';
 import { usePagination } from '@rahat-ui/query';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
@@ -56,7 +56,7 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
 
   const updateBeneficiaryClient = useCommunityBeneficiaryUpdate();
   const { pagination } = usePagination();
-  const { data: definitions } = useFieldDefinitionsList({
+  const { data: definitions } = useActiveFieldDefList({
     ...pagination,
     perPage: FIELD_DEF_FETCH_LIMIT,
   });
@@ -535,7 +535,7 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
               <b>Extra Fields:</b>
             </h3>
             <br />
-            {definitions?.data?.rows.map((definition: any) => {
+            {definitions?.data?.map((definition: any) => {
               return <FormBuilder formField={definition} />;
             }) || 'No field definitions found!'}
           </div>

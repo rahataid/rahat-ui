@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   Form,
@@ -19,9 +19,7 @@ import { useForm } from 'react-hook-form';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useTargetingCreate } from '@rahat-ui/community-query';
 import TargetingFormBuilder from '../../targetingFormBuilder';
-import useTargetingFormStore from '../../targetingFormBuilder/form.store';
 import { usePagination } from '@rahat-ui/query';
 import { useFieldDefinitionsList } from '@rahat-ui/community-query';
 
@@ -30,14 +28,15 @@ import {
   PhoneStatus,
   Gender,
 } from '@rahataid/community-tool-sdk/enums/';
+import { ITargetingQueries } from '../../types/targeting';
 
 const FIELD_DEF_FETCH_LIMIT = 200;
 
-export default function TargetSelectForm() {
-  const addTargeting = useTargetingCreate();
+type IProps = {
+  onFormSubmit: (formData: ITargetingQueries) => Promise<void>;
+};
 
-  const { targetingQueries }: any = useTargetingFormStore();
-
+export default function TargetSelectForm({ onFormSubmit }: IProps) {
   const { pagination } = usePagination();
   const { data: definitions } = useFieldDefinitionsList({
     ...pagination,
@@ -68,22 +67,9 @@ export default function TargetSelectForm() {
     },
   });
 
-  const handleTargetSubmit = async (formData: z.infer<typeof FormSchema>) => {
-    const payload = { ...formData, ...targetingQueries };
-    await addTargeting.mutateAsync({
-      filterOptions: [{ data: payload }],
-    });
-  };
-
-  useEffect(() => {
-    if (addTargeting.isSuccess) {
-      form.reset();
-    }
-  }, [addTargeting.isSuccess, form]);
-
   return (
     <Form {...form}>
-      <form onSubmit={handleSubmit(handleTargetSubmit)}>
+      <form onSubmit={handleSubmit(onFormSubmit)}>
         <div style={{ maxHeight: '50vh' }} className="m-2 overflow-y-auto">
           <FormField
             control={control}

@@ -9,7 +9,7 @@ import {
 
 export default function PhaseCard() {
   return (
-    <div className="grid grid-cols-3 p-2 gap-2 bg-secondary pb-0">
+    <div className="grid grid-cols-3 gap-2 bg-secondary pb-0">
       <Card>
         <CardContent className="flex p-2 pt-4">
           <RadialChart series={[30]} total={15} label="Preparedness" />

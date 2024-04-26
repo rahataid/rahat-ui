@@ -1,11 +1,6 @@
 'use client';
 import { useCallback, useState } from 'react';
 
-import {
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
-} from '@rahat-ui/shadcn/components/resizable';
 import { Tabs, TabsContent } from '@rahat-ui/shadcn/components/tabs';
 
 import {
@@ -20,17 +15,10 @@ import { useCommunityBeneficaryList } from '@rahat-ui/community-query';
 import { usePagination } from '@rahat-ui/query';
 import { ListBeneficiary } from '@rahataid/community-tool-sdk/beneficiary';
 import CustomPagination from '../../components/customPagination';
-import {
-  BENEFICIARY_NAV_ROUTE,
-  GROUP_NAV_ROUTE,
-} from '../../constants/beneficiary.const';
-import BeneficiaryDetail from '../../sections/beneficiary/beneficiaryDetail';
+import { BENEFICIARY_NAV_ROUTE } from '../../constants/beneficiary.const';
 import BeneficiaryGridView from '../../sections/beneficiary/gridView';
 import BeneficiaryListView from '../../sections/beneficiary/listView';
-import BeneficiaryNav from '../../sections/beneficiary/nav';
 import { useDebounce } from '../../utils/debounceHooks';
-import ViewGroup from '../group/group.view';
-import ImportBeneficiary from './import.beneficiary';
 import { useCommunityBeneficiaryTableColumns } from './useBeneficiaryColumns';
 
 function BeneficiaryView() {
@@ -90,71 +78,35 @@ function BeneficiaryView() {
     });
   }, []);
 
-  const handleClose = () => {
-    setSelectedData(null);
-  };
-
   return (
     <Tabs defaultValue="list" className="h-full">
-      <ResizablePanelGroup direction="horizontal" className="min-h-max bg-card">
-        <ResizablePanel minSize={20} defaultSize={20} maxSize={20}>
-          <BeneficiaryNav
-            meta={data?.response?.meta}
-            selectedBenefID={selectedBenefId}
-            // handleClear={handleclear}
-            setSelectedBenefId={setSelectedBenefId}
+      <>
+        <TabsContent value="list">
+          <BeneficiaryListView
+            table={table}
+            setFilters={setFilters}
+            filters={filters}
+            pagination={pagination}
+            setPagination={setPagination}
           />
-        </ResizablePanel>
-        <ResizableHandle />
-        <ResizablePanel minSize={28}>
-          {active === BENEFICIARY_NAV_ROUTE.UPLOAD_BENEFICIARY && (
-            <ImportBeneficiary />
-          )}
+        </TabsContent>
+        <TabsContent value="grid">
+          <BeneficiaryGridView
+            handleClick={handleBeneficiaryClick}
+            data={data?.data?.rows}
+          />
+        </TabsContent>
 
-          {active === BENEFICIARY_NAV_ROUTE.DEFAULT && (
-            <>
-              <TabsContent value="list">
-                <BeneficiaryListView
-                  table={table}
-                  handleClick={handleBeneficiaryClick}
-                  setFilters={setFilters}
-                  filters={filters}
-                  pagination={pagination}
-                  setPagination={setPagination}
-                />
-              </TabsContent>
-              <TabsContent value="grid">
-                <BeneficiaryGridView
-                  handleClick={handleBeneficiaryClick}
-                  data={data?.data?.rows}
-                />
-              </TabsContent>
-
-              <CustomPagination
-                currentPage={pagination.page}
-                handleNextPage={setNextPage}
-                handlePrevPage={setPrevPage}
-                handlePageSizeChange={setPerPage}
-                meta={data?.response?.meta || { total: 0, currentPage: 0 }}
-                perPage={pagination?.perPage}
-                total={data?.response?.meta?.total || 0}
-              />
-            </>
-          )}
-          {active === GROUP_NAV_ROUTE.VIEW_GROUP && <ViewGroup />}
-        </ResizablePanel>
-        {selectedData ? (
-          <>
-            <ResizableHandle />
-            <ResizablePanel minSize={24}>
-              <BeneficiaryDetail
-                handleClose={handleClose}
-                data={selectedData}
-              />
-            </ResizablePanel>
-          </>
-        ) : null}
-      </ResizablePanelGroup>
+        <CustomPagination
+          currentPage={pagination.page}
+          handleNextPage={setNextPage}
+          handlePrevPage={setPrevPage}
+          handlePageSizeChange={setPerPage}
+          meta={data?.response?.meta || { total: 0, currentPage: 0 }}
+          perPage={pagination?.perPage}
+          total={data?.response?.meta?.total || 0}
+        />
+      </>
     </Tabs>
   );
 }

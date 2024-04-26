@@ -2,13 +2,6 @@
 import { useCallback, useState } from 'react';
 
 import {
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
-} from '@rahat-ui/shadcn/components/resizable';
-import { Tabs, TabsContent } from '@rahat-ui/shadcn/components/tabs';
-
-import {
   VisibilityState,
   getCoreRowModel,
   getSortedRowModel,
@@ -19,9 +12,7 @@ import {
 import { FieldDefinition } from '@rahataid/community-tool-sdk/fieldDefinitions';
 import CustomPagination from '../../components/customPagination';
 import { FIELD_DEFINITON_NAV_ROUTE } from '../../constants/fieldDefinition.const';
-import FieldDefinitionsDetail from '../../sections/field-definitions/fieldDefinitionsDetail';
 import FieldDefinitionsListView from '../../sections/field-definitions/listView';
-import BeneficiaryNav from '../../sections/beneficiary/nav';
 import { useFieldDefinitionsList } from '@rahat-ui/community-query';
 import { usePagination } from '@rahat-ui/query';
 import { useFieldDefinitionsTableColumns } from './useFieldDefinitionsColumns';

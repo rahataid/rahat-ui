@@ -1,8 +1,13 @@
 import React from 'react';
 import { ScrollArea } from '@rahat-ui/shadcn/components/scroll-area';
 import TargetSelectForm from './TargetSelectForm';
+import { ITargetingQueries } from '../../types/targeting';
 
-export default function Nav() {
+type IProps = {
+  onFormSubmit: (formData: ITargetingQueries) => Promise<void>;
+};
+
+export default function Nav({ onFormSubmit }: IProps) {
   return (
     <>
       <div>
@@ -11,7 +16,7 @@ export default function Nav() {
         </div>
         <div className="px-4">
           <ScrollArea className="h-auto m-4">
-            <TargetSelectForm />
+            <TargetSelectForm onFormSubmit={onFormSubmit} />
           </ScrollArea>
         </div>
       </div>

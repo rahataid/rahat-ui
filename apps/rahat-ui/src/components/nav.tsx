@@ -33,6 +33,7 @@ export function Nav() {
     user: state.user,
     clearUser: state.clearUser,
   }));
+  console.log('user', user);
   const clearAuth = useAuthStore((state) => state.clearAuth);
   const handleLogout = () => {
     clearUser();
@@ -139,8 +140,10 @@ export function Nav() {
           >
             <DropdownMenuGroup className="p-2 flex flex-col">
               <div className="flex flex-col mb-1">
-                <span className="font-medium">{user?.name ?? 'John Doe'} </span>
-                <span>{user?.email ?? 'doe@john.com'}</span>
+                <span className="font-medium">
+                  {user?.data?.name ?? 'John Doe'}{' '}
+                </span>
+                <span>{user?.data?.email ?? 'doe@john.com'}</span>
               </div>
               <Separator />
               <Link

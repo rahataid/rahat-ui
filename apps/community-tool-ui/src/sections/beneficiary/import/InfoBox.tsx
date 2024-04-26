@@ -3,7 +3,6 @@ import React from 'react';
 export default function InfoBox({
   title = 'Info',
   message = 'This is default message',
-  uniqueField = '',
 }) {
   return (
     <div
@@ -22,11 +21,7 @@ export default function InfoBox({
         </div>
         <div>
           <p className="font-bold">{title}</p>
-          <p className="text-sm">
-            {message}.{' '}
-            {uniqueField &&
-              `${uniqueField.toUpperCase()} is your unique field!`}
-          </p>
+          <p className="text-sm">{message}.</p>
         </div>
       </div>
     </div>

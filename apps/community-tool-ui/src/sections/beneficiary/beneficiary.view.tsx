@@ -1,11 +1,6 @@
 'use client';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
-import {
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
-} from '@rahat-ui/shadcn/components/resizable';
 import { Tabs, TabsContent } from '@rahat-ui/shadcn/components/tabs';
 
 import {
@@ -16,21 +11,16 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 
-import { useCommunityBeneficaryList } from '@rahat-ui/community-query';
+import {
+  useCommunityBeneficaryList,
+  useCommunityBeneficiaryStore,
+} from '@rahat-ui/community-query';
 import { usePagination } from '@rahat-ui/query';
 import { ListBeneficiary } from '@rahataid/community-tool-sdk/beneficiary';
 import CustomPagination from '../../components/customPagination';
-import {
-  BENEFICIARY_NAV_ROUTE,
-  GROUP_NAV_ROUTE,
-} from '../../constants/beneficiary.const';
-import BeneficiaryDetail from '../../sections/beneficiary/beneficiaryDetail';
 import BeneficiaryGridView from '../../sections/beneficiary/gridView';
 import BeneficiaryListView from '../../sections/beneficiary/listView';
-import BeneficiaryNav from '../../sections/beneficiary/nav';
 import { useDebounce } from '../../utils/debounceHooks';
-import ViewGroup from '../group/group.view';
-import ImportBeneficiary from './import.beneficiary';
 import { useCommunityBeneficiaryTableColumns } from './useBeneficiaryColumns';
 
 function BeneficiaryView() {
@@ -47,14 +37,16 @@ function BeneficiaryView() {
   } = usePagination();
 
   const debouncedFilters = useDebounce(filters, 500);
+  const { setSelectedBeneficiaries, selectedBeneficiaries } =
+    useCommunityBeneficiaryStore();
 
   const { data } = useCommunityBeneficaryList({
     ...pagination,
     ...(debouncedFilters as any),
   });
+
   const columns = useCommunityBeneficiaryTableColumns();
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-  // const { closeSecondPanel, setSecondPanelComponent } = useSecondPanel();
   const table = useReactTable({
     manualPagination: true,
     data: data?.data?.rows || [],
@@ -72,89 +64,47 @@ function BeneficiaryView() {
   });
 
   const [selectedData, setSelectedData] = useState(null) as any;
-  const [selectedBenefId, setSelectedBenefId] = useState<string[]>([]);
-  const [active, setActive] = useState<string>(BENEFICIARY_NAV_ROUTE.DEFAULT);
 
   const handleBeneficiaryClick = useCallback((item: ListBeneficiary) => {
     setSelectedData(item);
-    setSelectedBenefId((prevSelectedData) => {
-      const isSelected = prevSelectedData?.includes(item.uuid);
-
-      if (isSelected) {
-        return prevSelectedData.filter(
-          (selectedUUID) => selectedUUID !== item.uuid,
-        );
-      } else {
-        return [...(prevSelectedData || []), item.uuid];
-      }
-    });
   }, []);
 
-  const handleClose = () => {
-    setSelectedData(null);
-  };
+  useEffect(() => {
+    setSelectedBeneficiaries(
+      Object.keys(selectedListItems).filter((key) => selectedListItems[key]),
+    );
+  }, [selectedListItems, setSelectedBeneficiaries]);
 
+  console.log('selecctedBenef', selectedListItems);
   return (
     <Tabs defaultValue="list" className="h-full">
-      <ResizablePanelGroup direction="horizontal" className="min-h-max bg-card">
-        <ResizablePanel minSize={20} defaultSize={20} maxSize={20}>
-          <BeneficiaryNav
-            meta={data?.response?.meta}
-            selectedBenefID={selectedBenefId}
-            // handleClear={handleclear}
-            setSelectedBenefId={setSelectedBenefId}
+      <>
+        <TabsContent value="list">
+          <BeneficiaryListView
+            table={table}
+            setFilters={setFilters}
+            filters={filters}
+            pagination={pagination}
+            setPagination={setPagination}
           />
-        </ResizablePanel>
-        <ResizableHandle />
-        <ResizablePanel minSize={28}>
-          {active === BENEFICIARY_NAV_ROUTE.UPLOAD_BENEFICIARY && (
-            <ImportBeneficiary />
-          )}
+        </TabsContent>
+        <TabsContent value="grid">
+          <BeneficiaryGridView
+            handleClick={handleBeneficiaryClick}
+            data={data?.data?.rows}
+          />
+        </TabsContent>
 
-          {active === BENEFICIARY_NAV_ROUTE.DEFAULT && (
-            <>
-              <TabsContent value="list">
-                <BeneficiaryListView
-                  table={table}
-                  handleClick={handleBeneficiaryClick}
-                  setFilters={setFilters}
-                  filters={filters}
-                  pagination={pagination}
-                  setPagination={setPagination}
-                />
-              </TabsContent>
-              <TabsContent value="grid">
-                <BeneficiaryGridView
-                  handleClick={handleBeneficiaryClick}
-                  data={data?.data?.rows}
-                />
-              </TabsContent>
-
-              <CustomPagination
-                currentPage={pagination.page}
-                handleNextPage={setNextPage}
-                handlePrevPage={setPrevPage}
-                handlePageSizeChange={setPerPage}
-                meta={data?.response?.meta || { total: 0, currentPage: 0 }}
-                perPage={pagination?.perPage}
-                total={data?.response?.meta?.total || 0}
-              />
-            </>
-          )}
-          {active === GROUP_NAV_ROUTE.VIEW_GROUP && <ViewGroup />}
-        </ResizablePanel>
-        {selectedData ? (
-          <>
-            <ResizableHandle />
-            <ResizablePanel minSize={24}>
-              <BeneficiaryDetail
-                handleClose={handleClose}
-                data={selectedData}
-              />
-            </ResizablePanel>
-          </>
-        ) : null}
-      </ResizablePanelGroup>
+        <CustomPagination
+          currentPage={pagination.page}
+          handleNextPage={setNextPage}
+          handlePrevPage={setPrevPage}
+          handlePageSizeChange={setPerPage}
+          meta={data?.response?.meta || { total: 0, currentPage: 0 }}
+          perPage={pagination?.perPage}
+          total={data?.response?.meta?.total || 0}
+        />
+      </>
     </Tabs>
   );
 }

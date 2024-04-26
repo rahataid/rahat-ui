@@ -75,15 +75,15 @@ export default function ListView({
       />
       <div className="-mt-2 p-2 bg-secondary">
         <div className="flex items-center mb-2">
-          <Input
+        <Input
             placeholder="Filter beneficiary..."
             value={
-              (table.getColumn('walletAddress')?.getFilterValue() as string) ??
+              (table.getColumn('name')?.getFilterValue() as string) ??
               ''
             }
             onChange={(event) =>
               table
-                .getColumn('walletAddress')
+                .getColumn('name')
                 ?.setFilterValue(event.target.value)
             }
             className="rounded"

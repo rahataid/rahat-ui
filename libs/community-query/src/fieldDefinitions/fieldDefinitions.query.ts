@@ -27,6 +27,23 @@ export const useFieldDefinitionsList = (
   return query;
 };
 
+export const useActiveFieldDefList = (
+  payload: Pagination & { isTargeting?: boolean },
+): UseQueryResult<any, Error> => {
+  const { queryClient, rumsanService } = useRSQuery();
+  const fieldDefClient = getFieldDefinitionClient(rumsanService.client);
+
+  const query = useQuery(
+    {
+      queryKey: [TAGS.LIST_ACTIVE_FIELD_DEFINITIONS, payload],
+      queryFn: () => fieldDefClient.listActive(payload),
+    },
+    queryClient,
+  );
+
+  return query;
+};
+
 export const useFieldDefinitionsCreate = () => {
   const { queryClient, rumsanService } = useRSQuery();
   const fieldDefClient = getFieldDefinitionClient(rumsanService.client);

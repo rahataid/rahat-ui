@@ -6,6 +6,7 @@ import { Project } from '@rahataid/sdk/project/project.types';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import WaterLevelInfo from './waterlevel/waterlevel.info';
+import { ActivitiesPhaseCard } from './activities';
 
 export default function ProjectDetails() {
   const project = useProjectStore((state) => state.singleProject) as Project;
@@ -17,8 +18,9 @@ export default function ProjectDetails() {
   console.log("water levels data", data)
 
   return (
-    <div className="p-4 bg-slate-100">
+    <div className="p-2 bg-secondary">
       <ProjectInfo project={project} />
+      <ActivitiesPhaseCard />
       {/* {
         isLoadingWaterLevels? (
           "Loading recent water levels..."

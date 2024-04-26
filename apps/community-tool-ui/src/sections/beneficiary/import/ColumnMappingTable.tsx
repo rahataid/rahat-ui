@@ -69,7 +69,7 @@ export default function ColumnMappingTable({
       <thead>
         <tr>
           {columns.map((column: any, index: number) => (
-            <th className="px-4 py-1.5" key={index}>
+            <th className="py-1.5" key={index}>
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
@@ -98,7 +98,7 @@ export default function ColumnMappingTable({
             className="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700"
           >
             {columns.map((column: any, columnIndex: number) => (
-              <td className="px-4 py-1.5" key={columnIndex}>
+              <td className="px-2 py-1.5" key={columnIndex}>
                 {typeof item[column] === 'object'
                   ? ''
                   : renderField(item, column)}

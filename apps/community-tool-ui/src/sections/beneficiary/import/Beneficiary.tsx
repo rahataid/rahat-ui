@@ -437,7 +437,7 @@ export default function BenImp({ extraFields }: IProps) {
 
             <hr />
 
-            <div className="overflow-x-auto" style={{ overflowX: 'auto' }}>
+            <div className="overflow-x-auto max-w-screen-lg">
               <ColumnMappingTable
                 rawData={rawData}
                 uniqueDBFields={uniqueDBFields}

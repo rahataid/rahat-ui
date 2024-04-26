@@ -66,7 +66,7 @@ export const useBeneficaryVoucher = (beneficiary: string) => {
     enabled: beneficiary ? true : false,
     queryKey: ['beneficiary-voucher', beneficiary],
     queryFn: async () => {
-      const res = await queryService.useBeneficiaryVoucher(beneficiary);
+      const res = await queryService?.useBeneficiaryVoucher(beneficiary);
       return res;
     },
   });
@@ -79,7 +79,7 @@ export const useBeneficiaryTransaction = (address: string) => {
     enabled: address ? true : false,
     queryKey: ['beneficiary-transaction', address],
     queryFn: async () => {
-      const res = await queryService.useBeneficiaryTransaction(address);
+      const res = await queryService?.useBeneficiaryTransaction(address);
       const claimedAssigned = res?.claimAssigneds || [];
       const claimProcessed = res?.projectClaimProcesseds || [];
       const beneficiaryReferred = res?.beneficiaryReferreds || [];
@@ -97,7 +97,7 @@ export const useProjectTransaction = () => {
   return useQuery({
     queryKey: ['project-trans'],
     queryFn: async () => {
-      const res = await queryService.useProjectTransaction();
+      const res = await queryService?.useProjectTransaction();
       const transactionTypes = [
         'claimAssigneds',
         'projectClaimProcesseds',
@@ -221,6 +221,51 @@ export const useGetReferredVoucherTransaction = (tokenReferred: string) => {
         tokenReferred,
       );
       return res;
+    },
+  });
+};
+
+export const useGetBeneficiaryVouchers = () => {
+  const { queryService } = useGraphService();
+  return useQuery({
+    queryKey: ['beneficiary-vouchers'],
+    queryFn: async () => {
+      const res = await queryService.useAllBeneficiariesVoucher();
+      return res;
+    },
+  });
+};
+
+export const useVendorFilteredTransaction = (
+  address: string,
+  tokenAddress: string,
+) => {
+  const { queryService } = useGraphService();
+
+  console.log(queryService);
+
+  return useQuery({
+    enabled: address ? true : false,
+    queryKey: ['vendor-vouchers-filtered', address],
+    queryFn: async () => {
+      const res = await queryService?.useVendorFilteredTransaction(
+        address,
+        tokenAddress,
+      );
+      const claimedAssigned = res?.data?.claimCreateds || [];
+      const claimProcessed = res?.data?.projectClaimProcesseds || [];
+      const beneficiaryReferred = res?.data?.beneficiaryReferreds || [];
+      const tokenRedeems = res?.data?.tokenRedeems || [];
+      const newData = mapTransactions(
+        claimedAssigned.concat(
+          claimProcessed,
+          beneficiaryReferred,
+          tokenRedeems,
+        ),
+      );
+      return {
+        newData,
+      };
     },
   });
 };

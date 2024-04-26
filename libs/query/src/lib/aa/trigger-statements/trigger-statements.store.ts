@@ -1,6 +1,5 @@
 import { localStore, zustandStore } from '@rumsan/react-query';
 
-
 const initialStore = {
   dhmStations: null,
 };

@@ -2,7 +2,7 @@ import {
   createUseReadContract,
   createUseWriteContract,
   createUseSimulateContract,
-} from 'wagmi/codegen'
+} from 'wagmi/codegen';
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // AccessManager
@@ -67,7 +67,7 @@ export const accessManagerAbi = [
     outputs: [],
     stateMutability: 'nonpayable',
   },
-] as const
+] as const;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // React
@@ -78,7 +78,7 @@ export const accessManagerAbi = [
  */
 export const useReadAccessManager = /*#__PURE__*/ createUseReadContract({
   abi: accessManagerAbi,
-})
+});
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link accessManagerAbi}__ and `functionName` set to `"isAdmin"`
@@ -86,7 +86,7 @@ export const useReadAccessManager = /*#__PURE__*/ createUseReadContract({
 export const useReadAccessManagerIsAdmin = /*#__PURE__*/ createUseReadContract({
   abi: accessManagerAbi,
   functionName: 'isAdmin',
-})
+});
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link accessManagerAbi}__ and `functionName` set to `"isDonor"`
@@ -94,7 +94,7 @@ export const useReadAccessManagerIsAdmin = /*#__PURE__*/ createUseReadContract({
 export const useReadAccessManagerIsDonor = /*#__PURE__*/ createUseReadContract({
   abi: accessManagerAbi,
   functionName: 'isDonor',
-})
+});
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link accessManagerAbi}__ and `functionName` set to `"isProjectManager"`
@@ -103,14 +103,14 @@ export const useReadAccessManagerIsProjectManager =
   /*#__PURE__*/ createUseReadContract({
     abi: accessManagerAbi,
     functionName: 'isProjectManager',
-  })
+  });
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link accessManagerAbi}__
  */
 export const useWriteAccessManager = /*#__PURE__*/ createUseWriteContract({
   abi: accessManagerAbi,
-})
+});
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link accessManagerAbi}__ and `functionName` set to `"updateAdmin"`
@@ -119,7 +119,7 @@ export const useWriteAccessManagerUpdateAdmin =
   /*#__PURE__*/ createUseWriteContract({
     abi: accessManagerAbi,
     functionName: 'updateAdmin',
-  })
+  });
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link accessManagerAbi}__ and `functionName` set to `"updateDonor"`
@@ -128,7 +128,7 @@ export const useWriteAccessManagerUpdateDonor =
   /*#__PURE__*/ createUseWriteContract({
     abi: accessManagerAbi,
     functionName: 'updateDonor',
-  })
+  });
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link accessManagerAbi}__ and `functionName` set to `"updateProjectManager"`
@@ -137,14 +137,14 @@ export const useWriteAccessManagerUpdateProjectManager =
   /*#__PURE__*/ createUseWriteContract({
     abi: accessManagerAbi,
     functionName: 'updateProjectManager',
-  })
+  });
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link accessManagerAbi}__
  */
 export const useSimulateAccessManager = /*#__PURE__*/ createUseSimulateContract(
   { abi: accessManagerAbi },
-)
+);
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link accessManagerAbi}__ and `functionName` set to `"updateAdmin"`
@@ -153,7 +153,7 @@ export const useSimulateAccessManagerUpdateAdmin =
   /*#__PURE__*/ createUseSimulateContract({
     abi: accessManagerAbi,
     functionName: 'updateAdmin',
-  })
+  });
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link accessManagerAbi}__ and `functionName` set to `"updateDonor"`
@@ -162,7 +162,7 @@ export const useSimulateAccessManagerUpdateDonor =
   /*#__PURE__*/ createUseSimulateContract({
     abi: accessManagerAbi,
     functionName: 'updateDonor',
-  })
+  });
 
 /**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link accessManagerAbi}__ and `functionName` set to `"updateProjectManager"`
@@ -171,4 +171,4 @@ export const useSimulateAccessManagerUpdateProjectManager =
   /*#__PURE__*/ createUseSimulateContract({
     abi: accessManagerAbi,
     functionName: 'updateProjectManager',
-  })
+  });

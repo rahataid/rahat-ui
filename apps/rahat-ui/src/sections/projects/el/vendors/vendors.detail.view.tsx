@@ -62,6 +62,8 @@ export default function VendorsDetailPage() {
     args: [walletAddress],
   });
 
+  console.log("contract address", contractAddress)
+
   const { data: vendorVoucher } = useReadElProjectGetVendorVoucherDetail({
     address: contractAddress,
     args: [walletAddress],
@@ -75,23 +77,30 @@ export default function VendorsDetailPage() {
   };
 
   useEffect(() => {
-    async function fetchData() {
-      const res = await projectClient.mutateAsync({
-        uuid: projectId,
-        data: {
-          action: MS_ACTIONS.SETTINGS.GET,
-          payload: {
-            name: PROJECT_SETTINGS.CONTRACTS,
+    try {
+      async function fetchData() {
+        const res = await projectClient.mutateAsync({
+          uuid: projectId,
+          data: {
+            action: MS_ACTIONS.SETTINGS.GET,
+            payload: {
+              name: PROJECT_SETTINGS.CONTRACTS,
+            },
           },
-        },
-      });
-      if (res.data) {
-        const { value } = res.data;
-        setContractAddress(value?.elproject?.address || '');
+        });
+        console.log("wallet address", res.data)
+        if (res.data) {
+          const { value } = res.data;
+          setContractAddress(value?.elproject?.address || '');
+        }
       }
+      fetchData();
+    } catch (error) {
+      console.log(error)
     }
-    fetchData();
   }, []);
+
+  console.log("vendor status", vendorStatus)
 
   return (
     <div className="bg-secondary">

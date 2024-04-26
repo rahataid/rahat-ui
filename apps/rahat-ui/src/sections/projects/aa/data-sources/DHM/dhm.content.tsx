@@ -1,6 +1,7 @@
-import { ClusterMap, StyledMapContainer, THEMES } from '@rahat-ui/shadcn/maps';
+import { StyledMapContainer, THEMES } from '@rahat-ui/shadcn/maps';
 import { mapboxBasicConfig } from '../../../../../constants/config';
 import { LineChart } from '@rahat-ui/shadcn/src/components/charts';
+import DHMMap from './map';
 
 const renderStatus = ({ warningLevel, dangerLevel, waterLevel }: any) => {
     let status;
@@ -107,7 +108,7 @@ export default function DHMContent({ data }: any) {
             <div className='h-[calc(100vh-130px)] col-span-3 flex flex-col gap-2'>
                 <div className='h-1/2 overflow-hidden rounded-md'>
                     <StyledMapContainer>
-                        <ClusterMap {...mapboxBasicConfig} mapStyle={THEMES.light} />
+                        <DHMMap {...mapboxBasicConfig} mapStyle={THEMES.light} />
                     </StyledMapContainer>
                 </div>
                 <div className='h-1/2 bg-card rounded-md'>

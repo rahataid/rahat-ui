@@ -14,6 +14,11 @@ import {
 } from './elProject';
 
 import { encodeFunctionData } from 'viem';
+import { useWriteAccessManagerUpdateAdmin, useWriteAccessManagerUpdateProjectManager } from './access';
+import { useUserAddRoles } from '@rumsan/react-query';
+import { useUserCreate } from '@rahat-ui/query';
+import { User } from '@rumsan/sdk/types';
+import { UUID } from 'crypto';
 
 export const useAddBeneficiary = () => {
   const alert = useSwal();
@@ -116,7 +121,6 @@ export const useOnlyMintVoucher = () => {
 
 export const useAddVendors = () => {
   const alert = useSwal();
-  const addVendor = useProjectAction();
   return useWriteElProjectUpdateVendor({
     mutation: {
       onSuccess: async () => {
@@ -197,3 +201,149 @@ export const useBulkAssignVoucher = () => {
   });
   return multicall;
 };
+
+export const useAddManager = () =>{
+
+  const contract = useWriteAccessManagerUpdateProjectManager();
+  const addUser = useUserCreate()
+  const alert = useSwal();
+
+  const functionCall = useMutation({mutationFn:({
+    data,
+    walletAddress,
+    contractAddress,
+  }:{
+    data:User,
+    walletAddress:`0x${string}`,
+    contractAddress: `0x${string}`
+  }):Promise<unknown> =>{
+    
+    return contract.writeContractAsync({
+      args:[walletAddress,true],
+      address:contractAddress
+    });
+  },
+  onSuccess:async (result,variables) =>{
+    await addUser.mutateAsync(variables.data)
+  },
+  onError:(err) =>{
+    alert.fire({
+      title: 'Error adding manager',
+      text:err.message,
+      icon: 'error',
+    });
+  }
+
+})
+return functionCall;
+}
+
+
+export const useAddAdmin = () =>{
+  const contract = useWriteAccessManagerUpdateAdmin();
+  const addUser = useUserCreate()
+  const alert = useSwal();
+
+  const functionCall = useMutation({mutationFn:({
+    data,
+    walletAddress,
+    contractAddress,
+  }:{
+    data:User,
+    walletAddress:`0x${string}`,
+    contractAddress: `0x${string}`
+  }):Promise<unknown> =>{
+    return contract.writeContractAsync({
+      args:[walletAddress,true],
+      address:contractAddress
+    });
+  },
+  onSuccess:async (data,variables) =>{
+    await addUser.mutateAsync(variables.data)
+
+  },
+  onError:(err) =>{
+    alert.fire({
+      title: 'Error adding admin',
+      text:err.message,
+      icon: 'error',
+    });
+  }
+  
+})
+return functionCall;
+}
+
+
+export const useAddManagerRole = () =>{
+
+  const contract = useWriteAccessManagerUpdateProjectManager();
+  const addUserRole  = useUserAddRoles()
+  const alert = useSwal();
+
+  const functionCall = useMutation({mutationFn:({
+    data,
+    contractAddress,
+  }:{
+    data:{role:string,uuid: UUID,wallet:`0X${string}`},
+    contractAddress: `0x${string}`
+  }):Promise<unknown> =>{
+    return contract.writeContractAsync({
+      args:[data.wallet,true],
+      address:contractAddress
+    });
+  },
+  onSuccess:async(result,variables) =>{
+    await addUserRole.mutateAsync({
+      uuid:variables.data.uuid,
+      roles: [variables.data.role]
+    })
+  },
+  onError:(err) =>{
+    alert.fire({
+      title: 'Error adding roles',
+      text:err.message,
+      icon: 'error',
+    });
+  }
+
+})
+return functionCall;
+}
+
+
+export const useAddAdminRole = () =>{
+  const contract = useWriteAccessManagerUpdateAdmin();
+  const addUserRole  = useUserAddRoles()
+  const alert = useSwal();
+
+  const functionCall = useMutation({mutationFn:({
+    data,
+    contractAddress,
+  }:{
+    data:{role:string,uuid: UUID,wallet:`0X${string}`},
+    contractAddress: `0x${string}`
+  }):Promise<unknown> =>{
+    return contract.writeContractAsync({
+      args:[data.wallet,true],
+      address:contractAddress
+    });
+  },
+  onSuccess:async (data,variables) =>{
+   await addUserRole.mutateAsync({
+      uuid:variables.data.uuid,
+      roles: [variables.data.role]
+    })
+
+  },
+  onError:(err) =>{
+    alert.fire({
+      title: 'Error adding roles',
+      text:err.message,
+      icon: 'error',
+    });
+  }
+  
+})
+return functionCall;
+}

@@ -91,7 +91,7 @@ export default function GroupDetail({ data, handleClose }: IProps) {
   const removeBeneficiaryFromGroup = () => {
     Swal.fire({
       title: 'Are you sure?',
-      text: 'Confirm beneficiary removal from this group',
+      text: 'Remove beneficiary from this group',
       icon: 'question',
       showDenyButton: true,
       confirmButtonText: 'Yes, I am sure!',
@@ -103,17 +103,11 @@ export default function GroupDetail({ data, handleClose }: IProps) {
       },
     }).then(async (result) => {
       if (result.isConfirmed) {
-        try {
-          await removeCommunityGroup.mutateAsync({
-            uuid: data?.uuid,
-            deleteBeneficiaryFlag: false,
-          });
-        } catch (error) {
-          toast.error('Error removing Beneficiary');
-          console.error('Error removing Beneficiary:', error);
-        }
-      } else if (result.isDenied) {
-        Swal.fire('Cancelled', `The beneficiary wasn't removed.`, 'error');
+        await removeCommunityGroup.mutateAsync({
+          uuid: data?.uuid,
+          deleteBeneficiaryFlag: false,
+        });
+        handleClose();
       }
     });
   };
@@ -121,7 +115,7 @@ export default function GroupDetail({ data, handleClose }: IProps) {
   const handleDelete = () => {
     Swal.fire({
       title: 'Are you sure?',
-      text: 'Confirm beneficiary delete',
+      text: 'Beneficiary will be removed from group and archived!',
       icon: 'question',
       showDenyButton: true,
       confirmButtonText: 'Yes, I am sure!',
@@ -133,26 +127,20 @@ export default function GroupDetail({ data, handleClose }: IProps) {
       },
     }).then(async (result) => {
       if (result.isConfirmed) {
-        try {
-          await removeCommunityGroup.mutateAsync({
-            uuid: data?.uuid,
-            deleteBeneficiaryFlag: true,
-          });
-        } catch (error) {
-          toast.error('Error deleting Beneficiary');
-          console.error('Error deleting Beneficiary:', error);
-        }
-      } else if (result.isDenied) {
-        Swal.fire('Cancelled', `The beneficiary wasn't deleted.`, 'error');
+        await removeCommunityGroup.mutateAsync({
+          uuid: data?.uuid,
+          deleteBeneficiaryFlag: true,
+        });
+        handleClose();
       }
     });
   };
 
   const handlePurge = () => {
     Swal.fire({
-      title: 'Are you sure?',
-      text: 'Confirm group purge',
-      icon: 'question',
+      title: 'CAUTION!',
+      text: 'Group and beneficiaries will be deleted permanently!',
+      icon: 'warning',
       showDenyButton: true,
       confirmButtonText: 'Yes, I am sure!',
       denyButtonText: 'No, cancel it!',
@@ -163,14 +151,8 @@ export default function GroupDetail({ data, handleClose }: IProps) {
       },
     }).then(async (result) => {
       if (result.isConfirmed) {
-        try {
-          await purgeCommunityGroup.mutateAsync(data?.uuid);
-        } catch (error) {
-          toast.error('Error purging Beneficiary');
-          console.error('Error purging Beneficiary:', error);
-        }
-      } else if (result.isDenied) {
-        Swal.fire('Cancelled', `The group wasn't purged.`, 'error');
+        await purgeCommunityGroup.mutateAsync(data?.uuid);
+        handleClose();
       }
     });
   };

@@ -20,6 +20,10 @@ import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTargetingCreate } from '@rahat-ui/community-query';
+import TargetingFormBuilder from '../../targetingFormBuilder';
+import useTargetingFormStore from '../../targetingFormBuilder/form.store';
+import { usePagination } from '@rahat-ui/query';
+import { useFieldDefinitionsList } from '@rahat-ui/community-query';
 
 import {
   BankedStatus,
@@ -27,8 +31,19 @@ import {
   Gender,
 } from '@rahataid/community-tool-sdk/enums/';
 
+const FIELD_DEF_FETCH_LIMIT = 200;
+
 export default function TargetSelectForm() {
   const addTargeting = useTargetingCreate();
+
+  const { targetingQueries }: any = useTargetingFormStore();
+
+  const { pagination } = usePagination();
+  const { data: definitions } = useFieldDefinitionsList({
+    ...pagination,
+    perPage: FIELD_DEF_FETCH_LIMIT,
+    isTargeting: true,
+  });
 
   const { handleSubmit, control } = useForm();
 
@@ -53,9 +68,10 @@ export default function TargetSelectForm() {
     },
   });
 
-  const handleTargetSubmit = async (data: z.infer<typeof FormSchema>) => {
+  const handleTargetSubmit = async (formData: z.infer<typeof FormSchema>) => {
+    const payload = { ...formData, ...targetingQueries };
     await addTargeting.mutateAsync({
-      filterOptions: [data],
+      filterOptions: [{ data: payload }],
     });
   };
 
@@ -68,7 +84,7 @@ export default function TargetSelectForm() {
   return (
     <Form {...form}>
       <form onSubmit={handleSubmit(handleTargetSubmit)}>
-        <div style={{ maxHeight: '80vh' }} className="m-2 overflow-y-auto">
+        <div style={{ maxHeight: '50vh' }} className="m-2 overflow-y-auto">
           <FormField
             control={control}
             name="ssa"
@@ -82,7 +98,7 @@ export default function TargetSelectForm() {
                       defaultValue={field.value}
                     >
                       <FormControl>
-                        <SelectTrigger>
+                        <SelectTrigger className="w-80">
                           <SelectValue placeholder={`Select SSA`} />
                         </SelectTrigger>
                       </FormControl>
@@ -116,7 +132,7 @@ export default function TargetSelectForm() {
                       defaultValue={field.value}
                     >
                       <FormControl>
-                        <SelectTrigger>
+                        <SelectTrigger className="w-80">
                           <SelectValue placeholder={`Select Vulnerability`} />
                         </SelectTrigger>
                       </FormControl>
@@ -145,7 +161,7 @@ export default function TargetSelectForm() {
                       defaultValue={field.value}
                     >
                       <FormControl>
-                        <SelectTrigger>
+                        <SelectTrigger className="w-80">
                           <SelectValue placeholder={`Select Gender`} />
                         </SelectTrigger>
                       </FormControl>
@@ -176,7 +192,7 @@ export default function TargetSelectForm() {
                       defaultValue={field.value}
                     >
                       <FormControl>
-                        <SelectTrigger>
+                        <SelectTrigger className="w-80">
                           <SelectValue placeholder={`Select Phone Status`} />
                         </SelectTrigger>
                       </FormControl>
@@ -215,7 +231,7 @@ export default function TargetSelectForm() {
                       defaultValue={field.value}
                     >
                       <FormControl>
-                        <SelectTrigger>
+                        <SelectTrigger className="w-80">
                           <SelectValue placeholder={`Select Banked Status`} />
                         </SelectTrigger>
                       </FormControl>
@@ -254,6 +270,7 @@ export default function TargetSelectForm() {
                         type="text"
                         placeholder="Location"
                         defaultValue={field.value}
+                        className="w-80"
                         {...field}
                       />
                     </FormControl>
@@ -264,9 +281,16 @@ export default function TargetSelectForm() {
             }}
           />
 
-          <div className="mt-4">
-            <Button type="submit">Submit</Button>
-          </div>
+          {definitions?.data?.rows.map((definition: any, index: number) => {
+            return (
+              <div key={index} className="mt-3">
+                <TargetingFormBuilder formField={definition} />
+              </div>
+            );
+          }) || 'No field definitions found!'}
+        </div>
+        <div className="mt-6">
+          <Button type="submit">Submit</Button>
         </div>
       </form>
     </Form>

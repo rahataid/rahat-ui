@@ -535,7 +535,7 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
               <b>Extra Fields:</b>
             </h3>
             <br />
-            {definitions?.data?.rows.map((definition: any) => {
+            {definitions?.data?.map((definition: any) => {
               return <FormBuilder formField={definition} />;
             }) || 'No field definitions found!'}
           </div>

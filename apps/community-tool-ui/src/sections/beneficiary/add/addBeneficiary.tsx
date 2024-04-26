@@ -477,7 +477,7 @@ export default function AddBeneficiary() {
                 <b>Extra Fields:</b>
               </h3>
               <br />
-              {definitions?.data?.rows.map((definition: any) => {
+              {definitions?.data?.map((definition: any) => {
                 return (
                   <FormBuilder key={definition.id} formField={definition} />
                 );

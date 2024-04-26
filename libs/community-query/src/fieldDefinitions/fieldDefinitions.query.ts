@@ -19,7 +19,7 @@ export const useFieldDefinitionsList = (
   const query = useQuery(
     {
       queryKey: [TAGS.LIST_COMMUNITY_FIELD_DEFINITIONS, payload],
-      queryFn: () => fieldDefClient.list(payload),
+      queryFn: () => fieldDefClient.listActive(payload),
     },
     queryClient,
   );

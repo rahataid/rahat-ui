@@ -19,8 +19,8 @@ import {
 import { useForm } from 'react-hook-form';
 
 import {
+  useActiveFieldDefList,
   useCommunityBeneficiaryCreate,
-  useFieldDefinitionsList,
 } from '@rahat-ui/community-query';
 import { Calendar } from '@rahat-ui/shadcn/src/components/ui/calendar';
 import {
@@ -50,7 +50,7 @@ export default function AddBeneficiary() {
   const { extras }: any = useFormStore();
 
   const { pagination } = usePagination();
-  const { data: definitions } = useFieldDefinitionsList({
+  const { data: definitions } = useActiveFieldDefList({
     ...pagination,
     perPage: FIELD_DEF_FETCH_LIMIT,
   });

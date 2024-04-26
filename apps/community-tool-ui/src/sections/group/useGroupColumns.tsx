@@ -61,7 +61,7 @@ export const useCommunityGroupDeailsColumns = () => {
   const columns: ColumnDef<GroupResponseById[]>[] = [
     {
       accessorKey: 'beneficiary',
-      header: 'FullName',
+      header: 'Full Name',
       cell: ({ row }) => {
         if (row && row.getValue && typeof row.getValue === 'function') {
           const beneficiary = row.getValue('beneficiary') as Beneficiary;
@@ -87,7 +87,7 @@ export const useCommunityGroupDeailsColumns = () => {
     },
     {
       accessorKey: 'beneficiary',
-      header: 'WalletAddress',
+      header: 'Wallet Address',
       cell: ({ row }) => {
         if (row && row.getValue && typeof row.getValue === 'function') {
           const beneficiary = row.getValue('beneficiary') as Beneficiary;
@@ -113,7 +113,7 @@ export const useCommunityGroupDeailsColumns = () => {
     },
     {
       accessorKey: 'beneficiary',
-      header: 'GovernmentIdNumber',
+      header: 'Govt. ID Number',
       cell: ({ row }) => {
         if (row && row.getValue && typeof row.getValue === 'function') {
           const beneficiary = row.getValue('beneficiary') as Beneficiary;
@@ -126,7 +126,7 @@ export const useCommunityGroupDeailsColumns = () => {
     },
     {
       accessorKey: 'beneficiary',
-      header: 'CreatedAt',
+      header: 'Created Date',
       cell: ({ row }) => {
         const beneficiary = row.getValue('beneficiary') as Beneficiary;
         const changedDate = new Date(beneficiary.createdAt as Date);

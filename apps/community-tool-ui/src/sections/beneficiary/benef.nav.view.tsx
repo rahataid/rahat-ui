@@ -16,11 +16,8 @@ const BeneficiaryNavView: FC<BeneficiaryNavViewProps> = ({
   const [openSubmenu, setOpenSubmenu] = useState<string | null>(null);
 
   const handleNav = (item: NavItem) => {
-    if (item.children) {
-      setOpenSubmenu(item.title === openSubmenu ? null : item.title);
-    } else if (item.path) {
-      router.push(item.path as string);
-    }
+    if (!item.children) router.push(item.path as string);
+    else setOpenSubmenu(item.title === openSubmenu ? null : item.title);
   };
   return (
     <div className="pb-2">

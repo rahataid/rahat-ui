@@ -1,9 +1,6 @@
-import React from 'react';
 import { useRouter } from 'next/navigation';
 import { FC, useState } from 'react';
 import { NavItem } from './nav-items.types';
-import { useCommunityBeneficiaryStore } from '@rahat-ui/community-query';
-import { Separator } from '@rahat-ui/shadcn/src/components/ui/separator';
 type BeneficiaryNavViewProps = {
   title: string;
   items?: NavItem[];
@@ -80,7 +77,7 @@ const BeneficiaryNavView: FC<BeneficiaryNavViewProps> = ({
                 )}
               </div>
               {item.children && openSubmenu === item.title && (
-                <div className="pl-6 transition-all ease-in-out duration-300 opacity-100 max-h-screen">
+                <div className="pl-6 transition-all ease-in-out  opacity-100 max-h-screen">
                   {item.children.map((subItem) => (
                     <div
                       key={subItem.title}

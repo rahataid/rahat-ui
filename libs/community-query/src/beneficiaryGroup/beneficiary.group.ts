@@ -34,18 +34,24 @@ export const useCommunityBeneficiaryGroupCreate = () => {
           beneficiaryUID: payload?.selectedBeneficiaries,
           groupUID: value,
         };
-        console.log('inputData', inputData);
         return await beneficiaryGroupClient.create(inputData as any);
       }
       return null;
     },
     onSuccess: async (data: any) => {
       queryClient.invalidateQueries({
-        queryKey: [TAGS.LIST_COMMUNITY_BENEFICIARY_GROUP],
+        queryKey: [
+          TAGS.LIST_COMMUNITY_BENEFICIARY_GROUP,
+          TAGS.LIST_COMMUNITY_BENFICIARIES,
+        ],
       });
       if (data) {
         queryClient.invalidateQueries({
-          queryKey: [TAGS.LIST_COMMUNITY_BENEFICIARY_GROUP, { exact: true }],
+          queryKey: [
+            TAGS.LIST_COMMUNITY_BENEFICIARY_GROUP,
+            TAGS.LIST_COMMUNITY_BENFICIARIES,
+            { exact: true },
+          ],
         });
 
         data?.data?.info === false
@@ -58,7 +64,7 @@ export const useCommunityBeneficiaryGroupCreate = () => {
               titleText: data?.data?.finalMessage,
               text: data?.data?.info,
 
-              icon: 'info',
+              icon: 'success',
             });
       }
     },

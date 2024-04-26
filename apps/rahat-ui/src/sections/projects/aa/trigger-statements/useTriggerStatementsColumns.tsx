@@ -61,8 +61,8 @@ export const useTriggerStatementTableColumns = () => {
         if (row.getValue('dataSource') === 'DHM') {
           return (
             <>
-              <div>Danger Level: {row.original.triggerStatement.dangerLevel}</div>
-              <div>Warning Level: {row.original.triggerStatement.warningLevel}</div>
+              <div>Readiness Level: {row.original.triggerStatement.readinessLevel}</div>
+              <div>Activation Level: {row.original.triggerStatement.activationLevel}</div>
             </>
           )
         }
@@ -71,7 +71,21 @@ export const useTriggerStatementTableColumns = () => {
     {
       accessorKey: 'triggerActivity',
       header: 'Trigger Activity',
-      cell: ({ row }) => <div>{row.getValue('triggerActivity')}</div>,
+      cell: ({ row }) => {
+        const triggerActivities = row.getValue('triggerActivity');
+
+        if (Array.isArray(triggerActivities) && triggerActivities.length) {
+          return (
+            <>
+              {triggerActivities.map((activity, index) => (
+                <div key={index}>{activity}</div> 
+              ))}
+            </>
+          );
+        } else {
+          return <div>N/A</div>; 
+        }
+      }
     },
     {
       id: 'actions',

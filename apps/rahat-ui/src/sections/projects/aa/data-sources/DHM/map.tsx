@@ -8,7 +8,7 @@ import { clusterLayer, clusterCountLayer, unclusteredPointLayer } from '@rahat-u
 
 // ----------------------------------------------------------------------
 
-function MapClusters({ ...other }: MapBoxProps) {
+function MapClusters({ coordinates, ...other }: { coordinates: number[], other: MapBoxProps }) {
     const geoJsonData = {
         type: "FeatureCollection",
         features: [
@@ -16,7 +16,7 @@ function MapClusters({ ...other }: MapBoxProps) {
                 type: "Feature",
                 geometry: {
                     type: "Point",
-                    coordinates: [82.3886, 29.3863]
+                    coordinates: coordinates
                 },
                 properties: {
                     id: "1",
@@ -28,9 +28,9 @@ function MapClusters({ ...other }: MapBoxProps) {
     return (
         <Map
             initialViewState={{
-                latitude: 28.3949,
-                longitude: 84.1240,
-                zoom: 5,
+                longitude: coordinates[0],
+                latitude: coordinates[1],
+                zoom: 6,
             }}
             {...other}
         >

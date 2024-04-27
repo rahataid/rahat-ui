@@ -6,24 +6,19 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@rahat-ui/shadcn/components/accordion';
-// import { useSwal } from '/src/components/swal';
-import { useRumsanService } from '../../providers/service.provider';
 import {
   useCommunityBeneficiaryGroupCreate,
+  useCommunityBeneficiaryStore,
   useCommunityGroupList,
 } from '@rahat-ui/community-query';
+import { usePagination } from '@rahat-ui/query';
 
-type IProps = {
-  selectedData: number[];
-  handleClose: () => void;
-};
-
-export default function Filter({ selectedData, handleClose }: IProps) {
-  //   const dialog = useSwal();
-  //   const totalSelected = table.getFilteredSelectedRowModel().rows.length;
+export default function Filter() {
   const perPage = 15;
   const currentPage = 1;
-
+  const { selectedBeneficiaries, setSelectedBeneficiaries } =
+    useCommunityBeneficiaryStore();
+  const { setSelectedListItems } = usePagination();
   const commuinityBeneficiaryGroupCreate = useCommunityBeneficiaryGroupCreate();
 
   const { data: groupData } = useCommunityGroupList({
@@ -32,19 +27,22 @@ export default function Filter({ selectedData, handleClose }: IProps) {
   });
 
   const inputOptions: { [key: string]: string } = {};
-  groupData?.data?.rows.forEach((row: { id: string; name: string }) => {
-    inputOptions[row.id] = row.name;
+
+  groupData?.data?.rows.forEach((row: { uuid: string; name: string }) => {
+    inputOptions[row.uuid] = row.name;
   });
 
-  const totalSelected = selectedData.length;
+  const totalSelected = selectedBeneficiaries && selectedBeneficiaries.length;
 
   const handleAssignBeneficiariesGroup = async () => {
     const res = await commuinityBeneficiaryGroupCreate.mutateAsync({
       inputOptions,
-      selectedData,
+      selectedBeneficiaries,
     });
-
-    res?.response?.success && handleClose();
+    if (res?.response?.success) {
+      setSelectedBeneficiaries([]);
+      setSelectedListItems([]);
+    }
   };
 
   return (
@@ -55,7 +53,8 @@ export default function Filter({ selectedData, handleClose }: IProps) {
     >
       <AccordionItem value="item-1">
         <AccordionTrigger className="no-underline bg-muted hover:bg-primary p-2 rounded hover:text-white">
-          {totalSelected} {totalSelected > 1 ? 'beneficiaries' : 'beneficiary'}{' '}
+          {totalSelected}{' '}
+          {(totalSelected as number) > 1 ? 'beneficiaries' : 'beneficiary'}{' '}
           selected.
         </AccordionTrigger>
         <AccordionContent className="p-2 border rounded mt-1">

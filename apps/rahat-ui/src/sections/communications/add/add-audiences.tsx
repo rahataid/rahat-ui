@@ -34,6 +34,7 @@ import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import React, { FC } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 import { z } from 'zod';
+import { benType } from '../../projects/el/beneficiary/beneficiary.table';
 import { useAudienceColumns } from './use-audience-columns';
 import { useAudienceTable } from './use-audience-table';
 
@@ -74,7 +75,7 @@ const AddAudience: FC<AddAudienceProps> = ({
   });
   const createAudience = useCreateAudience();
 
-  const filterBenByAudience = React.useCallback(
+  const filterBenByProjectId = React.useCallback(
     (id: string) => {
       if (id !== 'ALL') {
         setFilters({ ...filters, projectId: id });
@@ -84,6 +85,17 @@ const AddAudience: FC<AddAudienceProps> = ({
     },
     [filters, setFilters],
   );
+
+  const filterBenByBenTypes = React.useCallback(
+    (type: string) => {
+      if (type !== 'ALL') {
+        setFilters({ ...filters, type });
+        return;
+      }
+    },
+    [filters, setFilters],
+  );
+
   const columns = useAudienceColumns(
     beneficiaryData,
     selectedRows,
@@ -96,9 +108,9 @@ const AddAudience: FC<AddAudienceProps> = ({
     return (
       beneficiaryData &&
       beneficiaryData?.data?.map((item: any) => ({
-        name: item?.name,
-        id: item?.beneficiaryId,
-        phone: item?.phone,
+        name: item?.piiData?.name,
+        id: item?.piiData?.beneficiaryId,
+        phone: item?.piiData?.phone,
       }))
     );
   }, [beneficiaryData]);
@@ -126,7 +138,7 @@ const AddAudience: FC<AddAudienceProps> = ({
           }}
           className="max-w-sm"
         />
-        <Select onValueChange={filterBenByAudience}>
+        <Select onValueChange={filterBenByProjectId}>
           <SelectTrigger className="max-w-32">
             <SelectValue placeholder="Projects" />
           </SelectTrigger>
@@ -142,6 +154,22 @@ const AddAudience: FC<AddAudienceProps> = ({
               })}
           </SelectContent>
         </Select>
+        {filters?.projectId && (
+          <Select onValueChange={filterBenByBenTypes}>
+            <SelectTrigger className="max-w-32">
+              <SelectValue placeholder="Types" />
+            </SelectTrigger>
+            <SelectContent>
+              {benType.map((item) => {
+                return (
+                  <SelectItem key={item.key} value={item.value}>
+                    {item.key}
+                  </SelectItem>
+                );
+              })}
+            </SelectContent>
+          </Select>
+        )}
         <div
           className={`border rounded px-3 py-2 h-10 text-sm ${
             selectedRows.length

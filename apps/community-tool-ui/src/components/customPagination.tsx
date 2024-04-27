@@ -1,77 +1,3 @@
-// import { Button } from '@rahat-ui/shadcn/components/button';
-// import {
-//   Select,
-//   SelectContent,
-//   SelectGroup,
-//   SelectItem,
-//   SelectTrigger,
-//   SelectValue,
-// } from '@rahat-ui/shadcn/components/select';
-// import { PaginatedResult } from '@rumsan/sdk/types';
-// type IProps = {
-//   handleNextPage: () => void;
-//   handlePrevPage: () => void;
-//   handlePageSizeChange: (value: string) => void;
-//   meta: PaginatedResult<any>['meta'];
-// };
-
-// const pageSizes = ['5', '10', '20', '30', '40', '50'];
-
-// export default function CustomPagination({
-//   handleNextPage,
-//   handlePageSizeChange,
-//   handlePrevPage,
-//   meta,
-// }: IProps) {
-//   return (
-//     <div className="flex items-center justify-end space-x-4 p-1 pl-2 pr-2 border-t">
-//       <div className="flex-1 text-sm text-muted-foreground">
-//         {meta.currentPage} of {meta.total} row(s) selected.
-//       </div>
-//       {handlePageSizeChange && (
-//         <div className="flex items-center gap-2">
-//           <div className="text-sm font-medium">Rows per page</div>
-//           <Select defaultValue="5" onValueChange={handlePageSizeChange}>
-//             <SelectTrigger className="w-16">
-//               <SelectValue />
-//             </SelectTrigger>
-//             <SelectContent>
-//               <SelectGroup>
-//                 {pageSizes.map((size) => (
-//                   <SelectItem key={size} value={size}>
-//                     {size}
-//                   </SelectItem>
-//                 ))}
-//               </SelectGroup>
-//             </SelectContent>
-//           </Select>
-//         </div>
-//       )}
-//       <div>
-//         Page {meta.currentPage} of {meta.total}
-//       </div>
-//       <div className="space-x-2">
-//         <Button
-//           variant="outline"
-//           size="sm"
-//           onClick={handlePrevPage}
-//           disabled={meta?.currentPage === 1}
-//         >
-//           Previous
-//         </Button>
-//         <Button
-//           variant="outline"
-//           size="sm"
-//           onClick={handleNextPage}
-//           disabled={meta?.currentPage === meta?.lastPage}
-//         >
-//           Next
-//         </Button>
-//       </div>
-//     </div>
-//   );
-// }
-
 import { Button } from '@rahat-ui/shadcn/components/button';
 import {
   Select,
@@ -87,12 +13,12 @@ type IProps = {
   handlePrevPage: () => void;
   handlePageSizeChange: (value: string | number) => void;
   meta: PaginatedResult<any>['meta'];
-  total: number;
+  total?: number;
   perPage: number;
   currentPage: number;
 };
 
-const pageSizes = ['5', '10', '20', '30', '40', '50'];
+const pageSizes = ['5', '10', '20', '30', '40', '50', '100', '150'];
 
 export default function CustomPagination({
   handleNextPage,
@@ -104,10 +30,10 @@ export default function CustomPagination({
   total,
 }: IProps) {
   return (
-    <div className="flex items-center justify-end space-x-4 p-1 pl-2 pr-2 border-t">
-      <div className="flex-1 text-sm text-muted-foreground">
+    <div className="flex items-center justify-end space-x-4 p-1 pl-2 pr-2 border-t bg-card">
+      {/* <div className="flex-1 text-sm text-muted-foreground">
         {currentPage} of {total} row(s) selected.
-      </div>
+      </div> */}
       {handlePageSizeChange && (
         <div className="flex items-center gap-2">
           <div className="text-sm font-medium">Rows per page</div>
@@ -131,14 +57,15 @@ export default function CustomPagination({
         </div>
       )}
       <div>
-        Page {currentPage} of {total}
+        Page {currentPage} of {meta?.lastPage}
       </div>
       <div className="space-x-2">
         <Button
           variant="outline"
           size="sm"
           onClick={handlePrevPage}
-          disabled={meta?.currentPage === 1}
+          disabled={currentPage === 1}
+          type="button"
         >
           Previous
         </Button>
@@ -146,8 +73,9 @@ export default function CustomPagination({
           variant="outline"
           size="sm"
           onClick={handleNextPage}
+          type="button"
           // disabled={!table.getCanNextPage()}
-          disabled={meta?.currentPage === meta?.lastPage}
+          disabled={currentPage === meta?.lastPage}
         >
           Next
         </Button>

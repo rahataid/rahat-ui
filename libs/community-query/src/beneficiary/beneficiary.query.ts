@@ -1,21 +1,29 @@
-import { UseQueryResult, useMutation, useQuery } from '@tanstack/react-query';
+import {
+  UseQueryResult,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
 import { useRSQuery } from '@rumsan/react-query';
 import { getBeneficiaryClient } from '@rahataid/community-tool-sdk/clients';
 import { TAGS } from '../config';
 import { Pagination } from '@rumsan/sdk/types';
 import Swal from 'sweetalert2';
+import { useEffect } from 'react';
+import { Beneficiary } from '@rahataid/community-tool-sdk/beneficiary';
+import { useCommunityBeneficiaryStore } from './beneficiary.store';
 
 export const useCommunityBeneficaryList = (
-  payload: Pagination & { any?: string },
+  payload: Pagination & { [key: string]: string },
 ): UseQueryResult<any, Error> => {
   const { queryClient, rumsanService } = useRSQuery();
   const benClient = getBeneficiaryClient(rumsanService.client);
-  // const { setBeneficiaries, setMeta } = useCommunityBeneficiaryStore(
-  //   (state) => ({
-  //     setBeneficiaries: state.setBeneficiaries,
-  //     setMeta: state.setMeta,
-  //   }),
-  // );
+  const { setBeneficiaries, setMeta } = useCommunityBeneficiaryStore(
+    (state) => ({
+      setBeneficiaries: state.setBeneficiaries,
+      setMeta: state.setMeta,
+    }),
+  );
   const query = useQuery(
     {
       queryKey: [TAGS.LIST_COMMUNITY_BENFICIARIES, payload],
@@ -23,12 +31,12 @@ export const useCommunityBeneficaryList = (
     },
     queryClient,
   );
-  // useEffect(() => {
-  //   if (query.data) {
-  //     setBeneficiaries(query.data.data as Beneficiary[]);
-  //     setMeta(query.data.response.meta);
-  //   }
-  // }, [query.data, setBeneficiaries]);
+  useEffect(() => {
+    if (query.data) {
+      setBeneficiaries(query.data.data as Beneficiary[]);
+      setMeta(query.data.response.meta);
+    }
+  }, [query.data, setBeneficiaries]);
 
   return query;
 };
@@ -66,6 +74,8 @@ export const useCommunityBeneficiaryCreate = () => {
 
 export const useCommunityBeneficiaryUpdate = () => {
   const { queryClient, rumsanService } = useRSQuery();
+  const qc = useQueryClient();
+
   const benClient = getBeneficiaryClient(rumsanService.client);
 
   return useMutation(
@@ -74,19 +84,13 @@ export const useCommunityBeneficiaryUpdate = () => {
       mutationFn: benClient.update,
       onSuccess: () => {
         Swal.fire('Beneficiary Updated Successfully', '', 'success');
-        queryClient.invalidateQueries({
-          queryKey: [
-            TAGS.LIST_COMMUNITY_BENFICIARIES,
-            {
-              exact: true,
-            },
-          ],
-        });
+        qc.invalidateQueries({ queryKey: [TAGS.LIST_COMMUNITY_BENFICIARIES] });
       },
       onError: (error: any) => {
+        console.log(error);
         Swal.fire(
           'Error',
-          error.response.data.message || 'Encounter error on Creating Data',
+          error?.response?.data?.message || 'Encounter error on Creating Data',
           'error',
         );
       },
@@ -112,6 +116,8 @@ export const useCommunityBeneficiaryListByID = (): UseQueryResult<
 
 export const useCommunityBeneficiaryRemove = () => {
   const { queryClient, rumsanService } = useRSQuery();
+  const qc = useQueryClient();
+
   const benClient = getBeneficiaryClient(rumsanService.client);
   return useMutation(
     {
@@ -119,14 +125,7 @@ export const useCommunityBeneficiaryRemove = () => {
       mutationFn: benClient.remove,
       onSuccess: () => {
         Swal.fire('Beneficiary Removed Successfully', '', 'success');
-        queryClient.invalidateQueries({
-          queryKey: [
-            TAGS.LIST_COMMUNITY_BENFICIARIES,
-            {
-              exact: true,
-            },
-          ],
-        });
+        qc.invalidateQueries({ queryKey: [TAGS.LIST_COMMUNITY_BENFICIARIES] });
       },
       onError: (error: any) => {
         Swal.fire({

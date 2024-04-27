@@ -19,7 +19,7 @@ import { usePathname } from 'next/navigation';
 
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Separator } from '@rahat-ui/shadcn/src/components/ui/separator';
-import { useUserStore } from '@rumsan/react-query';
+import { useUserCurrentUser, useUserStore } from '@rumsan/react-query';
 import { useAuthStore } from '@rumsan/react-query/auth';
 import { useNavData } from '../app/config-nav';
 import ConnectWallet from '../components/wallet/connect-wallet';
@@ -33,12 +33,14 @@ export function Nav() {
     user: state.user,
     clearUser: state.clearUser,
   }));
+
   const clearAuth = useAuthStore((state) => state.clearAuth);
   const handleLogout = () => {
     clearUser();
     clearAuth();
     window.location.reload();
   };
+  const { data: currentUser } = useUserCurrentUser();
 
   return (
     <div className="flex justify-between pl-2 pr-6 py-2 sticky top-0 z-50 bg-blur backdrop-blur">
@@ -120,13 +122,13 @@ export function Nav() {
         </nav>
       </div>
       <div className="flex gap-4 items-center">
-        <ConnectWallet />
+        {/* <ConnectWallet /> */}
 
         <DropdownMenu>
           <DropdownMenuTrigger>
-            <Avatar className="h-10 w-10">
+            <Avatar className="h-10 w-10 border-none">
               <AvatarImage
-                src="https://github.com/shadcn.png"
+                src="/svg/PortraitPlaceholder.png"
                 alt="profile-icon"
                 className="rounded-3xl"
               />
@@ -139,8 +141,10 @@ export function Nav() {
           >
             <DropdownMenuGroup className="p-2 flex flex-col">
               <div className="flex flex-col mb-1">
-                <span className="font-medium">{user?.name ?? 'John Doe'} </span>
-                <span>{user?.email ?? 'doe@john.com'}</span>
+                <span className="font-medium">
+                  {currentUser?.data?.name ?? 'John Doe'}{' '}
+                </span>
+                <span>{currentUser?.data?.email ?? 'doe@john.com'}</span>
               </div>
               <Separator />
               <Link

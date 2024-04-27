@@ -55,32 +55,59 @@ export const useChainSettings = () => {
   return query;
 };
 
-export const useSubGraphUrlSettings = () => {
+export const useAcessManagerSettings = () => {
   const { queryClient } = useRSQuery();
-  const appSettings = useAppSettingsMutate('SUBGRAPH_URL');
-  const { setSubGraphUrlSettings, subGraphUrl } = useSettingsStore();
+  // TODO:NEW is a temp name, will be changed to CHAIN_SETTINGS
+  const appSettings = useAppSettingsMutate('ACCESS_MANAGER');
+  const { setAccessManagerSettings } = useSettingsStore();
 
   const query = useQuery(
     {
-      queryKey: ['SUBGRAPH_URL'],
+      queryKey: ['ACCESS_MANAGER'],
       queryFn: async () => {
         const d = await appSettings.mutateAsync();
         return d.data.data?.value;
       },
+
       enabled: !!queryClient,
     },
     queryClient,
   );
 
   useEffect(() => {
-    if (
-      query.isSuccess &&
-      query.data.length > 0 &&
-      query.data !== subGraphUrl
-    ) {
-      setSubGraphUrlSettings(query.data);
+    if (query.isSuccess) {
+      setAccessManagerSettings(query.data);
     }
-  }, [query.isSuccess, query.data, setSubGraphUrlSettings]);
+  }, [query.isSuccess, query.data, setAccessManagerSettings]);
 
   return query;
 };
+// export const useSubGraphUrlSettings = () => {
+//   const { queryClient } = useRSQuery();
+//   const appSettings = useAppSettingsMutate('SUBGRAPH_URL');
+//   const { setSubGraphUrlSettings, subGraphUrl } = useSettingsStore();
+
+//   const query = useQuery(
+//     {
+//       queryKey: ['SUBGRAPH_URL'],
+//       queryFn: async () => {
+//         const d = await appSettings.mutateAsync();
+//         return d.data.data?.value;
+//       },
+//       enabled: !!queryClient,
+//     },
+//     queryClient,
+//   );
+
+//   useEffect(() => {
+//     if (
+//       query.isSuccess &&
+//       query.data.length > 0 &&
+//       query.data !== subGraphUrl
+//     ) {
+//       setSubGraphUrlSettings(query.data);
+//     }
+//   }, [query.isSuccess, query.data, setSubGraphUrlSettings]);
+
+//   return query;
+// };

@@ -2,13 +2,6 @@
 import { useCallback, useState } from 'react';
 
 import {
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
-} from '@rahat-ui/shadcn/components/resizable';
-import { Tabs, TabsContent } from '@rahat-ui/shadcn/components/tabs';
-
-import {
   VisibilityState,
   getCoreRowModel,
   getSortedRowModel,
@@ -19,9 +12,7 @@ import {
 import { FieldDefinition } from '@rahataid/community-tool-sdk/fieldDefinitions';
 import CustomPagination from '../../components/customPagination';
 import { FIELD_DEFINITON_NAV_ROUTE } from '../../constants/fieldDefinition.const';
-import FieldDefinitionsDetail from '../../sections/field-definitions/fieldDefinitionsDetail';
 import FieldDefinitionsListView from '../../sections/field-definitions/listView';
-import BeneficiaryNav from '../../sections/beneficiary/nav';
 import { useFieldDefinitionsList } from '@rahat-ui/community-query';
 import { usePagination } from '@rahat-ui/query';
 import { useFieldDefinitionsTableColumns } from './useFieldDefinitionsColumns';
@@ -34,9 +25,14 @@ export default function FieldDefinitionsView() {
     setNextPage,
     setPrevPage,
     setPerPage,
+    filters,
+    setFilters,
   } = usePagination();
 
-  const { data } = useFieldDefinitionsList(pagination);
+  const { data } = useFieldDefinitionsList({
+    ...pagination,
+    ...(filters as any),
+  });
 
   const columns = useFieldDefinitionsTableColumns();
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
@@ -70,46 +66,23 @@ export default function FieldDefinitionsView() {
   };
 
   return (
-    <Tabs defaultValue="list" className="h-full">
-      <ResizablePanelGroup direction="horizontal" className="min-h-max bg-card">
-        <ResizablePanel minSize={20} defaultSize={20} maxSize={20}>
-          <BeneficiaryNav meta={data?.response?.meta} />
-        </ResizablePanel>
-        <ResizableHandle />
-        <ResizablePanel minSize={28}>
-          {active === FIELD_DEFINITON_NAV_ROUTE.DEFAULT && (
-            <>
-              <TabsContent value="list">
-                <FieldDefinitionsListView
-                  table={table}
-                  handleClick={handleFieldDefClick}
-                />
-              </TabsContent>
+    <>
+      <FieldDefinitionsListView
+        table={table}
+        handleClick={handleFieldDefClick}
+        setFilters={setFilters}
+        filters={filters}
+      />
 
-              <CustomPagination
-                meta={data?.response?.meta || { total: 0, currentPage: 0 }}
-                handleNextPage={setNextPage}
-                handlePrevPage={setPrevPage}
-                handlePageSizeChange={setPerPage}
-                currentPage={pagination.page}
-                perPage={pagination.perPage}
-                total={data?.response?.meta.lastPage || 0}
-              />
-            </>
-          )}
-        </ResizablePanel>
-        {selectedData ? (
-          <>
-            <ResizableHandle />
-            <ResizablePanel minSize={36}>
-              <FieldDefinitionsDetail
-                handleClose={handleClose}
-                fieldDefinitionData={selectedData}
-              />
-            </ResizablePanel>
-          </>
-        ) : null}
-      </ResizablePanelGroup>
-    </Tabs>
+      <CustomPagination
+        meta={data?.response?.meta || { total: 0, currentPage: 0 }}
+        handleNextPage={setNextPage}
+        handlePrevPage={setPrevPage}
+        handlePageSizeChange={setPerPage}
+        currentPage={pagination.page}
+        perPage={pagination.perPage}
+        total={data?.response?.meta.lastPage || 0}
+      />
+    </>
   );
 }

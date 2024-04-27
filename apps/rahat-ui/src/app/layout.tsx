@@ -29,28 +29,26 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <Wagmi>
-          <GraphQueryProvider>
-            <QueryProvider>
-              <RSQueryProvider>
-                <CommunicationQueryProvider>
-                  <ServiceProvider>
-                    <SecondPanelProvider>
-                      <ThemeProvider
-                        attribute="class"
-                        // defaultTheme="system"
-                        // enableSystem
-                        // disableTransitionOnChange
-                      >
-                        <main className={GeistSans.className}>{children}</main>
-                        <ToastContainer />
-                        <Toaster />
-                      </ThemeProvider>
-                    </SecondPanelProvider>
-                  </ServiceProvider>
-                </CommunicationQueryProvider>
-              </RSQueryProvider>
-            </QueryProvider>
-          </GraphQueryProvider>
+          <QueryProvider>
+            <RSQueryProvider>
+              <CommunicationQueryProvider>
+                <ServiceProvider>
+                  <SecondPanelProvider>
+                    <ThemeProvider
+                      attribute="class"
+                      // defaultTheme="system"
+                      // enableSystem
+                      // disableTransitionOnChange
+                    >
+                      <main className={GeistSans.className}>{children}</main>
+                      <ToastContainer />
+                      <Toaster />
+                    </ThemeProvider>
+                  </SecondPanelProvider>
+                </ServiceProvider>
+              </CommunicationQueryProvider>
+            </RSQueryProvider>
+          </QueryProvider>
         </Wagmi>
       </body>
     </html>

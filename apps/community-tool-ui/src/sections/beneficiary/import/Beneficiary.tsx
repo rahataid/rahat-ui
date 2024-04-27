@@ -12,23 +12,27 @@ import {
 import {
   attachedRawData,
   exportDataToExcel,
-  splitValidAndInvalid,
+  formatNameString,
   includeOnlySelectedTarget,
   removeFieldsWithUnderscore,
   splitFullName,
-  formatNameString,
   splitValidAndDuplicates,
+  splitValidAndInvalid,
 } from 'apps/community-tool-ui/src/utils';
 import { ArrowBigLeft } from 'lucide-react';
-import React, { useState } from 'react';
+import React from 'react';
 import { useForm } from 'react-hook-form';
-import * as xlsx from 'xlsx';
 import Swal from 'sweetalert2';
+import * as xlsx from 'xlsx';
 import AddToQueue from './AddToQueue';
 import ErrorAlert from './ErrorAlert';
 import FilterBox from './FilterBox';
 import InfoBox from './InfoBox';
 
+import {
+  useBeneficiaryImportStore,
+  useFetchKoboSettings,
+} from '@rahat-ui/community-query';
 import { useRSQuery } from '@rumsan/react-query';
 import ColumnMappingTable from './ColumnMappingTable';
 import MyAlert from './MyAlert';
@@ -40,22 +44,35 @@ interface IProps {
 export default function BenImp({ extraFields }: IProps) {
   const form = useForm({});
   const { rumsanService } = useRSQuery();
+  const { data: kbSettings } = useFetchKoboSettings();
 
-  const [uniqueField, setUniqueField] = useState('');
-  const [importSource, setImportSource] = useState('');
-  const [rawData, setRawData] = useState([]) as any;
-  const [mappings, setMappings] = useState([]) as any;
-  const [koboForms, setKoboForms] = useState([]);
-  const [importId, setImportId] = useState(''); // Kobo form id or excel sheetID
-  const [loading, setLoading] = useState(false);
-  const [currentScreen, setCurrentScreen] = useState(
-    BENEF_IMPORT_SCREENS.SELECTION,
-  );
-  const [processedData, setProcessedData] = useState([]) as any;
-  const [invalidFields, setInvalidFields] = useState([]) as any;
-  const [validBenef, setValidBenef] = useState([]) as any;
-  const [hasExistingMapping, setHasExistingMapping] = useState(false);
-  const [duplicateData, setDuplicateData] = useState([]) as any;
+  const {
+    currentScreen,
+    setCurrentScreen,
+    duplicateData,
+    setDuplicateData,
+    hasExistingMapping,
+    setHasExistingMapping,
+    importId,
+    setImportId,
+    importSource,
+    setImportSource,
+    invalidFields,
+    setInvalidFields,
+    koboForms,
+    setKoboForms,
+    loading,
+    setLoading,
+    mappings,
+    setMappings,
+    processedData,
+    setProcessedData,
+    rawData,
+    setRawData,
+    validBenef,
+    setValidBenef,
+  } = useBeneficiaryImportStore();
+  // ==========States=============
 
   const fetchExistingMapping = async (importId: string) => {
     setMappings([]);
@@ -68,25 +85,17 @@ export default function BenImp({ extraFields }: IProps) {
     }
   };
 
-  const handleUniqueFieldChange = (value: string) => setUniqueField(value);
-
-  const fetchKoboSettings = async () => {
-    const res = await rumsanService.client.get('/app/settings/kobotool');
-    return res.data;
-  };
-
   const handleSourceChange = async (d: string) => {
     setRawData([]);
     setMappings([]);
     if (d === IMPORT_SOURCE.KOBOTOOL) {
       setImportSource(IMPORT_SOURCE.KOBOTOOL);
-      const data = await fetchKoboSettings();
-      if (!data.data.length)
+      if (!kbSettings || !kbSettings.data.length)
         return Swal.fire({
           icon: 'warning',
           title: 'Please setup kobotool settings first!',
         });
-      const sanitizedOptions = data.data.map((d: any) => {
+      const sanitizedOptions = kbSettings.data.map((d: any) => {
         return {
           label: d.name,
           value: d.name,
@@ -136,8 +145,6 @@ export default function BenImp({ extraFields }: IProps) {
     sourceField: string,
     targetField: string,
   ) => {
-    console.log({ sourceField });
-    console.log({ targetField });
     if (targetField === 'None') return;
     const index = mappings.findIndex(
       (item: any) => item.sourceField === sourceField,
@@ -179,20 +186,8 @@ export default function BenImp({ extraFields }: IProps) {
         icon: 'error',
         title: 'Please load data from data source!',
       });
-    if (uniqueField) return setCurrentScreen(BENEF_IMPORT_SCREENS.VALIDATION);
 
-    return Swal.fire({
-      icon: 'warning',
-      title: 'Continue without unique field?',
-      showCancelButton: true,
-      confirmButtonText: 'Continue',
-      cancelButtonText: 'No',
-      text: 'Duplicate data might be imported!',
-    }).then((result) => {
-      if (result.isConfirmed) {
-        setCurrentScreen(BENEF_IMPORT_SCREENS.VALIDATION);
-      }
-    });
+    return setCurrentScreen(BENEF_IMPORT_SCREENS.VALIDATION);
   };
 
   const exportDuplicateData = (data: any, duplicateData: any) => {
@@ -207,16 +202,13 @@ export default function BenImp({ extraFields }: IProps) {
     setDuplicateData([]);
     if (!validData.length) {
       setHasExistingMapping(false);
-      setUniqueField('');
       setCurrentScreen(BENEF_IMPORT_SCREENS.SELECTION);
     }
   };
 
   const handleImportNowClick = async () => {
     const msg = duplicateData.length
-      ? `${duplicateData.length / 2} / ${
-          processedData.length
-        } duplicates found.<b>Import Anyway?</b>`
+      ? `Duplicate data found!.<b>Import Anyway?</b>`
       : '';
     const dialog = await Swal.fire({
       title: `${processedData.length} Beneficiaries will be imported!`,
@@ -235,7 +227,6 @@ export default function BenImp({ extraFields }: IProps) {
         action: IMPORT_ACTION.IMPORT,
         name: importSource,
         importId,
-        uniqueField,
         fieldMapping: { data: validBenef, sourceTargetMappings: mappings },
       };
       return createImportSource(sourcePayload);
@@ -245,10 +236,8 @@ export default function BenImp({ extraFields }: IProps) {
 
   const validateOrImport = (action: string) => {
     setValidBenef([]);
-    let finalPayload = rawData;
+    let finalPayload = rawData as any[];
     const selectedTargets = []; // Only submit selected target fields
-
-    console.log({ mappings });
 
     for (let m of mappings) {
       if (m.targetField === TARGET_FIELD.FIRSTNAME) {
@@ -269,16 +258,14 @@ export default function BenImp({ extraFields }: IProps) {
           return newItem;
         });
         finalPayload = replaced;
-      } else if (m.targetField === TARGET_FIELD.FULL_NAME) {
+      } else if (m.targetField === TARGET_FIELD.HOUSE_HEAD_NAME) {
         // Split fullName, update target_key:value and delete old_source_key
         selectedTargets.push(TARGET_FIELD.FIRSTNAME);
         selectedTargets.push(TARGET_FIELD.LASTNAME);
         const replaced = finalPayload.map((item: any) => {
           const { firstName, lastName } = splitFullName(item[m.sourceField]);
-          console.log({ firstName });
-          console.log({ lastName });
           const newItem = { ...item, firstName, lastName };
-          if (m.sourceField !== m.targetField) delete newItem[m.sourceField];
+          // if (m.sourceField !== m.targetField) delete newItem[m.sourceField];
           return newItem;
         });
         finalPayload = replaced;
@@ -310,13 +297,11 @@ export default function BenImp({ extraFields }: IProps) {
       finalPayload,
       selectedTargets,
     );
-    const final_mapping = attachedRawData(selectedFieldsOnly, rawData);
-    console.log('Final_mapin', final_mapping);
+    const final_mapping = attachedRawData(selectedFieldsOnly, rawData as []);
     const sourcePayload = {
       action,
       name: importSource,
       importId,
-      uniqueField,
       fieldMapping: { data: final_mapping, sourceTargetMappings: mappings },
     };
 
@@ -345,10 +330,11 @@ export default function BenImp({ extraFields }: IProps) {
         setCurrentScreen(BENEF_IMPORT_SCREENS.IMPORT_DATA);
       })
       .catch((err) => {
+        const msg = err?.response?.data?.message || 'Something went wrong!';
         setLoading(false);
         Swal.fire({
           icon: 'error',
-          title: 'Failed to add to the queue!',
+          title: msg,
         });
       });
   };
@@ -370,7 +356,6 @@ export default function BenImp({ extraFields }: IProps) {
     setRawData([]);
     setMappings([]);
     setInvalidFields([]);
-    setUniqueField('');
   };
 
   const handleBackClick = () => {
@@ -378,14 +363,13 @@ export default function BenImp({ extraFields }: IProps) {
     setMappings([]);
     setValidBenef([]);
     setCurrentScreen(BENEF_IMPORT_SCREENS.SELECTION);
-    setUniqueField('');
     setRawData([]);
   };
 
   const handleExportInvalidClick = async () => {
     const { invalidData, validData } = splitValidAndInvalid(
-      processedData,
-      invalidFields,
+      processedData as [],
+      invalidFields as [],
     );
     setValidBenef(validData);
     setProcessedData(validData);
@@ -393,7 +377,6 @@ export default function BenImp({ extraFields }: IProps) {
     exportDataToExcel(invalidData);
     if (!validData.length) {
       setHasExistingMapping(false);
-      setUniqueField('');
       setCurrentScreen(BENEF_IMPORT_SCREENS.SELECTION);
     }
   };
@@ -415,8 +398,6 @@ export default function BenImp({ extraFields }: IProps) {
               koboForms={koboForms}
               handleKoboFormChange={handleKoboFormChange}
               handleGoClick={handleGoClick}
-              selectedUniqueField={uniqueField}
-              handleUniqueFieldChange={handleUniqueFieldChange}
             />
             <div className="pt-10">{loading && <Loader />}</div>
           </>
@@ -427,7 +408,6 @@ export default function BenImp({ extraFields }: IProps) {
             <InfoBox
               title="Field Mapping"
               message="Select matching field for your data"
-              uniqueField={uniqueField}
             />
             {rawData.length > 0 && (
               <div className="flex mb-5 mt-5 justify-between m-2">
@@ -456,10 +436,8 @@ export default function BenImp({ extraFields }: IProps) {
             )}
 
             <hr />
-            <div
-              style={{ maxHeight: '60vh' }}
-              className="overflow-x-auto overflow-y-auto"
-            >
+
+            <div className="overflow-x-auto max-w-screen-lg">
               <ColumnMappingTable
                 rawData={rawData}
                 uniqueDBFields={uniqueDBFields}
@@ -473,7 +451,7 @@ export default function BenImp({ extraFields }: IProps) {
         {currentScreen === BENEF_IMPORT_SCREENS.IMPORT_DATA && (
           <>
             {invalidFields.length > 0 ? (
-              <ErrorAlert message="Fieds with * have failed validation. Highlighted rows are duplicate!" />
+              <ErrorAlert message="Fieds with * have failed validation!" />
             ) : (
               <InfoBox
                 title="Import Beneficiary"

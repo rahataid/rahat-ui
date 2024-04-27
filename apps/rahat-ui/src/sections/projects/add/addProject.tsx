@@ -1,12 +1,6 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Calendar } from '@rahat-ui/shadcn/components/calendar';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@rahat-ui/shadcn/components/popover';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   Form,
@@ -23,8 +17,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
-import { format } from 'date-fns';
-import { CalendarIcon } from 'lucide-react';
 
 import { Wallet } from 'lucide-react';
 import { useRouter } from 'next/navigation';
@@ -41,41 +33,41 @@ export default function AddProject() {
     projectType: z.string({
       required_error: 'Please select project type.',
     }),
-    longitude: z.number().optional(),
-    latitude: z.number().optional(),
+    // longitude: z.number().optional(),
+    // latitude: z.number().optional(),
     hazardType: z.string({
       required_error: 'Please select hazard type.',
     }),
     contractAddress: z
       .string()
       .min(42, { message: 'The Ethereum address must be 42 characters long' }),
-    projectManager: z
-      .string()
-      .toUpperCase()
-      .min(4, { message: 'Must be at least 4 characters' }),
+    // projectManager: z
+    //   .string()
+    //   .toUpperCase()
+    //   .min(4, { message: 'Must be at least 4 characters' }),
     description: z
       .string()
       .toUpperCase()
       .min(4, { message: 'Must be at least 4 characters' }),
-    location: z
-      .string()
-      .toUpperCase()
-      .min(4, { message: 'Must be at least 4 characters' }),
-    startDate: z.date({
-      required_error: 'Start date is required.',
-    }),
-    endDate: z.date({
-      required_error: 'End date is required.',
-    }),
+    // location: z
+    //   .string()
+    //   .toUpperCase()
+    //   .min(4, { message: 'Must be at least 4 characters' }),
+    // startDate: z.date({
+    //   required_error: 'Start date is required.',
+    // }),
+    // endDate: z.date({
+    //   required_error: 'End date is required.',
+    // }),
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
       name: '',
-      location: '',
+      // location: '',
       contractAddress: '',
-      projectManager: '',
+      // projectManager: '',
     },
   });
 
@@ -83,9 +75,9 @@ export default function AddProject() {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleCreateProject)}>
-        <div className="p-4 h-add bg-white">
-          <h1 className="text-lg font-semibold mb-6">Add Project</h1>
+        <div className="p-4 h-add bg-card">
           <div className="shadow-md p-4 rounded-sm">
+            <h1 className="text-lg font-semibold mb-6">Add Project</h1>
             <div className="grid grid-cols-2 gap-4 mb-4">
               <FormField
                 control={form.control}
@@ -127,76 +119,6 @@ export default function AddProject() {
               />
               <FormField
                 control={form.control}
-                name="location"
-                render={({ field }) => {
-                  return (
-                    <FormItem>
-                      <FormControl>
-                        <Input type="text" placeholder="Location" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  );
-                }}
-              />
-              <div className="flex gap-4">
-                <FormField
-                  control={form.control}
-                  name="longitude"
-                  render={({ field }) => {
-                    return (
-                      <FormItem className="w-full">
-                        <FormControl>
-                          <Input
-                            type="float"
-                            placeholder="Longitude"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    );
-                  }}
-                />
-                <FormField
-                  control={form.control}
-                  name="latitude"
-                  render={({ field }) => {
-                    return (
-                      <FormItem className="w-full">
-                        <FormControl>
-                          <Input
-                            type="float"
-                            placeholder="Latitude"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    );
-                  }}
-                />
-              </div>
-              <FormField
-                control={form.control}
-                name="projectManager"
-                render={({ field }) => {
-                  return (
-                    <FormItem>
-                      <FormControl>
-                        <Input
-                          type="text"
-                          placeholder="Project Manager"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  );
-                }}
-              />
-              <FormField
-                control={form.control}
                 name="description"
                 render={({ field }) => {
                   return (
@@ -213,78 +135,6 @@ export default function AddProject() {
                   );
                 }}
               />
-              <div className="flex gap-4">
-                <FormField
-                  control={form.control}
-                  name="startDate"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-col w-full">
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <FormControl>
-                            <Button variant="outline">
-                              {field.value ? (
-                                format(field.value, 'PPP')
-                              ) : (
-                                <span>Start Date</span>
-                              )}
-                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                            </Button>
-                          </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                          <Calendar
-                            mode="single"
-                            selected={field.value}
-                            onSelect={field.onChange}
-                            disabled={(date) =>
-                              date > new Date() || date < new Date('1900-01-01')
-                            }
-                            initialFocus
-                          />
-                        </PopoverContent>
-                      </Popover>
-
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="endDate"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-col w-full">
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <FormControl>
-                            <Button variant="outline">
-                              {field.value ? (
-                                format(field.value, 'PPP')
-                              ) : (
-                                <span>End Date</span>
-                              )}
-                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                            </Button>
-                          </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                          <Calendar
-                            mode="single"
-                            selected={field.value}
-                            onSelect={field.onChange}
-                            disabled={(date) =>
-                              date > new Date() || date < new Date('1900-01-01')
-                            }
-                            initialFocus
-                          />
-                        </PopoverContent>
-                      </Popover>
-
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
               <FormField
                 control={form.control}
                 name="contractAddress"

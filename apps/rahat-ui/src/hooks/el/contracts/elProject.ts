@@ -20,6 +20,7 @@ export const elProjectAbi = [
       { name: '_otpServerAddress', internalType: 'address', type: 'address' },
       { name: '_forwarder', internalType: 'address', type: 'address' },
       { name: '_referralLimit', internalType: 'uint256', type: 'uint256' },
+      { name: '_accessManager', internalType: 'address', type: 'address' },
     ],
     stateMutability: 'nonpayable',
   },
@@ -338,6 +339,15 @@ export const elProjectAbi = [
       { name: 'status', internalType: 'bool', type: 'bool', indexed: false },
     ],
     name: 'VendorUpdated',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'AccessManager',
+    outputs: [
+      { name: '', internalType: 'contract IAccessManager', type: 'address' },
+    ],
+    stateMutability: 'view',
   },
   {
     type: 'function',
@@ -868,6 +878,15 @@ export const elProjectAbi = [
 export const useReadElProject = /*#__PURE__*/ createUseReadContract({
   abi: elProjectAbi,
 })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link elProjectAbi}__ and `functionName` set to `"AccessManager"`
+ */
+export const useReadElProjectAccessManager =
+  /*#__PURE__*/ createUseReadContract({
+    abi: elProjectAbi,
+    functionName: 'AccessManager',
+  })
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link elProjectAbi}__ and `functionName` set to `"IID_RAHAT_PROJECT"`

@@ -18,9 +18,11 @@ import {
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { Info, PlusSquare, TicketCheck } from 'lucide-react';
-import { FC, useEffect, useState } from 'react';
+import { FC } from 'react';
 import { useProjectVoucher } from '../../../hooks/el/subgraph/querycall';
 import { useParams, useRouter } from 'next/navigation';
+import { PROJECT_SETTINGS_KEYS, useProjectSettingsStore } from '@rahat-ui/query';
+import { useReadElProjectGetProjectVoucherDetail, useReadElProjectGetTotalBeneficiaries } from 'apps/rahat-ui/src/hooks/el/contracts/elProject';
 
 interface CreateVoucherModalType {
   voucherInputs: {
@@ -60,30 +62,23 @@ const CreateVoucherModal: FC<CreateVoucherModalType> = ({
   const { id } = useParams();
   const route = useRouter();
 
-  const [contractAddress, setContractAddress] = useState<any>();
 
-  const projectSettings = localStorage.getItem('projectSettingsStore');
-
-  useEffect(() => {
-    if (projectSettings) {
-      const settings = JSON.parse(projectSettings)?.state?.settings?.[id];
-      setContractAddress({
-        el: settings?.elproject?.address,
-        eyeVoucher: settings?.eyevoucher?.address,
-        referredVoucher: settings?.referralvoucher?.address,
-        rahatDonor: settings?.rahatdonor?.address,
-      });
-    }
-  }, [projectSettings,id]);
+  const contractSettings = useProjectSettingsStore(
+    (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT] || null
+  )
 
   const { data: projectVoucher, isLoading } = useProjectVoucher(
-    contractAddress?.el || '',
-    contractAddress?.eyeVoucher || '',
+    contractSettings?.elproject?.address || '',
+    contractSettings?.eyevoucher?.address || '',
   );
 
   const handleVoucherCreate = () => {
     route.push(`/projects/el/${id}/vouchers`);
   };
+
+  const {data: benfData} = useReadElProjectGetProjectVoucherDetail({
+    address: contractSettings.elproject?.address,
+  })
 
   return ( 
     <>
@@ -96,7 +91,7 @@ const CreateVoucherModal: FC<CreateVoucherModalType> = ({
             </div>
           </div>
         </DialogTrigger>
-        {!isLoading && projectVoucher?.freeVoucherAddress ? (
+        {!isLoading && benfData?.eyeVoucherBudget ? (
           <DialogContent className="sm:max-w-[600px]">
             <DialogHeader>
               <DialogTitle>Mint Voucher</DialogTitle>
@@ -108,12 +103,12 @@ const CreateVoucherModal: FC<CreateVoucherModalType> = ({
                 <div className="flex items-center justify-between">
                   <p className="text-sm flex items-center gap-1 text-muted-foreground font-normal">
                     Free Vouchers:{' '}
-                    <span className="text-xl font-medium text-primary">30</span>
+                    <span className="text-xl font-medium text-primary">{Number(benfData?.eyeVoucherBudget)}</span>
                   </p>
                   <p className="text-sm flex items-center gap-1 text-muted-foreground font-normal">
                     Referred Vouchers:{' '}
                     <span className="text-xl font-medium text-primary">
-                      1000
+                    {Number(benfData?.referredVoucherBudget)}
                     </span>
                   </p>
                 </div>

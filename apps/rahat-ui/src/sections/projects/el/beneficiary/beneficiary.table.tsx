@@ -1,6 +1,7 @@
 'use client';
 
 import {
+  PROJECT_SETTINGS_KEYS,
   usePagination,
   useProjectBeneficiaries,
   useProjectSettingsStore,
@@ -51,10 +52,14 @@ import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
 import { useProjectBeneficiaryTableColumns } from './use-table-column';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
-import { useBulkAssignVoucher } from 'apps/rahat-ui/src/hooks/el/contracts/el-contracts';
+import { useBulkAssignVoucher, useGetVoucherDetails } from 'apps/rahat-ui/src/hooks/el/contracts/el-contracts';
 import { useBoolean } from '../../../../hooks/use-boolean';
 import TokenAssingnConfirm from './token.assign.confirm';
-
+import TableLoader from '../../../../components/table.loader';
+import { useRouter } from 'next/navigation';
+import { useGraphService } from '../../../../providers/subgraph-provider';
+import { useGetBeneficiaryVouchers, useVendorFilteredTransaction } from 'apps/rahat-ui/src/hooks/el/subgraph/querycall';
+import { useEffect, useState } from 'react';
 // import { useBeneficiaryTransaction } from '../../hooks/el/subgraph/querycall';
 
 export type Transaction = {
@@ -65,7 +70,7 @@ export type Transaction = {
   amount: string;
 };
 
-const benType = [
+export const benType = [
   {
     key: 'ALL',
     value: 'ALL',
@@ -80,14 +85,32 @@ const benType = [
   },
 ];
 
+export const voucherType = [
+  {
+    key: 'ALL',
+    value: 'ALL',
+  },
+  {
+    key: 'FREE',
+    value: 'FREE',
+  },
+  {
+    key: 'REFERRED',
+    value: 'REFERRED',
+  },
+];
+
 function BeneficiaryDetailTableView() {
   const tokenAssignModal = useBoolean();
-
+  const route = useRouter();
+  const id = useParams();
   // TODO: Refactor it
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
   );
+
+ 
 
   const handleTokenAssignModal = () => {
     tokenAssignModal.onTrue();
@@ -110,8 +133,13 @@ function BeneficiaryDetailTableView() {
     selectedListItems,
     setSelectedListItems,
     resetSelectedListItems,
+    resetFilters
   } = usePagination();
   const assignVoucher = useBulkAssignVoucher();
+  const { queryService } = useGraphService();
+
+  const {data:dataVouce, error} = useGetBeneficiaryVouchers()
+
 
   const projectBeneficiaries = useProjectBeneficiaries({
     page: pagination.page,
@@ -119,30 +147,87 @@ function BeneficiaryDetailTableView() {
     order: 'desc',
     sort: 'updatedAt',
     projectUUID: uuid,
+    vouchers: dataVouce?.voucherArray,
     ...filters,
   });
 
+  const [projectVoucherBeneficiaries, setProjectVoucherBeneficiaries] = useState<any>()
+  const [filteredProjectVoucherBeneficiaries, setFilteredProjectVoucherBeneficiaries] = useState<any>()
+  const [voucherFilter, setVoucherFilter] = useState<any>()
+
+  useEffect(() => {
+    if (projectBeneficiaries) {
+      const projectBenWithVoucher = projectBeneficiaries.data.data.map((row) => {
+        let voucherType = 'Not Assigned';
+        dataVouce?.voucherArray.forEach((voucher) => {
+          if (row.wallet.toLowerCase() === voucher.id.toLowerCase()) {
+            if (voucher.FreeVoucherAddress) {
+              voucherType = 'Free voucher';
+            }
+            if (voucher.ReferredVoucherAddress) {
+              voucherType = 'Referred voucher';
+            }
+          }
+        });
+        return {
+          ...row,
+          voucher: voucherType
+        };
+      });
+
+      setProjectVoucherBeneficiaries(projectBenWithVoucher);
+    }
+  }, [projectBeneficiaries?.fetchStatus])
+
+
+  useEffect(() => {
+    if(projectVoucherBeneficiaries && voucherFilter) {
+      if(voucherFilter.voucher === 'ALL'){
+        setFilteredProjectVoucherBeneficiaries(projectVoucherBeneficiaries)
+      }
+      if(voucherFilter.voucher === 'REFERRED'){
+        const filteredData = projectVoucherBeneficiaries.filter(item => item.voucher === 'Referred voucher')
+        setFilteredProjectVoucherBeneficiaries(filteredData)
+      }
+      if(voucherFilter.voucher === 'FREE'){
+        const filteredData = projectVoucherBeneficiaries.filter(item => item.voucher === 'Free voucher')
+        setFilteredProjectVoucherBeneficiaries(filteredData)
+      }
+    }
+  }, [voucherFilter, projectBeneficiaries?.fetchStatus])
+  
+
   const contractAddress = useProjectSettingsStore(
-    (state) => state.settings?.[uuid],
+    (state) => state.settings?.[uuid][PROJECT_SETTINGS_KEYS.CONTRACT] || null,
   );
 
   const columns = useProjectBeneficiaryTableColumns();
 
   const handleBenType = React.useCallback(
     (type: string) => {
+      resetFilters()
       resetSelectedListItems();
+      setFilteredProjectVoucherBeneficiaries(undefined)
       if (type === 'ALL') {
         setFilters({ ...filters, status: undefined });
         return;
       }
-      setFilters({ ...filters, status: type });
+      setFilters({ ...filters, status: type, voucher: 'ALL' });
+    },
+    [filters, setFilters],
+  );
+
+  const handleFilterType = React.useCallback(
+    (type: string) => {
+      // resetSelectedListItems();
+      setVoucherFilter({ voucher: type });
     },
     [filters, setFilters],
   );
 
   const table = useReactTable({
     manualPagination: true,
-    data: projectBeneficiaries?.data?.data || [],
+    data: filteredProjectVoucherBeneficiaries || projectVoucherBeneficiaries ||  [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -159,7 +244,6 @@ function BeneficiaryDetailTableView() {
       rowSelection: selectedListItems,
     },
   });
-  // const assignToken =
 
   const selectedRowAddresses = Object.keys(selectedListItems);
 
@@ -170,6 +254,12 @@ function BeneficiaryDetailTableView() {
       contractAddress: contractAddress.elproject.address,
     });
   };
+
+  React.useEffect(() => {
+    if (assignVoucher.isSuccess) {
+      route.push(`/projects/el/${id}`);
+    }
+  }, []);
 
   return (
     <>
@@ -193,6 +283,25 @@ function BeneficiaryDetailTableView() {
               </SelectTrigger>
               <SelectContent>
                 {benType.map((item) => {
+                  return (
+                    <SelectItem key={item.key} value={item.value}>
+                      {item.key}
+                    </SelectItem>
+                  );
+                })}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="max-w-sm rounded mr-2">
+            <Select
+              onValueChange={handleFilterType}
+              defaultValue={filters?.status || 'ALL'}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Beneficiary Type" />
+              </SelectTrigger>
+              <SelectContent>
+                {voucherType.map((item) => {
                   return (
                     <SelectItem key={item.key} value={item.value}>
                       {item.key}
@@ -295,11 +404,7 @@ function BeneficiaryDetailTableView() {
                       className="h-24 text-center"
                     >
                       {projectBeneficiaries.isFetching ? (
-                        <div className="flex items-center justify-center space-x-2 h-full">
-                          <div className="h-5 w-5 animate-bounce rounded-full bg-primary [animation-delay:-0.3s]"></div>
-                          <div className="h-5 w-5 animate-bounce rounded-full bg-primary [animation-delay:-0.13s]"></div>
-                          <div className="h-5 w-5 animate-bounce rounded-full bg-primary"></div>
-                        </div>
+                        <TableLoader />
                       ) : (
                         'No data available.'
                       )}

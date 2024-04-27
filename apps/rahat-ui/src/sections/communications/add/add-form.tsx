@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import { Button } from '@rahat-ui/shadcn/components/button';
 import { Calendar } from '@rahat-ui/shadcn/components/calendar';
 import {
@@ -31,6 +32,13 @@ import { useRouter } from 'next/navigation';
 import { FC } from 'react';
 import { UseFormReturn, useForm } from 'react-hook-form';
 import { z } from 'zod';
+import {
+  useGetApprovedTemplate,
+} from '@rumsan/communication-query';
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@rahat-ui/shadcn/src/components/ui/command';
+import { paths } from 'apps/rahat-ui/src/routes/paths';
+import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
+import ConfirmModal from './confirm.modal';
 
 type CampaignFormProps = {
   // Add props here
@@ -44,6 +52,7 @@ type CampaignFormProps = {
   showAddAudience: boolean;
   data?: any;
   isSubmitting?: boolean;
+  handleSubmit: () => void;
 
   // Add more props here
 };
@@ -55,19 +64,34 @@ const CampaignForm: FC<CampaignFormProps> = ({
   form,
   setShowAddAudience,
   showAddAudience,
+  handleSubmit,
   data,
   isSubmitting,
 }) => {
   const router = useRouter();
-  const includeMessage = ['sms', 'whatsapp', 'email'].includes(
+const {data:messageTemplate} = useGetApprovedTemplate()
+const includeMessage = ['sms', 'whatsapp', 'email'].includes(
     form.getValues().campaignType?.toLowerCase(),
   );
+  const isWhatsappMessage =
+    form.getValues().campaignType?.toLowerCase() === 'whatsapp';
   const includeAudio = ['phone'].includes(
     form.getValues().campaignType?.toLowerCase(),
   );
+  const [open, setOpen] = React.useState(false)
+  const [templatemessage, setTemplatemessage] = React.useState('')
   //   const includeFile = includeMessage ? 'message' : 'file';
   //   const excludeFile = includeMessage ? 'file' : 'message';
   if (!form) return 'loading...';
+  const campaignConfirmModal = useBoolean();
+  const handleOpenModal = (e: any) => {
+    e.preventDefault();
+    campaignConfirmModal.onTrue();
+  };
+  const handleCampaignAssignModalClose = () => {
+    campaignConfirmModal.onFalse();
+  };
+
   return (
     <>
       <div className="w-full p-2">
@@ -158,6 +182,64 @@ const CampaignForm: FC<CampaignFormProps> = ({
                 </FormItem>
               )}
             />
+            {includeMessage && isWhatsappMessage && (
+              <FormField
+                control={form.control}
+                name="messageSid"
+                render={({ field, fieldState }) => (
+                  <FormItem>
+                  
+                  <Popover
+                   >
+      <PopoverTrigger asChild>
+      <FormControl>
+        <Button
+          variant="outline"
+          role="combobox"
+          aria-expanded={open}
+          className="w-[200px] justify-between"
+        >
+          {field.value
+                        ? templatemessage
+                        : "Select from template"}
+             
+        </Button>
+      </FormControl>
+
+      </PopoverTrigger>
+      <PopoverContent className="w-[200px] p-0">
+        
+        <Command>
+          <CommandList>
+            <CommandInput placeholder="Search template..." />
+            <CommandEmpty>Not found.</CommandEmpty>
+            <CommandGroup>
+              {messageTemplate?.data?.map((option) => {
+                  if(option)
+                  return (
+                    <CommandItem
+                      className="gap-2"
+                      key={option?.sid}
+                      onSelect={() => {
+                        form.setValue("messageSid", option?.sid)
+                      setTemplatemessage(option?.types['twilio/text']?.body)
+                      }}
+                    >
+                    {option?.types['twilio/text']?.body}
+
+                    </CommandItem>
+                  );
+                })}
+            </CommandGroup>
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
+    </FormItem>
+
+                )}
+              />
+            )}
             {/* show only if selected is sms */}
             {includeMessage && (
               <FormField
@@ -168,6 +250,11 @@ const CampaignForm: FC<CampaignFormProps> = ({
                     <FormControl>
                       <Textarea
                         {...field}
+                        value={
+                          templatemessage.length>0
+                            ? templatemessage
+                            : field.value
+                        }
                         placeholder="Type your message here."
                         className="rounded"
                       />
@@ -212,7 +299,7 @@ const CampaignForm: FC<CampaignFormProps> = ({
             <Button
               type="button"
               variant="outline"
-              onClick={router.back}
+              onClick={() => router.push(paths.dashboard.communication.text)}
               className="mr-2"
             >
               Cancel
@@ -225,21 +312,33 @@ const CampaignForm: FC<CampaignFormProps> = ({
             >
               {showAddAudience ? 'Hide Audiences' : 'Show Audiences'}
             </Button>
-            {isSubmitting ? (
+            <Button
+              onClick={handleOpenModal}
+              variant={'default'}
+              disabled={loading}
+            >
+              {title}
+            </Button>
+            {/* {isSubmitting ? (
               <Button variant={'default'} disabled={true}>
                 <Loader />
               </Button>
             ) : (
               <Button
-                type="submit"
+                onClick={() => handleCampaignAssignModal}
                 variant={'default'}
-                disabled={data?.status === 'COMPLETED' ? true : loading}
+                disabled={loading}
               >
                 {title}
               </Button>
-            )}
+            )} */}
           </div>
         </div>
+        <ConfirmModal
+          open={campaignConfirmModal.value}
+          handleClose={handleCampaignAssignModalClose}
+          handleSubmit={handleSubmit}
+        />
       </div>
     </>
   );

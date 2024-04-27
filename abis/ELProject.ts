@@ -1,4 +1,4 @@
-export const ELAbi = [
+export const ELAbi =[
   {
     "inputs": [
       {
@@ -35,6 +35,11 @@ export const ELAbi = [
         "internalType": "uint256",
         "name": "_referralLimit",
         "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "_accessManager",
+        "type": "address"
       }
     ],
     "stateMutability": "nonpayable",
@@ -390,6 +395,19 @@ export const ELAbi = [
     ],
     "name": "VendorUpdated",
     "type": "event"
+  },
+  {
+    "inputs": [],
+    "name": "AccessManager",
+    "outputs": [
+      {
+        "internalType": "contract IAccessManager",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
   },
   {
     "inputs": [],

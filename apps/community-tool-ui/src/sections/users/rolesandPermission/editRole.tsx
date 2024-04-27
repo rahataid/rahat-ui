@@ -17,7 +17,7 @@ import {
 } from '@rahat-ui/shadcn/components/form';
 import React, { useState } from 'react';
 import { Switch } from '@rahat-ui/shadcn/src/components/ui/switch';
-import { Role } from '@rumsan/sdk/types';
+import { Role, RoleWithPermission } from '@rumsan/sdk/types';
 import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
 import {
   Select,
@@ -31,7 +31,7 @@ import { useEditRole } from '@rahat-ui/community-query';
 import { useSecondPanel } from 'apps/community-tool-ui/src/providers/second-panel-provider';
 
 type Iprops = {
-  roleDetail: Role;
+  roleDetail: any;
 };
 export default function EditRole({ roleDetail }: Iprops) {
   const { closeSecondPanel } = useSecondPanel();
@@ -78,8 +78,8 @@ export default function EditRole({ roleDetail }: Iprops) {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      roleName: roleDetail?.name || '',
-      isSystem: roleDetail?.isSystem || false,
+      roleName: roleDetail?.data?.role?.name || '',
+      isSystem: roleDetail?.data?.role?.isSystem || false,
       permission: [],
       subject: '',
     },
@@ -95,7 +95,7 @@ export default function EditRole({ roleDetail }: Iprops) {
       },
     };
 
-    edit.mutateAsync({ name: roleDetail?.name, data: k });
+    edit.mutateAsync({ name: roleDetail?.data?.role?.name, data: k });
     closeSecondPanel();
   };
 

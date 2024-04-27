@@ -16,6 +16,7 @@ import {
   useListAudience,
   useGetAudio,
   useCreateCampaign,
+  useGetApprovedTemplate,
 } from '@rumsan/communication-query';
 
 import { useRouter } from 'next/navigation';
@@ -34,6 +35,7 @@ const FormSchema = z.object({
   }),
 
   message: z.string().optional(),
+  messageSid: z.string().optional(),
   audiences: z.array(
     z.object({
       name: z.string(),
@@ -76,7 +78,7 @@ const AddCampaignView = () => {
   const debouncedHandleSubmit = debounce((data) => {
     let transportId;
     transportData?.data.map((tdata) => {
-      if (tdata.name.toLowerCase() === data.campaignType.toLowerCase()) {
+      if (tdata.name.toLowerCase() === data?.campaignType.toLowerCase()) {
         transportId = tdata.id;
       }
     });
@@ -93,6 +95,7 @@ const AddCampaignView = () => {
       audio?: any;
       message?: string;
       body?: string;
+      messageSid?: string;
     };
     const additionalData: AdditionalData = {};
     if (data?.campaignType === CAMPAIGN_TYPES.PHONE && data?.file) {
@@ -102,6 +105,11 @@ const AddCampaignView = () => {
       data?.message
     ) {
       additionalData.body = data?.message;
+    } else if (
+      data?.campaignType === CAMPAIGN_TYPES.WHATSAPP &&
+      data?.messageSid
+    ) {
+      additionalData.messageSid = data?.messageSid;
     } else {
       additionalData.message = data?.message;
     }
@@ -135,15 +143,12 @@ const AddCampaignView = () => {
     event: any,
   ) => {
     setIsSubmitting(true);
-    event.preventDefault();
     debouncedHandleSubmit(data);
   };
+
   return (
     <FormProvider {...form}>
-      <form
-        onSubmit={form.handleSubmit(handleCreateCampaign)}
-        className="h-add bg-secondary"
-      >
+      <form className="h-add">
         <AddForm
           title="Add Campaign"
           audios={audioData?.data || []}
@@ -151,7 +156,9 @@ const AddCampaignView = () => {
           showAddAudience={showAddAudienceView.value}
           form={form}
           isSubmitting={isSubmitting}
+          handleSubmit={form.handleSubmit(handleCreateCampaign)}
         />
+
         {showAddAudienceView.value ? (
           <div className="p-2">
             <AddAudience

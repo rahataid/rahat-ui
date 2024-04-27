@@ -1,10 +1,6 @@
 'use client';
 
-import {
-  useChainSettings,
-  useSettingsStore,
-  useSubGraphUrlSettings,
-} from '@rahat-ui/query';
+import { useAcessManagerSettings, useSettingsStore } from '@rahat-ui/query';
 import { useCommunicationQuery } from '@rumsan/communication-query';
 import { CommunicationService } from '@rumsan/communication/services/communication.client';
 import {
@@ -35,9 +31,6 @@ export function ServiceProvider({ children }: ServiceProviderProps) {
     setQueryClient: setCommsQueryClient,
   } = useCommunicationQuery();
 
-  useChainSettings();
-  useSubGraphUrlSettings();
-
   const chainSettings = useSettingsStore((s) => s.chainSettings);
   const rsService = useMemo(
     () =>
@@ -54,6 +47,7 @@ export function ServiceProvider({ children }: ServiceProviderProps) {
       }),
     [],
   );
+  useAcessManagerSettings();
 
   useEffect(() => {
     if (!queryClient) {

@@ -66,7 +66,7 @@ export const useBeneficaryVoucher = (beneficiary: string) => {
     enabled: beneficiary ? true : false,
     queryKey: ['beneficiary-voucher', beneficiary],
     queryFn: async () => {
-      const res = await queryService.useBeneficiaryVoucher(beneficiary);
+      const res = await queryService?.useBeneficiaryVoucher(beneficiary);
       return res;
     },
   });
@@ -79,7 +79,7 @@ export const useBeneficiaryTransaction = (address: string) => {
     enabled: address ? true : false,
     queryKey: ['beneficiary-transaction', address],
     queryFn: async () => {
-      const res = await queryService.useBeneficiaryTransaction(address);
+      const res = await queryService?.useBeneficiaryTransaction(address);
       const claimedAssigned = res?.claimAssigneds || [];
       const claimProcessed = res?.projectClaimProcesseds || [];
       const beneficiaryReferred = res?.beneficiaryReferreds || [];
@@ -97,7 +97,7 @@ export const useProjectTransaction = () => {
   return useQuery({
     queryKey: ['project-trans'],
     queryFn: async () => {
-      const res = await queryService.useProjectTransaction();
+      const res = await queryService?.useProjectTransaction();
       const transactionTypes = [
         'claimAssigneds',
         'projectClaimProcesseds',
@@ -114,7 +114,6 @@ export const useProjectTransaction = () => {
       return newData;
     },
   });
-
 };
 
 export const useBeneficiaryCount = (projectAddress: string) => {
@@ -165,66 +164,108 @@ export const useVendorVoucher = (address: string) => {
       return res;
     },
   });
-
 };
 
-export const useFreeVoucherHolder = () =>{
+export const useFreeVoucherHolder = () => {
   const { queryService } = useGraphService();
   return useQuery({
-    queryKey:['free-holder'],
-    queryFn: async () =>{
+    queryKey: ['free-holder'],
+    queryFn: async () => {
       const res = await queryService.getFreeVoucherOwners();
-      return res
-     
-    }
-  })
-}
+      return res;
+    },
+  });
+};
 
-export const useReferredVoucherHolder = () =>{
+export const useReferredVoucherHolder = () => {
   const { queryService } = useGraphService();
   return useQuery({
-    queryKey:['referred-holder'],
-    queryFn: async () =>{
+    queryKey: ['referred-holder'],
+    queryFn: async () => {
       const res = await queryService.getDiscountVoucherOwners();
       return res;
-    }
-  })
-}
+    },
+  });
+};
 
 export const useVoucherHolder = () => {
   const { queryService } = useGraphService();
   return useQuery({
-    queryKey:['voucher-holder'],
-    queryFn: async () =>{
+    queryKey: ['voucher-holder'],
+    queryFn: async () => {
       const res = await queryService.getVoucherOwners();
-      return res
-     
-    }
-  })
-}
+      return res;
+    },
+  });
+};
 
-export const useGetFreeVoucherTransaction = (tokenFree:string) => {
+export const useGetFreeVoucherTransaction = (tokenFree: string) => {
   const { queryService } = useGraphService();
   return useQuery({
     enabled: tokenFree ? true : false,
-    queryKey:['free-voucher-transactions'],
-    queryFn: async () =>{
+    queryKey: ['free-voucher-transactions'],
+    queryFn: async () => {
       const res = await queryService.getEyeVoucherTransaction(tokenFree);
-      return res
-     
-    }
-  })
-}
+      return res;
+    },
+  });
+};
 
-export const useGetReferredVoucherTransaction = (tokenReferred:string) => {
+export const useGetReferredVoucherTransaction = (tokenReferred: string) => {
   const { queryService } = useGraphService();
   return useQuery({
     enabled: tokenReferred ? true : false,
-    queryKey:['referred-voucher-transactions'],
-    queryFn: async () =>{
-      const res = await queryService.getReferredVoucherTransaction(tokenReferred);
-      return res
-     
-    }
-  })
-}
+    queryKey: ['referred-voucher-transactions'],
+    queryFn: async () => {
+      const res = await queryService.getReferredVoucherTransaction(
+        tokenReferred,
+      );
+      return res;
+    },
+  });
+};
+
+export const useGetBeneficiaryVouchers = () => {
+  const { queryService } = useGraphService();
+  return useQuery({
+    queryKey: ['beneficiary-vouchers'],
+    queryFn: async () => {
+      const res = await queryService.useAllBeneficiariesVoucher();
+      return res;
+    },
+  });
+};
+
+export const useVendorFilteredTransaction = (
+  address: string,
+  tokenAddress: string,
+) => {
+  const { queryService } = useGraphService();
+
+  console.log(queryService);
+
+  return useQuery({
+    enabled: address ? true : false,
+    queryKey: ['vendor-vouchers-filtered', address],
+    queryFn: async () => {
+      const res = await queryService?.useVendorFilteredTransaction(
+        address,
+        tokenAddress,
+      );
+      const claimedAssigned = res?.data?.claimCreateds || [];
+      const claimProcessed = res?.data?.projectClaimProcesseds || [];
+      const beneficiaryReferred = res?.data?.beneficiaryReferreds || [];
+      const tokenRedeems = res?.data?.tokenRedeems || [];
+      const newData = mapTransactions(
+        claimedAssigned.concat(
+          claimProcessed,
+          beneficiaryReferred,
+          tokenRedeems,
+        ),
+      );
+      return {
+        newData,
+      };
+    },
+  });
+};

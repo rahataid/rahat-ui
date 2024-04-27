@@ -22,28 +22,63 @@ import {
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { ListBeneficiary } from '@rahataid/community-tool-sdk/beneficiary';
+import { Pagination } from '@rumsan/sdk/types';
 
 type IProps = {
-  handleClick: (item: ListBeneficiary) => void;
+  // handleClick: (item: ListBeneficiary) => void;
   table: Table<ListBeneficiary>;
+  setFilters: (fiters: Record<string, any>) => void;
+  filters: Record<string, any>;
+  setPagination: (pagination: Pagination) => void;
+  pagination: Pagination;
 };
 
-export default function ListView({ handleClick, table }: IProps) {
+export default function ListView({
+  // handleClick,
+  table,
+  setFilters,
+  filters,
+  setPagination,
+  pagination,
+}: IProps) {
+  const handleFilterChange = (event: any) => {
+    if (event && event.target) {
+      const { name, value } = event.target;
+      table.getColumn(name)?.setFilterValue(value);
+      setFilters({
+        ...filters,
+        [name]: value,
+      });
+    }
+    setPagination({
+      ...pagination,
+      page: 1,
+    });
+  };
+
   return (
     <>
       <div className="w-full -mt-2 p-2 bg-secondary">
         <div className="flex items-center mb-2">
           <Input
-            placeholder="Filter beneficiary..."
+            placeholder="Search by firstName..."
+            name="firstName"
             value={
-              (table.getColumn('walletAddress')?.getFilterValue() as string) ??
-              ''
+              (table.getColumn('firstName')?.getFilterValue() as string) ??
+              filters?.firstName
             }
-            onChange={(event) =>
-              table
-                .getColumn('walletAddress')
-                ?.setFilterValue(event.target.value)
+            onChange={(event) => handleFilterChange(event)}
+            className="rounded mr-2"
+          />
+
+          <Input
+            placeholder="Search by location..."
+            name="location"
+            value={
+              (table.getColumn('location')?.getFilterValue() as string) ??
+              filters?.location
             }
+            onChange={(event) => handleFilterChange(event)}
             className="rounded mr-2"
           />
           <DropdownMenu>
@@ -103,9 +138,6 @@ export default function ListView({ handleClick, table }: IProps) {
                     <TableRow
                       key={row.id}
                       data-state={row.getIsSelected() && 'selected'}
-                      onClick={() => {
-                        handleClick(row.original);
-                      }}
                     >
                       {row.getVisibleCells().map((cell) => (
                         <TableCell key={cell.id}>

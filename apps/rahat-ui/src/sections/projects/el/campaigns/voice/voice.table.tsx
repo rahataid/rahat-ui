@@ -50,6 +50,7 @@ import { paths } from '../../../../../routes/paths';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { useCampaignStore, useListCampaignQuery } from '@rahat-ui/query';
 import { CAMPAIGN_TYPES } from '@rahat-ui/types';
+import TableLoader from 'apps/rahat-ui/src/components/table.loader';
 
 const data: Voice[] = VoiceTableData;
 
@@ -285,15 +286,7 @@ export default function VoiceTable() {
                     colSpan={columns.length}
                     className="h-24 text-center"
                   >
-                    {isFetching ? (
-                      <div className="flex items-center justify-center space-x-2 h-full">
-                        <div className="h-5 w-5 animate-bounce rounded-full bg-primary [animation-delay:-0.3s]"></div>
-                        <div className="h-5 w-5 animate-bounce rounded-full bg-primary [animation-delay:-0.13s]"></div>
-                        <div className="h-5 w-5 animate-bounce rounded-full bg-primary"></div>
-                      </div>
-                    ) : (
-                      'No data available.'
-                    )}
+                    {isFetching ? <TableLoader /> : 'No data available.'}
                   </TableCell>
                 </TableRow>
               )}

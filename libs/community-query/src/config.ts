@@ -41,4 +41,10 @@ export const TAGS = {
     'download_community_grouped_beneficiaries',
   GET_COMMUNITY_BENEFICARY_STATS: 'get_community_beneficiary_stats',
   LIST_TARGETING: 'list_targeting',
+  ADD_BULK_FIELD_DEFINITIONS: 'add_bulk_field_definitions',
+  CREATE_TARGETING: 'create_targeting',
+  REMOVE_COMMUNITY_GROUP: 'remove_community_group',
+  PURGE_COMMUNITY_GROUP: 'purge_community_group',
+  GET_TARGETING_BENEFICIARIES: 'get_targeting_beneficiary',
+  LIST_KOBO_SETTINGS: 'list_kobo_settings',
 };

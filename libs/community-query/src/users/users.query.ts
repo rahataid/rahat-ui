@@ -160,3 +160,16 @@ export const useEditRole = () => {
   );
   return query;
 };
+
+export const useGetRole = (name: string) => {
+  const { queryClient, rumsanService } = useRSQuery();
+  const roleClient = getRoleClient(rumsanService.client);
+  const query = useQuery(
+    {
+      queryKey: [TAGS.GET_ROLE, name],
+      queryFn: () => roleClient.getRole(name),
+    },
+    queryClient,
+  );
+  return query;
+};

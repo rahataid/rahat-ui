@@ -2,7 +2,11 @@
 
 import { useParams } from 'next/navigation';
 
-import { useProjectAction } from '@rahat-ui/query';
+import {
+  PROJECT_SETTINGS_KEYS,
+  useProjectAction,
+  useProjectSettingsStore,
+} from '@rahat-ui/query';
 import {
   Tabs,
   TabsContent,
@@ -29,6 +33,17 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/alert-dialog';
 import { Gender } from '@rahataid/sdk/enums';
 import { enumToObjectArray, truncateEthAddress } from '@rumsan/sdk/utils';
 import { useAssignClaims } from 'apps/rahat-ui/src/hooks/el/contracts/el-contracts';
@@ -41,12 +56,11 @@ import { useReadElProjectGetBeneficiaryVoucherDetail } from 'apps/rahat-ui/src/h
 import { zeroAddress } from 'viem';
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 import AssignVoucherConfirm from './assign.voucher.confirm';
-import ConfirmDialog from '../../../../components/dialog';
-import {
-  Dialog,
-  DialogTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/dialog';
+import TableLoader from 'apps/rahat-ui/src/components/table.loader';
+import { useRouter } from 'next/navigation';
 import EditBeneficiary from './beneficiary.edit';
+import { useRemoveBeneficiary } from '@rahat-ui/query';
+import { UUID } from 'crypto';
 
 type IProps = {
   beneficiaryDetails: any;
@@ -60,19 +74,21 @@ export default function BeneficiaryDetail({
   const assignClaims = useAssignClaims();
   const { id } = useParams();
   const getProject = useProjectAction();
-
+  const route = useRouter();
+  const deleteBeneficiary = useRemoveBeneficiary();
   const [assignStatus, setAssignStatus] = useState(false);
-  const [contractAddress, setContractAddress] = useState<any>();
 
   const walletAddress = beneficiaryDetails.wallet;
 
+  const contractSettings = useProjectSettingsStore(
+    (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT] || null,
+  );
+
   const { data: beneficiaryVoucherDetails, isLoading } =
     useReadElProjectGetBeneficiaryVoucherDetail({
-      address: contractAddress?.el,
+      address: contractSettings?.elproject?.address,
       args: [walletAddress],
     });
-
-  const projectSettings = localStorage.getItem('projectSettingsStore');
 
   const [activeTab, setActiveTab] = useState<'details' | 'edit' | null>(
     'details',
@@ -102,6 +118,12 @@ export default function BeneficiaryDetail({
   };
 
   useEffect(() => {
+    if (assignClaims.isSuccess) {
+      route.push(`/projects/el/${id}/beneficiary`);
+    }
+  }, [assignClaims.isSuccess]);
+
+  useEffect(() => {
     if (
       beneficiaryVoucherDetails?.freeVoucherAddress === undefined ||
       beneficiaryVoucherDetails?.referredVoucherAddress === undefined
@@ -117,35 +139,30 @@ export default function BeneficiaryDetail({
     }
   }, [beneficiaryVoucherDetails]);
 
-  useEffect(() => {
-    if (projectSettings) {
-      const settings = JSON.parse(projectSettings)?.state?.settings?.[id];
-      setContractAddress({
-        el: settings?.elproject?.address,
-        eyeVoucher: settings?.eyevoucher?.address,
-        referredVoucher: settings?.referralvoucher?.address,
-      });
-    }
-  }, [id, projectSettings]);
-
   const voucherAssignModal = useBoolean();
-
-  const handleVoucherAssignModal = () => {
-    voucherAssignModal.onTrue();
-  };
 
   const handleVoucherAssignModalClose = () => {
     voucherAssignModal.onFalse();
   };
 
+  const removeBeneficiary = (id: string | undefined) => {
+    try {
+      deleteBeneficiary.mutateAsync({
+        uuid: id as UUID,
+      });
+    } catch (e) {
+      console.error('Error::', e);
+    }
+  };
+
+  useEffect(() => {
+    deleteBeneficiary.isSuccess && closeSecondPanel();
+  }, [deleteBeneficiary]);
+
   return (
     <>
       {isLoading ? (
-        <div className="h-screen flex items-center justify-center space-x-2">
-          <div className="h-5 w-5 animate-bounce rounded-full bg-primary [animation-delay:-0.3s]"></div>
-          <div className="h-5 w-5 animate-bounce rounded-full bg-primary [animation-delay:-0.13s]"></div>
-          <div className="h-5 w-5 animate-bounce rounded-full bg-primary"></div>
-        </div>
+        <TableLoader />
       ) : (
         <>
           <div className="flex justify-between p-4 pt-5 bg-secondary border-b">
@@ -163,12 +180,37 @@ export default function BeneficiaryDetail({
               <TooltipProvider delayDuration={100}>
                 <Tooltip>
                   <TooltipTrigger>
-                    <Dialog>
-                      <DialogTrigger asChild>
-                        <Trash2 color="#FF0000" size={20} strokeWidth={1.5} />
-                      </DialogTrigger>
-                      <ConfirmDialog name="beneficiary" />
-                    </Dialog>
+                    <AlertDialog>
+                      <AlertDialogTrigger className="flex items-center">
+                        <Trash2
+                          className="cursor-pointer"
+                          color="red"
+                          size={20}
+                          strokeWidth={1.5}
+                        />
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>
+                            Are you absolutely sure?
+                          </AlertDialogTitle>
+                          <AlertDialogDescription>
+                            This action cannot be undone. This will permanently
+                            delete this beneficiary.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={() =>
+                              removeBeneficiary(beneficiaryDetails?.uuid)
+                            }
+                          >
+                            Continue
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                   </TooltipTrigger>
                   <TooltipContent className="bg-secondary ">
                     <p className="text-xs font-medium">Delete</p>

@@ -12,25 +12,65 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/components/tooltip';
-import {
-  Dialog,
-  DialogTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/dialog';
-import { Archive, Expand, FilePenLine, Minus, Trash2 } from 'lucide-react';
-import ConfirmDialog from '../../components/dialog';
-import { paths } from '../../routes/paths';
+import { ListBeneficiary } from '@rahataid/community-tool-sdk/beneficiary';
+import { Minus, Trash2 } from 'lucide-react';
 import EditBeneficiary from './editBeneficiary';
 import InfoCards from './infoCards';
-import { ListBeneficiary } from '@rahataid/community-tool-sdk/beneficiary';
+import Swal from 'sweetalert2';
+import { useCommunityBeneficiaryRemove } from '@rahat-ui/community-query';
+import { toast } from 'react-toastify';
+import { UUID } from 'crypto';
+import useFormStore from '../../formBuilder/form.store';
+import { useEffect } from 'react';
 
 type IProps = {
   data: ListBeneficiary;
   // handleDefault: VoidFunction;
-  handleClose: VoidFunction;
+  closeSecondPanel: VoidFunction;
 };
 
-export default function BeneficiaryDetail({ data, handleClose }: IProps) {
+export default function BeneficiaryDetail({ data, closeSecondPanel }: IProps) {
   const router = useRouter();
+  const { setExtras }: any = useFormStore();
+
+  useEffect(() => {
+    if (data.extras) {
+      setExtras(data.extras);
+    }
+
+    return () => setExtras({});
+  }, [data.uuid]);
+
+  const deleteCommunityBeneficiary = useCommunityBeneficiaryRemove();
+
+  const handleBeneficiaryDelete = () => {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'You are deleting beneficiary',
+      icon: 'question',
+      showDenyButton: true,
+      confirmButtonText: 'Yes, I am sure!',
+      denyButtonText: 'No, cancel it!',
+      customClass: {
+        actions: 'my-actions',
+        cancelButton: 'order-1',
+        confirmButton: 'order-2',
+        denyButton: 'order-3',
+      },
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          await deleteCommunityBeneficiary.mutateAsync(data?.uuid as UUID);
+          closeSecondPanel();
+        } catch (error) {
+          toast.error('Error deleting Beneficiary');
+          console.error('Error deleting Beneficiary:', error);
+        }
+      } else if (result.isDenied) {
+        Swal.fire('Cancelled', `The Beneficiary wasn't deleted.`, 'error');
+      }
+    });
+  };
 
   return (
     <>
@@ -39,7 +79,7 @@ export default function BeneficiaryDetail({ data, handleClose }: IProps) {
           <div className="flex gap-4">
             <TooltipProvider delayDuration={100}>
               <Tooltip>
-                <TooltipTrigger onClick={handleClose}>
+                <TooltipTrigger onClick={closeSecondPanel}>
                   <Minus size={20} strokeWidth={1.5} />
                 </TooltipTrigger>
                 <TooltipContent className="bg-secondary ">
@@ -47,58 +87,30 @@ export default function BeneficiaryDetail({ data, handleClose }: IProps) {
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
-            {/* <TooltipProvider delayDuration={100}>
-              <Tooltip>
-                <TooltipTrigger
-                  onClick={() => {
-                    router.push(paths.dashboard.beneficiary.detail(data?.uuid));
-                  }}
-                >
-                  <Expand size={20} strokeWidth={1.5} />
-                </TooltipTrigger>
-                <TooltipContent className="bg-secondary ">
-                  <p className="text-xs font-medium">Expand</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider> */}
-            {/* <TooltipProvider delayDuration={100}>
-              <Tooltip>
-                <TooltipTrigger>
-                  <FilePenLine size={20} strokeWidth={1.5} />
-                </TooltipTrigger>
-                <TooltipContent className="bg-secondary ">
-                  <p className="text-xs font-medium">Edit</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider> */}
-            {/* <TooltipProvider delayDuration={100}>
-              <Tooltip>
-                <TooltipTrigger>
-                  <Archive size={20} strokeWidth={1.5} />
-                </TooltipTrigger>
-                <TooltipContent className="bg-secondary ">
-                  <p className="text-xs font-medium">Archive</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider> */}
-            {/* <Button variant="outline">Delete User</Button> */}
-            {/* <TooltipProvider delayDuration={100}>
-              <Tooltip>
-                <TooltipTrigger>
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Trash2 size={20} strokeWidth={1.5} />
-                    </DialogTrigger>
-                    <ConfirmDialog name="beneficiary" />
-                  </Dialog>
-                </TooltipTrigger>
-                <TooltipContent className="bg-secondary ">
-                  <p className="text-xs font-medium">Delete</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider> */}
+            <div>
+              <p>
+                <b>
+                  {data.firstName} {data.lastName}
+                </b>
+              </p>
+            </div>
           </div>
           <TabsList>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild onClick={handleBeneficiaryDelete}>
+                  <Trash2
+                    className="cursor-pointer mr-3"
+                    size={20}
+                    strokeWidth={1.6}
+                    color="#FF0000"
+                  />
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Delete Beneficiary</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
             <TabsTrigger value="detail">Details </TabsTrigger>
             {/* <TabsTrigger value="transaction-history">
               Transaction History

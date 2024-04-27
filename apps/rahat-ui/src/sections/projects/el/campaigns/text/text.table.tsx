@@ -294,9 +294,9 @@ export default function TextTable() {
                   >
                     {isFetching ? (
                       <div className="flex items-center justify-center space-x-2 h-full">
-                        <div className="h-5 w-5 animate-bounce rounded-full bg-primary [animation-delay:-0.3s]"></div>
-                        <div className="h-5 w-5 animate-bounce rounded-full bg-primary [animation-delay:-0.13s]"></div>
-                        <div className="h-5 w-5 animate-bounce rounded-full bg-primary"></div>
+                        <div className="h-2 w-2 animate-bounce rounded-full bg-primary [animation-delay:-0.3s]"></div>
+                        <div className="h-2 w-2 animate-bounce rounded-full bg-primary [animation-delay:-0.13s]"></div>
+                        <div className="h-2 w-2 animate-bounce rounded-full bg-primary"></div>
                       </div>
                     ) : (
                       'No data available.'

@@ -6,7 +6,6 @@ import {
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   DropdownMenu,
-  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -14,15 +13,15 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
-import { ChevronDown } from 'lucide-react';
-import React, { useState } from 'react';
-import { currencies } from 'currencies.json';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { useMintVouchers } from 'apps/rahat-ui/src/hooks/el/contracts/el-contracts';
+import { currencies } from 'currencies.json';
+import { ChevronDown } from 'lucide-react';
+import React, { useState } from 'react';
 
 type Checked = DropdownMenuCheckboxItemProps['checked'];
 
-const AddVoucher = ({contractSettings}: {contractSettings:any}) => {
+const AddVoucher = ({ contractSettings }: { contractSettings: any }) => {
   const [voucherName, setVoucherName] = useState('');
   const [noOfVoucherMinted, setNoOfVoucherMinted] = useState('');
   const [priceInUSD, setPriceInUSD] = useState('');
@@ -42,24 +41,24 @@ const AddVoucher = ({contractSettings}: {contractSettings:any}) => {
 
   const createVoucher = useMintVouchers();
 
-
   const handleSubmit = async () => {
     const referralLimit = 3;
+
     await createVoucher.writeContractAsync({
-          address: contractSettings?.rahatDonor,
-          args: [
-            contractSettings?.eyeVoucher,
-            contractSettings?.referredVoucher,
-            contractSettings?.el,
-            BigInt(noOfVoucherMinted),
-            description,
-            descriptionReferred,
-            BigInt(priceInUSD),
-            BigInt(referredPriceInUSD),
-            BigInt(referralLimit),
-            selectedCurrencySymbol,
-          ],
-        })
+      address: contractSettings?.rahatdonor?.address,
+      args: [
+        contractSettings?.eyevoucher?.address,
+        contractSettings?.referralvoucher?.address,
+        contractSettings?.elproject?.address,
+        BigInt(noOfVoucherMinted),
+        description,
+        descriptionReferred,
+        BigInt(priceInUSD),
+        BigInt(referredPriceInUSD),
+        BigInt(referralLimit),
+        selectedCurrencySymbol,
+      ],
+    });
   };
 
   return (

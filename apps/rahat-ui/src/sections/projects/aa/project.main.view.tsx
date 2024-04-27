@@ -1,9 +1,12 @@
+import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import ProjectDetails from './project.detail';
 
 const ProjectMainView = () => {
   return (
     <>
-      <ProjectDetails />
+      <ScrollArea className="h-[calc(100vh-80px)]">
+        <ProjectDetails />
+      </ScrollArea>
     </>
   );
 };

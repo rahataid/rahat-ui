@@ -28,7 +28,10 @@ import {
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { useRoleList, useSettingsStore, useUserCreate } from '@rahat-ui/query';
-import { useAddAdmin, useAddManager } from '../../hooks/el/contracts/el-contracts';
+import {
+  useAddAdmin,
+  useAddManager,
+} from '../../hooks/el/contracts/el-contracts';
 
 // Constants
 // const genderList = enumToObjectArray(Gender);
@@ -37,7 +40,7 @@ const FormSchema = z.object({
   name: z.string().min(2, { message: 'Name must be at least 4 character' }),
   email: z.string().email(),
   gender: z.string(),
-  role: z.string(),
+  roles: z.array(z.string()),
   phone: z.string(),
   wallet: z
     .string()
@@ -53,40 +56,32 @@ export default function AddUser() {
       gender: 'UNKNOWN' || '',
       email: '',
       phone: '',
-      role: '',
+      roles: [''],
       wallet: '',
     },
   });
 
   const { data: roleData } = useRoleList();
-  const contractSettings = useSettingsStore(
-    (state) => state.accessManager
-  )
-
+  const contractSettings = useSettingsStore((state) => state.accessManager);
 
   const userCreate = useUserCreate();
   const addManager = useAddManager();
-  const addAdmin = useAddAdmin()
+  const addAdmin = useAddAdmin();
 
   const handleAddUser = async (data: any) => {
-    if(data.role === 'Manager') {
-        addManager.mutateAsync({
-          data:data,
-          walletAddress: data?.wallet,
-          contractAddress: contractSettings
-
-        })
-    }
-    else if(data.role === 'Admin'){
-      addAdmin.mutateAsync({
-        data:data,
+    if (data.role === 'Manager') {
+      addManager.mutateAsync({
+        data: data,
         walletAddress: data?.wallet,
-        contractAddress: contractSettings
-
-      })
-    }
-
-    else await userCreate.mutateAsync(data);
+        contractAddress: contractSettings as `0x${string}`,
+      });
+    } else if (data.role === 'Admin') {
+      addAdmin.mutateAsync({
+        data: data,
+        walletAddress: data?.wallet,
+        contractAddress: contractSettings as `0x${string}`,
+      });
+    } else await userCreate.mutateAsync(data);
   };
   useEffect(() => {
     if (userCreate.isSuccess) {
@@ -95,7 +90,7 @@ export default function AddUser() {
         gender: 'UNKOWN' || '',
         email: '',
         phone: '',
-        role: '',
+        roles: [''],
         wallet: '',
       });
     }
@@ -176,13 +171,15 @@ export default function AddUser() {
             />
             <FormField
               control={form.control}
-              name="role"
+              name="roles"
               render={({ field }) => {
                 return (
                   <FormItem>
                     <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
+                      onValueChange={(value) => {
+                        field.onChange([value]);
+                      }}
+                      defaultValue={field.value[0]}
                     >
                       <FormControl>
                         <SelectTrigger>

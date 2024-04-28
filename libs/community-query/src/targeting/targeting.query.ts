@@ -49,3 +49,19 @@ export const useTargetingCreate = () => {
     queryClient,
   );
 };
+
+export const useTargetedBeneficiaryList = (target_uuid: string) => {
+  const { queryClient, rumsanService } = useRSQuery();
+  const targetingClient = getTargetClient(rumsanService.client);
+
+  const query = useQuery(
+    {
+      queryKey: [TAGS.GET_TARGETING_BENEFICIARIES, target_uuid],
+      enabled: !!target_uuid,
+      queryFn: () => targetingClient.listByTargetUuid(target_uuid),
+    },
+    queryClient,
+  );
+
+  return query;
+};

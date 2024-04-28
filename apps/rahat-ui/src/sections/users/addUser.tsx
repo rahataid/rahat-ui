@@ -1,8 +1,8 @@
 'use client';
 
 // Import statements
-import { useEffect } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -18,6 +18,8 @@ import {
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
 // import { Gender } from '@rahat-ui/types';
+import { useRoleList, useSettingsStore, useUserCreate } from '@rahat-ui/query';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   Form,
   FormControl,
@@ -26,8 +28,6 @@ import {
   FormMessage,
 } from '@rahat-ui/shadcn/src/components/ui/form';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { useRoleList, useSettingsStore, useUserCreate } from '@rahat-ui/query';
 import {
   useAddAdmin,
   useAddManager,
@@ -83,6 +83,7 @@ export default function AddUser() {
       });
     } else await userCreate.mutateAsync(data);
   };
+
   useEffect(() => {
     if (userCreate.isSuccess) {
       form.reset({

@@ -46,7 +46,7 @@ export const useAudienceTable = ({
     return itemRank.passed;
   };
   const table = useReactTable({
-    manualPagination: true,
+    manualPagination: false,
     data: tableData || [],
     columns,
     getCoreRowModel: getCoreRowModel(),

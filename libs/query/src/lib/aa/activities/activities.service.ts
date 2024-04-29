@@ -105,6 +105,9 @@ export const useActivities = (uuid: UUID) => {
           hazardType: d.hazardType?.name,
           category: d.category?.name,
           description: d.description,
+          phase: d.phase?.name,
+          isApproved: d.isApproved,
+          isComplete: d.isComplete,
         })),
       };
     },

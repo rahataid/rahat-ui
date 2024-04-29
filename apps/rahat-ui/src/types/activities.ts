@@ -6,4 +6,7 @@ export interface IActivitiesItem {
   phase: string;
   category: string;
   description: string;
+  hazardType: string;
+  isApproved: boolean;
+  isComplete: boolean;
 }

@@ -327,7 +327,7 @@ export default function RedemptionTable({}) {
         <CustomPagination
           currentPage={pagination.page}
           handleNextPage={setNextPage}
-          handlePageSizeChange={setPerPage}
+          // handlePageSizeChange={setPerPage}
           handlePrevPage={setPrevPage}
           meta={meta || {}}
           perPage={pagination.perPage}

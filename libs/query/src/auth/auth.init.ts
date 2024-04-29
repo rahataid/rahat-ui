@@ -22,8 +22,6 @@ export const useAuthInitialization = (): UseAuthInitializationReturn => {
 
   const currentUser = useUserCurrentUser(!!token);
 
-  console.log('currentUser', currentUser);
-
   const setUser = useUserStore((state) => state.setUser);
 
   useEffect(() => {

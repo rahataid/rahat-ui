@@ -61,6 +61,7 @@ import { useRouter } from 'next/navigation';
 import EditBeneficiary from './beneficiary.edit';
 import { useRemoveBeneficiary } from '@rahat-ui/query';
 import { UUID } from 'crypto';
+import { useWaitForTransactionReceipt } from 'wagmi'
 
 type IProps = {
   beneficiaryDetails: any;
@@ -77,6 +78,8 @@ export default function BeneficiaryDetail({
   const route = useRouter();
   const deleteBeneficiary = useRemoveBeneficiary();
   const [assignStatus, setAssignStatus] = useState(false);
+  const [transactionHash, setTransactionHash] = useState<`0x${string}`>()
+  const [isTransacting, setisTransacting] = useState<boolean>(false)
 
   const walletAddress = beneficiaryDetails.wallet;
 
@@ -84,7 +87,7 @@ export default function BeneficiaryDetail({
     (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT] || null,
   );
 
-  const { data: beneficiaryVoucherDetails, isLoading } =
+  const { data: beneficiaryVoucherDetails, isLoading, refetch } =
     useReadElProjectGetBeneficiaryVoucherDetail({
       address: contractSettings?.elproject?.address,
       args: [walletAddress],
@@ -108,12 +111,22 @@ export default function BeneficiaryDetail({
     setActiveTab(tab);
   };
 
+  const result = useWaitForTransactionReceipt({
+    hash: transactionHash,
+  })
+
+  useEffect(() => {
+    result?.data && setisTransacting(false); refetch();
+  }, [result])
+
   const handleAssignVoucher = () => {
-    getProjectAddress(getProject, id as string).then((res) => {
-      assignClaims.writeContractAsync({
+    setisTransacting(true)
+    getProjectAddress(getProject, id as string).then(async (res) => {
+      const txnHash = await assignClaims.writeContractAsync({
         address: res.value.elproject.address,
         args: [walletAddress],
       });
+      setTransactionHash(txnHash)
     });
   };
 
@@ -121,7 +134,10 @@ export default function BeneficiaryDetail({
     if (assignClaims.isSuccess) {
       route.push(`/projects/el/${id}/beneficiary`);
     }
-  }, [assignClaims.isSuccess]);
+    if(assignClaims.isError){
+      setisTransacting(false)
+    }
+  }, [assignClaims.isSuccess, assignClaims.isError]);
 
   useEffect(() => {
     if (
@@ -282,7 +298,7 @@ export default function BeneficiaryDetail({
             </div>
             {!assignStatus && beneficiaryDetails?.type === 'ENROLLED' && (
               <div>
-                <Button onClick={handleAssignVoucher}>Assign Voucher</Button>
+                <Button disabled={isTransacting} onClick={handleAssignVoucher}>{isTransacting ? 'Confirming transaction...' : 'Assign Voucher'}</Button>
               </div>
             )}
           </div>

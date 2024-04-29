@@ -60,6 +60,7 @@ import { useRouter } from 'next/navigation';
 import { useGraphService } from '../../../../providers/subgraph-provider';
 import { useGetBeneficiaryVouchers, useVendorFilteredTransaction } from 'apps/rahat-ui/src/hooks/el/subgraph/querycall';
 import { useEffect, useState } from 'react';
+import { useWaitForTransactionReceipt } from 'wagmi';
 // import { useBeneficiaryTransaction } from '../../hooks/el/subgraph/querycall';
 
 export type Transaction = {
@@ -139,8 +140,6 @@ function BeneficiaryDetailTableView() {
   const { queryService } = useGraphService();
 
   const {data:dataVouce, error} = useGetBeneficiaryVouchers()
-
-
   const projectBeneficiaries = useProjectBeneficiaries({
     page: pagination.page,
     perPage: pagination.perPage,
@@ -152,6 +151,8 @@ function BeneficiaryDetailTableView() {
   });
 
   const [projectVoucherBeneficiaries, setProjectVoucherBeneficiaries] = useState<any>()
+  const [transactionHash, setTransactionHash] = useState<`0x${string}`>()
+  const [isTransacting, setisTransacting] = useState<boolean>(false)
   const [filteredProjectVoucherBeneficiaries, setFilteredProjectVoucherBeneficiaries] = useState<any>()
   const [voucherFilter, setVoucherFilter] = useState<any>()
 
@@ -247,17 +248,32 @@ function BeneficiaryDetailTableView() {
 
   const selectedRowAddresses = Object.keys(selectedListItems);
 
+  const result = useWaitForTransactionReceipt({
+    hash: transactionHash,
+  })
+
+  useEffect(() => {
+    result?.data && setisTransacting(false);
+  }, [result])
+
   const handleBulkAssign = async () => {
-    await assignVoucher.mutateAsync({
+    setisTransacting(true)
+    const txnHash = await assignVoucher.mutateAsync({
       addresses: selectedRowAddresses as `0x${string}`[],
       noOfTokens: 1,
       contractAddress: contractAddress.elproject.address,
     });
+    setTransactionHash(txnHash as `0x-${string}`)
   };
+  
 
   React.useEffect(() => {
     if (assignVoucher.isSuccess) {
       route.push(`/projects/el/${id}`);
+    }
+
+    if(assignVoucher.isError){
+      setisTransacting(false)
     }
   }, []);
 
@@ -429,6 +445,7 @@ function BeneficiaryDetailTableView() {
         open={tokenAssignModal.value}
         handleClose={handleTokenAssignModalClose}
         handleSubmit={handleBulkAssign}
+        isTransacting={isTransacting}
       />
     </>
   );

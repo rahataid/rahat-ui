@@ -54,6 +54,7 @@ function VendorsView() {
 
   const table = useReactTable({
     data: vendorData?.data || [],
+    manualPagination: true,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -70,6 +71,7 @@ function VendorsView() {
       rowSelection,
     },
   });
+
   return (
     <>
       <VendorsTable

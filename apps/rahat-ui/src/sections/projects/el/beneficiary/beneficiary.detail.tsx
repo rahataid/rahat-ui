@@ -242,9 +242,6 @@ export default function BeneficiaryDetail({
                   />
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
-                  <DropdownMenuItem onClick={() => handleTabChange('details')}>
-                    Details
-                  </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => handleTabChange('edit')}>
                     Edit
                   </DropdownMenuItem>

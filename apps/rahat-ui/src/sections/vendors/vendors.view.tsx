@@ -41,6 +41,7 @@ function VendorsView() {
       vendorUUID: selectedRow?.id,
       projectUUID: selectedProject,
     });
+    projectModal.onFalse();
   };
   const columns = useTableColumns(handleAssignModalClick);
   const [sorting, setSorting] = React.useState<SortingState>([]);

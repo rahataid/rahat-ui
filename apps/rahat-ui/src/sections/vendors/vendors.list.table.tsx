@@ -73,7 +73,6 @@ export default function VendorsTable({
   const projectList = useProjectList({});
   const handleProjectChange = (d: UUID) => setSelectedProject(d);
 
-
   return (
     <>
       <div className="p-2 bg-secondary">

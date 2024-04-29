@@ -72,10 +72,10 @@ export type Transaction = {
 };
 
 export const benType = [
-  {
-    key: 'ALL',
-    value: 'ALL',
-  },
+  // {
+  //   key: 'ALL',
+  //   value: 'ALL',
+  // },
   {
     key: 'ENROLLED',
     value: 'ENROLLED',
@@ -84,13 +84,14 @@ export const benType = [
     key: 'REFERRED',
     value: 'REFERRED',
   },
+  
 ];
 
 export const voucherType = [
-  {
-    key: 'ALL',
-    value: 'ALL',
-  },
+  // {
+  //   key: 'ALL',
+  //   value: 'ALL',
+  // },
   {
     key: 'FREE',
     value: 'FREE',
@@ -98,6 +99,10 @@ export const voucherType = [
   {
     key: 'REFERRED',
     value: 'REFERRED',
+  },
+  {
+    key: 'NOT_ASSIGNED',
+    value: 'NOT_ASSIGNED',
   },
 ];
 
@@ -110,8 +115,6 @@ function BeneficiaryDetailTableView() {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
   );
-
- 
 
   const handleTokenAssignModal = () => {
     tokenAssignModal.onTrue();
@@ -156,6 +159,8 @@ function BeneficiaryDetailTableView() {
   const [filteredProjectVoucherBeneficiaries, setFilteredProjectVoucherBeneficiaries] = useState<any>()
   const [voucherFilter, setVoucherFilter] = useState<any>()
 
+  console.log("data from graph", dataVouce)
+
   useEffect(() => {
     if (projectBeneficiaries) {
       const projectBenWithVoucher = projectBeneficiaries.data.data.map((row) => {
@@ -183,15 +188,19 @@ function BeneficiaryDetailTableView() {
 
   useEffect(() => {
     if(projectVoucherBeneficiaries && voucherFilter) {
-      if(voucherFilter.voucher === 'ALL'){
-        setFilteredProjectVoucherBeneficiaries(projectVoucherBeneficiaries)
-      }
+      // if(voucherFilter.voucher === 'ALL'){
+      //   setFilteredProjectVoucherBeneficiaries(projectVoucherBeneficiaries)
+      // }
       if(voucherFilter.voucher === 'REFERRED'){
         const filteredData = projectVoucherBeneficiaries.filter(item => item.voucher === 'Referred voucher')
         setFilteredProjectVoucherBeneficiaries(filteredData)
       }
       if(voucherFilter.voucher === 'FREE'){
         const filteredData = projectVoucherBeneficiaries.filter(item => item.voucher === 'Free voucher')
+        setFilteredProjectVoucherBeneficiaries(filteredData)
+      }
+      if(voucherFilter.voucher === 'NOT_ASSIGNED'){
+        const filteredData = projectVoucherBeneficiaries.filter(item => item.voucher === 'Not Assigned')
         setFilteredProjectVoucherBeneficiaries(filteredData)
       }
     }
@@ -209,10 +218,10 @@ function BeneficiaryDetailTableView() {
       resetFilters()
       resetSelectedListItems();
       setFilteredProjectVoucherBeneficiaries(undefined)
-      if (type === 'ALL') {
-        setFilters({ ...filters, status: undefined });
-        return;
-      }
+      // if (type === 'ALL') {
+      //   setFilters({ ...filters, status: undefined });
+      //   return;
+      // }
       setFilters({ ...filters, status: type, voucher: 'ALL' });
     },
     [filters, setFilters],
@@ -292,7 +301,7 @@ function BeneficiaryDetailTableView() {
           <div className="max-w-sm rounded mr-2">
             <Select
               onValueChange={handleBenType}
-              defaultValue={filters?.status || 'ALL'}
+              // defaultValue={filters?.status || 'ALL'}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Beneficiary Type" />
@@ -311,10 +320,10 @@ function BeneficiaryDetailTableView() {
           <div className="max-w-sm rounded mr-2">
             <Select
               onValueChange={handleFilterType}
-              defaultValue={filters?.status || 'ALL'}
+              // defaultValue={filters?.status || 'ALL'}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Beneficiary Type" />
+                <SelectValue placeholder="Voucher Type" />
               </SelectTrigger>
               <SelectContent>
                 {voucherType.map((item) => {

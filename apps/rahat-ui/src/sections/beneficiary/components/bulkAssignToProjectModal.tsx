@@ -80,14 +80,16 @@ export default function BulkAssignToProjectModal({
               Close
             </Button>
           </DialogClose>
-          <Button
-            onClick={handleAssignProject}
-            type="button"
-            variant="ghost"
-            className="text-primary"
-          >
-            Assign
-          </Button>
+          <DialogClose asChild>
+            <Button
+              onClick={handleAssignProject}
+              type="button"
+              variant="ghost"
+              className="text-primary"
+            >
+              Assign
+            </Button>
+          </DialogClose>
         </DialogFooter>
       </DialogContent>
     </Dialog>

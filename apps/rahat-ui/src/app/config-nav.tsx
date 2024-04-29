@@ -41,10 +41,6 @@ export function useNavData() {
   const subData = useMemo(
     () => [
       {
-        title: 'Transactions',
-        path: paths.dashboard.transactions,
-      },
-      {
         title: 'Vendors',
         path: paths.dashboard.vendor,
       },

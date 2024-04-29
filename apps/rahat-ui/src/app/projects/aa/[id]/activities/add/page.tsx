@@ -1,3 +1,5 @@
+'use client';
+
 import { AddActivitiesView } from '../../../../../../sections/projects/aa/activities';
 
 const Page = () => {

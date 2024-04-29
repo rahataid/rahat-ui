@@ -61,7 +61,7 @@ import { create } from 'zustand';
 type Store = {
   singleBeneficiary: any;
   beneficiaries: any[];
-  selectedBeneficiaries: any[];
+  selectedBeneficiaries: string[];
   meta: any;
   setSignleBeneficiary: (beneficiary: any) => void;
   setBeneficiaries: (beneficiaries: any) => void;

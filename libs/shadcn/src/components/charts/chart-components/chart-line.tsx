@@ -6,7 +6,7 @@ import useChart from '../use-chart';
 // ----------------------------------------------------------------------
 
 type Props = {
-  lineChartOptions?: ApexCharts.ApexOptions
+  lineChartOptions?: ApexCharts.ApexOptions;
   series: {
     name: string;
     data: number[];
@@ -14,7 +14,6 @@ type Props = {
 };
 
 export default function ChartLine({ series, lineChartOptions }: Props) {
-
   const defaultOptions = {
     xaxis: {
       categories: [
@@ -38,9 +37,9 @@ export default function ChartLine({ series, lineChartOptions }: Props) {
     dataLabels: {
       enabled: true,
     },
-  }
+  };
 
-  const options = lineChartOptions ? lineChartOptions : defaultOptions
+  const options = lineChartOptions ? lineChartOptions : defaultOptions;
 
   const chartOptions = useChart(options);
 

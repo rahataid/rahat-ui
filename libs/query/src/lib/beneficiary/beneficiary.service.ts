@@ -30,9 +30,8 @@ export const useCreateBeneficiary = () => {
   });
 };
 
-export const useBeneficiaryList = (
-  payload: any,
-): UseQueryResult<any, Error> => {
+// Todo: Change type of return
+export const useBeneficiaryList = (payload: any): any => {
   const { rumsanService, queryClient } = useRSQuery();
   const benClient = getBeneficiaryClient(rumsanService.client);
   const { setBeneficiaries, setMeta } = useBeneficiaryStore((state) => ({
@@ -56,7 +55,20 @@ export const useBeneficiaryList = (
     }
   }, [ben.data, setBeneficiaries]);
 
-  return ben;
+  const filteredBenData = {
+    ...ben,
+    data: {
+      ...ben?.data,
+      data: ben?.data?.data.map((row) => {
+        return {
+          ...row,
+          name: row?.piiData?.name || '',
+        };
+      }),
+    },
+  };
+
+  return filteredBenData;
 };
 
 const listBeneficiaryStatus = async () => {
@@ -217,16 +229,17 @@ export const useUploadBeneficiary = () => {
     queryClient,
   );
 };
+type OptionalPagination = Partial<Pagination>;
 
 export const useBeneficiaryPii = (
-  pagination: Pagination,
+  pagination: OptionalPagination,
 ): UseQueryResult<any, Error> => {
   const { rumsanService, queryClient } = useRSQuery();
   const benClient = getBeneficiaryClient(rumsanService.client);
   return useQuery(
     {
       queryKey: [TAGS.GET_BENEFICIARIES, pagination],
-      queryFn: () => benClient.listPiiData(pagination),
+      queryFn: () => benClient.listPiiData(pagination as Pagination),
     },
     queryClient,
   );

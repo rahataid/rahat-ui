@@ -101,7 +101,7 @@ export default function ActivitiesTable({ activitiesData }: any) {
       </div>
       <div className="rounded border bg-card">
         <Table>
-          <ScrollArea className="h-[calc(100vh-365px)]">
+          <ScrollArea className="h-[calc(100vh-180px)]">
             <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>

@@ -13,8 +13,8 @@ import {
   BookCheck,
   ShieldCheck,
   HardDrive,
+  LayoutDashboard,
 } from 'lucide-react';
-
 
 export type NavItem = {
   title: string;
@@ -56,9 +56,14 @@ export const useNavItems = () => {
           ]
           : [
             {
+              title: 'Dashboard',
+              path: `/projects/aa/${params.id}`,
+              icon: <LayoutDashboard size={18} strokeWidth={1.5} />,
+            },
+            {
               title: 'Beneficiaries',
               path: `/projects/aa/${params.id}/beneficiary`,
-              subtitle: 20,
+              // subtitle: 20,
               icon: <UsersRound size={18} strokeWidth={1.5} />,
             },
             {

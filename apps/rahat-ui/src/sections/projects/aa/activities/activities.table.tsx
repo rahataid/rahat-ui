@@ -99,9 +99,9 @@ export default function ActivitiesTable({ activitiesData }: any) {
           </SelectContent>
         </Select>
       </div>
-      <div className="rounded border bg-card">
+      <div className="rounded border bg-card h-[calc(100vh-178px)]">
         <Table>
-          <ScrollArea className="h-[calc(100vh-180px)]">
+          <ScrollArea className="h-[calc(100vh-193px)]">
             <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
@@ -111,9 +111,9 @@ export default function ActivitiesTable({ activitiesData }: any) {
                         {header.isPlaceholder
                           ? null
                           : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext(),
-                            )}
+                            header.column.columnDef.header,
+                            header.getContext(),
+                          )}
                       </TableHead>
                     );
                   })}

@@ -38,22 +38,28 @@ export const useNavItems = () => {
       children: [
         ...(pathname === `/projects/aa/${params.id}/activities`
           ? [
-            {
-              title: 'Preparedness',
-              subtitle: 0,
-              icon: <ClipboardCheck size={18} strokeWidth={1.5} />,
-            },
-            {
-              title: 'Readiness',
-              subtitle: 0,
-              icon: <BookCheck size={18} strokeWidth={1.5} />,
-            },
-            {
-              title: 'Activation',
-              subtitle: 0,
-              icon: <ShieldCheck size={18} strokeWidth={1.5} />,
-            },
-          ]
+              {
+                title: 'All',
+                subtitle: 0,
+                icon: <Activity size={18} strokeWidth={1.5} />,
+                path: `/projects/aa/${params.id}/activities`,
+              },
+              {
+                title: 'Preparedness',
+                subtitle: 0,
+                icon: <ClipboardCheck size={18} strokeWidth={1.5} />,
+              },
+              {
+                title: 'Readiness',
+                subtitle: 0,
+                icon: <BookCheck size={18} strokeWidth={1.5} />,
+              },
+              {
+                title: 'Activation',
+                subtitle: 0,
+                icon: <ShieldCheck size={18} strokeWidth={1.5} />,
+              },
+            ]
           : [
             {
               title: 'Dashboard',

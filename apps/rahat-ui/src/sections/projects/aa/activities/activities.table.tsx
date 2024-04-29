@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useParams } from 'next/navigation';
 import {
   ColumnFiltersState,
   SortingState,
@@ -32,11 +33,15 @@ import {
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import useActivitiesTableColumn from './useActivitiesTableColumn';
-// import ActivitiesData from './activities.json';
-import { useActivitiesFields } from './useActivitiesFields';
+import { useActivitiesCategories, useActivitiesHazardTypes, useActivitiesStore } from '@rahat-ui/query';
+import { UUID } from 'crypto';
 
 export default function ActivitiesTable({ activitiesData }: any) {
-  const { hazardType, category } = useActivitiesFields();
+  const { id } = useParams();
+  useActivitiesCategories(id as UUID);
+  const categories = useActivitiesStore((state) => state.categories);
+  useActivitiesHazardTypes(id as UUID);
+  const hazardTypes = useActivitiesStore((state) => state.hazardTypes);
   const columns = useActivitiesTableColumn();
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -45,7 +50,6 @@ export default function ActivitiesTable({ activitiesData }: any) {
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
-  // const data = ActivitiesData;
   const table = useReactTable({
     data: activitiesData ?? [],
     columns,
@@ -75,9 +79,9 @@ export default function ActivitiesTable({ activitiesData }: any) {
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
-              {category.map((item) => (
-                <SelectItem key={item.label} value={item.value}>
-                  {item.label}
+              {categories.map((item) => (
+                <SelectItem key={item.id} value={item.uuid}>
+                  {item.name}
                 </SelectItem>
               ))}
             </SelectGroup>
@@ -90,9 +94,9 @@ export default function ActivitiesTable({ activitiesData }: any) {
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
-              {hazardType.map((item) => (
-                <SelectItem key={item.label} value={item.value}>
-                  {item.label}
+              {hazardTypes.map((item) => (
+                <SelectItem key={item.id} value={item.uuid}>
+                  {item.name}
                 </SelectItem>
               ))}
             </SelectGroup>

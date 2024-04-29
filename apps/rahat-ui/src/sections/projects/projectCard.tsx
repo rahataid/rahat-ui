@@ -21,7 +21,6 @@ export default function CommonCard({
   image,
   badge,
   status,
-
 }: CardProps) {
   const router = useRouter();
 

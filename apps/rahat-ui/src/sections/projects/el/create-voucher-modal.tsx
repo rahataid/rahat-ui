@@ -18,10 +18,11 @@ import {
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { Info, PlusSquare, TicketCheck } from 'lucide-react';
-import { FC, useEffect, useState } from 'react';
+import { FC } from 'react';
 import { useProjectVoucher } from '../../../hooks/el/subgraph/querycall';
 import { useParams, useRouter } from 'next/navigation';
 import { PROJECT_SETTINGS_KEYS, useProjectSettingsStore } from '@rahat-ui/query';
+import { useReadElProjectGetProjectVoucherDetail, useReadElProjectGetTotalBeneficiaries } from 'apps/rahat-ui/src/hooks/el/contracts/elProject';
 
 interface CreateVoucherModalType {
   voucherInputs: {
@@ -75,6 +76,10 @@ const CreateVoucherModal: FC<CreateVoucherModalType> = ({
     route.push(`/projects/el/${id}/vouchers`);
   };
 
+  const {data: benfData} = useReadElProjectGetProjectVoucherDetail({
+    address: contractSettings.elproject?.address,
+  })
+
   return ( 
     <>
       <Dialog onOpenChange={handleModal}>
@@ -86,7 +91,7 @@ const CreateVoucherModal: FC<CreateVoucherModalType> = ({
             </div>
           </div>
         </DialogTrigger>
-        {!isLoading && projectVoucher?.freeVoucherAddress ? (
+        {!isLoading && benfData?.eyeVoucherBudget ? (
           <DialogContent className="sm:max-w-[600px]">
             <DialogHeader>
               <DialogTitle>Mint Voucher</DialogTitle>
@@ -98,12 +103,12 @@ const CreateVoucherModal: FC<CreateVoucherModalType> = ({
                 <div className="flex items-center justify-between">
                   <p className="text-sm flex items-center gap-1 text-muted-foreground font-normal">
                     Free Vouchers:{' '}
-                    <span className="text-xl font-medium text-primary">30</span>
+                    <span className="text-xl font-medium text-primary">{Number(benfData?.eyeVoucherBudget)}</span>
                   </p>
                   <p className="text-sm flex items-center gap-1 text-muted-foreground font-normal">
                     Referred Vouchers:{' '}
                     <span className="text-xl font-medium text-primary">
-                      1000
+                    {Number(benfData?.referredVoucherBudget)}
                     </span>
                   </p>
                 </div>

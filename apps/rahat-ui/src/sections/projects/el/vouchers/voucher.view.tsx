@@ -19,6 +19,7 @@ import DiscountVoucherInfo from './discount.voucher.info';
 import { FreeHoldersTable } from './free.holder.table';
 import { FreeTransactionTable } from './free.transactions.table';
 import FreeVoucherInfo from './free.voucher.info';
+import { useReadElProjectGetProjectVoucherDetail } from 'apps/rahat-ui/src/hooks/el/contracts/elProject';
 
 const VoucherView = () => {
   const { id } = useParams();
@@ -32,6 +33,10 @@ const VoucherView = () => {
     contractSettings?.eyevoucher?.address || '',
   );
 
+  const {data: voucherDetails} = useReadElProjectGetProjectVoucherDetail({
+    address: contractSettings?.elproject?.address || ''
+  })
+
   return (
     <>
       {isLoading ? (
@@ -40,14 +45,14 @@ const VoucherView = () => {
         </div>
       ) : (
         <>
-          {projectVoucher?.freeVoucherAddress ? (
+          {voucherDetails?.eyeVoucherBudget ? (
             <div className="bg-secondary">
               <div className="grid grid-cols-2">
                 <div>
-                  <FreeVoucherInfo data={projectVoucher} />
+                  <FreeVoucherInfo data={voucherDetails} />
                 </div>
                 <div>
-                  <DiscountVoucherInfo data={projectVoucher} />
+                  <DiscountVoucherInfo data={voucherDetails} />
                 </div>
               </div>
 

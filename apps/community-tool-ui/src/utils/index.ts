@@ -235,3 +235,13 @@ export function formatDate(date: Date) {
 
   return formattedDate;
 }
+
+export const selectNonEmptyFields = (data: any) => {
+  const nonEmptyFields: any = {};
+  Object.entries(data).forEach(([key, value]) => {
+    if (value !== undefined && value !== '') {
+      nonEmptyFields[key] = value;
+    }
+  });
+  return nonEmptyFields;
+};

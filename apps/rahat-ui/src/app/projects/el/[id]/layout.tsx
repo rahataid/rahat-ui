@@ -14,7 +14,6 @@ const ProjectLayoutRoot = ({ children }: { children: React.ReactNode }) => {
   const { id } = useParams();
 
   useProjectContractSettings(id as UUID);
-  console.log('here');
 
   const renderChildren = () => {
     // if (createVoucher.isPending) {

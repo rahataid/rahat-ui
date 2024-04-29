@@ -13,19 +13,6 @@ import BeneficiaryDetail from './beneficiaryDetail';
 
 export const useCommunityBeneficiaryTableColumns = () => {
   const { closeSecondPanel, setSecondPanelComponent } = useSecondPanel();
-  const { setSelectedBeneficiaries } = useCommunityBeneficiaryStore(
-    (state) => ({
-      setSelectedBeneficiaries: state.setSelectedBeneficiaries,
-    }),
-  );
-
-  const handleCheckboxChange = (row, table) => {
-    setTimeout(() => {
-      setSelectedBeneficiaries(
-        table.getSelectedRowModel().rows.map((row) => row.original.uuid),
-      );
-    }, 0);
-  };
 
   const columns: ColumnDef<ListBeneficiary>[] = [
     {
@@ -37,7 +24,6 @@ export const useCommunityBeneficiaryTableColumns = () => {
           disabled={!row.getCanSelect()}
           onCheckedChange={(value) => {
             row.toggleSelected(!!value);
-            handleCheckboxChange(row, table);
           }}
           aria-label="Select row"
         />
@@ -96,7 +82,7 @@ export const useCommunityBeneficiaryTableColumns = () => {
     {
       id: 'actions',
       enableHiding: false,
-      header: 'View Detail',
+      header: 'View Details',
       cell: ({ row }) => {
         return (
           <Eye

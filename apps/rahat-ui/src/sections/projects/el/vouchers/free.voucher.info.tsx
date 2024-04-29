@@ -7,6 +7,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
 
 const FreeVoucherInfo = ({ data }) => {
+  console.log("Eye voucher details", data)
   return (
     <div>
       <div className="mx-2 mt-2 rounded bg-card p-4 shadow">
@@ -35,7 +36,7 @@ const FreeVoucherInfo = ({ data }) => {
           </div>
           <div>
             <p className="font-medium text-primary">
-              {data?.freeVoucherBudget || 0}
+              {Number(data?.eyeVoucherBudget) || 0}
             </p>
             <p className="font-light">No. of Voucher Minted</p>
           </div>

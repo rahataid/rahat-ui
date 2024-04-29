@@ -11,13 +11,14 @@ import {
   useCommunityBeneficiaryStore,
   useCommunityGroupList,
 } from '@rahat-ui/community-query';
+import { usePagination } from '@rahat-ui/query';
 
 export default function Filter() {
   const perPage = 15;
   const currentPage = 1;
   const { selectedBeneficiaries, setSelectedBeneficiaries } =
     useCommunityBeneficiaryStore();
-
+  const { setSelectedListItems } = usePagination();
   const commuinityBeneficiaryGroupCreate = useCommunityBeneficiaryGroupCreate();
 
   const { data: groupData } = useCommunityGroupList({
@@ -38,8 +39,10 @@ export default function Filter() {
       inputOptions,
       selectedBeneficiaries,
     });
-
-    res?.response?.success && setSelectedBeneficiaries([]);
+    if (res?.response?.success) {
+      setSelectedBeneficiaries([]);
+      setSelectedListItems([]);
+    }
   };
 
   return (

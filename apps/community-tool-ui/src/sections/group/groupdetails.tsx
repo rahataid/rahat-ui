@@ -30,7 +30,6 @@ import {
 } from '@rahat-ui/community-query';
 import { useCommunityGroupDeailsColumns } from './useGroupColumns';
 import Swal from 'sweetalert2';
-import { toast } from 'react-toastify';
 import { useCommunityGroupRemove } from '@rahat-ui/community-query';
 import {
   DropdownMenu,
@@ -38,13 +37,17 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
+import {
+  ResizablePanel,
+  ResizablePanelGroup,
+} from '@rahat-ui/shadcn/src/components/ui/resizable';
 
 type IProps = {
   data: ListGroup;
-  handleClose: VoidFunction;
+  closeSecondPanel: VoidFunction;
 };
 
-export default function GroupDetail({ data, handleClose }: IProps) {
+export default function GroupDetail({ data, closeSecondPanel }: IProps) {
   const { data: responseByUUID } = useCommunityGroupListByID(data?.uuid);
   const columns = useCommunityGroupDeailsColumns();
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
@@ -107,7 +110,7 @@ export default function GroupDetail({ data, handleClose }: IProps) {
           uuid: data?.uuid,
           deleteBeneficiaryFlag: false,
         });
-        handleClose();
+        closeSecondPanel();
       }
     });
   };
@@ -131,7 +134,7 @@ export default function GroupDetail({ data, handleClose }: IProps) {
           uuid: data?.uuid,
           deleteBeneficiaryFlag: true,
         });
-        handleClose();
+        closeSecondPanel();
       }
     });
   };
@@ -152,7 +155,7 @@ export default function GroupDetail({ data, handleClose }: IProps) {
     }).then(async (result) => {
       if (result.isConfirmed) {
         await purgeCommunityGroup.mutateAsync(data?.uuid);
-        handleClose();
+        closeSecondPanel();
       }
     });
   };
@@ -164,7 +167,7 @@ export default function GroupDetail({ data, handleClose }: IProps) {
           <div className="flex gap-4">
             <TooltipProvider delayDuration={100}>
               <Tooltip>
-                <TooltipTrigger onClick={handleClose}>
+                <TooltipTrigger onClick={closeSecondPanel}>
                   <Minus size={20} strokeWidth={1.5} />
                 </TooltipTrigger>
                 <TooltipContent className="bg-secondary ">
@@ -218,7 +221,6 @@ export default function GroupDetail({ data, handleClose }: IProps) {
             <TabsTrigger value="detail" className="mr-2">
               Details{' '}
             </TabsTrigger>
-            {/* </TabsList> */}
             <DropdownMenu>
               <DropdownMenuTrigger>
                 <MoreVertical

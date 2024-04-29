@@ -27,8 +27,8 @@ import {
 import { z } from 'zod';
 
 import {
+  useActiveFieldDefList,
   useCommunityBeneficiaryUpdate,
-  useFieldDefinitionsList,
 } from '@rahat-ui/community-query';
 import { usePagination } from '@rahat-ui/query';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
@@ -47,7 +47,7 @@ import {
   PopoverTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/popover';
 import { Calendar } from '@rahat-ui/shadcn/src/components/ui/calendar';
-import { formatDate } from '../../utils';
+import { formatDate, selectNonEmptyFields } from '../../utils';
 
 const FIELD_DEF_FETCH_LIMIT = 200;
 
@@ -56,7 +56,7 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
 
   const updateBeneficiaryClient = useCommunityBeneficiaryUpdate();
   const { pagination } = usePagination();
-  const { data: definitions } = useFieldDefinitionsList({
+  const { data: definitions } = useActiveFieldDefList({
     ...pagination,
     perPage: FIELD_DEF_FETCH_LIMIT,
   });
@@ -64,10 +64,10 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
   const FormSchema = z.object({
     firstName: z
       .string()
-      .min(2, { message: 'FirstName must be at least 4 character' }),
+      .min(2, { message: 'FirstName must be at least 2 character' }),
     lastName: z
       .string()
-      .min(2, { message: 'LastName must be at least 4 character' }),
+      .min(2, { message: 'LastName must be at least 2 character' }),
     walletAddress: z.string().optional(),
     gender: z.string().toUpperCase().optional(),
     email: z.string().optional(),
@@ -103,6 +103,7 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
       longitude: data?.longitude || 0,
       notes: data?.notes || '',
       govtIDNumber: data?.govtIDNumber || '',
+      birthDate: data && data.birthDate ? new Date(data.birthDate) : undefined,
     },
   });
 
@@ -114,13 +115,10 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
       formData.birthDate = formattedDate;
     }
 
-    const nonEmptyFields: any = {};
-    Object.entries(formData).forEach(([key, value]) => {
-      if (value !== undefined && value !== '') {
-        nonEmptyFields[key] = value;
-      }
-    });
-
+    const nonEmptyFields = selectNonEmptyFields(formData);
+    if (extras.hasOwnProperty('isDuplicate')) {
+      delete extras.isDuplicate;
+    }
     await updateBeneficiaryClient.mutateAsync({
       uuid: data.uuid as UUID,
       payload: {
@@ -454,7 +452,6 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
               }}
             />
             <FormField
-              defaultValue={data?.birthDate}
               control={form.control}
               name="birthDate"
               render={({ field }) => (

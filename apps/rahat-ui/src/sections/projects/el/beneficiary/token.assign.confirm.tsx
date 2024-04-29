@@ -14,6 +14,7 @@ type Iprops = {
   tokens: number;
   handleClose: () => void;
   handleSubmit: () => void;
+  isTransacting: boolean
 };
 
 const TokenAssingnConfirm = ({
@@ -21,6 +22,7 @@ const TokenAssingnConfirm = ({
   handleSubmit,
   handleClose,
   tokens,
+  isTransacting
 }: Iprops) => {
   return (
     <Dialog open={open}>
@@ -43,8 +45,9 @@ const TokenAssingnConfirm = ({
             type="button"
             variant="ghost"
             className="text-primary"
+            disabled={isTransacting}
           >
-            Confirm
+           {isTransacting ? 'Waiting for transaction' : 'Confirm'} 
           </Button>
         </DialogFooter>
       </DialogContent>

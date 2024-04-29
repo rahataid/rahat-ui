@@ -56,32 +56,6 @@ export const useProjectBeneficiaryTableColumns = () => {
       enableHiding: false,
     },
     {
-      accessorKey: 'wallet',
-      header: 'Wallet',
-      cell: ({ row }) => (
-        <TooltipProvider delayDuration={100}>
-          <Tooltip>
-            <TooltipTrigger
-              className="flex items-center gap-3 cursor-pointer"
-              onClick={() => clickToCopy(row.getValue('wallet'), row.index)}
-            >
-              <p>{truncateEthAddress(row.getValue('wallet'))}</p>
-              {walletAddressCopied === row.index ? (
-                <CopyCheck size={15} strokeWidth={1.5} />
-              ) : (
-                <Copy className="text-slate-500" size={15} strokeWidth={1.5} />
-              )}
-            </TooltipTrigger>
-            <TooltipContent className="bg-secondary" side="bottom">
-              <p className="text-xs font-medium">
-                {walletAddressCopied === row.index ? 'copied' : 'click to copy'}
-              </p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      ),
-    },
-    {
       accessorKey: 'name',
       header: 'Name',
       cell: ({ row }) => (

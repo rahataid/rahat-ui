@@ -42,19 +42,14 @@ export default function AddBeneficiaryForm() {
       .string()
       .toUpperCase()
       .min(4, { message: 'Must select a Gender' }),
-    bankedStatus: z
-      .string()
-      .toUpperCase()
-      .min(4, { message: 'Must select a Bank Status' }),
-    internetStatus: z
-      .string()
-      .toUpperCase()
-      .min(4, { message: 'Must select Internet Status' }),
-    phoneStatus: z
-      .string()
-      .toUpperCase()
-      .min(4, { message: 'Must select Phone Status' }),
-    address: z.string().min(4, { message: 'Must be valid address.' }),
+    bankedStatus: z.string().toUpperCase(),
+    // .min(4, { message: 'Must select a Bank Status' }),
+    internetStatus: z.string().toUpperCase(),
+    // .min(4, { message: 'Must select Internet Status' }),
+    phoneStatus: z.string().toUpperCase(),
+    // .min(4, { message: 'Must select Phone Status' }),
+    address: z.string(),
+    // .min(4, { message: 'Must be valid address.' }),
     age: z.string().min(1, { message: 'Must be valid age.' }),
   });
 
@@ -79,9 +74,9 @@ export default function AddBeneficiaryForm() {
         gender: data.gender,
         location: data.address,
         age: data.age,
-        bankedStatus: data.bankedStatus,
-        internetStatus: data.internetStatus,
-        phoneStatus: data.phoneStatus,
+        bankedStatus: data.bankedStatus || 'UNKNOWN',
+        internetStatus: data.internetStatus || 'UNKNOWN',
+        phoneStatus: data.phoneStatus || 'UNKNOWN',
         piiData: {
           name: data.name,
           phone: data.phone,
@@ -170,7 +165,11 @@ export default function AddBeneficiaryForm() {
                       return (
                         <FormItem>
                           <FormControl>
-                            <Input type="text" placeholder="Age" {...field} />
+                            <Input
+                              type="text"
+                              placeholder="Estimated Age"
+                              {...field}
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>

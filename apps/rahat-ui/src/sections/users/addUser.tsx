@@ -36,7 +36,7 @@ const FormSchema = z.object({
   name: z.string().min(2, { message: 'Name must be at least 4 character' }),
   email: z.string().email(),
   gender: z.string(),
-  role: z.string(),
+  roles: z.array(z.string()),
   phone: z.string(),
   wallet: z
     .string()
@@ -52,7 +52,7 @@ export default function AddUser() {
       gender: 'UNKNOWN' || '',
       email: '',
       phone: '',
-      role: '',
+      roles: [''],
       wallet: '',
     },
   });
@@ -65,6 +65,7 @@ export default function AddUser() {
   const userCreate = useUserCreate();
 
   const handleAddUser = async (data: any) => {
+    // console.log('data', data);
     await userCreate.mutateAsync(data);
   };
   useEffect(() => {
@@ -74,7 +75,7 @@ export default function AddUser() {
         gender: 'UNKOWN' || '',
         email: '',
         phone: '',
-        role: '',
+        roles: [''],
         wallet: '',
       });
     }
@@ -155,13 +156,15 @@ export default function AddUser() {
             />
             <FormField
               control={form.control}
-              name="role"
+              name="roles"
               render={({ field }) => {
                 return (
                   <FormItem>
                     <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
+                      onValueChange={(value) => {
+                        field.onChange([value]);
+                      }}
+                      defaultValue={field.value[0]}
                     >
                       <FormControl>
                         <SelectTrigger>

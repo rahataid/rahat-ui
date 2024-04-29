@@ -63,7 +63,7 @@ export const useNavItems = () => {
             {
               title: 'Beneficiaries',
               path: `/projects/aa/${params.id}/beneficiary`,
-              subtitle: 20,
+              // subtitle: 20,
               icon: <UsersRound size={18} strokeWidth={1.5} />,
             },
             {

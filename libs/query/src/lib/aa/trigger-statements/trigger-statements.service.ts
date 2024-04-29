@@ -1,9 +1,9 @@
-import { UUID } from "crypto";
-import { useAAStationsStore } from "./trigger-statements.store";
-import { useProjectAction } from "../../projects/projects.service";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect } from "react";
-import { useSwal } from "../../../swal";
+import { UUID } from 'crypto';
+import { useAAStationsStore } from './trigger-statements.store';
+import { useProjectAction } from '../../projects/projects.service';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useEffect } from 'react';
+import { useSwal } from '../../../swal';
 
 export const useCreateTriggerStatement = () => {
   const q = useProjectAction();
@@ -17,7 +17,7 @@ export const useCreateTriggerStatement = () => {
   return useMutation({
     mutationFn: async ({
       projectUUID,
-      triggerStatementPayload
+      triggerStatementPayload,
     }: {
       projectUUID: UUID;
       triggerStatementPayload: any;
@@ -62,11 +62,11 @@ export const useDeleteTriggerStatement = () => {
   return useMutation({
     mutationFn: async ({
       projectUUID,
-      triggerStatementPayload
+      triggerStatementPayload,
     }: {
       projectUUID: UUID;
       triggerStatementPayload: {
-        repeatKey: string
+        repeatKey: string;
       };
     }) => {
       return q.mutateAsync({
@@ -112,7 +112,7 @@ export const useAAStations = (uuid: UUID) => {
         uuid,
         data: {
           action: 'aaProject.riverStations.getDhm',
-          payload: {}
+          payload: {},
         },
       });
       return mutate.data;
@@ -126,7 +126,7 @@ export const useAAStations = (uuid: UUID) => {
       });
     }
   }, [query.data]);
-  return query
+  return query;
 };
 
 export const useDhmWaterLevels = (uuid: UUID) => {
@@ -157,7 +157,7 @@ export const useDhmWaterLevels = (uuid: UUID) => {
   //     });
   //   }
   // }, [query.data]);
-  return query
+  return query;
 };
 
 export const useAATriggerStatements = (uuid: UUID) => {
@@ -170,12 +170,12 @@ export const useAATriggerStatements = (uuid: UUID) => {
         uuid,
         data: {
           action: 'aaProject.schedule.getAll',
-          payload: {}
+          payload: {},
         },
       });
       return mutate.data;
     },
   });
 
-  return query
+  return query;
 };

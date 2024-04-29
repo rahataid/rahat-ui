@@ -7,8 +7,17 @@ import {
 import { truncateEthAddress } from '@rumsan/sdk/utils';
 import { ColumnDef } from '@tanstack/react-table';
 import { Eye } from 'lucide-react';
+import { useSecondPanel } from '../../providers/second-panel-provider';
+import GroupDetail from './groupdetails';
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from '@rahat-ui/shadcn/src/components/ui/resizable';
 
 export const useCommunityGroupTableColumns = () => {
+  const { closeSecondPanel, setSecondPanelComponent } = useSecondPanel();
+
   const columns: ColumnDef<ListGroup>[] = [
     {
       header: 'ID',
@@ -22,14 +31,24 @@ export const useCommunityGroupTableColumns = () => {
     },
     {
       id: 'actions',
-
       enableHiding: false,
-      cell: () => {
+      header: 'View Detail',
+      cell: ({ row }) => {
         return (
           <Eye
             size={20}
             strokeWidth={1.5}
             className="cursor-pointer hover:text-primary"
+            onClick={() =>
+              setSecondPanelComponent(
+                <>
+                  <GroupDetail
+                    data={row.original}
+                    closeSecondPanel={closeSecondPanel}
+                  />
+                </>,
+              )
+            }
           />
         );
       },
@@ -42,12 +61,12 @@ export const useCommunityGroupDeailsColumns = () => {
   const columns: ColumnDef<GroupResponseById[]>[] = [
     {
       accessorKey: 'beneficiary',
-      header: 'FullName',
+      header: 'Full Name',
       cell: ({ row }) => {
         if (row && row.getValue && typeof row.getValue === 'function') {
           const beneficiary = row.getValue('beneficiary') as Beneficiary;
           if (beneficiary && beneficiary.firstName && beneficiary.lastName) {
-            return beneficiary.firstName + beneficiary.lastName;
+            return `${beneficiary.firstName}  ${beneficiary.lastName}`;
           }
         }
         return '';
@@ -68,7 +87,7 @@ export const useCommunityGroupDeailsColumns = () => {
     },
     {
       accessorKey: 'beneficiary',
-      header: 'WalletAddress',
+      header: 'Wallet Address',
       cell: ({ row }) => {
         if (row && row.getValue && typeof row.getValue === 'function') {
           const beneficiary = row.getValue('beneficiary') as Beneficiary;
@@ -94,7 +113,7 @@ export const useCommunityGroupDeailsColumns = () => {
     },
     {
       accessorKey: 'beneficiary',
-      header: 'GovernmentIdNumber',
+      header: 'Govt. ID Number',
       cell: ({ row }) => {
         if (row && row.getValue && typeof row.getValue === 'function') {
           const beneficiary = row.getValue('beneficiary') as Beneficiary;
@@ -107,7 +126,7 @@ export const useCommunityGroupDeailsColumns = () => {
     },
     {
       accessorKey: 'beneficiary',
-      header: 'CreatedAt',
+      header: 'Created Date',
       cell: ({ row }) => {
         const beneficiary = row.getValue('beneficiary') as Beneficiary;
         const changedDate = new Date(beneficiary.createdAt as Date);

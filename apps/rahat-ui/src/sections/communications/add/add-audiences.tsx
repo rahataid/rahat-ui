@@ -18,11 +18,13 @@ import {
   TableHeader,
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
@@ -70,7 +72,6 @@ const AddAudience: FC<AddAudienceProps> = ({
     setPerPage,
   } = usePagination();
   const { data: beneficiaryData } = useBeneficiaryPii({
-    ...pagination,
     ...filters,
   });
   const createAudience = useCreateAudience();
@@ -91,6 +92,9 @@ const AddAudience: FC<AddAudienceProps> = ({
       if (type !== 'ALL') {
         setFilters({ ...filters, type });
         return;
+      } else {
+        const { type: _, ...restFilters } = filters;
+        setFilters(restFilters);
       }
     },
     [filters, setFilters],
@@ -105,15 +109,16 @@ const AddAudience: FC<AddAudienceProps> = ({
   );
 
   const tableData = React.useMemo(() => {
-    return (
-      beneficiaryData &&
-      beneficiaryData?.data?.map((item: any) => ({
-        name: item?.piiData?.name,
-        id: item?.piiData?.beneficiaryId,
-        phone: item?.piiData?.phone,
-        email: item?.piiData?.email,
-      }))
-    );
+    if (beneficiaryData)
+      return (
+        beneficiaryData &&
+        beneficiaryData?.data?.map((item: any) => ({
+          name: item?.piiData?.name,
+          id: item?.piiData?.beneficiaryId,
+          phone: item?.piiData?.phone,
+        }))
+      );
+    else return [];
   }, [beneficiaryData]);
 
   const table = useAudienceTable({
@@ -187,9 +192,9 @@ const AddAudience: FC<AddAudienceProps> = ({
         name="audiences"
         render={() => (
           <FormItem>
-            <div className="rounded border mb-2 bg-card">
+            <div className="rounded border mb-8 bg-card">
               <Table>
-                <ScrollArea className="h-[calc(100vh-376px)]">
+                <ScrollArea className="h-[calc(100vh-440px)]">
                   <TableHeader>
                     {table.getHeaderGroups().map((headerGroup) => (
                       <TableRow key={headerGroup.id}>
@@ -238,25 +243,74 @@ const AddAudience: FC<AddAudienceProps> = ({
                   </TableBody>
                 </ScrollArea>
               </Table>
-              <CustomPagination
-                meta={
-                  beneficiaryData?.response?.meta || {
-                    total: 0,
-                    currentPage: 0,
-                  }
-                }
-                handleNextPage={setNextPage}
-                handlePrevPage={setPrevPage}
-                handlePageSizeChange={setPerPage}
-                currentPage={pagination.page}
-                perPage={pagination.perPage}
-                total={beneficiaryData?.response?.meta?.lastPage || 0}
-              />
             </div>
             <FormMessage />
           </FormItem>
         )}
       />
+      {/* <CustomPagination
+        meta={
+          beneficiaryData?.response?.meta || {
+            total: 0,
+            currentPage: 0,
+          }
+        }
+        handleNextPage={setNextPage}
+        handlePrevPage={setPrevPage}
+        handlePageSizeChange={setPerPage}
+        currentPage={pagination.page}
+        perPage={pagination.perPage}
+        total={beneficiaryData?.response?.meta?.lastPage || 0}
+      /> */}
+      <div className="flex items-center justify-end space-x-8 py-4">
+        <div className="flex-1 text-sm text-muted-foreground">
+          {table.getFilteredSelectedRowModel().rows.length} of{' '}
+          {table.getFilteredRowModel().rows.length} row(s) selected.
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="text-sm font-medium">Rows per page</div>
+          <Select
+            defaultValue="10"
+            onValueChange={(value) => table.setPageSize(Number(value))}
+          >
+            <SelectTrigger className="w-16">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectItem value="1">1</SelectItem>
+                <SelectItem value="10">10</SelectItem>
+                <SelectItem value="20">20</SelectItem>
+                <SelectItem value="30">30</SelectItem>
+                <SelectItem value="40">40</SelectItem>
+                <SelectItem value="50">50</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
+        <div>
+          Page {table.getState().pagination.pageIndex + 1} of{' '}
+          {table.getPageCount()}
+        </div>
+        <div className="space-x-4">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage()}
+          >
+            Previous
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => table.nextPage()}
+            disabled={!table.getCanNextPage()}
+          >
+            Next
+          </Button>
+        </div>
+      </div>
     </>
   );
 };

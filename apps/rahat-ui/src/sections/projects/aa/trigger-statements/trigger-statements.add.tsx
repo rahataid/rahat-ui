@@ -1,7 +1,12 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useAAStationsStore, useActivitiesStore, useActivitiesHazardTypes, useCreateTriggerStatement } from '@rahat-ui/query';
+import {
+  useAAStationsStore,
+  useActivitiesStore,
+  useActivitiesHazardTypes,
+  useCreateTriggerStatement,
+} from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 
 import {
@@ -24,13 +29,28 @@ import { z } from 'zod';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
 
-const WATER_LEVELS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12']
+const WATER_LEVELS = [
+  '1',
+  '2',
+  '3',
+  '4',
+  '5',
+  '6',
+  '7',
+  '8',
+  '9',
+  '10',
+  '11',
+  '12',
+];
 
 export default function AddTriggerStatement() {
   const params = useParams();
   const createTriggerStatement = useCreateTriggerStatement();
   const projectID = params.id as UUID;
-  const dhmStations = useAAStationsStore((state) => state.dhmStations![projectID]);
+  const dhmStations = useAAStationsStore(
+    (state) => state.dhmStations![projectID],
+  );
 
   useActivitiesHazardTypes(projectID);
   const hazardTypes = useActivitiesStore((state) => state.hazardTypes);
@@ -54,8 +74,8 @@ export default function AddTriggerStatement() {
       readinessLevel: '',
       activationLevel: '',
       location: '',
-      hazardTypeId: ''
-    }
+      hazardTypeId: '',
+    },
   });
 
   const handleCreateTriggerStatement = async (data: z.infer<typeof FormSchema>) => {
@@ -78,14 +98,15 @@ export default function AddTriggerStatement() {
     });
   };
 
-
   return (
     <>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleCreateTriggerStatement)}>
           <div className="p-4 h-add">
             <div className="shadow-md p-4 rounded-sm bg-card">
-              <h1 className="text-lg font-semibold mb-6">Add Trigger Statement</h1>
+              <h1 className="text-lg font-semibold mb-6">
+                Add Trigger Statement
+              </h1>
               <div className="grid grid-cols-2 gap-4 mb-4">
                 <FormField
                   control={form.control}
@@ -113,7 +134,6 @@ export default function AddTriggerStatement() {
                     );
                   }}
                 />
-
               </div>
 
               <div className="grid grid-cols-4 gap-4 mb-4">
@@ -134,15 +154,13 @@ export default function AddTriggerStatement() {
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              {
-                                dhmStations?.results?.map((r: any) => {
-                                  return (
-                                    <SelectItem value={r.title}>
-                                      {r.title}
-                                    </SelectItem>
-                                  )
-                                })
-                              }
+                              {dhmStations?.results?.map((r: any) => {
+                                return (
+                                  <SelectItem value={r.title}>
+                                    {r.title}
+                                  </SelectItem>
+                                );
+                              })}
                             </SelectContent>
                           </Select>
                           <FormMessage />
@@ -168,15 +186,13 @@ export default function AddTriggerStatement() {
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              {
-                                hazardTypes?.map((d: any) => {
-                                  return (
-                                    <SelectItem value={d.uuid}>
-                                      {d.name}
-                                    </SelectItem>
-                                  )
-                                })
-                              }
+                              {hazardTypes?.map((d: any) => {
+                                return (
+                                  <SelectItem value={d.uuid}>
+                                    {d.name}
+                                  </SelectItem>
+                                );
+                              })}
                             </SelectContent>
                           </Select>
                           <FormMessage />
@@ -204,15 +220,9 @@ export default function AddTriggerStatement() {
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              {
-                                WATER_LEVELS.map((d: string) => {
-                                  return (
-                                    <SelectItem value={d}>
-                                      {d}
-                                    </SelectItem>
-                                  )
-                                })
-                              }
+                              {WATER_LEVELS.map((d: string) => {
+                                return <SelectItem value={d}>{d}</SelectItem>;
+                              })}
                             </SelectContent>
                           </Select>
                           <FormMessage />
@@ -238,15 +248,9 @@ export default function AddTriggerStatement() {
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              {
-                                WATER_LEVELS.map((d: string) => {
-                                  return (
-                                    <SelectItem value={d}>
-                                      {d}
-                                    </SelectItem>
-                                  )
-                                })
-                              }
+                              {WATER_LEVELS.map((d: string) => {
+                                return <SelectItem value={d}>{d}</SelectItem>;
+                              })}
                             </SelectContent>
                           </Select>
                           <FormMessage />

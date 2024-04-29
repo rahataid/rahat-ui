@@ -14,7 +14,9 @@ type CardProps = {
 
 export default function Activities({ title, className, data }: CardProps) {
   return (
-    <Card className={cn('border-none shadow-sm h-full', className || '')}>
+    <Card
+      className={cn('border-none rounded shadow-sm h-full', className || '')}
+    >
       <CardHeader className="flex flex-row items-center justify-between space-y-0">
         <CardTitle className="text-md font-medium">{title}</CardTitle>
       </CardHeader>

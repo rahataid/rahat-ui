@@ -1,5 +1,5 @@
 import { StyledMapContainer, THEMES } from '@rahat-ui/shadcn/maps';
-import { mapboxBasicConfig } from '../../../../../constants/config';
+import { mapboxBasicConfig } from 'apps/rahat-ui/src/constants/config';
 import { LineChart } from '@rahat-ui/shadcn/src/components/charts';
 import DHMMap from './map';
 

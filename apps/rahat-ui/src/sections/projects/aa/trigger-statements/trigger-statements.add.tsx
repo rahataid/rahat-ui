@@ -52,6 +52,9 @@ export default function AddTriggerStatement() {
     (state) => state.dhmStations![projectID],
   );
 
+  // TODO: refactor to searchable select
+  const stations = [...dhmStations.results.slice(0, 5), { title: 'Karnali at Chisapani' }]
+
   useActivitiesHazardTypes(projectID);
   const hazardTypes = useActivitiesStore((state) => state.hazardTypes);
 
@@ -154,7 +157,7 @@ export default function AddTriggerStatement() {
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              {dhmStations?.results?.map((r: any) => {
+                              {stations?.map((r: any) => {
                                 return (
                                   <SelectItem value={r.title}>
                                     {r.title}

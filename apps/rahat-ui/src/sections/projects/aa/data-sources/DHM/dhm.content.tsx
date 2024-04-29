@@ -33,7 +33,7 @@ export default function DHMContent({ data }: any) {
     const dhmData = data;
 
     const xAxisLabel = dhmData.map((d: any) => {
-        const date = new Date(d.data.waterLevelOn)
+        const date = new Date(d.createdAt)
         return date.toLocaleTimeString()
     })
 

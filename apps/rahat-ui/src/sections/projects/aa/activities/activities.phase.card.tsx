@@ -6,20 +6,11 @@ import {
   CircleCheck,
   CircleX,
 } from 'lucide-react';
-import { usePhasesStats } from '@rahat-ui/query';
-// import {usePhasesStat}
 
 export default function PhaseCard({ phasesStats }: any) {
 
   const readiness = phasesStats.phaseStatus.readinessStatus
   const activation = phasesStats.phaseStatus.activationStatus
-
-  console.log(readiness)
-  console.log(activation)
-
-  // console.log(phasesStats.phaseStatus.readinessStatus)
-  // usePhasesStats()
-
 
   return (
     <div className="grid grid-cols-3 gap-2 bg-secondary pb-0">
@@ -33,8 +24,7 @@ export default function PhaseCard({ phasesStats }: any) {
                 <EllipsisVertical size={20} strokeWidth={1.5} />
               </div>
               <p className="font-normal text-sm pr-4">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
-                eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                The first stage of anticipatory action.
               </p>
             </div>
             <div className="flex justify-end">
@@ -56,15 +46,14 @@ export default function PhaseCard({ phasesStats }: any) {
                 <EllipsisVertical size={20} strokeWidth={1.5} />
               </div>
               <p className="font-normal text-sm pr-4">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
-                eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                The second stage of anticipatory action.
               </p>
             </div>
             <div className="flex justify-end">
               <div className="flex gap-3">
                 <TriangleAlert color="yellow" size={20} strokeWidth={1.5} />
                 {
-                  readiness.activated ? (
+                  readiness?.activated ? (
                     <CircleCheck color="green" size={20} strokeWidth={1.5} />
                   ) : (
                     <CircleX color="red" size={20} strokeWidth={1.5} />
@@ -85,15 +74,14 @@ export default function PhaseCard({ phasesStats }: any) {
                 <EllipsisVertical size={20} strokeWidth={1.5} />
               </div>
               <p className="font-normal text-sm pr-4">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
-                eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                The final stage of anticipatory action.
               </p>
             </div>
             <div className="flex justify-end">
               <div className="flex gap-3">
                 <TriangleAlert color="yellow" size={20} strokeWidth={1.5} />
                 {
-                  activation.activated ? (
+                  activation?.activated ? (
                     <CircleCheck color="green" size={20} strokeWidth={1.5} />
                   ) : (
                     <CircleX color="red" size={20} strokeWidth={1.5} />

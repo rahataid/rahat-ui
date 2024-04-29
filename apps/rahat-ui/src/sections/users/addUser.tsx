@@ -69,13 +69,13 @@ export default function AddUser() {
   const addAdmin = useAddAdmin();
 
   const handleAddUser = async (data: any) => {
-    if (data.roles.include('Manager')) {
+    if (data.roles.includes('Manager')) {
       addManager.mutateAsync({
         data: data,
         walletAddress: data?.wallet,
         contractAddress: contractSettings as `0x${string}`,
       });
-    } else if (data.roles.include('Admin')) {
+    } else if (data.roles.includes('Admin')) {
       addAdmin.mutateAsync({
         data: data,
         walletAddress: data?.wallet,

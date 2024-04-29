@@ -110,8 +110,6 @@ export default function DHMContent({ data }: any) {
     },
   ];
 
-  console.log();
-
   return (
     <div className="grid grid-cols-4 gap-2">
       <div className="h-[calc(100vh-130px)] col-span-3 flex flex-col gap-2">

@@ -31,24 +31,37 @@ import {
 import { useCommunityGroupDeailsColumns } from './useGroupColumns';
 import Swal from 'sweetalert2';
 import { useCommunityGroupRemove } from '@rahat-ui/community-query';
+import { usePagination } from '@rahat-ui/query';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
-import {
-  ResizablePanel,
-  ResizablePanelGroup,
-} from '@rahat-ui/shadcn/src/components/ui/resizable';
+import CustomPagination from '../../components/customPagination';
 
 type IProps = {
-  data: ListGroup;
+  data: any;
   closeSecondPanel: VoidFunction;
 };
 
 export default function GroupDetail({ data, closeSecondPanel }: IProps) {
-  const { data: responseByUUID } = useCommunityGroupListByID(data?.uuid);
+  const {
+    pagination,
+    selectedListItems,
+    setSelectedListItems,
+    setNextPage,
+    setPrevPage,
+    setPerPage,
+    filters,
+    setFilters,
+    setPagination,
+  } = usePagination();
+
+  const { data: responseByUUID } = useCommunityGroupListByID(
+    data?.uuid,
+    pagination,
+  );
   const columns = useCommunityGroupDeailsColumns();
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
@@ -66,7 +79,7 @@ export default function GroupDetail({ data, closeSecondPanel }: IProps) {
     onRowSelectionChange: setRowSelection,
     state: {
       columnVisibility,
-      rowSelection,
+      rowSelection: selectedListItems,
     },
   });
 
@@ -241,11 +254,21 @@ export default function GroupDetail({ data, closeSecondPanel }: IProps) {
 
         <TabsContent value="detail">
           <GroupDetailTable table={table} />
-          <p className="text-xs font-medium text-right mr-5 mt-5">
+          <p className="text-xs font-medium text-right mr-5 mt-1">
             Total beneficiary Count :
             {responseByUUID?.data?.beneficiariesGroup.length}
           </p>
         </TabsContent>
+
+        <CustomPagination
+          currentPage={pagination.page}
+          handleNextPage={setNextPage}
+          handlePrevPage={setPrevPage}
+          handlePageSizeChange={setPerPage}
+          meta={data?.response?.meta || { total: 0, currentPage: 0 }}
+          perPage={pagination?.perPage}
+          total={data?.response?.meta?.total || 0}
+        />
       </Tabs>
     </>
   );

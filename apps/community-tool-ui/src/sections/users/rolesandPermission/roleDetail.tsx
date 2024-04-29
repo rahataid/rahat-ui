@@ -1,6 +1,6 @@
 import { Button } from '@rahat-ui/shadcn/components/button';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { Role } from '@rumsan/sdk/types';
 import {
@@ -32,7 +32,7 @@ import {
   CardHeader,
 } from '@rahat-ui/shadcn/src/components/ui/card';
 import EditRole from './editRole';
-import { useGetRole } from '@rahat-ui/community-query';
+import { useDeleteRole, useGetRole } from '@rahat-ui/community-query';
 import { TabsList, TabsTrigger } from '@rahat-ui/shadcn/src/components/ui/tabs';
 import { useUserCurrentUser } from '@rumsan/react-query';
 import { ROLE_TYPE } from 'apps/community-tool-ui/src/constants/user.const';
@@ -45,6 +45,7 @@ type IProps = {
 export default function RoleDetail({ roleData, closeSecondPanel }: IProps) {
   const { data: roleDetail } = useGetRole(roleData.name);
   const { data: currentUser } = useUserCurrentUser();
+  const deleteRole = useDeleteRole();
 
   const isAdmin = currentUser?.data?.roles.includes(ROLE_TYPE.ADMIN);
   const [activeTab, setActiveTab] = useState<'details' | 'edit' | null>(
@@ -60,6 +61,18 @@ export default function RoleDetail({ roleData, closeSecondPanel }: IProps) {
     month: 'long',
     day: 'numeric',
   });
+
+  const handleDeleteRole = async () => {
+    await deleteRole.mutateAsync({
+      name: roleDetail?.data?.role?.name as string,
+    });
+  };
+
+  useEffect(() => {
+    if (deleteRole.data?.response.success) {
+      closeSecondPanel();
+    }
+  }, [closeSecondPanel, deleteRole.data?.response.success]);
 
   return (
     <>
@@ -105,7 +118,9 @@ export default function RoleDetail({ roleData, closeSecondPanel }: IProps) {
               </DialogHeader>
               <DialogFooter>
                 <div className="flex items-center justify-center mt-2 gap-4">
-                  <Button variant="outline">Yes</Button>
+                  <Button variant="outline" onClick={() => handleDeleteRole()}>
+                    Yes
+                  </Button>
                   <DialogClose asChild>
                     <Button variant="outline">No</Button>
                   </DialogClose>

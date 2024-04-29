@@ -232,7 +232,8 @@ export const useUploadBeneficiary = () => {
 type OptionalPagination = Partial<Pagination>;
 
 export const useBeneficiaryPii = (
-  pagination: OptionalPagination,
+  // TODO: UPDATE WITH OPTIONALPAGINATION
+  pagination: Pagination,
 ): UseQueryResult<any, Error> => {
   const { rumsanService, queryClient } = useRSQuery();
   const benClient = getBeneficiaryClient(rumsanService.client);

@@ -40,17 +40,17 @@ export const useNavItems = () => {
           ? [
             {
               title: 'Preparedness',
-              subtitle: 0,
+              // subtitle: 0,
               icon: <ClipboardCheck size={18} strokeWidth={1.5} />,
             },
             {
               title: 'Readiness',
-              subtitle: 0,
+              // subtitle: 0,
               icon: <BookCheck size={18} strokeWidth={1.5} />,
             },
             {
               title: 'Activation',
-              subtitle: 0,
+              // subtitle: 0,
               icon: <ShieldCheck size={18} strokeWidth={1.5} />,
             },
           ]
@@ -68,7 +68,7 @@ export const useNavItems = () => {
             },
             {
               title: 'Distributions',
-              subtitle: 0,
+              // subtitle: 0,
               icon: (
                 <AlignVerticalJustifyCenter size={18} strokeWidth={1.5} />
               ),
@@ -79,13 +79,13 @@ export const useNavItems = () => {
               children: [
                 {
                   title: 'Voice',
-                  subtitle: 10,
+                  // subtitle: 10,
                   icon: <Phone size={18} strokeWidth={1.5} />,
                   path: `/projects/aa/${params.id}/communications/voice`,
                 },
                 {
                   title: 'Text',
-                  subtitle: 10,
+                  // subtitle: 10,
                   icon: <MessageSquare size={18} strokeWidth={1.5} />,
                   path: `/projects/aa/${params.id}/communications/text`,
                 },
@@ -94,19 +94,19 @@ export const useNavItems = () => {
             {
               title: 'Activities',
               path: `/projects/aa/${params.id}/activities`,
-              subtitle: 0,
+              // subtitle: 0,
               icon: <Activity size={18} strokeWidth={1.5} />,
             },
             {
               title: 'Trigger Statements',
               path: `/projects/aa/${params.id}/trigger-statements`,
-              subtitle: 0,
+              // subtitle: 0,
               icon: <HardDrive size={18} strokeWidth={1.5} />,
             },
             {
               title: 'Data Sources',
               path: `/projects/aa/${params.id}/data-sources`,
-              subtitle: 0,
+              // subtitle: 0,
               icon: <HardDrive size={18} strokeWidth={1.5} />,
             },
           ]),

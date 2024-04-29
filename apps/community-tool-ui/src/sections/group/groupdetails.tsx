@@ -30,7 +30,6 @@ import {
 } from '@rahat-ui/community-query';
 import { useCommunityGroupDeailsColumns } from './useGroupColumns';
 import Swal from 'sweetalert2';
-import { toast } from 'react-toastify';
 import { useCommunityGroupRemove } from '@rahat-ui/community-query';
 import {
   DropdownMenu,
@@ -38,13 +37,17 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
+import {
+  ResizablePanel,
+  ResizablePanelGroup,
+} from '@rahat-ui/shadcn/src/components/ui/resizable';
 
 type IProps = {
   data: ListGroup;
-  handleClose: VoidFunction;
+  closeSecondPanel: VoidFunction;
 };
 
-export default function GroupDetail({ data, handleClose }: IProps) {
+export default function GroupDetail({ data, closeSecondPanel }: IProps) {
   const { data: responseByUUID } = useCommunityGroupListByID(data?.uuid);
   const columns = useCommunityGroupDeailsColumns();
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
@@ -91,7 +94,7 @@ export default function GroupDetail({ data, handleClose }: IProps) {
   const removeBeneficiaryFromGroup = () => {
     Swal.fire({
       title: 'Are you sure?',
-      text: 'Confirm beneficiary removal from this group',
+      text: 'Remove beneficiary from this group',
       icon: 'question',
       showDenyButton: true,
       confirmButtonText: 'Yes, I am sure!',
@@ -103,17 +106,11 @@ export default function GroupDetail({ data, handleClose }: IProps) {
       },
     }).then(async (result) => {
       if (result.isConfirmed) {
-        try {
-          await removeCommunityGroup.mutateAsync({
-            uuid: data?.uuid,
-            deleteBeneficiaryFlag: false,
-          });
-        } catch (error) {
-          toast.error('Error removing Beneficiary');
-          console.error('Error removing Beneficiary:', error);
-        }
-      } else if (result.isDenied) {
-        Swal.fire('Cancelled', `The beneficiary wasn't removed.`, 'error');
+        await removeCommunityGroup.mutateAsync({
+          uuid: data?.uuid,
+          deleteBeneficiaryFlag: false,
+        });
+        closeSecondPanel();
       }
     });
   };
@@ -121,7 +118,7 @@ export default function GroupDetail({ data, handleClose }: IProps) {
   const handleDelete = () => {
     Swal.fire({
       title: 'Are you sure?',
-      text: 'Confirm beneficiary delete',
+      text: 'Beneficiary will be removed from group and archived!',
       icon: 'question',
       showDenyButton: true,
       confirmButtonText: 'Yes, I am sure!',
@@ -133,26 +130,20 @@ export default function GroupDetail({ data, handleClose }: IProps) {
       },
     }).then(async (result) => {
       if (result.isConfirmed) {
-        try {
-          await removeCommunityGroup.mutateAsync({
-            uuid: data?.uuid,
-            deleteBeneficiaryFlag: true,
-          });
-        } catch (error) {
-          toast.error('Error deleting Beneficiary');
-          console.error('Error deleting Beneficiary:', error);
-        }
-      } else if (result.isDenied) {
-        Swal.fire('Cancelled', `The beneficiary wasn't deleted.`, 'error');
+        await removeCommunityGroup.mutateAsync({
+          uuid: data?.uuid,
+          deleteBeneficiaryFlag: true,
+        });
+        closeSecondPanel();
       }
     });
   };
 
   const handlePurge = () => {
     Swal.fire({
-      title: 'Are you sure?',
-      text: 'Confirm group purge',
-      icon: 'question',
+      title: 'CAUTION!',
+      text: 'Group and beneficiaries will be deleted permanently!',
+      icon: 'warning',
       showDenyButton: true,
       confirmButtonText: 'Yes, I am sure!',
       denyButtonText: 'No, cancel it!',
@@ -163,14 +154,8 @@ export default function GroupDetail({ data, handleClose }: IProps) {
       },
     }).then(async (result) => {
       if (result.isConfirmed) {
-        try {
-          await purgeCommunityGroup.mutateAsync(data?.uuid);
-        } catch (error) {
-          toast.error('Error purging Beneficiary');
-          console.error('Error purging Beneficiary:', error);
-        }
-      } else if (result.isDenied) {
-        Swal.fire('Cancelled', `The group wasn't purged.`, 'error');
+        await purgeCommunityGroup.mutateAsync(data?.uuid);
+        closeSecondPanel();
       }
     });
   };
@@ -182,7 +167,7 @@ export default function GroupDetail({ data, handleClose }: IProps) {
           <div className="flex gap-4">
             <TooltipProvider delayDuration={100}>
               <Tooltip>
-                <TooltipTrigger onClick={handleClose}>
+                <TooltipTrigger onClick={closeSecondPanel}>
                   <Minus size={20} strokeWidth={1.5} />
                 </TooltipTrigger>
                 <TooltipContent className="bg-secondary ">
@@ -236,7 +221,6 @@ export default function GroupDetail({ data, handleClose }: IProps) {
             <TabsTrigger value="detail" className="mr-2">
               Details{' '}
             </TabsTrigger>
-            {/* </TabsList> */}
             <DropdownMenu>
               <DropdownMenuTrigger>
                 <MoreVertical

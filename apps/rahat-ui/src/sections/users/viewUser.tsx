@@ -62,7 +62,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
-import { useRoleList } from '@rahat-ui/query';
+import { useRoleList, useSettingsStore } from '@rahat-ui/query';
+import {
+  useAddAdminRole,
+  useAddManagerRole,
+} from '../../hooks/el/contracts/el-contracts';
 
 type IProps = {
   userDetail: User;
@@ -74,6 +78,10 @@ export default function UserDetail({ userDetail, closeSecondPanel }: IProps) {
   const removeUser = useUserRemove();
   const { data: roleData } = useRoleList(); //TODO:fetch from store
   const addUserRole = useUserAddRoles();
+  const addManagerRole = useAddManagerRole();
+  const addAdminRole = useAddAdminRole();
+
+  const accessContract = useSettingsStore((state) => state.accessManager);
 
   const isAdmin = data?.data?.roles.includes(ROLE_TYPE.ADMIN);
   const [activeTab, setActiveTab] = useState<'details' | 'edit' | null>(
@@ -97,10 +105,29 @@ export default function UserDetail({ userDetail, closeSecondPanel }: IProps) {
   };
 
   const handleRoleAssign = () => {
-    addUserRole.mutateAsync({
-      uuid: userDetail.uuid as UUID,
-      roles: [selectedRole],
-    });
+    if (selectedRole === 'Manager') {
+      addManagerRole.mutateAsync({
+        data: {
+          role: selectedRole,
+          uuid: userDetail.uuid as UUID,
+          wallet: userDetail.wallet,
+        },
+        contractAddress: accessContract,
+      });
+    } else if (selectedRole === 'Admin') {
+      addAdminRole.mutateAsync({
+        data: {
+          role: selectedRole,
+          uuid: userDetail.uuid as UUID,
+          wallet: userDetail.wallet,
+        },
+        contractAddress: accessContract,
+      });
+    } else
+      addUserRole.mutateAsync({
+        uuid: userDetail.uuid as UUID,
+        roles: [selectedRole],
+      });
   };
 
   return (

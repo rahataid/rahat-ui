@@ -27,8 +27,8 @@ import { z } from 'zod';
 import React, { useEffect, useState } from 'react';
 
 import { useFieldDefinitionsCreate } from '@rahat-ui/community-query';
-import { FieldType } from 'apps/community-tool-ui/src/types/fieldDefinition';
 import { Minus, Plus } from 'lucide-react';
+import { FieldType } from 'apps/community-tool-ui/src/constants/fieldDefinition.const';
 
 type Iprops = {
   handleTabChange: (tab: 'add' | 'import') => void;
@@ -201,6 +201,7 @@ export default function AddFieldDefinitions({ handleTabChange }: Iprops) {
                             PASSWORD
                           </SelectItem>
                           <SelectItem value={FieldType.RADIO}>RADIO</SelectItem>
+                          <SelectItem value={FieldType.DATE}>DATE</SelectItem>
                           <SelectItem value={FieldType.TEXTAREA}>
                             TEXTAREA
                           </SelectItem>

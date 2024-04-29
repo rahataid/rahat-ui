@@ -18,18 +18,5 @@ export default function ImportBeneficiary() {
     extraFields = myFields;
   }
 
-  return (
-    <Tabs defaultValue="list" className="h-full">
-      <ResizablePanelGroup direction="horizontal" className="min-h-max bg-card">
-        <ResizablePanel minSize={20} defaultSize={20} maxSize={20}>
-          <BeneficiaryNav />
-        </ResizablePanel>
-        <ResizableHandle />
-
-        <ResizablePanel minSize={28}>
-          <ImportBen extraFields={extraFields} />
-        </ResizablePanel>
-      </ResizablePanelGroup>
-    </Tabs>
-  );
+  return <ImportBen extraFields={extraFields} />;
 }

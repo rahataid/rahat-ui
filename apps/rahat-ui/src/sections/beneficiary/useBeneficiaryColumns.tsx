@@ -60,16 +60,16 @@ export const useBeneficiaryTableColumns = () => {
       enableHiding: false,
     },
     {
-      accessorKey: 'piiData',
+      accessorKey: 'name',
       header: 'Name',
       cell: ({ row }) => {
-        const piiData = row.getValue('piiData') as any;
+        // const piiData = row.getValue('piiData') as any;
         return (
           <div
             className="cursor-pointer"
             onClick={() => openSplitDetailView(row.original)}
           >
-            {piiData?.name || '-'}
+            {row.getValue('name')}
           </div>
         );
       },

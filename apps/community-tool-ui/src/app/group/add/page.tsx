@@ -1,4 +1,4 @@
-import AddGroup from '../../../sections/group/add';
+import { AddGroup } from '../../../sections/group/add';
 import React from 'react';
 
 export const metadata = {

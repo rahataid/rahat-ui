@@ -34,7 +34,9 @@ export default function TriggerStatementsTable({ table }: IProps) {
         <div className="flex items-center mb-2">
           <Input
             placeholder="Search Trigger Statements..."
-            value={(table.getColumn('dataSource')?.getFilterValue() as string) ?? ''}
+            value={
+              (table.getColumn('dataSource')?.getFilterValue() as string) ?? ''
+            }
             onChange={(event) =>
               table.getColumn('dataSource')?.setFilterValue(event.target.value)
             }

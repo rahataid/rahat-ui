@@ -30,9 +30,8 @@ export const useCreateBeneficiary = () => {
   });
 };
 
-export const useBeneficiaryList = (
-  payload: any,
-): UseQueryResult<any, Error> => {
+// Todo: Change type of return
+export const useBeneficiaryList = (payload: any): any => {
   const { rumsanService, queryClient } = useRSQuery();
   const benClient = getBeneficiaryClient(rumsanService.client);
   const { setBeneficiaries, setMeta } = useBeneficiaryStore((state) => ({
@@ -56,7 +55,20 @@ export const useBeneficiaryList = (
     }
   }, [ben.data, setBeneficiaries]);
 
-  return ben;
+  const filteredBenData = {
+    ...ben,
+    data: {
+      ...ben?.data,
+      data: ben?.data?.data.map((row) => {
+        return {
+          ...row,
+          name: row?.piiData?.name || '',
+        };
+      }),
+    },
+  };
+
+  return filteredBenData;
 };
 
 const listBeneficiaryStatus = async () => {
@@ -71,15 +83,15 @@ export const useGetBeneficiaryStats = (): UseQueryResult<any, Error> => {
   });
 };
 
-const listProjectBeneficiaryStats = async () => {
-  const response = await api.get('/beneficiaries/table-stats');
+const listProjectBeneficiaryStats = async (id: any) => {
+  const response = await api.get(`/projects/${id}/stats`);
   return response?.data;
 };
 
-export const useGetProjectBeneficiaryStats = () => {
+export const useGetProjectBeneficiaryStats = (id: any) => {
   return useQuery({
     queryKey: [TAGS.GET_PROJECT_BENEFICIARIES_STATS],
-    queryFn: () => listProjectBeneficiaryStats(),
+    queryFn: () => listProjectBeneficiaryStats(id),
   });
 };
 
@@ -217,9 +229,10 @@ export const useUploadBeneficiary = () => {
     queryClient,
   );
 };
+type OptionalPagination = Partial<Pagination>;
 
 export const useBeneficiaryPii = (
-  pagination: Pagination,
+  pagination: OptionalPagination,
 ): UseQueryResult<any, Error> => {
   const { rumsanService, queryClient } = useRSQuery();
   const benClient = getBeneficiaryClient(rumsanService.client);

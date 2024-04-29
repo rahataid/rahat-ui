@@ -21,6 +21,7 @@ import { useSwal } from '../../swal';
 import { api } from '../../utils/api';
 import { useProjectSettingsStore, useProjectStore } from './project.store';
 
+
 export const PROJECT_SETTINGS_KEYS = {
   CONTRACT: 'CONTRACT',
   SUBGRAPH: 'SUBGRAPH_URL',
@@ -343,12 +344,13 @@ type GetProjectBeneficiaries = Pagination & {
   sort?: string;
   status?: string;
   projectUUID: UUID;
+  vouchers?: any;
 };
 
 export const useProjectBeneficiaries = (payload: GetProjectBeneficiaries) => {
   const q = useProjectAction<Beneficiary[]>();
   const { projectUUID, ...restPayload } = payload;
-
+  
   const restPayloadString = JSON.stringify(restPayload);
 
   const queryKey = useMemo(
@@ -440,7 +442,7 @@ export const useUpdateElRedemption = () => {
       redemptionUUID,
     }: {
       projectUUID: UUID;
-      redemptionUUID: UUID;
+      redemptionUUID: string[];
     }) => {
       const m = await projectAction.mutateAsync({
         uuid: projectUUID,

@@ -7,7 +7,6 @@ import {
 import { isURL, truncatedText } from 'apps/community-tool-ui/src/utils';
 import React, { useState } from 'react';
 import { ComboBox } from './Combobox';
-import NestedObjectRenderer from './NestedObjectRenderer';
 
 interface ColumnMappingTableProps {
   rawData: any[];
@@ -66,11 +65,11 @@ export default function ColumnMappingTable({
   }
 
   return (
-    <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+    <table className="ml-5 w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
       <thead>
         <tr>
           {columns.map((column: any, index: number) => (
-            <th className="px-4 py-1.5" key={index}>
+            <th className="py-1.5" key={index}>
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
@@ -99,12 +98,10 @@ export default function ColumnMappingTable({
             className="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700"
           >
             {columns.map((column: any, columnIndex: number) => (
-              <td className="px-4 py-1.5" key={columnIndex}>
-                {typeof item[column] === 'object' ? (
-                  <NestedObjectRenderer object={item[column]} />
-                ) : (
-                  renderField(item, column)
-                )}
+              <td className="px-2 py-1.5" key={columnIndex}>
+                {typeof item[column] === 'object'
+                  ? ''
+                  : renderField(item, column)}
               </td>
             ))}
           </tr>

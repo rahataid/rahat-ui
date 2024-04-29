@@ -1,5 +1,4 @@
 'use client';
-
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
@@ -20,8 +19,8 @@ import {
 import { useForm } from 'react-hook-form';
 
 import {
+  useActiveFieldDefList,
   useCommunityBeneficiaryCreate,
-  useFieldDefinitionsList,
 } from '@rahat-ui/community-query';
 import { Calendar } from '@rahat-ui/shadcn/src/components/ui/calendar';
 import {
@@ -43,7 +42,10 @@ import { z } from 'zod';
 import { usePagination } from '@rahat-ui/query';
 import useFormStore from '../../../formBuilder/form.store';
 import FormBuilder from '../../../formBuilder';
-import { formatDate } from 'apps/community-tool-ui/src/utils';
+import {
+  formatDate,
+  selectNonEmptyFields,
+} from 'apps/community-tool-ui/src/utils';
 
 const FIELD_DEF_FETCH_LIMIT = 200;
 
@@ -51,7 +53,7 @@ export default function AddBeneficiary() {
   const { extras }: any = useFormStore();
 
   const { pagination } = usePagination();
-  const { data: definitions } = useFieldDefinitionsList({
+  const { data: definitions } = useActiveFieldDefList({
     ...pagination,
     perPage: FIELD_DEF_FETCH_LIMIT,
   });
@@ -59,10 +61,10 @@ export default function AddBeneficiary() {
   const FormSchema = z.object({
     firstName: z
       .string()
-      .min(2, { message: 'FirstName must be at least 4 character' }),
+      .min(2, { message: 'FirstName must be at least 2 character' }),
     lastName: z
       .string()
-      .min(2, { message: 'LastName must be at least 4 character' }),
+      .min(2, { message: 'LastName must be at least 2 character' }),
     walletAddress: z.string(),
     phone: z.string().min(10, { message: 'Phone number must be 10 digits' }),
     email: z.string().optional(),
@@ -106,12 +108,8 @@ export default function AddBeneficiary() {
       ...data,
       birthDate: data.birthDate && formattedDate,
     };
-    const nonEmptyFields: any = {};
-    Object.entries(formData).forEach(([key, value]) => {
-      if (value !== undefined && value !== '') {
-        nonEmptyFields[key] = value;
-      }
-    });
+
+    const nonEmptyFields = selectNonEmptyFields(formData);
     await addCommunityBeneficiary.mutateAsync({
       ...nonEmptyFields,
       extras,
@@ -419,7 +417,7 @@ export default function AddBeneficiary() {
                             {field.value ? (
                               format(field.value, 'PPP')
                             ) : (
-                              <span>Birth Date</span>
+                              <span>Date of Birth</span>
                             )}
                             <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                           </Button>
@@ -473,8 +471,12 @@ export default function AddBeneficiary() {
                   </FormItem>
                 )}
               />
-              <h3>Extra Fields</h3> <br />
-              {definitions?.data?.rows.map((definition: any) => {
+
+              <h3>
+                <b>Extra Fields:</b>
+              </h3>
+              <br />
+              {definitions?.data?.map((definition: any) => {
                 return (
                   <FormBuilder key={definition.id} formField={definition} />
                 );

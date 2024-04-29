@@ -14,6 +14,7 @@ import { truncateEthAddress } from '@rumsan/sdk/utils';
 import React from 'react';
 import { useSecondPanel } from '../../../../providers/second-panel-provider';
 import { Redemption } from './redemption.table';
+import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
 
 export const useTableColumns = (handleAssignClick: any) => {
   const { closeSecondPanel, setSecondPanelComponent } = useSecondPanel();
@@ -30,6 +31,28 @@ export const useTableColumns = (handleAssignClick: any) => {
   };
 
   const columns: ColumnDef<Redemption>[] = [
+    {
+      id: 'select',
+      header: ({ table }) => (
+        <Checkbox
+          checked={
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && 'indeterminate')
+          }
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          aria-label="Select all"
+        />
+      ),
+      cell: ({ row }) => (
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label="Select row"
+        />
+      ),
+      enableSorting: false,
+      enableHiding: false,
+    },
     {
       accessorKey: 'name',
       header: 'Name',
@@ -76,6 +99,13 @@ export const useTableColumns = (handleAssignClick: any) => {
       ),
     },
     {
+      accessorKey: 'voucherType',
+      header: 'Voucher Type ',
+      cell: ({ row }) => (
+        <div className="capitalize">{row.getValue('voucherType')}</div>
+      ),
+    },
+    {
       accessorKey: 'tokenAmount',
       header: ({ column }) => {
         return (
@@ -89,14 +119,7 @@ export const useTableColumns = (handleAssignClick: any) => {
         );
       },
       cell: ({ row }) => (
-        <div className="lowercase">{row.getValue('tokenAmount')}</div>
-      ),
-    },
-    {
-      accessorKey: 'voucherType',
-      header: 'Voucher Type ',
-      cell: ({ row }) => (
-        <div className="capitalize">{row.getValue('voucherType')}</div>
+        <div className="w-1/3 text-center">{row.getValue('tokenAmount')}</div>
       ),
     },
     {

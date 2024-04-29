@@ -23,7 +23,13 @@ import TargetingListView from '../../sections/targeting/listView';
 import TargetingNav from '../../sections/targeting/targeting.nav';
 import { usePagination } from '@rahat-ui/query';
 import { useTargetingColumns } from './useTargetingColumns';
-// import { useTargetingList } from '@rahat-ui/community-query';
+import {
+  useTargetedBeneficiaryList,
+  useTargetingCreate,
+} from '@rahat-ui/community-query';
+import useTargetingFormStore from '../../targetingFormBuilder/form.store';
+import { ITargetingQueries } from '../../types/targeting';
+import { Result } from '@rahataid/community-tool-sdk/targets';
 
 export default function TargetingView() {
   const {
@@ -35,13 +41,21 @@ export default function TargetingView() {
     setPerPage,
   } = usePagination();
 
-  // const { data } = useTargetingList();
+  const [targetUUID, setTargetUUID] = useState<string>();
+
+  const { data: beneficiaryData } = useTargetedBeneficiaryList(
+    targetUUID as string,
+  );
+
+  const addTargeting = useTargetingCreate();
 
   const columns = useTargetingColumns();
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const table = useReactTable({
     manualPagination: true,
-    data: [],
+    data:
+      beneficiaryData?.data?.rows?.map((item: Result) => item?.beneficiary) ||
+      [],
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -62,15 +76,21 @@ export default function TargetingView() {
     setSelectedData(item);
   }, []);
 
-  const handleClose = () => {
-    setSelectedData(null);
+  const { targetingQueries } = useTargetingFormStore();
+
+  const handleTargetFormSubmit = async (formData: ITargetingQueries) => {
+    const payload = { ...formData, ...targetingQueries };
+    const getTargetInfo = await addTargeting.mutateAsync({
+      filterOptions: [{ data: payload }],
+    });
+    setTargetUUID(getTargetInfo?.data?.uuid);
   };
 
   return (
     <Tabs defaultValue="list" className="h-full">
       <ResizablePanelGroup direction="horizontal" className="min-h-max bg-card">
-        <ResizablePanel minSize={20} defaultSize={20} maxSize={20}>
-          <TargetingNav />
+        <ResizablePanel minSize={20} defaultSize={30} maxSize={30}>
+          <TargetingNav onFormSubmit={handleTargetFormSubmit} />
         </ResizablePanel>
         <ResizableHandle />
         <ResizablePanel minSize={28}>
@@ -84,7 +104,12 @@ export default function TargetingView() {
               </TabsContent>
 
               <CustomPagination
-                meta={{ total: 0, currentPage: 0 }}
+                meta={
+                  beneficiaryData?.response?.meta || {
+                    total: 0,
+                    currentPage: 0,
+                  }
+                }
                 handleNextPage={setNextPage}
                 handlePrevPage={setPrevPage}
                 handlePageSizeChange={setPerPage}

@@ -27,19 +27,27 @@ import {
 import { z } from 'zod';
 
 import {
+  useActiveFieldDefList,
   useCommunityBeneficiaryUpdate,
-  useFieldDefinitionsList,
 } from '@rahat-ui/community-query';
 import { usePagination } from '@rahat-ui/query';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
 import { ListBeneficiary } from '@rahataid/community-tool-sdk/beneficiary';
 import { Gender } from '@rumsan/sdk/enums';
-import { Wallet } from 'lucide-react';
+import { CalendarIcon, Wallet } from 'lucide-react';
 import FormBuilder from '../../formBuilder';
 
 import useFormStore from '../../formBuilder/form.store';
 import { UUID } from 'crypto';
+import { format } from 'date-fns';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/popover';
+import { Calendar } from '@rahat-ui/shadcn/src/components/ui/calendar';
+import { formatDate, selectNonEmptyFields } from '../../utils';
 
 const FIELD_DEF_FETCH_LIMIT = 200;
 
@@ -48,7 +56,7 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
 
   const updateBeneficiaryClient = useCommunityBeneficiaryUpdate();
   const { pagination } = usePagination();
-  const { data: definitions } = useFieldDefinitionsList({
+  const { data: definitions } = useActiveFieldDefList({
     ...pagination,
     perPage: FIELD_DEF_FETCH_LIMIT,
   });
@@ -56,13 +64,14 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
   const FormSchema = z.object({
     firstName: z
       .string()
-      .min(2, { message: 'FirstName must be at least 4 character' }),
+      .min(2, { message: 'FirstName must be at least 2 character' }),
     lastName: z
       .string()
-      .min(2, { message: 'LastName must be at least 4 character' }),
+      .min(2, { message: 'LastName must be at least 2 character' }),
     walletAddress: z.string().optional(),
     gender: z.string().toUpperCase().optional(),
     email: z.string().optional(),
+    birthDate: z.date().optional(),
     phone: z.string(),
     location: z.string().optional(),
     latitude: z.number().optional(),
@@ -94,19 +103,22 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
       longitude: data?.longitude || 0,
       notes: data?.notes || '',
       govtIDNumber: data?.govtIDNumber || '',
+      birthDate: data && data.birthDate ? new Date(data.birthDate) : undefined,
     },
   });
 
   const handleEditBeneficiary = async (
     formData: z.infer<typeof FormSchema>,
   ) => {
-    const nonEmptyFields: any = {};
-    Object.entries(formData).forEach(([key, value]) => {
-      if (value !== undefined && value !== '') {
-        nonEmptyFields[key] = value;
-      }
-    });
+    if (formData.birthDate) {
+      const formattedDate = formatDate(formData.birthDate as Date);
+      formData.birthDate = formattedDate;
+    }
 
+    const nonEmptyFields = selectNonEmptyFields(formData);
+    if (extras.hasOwnProperty('isDuplicate')) {
+      delete extras.isDuplicate;
+    }
     await updateBeneficiaryClient.mutateAsync({
       uuid: data.uuid as UUID,
       payload: {
@@ -115,8 +127,6 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
       },
     });
   };
-
-  console.log('definitions', definitions);
 
   return (
     <Form {...form}>
@@ -443,6 +453,39 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
             />
             <FormField
               control={form.control}
+              name="birthDate"
+              render={({ field }) => (
+                <FormItem className="flex flex-col">
+                  <Label className="text-xs font-medium">Date of Birth</Label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button variant={'outline'}>
+                          {field.value ? (
+                            format(field.value, 'PPP')
+                          ) : (
+                            <span>Birth Date</span>
+                          )}
+                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={field.value}
+                        onSelect={field.onChange}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
               name="longitude"
               render={({ field }) => {
                 return (
@@ -485,8 +528,11 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
                 </FormItem>
               )}
             />
-            <h3>Extra Fields</h3> <br />
-            {definitions?.data?.rows.map((definition: any) => {
+            <h3>
+              <b>Extra Fields:</b>
+            </h3>
+            <br />
+            {definitions?.data?.map((definition: any) => {
               return <FormBuilder formField={definition} />;
             }) || 'No field definitions found!'}
           </div>

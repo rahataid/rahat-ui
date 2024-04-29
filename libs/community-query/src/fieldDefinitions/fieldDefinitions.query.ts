@@ -11,7 +11,7 @@ import { Pagination } from '@rumsan/sdk/types';
 import Swal from 'sweetalert2';
 
 export const useFieldDefinitionsList = (
-  payload: Pagination & { any?: string },
+  payload: Pagination & { isTargeting?: boolean },
 ): UseQueryResult<any, Error> => {
   const { queryClient, rumsanService } = useRSQuery();
   const fieldDefClient = getFieldDefinitionClient(rumsanService.client);
@@ -20,6 +20,23 @@ export const useFieldDefinitionsList = (
     {
       queryKey: [TAGS.LIST_COMMUNITY_FIELD_DEFINITIONS, payload],
       queryFn: () => fieldDefClient.list(payload),
+    },
+    queryClient,
+  );
+
+  return query;
+};
+
+export const useActiveFieldDefList = (
+  payload: Pagination & { isTargeting?: boolean },
+): UseQueryResult<any, Error> => {
+  const { queryClient, rumsanService } = useRSQuery();
+  const fieldDefClient = getFieldDefinitionClient(rumsanService.client);
+
+  const query = useQuery(
+    {
+      queryKey: [TAGS.LIST_ACTIVE_FIELD_DEFINITIONS, payload],
+      queryFn: () => fieldDefClient.listActive(payload),
     },
     queryClient,
   );

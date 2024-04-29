@@ -3,6 +3,7 @@ import { react } from '@wagmi/cli/plugins';
 import { ELAbi } from './abis/ELProject';
 import { RahatDonorAbi } from './abis/RahatDonor';
 import { RahatTokenAbi } from './abis/RahatToken';
+import { AccessAbi } from './abis/AccessManager';
 
 export default defineConfig([
   {
@@ -31,6 +32,16 @@ export default defineConfig([
       {
         name: 'RahatToken',
         abi: RahatTokenAbi,
+      },
+    ],
+    plugins: [react()],
+  },
+  {
+    out: 'apps/rahat-ui/src/hooks/el/contracts/access.ts',
+    contracts: [
+      {
+        name: 'AccessManager',
+        abi: AccessAbi,
       },
     ],
     plugins: [react()],

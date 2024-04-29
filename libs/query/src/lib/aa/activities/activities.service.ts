@@ -87,8 +87,10 @@ export const useActivitiesHazardTypes = (uuid: UUID) => {
   return query;
 };
 
-export const useActivities = (uuid: UUID) => {
+export const useActivities = (uuid: UUID, payload: any) => {
+  console.log('p:', payload)
   const q = useProjectAction();
+  const qc = useQueryClient();
   const { setActivities } = useActivitiesStore((state) => ({
     setActivities: state.setActivities,
   }));
@@ -112,11 +114,12 @@ export const useActivities = (uuid: UUID) => {
       };
     },
     queryFn: async () => {
+      console.log('payloaddddd:', payload)
       const mutate = await q.mutateAsync({
         uuid,
         data: {
           action: 'aaProject.activities.getAll',
-          payload: {},
+          payload: payload ?? {},
         },
       });
       return mutate.data;
@@ -127,6 +130,10 @@ export const useActivities = (uuid: UUID) => {
       setActivities(query?.data);
     }
   }, [query.data]);
+  useEffect(() => {
+    console.log('here')
+    qc.invalidateQueries({ queryKey: ['activities'] });
+  }, [payload]);
   return query;
 };
 

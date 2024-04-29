@@ -36,7 +36,12 @@ import useActivitiesTableColumn from './useActivitiesTableColumn';
 import { useActivitiesCategories, useActivitiesHazardTypes, useActivitiesStore } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 
-export default function ActivitiesTable({ activitiesData }: any) {
+type IProps = {
+  activitiesData: any;
+  filter: (category: UUID) => void;
+}
+
+export default function ActivitiesTable({ activitiesData, filter }: IProps) {
   const { id } = useParams();
   useActivitiesCategories(id as UUID);
   const categories = useActivitiesStore((state) => state.categories);
@@ -73,7 +78,7 @@ export default function ActivitiesTable({ activitiesData }: any) {
     <div className="p-2 bg-secondary">
       <div className="flex items-center gap-2 mb-2 w-1/2">
         {/* Filter Category */}
-        <Select>
+        <Select onValueChange={(value) => filter(value as UUID)}>
           <SelectTrigger>
             <SelectValue placeholder="Select a category" />
           </SelectTrigger>

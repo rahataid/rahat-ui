@@ -6,8 +6,21 @@ import {
   CircleCheck,
   CircleX,
 } from 'lucide-react';
+import { usePhasesStats } from '@rahat-ui/query';
+// import {usePhasesStat}
 
-export default function PhaseCard() {
+export default function PhaseCard({ phasesStats }: any) {
+
+  const readiness = phasesStats.phaseStatus.readinessStatus
+  const activation = phasesStats.phaseStatus.activationStatus
+
+  console.log(readiness)
+  console.log(activation)
+
+  // console.log(phasesStats.phaseStatus.readinessStatus)
+  // usePhasesStats()
+
+
   return (
     <div className="grid grid-cols-3 gap-2 bg-secondary pb-0">
       <Card>
@@ -26,7 +39,7 @@ export default function PhaseCard() {
             </div>
             <div className="flex justify-end">
               <div className="flex gap-3">
-                <TriangleAlert color="yellow" size={20} strokeWidth={1.5} />
+                {/* <TriangleAlert color="yellow" size={20} strokeWidth={1.5} /> */}
                 <CircleCheck color="green" size={20} strokeWidth={1.5} />
               </div>
             </div>
@@ -50,7 +63,13 @@ export default function PhaseCard() {
             <div className="flex justify-end">
               <div className="flex gap-3">
                 <TriangleAlert color="yellow" size={20} strokeWidth={1.5} />
-                <CircleX color="red" size={20} strokeWidth={1.5} />
+                {
+                  readiness.activated ? (
+                    <CircleCheck color="green" size={20} strokeWidth={1.5} />
+                  ) : (
+                    <CircleX color="red" size={20} strokeWidth={1.5} />
+                  )
+                }
               </div>
             </div>
           </div>
@@ -73,7 +92,13 @@ export default function PhaseCard() {
             <div className="flex justify-end">
               <div className="flex gap-3">
                 <TriangleAlert color="yellow" size={20} strokeWidth={1.5} />
-                <CircleCheck color="green" size={20} strokeWidth={1.5} />
+                {
+                  activation.activated ? (
+                    <CircleCheck color="green" size={20} strokeWidth={1.5} />
+                  ) : (
+                    <CircleX color="red" size={20} strokeWidth={1.5} />
+                  )
+                }
               </div>
             </div>
           </div>

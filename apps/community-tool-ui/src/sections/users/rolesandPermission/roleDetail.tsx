@@ -90,7 +90,7 @@ export default function RoleDetail({ roleData, closeSecondPanel }: IProps) {
                     />
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>Delete User</p>
+                    <p>Delete Role</p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>

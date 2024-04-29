@@ -40,7 +40,16 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { truncateEthAddress } from '@rumsan/core/utilities/string.utils';
 import { User } from '@rumsan/sdk/types';
-import { MoreVertical, PlusCircle, Trash2, Minus } from 'lucide-react';
+import {
+  MoreVertical,
+  PlusCircle,
+  Trash2,
+  Minus,
+  Telescope,
+  FilePenLine,
+  MinusIcon,
+  PlusIcon,
+} from 'lucide-react';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { UsersRoleTable } from './usersRoleTable';
@@ -129,7 +138,7 @@ export default function UserDetail({ userDetail, closeSecondPanel }: IProps) {
         <TooltipProvider delayDuration={100}>
           <Tooltip>
             <TooltipTrigger onClick={closeSecondPanel}>
-              <Minus size={20} strokeWidth={1.5} />
+              <MinusIcon size={20} strokeWidth={1.5} />
             </TooltipTrigger>
             <TooltipContent className="bg-secondary ">
               <p className="text-xs font-medium">Close</p>
@@ -145,7 +154,7 @@ export default function UserDetail({ userDetail, closeSecondPanel }: IProps) {
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <PlusCircle
+                        <PlusIcon
                           className="cursor-pointer"
                           size={18}
                           strokeWidth={1.6}
@@ -215,62 +224,30 @@ export default function UserDetail({ userDetail, closeSecondPanel }: IProps) {
                   </DialogContent>
                 </Form>
               </Dialog>
-              <Dialog>
-                <DialogTrigger>
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Trash2
-                          className="cursor-pointer"
-                          size={18}
-                          strokeWidth={1.6}
-                          color="#FF0000"
-                        />
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>Delete User</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>Are you absolutely sure?</DialogTitle>
-                    <DialogDescription>
-                      This action cannot be undone. This will permanently delete
-                      your user.
-                    </DialogDescription>
-                  </DialogHeader>
-                  <DialogFooter>
-                    <div className="flex items-center justify-center mt-2 gap-4">
-                      <Button variant="outline">Yes</Button>
-                      <DialogClose asChild>
-                        <Button variant="outline">No</Button>
-                      </DialogClose>
-                    </div>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
+
+              <TooltipProvider delayDuration={100}>
+                <Tooltip>
+                  <TooltipTrigger onClick={() => handleTabChange('edit')}>
+                    <FilePenLine size={20} strokeWidth={1.5} color="#007bb6" />
+                  </TooltipTrigger>
+                  <TooltipContent className="bg-secondary ">
+                    <p className="text-xs font-medium">Edit</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </>
           )}
           {/* Actions */}
-          <DropdownMenu>
-            <DropdownMenuTrigger>
-              <MoreVertical
-                className="cursor-pointer"
-                size={20}
-                strokeWidth={1.5}
-              />
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuItem onClick={() => handleTabChange('details')}>
-                Details{' '}
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleTabChange('edit')}>
-                Edit
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <TooltipProvider delayDuration={100}>
+            <Tooltip>
+              <TooltipTrigger onClick={() => handleTabChange('details')}>
+                <Telescope size={20} strokeWidth={1.5} color="#007bb6" />
+              </TooltipTrigger>
+              <TooltipContent className="bg-secondary ">
+                <p className="text-xs font-medium">Details</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
       </div>
       <div className="flex justify-between p-2">

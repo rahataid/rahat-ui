@@ -19,7 +19,7 @@ import {
   splitValidAndDuplicates,
   splitValidAndInvalid,
 } from 'apps/community-tool-ui/src/utils';
-import { ArrowBigLeft } from 'lucide-react';
+import { ArrowBigLeft, ArrowBigRight } from 'lucide-react';
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import Swal from 'sweetalert2';
@@ -423,7 +423,8 @@ export default function BenImp({ extraFields }: IProps) {
                   onClick={() => validateOrImport(IMPORT_ACTION.VALIDATE)}
                   className="w-40 bg-primary hover:ring-2 ring-primary"
                 >
-                  Validate Data
+                  <ArrowBigRight size={18} strokeWidth={2} />
+                  {loading ? 'Validating...' : 'Validate Data'}
                 </Button>
               </div>
             )}
@@ -434,8 +435,6 @@ export default function BenImp({ extraFields }: IProps) {
                 message="Fields are already mapped. You can validate without mapping."
               />
             )}
-
-            <hr />
 
             <div className="overflow-x-auto max-w-screen-lg">
               <ColumnMappingTable

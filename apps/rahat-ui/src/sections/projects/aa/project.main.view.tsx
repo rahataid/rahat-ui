@@ -4,7 +4,7 @@ import ProjectDetails from './project.detail';
 const ProjectMainView = () => {
   return (
     <>
-      <ScrollArea className="h-[calc(100vh-80px)]">
+      <ScrollArea className="h-[calc(100vh-65px)]">
         <ProjectDetails />
       </ScrollArea>
     </>

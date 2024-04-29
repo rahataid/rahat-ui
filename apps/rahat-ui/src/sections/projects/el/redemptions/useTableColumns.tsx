@@ -118,6 +118,13 @@ export const useTableColumns = (handleAssignClick: any) => {
       ),
     },
     {
+      accessorKey: 'voucherType',
+      header: 'Voucher Type ',
+      cell: ({ row }) => (
+        <div className="capitalize">{row.getValue('voucherType')}</div>
+      ),
+    },
+    {
       accessorKey: 'tokenAmount',
       header: ({ column }) => {
         return (
@@ -131,14 +138,7 @@ export const useTableColumns = (handleAssignClick: any) => {
         );
       },
       cell: ({ row }) => (
-        <div className="lowercase">{row.getValue('tokenAmount')}</div>
-      ),
-    },
-    {
-      accessorKey: 'voucherType',
-      header: 'Voucher Type ',
-      cell: ({ row }) => (
-        <div className="capitalize">{row.getValue('voucherType')}</div>
+        <div className="w-1/3 text-center">{row.getValue('tokenAmount')}</div>
       ),
     },
     {

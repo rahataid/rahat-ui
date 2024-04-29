@@ -10,9 +10,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import {
-  usePagination,
-} from '@rahat-ui/query';
+import { usePagination } from '@rahat-ui/query';
 import * as React from 'react';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import {
@@ -89,7 +87,6 @@ export default function RedemptionTable({}) {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
   );
-  
 
   const projectModal = useBoolean();
 
@@ -176,12 +173,12 @@ export default function RedemptionTable({}) {
         payload: {
           page: pagination.page,
           perPage: pagination.perPage,
-          ...filters
+          ...filters,
         },
       },
     });
 
-    setMeta(result?.httpReponse?.data?.meta)
+    setMeta(result?.httpReponse?.data?.meta);
 
     const filterData = result?.data.map((row: any) => {
       return {
@@ -204,7 +201,7 @@ export default function RedemptionTable({}) {
   const handleApprove = async () => {
     await updateRedemption.mutateAsync({
       projectUUID: uuid,
-      redemptionUUID: selectedRowAddresses
+      redemptionUUID: selectedRowAddresses,
     });
     getRedemptionList();
     setSelectedListItems([])
@@ -223,7 +220,7 @@ export default function RedemptionTable({}) {
 
   return (
     <>
-      <div className="p-2 bg-secondary">
+      <div className="w-full h-full p-2 bg-secondary">
         <div className="flex items-center mb-2">
           <Input
             placeholder="Filter Redemptions..."
@@ -258,10 +255,7 @@ export default function RedemptionTable({}) {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               {selectedRowAddresses.length ? (
-                <Button
-                  disabled={false}
-                  className="h-10 ml-2"
-                >
+                <Button disabled={false} className="h-10 ml-2">
                   {selectedRowAddresses.length} - Items Selected
                   <ChevronDown strokeWidth={1.5} />
                 </Button>
@@ -273,10 +267,8 @@ export default function RedemptionTable({}) {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-
         </div>
 
-        
         <div className="rounded border h-[calc(100vh-180px)] bg-card">
           <Table>
             <ScrollArea className="h-table1">
@@ -334,12 +326,12 @@ export default function RedemptionTable({}) {
           </Table>
         </div>
         <CustomPagination
-        currentPage={pagination.page}
-        handleNextPage={setNextPage}
-        handlePageSizeChange={setPerPage}
-        handlePrevPage={setPrevPage}
-        meta={meta || {}}
-        perPage={pagination.perPage}
+          currentPage={pagination.page}
+          handleNextPage={setNextPage}
+          // handlePageSizeChange={setPerPage}
+          handlePrevPage={setPrevPage}
+          meta={meta || {}}
+          perPage={pagination.perPage}
         />
         {/* <div className="sticky bottom-0 flex items-center justify-end space-x-4 px-4 py-1 border-t-2 bg-card">
           <div className="flex-1 text-sm text-muted-foreground">
@@ -366,39 +358,34 @@ export default function RedemptionTable({}) {
           </div>
         </div> */}
       </div>
-      
-          <Dialog
-            open={projectModal.value}
-            onOpenChange={projectModal.onToggle}
-          >
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Approve Redemption</DialogTitle>
-                <DialogDescription>
-                  <p className="text-orange-500">
-                    Are you sure you want to approve the redemption?
-                  </p>
-                </DialogDescription>
-              </DialogHeader>
-              <DialogFooter>
-                <DialogClose asChild>
-                  <Button type="button" variant="ghost">
-                    Close
-                  </Button>
-                </DialogClose>
-                <Button
-                  onClick={handleApprove}
-                  type="button"
-                  variant="ghost"
-                  className="text-primary"
-                >
-                  Assign
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-      
-      
+
+      <Dialog open={projectModal.value} onOpenChange={projectModal.onToggle}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Approve Redemption</DialogTitle>
+            <DialogDescription>
+              <p className="text-orange-500">
+                Are you sure you want to approve the redemption?
+              </p>
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button type="button" variant="ghost">
+                Close
+              </Button>
+            </DialogClose>
+            <Button
+              onClick={handleApprove}
+              type="button"
+              variant="ghost"
+              className="text-primary"
+            >
+              Assign
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

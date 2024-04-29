@@ -67,7 +67,7 @@ export const useBeneficiaryNavItems = () => {
         },
         {
           title: 'Add Group',
-          path: `${paths.dashboard.group.root}`,
+          path: `${paths.dashboard.group.add}`,
           icon: <Plus size={18} strokeWidth={1.5} />,
         },
       ],

@@ -11,7 +11,7 @@ import { PaginatedResult } from '@rumsan/sdk/types';
 type IProps = {
   handleNextPage: () => void;
   handlePrevPage: () => void;
-  handlePageSizeChange: (value: string | number) => void;
+  handlePageSizeChange?: (value: string | number) => void;
   meta: PaginatedResult<any>['meta'];
   total?: number;
   perPage: number;

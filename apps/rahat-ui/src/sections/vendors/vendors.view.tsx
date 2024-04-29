@@ -86,7 +86,7 @@ function VendorsView() {
         meta={vendorData?.response?.meta || { total: 0, currentPage: 0 }}
         handleNextPage={setNextPage}
         handlePrevPage={setPrevPage}
-        handlePageSizeChange={setPerPage}
+        // handlePageSizeChange={setPerPage}
         currentPage={pagination.page}
         perPage={pagination.perPage}
         total={vendorData?.response?.meta.lastPage || 0}

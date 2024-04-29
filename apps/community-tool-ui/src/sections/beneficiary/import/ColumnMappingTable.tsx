@@ -65,7 +65,7 @@ export default function ColumnMappingTable({
   }
 
   return (
-    <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+    <table className="ml-8 w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
       <thead>
         <tr>
           {columns.map((column: any, index: number) => (
@@ -92,7 +92,7 @@ export default function ColumnMappingTable({
         </tr>
       </thead>
       <tbody>
-        {rawData.slice(0, 8).map((item: any, index: number) => (
+        {rawData.slice(0, 10).map((item: any, index: number) => (
           <tr
             key={index}
             className="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700"

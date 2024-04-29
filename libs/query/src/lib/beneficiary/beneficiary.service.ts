@@ -229,16 +229,17 @@ export const useUploadBeneficiary = () => {
     queryClient,
   );
 };
+type OptionalPagination = Partial<Pagination>;
 
 export const useBeneficiaryPii = (
-  pagination: Pagination,
+  pagination: OptionalPagination,
 ): UseQueryResult<any, Error> => {
   const { rumsanService, queryClient } = useRSQuery();
   const benClient = getBeneficiaryClient(rumsanService.client);
   return useQuery(
     {
       queryKey: [TAGS.GET_BENEFICIARIES, pagination],
-      queryFn: () => benClient.listPiiData(pagination),
+      queryFn: () => benClient.listPiiData(pagination as Pagination),
     },
     queryClient,
   );

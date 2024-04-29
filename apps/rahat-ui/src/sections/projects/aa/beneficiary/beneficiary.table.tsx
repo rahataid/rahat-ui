@@ -1,172 +1,167 @@
 'use client';
 
-import { useState } from 'react';
-import { flexRender } from '@tanstack/react-table';
-import { Settings2 } from 'lucide-react';
-import { usePagination } from '@rahat-ui/query';
-import { useRumsanService } from 'apps/rahat-ui/src/providers/service.provider';
+import {
+  PROJECT_SETTINGS_KEYS,
+  usePagination,
+  useProjectBeneficiaries,
+  useProjectSettingsStore,
+} from '@rahat-ui/query';
+import {
+  ColumnFiltersState,
+  SortingState,
+  VisibilityState,
+  flexRender,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  useReactTable,
+} from '@tanstack/react-table';
+import { ChevronDown, Settings2 } from 'lucide-react';
+
+import * as React from 'react';
 
 import { Button } from '@rahat-ui/shadcn/components/button';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
+  DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/components/dropdown-menu';
 import { Input } from '@rahat-ui/shadcn/components/input';
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@rahat-ui/shadcn/components/select';
+import {
+  Table,
   TableBody,
   TableCell,
-  Table as TableComponent,
   TableHead,
   TableHeader,
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import {
-  ColumnDef,
-  VisibilityState,
-  getCoreRowModel,
-  getSortedRowModel,
-  useReactTable,
-} from '@tanstack/react-table';
-import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
-import { MoreHorizontal } from 'lucide-react';
+import { UUID } from 'crypto';
+import { useParams } from 'next/navigation';
+import { useProjectBeneficiaryTableColumns } from './use-table-column'
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
+import { useBulkAssignVoucher } from 'apps/rahat-ui/src/hooks/el/contracts/el-contracts';
+import { useBoolean } from '../../../../hooks/use-boolean';
+// import TokenAssingnConfirm from './token.assign.confirm';
+import TableLoader from '../../../../components/table.loader';
+import { useRouter } from 'next/navigation';
 
-export type Beneficiary = {
+// import { useBeneficiaryTransaction } from '../../hooks/el/subgraph/querycall';
+
+export type Transaction = {
   name: string;
-  projectsInvolved: string;
-  internetAccess: string;
-  phone: string;
-  bank: string;
+  beneficaryType: string;
+  timeStamp: string;
+  transactionHash: string;
+  amount: string;
 };
 
-export const columns: ColumnDef<Beneficiary>[] = [
-  {
-    id: 'select',
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && 'indeterminate')
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
-    accessorKey: 'walletAddress',
-    header: 'Wallet Address',
-    cell: ({ row }) => <div>{row.getValue('walletAddress')}</div>,
-  },
-  {
-    accessorKey: 'gender',
-    header: 'Gender',
-    cell: ({ row }) => <div>{row.getValue('gender')}</div>,
-  },
-  {
-    accessorKey: 'internetStatus',
-    header: 'Internet Access',
-    cell: ({ row }) => <div>{row.getValue('internetStatus')}</div>,
-  },
-  {
-    accessorKey: 'phoneStatus',
-    header: 'Phone Type',
-    cell: ({ row }) => <div>{row.getValue('phoneStatus')}</div>,
-  },
-  {
-    accessorKey: 'bankedStatus',
-    header: 'Banking Status',
-    cell: ({ row }) => <div>{row.getValue('bankedStatus')}</div>,
-  },
-  {
-    id: 'actions',
-    enableHiding: false,
-    cell: () => {
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem>View Details</DropdownMenuItem>
-            {/* <DropdownMenuSeparator /> */}
-            {/* <DropdownMenuItem>Edit</DropdownMenuItem> */}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
-    },
-  },
-];
+function BeneficiaryDetailTableView() {
+  const tokenAssignModal = useBoolean();
+  const route = useRouter();
+  const id = useParams();
+  // TODO: Refactor it
+  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    [],
+  );
 
-export default function BeneficiaryTable() {
-  const { pagination, filters, setPagination } = usePagination((state) => ({
-    pagination: state.pagination,
-    filters: state.filters,
-    setPagination: state.setPagination,
-  }));
+  const handleTokenAssignModal = () => {
+    tokenAssignModal.onTrue();
+  };
 
-  const [perPage, setPerPage] = useState<number>(5);
-  const [currentPage, setCurrentPage] = useState<number>(1);
+  const handleTokenAssignModalClose = () => {
+    tokenAssignModal.onFalse();
+  };
 
-  const handleNextPage = () => setCurrentPage(currentPage + 1);
+  const [columnVisibility, setColumnVisibility] =
+    React.useState<VisibilityState>({});
+  const uuid = useParams().id as UUID;
+  const {
+    pagination,
+    filters,
+    setFilters,
+    setNextPage,
+    setPrevPage,
+    setPerPage,
+    selectedListItems,
+    setSelectedListItems,
+    resetSelectedListItems,
+  } = usePagination();
+  const assignVoucher = useBulkAssignVoucher();
 
-  const handlePrevPage = () => setCurrentPage(currentPage - 1);
-  const { beneficiaryQuery } = useRumsanService();
-
-  const { data } = beneficiaryQuery.useBeneficiaryList({
-    perPage,
-    page: currentPage,
+  const projectBeneficiaries = useProjectBeneficiaries({
+    page: pagination.page,
+    perPage: pagination.perPage,
+    order: 'desc',
+    sort: 'updatedAt',
+    projectUUID: uuid,
+    ...filters,
   });
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = useState({});
+
+
+  const columns = useProjectBeneficiaryTableColumns();
 
   const table = useReactTable({
     manualPagination: true,
-    data: data?.data || [],
+    data: projectBeneficiaries?.data?.data || [],
     columns,
+    onSortingChange: setSorting,
+    onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setRowSelection,
+    getRowId: (row) => row.wallet,
+    onRowSelectionChange: setSelectedListItems,
     state: {
+      sorting,
+      columnFilters,
       columnVisibility,
-      rowSelection,
+      rowSelection: selectedListItems,
     },
   });
+  // const assignToken =
+
+  const selectedRowAddresses = Object.keys(selectedListItems);
+
+  const handleBulkAssign = async () => {
+    // await assignVoucher.mutateAsync({
+    //   addresses: selectedRowAddresses as `0x${string}`[],
+    //   noOfTokens: 1,
+    //   contractAddress: contractAddress.elproject.address,
+    // });
+  };
+
+  React.useEffect(() => {
+    if (assignVoucher.isSuccess) {
+      route.push(`/projects/el/${id}`);
+    }
+  }, []);
+
   return (
     <>
-      <div className="w-full p-2 bg-secondary">
+      <div className="p-2 bg-secondary">
         <div className="flex items-center mb-2">
           <Input
-            placeholder="Filter beneficiary..."
-            value={
-              (table.getColumn('walletAddress')?.getFilterValue() as string) ??
-              ''
-            }
+            placeholder="Filter name..."
+            value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
             onChange={(event) =>
-              table
-                .getColumn('walletAddress')
-                ?.setFilterValue(event.target.value)
+              table.getColumn('name')?.setFilterValue(event.target.value)
             }
-            className="rounded mr-2"
+            className="max-w-sm rounded mr-2"
           />
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -197,9 +192,27 @@ export default function BeneficiaryTable() {
                 })}
             </DropdownMenuContent>
           </DropdownMenu>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              {selectedRowAddresses.length ? (
+                <Button
+                  disabled={assignVoucher.isPending}
+                  className="h-10 ml-2"
+                >
+                  {selectedRowAddresses.length} - Beneficiary Selected
+                  <ChevronDown strokeWidth={1.5} />
+                </Button>
+              ) : null}
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={handleTokenAssignModal}>
+                Assign Tokens To All
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
         <div className="rounded border bg-card">
-          <TableComponent>
+          <Table>
             <ScrollArea className="h-[calc(100vh-182px)]">
               <TableHeader className="bg-card sticky top-0">
                 {table.getHeaderGroups().map((headerGroup) => (
@@ -225,9 +238,6 @@ export default function BeneficiaryTable() {
                     <TableRow
                       key={row.id}
                       data-state={row.getIsSelected() && 'selected'}
-                      onClick={() => {
-                        handleClick(row.original);
-                      }}
                     >
                       {row.getVisibleCells().map((cell) => (
                         <TableCell key={cell.id}>
@@ -242,26 +252,38 @@ export default function BeneficiaryTable() {
                 ) : (
                   <TableRow>
                     <TableCell
-                      colSpan={table.getAllColumns().length}
+                      colSpan={columns.length}
                       className="h-24 text-center"
                     >
-                      No results.
+                      {projectBeneficiaries.isFetching ? (
+                        <TableLoader />
+                      ) : (
+                        'No data available.'
+                      )}
                     </TableCell>
                   </TableRow>
                 )}
               </TableBody>
             </ScrollArea>
-          </TableComponent>
-          <CustomPagination
-            meta={data?.response?.meta || { total: 0, currentPage: 0 }}
-            handleNextPage={handleNextPage}
-            handlePrevPage={handlePrevPage}
-            handlePageSizeChange={(value) =>
-              setPagination({ perPage: Number(value) })
-            }
-          />
+          </Table>
         </div>
       </div>
+      <CustomPagination
+        currentPage={pagination.page}
+        handleNextPage={setNextPage}
+        handlePageSizeChange={setPerPage}
+        handlePrevPage={setPrevPage}
+        meta={projectBeneficiaries.data?.response?.meta || {}}
+        perPage={pagination.perPage}
+      />
+      {/* <TokenAssingnConfirm
+        tokens={selectedRowAddresses.length}
+        open={tokenAssignModal.value}
+        handleClose={handleTokenAssignModalClose}
+        handleSubmit={handleBulkAssign}
+      /> */}
     </>
   );
 }
+
+export default React.memo(BeneficiaryDetailTableView);

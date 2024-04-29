@@ -73,13 +73,15 @@ const ProjectAssign: FC<ProjectAssignModal> = ({
                   Close
                 </Button>
               </DialogClose>
-              <Button
-                onClick={() => handleSubmit()}
-                variant="ghost"
-                className="text-primary"
-              >
-                Assign
-              </Button>
+              <DialogClose asChild>
+                <Button
+                  onClick={() => handleSubmit()}
+                  variant="ghost"
+                  className="text-primary"
+                >
+                  Assign
+                </Button>
+              </DialogClose>
             </DialogFooter>
           </DialogContent>
         </Dialog>

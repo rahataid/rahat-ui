@@ -54,7 +54,7 @@ export default function UserView() {
         currentPage={pagination.page}
         handleNextPage={setNextPage}
         handlePrevPage={setPrevPage}
-        handlePageSizeChange={setPerPage}
+        // handlePageSizeChange={setPerPage}
         meta={users?.response?.meta || { total: 0, currentPage: 0 }}
         perPage={pagination.perPage}
         total={users?.response?.meta?.lastPage || 0}

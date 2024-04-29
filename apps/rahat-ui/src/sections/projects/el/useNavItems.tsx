@@ -114,7 +114,6 @@ export const useNavItems = () => {
   const createOnlyVoucher = useOnlyMintVoucher();
   const closeProject = useCloseProject();
 
-  // Free Voucher
   const handleCreateVoucherSubmit = async (e: any) => {
     e.preventDefault();
     if (!contractSettings) return;
@@ -146,8 +145,6 @@ export const useNavItems = () => {
       });
     }
   };
-
-  console.log("project stats", projectStats)
 
   const navItems: NavItem[] = [
     {

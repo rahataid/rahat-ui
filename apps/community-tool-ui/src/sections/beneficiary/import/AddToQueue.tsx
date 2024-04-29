@@ -66,23 +66,27 @@ export default function AddToQueue({
       </div>
       <hr />
       <div className="max-h-screen max-w-screen-lg overflow-x-auto overflow-y-auto">
-        <table className="ml-5 w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-          <tr>
-            {/* Dynamically generated table headers */}
-            {headerKeys.map((key) => (
-              <th className="px-4 py-4" key={key}>
-                {invalidFields.find((field: any) => field.fieldName === key) ? (
-                  <span className="text-red-500">
-                    {truncatedText(humanizeString(key), 40)}*
-                  </span>
-                ) : key === 'isDuplicate' ? (
-                  ''
-                ) : (
-                  truncatedText(humanizeString(key), 40)
-                )}
-              </th>
-            ))}
-          </tr>
+        <table className="ml-2 w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+          <thead>
+            <tr>
+              {/* Dynamically generated table headers */}
+              {headerKeys.map((key) => (
+                <th className="px-2 py-2" key={key}>
+                  {invalidFields.find(
+                    (field: any) => field.fieldName === key,
+                  ) ? (
+                    <span className="text-red-500">
+                      {truncatedText(humanizeString(key), 40)}*
+                    </span>
+                  ) : key === 'isDuplicate' ? (
+                    ''
+                  ) : (
+                    truncatedText(humanizeString(key), 40)
+                  )}
+                </th>
+              ))}
+            </tr>
+          </thead>
 
           <tbody>
             {data.map((item: any, index: number) => (

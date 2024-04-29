@@ -21,6 +21,7 @@ export const useAudienceColumns = (
         details: {
           name: item.name,
           phone: item.phone,
+          email: item.email,
         },
       });
     }
@@ -89,6 +90,11 @@ export const useAudienceColumns = (
       accessorKey: 'phone',
       header: 'Phone',
       cell: ({ row }) => <div>{row.getValue('phone')}</div>,
+    },
+    {
+      accessorKey: 'email',
+      header: 'Email',
+      cell: ({ row }) => <div>{row.getValue('email')}</div>,
     },
   ];
   return columns;

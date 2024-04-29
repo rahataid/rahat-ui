@@ -35,8 +35,6 @@ const ProjectMainView = () => {
     (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT] || null,
   );
 
-  const beneficiaryStats = useGetBeneficiaryStats();
-
   const { data: beneficiaryDetails, refetch: refetchBeneficiary } =
     useReadElProjectGetTotalBeneficiaries({
       address: contractSettings?.elproject?.address,
@@ -85,8 +83,11 @@ const ProjectMainView = () => {
   const filteredChartData = stats?.data?.data
     ? stats.data.data.filter((item) => {
         const name = item?.name;
-        return name === `BENEFICIARY_AGE_RANGE${id}`;
-      })
+        return name === `BENEFICIARY_AGE_RANGE_ID_${id}`;
+      }).map((item) =>({
+        ...item,
+        name: item.name.replace(new RegExp(`_ID_${id}`), '') 
+      }))
     : [];
 
   const filterdELChartData =
@@ -177,6 +178,7 @@ const ProjectMainView = () => {
           refetchBeneficiary={refetchBeneficiary}
           refetchVoucher={refetchVoucher}
           loading={isLoading}
+          ELProjectStats={ELProjectStats}
         />
         <ProjectChart
           chartData={[
@@ -187,14 +189,12 @@ const ProjectMainView = () => {
         />
         <div className="grid md:grid-cols-1 lg:grid-cols-2 gap-2 mt-2">
           <div className="bg-card rounded">
-            <ChartColumnStacked series={eyeCheckupData} />
-
             <p className="mt-2 mb-1 ml-4">Eye Checkup Reporting</p>
+            <ChartColumnStacked series={eyeCheckupData} />
           </div>
           <div className="bg-card rounded">
-            <ChartColumnStacked series={glassData} />
-
             <p className="mt-2 mb-1 ml-4">Glasses Required</p>
+            <ChartColumnStacked series={glassData} />
           </div>
         </div>
       </ScrollArea>

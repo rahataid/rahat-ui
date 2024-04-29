@@ -24,8 +24,7 @@ export default function PhaseCard({ phasesStats }: any) {
                 <EllipsisVertical size={20} strokeWidth={1.5} />
               </div>
               <p className="font-normal text-sm pr-4">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
-                eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                The first stage of anticipatory action.
               </p>
             </div>
             <div className="flex justify-end">
@@ -47,8 +46,7 @@ export default function PhaseCard({ phasesStats }: any) {
                 <EllipsisVertical size={20} strokeWidth={1.5} />
               </div>
               <p className="font-normal text-sm pr-4">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
-                eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                The second stage of anticipatory action.
               </p>
             </div>
             <div className="flex justify-end">
@@ -76,8 +74,7 @@ export default function PhaseCard({ phasesStats }: any) {
                 <EllipsisVertical size={20} strokeWidth={1.5} />
               </div>
               <p className="font-normal text-sm pr-4">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
-                eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                The final stage of anticipatory action.
               </p>
             </div>
             <div className="flex justify-end">

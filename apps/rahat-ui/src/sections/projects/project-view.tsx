@@ -4,7 +4,6 @@ import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { CirclePlus } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useBoolean } from '../../hooks/use-boolean';
 import { ProjectCard } from '../../sections/projects';
@@ -15,7 +14,6 @@ export default function ProjectListView() {
   // const { pagination, setNextPage, setPrevPage, setPerPage } = usePagination();
   const { data } = useProjectList();
   const AddProjectModal = useBoolean();
-  console.log('project.type', data?.data);
 
   const [filterValue, setFilterValue] = useState('');
 
@@ -30,10 +28,6 @@ export default function ProjectListView() {
   const handleFilterChange = (event) => {
     setFilterValue(event.target.value);
   };
-
-  const filteredProjects = data?.data?.filter((project) =>
-    project.name.toLowerCase().includes(filterValue.toLowerCase()),
-  );
 
   return (
     <div className="-mt-2 p-2 bg-secondary">
@@ -86,7 +80,7 @@ export default function ProjectListView() {
     </div>
   );
 }
-function getImageForProjectType(type) {
+function getImageForProjectType(type: String) {
   switch (type) {
     case 'el':
       return '/el/el_logo_dark.png';

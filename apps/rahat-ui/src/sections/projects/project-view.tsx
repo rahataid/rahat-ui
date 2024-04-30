@@ -2,17 +2,60 @@
 import { usePagination, useProjectList } from '@rahat-ui/query';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { ProjectCard } from '../../sections/projects';
-import Filters from './filter';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { useBoolean } from '../../hooks/use-boolean';
+import AddProjectConfirmModal from './addProject.confirm';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
+import { CirclePlus } from 'lucide-react';
 // import CustomPagination from '../../components/customPagination';
 
 export default function ProjectListView() {
   // const { pagination, setNextPage, setPrevPage, setPerPage } = usePagination();
   const { data } = useProjectList();
+  const router = useRouter();
+  const AddProjectModal = useBoolean();
+
+  const [filterValue, setFilterValue] = useState('');
+
+  const openAddProjectModal = () => {
+    AddProjectModal.onTrue();
+  };
+
+  const closeAddProjectModal = () => {
+    AddProjectModal.onFalse();
+  };
+
+  const handleFilterChange = (event) => {
+    setFilterValue(event.target.value);
+  };
+
+  const filteredProjects = data?.data?.filter((project) =>
+    project.name.toLowerCase().includes(filterValue.toLowerCase()),
+  );
 
   return (
-    <div className="bg-secondary">
-      <div className="p-2">
-        <Filters />
+    <div className="-mt-2 p-2 bg-secondary">
+      <AddProjectConfirmModal
+        open={AddProjectModal.value}
+        handleClose={closeAddProjectModal}
+      />
+      <div className="flex items-center mb-2">
+        <Input
+          placeholder="Filter projects..."
+          className="rounded mt-2"
+          value={filterValue}
+          onChange={handleFilterChange}
+        />
+        <Button
+          onClick={() => openAddProjectModal()}
+          variant={'outline'}
+          className="mt-2 flex items-center justify-center gap-1 bg-white hover:bg-primary hover:text-white "
+        >
+          <CirclePlus size={16} strokeWidth={1.5} />
+          Add Project
+        </Button>
       </div>
       <ScrollArea className="px-2 pb-2 h-[calc(100vh-122px)]">
         <div className="grid grid-cols-3 gap-2">

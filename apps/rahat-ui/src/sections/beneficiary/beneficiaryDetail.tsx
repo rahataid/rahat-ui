@@ -115,7 +115,7 @@ export default function BeneficiaryDetail({
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
-          <TooltipProvider delayDuration={100}>
+          {/* <TooltipProvider delayDuration={100}>
             <Tooltip>
               <TooltipTrigger
                 onClick={() => {
@@ -130,7 +130,7 @@ export default function BeneficiaryDetail({
                 <p className="text-xs font-medium">Expand</p>
               </TooltipContent>
             </Tooltip>
-          </TooltipProvider>
+          </TooltipProvider> */}
         </div>
         <div className="flex gap-3">
           <TooltipProvider delayDuration={100}>
@@ -190,9 +190,6 @@ export default function BeneficiaryDetail({
               />
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-              <DropdownMenuItem onClick={() => handleTabChange('details')}>
-                Details
-              </DropdownMenuItem>
               <DropdownMenuItem onClick={() => handleTabChange('edit')}>
                 Edit
               </DropdownMenuItem>

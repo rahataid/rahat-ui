@@ -32,10 +32,15 @@ import { useRouter } from 'next/navigation';
 import { FC } from 'react';
 import { UseFormReturn, useForm } from 'react-hook-form';
 import { z } from 'zod';
+import { useGetApprovedTemplate } from '@rumsan/communication-query';
 import {
-  useGetApprovedTemplate,
-} from '@rumsan/communication-query';
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@rahat-ui/shadcn/src/components/ui/command';
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '@rahat-ui/shadcn/src/components/ui/command';
 import { paths } from 'apps/rahat-ui/src/routes/paths';
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 import ConfirmModal from './confirm.modal';
@@ -69,8 +74,8 @@ const CampaignForm: FC<CampaignFormProps> = ({
   isSubmitting,
 }) => {
   const router = useRouter();
-const {data:messageTemplate} = useGetApprovedTemplate()
-const includeMessage = ['sms', 'whatsapp', 'email'].includes(
+  const { data: messageTemplate } = useGetApprovedTemplate();
+  const includeMessage = ['sms', 'whatsapp', 'email'].includes(
     form.getValues().campaignType?.toLowerCase(),
   );
   const isWhatsappMessage =
@@ -78,8 +83,8 @@ const includeMessage = ['sms', 'whatsapp', 'email'].includes(
   const includeAudio = ['phone'].includes(
     form.getValues().campaignType?.toLowerCase(),
   );
-  const [open, setOpen] = React.useState(false)
-  const [templatemessage, setTemplatemessage] = React.useState('')
+  const [open, setOpen] = React.useState(false);
+  const [templatemessage, setTemplatemessage] = React.useState('');
   //   const includeFile = includeMessage ? 'message' : 'file';
   //   const excludeFile = includeMessage ? 'file' : 'message';
   if (!form) return 'loading...';
@@ -91,7 +96,6 @@ const includeMessage = ['sms', 'whatsapp', 'email'].includes(
   const handleCampaignAssignModalClose = () => {
     campaignConfirmModal.onFalse();
   };
-
   return (
     <>
       <div className="w-full p-2">
@@ -118,12 +122,11 @@ const includeMessage = ['sms', 'whatsapp', 'email'].includes(
               )}
             />
 
-            <FormField
+            {/* <FormField
               control={form.control}
               name="startTime"
               render={({ field }) => (
                 <FormItem className="flex flex-col">
-                  {/* <FormLabel>Start time</FormLabel> */}
                   <Popover>
                     <PopoverTrigger asChild>
                       <FormControl>
@@ -151,7 +154,7 @@ const includeMessage = ['sms', 'whatsapp', 'email'].includes(
                   <FormMessage />
                 </FormItem>
               )}
-            />
+            /> */}
 
             <FormField
               control={form.control}
@@ -188,55 +191,63 @@ const includeMessage = ['sms', 'whatsapp', 'email'].includes(
                 name="messageSid"
                 render={({ field, fieldState }) => (
                   <FormItem>
-                  
-                  <Popover
-                   >
-      <PopoverTrigger asChild>
-      <FormControl>
-        <Button
-          variant="outline"
-          role="combobox"
-          aria-expanded={open}
-          className="w-[200px] justify-between"
-        >
-          {field.value
-                        ? templatemessage
-                        : "Select from template"}
-             
-        </Button>
-      </FormControl>
-
-      </PopoverTrigger>
-      <PopoverContent className="w-[200px] p-0">
-        
-        <Command>
-          <CommandList>
-            <CommandInput placeholder="Search template..." />
-            <CommandEmpty>Not found.</CommandEmpty>
-            <CommandGroup>
-              {messageTemplate?.data?.map((option) => {
-                  if(option)
-                  return (
-                    <CommandItem
-                      className="gap-2"
-                      key={option?.sid}
-                      onSelect={() => {
-                        form.setValue("messageSid", option?.sid)
-                      setTemplatemessage(option?.types['twilio/text']?.body)
-                      }}
-                    >
-                    {option?.types['twilio/text']?.body}
-
-                    </CommandItem>
-                  );
-                })}
-            </CommandGroup>
-          </CommandList>
-        </Command>
-      </PopoverContent>
-    </Popover>
-    </FormItem>
-
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant="outline"
+                            role="combobox"
+                            aria-expanded={open}
+                            className="justify-between"
+                          >
+                            {field.value
+                              ? templatemessage.length > 50
+                                ? templatemessage.slice(0, 25) + '...'
+                                : templatemessage
+                              : 'Select from template'}
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className=" p-0">
+                        <Command>
+                          <CommandList>
+                            <CommandInput placeholder="Search template..." />
+                            <CommandEmpty>Not found.</CommandEmpty>
+                            <CommandGroup>
+                              {messageTemplate?.data?.map((option) => {
+                                if (option)
+                                  return (
+                                    <>
+                                      <CommandItem
+                                        className="gap-4"
+                                        key={option?.sid}
+                                        onSelect={() => {
+                                          form.setValue(
+                                            'messageSid',
+                                            option?.sid,
+                                          );
+                                          setTemplatemessage(
+                                            option?.types['twilio/text']?.body,
+                                          );
+                                        }}
+                                      >
+                                        <strong>{option?.friendly_name}</strong>{' '}
+                                        {option?.types['twilio/text']?.body
+                                          .length > 100
+                                          ? option?.types[
+                                              'twilio/text'
+                                            ]?.body.slice(0, 50) + '...'
+                                          : option?.types['twilio/text']?.body}
+                                      </CommandItem>
+                                    </>
+                                  );
+                              })}
+                            </CommandGroup>
+                          </CommandList>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
+                  </FormItem>
                 )}
               />
             )}
@@ -251,7 +262,7 @@ const includeMessage = ['sms', 'whatsapp', 'email'].includes(
                       <Textarea
                         {...field}
                         value={
-                          templatemessage.length>0
+                          templatemessage.length > 0
                             ? templatemessage
                             : field.value
                         }
@@ -338,6 +349,7 @@ const includeMessage = ['sms', 'whatsapp', 'email'].includes(
           open={campaignConfirmModal.value}
           handleClose={handleCampaignAssignModalClose}
           handleSubmit={handleSubmit}
+          isSubmitting={isSubmitting}
         />
       </div>
     </>

@@ -6,8 +6,8 @@ import Filters from './filter';
 // import CustomPagination from '../../components/customPagination';
 
 export default function ProjectListView() {
-  const { pagination, setNextPage, setPrevPage, setPerPage } = usePagination();
-  const { data } = useProjectList(pagination);
+  // const { pagination, setNextPage, setPrevPage, setPerPage } = usePagination();
+  const { data } = useProjectList();
 
   return (
     <div className="bg-secondary">

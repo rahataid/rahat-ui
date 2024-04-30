@@ -20,7 +20,7 @@ import {
   splitValidAndInvalid,
 } from 'apps/community-tool-ui/src/utils';
 import { ArrowBigLeft, ArrowBigRight } from 'lucide-react';
-import React from 'react';
+import React, { use } from 'react';
 import { useForm } from 'react-hook-form';
 import Swal from 'sweetalert2';
 import * as xlsx from 'xlsx';
@@ -31,7 +31,9 @@ import InfoBox from './InfoBox';
 
 import {
   useBeneficiaryImportStore,
+  useExistingFieldMappings,
   useFetchKoboSettings,
+  useKobotoolData,
 } from '@rahat-ui/community-query';
 import { useRSQuery } from '@rumsan/react-query';
 import ColumnMappingTable from './ColumnMappingTable';
@@ -42,10 +44,15 @@ interface IProps {
 }
 
 export default function BenImp({ extraFields }: IProps) {
+  // ==========Hook Functions=============
   const form = useForm({});
   const { rumsanService } = useRSQuery();
   const { data: kbSettings } = useFetchKoboSettings();
+  const existingMapClient = useExistingFieldMappings();
+  // const koboClient = useKobotoolData();
+  // ========End of Hooks functions =========
 
+  // =======States=========
   const {
     currentScreen,
     setCurrentScreen,
@@ -72,15 +79,15 @@ export default function BenImp({ extraFields }: IProps) {
     validBenef,
     setValidBenef,
   } = useBeneficiaryImportStore();
-  // ==========States=============
+  // ==========End of States=============
 
   const fetchExistingMapping = async (importId: string) => {
     setMappings([]);
-    const res = await rumsanService.client.get(`/sources/${importId}/mappings`);
+    const res = await existingMapClient.mutateAsync(importId);
     if (!res) return;
-    if (res?.data?.data) {
+    if (res?.data?.fieldMapping) {
       setHasExistingMapping(true);
-      const { fieldMapping } = res.data.data;
+      const { fieldMapping } = res.data;
       return setMappings(fieldMapping?.sourceTargetMappings);
     }
   };
@@ -136,7 +143,7 @@ export default function BenImp({ extraFields }: IProps) {
       setLoading(false);
       return Swal.fire({
         icon: 'error',
-        title: 'Failed to fetch kobotool settings',
+        title: 'Failed to fetch data from kobotool',
       });
     }
   };
@@ -222,7 +229,8 @@ export default function BenImp({ extraFields }: IProps) {
       html: msg,
     });
     if (dialog.isConfirmed) {
-      if (!validBenef.length) return validateOrImport(IMPORT_ACTION.IMPORT);
+      if (!validBenef.length)
+        return createMappingAndValidate(IMPORT_ACTION.IMPORT);
       const sourcePayload = {
         action: IMPORT_ACTION.IMPORT,
         name: importSource,
@@ -234,7 +242,7 @@ export default function BenImp({ extraFields }: IProps) {
       return exportDuplicateData(processedData, duplicateData);
   };
 
-  const validateOrImport = (action: string) => {
+  const createMappingAndValidate = (action: string) => {
     setValidBenef([]);
     let finalPayload = rawData as any[];
     const selectedTargets = []; // Only submit selected target fields
@@ -420,7 +428,9 @@ export default function BenImp({ extraFields }: IProps) {
 
                 <Button
                   disabled={loading}
-                  onClick={() => validateOrImport(IMPORT_ACTION.VALIDATE)}
+                  onClick={() =>
+                    createMappingAndValidate(IMPORT_ACTION.VALIDATE)
+                  }
                   className="w-40 bg-primary hover:ring-2 ring-primary"
                 >
                   <ArrowBigRight size={18} strokeWidth={2} />

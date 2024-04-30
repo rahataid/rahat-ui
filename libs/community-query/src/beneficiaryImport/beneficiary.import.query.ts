@@ -3,7 +3,7 @@ import {
   getSourceClient,
 } from '@rahataid/community-tool-sdk/clients';
 import { useRSQuery } from '@rumsan/react-query';
-import { UseQueryResult, useQuery } from '@tanstack/react-query';
+import { UseQueryResult, useMutation, useQuery } from '@tanstack/react-query';
 import { TAGS } from '../config';
 
 export const useFetchKoboSettings = (): UseQueryResult<any, Error> => {
@@ -19,17 +19,30 @@ export const useFetchKoboSettings = (): UseQueryResult<any, Error> => {
   );
 };
 
-export const useExistingFieldMappings = (
-  importId: string,
-): UseQueryResult<any, Error> => {
-  const { queryClient, rumsanService } = useRSQuery();
+export const useExistingFieldMappings = () => {
+  const { rumsanService } = useRSQuery();
   const sourceClient = getSourceClient(rumsanService.client);
-  return useQuery(
-    {
-      queryKey: [TAGS.LIST_MAPPINGS_BY_IMPORT_ID],
-      queryFn: () => sourceClient.importIdMapping(importId),
-    },
+  return useMutation({
+    mutationFn: (importId: string) => sourceClient.importIdMapping(importId),
+  });
+};
 
-    queryClient,
-  );
+export const useCreateImportSource = () => {
+  const { rumsanService } = useRSQuery();
+  const myClient = getSourceClient(rumsanService.client);
+  return useMutation({
+    mutationFn: (payload: any) => myClient.create(payload),
+    onSuccess: () => {},
+    onError: () => {},
+  });
+};
+
+// TODO Fix SDK
+export const useKobotoolData = () => {
+  const { rumsanService } = useRSQuery();
+  const myClient = getAppClient(rumsanService.client);
+  return useMutation({
+    mutationFn: (formName: string) =>
+      myClient.koboImportByForm({ name: formName }),
+  });
 };

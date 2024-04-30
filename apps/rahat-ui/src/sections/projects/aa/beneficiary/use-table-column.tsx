@@ -11,7 +11,8 @@ import {
   TooltipContent,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { useSecondPanel } from '../../../../providers/second-panel-provider';
-import BeneficiaryDetail from '../../../../sections/projects/el/beneficiary/beneficiary.detail';
+
+// import BeneficiaryDetail from './beneficiary.detail';
 import { truncateEthAddress } from '@rumsan/sdk/utils';
 
 export const useProjectBeneficiaryTableColumns = () => {
@@ -23,14 +24,14 @@ export const useProjectBeneficiaryTableColumns = () => {
     setWalletAddressCopied(index);
   };
 
-  const openSplitDetailView = (rowDetail: any) => {
-    setSecondPanelComponent(
-      <BeneficiaryDetail
-        closeSecondPanel={closeSecondPanel}
-        beneficiaryDetails={rowDetail}
-      />,
-    );
-  };
+  // const openSplitDetailView = (rowDetail: any) => {
+  //   setSecondPanelComponent(
+  //     <BeneficiaryDetail
+  //       closeSecondPanel={closeSecondPanel}
+  //       beneficiaryDetails={rowDetail}
+  //     />,
+  //   );
+  // };
 
   const columns: ColumnDef<any>[] = [
     {
@@ -56,40 +57,48 @@ export const useProjectBeneficiaryTableColumns = () => {
       enableHiding: false,
     },
     {
+      accessorKey: 'wallet',
+      header: 'Wallet',
+      cell: ({ row }) => (
+        <TooltipProvider delayDuration={100}>
+          <Tooltip>
+            <TooltipTrigger
+              className="flex items-center gap-3 cursor-pointer"
+              onClick={() => clickToCopy(row.getValue('wallet'), row.index)}
+            >
+              <p>{truncateEthAddress(row.getValue('wallet'))}</p>
+              {walletAddressCopied === row.index ? (
+                <CopyCheck size={15} strokeWidth={1.5} />
+              ) : (
+                <Copy className="text-slate-500" size={15} strokeWidth={1.5} />
+              )}
+            </TooltipTrigger>
+            <TooltipContent className="bg-secondary" side="bottom">
+              <p className="text-xs font-medium">
+                {walletAddressCopied === row.index ? 'copied' : 'click to copy'}
+              </p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      ),
+    },
+    {
       accessorKey: 'name',
       header: 'Name',
       cell: ({ row }) => (
         <div
           className="cursor-pointer"
-          onClick={() => openSplitDetailView(row.original)}
+          // onClick={() => openSplitDetailView(row.original)}
         >
           {row.getValue('name')}
         </div>
       ),
     },
     {
-      accessorKey: 'type',
-      header: 'Type',
-      cell: ({ row }) => <div> {row.getValue('type')}</div>,
+      accessorKey: 'email',
+      header: 'Email',
+      cell: ({ row }) => <div> {row.getValue('email') || 'N/A'}</div>,
     },
-    
-    // {
-    //   accessorKey: 'Type',
-    //   header: 'Type',
-    //   cell: ({ row }) => (
-    //     <div className="capitalize">
-    //       {row.getValue('vouvherType')
-    //         ? `${row
-    //             .getValue('vouvherType')
-    //             ?.toString()
-    //             .substring(0, 4)}....${row
-    //             .getValue('vouvherType')
-    //             ?.toString()
-    //             ?.slice(-3)}`
-    //         : 'N/A'}
-    //     </div>
-    //   ),
-    // },
     {
       accessorKey: 'phone',
       header: 'Phone',
@@ -100,25 +109,20 @@ export const useProjectBeneficiaryTableColumns = () => {
       header: 'Gender',
       cell: ({ row }) => <div> {row.getValue('gender')}</div>,
     },
-    {
-      accessorKey: 'voucher',
-      header: 'Voucher',
-      cell: ({ row }) => <div> {row.getValue('voucher')}</div>,
-    },
-    {
-      id: 'actions',
-      enableHiding: false,
-      cell: ({ row }) => {
-        return (
-          <Eye
-            size={20}
-            strokeWidth={1.5}
-            className="cursor-pointer hover:text-primary"
-            onClick={() => openSplitDetailView(row.original)}
-          />
-        );
-      },
-    },
+    // {
+    //   id: 'actions',
+    //   enableHiding: false,
+    //   cell: ({ row }) => {
+    //     return (
+    //       <Eye
+    //         size={20}
+    //         strokeWidth={1.5}
+    //         className="cursor-pointer hover:text-primary"
+    //         onClick={() => openSplitDetailView(row.original)}
+    //       />
+    //     );
+    //   },
+    // },
   ];
 
   return columns;

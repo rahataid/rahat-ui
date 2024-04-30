@@ -52,61 +52,53 @@ export default function AddTriggerStatement() {
     (state) => state.dhmStations![projectID],
   );
 
+  // TODO: refactor to searchable select
+  const stations = [...dhmStations.results.slice(0, 5), { title: 'Karnali at Chisapani' }]
+
   useActivitiesHazardTypes(projectID);
   const hazardTypes = useActivitiesStore((state) => state.hazardTypes);
 
-  const FormSchema = z
-    .object({
-      dataSource: z.string().min(1, { message: 'Required.' }),
-      location: z.string().min(1, { message: 'Required.' }),
-      dangerLevel: z.string().min(1, { message: 'Required.' }),
-      warningLevel: z.string().min(1, { message: 'Required.' }),
-      hazardTypeId: z.string().min(1, { message: 'Required.' }),
-    })
-    .refine((data) => Number(data.dangerLevel) > Number(data.warningLevel), {
-      message: 'Danger level must me higher than warning level.',
-      path: ['dangerLevel'],
+  const FormSchema = z.object({
+    dataSource: z.string().min(1, { message: 'Required.' }),
+    location: z.string().min(1, { message: 'Required.' }),
+    activationLevel: z.string().min(1, { message: 'Required.' }),
+    readinessLevel: z.string().min(1, { message: 'Required.' }),
+    hazardTypeId: z.string().min(1, { message: 'Required.' })
+  })
+    .refine((data) => Number(data.activationLevel) > Number(data.readinessLevel), {
+      message: "Activation level must be higher than readiness level.",
+      path: ["activationLevel"],
     });
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
       dataSource: '',
-      dangerLevel: '',
-      warningLevel: '',
+      readinessLevel: '',
+      activationLevel: '',
       location: '',
       hazardTypeId: '',
     },
   });
 
-  const handleCreateTriggerStatement = async (
-    data: z.infer<typeof FormSchema>,
-  ) => {
-    try {
-      let payload;
-      if (data.dataSource === 'DHM') {
-        payload = {
-          dataSource: data.dataSource,
-          location: data.location,
-          hazardTypeId: data.hazardTypeId,
-          triggerStatement: {
-            dangerLevel: data.dangerLevel,
-            warningLevel: data.warningLevel,
-          },
-        };
+  const handleCreateTriggerStatement = async (data: z.infer<typeof FormSchema>) => {
+    let payload;
+    if (data.dataSource === 'DHM') {
+      payload = {
+        dataSource: data.dataSource,
+        location: data.location,
+        hazardTypeId: data.hazardTypeId,
+        triggerStatement: {
+          readinessLevel: data.readinessLevel,
+          activationLevel: data.activationLevel
+        }
       }
-
-      await createTriggerStatement.mutateAsync({
-        projectUUID: projectID,
-        triggerStatementPayload: {
-          ...payload,
-          triggerActivity: ['EMAIL'],
-          repeatEvery: 300000, //5 minutes
-        },
-      });
-    } catch (e) {
-      toast.error('Failed to add trigger statement.');
     }
+
+    await createTriggerStatement.mutateAsync({
+      projectUUID: projectID,
+      triggerStatementPayload: payload
+    });
   };
 
   return (
@@ -165,7 +157,7 @@ export default function AddTriggerStatement() {
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              {dhmStations?.results?.map((r: any) => {
+                              {stations?.map((r: any) => {
                                 return (
                                   <SelectItem value={r.title}>
                                     {r.title}
@@ -217,7 +209,7 @@ export default function AddTriggerStatement() {
                 <div className="col-span-2">
                   <FormField
                     control={form.control}
-                    name="dangerLevel"
+                    name="readinessLevel"
                     render={({ field }) => {
                       return (
                         <FormItem>
@@ -227,7 +219,7 @@ export default function AddTriggerStatement() {
                           >
                             <FormControl>
                               <SelectTrigger>
-                                <SelectValue placeholder="Danger Level" />
+                                <SelectValue placeholder="Readiness Level" />
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
@@ -245,7 +237,7 @@ export default function AddTriggerStatement() {
                 <div className="col-span-2">
                   <FormField
                     control={form.control}
-                    name="warningLevel"
+                    name="activationLevel"
                     render={({ field }) => {
                       return (
                         <FormItem>
@@ -255,7 +247,7 @@ export default function AddTriggerStatement() {
                           >
                             <FormControl>
                               <SelectTrigger>
-                                <SelectValue placeholder="Warning Level" />
+                                <SelectValue placeholder="Activation Level" />
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>

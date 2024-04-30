@@ -7,9 +7,13 @@ import {
   CircleX,
 } from 'lucide-react';
 
-export default function PhaseCard() {
+export default function PhaseCard({ phasesStats }: any) {
+
+  const readiness = phasesStats.phaseStatus.readinessStatus
+  const activation = phasesStats.phaseStatus.activationStatus
+
   return (
-    <div className="grid grid-cols-3 p-2 gap-2 bg-secondary pb-0">
+    <div className="grid grid-cols-3 gap-2 bg-secondary pb-0">
       <Card>
         <CardContent className="flex p-2 pt-4">
           <RadialChart series={[30]} total={15} label="Preparedness" />
@@ -20,13 +24,12 @@ export default function PhaseCard() {
                 <EllipsisVertical size={20} strokeWidth={1.5} />
               </div>
               <p className="font-normal text-sm pr-4">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
-                eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                The first stage of anticipatory action.
               </p>
             </div>
             <div className="flex justify-end">
               <div className="flex gap-3">
-                <TriangleAlert color="yellow" size={20} strokeWidth={1.5} />
+                {/* <TriangleAlert color="yellow" size={20} strokeWidth={1.5} /> */}
                 <CircleCheck color="green" size={20} strokeWidth={1.5} />
               </div>
             </div>
@@ -43,14 +46,19 @@ export default function PhaseCard() {
                 <EllipsisVertical size={20} strokeWidth={1.5} />
               </div>
               <p className="font-normal text-sm pr-4">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
-                eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                The second stage of anticipatory action.
               </p>
             </div>
             <div className="flex justify-end">
               <div className="flex gap-3">
                 <TriangleAlert color="yellow" size={20} strokeWidth={1.5} />
-                <CircleX color="red" size={20} strokeWidth={1.5} />
+                {
+                  readiness?.activated ? (
+                    <CircleCheck color="green" size={20} strokeWidth={1.5} />
+                  ) : (
+                    <CircleX color="red" size={20} strokeWidth={1.5} />
+                  )
+                }
               </div>
             </div>
           </div>
@@ -66,14 +74,19 @@ export default function PhaseCard() {
                 <EllipsisVertical size={20} strokeWidth={1.5} />
               </div>
               <p className="font-normal text-sm pr-4">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
-                eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                The final stage of anticipatory action.
               </p>
             </div>
             <div className="flex justify-end">
               <div className="flex gap-3">
                 <TriangleAlert color="yellow" size={20} strokeWidth={1.5} />
-                <CircleCheck color="green" size={20} strokeWidth={1.5} />
+                {
+                  activation?.activated ? (
+                    <CircleCheck color="green" size={20} strokeWidth={1.5} />
+                  ) : (
+                    <CircleX color="red" size={20} strokeWidth={1.5} />
+                  )
+                }
               </div>
             </div>
           </div>

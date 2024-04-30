@@ -103,4 +103,4 @@ export const SUBJECTS = [
   { label: 'Group', value: 'group' },
 ];
 
-export const MAX_EXPORT_COUNT = 500;
+export const MAX_EXPORT_COUNT = 1000;

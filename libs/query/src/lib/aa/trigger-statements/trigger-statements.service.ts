@@ -41,7 +41,7 @@ export const useCreateTriggerStatement = () => {
       const errorMessage = error?.response?.data?.message || 'Error';
       q.reset();
       toast.fire({
-        title: 'Error while adding trigger statement.',
+        title: 'Error.',
         icon: 'error',
         text: errorMessage,
       });
@@ -50,7 +50,7 @@ export const useCreateTriggerStatement = () => {
 };
 
 export const useDeleteTriggerStatement = () => {
-  const qc = useQueryClient();
+  const qc = useQueryClient()
   const q = useProjectAction();
   const alert = useSwal();
   const toast = alert.mixin({
@@ -80,7 +80,7 @@ export const useDeleteTriggerStatement = () => {
 
     onSuccess: () => {
       q.reset();
-      qc.invalidateQueries({ queryKey: ['triggerstatements'] });
+      qc.invalidateQueries({ queryKey: ['triggerstatements'] })
       toast.fire({
         title: 'Trigger statement removed successfully.',
         icon: 'success',
@@ -139,9 +139,13 @@ export const useDhmWaterLevels = (uuid: UUID) => {
         uuid,
         data: {
           action: 'aaProject.waterLevels.getDhm',
-          payload: {},
+          payload: {
+            page: 1,
+            perPage: 10
+          }
         },
       });
+      console.log(mutate)
       return mutate.data;
     },
   });

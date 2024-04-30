@@ -240,7 +240,7 @@ export const useBeneficiaryPii = (
   return useQuery(
     {
       queryKey: [TAGS.GET_BENEFICIARIES, pagination],
-      queryFn: () => benClient.listPiiData(pagination),
+      queryFn: () => benClient.listPiiData(pagination as Pagination),
     },
     queryClient,
   );

@@ -72,10 +72,10 @@ export type Transaction = {
 };
 
 export const benType = [
-  // {
-  //   key: 'ALL',
-  //   value: 'ALL',
-  // },
+  {
+    key: 'ALL',
+    value: 'ALL',
+  },
   {
     key: 'ENROLLED',
     value: 'ENROLLED',
@@ -88,6 +88,10 @@ export const benType = [
 ];
 
 export const voucherType = [
+  {
+    key: 'NOT_ASSIGNED',
+    value: 'NOT_ASSIGNED',
+  },
   // {
   //   key: 'ALL',
   //   value: 'ALL',
@@ -100,10 +104,7 @@ export const voucherType = [
     key: 'REFERRED',
     value: 'REFERRED',
   },
-  {
-    key: 'NOT_ASSIGNED',
-    value: 'NOT_ASSIGNED',
-  },
+  
 ];
 
 function BeneficiaryDetailTableView() {
@@ -159,7 +160,6 @@ function BeneficiaryDetailTableView() {
   const [filteredProjectVoucherBeneficiaries, setFilteredProjectVoucherBeneficiaries] = useState<any>()
   const [voucherFilter, setVoucherFilter] = useState<any>()
 
-  console.log("data from graph", dataVouce)
 
   useEffect(() => {
     if (projectBeneficiaries) {
@@ -218,10 +218,10 @@ function BeneficiaryDetailTableView() {
       resetFilters()
       resetSelectedListItems();
       setFilteredProjectVoucherBeneficiaries(undefined)
-      // if (type === 'ALL') {
-      //   setFilters({ ...filters, status: undefined });
-      //   return;
-      // }
+      if (type === 'ALL') {
+        setFilters({ ...filters, status: undefined });
+        return;
+      }
       setFilters({ ...filters, status: type, voucher: 'ALL' });
     },
     [filters, setFilters],
@@ -301,7 +301,7 @@ function BeneficiaryDetailTableView() {
           <div className="max-w-sm rounded mr-2">
             <Select
               onValueChange={handleBenType}
-              // defaultValue={filters?.status || 'ALL'}
+              defaultValue={filters?.status || 'ALL'}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Beneficiary Type" />

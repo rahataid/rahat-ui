@@ -39,6 +39,7 @@ import { z } from 'zod';
 import { benType } from '../../projects/el/beneficiary/beneficiary.table';
 import { useAudienceColumns } from './use-audience-columns';
 import { useAudienceTable } from './use-audience-table';
+import { UUID } from 'crypto';
 
 type AddAudienceProps = {
   form: UseFormReturn<z.infer<any>>;
@@ -60,7 +61,6 @@ const AddAudience: FC<AddAudienceProps> = ({
 }) => {
   const [columnVisibility, setColumnVisibility] = React.useState({});
   const [rowSelection, setRowSelection] = React.useState({});
-  const [aaProjectId, setAaProjectId] = React.useState('');
 
   const projectsList = useProjectList({});
 
@@ -134,6 +134,7 @@ const AddAudience: FC<AddAudienceProps> = ({
     tableData,
   });
 
+
   return (
     <>
       {/* header area start  */}
@@ -154,9 +155,6 @@ const AddAudience: FC<AddAudienceProps> = ({
             <SelectItem value={'ALL'}>ALL</SelectItem>
             {projectsList.data?.data.length &&
               projectsList.data.data.map((project) => {
-                if (project.name?.toLocaleLowerCase() === 'aa') {
-                  setAaProjectId(project?.uuid as string);
-                }
                 return (
                   <SelectItem key={project.uuid} value={project.uuid || ''}>
                     {project.name}
@@ -165,7 +163,7 @@ const AddAudience: FC<AddAudienceProps> = ({
               })}
           </SelectContent>
         </Select>
-        {filters?.projectId && filters?.projectId !== aaProjectId && (
+        {filters?.projectId && (
           <Select onValueChange={filterBenByBenTypes}>
             <SelectTrigger className="max-w-32">
               <SelectValue placeholder="Types" />

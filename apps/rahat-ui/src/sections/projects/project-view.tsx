@@ -1,21 +1,21 @@
 'use client';
-import { usePagination, useProjectList } from '@rahat-ui/query';
+import { useProjectList } from '@rahat-ui/query';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import { ProjectCard } from '../../sections/projects';
+import { CirclePlus } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useBoolean } from '../../hooks/use-boolean';
+import { ProjectCard } from '../../sections/projects';
 import AddProjectConfirmModal from './addProject.confirm';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
-import { CirclePlus } from 'lucide-react';
 // import CustomPagination from '../../components/customPagination';
 
 export default function ProjectListView() {
   // const { pagination, setNextPage, setPrevPage, setPerPage } = usePagination();
   const { data } = useProjectList();
-  const router = useRouter();
   const AddProjectModal = useBoolean();
+  console.log('project.type', data?.data);
 
   const [filterValue, setFilterValue] = useState('');
 
@@ -65,7 +65,7 @@ export default function ProjectListView() {
               address={project?.uuid}
               key={project.uuid}
               title={project.name}
-              image={project.image || '/rahat-logo.png'}
+              image={getImageForProjectType(project.type)}
               subTitle={project.description as string}
               badge={project.type}
               status={project.status}
@@ -85,4 +85,12 @@ export default function ProjectListView() {
       /> */}
     </div>
   );
+}
+function getImageForProjectType(type) {
+  switch (type) {
+    case 'el':
+      return '/el/el_logo_dark.png';
+    default:
+      return '/rahat-logo.png';
+  }
 }

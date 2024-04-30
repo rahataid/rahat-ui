@@ -97,11 +97,8 @@ export const useActivities = (uuid: UUID, payload: any) => {
   }));
 
   const query = useQuery({
-    queryKey: ['activities', uuid],
+    queryKey: ['activities', uuid, payload],
     queryFn: async () => {
-
-      console.log('payloaddddd:', payload)
-
       const mutate = await q.mutateAsync({
         uuid,
         data: {

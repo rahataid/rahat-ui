@@ -24,6 +24,7 @@ import * as React from 'react';
 type ProjectModalType = {
   value: boolean;
   onToggle: () => void;
+  onFalse: () => void;
 };
 
 type IProps = {
@@ -58,6 +59,10 @@ export default function AssignToProjectModal({
     //   },
     // });
   };
+
+  React.useEffect(() => {
+    assignBeneficiary.isSuccess && projectModal.onFalse();
+  }, [assignBeneficiary])
 
   return (
     <Dialog open={projectModal.value} onOpenChange={projectModal.onToggle}>

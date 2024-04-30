@@ -173,3 +173,35 @@ export const useGetRole = (name: string) => {
   );
   return query;
 };
+
+export const useDeleteRole = () => {
+  const { queryClient, rumsanService } = useRSQuery();
+  const roleClient = getRoleClient(rumsanService.client);
+  const query = useMutation(
+    {
+      mutationKey: [TAGS.DELETE_ROLE],
+
+      mutationFn: ({ name }: { name: string }) => roleClient.deleteRole(name),
+      onSuccess: () => {
+        Swal.fire('Role Deleted Successfully', '', 'success');
+        queryClient.invalidateQueries({
+          queryKey: [
+            TAGS.GET_ALL_ROLES,
+            {
+              exact: true,
+            },
+          ],
+        });
+      },
+      onError: (error: any) => {
+        Swal.fire(
+          'Error',
+          error.response.data.message || 'Encounter error on Deleting Data',
+          'error',
+        );
+      },
+    },
+    queryClient,
+  );
+  return query;
+};

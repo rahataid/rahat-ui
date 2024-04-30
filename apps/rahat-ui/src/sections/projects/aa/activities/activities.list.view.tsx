@@ -8,22 +8,23 @@ import { UUID } from 'crypto';
 import { QueryClient } from '@rahat-ui/query';
 
 export default function ActivitiesList() {
-  const q = new QueryClient()
-  const { id } = useParams();
-  const [filterItem, setFilterItem] = useState({});
+  // const q = new QueryClient()
+  // const { id } = useParams();
+  // const [filterItem, setFilterItem] = useState({});
 
-  const filter = useCallback((category: UUID) => {
-    const payload = { category: category }
-    setFilterItem(payload);
-    console.log('payload:', payload)
-  }, [])
+  // const filter = useCallback((category: UUID) => {
+  //   const payload = { category: category }
+  //   setFilterItem(payload);
+  //   console.log('payload:', payload)
+  // }, [])
 
-  useActivities(id as UUID, filterItem);
-  const activities = useActivitiesStore((state) => state.activities);
+  // useActivities(id as UUID, filterItem);
+  // const activities = useActivitiesStore((state) => state.activities);
   // useEffect(() => {
   //   q.invalidateQueries
   //   // useActivities(id as UUID, filterItem)
   // }, [filterItem])
 
-  return <ActivitiesTable activitiesData={activities?.data} filter={filter} />;
+  // return <ActivitiesTable activitiesData={activities?.data} filter={filter} />;
+  return <ActivitiesTable />;
 }

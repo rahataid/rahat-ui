@@ -33,29 +33,67 @@ import {
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import useActivitiesTableColumn from './useActivitiesTableColumn';
-import { useActivitiesCategories, useActivitiesHazardTypes, useActivitiesStore } from '@rahat-ui/query';
+import { useActivities, useActivitiesCategories, useActivitiesHazardTypes, useActivitiesStore, usePagination } from '@rahat-ui/query';
 import { UUID } from 'crypto';
+import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
+import { filter } from 'lodash';
+import { useEffect, useState } from 'react';
+import TableLoader from 'apps/rahat-ui/src/components/table.loader';
 
 type IProps = {
   activitiesData: any;
   filter: (category: UUID) => void;
 }
 
-export default function ActivitiesTable({ activitiesData, filter }: IProps) {
+export default function ActivitiesTable() {
   const { id } = useParams();
+
+  const {
+    pagination,
+    // selectedListItems,
+    // setSelectedListItems,
+    setNextPage,
+    setPrevPage,
+    setPerPage,
+    setPagination,
+    setFilters,
+    filters,
+  } = usePagination();
+
+  useEffect(() => {
+    setPagination({ page: 1, perPage: 10 });
+  }, []);
+
+  console.log("xxx",pagination)
+  console.log("yyy",filters)
+
+  const { activitiesData, activitiesMeta, isLoading } = useActivities(id as UUID, { ...pagination, ...filters });
+
+  // console.log(activitiesData)
+  // console.log(activitiesMeta)
+  // const activities = useActivitiesStore((state) => {
+  //   return {
+  //     data: state.activities,
+  //     meta: state.activitiesMeta
+  //   }
+  // })
+  // console.log(activities)
+
   useActivitiesCategories(id as UUID);
   const categories = useActivitiesStore((state) => state.categories);
   useActivitiesHazardTypes(id as UUID);
   const hazardTypes = useActivitiesStore((state) => state.hazardTypes);
   const columns = useActivitiesTableColumn();
+
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
   );
-  const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({});
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
+
   const table = useReactTable({
+    manualPagination: true,
     data: activitiesData ?? [],
     columns,
     onSortingChange: setSorting,
@@ -73,6 +111,10 @@ export default function ActivitiesTable({ activitiesData, filter }: IProps) {
       rowSelection,
     },
   });
+
+  if (isLoading) {
+    return <TableLoader />
+  }
 
   return (
     <div className="p-2 bg-secondary">
@@ -160,7 +202,16 @@ export default function ActivitiesTable({ activitiesData, filter }: IProps) {
           </ScrollArea>
         </Table>
       </div>
-      <div className="flex items-center justify-end space-x-8 p-2 pb-0">
+      <CustomPagination
+        meta={activitiesMeta || { total: 0, currentPage: 0 }}
+        handleNextPage={setNextPage}
+        handlePrevPage={setPrevPage}
+        handlePageSizeChange={setPerPage}
+        currentPage={pagination.page}
+        perPage={pagination.perPage}
+        total={activitiesMeta?.lastPage || 0}
+      />
+      {/* <div className="flex items-center justify-end space-x-8 p-2 pb-0">
         <div className="flex items-center gap-2">
           <div className="text-sm font-medium">Rows per page</div>
           <Select
@@ -204,7 +255,7 @@ export default function ActivitiesTable({ activitiesData, filter }: IProps) {
             Next
           </Button>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }

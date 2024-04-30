@@ -13,6 +13,7 @@ const initialStore = {
   phases: [],
   hazardTypes: [],
   activities: [],
+  activitiesMeta: {}
 };
 
 type ActivitiesState = {
@@ -20,6 +21,7 @@ type ActivitiesState = {
   phases: I[];
   hazardTypes: I[];
   activities: any;
+  activitiesMeta: any;
 };
 
 type ActivitiesStateAction = {
@@ -27,6 +29,7 @@ type ActivitiesStateAction = {
   setPhases: (phases: I[]) => void;
   setHazardTypes: (hazardTypes: I[]) => void;
   setActivities: (activities: any) => void;
+  setActivitiesMeta: (meta: any) => void;
 };
 
 type ActivitiesStore = ActivitiesState & ActivitiesStateAction;
@@ -38,6 +41,7 @@ export const useActivitiesStore = zustandStore<ActivitiesStore>(
     setPhases: (phases) => set({ phases }),
     setHazardTypes: (hazardTypes) => set({ hazardTypes }),
     setActivities: (activities) => set({ activities }),
+    setActivitiesMeta: (meta) => set({ activitiesMeta: meta })
   }),
   {
     devtoolsEnabled: true,

@@ -60,7 +60,10 @@ export default function EditUser({ userDetail }: Iprops) {
   const handleEditUser = async (data: any) => {
     await updateUser.mutateAsync({
       uuid: userDetail.uuid as UUID,
-      payload: data,
+      payload: {
+        ...data,
+        wallet: data?.walletAddress,
+      },
     });
   };
 

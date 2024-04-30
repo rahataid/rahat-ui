@@ -12,9 +12,15 @@ type Iprops = {
   open: boolean;
   handleClose: () => void;
   handleSubmit: () => void;
+  isSubmitting?: boolean;
 };
 
-const CampaignModal = ({ open, handleSubmit, handleClose }: Iprops) => {
+const CampaignModal = ({
+  open,
+  handleSubmit,
+  handleClose,
+  isSubmitting,
+}: Iprops) => {
   return (
     <div className="py-2 w-full border-t">
       <div className="p-4 flex flex-col gap-0.5 text-sm">
@@ -35,6 +41,7 @@ const CampaignModal = ({ open, handleSubmit, handleClose }: Iprops) => {
                 type="button"
                 variant="ghost"
                 className="text-primary"
+                disabled={isSubmitting}
               >
                 Confirm
               </Button>

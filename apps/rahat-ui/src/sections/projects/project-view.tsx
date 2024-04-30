@@ -58,7 +58,7 @@ export default function ProjectListView() {
         </Button>
       </div>
       <ScrollArea className="px-2 pb-2 h-[calc(100vh-122px)]">
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-2">
           {data?.data?.map((project) => (
             <ProjectCard
               // TODO:Fix the return type

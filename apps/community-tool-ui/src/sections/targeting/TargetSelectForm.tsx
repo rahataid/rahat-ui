@@ -84,7 +84,7 @@ export default function TargetSelectForm({ onFormSubmit }: IProps) {
                       defaultValue={field.value}
                     >
                       <FormControl>
-                        <SelectTrigger className="w-80">
+                        <SelectTrigger className="w-60">
                           <SelectValue placeholder={`Select SSA`} />
                         </SelectTrigger>
                       </FormControl>
@@ -118,7 +118,7 @@ export default function TargetSelectForm({ onFormSubmit }: IProps) {
                       defaultValue={field.value}
                     >
                       <FormControl>
-                        <SelectTrigger className="w-80">
+                        <SelectTrigger className="w-60">
                           <SelectValue placeholder={`Select Vulnerability`} />
                         </SelectTrigger>
                       </FormControl>
@@ -147,7 +147,7 @@ export default function TargetSelectForm({ onFormSubmit }: IProps) {
                       defaultValue={field.value}
                     >
                       <FormControl>
-                        <SelectTrigger className="w-80">
+                        <SelectTrigger className="w-60">
                           <SelectValue placeholder={`Select Gender`} />
                         </SelectTrigger>
                       </FormControl>
@@ -178,7 +178,7 @@ export default function TargetSelectForm({ onFormSubmit }: IProps) {
                       defaultValue={field.value}
                     >
                       <FormControl>
-                        <SelectTrigger className="w-80">
+                        <SelectTrigger className="w-60">
                           <SelectValue placeholder={`Select Phone Status`} />
                         </SelectTrigger>
                       </FormControl>
@@ -217,7 +217,7 @@ export default function TargetSelectForm({ onFormSubmit }: IProps) {
                       defaultValue={field.value}
                     >
                       <FormControl>
-                        <SelectTrigger className="w-80">
+                        <SelectTrigger className="w-60">
                           <SelectValue placeholder={`Select Banked Status`} />
                         </SelectTrigger>
                       </FormControl>
@@ -256,7 +256,7 @@ export default function TargetSelectForm({ onFormSubmit }: IProps) {
                         type="text"
                         placeholder="Location"
                         defaultValue={field.value}
-                        className="w-80"
+                        className="w-60"
                         {...field}
                       />
                     </FormControl>

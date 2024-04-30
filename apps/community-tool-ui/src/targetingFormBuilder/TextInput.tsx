@@ -24,7 +24,7 @@ export default function TextInput({ formField }: any) {
         value={defaultData}
         type="text"
         onChange={handleInputChange}
-        className="w-80"
+        className="w-60"
       />
     </div>
   );

@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useParams } from 'next/navigation';
 import {
   ColumnFiltersState,
   SortingState,
@@ -32,21 +33,67 @@ import {
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import useActivitiesTableColumn from './useActivitiesTableColumn';
-// import ActivitiesData from './activities.json';
-import { useActivitiesFields } from './useActivitiesFields';
+import { useActivities, useActivitiesCategories, useActivitiesHazardTypes, useActivitiesStore, usePagination } from '@rahat-ui/query';
+import { UUID } from 'crypto';
+import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
+import { filter } from 'lodash';
+import { useEffect, useState } from 'react';
+import TableLoader from 'apps/rahat-ui/src/components/table.loader';
 
-export default function ActivitiesTable({ activitiesData }: any) {
-  const { hazardType, category } = useActivitiesFields();
+type IProps = {
+  activitiesData: any;
+  filter: (category: UUID) => void;
+}
+
+export default function ActivitiesTable() {
+  const { id } = useParams();
+
+  const {
+    pagination,
+    // selectedListItems,
+    // setSelectedListItems,
+    setNextPage,
+    setPrevPage,
+    setPerPage,
+    setPagination,
+    setFilters,
+    filters,
+  } = usePagination();
+
+  useEffect(() => {
+    setPagination({ page: 1, perPage: 10 });
+  }, []);
+
+  console.log("xxx",pagination)
+  console.log("yyy",filters)
+
+  const { activitiesData, activitiesMeta, isLoading } = useActivities(id as UUID, { ...pagination, ...filters });
+
+  // console.log(activitiesData)
+  // console.log(activitiesMeta)
+  // const activities = useActivitiesStore((state) => {
+  //   return {
+  //     data: state.activities,
+  //     meta: state.activitiesMeta
+  //   }
+  // })
+  // console.log(activities)
+
+  useActivitiesCategories(id as UUID);
+  const categories = useActivitiesStore((state) => state.categories);
+  useActivitiesHazardTypes(id as UUID);
+  const hazardTypes = useActivitiesStore((state) => state.hazardTypes);
   const columns = useActivitiesTableColumn();
+
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
   );
-  const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({});
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
-  // const data = ActivitiesData;
+
   const table = useReactTable({
+    manualPagination: true,
     data: activitiesData ?? [],
     columns,
     onSortingChange: setSorting,
@@ -65,19 +112,23 @@ export default function ActivitiesTable({ activitiesData }: any) {
     },
   });
 
+  if (isLoading) {
+    return <TableLoader />
+  }
+
   return (
     <div className="p-2 bg-secondary">
       <div className="flex items-center gap-2 mb-2 w-1/2">
         {/* Filter Category */}
-        <Select>
+        <Select onValueChange={(value) => filter(value as UUID)}>
           <SelectTrigger>
             <SelectValue placeholder="Select a category" />
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
-              {category.map((item) => (
-                <SelectItem key={item.label} value={item.value}>
-                  {item.label}
+              {categories.map((item) => (
+                <SelectItem key={item.id} value={item.uuid}>
+                  {item.name}
                 </SelectItem>
               ))}
             </SelectGroup>
@@ -90,18 +141,18 @@ export default function ActivitiesTable({ activitiesData }: any) {
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
-              {hazardType.map((item) => (
-                <SelectItem key={item.label} value={item.value}>
-                  {item.label}
+              {hazardTypes.map((item) => (
+                <SelectItem key={item.id} value={item.uuid}>
+                  {item.name}
                 </SelectItem>
               ))}
             </SelectGroup>
           </SelectContent>
         </Select>
       </div>
-      <div className="rounded border bg-card">
+      <div className="rounded border bg-card h-[calc(100vh-178px)]">
         <Table>
-          <ScrollArea className="h-[calc(100vh-180px)]">
+          <ScrollArea className="h-[calc(100vh-193px)]">
             <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
@@ -111,9 +162,9 @@ export default function ActivitiesTable({ activitiesData }: any) {
                         {header.isPlaceholder
                           ? null
                           : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext(),
-                            )}
+                            header.column.columnDef.header,
+                            header.getContext(),
+                          )}
                       </TableHead>
                     );
                   })}
@@ -151,7 +202,16 @@ export default function ActivitiesTable({ activitiesData }: any) {
           </ScrollArea>
         </Table>
       </div>
-      <div className="flex items-center justify-end space-x-8 p-2 pb-0">
+      <CustomPagination
+        meta={activitiesMeta || { total: 0, currentPage: 0 }}
+        handleNextPage={setNextPage}
+        handlePrevPage={setPrevPage}
+        handlePageSizeChange={setPerPage}
+        currentPage={pagination.page}
+        perPage={pagination.perPage}
+        total={activitiesMeta?.lastPage || 0}
+      />
+      {/* <div className="flex items-center justify-end space-x-8 p-2 pb-0">
         <div className="flex items-center gap-2">
           <div className="text-sm font-medium">Rows per page</div>
           <Select
@@ -195,7 +255,7 @@ export default function ActivitiesTable({ activitiesData }: any) {
             Next
           </Button>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }

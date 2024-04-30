@@ -1,6 +1,4 @@
 import { Button } from '@rahat-ui/shadcn/components/button';
-import { Label } from '@rahat-ui/shadcn/components/label';
-import { Switch } from '@rahat-ui/shadcn/components/switch';
 import {
   Tabs,
   TabsContent,
@@ -23,7 +21,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
-import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 // import {
 //   Select,
 //   SelectContent,
@@ -32,29 +29,8 @@ import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 //   SelectTrigger,
 //   SelectValue,
 // } from '@rahat-ui/shadcn/src/components/ui/select';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/tooltip';
-import { truncateEthAddress } from '@rumsan/core/utilities/string.utils';
-import { User } from '@rumsan/sdk/types';
-import { MoreVertical, PlusCircle, Trash2, Minus } from 'lucide-react';
-import Image from 'next/image';
-import { useState } from 'react';
-import { UsersRoleTable } from './usersRoleTable';
-import { enumToObjectArray } from '@rumsan/sdk/utils';
-import { Gender } from '@rahataid/sdk/enums';
+import { useRoleList, useSettingsStore } from '@rahat-ui/query';
 import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
-import EditUser from './editUser';
-import {
-  useUserAddRoles,
-  useUserCurrentUser,
-  useUserRemove,
-} from '@rumsan/react-query';
-import { ROLE_TYPE } from './role/const';
-import { UUID } from 'crypto';
 import {
   Select,
   SelectContent,
@@ -62,11 +38,32 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
-import { useRoleList, useSettingsStore } from '@rahat-ui/query';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/tooltip';
+import { Gender } from '@rahataid/sdk/enums';
+import { truncateEthAddress } from '@rumsan/core/utilities/string.utils';
+import {
+  useUserAddRoles,
+  useUserCurrentUser,
+  useUserRemove,
+} from '@rumsan/react-query';
+import { User } from '@rumsan/sdk/types';
+import { enumToObjectArray } from '@rumsan/sdk/utils';
+import { UUID } from 'crypto';
+import { Minus, MoreVertical, PlusCircle, Trash2 } from 'lucide-react';
+import Image from 'next/image';
+import { useState } from 'react';
 import {
   useAddAdminRole,
   useAddManagerRole,
 } from '../../hooks/el/contracts/el-contracts';
+import EditUser from './editUser';
+import { ROLE_TYPE } from './role/const';
+import { UsersRoleTable } from './usersRoleTable';
 
 type IProps = {
   userDetail: User;
@@ -132,7 +129,7 @@ export default function UserDetail({ userDetail, closeSecondPanel }: IProps) {
 
   return (
     <>
-      <div className="flex justify-between p-4 pt-5 bg-secondary border-b">
+      <div className="flex justify-between p-4 pt-5 bg-card border-b">
         {/* Minimize  */}
         <TooltipProvider delayDuration={100}>
           <Tooltip>
@@ -190,12 +187,14 @@ export default function UserDetail({ userDetail, closeSecondPanel }: IProps) {
                 </DialogDescription>
                 <DialogFooter>
                   <div className="flex items-center justify-center mt-2 gap-4">
-                    <Button
-                      onClick={() => handleRoleAssign()}
-                      variant="outline"
-                    >
-                      Submit
-                    </Button>
+                    <DialogClose asChild>
+                      <Button
+                        onClick={() => handleRoleAssign()}
+                        variant="outline"
+                      >
+                        Submit
+                      </Button>
+                    </DialogClose>
                     <DialogClose asChild>
                       <Button variant="outline">Cancel</Button>
                     </DialogClose>
@@ -282,20 +281,6 @@ export default function UserDetail({ userDetail, closeSecondPanel }: IProps) {
                 : truncateEthAddress(userDetail.wallet || '-')}
             </p>
           </div>
-        </div>
-        <div className="flex items-center space-x-2">
-          <Label
-            className="text-slate-500 font-light text-sm"
-            htmlFor="activeUser"
-          >
-            {activeUser ? 'Active' : 'Inactive'}
-          </Label>
-          <Switch
-            className="data-[state=unchecked]:bg-red-600 data-[state=checked]:bg-green-600"
-            id="activeUser"
-            checked={activeUser}
-            onCheckedChange={toggleActiveUser}
-          />
         </div>
       </div>
       {/* Details View */}

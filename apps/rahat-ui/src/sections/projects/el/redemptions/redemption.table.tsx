@@ -204,6 +204,7 @@ export default function RedemptionTable({}) {
       redemptionUUID: selectedRowAddresses,
     });
     getRedemptionList();
+    setSelectedListItems([])
     projectModal.onFalse();
   };
 
@@ -224,20 +225,20 @@ export default function RedemptionTable({}) {
           <Input
             placeholder="Filter Redemptions..."
             value={
-              (table.getColumn('beneficiary')?.getFilterValue() as string) ?? ''
+              (table.getColumn('name')?.getFilterValue() as string) ?? ''
             }
             onChange={(event) =>
-              table.getColumn('beneficiary')?.setFilterValue(event.target.value)
+              table.getColumn('name')?.setFilterValue(event.target.value)
             }
             className="max-w-sm rounded mr-2"
           />
           <div className="max-w-sm rounded mr-2">
             <Select
               onValueChange={handleRedType}
-              defaultValue={filters?.status || 'ALL'}
+              // defaultValue={filters?.status || 'ALL'}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Beneficiary Type" />
+                <SelectValue placeholder="REDEMPTION TYPE" />
               </SelectTrigger>
               <SelectContent>
                 {redType.map((item) => {

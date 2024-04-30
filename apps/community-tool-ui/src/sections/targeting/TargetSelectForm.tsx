@@ -27,6 +27,7 @@ import {
   BankedStatus,
   PhoneStatus,
   Gender,
+  InternetStatus,
 } from '@rahataid/community-tool-sdk/enums/';
 import { ITargetingQueries } from '../../types/targeting';
 
@@ -47,10 +48,9 @@ export default function TargetSelectForm({ onFormSubmit }: IProps) {
   const { handleSubmit, control } = useForm();
 
   const FormSchema = z.object({
-    ssa: z.string().optional(),
-    vulnerability: z.string().toUpperCase().optional(),
     gender: z.string().toUpperCase().optional(),
     phoneStatus: z.string().toUpperCase().optional(),
+    internetStatus: z.string().toUpperCase().optional(),
     bankedStatus: z.string().toUpperCase().optional(),
     location: z.string().optional(),
   });
@@ -58,10 +58,9 @@ export default function TargetSelectForm({ onFormSubmit }: IProps) {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      ssa: 'Widowed',
-      vulnerability: 'PREGNANT',
       gender: Gender.UKNOWN,
       phoneStatus: PhoneStatus.UNKNOWN,
+      internetStatus: InternetStatus.UNKNOWN,
       bankedStatus: BankedStatus.UNKNOWN,
       location: '',
     },
@@ -70,70 +69,7 @@ export default function TargetSelectForm({ onFormSubmit }: IProps) {
   return (
     <Form {...form}>
       <form onSubmit={handleSubmit(onFormSubmit)}>
-        <div style={{ maxHeight: '50vh' }} className="m-2 overflow-y-auto">
-          <FormField
-            control={control}
-            name="ssa"
-            render={({ field }) => {
-              return (
-                <div className="mb-4">
-                  <Label>SSA</Label>
-                  <FormItem>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger className="w-80">
-                          <SelectValue placeholder={`Select SSA`} />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value={'Old_Citizen'}>
-                          Old Citizen
-                        </SelectItem>
-                        <SelectItem value={'Widowed'}>Widowed</SelectItem>
-                        <SelectItem value={'Children_under_5_dalit'}>
-                          Childern under 5 (Dalit)
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                </div>
-              );
-            }}
-          />
-
-          <FormField
-            control={control}
-            name="vulnerability"
-            render={({ field }) => {
-              return (
-                <div className="mb-4">
-                  <Label>Vulnerability</Label>
-                  <FormItem>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger className="w-80">
-                          <SelectValue placeholder={`Select Vulnerability`} />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value={'PREGNANT'}>Pregnant</SelectItem>
-                        <SelectItem value={'LACTATING'}>Lactating</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                </div>
-              );
-            }}
-          />
-
+        <div style={{ maxHeight: '60vh' }} className="m-2 overflow-y-auto">
           <FormField
             control={control}
             name="gender"
@@ -147,8 +83,8 @@ export default function TargetSelectForm({ onFormSubmit }: IProps) {
                       defaultValue={field.value}
                     >
                       <FormControl>
-                        <SelectTrigger className="w-80">
-                          <SelectValue placeholder={`Select Gender`} />
+                        <SelectTrigger className="w-60">
+                          <SelectValue placeholder={`--Select Option--`} />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -156,6 +92,45 @@ export default function TargetSelectForm({ onFormSubmit }: IProps) {
                         <SelectItem value={Gender.FEMALE}>Female</SelectItem>
                         <SelectItem value={Gender.OTHER}>Other</SelectItem>
                         <SelectItem value={Gender.UKNOWN}>Unknown</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                </div>
+              );
+            }}
+          />
+
+          <FormField
+            control={control}
+            name="internetStatus"
+            render={({ field }) => {
+              return (
+                <div className="mb-4">
+                  <Label>Internet Status</Label>
+                  <FormItem>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger className="w-60">
+                          <SelectValue placeholder={`--Select Option--`} />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value={InternetStatus.HOME_INTERNET}>
+                          Home Internet
+                        </SelectItem>
+                        <SelectItem value={InternetStatus.MOBILE_INTERNET}>
+                          Mobile Internet
+                        </SelectItem>
+                        <SelectItem value={InternetStatus.NO_INTERNET}>
+                          No Internet
+                        </SelectItem>
+                        <SelectItem value={InternetStatus.UNKNOWN}>
+                          Unknown
+                        </SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -178,8 +153,8 @@ export default function TargetSelectForm({ onFormSubmit }: IProps) {
                       defaultValue={field.value}
                     >
                       <FormControl>
-                        <SelectTrigger className="w-80">
-                          <SelectValue placeholder={`Select Phone Status`} />
+                        <SelectTrigger className="w-60">
+                          <SelectValue placeholder={`--Select Option--`} />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -217,8 +192,8 @@ export default function TargetSelectForm({ onFormSubmit }: IProps) {
                       defaultValue={field.value}
                     >
                       <FormControl>
-                        <SelectTrigger className="w-80">
-                          <SelectValue placeholder={`Select Banked Status`} />
+                        <SelectTrigger className="w-60">
+                          <SelectValue placeholder={`--Select Option--`} />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -256,7 +231,7 @@ export default function TargetSelectForm({ onFormSubmit }: IProps) {
                         type="text"
                         placeholder="Location"
                         defaultValue={field.value}
-                        className="w-80"
+                        className="w-60"
                         {...field}
                       />
                     </FormControl>

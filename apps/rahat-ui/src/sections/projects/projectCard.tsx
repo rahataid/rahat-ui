@@ -36,7 +36,7 @@ export default function CommonCard({
     >
       <div className="bg-black rounded">
         <Image
-          className="object-cover h-72 w-full rounded-t opacity-70"
+          className="object-contain h-72 w-full rounded-t opacity-70"
           src={image}
           alt="project"
           height={200}

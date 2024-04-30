@@ -48,4 +48,5 @@ export const TAGS = {
   PURGE_COMMUNITY_GROUP: 'purge_community_group',
   GET_TARGETING_BENEFICIARIES: 'get_targeting_beneficiary',
   LIST_KOBO_SETTINGS: 'list_kobo_settings',
+  LIST_MAPPINGS_BY_IMPORT_ID: 'list_mappings_by_import_id',
 };

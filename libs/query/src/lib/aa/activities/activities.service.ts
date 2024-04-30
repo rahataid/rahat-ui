@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useProjectAction } from '../../projects';
 import { useActivitiesStore } from './activities.store';
 import { UUID } from 'crypto';
@@ -87,44 +87,52 @@ export const useActivitiesHazardTypes = (uuid: UUID) => {
   return query;
 };
 
-export const useActivities = (uuid: UUID) => {
+export const useActivities = (uuid: UUID, payload: any) => {
+
   const q = useProjectAction();
-  const { setActivities } = useActivitiesStore((state) => ({
+
+  const { setActivities, setActivitiesMeta } = useActivitiesStore((state) => ({
     setActivities: state.setActivities,
+    setActivitiesMeta: state.setActivitiesMeta
   }));
+
   const query = useQuery({
-    queryKey: ['activities', uuid],
-    select: (data) => {
-      return {
-        ...data,
-        data: data.map((d: any) => ({
-          id: d.uuid,
-          title: d.title,
-          responsibility: d.responsibility,
-          source: d.source,
-          hazardType: d.hazardType?.name,
-          category: d.category?.name,
-          description: d.description,
-        })),
-      };
-    },
+    queryKey: ['activities', uuid, payload],
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid,
         data: {
           action: 'aaProject.activities.getAll',
-          payload: {},
+          payload: payload,
         },
       });
-      return mutate.data;
+      return mutate.response;
     },
+    placeholderData: keepPreviousData
   });
+
   useEffect(() => {
-    if (query.data) {
-      setActivities(query?.data);
+    if (query?.data) {
+      setActivities(query?.data?.data);
+      setActivitiesMeta(query?.data?.meta);
     }
   }, [query.data]);
-  return query;
+
+  const activitiesData = query?.data?.data?.map((d: any) => ({
+    id: d.uuid,
+    title: d.title,
+    responsibility: d.responsibility,
+    source: d.source,
+    hazardType: d.hazardType?.name,
+    category: d.category?.name,
+    description: d.description,
+    phase: d.phase?.name,
+    isApproved: d.isApproved,
+    isComplete: d.isComplete,
+  }))
+
+
+  return { ...query, activitiesData, activitiesMeta: query?.data?.meta };
 };
 
 export const useCreateActivities = () => {

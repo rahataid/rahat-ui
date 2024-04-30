@@ -26,11 +26,11 @@ export default function GroupDetailTable({ table }: IProps) {
           <TableComponent>
             <ScrollArea className="h-[calc(100vh-210px)]">
               <TableHeader className="bg-card sticky top-0">
-                {table.getHeaderGroups().map((headerGroup) => (
-                  <TableRow key={headerGroup.id}>
-                    {headerGroup.headers.map((header) => {
+                {table.getHeaderGroups().map((headerGroup, index) => (
+                  <TableRow key={index}>
+                    {headerGroup.headers.map((header, index) => {
                       return (
-                        <TableHead key={header.id}>
+                        <TableHead key={index}>
                           {header.isPlaceholder
                             ? null
                             : flexRender(

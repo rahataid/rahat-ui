@@ -99,6 +99,8 @@ export default function AddTriggerStatement() {
       projectUUID: projectID,
       triggerStatementPayload: payload
     });
+
+    form.reset();
   };
 
   return (

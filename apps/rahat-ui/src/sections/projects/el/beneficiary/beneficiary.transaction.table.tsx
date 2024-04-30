@@ -33,6 +33,7 @@ import {
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { useBeneficiaryTransaction } from 'apps/rahat-ui/src/hooks/el/subgraph/querycall';
+import TableLoader from 'apps/rahat-ui/src/components/table.loader';
 
 export type Transaction = {
   beneficiary: any;

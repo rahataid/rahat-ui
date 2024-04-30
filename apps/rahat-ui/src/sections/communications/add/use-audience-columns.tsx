@@ -5,7 +5,7 @@ import { ColumnDef } from '@tanstack/react-table';
 import { SelectedRowType } from './add-campaign-view';
 
 export const useAudienceColumns = (
-  beneficiaryData: { data: TPIIData[] },
+  beneficiaryData: { data: { piiData: TPIIData }[] },
   selectedRows: SelectedRowType[],
   audienceData: { data: Audience[] },
   createAudience: any,
@@ -37,14 +37,13 @@ export const useAudienceColumns = (
               setSelectedRows([]);
 
               beneficiaryData?.data?.map((item) => {
-                handleCreateAudience(item);
-
+                handleCreateAudience(item.piiData);
                 setSelectedRows((prevSelectedRows: SelectedRowType[]) => [
                   ...prevSelectedRows,
                   {
-                    name: item.name,
-                    id: item.beneficiaryId,
-                    phone: item.phone,
+                    name: item?.piiData?.name,
+                    id: item?.piiData?.beneficiaryId,
+                    phone: item?.piiData?.phone,
                   },
                 ]);
               });

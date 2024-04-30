@@ -24,7 +24,7 @@ export default function NumberInput({ formField }: any) {
         value={defaultData}
         type="number"
         onChange={handleInputChange}
-        className="w-80"
+        className="w-60"
       />
     </div>
   );

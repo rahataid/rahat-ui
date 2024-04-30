@@ -15,7 +15,7 @@ export default function Nav({ onFormSubmit }: IProps) {
           <h1 className="font-semibold text-xl text-primary">Targeting</h1>
         </div>
         <div className="px-4">
-          <ScrollArea className="h-auto m-4">
+          <ScrollArea className="h-[calc(100vh-66px)]">
             <TargetSelectForm onFormSubmit={onFormSubmit} />
           </ScrollArea>
         </div>

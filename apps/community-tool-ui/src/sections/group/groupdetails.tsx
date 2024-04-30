@@ -84,14 +84,15 @@ export default function GroupDetail({ data, closeSecondPanel }: IProps) {
   });
 
   const handleClick = async () => {
-    const k = responseByUUID?.data?.beneficiariesGroup?.map((item) => {
-      const groupName = data?.name;
-      return { ...item.beneficiary, groupName };
-    });
+    // const k = responseByUUID?.data?.beneficiariesGroup?.map((item) => {
+    //   const groupName = data?.name;
+    //   return { ...item.beneficiary, groupName };
+    // });
     const response = await download.mutateAsync({
-      groupedBeneficiaries: k,
+      uuid: data?.uuid,
       config: { responseType: 'arraybuffer' },
     });
+
     const blob = new Blob([response.data], {
       type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     });
@@ -102,6 +103,7 @@ export default function GroupDetail({ data, closeSecondPanel }: IProps) {
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
   };
 
   const removeBeneficiaryFromGroup = () => {
@@ -255,8 +257,7 @@ export default function GroupDetail({ data, closeSecondPanel }: IProps) {
         <TabsContent value="detail">
           <GroupDetailTable table={table} />
           <p className="text-xs font-medium text-right mr-5 mt-1">
-            Total beneficiary Count :
-            {responseByUUID?.data?.beneficiariesGroup.length}
+            Total beneficiary Count :{responseByUUID?.response?.meta?.total}
           </p>
         </TabsContent>
 
@@ -265,9 +266,9 @@ export default function GroupDetail({ data, closeSecondPanel }: IProps) {
           handleNextPage={setNextPage}
           handlePrevPage={setPrevPage}
           handlePageSizeChange={setPerPage}
-          meta={data?.response?.meta || { total: 0, currentPage: 0 }}
+          meta={responseByUUID?.response?.meta || { total: 0, currentPage: 0 }}
           perPage={pagination?.perPage}
-          total={data?.response?.meta?.total || 0}
+          total={responseByUUID?.response?.meta?.total || 0}
         />
       </Tabs>
     </>

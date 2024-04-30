@@ -60,6 +60,7 @@ const AddAudience: FC<AddAudienceProps> = ({
 }) => {
   const [columnVisibility, setColumnVisibility] = React.useState({});
   const [rowSelection, setRowSelection] = React.useState({});
+  const [aaProjectId, setAaProjectId] = React.useState('');
 
   const projectsList = useProjectList({});
 
@@ -116,7 +117,7 @@ const AddAudience: FC<AddAudienceProps> = ({
           name: item?.piiData?.name,
           id: item?.piiData?.beneficiaryId,
           phone: item?.piiData?.phone,
-          email: item?.piiData?.email
+          email: item?.piiData?.email,
         }))
       );
     else return [];
@@ -153,6 +154,9 @@ const AddAudience: FC<AddAudienceProps> = ({
             <SelectItem value={'ALL'}>ALL</SelectItem>
             {projectsList.data?.data.length &&
               projectsList.data.data.map((project) => {
+                if (project.name?.toLocaleLowerCase() === 'aa') {
+                  setAaProjectId(project?.uuid as string);
+                }
                 return (
                   <SelectItem key={project.uuid} value={project.uuid || ''}>
                     {project.name}
@@ -161,7 +165,7 @@ const AddAudience: FC<AddAudienceProps> = ({
               })}
           </SelectContent>
         </Select>
-        {filters?.projectId && (
+        {filters?.projectId && filters?.projectId !== aaProjectId && (
           <Select onValueChange={filterBenByBenTypes}>
             <SelectTrigger className="max-w-32">
               <SelectValue placeholder="Types" />

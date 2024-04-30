@@ -28,6 +28,7 @@ import { toast } from 'react-toastify';
 import { z } from 'zod';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
+import ActionCards from './demo-cards';
 
 const WATER_LEVELS = [
   '1',
@@ -265,12 +266,14 @@ export default function AddTriggerStatement() {
                   />
                 </div>
               </div>
+              <ActionCards />
 
               <div className="flex justify-end">
                 <Button>Add Trigger Statement</Button>
               </div>
             </div>
           </div>
+
         </form>
       </Form>
     </>

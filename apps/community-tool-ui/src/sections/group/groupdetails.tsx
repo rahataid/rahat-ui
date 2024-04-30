@@ -31,24 +31,37 @@ import {
 import { useCommunityGroupDeailsColumns } from './useGroupColumns';
 import Swal from 'sweetalert2';
 import { useCommunityGroupRemove } from '@rahat-ui/community-query';
+import { usePagination } from '@rahat-ui/query';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
-import {
-  ResizablePanel,
-  ResizablePanelGroup,
-} from '@rahat-ui/shadcn/src/components/ui/resizable';
+import CustomPagination from '../../components/customPagination';
 
 type IProps = {
-  data: ListGroup;
+  data: any;
   closeSecondPanel: VoidFunction;
 };
 
 export default function GroupDetail({ data, closeSecondPanel }: IProps) {
-  const { data: responseByUUID } = useCommunityGroupListByID(data?.uuid);
+  const {
+    pagination,
+    selectedListItems,
+    setSelectedListItems,
+    setNextPage,
+    setPrevPage,
+    setPerPage,
+    filters,
+    setFilters,
+    setPagination,
+  } = usePagination();
+
+  const { data: responseByUUID } = useCommunityGroupListByID(
+    data?.uuid,
+    pagination,
+  );
   const columns = useCommunityGroupDeailsColumns();
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
@@ -66,19 +79,20 @@ export default function GroupDetail({ data, closeSecondPanel }: IProps) {
     onRowSelectionChange: setRowSelection,
     state: {
       columnVisibility,
-      rowSelection,
+      rowSelection: selectedListItems,
     },
   });
 
   const handleClick = async () => {
-    const k = responseByUUID?.data?.beneficiariesGroup?.map((item) => {
-      const groupName = data?.name;
-      return { ...item.beneficiary, groupName };
-    });
+    // const k = responseByUUID?.data?.beneficiariesGroup?.map((item) => {
+    //   const groupName = data?.name;
+    //   return { ...item.beneficiary, groupName };
+    // });
     const response = await download.mutateAsync({
-      groupedBeneficiaries: k,
+      uuid: data?.uuid,
       config: { responseType: 'arraybuffer' },
     });
+
     const blob = new Blob([response.data], {
       type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     });
@@ -89,6 +103,7 @@ export default function GroupDetail({ data, closeSecondPanel }: IProps) {
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
   };
 
   const removeBeneficiaryFromGroup = () => {
@@ -241,11 +256,20 @@ export default function GroupDetail({ data, closeSecondPanel }: IProps) {
 
         <TabsContent value="detail">
           <GroupDetailTable table={table} />
-          <p className="text-xs font-medium text-right mr-5 mt-5">
-            Total beneficiary Count :
-            {responseByUUID?.data?.beneficiariesGroup.length}
+          <p className="text-xs font-medium text-right mr-5 mt-1">
+            Total beneficiary Count :{responseByUUID?.response?.meta?.total}
           </p>
         </TabsContent>
+
+        <CustomPagination
+          currentPage={pagination.page}
+          handleNextPage={setNextPage}
+          handlePrevPage={setPrevPage}
+          handlePageSizeChange={setPerPage}
+          meta={responseByUUID?.response?.meta || { total: 0, currentPage: 0 }}
+          perPage={pagination?.perPage}
+          total={responseByUUID?.response?.meta?.total || 0}
+        />
       </Tabs>
     </>
   );

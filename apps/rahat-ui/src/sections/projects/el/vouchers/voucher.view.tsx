@@ -37,6 +37,8 @@ const VoucherView = () => {
     address: contractSettings?.elproject?.address || '',
   });
 
+  const voucherData = {...voucherDetails,...projectVoucher}
+
   return (
     <>
       {isLoading ? (
@@ -49,10 +51,10 @@ const VoucherView = () => {
             <div className="bg-secondary">
               <div className="grid grid-cols-2">
                 <div>
-                  <FreeVoucherInfo data={voucherDetails} />
+                  <FreeVoucherInfo data={voucherData} />
                 </div>
                 <div>
-                  <DiscountVoucherInfo data={voucherDetails} />
+                  <DiscountVoucherInfo data={voucherData} />
                 </div>
               </div>
 

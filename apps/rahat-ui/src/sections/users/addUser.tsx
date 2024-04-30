@@ -32,6 +32,7 @@ import {
   useAddAdmin,
   useAddManager,
 } from '../../hooks/el/contracts/el-contracts';
+import { useRouter } from 'next/navigation';
 
 // Constants
 // const genderList = enumToObjectArray(Gender);
@@ -63,6 +64,7 @@ export default function AddUser() {
 
   const { data: roleData } = useRoleList();
   const contractSettings = useSettingsStore((state) => state.accessManager);
+  const route = useRouter();
 
   const userCreate = useUserCreate();
   const addManager = useAddManager();
@@ -75,12 +77,14 @@ export default function AddUser() {
         walletAddress: data?.wallet,
         contractAddress: contractSettings as `0x${string}`,
       });
+      userCreate.isSuccess && route.push('/users');
     } else if (data.roles.includes('Admin')) {
       addAdmin.mutateAsync({
         data: data,
         walletAddress: data?.wallet,
         contractAddress: contractSettings as `0x${string}`,
       });
+      userCreate.isSuccess && route.push('/users');
     } else await userCreate.mutateAsync(data);
   };
 
@@ -94,6 +98,7 @@ export default function AddUser() {
         roles: [''],
         wallet: '',
       });
+      route.push('/users');
     }
   }, [form, userCreate.isSuccess]);
 
@@ -223,7 +228,13 @@ export default function AddUser() {
             />
           </div>
           <div className="flex justify-end">
-            <Button>Create User</Button>
+            {userCreate.isPending ? (
+              <Button>
+                <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-primary" />
+              </Button>
+            ) : (
+              <Button>Create User</Button>
+            )}
           </div>
         </div>
       </form>

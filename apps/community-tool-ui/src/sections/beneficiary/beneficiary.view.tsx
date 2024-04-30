@@ -75,7 +75,6 @@ function BeneficiaryView() {
     );
   }, [selectedListItems, setSelectedBeneficiaries]);
 
-  console.log('selecctedBenef', selectedListItems);
   return (
     <Tabs defaultValue="list" className="h-full">
       <>

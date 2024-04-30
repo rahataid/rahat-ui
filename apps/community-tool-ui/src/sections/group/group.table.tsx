@@ -45,13 +45,13 @@ export default function GroupDetailTable({ table }: IProps) {
               </TableHeader>
               <TableBody>
                 {table.getRowModel().rows?.length ? (
-                  table.getRowModel().rows.map((row) => (
+                  table.getRowModel().rows.map((row, index) => (
                     <TableRow
-                      key={row.id}
+                      key={index}
                       data-state={row.getIsSelected() && 'selected'}
                     >
-                      {row.getVisibleCells().map((cell) => (
-                        <TableCell key={cell.id}>
+                      {row.getVisibleCells().map((cell, index) => (
+                        <TableCell key={index}>
                           {flexRender(
                             cell.column.columnDef.cell,
                             cell.getContext(),

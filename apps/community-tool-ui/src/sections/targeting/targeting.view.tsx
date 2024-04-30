@@ -88,8 +88,13 @@ export default function TargetingView() {
 
   return (
     <Tabs defaultValue="list" className="h-full">
-      <ResizablePanelGroup direction="horizontal" className="min-h-max bg-card">
-        <ResizablePanel minSize={20} defaultSize={30} maxSize={30}>
+      <ResizablePanelGroup direction="horizontal" className="min-h-max border">
+        <ResizablePanel
+          defaultSize={20}
+          minSize={20}
+          maxSize={20}
+          className="h-full"
+        >
           <TargetingNav onFormSubmit={handleTargetFormSubmit} />
         </ResizablePanel>
         <ResizableHandle />
@@ -120,17 +125,6 @@ export default function TargetingView() {
             </>
           )}
         </ResizablePanel>
-        {/* {selectedData ? (
-          <>
-            <ResizableHandle />
-            <ResizablePanel minSize={36}>
-              <FieldDefinitionsDetail
-                handleClose={handleClose}
-                fieldDefinitionData={selectedData}
-              />
-            </ResizablePanel>
-          </>
-        ) : null} */}
       </ResizablePanelGroup>
     </Tabs>
   );

@@ -53,8 +53,6 @@ const BeneficiaryDetailTableView = () => {
   const tokenAssignModal = useBoolean();
   const uuid = useParams().id as UUID;
 
-  console.log({ uuid });
-
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],

@@ -4,99 +4,128 @@ import { LineChart } from '@rahat-ui/shadcn/src/components/charts';
 import DHMMap from './map';
 
 const renderStatus = ({ readinessLevel, activationLevel, waterLevel }: any) => {
-    let status;
-    if (waterLevel >= activationLevel) {
-        status = "activation";
-    } else if (waterLevel >= readinessLevel) {
-        status = "readiness";
-    } else {
-        status = "safe";
-    }
+  let status;
+  if (waterLevel >= activationLevel) {
+    status = 'activation';
+  } else if (waterLevel >= readinessLevel) {
+    status = 'readiness';
+  } else {
+    status = 'safe';
+  }
 
-    return (
-        <div>
-            <p className={`mt-4 sm:mt-8 sm:w-2/3 ${status === "activation" ? "text-red-500" : status === "readiness" ? "text-yellow-500" : "text-green-500"}`}>
-                {status === "activation" ? "Water is in activation level!" : status === "readiness" ? "Water is in readiness level!" : "Water is in a safe level."}
-            </p>
-        </div>
-    );
+  return (
+    <div>
+      <p
+        className={`mt-4 sm:mt-8 sm:w-2/3 ${
+          status === 'activation'
+            ? 'text-red-500'
+            : status === 'readiness'
+            ? 'text-yellow-500'
+            : 'text-green-500'
+        }`}
+      >
+        {status === 'activation'
+          ? 'Water is in activation level!'
+          : status === 'readiness'
+          ? 'Water is in readiness level!'
+          : 'Water is in a safe level.'}
+      </p>
+    </div>
+  );
 };
 
 export default function DHMContent({ data }: any) {
+  if (!data.length) {
+    return <p>Data not available for DHM.</p>;
+  }
 
-    if (!data.length) {
-        return <p>Data not available for DHM.</p>
-    }
+  const latestData = data[0];
+  console.log(latestData);
+  const dhmData = data;
 
-    const latestData = data[0]
-    console.log(latestData)
-    const dhmData = data;
+  const xAxisLabel = dhmData.map((d: any) => {
+    const date = new Date(d.createdAt);
+    return date.toLocaleTimeString();
+  });
 
-    const xAxisLabel = dhmData.map((d: any) => {
-        const date = new Date(d.createdAt)
-        return date.toLocaleTimeString()
-    })
+  const activationLevel =
+    latestData.dataSource.triggerStatement.activationLevel;
+  const readinessLevel = latestData.dataSource.triggerStatement.readinessLevel;
+  const longitude = latestData.data.point.coordinates[0];
+  const latitude = latestData.data.point.coordinates[1];
 
-    const activationLevel = latestData.dataSource.triggerStatement.activationLevel;
-    const readinessLevel = latestData.dataSource.triggerStatement.readinessLevel;
-    const longitude = latestData.data.point.coordinates[0];
-    const latitude = latestData.data.point.coordinates[1];
-
-    const chartOptions: ApexCharts.ApexOptions = {
-        xaxis: {
-            categories: xAxisLabel.reverse(),
-            title: {
-                text: 'Time'
-            }
-        },
-        yaxis: {
-            title: {
-                text: 'Water Level'
+  const chartOptions: ApexCharts.ApexOptions = {
+    xaxis: {
+      categories: xAxisLabel.reverse(),
+      title: {
+        text: 'Time',
+      },
+    },
+    yaxis: {
+      title: {
+        text: 'Water Level',
+      },
+      max: 12,
+    },
+    annotations: {
+      yaxis: [
+        {
+          y: activationLevel,
+          borderColor: '#D2042D',
+          borderWidth: 2,
+          label: {
+            style: {
+              color: '#D2042D',
             },
-            max: 12
+            text: 'Activation Level',
+          },
         },
-        annotations: {
-            yaxis: [
-                {
-                    y: activationLevel,
-                    borderColor: '#D2042D',
-                    borderWidth: 2,
-                    label: {
-                        style: {
-                            color: '#D2042D',
-                        },
-                        text: 'Activation Level'
-                    }
-                },
-                {
-                    y: readinessLevel,
-                    borderColor: '#FFC300',
-                    borderWidth: 2,
-                    label: {
-                        style: {
-                            color: '#FFC300',
-                        },
-                        text: 'Readiness Level'
-                    }
-                }
-            ]
-        },
-        tooltip: {
-            x: {
-                show: false,
+        {
+          y: readinessLevel,
+          borderColor: '#FFC300',
+          borderWidth: 2,
+          label: {
+            style: {
+              color: '#FFC300',
             },
-            marker: { show: false },
+            text: 'Readiness Level',
+          },
         },
-        dataLabels: {
-            enabled: true,
-        },
-    }
+      ],
+    },
+    tooltip: {
+      x: {
+        show: false,
+      },
+      marker: { show: false },
+    },
+    dataLabels: {
+      enabled: true,
+    },
+  };
 
+  const waterLevelData = dhmData.map((d: any) => {
+    return d.data.waterLevel;
+  });
 
-    const waterLevelData = dhmData.map((d: any) => {
-        return d.data.waterLevel
-    })
-
+  return (
+    <div className="grid grid-cols-4 gap-2">
+      <div className="h-[calc(100vh-130px)] col-span-3 flex flex-col gap-2">
+        <div className="h-1/2 overflow-hidden rounded-md">
+          <StyledMapContainer>
+            <ClusterMap {...mapboxBasicConfig} mapStyle={THEMES.light} />
+          </StyledMapContainer>
+        </div>
+        <div className="h-1/2 bg-card rounded-md">
+          <LineChart series={seriesData} lineChartOptions={chartOptions} />
+        </div>
+      </div>
+      <div className="grid grid-rows-3 gap-2 h-full">
+        <div className="bg-card p-4 rounded">
+          <h1 className="font-semibold text-lg">Real Time Status</h1>
+          <p>Station: {latestData.data.title}</p>
+          <p>Basin: {latestData.data.basin}</p>
+          {/* <p>Status: {latestData.data.status}</p>
     const seriesData = [
         {
             name: 'Water Level',
@@ -152,10 +181,8 @@ export default function DHMContent({ data }: any) {
                         waterLevel: latestData.data.waterLevel
                     })}
                     {/* <h1 className='font-semibold text-lg'>Phase: Readiness</h1> */}
-                </div>
-            </div>
-
         </div>
-
-    )
+      </div>
+    </div>
+  );
 }

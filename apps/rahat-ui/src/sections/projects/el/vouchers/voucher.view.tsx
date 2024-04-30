@@ -33,9 +33,9 @@ const VoucherView = () => {
     contractSettings?.eyevoucher?.address || '',
   );
 
-  const {data: voucherDetails} = useReadElProjectGetProjectVoucherDetail({
-    address: contractSettings?.elproject?.address || ''
-  })
+  const { data: voucherDetails } = useReadElProjectGetProjectVoucherDetail({
+    address: contractSettings?.elproject?.address || '',
+  });
 
   return (
     <>
@@ -45,7 +45,7 @@ const VoucherView = () => {
         </div>
       ) : (
         <>
-          {voucherDetails?.eyeVoucherBudget ? (
+          {voucherDetails ? (
             <div className="bg-secondary">
               <div className="grid grid-cols-2">
                 <div>

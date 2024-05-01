@@ -1,5 +1,6 @@
 [
     {
+        "name": "John Doe",
         "phone": "+977 9876543210",
         "email": "example@example.com",
         "designation": "Manager",

@@ -54,6 +54,11 @@ export default function useStakeholdersTableColumn() {
             enableHiding: false,
         },
         {
+            accessorKey: 'name',
+            header: 'Name',
+            cell: ({ row }) => <div>{row.getValue('name')}</div>,
+        },
+        {
             accessorKey: 'phone',
             header: 'Phone',
             cell: ({ row }) => <div>{row.getValue('phone')}</div>,

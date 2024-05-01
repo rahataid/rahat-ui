@@ -16,6 +16,7 @@ import { PhoneInput } from '@rahat-ui/shadcn/src/components/ui/phone-input';
 
 export default function AddStakeholders() {
     const FormSchema = z.object({
+        name: z.string().min(2, { message: 'Please enter name.' }),
         phone: z.string().refine(isValidPhoneNumber, { message: 'Invalid phone number' }),
         email: z.string().min(2, { message: 'Please enter email address.' }),
         designation: z.string().min(2, { message: 'Please enter designation.' }),
@@ -27,6 +28,7 @@ export default function AddStakeholders() {
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
         defaultValues: {
+            name: '',
             phone: '',
             email: '',
             designation: '',
@@ -48,6 +50,20 @@ export default function AddStakeholders() {
                     <h1 className="text-lg font-semibold mb-6">Add : Stakeholders</h1>
                     <div className="shadow-md p-4 rounded-sm">
                         <div className="grid grid-cols-2 gap-4 mb-4">
+                            <FormField
+                                control={form.control}
+                                name="name"
+                                render={({ field }) => {
+                                    return (
+                                        <FormItem>
+                                            <FormControl>
+                                                <Input type='text' placeholder="Name" {...field} />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    );
+                                }}
+                            />
                             <FormField
                                 control={form.control}
                                 name="phone"

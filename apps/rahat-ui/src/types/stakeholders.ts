@@ -1,4 +1,5 @@
 export interface IStakeholdersItem {
+    name: string;
     phone: string;
     email: string;
     designation: string;

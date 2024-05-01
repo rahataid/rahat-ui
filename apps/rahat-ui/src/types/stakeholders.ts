@@ -1,4 +1,5 @@
 export interface IStakeholdersItem {
+    uuid: string;
     name: string;
     phone: string;
     email: string;

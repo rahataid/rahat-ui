@@ -1,3 +1,4 @@
+import { useParams } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
@@ -13,12 +14,22 @@ import { isValidPhoneNumber } from 'react-phone-number-input';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { PhoneInput } from '@rahat-ui/shadcn/src/components/ui/phone-input';
+import { useCreateStakeholders } from '@rahat-ui/query';
+import { UUID } from 'crypto';
 
 export default function AddStakeholders() {
+    const { id } = useParams();
+    const createStakeholder = useCreateStakeholders();
+
+    const isValidPhoneNumberRefinement = (value: string | undefined) => {
+        if (value === undefined || value === '') return true; // If phone number is empty or undefined, it's considered valid
+        return isValidPhoneNumber(value);
+    };
+
     const FormSchema = z.object({
         name: z.string().min(2, { message: 'Please enter name.' }),
-        phone: z.string().refine(isValidPhoneNumber, { message: 'Invalid phone number' }),
-        email: z.string().min(2, { message: 'Please enter email address.' }),
+        phone: z.string().optional().refine(isValidPhoneNumberRefinement, { message: 'Invalid phone number' }),
+        email: z.string().optional(),
         designation: z.string().min(2, { message: 'Please enter designation.' }),
         organization: z.string().min(2, { message: 'Please enter organization.' }),
         district: z.string().min(2, { message: 'Please enter district.' }),
@@ -39,9 +50,16 @@ export default function AddStakeholders() {
     });
 
     const handleCreateStakeholders = async (data: z.infer<typeof FormSchema>) => {
-        form.reset();
-        console.log('Add Stakeholders Data::', data);
-        alert('Added Stakeholders');
+        try {
+            await createStakeholder.mutateAsync({
+                projectUUID: id as UUID,
+                stakeholderPayload: data
+            })
+        } catch (e) {
+            console.error("Create Stakeholder Error::", e)
+        } finally {
+            form.reset();
+        }
     };
     return (
         <Form {...form}>

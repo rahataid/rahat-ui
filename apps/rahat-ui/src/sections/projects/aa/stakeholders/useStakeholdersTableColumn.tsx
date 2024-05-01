@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
 import {
@@ -22,12 +22,23 @@ import { Pencil, Trash2 } from 'lucide-react';
 import { useSecondPanel } from '../../../../providers/second-panel-provider';
 import { IStakeholdersItem } from 'apps/rahat-ui/src/types/stakeholders';
 import StakeholdersEditPanel from './stakeholders.edit.view';
+import { useDeleteStakeholders } from '@rahat-ui/query';
+import { useParams } from 'next/navigation';
+import { UUID } from 'crypto';
 
 export default function useStakeholdersTableColumn() {
+    const { id } = useParams();
     const { setSecondPanelComponent, closeSecondPanel } = useSecondPanel();
 
-    const removeStakeholder = () => {
-        alert('Deleted')
+    const deleteStakeholder = useDeleteStakeholders();
+
+    const removeStakeholder = (stakeholder: IStakeholdersItem) => {
+        deleteStakeholder.mutateAsync({
+            projectUUID: id as UUID,
+            stakeholderPayload: {
+                uuid: stakeholder?.uuid
+            }
+        })
     }
 
     const columns: ColumnDef<IStakeholdersItem>[] = [
@@ -61,12 +72,12 @@ export default function useStakeholdersTableColumn() {
         {
             accessorKey: 'phone',
             header: 'Phone',
-            cell: ({ row }) => <div>{row.getValue('phone')}</div>,
+            cell: ({ row }) => <div>{row.getValue('phone') || "N/A"}</div>,
         },
         {
             accessorKey: 'email',
             header: 'Email Address',
-            cell: ({ row }) => <div>{row.getValue('email')}</div>,
+            cell: ({ row }) => <div>{row.getValue('email') || "N/A"}</div>,
         },
         {
             accessorKey: 'designation',
@@ -140,7 +151,7 @@ export default function useStakeholdersTableColumn() {
                                             </AlertDialogHeader>
                                             <AlertDialogFooter>
                                                 <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                                <AlertDialogAction onClick={() => removeStakeholder()}>Continue</AlertDialogAction>
+                                                <AlertDialogAction onClick={() => removeStakeholder(row.original)}>Continue</AlertDialogAction>
                                             </AlertDialogFooter>
                                         </AlertDialogContent>
                                     </AlertDialog>

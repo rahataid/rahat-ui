@@ -5,6 +5,18 @@ import { useStakeholdersStore } from './stakeholders.store';
 import { UUID } from 'crypto';
 import { useSwal } from 'libs/query/src/swal';
 
+interface IStakeholdersUpdatePayload {
+    uuid: string;
+    name?: string;
+    phone?: string;
+    email?: string;
+    designation?: string;
+    organization?: string;
+    district?: string;
+    municipality?: string;
+}
+
+
 export const useStakeholders = (uuid: UUID, payload: any) => {
     const q = useProjectAction();
     const { setStakeholders, setStakeholdersMeta } = useStakeholdersStore((state) => ({
@@ -97,9 +109,7 @@ export const useUpdateStakeholders = () => {
             stakeholderPayload,
         }: {
             projectUUID: UUID;
-            stakeholderPayload: {
-                uuid: string;
-            };
+            stakeholderPayload: IStakeholdersUpdatePayload
         }) => {
             return q.mutateAsync({
                 uuid: projectUUID,

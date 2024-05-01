@@ -1,3 +1,5 @@
+import * as React from 'react'
+import { useParams } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
@@ -16,18 +18,28 @@ import { PhoneInput } from '@rahat-ui/shadcn/src/components/ui/phone-input';
 
 import { useSecondPanel } from 'apps/rahat-ui/src/providers/second-panel-provider';
 import { IStakeholdersItem } from 'apps/rahat-ui/src/types/stakeholders';
+import { useUpdateStakeholders } from '@rahat-ui/query';
+import { UUID } from 'crypto';
 
 type IProps = {
     stakeholdersDetail: IStakeholdersItem
 }
 
 export default function EditStakeholders({ stakeholdersDetail }: IProps) {
+    const { id } = useParams();
     const { closeSecondPanel } = useSecondPanel();
+
+    const updateStakeholder = useUpdateStakeholders();
+
+    const isValidPhoneNumberRefinement = (value: string | undefined) => {
+        if (value === undefined || value === '') return true; // If phone number is empty or undefined, it's considered valid
+        return isValidPhoneNumber(value);
+    };
 
     const FormSchema = z.object({
         name: z.string().min(2, { message: 'Please enter name.' }),
-        phone: z.string().refine(isValidPhoneNumber, { message: 'Invalid phone number' }),
-        email: z.string().min(2, { message: 'Please enter email address.' }),
+        phone: z.string().optional().refine(isValidPhoneNumberRefinement, { message: 'Invalid phone number' }),
+        email: z.string().optional(),
         designation: z.string().min(2, { message: 'Please enter designation.' }),
         organization: z.string().min(2, { message: 'Please enter organization.' }),
         district: z.string().min(2, { message: 'Please enter district.' }),
@@ -48,9 +60,20 @@ export default function EditStakeholders({ stakeholdersDetail }: IProps) {
     });
 
     const handleEditStakeholders = async (data: z.infer<typeof FormSchema>) => {
-        alert('Stakeholders Updated');
-        closeSecondPanel();
+        try {
+            await updateStakeholder.mutateAsync({
+                projectUUID: id as UUID,
+                stakeholderPayload: { ...data, uuid: stakeholdersDetail?.uuid }
+            })
+        } catch (e) {
+            console.error("Update Stakeholder Error::", e)
+        }
     };
+
+    React.useEffect(() => {
+        updateStakeholder.isSuccess && closeSecondPanel();
+    }, [updateStakeholder])
+
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(handleEditStakeholders)}>

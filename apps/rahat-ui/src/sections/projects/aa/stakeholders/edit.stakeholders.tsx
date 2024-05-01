@@ -1,0 +1,152 @@
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import {
+    Form,
+    FormControl,
+    FormField,
+    FormItem,
+    FormMessage,
+} from '@rahat-ui/shadcn/src/components/ui/form';
+import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
+
+import { isValidPhoneNumber } from 'react-phone-number-input';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { PhoneInput } from '@rahat-ui/shadcn/src/components/ui/phone-input';
+
+import { useSecondPanel } from 'apps/rahat-ui/src/providers/second-panel-provider';
+import { IStakeholdersItem } from 'apps/rahat-ui/src/types/stakeholders';
+
+type IProps = {
+    stakeholdersDetail: IStakeholdersItem
+}
+
+export default function EditStakeholders({ stakeholdersDetail }: IProps) {
+    const { closeSecondPanel } = useSecondPanel();
+
+    const FormSchema = z.object({
+        phone: z.string().refine(isValidPhoneNumber, { message: 'Invalid phone number' }),
+        email: z.string().min(2, { message: 'Please enter email address.' }),
+        designation: z.string().min(2, { message: 'Please enter designation.' }),
+        organization: z.string().min(2, { message: 'Please enter organization.' }),
+        district: z.string().min(2, { message: 'Please enter district.' }),
+        municipality: z.string().min(2, { message: 'Please enter municipality' }),
+    });
+
+    const form = useForm<z.infer<typeof FormSchema>>({
+        resolver: zodResolver(FormSchema),
+        defaultValues: {
+            phone: stakeholdersDetail?.phone,
+            email: stakeholdersDetail?.email,
+            designation: stakeholdersDetail?.designation,
+            organization: stakeholdersDetail?.organization,
+            district: stakeholdersDetail?.district,
+            municipality: stakeholdersDetail?.municipality,
+        },
+    });
+
+    const handleEditStakeholders = async (data: z.infer<typeof FormSchema>) => {
+        alert('Stakeholders Updated');
+        closeSecondPanel();
+    };
+    return (
+        <Form {...form}>
+            <form onSubmit={form.handleSubmit(handleEditStakeholders)}>
+                <div className="p-4 bg-card">
+                    <h1 className="text-lg font-semibold mb-6">Edit : Stakeholders</h1>
+                    <div className="shadow-md p-4 rounded-sm">
+                        <div className="grid grid-cols-2 gap-4 mb-4">
+                            <FormField
+                                control={form.control}
+                                name="phone"
+                                render={({ field }) => {
+                                    return (
+                                        <FormItem>
+                                            <FormControl>
+                                                <PhoneInput placeholder="Phone" {...field} />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    );
+                                }}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="email"
+                                render={({ field }) => {
+                                    return (
+                                        <FormItem>
+                                            <FormControl>
+                                                <Input type='email' placeholder="Email Address" {...field} />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    );
+                                }}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="designation"
+                                render={({ field }) => {
+                                    return (
+                                        <FormItem>
+                                            <FormControl>
+                                                <Input type="text" placeholder="Designation" {...field} />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    );
+                                }}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="organization"
+                                render={({ field }) => {
+                                    return (
+                                        <FormItem>
+                                            <FormControl>
+                                                <Input type="text" placeholder="Organization" {...field} />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    );
+                                }}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="district"
+                                render={({ field }) => {
+                                    return (
+                                        <FormItem>
+                                            <FormControl>
+                                                <Input type="text" placeholder="District" {...field} />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    );
+                                }}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="municipality"
+                                render={({ field }) => {
+                                    return (
+                                        <FormItem>
+                                            <FormControl>
+                                                <Input type="text" placeholder="Municipality" {...field} />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    );
+                                }}
+                            />
+                        </div>
+                        <div className="flex justify-end">
+                            <Button>Update Stakeholders</Button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </Form>
+    );
+}

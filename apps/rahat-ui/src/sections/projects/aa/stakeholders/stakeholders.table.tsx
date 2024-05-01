@@ -67,9 +67,9 @@ export default function StakeholdersTable() {
 
     return (
         <div className="p-2 bg-secondary">
-            <div className="rounded border bg-card h-[calc(100vh-178px)]">
+            <div className="rounded border bg-card h-[calc(100vh-130px)]">
                 <Table>
-                    <ScrollArea className="h-[calc(100vh-193px)]">
+                    <ScrollArea className="h-[calc(100vh-142px)]">
                         <TableHeader>
                             {table.getHeaderGroups().map((headerGroup) => (
                                 <TableRow key={headerGroup.id}>

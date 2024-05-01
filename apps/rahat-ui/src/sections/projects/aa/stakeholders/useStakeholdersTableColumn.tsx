@@ -1,9 +1,16 @@
 import React from 'react';
 import { ColumnDef } from '@tanstack/react-table';
-import { useSecondPanel } from '../../../../providers/second-panel-provider';
-import { Eye } from 'lucide-react';
-import { IStakeholdersItem } from 'apps/rahat-ui/src/types/stakeholders';
 import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from '@rahat-ui/shadcn/components/tooltip';
+import { Pencil } from 'lucide-react';
+import { useSecondPanel } from '../../../../providers/second-panel-provider';
+import { IStakeholdersItem } from 'apps/rahat-ui/src/types/stakeholders';
+import StakeholdersEditPanel from './stakeholders.edit.view';
 
 export default function useStakeholdersTableColumn() {
     const { setSecondPanelComponent, closeSecondPanel } = useSecondPanel();
@@ -65,21 +72,29 @@ export default function useStakeholdersTableColumn() {
             id: 'actions',
             enableHiding: false,
             cell: ({ row }) => {
-                console.log(row)
                 return (
-                    <Eye
-                        className="hover:text-primary cursor-pointer"
-                        size={20}
-                        strokeWidth={1.5}
-                    // onClick={() => {
-                    //     setSecondPanelComponent(
-                    //         <ActivitiesDetailView
-                    //             activityDetail={row.original}
-                    //             closeSecondPanel={closeSecondPanel}
-                    //         />,
-                    //     );
-                    // }}
-                    />
+                    <TooltipProvider delayDuration={100}>
+                        <Tooltip>
+                            <TooltipTrigger>
+                                <Pencil
+                                    className="hover:text-primary cursor-pointer"
+                                    size={20}
+                                    strokeWidth={1.5}
+                                    onClick={() => {
+                                        setSecondPanelComponent(
+                                            <StakeholdersEditPanel
+                                                stakeholdersDetail={row.original}
+                                                closeSecondPanel={closeSecondPanel}
+                                            />,
+                                        );
+                                    }}
+                                />
+                            </TooltipTrigger>
+                            <TooltipContent className="bg-secondary ">
+                                <p className="text-xs font-medium">Edit</p>
+                            </TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
                 );
             },
         },

@@ -7,13 +7,28 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from '@rahat-ui/shadcn/components/tooltip';
-import { Pencil } from 'lucide-react';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/alert-dialog';
+import { Pencil, Trash2 } from 'lucide-react';
 import { useSecondPanel } from '../../../../providers/second-panel-provider';
 import { IStakeholdersItem } from 'apps/rahat-ui/src/types/stakeholders';
 import StakeholdersEditPanel from './stakeholders.edit.view';
 
 export default function useStakeholdersTableColumn() {
     const { setSecondPanelComponent, closeSecondPanel } = useSecondPanel();
+
+    const removeStakeholder = () => {
+        alert('Deleted')
+    }
 
     const columns: ColumnDef<IStakeholdersItem>[] = [
         {
@@ -73,28 +88,64 @@ export default function useStakeholdersTableColumn() {
             enableHiding: false,
             cell: ({ row }) => {
                 return (
-                    <TooltipProvider delayDuration={100}>
-                        <Tooltip>
-                            <TooltipTrigger>
-                                <Pencil
-                                    className="hover:text-primary cursor-pointer"
-                                    size={20}
-                                    strokeWidth={1.5}
-                                    onClick={() => {
-                                        setSecondPanelComponent(
-                                            <StakeholdersEditPanel
-                                                stakeholdersDetail={row.original}
-                                                closeSecondPanel={closeSecondPanel}
-                                            />,
-                                        );
-                                    }}
-                                />
-                            </TooltipTrigger>
-                            <TooltipContent className="bg-secondary ">
-                                <p className="text-xs font-medium">Edit</p>
-                            </TooltipContent>
-                        </Tooltip>
-                    </TooltipProvider>
+                    <div className='flex gap-3 items-center'>
+                        <TooltipProvider delayDuration={100}>
+                            <Tooltip>
+                                <TooltipTrigger>
+                                    <Pencil
+                                        className="hover:text-primary cursor-pointer"
+                                        size={20}
+                                        strokeWidth={1.5}
+                                        onClick={() => {
+                                            setSecondPanelComponent(
+                                                <StakeholdersEditPanel
+                                                    stakeholdersDetail={row.original}
+                                                    closeSecondPanel={closeSecondPanel}
+                                                />,
+                                            );
+                                        }}
+                                    />
+                                </TooltipTrigger>
+                                <TooltipContent className="bg-secondary ">
+                                    <p className="text-xs font-medium">Edit</p>
+                                </TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
+                        <TooltipProvider delayDuration={100}>
+                            <Tooltip>
+                                <TooltipTrigger>
+                                    <AlertDialog>
+                                        <AlertDialogTrigger className="flex items-center">
+                                            <Trash2
+                                                className="cursor-pointer"
+                                                color="red"
+                                                size={20}
+                                                strokeWidth={1.5}
+                                            />
+                                        </AlertDialogTrigger>
+                                        <AlertDialogContent>
+                                            <AlertDialogHeader>
+                                                <AlertDialogTitle>
+                                                    Are you absolutely sure?
+                                                </AlertDialogTitle>
+                                                <AlertDialogDescription>
+                                                    This action cannot be undone. This will permanently
+                                                    delete this stakeholder.
+                                                </AlertDialogDescription>
+                                            </AlertDialogHeader>
+                                            <AlertDialogFooter>
+                                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                <AlertDialogAction onClick={() => removeStakeholder()}>Continue</AlertDialogAction>
+                                            </AlertDialogFooter>
+                                        </AlertDialogContent>
+                                    </AlertDialog>
+                                </TooltipTrigger>
+                                <TooltipContent className="bg-secondary ">
+                                    <p className="text-xs font-medium">Delete</p>
+                                </TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
+                    </div>
                 );
             },
         },

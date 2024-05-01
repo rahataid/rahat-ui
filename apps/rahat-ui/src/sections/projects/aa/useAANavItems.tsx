@@ -14,6 +14,7 @@ import {
   ShieldCheck,
   HardDrive,
   LayoutDashboard,
+  Users
 } from 'lucide-react';
 
 export type NavItem = {
@@ -109,6 +110,12 @@ export const useNavItems = () => {
             path: `/projects/aa/${params.id}/data-sources`,
             // subtitle: 0,
             icon: <HardDrive size={18} strokeWidth={1.5} />,
+          },
+          {
+            title: 'Stakeholders',
+            path: `/projects/aa/${params.id}/stakeholders`,
+            // subtitle: 0,
+            icon: <Users size={18} strokeWidth={1.5} />,
           },
         ],
       ],

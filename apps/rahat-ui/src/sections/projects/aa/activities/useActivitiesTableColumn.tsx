@@ -48,6 +48,15 @@ export default function useActivitiesTableColumn() {
       ),
     },
     {
+      accessorKey: 'phase',
+      header: 'Phase',
+      cell: ({ row }) => (
+        <Badge className="rounded-md capitalize">
+          {row.getValue('phase')}
+        </Badge>
+      ),
+    },
+    {
       accessorKey: 'responsibility',
       header: 'Responsibility',
       cell: ({ row }) => <div>{row.getValue('responsibility')}</div>,
@@ -68,16 +77,10 @@ export default function useActivitiesTableColumn() {
       cell: ({ row }) => (
         <div className="flex gap-1">
           <Badge
-            className={`rounded-md capitalize ${row.original.isApproved ? 'bg-green-200' : 'bg-red-200'
+            className={`rounded-md capitalize bg-green-200
               }`}
           >
-            {row.original.isApproved ? 'Approved' : 'Not Approved'}
-          </Badge>
-          <Badge
-            className={`rounded-md capitalize ${row.original.isComplete ? 'bg-green-200' : 'bg-yellow-200'
-              }`}
-          >
-            {row.original.isComplete ? 'Completed' : 'Work In Progress'}
+            {row.getValue('status')}
           </Badge>
         </div>
       ),
@@ -86,6 +89,7 @@ export default function useActivitiesTableColumn() {
       id: 'actions',
       enableHiding: false,
       cell: ({ row }) => {
+        console.log(row)
         return (
           <Eye
             className="hover:text-primary cursor-pointer"

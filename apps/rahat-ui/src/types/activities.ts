@@ -7,6 +7,5 @@ export interface IActivitiesItem {
   category: string;
   description: string;
   hazardType: string;
-  isApproved: boolean;
-  isComplete: boolean;
+  status: string;
 }

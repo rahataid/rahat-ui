@@ -117,6 +117,11 @@ export const useNavItems = () => {
       title: 'Actions',
       children: [
         {
+          title: 'Add Stakeholders',
+          path: `/projects/aa/${params.id}/stakeholders/add`,
+          icon: <Plus size={18} strokeWidth={1.5} />,
+        },
+        {
           title: 'Add Trigger Statement',
           path: `/projects/aa/${params.id}/trigger-statements/add`,
           icon: <Plus size={18} strokeWidth={1.5} />,

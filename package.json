@@ -47,7 +47,7 @@
     "@rumsan/prisma": "^1.0.125",
     "@rumsan/react-query": "0.0.38",
     "@rumsan/sdk": "^0.0.45",
-    "@rahataid/community-tool-sdk": "^0.0.13",
+    "@rahataid/community-tool-sdk": "^0.0.14",
     "@rumsan/extensions": "^0.0.22",
     "@rumsan/user": "^3.0.158",
     "@tanstack/match-sorter-utils": "^8.11.8",

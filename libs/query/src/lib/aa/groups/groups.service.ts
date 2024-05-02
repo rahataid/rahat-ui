@@ -53,3 +53,35 @@ export const useCreateStakeholdersGroups = () => {
         },
     })
 }
+
+export const useStakeholdersGroups = (uuid: UUID, payload: any) => {
+    const q = useProjectAction();
+    const { setStakeholdersGroups, setStakeholdersGroupsMeta } = useStakeholdersGroupsStore((state) => ({
+        setStakeholdersGroups: state.setStakeholdersGroups,
+        setStakeholdersGroupsMeta: state.setStakeholdersGroupsMeta
+    }));
+
+    const query = useQuery({
+        queryKey: ['stakeholdersGroups', uuid, payload],
+        queryFn: async () => {
+            const mutate = await q.mutateAsync({
+                uuid,
+                data: {
+                    action: 'aaProject.stakeholders.getAllGroups',
+                    payload: payload,
+                },
+            });
+            return mutate.response;
+        },
+        placeholderData: keepPreviousData
+    });
+
+    useEffect(() => {
+        if (query?.data) {
+            setStakeholdersGroups(query?.data?.data);
+            setStakeholdersGroupsMeta(query?.data?.meta);
+        }
+    }, [query.data]);
+
+    return { ...query, stakeholdersGroupsMeta: query?.data?.meta };
+};

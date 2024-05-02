@@ -146,6 +146,8 @@ export const useNavItems = () => {
     }
   };
 
+  console.log('project stats', projectStats);
+
   const navItems: NavItem[] = [
     {
       title: 'Project Details',

@@ -1,0 +1,1 @@
+export { default as GroupsAddView } from './groups.add.view'

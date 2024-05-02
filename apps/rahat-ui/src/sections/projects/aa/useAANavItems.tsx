@@ -129,6 +129,11 @@ export const useNavItems = () => {
           icon: <Plus size={18} strokeWidth={1.5} />,
         },
         {
+          title: 'Add Groups',
+          path: `/projects/aa/${params.id}/groups/add`,
+          icon: <Plus size={18} strokeWidth={1.5} />,
+        },
+        {
           title: 'Add Trigger Statement',
           path: `/projects/aa/${params.id}/trigger-statements/add`,
           icon: <Plus size={18} strokeWidth={1.5} />,

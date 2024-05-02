@@ -86,6 +86,58 @@ export const useStakeholdersGroups = (uuid: UUID, payload: any) => {
     return { ...query, stakeholdersGroupsMeta: query?.data?.meta };
 };
 
+export const useUpdateStakeholdersGroups = () => {
+    const qc = useQueryClient();
+    const q = useProjectAction();
+    const alert = useSwal();
+    const toast = alert.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000,
+    });
+    return useMutation({
+        mutationFn: async ({
+            projectUUID,
+            stakeholdersGroupPayload,
+        }: {
+            projectUUID: UUID;
+            stakeholdersGroupPayload: {
+                uuid: string;
+                name?: string;
+                stakeholders?: Array<{
+                    uuid: string
+                }>
+            }
+        }) => {
+            return q.mutateAsync({
+                uuid: projectUUID,
+                data: {
+                    action: 'aaProject.stakeholders.updateGroup',
+                    payload: stakeholdersGroupPayload,
+                },
+            });
+        },
+        onSuccess: () => {
+            q.reset();
+            qc.invalidateQueries({ queryKey: ['stakeholdersGroups', 'stakeholders'] });
+            toast.fire({
+                title: 'Stakeholders group updated successfully',
+                icon: 'success',
+            });
+        },
+        onError: (error: any) => {
+            const errorMessage = error?.response?.data?.message || 'Error';
+            q.reset();
+            toast.fire({
+                title: 'Error while updating stakeholders group.',
+                icon: 'error',
+                text: errorMessage,
+            });
+        },
+    });
+}
+
 export const useDeleteStakeholdersGroups = () => {
     const qc = useQueryClient();
     const q = useProjectAction();
@@ -116,7 +168,7 @@ export const useDeleteStakeholdersGroups = () => {
         },
         onSuccess: () => {
             q.reset();
-            qc.invalidateQueries({ queryKey: ['stakeholdersGroups'] });
+            qc.invalidateQueries({ queryKey: ['stakeholdersGroups', 'stakeholders'] });
             toast.fire({
                 title: 'Stakeholders Group removed successfully',
                 icon: 'success',

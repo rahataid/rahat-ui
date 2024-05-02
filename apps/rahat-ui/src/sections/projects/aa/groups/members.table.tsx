@@ -23,7 +23,7 @@ type IProps = {
 export default function MembersTable({ table }: IProps) {
     return (
         <TableComponent>
-            <ScrollArea className="h-[calc(100vh-370px)]">
+            <ScrollArea className="h-[calc(100vh-420px)]">
                 <TableHeader>
                     {table.getHeaderGroups().map((headerGroup) => (
                         <TableRow key={headerGroup.id}>

@@ -18,7 +18,7 @@ import {
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { Info, PlusSquare, TicketCheck } from 'lucide-react';
-import { FC } from 'react';
+import { FC, useState } from 'react';
 import { useProjectVoucher } from '../../../hooks/el/subgraph/querycall';
 import { useParams, useRouter } from 'next/navigation';
 import {
@@ -46,7 +46,7 @@ interface CreateVoucherModalType {
   open: boolean;
   handleInputChange: (e: any) => void;
   setVoucherInputs?: any;
-  handleSubmit: (e: any) => void;
+  handleSubmit: () => void;
   handleModal: () => void;
 }
 
@@ -67,6 +67,17 @@ const CreateVoucherModal: FC<CreateVoucherModalType> = ({
 
   const { id } = useParams();
   const route = useRouter();
+
+  const [errorMessage, setErrorMessage] = useState<string>('');
+
+  const handleSubmitCheck = (e: any) => {
+    e.preventDefault();
+    if (!voucherInputs.tokens) {
+      setErrorMessage('Please enter the number of free vouchers.');
+    } else {
+      handleSubmit();
+    }
+  };
 
   const contractSettings = useProjectSettingsStore(
     (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT] || null,
@@ -129,8 +140,12 @@ const CreateVoucherModal: FC<CreateVoucherModalType> = ({
                       onChange={handleInputChange}
                       type="number"
                       min="1"
+                      onFocus={() => setErrorMessage('')}
                     />
                   </div>
+                  {errorMessage && (
+                    <p className="text-sm text-red-500">{errorMessage}</p>
+                  )}
                 </form>
               </AlertDescription>
             </Alert>
@@ -158,7 +173,7 @@ const CreateVoucherModal: FC<CreateVoucherModalType> = ({
 
             <DialogFooter>
               <DialogClose asChild>
-                <Button onClick={handleSubmit}>Submit</Button>
+                <Button onClick={handleSubmitCheck}>Submit</Button>
               </DialogClose>
             </DialogFooter>
           </DialogContent>

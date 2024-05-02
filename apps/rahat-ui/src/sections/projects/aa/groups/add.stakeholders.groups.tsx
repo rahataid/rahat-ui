@@ -25,10 +25,11 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { UUID } from 'crypto';
 import useMembersTableColumn from './useMembersTable';
-import { useStakeholders, useStakeholdersStore, usePagination } from '@rahat-ui/query';
+import { useStakeholders, useStakeholdersStore, usePagination, useCreateStakeholdersGroups } from '@rahat-ui/query';
 import MembersTable from './members.table';
 import CustomPagination from '../../../../components/customPagination';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+import { toast } from 'react-toastify';
 
 
 export default function AddStakeholdersGroups() {
@@ -81,6 +82,8 @@ export default function AddStakeholdersGroups() {
         },
     });
 
+    const createStakeholdersGroup = useCreateStakeholdersGroups()
+
     const FormSchema = z.object({
         name: z.string().min(2, { message: 'Please enter group name.' }),
     });
@@ -93,7 +96,27 @@ export default function AddStakeholdersGroups() {
     });
 
     const handleCreateStakeholdersGroups = async (data: z.infer<typeof FormSchema>) => {
-        alert("Added")
+        const stakeHolders = table.getSelectedRowModel().rows?.map((stakeholder: any) => ({ uuid: stakeholder?.original?.uuid }))
+        try {
+            if (!stakeHolders.length) {
+                toast.error('Please select members to create group')
+                return
+            }
+            await createStakeholdersGroup.mutateAsync({
+                projectUUID: id as UUID,
+                stakeholdersGroupPayload: {
+                    ...data,
+                    stakeholders: stakeHolders
+                }
+            })
+        } catch (e) {
+            console.error('Creating Stakeholders Group Error::', e)
+        } finally {
+            if (stakeHolders.length) {
+                form.reset()
+                table.resetRowSelection()
+            }
+        }
     };
     return (
         <Form {...form}>
@@ -118,7 +141,7 @@ export default function AddStakeholdersGroups() {
                             />
                             <div className="flex justify-end">
                                 <div className='flex gap-4'>
-                                    {table.getSelectedRowModel().rows.length ? <Badge className='rounded h-10 px-4 py-2'>{table.getSelectedRowModel().rows.length} - member selected</Badge> : null}
+                                    {table.getSelectedRowModel().rows.length ? <Badge className='rounded h-10 px-4 py-2 w-max'>{table.getSelectedRowModel().rows.length} - member selected</Badge> : null}
                                     <Button type='button' onClick={() => setShowMembers(!showMembers)}>
                                         {showMembers ? 'Hide Members' : 'Show Members'}
                                     </Button>

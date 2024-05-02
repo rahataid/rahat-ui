@@ -34,6 +34,7 @@ function BeneficiaryView() {
     filters,
     setFilters,
     setPagination,
+    resetSelectedListItems,
   } = usePagination();
 
   const debouncedFilters = useDebounce(filters, 500);
@@ -74,6 +75,12 @@ function BeneficiaryView() {
       Object.keys(selectedListItems).filter((key) => selectedListItems[key]),
     );
   }, [selectedListItems, setSelectedBeneficiaries]);
+
+  useEffect(() => {
+    if (selectedBeneficiaries.length === 0) {
+      resetSelectedListItems();
+    }
+  }, [resetSelectedListItems, selectedBeneficiaries.length]);
 
   return (
     <Tabs defaultValue="list" className="h-full">

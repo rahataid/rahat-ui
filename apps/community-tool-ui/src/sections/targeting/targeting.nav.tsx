@@ -10,15 +10,15 @@ type IProps = {
 export default function Nav({ onFormSubmit }: IProps) {
   return (
     <>
-      <div>
-        <div className="flex justify-between items-center p-4 border-6">
-          <h1 className="font-semibold text-xl text-primary">Targeting</h1>
-        </div>
-        <div className="px-4">
-          <ScrollArea className="h-[calc(100vh-66px)]">
-            <TargetSelectForm onFormSubmit={onFormSubmit} />
-          </ScrollArea>
-        </div>
+      <div className="flex justify-between items-center p-4 border-6">
+        <h1 className="font-semibold text-xl text-primary">
+          Targeting Options
+        </h1>
+      </div>
+      <div className="px-4">
+        <ScrollArea className="h-[calc(100vh-46px)]">
+          <TargetSelectForm onFormSubmit={onFormSubmit} />
+        </ScrollArea>
       </div>
     </>
   );

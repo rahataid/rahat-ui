@@ -33,15 +33,15 @@ export default function useTextTableColumn() {
         </div>
       ),
     },
-    {
-      accessorKey: 'startTime',
-      header: 'Start Time',
-      cell: ({ row }) => (
-        <div className="capitalize">
-          {new Date(row.getValue('startTime')).toLocaleString()}
-        </div>
-      ),
-    },
+    // {
+    //   accessorKey: 'startTime',
+    //   header: 'Start Time',
+    //   cell: ({ row }) => (
+    //     <div className="capitalize">
+    //       {new Date(row.getValue('startTime')).toLocaleString()}
+    //     </div>
+    //   ),
+    // },
     {
       accessorKey: 'status',
       header: 'Status',

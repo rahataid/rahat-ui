@@ -24,6 +24,7 @@ import * as React from 'react';
 type ProjectModalType = {
   value: boolean;
   onToggle: () => void;
+  onFalse: () => void;
 };
 
 type IProps = {
@@ -35,8 +36,8 @@ export default function AssignToProjectModal({
   beneficiaryDetail,
   projectModal,
 }: IProps) {
-  const addBeneficiary = useAssignBenToProject();
-  const projectsList = useProjectList({});
+  const assignBeneficiary = useAssignBenToProject();
+  const projectsList = useProjectList({ page: 1, perPage: 10 });
 
   const [selectedProject, setSelectedProject] = React.useState<UUID>();
 
@@ -44,7 +45,7 @@ export default function AssignToProjectModal({
 
   const handleAssignProject = async () => {
     if (!selectedProject) return alert('Please select a project');
-    await addBeneficiary.mutateAsync({
+    await assignBeneficiary.mutateAsync({
       beneficiaryUUID: beneficiaryDetail?.uuid,
       projectUUID: selectedProject,
     });
@@ -58,6 +59,10 @@ export default function AssignToProjectModal({
     //   },
     // });
   };
+
+  React.useEffect(() => {
+    assignBeneficiary.isSuccess && projectModal.onFalse();
+  }, [assignBeneficiary])
 
   return (
     <Dialog open={projectModal.value} onOpenChange={projectModal.onToggle}>

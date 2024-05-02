@@ -34,16 +34,16 @@ export default function CommonCard({
       onClick={handleClick}
       className={`cursor-pointer rounded border shadow`}
     >
-      <div className="bg-black rounded">
+      <div className="rounded">
         <Image
-          className="object-cover h-72 w-full rounded-t opacity-70"
+          className="object-contain h-72 w-full rounded-t"
           src={image}
           alt="project"
           height={200}
           width={200}
         />
       </div>
-      <CardContent className="pt-4 pb-4">
+      <CardContent className="pt-4 pb-4 border-t">
         <div className="flex justify-between">
           <p className="font-bold text-md text-primary">{title} </p>
           <Badge

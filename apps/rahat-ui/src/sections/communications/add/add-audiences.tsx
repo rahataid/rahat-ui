@@ -39,6 +39,7 @@ import { z } from 'zod';
 import { benType } from '../../projects/el/beneficiary/beneficiary.table';
 import { useAudienceColumns } from './use-audience-columns';
 import { useAudienceTable } from './use-audience-table';
+import { UUID } from 'crypto';
 
 type AddAudienceProps = {
   form: UseFormReturn<z.infer<any>>;
@@ -116,6 +117,7 @@ const AddAudience: FC<AddAudienceProps> = ({
           name: item?.piiData?.name,
           id: item?.piiData?.beneficiaryId,
           phone: item?.piiData?.phone,
+          email: item?.piiData?.email,
         }))
       );
     else return [];
@@ -131,6 +133,7 @@ const AddAudience: FC<AddAudienceProps> = ({
     setRowSelection,
     tableData,
   });
+
 
   return (
     <>

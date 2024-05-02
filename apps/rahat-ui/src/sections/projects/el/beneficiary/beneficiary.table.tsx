@@ -60,6 +60,7 @@ import { useRouter } from 'next/navigation';
 import { useGraphService } from '../../../../providers/subgraph-provider';
 import { useGetBeneficiaryVouchers, useVendorFilteredTransaction } from 'apps/rahat-ui/src/hooks/el/subgraph/querycall';
 import { useEffect, useState } from 'react';
+import { useWaitForTransactionReceipt } from 'wagmi';
 // import { useBeneficiaryTransaction } from '../../hooks/el/subgraph/querycall';
 
 export type Transaction = {
@@ -83,13 +84,18 @@ export const benType = [
     key: 'REFERRED',
     value: 'REFERRED',
   },
+  
 ];
 
 export const voucherType = [
   {
-    key: 'ALL',
-    value: 'ALL',
+    key: 'NOT_ASSIGNED',
+    value: 'NOT_ASSIGNED',
   },
+  // {
+  //   key: 'ALL',
+  //   value: 'ALL',
+  // },
   {
     key: 'FREE',
     value: 'FREE',
@@ -98,6 +104,7 @@ export const voucherType = [
     key: 'REFERRED',
     value: 'REFERRED',
   },
+  
 ];
 
 function BeneficiaryDetailTableView() {
@@ -109,8 +116,6 @@ function BeneficiaryDetailTableView() {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
   );
-
- 
 
   const handleTokenAssignModal = () => {
     tokenAssignModal.onTrue();
@@ -139,8 +144,6 @@ function BeneficiaryDetailTableView() {
   const { queryService } = useGraphService();
 
   const {data:dataVouce, error} = useGetBeneficiaryVouchers()
-
-
   const projectBeneficiaries = useProjectBeneficiaries({
     page: pagination.page,
     perPage: pagination.perPage,
@@ -152,6 +155,8 @@ function BeneficiaryDetailTableView() {
   });
 
   const [projectVoucherBeneficiaries, setProjectVoucherBeneficiaries] = useState<any>()
+  const [transactionHash, setTransactionHash] = useState<`0x${string}`>()
+  const [isTransacting, setisTransacting] = useState<boolean>(false)
   const [filteredProjectVoucherBeneficiaries, setFilteredProjectVoucherBeneficiaries] = useState<any>()
   const [voucherFilter, setVoucherFilter] = useState<any>()
 
@@ -159,19 +164,23 @@ function BeneficiaryDetailTableView() {
     if (projectBeneficiaries) {
       const projectBenWithVoucher = projectBeneficiaries.data.data.map((row) => {
         let voucherType = 'Not Assigned';
+        let voucherClaimStatus = false;
         dataVouce?.voucherArray.forEach((voucher) => {
           if (row.wallet.toLowerCase() === voucher.id.toLowerCase()) {
             if (voucher.FreeVoucherAddress) {
               voucherType = 'Free voucher';
+              voucherClaimStatus = voucher.FreeVoucherClaimStatus;
             }
             if (voucher.ReferredVoucherAddress) {
               voucherType = 'Referred voucher';
+              voucherClaimStatus = voucher.ReferredVoucherClaimStatus;
             }
           }
         });
         return {
           ...row,
-          voucher: voucherType
+          voucher: voucherType,
+          voucherClaimStatus
         };
       });
 
@@ -182,15 +191,19 @@ function BeneficiaryDetailTableView() {
 
   useEffect(() => {
     if(projectVoucherBeneficiaries && voucherFilter) {
-      if(voucherFilter.voucher === 'ALL'){
-        setFilteredProjectVoucherBeneficiaries(projectVoucherBeneficiaries)
-      }
+      // if(voucherFilter.voucher === 'ALL'){
+      //   setFilteredProjectVoucherBeneficiaries(projectVoucherBeneficiaries)
+      // }
       if(voucherFilter.voucher === 'REFERRED'){
         const filteredData = projectVoucherBeneficiaries.filter(item => item.voucher === 'Referred voucher')
         setFilteredProjectVoucherBeneficiaries(filteredData)
       }
       if(voucherFilter.voucher === 'FREE'){
         const filteredData = projectVoucherBeneficiaries.filter(item => item.voucher === 'Free voucher')
+        setFilteredProjectVoucherBeneficiaries(filteredData)
+      }
+      if(voucherFilter.voucher === 'NOT_ASSIGNED'){
+        const filteredData = projectVoucherBeneficiaries.filter(item => item.voucher === 'Not Assigned')
         setFilteredProjectVoucherBeneficiaries(filteredData)
       }
     }
@@ -247,17 +260,32 @@ function BeneficiaryDetailTableView() {
 
   const selectedRowAddresses = Object.keys(selectedListItems);
 
+  const result = useWaitForTransactionReceipt({
+    hash: transactionHash,
+  })
+
+  useEffect(() => {
+    result?.data && setisTransacting(false);
+  }, [result])
+
   const handleBulkAssign = async () => {
-    await assignVoucher.mutateAsync({
+    setisTransacting(true)
+    const txnHash = await assignVoucher.mutateAsync({
       addresses: selectedRowAddresses as `0x${string}`[],
       noOfTokens: 1,
       contractAddress: contractAddress.elproject.address,
     });
+    setTransactionHash(txnHash as `0x-${string}`)
   };
+  
 
   React.useEffect(() => {
     if (assignVoucher.isSuccess) {
       route.push(`/projects/el/${id}`);
+    }
+
+    if(assignVoucher.isError){
+      setisTransacting(false)
     }
   }, []);
 
@@ -295,10 +323,10 @@ function BeneficiaryDetailTableView() {
           <div className="max-w-sm rounded mr-2">
             <Select
               onValueChange={handleFilterType}
-              defaultValue={filters?.status || 'ALL'}
+              // defaultValue={filters?.status || 'ALL'}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Beneficiary Type" />
+                <SelectValue placeholder="Voucher Type" />
               </SelectTrigger>
               <SelectContent>
                 {voucherType.map((item) => {
@@ -429,6 +457,7 @@ function BeneficiaryDetailTableView() {
         open={tokenAssignModal.value}
         handleClose={handleTokenAssignModalClose}
         handleSubmit={handleBulkAssign}
+        isTransacting={isTransacting}
       />
     </>
   );

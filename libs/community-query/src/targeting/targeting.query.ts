@@ -28,10 +28,9 @@ export const useTargetingCreate = () => {
       mutationKey: [TAGS.CREATE_TARGETING],
       mutationFn: targetingClient.create,
       onSuccess: () => {
-        Swal.fire('Targeting Created Successfully', '', 'success');
         queryClient.invalidateQueries({
           queryKey: [
-            TAGS.LIST_TARGETING,
+            TAGS.GET_TARGETING_BENEFICIARIES,
             {
               exact: true,
             },
@@ -41,7 +40,7 @@ export const useTargetingCreate = () => {
       onError: (error: any) => {
         Swal.fire(
           'Error',
-          error.response.data.message || 'Encounter error on Creating Data',
+          error.response.data.message || 'Failed to create targeting!',
           'error',
         );
       },

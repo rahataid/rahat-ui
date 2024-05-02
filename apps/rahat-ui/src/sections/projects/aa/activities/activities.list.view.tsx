@@ -1,38 +1,30 @@
 'use client';
 
+import { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import ActivitiesTable from './activities.table';
-import {
-  ResizablePanelGroup,
-  ResizablePanel,
-  ResizableHandle,
-} from '@rahat-ui/shadcn/src/components/ui/resizable';
-import { useSecondPanel } from 'apps/rahat-ui/src/providers/second-panel-provider';
-import ActivitiesPhaseCard from './activities.phase.card';
 import { useActivities, useActivitiesStore } from '@rahat-ui/query';
 import { UUID } from 'crypto';
+import { QueryClient } from '@rahat-ui/query';
 
 export default function ActivitiesList() {
-  const { secondPanel } = useSecondPanel();
-  const { id } = useParams();
-  useActivities(id as UUID);
-  const activities = useActivitiesStore((state) => state.activities);
-  return (
-    <>
-      <ActivitiesPhaseCard />
-      <ResizablePanelGroup className="bg-secondary" direction="horizontal">
-        <ResizablePanel minSize={50}>
-          <ActivitiesTable activitiesData={activities?.data} />
-        </ResizablePanel>
-        {secondPanel && (
-          <>
-            <ResizableHandle className="mt-2" withHandle />
-            <ResizablePanel minSize={30} defaultSize={30}>
-              {secondPanel}
-            </ResizablePanel>
-          </>
-        )}
-      </ResizablePanelGroup>
-    </>
-  );
+  // const q = new QueryClient()
+  // const { id } = useParams();
+  // const [filterItem, setFilterItem] = useState({});
+
+  // const filter = useCallback((category: UUID) => {
+  //   const payload = { category: category }
+  //   setFilterItem(payload);
+  //   console.log('payload:', payload)
+  // }, [])
+
+  // useActivities(id as UUID, filterItem);
+  // const activities = useActivitiesStore((state) => state.activities);
+  // useEffect(() => {
+  //   q.invalidateQueries
+  //   // useActivities(id as UUID, filterItem)
+  // }, [filterItem])
+
+  // return <ActivitiesTable activitiesData={activities?.data} filter={filter} />;
+  return <ActivitiesTable />;
 }

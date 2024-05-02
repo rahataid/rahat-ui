@@ -30,11 +30,6 @@ export const useUsersNavItems = () => {
           icon: <KanbanSquare size={18} strokeWidth={1.5} />,
           path: '/users',
         },
-        {
-          title: 'Archived',
-          icon: <Archive size={18} strokeWidth={1.5} />,
-          onClick: () => setFilters({ deletedAt: true }),
-        },
       ],
     },
     {

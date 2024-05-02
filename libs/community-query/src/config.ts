@@ -9,6 +9,7 @@ export const TAGS = {
   GET_ROLE: 'get_role',
   CREATE_ROLE: 'create_role',
   EDIT_ROLE: 'edit_role',
+  DELETE_ROLE: 'delete_role',
   GET_ALL_CAMPAIGNS: 'get_all_campaign',
   GET_CAMPAIGNS: 'get_campaign',
   GET_CAMPAIGNS_AUDIO: 'get_campaign_audio',
@@ -47,4 +48,5 @@ export const TAGS = {
   PURGE_COMMUNITY_GROUP: 'purge_community_group',
   GET_TARGETING_BENEFICIARIES: 'get_targeting_beneficiary',
   LIST_KOBO_SETTINGS: 'list_kobo_settings',
+  LIST_MAPPINGS_BY_IMPORT_ID: 'list_mappings_by_import_id',
 };

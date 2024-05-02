@@ -21,7 +21,6 @@ import { useSwal } from '../../swal';
 import { api } from '../../utils/api';
 import { useProjectSettingsStore, useProjectStore } from './project.store';
 
-
 export const PROJECT_SETTINGS_KEYS = {
   CONTRACT: 'CONTRACT',
   SUBGRAPH: 'SUBGRAPH_URL',
@@ -300,7 +299,7 @@ export const useProjectSubgraphSettings = (uuid: UUID) => {
 };
 
 export const useProjectList = (
-  payload: Pagination,
+  payload?: Pagination,
 ): UseQueryResult<FormattedResponse<Project[]>, Error> => {
   const { queryClient, rumsanService } = useRSQuery();
 
@@ -350,7 +349,7 @@ type GetProjectBeneficiaries = Pagination & {
 export const useProjectBeneficiaries = (payload: GetProjectBeneficiaries) => {
   const q = useProjectAction<Beneficiary[]>();
   const { projectUUID, ...restPayload } = payload;
-  
+
   const restPayloadString = JSON.stringify(restPayload);
 
   const queryKey = useMemo(
@@ -383,6 +382,7 @@ export const useProjectBeneficiaries = (payload: GetProjectBeneficiaries) => {
               uuid: row?.Beneficiary?.uuid,
               wallet: row?.Beneficiary?.walletAddress,
               name: row?.piiData?.name,
+              email: row?.piiData?.email,
               gender: row?.Beneficiary?.gender,
               phone: row?.piiData?.phone || 'N/A',
               type: row?.Beneficiary?.type || 'N/A',

@@ -29,7 +29,7 @@ export default function RadioInput({ formField }: any) {
       <RadioGroup
         value={defaultData}
         onChange={handleInputChange}
-        className="w-80"
+        className="w-60"
       >
         {options.length > 0 ? (
           options.map((d: any) => {

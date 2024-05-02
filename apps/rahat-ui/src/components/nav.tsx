@@ -33,7 +33,6 @@ export function Nav() {
     user: state.user,
     clearUser: state.clearUser,
   }));
-  console.log('user', user);
   const clearAuth = useAuthStore((state) => state.clearAuth);
   const handleLogout = () => {
     clearUser();

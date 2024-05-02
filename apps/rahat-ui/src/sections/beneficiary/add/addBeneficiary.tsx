@@ -38,23 +38,19 @@ export default function AddBeneficiaryForm() {
     phone: z
       .string()
       .refine(isValidPhoneNumber, { message: 'Invalid phone number' }),
+    email: z.string().optional(),
     gender: z
       .string()
       .toUpperCase()
       .min(4, { message: 'Must select a Gender' }),
-    bankedStatus: z
-      .string()
-      .toUpperCase()
-      .min(4, { message: 'Must select a Bank Status' }),
-    internetStatus: z
-      .string()
-      .toUpperCase()
-      .min(4, { message: 'Must select Internet Status' }),
-    phoneStatus: z
-      .string()
-      .toUpperCase()
-      .min(4, { message: 'Must select Phone Status' }),
-    address: z.string().min(4, { message: 'Must be valid address.' }),
+    bankedStatus: z.string().toUpperCase(),
+    // .min(4, { message: 'Must select a Bank Status' }),
+    internetStatus: z.string().toUpperCase(),
+    // .min(4, { message: 'Must select Internet Status' }),
+    phoneStatus: z.string().toUpperCase(),
+    // .min(4, { message: 'Must select Phone Status' }),
+    address: z.string(),
+    // .min(4, { message: 'Must be valid address.' }),
     age: z.string().min(1, { message: 'Must be valid age.' }),
   });
 
@@ -64,6 +60,7 @@ export default function AddBeneficiaryForm() {
       name: '',
       gender: '',
       walletAddress: '',
+      email: '',
       phone: '',
       bankedStatus: '',
       internetStatus: '',
@@ -79,10 +76,11 @@ export default function AddBeneficiaryForm() {
         gender: data.gender,
         location: data.address,
         age: data.age,
-        bankedStatus: data.bankedStatus,
-        internetStatus: data.internetStatus,
-        phoneStatus: data.phoneStatus,
+        bankedStatus: data.bankedStatus || 'UNKNOWN',
+        internetStatus: data.internetStatus || 'UNKNOWN',
+        phoneStatus: data.phoneStatus || 'UNKNOWN',
         piiData: {
+          email: data.email,
           name: data.name,
           phone: data.phone,
         },
@@ -111,7 +109,7 @@ export default function AddBeneficiaryForm() {
           <div className="p-4 h-add">
             <div className="shadow-md p-4 rounded-sm bg-card">
               <h1 className="text-lg font-semibold mb-6">Add Beneficiary</h1>
-              <div className="grid grid-cols-2 gap-4 mb-4">
+              <div className="grid grid-cols-3 gap-4 mb-4">
                 <FormField
                   control={form.control}
                   name="name"
@@ -126,6 +124,7 @@ export default function AddBeneficiaryForm() {
                     );
                   }}
                 />
+           
                 <FormField
                   control={form.control}
                   name="phone"
@@ -134,6 +133,20 @@ export default function AddBeneficiaryForm() {
                       <FormItem>
                         <FormControl>
                           <PhoneInput placeholder="Phone" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    );
+                  }}
+                />
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => {
+                    return (
+                      <FormItem>
+                        <FormControl>
+                          <Input placeholder="Email" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -170,7 +183,11 @@ export default function AddBeneficiaryForm() {
                       return (
                         <FormItem>
                           <FormControl>
-                            <Input type="text" placeholder="Age" {...field} />
+                            <Input
+                              type="text"
+                              placeholder="Estimated Age"
+                              {...field}
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>

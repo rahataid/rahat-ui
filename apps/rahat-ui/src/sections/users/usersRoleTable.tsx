@@ -27,6 +27,8 @@ import {
 import { useUserRoleList, useUserRolesRemove } from '@rumsan/react-query';
 import { UUID } from 'crypto';
 import { UserRole } from '@rumsan/sdk/types';
+import DeleteConfirmModal from './confirm.delete.role';
+import { useBoolean } from '../../hooks/use-boolean';
 
 export function UsersRoleTable({
   uuid,
@@ -45,8 +47,21 @@ export function UsersRoleTable({
   const removeUserRole = useUserRolesRemove();
   const { data } = useUserRoleList(uuid);
 
+  const RoleDeleteModal = useBoolean();
+  const [selectedRow, setSelectedRow] = React.useState<UserRole | null>(null);
+
+  const handleRoleDeleteModalOpen = (row: UserRole) => {
+    setSelectedRow(row);
+    RoleDeleteModal.onTrue();
+  };
+
+  const handleRoleDeleteModalClose = () => {
+    setSelectedRow(null);
+    RoleDeleteModal.onFalse();
+  };
+
   const handleRemoveRole = (data: any) => {
-    if (isAdmin)
+    if (isAdmin && selectedRow)
       removeUserRole.mutateAsync({ uuid: uuid, roles: [data?.name] });
   };
 
@@ -87,11 +102,10 @@ export function UsersRoleTable({
       id: 'actions',
       enableHiding: false,
       cell: ({ row }) => {
-        const payment = row.original;
-
         return (
           <Trash2
-            onClick={() => handleRemoveRole(row.original)}
+            className="cursor-pointer"
+            onClick={() => handleRoleDeleteModalOpen(row.original)}
             strokeWidth={1.6}
             size={16}
           />
@@ -103,7 +117,6 @@ export function UsersRoleTable({
   const tableData = React.useMemo(() => {
     return data?.data;
   }, [data]);
-  console.log(tableData);
 
   const table = useReactTable({
     data: tableData || [],
@@ -126,6 +139,12 @@ export function UsersRoleTable({
 
   return (
     <div className="w-full">
+      <DeleteConfirmModal
+        open={RoleDeleteModal.value}
+        handleClose={handleRoleDeleteModalClose}
+        handleSubmit={handleRemoveRole}
+        data={selectedRow}
+      />
       <div className="rounded border">
         <Table>
           <TableHeader>

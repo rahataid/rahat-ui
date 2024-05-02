@@ -25,7 +25,6 @@ import { useSecondPanel } from '../../providers/second-panel-provider';
 import BeneficiaryGridView from '../../sections/beneficiary/gridView';
 import BeneficiaryListView from '../../sections/beneficiary/listView';
 import { useBeneficiaryTableColumns } from './useBeneficiaryColumns';
-import { useRouter } from 'next/navigation';
 
 function BeneficiaryView() {
   const {
@@ -44,7 +43,7 @@ function BeneficiaryView() {
     setPagination({ page: 1, perPage: 10, order: 'desc', sort: 'createdAt' });
   }, []);
 
-  const router = useRouter();
+  console.log("Filters are", filters)
 
   const { data } = useBeneficiaryList({
     ...pagination,
@@ -77,7 +76,7 @@ function BeneficiaryView() {
 
   const handleFilterProjectSelect = (project: string | UUID) => {
     setFilters({
-      project: project,
+      projectId: project,
     });
   };
 
@@ -127,6 +126,7 @@ function BeneficiaryView() {
           projects={projectsList?.data?.data || []}
           loading={projectsList.isLoading}
           handleFilterProjectSelect={handleFilterProjectSelect}
+          filters={filters}
         />
       </TabsContent>
       <TabsContent value="grid">

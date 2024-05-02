@@ -24,8 +24,9 @@ import {
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { ListBeneficiary } from '@rahat-ui/types';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import BulkAssignToProjectModal from './components/bulkAssignToProjectModal';
+import { useProjectBeneficiaries } from '@rahat-ui/query';
 
 type IProps = {
   table: Table<ListBeneficiary>;
@@ -34,7 +35,9 @@ type IProps = {
   loading: boolean;
   projectModal: any;
   projects: any;
+  beneficiaries: any;
   handleFilterProjectSelect: (selectedProject: string) => void;
+  filters: Record<string, any>;
 };
 
 export default function ListView({
@@ -45,12 +48,16 @@ export default function ListView({
   projects,
   loading,
   handleFilterProjectSelect,
+  filters,
 }: IProps) {
-  const [selectedProject, setSelectedProject] = useState(null);
+  const [selectedProject, setSelectedProject] = useState<null | Record<
+    string,
+    any
+  >>(null);
 
-  const handleProjectSelect = (projectName: any) => {
-    setSelectedProject(projectName);
-    handleFilterProjectSelect(projectName);
+  const handleSelectProject = (project: Record<string, any>) => {
+    setSelectedProject(project);
+    handleFilterProjectSelect(project.value);
   };
 
   const selectFilterProjectItems = [
@@ -64,6 +71,16 @@ export default function ListView({
     })),
   ];
 
+  useEffect(() => {
+    if (filters?.projectId) {
+      const project = selectFilterProjectItems.find((p) => {
+        console.log('p', p);
+        return p.value === filters?.projectId;
+      });
+      setSelectedProject(project);
+    }
+  }, [filters?.projectId, projects]);
+
   return (
     <>
       <BulkAssignToProjectModal
@@ -75,16 +92,11 @@ export default function ListView({
       />
       <div className="-mt-2 p-2 bg-secondary">
         <div className="flex items-center mb-2">
-        <Input
+          <Input
             placeholder="Filter beneficiary..."
-            value={
-              (table.getColumn('name')?.getFilterValue() as string) ??
-              ''
-            }
+            value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
             onChange={(event) =>
-              table
-                .getColumn('name')
-                ?.setFilterValue(event.target.value)
+              table.getColumn('name')?.setFilterValue(event.target.value)
             }
             className="rounded"
           />
@@ -92,7 +104,7 @@ export default function ListView({
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="ml-auto">
-                {selectedProject ? selectedProject : 'Select Project'}
+                {selectedProject ? selectedProject.name : 'Select Project'}
                 <ChevronDown className="mr-2 h-4 w-5" />
               </Button>
             </DropdownMenuTrigger>
@@ -100,7 +112,8 @@ export default function ListView({
               {selectFilterProjectItems.map((project: any) => (
                 <DropdownMenuItem
                   key={project.name}
-                  onClick={() => handleProjectSelect(project.uuid)}
+                  textValue={project.value}
+                  onSelect={() => handleSelectProject(project)}
                 >
                   {project.name}
                 </DropdownMenuItem>

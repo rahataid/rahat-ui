@@ -3,7 +3,7 @@ import { formatUnderScoredString } from '../../utils/string';
 import { DashboardRecentActivities } from './activities.dashboard';
 
 const Charts = ({ charts }: { charts: any }) => {
-  const filteredCharts = charts.filter((d: any) => {
+  const filteredCharts = charts?.filter((d: any) => {
     return (
       d.name === 'BENEFICIARY_AGE_RANGE' || d.name === 'BENEFICIARY_GENDER'
     );

@@ -51,31 +51,7 @@ export type Transaction = {
 
 export const columns: ColumnDef<Transaction>[] = [
   {
-    id: 'select',
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && 'indeterminate')
-        }
-        onCheckedChange={(value: any) =>
-          table.toggleAllPageRowsSelected(!!value)
-        }
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value: any) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
-    accessorKey: 'walletAddress',
+    accessorKey: 'referrerBen',
     header: ({ column }) => {
       return (
         <Button
@@ -88,8 +64,8 @@ export const columns: ColumnDef<Transaction>[] = [
       );
     },
     cell: ({ row }) => (
-      <div className="lowercase">
-        {truncateEthAddress(row.getValue('walletAddress'))}
+      <div >
+        {row.getValue('referrerBen')}
       </div>
     ),
   },
@@ -125,14 +101,14 @@ export const columns: ColumnDef<Transaction>[] = [
       );
     },
     cell: ({ row }) => (
-      <div className="lowercase">
-        {truncateEthAddress(row.getValue('referredBy'))}
+      <div >
+        {row.getValue('referredBy')}
       </div>
     ),
   },
 ];
 
-export default function ReferralTable({ projectId, vendorId, walletAddress }) {
+export default function ReferralTable({ name,projectId, vendorId, walletAddress }) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
@@ -161,11 +137,11 @@ export default function ReferralTable({ projectId, vendorId, walletAddress }) {
     },
   });
 
-  const getVendorRedemption = useProjectAction();
+  const getVendorReferrals = useProjectAction();
 
   React.useEffect(() => {
     async function fetchData() {
-      const res = await getVendorRedemption.mutateAsync({
+      const res = await getVendorReferrals.mutateAsync({
         uuid: projectId,
         data: {
           action: 'elProject.beneficiaryReferred',
@@ -174,10 +150,10 @@ export default function ReferralTable({ projectId, vendorId, walletAddress }) {
           },
         },
       });
-      const filteredData = res?.data.map((item) => {
+      const filteredData = res?.data?.result.map((item) => {
         return {
-          walletAddress: item?.walletAddress,
-          referredBy: walletAddress,
+          referrerBen: item?.piiData?.name,
+          referredBy: name,
           timeStamp: formatdbDate(item?.createdAt),
           phone: item?.phoneNumber,
         };
@@ -245,7 +221,7 @@ export default function ReferralTable({ projectId, vendorId, walletAddress }) {
                     colSpan={columns.length}
                     className="h-24 text-center"
                   >
-                    {getVendorRedemption.isPending ? (
+                    {getVendorReferrals.isPending ? (
                       <TableLoader />
                     ) : (
                       'No data available.'

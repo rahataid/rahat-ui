@@ -47,7 +47,8 @@ const columns: ColumnDef<any>[] = [
     accessorKey: 'transactionHash',
     header: 'Txn Hash',
     cell: ({ row }) => (
-      <div>{truncateEthAddress(row.getValue('transactionHash'))}</div>
+      <a href={`https://sepolia.arbiscan.io/tx/${row.getValue('transactionHash')}`} > {truncateEthAddress(row.getValue('transactionHash'))}</a>
+      // <div>{`https://sepolia.arbiscan.io/tx/${truncateEthAddress(row.getValue('transactionHash'))}`}</div>
     ),
   },
   {

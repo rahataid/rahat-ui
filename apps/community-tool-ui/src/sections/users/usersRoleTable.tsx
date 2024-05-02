@@ -31,6 +31,17 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/dialog';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 
 export type Role = {
   id: string;
@@ -56,6 +67,7 @@ export function UsersRoleTable({
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
+  console.log(isAdmin);
   const handleRemoveRole = (data: any) => {
     if (isAdmin)
       removeUserRole.mutateAsync({ uuid: userRole, roles: [data?.name] });
@@ -75,20 +87,49 @@ export function UsersRoleTable({
       enableHiding: false,
       cell: ({ row }) => {
         return (
-          <TooltipProvider delayDuration={100}>
-            <Tooltip>
-              <TooltipTrigger>
-                <Trash2
-                  onClick={() => handleRemoveRole(row.original)}
-                  strokeWidth={1.6}
-                  size={16}
-                />
-              </TooltipTrigger>
-              <TooltipContent className="bg-secondary ">
-                <p className="text-xs font-medium">Delete</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <Dialog>
+            <DialogTrigger>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    {isAdmin && (
+                      <Trash2
+                        className="cursor-pointer"
+                        size={18}
+                        strokeWidth={1.6}
+                        color="#FF0000"
+                      />
+                    )}
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Delete User</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Are you absolutely sure?</DialogTitle>
+                <DialogDescription>
+                  This action cannot be undone. This will permanently delete the
+                  role assigned to the user.
+                </DialogDescription>
+              </DialogHeader>
+              <DialogFooter>
+                <div className="flex items-center justify-center mt-2 gap-4">
+                  <Button
+                    variant="outline"
+                    onClick={() => handleRemoveRole(row.original)}
+                  >
+                    Yes
+                  </Button>
+                  <DialogClose asChild>
+                    <Button variant="outline">No</Button>
+                  </DialogClose>
+                </div>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         );
       },
     },

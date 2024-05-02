@@ -35,10 +35,10 @@ export default function TriggerStatementsTable({ table }: IProps) {
           <Input
             placeholder="Search Trigger Statements..."
             value={
-              (table.getColumn('dataSource')?.getFilterValue() as string) ?? ''
+              (table.getColumn('title')?.getFilterValue() as string) ?? ''
             }
             onChange={(event) =>
-              table.getColumn('dataSource')?.setFilterValue(event.target.value)
+              table.getColumn('title')?.setFilterValue(event.target.value)
             }
             className="rounded mr-2"
           />

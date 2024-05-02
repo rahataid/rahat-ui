@@ -85,3 +85,51 @@ export const useStakeholdersGroups = (uuid: UUID, payload: any) => {
 
     return { ...query, stakeholdersGroupsMeta: query?.data?.meta };
 };
+
+export const useDeleteStakeholdersGroups = () => {
+    const qc = useQueryClient();
+    const q = useProjectAction();
+    const alert = useSwal();
+    const toast = alert.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000,
+    });
+    return useMutation({
+        mutationFn: async ({
+            projectUUID,
+            stakeholdersGroupPayload,
+        }: {
+            projectUUID: UUID;
+            stakeholdersGroupPayload: {
+                uuid: string;
+            };
+        }) => {
+            return q.mutateAsync({
+                uuid: projectUUID,
+                data: {
+                    action: 'aaProject.stakeholders.deleteGroup',
+                    payload: stakeholdersGroupPayload,
+                },
+            });
+        },
+        onSuccess: () => {
+            q.reset();
+            qc.invalidateQueries({ queryKey: ['stakeholdersGroups'] });
+            toast.fire({
+                title: 'Stakeholders Group removed successfully',
+                icon: 'success',
+            });
+        },
+        onError: (error: any) => {
+            const errorMessage = error?.response?.data?.message || 'Error';
+            q.reset();
+            toast.fire({
+                title: 'Error while removing stakeholders group.',
+                icon: 'error',
+                text: errorMessage,
+            });
+        },
+    });
+};

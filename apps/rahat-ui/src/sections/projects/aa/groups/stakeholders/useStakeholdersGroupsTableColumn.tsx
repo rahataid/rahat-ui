@@ -1,8 +1,12 @@
 import { ColumnDef } from '@tanstack/react-table';
 import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
 import { Eye } from 'lucide-react';
+import { useSecondPanel } from 'apps/rahat-ui/src/providers/second-panel-provider';
+import StakeholdersGroupsDetailView from './stakeholders.groups.detail.view';
 
 export default function useStakeholdersGroupsTableColumn() {
+    const { setSecondPanelComponent, closeSecondPanel } = useSecondPanel();
+
     const columns: ColumnDef<any>[] = [
         {
             id: 'select',
@@ -49,7 +53,19 @@ export default function useStakeholdersGroupsTableColumn() {
             enableHiding: false,
             cell: ({ row }) => {
                 return (
-                    <Eye size={20} strokeWidth={1.5} />
+                    <Eye
+                        className='hover:text-primary cursor-pointer'
+                        size={20}
+                        strokeWidth={1.5}
+                        onClick={() => {
+                            setSecondPanelComponent(
+                                <StakeholdersGroupsDetailView
+                                    stakeholdersGroupDetail={row.original}
+                                    closeSecondPanel={closeSecondPanel}
+                                />,
+                            );
+                        }}
+                    />
                 );
             },
         },

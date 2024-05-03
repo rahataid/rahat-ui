@@ -65,6 +65,9 @@ dependencies:
   '@radix-ui/react-tooltip':
     specifier: ^1.0.7
     version: 1.0.7(@types/react-dom@18.3.0)(@types/react@18.3.1)(react-dom@18.2.0)(react@18.2.0)
+  '@rahataid/c2c-query':
+    specifier: 0.0.3
+    version: 0.0.3
   '@rahataid/community-tool-sdk':
     specifier: ^0.0.14
     version: 0.0.14
@@ -5449,6 +5452,12 @@ packages:
     resolution: {integrity: sha512-fyrgCaedtvMg9NK3en0pnOYJdtfwxUcNolezkNPUsoX57X8oQk+NkqcvzHXD2uKNij6GXmWU9NDru2IWjrO4BQ==}
     dependencies:
       '@babel/runtime': 7.24.5
+    dev: false
+
+  /@rahataid/c2c-query@0.0.3:
+    resolution: {integrity: sha512-gUzI4ClEg44+M9GuE1hl7HrwRwK06prKCdQajch6RHMQYqOf6/GA4SZiv0PuCfP2t51F5ycugMRFBVUDxUAMjw==, tarball: https://npm.pkg.github.com/download/@rahataid/c2c-query/0.0.3/9e5a0c58b23ceb5e737b7cac1d7cde7d7d9ac8b9}
+    dependencies:
+      '@swc/helpers': 0.5.11
     dev: false
 
   /@rahataid/community-tool-sdk@0.0.14:

@@ -90,8 +90,8 @@ dependencies:
     specifier: ^1.0.125
     version: 1.0.130(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1)
   '@rumsan/react-query':
-    specifier: 0.0.38
-    version: 0.0.38(@types/react@18.3.1)(typescript@5.4.5)(zod@3.23.5)
+    specifier: 0.0.39
+    version: 0.0.39(@types/react@18.3.1)(typescript@5.4.5)(zod@3.23.5)
   '@rumsan/sdk':
     specifier: ^0.0.45
     version: 0.0.45
@@ -6096,11 +6096,11 @@ packages:
       - rxjs
     dev: false
 
-  /@rumsan/react-query@0.0.38(@types/react@18.3.1)(typescript@5.4.5)(zod@3.23.5):
-    resolution: {integrity: sha512-SRmOH1E0s0NtFGKxnWty3dQB/kauLx+s88+J1PsaF5g/cCZxb5QwkdJmL6t2C9zz2UWlnfriD0p+bkBtguWBSw==, tarball: https://npm.pkg.github.com/download/@rumsan/react-query/0.0.38/8764cc38cc8e391048fb3fe1a46ddc5e2664cfc1}
+  /@rumsan/react-query@0.0.39(@types/react@18.3.1)(typescript@5.4.5)(zod@3.23.5):
+    resolution: {integrity: sha512-qjISEeXbJjfQy71Q5t3sLyx25S66jPljIiZrmZK345otNJ2v26920QJ9M+jXnsCJfs18lpZib3OApR4CiSg+lg==, tarball: https://npm.pkg.github.com/download/@rumsan/react-query/0.0.39/3677e886859f43ad88671fae6616ff9e05de774a}
     dependencies:
       '@rumsan/communication': 0.0.8
-      '@rumsan/sdk': 0.0.45
+      '@rumsan/sdk': 0.0.44
       '@tanstack/react-query': 5.22.2(react@18.2.0)
       axios: 1.6.8
       http-status-codes: 2.3.0

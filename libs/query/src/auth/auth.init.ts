@@ -6,8 +6,10 @@ import {
   useUserStore,
   useAuthStore,
   useUserCurrentUser,
+  useUserRoleList,
 } from '@rumsan/react-query';
 import { toast } from 'react-toastify';
+import { generateRoleObject } from '../utils/currentRole';
 
 export type UseAuthInitializationReturn = [boolean, boolean, any];
 
@@ -23,6 +25,8 @@ export const useAuthInitialization = (): UseAuthInitializationReturn => {
   const currentUser = useUserCurrentUser(!!token);
 
   const setUser = useUserStore((state) => state.setUser);
+  const currentUserRole = useUserRoleList(currentUser?.data?.data?.uuid);
+  const currentRole = generateRoleObject(currentUserRole?.data?.data || []);
 
   useEffect(() => {
     if (token) {
@@ -39,6 +43,7 @@ export const useAuthInitialization = (): UseAuthInitializationReturn => {
           setInitialization({
             isInitialized: true,
             isAuthenticated: true,
+            roles: currentRole,
           });
         } else {
           toast.error('Token is expired');
@@ -51,6 +56,7 @@ export const useAuthInitialization = (): UseAuthInitializationReturn => {
           isInitialized: true,
           isAuthenticated: false,
           token: '',
+          roles: {},
         });
         setUser(null);
       }

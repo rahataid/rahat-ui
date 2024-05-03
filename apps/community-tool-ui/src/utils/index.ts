@@ -86,8 +86,8 @@ function moveErrorMsgToFirstKey(data: any) {
       const val = obj.errorMessage;
       delete obj.errorMessage;
       obj = { errorMessage: val, ...obj };
-      result.push(obj);
     }
+    result.push(obj);
   });
 
   return result;
@@ -140,26 +140,29 @@ export const splitValidAndDuplicates = (
   return { validData, sanitized: swapped };
 };
 
-function createInvalidFieldError(errFields: any) {
+function createInvalidFieldError(errFields: any, isDuplicate: boolean) {
   const errFieldsArr = errFields.map((err: any) => err.fieldName);
-  return `Invalid fields: ${errFieldsArr.join(', ')}`;
+  return `Invalid fields: ${errFieldsArr.join(', ')} ${
+    isDuplicate ? 'and This row is duplicate!' : ''
+  }`;
 }
 
+// Export both error and duplicate data to excel
 export const splitValidAndInvalid = (payload: [], errors: []) => {
   const invalidData = [] as any;
   const validData = [] as any;
   payload.forEach((p: any) => {
     const error = errors.find((error: any) => error.uuid === p.uuid);
-    // if (p.hasOwnProperty('isDuplicate')) {
-    //   delete p.isDuplicate;
-    // }
-    if (error) {
+    if (error || p.isDuplicate) {
       const errFields = errors.filter((err: any) => err.uuid === p.uuid);
       if (p.uuid) delete p.uuid;
       if (p.rawData) delete p.rawData;
       if (errFields.length) {
-        p.errorMessage = createInvalidFieldError(errFields);
-      }
+        p.errorMessage = createInvalidFieldError(
+          errFields,
+          p.isDuplicate || false,
+        );
+      } else p.errorMessage = 'This row is duplicate!';
       invalidData.push(p);
     } else {
       validData.push(p);

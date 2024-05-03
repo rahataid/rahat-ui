@@ -36,6 +36,8 @@ export default function AddToQueue({
     } else return item[key];
   }
 
+  console.log('Data==>', data);
+
   return (
     <div className="relative mt-5">
       <div className="flex mb-5 justify-between m-2">
@@ -91,7 +93,11 @@ export default function AddToQueue({
           <tbody>
             {data.map((item: any, index: number) => (
               <tr
-                className="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700"
+                className={`${
+                  item.isDuplicate
+                    ? 'bg-orange-100 border-b'
+                    : 'odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700'
+                }`}
                 key={index}
               >
                 {/* Dynamically generated table cells */}

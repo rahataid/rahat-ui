@@ -321,8 +321,10 @@ export default function BenImp({ extraFields }: IProps) {
             title: `${sourcePayload.fieldMapping.data.length} Beneficiaries imported successfully!`,
           });
         }
-        const { result, invalidFields, duplicates } = res.data.data;
-        setDuplicateData(duplicates);
+        const { result, invalidFields } = res.data.data;
+        // setDuplicateData(duplicates);
+        console.log('Processed:', result);
+        console.log('InvalidData:', invalidFields);
         setProcessedData(result);
         if (invalidFields.length) {
           setInvalidFields(invalidFields);

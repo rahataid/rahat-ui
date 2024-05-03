@@ -8,4 +8,5 @@ export interface IActivitiesItem {
   description: string;
   hazardType: string;
   status: string;
+  activityType: string;
 }

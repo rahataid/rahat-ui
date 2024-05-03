@@ -62,6 +62,8 @@ export default function ActivitiesTable() {
 
   const { activitiesData, activitiesMeta, isLoading } = useActivities(id as UUID, { ...pagination, ...filters });
 
+  console.log('activitiesData', activitiesData)
+
   useActivitiesCategories(id as UUID);
   const categories = useActivitiesStore((state) => state.categories);
   useActivitiesHazardTypes(id as UUID);

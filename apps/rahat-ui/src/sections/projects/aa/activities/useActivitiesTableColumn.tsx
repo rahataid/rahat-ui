@@ -55,6 +55,15 @@ export default function useActivitiesTableColumn() {
           {row.getValue('phase')}
         </Badge>
       ),
+    }, 
+    {
+      accessorKey: 'activityType',
+      header: 'Type',
+      cell: ({ row }) => (
+        <Badge className="rounded-md capitalize">
+          {row.getValue('activityType')}
+        </Badge>
+      ),
     },
     {
       accessorKey: 'responsibility',
@@ -89,7 +98,7 @@ export default function useActivitiesTableColumn() {
       id: 'actions',
       enableHiding: false,
       cell: ({ row }) => {
-        console.log(row)
+        // console.log(row)
         return (
           <Eye
             className="hover:text-primary cursor-pointer"

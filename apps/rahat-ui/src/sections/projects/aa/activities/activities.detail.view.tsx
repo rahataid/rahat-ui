@@ -135,10 +135,10 @@ export default function ActivitiesDetail({
         </div>
         <div className="pl-2">
           <h1 className="font-semibold">Activity Type</h1>
-          <p>{activityDetail?.activityType ?? "Communication"}</p>
+          <p>{activityDetail?.activityType}</p>
         </div>
       </div>
-      {activityDetail?.activityType !== "Communication" ? <ActivityCommunicationForm /> : null}
+      {activityDetail?.activityType === "COMMUNICATION" && <ActivityCommunicationForm />}
       {showEdit && <EditActivityView />}
     </>
   );

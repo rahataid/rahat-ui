@@ -127,7 +127,8 @@ export const useActivities = (uuid: UUID, payload: any) => {
     category: d.category?.name,
     description: d.description,
     phase: d.phase?.name,
-    status: d.status
+    status: d.status,
+    activityType: d.activityType
     // isApproved: d.isApproved,
     // isComplete: d.isComplete,
 

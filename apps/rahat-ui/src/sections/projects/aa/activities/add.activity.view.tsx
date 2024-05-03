@@ -52,6 +52,7 @@ export default function AddActivities() {
     phaseId: z.string().min(1, { message: 'Please select phase' }),
     categoryId: z.string().min(1, { message: 'Please select category' }),
     hazardTypeId: z.string().min(1, { message: 'Please select hazard type' }),
+    activityType: z.string().min(1, { message: 'Please select activity type' }),
     description: z
       .string()
       .min(5, { message: 'Must be at least 5 characters' }),
@@ -66,6 +67,7 @@ export default function AddActivities() {
       phaseId: '',
       categoryId: '',
       hazardTypeId: '',
+      activityType: '',
       description: '',
     },
   });
@@ -213,6 +215,39 @@ export default function AddActivities() {
                   </FormItem>
                 )}
               />
+
+              <FormField
+                control={form.control}
+                name="activityType"
+                render={({ field }) => (
+                  <FormItem>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select activity type" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                       
+                          <SelectItem value={'GENERAL'}>
+                            {'GENERAL'}
+                          </SelectItem>
+                            <SelectItem value={'COMMUNICATION'}>
+                            {'COMMUNICATION'}
+                          </SelectItem>
+                            <SelectItem value={'PAYOUT'}>
+                            {'PAYOUT'}
+                          </SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
               <FormField
                 control={form.control}
                 name="description"

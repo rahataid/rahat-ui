@@ -55,7 +55,6 @@ export default function ProjectListView() {
         <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-2">
           {data?.data?.map((project) => (
             <ProjectCard
-              // TODO:Fix the return type
               address={project?.uuid}
               key={project.uuid}
               title={project.name}

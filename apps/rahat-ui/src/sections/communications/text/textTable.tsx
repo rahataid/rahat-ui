@@ -41,6 +41,7 @@ import { ICampaignItemApiResponse } from '@rumsan/communication/types';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import { usePagination } from '@rahat-ui/query';
 import TableLoader from '../../../components/table.loader';
+import CommunicationSummary from '../components/communication.summary';
 
 export default function TextTableView() {
   const columns = useTextTableColumn();
@@ -91,6 +92,8 @@ export default function TextTableView() {
 
   return (
     <div className="p-2 bg-secondary">
+      <CommunicationSummary />
+
       {isLoading ? (
         <>
           <TableLoader />

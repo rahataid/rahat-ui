@@ -54,8 +54,7 @@ export default function AddActivities() {
     hazardTypeId: z.string().min(1, { message: 'Please select hazard type' }),
     description: z
       .string()
-      .toUpperCase()
-      .min(4, { message: 'Must be at least 5 characters' }),
+      .min(5, { message: 'Must be at least 5 characters' }),
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -86,7 +85,7 @@ export default function AddActivities() {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleCreateActivities)}>
-        <div className="p-4 h-add bg-white">
+        <div className="p-4 h-add bg-card">
           <h1 className="text-lg font-semibold mb-6">Add : Activities</h1>
           <div className="shadow-md p-4 rounded-sm">
             <div className="grid grid-cols-2 gap-4 mb-4">

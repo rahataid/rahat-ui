@@ -47,6 +47,7 @@ import {
   TableHeader,
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@rahat-ui/shadcn/components/tabs';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
@@ -158,7 +159,7 @@ function BeneficiaryDetailTableView() {
   const [transactionHash, setTransactionHash] = useState<`0x${string}`>()
   const [isTransacting, setisTransacting] = useState<boolean>(false)
   const [filteredProjectVoucherBeneficiaries, setFilteredProjectVoucherBeneficiaries] = useState<any>()
-  const [voucherFilter, setVoucherFilter] = useState<any>()
+  const [voucherFilter, setVoucherFilter] = useState<any>('NOT_ASSIGNED')
 
   useEffect(() => {
     if (projectBeneficiaries) {
@@ -183,17 +184,13 @@ function BeneficiaryDetailTableView() {
           voucherClaimStatus
         };
       });
-
       setProjectVoucherBeneficiaries(projectBenWithVoucher);
     }
   }, [projectBeneficiaries?.fetchStatus])
 
-
   useEffect(() => {
     if(projectVoucherBeneficiaries && voucherFilter) {
-      // if(voucherFilter.voucher === 'ALL'){
-      //   setFilteredProjectVoucherBeneficiaries(projectVoucherBeneficiaries)
-      // }
+      console.log("reached filtering voucher", voucherFilter.voucher)
       if(voucherFilter.voucher === 'REFERRED'){
         const filteredData = projectVoucherBeneficiaries.filter(item => item.voucher === 'Referred voucher')
         setFilteredProjectVoucherBeneficiaries(filteredData)
@@ -202,13 +199,12 @@ function BeneficiaryDetailTableView() {
         const filteredData = projectVoucherBeneficiaries.filter(item => item.voucher === 'Free voucher')
         setFilteredProjectVoucherBeneficiaries(filteredData)
       }
-      if(voucherFilter.voucher === 'NOT_ASSIGNED'){
+      if(voucherFilter.voucher === 'NOT_ASSIGNED' || voucherFilter.voucher === undefined){
         const filteredData = projectVoucherBeneficiaries.filter(item => item.voucher === 'Not Assigned')
         setFilteredProjectVoucherBeneficiaries(filteredData)
       }
     }
   }, [voucherFilter, projectBeneficiaries?.fetchStatus])
-  
 
   const contractAddress = useProjectSettingsStore(
     (state) => state.settings?.[uuid][PROJECT_SETTINGS_KEYS.CONTRACT] || null,
@@ -222,10 +218,10 @@ function BeneficiaryDetailTableView() {
       resetSelectedListItems();
       setFilteredProjectVoucherBeneficiaries(undefined)
       if (type === 'ALL') {
-        setFilters({ ...filters, status: undefined });
+        setFilters({ ...filters, status: undefined, voucher: voucherFilter.voucher });
         return;
       }
-      setFilters({ ...filters, status: type, voucher: 'ALL' });
+      setFilters({ ...filters, status: type, voucher: voucherFilter.voucher });
     },
     [filters, setFilters],
   );
@@ -240,7 +236,7 @@ function BeneficiaryDetailTableView() {
 
   const table = useReactTable({
     manualPagination: true,
-    data: filteredProjectVoucherBeneficiaries || projectVoucherBeneficiaries ||  [],
+    data: filteredProjectVoucherBeneficiaries || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -279,7 +275,7 @@ function BeneficiaryDetailTableView() {
   };
   
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (assignVoucher.isSuccess) {
       route.push(`/projects/el/${id}`);
     }
@@ -311,25 +307,6 @@ function BeneficiaryDetailTableView() {
               </SelectTrigger>
               <SelectContent>
                 {benType.map((item) => {
-                  return (
-                    <SelectItem key={item.key} value={item.value}>
-                      {item.key}
-                    </SelectItem>
-                  );
-                })}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="max-w-sm rounded mr-2">
-            <Select
-              onValueChange={handleFilterType}
-              // defaultValue={filters?.status || 'ALL'}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Voucher Type" />
-              </SelectTrigger>
-              <SelectContent>
-                {voucherType.map((item) => {
                   return (
                     <SelectItem key={item.key} value={item.value}>
                       {item.key}
@@ -386,6 +363,18 @@ function BeneficiaryDetailTableView() {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+        </div>
+        <div>
+        <Tabs defaultValue="account" className="w-[400px]">
+          <TabsList defaultValue="notAssigned" className="grid w-full grid-cols-3">
+            <TabsTrigger onClick={() => handleFilterType('NOT_ASSIGNED')} value="notAssigned">Not Assigned</TabsTrigger>
+            <TabsTrigger onClick={() => handleFilterType('FREE')} value="freeVoucher">Free Voucher</TabsTrigger>
+            <TabsTrigger onClick={() => handleFilterType('REFERRED')} value="referredVoucher">Referred Voucher</TabsTrigger>
+          </TabsList>
+          </Tabs>
+        </div>
+        <div>
+
         </div>
         <div className="rounded border bg-card">
           <Table>

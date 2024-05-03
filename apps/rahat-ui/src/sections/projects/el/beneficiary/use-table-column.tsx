@@ -50,7 +50,7 @@ export const useProjectBeneficiaryTableColumns = () => {
       ({ row }) => {
         const isDisabled = row.getValue('voucher') != 'Not Assigned';
         const isChecked = row.getIsSelected() && !isDisabled;
-        return (<Checkbox
+        return (!isDisabled && <Checkbox
           checked={isChecked}
           onCheckedChange={(value) => row.toggleSelected(!!value)}
           aria-label="Select row"

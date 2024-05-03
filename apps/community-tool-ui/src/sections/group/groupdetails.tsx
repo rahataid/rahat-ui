@@ -39,6 +39,7 @@ import {
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
 import CustomPagination from '../../components/customPagination';
+import * as XLSX from 'xlsx';
 
 type IProps = {
   data: any;
@@ -84,26 +85,30 @@ export default function GroupDetail({ data, closeSecondPanel }: IProps) {
   });
 
   const handleClick = async () => {
-    // const k = responseByUUID?.data?.beneficiariesGroup?.map((item) => {
-    //   const groupName = data?.name;
-    //   return { ...item.beneficiary, groupName };
-    // });
     const response = await download.mutateAsync({
       uuid: data?.uuid,
       config: { responseType: 'arraybuffer' },
     });
 
-    const blob = new Blob([response.data], {
-      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-    });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'beneficiaries.xlsx';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    window.URL.revokeObjectURL(url);
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.json_to_sheet(response?.data?.data);
+
+    XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+
+    XLSX.writeFile(wb, 'beneficiaries.xlsx');
+
+    // const blob = new Blob([response.data], {
+    //   type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    // });
+
+    // const url = window.URL.createObjectURL(blob);
+    // const a = document.createElement('a');
+    // a.href = url;
+    // a.download = 'beneficiaries.xlsx';
+    // document.body.appendChild(a);
+    // a.click();
+    // document.body.removeChild(a);
+    // window.URL.revokeObjectURL(url);
   };
 
   const removeBeneficiaryFromGroup = () => {

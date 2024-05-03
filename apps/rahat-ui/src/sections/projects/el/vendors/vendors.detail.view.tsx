@@ -62,7 +62,6 @@ export default function VendorsDetailPage() {
     args: [walletAddress],
   });
 
-  console.log("contract address", contractAddress)
 
   const { data: vendorVoucher } = useReadElProjectGetVendorVoucherDetail({
     address: contractAddress,
@@ -88,7 +87,6 @@ export default function VendorsDetailPage() {
             },
           },
         });
-        console.log("wallet address", res.data)
         if (res.data) {
           const { value } = res.data;
           setContractAddress(value?.elproject?.address || '');
@@ -100,7 +98,6 @@ export default function VendorsDetailPage() {
     }
   }, []);
 
-  console.log("vendor status", vendorStatus)
 
   return (
     <div className="bg-secondary">
@@ -151,6 +148,7 @@ export default function VendorsDetailPage() {
           </TabsContent>
           <TabsContent value="referrals">
             <ReferralTable
+              name = {name}
               projectId={projectId}
               vendorId={vendorId}
               walletAddress={walletAddress}

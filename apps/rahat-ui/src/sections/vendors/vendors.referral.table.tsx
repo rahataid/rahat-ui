@@ -11,18 +11,10 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { ArrowUpDown, MoreHorizontal } from 'lucide-react';
+import { ArrowUpDown } from 'lucide-react';
 import * as React from 'react';
 
 import { Button } from '@rahat-ui/shadcn/components/button';
-import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuTrigger,
-} from '@rahat-ui/shadcn/components/dropdown-menu';
 import { Input } from '@rahat-ui/shadcn/components/input';
 import {
   Table,
@@ -33,12 +25,10 @@ import {
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
 
-import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import { truncateEthAddress } from '@rumsan/sdk/utils';
 import { useProjectAction } from '@rahat-ui/query';
-import { MS_ACTIONS } from '@rahataid/sdk';
-import { formatdbDate } from '../../utils';
+import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import TableLoader from '../../components/table.loader';
+import { formatdbDate } from '../../utils';
 
 export type Transaction = {
   id: string;
@@ -51,47 +41,20 @@ export type Transaction = {
 
 export const columns: ColumnDef<Transaction>[] = [
   {
-    id: 'select',
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && 'indeterminate')
-        }
-        onCheckedChange={(value: any) =>
-          table.toggleAllPageRowsSelected(!!value)
-        }
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value: any) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
-    accessorKey: 'walletAddress',
+    accessorKey: 'referrerBen',
     header: ({ column }) => {
       return (
         <Button
+          className="px-0"
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
           Beneficiary
-          <ArrowUpDown className="ml-2 h-4 w-4" />
+          <ArrowUpDown className="h-4 w-4" />
         </Button>
       );
     },
-    cell: ({ row }) => (
-      <div className="lowercase">
-        {truncateEthAddress(row.getValue('walletAddress'))}
-      </div>
-    ),
+    cell: ({ row }) => <div>{row.getValue('referrerBen')}</div>,
   },
 
   {
@@ -99,11 +62,12 @@ export const columns: ColumnDef<Transaction>[] = [
     header: ({ column }) => {
       return (
         <Button
+          className="px-0"
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
           Timestamp
-          <ArrowUpDown className="ml-2 h-4 w-4" />
+          <ArrowUpDown className="h-4 w-4" />
         </Button>
       );
     },
@@ -116,23 +80,20 @@ export const columns: ColumnDef<Transaction>[] = [
     header: ({ column }) => {
       return (
         <Button
+          className="px-0"
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
           Referred By
-          <ArrowUpDown className="ml-2 h-4 w-4" />
+          <ArrowUpDown className="h-4 w-4" />
         </Button>
       );
     },
-    cell: ({ row }) => (
-      <div className="lowercase">
-        {truncateEthAddress(row.getValue('referredBy'))}
-      </div>
-    ),
+    cell: ({ row }) => <div>{row.getValue('referredBy')}</div>,
   },
 ];
 
-export default function ReferralTable({ projectId, vendorId, walletAddress }) {
+export default function ReferralTable({ name, projectId, vendorId }) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
@@ -161,11 +122,11 @@ export default function ReferralTable({ projectId, vendorId, walletAddress }) {
     },
   });
 
-  const getVendorRedemption = useProjectAction();
+  const getVendorReferrals = useProjectAction();
 
   React.useEffect(() => {
     async function fetchData() {
-      const res = await getVendorRedemption.mutateAsync({
+      const res = await getVendorReferrals.mutateAsync({
         uuid: projectId,
         data: {
           action: 'elProject.beneficiaryReferred',
@@ -174,10 +135,10 @@ export default function ReferralTable({ projectId, vendorId, walletAddress }) {
           },
         },
       });
-      const filteredData = res?.data.map((item) => {
+      const filteredData = res?.data?.result.map((item) => {
         return {
-          walletAddress: item?.walletAddress,
-          referredBy: walletAddress,
+          referrerBen: item?.piiData?.name,
+          referredBy: name,
           timeStamp: formatdbDate(item?.createdAt),
           phone: item?.phoneNumber,
         };
@@ -203,13 +164,13 @@ export default function ReferralTable({ projectId, vendorId, walletAddress }) {
       </div>
       <div className="rounded border h-[calc(100vh-180px)] bg-card">
         <Table>
-          <ScrollArea className="h-table1">
-            <TableHeader className="bg-card sticky top-0">
+          <ScrollArea className="w-full h-withPage px-4 py-1">
+            <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
                   {headerGroup.headers.map((header) => {
                     return (
-                      <TableHead key={header.id}>
+                      <TableHead className="text-primary" key={header.id}>
                         {header.isPlaceholder
                           ? null
                           : flexRender(
@@ -230,7 +191,7 @@ export default function ReferralTable({ projectId, vendorId, walletAddress }) {
                     data-state={row.getIsSelected() && 'selected'}
                   >
                     {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>
+                      <TableCell className="w-1/3 text-left" key={cell.id}>
                         {flexRender(
                           cell.column.columnDef.cell,
                           cell.getContext(),
@@ -245,7 +206,7 @@ export default function ReferralTable({ projectId, vendorId, walletAddress }) {
                     colSpan={columns.length}
                     className="h-24 text-center"
                   >
-                    {getVendorRedemption.isPending ? (
+                    {getVendorReferrals.isPending ? (
                       <TableLoader />
                     ) : (
                       'No data available.'

@@ -1,5 +1,11 @@
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/tooltip';
+import {
   humanizeString,
   truncatedText,
 } from 'apps/community-tool-ui/src/utils';
@@ -36,8 +42,6 @@ export default function AddToQueue({
     } else return item[key];
   }
 
-  console.log('Data==>', data);
-
   return (
     <div className="relative mt-5">
       <div className="flex mb-5 justify-between m-2">
@@ -45,7 +49,7 @@ export default function AddToQueue({
           onClick={handleRetargetClick}
           className="w-40 bg-secondary hover:ring-2bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow"
         >
-          <ArrowBigLeft size={18} strokeWidth={2} /> Re-Target
+          <ArrowBigLeft size={18} strokeWidth={2} /> Back
         </Button>
         <div>
           <Button
@@ -67,7 +71,10 @@ export default function AddToQueue({
         </div>
       </div>
       <hr />
-      <div className="max-h-screen max-w-screen-lg overflow-x-auto overflow-y-auto">
+      <div
+        style={{ maxWidth: 1200 }}
+        className="max-h-screen overflow-x-auto overflow-y-auto"
+      >
         <table className="ml-2 w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
           <thead>
             <tr>
@@ -92,32 +99,45 @@ export default function AddToQueue({
 
           <tbody>
             {data.map((item: any, index: number) => (
-              <tr
-                className={`${
-                  item.isDuplicate
-                    ? 'bg-orange-100 border-b'
-                    : 'odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700'
-                }`}
-                key={index}
-              >
-                {/* Dynamically generated table cells */}
-                {headerKeys.map((key) =>
-                  invalidFields.find(
-                    (err: any) =>
-                      err.uuid === item['uuid'] &&
-                      err.value === item[key] &&
-                      key === err.fieldName,
-                  ) ? (
-                    <td className="px-4 bg-red-100 py-1.5" key={key}>
-                      {renderItemKey(item, key)}
-                    </td>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <tr
+                      className={`${
+                        item.isDuplicate
+                          ? 'bg-orange-100 border-b'
+                          : 'odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700'
+                      }`}
+                      key={index}
+                    >
+                      {/* Dynamically generated table cells */}
+                      {headerKeys.map((key) =>
+                        invalidFields.find(
+                          (err: any) =>
+                            err.uuid === item['uuid'] &&
+                            err.value === item[key] &&
+                            key === err.fieldName,
+                        ) ? (
+                          <td className="px-4 bg-red-100 py-1.5" key={key}>
+                            {renderItemKey(item, key)}
+                          </td>
+                        ) : (
+                          <td className="px-4 py-1.5" key={key}>
+                            {renderItemKey(item, key)}
+                          </td>
+                        ),
+                      )}
+                    </tr>
+                  </TooltipTrigger>
+                  {item.isDuplicate ? (
+                    <TooltipContent>
+                      <p>This row is duplicate!</p>
+                    </TooltipContent>
                   ) : (
-                    <td className="px-4 py-1.5" key={key}>
-                      {renderItemKey(item, key)}
-                    </td>
-                  ),
-                )}
-              </tr>
+                    ''
+                  )}
+                </Tooltip>
+              </TooltipProvider>
             ))}
           </tbody>
         </table>

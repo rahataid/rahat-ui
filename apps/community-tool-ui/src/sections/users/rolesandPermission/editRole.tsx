@@ -1,23 +1,20 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
 import { Button } from '@rahat-ui/shadcn/components/button';
 import { Input } from '@rahat-ui/shadcn/components/input';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 
+import { useEditRole } from '@rahat-ui/community-query';
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from '@rahat-ui/shadcn/components/form';
-import React, { useState } from 'react';
-import { Switch } from '@rahat-ui/shadcn/src/components/ui/switch';
-import { Role, RoleWithPermission } from '@rumsan/sdk/types';
 import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
 import {
   Select,
@@ -26,38 +23,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
+import { Switch } from '@rahat-ui/shadcn/src/components/ui/switch';
 import { SUBJECTS } from 'apps/community-tool-ui/src/constants/app.const';
-import { useEditRole } from '@rahat-ui/community-query';
 import { useSecondPanel } from 'apps/community-tool-ui/src/providers/second-panel-provider';
 
 type Iprops = {
   roleDetail: any;
 };
+
 export default function EditRole({ roleDetail }: Iprops) {
   const { closeSecondPanel } = useSecondPanel();
   const edit = useEditRole();
-  const permissions = [
-    {
-      id: 'manage',
-      label: 'Manage',
-    },
-    {
-      id: 'create',
-      label: 'Create',
-    },
-    {
-      id: 'read',
-      label: 'Read',
-    },
-    {
-      id: 'update',
-      label: 'Update',
-    },
-    {
-      id: 'delete',
-      label: 'Delete',
-    },
-  ] as const;
 
   const FormSchema = z.object({
     permission: z

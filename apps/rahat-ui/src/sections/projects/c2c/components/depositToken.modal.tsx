@@ -1,7 +1,6 @@
 'use client';
 import {
   PROJECT_SETTINGS_KEYS,
-  useProjectAction,
   useProjectSettingsStore,
 } from '@rahat-ui/query';
 import {
@@ -19,50 +18,74 @@ import {
   AlertDescription,
   AlertTitle,
 } from '@rahat-ui/shadcn/components/alert';
-import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
-import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import React, { FC, useState } from 'react';
-import { Vault, Info, TriangleAlert, TicketCheck } from 'lucide-react';
+import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
+import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
+import { Info, TriangleAlert, Vault } from 'lucide-react';
 import { useParams } from 'next/navigation';
-import { useSendTransaction } from 'wagmi';
+import { FC, useState } from 'react';
+
+import { UseBooleanReturnType } from 'apps/rahat-ui/src/hooks/use-boolean';
+import { config } from 'apps/rahat-ui/wagmi.config';
 import { parseEther } from 'viem';
+import { sepolia } from 'viem/chains';
+import { useAccount, useConnect, useSendTransaction } from 'wagmi';
 
 interface DepositTokenModalType {
-  handleModal: () => void;
+  handleModal: UseBooleanReturnType;
 }
 
 const DepositTokenModal: FC<DepositTokenModalType> = ({ handleModal }) => {
   const { id } = useParams();
   const [tokenInputs, setTokenInputs] = useState('');
-  const { data: hash, isPending, sendTransaction } = useSendTransaction();
+  const { address } = useAccount();
+  const { connectAsync } = useConnect();
+
+  const contractInt = useSendTransaction({
+    config,
+    mutation: {
+      onError: (error) => {
+        console.error(error);
+      },
+      onSuccess(data, variables, context) {
+        console.log('data', data, variables, context);
+      },
+    },
+  });
+
   const contractSettings = useProjectSettingsStore(
     (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT] || null,
   );
 
-  console.log({ contractSettings });
-
-  const handleSubmit = () => {
-    sendTransaction({
-      to: contractSettings?.c2cproject?.address || '',
+  const handleDepositToken = async () => {
+    if (!address) {
+      await connectAsync({
+        chainId: sepolia.id,
+        connector: config.connectors[0],
+      });
+    }
+    await contractInt.sendTransactionAsync({
+      to: contractSettings?.c2cproject?.address,
       value: parseEther(tokenInputs),
-    });
-  };
+      // address: contractSettings?.rahattoken?.address,
+      // args: [contractSettings?.c2cproject?.address, BigInt(tokenInputs)],
+      // abi: rahatTokenAbi,
 
-  const handleDepositToken = () => {
-    console.log(contractSettings?.c2cproject?.address);
-    sendTransaction({
-      to: `0x2D205EB00883a2FeeBFdAf632f407492F391063c`,
-      value: parseEther(tokenInputs),
+      // functionName: 'transfer',
+      // chainId: sepolia.id,
     });
+    // sendTransaction({
+
+    //   to: contractSettings?.c2cproject?.address,
+
+    //   value: parseEther(tokenInputs),
+    // });
     setTokenInputs('');
   };
 
-  console.log({ id });
-
   return (
     <>
-      <Dialog onOpenChange={handleModal}>
+      <Dialog onOpenChange={handleModal.onToggle} open={handleModal.value}>
         <DialogTrigger asChild>
           <div className="w-full flex justify-between items-center">
             <div className="flex gap-3 items-center">
@@ -106,7 +129,7 @@ const DepositTokenModal: FC<DepositTokenModalType> = ({ handleModal }) => {
               </form>
             </AlertDescription>
           </Alert>
-          {hash && (
+          {/* {hash && (
             <div className="w-full  mb-2">
               <Alert className="rounded">
                 <TicketCheck className="h-4 w-4">
@@ -114,7 +137,7 @@ const DepositTokenModal: FC<DepositTokenModalType> = ({ handleModal }) => {
                 </TicketCheck>
               </Alert>
             </div>
-          )}
+          )} */}
           <DialogFooter>
             <DialogClose asChild>
               <Button

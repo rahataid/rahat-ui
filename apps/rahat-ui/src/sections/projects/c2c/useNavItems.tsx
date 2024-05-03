@@ -1,29 +1,16 @@
-import { LayoutDashboard, UserRound, Coins, Blocks } from 'lucide-react';
+import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
+import { Blocks, Coins, LayoutDashboard, UserRound } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import {
-  ProjectNavItemsReturnType,
   NavItem,
+  ProjectNavItemsReturnType,
 } from '../components/nav-items.types';
-import { parseEther } from 'viem';
-import { useSendTransaction } from 'wagmi';
-import DepositTokenModal from './components/token/depositToken.modal';
-import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
+import DepositTokenModal from './components/depositToken.modal';
 
 export const useNavItems = (): ProjectNavItemsReturnType => {
   const { id } = useParams();
-  const { sendTransaction } = useSendTransaction();
 
   const depositTokenModal = useBoolean();
-  const handleOpenDepositToken = () => {
-    depositTokenModal.onToggle();
-  };
-
-  const handleDepositToken = () => {
-    return sendTransaction({
-      to: `0x491A0ae888449A9cE02f3F4288EFD9D5065c16C9`,
-      value: parseEther('0.1'),
-    });
-  };
 
   const navItems: NavItem[] = [
     {
@@ -52,7 +39,7 @@ export const useNavItems = (): ProjectNavItemsReturnType => {
         {
           component: (
             <>
-              <DepositTokenModal handleModal={handleOpenDepositToken} />
+              <DepositTokenModal handleModal={depositTokenModal} />
             </>
           ),
           title: 'Deposit Token',

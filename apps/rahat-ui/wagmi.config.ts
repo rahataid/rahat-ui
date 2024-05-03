@@ -17,10 +17,10 @@ export const config = createConfig(
     syncConnectedChain: true,
     chains: [
       // mainnet,
-      // sepolia,
+      sepolia,
       // arbitrumGoerli,
       // polygon,
-      rahatChain,
+      // rahatChain,
 
       // polygonMumbai,
       // arbitrumSepolia,

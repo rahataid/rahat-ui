@@ -43,6 +43,8 @@ function BeneficiaryView() {
     setPagination({ page: 1, perPage: 10, order: 'desc', sort: 'createdAt' });
   }, []);
 
+  
+
   const { data } = useBeneficiaryList({
     ...pagination,
 

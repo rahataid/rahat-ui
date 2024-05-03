@@ -11,25 +11,25 @@ import { Tabs, TabsContent } from '@rahat-ui/shadcn/components/tabs';
 import {
   VisibilityState,
   getCoreRowModel,
-  getSortedRowModel,
   getFilteredRowModel,
+  getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
 
-import { ListBeneficiary } from '@rahataid/community-tool-sdk';
-import CustomPagination from '../../components/customPagination';
-import { TARGETING_NAV_ROUTE } from '../../constants/targeting.const';
-import TargetingListView from '../../sections/targeting/listView';
-import TargetingNav from '../../sections/targeting/targeting.nav';
-import { usePagination } from '@rahat-ui/query';
-import { useTargetingColumns } from './useTargetingColumns';
 import {
   useTargetedBeneficiaryList,
   useTargetingCreate,
 } from '@rahat-ui/community-query';
+import { usePagination } from '@rahat-ui/query';
+import { ListBeneficiary } from '@rahataid/community-tool-sdk';
+import { Result } from '@rahataid/community-tool-sdk/targets';
+import CustomPagination from '../../components/customPagination';
+import { TARGETING_NAV_ROUTE } from '../../constants/targeting.const';
+import TargetingListView from '../../sections/targeting/listView';
+import TargetingNav from '../../sections/targeting/targeting.nav';
 import useTargetingFormStore from '../../targetingFormBuilder/form.store';
 import { ITargetingQueries } from '../../types/targeting';
-import { Result } from '@rahataid/community-tool-sdk/targets';
+import { useTargetingColumns } from './useTargetingColumns';
 
 export default function TargetingView() {
   const {
@@ -42,6 +42,7 @@ export default function TargetingView() {
   } = usePagination();
 
   const [targetUUID, setTargetUUID] = useState<string>();
+  const [loading, setLoading] = useState<boolean>(false);
 
   const { data: beneficiaryData } = useTargetedBeneficiaryList(
     targetUUID as string,
@@ -79,11 +80,15 @@ export default function TargetingView() {
   const { targetingQueries } = useTargetingFormStore();
 
   const handleTargetFormSubmit = async (formData: ITargetingQueries) => {
+    setLoading(true);
     const payload = { ...formData, ...targetingQueries };
     const getTargetInfo = await addTargeting.mutateAsync({
       filterOptions: [{ data: payload }],
     });
     setTargetUUID(getTargetInfo?.data?.uuid);
+    setTimeout(() => {
+      setLoading(false);
+    }, 3000);
   };
 
   return (
@@ -103,6 +108,7 @@ export default function TargetingView() {
             <>
               <TabsContent value="list">
                 <TargetingListView
+                  loading={loading}
                   table={table}
                   handleClick={handleFieldDefClick}
                 />

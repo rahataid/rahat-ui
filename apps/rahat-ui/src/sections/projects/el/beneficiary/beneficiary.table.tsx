@@ -160,24 +160,27 @@ function BeneficiaryDetailTableView() {
   const [filteredProjectVoucherBeneficiaries, setFilteredProjectVoucherBeneficiaries] = useState<any>()
   const [voucherFilter, setVoucherFilter] = useState<any>()
 
-
   useEffect(() => {
     if (projectBeneficiaries) {
       const projectBenWithVoucher = projectBeneficiaries.data.data.map((row) => {
         let voucherType = 'Not Assigned';
+        let voucherClaimStatus = false;
         dataVouce?.voucherArray.forEach((voucher) => {
           if (row.wallet.toLowerCase() === voucher.id.toLowerCase()) {
             if (voucher.FreeVoucherAddress) {
               voucherType = 'Free voucher';
+              voucherClaimStatus = voucher.FreeVoucherClaimStatus;
             }
             if (voucher.ReferredVoucherAddress) {
               voucherType = 'Referred voucher';
+              voucherClaimStatus = voucher.ReferredVoucherClaimStatus;
             }
           }
         });
         return {
           ...row,
-          voucher: voucherType
+          voucher: voucherType,
+          voucherClaimStatus
         };
       });
 

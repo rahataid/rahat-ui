@@ -50,9 +50,9 @@ export class CommunityGroupQuery {
     return useQuery({
       refetchOnMount: true,
       queryKey: [TAGS.LIST_COMMUNITY_GROUP, uuid],
-      queryFn: () => {
-        return this.client.listById(uuid);
-      },
+      // queryFn: () => {
+      //   return this.client.listById(uuid);
+      // },
     });
   };
 

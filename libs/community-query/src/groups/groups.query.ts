@@ -72,7 +72,7 @@ export const useCommunityGroupListByID = (
   const groupClient = getGroupClient(rumsanService.client);
   return useQuery(
     {
-      queryKey: [TAGS.LIST_COMMUNITY_GROUP_BY_ID, query],
+      queryKey: [TAGS.LIST_COMMUNITY_GROUP_BY_ID, query, uuid],
       queryFn: () => groupClient.listById(uuid, query),
     },
     queryClient,

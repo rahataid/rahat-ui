@@ -12,13 +12,14 @@ import {
   useCommunityGroupList,
 } from '@rahat-ui/community-query';
 import { usePagination } from '@rahat-ui/query';
+import { useEffect } from 'react';
 
 export default function Filter() {
   const perPage = 15;
   const currentPage = 1;
   const { selectedBeneficiaries, setSelectedBeneficiaries } =
     useCommunityBeneficiaryStore();
-  const { setSelectedListItems } = usePagination();
+
   const commuinityBeneficiaryGroupCreate = useCommunityBeneficiaryGroupCreate();
 
   const { data: groupData } = useCommunityGroupList({
@@ -41,7 +42,6 @@ export default function Filter() {
     });
     if (res?.response?.success) {
       setSelectedBeneficiaries([]);
-      setSelectedListItems([]);
     }
   };
 

@@ -35,23 +35,28 @@ export const useProjectBeneficiaryTableColumns = () => {
   const columns: ColumnDef<any>[] = [
     {
       id: 'select',
-      header: ({ table }) => (
-        <Checkbox
-          checked={
-            table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && 'indeterminate')
-          }
-          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-          aria-label="Select all"
-        />
-      ),
-      cell: ({ row }) => (
-        <Checkbox
-          checked={row.getIsSelected()}
+      header: "",
+      // ({ table }) => (
+      //   <Checkbox
+      //     checked={
+      //       table.getIsAllPageRowsSelected() ||
+      //       (table.getIsSomePageRowsSelected() && 'indeterminate')
+      //     }
+      //     onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+      //     aria-label="Select all"
+      //   />
+      // ),
+      cell: 
+      ({ row }) => {
+        const isDisabled = row.getValue('voucher') != 'Not Assigned';
+        const isChecked = row.getIsSelected() && !isDisabled;
+        return (<Checkbox
+          checked={isChecked}
           onCheckedChange={(value) => row.toggleSelected(!!value)}
           aria-label="Select row"
-        />
-      ),
+          disabled={isDisabled}
+        />)
+      },
       enableSorting: false,
       enableHiding: false,
     },
@@ -104,6 +109,11 @@ export const useProjectBeneficiaryTableColumns = () => {
       accessorKey: 'voucher',
       header: 'Voucher',
       cell: ({ row }) => <div> {row.getValue('voucher')}</div>,
+    },
+    {
+      accessorKey: 'voucherClaimStatus',
+      header: 'Claim Status',
+      cell: ({ row }) => <div> {row.getValue('voucherClaimStatus').toString()}</div>,
     },
     {
       id: 'actions',

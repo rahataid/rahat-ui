@@ -10,7 +10,6 @@ import {
   truncatedText,
 } from 'apps/community-tool-ui/src/utils';
 import { ArrowBigLeft, ArrowBigUp, CloudDownloadIcon } from 'lucide-react';
-import React from 'react';
 
 interface IProps {
   data: any;
@@ -42,6 +41,8 @@ export default function AddToQueue({
     } else return item[key];
   }
 
+  const hasDuplicates = data.some((item: any) => item.isDuplicate);
+
   return (
     <div className="relative mt-5">
       <div className="flex mb-5 justify-between m-2">
@@ -53,7 +54,7 @@ export default function AddToQueue({
         </Button>
         <div>
           <Button
-            disabled={!invalidFields.length}
+            disabled={!invalidFields.length && !hasDuplicates}
             onClick={handleExportInvalidClick}
             className="w-40 mr-2 bg-secondary hover:ring-2bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow"
           >
@@ -61,7 +62,7 @@ export default function AddToQueue({
           </Button>
 
           <Button
-            disabled={invalidFields.length}
+            disabled={invalidFields.length || hasDuplicates}
             onClick={handleImportClick}
             className="w-40 bg-primary hover:ring-2 ring-primary py-2 px-4"
           >
@@ -72,7 +73,7 @@ export default function AddToQueue({
       </div>
       <hr />
       <div
-        style={{ maxWidth: 1200 }}
+        style={{ maxWidth: 1100 }}
         className="max-h-screen overflow-x-auto overflow-y-auto"
       >
         <table className="ml-2 w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">

@@ -1,8 +1,23 @@
 'use client';
 
-import * as React from 'react';
 import { usePagination, useProjectBeneficiaries } from '@rahat-ui/query';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@rahat-ui/shadcn/components/select';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@rahat-ui/shadcn/components/table';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
+import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import {
   ColumnFiltersState,
   SortingState,
@@ -16,38 +31,13 @@ import {
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
-import { useProjectBeneficiaryTableColumns } from '../../el/beneficiary/use-table-column';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@rahat-ui/shadcn/components/select';
+import * as React from 'react';
 import { benType } from '../../el/beneficiary/beneficiary.table';
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@rahat-ui/shadcn/components/dropdown-menu';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@rahat-ui/shadcn/components/table';
-import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import { useProjectBeneficiaryTableColumns } from '../../el/beneficiary/use-table-column';
 
-import { Button } from '@rahat-ui/shadcn/components/button';
-import { ChevronDown, Settings2 } from 'lucide-react';
-import { assign, filter } from 'lodash';
-import TableLoader from 'apps/rahat-ui/src/components/table.loader';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
+import TableLoader from 'apps/rahat-ui/src/components/table.loader';
+import Modal5 from '../components/disburse-modal/5-modal';
 
 const BeneficiaryDetailTableView = () => {
   const tokenAssignModal = useBoolean();
@@ -121,74 +111,41 @@ const BeneficiaryDetailTableView = () => {
   return (
     <>
       <div className="p-2 bg-secondary">
-        <div className="flex items-center mb-2">
-          <Input
-            placeholder="Filter name..."
-            value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
-            onChange={(event) => {
-              table.getColumn('name')?.setFilterValue(event.target.value);
-            }}
-            className="max-w-sm rounded mr-2"
-          />
-          <div className="max-w-sm rounded mr-2">
-            <Select
-              onValueChange={handleBenType}
-              defaultValue={filters?.status || 'ALL'}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Beneficiary Type" />
-              </SelectTrigger>
-              <SelectContent>
-                {benType.map((item) => {
-                  return (
-                    <SelectItem key={item.value} value={item.value}>
-                      {item.key}
-                    </SelectItem>
-                  );
-                })}
-              </SelectContent>
-            </Select>
+        <div className="flex justify-between items-center mb-2">
+          <div className="flex">
+            <Input
+              placeholder="Filter name..."
+              value={
+                (table.getColumn('name')?.getFilterValue() as string) ?? ''
+              }
+              onChange={(event) => {
+                table.getColumn('name')?.setFilterValue(event.target.value);
+              }}
+              className="max-w-sm rounded mr-2"
+            />
+            <div className="max-w-sm rounded mr-2">
+              <Select
+                onValueChange={handleBenType}
+                defaultValue={filters?.status || 'ALL'}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Beneficiary Type" />
+                </SelectTrigger>
+                <SelectContent>
+                  {benType.map((item) => {
+                    return (
+                      <SelectItem key={item.value} value={item.value}>
+                        {item.key}
+                      </SelectItem>
+                    );
+                  })}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="ml-auto">
-                <Settings2 className="mr-2 h-4 w-5" />
-                View
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Toggle Columns</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              {table
-                .getAllColumns()
-                .filter((column) => column.getCanHide())
-                .map((column) => {
-                  return (
-                    <DropdownMenuCheckboxItem
-                      key={column.id}
-                      className="capitalize"
-                      checked={column.getIsVisible()}
-                      onCheckedChange={(value) =>
-                        column.toggleVisibility(!!value)
-                      }
-                    >
-                      {column.id}
-                    </DropdownMenuCheckboxItem>
-                  );
-                })}
-            </DropdownMenuContent>
-          </DropdownMenu>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              {selectedRowAddresses.length > 0 ? (
-                <Button disabled className='"h-10 ml-2'>
-                  {selectedRowAddresses.length} - Beneficiary Selected
-                  <ChevronDown strokeWidth={1.5} />
-                </Button>
-              ) : null}
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end"></DropdownMenuContent>
-          </DropdownMenu>
+          <div>
+            <Modal5 />
+          </div>
         </div>
         <div className="rounded border bg-card">
           <Table>

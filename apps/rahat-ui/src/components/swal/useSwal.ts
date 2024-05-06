@@ -9,3 +9,24 @@ export const useSwal = (): HookReturnType => {
 
   return MySwal;
 };
+
+export const useAlert = () =>{
+  const alert = useSwal();
+  const toastMixin = alert.mixin({
+    toast: true,
+    icon: 'success',
+    title: 'General Title',
+    animation: false,
+    position: 'top-right',
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+      toast.addEventListener('mouseenter', alert.stopTimer);
+      toast.addEventListener('mouseleave', alert.resumeTimer);
+    },
+  });
+
+  return toastMixin;
+
+}

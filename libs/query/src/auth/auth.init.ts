@@ -1,13 +1,15 @@
 'use client';
 
 import { JwtPayload, decode } from 'jsonwebtoken';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import {
   useUserStore,
   useAuthStore,
   useUserCurrentUser,
+  useUserRoleList,
 } from '@rumsan/react-query';
 import { toast } from 'react-toastify';
+import { generateRoleObject } from '../utils/currentRole';
 
 export type UseAuthInitializationReturn = [boolean, boolean, any];
 
@@ -19,10 +21,16 @@ export const useAuthInitialization = (): UseAuthInitializationReturn => {
       isInitialized: state.isInitialized,
       setInitialization: state.setInitialization,
     }));
-
   const currentUser = useUserCurrentUser(!!token);
+  console.log('currentUser', currentUser);
 
   const setUser = useUserStore((state) => state.setUser);
+  const currentUserRole = useUserRoleList(currentUser?.data?.data?.uuid);
+  const currentRole = useMemo(
+    () => generateRoleObject(currentUserRole?.data?.data || []),
+    [currentUserRole],
+  );
+  console.log('currentRoles', currentRole);
 
   useEffect(() => {
     if (token) {
@@ -39,6 +47,7 @@ export const useAuthInitialization = (): UseAuthInitializationReturn => {
           setInitialization({
             isInitialized: true,
             isAuthenticated: true,
+            roles: currentRole,
           });
         } else {
           toast.error('Token is expired');
@@ -51,6 +60,7 @@ export const useAuthInitialization = (): UseAuthInitializationReturn => {
           isInitialized: true,
           isAuthenticated: false,
           token: '',
+          roles: {},
         });
         setUser(null);
       }

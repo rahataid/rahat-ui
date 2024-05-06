@@ -67,7 +67,6 @@ export function UsersRoleTable({
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
-  console.log(isAdmin);
   const handleRemoveRole = (data: any) => {
     if (isAdmin)
       removeUserRole.mutateAsync({ uuid: userRole, roles: [data?.name] });

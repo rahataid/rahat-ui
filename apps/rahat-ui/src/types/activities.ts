@@ -1,5 +1,6 @@
 export interface IActivitiesItem {
   id: number;
+  campaignId: string;
   title: string;
   responsibility: string;
   source: string;

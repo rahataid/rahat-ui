@@ -42,7 +42,7 @@ const commType = [
 ];
 
 type IProps = {
-  activityId: string;
+  activityId: number;
 };
 
 export default function ActivityCommunicationForm({ activityId }: IProps) {
@@ -76,11 +76,7 @@ export default function ActivityCommunicationForm({ activityId }: IProps) {
     createActivityCommunication.mutateAsync({
       projectUUID: id as UUID,
       activityCommunicationPayload: { ...data, activityId },
-      //   activityPayload: { ...data, activityId },
     });
-    console.log('comm data::', data, activityId);
-
-    form.reset();
   };
   return (
     <Form {...form}>

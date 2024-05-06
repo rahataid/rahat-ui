@@ -133,6 +133,7 @@ export const useActivities = (uuid: UUID, payload: any) => {
     phase: d.phase?.name,
     status: d.status,
     activityType: d.activityType,
+    campaignId: d?.activityComm?.campaignId || null,
     // isApproved: d.isApproved,
     // isComplete: d.isComplete,
   }));
@@ -270,6 +271,51 @@ export const useCreateActivityCommunication = () => {
       q.reset();
       toast.fire({
         title: 'Error while adding communication.',
+        icon: 'error',
+        text: errorMessage,
+      });
+    },
+  });
+};
+
+export const useTriggerCommunication = () => {
+  const q = useProjectAction();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+  return useMutation({
+    mutationFn: async ({
+      projectUUID,
+      activityCommunicationPayload,
+    }: {
+      projectUUID: UUID;
+      activityCommunicationPayload: any;
+    }) => {
+      return q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'aaProject.activities.communication.trigger',
+          payload: activityCommunicationPayload,
+        },
+      });
+    },
+
+    onSuccess: () => {
+      q.reset();
+      toast.fire({
+        title: 'Communication Trigger successfully',
+        icon: 'success',
+      });
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || 'Error';
+      q.reset();
+      toast.fire({
+        title: 'Error while triggering communication.',
         icon: 'error',
         text: errorMessage,
       });

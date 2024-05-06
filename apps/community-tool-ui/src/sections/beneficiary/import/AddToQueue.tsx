@@ -17,6 +17,7 @@ interface IProps {
   handleImportClick: any;
   invalidFields: any;
   handleExportInvalidClick: any;
+  hasUUID: boolean;
 }
 
 export default function AddToQueue({
@@ -25,6 +26,7 @@ export default function AddToQueue({
   handleImportClick,
   invalidFields,
   handleExportInvalidClick,
+  hasUUID,
 }: IProps) {
   const mappedData =
     data.length > 0
@@ -43,6 +45,10 @@ export default function AddToQueue({
 
   const hasDuplicates = data.some((item: any) => item.isDuplicate);
 
+  const enableDisableImportButton = () => {
+    if (hasUUID) return false;
+    if (invalidFields.length || hasDuplicates) return true;
+  };
   return (
     <div className="relative mt-5">
       <div className="flex mb-5 justify-between m-2">
@@ -62,7 +68,7 @@ export default function AddToQueue({
           </Button>
 
           <Button
-            disabled={invalidFields.length || hasDuplicates}
+            disabled={enableDisableImportButton()}
             onClick={handleImportClick}
             className="w-40 bg-primary hover:ring-2 ring-primary py-2 px-4"
           >

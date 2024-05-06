@@ -441,6 +441,7 @@ export default function BenImp({ extraFields }: IProps) {
             )}
 
             <AddToQueue
+              hasUUID={hasUUID}
               handleExportInvalidClick={handleExportInvalidClick}
               handleRetargetClick={handleRetargetClick}
               data={processedData}

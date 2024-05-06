@@ -138,7 +138,9 @@ export default function ActivitiesDetail({
           <p>{activityDetail?.activityType}</p>
         </div>
       </div>
-      {activityDetail?.activityType === "COMMUNICATION" && <ActivityCommunicationForm />}
+      {activityDetail?.activityType === 'COMMUNICATION' && (
+        <ActivityCommunicationForm activityId={activityDetail?.id} />
+      )}
       {showEdit && <EditActivityView />}
     </>
   );

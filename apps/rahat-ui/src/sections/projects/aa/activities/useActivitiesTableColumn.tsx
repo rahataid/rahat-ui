@@ -1,14 +1,13 @@
-import React from 'react';
+import { useParams, useRouter } from 'next/navigation';
 import { ColumnDef } from '@tanstack/react-table';
-import { useSecondPanel } from '../../../../providers/second-panel-provider';
 import { Eye } from 'lucide-react';
 import { IActivitiesItem } from '../../../../types/activities';
 import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
-import { ActivitiesDetailView } from '.';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 
 export default function useActivitiesTableColumn() {
-  const { setSecondPanelComponent, closeSecondPanel } = useSecondPanel();
+  const router = useRouter();
+  const { id } = useParams();
 
   const columns: ColumnDef<IActivitiesItem>[] = [
     {
@@ -55,7 +54,7 @@ export default function useActivitiesTableColumn() {
           {row.getValue('phase')}
         </Badge>
       ),
-    }, 
+    },
     {
       accessorKey: 'activityType',
       header: 'Type',
@@ -98,20 +97,12 @@ export default function useActivitiesTableColumn() {
       id: 'actions',
       enableHiding: false,
       cell: ({ row }) => {
-        // console.log(row)
         return (
           <Eye
             className="hover:text-primary cursor-pointer"
             size={20}
             strokeWidth={1.5}
-            onClick={() => {
-              setSecondPanelComponent(
-                <ActivitiesDetailView
-                  activityDetail={row.original}
-                  closeSecondPanel={closeSecondPanel}
-                />,
-              );
-            }}
+            onClick={() => router.push(`/projects/aa/${id}/activities/${row.original?.id}`)}
           />
         );
       },

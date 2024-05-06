@@ -1,7 +1,7 @@
 'use client';
 
 import { JwtPayload, decode } from 'jsonwebtoken';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import {
   useUserStore,
   useAuthStore,
@@ -21,12 +21,16 @@ export const useAuthInitialization = (): UseAuthInitializationReturn => {
       isInitialized: state.isInitialized,
       setInitialization: state.setInitialization,
     }));
-
   const currentUser = useUserCurrentUser(!!token);
+  console.log('currentUser', currentUser);
 
   const setUser = useUserStore((state) => state.setUser);
   const currentUserRole = useUserRoleList(currentUser?.data?.data?.uuid);
-  const currentRole = generateRoleObject(currentUserRole?.data?.data || []);
+  const currentRole = useMemo(
+    () => generateRoleObject(currentUserRole?.data?.data || []),
+    [currentUserRole],
+  );
+  console.log('currentRoles', currentRole);
 
   useEffect(() => {
     if (token) {

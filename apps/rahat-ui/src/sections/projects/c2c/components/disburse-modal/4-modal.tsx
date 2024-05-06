@@ -1,6 +1,7 @@
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,

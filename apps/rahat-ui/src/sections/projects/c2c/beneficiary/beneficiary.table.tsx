@@ -37,7 +37,7 @@ import { useProjectBeneficiaryTableColumns } from '../../el/beneficiary/use-tabl
 
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import TableLoader from 'apps/rahat-ui/src/components/table.loader';
-import Modal5 from '../components/disburse-modal/5-modal';
+import Modal from '../components/disburse-modal/4-modal';
 
 const BeneficiaryDetailTableView = () => {
   const tokenAssignModal = useBoolean();
@@ -144,7 +144,7 @@ const BeneficiaryDetailTableView = () => {
             </div>
           </div>
           <div>
-            <Modal5 />
+            <Modal />
           </div>
         </div>
         <div className="rounded border bg-card">

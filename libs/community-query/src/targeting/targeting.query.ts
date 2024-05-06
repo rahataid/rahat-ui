@@ -64,3 +64,34 @@ export const useTargetedBeneficiaryList = (target_uuid: string) => {
 
   return query;
 };
+
+export const useTargetingLabelUpdate = () => {
+  const { queryClient, rumsanService } = useRSQuery();
+  const targetingClient = getTargetClient(rumsanService.client);
+
+  return useMutation(
+    {
+      mutationKey: [TAGS.UPDATE_TARGETING_LABEL],
+      mutationFn: targetingClient.patchLabel,
+      onSuccess: () => {
+        Swal.fire('Target Label Created Successfully', '', 'success');
+        queryClient.invalidateQueries({
+          queryKey: [
+            TAGS.GET_TARGETING_BENEFICIARIES,
+            {
+              exact: true,
+            },
+          ],
+        });
+      },
+      onError: (error: any) => {
+        Swal.fire(
+          'Error',
+          error.response.data.message || 'Failed to update targeting label!',
+          'error',
+        );
+      },
+    },
+    queryClient,
+  );
+};

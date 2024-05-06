@@ -139,17 +139,18 @@ export default function AuthPage() {
             >
               {!optSent ? 'Get Started' : 'Resend'}
             </span> */}
-            {/* {optSent ? (
+            {optSent ? (
               <Button
                 className="ml-2"
                 onClick={() => {
                   setAddress('');
                   setChallenge('');
+                  setOtpSent(false);
                 }}
               >
                 Go Back
               </Button>
-            ) : null} */}
+            ) : null}
           </p>
           {!optSent && (
             <p className="text-muted-foreground text-sm">

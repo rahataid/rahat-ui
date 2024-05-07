@@ -80,14 +80,14 @@ export default function AddToQueue({
       <hr />
       <div
         style={{ maxWidth: 1100 }}
-        className="max-h-screen overflow-x-auto overflow-y-auto"
+        className="table-wrp block h-screen overflow-x-auto"
       >
         <table className="ml-2 w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-          <thead>
+          <thead className="bg-white border-b sticky top-0">
             <tr>
               {/* Dynamically generated table headers */}
               {headerKeys.map((key) => (
-                <th className="px-2 py-2" key={key}>
+                <th className="px-2 py-1" key={key}>
                   {invalidFields.find(
                     (field: any) => field.fieldName === key,
                   ) ? (
@@ -104,7 +104,7 @@ export default function AddToQueue({
             </tr>
           </thead>
 
-          <tbody>
+          <tbody className="h-screen overflow-y-auto">
             {data.map((item: any, index: number) => (
               <TooltipProvider>
                 <Tooltip>

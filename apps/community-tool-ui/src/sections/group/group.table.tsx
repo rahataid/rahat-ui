@@ -21,7 +21,7 @@ type IProps = {
 export default function GroupDetailTable({ table }: IProps) {
   return (
     <>
-      <div className="w-full -mt-0 bg-secondary">
+      <div className="w-full mb-3 bg-secondary">
         <div className="rounded border bg-card">
           <TableComponent>
             <ScrollArea className="h-[calc(100vh-210px)]">

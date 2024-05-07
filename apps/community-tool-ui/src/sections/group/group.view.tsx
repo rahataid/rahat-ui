@@ -71,16 +71,16 @@ function ViewGroup() {
             pagination={pagination}
             setPagination={setPagination}
           />
+          <CustomPagination
+            meta={data?.response?.meta || { total: 0, currentPage: 0 }}
+            handleNextPage={setNextPage}
+            handlePrevPage={setPrevPage}
+            handlePageSizeChange={setPerPage}
+            currentPage={pagination.page}
+            perPage={pagination.perPage}
+            total={data?.response?.meta.total || 0}
+          />
         </TabsContent>
-        <CustomPagination
-          meta={data?.response?.meta || { total: 0, currentPage: 0 }}
-          handleNextPage={setNextPage}
-          handlePrevPage={setPrevPage}
-          handlePageSizeChange={setPerPage}
-          currentPage={pagination.page}
-          perPage={pagination.perPage}
-          total={data?.response?.meta.lastPage || 0}
-        />
       </>
     </Tabs>
   );

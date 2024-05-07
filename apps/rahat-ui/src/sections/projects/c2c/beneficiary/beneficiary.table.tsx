@@ -16,7 +16,7 @@ import {
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
-import { useProjectBeneficiaryTableColumns } from '../../el/beneficiary/use-table-column';
+import { useProjectBeneficiaryTableColumns } from './use-table-column';
 import {
   Select,
   SelectContent,
@@ -24,7 +24,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@rahat-ui/shadcn/components/select';
-import { benType } from '../../el/beneficiary/beneficiary.table';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -49,17 +48,17 @@ import { assign, filter } from 'lodash';
 import TableLoader from 'apps/rahat-ui/src/components/table.loader';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 
+import { benType } from '../../el/beneficiary/beneficiary.table';
+
 const BeneficiaryDetailTableView = () => {
   const tokenAssignModal = useBoolean();
   const uuid = useParams().id as UUID;
-
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
   );
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
-
   const {
     pagination,
     filters,
@@ -71,11 +70,8 @@ const BeneficiaryDetailTableView = () => {
     setSelectedListItems,
     resetSelectedListItems,
   } = usePagination();
-
   const selectedRowAddresses = Object.keys(selectedListItems);
-
   const columns = useProjectBeneficiaryTableColumns();
-
   const projectBeneficiaries = useProjectBeneficiaries({
     page: pagination.page,
     perPage: pagination.perPage,
@@ -84,7 +80,6 @@ const BeneficiaryDetailTableView = () => {
     projectUUID: uuid,
     ...filters,
   });
-
   const table = useReactTable({
     manualPagination: true,
     data: projectBeneficiaries?.data?.data || [],
@@ -104,20 +99,17 @@ const BeneficiaryDetailTableView = () => {
       rowSelection: selectedListItems,
     },
   });
-
   const handleBenType = React.useCallback(
     (type: string) => {
       resetSelectedListItems();
       if (type === 'ALL') {
         setFilters({ ...filters, status: undefined });
-
         return;
         setFilters({ ...filters, status: type });
       }
     },
     [filters, setFilters],
   );
-
   return (
     <>
       <div className="p-2 bg-secondary">

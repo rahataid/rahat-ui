@@ -24,12 +24,14 @@ import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { Info, TriangleAlert, Vault } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import { FC, useState } from 'react';
-
 import { UseBooleanReturnType } from 'apps/rahat-ui/src/hooks/use-boolean';
 import { config } from 'apps/rahat-ui/wagmi.config';
 import { parseEther } from 'viem';
 import { sepolia } from 'viem/chains';
-import { useAccount, useConnect, useSendTransaction } from 'wagmi';
+import { useAccount, useConnect, useWriteContract } from 'wagmi';
+import { rahatChain } from 'apps/rahat-ui/src/chain-custom';
+import { injected } from 'wagmi/connectors';
+import { rahatTokenAbi } from 'apps/rahat-ui/src/hooks/el/contracts/token';
 
 interface DepositTokenModalType {
   handleModal: UseBooleanReturnType;
@@ -39,48 +41,42 @@ const DepositTokenModal: FC<DepositTokenModalType> = ({ handleModal }) => {
   const { id } = useParams();
   const [tokenInputs, setTokenInputs] = useState('');
   const { address } = useAccount();
+  const { writeContractAsync } = useWriteContract();
   const { connectAsync } = useConnect();
 
-  const contractInt = useSendTransaction({
-    config,
-    mutation: {
-      onError: (error) => {
-        console.error(error);
-      },
-      onSuccess(data, variables, context) {
-        console.log('data', data, variables, context);
-      },
-    },
-  });
+  // const contractInt = useSendTransaction({
+  //   config,
+  //   mutation: {
+  //     onError: (error) => {
+  //       console.error(error);
+  //     },
+  //     onSuccess(data, variables, context) {
+  //       console.log('data', data, variables, context);
+  //     },
+  //   },
+  // });
 
   const contractSettings = useProjectSettingsStore(
     (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT] || null,
   );
 
   const handleDepositToken = async () => {
+    console.log({ rahatChain });
     if (!address) {
       await connectAsync({
-        chainId: sepolia.id,
-        connector: config.connectors[0],
+        chainId: rahatChain.id,
+        connector: injected(),
       });
     }
-    await contractInt.sendTransactionAsync({
-      to: contractSettings?.c2cproject?.address,
-      value: parseEther(tokenInputs),
-      // address: contractSettings?.rahattoken?.address,
-      // args: [contractSettings?.c2cproject?.address, BigInt(tokenInputs)],
-      // abi: rahatTokenAbi,
-
-      // functionName: 'transfer',
-      // chainId: sepolia.id,
+    const data = writeContractAsync({
+      chainId: rahatChain.id,
+      address: contractSettings?.rahattoken?.address,
+      functionName: 'transfer',
+      abi: rahatTokenAbi,
+      args: [contractSettings?.c2cproject?.address, parseEther(tokenInputs)],
     });
-    // sendTransaction({
-
-    //   to: contractSettings?.c2cproject?.address,
-
-    //   value: parseEther(tokenInputs),
-    // });
-    setTokenInputs('');
+    console.log(contractSettings?.c2cproject?.address);
+    console.log(address);
   };
 
   return (
@@ -129,15 +125,6 @@ const DepositTokenModal: FC<DepositTokenModalType> = ({ handleModal }) => {
               </form>
             </AlertDescription>
           </Alert>
-          {/* {hash && (
-            <div className="w-full  mb-2">
-              <Alert className="rounded">
-                <TicketCheck className="h-4 w-4">
-                  <AlertTitle>Transaction hash: {hash}</AlertTitle>
-                </TicketCheck>
-              </Alert>
-            </div>
-          )} */}
           <DialogFooter>
             <DialogClose asChild>
               <Button

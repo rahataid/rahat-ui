@@ -116,6 +116,7 @@ const AddCampaignView = () => {
       data?.messageSid
     ) {
       additionalData.messageSid = data?.messageSid;
+      additionalData.body = data?.message;
     } else {
       additionalData.message = data?.message;
     }

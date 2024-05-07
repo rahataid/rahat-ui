@@ -1,8 +1,9 @@
 'use client';
 
 import * as React from 'react';
+import { useParams, useRouter } from 'next/navigation';
 import { Table, flexRender } from '@tanstack/react-table';
-import { Settings2 } from 'lucide-react';
+import { Plus, Settings2 } from 'lucide-react';
 import { Button } from '@rahat-ui/shadcn/components/button';
 import {
   DropdownMenu,
@@ -25,57 +26,63 @@ import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 
 type IProps = {
   table: Table<any>;
+  projectId: string | string[]
 };
 
-export default function TriggerStatementsTable({ table }: IProps) {
+export default function TriggerStatementsTable({ table, projectId }: IProps) {
+  const { id } = useParams();
+  const router = useRouter();
   return (
     <>
-      <div className="p-2 bg-secondary">
-        <div className="flex items-center mb-2">
-          <Input
-            placeholder="Search Trigger Statements..."
-            value={
-              (table.getColumn('title')?.getFilterValue() as string) ?? ''
-            }
-            onChange={(event) =>
-              table.getColumn('title')?.setFilterValue(event.target.value)
-            }
-            className="rounded mr-2"
-          />
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="ml-auto">
-                <Settings2 className="mr-2 h-4 w-5" />
-                View
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Toggle Columns</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              {table
-                .getAllColumns()
-                .filter((column) => column.getCanHide())
-                .map((column) => {
-                  return (
-                    <DropdownMenuCheckboxItem
-                      key={column.id}
-                      className="capitalize"
-                      checked={column.getIsVisible()}
-                      onCheckedChange={(value) =>
-                        column.toggleVisibility(!!value)
-                      }
-                    >
-                      {column.id}
-                    </DropdownMenuCheckboxItem>
-                  );
-                })}
-            </DropdownMenuContent>
-          </DropdownMenu>
+      <div className="p-2">
+        <div className="flex items-center mb-2 gap-4">
+          <div className='flex w-full'>
+            <Input
+              placeholder="Search Trigger Statements..."
+              value={
+                (table.getColumn('title')?.getFilterValue() as string) ?? ''
+              }
+              onChange={(event) =>
+                table.getColumn('title')?.setFilterValue(event.target.value)
+              }
+              className="rounded-l rounded-r-none"
+            />
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="secondary" className="rounded-l-none">
+                  <Settings2 className="mr-2 h-4 w-5" />
+                  View
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>Toggle Columns</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                {table
+                  .getAllColumns()
+                  .filter((column) => column.getCanHide())
+                  .map((column) => {
+                    return (
+                      <DropdownMenuCheckboxItem
+                        key={column.id}
+                        className="capitalize"
+                        checked={column.getIsVisible()}
+                        onCheckedChange={(value) =>
+                          column.toggleVisibility(!!value)
+                        }
+                      >
+                        {column.id}
+                      </DropdownMenuCheckboxItem>
+                    );
+                  })}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+          <Button onClick={() => router.push(`/projects/aa/${projectId}/trigger-statements/add`)}><Plus size={18} className='mr-1' /> Add Trigger Statement</Button>
         </div>
         <div className="rounded border h-[calc(100vh-180px)] bg-card">
           <TableComponent>
             <ScrollArea className="h-table1">
-              <TableHeader className="bg-card sticky top-0">
+              <TableHeader className="bg-secondary sticky top-0">
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow key={headerGroup.id}>
                     {headerGroup.headers.map((header) => {
@@ -84,9 +91,9 @@ export default function TriggerStatementsTable({ table }: IProps) {
                           {header.isPlaceholder
                             ? null
                             : flexRender(
-                                header.column.columnDef.header,
-                                header.getContext(),
-                              )}
+                              header.column.columnDef.header,
+                              header.getContext(),
+                            )}
                         </TableHead>
                       );
                     })}
@@ -113,7 +120,7 @@ export default function TriggerStatementsTable({ table }: IProps) {
                 ) : (
                   <TableRow>
                     <TableCell
-                      colSpan={table.getAllColumns.length}
+                      colSpan={table.getAllColumns().length}
                       className="h-24 text-center"
                     >
                       No results.

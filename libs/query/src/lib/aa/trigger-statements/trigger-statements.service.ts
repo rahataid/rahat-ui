@@ -25,7 +25,7 @@ export const useCreateTriggerStatement = () => {
       return q.mutateAsync({
         uuid: projectUUID,
         data: {
-          action: 'aaProject.schedule.add',
+          action: 'aaProject.triggers.add',
           payload: triggerStatementPayload,
         },
       });
@@ -72,7 +72,7 @@ export const useDeleteTriggerStatement = () => {
       return q.mutateAsync({
         uuid: projectUUID,
         data: {
-          action: 'aaProject.schedule.remove',
+          action: 'aaProject.triggers.remove',
           payload: triggerStatementPayload,
         },
       });
@@ -145,7 +145,6 @@ export const useDhmWaterLevels = (uuid: UUID) => {
           }
         },
       });
-      console.log(mutate)
       return mutate.data;
     },
   });
@@ -169,7 +168,7 @@ export const useAATriggerStatements = (uuid: UUID) => {
       const mutate = await q.mutateAsync({
         uuid,
         data: {
-          action: 'aaProject.schedule.getAll',
+          action: 'aaProject.triggers.getAll',
           payload: {},
         },
       });

@@ -1,7 +1,7 @@
 import React from 'react';
 import ChartLine from '@rahat-ui/shadcn/src/components/charts/chart-components/chart-line';
 import DataCard from 'apps/rahat-ui/src/components/dataCard';
-import { Users } from 'lucide-react';
+import { Banknote, ReceiptText } from 'lucide-react';
 import RecentTransaction from './recent.transaction';
 
 const FundManagementView = () => {
@@ -19,14 +19,14 @@ const FundManagementView = () => {
           title="Project Balance"
           smallNumber={'12 USDC'}
           subTitle="Total"
-          Icon={Users}
+          Icon={Banknote}
         />
         <DataCard
           className=""
           title="Project Contract Address"
           smallNumber={'0x67FAB91396....'}
           subTitle=""
-          Icon={Users}
+          Icon={ReceiptText}
         />
       </div>
       <div className="grid grid-cols-3 gap-4">

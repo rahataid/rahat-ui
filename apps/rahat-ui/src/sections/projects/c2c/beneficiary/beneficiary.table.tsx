@@ -37,7 +37,7 @@ import { useProjectBeneficiaryTableColumns } from '../../el/beneficiary/use-tabl
 
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import TableLoader from 'apps/rahat-ui/src/components/table.loader';
-import Modal from '../components/disburse-modal/4-modal';
+import Modal from '../components/disburse-modal/1-modal';
 
 const BeneficiaryDetailTableView = () => {
   const tokenAssignModal = useBoolean();

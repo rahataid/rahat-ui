@@ -30,14 +30,14 @@ export const useCommunityBeneficiaryTableColumns = () => {
       enableHiding: false,
     },
     {
-      accessorKey: 'firstName',
-      header: 'First Name',
-      cell: ({ row }) => <div>{row.getValue('firstName')}</div>,
-    },
-    {
-      accessorKey: 'lastName',
-      header: 'Last Name',
-      cell: ({ row }) => <div>{row.getValue('lastName')}</div>,
+      header: 'Beneficiary',
+      cell: ({ row }) => {
+        return (
+          <div>
+            {row.original.firstName} {row.original.lastName}
+          </div>
+        );
+      },
     },
 
     {
@@ -52,28 +52,62 @@ export const useCommunityBeneficiaryTableColumns = () => {
       cell: ({ row }) => <div>{humanizeString(row.getValue('phone'))}</div>,
     },
     {
+      accessorKey: 'extras',
+      header: 'Govt. ID Type',
+      cell: ({ row }) => {
+        const govtIDType =
+          row.original?.extras?.household_head_government_id_type || '-';
+        return <div>{humanizeString(govtIDType)}</div>;
+      },
+    },
+    {
       accessorKey: 'govtIDNumber',
-      header: 'Govt ID Number',
+      header: 'Govt. ID Number',
       cell: ({ row }) => (
-        <div>{humanizeString(row.getValue('govtIDNumber'))}</div>
+        <div>{humanizeString(row.getValue('govtIDNumber')) || '-'}</div>
       ),
     },
     {
-      accessorKey: 'location',
-      header: 'Location',
-      cell: ({ row }) => <div>{row.getValue('location') || '-'}</div>,
+      header: 'Local Level',
+      cell: ({ row }) => {
+        const localLevel = row.original?.extras?.local_level || '-';
+        return <div>{humanizeString(localLevel)}</div>;
+      },
     },
     {
-      accessorKey: 'internetStatus',
-      header: 'Internet Access',
-      cell: ({ row }) => (
-        <div>{humanizeString(row.getValue('internetStatus'))}</div>
-      ),
+      header: 'Ward',
+      cell: ({ row }) => {
+        const wardNo = row.original?.extras?.ward_no || '-';
+        return <div>{wardNo}</div>;
+      },
     },
+    {
+      header: 'Total Members',
+      cell: ({ row }) => {
+        const totalFamilyMembers =
+          row.original?.extras?.total_number_of_family_members || '-';
+        return <div>{totalFamilyMembers}</div>;
+      },
+    },
+    {
+      header: 'Female',
+      cell: ({ row }) => {
+        const femaleCount = row.original?.extras?.no_of_female || '-';
+        return <div>{femaleCount}</div>;
+      },
+    },
+    {
+      header: 'Male',
+      cell: ({ row }) => {
+        const maleCount = row.original?.extras?.no_of_male || '-';
+        return <div>{maleCount}</div>;
+      },
+    },
+
     {
       id: 'actions',
       enableHiding: false,
-      header: 'View Details',
+      header: 'Details',
       cell: ({ row }) => {
         return (
           <Eye

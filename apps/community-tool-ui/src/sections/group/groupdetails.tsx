@@ -262,7 +262,7 @@ export default function GroupDetail({ data, closeSecondPanel }: IProps) {
         <TabsContent value="detail">
           <GroupDetailTable table={table} />
           <p className="text-xs font-medium text-right mr-5 mt-1">
-            Total beneficiary Count :{responseByUUID?.response?.meta?.total}
+            Total Count :{responseByUUID?.response?.meta?.total}
           </p>
         </TabsContent>
 

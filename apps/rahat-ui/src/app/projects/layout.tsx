@@ -12,6 +12,8 @@ export default function ProjectLayoutRoot({
 }) {
   const pathName = usePathname();
   const allowedPaths: string[] = [];
+  // const allowedPaths = ['/projects', '/projects/add'];
+  //
   return (
     <DashboardLayout>
       {!allowedPaths.includes(pathName) ? (

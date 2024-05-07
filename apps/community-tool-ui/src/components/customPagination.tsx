@@ -31,9 +31,7 @@ export default function CustomPagination({
 }: IProps) {
   return (
     <div className="flex items-center justify-end space-x-4 p-1 pl-2 pr-2 border-t bg-card">
-      {/* <div className="flex-1 text-sm text-muted-foreground">
-        {currentPage} of {total} row(s) selected.
-      </div> */}
+      <div className="flex-1 text-sm ">Total Count: {total}</div>
       {handlePageSizeChange && (
         <div className="flex items-center gap-2">
           <div className="text-sm font-medium">Rows per page</div>

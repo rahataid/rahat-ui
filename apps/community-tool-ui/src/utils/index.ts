@@ -209,22 +209,22 @@ export const isURL = (value: string) => {
 
 export const humanizeString = (inputString: string) => {
   // Replace underscore with space
-  inputString = inputString.replace(/_/g, ' ');
+  inputString = inputString?.replace(/_/g, ' ');
 
-  let words = inputString.toLowerCase().split(' ');
+  let words = inputString?.toLowerCase().split(' ');
   // Capitalize the first letter of each word
-  for (let i = 0; i < words.length; i++) {
+  for (let i = 0; i < words?.length; i++) {
     words[i] = words[i].charAt(0).toUpperCase() + words[i].slice(1);
   }
 
-  const result = words.join(' ');
+  const result = words?.join(' ');
   return truncateString(result, 50);
 };
 
 function truncateString(inputStr: string, length: number) {
   if (!length) length = 10;
-  if (inputStr.length > length) {
-    return inputStr.slice(0, length) + '...';
+  if (inputStr?.length > length) {
+    return inputStr?.slice(0, length) + '...';
   }
   return inputStr;
 }

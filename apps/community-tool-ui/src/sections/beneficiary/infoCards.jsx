@@ -113,7 +113,7 @@ export default function InfoCards({ data }) {
           </div>
         </CardContent>
       </Card>
-      {data.extras && <ExtraInfoCard data={data.extras} />}
+      {data?.extras && <ExtraInfoCard data={data?.extras} />}
     </div>
   );
 }

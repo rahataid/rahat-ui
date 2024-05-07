@@ -17,6 +17,7 @@ interface IProps {
   handleImportClick: any;
   invalidFields: any;
   handleExportInvalidClick: any;
+  hasUUID: boolean;
 }
 
 export default function AddToQueue({
@@ -25,6 +26,7 @@ export default function AddToQueue({
   handleImportClick,
   invalidFields,
   handleExportInvalidClick,
+  hasUUID,
 }: IProps) {
   const mappedData =
     data.length > 0
@@ -43,6 +45,10 @@ export default function AddToQueue({
 
   const hasDuplicates = data.some((item: any) => item.isDuplicate);
 
+  const enableDisableImportButton = () => {
+    if (hasUUID) return false;
+    if (invalidFields.length || hasDuplicates) return true;
+  };
   return (
     <div className="relative mt-5">
       <div className="flex mb-5 justify-between m-2">
@@ -62,7 +68,7 @@ export default function AddToQueue({
           </Button>
 
           <Button
-            disabled={invalidFields.length || hasDuplicates}
+            disabled={enableDisableImportButton()}
             onClick={handleImportClick}
             className="w-40 bg-primary hover:ring-2 ring-primary py-2 px-4"
           >
@@ -74,14 +80,14 @@ export default function AddToQueue({
       <hr />
       <div
         style={{ maxWidth: 1100 }}
-        className="max-h-screen overflow-x-auto overflow-y-auto"
+        className="table-wrp block h-screen overflow-x-auto"
       >
         <table className="ml-2 w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-          <thead>
+          <thead className="bg-white border-b sticky top-0">
             <tr>
               {/* Dynamically generated table headers */}
               {headerKeys.map((key) => (
-                <th className="px-2 py-2" key={key}>
+                <th style={{ minWidth: 150 }} className="px-2 py-1" key={key}>
                   {invalidFields.find(
                     (field: any) => field.fieldName === key,
                   ) ? (
@@ -98,7 +104,7 @@ export default function AddToQueue({
             </tr>
           </thead>
 
-          <tbody>
+          <tbody className="h-screen overflow-y-auto">
             {data.map((item: any, index: number) => (
               <TooltipProvider>
                 <Tooltip>
@@ -131,7 +137,7 @@ export default function AddToQueue({
                     </tr>
                   </TooltipTrigger>
                   {item.isDuplicate ? (
-                    <TooltipContent>
+                    <TooltipContent align="start">
                       <p>This row is duplicate!</p>
                     </TooltipContent>
                   ) : (

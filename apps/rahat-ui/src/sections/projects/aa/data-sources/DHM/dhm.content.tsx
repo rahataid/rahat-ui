@@ -37,8 +37,8 @@ export default function DHMContent({ data }: any) {
         return date.toLocaleTimeString()
     })
 
-    const activationLevel = latestData.dataSource.triggerStatement.activationLevel;
-    const readinessLevel = latestData.dataSource.triggerStatement.readinessLevel;
+    const activationLevel = latestData.trigger.triggerStatement.activationLevel;
+    const readinessLevel = latestData.trigger.triggerStatement.readinessLevel;
     const longitude = latestData.data.point.coordinates[0];
     const latitude = latestData.data.point.coordinates[1];
 
@@ -143,8 +143,8 @@ export default function DHMContent({ data }: any) {
                 <div className='bg-card p-4 rounded'>
                     <h1 className='font-semibold text-lg'>Water Level: {parseFloat(latestData.data.waterLevel).toFixed(2)}</h1>
                     <h1 className='font-semibold text-lg'>
-                        <div>Activation Level: {latestData.dataSource.triggerStatement.activationLevel}</div>
-                        <div>Readiness Level: {latestData.dataSource.triggerStatement.readinessLevel}</div>
+                        <div>Activation Level: {latestData.trigger.triggerStatement.activationLevel}</div>
+                        <div>Readiness Level: {latestData.trigger.triggerStatement.readinessLevel}</div>
                     </h1>
                     {renderStatus({
                         readinessLevel: readinessLevel,

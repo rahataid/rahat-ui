@@ -1,5 +1,6 @@
 export interface IActivitiesItem {
   id: number;
+  campaignId: string;
   title: string;
   responsibility: string;
   source: string;
@@ -7,6 +8,7 @@ export interface IActivitiesItem {
   category: string;
   description: string;
   hazardType: string;
-  isApproved: boolean;
-  isComplete: boolean;
+  status: string;
+  activityType: string;
+  activtiyComm: Record<string,any>;
 }

@@ -2,6 +2,7 @@ import React from 'react';
 import ChartLine from '@rahat-ui/shadcn/src/components/charts/chart-components/chart-line';
 import DataCard from 'apps/rahat-ui/src/components/dataCard';
 import { Users } from 'lucide-react';
+import RecentTransaction from './recent.transaction';
 
 const FundManagementView = () => {
   const mySeries = [
@@ -28,8 +29,11 @@ const FundManagementView = () => {
           Icon={Users}
         />
       </div>
-      <div className="grid grid-cols-2">
-        <ChartLine series={mySeries} />
+      <div className="grid grid-cols-3 gap-4">
+        <div className="col-span-2">
+          <ChartLine series={mySeries} />
+        </div>
+        <RecentTransaction />
       </div>
     </>
   );

@@ -11,9 +11,10 @@ import { UUID } from 'crypto';
 
 type IProps = {
   campaignId: string;
+  groupName: string;
 };
 
-export default function ActivityCommunicationTrigger({ campaignId }: IProps) {
+export default function ActivityCommunicationTrigger({ campaignId, groupName }: IProps) {
   const { id } = useParams();
   useStakeholdersGroups(id as UUID, {});
 
@@ -31,8 +32,12 @@ export default function ActivityCommunicationTrigger({ campaignId }: IProps) {
         Trigger: Activity Communication
       </h1>
 
+      <div>
+        Selected group: {groupName}
+      </div>
+
       <div className="flex justify-end">
-        <Button onClick={() => handleTriggerCommunication()}>Submit</Button>
+        <Button onClick={() => handleTriggerCommunication()}>Trigger</Button>
       </div>
     </div>
   );

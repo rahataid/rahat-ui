@@ -78,7 +78,7 @@ const InfoCard: React.FC<IProps> = ({
                 <DialogContent>
                   <DialogHeader>
                     <DialogTitle>Trigger Campaign</DialogTitle>
-                    <DialogDescription>Are you sure??</DialogDescription>
+                    <DialogDescription>Are you sure?</DialogDescription>
                   </DialogHeader>
                   <DialogFooter className="sm:justify-end">
                     <DialogClose asChild>
@@ -107,10 +107,10 @@ const InfoCard: React.FC<IProps> = ({
             <p>{type}</p>
             <p className="text-sm font-light">Type</p>
           </div>
-          <div>
+          {/* <div>
             <p>{startTime}</p>
             <p className="text-sm font-light">Start Time</p>
-          </div>
+          </div> */}
           <div>
             <p>{status}</p>
             <p className="text-sm font-light">Status</p>

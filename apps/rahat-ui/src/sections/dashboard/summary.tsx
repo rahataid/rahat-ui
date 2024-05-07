@@ -1,15 +1,20 @@
 import { BadgeCent, HeartHandshake, Home, Users } from 'lucide-react';
 import DataCard from '../../components/dataCard';
 
-const DashboardSummary = () => {
+const DashboardSummary = ({ data }: { data: any }) => {
+  const beneficiaryTotal = data?.data?.data?.find(
+    (item) => item.name === 'BENEFICIARY_TOTAL',
+  );
+  const count = beneficiaryTotal ? beneficiaryTotal?.data?.count : 0;
+
   return (
     <div>
       <div className=" grid md:grid-cols-4 gap-2">
         <DataCard
           className=""
           title="Total beneficiaries"
-          number={'1900'}
-          subTitle="+20% from last month"
+          number={count}
+          subTitle="+2% from last month"
           Icon={Users}
         />
         <DataCard

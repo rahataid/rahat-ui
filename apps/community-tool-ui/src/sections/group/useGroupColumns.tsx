@@ -87,19 +87,6 @@ export const useCommunityGroupDeailsColumns = () => {
     },
     {
       accessorKey: 'beneficiary',
-      header: 'Wallet Address',
-      cell: ({ row }) => {
-        if (row && row.getValue && typeof row.getValue === 'function') {
-          const beneficiary = row.getValue('beneficiary') as Beneficiary;
-          if (beneficiary && beneficiary.walletAddress) {
-            return truncateEthAddress(beneficiary.walletAddress);
-          }
-        }
-        return '';
-      },
-    },
-    {
-      accessorKey: 'beneficiary',
       header: 'Gender',
       cell: ({ row }) => {
         if (row && row.getValue && typeof row.getValue === 'function') {
@@ -122,20 +109,6 @@ export const useCommunityGroupDeailsColumns = () => {
           }
         }
         return 'null';
-      },
-    },
-    {
-      accessorKey: 'beneficiary',
-      header: 'Created Date',
-      cell: ({ row }) => {
-        const beneficiary = row.getValue('beneficiary') as Beneficiary;
-        const changedDate = new Date(beneficiary.createdAt as Date);
-        const formattedDate = changedDate.toLocaleDateString('en-US', {
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric',
-        });
-        return <div>{formattedDate}</div>;
       },
     },
   ];

@@ -44,8 +44,7 @@ export const useNavItems = () => {
     createTokenModal.onToggle();
     createTokenSummaryModal.onFalse();
   };
-  const handleSubmitCreateTokenModal = (e: any) => {
-    e.preventDefault();
+  const handleSubmitCreateTokenModal = () => {
     createTokenModal.onFalse();
     createTokenSummaryModal.onTrue();
   };
@@ -55,9 +54,6 @@ export const useNavItems = () => {
   };
   const handleCloseSummaryModal = () => {
     createTokenSummaryModal.onFalse();
-  };
-  const handleSummaryModal = () => {
-    createTokenModal.onToggle();
   };
 
   const [voucherInputs, setVoucherInputs] = useState({
@@ -145,6 +141,8 @@ export const useNavItems = () => {
       });
     }
   };
+
+  console.log('project stats', projectStats);
 
   const navItems: NavItem[] = [
     {

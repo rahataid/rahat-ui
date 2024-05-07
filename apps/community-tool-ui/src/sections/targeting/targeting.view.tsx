@@ -42,10 +42,12 @@ export default function TargetingView() {
     setPerPage,
   } = usePagination();
 
-  const [uuid, setTargetUUID] = useState<string>();
+  const [targetUUID, setTargetUUID] = useState<string>();
   const [loading, setLoading] = useState<boolean>(false);
 
-  const { data: beneficiaryData } = useTargetedBeneficiaryList(uuid as string);
+  const { data: beneficiaryData } = useTargetedBeneficiaryList(
+    targetUUID as string,
+  );
 
   const addTargeting = useTargetingCreate();
   const updateTargetLabel = useTargetingLabelUpdate();
@@ -88,7 +90,9 @@ export default function TargetingView() {
   };
 
   const handleUpdateTargetLabel = async (label: string) => {
-    await updateTargetLabel.mutateAsync({ uuid, label });
+    const uuid = targetUUID as string;
+    const payload = { label };
+    await updateTargetLabel.mutateAsync({ uuid, payload });
   };
 
   return (
@@ -111,7 +115,7 @@ export default function TargetingView() {
                   loading={loading}
                   table={table}
                   handleUpdateTargetLabel={handleUpdateTargetLabel}
-                  targetUUID={uuid as string}
+                  targetUUID={targetUUID as string}
                 />
               </TabsContent>
 

@@ -87,7 +87,7 @@ export default function AddToQueue({
             <tr>
               {/* Dynamically generated table headers */}
               {headerKeys.map((key) => (
-                <th className="px-2 py-1" key={key}>
+                <th style={{ minWidth: 150 }} className="px-2 py-1" key={key}>
                   {invalidFields.find(
                     (field: any) => field.fieldName === key,
                   ) ? (
@@ -137,7 +137,7 @@ export default function AddToQueue({
                     </tr>
                   </TooltipTrigger>
                   {item.isDuplicate ? (
-                    <TooltipContent>
+                    <TooltipContent align="start">
                       <p>This row is duplicate!</p>
                     </TooltipContent>
                   ) : (

@@ -1,5 +1,5 @@
 'use client';
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
 
 import {
   ResizableHandle,
@@ -19,6 +19,7 @@ import {
 import {
   useTargetedBeneficiaryList,
   useTargetingCreate,
+  useTargetingLabelUpdate,
 } from '@rahat-ui/community-query';
 import { usePagination } from '@rahat-ui/query';
 import { ListBeneficiary } from '@rahataid/community-tool-sdk';
@@ -41,14 +42,13 @@ export default function TargetingView() {
     setPerPage,
   } = usePagination();
 
-  const [targetUUID, setTargetUUID] = useState<string>();
+  const [uuid, setTargetUUID] = useState<string>();
   const [loading, setLoading] = useState<boolean>(false);
 
-  const { data: beneficiaryData } = useTargetedBeneficiaryList(
-    targetUUID as string,
-  );
+  const { data: beneficiaryData } = useTargetedBeneficiaryList(uuid as string);
 
   const addTargeting = useTargetingCreate();
+  const updateTargetLabel = useTargetingLabelUpdate();
 
   const columns = useTargetingColumns();
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
@@ -70,18 +70,14 @@ export default function TargetingView() {
     },
   });
 
-  const [selectedData, setSelectedData] = useState<ListBeneficiary | null>();
   const [active, setActive] = useState<string>(TARGETING_NAV_ROUTE.DEFAULT);
-
-  const handleFieldDefClick = useCallback((item: ListBeneficiary) => {
-    setSelectedData(item);
-  }, []);
 
   const { targetingQueries } = useTargetingFormStore();
 
   const handleTargetFormSubmit = async (formData: ITargetingQueries) => {
     setLoading(true);
     const payload = { ...formData, ...targetingQueries };
+
     const getTargetInfo = await addTargeting.mutateAsync({
       filterOptions: [{ data: payload }],
     });
@@ -89,6 +85,10 @@ export default function TargetingView() {
     setTimeout(() => {
       setLoading(false);
     }, 3000);
+  };
+
+  const handleUpdateTargetLabel = async (label: string) => {
+    await updateTargetLabel.mutateAsync({ uuid, label });
   };
 
   return (
@@ -110,7 +110,8 @@ export default function TargetingView() {
                 <TargetingListView
                   loading={loading}
                   table={table}
-                  handleClick={handleFieldDefClick}
+                  handleUpdateTargetLabel={handleUpdateTargetLabel}
+                  targetUUID={uuid as string}
                 />
               </TabsContent>
 

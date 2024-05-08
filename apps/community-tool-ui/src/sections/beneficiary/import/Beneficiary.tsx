@@ -16,7 +16,6 @@ import {
   includeOnlySelectedTarget,
   removeFieldsWithUnderscore,
   splitFullName,
-  splitValidAndDuplicates,
   splitValidAndInvalid,
 } from 'apps/community-tool-ui/src/utils';
 import { ArrowBigLeft, ArrowBigRight } from 'lucide-react';
@@ -31,12 +30,12 @@ import InfoBox from './InfoBox';
 
 import {
   useBeneficiaryImportStore,
+  useExistingFieldMappings,
   useFetchKoboSettings,
 } from '@rahat-ui/community-query';
 import { useRSQuery } from '@rumsan/react-query';
 import ColumnMappingTable from './ColumnMappingTable';
 import MyAlert from './MyAlert';
-import { has } from 'lodash';
 
 interface IProps {
   extraFields: string[];
@@ -46,6 +45,7 @@ export default function BenImp({ extraFields }: IProps) {
   const form = useForm({});
   const { rumsanService } = useRSQuery();
   const { data: kbSettings } = useFetchKoboSettings();
+  const existingMapQuery = useExistingFieldMappings();
 
   const {
     currentScreen,
@@ -77,11 +77,11 @@ export default function BenImp({ extraFields }: IProps) {
 
   const fetchExistingMapping = async (importId: string) => {
     setMappings([]);
-    const res = await rumsanService.client.get(`/sources/${importId}/mappings`);
+    const res = await existingMapQuery.mutateAsync(importId);
     if (!res) return;
-    if (res?.data?.data) {
+    if (res?.data) {
       setHasExistingMapping(true);
-      const { fieldMapping } = res.data.data;
+      const { fieldMapping } = res.data;
       return setMappings(fieldMapping?.sourceTargetMappings);
     }
   };

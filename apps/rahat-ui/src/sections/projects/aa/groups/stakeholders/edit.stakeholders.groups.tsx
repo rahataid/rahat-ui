@@ -56,7 +56,7 @@ export default function EditStakeholdersGroups({ stakeholdersGroupDetail }: any)
         stakeholdersMeta: state.stakeholdersMeta
     }))
 
-    const columns = useMembersTableColumn();
+    const columns = useMembersTableColumn(stakeholdersGroupDetail);
 
     const [sorting, setSorting] = React.useState<SortingState>([]);
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([],);
@@ -97,14 +97,17 @@ export default function EditStakeholdersGroups({ stakeholdersGroupDetail }: any)
     });
 
     const handleUpdateStakeholdersGroups = async (data: z.infer<typeof FormSchema>) => {
-        const stakeHolders = table.getSelectedRowModel().rows?.map((stakeholder: any) => ({ uuid: stakeholder?.original?.uuid }))
+        const prevMembers = stakeholdersGroupDetail?.stakeholders?.map((member: any) => ({ uuid: member?.uuid }));
+        const stakeHolders = table.getSelectedRowModel().rows?.map((stakeholder: any) => ({ uuid: stakeholder?.original?.uuid }));
+        const finalMembers = table.getSelectedRowModel().rows?.length ? stakeHolders : prevMembers
         try {
             await updateStakeholdersGroup.mutateAsync({
                 projectUUID: id as UUID,
                 stakeholdersGroupPayload: {
                     uuid: stakeholdersGroupDetail?.uuid,
                     ...data,
-                    stakeholders: [...stakeholdersGroupDetail?.stakeholders?.map((member: any) => ({ uuid: member?.uuid })), ...stakeHolders]
+                    // stakeholders: [...stakeholdersGroupDetail?.stakeholders?.map((member: any) => ({ uuid: member?.uuid })), ...stakeHolders]
+                    stakeholders: finalMembers
                 }
             })
         } catch (e) {

@@ -144,67 +144,21 @@ function BeneficiaryDetailTableView() {
   const assignVoucher = useBulkAssignVoucher();
   const { queryService } = useGraphService();
 
-  const {data:dataVouce, error} = useGetBeneficiaryVouchers()
+  const [voucherType, setVoucherType] = useState("NOT_ASSIGNED")
+
   const projectBeneficiaries = useProjectBeneficiaries({
     page: pagination.page,
     perPage: pagination.perPage,
     order: 'desc',
     sort: 'updatedAt',
+    type: voucherType,
     projectUUID: uuid,
-    vouchers: dataVouce?.voucherArray,
     ...filters,
   });
 
-  const [projectVoucherBeneficiaries, setProjectVoucherBeneficiaries] = useState<any>()
   const [transactionHash, setTransactionHash] = useState<`0x${string}`>()
   const [isTransacting, setisTransacting] = useState<boolean>(false)
-  const [filteredProjectVoucherBeneficiaries, setFilteredProjectVoucherBeneficiaries] = useState<any>()
   const [voucherFilter, setVoucherFilter] = useState<any>('NOT_ASSIGNED')
-
-  useEffect(() => {
-    if (projectBeneficiaries) {
-      const projectBenWithVoucher = projectBeneficiaries.data.data.map((row) => {
-        let voucherType = 'Not Assigned';
-        let voucherClaimStatus = false;
-        dataVouce?.voucherArray.forEach((voucher) => {
-          if (row.wallet.toLowerCase() === voucher.id.toLowerCase()) {
-            if (voucher.FreeVoucherAddress) {
-              voucherType = 'Free voucher';
-              voucherClaimStatus = voucher.FreeVoucherClaimStatus;
-            }
-            if (voucher.ReferredVoucherAddress) {
-              voucherType = 'Referred voucher';
-              voucherClaimStatus = voucher.ReferredVoucherClaimStatus;
-            }
-          }
-        });
-        return {
-          ...row,
-          voucher: voucherType,
-          voucherClaimStatus
-        };
-      });
-      setProjectVoucherBeneficiaries(projectBenWithVoucher);
-    }
-  }, [projectBeneficiaries?.fetchStatus])
-
-  useEffect(() => {
-    if(projectVoucherBeneficiaries && voucherFilter) {
-      console.log("reached filtering voucher", voucherFilter.voucher)
-      if(voucherFilter.voucher === 'REFERRED'){
-        const filteredData = projectVoucherBeneficiaries.filter(item => item.voucher === 'Referred voucher')
-        setFilteredProjectVoucherBeneficiaries(filteredData)
-      }
-      if(voucherFilter.voucher === 'FREE'){
-        const filteredData = projectVoucherBeneficiaries.filter(item => item.voucher === 'Free voucher')
-        setFilteredProjectVoucherBeneficiaries(filteredData)
-      }
-      if(voucherFilter.voucher === 'NOT_ASSIGNED' || voucherFilter.voucher === undefined){
-        const filteredData = projectVoucherBeneficiaries.filter(item => item.voucher === 'Not Assigned')
-        setFilteredProjectVoucherBeneficiaries(filteredData)
-      }
-    }
-  }, [voucherFilter, projectBeneficiaries?.fetchStatus])
 
   const contractAddress = useProjectSettingsStore(
     (state) => state.settings?.[uuid][PROJECT_SETTINGS_KEYS.CONTRACT] || null,
@@ -216,7 +170,6 @@ function BeneficiaryDetailTableView() {
     (type: string) => {
       resetFilters()
       resetSelectedListItems();
-      setFilteredProjectVoucherBeneficiaries(undefined)
       if (type === 'ALL') {
         setFilters({ ...filters, status: undefined, voucher: voucherFilter.voucher });
         return;
@@ -236,7 +189,7 @@ function BeneficiaryDetailTableView() {
 
   const table = useReactTable({
     manualPagination: true,
-    data: filteredProjectVoucherBeneficiaries || [],
+    data: projectBeneficiaries?.data?.data || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -367,9 +320,9 @@ function BeneficiaryDetailTableView() {
         <div>
         <Tabs defaultValue="account" className="w-[400px]">
           <TabsList defaultValue="notAssigned" className="grid w-full grid-cols-3">
-            <TabsTrigger onClick={() => handleFilterType('NOT_ASSIGNED')} value="notAssigned">Not Assigned</TabsTrigger>
-            <TabsTrigger onClick={() => handleFilterType('FREE')} value="freeVoucher">Free Voucher</TabsTrigger>
-            <TabsTrigger onClick={() => handleFilterType('REFERRED')} value="referredVoucher">Referred Voucher</TabsTrigger>
+            <TabsTrigger onClick={() => setVoucherType('NOT_ASSIGNED')} value="notAssigned">Not Assigned</TabsTrigger>
+            <TabsTrigger onClick={() => setVoucherType('FREE_VOUCHER')} value="freeVoucher">Free Voucher</TabsTrigger>
+            <TabsTrigger onClick={() => setVoucherType('REFERRED_VOUCHER')} value="referredVoucher">Referred Voucher</TabsTrigger>
           </TabsList>
           </Tabs>
         </div>

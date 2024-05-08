@@ -30,15 +30,15 @@ const DiscountVoucherInfo = ({ data }) => {
           <p className="font-light">Voucher Name</p>
         </div>
         <div>
-          <p className="font-medium text-primary">
-            {data?.referredVoucherPrice}
+          <p className="font-medium text-primary text-right">
+            {data?.referredVoucherPrice || 0}
           </p>
           <p className="font-light">
-            Price in {data?.referredVoucherCurrency || ''}
+            Price in {data?.referredVoucherCurrency || 'USD'}
           </p>
         </div>
         <div>
-          <p className="font-medium text-primary">
+          <p className="font-medium text-primary text-right">
             {Number(data?.referredVoucherBudget) || 0}
           </p>
           <p className="font-light">No. of Voucher Minted</p>
@@ -46,7 +46,7 @@ const DiscountVoucherInfo = ({ data }) => {
       </div>
       <div>
         <p className="mt-4 sm:mt-8 sm:w-2/3">
-          {data?.referredVoucherDescription}
+          {data?.referredVoucherDescription || 'Discount voucher'}
         </p>
       </div>
     </div>

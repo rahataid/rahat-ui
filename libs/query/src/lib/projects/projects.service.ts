@@ -343,6 +343,7 @@ type GetProjectBeneficiaries = Pagination & {
   sort?: string;
   status?: string;
   projectUUID: UUID;
+  type?: string;
   vouchers?: any;
 };
 
@@ -381,6 +382,8 @@ export const useProjectBeneficiaries = (payload: GetProjectBeneficiaries) => {
           ? query.data.data.map((row: any) => ({
               uuid: row?.Beneficiary?.uuid,
               wallet: row?.Beneficiary?.walletAddress,
+              voucherType: row?.Beneficiary.voucherType,
+              voucherClaimStatus: row?.Beneficiary.voucherClaimStatus,
               name: row?.piiData?.name,
               email: row?.piiData?.email,
               gender: row?.Beneficiary?.gender,

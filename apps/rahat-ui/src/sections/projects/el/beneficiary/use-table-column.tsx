@@ -106,14 +106,14 @@ export const useProjectBeneficiaryTableColumns = () => {
       cell: ({ row }) => <div> {row.getValue('gender')}</div>,
     },
     {
-      accessorKey: 'voucher',
+      accessorKey: 'voucherType',
       header: 'Voucher',
-      cell: ({ row }) => <div> {row.getValue('voucher')}</div>,
+      cell: ({ row }) => <div> {row.getValue('voucherType')}</div>,
     },
     {
       accessorKey: 'voucherClaimStatus',
       header: 'Claim Status',
-      cell: ({ row }) => <div> {row.getValue('voucherClaimStatus').toString()}</div>,
+      cell: ({ row }) => <div> {row.getValue('voucherClaimStatus')}</div>,
     },
     {
       id: 'actions',

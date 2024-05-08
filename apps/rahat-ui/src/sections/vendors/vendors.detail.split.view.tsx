@@ -50,7 +50,7 @@ export default function VendorsDetailSplitView({
 }: IProps) {
   const [walletAddressCopied, setWalletAddressCopied] =
     useState<boolean>(false);
-  const [selectedRow, setSelectedRow] = useState(null) as any;
+    
   const projectList = useProjectList({});
 
   const [selectedProject, setSelectedProject] = useState<any>();
@@ -66,7 +66,7 @@ export default function VendorsDetailSplitView({
   const handleAssignProject = async () => {
     if (!selectedProject) return alert('Please select a project');
     await addVendor.mutateAsync({
-      vendorUUID: selectedRow?.id,
+      vendorUUID: vendorsDetail.id,
       projectUUID: selectedProject,
     });
     projectModal.onFalse();
@@ -117,10 +117,9 @@ export default function VendorsDetailSplitView({
               <DropdownMenuItem>Edit</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-          <button onClick={assignVoucher}>Assign voucher</button>
         </div>
       </div>
-      <div className="p-2">
+      <div className="p-2 flex justify-between items-center">
         <div className="flex items-center gap-2">
           <Image
             className="rounded-full"
@@ -161,6 +160,11 @@ export default function VendorsDetailSplitView({
             </TooltipProvider>
           </div>
         </div>
+        {vendorsDetail.projectName === 'N/A' && <Button type="button" variant="default" onClick={assignVoucher}>
+          Assign voucher
+        </Button>}
+        </div>
+        <div>
       </div>
       <Card className="shadow rounded m-2">
         <CardContent className="pt-6">

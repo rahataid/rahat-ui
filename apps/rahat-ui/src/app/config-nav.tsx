@@ -48,6 +48,10 @@ export function useNavData() {
         title: 'Users',
         path: paths.dashboard.user,
       },
+      {
+        title: 'Audit',
+        path: paths.dashboard.audit,
+      },
     ],
     [],
   );

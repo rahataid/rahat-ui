@@ -8,7 +8,7 @@ import useChart from '../use-chart';
 
 const CHART_HEIGHT = 400;
 const LEGEND_HEIGHT = 72;
-const DIVIDER_COLOR = '#000000'; // Replace with your desired color
+const DIVIDER_COLOR = '#007bb6'; // Replace with your desired color
 
 const StyledChart = styled(Chart)({
   height: CHART_HEIGHT,
@@ -37,7 +37,7 @@ interface Props {
   };
 }
 
-export default function PieChart({ title, subheader, chart }: Props) {
+export default function PieChart({ title, chart }: Props) {
   const {
     colors = ['#00b67a', '#8BC34A', '#FFA726', '#007bb6', '#7a00b6'],
     series = [],

@@ -10,6 +10,12 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/dialog';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { AlertDialogHeader } from '@rahat-ui/shadcn/src/components/ui/alert-dialog';
+import { useDisburseTokenToBeneficiaries } from '@rahataid/c2c-query';
+import { useParams } from 'next/navigation';
+import {
+  PROJECT_SETTINGS_KEYS,
+  useProjectSettingsStore,
+} from '@rahat-ui/query';
 
 type DisburseFlowProps = {
   selectedBeneficiaries: string[];
@@ -18,6 +24,13 @@ type DisburseFlowProps = {
 const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [stepData, setStepData] = useState<Record<string, any>>({});
+
+  const { id } = useParams();
+  const contractSettings = useProjectSettingsStore(
+    (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT],
+  );
+  console.log('contractSettings', contractSettings);
+  const disburseToken = useDisburseTokenToBeneficiaries();
 
   const handleStepDataChange = (e) => {
     const { name, value } = e.target;
@@ -48,6 +61,14 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
   };
 
   console.log('stepData', stepData);
+
+  const handleDisburseToken = async () => {
+    await disburseToken.mutateAsync({
+      amount: stepData.disburseAmount,
+      beneficiaryAddresses: selectedBeneficiaries as `0x${string}`[],
+      rahatTokenAddress: contractSettings?.rahattoken?.address,
+    });
+  };
 
   const steps = [
     {
@@ -87,7 +108,7 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
       },
     },
     {
-      id: 'step3',
+      id: 'confirm_send',
       title: 'Review & Confirm',
       component: (
         <Step3DisburseSummary
@@ -118,8 +139,12 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
               Back
             </Button>
             <Button
-              onClick={handleNext}
-              disabled={currentStep === steps.length - 1}
+              onClick={
+                steps[currentStep].id === 'confirm_send'
+                  ? handleDisburseToken
+                  : handleNext
+              }
+              // disabled={currentStep === steps.length - 1}
             >
               {currentStep === steps.length - 1 ? 'Confirm' : 'Proceed'}
             </Button>

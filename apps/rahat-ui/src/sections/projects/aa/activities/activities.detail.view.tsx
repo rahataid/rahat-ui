@@ -22,6 +22,8 @@ import { IActivitiesItem } from 'apps/rahat-ui/src/types/activities';
 import EditActivityView from './edit.activity.view';
 import { useDeleteActivities } from '@rahat-ui/query';
 import { UUID } from 'crypto';
+import ActivityCommunicationForm from './activity.communication.form';
+import ActivityCommunicationTrigger from './activity.communication.trigger';
 
 type IProps = {
   activityDetail: IActivitiesItem;
@@ -48,6 +50,7 @@ export default function ActivitiesDetail({
   useEffect(() => {
     deleteActivity.isSuccess && closeSecondPanel();
   }, [deleteActivity]);
+  console.log(activityDetail);
   return (
     <>
       <div className="flex justify-between items-center py-5 px-2 bg-secondary">
@@ -132,7 +135,21 @@ export default function ActivitiesDetail({
           <h1 className="font-semibold">Phase :</h1>
           <p>{activityDetail?.phase}</p>
         </div>
+        <div className="pl-2">
+          <h1 className="font-semibold">Activity Type</h1>
+          <p>{activityDetail?.activityType}</p>
+        </div>
       </div>
+      {activityDetail?.activityType === 'COMMUNICATION' &&
+        activityDetail?.campaignId && (
+          <ActivityCommunicationTrigger campaignId={activityDetail?.campaignId} groupName={activityDetail?.activtiyComm?.stakeholdersGroup?.name} />
+        )}
+
+      {activityDetail?.activityType === 'COMMUNICATION' &&
+        !activityDetail?.campaignId &&
+        <ActivityCommunicationForm activityId={activityDetail?.id} />
+      }
+
       {showEdit && <EditActivityView />}
     </>
   );

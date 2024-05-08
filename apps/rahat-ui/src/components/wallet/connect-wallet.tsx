@@ -1,12 +1,10 @@
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { ConnectKitButton } from 'connectkit';
-import { Wallet2 } from 'lucide-react';
-import { Account } from './account';
 
 function ConnectWallet() {
   return (
     <div>
-      <ConnectKitButton.Custom>
+      <ConnectKitButton showAvatar={true} showBalance={true} />
+      {/* <ConnectKitButton.Custom>
         {({ show, isConnected, ensName }) => {
           if (isConnected) {
             return <Account />;
@@ -22,7 +20,7 @@ function ConnectWallet() {
             </Button>
           );
         }}
-      </ConnectKitButton.Custom>
+      </ConnectKitButton.Custom> */}
     </div>
   );
 }

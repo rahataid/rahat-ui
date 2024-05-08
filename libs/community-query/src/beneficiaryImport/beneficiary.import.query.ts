@@ -5,6 +5,7 @@ import {
 import { useRSQuery } from '@rumsan/react-query';
 import { UseQueryResult, useMutation, useQuery } from '@tanstack/react-query';
 import { TAGS } from '../config';
+import Swal from 'sweetalert2';
 
 export const useFetchKoboSettings = (): UseQueryResult<any, Error> => {
   const { queryClient, rumsanService } = useRSQuery();
@@ -33,16 +34,20 @@ export const useCreateImportSource = () => {
   return useMutation({
     mutationFn: (payload: any) => myClient.create(payload),
     onSuccess: () => {},
-    onError: () => {},
+    onError: (err: any) => {
+      const msg = err?.response?.data?.message || 'Something went wrong!';
+      Swal.fire({
+        icon: 'error',
+        title: msg,
+      });
+    },
   });
 };
 
-// TODO Fix SDK
 export const useKobotoolData = () => {
   const { rumsanService } = useRSQuery();
   const myClient = getAppClient(rumsanService.client);
   return useMutation({
-    mutationFn: (formName: string) =>
-      myClient.koboImportByForm({ name: formName }),
+    mutationFn: (formName: string) => myClient.koboImportByForm(formName),
   });
 };

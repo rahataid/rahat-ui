@@ -19,31 +19,33 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [stepData, setStepData] = useState<Record<string, any>>({});
 
-  const nextStep = (e) => {
-    e.preventDefault();
+  const handleStepDataChange = (e) => {
+    const { name, value } = e.target;
+    setStepData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const nextStep = () => {
     if (currentStep < steps.length - 1) {
       setCurrentStep(currentStep + 1);
     }
   };
 
-  const prevStep = (e) => {
-    e.preventDefault();
+  const prevStep = () => {
     if (currentStep > 0) {
       setCurrentStep(currentStep - 1);
     }
   };
 
-  const handleDisburseAmountFormSubmit = (e) => {
+  const handleDisburseAmountFormSubmit = (e, goNext: boolean) => {
     e.preventDefault();
+    console.log('e', e.target);
     const { name, value } = e.target;
     console.log('value', value);
     setStepData((prev) => ({ ...prev, [name]: value }));
 
-    if (!stepData.disburseAmount) {
-      alert('Please enter amount to disburse');
-      return;
+    if (goNext) {
+      nextStep();
     }
-    nextStep(e);
 
     console.log('Disburse amount form submitted');
   };
@@ -57,15 +59,25 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
       ),
       handleNext: nextStep,
       handleBack: prevStep,
+      validationCondition: () => {
+        return true;
+      },
     },
     {
       id: 'step2',
       title: 'Disburse Amount',
       component: (
-        <Step2DisburseAmount selectedBeneficiaries={selectedBeneficiaries} />
+        <Step2DisburseAmount
+          selectedBeneficiaries={selectedBeneficiaries}
+          value={stepData.disburseAmount}
+          onChange={handleStepDataChange}
+        />
       ),
       handleNext: handleDisburseAmountFormSubmit,
       handleBack: prevStep,
+      validationCondition: () => {
+        return !!stepData.disburseAmount;
+      },
     },
     {
       id: 'step3',
@@ -75,6 +87,9 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
       ),
       handleNext: nextStep,
       handleBack: prevStep,
+      validationCondition: () => {
+        return true;
+      },
     },
   ];
 
@@ -89,7 +104,14 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
             {steps[currentStep].title}
           </DialogTitle>
         </AlertDialogHeader>
-        <form onSubmit={steps[currentStep].handleNext}>
+        <form
+          onSubmit={(a) =>
+            steps[currentStep].handleNext(
+              a,
+              steps[currentStep].validationCondition(),
+            )
+          }
+        >
           <div>{steps[currentStep].component}</div>
           <div className="flex justify-between">
             <Button

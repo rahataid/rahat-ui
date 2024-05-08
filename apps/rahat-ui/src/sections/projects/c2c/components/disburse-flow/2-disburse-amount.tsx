@@ -2,10 +2,14 @@ import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 
 type Step2DisburseAmountProps = {
   selectedBeneficiaries: string[];
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 };
 
 export default function Step2DisburseAmount({
   selectedBeneficiaries,
+  onChange,
+  value,
 }: Step2DisburseAmountProps) {
   // const [amount, setAmount] = useState<string>('0');
   return (
@@ -26,8 +30,8 @@ export default function Step2DisburseAmount({
           <Input
             name="disburseAmount"
             placeholder="Amount for each beneficiaries"
-            // value={amount}
-            // onChange={(e) => setAmount(e.target.value)}
+            value={value}
+            onChange={onChange}
           />
           USDC
         </div>

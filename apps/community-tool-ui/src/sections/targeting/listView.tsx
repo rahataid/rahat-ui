@@ -67,7 +67,7 @@ export default function ListView({
             className="rounded"
             name="location"
             type="button"
-            // onClick={() => handleUpdateTargetLabel(label as string)}
+            onClick={() => handleUpdateTargetLabel(label as string)}
             disabled={!label}
           >
             <PinIcon className="h-6 w-6 mr-2" />

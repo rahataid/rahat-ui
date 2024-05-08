@@ -99,16 +99,17 @@ export const useCommunityBeneficiaryUpdate = () => {
   );
 };
 
-export const useCommunityBeneficiaryListByID = (): UseQueryResult<
-  any,
-  Error
-> => {
+export const useCommunityBeneficiaryListByID = ({
+  uuid,
+}: {
+  uuid: string;
+}): UseQueryResult<any, Error> => {
   const { queryClient, rumsanService } = useRSQuery();
   const benClient = getBeneficiaryClient(rumsanService.client);
   return useQuery(
     {
-      queryKey: [TAGS.GET_BENEFICIARY],
-      queryFn: () => benClient.listById,
+      queryKey: [TAGS.GET_BENEFICIARY, uuid],
+      queryFn: () => benClient.listById(uuid),
     },
     queryClient,
   );

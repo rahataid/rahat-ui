@@ -22,7 +22,6 @@ export const useAuthInitialization = (): UseAuthInitializationReturn => {
       setInitialization: state.setInitialization,
     }));
   const currentUser = useUserCurrentUser(!!token);
-  console.log('currentUser', currentUser);
 
   const setUser = useUserStore((state) => state.setUser);
   const currentUserRole = useUserRoleList(currentUser?.data?.data?.uuid);
@@ -30,7 +29,6 @@ export const useAuthInitialization = (): UseAuthInitializationReturn => {
     () => generateRoleObject(currentUserRole?.data?.data || []),
     [currentUserRole],
   );
-  console.log('currentRoles', currentRole);
 
   useEffect(() => {
     if (token) {

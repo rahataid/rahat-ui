@@ -1,7 +1,9 @@
+import { AuditTable } from '../../sections/audit/audit.table';
+
 export const metadata = {
   title: 'Audit',
 };
 
 export default function AuditPage() {
-  return <h1>Audit</h1>;
+  return <AuditTable />;
 }

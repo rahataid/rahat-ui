@@ -1,5 +1,4 @@
-'use client';
-
+import { useParams, useRouter } from 'next/navigation';
 import {
   Tooltip,
   TooltipContent,
@@ -7,12 +6,11 @@ import {
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { ColumnDef } from '@tanstack/react-table';
-import { useSecondPanel } from 'apps/rahat-ui/src/providers/second-panel-provider';
 import { Eye, Pencil, Trash2 } from 'lucide-react';
-import TriggerStatementsDetail from './trigger-statements.detail.view';
 
 export const useTriggerStatementTableColumns = () => {
-  const { setSecondPanelComponent, closeSecondPanel } = useSecondPanel();
+  const { id } = useParams();
+  const router = useRouter();
 
   const columns: ColumnDef<any>[] = [
     {
@@ -82,14 +80,7 @@ export const useTriggerStatementTableColumns = () => {
               className="hover:text-primary cursor-pointer"
               size={20}
               strokeWidth={1.5}
-              onClick={() => {
-                setSecondPanelComponent(
-                  <TriggerStatementsDetail
-                    triggerStatement={row.original}
-                    closeSecondPanel={closeSecondPanel}
-                  />,
-                );
-              }}
+              onClick={() => router.push(`/projects/aa/${id}/trigger-statements/${row.original.uuid}`)}
             />
             <Pencil
               size={20}

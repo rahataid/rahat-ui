@@ -17,6 +17,36 @@ type DisburseFlowProps = {
 
 const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
   const [currentStep, setCurrentStep] = useState(0);
+  const [stepData, setStepData] = useState<Record<string, any>>({});
+
+  const nextStep = (e) => {
+    e.preventDefault();
+    if (currentStep < steps.length - 1) {
+      setCurrentStep(currentStep + 1);
+    }
+  };
+
+  const prevStep = (e) => {
+    e.preventDefault();
+    if (currentStep > 0) {
+      setCurrentStep(currentStep - 1);
+    }
+  };
+
+  const handleDisburseAmountFormSubmit = (e) => {
+    e.preventDefault();
+    const { name, value } = e.target;
+    console.log('value', value);
+    setStepData((prev) => ({ ...prev, [name]: value }));
+
+    if (!stepData.disburseAmount) {
+      alert('Please enter amount to disburse');
+      return;
+    }
+    nextStep(e);
+
+    console.log('Disburse amount form submitted');
+  };
 
   const steps = [
     {
@@ -25,12 +55,8 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
       component: (
         <Step1DisburseMethod selectedBeneficiaries={selectedBeneficiaries} />
       ),
-      handleNext: () => {
-        nextStep();
-      },
-      handleBack: () => {
-        prevStep();
-      },
+      handleNext: nextStep,
+      handleBack: prevStep,
     },
     {
       id: 'step2',
@@ -38,12 +64,8 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
       component: (
         <Step2DisburseAmount selectedBeneficiaries={selectedBeneficiaries} />
       ),
-      handleNext: () => {
-        nextStep();
-      },
-      handleBack: () => {
-        prevStep();
-      },
+      handleNext: handleDisburseAmountFormSubmit,
+      handleBack: prevStep,
     },
     {
       id: 'step3',
@@ -51,26 +73,10 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
       component: (
         <Step3DisburseSummary selectedBeneficiaries={selectedBeneficiaries} />
       ),
-      handleNext: () => {
-        nextStep();
-      },
-      handleBack: () => {
-        prevStep();
-      },
+      handleNext: nextStep,
+      handleBack: prevStep,
     },
   ];
-
-  const nextStep = () => {
-    if (currentStep < steps.length - 1) {
-      setCurrentStep(currentStep + 1);
-    }
-  };
-
-  const prevStep = () => {
-    if (currentStep > 0) {
-      setCurrentStep(currentStep - 1);
-    }
-  };
 
   return (
     <Dialog>
@@ -83,18 +89,20 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
             {steps[currentStep].title}
           </DialogTitle>
         </AlertDialogHeader>
-        <div>{steps[currentStep].component}</div>
-        <div className="flex justify-between">
-          <Button onClick={prevStep} disabled={currentStep === 0}>
-            Back
-          </Button>
-          <Button
-            onClick={nextStep}
-            disabled={currentStep === steps.length - 1}
-          >
-            Proceed
-          </Button>
-        </div>
+        <form onSubmit={steps[currentStep].handleNext}>
+          <div>{steps[currentStep].component}</div>
+          <div className="flex justify-between">
+            <Button
+              onClick={steps[currentStep].handleBack}
+              disabled={currentStep === 0}
+            >
+              Back
+            </Button>
+            <Button type="submit" disabled={currentStep === steps.length - 1}>
+              Proceed
+            </Button>
+          </div>
+        </form>
       </DialogContent>
     </Dialog>
   );

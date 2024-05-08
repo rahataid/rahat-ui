@@ -7,6 +7,7 @@ type Step2DisburseAmountProps = {
 export default function Step2DisburseAmount({
   selectedBeneficiaries,
 }: Step2DisburseAmountProps) {
+  // const [amount, setAmount] = useState<string>('0');
   return (
     <div>
       <div className="flex items-center justify-between">
@@ -22,7 +23,12 @@ export default function Step2DisburseAmount({
           </span>
         </div>
         <div className="flex w-1/4 max-w-sm items-center space-x-2 gap-2">
-          <Input placeholder="100" />
+          <Input
+            name="disburseAmount"
+            placeholder="Amount for each beneficiaries"
+            // value={amount}
+            // onChange={(e) => setAmount(e.target.value)}
+          />
           USDC
         </div>
       </div>

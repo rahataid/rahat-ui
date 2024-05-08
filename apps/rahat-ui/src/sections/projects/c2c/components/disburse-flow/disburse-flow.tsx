@@ -24,43 +24,46 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
     setStepData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const nextStep = () => {
+  const handleNext = () => {
+    const currentStepValidations = steps[currentStep].validation;
+    const validationErrors = Object.entries(currentStepValidations)
+      .filter(([_, validation]) => validation.condition())
+      .map(([_, validation]) => validation.message);
+
+    if (validationErrors.length > 0) {
+      console.error(validationErrors);
+      return;
+    }
+
     if (currentStep < steps.length - 1) {
       setCurrentStep(currentStep + 1);
     }
   };
 
-  const prevStep = () => {
+  const handlePrevious = () => {
     if (currentStep > 0) {
       setCurrentStep(currentStep - 1);
     }
   };
 
-  const handleDisburseAmountFormSubmit = (e, goNext: boolean) => {
-    e.preventDefault();
-    console.log('e', e.target);
-    const { name, value } = e.target;
-    console.log('value', value);
-    setStepData((prev) => ({ ...prev, [name]: value }));
-
-    if (goNext) {
-      nextStep();
-    }
-
-    console.log('Disburse amount form submitted');
-  };
+  console.log('stepData', stepData);
 
   const steps = [
     {
       id: 'step1',
       title: 'Disburse Method',
       component: (
-        <Step1DisburseMethod selectedBeneficiaries={selectedBeneficiaries} />
+        <Step1DisburseMethod
+          selectedBeneficiaries={selectedBeneficiaries}
+          value={stepData.depositMethod}
+          onChange={handleStepDataChange}
+        />
       ),
-      handleNext: nextStep,
-      handleBack: prevStep,
-      validationCondition: () => {
-        return true;
+      validation: {
+        noMethodSelected: {
+          condition: () => !!stepData.disburseMethod,
+          message: 'Please select a disburse method',
+        },
       },
     },
     {
@@ -73,10 +76,13 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
           onChange={handleStepDataChange}
         />
       ),
-      handleNext: handleDisburseAmountFormSubmit,
-      handleBack: prevStep,
-      validationCondition: () => {
-        return !!stepData.disburseAmount;
+      validation: {
+        noAmountEntered: {
+          condition: () => {
+            return !stepData.disburseAmount;
+          },
+          message: 'Please enter an amount',
+        },
       },
     },
     {
@@ -85,11 +91,7 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
       component: (
         <Step3DisburseSummary selectedBeneficiaries={selectedBeneficiaries} />
       ),
-      handleNext: nextStep,
-      handleBack: prevStep,
-      validationCondition: () => {
-        return true;
-      },
+      validation: {},
     },
   ];
 
@@ -104,30 +106,20 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
             {steps[currentStep].title}
           </DialogTitle>
         </AlertDialogHeader>
-        <form
-          onSubmit={(a) =>
-            steps[currentStep].handleNext(
-              a,
-              steps[currentStep].validationCondition(),
-            )
-          }
-        >
+        <div>
           <div>{steps[currentStep].component}</div>
           <div className="flex justify-between">
-            <Button
-              onClick={steps[currentStep].handleBack}
-              disabled={currentStep === 0}
-            >
+            <Button onClick={handlePrevious} disabled={currentStep === 0}>
               Back
             </Button>
             <Button
-              onClick={steps[currentStep].handleNext}
+              onClick={handleNext}
               disabled={currentStep === steps.length - 1}
             >
               Proceed
             </Button>
           </div>
-        </form>
+        </div>
       </DialogContent>
     </Dialog>
   );

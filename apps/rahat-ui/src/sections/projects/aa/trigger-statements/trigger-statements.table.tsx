@@ -1,9 +1,9 @@
 'use client';
 
 import * as React from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { Table, flexRender } from '@tanstack/react-table';
-import { Plus, Settings2 } from 'lucide-react';
+import { Plus, Settings2, Search } from 'lucide-react';
 import { Button } from '@rahat-ui/shadcn/components/button';
 import {
   DropdownMenu,
@@ -30,23 +30,25 @@ type IProps = {
 };
 
 export default function TriggerStatementsTable({ table, projectId }: IProps) {
-  const { id } = useParams();
   const router = useRouter();
   return (
     <>
       <div className="p-2">
         <div className="flex items-center mb-2 gap-4">
           <div className='flex w-full'>
-            <Input
-              placeholder="Search Trigger Statements..."
-              value={
-                (table.getColumn('title')?.getFilterValue() as string) ?? ''
-              }
-              onChange={(event) =>
-                table.getColumn('title')?.setFilterValue(event.target.value)
-              }
-              className="rounded-l rounded-r-none"
-            />
+            <div className="relative w-full">
+              <Search size={18} strokeWidth={2.5} className="absolute left-2 top-3 text-muted-foreground" />
+              <Input
+                placeholder="Search Trigger Statements..."
+                value={
+                  (table.getColumn('title')?.getFilterValue() as string) ?? ''
+                }
+                onChange={(event) =>
+                  table.getColumn('title')?.setFilterValue(event.target.value)
+                }
+                className="rounded-l rounded-r-none pl-8"
+              />
+            </div>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="secondary" className="rounded-l-none">

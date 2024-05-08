@@ -24,7 +24,10 @@ import {
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { Switch } from '@rahat-ui/shadcn/src/components/ui/switch';
-import { SUBJECTS } from 'apps/community-tool-ui/src/constants/app.const';
+import {
+  SUBJECTS,
+  PERMISSIONS,
+} from 'apps/community-tool-ui/src/constants/app.const';
 import { useSecondPanel } from 'apps/community-tool-ui/src/providers/second-panel-provider';
 
 type Iprops = {
@@ -162,7 +165,7 @@ export default function EditRole({ roleDetail }: Iprops) {
                   </FormControl>
 
                   <SelectContent>
-                    {permissions.map((item) => (
+                    {PERMISSIONS.map((item) => (
                       <FormField
                         key={item.id}
                         control={form.control}

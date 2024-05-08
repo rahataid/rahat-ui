@@ -1,3 +1,4 @@
+import { useParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -10,26 +11,54 @@ import {
     FormLabel,
     FormMessage,
 } from '@rahat-ui/shadcn/src/components/ui/form';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@rahat-ui/shadcn/src/components/ui/select';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
+import { useActivitiesStore, useCreateTriggerStatement } from '@rahat-ui/query';
+import { UUID } from 'crypto';
 
 export default function AddManualTriggerForm() {
+    const { id: projectID } = useParams();
+    const { hazardTypes, phases } = useActivitiesStore((state) => ({
+        hazardTypes: state.hazardTypes,
+        phases: state.phases
+    }));
+    const createTriggerStatement = useCreateTriggerStatement();
+
     const FormSchema = z.object({
-        triggerTitle: z.string().optional(),
-        triggerNotes: z.string().optional(),
+        title: z.string().min(2, { message: "Please enter valid title" }),
+        notes: z.string().min(5, { message: "Must be at least 5 characters" }),
+        phaseId: z.string().min(1, { message: "Please select phase" }),
+        hazardTypeId: z.string().min(1, { message: "Please select hazard type" })
     })
 
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
         defaultValues: {
-            triggerTitle: '',
-            triggerNotes: '',
+            title: '',
+            notes: '',
+            phaseId: '',
+            hazardTypeId: ''
         },
     });
 
     const handleCreateTriggerStatement = async (data: z.infer<typeof FormSchema>) => {
-        alert('submitted')
-        form.reset();
+        try {
+            await createTriggerStatement.mutateAsync({
+                projectUUID: projectID as UUID,
+                triggerStatementPayload: { ...data, dataSource: "MANUAL" }
+            })
+        } catch (e) {
+            console.error("Create Manual Trigger Error::", e)
+        } finally {
+            form.reset();
+        }
     };
 
     return (
@@ -39,7 +68,7 @@ export default function AddManualTriggerForm() {
                     <div className="mt-4 grid gap-4">
                         <FormField
                             control={form.control}
-                            name="triggerTitle"
+                            name="title"
                             render={({ field }) => {
                                 return (
                                     <FormItem className='w-full'>
@@ -54,7 +83,65 @@ export default function AddManualTriggerForm() {
                         />
                         <FormField
                             control={form.control}
-                            name="triggerNotes"
+                            name="phaseId"
+                            render={({ field }) => {
+                                return (
+                                    <FormItem className='w-full'>
+                                        <Select
+                                            onValueChange={field.onChange}
+                                            defaultValue={field.value}
+                                        >
+                                            <FormLabel>Phase</FormLabel>
+                                            <FormControl>
+                                                <SelectTrigger>
+                                                    <SelectValue placeholder="Select Phase" />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
+                                                {phases.filter((phase) => phase.name !== 'PREPAREDNESS').map((item) => (
+                                                    <SelectItem key={item.id} value={item.uuid}>{item.name}</SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                        <FormMessage />
+                                    </FormItem>
+                                );
+                            }}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="hazardTypeId"
+                            render={({ field }) => {
+                                return (
+                                    <FormItem className='w-full'>
+                                        <Select
+                                            onValueChange={field.onChange}
+                                            defaultValue={field.value}
+                                        >
+                                            <FormLabel>Hazard Type</FormLabel>
+                                            <FormControl>
+                                                <SelectTrigger>
+                                                    <SelectValue placeholder="Select Hazard Type" />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
+                                                {hazardTypes?.map((d: any) => {
+                                                    return (
+                                                        <SelectItem key={d.id} value={d.uuid}>
+                                                            {d.name}
+                                                        </SelectItem>
+                                                    );
+                                                })}
+                                            </SelectContent>
+                                        </Select>
+                                        <FormMessage />
+                                    </FormItem>
+                                );
+                            }}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="notes"
                             render={({ field }) => {
                                 return (
                                     <FormItem className='w-full'>

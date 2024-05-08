@@ -6,10 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import {
     useAAStationsStore,
     useActivitiesStore,
-    useActivitiesHazardTypes,
     useCreateTriggerStatement,
-    useActivities,
-    useActivitiesPhase
 } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
@@ -35,12 +32,17 @@ import { UUID } from 'crypto';
 import { Plus, X } from 'lucide-react';
 
 export default function AddAutomatedTriggerForm() {
-    const [phase, setPhase] = React.useState('');
     const params = useParams();
-    const createTriggerStatement = useCreateTriggerStatement();
     const projectID = params.id as UUID;
-    useActivities(projectID, {});
-    const activities = useActivitiesStore((state) => state.activities);
+    const [phase, setPhase] = React.useState('');
+    const createTriggerStatement = useCreateTriggerStatement();
+
+    const { activities, hazardTypes, phases } = useActivitiesStore((state) => ({
+        activities: state.activities,
+        hazardTypes: state.hazardTypes,
+        phases: state.phases
+    }));
+
     const dhmStations = useAAStationsStore(
         (state) => state.dhmStations![projectID],
     );
@@ -48,11 +50,6 @@ export default function AddAutomatedTriggerForm() {
     // TODO: refactor to searchable select
     const stations = [...dhmStations.results.slice(0, 5), { title: 'Karnali at Chisapani' }]
 
-    useActivitiesHazardTypes(projectID);
-    const hazardTypes = useActivitiesStore((state) => state.hazardTypes);
-
-    useActivitiesPhase(projectID);
-    const phases = useActivitiesStore((state) => state.phases)
 
     const FormSchema = z.object({
         triggerTitle: z.string().min(2, { message: "Please enter valid name" }),
@@ -104,7 +101,7 @@ export default function AddAutomatedTriggerForm() {
                 triggerStatementPayload: payload
             })
         } catch (e) {
-            console.error('Create Trigger Statement Error::', e)
+            console.error('Create Automated Trigger Error::', e)
         } finally {
             setPhase('')
             form.reset();

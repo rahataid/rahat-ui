@@ -1,7 +1,18 @@
 import { Card, CardContent } from "@rahat-ui/shadcn/src/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@rahat-ui/shadcn/src/components/ui/select";
+import { useState } from "react";
 
 const ActionCards = () => {
+    const [vis, setVis] = useState(false)
+
+    const handleValueChange = (val: any) => {
+        if (val === '4') {
+            setVis(true)
+        }else{
+            setVis(false)
+        }
+    }
+
     return (
         <>
             <div className="flex justify-between my-4">
@@ -12,7 +23,7 @@ const ActionCards = () => {
                                 <div className="flex justify-between">
                                     <p className="font-semibold text-xl mb-2">Communication</p>
                                 </div>
-                                <Select>
+                                <Select onValueChange={(val) => handleValueChange(val)}>
                                     <SelectTrigger>
                                         <SelectValue placeholder="Select option" />
                                     </SelectTrigger>
@@ -26,13 +37,16 @@ const ActionCards = () => {
                                         <SelectItem value="3">
                                             IVR
                                         </SelectItem>
+                                        <SelectItem value="4">
+                                            PAYOUT
+                                        </SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>
                         </div>
                     </CardContent>
                 </Card>
-                <Card className="w-1/2 ml-2">
+                <Card className={`w-1/2 ml-2 ${vis ? 'visible' : 'hidden'}`}>
                     <CardContent className="flex p-4">
                         <div className="flex flex-col justify-between w-full">
                             <div>

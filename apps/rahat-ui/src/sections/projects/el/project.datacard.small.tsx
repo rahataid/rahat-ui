@@ -34,7 +34,7 @@ const SmallDataCard = ({
         ) : (
           <CardTitle className="text-xl text-primary">
             <span className="text-xs text-muted-foreground">
-              {currency || ' '}
+              {currency || ' '}{' '}
             </span>
             {number || '-'}
           </CardTitle>

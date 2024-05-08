@@ -46,11 +46,12 @@ export const columns: ColumnDef<Transaction>[] = [
     header: ({ column }) => {
       return (
         <Button
+          className="px-0"
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
           Voucher Amount
-          <ArrowUpDown className="ml-2 h-4 w-4" />
+          <ArrowUpDown className="h-4 w-4" />
         </Button>
       );
     },
@@ -64,11 +65,12 @@ export const columns: ColumnDef<Transaction>[] = [
     header: ({ column }) => {
       return (
         <Button
+          className="px-0"
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
           Voucher Type
-          <ArrowUpDown className="ml-2 h-4 w-4" />
+          <ArrowUpDown className="h-4 w-4" />
         </Button>
       );
     },
@@ -79,11 +81,12 @@ export const columns: ColumnDef<Transaction>[] = [
     header: ({ column }) => {
       return (
         <Button
+          className="px-0"
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
           Timestamp
-          <ArrowUpDown className="ml-2 h-4 w-4" />
+          <ArrowUpDown className="h-4 w-4" />
         </Button>
       );
     },
@@ -94,11 +97,12 @@ export const columns: ColumnDef<Transaction>[] = [
     header: ({ column }) => {
       return (
         <Button
+          className="px-0"
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
           Redemption Status
-          <ArrowUpDown className="ml-2 h-4 w-4" />
+          <ArrowUpDown className="h-4 w-4" />
         </Button>
       );
     },
@@ -165,13 +169,13 @@ export default function RedemptionTable({ projectId, vendorId }) {
     <div className="w-full h-full bg-secondary">
       <div className="rounded border h-[calc(100vh-180px)] bg-card">
         <Table>
-          <ScrollArea className="h-table1">
-            <TableHeader className="bg-card sticky top-0">
+          <ScrollArea className="w-full h-withPage px-4 py-1">
+            <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
                   {headerGroup.headers.map((header) => {
                     return (
-                      <TableHead key={header.id}>
+                      <TableHead className="text-primary" key={header.id}>
                         {header.isPlaceholder
                           ? null
                           : flexRender(
@@ -192,7 +196,7 @@ export default function RedemptionTable({ projectId, vendorId }) {
                     data-state={row.getIsSelected() && 'selected'}
                   >
                     {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>
+                      <TableCell className="w-1/3 text-left" key={cell.id}>
                         {flexRender(
                           cell.column.columnDef.cell,
                           cell.getContext(),

@@ -27,7 +27,7 @@ export default function DataCard({
   return (
     <Card
       className={cn(
-        'flex flex-col rounded justify-center border-none shadow',
+        'flex flex-col rounded justify-center border-none shadow bg-card',
         className,
       )}
     >

@@ -31,7 +31,8 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
       .map(([_, validation]) => validation.message);
 
     if (validationErrors.length > 0) {
-      console.error(validationErrors);
+      console.log(validationErrors);
+      alert(validationErrors.join('\n'));
       return;
     }
 
@@ -89,7 +90,11 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
       id: 'step3',
       title: 'Review & Confirm',
       component: (
-        <Step3DisburseSummary selectedBeneficiaries={selectedBeneficiaries} />
+        <Step3DisburseSummary
+          selectedBeneficiaries={selectedBeneficiaries}
+          token="USDC"
+          value={stepData.disburseAmount}
+        />
       ),
       validation: {},
     },
@@ -116,7 +121,7 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
               onClick={handleNext}
               disabled={currentStep === steps.length - 1}
             >
-              Proceed
+              {currentStep === steps.length - 1 ? 'Confirm' : 'Proceed'}
             </Button>
           </div>
         </div>

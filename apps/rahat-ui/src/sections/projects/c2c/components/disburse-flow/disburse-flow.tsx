@@ -120,7 +120,10 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
             >
               Back
             </Button>
-            <Button type="submit" disabled={currentStep === steps.length - 1}>
+            <Button
+              onClick={steps[currentStep].handleNext}
+              disabled={currentStep === steps.length - 1}
+            >
               Proceed
             </Button>
           </div>

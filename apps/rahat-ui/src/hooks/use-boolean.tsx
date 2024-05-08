@@ -4,7 +4,7 @@ import { useCallback, useState } from 'react';
 
 // ----------------------------------------------------------------------
 
-interface ReturnType {
+export interface UseBooleanReturnType {
   value: boolean;
   onTrue: () => void;
   onFalse: () => void;
@@ -12,7 +12,7 @@ interface ReturnType {
   setValue: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export function useBoolean(defaultValue?: boolean): ReturnType {
+export function useBoolean(defaultValue?: boolean): UseBooleanReturnType {
   const [value, setValue] = useState(!!defaultValue);
 
   const onTrue = useCallback(() => {

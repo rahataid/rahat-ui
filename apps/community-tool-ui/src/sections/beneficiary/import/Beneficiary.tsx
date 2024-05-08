@@ -36,6 +36,7 @@ import {
 import { useRSQuery } from '@rumsan/react-query';
 import ColumnMappingTable from './ColumnMappingTable';
 import MyAlert from './MyAlert';
+import { has } from 'lodash';
 
 interface IProps {
   extraFields: string[];
@@ -49,8 +50,6 @@ export default function BenImp({ extraFields }: IProps) {
   const {
     currentScreen,
     setCurrentScreen,
-    duplicateData,
-    setDuplicateData,
     hasExistingMapping,
     setHasExistingMapping,
     importId,
@@ -71,6 +70,8 @@ export default function BenImp({ extraFields }: IProps) {
     setRawData,
     validBenef,
     setValidBenef,
+    hasUUID,
+    setHasUUID,
   } = useBeneficiaryImportStore();
   // ==========States=============
 
@@ -190,35 +191,17 @@ export default function BenImp({ extraFields }: IProps) {
     return setCurrentScreen(BENEF_IMPORT_SCREENS.VALIDATION);
   };
 
-  const exportDuplicateData = (data: any, duplicateData: any) => {
-    const { validData, sanitized } = splitValidAndDuplicates(
-      data,
-      duplicateData,
-    );
-    setValidBenef(validData);
-    setProcessedData(validData);
-    setInvalidFields([]);
-    exportDataToExcel(sanitized);
-    setDuplicateData([]);
-    if (!validData.length) {
-      setHasExistingMapping(false);
-      setCurrentScreen(BENEF_IMPORT_SCREENS.SELECTION);
-    }
-  };
-
   const handleImportNowClick = async () => {
-    const msg = duplicateData.length
-      ? `Duplicate data found!.<b>Import Anyway?</b>`
+    const msg = hasUUID
+      ? 'Duplicate data will be replaced! <b>Import Anyway?</b>'
       : '';
     const dialog = await Swal.fire({
+      icon: 'info',
       title: `${processedData.length} Beneficiaries will be imported!`,
       text: msg,
       showCancelButton: true,
       confirmButtonText: 'Import Now',
       cancelButtonText: 'No',
-      showDenyButton: duplicateData.length ? true : false,
-      denyButtonColor: 'orange',
-      denyButtonText: 'Export Duplicates',
       html: msg,
     });
     if (dialog.isConfirmed) {
@@ -230,8 +213,7 @@ export default function BenImp({ extraFields }: IProps) {
         fieldMapping: { data: validBenef, sourceTargetMappings: mappings },
       };
       return createImportSource(sourcePayload);
-    } else if (dialog.isDenied)
-      return exportDuplicateData(processedData, duplicateData);
+    }
   };
 
   const validateOrImport = (action: string) => {
@@ -321,8 +303,8 @@ export default function BenImp({ extraFields }: IProps) {
             title: `${sourcePayload.fieldMapping.data.length} Beneficiaries imported successfully!`,
           });
         }
-        const { result, invalidFields, duplicates } = res.data.data;
-        setDuplicateData(duplicates);
+        const { result, invalidFields, hasUUID } = res.data.data;
+        setHasUUID(hasUUID);
         setProcessedData(result);
         if (invalidFields.length) {
           setInvalidFields(invalidFields);
@@ -340,7 +322,6 @@ export default function BenImp({ extraFields }: IProps) {
   };
 
   const handleRetargetClick = () => {
-    setDuplicateData([]);
     setValidBenef([]);
     setProcessedData([]);
     setCurrentScreen(BENEF_IMPORT_SCREENS.VALIDATION);
@@ -371,6 +352,7 @@ export default function BenImp({ extraFields }: IProps) {
       processedData as [],
       invalidFields as [],
     );
+
     setValidBenef(validData);
     setProcessedData(validData);
     setInvalidFields([]);
@@ -459,6 +441,7 @@ export default function BenImp({ extraFields }: IProps) {
             )}
 
             <AddToQueue
+              hasUUID={hasUUID}
               handleExportInvalidClick={handleExportInvalidClick}
               handleRetargetClick={handleRetargetClick}
               data={processedData}

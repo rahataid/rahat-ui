@@ -5,7 +5,6 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from '@rahat-ui/shadcn/src/components/ui/resizable';
-// import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { FC } from 'react';
 import ProjectNavView from './project.nav.view';
 import { useProjectNavItems } from './useProjectNavItems';
@@ -16,9 +15,14 @@ import { useTheme } from 'next-themes';
 type ProjectLayoutProps = {
   children: React.ReactNode | React.ReactNode[];
   projectType: ProjectType;
+  navFooter?: React.ReactNode;
 };
 
-const ProjectLayout: FC<ProjectLayoutProps> = ({ children, projectType }) => {
+const ProjectLayout: FC<ProjectLayoutProps> = ({
+  children,
+  projectType,
+  navFooter,
+}) => {
   const { navItems: menuItems } = useProjectNavItems(projectType);
   const theme = useTheme();
   const renderResizablePanel = (children: React.ReactNode, index?: number) => {
@@ -59,31 +63,7 @@ const ProjectLayout: FC<ProjectLayoutProps> = ({ children, projectType }) => {
               items={item.children}
             />
           ))}
-          <div className="fixed bottom-2 left-0 right-0  px-6">
-            <Image
-              src="/el/el_logo_dark.png"
-              alt="Dark Logo"
-              height={150}
-              width={200}
-            />
-            {/* {theme?.theme === 'light' ? (
-              <Image
-                src="/el/el_logo_light.png"
-                alt="Light Logo"
-                height={150}
-                width={200}
-              />
-            ) : (
-              theme?.theme === 'dark' && (
-                <Image
-                  src="/el/el_logo_dark.png"
-                  alt="Dark Logo"
-                  height={150}
-                  width={200}
-                />
-              )
-            )} */}
-          </div>
+          {navFooter}
         </ResizablePanel>
         {renderChildren()}
       </ResizablePanelGroup>

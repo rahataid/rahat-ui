@@ -10,27 +10,22 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/components/tooltip';
-import { Download, Minus, Trash2, MoreVertical } from 'lucide-react';
+import { Download, Minus, MoreVertical, Trash2 } from 'lucide-react';
 
-import { ListGroup } from '@rahataid/community-tool-sdk/groups';
 import {
   VisibilityState,
   getCoreRowModel,
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import React, { useState } from 'react';
+import { useState } from 'react';
 
-import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
-import GroupDetailTable from './group.table';
 import {
   useCommunityGroupListByID,
   useCommunityGroupPurge,
+  useCommunityGroupRemove,
   useCommunityGroupedBeneficiariesDownload,
 } from '@rahat-ui/community-query';
-import { useCommunityGroupDeailsColumns } from './useGroupColumns';
-import Swal from 'sweetalert2';
-import { useCommunityGroupRemove } from '@rahat-ui/community-query';
 import { usePagination } from '@rahat-ui/query';
 import {
   DropdownMenu,
@@ -38,38 +33,36 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
-import CustomPagination from '../../components/customPagination';
+import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
+import Swal from 'sweetalert2';
 import * as XLSX from 'xlsx';
+import CustomPagination from '../../components/customPagination';
+import GroupDetailTable from './group.table';
+import { useCommunityGroupDeailsColumns } from './useGroupColumns';
+import { useRouter } from 'next/navigation';
 
 type IProps = {
-  data: any;
-  closeSecondPanel: VoidFunction;
+  uuid: string;
+  // closeSecondPanel: VoidFunction;
 };
 
-export default function GroupDetail({ data, closeSecondPanel }: IProps) {
+export default function GroupDetail({ uuid }: IProps) {
   const {
     pagination,
     selectedListItems,
-    setSelectedListItems,
     setNextPage,
     setPrevPage,
     setPerPage,
-    filters,
-    setFilters,
-    setPagination,
   } = usePagination();
 
-  const { data: responseByUUID } = useCommunityGroupListByID(
-    data?.uuid,
-    pagination,
-  );
+  const { data: responseByUUID } = useCommunityGroupListByID(uuid, pagination);
   const columns = useCommunityGroupDeailsColumns();
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
   const download = useCommunityGroupedBeneficiariesDownload();
   const removeCommunityGroup = useCommunityGroupRemove();
   const purgeCommunityGroup = useCommunityGroupPurge();
-
+  const router = useRouter();
   const table = useReactTable({
     manualPagination: true,
     data: responseByUUID?.data?.beneficiariesGroup || [],
@@ -86,7 +79,7 @@ export default function GroupDetail({ data, closeSecondPanel }: IProps) {
 
   const handleClick = async () => {
     const response = await download.mutateAsync({
-      uuid: data?.uuid,
+      uuid: uuid,
       config: { responseType: 'arraybuffer' },
     });
 
@@ -127,10 +120,10 @@ export default function GroupDetail({ data, closeSecondPanel }: IProps) {
     }).then(async (result) => {
       if (result.isConfirmed) {
         await removeCommunityGroup.mutateAsync({
-          uuid: data?.uuid,
+          uuid: uuid,
           deleteBeneficiaryFlag: false,
         });
-        closeSecondPanel();
+        router.push('/group');
       }
     });
   };
@@ -151,10 +144,12 @@ export default function GroupDetail({ data, closeSecondPanel }: IProps) {
     }).then(async (result) => {
       if (result.isConfirmed) {
         await removeCommunityGroup.mutateAsync({
-          uuid: data?.uuid,
+          uuid: uuid,
           deleteBeneficiaryFlag: true,
         });
-        closeSecondPanel();
+        router.push('/group');
+
+        // closeSecondPanel();
       }
     });
   };
@@ -174,31 +169,21 @@ export default function GroupDetail({ data, closeSecondPanel }: IProps) {
       },
     }).then(async (result) => {
       if (result.isConfirmed) {
-        await purgeCommunityGroup.mutateAsync(data?.uuid);
-        closeSecondPanel();
+        await purgeCommunityGroup.mutateAsync(uuid);
+        // closeSecondPanel();
+        router.push('/group');
       }
     });
   };
-
   return (
     <>
       <Tabs defaultValue="detail">
-        <div className="flex justify-between items-center p-4">
+        <div className="flex justify-between items-center p-4 pb-1">
           <div className="flex gap-4">
             <TooltipProvider delayDuration={100}>
               <Tooltip>
-                <TooltipTrigger onClick={closeSecondPanel}>
-                  <Minus size={20} strokeWidth={1.5} />
-                </TooltipTrigger>
-                <TooltipContent className="bg-secondary ">
-                  <p className="text-xs font-medium">Close</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-            <TooltipProvider delayDuration={100}>
-              <Tooltip>
                 <TooltipTrigger>
-                  <Label>{data.name}</Label>
+                  <Label>{responseByUUID?.data?.name}</Label>
                 </TooltipTrigger>
                 <TooltipContent className="bg-secondary ">
                   <p className="text-xs font-medium">Group Name</p>
@@ -261,9 +246,6 @@ export default function GroupDetail({ data, closeSecondPanel }: IProps) {
 
         <TabsContent value="detail">
           <GroupDetailTable table={table} />
-          <p className="text-xs font-medium text-right mr-5 mt-1">
-            Total beneficiary Count :{responseByUUID?.response?.meta?.total}
-          </p>
         </TabsContent>
 
         <CustomPagination

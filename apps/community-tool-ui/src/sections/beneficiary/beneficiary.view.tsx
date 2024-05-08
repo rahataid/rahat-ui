@@ -94,12 +94,12 @@ function BeneficiaryView() {
             setPagination={setPagination}
           />
         </TabsContent>
-        <TabsContent value="grid">
+        {/* <TabsContent value="grid">
           <BeneficiaryGridView
             handleClick={handleBeneficiaryClick}
             data={data?.data?.rows}
           />
-        </TabsContent>
+        </TabsContent> */}
 
         <CustomPagination
           currentPage={pagination.page}

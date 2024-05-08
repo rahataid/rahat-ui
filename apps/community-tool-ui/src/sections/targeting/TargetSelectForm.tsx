@@ -8,13 +8,6 @@ import {
   FormControl,
 } from '@rahat-ui/shadcn/src/components/ui/form';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@rahat-ui/shadcn/src/components/ui/select';
 import { useForm } from 'react-hook-form';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { z } from 'zod';
@@ -22,14 +15,16 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import TargetingFormBuilder from '../../targetingFormBuilder';
 import { usePagination } from '@rahat-ui/query';
 import { useFieldDefinitionsList } from '@rahat-ui/community-query';
+import { ITargetingQueries } from '../../types/targeting';
+import MultiSelectCheckBox from '../../targetingFormBuilder/MultiSelectCheckBox';
+import useTargetingFormStore from '../../targetingFormBuilder/form.store';
 
 import {
-  BankedStatus,
-  PhoneStatus,
-  Gender,
-  InternetStatus,
-} from '@rahataid/community-tool-sdk/enums/';
-import { ITargetingQueries } from '../../types/targeting';
+  bankedStatusOptions,
+  genderOptions,
+  internetStatusOptions,
+  phoneStatusOptions,
+} from '../../constants/targeting.const';
 
 const FIELD_DEF_FETCH_LIMIT = 200;
 
@@ -45,202 +40,106 @@ export default function TargetSelectForm({ onFormSubmit }: IProps) {
     isTargeting: true,
   });
 
+  const { targetingQueries } = useTargetingFormStore();
+
   const { handleSubmit, control } = useForm();
 
   const FormSchema = z.object({
-    gender: z.string().toUpperCase().optional(),
-    phoneStatus: z.string().toUpperCase().optional(),
-    internetStatus: z.string().toUpperCase().optional(),
-    bankedStatus: z.string().toUpperCase().optional(),
-    location: z.string().optional(),
+    location: z.string().min(1),
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      gender: Gender.UKNOWN,
-      phoneStatus: PhoneStatus.UNKNOWN,
-      internetStatus: InternetStatus.UNKNOWN,
-      bankedStatus: BankedStatus.UNKNOWN,
       location: '',
     },
   });
+
+  function isMultiFieldEmpty(): boolean {
+    if (Object.keys(targetingQueries).length === 0) {
+      return false;
+    }
+    for (const key in targetingQueries) {
+      if (Object.prototype.hasOwnProperty.call(targetingQueries, key)) {
+        if (targetingQueries[key] === '') {
+          return false;
+        }
+        return true;
+      }
+      return false;
+    }
+    return true;
+  }
+
+  function isFormEmpty(): boolean {
+    const formData = {
+      ...form.getValues(),
+      location: form.getValues('location'),
+    };
+
+    for (const key in formData) {
+      if (Object.prototype.hasOwnProperty.call(formData, key)) {
+        const value = formData[key as keyof typeof formData];
+        if (value === '') {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
 
   return (
     <Form {...form}>
       <form onSubmit={handleSubmit(onFormSubmit)}>
         <div style={{ maxHeight: '60vh' }} className="m-2 overflow-y-auto">
-          <FormField
-            control={control}
-            name="gender"
-            render={({ field }) => {
-              return (
-                <div className="mb-4">
-                  <Label>Gender</Label>
-                  <FormItem>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger className="w-60">
-                          <SelectValue placeholder={`--Select Option--`} />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value={Gender.MALE}>Male</SelectItem>
-                        <SelectItem value={Gender.FEMALE}>Female</SelectItem>
-                        <SelectItem value={Gender.OTHER}>Other</SelectItem>
-                        <SelectItem value={Gender.UKNOWN}>Unknown</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                </div>
-              );
-            }}
+          <MultiSelectCheckBox
+            defaultName="gender"
+            defaultLabel="Gender"
+            defaultOptions={genderOptions}
           />
 
-          <FormField
-            control={control}
-            name="internetStatus"
-            render={({ field }) => {
-              return (
-                <div className="mb-4">
-                  <Label>Internet Status</Label>
-                  <FormItem>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger className="w-60">
-                          <SelectValue placeholder={`--Select Option--`} />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value={InternetStatus.HOME_INTERNET}>
-                          Home Internet
-                        </SelectItem>
-                        <SelectItem value={InternetStatus.MOBILE_INTERNET}>
-                          Mobile Internet
-                        </SelectItem>
-                        <SelectItem value={InternetStatus.NO_INTERNET}>
-                          No Internet
-                        </SelectItem>
-                        <SelectItem value={InternetStatus.UNKNOWN}>
-                          Unknown
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                </div>
-              );
-            }}
+          <MultiSelectCheckBox
+            defaultName="internetStatus"
+            defaultLabel="Internet Status"
+            defaultOptions={internetStatusOptions}
           />
 
-          <FormField
-            control={control}
-            name="phoneStatus"
-            render={({ field }) => {
-              return (
-                <div className="mb-4">
-                  <Label>Phone Status</Label>
-                  <FormItem>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger className="w-60">
-                          <SelectValue placeholder={`--Select Option--`} />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value={PhoneStatus.SMART_PHONE}>
-                          Smart Phone
-                        </SelectItem>
-                        <SelectItem value={PhoneStatus.FEATURE_PHONE}>
-                          Feature Phone
-                        </SelectItem>
-                        <SelectItem value={PhoneStatus.NO_PHONE}>
-                          No Phone
-                        </SelectItem>
-                        <SelectItem value={PhoneStatus.UNKNOWN}>
-                          Unknown
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                </div>
-              );
-            }}
+          <MultiSelectCheckBox
+            defaultName="phoneStatus"
+            defaultLabel="Phone Status"
+            defaultOptions={phoneStatusOptions}
           />
 
-          <FormField
-            control={control}
-            name="bankedStatus"
-            render={({ field }) => {
-              return (
-                <div className="mb-4">
-                  <Label>Banked Status</Label>
-                  <FormItem>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
+          <MultiSelectCheckBox
+            defaultName="bankedStatus"
+            defaultLabel="Banked Status"
+            defaultOptions={bankedStatusOptions}
+          />
+          <div className="mt-3">
+            <FormField
+              control={control}
+              name="location"
+              render={({ field }) => {
+                return (
+                  <>
+                    <Label>Location</Label>
+                    <FormItem>
                       <FormControl>
-                        <SelectTrigger className="w-60">
-                          <SelectValue placeholder={`--Select Option--`} />
-                        </SelectTrigger>
+                        <Input
+                          type="text"
+                          placeholder="Location"
+                          defaultValue={field.value}
+                          className="w-60"
+                          {...field}
+                        />
                       </FormControl>
-                      <SelectContent>
-                        <SelectItem value={BankedStatus.BANKED}>
-                          Banked
-                        </SelectItem>
-                        <SelectItem value={BankedStatus.UNDER_BANKED}>
-                          Under Banked
-                        </SelectItem>
-                        <SelectItem value={BankedStatus.UNBANKED}>
-                          UnBanked
-                        </SelectItem>
-                        <SelectItem value={BankedStatus.UNKNOWN}>
-                          Unknown
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                </div>
-              );
-            }}
-          />
-
-          <FormField
-            control={control}
-            name="location"
-            render={({ field }) => {
-              return (
-                <>
-                  <Label>Location</Label>
-                  <FormItem>
-                    <FormControl>
-                      <Input
-                        type="text"
-                        placeholder="Location"
-                        defaultValue={field.value}
-                        className="w-60"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                </>
-              );
-            }}
-          />
+                      <FormMessage />
+                    </FormItem>
+                  </>
+                );
+              }}
+            />
+          </div>
 
           {definitions?.data?.rows.map((definition: any, index: number) => {
             return (
@@ -248,10 +147,12 @@ export default function TargetSelectForm({ onFormSubmit }: IProps) {
                 <TargetingFormBuilder formField={definition} />
               </div>
             );
-          }) || 'No field definitions found!'}
+          })}
         </div>
         <div className="mt-6">
-          <Button type="submit">Submit</Button>
+          <Button type="submit" disabled={!isMultiFieldEmpty()}>
+            Submit
+          </Button>
         </div>
       </form>
     </Form>

@@ -16,10 +16,10 @@ const tabs = [
     icon: <AlignJustify size={18} strokeWidth={1.5} />,
     value: 'list',
   },
-  {
-    icon: <LayoutGrid size={18} strokeWidth={1.5} />,
-    value: 'grid',
-  },
+  // {
+  //   icon: <LayoutGrid size={18} strokeWidth={1.5} />,
+  //   value: 'grid',
+  // },
 ];
 export const useBeneficiaryNavItems = () => {
   const { setFilters } = usePagination();

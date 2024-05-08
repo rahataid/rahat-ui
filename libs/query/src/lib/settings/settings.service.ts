@@ -10,6 +10,7 @@ import { useSettingsStore } from './settings.store';
 //Never call this function directly, always use useAppSettings or useChainSettings
 export const useAppSettingsMutate = (settingsName?: string) => {
   const { queryClient, rumsanService } = useRSQuery();
+
   const fetchSettings = async () => {
     const url = settingsName ? `/settings/${settingsName}` : '/settings';
     // const urlFunction = settingsName

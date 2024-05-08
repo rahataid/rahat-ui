@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { useParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -33,6 +34,7 @@ import { UUID } from 'crypto';
 import { Plus, X } from 'lucide-react';
 
 export default function AddAutomatedTriggerForm() {
+    const [phase, setPhase] = React.useState('');
     const params = useParams();
     const createTriggerStatement = useCreateTriggerStatement();
     const projectID = params.id as UUID;
@@ -53,6 +55,9 @@ export default function AddAutomatedTriggerForm() {
         source: z.string().optional(),
         riverBasin: z.string().optional(),
         hazardType: z.string().optional(),
+        phase: z.string().min(1, { message: "Please select phase" }),
+        // readinessLevel: z.string().regex(/^(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)$/, "Must be a positive integer or a decimal number").optional(),
+        // activationLevel: z.string().regex(/^(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)$/, "Must be a positive integer or a decimal number").optional(),
         readinessLevel: z.string().optional(),
         activationLevel: z.string().optional(),
         activity: z.array(z.object({
@@ -70,6 +75,7 @@ export default function AddAutomatedTriggerForm() {
             source: '',
             riverBasin: '',
             hazardType: '',
+            phase: '',
             readinessLevel: '',
             activationLevel: '',
             activity: [],
@@ -79,8 +85,10 @@ export default function AddAutomatedTriggerForm() {
     const handleCreateTriggerStatement = async (data: z.infer<typeof FormSchema>) => {
         console.log('data::', data)
         alert('submitted')
+        setPhase('')
         form.reset();
     };
+
     return (
         <>
             <Form {...form}>
@@ -196,44 +204,67 @@ export default function AddAutomatedTriggerForm() {
                         </div>
                         <FormField
                             control={form.control}
-                            name="readinessLevel"
+                            name="phase"
                             render={({ field }) => {
                                 return (
-                                    <FormItem>
+                                    <FormItem className='w-full'>
                                         <Select
-                                            onValueChange={field.onChange}
+                                            onValueChange={(value) => {
+                                                setPhase(value);
+                                                field.onChange(value);
+                                            }}
                                             defaultValue={field.value}
                                         >
+                                            <FormLabel>Phase</FormLabel>
+                                            <FormControl>
+                                                <SelectTrigger>
+                                                    <SelectValue placeholder="Select Phase" />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
+                                                <SelectItem value='readiness'>Readiness</SelectItem>
+                                                <SelectItem value='activation' >Activation</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                        <FormMessage />
+                                    </FormItem>
+                                );
+                            }}
+                        />
+                        {phase === 'readiness' && (
+                            <FormField
+                                control={form.control}
+                                name="readinessLevel"
+                                render={({ field }) => {
+                                    return (
+                                        <FormItem>
                                             <FormLabel>Readiness Level</FormLabel>
                                             <FormControl>
-                                                <Input type='number' placeholder='Enter Readiness Level' />
+                                                <Input type='text' placeholder='Enter Readiness Level' {...field} />
                                             </FormControl>
-                                        </Select>
-                                        <FormMessage />
-                                    </FormItem>
-                                );
-                            }}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="activationLevel"
-                            render={({ field }) => {
-                                return (
-                                    <FormItem>
-                                        <Select
-                                            onValueChange={field.onChange}
-                                            defaultValue={field.value}
-                                        >
+                                            <FormMessage />
+                                        </FormItem>
+                                    );
+                                }}
+                            />
+                        )}
+                        {phase === 'activation' && (
+                            <FormField
+                                control={form.control}
+                                name="activationLevel"
+                                render={({ field }) => {
+                                    return (
+                                        <FormItem>
                                             <FormLabel>Activation Level</FormLabel>
                                             <FormControl>
-                                                <Input type='number' placeholder='Enter Activation Level' />
+                                                <Input type='text' placeholder='Enter Activation Level' {...field} />
                                             </FormControl>
-                                        </Select>
-                                        <FormMessage />
-                                    </FormItem>
-                                );
-                            }}
-                        />
+                                            <FormMessage />
+                                        </FormItem>
+                                    );
+                                }}
+                            />
+                        )}
                         <FormField
                             control={form.control}
                             name="activity"
@@ -317,7 +348,17 @@ export default function AddAutomatedTriggerForm() {
                     </div>
                     <div className="flex justify-end mt-8">
                         <div className='flex gap-2'>
-                            <Button type='button' variant='secondary' className='bg-red-100 text-red-600 w-36' onClick={() => form.reset()}>Cancel</Button>
+                            <Button
+                                type='button'
+                                variant='secondary'
+                                className='bg-red-100 text-red-600 w-36'
+                                onClick={() => {
+                                    form.reset();
+                                    setPhase('')
+                                }}
+                            >
+                                Cancel
+                            </Button>
                             <Button type='submit'>Add Trigger Statement</Button>
                         </div>
                     </div>

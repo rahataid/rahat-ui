@@ -14,7 +14,7 @@ import { useSecondPanel } from '../../../../providers/second-panel-provider';
 import BeneficiaryDetail from '../../../../sections/projects/el/beneficiary/beneficiary.detail';
 import { truncateEthAddress } from '@rumsan/sdk/utils';
 
-export const useProjectBeneficiaryTableColumns = () => {
+export const useProjectBeneficiaryTableColumns = (voucherType:string) => {
   const { setSecondPanelComponent, closeSecondPanel } = useSecondPanel();
   const [walletAddressCopied, setWalletAddressCopied] = useState<number>();
 
@@ -108,7 +108,7 @@ export const useProjectBeneficiaryTableColumns = () => {
     {
       accessorKey: 'voucherType',
       header: 'Voucher',
-      cell: ({ row }) => <div> {row.getValue('voucherType')}</div>,
+      cell: ({ row }) => <div> {voucherType}</div>,
     },
     {
       accessorKey: 'voucherClaimStatus',

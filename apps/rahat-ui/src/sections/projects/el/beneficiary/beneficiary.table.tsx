@@ -150,7 +150,7 @@ function BeneficiaryDetailTableView() {
     page: pagination.page,
     perPage: pagination.perPage,
     order: 'desc',
-    sort: 'updatedAt',
+    sort: 'createdAt',
     type: voucherType,
     projectUUID: uuid,
     ...filters,
@@ -164,7 +164,7 @@ function BeneficiaryDetailTableView() {
     (state) => state.settings?.[uuid][PROJECT_SETTINGS_KEYS.CONTRACT] || null,
   );
 
-  const columns = useProjectBeneficiaryTableColumns();
+  const columns = useProjectBeneficiaryTableColumns(voucherType);
 
   const handleBenType = React.useCallback(
     (type: string) => {

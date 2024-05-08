@@ -1,5 +1,3 @@
-import { useState } from 'react';
-
 const disburseMethods = [
   {
     id: 'project_balance',

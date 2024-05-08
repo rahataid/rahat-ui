@@ -9,6 +9,7 @@ import {
     useActivitiesHazardTypes,
     useCreateTriggerStatement,
     useActivities,
+    useActivitiesPhase
 } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
@@ -50,11 +51,14 @@ export default function AddAutomatedTriggerForm() {
     useActivitiesHazardTypes(projectID);
     const hazardTypes = useActivitiesStore((state) => state.hazardTypes);
 
+    useActivitiesPhase(projectID);
+    const phases = useActivitiesStore((state) => state.phases)
+
     const FormSchema = z.object({
-        triggerTitle: z.string().optional(),
-        source: z.string().optional(),
-        riverBasin: z.string().optional(),
-        hazardType: z.string().optional(),
+        triggerTitle: z.string().min(2, { message: "Please enter valid name" }),
+        source: z.string().min(1, { message: "Please select data source" }),
+        riverBasin: z.string().min(1, { message: "Please select river basin" }),
+        hazardType: z.string().min(1, { message: "Please select hazard type" }),
         phase: z.string().min(1, { message: "Please select phase" }),
         // readinessLevel: z.string().regex(/^(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)$/, "Must be a positive integer or a decimal number").optional(),
         // activationLevel: z.string().regex(/^(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)$/, "Must be a positive integer or a decimal number").optional(),
@@ -83,10 +87,28 @@ export default function AddAutomatedTriggerForm() {
     });
 
     const handleCreateTriggerStatement = async (data: z.infer<typeof FormSchema>) => {
-        console.log('data::', data)
-        alert('submitted')
-        setPhase('')
-        form.reset();
+        const activities = data.activity.map(activity => ({ uuid: activity.uuid }))
+        const triggerStatement = phase === "READINESS" ? { readinessLevel: data.readinessLevel } : { activationLevel: data.activationLevel }
+        const payload = {
+            title: data.triggerTitle,
+            dataSource: data.source,
+            location: data.riverBasin,
+            hazardTypeId: data.hazardType,
+            phaseId: data.phase,
+            triggerStatement: triggerStatement,
+            activities: activities
+        }
+        try {
+            await createTriggerStatement.mutateAsync({
+                projectUUID: projectID,
+                triggerStatementPayload: payload
+            })
+        } catch (e) {
+            console.error('Create Trigger Statement Error::', e)
+        } finally {
+            setPhase('')
+            form.reset();
+        }
     };
 
     return (
@@ -210,7 +232,8 @@ export default function AddAutomatedTriggerForm() {
                                     <FormItem className='w-full'>
                                         <Select
                                             onValueChange={(value) => {
-                                                setPhase(value);
+                                                const selectedPhase = phases.filter((phase) => phase.uuid === value)
+                                                setPhase(selectedPhase[0].name);
                                                 field.onChange(value);
                                             }}
                                             defaultValue={field.value}
@@ -222,8 +245,9 @@ export default function AddAutomatedTriggerForm() {
                                                 </SelectTrigger>
                                             </FormControl>
                                             <SelectContent>
-                                                <SelectItem value='readiness'>Readiness</SelectItem>
-                                                <SelectItem value='activation' >Activation</SelectItem>
+                                                {phases.filter((phase) => phase.name !== 'PREPAREDNESS').map((item) => (
+                                                    <SelectItem key={item.id} value={item.uuid}>{item.name}</SelectItem>
+                                                ))}
                                             </SelectContent>
                                         </Select>
                                         <FormMessage />
@@ -231,7 +255,7 @@ export default function AddAutomatedTriggerForm() {
                                 );
                             }}
                         />
-                        {phase === 'readiness' && (
+                        {phase === 'READINESS' && (
                             <FormField
                                 control={form.control}
                                 name="readinessLevel"
@@ -248,7 +272,7 @@ export default function AddAutomatedTriggerForm() {
                                 }}
                             />
                         )}
-                        {phase === 'activation' && (
+                        {phase === 'ACTION' && (
                             <FormField
                                 control={form.control}
                                 name="activationLevel"
@@ -322,7 +346,7 @@ export default function AddAutomatedTriggerForm() {
                                         </Select>
                                         <div className='flex flex-wrap gap-2 mt-2'>
                                             {form.watch('activity').map((activity) => {
-                                                const truncatedTitle = activity.title.length > 15 ? activity.title.slice(0, 14) + "..." : activity.title;
+                                                const truncatedTitle = activity.title.length > 50 ? activity.title.slice(0, 49) + "..." : activity.title;
                                                 return (
                                                     <div key={activity.uuid} className='px-2 py-1 flex gap-2 items-center bg-secondary rounded'>
                                                         <p className='text-primary'>{truncatedTitle}</p>

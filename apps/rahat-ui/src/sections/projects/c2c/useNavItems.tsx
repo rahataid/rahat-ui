@@ -1,5 +1,6 @@
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 import {
+  ArrowLeftRight,
   Blocks,
   Coins,
   LayoutDashboard,
@@ -36,6 +37,11 @@ export const useNavItems = (): ProjectNavItemsReturnType => {
           title: 'Fund Management',
           path: `/projects/c2c/${id}/fundManagement`,
           icon: <Coins size={18} strokeWidth={1.5} />,
+        },
+        {
+          title: 'Transactions',
+          path: `/projects/c2c/${id}/transactions`,
+          icon: <ArrowLeftRight size={18} strokeWidth={1.5} />,
         },
       ],
     },

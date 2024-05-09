@@ -1,9 +1,9 @@
-import TargetingView from '../../sections/targeting/targeting.view';
+import { ListTargeting } from '../../sections/targeting';
 
 export const metadata = {
-  title: 'Targeting',
+  title: 'Targeting Query List',
 };
 
-export default function TargetingPage() {
-  return <TargetingView />;
+export default function TargetList() {
+  return <ListTargeting />;
 }

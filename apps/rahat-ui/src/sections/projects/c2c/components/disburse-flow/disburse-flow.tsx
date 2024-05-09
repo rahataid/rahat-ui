@@ -126,11 +126,9 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
       <DialogTrigger asChild>
         <Button>Disburse Token</Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[450px]">
         <AlertDialogHeader>
-          <DialogTitle className="text-primary">
-            {steps[currentStep].title}
-          </DialogTitle>
+          <DialogTitle>{steps[currentStep].title}</DialogTitle>
         </AlertDialogHeader>
         <div>
           <div>{steps[currentStep].component}</div>

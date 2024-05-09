@@ -15,7 +15,8 @@ import {
   HardDrive,
   LayoutDashboard,
   Users,
-  Group
+  Group,
+  ParkingMeter
 } from 'lucide-react';
 
 export type NavItem = {
@@ -104,7 +105,7 @@ export const useNavItems = () => {
             title: 'Trigger Statements',
             path: `/projects/aa/${params.id}/trigger-statements`,
             // subtitle: 0,
-            icon: <HardDrive size={18} strokeWidth={1.5} />,
+            icon: <ParkingMeter size={18} strokeWidth={1.5} />,
           },
           {
             title: 'Data Sources',
@@ -140,11 +141,11 @@ export const useNavItems = () => {
           path: `/projects/aa/${params.id}/groups/add`,
           icon: <Plus size={18} strokeWidth={1.5} />,
         },
-        {
-          title: 'Add Trigger Statement',
-          path: `/projects/aa/${params.id}/trigger-statements/add`,
-          icon: <Plus size={18} strokeWidth={1.5} />,
-        },
+        // {
+        //   title: 'Add Trigger Statement',
+        //   path: `/projects/aa/${params.id}/trigger-statements/add`,
+        //   icon: <Plus size={18} strokeWidth={1.5} />,
+        // },
         {
           title: 'Create Distribution',
           icon: <PlusSquare size={18} strokeWidth={1.5} />,

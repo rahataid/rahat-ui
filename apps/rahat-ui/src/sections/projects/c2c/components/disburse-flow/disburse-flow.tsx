@@ -10,7 +10,10 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/dialog';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { AlertDialogHeader } from '@rahat-ui/shadcn/src/components/ui/alert-dialog';
-import { useDisburseTokenToBeneficiaries } from '@rahataid/c2c-query';
+import {
+  useC2CProjectSubgraphStore,
+  useDisburseTokenToBeneficiaries,
+} from '@rahataid/c2c-query';
 import { useParams } from 'next/navigation';
 import {
   PROJECT_SETTINGS_KEYS,
@@ -24,6 +27,9 @@ type DisburseFlowProps = {
 const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [stepData, setStepData] = useState<Record<string, any>>({});
+  const projectSubgraphDetails = useC2CProjectSubgraphStore(
+    (state) => state.projectDetails,
+  );
 
   const { id } = useParams();
   const contractSettings = useProjectSettingsStore(
@@ -60,8 +66,6 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
     }
   };
 
-  console.log('stepData', stepData);
-
   const handleDisburseToken = async () => {
     await disburseToken.mutateAsync({
       amount: stepData.disburseAmount,
@@ -69,7 +73,6 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
       rahatTokenAddress: contractSettings?.rahattoken?.address,
     });
   };
-
   const steps = [
     {
       id: 'step1',
@@ -79,6 +82,7 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
           selectedBeneficiaries={selectedBeneficiaries}
           value={stepData.depositMethod}
           onChange={handleStepDataChange}
+          projectSubgraphDetails={projectSubgraphDetails}
         />
       ),
       validation: {
@@ -96,6 +100,7 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
           selectedBeneficiaries={selectedBeneficiaries}
           value={stepData.disburseAmount}
           onChange={handleStepDataChange}
+          projectSubgraphDetails={projectSubgraphDetails}
         />
       ),
       validation: {
@@ -115,6 +120,7 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
           selectedBeneficiaries={selectedBeneficiaries}
           token="USDC"
           value={stepData.disburseAmount}
+          projectSubgraphDetails={projectSubgraphDetails}
         />
       ),
       validation: {},

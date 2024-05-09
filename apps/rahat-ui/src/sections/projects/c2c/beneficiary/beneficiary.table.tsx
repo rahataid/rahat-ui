@@ -37,11 +37,9 @@ import { useProjectBeneficiaryTableColumns } from './useBeneficiaryColumns';
 
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import TableLoader from 'apps/rahat-ui/src/components/table.loader';
-import DisburseMethod1 from '../components/disburse-flow/1-disburse-method';
 import DisburseFlow from '../components/disburse-flow/disburse-flow';
 
 const BeneficiaryDetailTableView = () => {
-  const tokenAssignModal = useBoolean();
   const uuid = useParams().id as UUID;
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(

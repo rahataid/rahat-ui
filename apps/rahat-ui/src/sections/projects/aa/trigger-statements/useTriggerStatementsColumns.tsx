@@ -1,5 +1,4 @@
-'use client';
-
+import { useParams, useRouter } from 'next/navigation';
 import {
   Tooltip,
   TooltipContent,
@@ -7,19 +6,18 @@ import {
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { ColumnDef } from '@tanstack/react-table';
-import { useSecondPanel } from 'apps/rahat-ui/src/providers/second-panel-provider';
-import { Eye } from 'lucide-react';
-import TriggerStatementsDetail from './trigger-statements.detail.view';
+import { Eye, Pencil, Trash2 } from 'lucide-react';
 
 export const useTriggerStatementTableColumns = () => {
-  const { setSecondPanelComponent, closeSecondPanel } = useSecondPanel();
+  const { id } = useParams();
+  const router = useRouter();
 
   const columns: ColumnDef<any>[] = [
     {
       accessorKey: 'title',
       header: 'Title',
       cell: ({ row }) => {
-        return row.getValue('title')
+        return row.getValue('title');
       },
     },
     {
@@ -42,14 +40,16 @@ export const useTriggerStatementTableColumns = () => {
             </>
           );
         }
-        return row.getValue('dataSource')
+        return row.getValue('dataSource');
       },
     },
     {
       accessorKey: 'location',
       header: 'River Basin',
       cell: ({ row }) => (
-        <div className="cursor-pointer">{row.getValue('location') || 'N/A'}</div>
+        <div className="cursor-pointer w-max">
+          {row.getValue('location') || 'N/A'}
+        </div>
       ),
     },
     // {
@@ -73,26 +73,24 @@ export const useTriggerStatementTableColumns = () => {
     // },
     {
       id: 'actions',
+      header: 'Actions',
       enableHiding: false,
       cell: ({ row }) => {
         return (
-          <>
-            <div className='flex jusify-around'>
-              <Eye
-                className="hover:text-primary cursor-pointer"
-                size={20}
-                strokeWidth={1.5}
-                onClick={() => {
-                  setSecondPanelComponent(
-                    <TriggerStatementsDetail
-                      triggerStatement={row.original}
-                      closeSecondPanel={closeSecondPanel}
-                    />,
-                  );
-                }}
-              />
-            </div>
-          </>
+          <div className="flex gap-4 w-max">
+            <Eye
+              className="hover:text-primary cursor-pointer"
+              size={20}
+              strokeWidth={1.5}
+              onClick={() =>
+                router.push(
+                  `/projects/aa/${id}/trigger-statements/${row.original.repeatKey}`,
+                )
+              }
+            />
+            <Pencil size={20} strokeWidth={1.5} className="text-primary" />
+            <Trash2 size={20} strokeWidth={1.5} color="red" />
+          </div>
         );
       },
     },

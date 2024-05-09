@@ -33,11 +33,12 @@ import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
 import * as React from 'react';
 import { benType } from '../../el/beneficiary/beneficiary.table';
-import { useProjectBeneficiaryTableColumns } from '../../el/beneficiary/use-table-column';
+import { useProjectBeneficiaryTableColumns } from './useBeneficiaryColumns';
 
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import TableLoader from 'apps/rahat-ui/src/components/table.loader';
-import Modal from '../components/disburse-modal/1-modal';
+import DisburseMethod1 from '../components/disburse-flow/1-disburse-method';
+import DisburseFlow from '../components/disburse-flow/disburse-flow';
 
 const BeneficiaryDetailTableView = () => {
   const tokenAssignModal = useBoolean();
@@ -144,7 +145,7 @@ const BeneficiaryDetailTableView = () => {
             </div>
           </div>
           <div>
-            <Modal />
+            <DisburseFlow selectedBeneficiaries={selectedRowAddresses} />
           </div>
         </div>
         <div className="rounded border bg-card">

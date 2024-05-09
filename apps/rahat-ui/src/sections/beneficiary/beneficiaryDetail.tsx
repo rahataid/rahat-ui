@@ -190,9 +190,16 @@ export default function BeneficiaryDetail({
               />
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-              <DropdownMenuItem onClick={() => handleTabChange('edit')}>
-                Edit
-              </DropdownMenuItem>
+              {activeTab === 'details' ? (
+                <DropdownMenuItem onClick={() => handleTabChange('edit')}>
+                  Edit
+                </DropdownMenuItem>
+              ) : (
+                <DropdownMenuItem onClick={() => handleTabChange('details')}>
+                  Details
+                </DropdownMenuItem>
+              )}
+
               <DropdownMenuItem onClick={handleAssignModalClick}>
                 Assign to project
               </DropdownMenuItem>

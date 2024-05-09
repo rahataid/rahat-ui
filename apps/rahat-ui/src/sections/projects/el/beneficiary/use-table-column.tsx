@@ -48,7 +48,7 @@ export const useProjectBeneficiaryTableColumns = (voucherType:string) => {
       // ),
       cell: 
       ({ row }) => {
-        const isDisabled = row.getValue('voucher') != 'Not Assigned';
+        const isDisabled = voucherType != 'NOT_ASSIGNED';
         const isChecked = row.getIsSelected() && !isDisabled;
         return (!isDisabled && <Checkbox
           checked={isChecked}

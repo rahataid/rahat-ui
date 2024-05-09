@@ -20,7 +20,7 @@ export const config = createConfig(
       // sepolia,
       // arbitrumGoerli,
       // polygon,
-      // rahatChain,
+      rahatChain,
 
       // polygonMumbai,
       arbitrumSepolia,

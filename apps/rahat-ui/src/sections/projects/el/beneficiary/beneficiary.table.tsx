@@ -53,7 +53,7 @@ import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
 import { useProjectBeneficiaryTableColumns } from './use-table-column';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
-import { useBulkAssignVoucher, useGetVoucherDetails } from 'apps/rahat-ui/src/hooks/el/contracts/el-contracts';
+import { useBulkAssignVoucher } from 'apps/rahat-ui/src/hooks/el/contracts/el-contracts';
 import { useBoolean } from '../../../../hooks/use-boolean';
 import TokenAssingnConfirm from './token.assign.confirm';
 import TableLoader from '../../../../components/table.loader';
@@ -320,9 +320,9 @@ function BeneficiaryDetailTableView() {
         <div>
         <Tabs defaultValue="account" className="w-[400px]">
           <TabsList defaultValue="notAssigned" className="grid w-full grid-cols-3">
-            <TabsTrigger onClick={() => setVoucherType('NOT_ASSIGNED')} value="notAssigned">Not Assigned</TabsTrigger>
-            <TabsTrigger onClick={() => setVoucherType('FREE_VOUCHER')} value="freeVoucher">Free Voucher</TabsTrigger>
-            <TabsTrigger onClick={() => setVoucherType('REFERRED_VOUCHER')} value="referredVoucher">Referred Voucher</TabsTrigger>
+            <TabsTrigger onClick={() => {setVoucherType('NOT_ASSIGNED'); resetSelectedListItems();}} value="notAssigned">Not Assigned</TabsTrigger>
+            <TabsTrigger onClick={() => {setVoucherType('FREE_VOUCHER'); resetSelectedListItems();}} value="freeVoucher">Free Voucher</TabsTrigger>
+            <TabsTrigger onClick={() => {setVoucherType('REFERRED_VOUCHER'); resetSelectedListItems();}} value="referredVoucher">Referred Voucher</TabsTrigger>
           </TabsList>
           </Tabs>
         </div>

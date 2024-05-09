@@ -108,14 +108,14 @@ const AddCampaignView = () => {
       additionalData.audio = data.file;
     } else if (
       data?.campaignType === CAMPAIGN_TYPES.WHATSAPP &&
-      data?.message
-    ) {
-      additionalData.body = data?.message;
-    } else if (
-      data?.campaignType === CAMPAIGN_TYPES.WHATSAPP &&
       data?.messageSid
     ) {
       additionalData.messageSid = data?.messageSid;
+      additionalData.body = data?.message;
+    } else if (
+      data?.campaignType === CAMPAIGN_TYPES.WHATSAPP &&
+      !data?.messageSid
+    ) {
       additionalData.body = data?.message;
     } else {
       additionalData.message = data?.message;

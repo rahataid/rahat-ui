@@ -226,6 +226,10 @@ const CampaignForm: FC<CampaignFormProps> = ({
                                             'messageSid',
                                             option?.sid,
                                           );
+                                          form.setValue(
+                                            'message',
+                                            option?.types['twilio/text']?.body,
+                                          );
                                           setTemplatemessage(
                                             option?.types['twilio/text']?.body,
                                           );

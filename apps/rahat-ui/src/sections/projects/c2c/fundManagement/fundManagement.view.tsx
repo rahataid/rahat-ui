@@ -23,7 +23,7 @@ const FundManagementView = () => {
           className=""
           title="Project Balance"
           smallNumber={`${formatEther(
-            +projectDetails.tokenBalance.balance,
+            BigInt(projectDetails.tokenBalance.balance),
           )} USDC`}
           subTitle="Total"
           Icon={Banknote}

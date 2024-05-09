@@ -23,14 +23,17 @@ import {
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import TableLoader from 'apps/rahat-ui/src/components/table.loader';
 
 type IProps = {
   table: Table<any>;
-  projectId: string | string[]
+  projectId: string | string[];
+  loading: boolean;
 };
 
-export default function TriggerStatementsTable({ table, projectId }: IProps) {
+export default function TriggerStatementsTable({ table, projectId, loading }: IProps) {
   const router = useRouter();
+  if (loading) return <TableLoader />
   return (
     <>
       <div className="p-2">

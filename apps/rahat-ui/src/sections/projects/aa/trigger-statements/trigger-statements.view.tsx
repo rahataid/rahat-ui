@@ -31,9 +31,7 @@ export default function TriggerStatementsView() {
   }, []);
 
   const columns = useTriggerStatementTableColumns();
-  const { data: tableData } = useAATriggerStatements(id as UUID);
-
-  console.log(tableData);
+  const { data: tableData, isLoading } = useAATriggerStatements(id as UUID);
 
   const table = useReactTable({
     manualPagination: true,
@@ -52,7 +50,7 @@ export default function TriggerStatementsView() {
   });
   return (
     <>
-      <TriggerStatementsTable table={table} projectId={id} />
+      <TriggerStatementsTable table={table} projectId={id} loading={isLoading} />
       <CustomPagination
         meta={{ total: 0, currentPage: 0, lastPage: 0, perPage: 0, next: null, prev: null }}
         handleNextPage={setNextPage}

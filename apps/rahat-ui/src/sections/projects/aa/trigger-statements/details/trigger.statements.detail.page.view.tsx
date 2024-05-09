@@ -24,12 +24,13 @@ import TriggerDetailCard from './trigger.detail.card';
 import TriggerActivityListCard from './trigger.activity.list.card';
 import { useSingleTriggerStatement, useDeleteTriggerStatement } from '@rahat-ui/query';
 import { UUID } from 'crypto';
+import Loader from 'apps/rahat-ui/src/components/table.loader';
 
 export default function TriggerStatementsDetailView() {
   const { id: projectID } = useParams();
   const router = useRouter();
   const triggerRepeatKey = window.location.href.split("/").slice(-1)[0]
-  const { data: triggerDetail } = useSingleTriggerStatement(
+  const { data: triggerDetail, isLoading } = useSingleTriggerStatement(
     projectID as UUID,
     triggerRepeatKey,
   );
@@ -47,6 +48,8 @@ export default function TriggerStatementsDetailView() {
   React.useEffect(() => {
     deleteTrigger.isSuccess && router.back();
   }, [deleteTrigger])
+
+  if (isLoading) return <Loader />
 
   return (
     <div className="h-[calc(100vh-65px)] bg-secondary p-4">

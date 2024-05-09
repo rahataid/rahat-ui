@@ -112,7 +112,7 @@ export default function VendorsDetailPage() {
         />
         <DataCard
           className="mt-2"
-          title="Referred Voucher Redeemed"
+          title="Discount Voucher Redeemed"
           number={vendorVoucher?.referredVoucherRedeemed?.toString() || '0'}
           subTitle="Discount Vouchers"
         />

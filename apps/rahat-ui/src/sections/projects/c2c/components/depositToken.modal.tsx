@@ -68,7 +68,8 @@ const DepositTokenModal: FC<DepositTokenModalType> = ({ handleModal }) => {
         connector: injected(),
       });
     }
-    const data = writeContractAsync({
+    console.log({ address });
+    const data = await writeContractAsync({
       chainId: rahatChain.id,
       address: contractSettings?.rahattoken?.address,
       functionName: 'transfer',

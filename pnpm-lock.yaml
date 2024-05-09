@@ -66,8 +66,8 @@ dependencies:
     specifier: ^1.0.7
     version: 1.0.7(@types/react-dom@18.3.0)(@types/react@18.3.1)(react-dom@18.2.0)(react@18.2.0)
   '@rahataid/c2c-query':
-    specifier: 0.0.5
-    version: 0.0.5
+    specifier: 0.0.8
+    version: 0.0.8
   '@rahataid/community-tool-sdk':
     specifier: ^0.0.17
     version: 0.0.17
@@ -5457,8 +5457,8 @@ packages:
       '@babel/runtime': 7.24.5
     dev: false
 
-  /@rahataid/c2c-query@0.0.5:
-    resolution: {integrity: sha512-eXmBOh13mDPQFrvoqyrTGmIU/VJun5otSPRJ4s4aO1GR7LN933+uv/yYQrvZPHAJwpmcTle5vxz67RuT3mtVvg==, tarball: https://npm.pkg.github.com/download/@rahataid/c2c-query/0.0.5/64495376c8abbdf343c24f8792d187c5868b5484}
+  /@rahataid/c2c-query@0.0.8:
+    resolution: {integrity: sha512-wavbMyUVG9wMy3CvHYYgBerqq9gaw4/4hlnfTM/TDKUL1J8vh4TX2tlk+M/xtqFoBg2nRQXxpr2P0F/HVuUplQ==, tarball: https://npm.pkg.github.com/download/@rahataid/c2c-query/0.0.8/88e36c936103a67610e2f75dc5b079854814e94f}
     dependencies:
       '@swc/helpers': 0.5.11
     dev: false

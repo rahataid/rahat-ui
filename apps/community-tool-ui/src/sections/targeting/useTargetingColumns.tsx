@@ -46,19 +46,6 @@ export const useTargetingColumns = () => {
       header: 'Banking Status',
       cell: ({ row }) => <div>{row.getValue('bankedStatus')}</div>,
     },
-    {
-      id: 'actions',
-      enableHiding: false,
-      cell: () => {
-        return (
-          <Eye
-            size={20}
-            strokeWidth={1.5}
-            className="cursor-pointer hover:text-primary"
-          />
-        );
-      },
-    },
   ];
 
   return columns;

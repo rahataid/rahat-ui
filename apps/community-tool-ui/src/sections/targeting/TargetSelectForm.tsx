@@ -26,7 +26,7 @@ import {
   phoneStatusOptions,
 } from '../../constants/targeting.const';
 
-const FIELD_DEF_FETCH_LIMIT = 200;
+const FIELD_DEF_FETCH_LIMIT = 300;
 
 type IProps = {
   onFormSubmit: (formData: ITargetingQueries) => Promise<void>;
@@ -115,31 +115,6 @@ export default function TargetSelectForm({ onFormSubmit }: IProps) {
             defaultLabel="Banked Status"
             defaultOptions={bankedStatusOptions}
           />
-          <div className="mt-3">
-            <FormField
-              control={control}
-              name="location"
-              render={({ field }) => {
-                return (
-                  <>
-                    <Label>Location</Label>
-                    <FormItem>
-                      <FormControl>
-                        <Input
-                          type="text"
-                          placeholder="Location"
-                          defaultValue={field.value}
-                          className="w-60"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  </>
-                );
-              }}
-            />
-          </div>
 
           {definitions?.data?.rows.map((definition: any, index: number) => {
             return (

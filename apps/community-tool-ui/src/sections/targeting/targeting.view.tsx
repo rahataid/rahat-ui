@@ -22,7 +22,6 @@ import {
   useTargetingLabelUpdate,
 } from '@rahat-ui/community-query';
 import { usePagination } from '@rahat-ui/query';
-import { ListBeneficiary } from '@rahataid/community-tool-sdk';
 import { Result } from '@rahataid/community-tool-sdk/targets';
 import CustomPagination from '../../components/customPagination';
 import { TARGETING_NAV_ROUTE } from '../../constants/targeting.const';

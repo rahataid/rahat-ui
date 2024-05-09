@@ -1,17 +1,17 @@
-export default function TriggerDetailCard() {
+export default function TriggerDetailCard({ triggerDetail }: any) {
 
     const triggerDetailData = [
         {
             title: 'River Basin',
-            content: 'Karnali'
+            content: <p>{triggerDetail?.location}</p>
         },
         {
             title: 'Hazard Type',
-            content: 'River Flood'
+            content: <p>{triggerDetail?.hazardType?.name}</p>
         },
         {
             title: 'Trigger Type',
-            content: 'Automatic Trigger'
+            content: <p>{triggerDetail?.dataSource === "MANUAL" ? "Manual Trigger" : "Automated Trigger"}</p>
         },
     ]
 
@@ -22,7 +22,7 @@ export default function TriggerDetailCard() {
                 {triggerDetailData.map((item) => (
                     <div key={item.title} className="mt-4">
                         <h1 className="text-muted-foreground text-sm">{item.title}</h1>
-                        <p>{item.content}</p>
+                        {item.content}
                     </div>
                 ))}
             </div>

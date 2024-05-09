@@ -17,7 +17,7 @@ export const useTriggerStatementTableColumns = () => {
       accessorKey: 'title',
       header: 'Title',
       cell: ({ row }) => {
-        return row.getValue('title')
+        return row.getValue('title');
       },
     },
     {
@@ -40,14 +40,16 @@ export const useTriggerStatementTableColumns = () => {
             </>
           );
         }
-        return row.getValue('dataSource')
+        return row.getValue('dataSource');
       },
     },
     {
       accessorKey: 'location',
       header: 'River Basin',
       cell: ({ row }) => (
-        <div className="cursor-pointer w-max">{row.getValue('location') || 'N/A'}</div>
+        <div className="cursor-pointer w-max">
+          {row.getValue('location') || 'N/A'}
+        </div>
       ),
     },
     // {
@@ -75,23 +77,19 @@ export const useTriggerStatementTableColumns = () => {
       enableHiding: false,
       cell: ({ row }) => {
         return (
-          <div className='flex gap-4 w-max'>
+          <div className="flex gap-4 w-max">
             <Eye
               className="hover:text-primary cursor-pointer"
               size={20}
               strokeWidth={1.5}
-              onClick={() => router.push(`/projects/aa/${id}/trigger-statements/${row.original.uuid}`)}
+              onClick={() =>
+                router.push(
+                  `/projects/aa/${id}/trigger-statements/${row.original.repeatKey}`,
+                )
+              }
             />
-            <Pencil
-              size={20}
-              strokeWidth={1.5}
-              className='text-primary'
-            />
-            <Trash2
-              size={20}
-              strokeWidth={1.5}
-              color='red'
-            />
+            <Pencil size={20} strokeWidth={1.5} className="text-primary" />
+            <Trash2 size={20} strokeWidth={1.5} color="red" />
           </div>
         );
       },

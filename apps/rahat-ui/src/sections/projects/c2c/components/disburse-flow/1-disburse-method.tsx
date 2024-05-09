@@ -25,14 +25,14 @@ export default function Step1DisburseMethod({
   value,
 }: Step1DisburseMethodProps) {
   return (
-    <div className="bg-white rounded px-8 pt-6 pb-8 mb-4 flex flex-col">
-      <div className="mb-6">
-        <div className="flex flex-col space-y-4">
+    <div className="bg-card rounded px-4 pb-4 flex flex-col">
+      <div className="mb-2">
+        <div className="flex flex-col">
           {disburseMethods.map((method) => (
             <label key={method.id} className="inline-flex items-center mt-3">
               <input
                 type="radio"
-                className="form-radio h-5 w-5 text-gray-600"
+                className="form-radio h-4 w-4 text-gray-600"
                 checked={value === method.id}
                 onChange={() =>
                   onChange({

@@ -34,7 +34,7 @@ const DiscountVoucherInfo = ({ data }) => {
             {data?.referredVoucherPrice}
           </p>
           <p className="font-light">
-            Price in {data?.referredVoucherCurrency || ''}
+            Value in {data?.referredVoucherCurrency || ''}
           </p>
         </div>
         <div>

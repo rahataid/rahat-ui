@@ -50,7 +50,7 @@ export default function GroupList({
     <div className="w-full -mt-2 p-2 bg-secondary">
       <div className="flex items-center mb-2">
         <Input
-          placeholder="Search by Group Name..."
+          placeholder="Search by name..."
           name="name"
           value={
             (table.getColumn('name')?.getFilterValue() as string) ??

@@ -1,3 +1,5 @@
+'use client';
+
 import { AATriggerStatementsView } from 'apps/rahat-ui/src/sections/projects/aa/trigger-statements';
 
 const Page = () => {

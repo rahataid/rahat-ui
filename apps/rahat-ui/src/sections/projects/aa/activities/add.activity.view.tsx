@@ -52,10 +52,10 @@ export default function AddActivities() {
     phaseId: z.string().min(1, { message: 'Please select phase' }),
     categoryId: z.string().min(1, { message: 'Please select category' }),
     hazardTypeId: z.string().min(1, { message: 'Please select hazard type' }),
+    activityType: z.string().min(1, { message: 'Please select activity type' }),
     description: z
       .string()
-      .toUpperCase()
-      .min(4, { message: 'Must be at least 5 characters' }),
+      .min(5, { message: 'Must be at least 5 characters' }),
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -67,6 +67,7 @@ export default function AddActivities() {
       phaseId: '',
       categoryId: '',
       hazardTypeId: '',
+      activityType: '',
       description: '',
     },
   });
@@ -86,7 +87,7 @@ export default function AddActivities() {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleCreateActivities)}>
-        <div className="p-4 h-add bg-white">
+        <div className="p-4 h-add bg-card">
           <h1 className="text-lg font-semibold mb-6">Add : Activities</h1>
           <div className="shadow-md p-4 rounded-sm">
             <div className="grid grid-cols-2 gap-4 mb-4">
@@ -214,6 +215,34 @@ export default function AddActivities() {
                   </FormItem>
                 )}
               />
+
+              <FormField
+                control={form.control}
+                name="activityType"
+                render={({ field }) => (
+                  <FormItem>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select activity type" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value={'GENERAL'}>{'GENERAL'}</SelectItem>
+                        <SelectItem value={'COMMUNICATION'}>
+                          {'COMMUNICATION'}
+                        </SelectItem>
+                        <SelectItem value={'PAYOUT'}>{'PAYOUT'}</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
               <FormField
                 control={form.control}
                 name="description"

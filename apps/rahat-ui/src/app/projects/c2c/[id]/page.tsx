@@ -8,7 +8,6 @@ import React from 'react';
 
 const Page = () => {
   const { id } = useParams();
-  console.log({ id });
   useProject(id as UUID);
   return <ProjectViewC2C />;
 };

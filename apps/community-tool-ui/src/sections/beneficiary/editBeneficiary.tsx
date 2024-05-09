@@ -1,4 +1,4 @@
-'use client';
+// 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
@@ -28,6 +28,7 @@ import { z } from 'zod';
 
 import {
   useActiveFieldDefList,
+  useCommunityBeneficiaryListByID,
   useCommunityBeneficiaryUpdate,
 } from '@rahat-ui/community-query';
 import { usePagination } from '@rahat-ui/query';
@@ -48,6 +49,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/popover';
 import { Calendar } from '@rahat-ui/shadcn/src/components/ui/calendar';
 import { formatDate, selectNonEmptyFields } from '../../utils';
+import { useEffect } from 'react';
 
 const FIELD_DEF_FETCH_LIMIT = 200;
 
@@ -55,6 +57,10 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
   const { extras }: any = useFormStore();
 
   const updateBeneficiaryClient = useCommunityBeneficiaryUpdate();
+  // const { data } = useCommunityBeneficiaryListByID({
+  //   uuid,
+  // });
+  console.log('datachanged');
   const { pagination } = usePagination();
   const { data: definitions } = useActiveFieldDefList({
     ...pagination,
@@ -103,7 +109,8 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
       longitude: data?.longitude || 0,
       notes: data?.notes || '',
       govtIDNumber: data?.govtIDNumber || '',
-      birthDate: data && data.birthDate ? new Date(data.birthDate) : undefined,
+      birthDate:
+        data && data?.birthDate ? new Date(data?.birthDate) : undefined,
     },
   });
 
@@ -128,6 +135,25 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
     });
   };
 
+  useEffect(() => {
+    form.reset({
+      walletAddress: data?.walletAddress || '',
+      firstName: data?.firstName || '',
+      lastName: data?.lastName || '',
+      gender: data?.gender || '',
+      email: data?.email || '',
+      phone: data?.phone || '',
+      bankedStatus: data?.bankedStatus || '',
+      internetStatus: data?.internetStatus || '',
+      phoneStatus: data?.phoneStatus || '',
+      location: data?.location || '',
+      latitude: data?.latitude || 0,
+      longitude: data?.longitude || 0,
+      notes: data?.notes || '',
+      govtIDNumber: data?.govtIDNumber || '',
+      birthDate: data?.birthDate ? new Date(data?.birthDate) : undefined,
+    });
+  }, [data, form]);
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleEditBeneficiary)}>

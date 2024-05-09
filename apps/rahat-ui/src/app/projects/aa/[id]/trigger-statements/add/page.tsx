@@ -1,7 +1,9 @@
-import { AATriggerStatementsAdd } from 'apps/rahat-ui/src/sections/projects/aa/trigger-statements';
+'use client';
+
+import { AATriggerStatementsAddView } from 'apps/rahat-ui/src/sections/projects/aa/trigger-statements';
 
 const Page = () => {
-  return <AATriggerStatementsAdd />;
+  return <AATriggerStatementsAddView />;
 };
 
 export default Page;

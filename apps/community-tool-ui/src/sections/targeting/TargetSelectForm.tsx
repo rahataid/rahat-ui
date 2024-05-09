@@ -17,6 +17,8 @@ import { usePagination } from '@rahat-ui/query';
 import { useFieldDefinitionsList } from '@rahat-ui/community-query';
 import { ITargetingQueries } from '../../types/targeting';
 import MultiSelectCheckBox from '../../targetingFormBuilder/MultiSelectCheckBox';
+import useTargetingFormStore from '../../targetingFormBuilder/form.store';
+
 import {
   bankedStatusOptions,
   genderOptions,
@@ -24,7 +26,7 @@ import {
   phoneStatusOptions,
 } from '../../constants/targeting.const';
 
-const FIELD_DEF_FETCH_LIMIT = 200;
+const FIELD_DEF_FETCH_LIMIT = 300;
 
 type IProps = {
   onFormSubmit: (formData: ITargetingQueries) => Promise<void>;
@@ -38,6 +40,8 @@ export default function TargetSelectForm({ onFormSubmit }: IProps) {
     isTargeting: true,
   });
 
+  const { targetingQueries } = useTargetingFormStore();
+
   const { handleSubmit, control } = useForm();
 
   const FormSchema = z.object({
@@ -50,6 +54,39 @@ export default function TargetSelectForm({ onFormSubmit }: IProps) {
       location: '',
     },
   });
+
+  function isMultiFieldEmpty(): boolean {
+    if (Object.keys(targetingQueries).length === 0) {
+      return false;
+    }
+    for (const key in targetingQueries) {
+      if (Object.prototype.hasOwnProperty.call(targetingQueries, key)) {
+        if (targetingQueries[key] === '') {
+          return false;
+        }
+        return true;
+      }
+      return false;
+    }
+    return true;
+  }
+
+  function isFormEmpty(): boolean {
+    const formData = {
+      ...form.getValues(),
+      location: form.getValues('location'),
+    };
+
+    for (const key in formData) {
+      if (Object.prototype.hasOwnProperty.call(formData, key)) {
+        const value = formData[key as keyof typeof formData];
+        if (value === '') {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
 
   return (
     <Form {...form}>
@@ -78,31 +115,6 @@ export default function TargetSelectForm({ onFormSubmit }: IProps) {
             defaultLabel="Banked Status"
             defaultOptions={bankedStatusOptions}
           />
-          <div className="mt-3">
-            <FormField
-              control={control}
-              name="location"
-              render={({ field }) => {
-                return (
-                  <>
-                    <Label>Location</Label>
-                    <FormItem>
-                      <FormControl>
-                        <Input
-                          type="text"
-                          placeholder="Location"
-                          defaultValue={field.value}
-                          className="w-60"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  </>
-                );
-              }}
-            />
-          </div>
 
           {definitions?.data?.rows.map((definition: any, index: number) => {
             return (
@@ -110,10 +122,12 @@ export default function TargetSelectForm({ onFormSubmit }: IProps) {
                 <TargetingFormBuilder formField={definition} />
               </div>
             );
-          }) || 'No field definitions found!'}
+          })}
         </div>
         <div className="mt-6">
-          <Button type="submit">Submit</Button>
+          <Button type="submit" disabled={!isMultiFieldEmpty()}>
+            Submit
+          </Button>
         </div>
       </form>
     </Form>

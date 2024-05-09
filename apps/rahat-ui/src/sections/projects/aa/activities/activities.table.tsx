@@ -33,17 +33,18 @@ import {
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import useActivitiesTableColumn from './useActivitiesTableColumn';
-import { useActivities, useActivitiesCategories, useActivitiesHazardTypes, useActivitiesStore, usePagination } from '@rahat-ui/query';
+import {
+  useActivities,
+  useActivitiesCategories,
+  useActivitiesHazardTypes,
+  useActivitiesPhase,
+  useActivitiesStore,
+  usePagination,
+} from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
-import { filter } from 'lodash';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import TableLoader from 'apps/rahat-ui/src/components/table.loader';
-
-type IProps = {
-  activitiesData: any;
-  filter: (category: UUID) => void;
-}
 
 export default function ActivitiesTable() {
   const { id } = useParams();
@@ -64,25 +65,20 @@ export default function ActivitiesTable() {
     setPagination({ page: 1, perPage: 10 });
   }, []);
 
-  console.log("xxx",pagination)
-  console.log("yyy",filters)
+  const { activitiesData, activitiesMeta, isLoading } = useActivities(
+    id as UUID,
+    { ...pagination, ...filters },
+  );
 
-  const { activitiesData, activitiesMeta, isLoading } = useActivities(id as UUID, { ...pagination, ...filters });
-
-  // console.log(activitiesData)
-  // console.log(activitiesMeta)
-  // const activities = useActivitiesStore((state) => {
-  //   return {
-  //     data: state.activities,
-  //     meta: state.activitiesMeta
-  //   }
-  // })
-  // console.log(activities)
+  console.log('activitiesData', activitiesData);
 
   useActivitiesCategories(id as UUID);
   const categories = useActivitiesStore((state) => state.categories);
   useActivitiesHazardTypes(id as UUID);
   const hazardTypes = useActivitiesStore((state) => state.hazardTypes);
+  useActivitiesPhase(id as UUID);
+  const phases = useActivitiesStore((state) => state.phases);
+
   const columns = useActivitiesTableColumn();
 
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -112,20 +108,66 @@ export default function ActivitiesTable() {
     },
   });
 
+  const handleCategoryFilters = useCallback(
+    (category: any) => {
+      if (category === 'all') {
+        setFilters({ ...filters, category: null });
+        return;
+      }
+      setFilters({ ...filters, category });
+    },
+    [filters, setFilters],
+  );
+
+  const handleHazardTypeFilter = useCallback(
+    (hazardType: any) => {
+      setFilters({ ...filters, hazardType });
+    },
+    [filters, setFilters],
+  );
+
+  const handlePhasesFilter = useCallback(
+    (phase: any) => {
+      if (phase === 'all') {
+        setFilters({ ...filters, phase: null });
+        return;
+      }
+      setFilters({ ...filters, phase });
+    },
+    [filters, setFilters],
+  );
+
   if (isLoading) {
-    return <TableLoader />
+    return <TableLoader />;
   }
 
   return (
     <div className="p-2 bg-secondary">
       <div className="flex items-center gap-2 mb-2 w-1/2">
+        {/* Filter Phases */}
+        <Select onValueChange={(value) => handlePhasesFilter(value)}>
+          <SelectTrigger>
+            <SelectValue placeholder="Select a phase" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectItem value="all">All Phases</SelectItem>
+              {phases.map((item) => (
+                <SelectItem key={item.id} value={item.uuid}>
+                  {item.name}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
         {/* Filter Category */}
-        <Select onValueChange={(value) => filter(value as UUID)}>
+        <Select onValueChange={(value) => handleCategoryFilters(value)}>
           <SelectTrigger>
             <SelectValue placeholder="Select a category" />
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
+              <SelectItem value="all">All Categories</SelectItem>
               {categories.map((item) => (
                 <SelectItem key={item.id} value={item.uuid}>
                   {item.name}
@@ -135,7 +177,7 @@ export default function ActivitiesTable() {
           </SelectContent>
         </Select>
         {/* Filter Hazard type */}
-        <Select>
+        <Select onValueChange={(value) => handleHazardTypeFilter(value)}>
           <SelectTrigger>
             <SelectValue placeholder="Select a hazard type" />
           </SelectTrigger>
@@ -162,9 +204,9 @@ export default function ActivitiesTable() {
                         {header.isPlaceholder
                           ? null
                           : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext(),
-                          )}
+                              header.column.columnDef.header,
+                              header.getContext(),
+                            )}
                       </TableHead>
                     );
                   })}
@@ -203,7 +245,16 @@ export default function ActivitiesTable() {
         </Table>
       </div>
       <CustomPagination
-        meta={activitiesMeta || { total: 0, currentPage: 0 }}
+        meta={
+          activitiesMeta || {
+            total: 0,
+            currentPage: 0,
+            lastPage: 0,
+            perPage: 0,
+            next: null,
+            prev: null,
+          }
+        }
         handleNextPage={setNextPage}
         handlePrevPage={setPrevPage}
         handlePageSizeChange={setPerPage}

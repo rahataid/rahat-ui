@@ -1,5 +1,11 @@
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
-import { Blocks, Coins, LayoutDashboard, UserRound } from 'lucide-react';
+import {
+  Blocks,
+  Coins,
+  LayoutDashboard,
+  PencilRuler,
+  UserRound,
+} from 'lucide-react';
 import { useParams } from 'next/navigation';
 import {
   NavItem,
@@ -47,6 +53,11 @@ export const useNavItems = (): ProjectNavItemsReturnType => {
         {
           icon: <Blocks size={18} strokeWidth={1.5} />,
           title: 'Request Token',
+        },
+        {
+          icon: <PencilRuler size={18} strokeWidth={1.5} />,
+          title: 'Edit Project',
+          path: `/projects/c2c/${id}/edit`,
         },
       ],
     },

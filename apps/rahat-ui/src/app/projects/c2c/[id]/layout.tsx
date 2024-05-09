@@ -1,8 +1,18 @@
 'use client';
 
-import { useProjectContractSettings } from '@rahat-ui/query';
+import {
+  PROJECT_SETTINGS_KEYS,
+  useProjectContractSettings,
+  useProjectSettingsStore,
+  useProjectSubgraphSettings,
+} from '@rahat-ui/query';
+import {
+  useC2CProjectSubgraphStore,
+  useProjectDetails as useProjectSubgraphDetails,
+} from '@rahataid/c2c-query';
+import C2CSubgraphProvider from '@rahataid/c2c-query/src/subgraph/subgraph.provider';
+import { Client, cacheExchange, fetchExchange } from '@urql/core';
 import { useSecondPanel } from 'apps/rahat-ui/src/providers/second-panel-provider';
-import { GraphQueryProvider } from 'apps/rahat-ui/src/providers/subgraph-provider';
 import { ProjectLayout } from 'apps/rahat-ui/src/sections/projects/components';
 import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
@@ -14,14 +24,25 @@ export default function ProjectLayoutRoot({
   children: React.ReactNode;
 }) {
   const { secondPanel } = useSecondPanel();
-  const { id } = useParams();
 
-  useProjectContractSettings(id as UUID);
+  const uuid = useParams().id as UUID;
+  useProjectSubgraphSettings(uuid);
+  useProjectContractSettings(uuid);
+
+  const subgraphSettings = useProjectSettingsStore(
+    (s) => s.settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.SUBGRAPH]?.url,
+  );
+  const contractSettings = useProjectSettingsStore(
+    (state) => state.settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.CONTRACT],
+  );
+
+  const { data } = useProjectSubgraphDetails(
+    contractSettings?.rahattoken?.address,
+  );
+  const s = useC2CProjectSubgraphStore((state) => state.projectDetails);
+  console.log('s', s, data);
 
   const renderChildren = () => {
-    // if (createVoucher.isPending) {
-    //   return <h3>Minting Voucher...</h3>;
-    // }
     if (secondPanel) {
       return [children, secondPanel];
     }
@@ -30,8 +51,15 @@ export default function ProjectLayoutRoot({
   };
 
   return (
-    <GraphQueryProvider>
+    <C2CSubgraphProvider
+      subgraphClient={
+        new Client({
+          url: subgraphSettings || 'http://localhost:8000',
+          exchanges: [cacheExchange, fetchExchange],
+        })
+      }
+    >
       <ProjectLayout projectType="C2C">{renderChildren()}</ProjectLayout>
-    </GraphQueryProvider>
+    </C2CSubgraphProvider>
   );
 }

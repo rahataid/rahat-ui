@@ -4,16 +4,13 @@ import {
   GroupResponseById,
   ListGroup,
 } from '@rahataid/community-tool-sdk';
-import { truncateEthAddress } from '@rumsan/sdk/utils';
 import { ColumnDef } from '@tanstack/react-table';
 import { Eye } from 'lucide-react';
 import { useSecondPanel } from '../../providers/second-panel-provider';
-import GroupDetail from './groupdetails';
-import {
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
-} from '@rahat-ui/shadcn/src/components/ui/resizable';
+
+import Link from 'next/link';
+import EditBeneficiary from '../beneficiary/editBeneficiary';
+import EditGroupedBeneficiaries from './edit/editGroupedBeneficiaries';
 
 export const useCommunityGroupTableColumns = () => {
   const { closeSecondPanel, setSecondPanelComponent } = useSecondPanel();
@@ -35,21 +32,13 @@ export const useCommunityGroupTableColumns = () => {
       header: 'View Detail',
       cell: ({ row }) => {
         return (
-          <Eye
-            size={20}
-            strokeWidth={1.5}
-            className="cursor-pointer hover:text-primary"
-            onClick={() =>
-              setSecondPanelComponent(
-                <>
-                  <GroupDetail
-                    data={row.original}
-                    closeSecondPanel={closeSecondPanel}
-                  />
-                </>,
-              )
-            }
-          />
+          <Link href={`/group/${row.original.uuid}`}>
+            <Eye
+              size={20}
+              strokeWidth={1.5}
+              className="cursor-pointer hover:text-primary"
+            />
+          </Link>
         );
       },
     },
@@ -58,6 +47,8 @@ export const useCommunityGroupTableColumns = () => {
 };
 
 export const useCommunityGroupDeailsColumns = () => {
+  const { closeSecondPanel, setSecondPanelComponent } = useSecondPanel();
+
   const columns: ColumnDef<GroupResponseById[]>[] = [
     {
       accessorKey: 'beneficiary',
@@ -109,6 +100,33 @@ export const useCommunityGroupDeailsColumns = () => {
           }
         }
         return 'null';
+      },
+    },
+    {
+      id: 'actions',
+      enableHiding: false,
+      header: 'View Detail',
+
+      cell: ({ row }) => {
+        const beneficiary = row.getValue('beneficiary') as Beneficiary;
+        console.log('row', row.original);
+        return (
+          <Eye
+            size={20}
+            strokeWidth={1.5}
+            className="cursor-pointer hover:text-primary"
+            onClick={() =>
+              setSecondPanelComponent(
+                <>
+                  <EditGroupedBeneficiaries
+                    uuid={beneficiary?.uuid as string}
+                    closeSecondPanel={closeSecondPanel}
+                  />
+                </>,
+              )
+            }
+          />
+        );
       },
     },
   ];

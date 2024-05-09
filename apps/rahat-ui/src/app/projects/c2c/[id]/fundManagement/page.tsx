@@ -1,9 +1,11 @@
 'use client';
 
+import FundManagementView from 'apps/rahat-ui/src/sections/projects/c2c/fundManagement/fundManagement.view';
+
 const FundManagementPage = () => {
   return (
     <>
-      <h1>Hello</h1>
+      <FundManagementView />
     </>
   );
 };

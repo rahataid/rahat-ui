@@ -261,7 +261,7 @@ export default function AddAutomatedTriggerForm() {
                                         <FormItem>
                                             <FormLabel>Readiness Level</FormLabel>
                                             <FormControl>
-                                                <Input type='text' placeholder='Enter Readiness Level' {...field} />
+                                                <Input type='text' inputMode='decimal' pattern='[0-9]*[.,]?[0-9]*' title='Please enter positive integer or decimal number' placeholder='Enter Readiness Level' {...field} />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -278,7 +278,7 @@ export default function AddAutomatedTriggerForm() {
                                         <FormItem>
                                             <FormLabel>Activation Level</FormLabel>
                                             <FormControl>
-                                                <Input type='text' placeholder='Enter Activation Level' {...field} />
+                                                <Input type='text' inputMode='decimal' pattern='[0-9]*[.,]?[0-9]*' title='Please enter positive integer or decimal number' placeholder='Enter Activation Level' {...field} />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>

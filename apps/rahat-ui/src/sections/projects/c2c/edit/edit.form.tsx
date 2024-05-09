@@ -260,7 +260,9 @@ export default function EditProject() {
           </div>
           <Accordion type="single" collapsible className="w-full">
             <AccordionItem value="item-1">
-              <AccordionTrigger className="border-b">Advanced</AccordionTrigger>
+              <AccordionTrigger className="border rounded p-4 text-muted-foreground">
+                Advanced
+              </AccordionTrigger>
               <AccordionContent>
                 <AdvancedEditForm />
               </AccordionContent>

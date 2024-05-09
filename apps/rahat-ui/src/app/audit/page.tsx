@@ -1,4 +1,4 @@
-import { AuditTable } from '../../sections/audit/audit.table';
+import AuditTable from '../../sections/audit/audit.table';
 
 export const metadata = {
   title: 'Audit',

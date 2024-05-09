@@ -29,6 +29,7 @@ export const paths = {
     group: {
       root: ROOTS.GROUPS,
       add: `${ROOTS.GROUPS}/add`,
+      import_logs: `${ROOTS.GROUPS}/import-logs`,
       detail: (uuid: string) => `${ROOTS.GROUPS}/${uuid}`,
     },
     fieldDefinitions: {

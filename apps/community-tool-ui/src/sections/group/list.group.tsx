@@ -18,7 +18,6 @@ import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { Pagination } from '@rumsan/sdk/types';
 
 type IProps = {
-  handleClick: (index: any) => void;
   table: Table<ListGroup>;
   setFilters: (fiters: Record<string, any>) => void;
   filters: Record<string, any>;
@@ -28,7 +27,6 @@ type IProps = {
 
 export default function GroupList({
   table,
-  handleClick,
   filters,
   setFilters,
   setPagination,
@@ -89,9 +87,6 @@ export default function GroupList({
                   <TableRow
                     key={key}
                     data-state={row.getIsSelected() && 'selected'}
-                    onClick={() => {
-                      handleClick(row.original);
-                    }}
                   >
                     {row.getVisibleCells().map((cell, index) => (
                       <TableCell key={index}>

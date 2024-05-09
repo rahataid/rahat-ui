@@ -3,15 +3,18 @@ import { useRSQuery } from '@rumsan/react-query';
 import { getTargetClient } from '@rahataid/community-tool-sdk/clients';
 import { TAGS } from '../config';
 import Swal from 'sweetalert2';
+import { Pagination } from '@rumsan/sdk/types';
 
-export const useTargetingList = (): UseQueryResult<any, Error> => {
+export const useTargetingList = (
+  payload: Pagination & { [key: string]: string },
+): UseQueryResult<any, Error> => {
   const { queryClient, rumsanService } = useRSQuery();
   const targetingClient = getTargetClient(rumsanService.client);
 
   const query = useQuery(
     {
-      queryKey: [TAGS.LIST_TARGETING],
-      queryFn: () => targetingClient.list(),
+      queryKey: [TAGS.LIST_TARGETING, payload],
+      queryFn: () => targetingClient.list(payload),
     },
     queryClient,
   );
@@ -52,7 +55,7 @@ export const useTargetingCreate = () => {
 export const useTargetedBeneficiaryList = (target_uuid: string) => {
   const { queryClient, rumsanService } = useRSQuery();
   const targetingClient = getTargetClient(rumsanService.client);
-
+  console.log('target_uuid', target_uuid);
   const query = useQuery(
     {
       queryKey: [TAGS.GET_TARGETING_BENEFICIARIES, target_uuid],

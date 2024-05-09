@@ -27,9 +27,9 @@ const FormSchema = z.object({
   campaignName: z.string().min(2, {
     message: 'Campaign Name must be at least 2 characters.',
   }),
-  startTime: z.date({
-    required_error: 'Start time is required.',
-  }),
+  // startTime: z.date({
+  //   required_error: 'Start time is required.',
+  // }),
   campaignType: z.string({
     required_error: 'Camapign Type is required.',
   }),
@@ -82,8 +82,14 @@ const AddCampaignView = () => {
         transportId = tdata.id;
       }
     });
-
-    const audiences = audienceData?.data
+    const uniquePhoneNumbers = new Set();
+    const uniqueAudienceData: any = audienceData?.data.filter((data) => {
+      if (!uniquePhoneNumbers.has(data.details?.phone)) {
+        uniquePhoneNumbers.add(data.details?.phone);
+        return true;
+      }
+    });
+    const audiences = uniqueAudienceData
       .filter((audienceObject: Audience) =>
         selectedRows?.some(
           (selectedObject) =>
@@ -110,6 +116,7 @@ const AddCampaignView = () => {
       data?.messageSid
     ) {
       additionalData.messageSid = data?.messageSid;
+      additionalData.body = data?.message;
     } else {
       additionalData.message = data?.message;
     }
@@ -117,7 +124,7 @@ const AddCampaignView = () => {
       .mutateAsync({
         audienceIds: audiences || [],
         name: data.campaignName,
-        startTime: data.startTime,
+        startTime: null,
         transportId: Number(transportId),
         type: data.campaignType,
         details: additionalData,

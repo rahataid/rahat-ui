@@ -51,7 +51,7 @@ const BeneficiaryLayout: FC<BeneficiaryLayoutProps> = ({
     <>
       <Tabs defaultValue="list">
         <ResizablePanelGroup direction="horizontal">
-          <ResizablePanel defaultSize={20} minSize={20} maxSize={20}>
+          <ResizablePanel defaultSize={18} minSize={18} maxSize={18}>
             {menuItems.map((item) => (
               <BeneficiaryNavView
                 key={item.title}

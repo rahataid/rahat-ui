@@ -10,29 +10,6 @@ import { ListBeneficiary } from '@rahataid/community-tool-sdk';
 export const useTargetingColumns = () => {
   const columns: ColumnDef<ListBeneficiary>[] = [
     {
-      id: 'select',
-      header: ({ table }) => (
-        <Checkbox
-          checked={
-            table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && 'indeterminate')
-          }
-          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-          aria-label="Select all"
-        />
-      ),
-      cell: ({ row }) => (
-        <Checkbox
-          checked={row.getIsSelected()}
-          disabled={!row.getCanSelect()}
-          onCheckedChange={(value) => row.toggleSelected(!!value)}
-          aria-label="Select row"
-        />
-      ),
-      enableSorting: false,
-      enableHiding: false,
-    },
-    {
       accessorKey: 'firstName',
       header: 'First Name',
       cell: ({ row }) => <div>{row.getValue('firstName')}</div>,
@@ -68,19 +45,6 @@ export const useTargetingColumns = () => {
       accessorKey: 'bankedStatus',
       header: 'Banking Status',
       cell: ({ row }) => <div>{row.getValue('bankedStatus')}</div>,
-    },
-    {
-      id: 'actions',
-      enableHiding: false,
-      cell: () => {
-        return (
-          <Eye
-            size={20}
-            strokeWidth={1.5}
-            className="cursor-pointer hover:text-primary"
-          />
-        );
-      },
     },
   ];
 

@@ -28,10 +28,9 @@ export const useTargetingCreate = () => {
       mutationKey: [TAGS.CREATE_TARGETING],
       mutationFn: targetingClient.create,
       onSuccess: () => {
-        Swal.fire('Targeting Created Successfully', '', 'success');
         queryClient.invalidateQueries({
           queryKey: [
-            TAGS.LIST_TARGETING,
+            TAGS.GET_TARGETING_BENEFICIARIES,
             {
               exact: true,
             },
@@ -41,7 +40,7 @@ export const useTargetingCreate = () => {
       onError: (error: any) => {
         Swal.fire(
           'Error',
-          error.response.data.message || 'Encounter error on Creating Data',
+          error.response.data.message || 'Failed to create targeting!',
           'error',
         );
       },
@@ -64,4 +63,35 @@ export const useTargetedBeneficiaryList = (target_uuid: string) => {
   );
 
   return query;
+};
+
+export const useTargetingLabelUpdate = () => {
+  const { queryClient, rumsanService } = useRSQuery();
+  const targetingClient = getTargetClient(rumsanService.client);
+
+  return useMutation(
+    {
+      mutationKey: [TAGS.UPDATE_TARGETING_LABEL],
+      mutationFn: targetingClient.patchLabel,
+      onSuccess: () => {
+        Swal.fire('Target Label Created Successfully', '', 'success');
+        queryClient.invalidateQueries({
+          queryKey: [
+            TAGS.GET_TARGETING_BENEFICIARIES,
+            {
+              exact: true,
+            },
+          ],
+        });
+      },
+      onError: (error: any) => {
+        Swal.fire(
+          'Error',
+          error.response.data.message || 'Failed to update targeting label!',
+          'error',
+        );
+      },
+    },
+    queryClient,
+  );
 };

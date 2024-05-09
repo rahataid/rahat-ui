@@ -71,8 +71,6 @@ export default function AddRole() {
   });
 
   const handleCreateRole = async (data: z.infer<typeof FormSchema>) => {
-    console.log(data);
-
     createRole
       .mutateAsync({
         name: data.roleName,

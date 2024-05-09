@@ -61,8 +61,9 @@ export default function AddRoles() {
   });
 
   const handleCreateRole = async (data: z.infer<typeof FormSchema>) => {
+    const validateRoleName = data.roleName.split(' ').join('');
     createRole.mutateAsync({
-      name: data.roleName,
+      name: validateRoleName,
       isSystem: data?.isSystem,
     });
   };

@@ -25,6 +25,7 @@ export const usePhasesStats = (uuid: UUID) => {
   });
 
   useEffect(() => {
+    console.log("kkkkk",query)
     if (query.data) {
       setPhasesStats(query?.data)
     }

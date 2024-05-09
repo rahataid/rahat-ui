@@ -94,13 +94,34 @@ export const SUBJECTS = [
   { label: 'User', value: 'user' },
   { label: 'Public', value: 'public' },
   { label: 'Beneficiary', value: 'beneficiary' },
-  { label: 'Beneficiary Group', value: 'beneficiaryGroup' },
-  { label: 'Beneficiary Source', value: 'beneficiarySource' },
   { label: 'Target', value: 'target' },
   { label: 'Field Definition', value: 'fieldDefinition' },
   { label: 'Settings', value: 'settings' },
   { label: 'Source', value: 'source' },
   { label: 'Group', value: 'group' },
 ];
+
+export const PERMISSIONS = [
+  {
+    id: 'manage',
+    label: 'Manage',
+  },
+  {
+    id: 'create',
+    label: 'Create',
+  },
+  {
+    id: 'read',
+    label: 'Read',
+  },
+  {
+    id: 'update',
+    label: 'Update',
+  },
+  {
+    id: 'delete',
+    label: 'Delete',
+  },
+] as const;
 
 export const MAX_EXPORT_COUNT = 1000;

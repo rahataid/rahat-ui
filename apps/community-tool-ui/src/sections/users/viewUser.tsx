@@ -1,3 +1,5 @@
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useRoleList } from '@rahat-ui/community-query';
 import { Button } from '@rahat-ui/shadcn/components/button';
 import { Label } from '@rahat-ui/shadcn/components/label';
 import { Switch } from '@rahat-ui/shadcn/components/switch';
@@ -7,6 +9,7 @@ import {
   TabsList,
   TabsTrigger,
 } from '@rahat-ui/shadcn/components/tabs';
+import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
 import {
   Dialog,
   DialogClose,
@@ -18,12 +21,12 @@ import {
   DialogTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dialog';
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
-import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from '@rahat-ui/shadcn/src/components/ui/form';
 import {
   Select,
   SelectContent,
@@ -39,33 +42,21 @@ import {
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { truncateEthAddress } from '@rumsan/core/utilities/string.utils';
-import { User } from '@rumsan/sdk/types';
-import { MoreVertical, PlusCircle, Trash2, Minus } from 'lucide-react';
-import Image from 'next/image';
-import { useEffect, useState } from 'react';
-import { UsersRoleTable } from './usersRoleTable';
-import { enumToObjectArray } from '@rumsan/sdk/utils';
-import { Gender } from '@rahataid/sdk/enums';
-import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
-import EditUser from './editUser';
-import { z } from 'zod';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useRoleList } from '@rahat-ui/community-query';
 import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormMessage,
-} from '@rahat-ui/shadcn/src/components/ui/form';
-import {
+  useAuthStore,
   useUserAddRoles,
   useUserCurrentUser,
-  useUserEdit,
 } from '@rumsan/react-query';
+import { User } from '@rumsan/sdk/types';
 import { UUID } from 'crypto';
+import { FilePenLine, MinusIcon, PlusIcon, Telescope } from 'lucide-react';
+import Image from 'next/image';
+import { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 import { ROLE_TYPE } from '../../constants/user.const';
+import EditUser from './editUser';
+import { UsersRoleTable } from './usersRoleTable';
 
 type IProps = {
   userDetail: User;
@@ -78,8 +69,9 @@ const FormSchema = z.object({
 export default function UserDetail({ userDetail, closeSecondPanel }: IProps) {
   const updateUserRole = useUserAddRoles();
   const { data } = useUserCurrentUser();
+  const isRole = useAuthStore((state) => state.roles);
 
-  const isAdmin = data?.data?.roles.includes(ROLE_TYPE.ADMIN);
+  // const isAdmin = data?.data?.roles.includes(ROLE_TYPE.ADMIN);
 
   const form = useForm({
     resolver: zodResolver(FormSchema),
@@ -122,6 +114,7 @@ export default function UserDetail({ userDetail, closeSecondPanel }: IProps) {
   useEffect(() => {
     isSubmitSuccessful && reset();
   }, [isSubmitSuccessful, reset]);
+  console.log(isRole);
   return (
     <>
       <div className="flex justify-between items-center p-4 pt-5">
@@ -129,7 +122,7 @@ export default function UserDetail({ userDetail, closeSecondPanel }: IProps) {
         <TooltipProvider delayDuration={100}>
           <Tooltip>
             <TooltipTrigger onClick={closeSecondPanel}>
-              <Minus size={20} strokeWidth={1.5} />
+              <MinusIcon size={20} strokeWidth={1.5} />
             </TooltipTrigger>
             <TooltipContent className="bg-secondary ">
               <p className="text-xs font-medium">Close</p>
@@ -138,14 +131,14 @@ export default function UserDetail({ userDetail, closeSecondPanel }: IProps) {
         </TooltipProvider>
         <div className="flex gap-3">
           {/* Add Roles */}
-          {isAdmin && (
+          {isRole?.isAdmin === true && (
             <>
               <Dialog open={open} onOpenChange={setOpen}>
                 <DialogTrigger>
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <PlusCircle
+                        <PlusIcon
                           className="cursor-pointer"
                           size={18}
                           strokeWidth={1.6}
@@ -215,62 +208,30 @@ export default function UserDetail({ userDetail, closeSecondPanel }: IProps) {
                   </DialogContent>
                 </Form>
               </Dialog>
-              <Dialog>
-                <DialogTrigger>
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Trash2
-                          className="cursor-pointer"
-                          size={18}
-                          strokeWidth={1.6}
-                          color="#FF0000"
-                        />
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>Delete User</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>Are you absolutely sure?</DialogTitle>
-                    <DialogDescription>
-                      This action cannot be undone. This will permanently delete
-                      your user.
-                    </DialogDescription>
-                  </DialogHeader>
-                  <DialogFooter>
-                    <div className="flex items-center justify-center mt-2 gap-4">
-                      <Button variant="outline">Yes</Button>
-                      <DialogClose asChild>
-                        <Button variant="outline">No</Button>
-                      </DialogClose>
-                    </div>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
+
+              <TooltipProvider delayDuration={100}>
+                <Tooltip>
+                  <TooltipTrigger onClick={() => handleTabChange('edit')}>
+                    <FilePenLine size={20} strokeWidth={1.5} color="#007bb6" />
+                  </TooltipTrigger>
+                  <TooltipContent className="bg-secondary ">
+                    <p className="text-xs font-medium">Edit</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </>
           )}
           {/* Actions */}
-          <DropdownMenu>
-            <DropdownMenuTrigger>
-              <MoreVertical
-                className="cursor-pointer"
-                size={20}
-                strokeWidth={1.5}
-              />
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuItem onClick={() => handleTabChange('details')}>
-                Details{' '}
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleTabChange('edit')}>
-                Edit
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <TooltipProvider delayDuration={100}>
+            <Tooltip>
+              <TooltipTrigger onClick={() => handleTabChange('details')}>
+                <Telescope size={20} strokeWidth={1.5} color="#007bb6" />
+              </TooltipTrigger>
+              <TooltipContent className="bg-secondary ">
+                <p className="text-xs font-medium">Details</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
       </div>
       <div className="flex justify-between p-2">
@@ -364,7 +325,7 @@ export default function UserDetail({ userDetail, closeSecondPanel }: IProps) {
             <div className="px-2">
               <UsersRoleTable
                 userRole={userDetail?.uuid as UUID}
-                isAdmin={isAdmin}
+                isAdmin={isRole?.isAdmin}
               />
             </div>
           </TabsContent>

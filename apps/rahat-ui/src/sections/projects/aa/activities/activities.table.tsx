@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useParams } from 'next/navigation';
 import {
   ColumnFiltersState,
   SortingState,
@@ -32,21 +33,55 @@ import {
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import useActivitiesTableColumn from './useActivitiesTableColumn';
-// import ActivitiesData from './activities.json';
-import { useActivitiesFields } from './useActivitiesFields';
+import { useActivities, useActivitiesCategories, useActivitiesHazardTypes, useActivitiesPhase, useActivitiesStore, usePagination } from '@rahat-ui/query';
+import { UUID } from 'crypto';
+import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
+import { useEffect, useState, useCallback } from 'react';
+import TableLoader from 'apps/rahat-ui/src/components/table.loader';
 
-export default function ActivitiesTable({ activitiesData }: any) {
-  const { hazardType, category } = useActivitiesFields();
+
+export default function ActivitiesTable() {
+  const { id } = useParams();
+
+  const {
+    pagination,
+    // selectedListItems,
+    // setSelectedListItems,
+    setNextPage,
+    setPrevPage,
+    setPerPage,
+    setPagination,
+    setFilters,
+    filters,
+  } = usePagination();
+
+  useEffect(() => {
+    setPagination({ page: 1, perPage: 10 });
+  }, []);
+
+
+  const { activitiesData, activitiesMeta, isLoading } = useActivities(id as UUID, { ...pagination, ...filters });
+
+  console.log('activitiesData', activitiesData)
+
+  useActivitiesCategories(id as UUID);
+  const categories = useActivitiesStore((state) => state.categories);
+  useActivitiesHazardTypes(id as UUID);
+  const hazardTypes = useActivitiesStore((state) => state.hazardTypes);
+  useActivitiesPhase(id as UUID);
+  const phases = useActivitiesStore((state) => state.phases);
+
   const columns = useActivitiesTableColumn();
+
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
   );
-  const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({});
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
-  // const data = ActivitiesData;
+
   const table = useReactTable({
+    manualPagination: true,
     data: activitiesData ?? [],
     columns,
     onSortingChange: setSorting,
@@ -65,43 +100,97 @@ export default function ActivitiesTable({ activitiesData }: any) {
     },
   });
 
+  const handleCategoryFilters = useCallback(
+    (category: any) => {
+      if (category === 'all') {
+        setFilters({ ...filters, category: null })
+        return
+      }
+      setFilters({ ...filters, category })
+    },
+    [filters, setFilters]
+  )
+
+  const handleHazardTypeFilter = useCallback(
+    (hazardType: any) => {
+      setFilters({ ...filters, hazardType })
+    },
+    [filters, setFilters]
+  )
+
+  const handlePhasesFilter = useCallback(
+    (phase: any) => {
+      if (phase === 'all') {
+        setFilters({ ...filters, phase: null })
+        return
+      }
+      setFilters({ ...filters, phase })
+    },
+    [filters, setFilters]
+  )
+
+  if (isLoading) {
+    return <TableLoader />
+  }
+
   return (
     <div className="p-2 bg-secondary">
       <div className="flex items-center gap-2 mb-2 w-1/2">
+        {/* Filter Phases */}
+        <Select onValueChange={(value) => handlePhasesFilter(value)}>
+          <SelectTrigger>
+            <SelectValue placeholder="Select a phase" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectItem value='all'>
+                All Phases
+              </SelectItem>
+              {phases.map((item) => (
+                <SelectItem key={item.id} value={item.uuid}>
+                  {item.name}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
         {/* Filter Category */}
-        <Select>
+        <Select onValueChange={(value) => handleCategoryFilters(value)}>
           <SelectTrigger>
             <SelectValue placeholder="Select a category" />
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
-              {category.map((item) => (
-                <SelectItem key={item.label} value={item.value}>
-                  {item.label}
+              <SelectItem value='all'>
+                All Categories
+              </SelectItem>
+              {categories.map((item) => (
+                <SelectItem key={item.id} value={item.uuid}>
+                  {item.name}
                 </SelectItem>
               ))}
             </SelectGroup>
           </SelectContent>
         </Select>
         {/* Filter Hazard type */}
-        <Select>
+        <Select onValueChange={(value) => handleHazardTypeFilter(value)}>
           <SelectTrigger>
             <SelectValue placeholder="Select a hazard type" />
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
-              {hazardType.map((item) => (
-                <SelectItem key={item.label} value={item.value}>
-                  {item.label}
+              {hazardTypes.map((item) => (
+                <SelectItem key={item.id} value={item.uuid}>
+                  {item.name}
                 </SelectItem>
               ))}
             </SelectGroup>
           </SelectContent>
         </Select>
       </div>
-      <div className="rounded border bg-card">
+      <div className="rounded border bg-card h-[calc(100vh-178px)]">
         <Table>
-          <ScrollArea className="h-[calc(100vh-180px)]">
+          <ScrollArea className="h-[calc(100vh-193px)]">
             <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
@@ -111,9 +200,9 @@ export default function ActivitiesTable({ activitiesData }: any) {
                         {header.isPlaceholder
                           ? null
                           : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext(),
-                            )}
+                            header.column.columnDef.header,
+                            header.getContext(),
+                          )}
                       </TableHead>
                     );
                   })}
@@ -151,7 +240,16 @@ export default function ActivitiesTable({ activitiesData }: any) {
           </ScrollArea>
         </Table>
       </div>
-      <div className="flex items-center justify-end space-x-8 p-2 pb-0">
+      <CustomPagination
+        meta={activitiesMeta || { total: 0, currentPage: 0, lastPage: 0, perPage: 0, next: null, prev: null }}
+        handleNextPage={setNextPage}
+        handlePrevPage={setPrevPage}
+        handlePageSizeChange={setPerPage}
+        currentPage={pagination.page}
+        perPage={pagination.perPage}
+        total={activitiesMeta?.lastPage || 0}
+      />
+      {/* <div className="flex items-center justify-end space-x-8 p-2 pb-0">
         <div className="flex items-center gap-2">
           <div className="text-sm font-medium">Rows per page</div>
           <Select
@@ -195,7 +293,7 @@ export default function ActivitiesTable({ activitiesData }: any) {
             Next
           </Button>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }

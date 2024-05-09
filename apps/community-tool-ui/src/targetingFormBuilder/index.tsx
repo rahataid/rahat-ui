@@ -4,9 +4,7 @@ import { FieldType } from '../constants/fieldDefinition.const';
 import NumberInput from './NumberInput';
 import TextAreaInput from './TextAreaInput';
 import PasswordInput from './PasswordInput';
-import RadioInput from './RadioInput';
-import DropDownInput from './DropdownInput';
-import CheckboxInput from './CheckboxInput';
+import MultiSelectCheckBox from './MultiSelectCheckBox';
 
 export default function Index({ formField }: any) {
   return (
@@ -23,21 +21,11 @@ export default function Index({ formField }: any) {
         <PasswordInput formField={formField} className="mt-8" />
       )}
 
-      {formField.fieldType === FieldType.RADIO && (
-        <RadioInput formField={formField} className="mt-8" />
-      )}
-
-      {formField.fieldType === FieldType.DROPDOWN && (
-        <DropDownInput formField={formField} className="mt-8" />
-      )}
-
-      {formField.fieldType === FieldType.CHECKBOX && (
-        <CheckboxInput formField={formField} className="mt-8" />
-      )}
-
       {formField.fieldType === FieldType.TEXTAREA && (
         <TextAreaInput formField={formField} className="mt-8" />
       )}
+
+      <MultiSelectCheckBox formField={formField} />
     </>
   );
 }

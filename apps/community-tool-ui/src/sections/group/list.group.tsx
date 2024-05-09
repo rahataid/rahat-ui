@@ -85,16 +85,16 @@ export default function GroupList({
             </TableHeader>
             <TableBody>
               {table.getRowModel().rows?.length ? (
-                table.getRowModel().rows.map((row) => (
+                table.getRowModel().rows.map((row, key) => (
                   <TableRow
-                    key={row.id}
+                    key={key}
                     data-state={row.getIsSelected() && 'selected'}
                     onClick={() => {
                       handleClick(row.original);
                     }}
                   >
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>
+                    {row.getVisibleCells().map((cell, index) => (
+                      <TableCell key={index}>
                         {flexRender(
                           cell.column.columnDef.cell,
                           cell.getContext(),

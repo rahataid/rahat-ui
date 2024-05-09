@@ -33,12 +33,12 @@ export default function DHMContent({ data }: any) {
     const dhmData = data;
 
     const xAxisLabel = dhmData.map((d: any) => {
-        const date = new Date(d.data.waterLevelOn)
+        const date = new Date(d.createdAt)
         return date.toLocaleTimeString()
     })
 
-    const activationLevel = latestData.dataSource.triggerStatement.activationLevel;
-    const readinessLevel = latestData.dataSource.triggerStatement.readinessLevel;
+    const activationLevel = latestData.trigger.triggerStatement.activationLevel;
+    const readinessLevel = latestData.trigger.triggerStatement.readinessLevel;
     const longitude = latestData.data.point.coordinates[0];
     const latitude = latestData.data.point.coordinates[1];
 
@@ -94,7 +94,7 @@ export default function DHMContent({ data }: any) {
 
 
     const waterLevelData = dhmData.map((d: any) => {
-        return d.data.waterLevel
+        return parseFloat(d.data.waterLevel).toFixed(2)
     })
 
     const seriesData = [
@@ -123,10 +123,10 @@ export default function DHMContent({ data }: any) {
                     <h1 className='font-semibold text-lg'>Real Time Status</h1>
                     <p>Station: {latestData.data.title}</p>
                     <p>Basin: {latestData.data.basin}</p>
-                    <p>Water Level: {latestData.data.waterLevel}</p>
+                    <p>Water Level: {parseFloat(latestData.data.waterLevel).toFixed(2)}</p>
                     <p>Water Level On: {(new Date(latestData.data.waterLevelOn)).toLocaleString()}</p>
-                    <p>Longitude: {longitude}</p>
-                    <p>Latitude: {latitude}</p>
+                    <p>Longitude: {parseFloat(longitude).toFixed(2)}</p>
+                    <p>Latitude: {parseFloat(latitude).toFixed(2)}</p>
                     <p>Description: {latestData.data.description}</p>
                 </div>
                 <div className='bg-card p-4 rounded'>
@@ -141,10 +141,10 @@ export default function DHMContent({ data }: any) {
                     <p>Description: N/A</p>
                 </div>
                 <div className='bg-card p-4 rounded'>
-                    <h1 className='font-semibold text-lg'>Water Level: {latestData.data.waterLevel}</h1>
+                    <h1 className='font-semibold text-lg'>Water Level: {parseFloat(latestData.data.waterLevel).toFixed(2)}</h1>
                     <h1 className='font-semibold text-lg'>
-                        <div>Activation Level: {latestData.dataSource.triggerStatement.activationLevel}</div>
-                        <div>Readiness Level: {latestData.dataSource.triggerStatement.readinessLevel}</div>
+                        <div>Activation Level: {latestData.trigger.triggerStatement.activationLevel}</div>
+                        <div>Readiness Level: {latestData.trigger.triggerStatement.readinessLevel}</div>
                     </h1>
                     {renderStatus({
                         readinessLevel: readinessLevel,

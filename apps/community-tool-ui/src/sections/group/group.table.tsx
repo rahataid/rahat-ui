@@ -21,16 +21,16 @@ type IProps = {
 export default function GroupDetailTable({ table }: IProps) {
   return (
     <>
-      <div className="w-full -mt-0 bg-secondary">
+      <div className="w-full mb-3 bg-secondary">
         <div className="rounded border bg-card">
           <TableComponent>
             <ScrollArea className="h-[calc(100vh-210px)]">
               <TableHeader className="bg-card sticky top-0">
-                {table.getHeaderGroups().map((headerGroup) => (
-                  <TableRow key={headerGroup.id}>
-                    {headerGroup.headers.map((header) => {
+                {table.getHeaderGroups().map((headerGroup, index) => (
+                  <TableRow key={index}>
+                    {headerGroup.headers.map((header, index) => {
                       return (
-                        <TableHead key={header.id}>
+                        <TableHead key={index}>
                           {header.isPlaceholder
                             ? null
                             : flexRender(
@@ -45,13 +45,13 @@ export default function GroupDetailTable({ table }: IProps) {
               </TableHeader>
               <TableBody>
                 {table.getRowModel().rows?.length ? (
-                  table.getRowModel().rows.map((row) => (
+                  table.getRowModel().rows.map((row, index) => (
                     <TableRow
-                      key={row.id}
+                      key={index}
                       data-state={row.getIsSelected() && 'selected'}
                     >
-                      {row.getVisibleCells().map((cell) => (
-                        <TableCell key={cell.id}>
+                      {row.getVisibleCells().map((cell, index) => (
+                        <TableCell key={index}>
                           {flexRender(
                             cell.column.columnDef.cell,
                             cell.getContext(),

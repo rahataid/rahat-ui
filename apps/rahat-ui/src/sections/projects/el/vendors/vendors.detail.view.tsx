@@ -27,6 +27,7 @@ import {
 import { Card } from '@rahat-ui/shadcn/src/components/ui/card';
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 import AssignVoucherConfirm from './vendor.assign.confirm';
+import { useWaitForTransactionReceipt } from 'wagmi';
 
 interface IParams {
   uuid: any;
@@ -53,6 +54,9 @@ export default function VendorsDetailPage() {
 
   const { uuid: walletAddress, id: projectId } = useParams<IParams>();
   const [contractAddress, setContractAddress] = useState<any>('');
+  const [isTransacting, setisTransacting] = useState<boolean>(false);
+  const [transactionHash, setTransactionHash] = useState<`0x${string}`>()
+
 
   const updateVendor = useAddVendors();
   const projectClient = useProjectAction();
@@ -62,7 +66,10 @@ export default function VendorsDetailPage() {
     args: [walletAddress],
   });
 
-  console.log("contract address", contractAddress)
+  const result = useWaitForTransactionReceipt({
+    hash: transactionHash
+  })
+
 
   const { data: vendorVoucher } = useReadElProjectGetVendorVoucherDetail({
     address: contractAddress,
@@ -70,10 +77,12 @@ export default function VendorsDetailPage() {
   });
 
   const assignVendorToProjet = async () => {
-    return updateVendor.writeContractAsync({
+    setisTransacting(true);
+    const txnHash = await  updateVendor.writeContractAsync({
       address: contractAddress,
       args: [walletAddress, true],
     });
+    setTransactionHash(txnHash)
   };
 
   useEffect(() => {
@@ -88,7 +97,6 @@ export default function VendorsDetailPage() {
             },
           },
         });
-        console.log("wallet address", res.data)
         if (res.data) {
           const { value } = res.data;
           setContractAddress(value?.elproject?.address || '');
@@ -100,7 +108,6 @@ export default function VendorsDetailPage() {
     }
   }, []);
 
-  console.log("vendor status", vendorStatus)
 
   return (
     <div className="bg-secondary">
@@ -115,7 +122,7 @@ export default function VendorsDetailPage() {
         />
         <DataCard
           className="mt-2"
-          title="Referred Voucher Redeemed"
+          title="Discount Voucher Redeemed"
           number={vendorVoucher?.referredVoucherRedeemed?.toString() || '0'}
           subTitle="Discount Vouchers"
         />
@@ -151,6 +158,7 @@ export default function VendorsDetailPage() {
           </TabsContent>
           <TabsContent value="referrals">
             <ReferralTable
+              name = {name}
               projectId={projectId}
               vendorId={vendorId}
               walletAddress={walletAddress}

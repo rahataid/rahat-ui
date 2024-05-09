@@ -31,7 +31,7 @@ const AssignVoucherConfirm = ({
               <DialogTitle>Confirm Vendor Assign</DialogTitle>
             </DialogHeader>
             <DialogDescription>
-              Are you sure you want to assign{' '}
+              Are you sure you want to approve{' '}
               <span className="text-primary">{name}</span> to this project ?
             </DialogDescription>
             <DialogFooter className="sm:justify-end">

@@ -9,7 +9,8 @@ import { LucideIcon, RefreshCcw } from 'lucide-react';
 
 type CardProps = {
   title: string;
-  number: string;
+  number?: string;
+  smallNumber?: string;
   subTitle: string;
   className: string;
   Icon?: LucideIcon;
@@ -19,6 +20,7 @@ type CardProps = {
 export default function DataCard({
   title,
   number,
+  smallNumber,
   subTitle,
   className,
   Icon,
@@ -27,7 +29,7 @@ export default function DataCard({
   return (
     <Card
       className={cn(
-        'flex flex-col rounded justify-center border-none shadow',
+        'flex flex-col rounded justify-center border-none shadow bg-card',
         className,
       )}
     >
@@ -48,6 +50,7 @@ export default function DataCard({
       <CardContent className="flex items-center justify-between">
         <div>
           <div className="text-4xl font-semibold text-primary">{number}</div>
+          <div className="text-xl font-normal text-primary">{smallNumber}</div>
           <div className="flex items-end gap-4">
             <p className="text-xs text-muted-foreground space-y-0 pt-2">
               {subTitle}

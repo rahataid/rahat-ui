@@ -25,34 +25,17 @@ interface VendorTableProps {
 export const useVendorTable = ({ handleViewClick }: VendorTableProps) => {
   const columns: ColumnDef<VendorType>[] = [
     {
-      id: 'select',
-      header: ({ table }) => (
-        <Checkbox
-          checked={
-            table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && 'indeterminate')
-          }
-          onCheckedChange={(value: any) =>
-            table.toggleAllPageRowsSelected(!!value)
-          }
-          aria-label="Select all"
-        />
-      ),
-      cell: ({ row }) => (
-        <Checkbox
-          checked={row.getIsSelected()}
-          onCheckedChange={(value: any) => row.toggleSelected(!!value)}
-          aria-label="Select row"
-        />
-      ),
-      enableSorting: false,
-      enableHiding: false,
-    },
-    {
       accessorKey: 'name',
       header: 'Name',
       cell: ({ row }) => (
         <div className="capitalize">{row.getValue('name')}</div>
+      ),
+    },
+    {
+      accessorKey: 'phone',
+      header: 'Phone',
+      cell: ({ row }) => (
+        <div>{row.getValue('phone')}</div>
       ),
     },
     {

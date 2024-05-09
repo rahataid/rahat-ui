@@ -14,7 +14,10 @@ type IProps = {
   groupName: string;
 };
 
-export default function ActivityCommunicationTrigger({ campaignId, groupName }: IProps) {
+export default function ActivityCommunicationTrigger({
+  campaignId,
+  groupName,
+}: IProps) {
   const { id } = useParams();
   useStakeholdersGroups(id as UUID, {});
 
@@ -32,9 +35,7 @@ export default function ActivityCommunicationTrigger({ campaignId, groupName }: 
         Trigger: Activity Communication
       </h1>
 
-      <div>
-        Selected group: {groupName}
-      </div>
+      <div>Selected group: {groupName}</div>
 
       <div className="flex justify-end">
         <Button onClick={() => handleTriggerCommunication()}>Trigger</Button>

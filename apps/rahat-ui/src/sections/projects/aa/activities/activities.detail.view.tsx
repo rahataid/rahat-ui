@@ -142,13 +142,16 @@ export default function ActivitiesDetail({
       </div>
       {activityDetail?.activityType === 'COMMUNICATION' &&
         activityDetail?.campaignId && (
-          <ActivityCommunicationTrigger campaignId={activityDetail?.campaignId} groupName={activityDetail?.activtiyComm?.stakeholdersGroup?.name} />
+          <ActivityCommunicationTrigger
+            campaignId={activityDetail?.campaignId}
+            groupName={activityDetail?.activtiyComm?.stakeholdersGroup?.name}
+          />
         )}
 
       {activityDetail?.activityType === 'COMMUNICATION' &&
-        !activityDetail?.campaignId &&
-        <ActivityCommunicationForm activityId={activityDetail?.id} />
-      }
+        !activityDetail?.campaignId && (
+          <ActivityCommunicationForm activityId={activityDetail?.id} />
+        )}
 
       {showEdit && <EditActivityView />}
     </>

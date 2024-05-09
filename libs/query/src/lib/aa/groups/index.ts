@@ -1,2 +1,2 @@
-export * from './groups.service'
-export * from './groups.store'
+export * from './groups.service';
+export * from './groups.store';

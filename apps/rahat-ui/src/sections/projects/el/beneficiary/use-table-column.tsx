@@ -14,7 +14,7 @@ import { useSecondPanel } from '../../../../providers/second-panel-provider';
 import BeneficiaryDetail from '../../../../sections/projects/el/beneficiary/beneficiary.detail';
 import { truncateEthAddress } from '@rumsan/sdk/utils';
 
-export const useProjectBeneficiaryTableColumns = () => {
+export const useProjectBeneficiaryTableColumns = (voucherType:string) => {
   const { setSecondPanelComponent, closeSecondPanel } = useSecondPanel();
   const [walletAddressCopied, setWalletAddressCopied] = useState<number>();
 
@@ -48,9 +48,9 @@ export const useProjectBeneficiaryTableColumns = () => {
       // ),
       cell: 
       ({ row }) => {
-        const isDisabled = row.getValue('voucher') != 'Not Assigned';
+        const isDisabled = voucherType != 'NOT_ASSIGNED';
         const isChecked = row.getIsSelected() && !isDisabled;
-        return (<Checkbox
+        return (!isDisabled && <Checkbox
           checked={isChecked}
           onCheckedChange={(value) => row.toggleSelected(!!value)}
           aria-label="Select row"
@@ -106,14 +106,14 @@ export const useProjectBeneficiaryTableColumns = () => {
       cell: ({ row }) => <div> {row.getValue('gender')}</div>,
     },
     {
-      accessorKey: 'voucher',
+      accessorKey: 'voucherType',
       header: 'Voucher',
-      cell: ({ row }) => <div> {row.getValue('voucher')}</div>,
+      cell: ({ row }) => <div> {voucherType}</div>,
     },
     {
       accessorKey: 'voucherClaimStatus',
       header: 'Claim Status',
-      cell: ({ row }) => <div> {row.getValue('voucherClaimStatus').toString()}</div>,
+      cell: ({ row }) => <div> {row.getValue('voucherClaimStatus')}</div>,
     },
     {
       id: 'actions',

@@ -65,6 +65,10 @@ export default function ListView({
       name: 'All',
       value: undefined,
     },
+    {
+      name: 'Not Assigned',
+      value: 'NOT_ASSGNED',
+    },
     ...projects.map((p: any) => ({
       name: p.name,
       value: p.uuid,

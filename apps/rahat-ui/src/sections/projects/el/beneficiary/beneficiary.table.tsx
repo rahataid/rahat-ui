@@ -93,10 +93,6 @@ export const voucherType = [
     key: 'NOT_ASSIGNED',
     value: 'NOT_ASSIGNED',
   },
-  // {
-  //   key: 'ALL',
-  //   value: 'ALL',
-  // },
   {
     key: 'FREE',
     value: 'FREE',
@@ -271,35 +267,6 @@ function BeneficiaryDetailTableView() {
           </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="ml-auto">
-                <Settings2 className="mr-2 h-4 w-5" />
-                View
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Toggle Columns</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              {table
-                .getAllColumns()
-                .filter((column) => column.getCanHide())
-                .map((column) => {
-                  return (
-                    <DropdownMenuCheckboxItem
-                      key={column.id}
-                      className="capitalize"
-                      checked={column.getIsVisible()}
-                      onCheckedChange={(value) =>
-                        column.toggleVisibility(!!value)
-                      }
-                    >
-                      {column.id}
-                    </DropdownMenuCheckboxItem>
-                  );
-                })}
-            </DropdownMenuContent>
-          </DropdownMenu>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
               {selectedRowAddresses.length ? (
                 <Button
                   disabled={assignVoucher.isPending}
@@ -318,7 +285,7 @@ function BeneficiaryDetailTableView() {
           </DropdownMenu>
         </div>
         <div>
-        <Tabs defaultValue="account" className="w-[400px]">
+        <Tabs defaultValue="account" className="w-[100%]">
           <TabsList defaultValue="notAssigned" className="grid w-full grid-cols-3">
             <TabsTrigger onClick={() => {setVoucherType('NOT_ASSIGNED'); resetSelectedListItems();}} value="notAssigned">Not Assigned</TabsTrigger>
             <TabsTrigger onClick={() => {setVoucherType('FREE_VOUCHER'); resetSelectedListItems();}} value="freeVoucher">Free Voucher</TabsTrigger>

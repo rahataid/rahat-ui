@@ -387,7 +387,7 @@ export const useProjectBeneficiaries = (payload: GetProjectBeneficiaries) => {
               email: row?.piiData?.email || "",
               gender: row?.projectData?.gender || "",
               phone: row?.piiData?.phone || 'N/A',
-              type: row?.Beneficiary?.type || 'N/A',
+              type: row?.type || 'N/A',
               phoneStatus: row?.projectData?.phoneStatus || "",
               bankedStatus: row?.projectData?.bankedStatus || "",
               internetStatus: row?.projectData?.internetStatus || "",

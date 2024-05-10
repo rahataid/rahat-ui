@@ -72,7 +72,7 @@ const TargetingPageLayout: FC<TargetingPageLayoutProps> = ({
               />
             ))}
             <Separator />
-            {pathName === '/targeting/targetFilters' && <TargetSelectForm />}
+            {pathName === '/targeting/filters' && <TargetSelectForm />}
           </ResizablePanel>
           {renderChildren()}
         </ResizablePanelGroup>

@@ -276,8 +276,21 @@ export default function AddActivities() {
                 Add Payout
                 <Plus className='ml-2' size={16} strokeWidth={3} />
               </Button>
-              <div className="flex justify-end mt-4">
-                <Button>Create Activities</Button>
+              <div className="flex justify-end mt-8">
+                <div className='flex gap-2'>
+                  <Button
+                    type='button'
+                    variant='secondary'
+                    className='bg-red-100 text-red-600 w-36'
+                    onClick={() => {
+                      form.reset();
+                      setCommunicationAddForm([])
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                  <Button type='submit'>Create Activities</Button>
+                </div>
               </div>
             </div>
           </ScrollArea>

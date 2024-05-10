@@ -23,6 +23,12 @@ export const useCommunityGroupTableColumns = () => {
       cell: ({ row }) => <div>{row.getValue('name')}</div>,
     },
     {
+      header: 'Created By',
+      cell: ({ row }) => {
+        return <div>{row.original.user?.name || '-'}</div>;
+      },
+    },
+    {
       id: 'actions',
       enableHiding: false,
       header: 'View Detail',

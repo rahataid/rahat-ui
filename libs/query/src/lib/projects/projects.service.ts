@@ -380,14 +380,14 @@ export const useProjectBeneficiaries = (payload: GetProjectBeneficiaries) => {
         ...query.data,
         data: query.data?.data?.length
           ? query.data.data.map((row: any) => ({
-              uuid: row?.uuid,
-              wallet: row?.walletAddress,
+              uuid: row?.uuid?.toString(),
+              wallet: row?.walletAddress?.toString(),
               voucherClaimStatus: row?.claimStatus,
               name: row?.piiData?.name || "",
               email: row?.piiData?.email || "",
               gender: row?.projectData?.gender || "",
               phone: row?.piiData?.phone || 'N/A',
-              type: row?.type || 'N/A',
+              type: row?.type?.toString() || 'N/A',
               phoneStatus: row?.projectData?.phoneStatus || "",
               bankedStatus: row?.projectData?.bankedStatus || "",
               internetStatus: row?.projectData?.internetStatus || "",

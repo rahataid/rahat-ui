@@ -1,40 +1,39 @@
-import {
-  Beneficiary,
-  GroupResponseById,
-  ListGroup,
-} from '@rahataid/community-tool-sdk';
+'use client';
+
 import { ColumnDef } from '@tanstack/react-table';
 import { Eye } from 'lucide-react';
-import { useSecondPanel } from '../../providers/second-panel-provider';
-
+import { Result, TargetList } from '@rahataid/community-tool-sdk/targets';
+import { formatDate, humanizeString } from '../../../utils';
 import Link from 'next/link';
-import EditGroupedBeneficiaries from './edit/editGroupedBeneficiaries';
+import { Beneficiary } from '@rahataid/community-tool-sdk';
+import { useSecondPanel } from 'apps/community-tool-ui/src/providers/second-panel-provider';
+import PinnedListBeneficiaryDetail from './pinnedlist.beneficiary.details';
 
-export const useCommunityGroupTableColumns = () => {
-  const columns: ColumnDef<ListGroup>[] = [
+export const useTargetLabelTableColumns = () => {
+  const columns: ColumnDef<TargetList>[] = [
     {
-      header: 'ID',
-      accessorKey: 'ID',
-      cell: ({ row }) => <div>{row.original.id}</div>,
+      accessorKey: 'label',
+      header: 'Label',
+      cell: ({ row }) => <div>{humanizeString(row.getValue('label'))}</div>,
     },
     {
-      header: 'Name',
-      accessorKey: 'name',
-      cell: ({ row }) => <div>{row.getValue('name')}</div>,
+      accessorKey: 'status',
+      header: 'Status',
+      cell: ({ row }) => <div>{row.getValue('status')}</div>,
     },
     {
+      accessorKey: 'createdBy',
       header: 'Created By',
-      cell: ({ row }) => {
-        return <div>{row.original.user?.name || '-'}</div>;
-      },
+      cell: ({ row }) => <div>{row?.original?.user?.name}</div>,
     },
+
     {
       id: 'actions',
       enableHiding: false,
-      header: 'View Detail',
+      header: 'Details',
       cell: ({ row }) => {
         return (
-          <Link href={`/group/${row.original.uuid}`}>
+          <Link href={`/targeting/${row?.original?.uuid}`}>
             <Eye
               size={20}
               strokeWidth={1.5}
@@ -45,13 +44,13 @@ export const useCommunityGroupTableColumns = () => {
       },
     },
   ];
+
   return columns;
 };
 
-export const useCommunityGroupDeailsColumns = () => {
+export const useTargetPinnedListDetailsTableColumns = () => {
   const { closeSecondPanel, setSecondPanelComponent } = useSecondPanel();
-
-  const columns: ColumnDef<GroupResponseById[]>[] = [
+  const columns: ColumnDef<Result>[] = [
     {
       accessorKey: 'beneficiary',
       header: 'Full Name',
@@ -104,6 +103,20 @@ export const useCommunityGroupDeailsColumns = () => {
         return 'null';
       },
     },
+
+    {
+      accessorKey: 'beneficiary',
+      header: 'Created At',
+      cell: ({ row }) => {
+        if (row && row.getValue && typeof row.getValue === 'function') {
+          const beneficiary = row.getValue('beneficiary') as Beneficiary;
+          if (beneficiary && beneficiary.createdAt) {
+            return formatDate(beneficiary.createdAt);
+          }
+        }
+        return 'null';
+      },
+    },
     {
       id: 'actions',
       enableHiding: false,
@@ -119,8 +132,8 @@ export const useCommunityGroupDeailsColumns = () => {
             onClick={() =>
               setSecondPanelComponent(
                 <>
-                  <EditGroupedBeneficiaries
-                    uuid={beneficiary?.uuid as string}
+                  <PinnedListBeneficiaryDetail
+                    data={beneficiary}
                     closeSecondPanel={closeSecondPanel}
                   />
                 </>,

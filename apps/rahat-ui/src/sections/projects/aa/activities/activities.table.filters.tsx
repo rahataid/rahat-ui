@@ -1,3 +1,4 @@
+import { useRouter } from 'next/navigation';
 import {
     Select,
     SelectContent,
@@ -13,14 +14,17 @@ import { useActivitiesStore } from '@rahat-ui/query';
 
 type IProps = {
     handleFilter: (key: string, value: string) => void;
+    projectID: string | string[];
 }
 
-export default function ActivitiesTableFilters({ handleFilter }: IProps) {
+export default function ActivitiesTableFilters({ handleFilter, projectID }: IProps) {
     const { categories, phases, hazardTypes } = useActivitiesStore((state) => ({
         categories: state.categories,
         phases: state.phases,
         hazardTypes: state.hazardTypes
-    }))
+    }));
+
+    const router = useRouter();
 
     return (
         <div className="flex items-center gap-2 mb-2">
@@ -84,7 +88,7 @@ export default function ActivitiesTableFilters({ handleFilter }: IProps) {
                 </SelectContent>
             </Select>
             {/* Add Activities Btn */}
-            <Button><Plus size={18} className='mr-1' /> Add Trigger Statement</Button>
+            <Button type='button' onClick={() => router.push(`/projects/aa/${projectID}/activities/add`)}><Plus size={18} className='mr-1' /> Add Activities</Button>
         </div>
     )
 }

@@ -1,6 +1,7 @@
-'use client';
-
+import * as React from 'react'
 import { useParams } from 'next/navigation';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
@@ -8,6 +9,7 @@ import {
   FormControl,
   FormField,
   FormItem,
+  FormLabel,
   FormMessage,
 } from '@rahat-ui/shadcn/src/components/ui/form';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
@@ -18,44 +20,46 @@ import {
   SelectContent,
   SelectItem,
 } from '@rahat-ui/shadcn/src/components/ui/select';
-
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-// import { useActivitiesFields } from './useActivitiesFields';
+import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
+import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import { Plus } from 'lucide-react';
 import {
-  useActivitiesCategories,
   useActivitiesStore,
-  useActivitiesHazardTypes,
-  useActivitiesPhase,
   useCreateActivities,
 } from '@rahat-ui/query';
 import { UUID } from 'crypto';
+import AddCommunicationForm from './add.communication.form';
 
 export default function AddActivities() {
-  const { id } = useParams();
-  useActivitiesCategories(id as UUID);
-  const categories = useActivitiesStore((state) => state.categories);
-  useActivitiesPhase(id as UUID);
-  const phases = useActivitiesStore((state) => state.phases);
-  useActivitiesHazardTypes(id as UUID);
-  const hazardTypes = useActivitiesStore((state) => state.hazardTypes);
-  // const { hazardType, category, phase } = useActivitiesFields();
+  const { id: projectID } = useParams();
+  const { categories, phases, hazardTypes } = useActivitiesStore((state) => ({
+    categories: state.categories,
+    phases: state.phases,
+    hazardTypes: state.hazardTypes
+  }))
+  const [communicationAddForm, setCommunicationAddForm] = React.useState<React.ReactNode[]>([]);
 
   const createActivity = useCreateActivities();
 
   const FormSchema = z.object({
     title: z.string().min(2, { message: 'Title must be at least 4 character' }),
-    responsibility: z
-      .string()
-      .min(2, { message: 'Please enter responsibility' }),
+    responsibility: z.string().min(2, { message: 'Please enter responsibility' }),
     source: z.string().min(2, { message: 'Please enter source' }),
     phaseId: z.string().min(1, { message: 'Please select phase' }),
     categoryId: z.string().min(1, { message: 'Please select category' }),
     hazardTypeId: z.string().min(1, { message: 'Please select hazard type' }),
-    activityType: z.string().min(1, { message: 'Please select activity type' }),
-    description: z
-      .string()
-      .min(5, { message: 'Must be at least 5 characters' }),
+    leadTime: z.string().min(2, { message: "Please enter lead time" }),
+    description: z.string().min(5, { message: 'Must be at least 5 characters' }),
+    groupType: z.string().min(1, { message: 'Please select group type' }),
+    groupId: z.string().min(1, { message: 'Please select group' }),
+    communicationType: z.string().min(1, { message: 'Please select communication type' }),
+    message: z.string().min(5, { message: 'Must be at least 5 characters' })
+    // activityCommunication: z.array(z.object({
+    //   groupType: z.string().min(1, { message: 'Please select group type' }),
+    //   groupId: z.string().min(1, { message: 'Please select group' }),
+    //   communicationType: z.string().min(1, { message: 'Please select communication type' }),
+    //   message: z.string().min(5, { message: 'Must be at least 5 characters' })
+    // }))
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -67,15 +71,20 @@ export default function AddActivities() {
       phaseId: '',
       categoryId: '',
       hazardTypeId: '',
-      activityType: '',
+      leadTime: '',
       description: '',
+      // activityCommunication: [{ groupType: '', groupId: '', communicationType: '', message: '' }]
     },
   });
+
+  const addCommunicationForm = () => {
+    setCommunicationAddForm([...communicationAddForm, <AddCommunicationForm form={form} />])
+  }
 
   const handleCreateActivities = async (data: z.infer<typeof FormSchema>) => {
     try {
       await createActivity.mutateAsync({
-        projectUUID: id as UUID,
+        projectUUID: projectID as UUID,
         activityPayload: data,
       });
     } catch (e) {
@@ -87,190 +96,191 @@ export default function AddActivities() {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleCreateActivities)}>
-        <div className="p-4 h-add bg-card">
-          <h1 className="text-lg font-semibold mb-6">Add : Activities</h1>
-          <div className="shadow-md p-4 rounded-sm">
-            <div className="grid grid-cols-2 gap-4 mb-4">
-              <FormField
-                control={form.control}
-                name="title"
-                render={({ field }) => {
-                  return (
+        <div className='p-2 bg-secondary'>
+          <ScrollArea className='h-[calc(100vh-80px)]'>
+            <div className="p-4 rounded bg-card">
+              <h1 className="text-lg font-semibold mb-6">Add : Activities</h1>
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="title"
+                  render={({ field }) => {
+                    return (
+                      <FormItem className='col-span-2'>
+                        <FormLabel>Activity title</FormLabel>
+                        <FormControl>
+                          <Input type="text" placeholder="Enter activity title" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    );
+                  }}
+                />
+                <FormField
+                  control={form.control}
+                  name="responsibility"
+                  render={({ field }) => {
+                    return (
+                      <FormItem>
+                        <FormLabel>Responsibility</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="text"
+                            placeholder="Enter responsibility"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    );
+                  }}
+                />
+                <FormField
+                  control={form.control}
+                  name="source"
+                  render={({ field }) => {
+                    return (
+                      <FormItem>
+                        <FormLabel>Source</FormLabel>
+                        <FormControl>
+                          <Input type="text" placeholder="Enter source" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    );
+                  }}
+                />
+                <FormField
+                  control={form.control}
+                  name="phaseId"
+                  render={({ field }) => (
                     <FormItem>
-                      <FormControl>
-                        <Input type="text" placeholder="Title" {...field} />
-                      </FormControl>
+                      <FormLabel>Phase</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select phase" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {phases.map((item) => (
+                            <SelectItem key={item.id} value={item.uuid}>
+                              {item.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                       <FormMessage />
                     </FormItem>
-                  );
-                }}
-              />
-              <FormField
-                control={form.control}
-                name="responsibility"
-                render={({ field }) => {
-                  return (
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="categoryId"
+                  render={({ field }) => (
                     <FormItem>
-                      <FormControl>
-                        <Input
-                          type="text"
-                          placeholder="Responsibility"
-                          {...field}
-                        />
-                      </FormControl>
+                      <FormLabel>Category</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select category" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {categories.map((item) => (
+                            <SelectItem key={item.id} value={item.uuid}>
+                              {item.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                       <FormMessage />
                     </FormItem>
-                  );
-                }}
-              />
-              <FormField
-                control={form.control}
-                name="source"
-                render={({ field }) => {
-                  return (
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="hazardTypeId"
+                  render={({ field }) => (
                     <FormItem>
-                      <FormControl>
-                        <Input type="text" placeholder="Source" {...field} />
-                      </FormControl>
+                      <FormLabel>Hazard Type</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select hazard type" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {hazardTypes.map((item) => (
+                            <SelectItem key={item.id} value={item.uuid}>
+                              {item.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                       <FormMessage />
                     </FormItem>
-                  );
-                }}
-              />
-              <FormField
-                control={form.control}
-                name="phaseId"
-                render={({ field }) => (
-                  <FormItem>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select phase" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {phases.map((item) => (
-                          <SelectItem key={item.id} value={item.uuid}>
-                            {item.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="categoryId"
-                render={({ field }) => (
-                  <FormItem>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select category" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {categories.map((item) => (
-                          <SelectItem key={item.id} value={item.uuid}>
-                            {item.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="hazardTypeId"
-                render={({ field }) => (
-                  <FormItem>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select hazard type" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {hazardTypes.map((item) => (
-                          <SelectItem key={item.id} value={item.uuid}>
-                            {item.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="activityType"
-                render={({ field }) => (
-                  <FormItem>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select activity type" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                       
-                          <SelectItem value={'GENERAL'}>
-                            {'GENERAL'}
-                          </SelectItem>
-                            <SelectItem value={'COMMUNICATION'}>
-                            {'COMMUNICATION'}
-                          </SelectItem>
-                            <SelectItem value={'PAYOUT'}>
-                            {'PAYOUT'}
-                          </SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="description"
-                render={({ field }) => {
-                  return (
-                    <FormItem>
-                      <FormControl>
-                        <Input
-                          type="textarea"
-                          placeholder="Description"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  );
-                }}
-              />
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="leadTime"
+                  render={({ field }) => {
+                    return (
+                      <FormItem>
+                        <FormLabel>Lead Time</FormLabel>
+                        <FormControl>
+                          <Input type="text" placeholder="Enter lead time" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    );
+                  }}
+                />
+                <FormField
+                  control={form.control}
+                  name="description"
+                  render={({ field }) => {
+                    return (
+                      <FormItem className='col-span-2'>
+                        <FormLabel>Description</FormLabel>
+                        <FormControl>
+                          <Textarea placeholder="Enter description" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    );
+                  }}
+                />
+              </div>
+              {communicationAddForm?.map((communicationForm, index) => <div key={index} className='mt-4'>{communicationForm}</div>)}
+              <Button
+                type='button'
+                variant='outline'
+                className='border-dashed border-primary text-primary text-md w-full mt-4'
+                onClick={addCommunicationForm}
+              >
+                Add Communication
+                <Plus className='ml-2' size={16} strokeWidth={3} />
+              </Button>
+              <Button type='button' variant='outline' className='border-dashed border-primary text-primary text-md w-full mt-4'>
+                Add Payout
+                <Plus className='ml-2' size={16} strokeWidth={3} />
+              </Button>
+              <div className="flex justify-end mt-4">
+                <Button>Create Activities</Button>
+              </div>
             </div>
-            <div className="flex justify-end">
-              <Button>Create Activities</Button>
-            </div>
-          </div>
+          </ScrollArea>
         </div>
       </form>
     </Form>

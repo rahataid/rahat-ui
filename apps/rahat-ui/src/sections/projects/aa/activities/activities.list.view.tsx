@@ -91,6 +91,7 @@ export default function ActivitiesList() {
   return (
     <div className="p-2 bg-secondary h-[calc(100vh-65px)]">
       <ActivitiesTableFilters
+        projectID={projectID}
         handleFilter={handleFilter}
       />
       <div className='border bg-card rounded'>

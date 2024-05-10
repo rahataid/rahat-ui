@@ -14,7 +14,7 @@ export const useTargetingList = (
   const query = useQuery(
     {
       queryKey: [TAGS.LIST_TARGETING, payload],
-      queryFn: () => targetingClient.list(),
+      queryFn: () => targetingClient.list(payload),
     },
     queryClient,
   );
@@ -55,7 +55,6 @@ export const useTargetingCreate = () => {
 export const useTargetedBeneficiaryList = (target_uuid: string) => {
   const { queryClient, rumsanService } = useRSQuery();
   const targetingClient = getTargetClient(rumsanService.client);
-  console.log('target_uuid', target_uuid);
   const query = useQuery(
     {
       queryKey: [TAGS.GET_TARGETING_BENEFICIARIES, target_uuid],

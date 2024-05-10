@@ -42,7 +42,6 @@ export default function BeneficiaryDetail({ data, closeSecondPanel }: IProps) {
   }, [data.uuid]);
 
   const deleteCommunityBeneficiary = useCommunityBeneficiaryRemove();
-  console.log('benefdetails', data);
   const handleBeneficiaryDelete = () => {
     Swal.fire({
       title: 'Are you sure?',

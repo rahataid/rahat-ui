@@ -49,6 +49,8 @@ type AddAudienceProps = {
   selectedRows: Array<any>;
   audienceData: any;
   setSelectedRows: any;
+  audienceRequiredError: boolean;
+  setAudienceRequiredError: any;
 };
 
 const AddAudience: FC<AddAudienceProps> = ({
@@ -58,6 +60,8 @@ const AddAudience: FC<AddAudienceProps> = ({
   selectedRows,
   audienceData,
   setSelectedRows,
+  audienceRequiredError,
+  setAudienceRequiredError,
 }) => {
   const [columnVisibility, setColumnVisibility] = React.useState({});
   const [rowSelection, setRowSelection] = React.useState({});
@@ -133,10 +137,14 @@ const AddAudience: FC<AddAudienceProps> = ({
     setRowSelection,
     tableData,
   });
-
-
+  if (selectedRows.length > 0) {
+    setAudienceRequiredError(false);
+  }
   return (
     <>
+      {audienceRequiredError && (
+        <h3 className="text-red-600">Select Audience</h3>
+      )}
       {/* header area start  */}
       <div className="flex items-center gap-2 pb-2">
         <Input

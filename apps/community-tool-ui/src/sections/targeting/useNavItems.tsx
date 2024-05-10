@@ -1,4 +1,4 @@
-import { List, ListFilter } from 'lucide-react';
+import { PinIcon, ListFilter } from 'lucide-react';
 import { paths } from '../../routes/paths';
 import { NavItem } from './nav-items.types';
 
@@ -8,14 +8,14 @@ export const useTargetingNavItems = () => {
       title: 'Targeting',
       children: [
         {
-          title: 'Targeting Filters',
+          title: 'Filters options',
           path: `${paths.dashboard.targeting.root}`,
           icon: <ListFilter size={18} strokeWidth={1.5} />,
         },
         {
-          title: 'Target List',
+          title: 'Pinned list',
           path: `${paths.dashboard.targeting.list}`,
-          icon: <List size={18} strokeWidth={1.5} />,
+          icon: <PinIcon size={18} strokeWidth={1.5} />,
         },
       ],
     },

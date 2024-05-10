@@ -50,6 +50,11 @@ export const useBeneficiaryNavItems = () => {
           path: `${paths.dashboard.group.root}`,
           icon: <List size={18} strokeWidth={1.5} />,
         },
+        {
+          title: ' Import Logs',
+          path: `${paths.dashboard.group.import_logs}`,
+          icon: <List size={18} strokeWidth={1.5} />,
+        },
       ],
     },
     {

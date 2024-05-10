@@ -14,7 +14,7 @@ export const useTargetingList = (
   const query = useQuery(
     {
       queryKey: [TAGS.LIST_TARGETING, payload],
-      queryFn: () => targetingClient.list(),
+      queryFn: () => targetingClient.list(payload),
     },
     queryClient,
   );
@@ -55,7 +55,6 @@ export const useTargetingCreate = () => {
 export const useTargetedBeneficiaryList = (target_uuid: string) => {
   const { queryClient, rumsanService } = useRSQuery();
   const targetingClient = getTargetClient(rumsanService.client);
-  console.log('target_uuid', target_uuid);
   const query = useQuery(
     {
       queryKey: [TAGS.GET_TARGETING_BENEFICIARIES, target_uuid],
@@ -77,7 +76,7 @@ export const useTargetingLabelUpdate = () => {
       mutationKey: [TAGS.UPDATE_TARGETING_LABEL],
       mutationFn: targetingClient.patchLabel,
       onSuccess: () => {
-        Swal.fire('Target Label Created Successfully', '', 'success');
+        Swal.fire('Target beneficiary pinned successfully', '', 'success');
         queryClient.invalidateQueries({
           queryKey: [
             TAGS.GET_TARGETING_BENEFICIARIES,

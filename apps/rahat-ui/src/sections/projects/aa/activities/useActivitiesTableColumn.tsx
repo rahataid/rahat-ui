@@ -42,7 +42,7 @@ export default function useActivitiesTableColumn() {
       accessorKey: 'category',
       header: 'Category',
       cell: ({ row }) => (
-        <Badge className="rounded-md capitalize">
+        <Badge className="rounded-md capitalize w-max text-muted-foreground">
           {row.getValue('category')}
         </Badge>
       ),
@@ -51,14 +51,14 @@ export default function useActivitiesTableColumn() {
       accessorKey: 'phase',
       header: 'Phase',
       cell: ({ row }) => (
-        <Badge className="rounded-md capitalize">{row.getValue('phase')}</Badge>
+        <Badge className="rounded-md capitalize text-muted-foreground">{row.getValue('phase')}</Badge>
       ),
     },
     {
       accessorKey: 'activityType',
       header: 'Type',
       cell: ({ row }) => (
-        <Badge className="rounded-md capitalize">
+        <Badge className="rounded-md capitalize text-muted-foreground">
           {row.getValue('activityType')}
         </Badge>
       ),
@@ -75,7 +75,7 @@ export default function useActivitiesTableColumn() {
     },
     {
       accessorKey: 'hazardType',
-      header: 'Hazard Type',
+      header: () => <div className='w-max'>Hazard Type</div>,
       cell: ({ row }) => <div>{row.getValue('hazardType')}</div>,
     },
     {
@@ -84,7 +84,7 @@ export default function useActivitiesTableColumn() {
       cell: ({ row }) => (
         <div className="flex gap-1">
           <Badge
-            className={`rounded-md capitalize bg-green-200
+            className={`rounded-md capitalize bg-red-100 text-red-600
               }`}
           >
             {row.getValue('status')}

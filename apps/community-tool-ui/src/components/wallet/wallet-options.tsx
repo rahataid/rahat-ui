@@ -4,7 +4,6 @@ import { Connector, useConnect } from 'wagmi';
 
 export function WalletOptions() {
   const { connectors, connect } = useConnect();
-  console.log('connectors', connectors);
 
   return (
     <div className="flex flex-col space-y-4">

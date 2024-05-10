@@ -1,4 +1,4 @@
-import { ListTargeting } from '../../sections/targeting';
+import { ListTargeting } from '../../../sections/targeting';
 
 export const metadata = {
   title: 'Targeting Query List',

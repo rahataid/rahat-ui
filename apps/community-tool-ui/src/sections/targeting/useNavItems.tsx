@@ -8,20 +8,14 @@ export const useTargetingNavItems = () => {
       title: 'Targeting',
       children: [
         {
-          title: 'Target List',
-          path: `${paths.dashboard.targeting.root}`,
-          icon: <List size={18} strokeWidth={1.5} />,
-        },
-      ],
-    },
-    {
-      title: 'Actions',
-
-      children: [
-        {
           title: 'Targeting Filters',
-          path: `${paths.dashboard.targeting.targetFilters}`,
+          path: `${paths.dashboard.targeting.root}`,
           icon: <ListFilter size={18} strokeWidth={1.5} />,
+        },
+        {
+          title: 'Target List',
+          path: `${paths.dashboard.targeting.list}`,
+          icon: <List size={18} strokeWidth={1.5} />,
         },
       ],
     },

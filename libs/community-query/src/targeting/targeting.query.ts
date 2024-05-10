@@ -14,7 +14,7 @@ export const useTargetingList = (
   const query = useQuery(
     {
       queryKey: [TAGS.LIST_TARGETING, payload],
-      queryFn: () => targetingClient.list(payload),
+      queryFn: () => targetingClient.list(),
     },
     queryClient,
   );

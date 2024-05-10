@@ -16,7 +16,7 @@ import {
   LayoutDashboard,
   Users,
   Group,
-  ParkingMeter
+  ParkingMeter,
 } from 'lucide-react';
 
 export type NavItem = {
@@ -73,9 +73,7 @@ export const useNavItems = () => {
           {
             title: 'Distributions',
             // subtitle: 0,
-            icon: (
-              <AlignVerticalJustifyCenter size={18} strokeWidth={1.5} />
-            ),
+            icon: <AlignVerticalJustifyCenter size={18} strokeWidth={1.5} />,
           },
           {
             title: 'Communications',

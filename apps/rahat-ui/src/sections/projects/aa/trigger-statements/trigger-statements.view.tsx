@@ -18,13 +18,8 @@ import { UUID } from 'crypto';
 export default function TriggerStatementsView() {
   const { id } = useParams();
 
-  const {
-    pagination,
-    setNextPage,
-    setPrevPage,
-    setPerPage,
-    setPagination
-  } = usePagination();
+  const { pagination, setNextPage, setPrevPage, setPerPage, setPagination } =
+    usePagination();
 
   React.useEffect(() => {
     setPagination({ page: 1, perPage: 10 });
@@ -50,9 +45,20 @@ export default function TriggerStatementsView() {
   });
   return (
     <>
-      <TriggerStatementsTable table={table} projectId={id} loading={isLoading} />
+      <TriggerStatementsTable
+        table={table}
+        projectId={id}
+        loading={isLoading}
+      />
       <CustomPagination
-        meta={{ total: 0, currentPage: 0, lastPage: 0, perPage: 0, next: null, prev: null }}
+        meta={{
+          total: 0,
+          currentPage: 0,
+          lastPage: 0,
+          perPage: 0,
+          next: null,
+          prev: null,
+        }}
         handleNextPage={setNextPage}
         handlePrevPage={setPrevPage}
         handlePageSizeChange={setPerPage}

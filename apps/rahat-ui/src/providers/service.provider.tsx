@@ -47,7 +47,7 @@ export function ServiceProvider({ children }: ServiceProviderProps) {
       }),
     [],
   );
-  // useAcessManagerSettings();
+  useAcessManagerSettings();
 
   useEffect(() => {
     if (!queryClient) {

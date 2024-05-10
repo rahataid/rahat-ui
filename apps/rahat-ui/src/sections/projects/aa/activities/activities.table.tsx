@@ -33,12 +33,18 @@ import {
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import useActivitiesTableColumn from './useActivitiesTableColumn';
-import { useActivities, useActivitiesCategories, useActivitiesHazardTypes, useActivitiesPhase, useActivitiesStore, usePagination } from '@rahat-ui/query';
+import {
+  useActivities,
+  useActivitiesCategories,
+  useActivitiesHazardTypes,
+  useActivitiesPhase,
+  useActivitiesStore,
+  usePagination,
+} from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import { useEffect, useState, useCallback } from 'react';
 import TableLoader from 'apps/rahat-ui/src/components/table.loader';
-
 
 export default function ActivitiesTable() {
   const { id } = useParams();
@@ -59,10 +65,12 @@ export default function ActivitiesTable() {
     setPagination({ page: 1, perPage: 10 });
   }, []);
 
+  const { activitiesData, activitiesMeta, isLoading } = useActivities(
+    id as UUID,
+    { ...pagination, ...filters },
+  );
 
-  const { activitiesData, activitiesMeta, isLoading } = useActivities(id as UUID, { ...pagination, ...filters });
-
-  console.log('activitiesData', activitiesData)
+  console.log('activitiesData', activitiesData);
 
   useActivitiesCategories(id as UUID);
   const categories = useActivitiesStore((state) => state.categories);
@@ -103,34 +111,34 @@ export default function ActivitiesTable() {
   const handleCategoryFilters = useCallback(
     (category: any) => {
       if (category === 'all') {
-        setFilters({ ...filters, category: null })
-        return
+        setFilters({ ...filters, category: null });
+        return;
       }
-      setFilters({ ...filters, category })
+      setFilters({ ...filters, category });
     },
-    [filters, setFilters]
-  )
+    [filters, setFilters],
+  );
 
   const handleHazardTypeFilter = useCallback(
     (hazardType: any) => {
-      setFilters({ ...filters, hazardType })
+      setFilters({ ...filters, hazardType });
     },
-    [filters, setFilters]
-  )
+    [filters, setFilters],
+  );
 
   const handlePhasesFilter = useCallback(
     (phase: any) => {
       if (phase === 'all') {
-        setFilters({ ...filters, phase: null })
-        return
+        setFilters({ ...filters, phase: null });
+        return;
       }
-      setFilters({ ...filters, phase })
+      setFilters({ ...filters, phase });
     },
-    [filters, setFilters]
-  )
+    [filters, setFilters],
+  );
 
   if (isLoading) {
-    return <TableLoader />
+    return <TableLoader />;
   }
 
   return (
@@ -143,9 +151,7 @@ export default function ActivitiesTable() {
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
-              <SelectItem value='all'>
-                All Phases
-              </SelectItem>
+              <SelectItem value="all">All Phases</SelectItem>
               {phases.map((item) => (
                 <SelectItem key={item.id} value={item.uuid}>
                   {item.name}
@@ -161,9 +167,7 @@ export default function ActivitiesTable() {
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
-              <SelectItem value='all'>
-                All Categories
-              </SelectItem>
+              <SelectItem value="all">All Categories</SelectItem>
               {categories.map((item) => (
                 <SelectItem key={item.id} value={item.uuid}>
                   {item.name}
@@ -200,9 +204,9 @@ export default function ActivitiesTable() {
                         {header.isPlaceholder
                           ? null
                           : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext(),
-                          )}
+                              header.column.columnDef.header,
+                              header.getContext(),
+                            )}
                       </TableHead>
                     );
                   })}
@@ -241,7 +245,16 @@ export default function ActivitiesTable() {
         </Table>
       </div>
       <CustomPagination
-        meta={activitiesMeta || { total: 0, currentPage: 0, lastPage: 0, perPage: 0, next: null, prev: null }}
+        meta={
+          activitiesMeta || {
+            total: 0,
+            currentPage: 0,
+            lastPage: 0,
+            perPage: 0,
+            next: null,
+            prev: null,
+          }
+        }
         handleNextPage={setNextPage}
         handlePrevPage={setPrevPage}
         handlePageSizeChange={setPerPage}

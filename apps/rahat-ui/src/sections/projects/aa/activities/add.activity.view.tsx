@@ -231,16 +231,11 @@ export default function AddActivities() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                       
-                          <SelectItem value={'GENERAL'}>
-                            {'GENERAL'}
-                          </SelectItem>
-                            <SelectItem value={'COMMUNICATION'}>
-                            {'COMMUNICATION'}
-                          </SelectItem>
-                            <SelectItem value={'PAYOUT'}>
-                            {'PAYOUT'}
-                          </SelectItem>
+                        <SelectItem value={'GENERAL'}>{'GENERAL'}</SelectItem>
+                        <SelectItem value={'COMMUNICATION'}>
+                          {'COMMUNICATION'}
+                        </SelectItem>
+                        <SelectItem value={'PAYOUT'}>{'PAYOUT'}</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />

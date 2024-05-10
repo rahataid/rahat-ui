@@ -343,6 +343,7 @@ type GetProjectBeneficiaries = Pagination & {
   sort?: string;
   status?: string;
   projectUUID: UUID;
+  type?: string;
   vouchers?: any;
 };
 
@@ -379,16 +380,17 @@ export const useProjectBeneficiaries = (payload: GetProjectBeneficiaries) => {
         ...query.data,
         data: query.data?.data?.length
           ? query.data.data.map((row: any) => ({
-              uuid: row?.Beneficiary?.uuid,
-              wallet: row?.Beneficiary?.walletAddress,
-              name: row?.piiData?.name,
-              email: row?.piiData?.email,
-              gender: row?.Beneficiary?.gender,
+              uuid: row?.uuid,
+              wallet: row?.walletAddress,
+              voucherClaimStatus: row?.claimStatus,
+              name: row?.piiData?.name || "",
+              email: row?.piiData?.email || "",
+              gender: row?.projectData?.gender || "",
               phone: row?.piiData?.phone || 'N/A',
               type: row?.Beneficiary?.type || 'N/A',
-              phoneStatus: row?.Beneficiary?.phoneStatus,
-              bankedStatus: row?.Beneficiary?.bankedStatus,
-              internetStatus: row?.Beneficiary?.internetStatus,
+              phoneStatus: row?.projectData?.phoneStatus || "",
+              bankedStatus: row?.projectData?.bankedStatus || "",
+              internetStatus: row?.projectData?.internetStatus || "",
             }))
           : [],
       };

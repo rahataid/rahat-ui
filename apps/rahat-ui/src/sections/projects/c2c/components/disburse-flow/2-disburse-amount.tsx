@@ -1,22 +1,30 @@
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
+import { formatEther } from 'viem';
 
 type Step2DisburseAmountProps = {
   selectedBeneficiaries: string[];
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  projectSubgraphDetails: any;
+  tokenName?: string;
 };
 
 export default function Step2DisburseAmount({
   selectedBeneficiaries,
   onChange,
   value,
+  projectSubgraphDetails,
+  tokenName = 'USDC',
 }: Step2DisburseAmountProps) {
   // const [amount, setAmount] = useState<string>('0');
   return (
     <div className="px-2 pb-4 mb-2">
       <div className="flex items-center justify-between mb-4">
         <h1>Project Balance</h1>
-        <h1>20000 USDC</h1>
+        <h1>
+          {formatEther(BigInt(projectSubgraphDetails.tokenBalance.balance))}{' '}
+          {tokenName}
+        </h1>
       </div>
       <div className="flex items-center justify-between">
         <div>
@@ -33,7 +41,7 @@ export default function Step2DisburseAmount({
             value={value}
             onChange={onChange}
           />
-          USDC
+          {tokenName}
         </div>
       </div>
     </div>

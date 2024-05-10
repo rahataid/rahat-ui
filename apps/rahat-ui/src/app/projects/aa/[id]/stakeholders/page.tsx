@@ -1,9 +1,9 @@
 'use client';
 
-import { StakeholdersListView } from "../../../../../sections/projects/aa/stakeholders";
+import { StakeholdersListView } from '../../../../../sections/projects/aa/stakeholders';
 
 const Page = () => {
-    return <StakeholdersListView />
-}
+  return <StakeholdersListView />;
+};
 
-export default Page
+export default Page;

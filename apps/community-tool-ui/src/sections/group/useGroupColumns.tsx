@@ -1,4 +1,3 @@
-import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
 import {
   Beneficiary,
   GroupResponseById,
@@ -9,12 +8,9 @@ import { Eye } from 'lucide-react';
 import { useSecondPanel } from '../../providers/second-panel-provider';
 
 import Link from 'next/link';
-import EditBeneficiary from '../beneficiary/editBeneficiary';
 import EditGroupedBeneficiaries from './edit/editGroupedBeneficiaries';
 
 export const useCommunityGroupTableColumns = () => {
-  const { closeSecondPanel, setSecondPanelComponent } = useSecondPanel();
-
   const columns: ColumnDef<ListGroup>[] = [
     {
       header: 'ID',
@@ -25,6 +21,12 @@ export const useCommunityGroupTableColumns = () => {
       header: 'Name',
       accessorKey: 'name',
       cell: ({ row }) => <div>{row.getValue('name')}</div>,
+    },
+    {
+      header: 'Created By',
+      cell: ({ row }) => {
+        return <div>{row.original.user?.name || '-'}</div>;
+      },
     },
     {
       id: 'actions',
@@ -109,7 +111,6 @@ export const useCommunityGroupDeailsColumns = () => {
 
       cell: ({ row }) => {
         const beneficiary = row.getValue('beneficiary') as Beneficiary;
-        console.log('row', row.original);
         return (
           <Eye
             size={20}

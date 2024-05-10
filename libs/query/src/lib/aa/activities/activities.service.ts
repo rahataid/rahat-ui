@@ -122,7 +122,6 @@ export const useActivities = (uuid: UUID, payload: any) => {
     }
   }, [query.data]);
 
-
   const activitiesData = query?.data?.data?.map((d: any) => ({
     id: d.uuid,
     title: d.title,
@@ -135,7 +134,7 @@ export const useActivities = (uuid: UUID, payload: any) => {
     status: d.status,
     activityType: d.activityType,
     campaignId: d?.activityComm?.campaignId || null,
-    activtiyComm: d?.activityComm || null
+    activtiyComm: d?.activityComm || null,
     // isApproved: d.isApproved,
     // isComplete: d.isComplete,
   }));

@@ -55,8 +55,7 @@ export default function VendorsDetailPage() {
   const { uuid: walletAddress, id: projectId } = useParams<IParams>();
   const [contractAddress, setContractAddress] = useState<any>('');
   const [isTransacting, setisTransacting] = useState<boolean>(false);
-  const [transactionHash, setTransactionHash] = useState<`0x${string}`>()
-
+  const [transactionHash, setTransactionHash] = useState<`0x${string}`>();
 
   const updateVendor = useAddVendors();
   const projectClient = useProjectAction();
@@ -67,9 +66,8 @@ export default function VendorsDetailPage() {
   });
 
   const result = useWaitForTransactionReceipt({
-    hash: transactionHash
-  })
-
+    hash: transactionHash,
+  });
 
   const { data: vendorVoucher } = useReadElProjectGetVendorVoucherDetail({
     address: contractAddress,
@@ -78,11 +76,11 @@ export default function VendorsDetailPage() {
 
   const assignVendorToProjet = async () => {
     setisTransacting(true);
-    const txnHash = await  updateVendor.writeContractAsync({
+    const txnHash = await updateVendor.writeContractAsync({
       address: contractAddress,
       args: [walletAddress, true],
     });
-    setTransactionHash(txnHash)
+    setTransactionHash(txnHash);
   };
 
   useEffect(() => {
@@ -104,10 +102,9 @@ export default function VendorsDetailPage() {
       }
       fetchData();
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
   }, []);
-
 
   return (
     <div className="bg-secondary">
@@ -158,7 +155,7 @@ export default function VendorsDetailPage() {
           </TabsContent>
           <TabsContent value="referrals">
             <ReferralTable
-              name = {name}
+              name={name}
               projectId={projectId}
               vendorId={vendorId}
               walletAddress={walletAddress}

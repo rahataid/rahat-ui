@@ -11,8 +11,6 @@ import {
 export default function ProfileView() {
   const { data } = useUserCurrentUser();
 
-  console.log(data);
-
   const changedDate = new Date(data?.data?.createdAt as Date);
   const formattedDate = changedDate.toLocaleDateString('en-US', {
     year: 'numeric',

@@ -49,7 +49,7 @@ const data: Payment[] = [
     amount: 242,
     status: 'success',
     email: 'Abe45@gmail.com',
-  }
+  },
 ];
 
 export type Payment = {
@@ -161,10 +161,7 @@ export default function DataTableDemo() {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
-
-  const {data: projectTransaction} = useProjectTransaction();
-
-  console.log(projectTransaction)
+  const { data: projectTransaction } = useProjectTransaction();
 
   const table = useReactTable({
     data: projectTransaction?.data || [],

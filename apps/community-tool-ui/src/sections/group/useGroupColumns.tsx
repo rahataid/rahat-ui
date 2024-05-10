@@ -111,7 +111,6 @@ export const useCommunityGroupDeailsColumns = () => {
 
       cell: ({ row }) => {
         const beneficiary = row.getValue('beneficiary') as Beneficiary;
-        console.log('row', row.original);
         return (
           <Eye
             size={20}

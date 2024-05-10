@@ -41,6 +41,7 @@ export const paths = {
     targeting: {
       add: `${ROOTS.TARGETING}/add`,
       root: ROOTS.TARGETING,
+      targetFilters: `${ROOTS.TARGETING}/targetFilters`,
       detail: (uuid: string) => `${ROOTS.TARGETING}/${uuid}`,
     },
   },

@@ -1,7 +1,5 @@
-import React from 'react';
+import PinnedListDetailsView from 'apps/community-tool-ui/src/sections/targeting/pinnedList/pinnedList.details.view';
 
-type Props = {};
-
-export default function Page({}: Props) {
-  return <div>details</div>;
+export default function Page() {
+  return <PinnedListDetailsView />;
 }

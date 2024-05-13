@@ -37,7 +37,9 @@ export default function FiltersTargetingView() {
     setPrevPage,
     setPerPage,
   } = usePagination();
-  const { loading, targetUUID } = useCommunityTargetingStore();
+  const { loading, targetUUID, setTargetUUID } = useCommunityTargetingStore();
+
+  console.log({ targetUUID });
 
   const { data: beneficiaryData } = useTargetedBeneficiaryList(
     targetUUID as string,
@@ -72,6 +74,7 @@ export default function FiltersTargetingView() {
     const payload = { label };
     await updateTargetLabel.mutateAsync({ uuid, payload });
     setTargetingQueries([]);
+    setTargetUUID('');
     router.push(paths.dashboard.targeting.list);
   };
 

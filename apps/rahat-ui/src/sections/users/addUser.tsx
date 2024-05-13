@@ -72,20 +72,20 @@ export default function AddUser() {
 
   const handleAddUser = async (data: any) => {
     if (data.roles.includes('Manager')) {
-      addManager.mutateAsync({
+      await addManager.mutateAsync({
         data: data,
         walletAddress: data?.wallet,
         contractAddress: contractSettings as `0x${string}`,
       });
-      userCreate.isSuccess && route.push('/users');
     } else if (data.roles.includes('Admin')) {
-      addAdmin.mutateAsync({
+      await addAdmin.mutateAsync({
         data: data,
         walletAddress: data?.wallet,
         contractAddress: contractSettings as `0x${string}`,
       });
-      userCreate.isSuccess && route.push('/users');
-    } else await userCreate.mutateAsync(data);
+    } else {
+      await userCreate.mutateAsync(data);
+    }
   };
 
   useEffect(() => {

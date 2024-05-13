@@ -14,13 +14,18 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
 import { useStakeholdersGroupsStore } from '@rahat-ui/query';
+import { X } from 'lucide-react';
 
-
-export default function AddCommunicationForm({ form }: any) {
+export default function AddCommunicationForm({ form, onClose }: any) {
     const stakeholdersGroups = useStakeholdersGroupsStore((state) => state.stakeholdersGroups)
     return (
         <div className='border border-dashed rounded p-4'>
-            <h1 className="text-lg font-semibold mb-6">Add : Communication</h1>
+            <div className='flex justify-between items-center mb-6'>
+                <h1 className="text-lg font-semibold">Add : Communication</h1>
+                <div className='p-1 rounded-full bg-red-100 hover:bg-red-200 text-red-500 hover:text-red-600 cursor-pointer'>
+                    <X size={20} strokeWidth={3} onClick={onClose}/>
+                </div>
+            </div>
             <div className='grid grid-cols-2 gap-4'>
                 <FormField
                     control={form.control}

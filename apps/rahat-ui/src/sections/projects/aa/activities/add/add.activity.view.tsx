@@ -32,16 +32,17 @@ import { UUID } from 'crypto';
 import AddCommunicationForm from './add.communication.form';
 
 export default function AddActivities() {
+  const createActivity = useCreateActivities();
   const { id: projectID } = useParams();
   const { categories, phases, hazardTypes } = useActivitiesStore((state) => ({
     categories: state.categories,
     phases: state.phases,
     hazardTypes: state.hazardTypes
   }))
-  useStakeholdersGroups(projectID as UUID, {})
-  const [communicationAddForm, setCommunicationAddForm] = React.useState<React.ReactNode[]>([]);
+  const [communicationAddForm, setCommunicationAddForm] = React.useState<{ id: number; form: React.ReactNode }[]>([]);
+  const nextId = React.useRef(0);
 
-  const createActivity = useCreateActivities();
+  useStakeholdersGroups(projectID as UUID, {})
 
   const FormSchema = z.object({
     title: z.string().min(2, { message: 'Title must be at least 4 character' }),
@@ -79,8 +80,13 @@ export default function AddActivities() {
     },
   });
 
+  const removeCommunicationForm = (idToRemove: number) => {
+    setCommunicationAddForm(prevForms => prevForms.filter(({ id }) => id !== idToRemove));
+  };
+
   const addCommunicationForm = () => {
-    setCommunicationAddForm([...communicationAddForm, <AddCommunicationForm form={form} />])
+    const newId = nextId.current++;
+    setCommunicationAddForm(prevForms => [...prevForms, { id: newId, form: <AddCommunicationForm key={newId} form={form} onClose={() => removeCommunicationForm(newId)} /> }]);
   }
 
   const handleCreateActivities = async (data: z.infer<typeof FormSchema>) => {
@@ -264,7 +270,9 @@ export default function AddActivities() {
                   }}
                 />
               </div>
-              {communicationAddForm?.map((communicationForm, index) => <div key={index} className='mt-4'>{communicationForm}</div>)}
+              {communicationAddForm?.map(({ id, form }) => (
+                <div key={id} className='mt-4'>{form}</div>
+              ))}
               <Button
                 type='button'
                 variant='outline'

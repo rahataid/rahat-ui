@@ -235,6 +235,7 @@ function BeneficiaryDetailTableView() {
       contractAddress: contractAddress.elproject.address,
     });
     setTransactionHash(txnHash as `0x-${string}`);
+    handleTokenAssignModalClose();
   };
 
   useEffect(() => {

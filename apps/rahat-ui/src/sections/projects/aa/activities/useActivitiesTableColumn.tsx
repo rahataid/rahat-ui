@@ -54,15 +54,6 @@ export default function useActivitiesTableColumn() {
       ),
     },
     {
-      accessorKey: 'activityType',
-      header: 'Type',
-      cell: ({ row }) => (
-        <Badge className="rounded-md capitalize text-muted-foreground">
-          {row.getValue('activityType')}
-        </Badge>
-      ),
-    },
-    {
       accessorKey: 'responsibility',
       header: 'Responsibility',
       cell: ({ row }) => <div>{row.getValue('responsibility')}</div>,

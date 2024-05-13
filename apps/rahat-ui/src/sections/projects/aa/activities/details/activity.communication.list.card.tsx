@@ -25,7 +25,7 @@ export default function ActivityCommunicationListCard({ activityDetail, projectI
                 {activityDetail?.activityCommunication?.map((comm: any) => (
                     <div key={comm?.id} className="p-4 rounded-md bg-secondary mt-4">
                         <div className="flex justify-between items-center">
-                            <h1 className="font-medium text-primary">Group Name</h1>
+                            <h1 className="font-medium text-primary">{comm?.groupName}</h1>
                             <Button type="button" className="h-7" onClick={() => triggerCommunication(comm?.campaignId)}>
                                 Trigger
                             </Button>

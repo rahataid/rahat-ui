@@ -31,8 +31,8 @@ export default function ActivityDetailCards({ activityDetail }: any) {
             icon: <SignalHigh size={25} />,
         },
         {
-            title: 'Type',
-            content: <p className="text-xl text-primary font-semibold">Demo</p>,
+            title: 'Hazard Type',
+            content: <p className="text-xl text-primary font-semibold">{activityDetail?.hazardType?.name}</p>,
             icon: <Gauge size={25} />,
         },
     ];

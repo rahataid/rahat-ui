@@ -53,16 +53,12 @@ export default function AddActivities() {
     hazardTypeId: z.string().min(1, { message: 'Please select hazard type' }),
     leadTime: z.string().min(2, { message: "Please enter lead time" }),
     description: z.string().min(5, { message: 'Must be at least 5 characters' }),
-    groupType: z.string().min(1, { message: 'Please select group type' }),
-    groupId: z.string().min(1, { message: 'Please select group' }),
-    communicationType: z.string().min(1, { message: 'Please select communication type' }),
-    message: z.string().min(5, { message: 'Must be at least 5 characters' })
-    // activityCommunication: z.array(z.object({
-    //   groupType: z.string().min(1, { message: 'Please select group type' }),
-    //   groupId: z.string().min(1, { message: 'Please select group' }),
-    //   communicationType: z.string().min(1, { message: 'Please select communication type' }),
-    //   message: z.string().min(5, { message: 'Must be at least 5 characters' })
-    // }))
+    activityCommunication: z.array(z.object({
+      groupType: z.string().min(1, { message: 'Please select group type' }),
+      groupId: z.string().min(1, { message: 'Please select group' }),
+      communicationType: z.string().min(1, { message: 'Please select communication type' }),
+      message: z.string().min(5, { message: 'Must be at least 5 characters' })
+    }))
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -76,7 +72,7 @@ export default function AddActivities() {
       hazardTypeId: '',
       leadTime: '',
       description: '',
-      // activityCommunication: [{ groupType: '', groupId: '', communicationType: '', message: '' }]
+      activityCommunication: [{ groupType: '', groupId: '', communicationType: '', message: '' }]
     },
   });
 
@@ -86,7 +82,7 @@ export default function AddActivities() {
 
   const addCommunicationForm = () => {
     const newId = nextId.current++;
-    setCommunicationAddForm(prevForms => [...prevForms, { id: newId, form: <AddCommunicationForm key={newId} form={form} onClose={() => removeCommunicationForm(newId)} /> }]);
+    setCommunicationAddForm(prevForms => [...prevForms, { id: newId, form: <AddCommunicationForm key={newId} form={form} index={newId} onClose={() => removeCommunicationForm(newId)} /> }]);
   }
 
   const handleCreateActivities = async (data: z.infer<typeof FormSchema>) => {
@@ -99,6 +95,7 @@ export default function AddActivities() {
       console.error('Error::', e);
     } finally {
       form.reset();
+      setCommunicationAddForm([]);
     }
   };
   return (

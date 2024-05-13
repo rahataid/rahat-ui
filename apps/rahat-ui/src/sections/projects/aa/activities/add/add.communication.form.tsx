@@ -16,20 +16,27 @@ import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
 import { useStakeholdersGroupsStore } from '@rahat-ui/query';
 import { X } from 'lucide-react';
 
-export default function AddCommunicationForm({ form, onClose }: any) {
+type IProps = {
+    form: any,
+    onClose: VoidFunction,
+    index: number
+}
+
+export default function AddCommunicationForm({ form, onClose, index }: IProps) {
     const stakeholdersGroups = useStakeholdersGroupsStore((state) => state.stakeholdersGroups)
+    const fieldName = (name: string) => `activityCommunication.${index}.${name}`; // Dynamic field name generator
     return (
         <div className='border border-dashed rounded p-4'>
             <div className='flex justify-between items-center mb-6'>
                 <h1 className="text-lg font-semibold">Add : Communication</h1>
                 <div className='p-1 rounded-full bg-red-100 hover:bg-red-200 text-red-500 hover:text-red-600 cursor-pointer'>
-                    <X size={20} strokeWidth={3} onClick={onClose}/>
+                    <X size={20} strokeWidth={3} onClick={onClose} />
                 </div>
             </div>
             <div className='grid grid-cols-2 gap-4'>
                 <FormField
                     control={form.control}
-                    name="groupType"
+                    name={fieldName("groupType")}
                     render={({ field }) => (
                         <FormItem>
                             <FormLabel>Group Type</FormLabel>
@@ -52,7 +59,7 @@ export default function AddCommunicationForm({ form, onClose }: any) {
                 />
                 <FormField
                     control={form.control}
-                    name="groupId"
+                    name={fieldName("groupId")}
                     render={({ field }) => (
                         <FormItem>
                             <FormLabel>Group</FormLabel>
@@ -77,7 +84,7 @@ export default function AddCommunicationForm({ form, onClose }: any) {
                 />
                 <FormField
                     control={form.control}
-                    name="communicationType"
+                    name={fieldName("communicationType")}
                     render={({ field }) => (
                         <FormItem>
                             <FormLabel>Communication Type</FormLabel>
@@ -100,7 +107,7 @@ export default function AddCommunicationForm({ form, onClose }: any) {
                 />
                 <FormField
                     control={form.control}
-                    name="message"
+                    name={fieldName("message")}
                     render={({ field }) => {
                         return (
                             <FormItem className='col-span-2'>

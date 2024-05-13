@@ -1,15 +1,7 @@
 import { usePagination } from '@rahat-ui/query';
-import {
-  AlignJustify,
-  Import,
-  LayoutGrid,
-  List,
-  ListCollapse,
-  Plus,
-} from 'lucide-react';
-import { NavItem } from './nav-items.types';
+import { AlignJustify, Import, List, Plus } from 'lucide-react';
 import { paths } from '../../routes/paths';
-import { TabsList, TabsTrigger } from '@rahat-ui/shadcn/src/components/ui/tabs';
+import { NavItem } from './nav-items.types';
 
 const tabs = [
   {
@@ -30,13 +22,13 @@ export const useBeneficiaryNavItems = () => {
       component: (
         <div className="flex justify-between items-center border-6 w-full">
           <h1 className="font-semibold text-xl text-primary">Beneficiaries</h1>
-          <TabsList defaultValue="list" className="border rounded">
+          {/* <TabsList defaultValue="list" className="border rounded">
             {tabs.map((tab) => (
               <TabsTrigger key={tab.value} value={tab.value}>
                 {tab.icon}
               </TabsTrigger>
             ))}
-          </TabsList>
+          </TabsList> */}
         </div>
       ),
       children: [
@@ -61,7 +53,7 @@ export const useBeneficiaryNavItems = () => {
       title: 'Actions',
       children: [
         {
-          title: 'Add Beneficiaries',
+          title: 'Add Beneficiary',
           path: `${paths.dashboard.beneficiary.add}`,
           icon: <Plus size={18} strokeWidth={1.5} />,
         },

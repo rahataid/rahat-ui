@@ -40,6 +40,7 @@ export default function AddActivities() {
     hazardTypes: state.hazardTypes
   }))
   const [communicationAddForm, setCommunicationAddForm] = React.useState<{ id: number; form: React.ReactNode }[]>([]);
+  const [communicationFormOpened, setCommunicationFormOpened] = React.useState<boolean>(false)
   const nextId = React.useRef(0);
 
   useStakeholdersGroups(projectID as UUID, {})
@@ -53,12 +54,24 @@ export default function AddActivities() {
     hazardTypeId: z.string().min(1, { message: 'Please select hazard type' }),
     leadTime: z.string().min(2, { message: "Please enter lead time" }),
     description: z.string().min(5, { message: 'Must be at least 5 characters' }),
-    activityCommunication: z.array(z.object({
-      groupType: z.string().min(1, { message: 'Please select group type' }),
-      groupId: z.string().min(1, { message: 'Please select group' }),
-      communicationType: z.string().min(1, { message: 'Please select communication type' }),
-      message: z.string().min(5, { message: 'Must be at least 5 characters' })
-    }))
+    activityCommunication: communicationFormOpened
+      ? z.array(
+        z.object({
+          groupType: z.string().min(1, { message: 'Please select group type' }),
+          groupId: z.string().min(1, { message: 'Please select group' }),
+          communicationType: z.string().min(1, { message: 'Please select communication type' }),
+          message: z.string().min(5, { message: 'Must be at least 5 characters' })
+        })
+      ).refine(
+        (val) => val.length > 0,
+        { message: 'Please add at least one communication' }
+      )
+      : z.array(z.object({
+        groupType: z.string().optional(),
+        groupId: z.string().optional(),
+        communicationType: z.string().optional(),
+        message: z.string().optional()
+      }))
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -81,6 +94,7 @@ export default function AddActivities() {
   };
 
   const addCommunicationForm = () => {
+    setCommunicationFormOpened(true);
     const newId = nextId.current++;
     setCommunicationAddForm(prevForms => [...prevForms, { id: newId, form: <AddCommunicationForm key={newId} form={form} index={newId} onClose={() => removeCommunicationForm(newId)} /> }]);
   }
@@ -96,6 +110,7 @@ export default function AddActivities() {
     } finally {
       form.reset();
       setCommunicationAddForm([]);
+      setCommunicationFormOpened(false);
     }
   };
   return (
@@ -291,7 +306,8 @@ export default function AddActivities() {
                     className='bg-red-100 text-red-600 w-36'
                     onClick={() => {
                       form.reset();
-                      setCommunicationAddForm([])
+                      setCommunicationAddForm([]);
+                      setCommunicationFormOpened(false);
                     }}
                   >
                     Cancel

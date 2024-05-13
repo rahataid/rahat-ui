@@ -26,6 +26,7 @@ import { Plus } from 'lucide-react';
 import {
   useActivitiesStore,
   useCreateActivities,
+  useStakeholdersGroups
 } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import AddCommunicationForm from './add.communication.form';
@@ -37,6 +38,7 @@ export default function AddActivities() {
     phases: state.phases,
     hazardTypes: state.hazardTypes
   }))
+  useStakeholdersGroups(projectID as UUID, {})
   const [communicationAddForm, setCommunicationAddForm] = React.useState<React.ReactNode[]>([]);
 
   const createActivity = useCreateActivities();

@@ -13,9 +13,11 @@ import {
     SelectItem,
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
+import { useStakeholdersGroupsStore } from '@rahat-ui/query';
 
 
 export default function AddCommunicationForm({ form }: any) {
+    const stakeholdersGroups = useStakeholdersGroupsStore((state) => state.stakeholdersGroups)
     return (
         <div className='border border-dashed rounded p-4'>
             <h1 className="text-lg font-semibold mb-6">Add : Communication</h1>
@@ -36,7 +38,7 @@ export default function AddCommunicationForm({ form }: any) {
                                     </SelectTrigger>
                                 </FormControl>
                                 <SelectContent>
-                                    <SelectItem value="STAKEHOLDERS"> Stakeholders</SelectItem>
+                                    <SelectItem value="STAKEHOLDERS">Stakeholders</SelectItem>
                                 </SelectContent>
                             </Select>
                             <FormMessage />
@@ -59,7 +61,9 @@ export default function AddCommunicationForm({ form }: any) {
                                     </SelectTrigger>
                                 </FormControl>
                                 <SelectContent>
-                                    <SelectItem value="STAKEHOLDERS"> Stakeholders</SelectItem>
+                                    {stakeholdersGroups.map((group: any) => (
+                                        <SelectItem key={group.id} value={group.uuid}>{group.name}</SelectItem>
+                                    ))}
                                 </SelectContent>
                             </Select>
                             <FormMessage />
@@ -82,7 +86,7 @@ export default function AddCommunicationForm({ form }: any) {
                                     </SelectTrigger>
                                 </FormControl>
                                 <SelectContent>
-                                    <SelectItem value="STAKEHOLDERS"> Stakeholders</SelectItem>
+                                    <SelectItem value="EMAIL">Email</SelectItem>
                                 </SelectContent>
                             </Select>
                             <FormMessage />

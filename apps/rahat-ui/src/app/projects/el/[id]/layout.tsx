@@ -31,16 +31,16 @@ const ProjectLayoutRoot = ({ children }: { children: React.ReactNode }) => {
     <GraphQueryProvider>
       <ProjectLayout
         projectType={ProjectTypes.EL}
-        navFooter={
-          <div className="fixed bottom-2 left-0 right-0  px-6">
-            <Image
-              src="/el/el_logo_dark.png"
-              alt="Dark Logo"
-              height={150}
-              width={200}
-            />
-          </div>
-        }
+        // navFooter={
+        //   <div className="fixed bottom-2 left-0 right-0  px-6">
+        //     <Image
+        //       src="/el/el_logo_dark.png"
+        //       alt="Dark Logo"
+        //       height={150}
+        //       width={200}
+        //     />
+        //   </div>
+        // }
       >
         {renderChildren()}
       </ProjectLayout>

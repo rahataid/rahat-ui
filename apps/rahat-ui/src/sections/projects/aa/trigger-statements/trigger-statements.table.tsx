@@ -31,16 +31,24 @@ type IProps = {
   loading: boolean;
 };
 
-export default function TriggerStatementsTable({ table, projectId, loading }: IProps) {
+export default function TriggerStatementsTable({
+  table,
+  projectId,
+  loading,
+}: IProps) {
   const router = useRouter();
-  if (loading) return <TableLoader />
+  if (loading) return <TableLoader />;
   return (
     <>
       <div className="p-2">
         <div className="flex items-center mb-2 gap-4">
-          <div className='flex w-full'>
+          <div className="flex w-full">
             <div className="relative w-full">
-              <Search size={18} strokeWidth={2.5} className="absolute left-2 top-3 text-muted-foreground" />
+              <Search
+                size={18}
+                strokeWidth={2.5}
+                className="absolute left-2 top-3 text-muted-foreground"
+              />
               <Input
                 placeholder="Search Trigger Statements..."
                 value={
@@ -82,7 +90,13 @@ export default function TriggerStatementsTable({ table, projectId, loading }: IP
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
-          <Button onClick={() => router.push(`/projects/aa/${projectId}/trigger-statements/add`)}><Plus size={18} className='mr-1' /> Add Trigger Statement</Button>
+          <Button
+            onClick={() =>
+              router.push(`/projects/aa/${projectId}/trigger-statements/add`)
+            }
+          >
+            <Plus size={18} className="mr-1" /> Add Trigger Statement
+          </Button>
         </div>
         <div className="rounded border h-[calc(100vh-180px)] bg-card">
           <TableComponent>
@@ -96,9 +110,9 @@ export default function TriggerStatementsTable({ table, projectId, loading }: IP
                           {header.isPlaceholder
                             ? null
                             : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext(),
-                            )}
+                                header.column.columnDef.header,
+                                header.getContext(),
+                              )}
                         </TableHead>
                       );
                     })}

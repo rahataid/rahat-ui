@@ -39,6 +39,7 @@ const VoucherView = () => {
 
   const voucherData = {...voucherDetails,...projectVoucher}
 
+  console.log(voucherDetails)
   return (
     <>
       {isLoading ? (
@@ -47,7 +48,7 @@ const VoucherView = () => {
         </div>
       ) : (
         <>
-          {voucherDetails ? (
+          {voucherDetails?.eyeVoucherBudget >= BigInt(1)  ? (
             <div className="bg-secondary">
               <div className="grid grid-cols-2">
                 <div>

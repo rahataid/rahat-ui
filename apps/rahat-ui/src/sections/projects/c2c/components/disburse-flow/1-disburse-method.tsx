@@ -17,12 +17,14 @@ type Step1DisburseMethodProps = {
   selectedBeneficiaries: string[];
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  projectSubgraphDetails: any;
 };
 
 export default function Step1DisburseMethod({
   onChange,
   selectedBeneficiaries,
   value,
+  projectSubgraphDetails,
 }: Step1DisburseMethodProps) {
   return (
     <div className="bg-card rounded px-4 pb-4 flex flex-col">

@@ -22,14 +22,17 @@ import { ArrowLeft, ArchiveRestore, Pencil } from 'lucide-react';
 import TriggerDetailCards from './trigger.detail.cards';
 import TriggerDetailCard from './trigger.detail.card';
 import TriggerActivityListCard from './trigger.activity.list.card';
-import { useSingleTriggerStatement, useDeleteTriggerStatement } from '@rahat-ui/query';
+import {
+  useSingleTriggerStatement,
+  useDeleteTriggerStatement,
+} from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import Loader from 'apps/rahat-ui/src/components/table.loader';
 
 export default function TriggerStatementsDetailView() {
   const { id: projectID } = useParams();
   const router = useRouter();
-  const triggerRepeatKey = window.location.href.split("/").slice(-1)[0]
+  const triggerRepeatKey = window.location.href.split('/').slice(-1)[0];
   const { data: triggerDetail, isLoading } = useSingleTriggerStatement(
     projectID as UUID,
     triggerRepeatKey,
@@ -40,16 +43,16 @@ export default function TriggerStatementsDetailView() {
     deleteTrigger.mutateAsync({
       projectUUID: projectID as UUID,
       triggerStatementPayload: {
-        repeatKey: triggerRepeatKey
-      }
-    })
-  }
+        repeatKey: triggerRepeatKey,
+      },
+    });
+  };
 
   React.useEffect(() => {
     deleteTrigger.isSuccess && router.back();
-  }, [deleteTrigger])
+  }, [deleteTrigger]);
 
-  if (isLoading) return <Loader />
+  if (isLoading) return <Loader />;
 
   return (
     <div className="h-[calc(100vh-65px)] bg-secondary p-4">
@@ -88,9 +91,7 @@ export default function TriggerStatementsDetailView() {
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                       <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction
-                        onClick={removeTrigger}
-                      >
+                      <AlertDialogAction onClick={removeTrigger}>
                         Continue
                       </AlertDialogAction>
                     </AlertDialogFooter>

@@ -6,7 +6,13 @@ export default function TriggerDetailCards({ triggerDetail }: any) {
     {
       title: 'Status',
       content: (
-        <Badge className={!triggerDetail?.isTriggered ? "bg-green-100 text-green-600" : "bg-red-100 text-red-600"}>
+        <Badge
+          className={
+            !triggerDetail?.isTriggered
+              ? 'bg-green-100 text-green-600'
+              : 'bg-red-100 text-red-600'
+          }
+        >
           {triggerDetail?.isTriggered ? 'Triggered' : 'Not Triggered'}
         </Badge>
       ),
@@ -32,7 +38,12 @@ export default function TriggerDetailCards({ triggerDetail }: any) {
     },
     {
       title: 'Level',
-      content: <p className="text-xl text-primary font-semibold">{triggerDetail?.triggerStatement?.readinessLevel || triggerDetail?.triggerStatement?.activationLevel}</p>,
+      content: (
+        <p className="text-xl text-primary font-semibold">
+          {triggerDetail?.triggerStatement?.readinessLevel ||
+            triggerDetail?.triggerStatement?.activationLevel}
+        </p>
+      ),
       icon: <Gauge size={25} />,
     },
   ];

@@ -1,17 +1,17 @@
-export default function ActivityDetailCard() {
+export default function ActivityDetailCard({ activityDetail }: any) {
 
     const detailData = [
         {
             title: 'Category',
-            content: <p>Demo</p>
+            content: <p>{activityDetail?.category?.name}</p>
         },
         {
             title: 'Responsibility',
-            content: <p>Demo</p>
+            content: <p>{activityDetail?.responsibility}</p>
         },
         {
             title: 'Hazard Type',
-            content: <p>Demo</p>
+            content: <p>{activityDetail?.hazardType?.name}</p>
         },
     ]
 

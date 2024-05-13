@@ -1,13 +1,13 @@
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Info, Text, SignalHigh, Gauge } from 'lucide-react';
 
-export default function ActivityDetailCards() {
+export default function ActivityDetailCards({ activityDetail }: any) {
     const detailCardData = [
         {
             title: 'Status',
             content: (
-                <Badge className="bg-red-100 text-red-600">
-                    Not Started
+                <Badge className="bg-orange-100 text-orange-600">
+                    {activityDetail?.status}
                 </Badge>
             ),
             icon: <Info size={25} />,
@@ -16,7 +16,7 @@ export default function ActivityDetailCards() {
             title: 'Source',
             content: (
                 <p className="text-xl text-primary font-semibold">
-                    Demo
+                    {activityDetail?.source}
                 </p>
             ),
             icon: <Text size={25} />,
@@ -25,7 +25,7 @@ export default function ActivityDetailCards() {
             title: 'Phase',
             content: (
                 <p className="text-xl text-primary font-semibold">
-                    Demo
+                    {activityDetail?.phase?.name}
                 </p>
             ),
             icon: <SignalHigh size={25} />,

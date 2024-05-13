@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import {
     Tooltip,
     TooltipContent,
@@ -22,9 +22,13 @@ import ActivityDetailCard from './activity.detail.card';
 import ActivityDetailCards from './activity.detail.cards';
 import ActivityCommunicationListCard from './activity.communication.list.card';
 import ActivityPayoutCard from './activity.payout.card';
+import { useSingleActivity } from '@rahat-ui/query';
+import { UUID } from 'crypto';
 
 export default function ActivitiesDetailView() {
     const router = useRouter();
+    const { id: projectID, activityID } = useParams();
+    const { data: activityDetail } = useSingleActivity(projectID as UUID, activityID);
 
     return (
         <div className="h-[calc(100vh-65px)] bg-secondary p-4">
@@ -78,10 +82,10 @@ export default function ActivitiesDetailView() {
                     </TooltipProvider>
                 </div>
             </div>
-            <ActivityDetailCards />
+            <ActivityDetailCards activityDetail={activityDetail} />
             <div className="grid grid-cols-3 gap-4 mt-4">
-                <ActivityDetailCard />
-                <ActivityCommunicationListCard />
+                <ActivityDetailCard activityDetail={activityDetail} />
+                <ActivityCommunicationListCard activityDetail={activityDetail} projectId={projectID} />
                 <ActivityPayoutCard />
             </div>
         </div>

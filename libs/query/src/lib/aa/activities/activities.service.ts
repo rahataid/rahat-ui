@@ -143,6 +143,30 @@ export const useActivities = (uuid: UUID, payload: any) => {
   return { ...query, activitiesData, activitiesMeta: query?.data?.meta };
 };
 
+export const useSingleActivity = (
+  uuid: UUID,
+  activityId: string | string[],
+) => {
+  const q = useProjectAction();
+
+  const query = useQuery({
+    queryKey: ['activity', uuid, activityId],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'aaProject.activities.getOne',
+          payload: {
+            uuid: activityId,
+          },
+        },
+      });
+      return mutate.data;
+    },
+  });
+  return query;
+};
+
 export const useCreateActivities = () => {
   const q = useProjectAction();
   const alert = useSwal();
@@ -282,6 +306,7 @@ export const useCreateActivityCommunication = () => {
 
 export const useTriggerCommunication = () => {
   const q = useProjectAction();
+  const qc = useQueryClient();
   const alert = useSwal();
   const toast = alert.mixin({
     toast: true,
@@ -308,6 +333,7 @@ export const useTriggerCommunication = () => {
 
     onSuccess: () => {
       q.reset();
+      qc.invalidateQueries({ queryKey: ['activity'] });
       toast.fire({
         title: 'Communication Trigger successfully',
         icon: 'success',

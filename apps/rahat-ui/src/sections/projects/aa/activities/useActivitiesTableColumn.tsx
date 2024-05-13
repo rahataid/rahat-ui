@@ -1,14 +1,13 @@
-import React from 'react';
+import { useRouter, useParams } from 'next/navigation';
 import { ColumnDef } from '@tanstack/react-table';
-import { useSecondPanel } from '../../../../providers/second-panel-provider';
+import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
+import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Eye } from 'lucide-react';
 import { IActivitiesItem } from '../../../../types/activities';
-import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
-import { ActivitiesDetailView } from '.';
-import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 
 export default function useActivitiesTableColumn() {
-  const { setSecondPanelComponent, closeSecondPanel } = useSecondPanel();
+  const { id: projectID } = useParams();
+  const router = useRouter();
 
   const columns: ColumnDef<IActivitiesItem>[] = [
     {
@@ -42,7 +41,7 @@ export default function useActivitiesTableColumn() {
       accessorKey: 'category',
       header: 'Category',
       cell: ({ row }) => (
-        <Badge className="rounded-md capitalize">
+        <Badge className="rounded-md capitalize w-max text-muted-foreground">
           {row.getValue('category')}
         </Badge>
       ),
@@ -51,16 +50,7 @@ export default function useActivitiesTableColumn() {
       accessorKey: 'phase',
       header: 'Phase',
       cell: ({ row }) => (
-        <Badge className="rounded-md capitalize">{row.getValue('phase')}</Badge>
-      ),
-    },
-    {
-      accessorKey: 'activityType',
-      header: 'Type',
-      cell: ({ row }) => (
-        <Badge className="rounded-md capitalize">
-          {row.getValue('activityType')}
-        </Badge>
+        <Badge className="rounded-md capitalize text-muted-foreground">{row.getValue('phase')}</Badge>
       ),
     },
     {
@@ -75,7 +65,7 @@ export default function useActivitiesTableColumn() {
     },
     {
       accessorKey: 'hazardType',
-      header: 'Hazard Type',
+      header: () => <div className='w-max'>Hazard Type</div>,
       cell: ({ row }) => <div>{row.getValue('hazardType')}</div>,
     },
     {
@@ -84,7 +74,7 @@ export default function useActivitiesTableColumn() {
       cell: ({ row }) => (
         <div className="flex gap-1">
           <Badge
-            className={`rounded-md capitalize bg-green-200
+            className={`rounded-md capitalize bg-red-100 text-red-600
               }`}
           >
             {row.getValue('status')}
@@ -101,14 +91,7 @@ export default function useActivitiesTableColumn() {
             className="hover:text-primary cursor-pointer"
             size={20}
             strokeWidth={1.5}
-            onClick={() => {
-              setSecondPanelComponent(
-                <ActivitiesDetailView
-                  activityDetail={row.original}
-                  closeSecondPanel={closeSecondPanel}
-                />,
-              );
-            }}
+            onClick={() => router.push(`/projects/aa/${projectID}/activities/${row.original.id}`)}
           />
         );
       },

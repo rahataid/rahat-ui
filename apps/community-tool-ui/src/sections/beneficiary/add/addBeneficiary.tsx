@@ -86,12 +86,12 @@ export default function AddBeneficiary() {
     defaultValues: {
       firstName: '',
       lastName: '',
-      gender: Gender.UKNOWN,
+      gender: '',
       walletAddress: '',
       phone: '',
-      bankedStatus: BankedStatus.UNKNOWN,
-      internetStatus: InternetStatus.UNKNOWN,
-      phoneStatus: PhoneStatus.UNKNOWN,
+      bankedStatus: '',
+      internetStatus: '',
+      phoneStatus: '',
       email: '',
       location: '',
       latitude: 0,
@@ -471,14 +471,17 @@ export default function AddBeneficiary() {
                   </FormItem>
                 )}
               />
-
-              <h3>
-                <b>Extra Fields:</b>
-              </h3>
+              {definitions?.data.length > 0 && (
+                <h3>
+                  <b>Extra Fields:</b>
+                </h3>
+              )}
               <br />
               {definitions?.data?.map((definition: any) => {
                 return (
-                  <FormBuilder key={definition.id} formField={definition} />
+                  <>
+                    <FormBuilder key={definition.id} formField={definition} />
+                  </>
                 );
               }) || 'No field definitions found!'}
             </div>

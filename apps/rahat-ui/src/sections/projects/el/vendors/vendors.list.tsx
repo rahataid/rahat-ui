@@ -28,6 +28,7 @@ import { MS_ACTIONS } from '@rahataid/sdk';
 import { useParams, useRouter } from 'next/navigation';
 import { useVendorTable } from './useVendorTable';
 import TableLoader from 'apps/rahat-ui/src/components/table.loader';
+import { useAllVendorVoucher, useVendorVoucher } from 'apps/rahat-ui/src/hooks/el/subgraph/querycall';
 
 export type Transaction = {
   id: string;
@@ -41,6 +42,8 @@ export type Transaction = {
 export default function VendorsList() {
   const router = useRouter();
   const uuid = useParams().id;
+
+  const vendorList = useAllVendorVoucher()
 
   const handleViewClick = (rowData: any) => {
     router.push(
@@ -100,15 +103,28 @@ export default function VendorsList() {
         walletaddress: row.User.wallet,
         phone: row.User.phone,
         vendorId: row.User.uuid,
-        
       };
     });
-    setData(filteredData);
+
+    let totalVoucher:number;
+
+    const vendorListArray = Object.values(vendorList?.data?.voucherArray || {});
+
+    const filteredDataWithVoucher = filteredData?.map((row:any) => {
+      vendorListArray?.map((voucherRow:any) => {
+        if(row.walletaddress.toLowerCase() == voucherRow.id.toLowerCase()){
+          totalVoucher = Number(voucherRow?.freeVoucherRedeemed) + Number(voucherRow?.referredVoucherRedeemed)
+        }
+      })
+      return{...row, totalVoucherRedemmed: totalVoucher}
+    })
+
+    setData(filteredDataWithVoucher);
   };
 
   React.useEffect(() => {
     fetchVendors();
-  }, []);
+  }, [vendorList?.isFetched]);
 
   return (
     <div className="w-full h-full p-2 bg-secondary">

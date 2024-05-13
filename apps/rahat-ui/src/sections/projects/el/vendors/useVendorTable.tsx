@@ -39,22 +39,18 @@ export const useVendorTable = ({ handleViewClick }: VendorTableProps) => {
       ),
     },
     {
-      accessorKey: 'walletaddress',
-      header: ({ column }) => {
-        return (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-          >
-            Wallet Address
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
-        );
-      },
+      accessorKey: 'totalVoucherRedemmed',
+      header: 'Total Vouchers Redeemed',
       cell: ({ row }) => (
-        <div className="lowercase">
-          {truncateEthAddress(row.getValue('walletaddress'))}
-        </div>
+        <div>{row.getValue('totalVoucherRedemmed')}</div>
+      ),
+    },
+    
+    {
+      accessorKey: 'redemmedValue',
+      header: 'Redeemed Value',
+      cell: ({ row }) => (
+        <div>{Number(row.getValue('totalVoucherRedemmed'))*30000}</div>
       ),
     },
     {

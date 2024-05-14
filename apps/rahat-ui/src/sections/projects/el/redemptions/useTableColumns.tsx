@@ -3,7 +3,16 @@
 import { ColumnDef } from '@tanstack/react-table';
 import { ArrowUpDown, Copy, CopyCheck, MoreHorizontal } from 'lucide-react';
 
+import { useUpdateElRedemption } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/components/button';
+import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from '@rahat-ui/shadcn/components/dropdown-menu';
 import {
   Tooltip,
   TooltipContent,
@@ -11,17 +20,11 @@ import {
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { truncateEthAddress } from '@rumsan/sdk/utils';
-import React from 'react';
-import { useSecondPanel } from '../../../../providers/second-panel-provider';
-import { Redemption } from './redemption.table';
-import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from '@rahat-ui/shadcn/components/dropdown-menu';
-import { useUpdateElRedemption } from '@rahat-ui/query';
 import { useParams } from 'next/navigation';
+import React from 'react';
+import { Redemption } from './redemption.table';
 
 export const useTableColumns = (handleAssignClick: any) => {
-  const { closeSecondPanel, setSecondPanelComponent } = useSecondPanel();
-
   const handleAssign = (row: any) => {
     handleAssignClick(row);
   };
@@ -37,38 +40,29 @@ export const useTableColumns = (handleAssignClick: any) => {
 
   const updateRedemption = useUpdateElRedemption();
 
-  const handleApprove = async (row:any) => {
+  const handleApprove = async (row: any) => {
     await updateRedemption.mutateAsync({
       projectUUID: uuid,
-      redemptionUUID: [row.uuid]
+      redemptionUUID: [row.uuid],
     });
-  }
+  };
 
   const columns: ColumnDef<Redemption>[] = [
     {
       id: 'select',
       header: '',
-      // ({ table }) => (
-      //   <Checkbox
-      //     checked={
-      //       table.getIsAllPageRowsSelected() ||
-      //       (table.getIsSomePageRowsSelected() && 'indeterminate')
-      //     }
-      //     onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-      //     aria-label="Select all"
-      //   />
-      // ),
       cell: ({ row }) => {
         const isDisabled = row.getValue('status') === 'APPROVED';
         const isChecked = row.getIsSelected() && !isDisabled;
         return (
-        <Checkbox
-          checked={isChecked}
-          onCheckedChange={(value) => row.toggleSelected(!!value)}
-          aria-label="Select row"
-          disabled = {isDisabled}
-        />)
-    },
+          <Checkbox
+            checked={isChecked}
+            onCheckedChange={(value) => row.toggleSelected(!!value)}
+            aria-label="Select row"
+            disabled={isDisabled}
+          />
+        );
+      },
       enableSorting: false,
       enableHiding: false,
     },
@@ -161,6 +155,7 @@ export const useTableColumns = (handleAssignClick: any) => {
       enableHiding: false,
       cell: ({ row }) => {
         const rowData = row.original;
+        if (rowData.status === 'APPROVED') return null;
         return (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -178,7 +173,7 @@ export const useTableColumns = (handleAssignClick: any) => {
           </DropdownMenu>
         );
       },
-    }
+    },
   ];
 
   return columns;

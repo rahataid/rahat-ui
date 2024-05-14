@@ -1,41 +1,23 @@
-import { Button } from '@rahat-ui/shadcn/components/button';
+import { useEffect, useState } from 'react';
 
-import React, { useEffect, useState } from 'react';
-
-import { Role } from '@rumsan/sdk/types';
+import { useDeleteRole, useGetRole } from '@rahat-ui/community-query';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+} from '@rahat-ui/shadcn/src/components/ui/card';
+import { TabsList, TabsTrigger } from '@rahat-ui/shadcn/src/components/ui/tabs';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
-import { Minus, MoreVertical, Trash2 } from 'lucide-react';
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/dialog';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-} from '@rahat-ui/shadcn/src/components/ui/card';
-import EditRole from './editRole';
-import { useDeleteRole, useGetRole } from '@rahat-ui/community-query';
-import { TabsList, TabsTrigger } from '@rahat-ui/shadcn/src/components/ui/tabs';
 import { useUserCurrentUser } from '@rumsan/react-query';
+import { Role } from '@rumsan/sdk/types';
 import { ROLE_TYPE } from 'apps/community-tool-ui/src/constants/user.const';
+import { Minus } from 'lucide-react';
+import EditRole from './editRole';
 
 type IProps = {
   roleData: Role;
@@ -90,7 +72,7 @@ export default function RoleDetail({ roleData, closeSecondPanel }: IProps) {
         </TooltipProvider>
         <div className="flex gap-3">
           {/* Delete Role */}
-          <Dialog>
+          {/* <Dialog>
             <DialogTrigger>
               <TooltipProvider>
                 <Tooltip>
@@ -127,7 +109,7 @@ export default function RoleDetail({ roleData, closeSecondPanel }: IProps) {
                 </div>
               </DialogFooter>
             </DialogContent>
-          </Dialog>
+          </Dialog> */}
 
           <TabsList className="w-full grid grid-cols-2 bg-transparent">
             <TabsTrigger
@@ -180,7 +162,7 @@ export default function RoleDetail({ roleData, closeSecondPanel }: IProps) {
 
                 <div className="text-right">
                   <p className="font-light text-base">
-                    {roleDetail?.data?.role?.isSystem ? 'true' : 'false'}
+                    {roleDetail?.data?.role?.isSystem ? 'Yes' : 'No'}
                   </p>
                   <p className="text-sm font-normal text-muted-foreground ">
                     Is System

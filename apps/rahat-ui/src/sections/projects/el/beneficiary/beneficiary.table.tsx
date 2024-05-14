@@ -47,7 +47,12 @@ import {
   TableHeader,
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@rahat-ui/shadcn/components/tabs';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@rahat-ui/shadcn/components/tabs';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
@@ -59,7 +64,10 @@ import TokenAssingnConfirm from './token.assign.confirm';
 import TableLoader from '../../../../components/table.loader';
 import { useRouter } from 'next/navigation';
 import { useGraphService } from '../../../../providers/subgraph-provider';
-import { useGetBeneficiaryVouchers, useVendorFilteredTransaction } from 'apps/rahat-ui/src/hooks/el/subgraph/querycall';
+import {
+  useGetBeneficiaryVouchers,
+  useVendorFilteredTransaction,
+} from 'apps/rahat-ui/src/hooks/el/subgraph/querycall';
 import { useEffect, useState } from 'react';
 import { useWaitForTransactionReceipt } from 'wagmi';
 // import { useBeneficiaryTransaction } from '../../hooks/el/subgraph/querycall';
@@ -85,7 +93,6 @@ export const benType = [
     key: 'REFERRED',
     value: 'REFERRED',
   },
-  
 ];
 
 export const voucherType = [
@@ -101,7 +108,6 @@ export const voucherType = [
     key: 'REFERRED',
     value: 'REFERRED',
   },
-  
 ];
 
 function BeneficiaryDetailTableView() {
@@ -135,12 +141,12 @@ function BeneficiaryDetailTableView() {
     selectedListItems,
     setSelectedListItems,
     resetSelectedListItems,
-    resetFilters
+    resetFilters,
   } = usePagination();
   const assignVoucher = useBulkAssignVoucher();
   const { queryService } = useGraphService();
 
-  const [voucherType, setVoucherType] = useState("NOT_ASSIGNED")
+  const [voucherType, setVoucherType] = useState('NOT_ASSIGNED');
 
   const projectBeneficiaries = useProjectBeneficiaries({
     page: pagination.page,
@@ -152,9 +158,9 @@ function BeneficiaryDetailTableView() {
     ...filters,
   });
 
-  const [transactionHash, setTransactionHash] = useState<`0x${string}`>()
-  const [isTransacting, setisTransacting] = useState<boolean>(false)
-  const [voucherFilter, setVoucherFilter] = useState<any>('NOT_ASSIGNED')
+  const [transactionHash, setTransactionHash] = useState<`0x${string}`>();
+  const [isTransacting, setisTransacting] = useState<boolean>(false);
+  const [voucherFilter, setVoucherFilter] = useState<any>('NOT_ASSIGNED');
 
   const contractAddress = useProjectSettingsStore(
     (state) => state.settings?.[uuid][PROJECT_SETTINGS_KEYS.CONTRACT] || null,
@@ -164,10 +170,14 @@ function BeneficiaryDetailTableView() {
 
   const handleBenType = React.useCallback(
     (type: string) => {
-      resetFilters()
+      resetFilters();
       resetSelectedListItems();
       if (type === 'ALL') {
-        setFilters({ ...filters, status: undefined, voucher: voucherFilter.voucher });
+        setFilters({
+          ...filters,
+          status: undefined,
+          voucher: voucherFilter.voucher,
+        });
         return;
       }
       setFilters({ ...filters, status: type, voucher: voucherFilter.voucher });
@@ -207,30 +217,30 @@ function BeneficiaryDetailTableView() {
 
   const result = useWaitForTransactionReceipt({
     hash: transactionHash,
-  })
+  });
 
   useEffect(() => {
     result?.data && setisTransacting(false);
-  }, [result])
+  }, [result]);
 
   const handleBulkAssign = async () => {
-    setisTransacting(true)
+    setisTransacting(true);
     const txnHash = await assignVoucher.mutateAsync({
       addresses: selectedRowAddresses as `0x${string}`[],
       noOfTokens: 1,
       contractAddress: contractAddress.elproject.address,
     });
-    setTransactionHash(txnHash as `0x-${string}`)
+    setTransactionHash(txnHash as `0x-${string}`);
+    handleTokenAssignModalClose();
   };
-  
 
   useEffect(() => {
     if (assignVoucher.isSuccess) {
       route.push(`/projects/el/${id}`);
     }
 
-    if(assignVoucher.isError){
-      setisTransacting(false)
+    if (assignVoucher.isError) {
+      setisTransacting(false);
     }
   }, []);
 
@@ -285,17 +295,39 @@ function BeneficiaryDetailTableView() {
           </DropdownMenu>
         </div>
         <div>
-        <Tabs defaultValue="account" className="w-[100%]">
-          <TabsList defaultValue="notAssigned" className="grid w-full grid-cols-3">
-            <TabsTrigger onClick={() => {setVoucherType('NOT_ASSIGNED'); resetSelectedListItems();}} value="notAssigned">Not Assigned</TabsTrigger>
-            <TabsTrigger onClick={() => {setVoucherType('FREE_VOUCHER'); resetSelectedListItems();}} value="freeVoucher">Free Voucher</TabsTrigger>
-            <TabsTrigger onClick={() => {setVoucherType('REFERRED_VOUCHER'); resetSelectedListItems();}} value="referredVoucher">Referred Voucher</TabsTrigger>
-          </TabsList>
+          <Tabs defaultValue="notAssigned" className="w-full mb-1">
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger
+                onClick={() => {
+                  setVoucherType('NOT_ASSIGNED');
+                  resetSelectedListItems();
+                }}
+                value="notAssigned"
+              >
+                Not Assigned
+              </TabsTrigger>
+              <TabsTrigger
+                onClick={() => {
+                  setVoucherType('FREE_VOUCHER');
+                  resetSelectedListItems();
+                }}
+                value="freeVoucher"
+              >
+                Free Voucher
+              </TabsTrigger>
+              <TabsTrigger
+                onClick={() => {
+                  setVoucherType('REFERRED_VOUCHER');
+                  resetSelectedListItems();
+                }}
+                value="referredVoucher"
+              >
+                Referred Voucher
+              </TabsTrigger>
+            </TabsList>
           </Tabs>
         </div>
-        <div>
-
-        </div>
+        <div></div>
         <div className="rounded border bg-card">
           <Table>
             <ScrollArea className="h-[calc(100vh-182px)]">

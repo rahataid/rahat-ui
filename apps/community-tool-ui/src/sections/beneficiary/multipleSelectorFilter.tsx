@@ -1,32 +1,31 @@
 'use client';
 
 import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '@rahat-ui/shadcn/components/accordion';
-import {
   useCommunityBeneficiaryGroupCreate,
   useCommunityBeneficiaryStore,
   useCommunityGroupList,
 } from '@rahat-ui/community-query';
 import { usePagination } from '@rahat-ui/query';
-import { useEffect } from 'react';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@rahat-ui/shadcn/components/accordion';
 
 export default function Filter() {
-  const perPage = 15;
-  const currentPage = 1;
+  const { pagination, filters } = usePagination();
   const { selectedBeneficiaries, setSelectedBeneficiaries } =
     useCommunityBeneficiaryStore();
 
   const commuinityBeneficiaryGroupCreate = useCommunityBeneficiaryGroupCreate();
 
+  filters.autoCreated = 'false';
+  pagination.perPage = 50;
   const { data: groupData } = useCommunityGroupList({
-    perPage,
-    page: currentPage,
+    ...pagination,
+    ...filters,
   });
-
   const inputOptions: { [key: string]: string } = {};
 
   groupData?.data?.rows.forEach((row: { uuid: string; name: string }) => {

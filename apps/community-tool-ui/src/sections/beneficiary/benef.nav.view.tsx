@@ -1,4 +1,4 @@
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { FC, useState } from 'react';
 import { NavItem } from './nav-items.types';
 type BeneficiaryNavViewProps = {
@@ -13,6 +13,7 @@ const BeneficiaryNavView: FC<BeneficiaryNavViewProps> = ({
   item,
 }) => {
   const router = useRouter();
+  const pathName = usePathname();
   const [openSubmenu, setOpenSubmenu] = useState<string | null>(null);
 
   const handleNav = (item: NavItem) => {
@@ -33,7 +34,9 @@ const BeneficiaryNavView: FC<BeneficiaryNavViewProps> = ({
           {items?.map((item) => (
             <div key={item.title}>
               <div
-                className={`flex justify-between p-2 items-center rounded-md cursor-pointer hover:bg-primary hover:text-white`}
+                className={`flex justify-between p-2 mb-1 items-center rounded-md cursor-pointer hover:bg-primary hover:text-white ${
+                  pathName === item.path && 'bg-primary text-white'
+                }`}
                 onClick={() => handleNav(item)}
                 {...item}
               >

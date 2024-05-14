@@ -2,6 +2,8 @@ import { StyledMapContainer, THEMES } from '@rahat-ui/shadcn/maps';
 import { mapboxBasicConfig } from 'apps/rahat-ui/src/constants/config';
 import { LineChart } from '@rahat-ui/shadcn/src/components/charts';
 import DHMMap from './map';
+import { Pencil } from 'lucide-react';
+import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 
 const renderStatus = ({ readinessLevel, activationLevel, waterLevel }: any) => {
   let status;
@@ -14,23 +16,20 @@ const renderStatus = ({ readinessLevel, activationLevel, waterLevel }: any) => {
   }
 
   return (
-    <div>
-      <p
-        className={`mt-4 sm:mt-8 sm:w-2/3 ${
-          status === 'activation'
-            ? 'text-red-500'
-            : status === 'readiness'
-            ? 'text-yellow-500'
-            : 'text-green-500'
+    <p
+      className={`${status === 'activation'
+        ? 'text-red-500'
+        : status === 'readiness'
+          ? 'text-yellow-500'
+          : 'text-green-500'
         }`}
-      >
-        {status === 'activation'
-          ? 'Water is in activation level!'
-          : status === 'readiness'
-          ? 'Water is in readiness level!'
-          : 'Water is in a safe level.'}
-      </p>
-    </div>
+    >
+      {status === 'activation'
+        ? 'Water is in activation level'
+        : status === 'readiness'
+          ? 'Water is in readiness level'
+          : 'Water is in a safe level'}
+    </p>
   );
 };
 
@@ -117,69 +116,94 @@ export default function DHMContent({ data }: any) {
   console.log();
 
   return (
-    <div className="grid grid-cols-4 gap-2">
-      <div className="h-[calc(100vh-130px)] col-span-3 flex flex-col gap-2">
-        <div className="h-1/2 overflow-hidden rounded-md">
-          <StyledMapContainer>
-            <DHMMap
-              coordinates={[longitude, latitude]}
-              {...mapboxBasicConfig}
-              mapStyle={THEMES.light}
-            />
-          </StyledMapContainer>
-        </div>
-        <div className="h-1/2 bg-card rounded-md">
-          <LineChart series={seriesData} lineChartOptions={chartOptions} />
+    <div className="grid grid-cols-5 gap-4 h-[calc(100vh-215px)]">
+      <div className="overflow-hidden rounded-md col-span-3">
+        <StyledMapContainer>
+          <DHMMap
+            coordinates={[longitude, latitude]}
+            {...mapboxBasicConfig}
+            mapStyle={THEMES.outdoors}
+          />
+        </StyledMapContainer>
+      </div>
+
+      <div className="bg-card p-4 rounded col-span-2">
+        <h1 className="font-semibold text-lg mb-4">Real Time Status</h1>
+        <div className='grid grid-cols-2 gap-4'>
+          <div>
+            <h1 className="text-muted-foreground text-sm">Station</h1>
+            <p>{latestData.data.title}</p>
+          </div>
+          <div className='text-right'>
+            <h1 className="text-muted-foreground text-sm">Basin</h1>
+            <p>{latestData.data.basin}</p>
+          </div>
+          <div>
+            <h1 className="text-muted-foreground text-sm">Water Level</h1>
+            <p>{parseFloat(latestData.data.waterLevel).toFixed(2)}</p>
+          </div>
+          <div className='text-right'>
+            <h1 className="text-muted-foreground text-sm">Water Level On</h1>
+            <p>{new Date(latestData.data.waterLevelOn).toLocaleString()}</p>
+          </div>
+          <div>
+            <h1 className="text-muted-foreground text-sm">Longitude</h1>
+            <p>{parseFloat(longitude).toFixed(2)}</p>
+          </div>
+          <div className='text-right'>
+            <h1 className="text-muted-foreground text-sm">Latitude</h1>
+            <p>{parseFloat(latitude).toFixed(2)}</p>
+          </div>
+          <div>
+            <h1 className="text-muted-foreground text-sm">Description</h1>
+            <p>{latestData.data.description}</p>
+          </div>
+          <div className='text-right'>
+            {renderStatus({
+              readinessLevel: readinessLevel,
+              activationLevel: activationLevel,
+              waterLevel: latestData.data.waterLevel,
+            })}
+          </div>
         </div>
       </div>
-      <div className="grid grid-rows-3 gap-2 h-full">
-        <div className="bg-card p-4 rounded">
-          <h1 className="font-semibold text-lg">Real Time Status</h1>
-          <p>Station: {latestData.data.title}</p>
-          <p>Basin: {latestData.data.basin}</p>
-          <p>
-            Water Level: {parseFloat(latestData.data.waterLevel).toFixed(2)}
-          </p>
-          <p>
-            Water Level On:{' '}
-            {new Date(latestData.data.waterLevelOn).toLocaleString()}
-          </p>
-          <p>Longitude: {parseFloat(longitude).toFixed(2)}</p>
-          <p>Latitude: {parseFloat(latitude).toFixed(2)}</p>
-          <p>Description: {latestData.data.description}</p>
-        </div>
-        <div className="bg-card p-4 rounded">
+
+      <div className="bg-card p-4 rounded col-span-2">
+        <div className='flex justify-between items-center mb-4'>
           <h1 className="font-semibold text-lg">Bulletin Today</h1>
-          <p>Station: N/A</p>
-          <p>Basin: N/A</p>
-          <p>Status: N/A</p>
-          <p>Warning Level: N/A</p>
-          <p>Flow: N/A</p>
-          <p>Longitude: N/A</p>
-          <p>Latitude: N/A</p>
-          <p>Description: N/A</p>
+          <div className="rounded-full border border-primary text-primary bg-card p-2">
+            <Pencil size={20} strokeWidth={1.5} />
+          </div>
         </div>
-        <div className="bg-card p-4 rounded">
-          <h1 className="font-semibold text-lg">
-            Water Level: {parseFloat(latestData.data.waterLevel).toFixed(2)}
-          </h1>
-          <h1 className="font-semibold text-lg">
-            <div>
-              Activation Level:{' '}
-              {latestData.trigger.triggerStatement.activationLevel}
-            </div>
-            <div>
-              Readiness Level:{' '}
-              {latestData.trigger.triggerStatement.readinessLevel}
-            </div>
-          </h1>
-          {renderStatus({
-            readinessLevel: readinessLevel,
-            activationLevel: activationLevel,
-            waterLevel: latestData.data.waterLevel,
-          })}
-          {/* <h1 className='font-semibold text-lg'>Phase: Readiness</h1> */}
+        <div className='grid grid-cols-2 gap-4'>
+          <div>
+            <h1 className="text-muted-foreground text-sm">Waterway</h1>
+            <p>Test</p>
+          </div>
+          <div className='text-right'>
+            <h1 className="text-muted-foreground text-sm">River</h1>
+            <p>Test</p>
+          </div>
+          <div>
+            <h1 className="text-muted-foreground text-sm">(2080-01-12)</h1>
+            <p>Today</p>
+            <Badge className='bg-green-100 text-green-600'>Normal</Badge>
+          </div>
+          <div className='text-right'>
+            <h1 className="text-muted-foreground text-sm">(2080-01-13)</h1>
+            <p>Tomorrow</p>
+            <Badge className='bg-orange-100 text-orange-500'>Notable increase</Badge>
+          </div>
+          <div>
+            <h1 className="text-muted-foreground text-sm">(2080-01-14)</h1>
+            <Badge className='bg-green-100 text-green-600'>Normal</Badge>
+          </div>
         </div>
+      </div>
+
+      <div className="bg-card rounded-md col-span-3">
+        <h1 className='p-4 pb-2 font-semibold text-lg'>Water Level Stats</h1>
+        <LineChart series={seriesData} lineChartOptions={chartOptions} />
       </div>
     </div>
   );

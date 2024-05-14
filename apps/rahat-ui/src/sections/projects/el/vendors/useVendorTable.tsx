@@ -20,9 +20,10 @@ export type VendorType = {
 
 interface VendorTableProps {
   handleViewClick: any;
+  voucherPrice: number;
 }
 
-export const useVendorTable = ({ handleViewClick }: VendorTableProps) => {
+export const useVendorTable = ({ handleViewClick, voucherPrice }: VendorTableProps) => {
   const columns: ColumnDef<VendorType>[] = [
     {
       accessorKey: 'name',
@@ -50,7 +51,15 @@ export const useVendorTable = ({ handleViewClick }: VendorTableProps) => {
       accessorKey: 'redemmedValue',
       header: 'Redeemed Value',
       cell: ({ row }) => (
-        <div>{Number(row.getValue('totalVoucherRedemmed'))*30000}</div>
+        <div>{Number(row.getValue('totalVoucherRedemmed'))*voucherPrice}</div>
+      ),
+    },
+
+    {
+      accessorKey: 'redemptionNumber',
+      header: 'Redemption Value',
+      cell: ({ row }) => (
+        <div>{Number(row.getValue('redemptionNumber'))*voucherPrice}</div>
       ),
     },
     {

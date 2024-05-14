@@ -12,7 +12,7 @@ import {
 } from '@tanstack/react-table';
 import * as React from 'react';
 
-import { useProjectAction } from '@rahat-ui/query';
+import { PROJECT_SETTINGS_KEYS, useProjectAction, useProjectSettingsStore } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/components/button';
 import { Input } from '@rahat-ui/shadcn/components/input';
 import {
@@ -28,7 +28,7 @@ import { MS_ACTIONS } from '@rahataid/sdk';
 import { useParams, useRouter } from 'next/navigation';
 import { useVendorTable } from './useVendorTable';
 import TableLoader from 'apps/rahat-ui/src/components/table.loader';
-import { useAllVendorVoucher, useVendorVoucher } from 'apps/rahat-ui/src/hooks/el/subgraph/querycall';
+import { useAllVendorVoucher, useProjectVoucher, useVendorVoucher } from 'apps/rahat-ui/src/hooks/el/subgraph/querycall';
 
 export type Transaction = {
   id: string;
@@ -51,7 +51,17 @@ export default function VendorsList() {
     );
   };
 
-  const columns = useVendorTable({ handleViewClick });
+  const contractSettings = useProjectSettingsStore(
+    (state) => state.settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.CONTRACT] || null,
+  );
+  const voucherDetail = useProjectVoucher(
+    contractSettings?.elproject?.address || '',
+    contractSettings?.eyevoucher?.address || '',
+  );
+
+  const voucherPrice = Number(voucherDetail?.data?.freeVoucherPrice);
+
+  const columns = useVendorTable({ handleViewClick, voucherPrice });
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
@@ -86,6 +96,7 @@ export default function VendorsList() {
   const [currentPage, setCurrentPage] = React.useState<number>(1);
 
   const fetchVendors = async () => {
+
     const result = await getVendors.mutateAsync({
       uuid,
       data: {
@@ -96,13 +107,14 @@ export default function VendorsList() {
         },
       },
     });
-
+    
     const filteredData = result?.data.map((row: any) => {
       return {
         name: row.User.name,
         walletaddress: row.User.wallet,
         phone: row.User.phone,
         vendorId: row.User.uuid,
+        redemptionNumber: row.redemptionNumber
       };
     });
 
@@ -112,9 +124,14 @@ export default function VendorsList() {
 
     const filteredDataWithVoucher = filteredData?.map((row:any) => {
       vendorListArray?.map((voucherRow:any) => {
-        if(row.walletaddress.toLowerCase() == voucherRow.id.toLowerCase()){
-          totalVoucher = Number(voucherRow?.freeVoucherRedeemed) + Number(voucherRow?.referredVoucherRedeemed)
+        try {
+          if(row?.walletaddress?.toLowerCase() == voucherRow?.id?.toLowerCase()){
+            totalVoucher = Number(voucherRow?.freeVoucherRedeemed) + Number(voucherRow?.referredVoucherRedeemed)
+          }
+        } catch (error) {
+          console.log(error)
         }
+        
       })
       return{...row, totalVoucherRedemmed: totalVoucher}
     })

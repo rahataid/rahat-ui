@@ -62,6 +62,8 @@ const AddCampaignView = () => {
   const [selectedRows, setSelectedRows] = React.useState<SelectedRowType[]>([]);
   const [globalFilter, setGlobalFilter] = React.useState('');
   const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [audienceRequiredError, setAudienceRequiredError] =
+    React.useState(false);
 
   const showAddAudienceView = useBoolean(false);
   const router = useRouter();
@@ -76,6 +78,10 @@ const AddCampaignView = () => {
   });
 
   const debouncedHandleSubmit = debounce((data) => {
+    if (selectedRows.length === 0) {
+      setAudienceRequiredError(true);
+      return
+    }
     let transportId;
     transportData?.data.map((tdata) => {
       if (tdata.name.toLowerCase() === data?.campaignType.toLowerCase()) {
@@ -108,14 +114,14 @@ const AddCampaignView = () => {
       additionalData.audio = data.file;
     } else if (
       data?.campaignType === CAMPAIGN_TYPES.WHATSAPP &&
-      data?.message
-    ) {
-      additionalData.body = data?.message;
-    } else if (
-      data?.campaignType === CAMPAIGN_TYPES.WHATSAPP &&
       data?.messageSid
     ) {
       additionalData.messageSid = data?.messageSid;
+      additionalData.body = data?.message;
+    } else if (
+      data?.campaignType === CAMPAIGN_TYPES.WHATSAPP &&
+      !data?.messageSid
+    ) {
       additionalData.body = data?.message;
     } else {
       additionalData.message = data?.message;
@@ -175,6 +181,8 @@ const AddCampaignView = () => {
               selectedRows={selectedRows}
               setSelectedRows={setSelectedRows}
               audienceData={audienceData}
+              setAudienceRequiredError={setAudienceRequiredError}
+              audienceRequiredError={audienceRequiredError}
             />
           </div>
         ) : null}

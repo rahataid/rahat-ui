@@ -81,13 +81,15 @@ const ProjectMainView = () => {
   }, [getProjectStats, getElProjectStats]);
 
   const filteredChartData = stats?.data?.data
-    ? stats.data.data.filter((item) => {
-        const name = item?.name;
-        return name === `BENEFICIARY_AGE_RANGE_ID_${id}`;
-      }).map((item) =>({
-        ...item,
-        name: item.name.replace(new RegExp(`_ID_${id}`), '') 
-      }))
+    ? stats.data.data
+        .filter((item) => {
+          const name = item?.name;
+          return name === `BENEFICIARY_AGE_RANGE_ID_${id}`;
+        })
+        .map((item) => ({
+          ...item,
+          name: item.name.replace(new RegExp(`_ID_${id}`), ''),
+        }))
     : [];
 
   const filterdELChartData =
@@ -168,6 +170,7 @@ const ProjectMainView = () => {
           project={project}
           totalBeneficiary={projectStats?.benTotal}
           totalVendor={projectStats?.vendorTotal}
+          loading={isLoading}
         />
         <ProjectDataCard
           beneficiaryDetails={beneficiaryDetails}

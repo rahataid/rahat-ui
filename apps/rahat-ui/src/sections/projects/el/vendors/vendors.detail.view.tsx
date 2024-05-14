@@ -81,6 +81,7 @@ export default function VendorsDetailPage() {
       args: [walletAddress, true],
     });
     setTransactionHash(txnHash);
+    handleAssignVendorClose();
   };
 
   useEffect(() => {

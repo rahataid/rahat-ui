@@ -185,14 +185,6 @@ function BeneficiaryDetailTableView() {
     [filters, setFilters],
   );
 
-  const handleFilterType = React.useCallback(
-    (type: string) => {
-      // resetSelectedListItems();
-      setVoucherFilter({ voucher: type });
-    },
-    [filters, setFilters],
-  );
-
   const table = useReactTable({
     manualPagination: true,
     data: projectBeneficiaries?.data?.data || [],

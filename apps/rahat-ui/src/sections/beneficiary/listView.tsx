@@ -78,7 +78,6 @@ export default function ListView({
   useEffect(() => {
     if (filters?.projectId) {
       const project = selectFilterProjectItems.find((p) => {
-        console.log('p', p);
         return p.value === filters?.projectId;
       });
       setSelectedProject(project);

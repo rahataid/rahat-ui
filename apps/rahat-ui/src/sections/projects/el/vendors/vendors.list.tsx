@@ -124,13 +124,10 @@ export default function VendorsList() {
 
     const filteredDataWithVoucher = filteredData?.map((row:any) => {
       vendorListArray?.map((voucherRow:any) => {
-        try {
+        
           if(row?.walletaddress?.toLowerCase() == voucherRow?.id?.toLowerCase()){
             totalVoucher = Number(voucherRow?.freeVoucherRedeemed) + Number(voucherRow?.referredVoucherRedeemed)
           }
-        } catch (error) {
-          console.log(error)
-        }
         
       })
       return{...row, totalVoucherRedemmed: totalVoucher}

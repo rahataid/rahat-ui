@@ -166,6 +166,19 @@ export const useVendorVoucher = (address: string) => {
   });
 };
 
+export const useAllVendorVoucher = () => {
+  const {queryService} = useGraphService();
+
+  return useQuery({
+    queryKey: ['vendors-voucher'],
+    queryFn: async () => {
+      const res = await queryService.useAllVendorVoucher();
+      return res;
+    }
+  })
+}
+
+
 export const useFreeVoucherHolder = () => {
   const { queryService } = useGraphService();
   return useQuery({

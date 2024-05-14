@@ -100,10 +100,6 @@ export const voucherType = [
     key: 'NOT_ASSIGNED',
     value: 'NOT_ASSIGNED',
   },
-  // {
-  //   key: 'ALL',
-  //   value: 'ALL',
-  // },
   {
     key: 'FREE',
     value: 'FREE',
@@ -185,14 +181,6 @@ function BeneficiaryDetailTableView() {
         return;
       }
       setFilters({ ...filters, status: type, voucher: voucherFilter.voucher });
-    },
-    [filters, setFilters],
-  );
-
-  const handleFilterType = React.useCallback(
-    (type: string) => {
-      // resetSelectedListItems();
-      setVoucherFilter({ voucher: type });
     },
     [filters, setFilters],
   );
@@ -279,35 +267,6 @@ function BeneficiaryDetailTableView() {
               </SelectContent>
             </Select>
           </div>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="ml-auto">
-                <Settings2 className="mr-2 h-4 w-5" />
-                View
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Toggle Columns</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              {table
-                .getAllColumns()
-                .filter((column) => column.getCanHide())
-                .map((column) => {
-                  return (
-                    <DropdownMenuCheckboxItem
-                      key={column.id}
-                      className="capitalize"
-                      checked={column.getIsVisible()}
-                      onCheckedChange={(value) =>
-                        column.toggleVisibility(!!value)
-                      }
-                    >
-                      {column.id}
-                    </DropdownMenuCheckboxItem>
-                  );
-                })}
-            </DropdownMenuContent>
-          </DropdownMenu>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               {selectedRowAddresses.length ? (

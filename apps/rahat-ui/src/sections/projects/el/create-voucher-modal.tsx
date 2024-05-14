@@ -48,13 +48,15 @@ interface CreateVoucherModalType {
   setVoucherInputs?: any;
   handleSubmit: () => void;
   handleModal: () => void;
+  isTransacting: boolean;
 }
-
+ 
 const CreateVoucherModal: FC<CreateVoucherModalType> = ({
   voucherInputs,
   handleInputChange,
   handleModal,
   handleSubmit,
+  isTransacting
 }) => {
   const handleSelectChange = (value: string) => {
     handleInputChange({
@@ -173,7 +175,7 @@ const CreateVoucherModal: FC<CreateVoucherModalType> = ({
 
             <DialogFooter>
               <DialogClose asChild>
-                <Button onClick={handleSubmitCheck}>Submit</Button>
+                <Button onClick={handleSubmitCheck} disabled={isTransacting}>{isTransacting ? "Confirming Transaction..." : "Submit"}</Button>
               </DialogClose>
             </DialogFooter>
           </DialogContent>

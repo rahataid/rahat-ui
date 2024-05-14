@@ -20,9 +20,10 @@ export type VendorType = {
 
 interface VendorTableProps {
   handleViewClick: any;
+  voucherPrice: number;
 }
 
-export const useVendorTable = ({ handleViewClick }: VendorTableProps) => {
+export const useVendorTable = ({ handleViewClick, voucherPrice }: VendorTableProps) => {
   const columns: ColumnDef<VendorType>[] = [
     {
       accessorKey: 'name',
@@ -39,22 +40,26 @@ export const useVendorTable = ({ handleViewClick }: VendorTableProps) => {
       ),
     },
     {
-      accessorKey: 'walletaddress',
-      header: ({ column }) => {
-        return (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-          >
-            Wallet Address
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
-        );
-      },
+      accessorKey: 'totalVoucherRedemmed',
+      header: 'Total Vouchers Redeemed',
       cell: ({ row }) => (
-        <div className="lowercase">
-          {truncateEthAddress(row.getValue('walletaddress'))}
-        </div>
+        <div>{row.getValue('totalVoucherRedemmed')}</div>
+      ),
+    },
+    
+    {
+      accessorKey: 'redemmedValue',
+      header: 'Redeemed Value',
+      cell: ({ row }) => (
+        <div>{Number(row.getValue('totalVoucherRedemmed'))*voucherPrice}</div>
+      ),
+    },
+
+    {
+      accessorKey: 'redemptionNumber',
+      header: 'Redemption Value',
+      cell: ({ row }) => (
+        <div>{Number(row.getValue('redemptionNumber'))*voucherPrice}</div>
       ),
     },
     {

@@ -190,7 +190,7 @@ const AddAudience: FC<AddAudienceProps> = ({
           <FormItem>
             <div className="rounded border mb-8 bg-card">
               <Table>
-                <ScrollArea className="h-[calc(100vh-440px)]">
+                <ScrollArea className="h-[calc(100vh-460px)]">
                   <TableHeader>
                     {table.getHeaderGroups().map((headerGroup) => (
                       <TableRow key={headerGroup.id}>

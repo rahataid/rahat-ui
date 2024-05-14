@@ -173,7 +173,7 @@ const AddCampaignView = () => {
         />
 
         {showAddAudienceView.value ? (
-          <div className="p-2">
+          <div className="p-2 h-full">
             <AddAudience
               form={form}
               globalFilter={globalFilter}

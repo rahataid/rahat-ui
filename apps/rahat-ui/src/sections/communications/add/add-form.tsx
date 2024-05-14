@@ -372,12 +372,14 @@ const CampaignForm: FC<CampaignFormProps> = ({
             )} */}
           </div>
         </div>
-        <ConfirmModal
-          open={campaignConfirmModal.value}
-          handleClose={handleCampaignAssignModalClose}
-          handleSubmit={handleSubmit}
-          isSubmitting={isSubmitting}
-        />
+        {campaignConfirmModal.value && (
+          <ConfirmModal
+            open={campaignConfirmModal.value}
+            handleClose={handleCampaignAssignModalClose}
+            handleSubmit={handleSubmit}
+            isSubmitting={isSubmitting}
+          />
+        )}
       </div>
     </>
   );

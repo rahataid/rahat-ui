@@ -77,7 +77,9 @@ const UserNavView: FC<UserNavViewProps> = ({ title, items }) => {
                   {item.children.map((subItem) => (
                     <div
                       key={subItem.title}
-                      className="flex justify-between p-2 items-center rounded-md cursor-pointer hover:bg-primary hover:text-white"
+                      className={`flex justify-between mb-1 p-2 items-center rounded-md cursor-pointer hover:bg-primary hover:text-white ${
+                        pathName === subItem.path && 'bg-primary text-white'
+                      }`}
                       onClick={() => subItem.path && router.push(subItem.path)}
                       {...subItem}
                     >

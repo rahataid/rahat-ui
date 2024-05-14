@@ -1,4 +1,11 @@
 'use client';
+import { usePagination } from '@rahat-ui/query';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@rahat-ui/shadcn/components/dropdown-menu';
 import {
   ColumnFiltersState,
   SortingState,
@@ -10,22 +17,19 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { usePagination } from '@rahat-ui/query';
-import * as React from 'react';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@rahat-ui/shadcn/components/dropdown-menu';
+import * as React from 'react';
 
 import { useProjectAction, useUpdateElRedemption } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/components/button';
 import { Input } from '@rahat-ui/shadcn/components/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@rahat-ui/shadcn/components/select';
 import {
   Table,
   TableBody,
@@ -44,19 +48,12 @@ import {
   DialogTitle,
 } from '@rahat-ui/shadcn/src/components/ui/dialog';
 import { ChevronDown } from 'lucide-react';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@rahat-ui/shadcn/components/select';
 
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import TableLoader from 'apps/rahat-ui/src/components/table.loader';
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 import { useParams, useRouter } from 'next/navigation';
 import { useTableColumns } from './useTableColumns';
-import TableLoader from 'apps/rahat-ui/src/components/table.loader';
 
 export type Redemption = {
   id: string;
@@ -204,7 +201,7 @@ export default function RedemptionTable({}) {
       redemptionUUID: selectedRowAddresses,
     });
     getRedemptionList();
-    setSelectedListItems([])
+    setSelectedListItems([]);
     projectModal.onFalse();
   };
 
@@ -224,9 +221,7 @@ export default function RedemptionTable({}) {
         <div className="flex items-center mb-2">
           <Input
             placeholder="Filter Redemptions..."
-            value={
-              (table.getColumn('name')?.getFilterValue() as string) ?? ''
-            }
+            value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
             onChange={(event) =>
               table.getColumn('name')?.setFilterValue(event.target.value)
             }

@@ -1,20 +1,13 @@
 'use client';
 
-import { useState } from 'react';
-import { ColumnDef } from '@tanstack/react-table';
-import { Copy, CopyCheck, Eye } from 'lucide-react';
 import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
-import {
-  Tooltip,
-  TooltipProvider,
-  TooltipTrigger,
-  TooltipContent,
-} from '@rahat-ui/shadcn/src/components/ui/tooltip';
+import { ColumnDef } from '@tanstack/react-table';
+import { Eye } from 'lucide-react';
+import { useState } from 'react';
 import { useSecondPanel } from '../../../../providers/second-panel-provider';
 import BeneficiaryDetail from '../../../../sections/projects/el/beneficiary/beneficiary.detail';
-import { truncateEthAddress } from '@rumsan/sdk/utils';
 
-export const useProjectBeneficiaryTableColumns = (voucherType:string) => {
+export const useProjectBeneficiaryTableColumns = (voucherType: string) => {
   const { setSecondPanelComponent, closeSecondPanel } = useSecondPanel();
   const [walletAddressCopied, setWalletAddressCopied] = useState<number>();
 
@@ -35,7 +28,7 @@ export const useProjectBeneficiaryTableColumns = (voucherType:string) => {
   const columns: ColumnDef<any>[] = [
     {
       id: 'select',
-      header: "",
+      header: '',
       // ({ table }) => (
       //   <Checkbox
       //     checked={
@@ -46,16 +39,19 @@ export const useProjectBeneficiaryTableColumns = (voucherType:string) => {
       //     aria-label="Select all"
       //   />
       // ),
-      cell: 
-      ({ row }) => {
+      cell: ({ row }) => {
         const isDisabled = voucherType != 'NOT_ASSIGNED';
         const isChecked = row.getIsSelected() && !isDisabled;
-        return (!isDisabled && <Checkbox
-          checked={isChecked}
-          onCheckedChange={(value) => row.toggleSelected(!!value)}
-          aria-label="Select row"
-          disabled={isDisabled}
-        />)
+        return (
+          !isDisabled && (
+            <Checkbox
+              checked={isChecked}
+              onCheckedChange={(value) => row.toggleSelected(!!value)}
+              aria-label="Select row"
+              disabled={isDisabled}
+            />
+          )
+        );
       },
       enableSorting: false,
       enableHiding: false,
@@ -77,7 +73,7 @@ export const useProjectBeneficiaryTableColumns = (voucherType:string) => {
       header: 'Type',
       cell: ({ row }) => <div> {row.getValue('type')}</div>,
     },
-    
+
     // {
     //   accessorKey: 'Type',
     //   header: 'Type',

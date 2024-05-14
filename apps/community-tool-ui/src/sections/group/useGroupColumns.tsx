@@ -62,7 +62,7 @@ export const useCommunityGroupDeailsColumns = () => {
             return `${beneficiary.firstName}  ${beneficiary.lastName}`;
           }
         }
-        return '';
+        return '-';
       },
     },
     {
@@ -75,7 +75,7 @@ export const useCommunityGroupDeailsColumns = () => {
             return beneficiary.phone;
           }
         }
-        return 'null';
+        return '-';
       },
     },
     {
@@ -101,7 +101,7 @@ export const useCommunityGroupDeailsColumns = () => {
             return beneficiary.govtIDNumber;
           }
         }
-        return 'null';
+        return '-';
       },
     },
     {

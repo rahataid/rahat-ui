@@ -1,4 +1,4 @@
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { FC, useState } from 'react';
 import { NavItem } from './nav-items.types';
 type TargetingNavProps = {
@@ -10,7 +10,7 @@ type TargetingNavProps = {
 const TargetingNav: FC<TargetingNavProps> = ({ title, items, item }) => {
   const router = useRouter();
   const [openSubmenu, setOpenSubmenu] = useState<string | null>(null);
-
+  const pathName = usePathname();
   const handleNav = (item: NavItem) => {
     if (!item.children) router.push(item.path as string);
     else setOpenSubmenu(item.title === openSubmenu ? null : item.title);
@@ -29,7 +29,9 @@ const TargetingNav: FC<TargetingNavProps> = ({ title, items, item }) => {
           {items?.map((item) => (
             <div key={item.title}>
               <div
-                className={`flex justify-between p-2 items-center rounded-md cursor-pointer hover:bg-primary hover:text-white`}
+                className={`flex justify-between p-2 mb-1 items-center rounded-md cursor-pointer hover:bg-primary hover:text-white ${
+                  pathName === item.path && 'bg-primary text-white'
+                }`}
                 onClick={() => handleNav(item)}
                 {...item}
               >

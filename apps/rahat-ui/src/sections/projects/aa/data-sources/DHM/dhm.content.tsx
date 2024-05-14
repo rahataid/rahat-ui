@@ -2,8 +2,8 @@ import { StyledMapContainer, THEMES } from '@rahat-ui/shadcn/maps';
 import { mapboxBasicConfig } from 'apps/rahat-ui/src/constants/config';
 import { LineChart } from '@rahat-ui/shadcn/src/components/charts';
 import DHMMap from './map';
-import { Pencil } from 'lucide-react';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+import DHMBulletinDialog from './dhm.bulletin.edit.dialog';
 
 const renderStatus = ({ readinessLevel, activationLevel, waterLevel }: any) => {
   let status;
@@ -171,9 +171,7 @@ export default function DHMContent({ data }: any) {
       <div className="bg-card p-4 rounded col-span-2">
         <div className='flex justify-between items-center mb-4'>
           <h1 className="font-semibold text-lg">Bulletin Today</h1>
-          <div className="rounded-full border border-primary text-primary bg-card p-2">
-            <Pencil size={20} strokeWidth={1.5} />
-          </div>
+          <DHMBulletinDialog />
         </div>
         <div className='grid grid-cols-2 gap-4'>
           <div>

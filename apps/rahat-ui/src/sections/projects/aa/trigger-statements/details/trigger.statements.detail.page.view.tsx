@@ -17,7 +17,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/alert-dialog';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { ArrowLeft, ArchiveRestore, Pencil } from 'lucide-react';
 import TriggerDetailCards from './trigger.detail.cards';
 import TriggerDetailCard from './trigger.detail.card';
@@ -28,6 +27,7 @@ import {
 } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import Loader from 'apps/rahat-ui/src/components/table.loader';
+import ManualTriggerDialog from './manual.trigger.dialog';
 
 export default function TriggerStatementsDetailView() {
   const { id: projectID } = useParams();
@@ -103,9 +103,9 @@ export default function TriggerStatementsDetailView() {
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
-          <Button type="button" className="px-8">
-            Trigger
-          </Button>
+          {triggerDetail?.dataSource === "MANUAL" ? (
+            <ManualTriggerDialog />
+          ) : null}
         </div>
       </div>
       <TriggerDetailCards triggerDetail={triggerDetail} />

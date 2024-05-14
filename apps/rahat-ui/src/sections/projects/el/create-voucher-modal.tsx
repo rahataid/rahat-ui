@@ -124,7 +124,7 @@ const CreateVoucherModal: FC<CreateVoucherModalType> = ({
                     </span>
                   </p>
                   <p className="text-sm flex items-center gap-1 text-muted-foreground font-normal">
-                    Referred Vouchers:{' '}
+                    Discount Vouchers:{' '}
                     <span className="text-xl font-medium text-primary">
                       {Number(benfData?.referredVoucherBudget)}
                     </span>
@@ -164,7 +164,7 @@ const CreateVoucherModal: FC<CreateVoucherModalType> = ({
                       <span className="text-primary">
                         {+voucherInputs.tokens * 3}{' '}
                       </span>
-                      Referred voucher will be minted.
+                      Discount voucher will be minted.
                     </AlertDescription>
                   </Alert>
                 </div>

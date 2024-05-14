@@ -10,5 +10,5 @@ export interface IActivitiesItem {
   hazardType: string;
   status: string;
   activityType: string;
-  activtiyComm: Record<string,any>;
+  activtiyComm: Record<string, any>;
 }

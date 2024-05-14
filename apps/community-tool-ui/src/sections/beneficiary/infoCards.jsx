@@ -113,7 +113,9 @@ export default function InfoCards({ data }) {
           </div>
         </CardContent>
       </Card>
-      {data?.extras && <ExtraInfoCard data={data?.extras} />}
+      {Object?.entries(data?.extras).length > 0 && (
+        <ExtraInfoCard data={data?.extras} />
+      )}
     </div>
   );
 }

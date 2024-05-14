@@ -37,7 +37,7 @@ const VoucherView = () => {
     address: contractSettings?.elproject?.address || '',
   });
 
-  const voucherData = {...voucherDetails,...projectVoucher}
+  const voucherData = { ...voucherDetails, ...projectVoucher };
 
   return (
     <>
@@ -47,7 +47,7 @@ const VoucherView = () => {
         </div>
       ) : (
         <>
-          {voucherDetails ? (
+          {voucherDetails?.eyeVoucherBudget >= BigInt(1) ? (
             <div className="bg-secondary">
               <div className="grid grid-cols-2">
                 <div>

@@ -16,7 +16,6 @@ import {
   includeOnlySelectedTarget,
   removeFieldsWithUnderscore,
   splitFullName,
-  splitValidAndDuplicates,
   splitValidAndInvalid,
 } from 'apps/community-tool-ui/src/utils';
 import { ArrowBigLeft, ArrowBigRight } from 'lucide-react';
@@ -31,12 +30,13 @@ import InfoBox from './InfoBox';
 
 import {
   useBeneficiaryImportStore,
+  useCreateImportSource,
+  useExistingFieldMappings,
   useFetchKoboSettings,
 } from '@rahat-ui/community-query';
 import { useRSQuery } from '@rumsan/react-query';
 import ColumnMappingTable from './ColumnMappingTable';
 import MyAlert from './MyAlert';
-import { has } from 'lodash';
 
 interface IProps {
   extraFields: string[];
@@ -46,6 +46,8 @@ export default function BenImp({ extraFields }: IProps) {
   const form = useForm({});
   const { rumsanService } = useRSQuery();
   const { data: kbSettings } = useFetchKoboSettings();
+  const existingMapQuery = useExistingFieldMappings();
+  const importSourceQuery = useCreateImportSource();
 
   const {
     currentScreen,
@@ -77,11 +79,11 @@ export default function BenImp({ extraFields }: IProps) {
 
   const fetchExistingMapping = async (importId: string) => {
     setMappings([]);
-    const res = await rumsanService.client.get(`/sources/${importId}/mappings`);
+    const res = await existingMapQuery.mutateAsync(importId);
     if (!res) return;
-    if (res?.data?.data) {
+    if (res?.data) {
       setHasExistingMapping(true);
-      const { fieldMapping } = res.data.data;
+      const { fieldMapping } = res.data;
       return setMappings(fieldMapping?.sourceTargetMappings);
     }
   };
@@ -290,35 +292,36 @@ export default function BenImp({ extraFields }: IProps) {
     return createImportSource(sourcePayload);
   };
 
-  const createImportSource = (sourcePayload: any) => {
+  const createImportSource = async (sourcePayload: any) => {
     setLoading(true);
-    rumsanService.client
-      .post('/sources', sourcePayload)
-      .then((res) => {
-        setLoading(false);
-        if (sourcePayload.action === IMPORT_ACTION.IMPORT) {
-          resetStates();
-          return Swal.fire({
-            icon: 'success',
-            title: `${sourcePayload.fieldMapping.data.length} Beneficiaries imported successfully!`,
-          });
-        }
-        const { result, invalidFields, hasUUID } = res.data.data;
-        setHasUUID(hasUUID);
-        setProcessedData(result);
-        if (invalidFields.length) {
-          setInvalidFields(invalidFields);
-        }
-        setCurrentScreen(BENEF_IMPORT_SCREENS.IMPORT_DATA);
-      })
-      .catch((err) => {
-        const msg = err?.response?.data?.message || 'Something went wrong!';
-        setLoading(false);
-        Swal.fire({
-          icon: 'error',
-          title: msg,
-        });
+    const res = (await importSourceQuery.mutateAsync(sourcePayload)) as any;
+    if (!res) {
+      setLoading(false);
+      return Swal.fire({
+        icon: 'error',
+        title: 'Failed to create import source!',
       });
+    }
+
+    // If action is IMPORT, source will be created on backend!
+    // Otherwise, just validate in the backend
+    if (sourcePayload.action === IMPORT_ACTION.IMPORT) {
+      setLoading(false);
+      resetStates();
+      return Swal.fire({
+        icon: 'success',
+        title: `${sourcePayload.fieldMapping.data.length} Beneficiaries imported successfully!`,
+      });
+    }
+
+    const { result, invalidFields, hasUUID } = res?.data;
+    setHasUUID(hasUUID);
+    setProcessedData(result);
+    if (invalidFields.length) {
+      setInvalidFields(invalidFields);
+    }
+    setCurrentScreen(BENEF_IMPORT_SCREENS.IMPORT_DATA);
+    setLoading(false);
   };
 
   const handleRetargetClick = () => {

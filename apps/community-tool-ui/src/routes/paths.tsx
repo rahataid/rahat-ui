@@ -29,6 +29,7 @@ export const paths = {
     group: {
       root: ROOTS.GROUPS,
       add: `${ROOTS.GROUPS}/add`,
+      import_logs: `${ROOTS.GROUPS}/import-logs`,
       detail: (uuid: string) => `${ROOTS.GROUPS}/${uuid}`,
     },
     fieldDefinitions: {
@@ -39,7 +40,8 @@ export const paths = {
     },
     targeting: {
       add: `${ROOTS.TARGETING}/add`,
-      root: ROOTS.TARGETING,
+      root: `${ROOTS.TARGETING}/filters`,
+      list: `${ROOTS.TARGETING}/list`,
       detail: (uuid: string) => `${ROOTS.TARGETING}/${uuid}`,
     },
   },

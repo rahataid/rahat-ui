@@ -60,7 +60,6 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
   // const { data } = useCommunityBeneficiaryListByID({
   //   uuid,
   // });
-  console.log('datachanged');
   const { pagination } = usePagination();
   const { data: definitions } = useActiveFieldDefList({
     ...pagination,

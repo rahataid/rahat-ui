@@ -23,6 +23,7 @@ import { useUserAddRoles } from '@rumsan/react-query';
 import { useUserCreate } from '@rahat-ui/query';
 import { User } from '@rumsan/sdk/types';
 import { UUID } from 'crypto';
+import { useRouter } from 'next/navigation';
 
 export const useAddBeneficiary = () => {
   const alert = useAlert();
@@ -32,7 +33,6 @@ export const useAddBeneficiary = () => {
         alert.fire({
           title: 'Beneficiary added successfully',
           icon: 'success',
-
         });
       },
     },
@@ -61,7 +61,7 @@ export const useAssignClaims = () => {
 };
 
 export const useMintVouchers = () => {
-  const toastMixin = useAlert(); 
+  const toastMixin = useAlert();
   return useWriteRahatDonorMintTokenAndApproveDescription({
     mutation: {
       onSuccess: () => {
@@ -79,12 +79,13 @@ export const useMintVouchers = () => {
 };
 
 export const useOnlyMintVoucher = () => {
-  const toastMixin = useAlert()
+  const toastMixin = useAlert();
   return useWriteRahatDonorMintTokenAndApprove({
     mutation: {
       onSuccess: () => {
-        toastMixin.fire({title:'Success',
-          text:'Voucher minted successfully'
+        toastMixin.fire({
+          title: 'Success',
+          text: 'Voucher minted successfully',
         });
       },
       onError: (err) => {
@@ -185,6 +186,7 @@ export const useAddManager = () => {
   const contract = useWriteAccessManagerUpdateProjectManager();
   const addUser = useUserCreate();
   const alert = useAlert();
+  const route = useRouter();
 
   const functionCall = useMutation({
     mutationFn: ({
@@ -203,12 +205,13 @@ export const useAddManager = () => {
     },
     onSuccess: async (result, variables) => {
       await addUser.mutateAsync(variables.data);
+      route.push('/users');
     },
     onError: (err) => {
       alert.fire({
         title: 'Error adding manager',
         text: err.message,
-        icon:'error',
+        icon: 'error',
       });
     },
   });
@@ -219,6 +222,7 @@ export const useAddAdmin = () => {
   const contract = useWriteAccessManagerUpdateAdmin();
   const addUser = useUserCreate();
   const alert = useAlert();
+  const route = useRouter();
 
   const functionCall = useMutation({
     mutationFn: ({
@@ -237,13 +241,13 @@ export const useAddAdmin = () => {
     },
     onSuccess: async (data, variables) => {
       await addUser.mutateAsync(variables.data);
+      route.push('/users');
     },
     onError: (err) => {
       alert.fire({
         title: 'Error adding admin',
         text: err.message,
         icon: 'error',
-       
       });
     },
   });

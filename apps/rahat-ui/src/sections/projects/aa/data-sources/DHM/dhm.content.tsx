@@ -43,13 +43,18 @@ export default function DHMContent({ data }: any) {
   console.log(latestData);
   const dhmData = data;
 
-  const xAxisLabel = dhmData.map((d: any) => {
-    const date = new Date(d.createdAt);
+  const xAxisLabel = dhmData?.map((d: any) => {
+    const date = new Date(d?.data?.createdAt);
     return date.toLocaleTimeString();
   });
 
-  const activationLevel = latestData.trigger.triggerStatement.activationLevel;
-  const readinessLevel = latestData.trigger.triggerStatement.readinessLevel;
+  // const activationLevel = latestData.trigger.triggerStatement.activationLevel;
+  // const readinessLevel = latestData.trigger.triggerStatement.readinessLevel;
+
+
+  const activationLevel = 3
+  const readinessLevel = 7;
+
   const longitude = latestData.data.point.coordinates[0];
   const latitude = latestData.data.point.coordinates[1];
 
@@ -166,11 +171,11 @@ export default function DHMContent({ data }: any) {
           <h1 className="font-semibold text-lg">
             <div>
               Activation Level:{' '}
-              {latestData.trigger.triggerStatement.activationLevel}
+              {latestData?.trigger?.triggerStatement?.activationLevel || 'N/A'}
             </div>
             <div>
               Readiness Level:{' '}
-              {latestData.trigger.triggerStatement.readinessLevel}
+              {latestData?.trigger?.triggerStatement?.readinessLevel || 'N/A'}
             </div>
           </h1>
           {renderStatus({

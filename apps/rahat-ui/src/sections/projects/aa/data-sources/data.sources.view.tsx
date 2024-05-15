@@ -20,6 +20,8 @@ export default function DataSourcesView() {
   const projectID = id as UUID;
   const { isLoading: isLoadingDhm, data: dhmData } =
     useDhmWaterLevels(projectID);
+    
+  console.log(dhmData)
 
   return (
     <div className="p-2 bg-secondary h-[calc(100vh-65px)]">

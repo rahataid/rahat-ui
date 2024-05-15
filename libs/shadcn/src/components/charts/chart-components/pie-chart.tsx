@@ -8,7 +8,7 @@ import useChart from '../use-chart';
 
 const CHART_HEIGHT = 400;
 const LEGEND_HEIGHT = 72;
-const DIVIDER_COLOR = '#dee2e6'; // Replace with your desired color
+const DIVIDER_COLOR = '#000000'; // Replace with your desired color
 
 const StyledChart = styled(Chart)({
   height: CHART_HEIGHT,
@@ -39,7 +39,7 @@ interface Props {
 
 export default function PieChart({ title, subheader, chart }: Props) {
   const {
-    colors = ['#00b67a', '#b67a00', '#b6007b', '#007bb6', '#7a00b6'],
+    colors = ['#00b67a', '#8BC34A', '#FFA726', '#007bb6', '#7a00b6'],
     series = [],
     options = {},
   } = chart;
@@ -92,9 +92,7 @@ export default function PieChart({ title, subheader, chart }: Props) {
 
   return (
     <div className="bg-card shadow rounded p-4 flex flex-col items-center justify-center">
-      <h2 className="text-lg text-white font-semibold">{title}</h2>
-      <p className="text-sm text-white">{subheader}</p>
-
+      <h2 className="text-lg font-medium">{title}</h2>
       <StyledChart
         dir="ltr"
         type="pie"

@@ -1,5 +1,5 @@
-import { useMutation, useProjectAction } from '@rahat-ui/query';
-import { useSwal } from '../../../components/swal';
+import { useMutation } from '@rahat-ui/query';
+import { useAlert } from '../../../components/swal';
 import {
   useWriteRahatDonorMintTokenAndApprove,
   useWriteRahatDonorMintTokenAndApproveDescription,
@@ -23,13 +23,14 @@ import { useUserAddRoles } from '@rumsan/react-query';
 import { useUserCreate } from '@rahat-ui/query';
 import { User } from '@rumsan/sdk/types';
 import { UUID } from 'crypto';
+import { useRouter } from 'next/navigation';
 
 export const useAddBeneficiary = () => {
-  const alert = useSwal();
+  const alert = useAlert();
   return useWriteElProjectAddBeneficiary({
     mutation: {
       onSuccess: () => {
-        alert({
+        alert.fire({
           title: 'Beneficiary added successfully',
           icon: 'success',
         });
@@ -39,7 +40,7 @@ export const useAddBeneficiary = () => {
 };
 
 export const useAssignClaims = () => {
-  const alert = useSwal();
+  const alert = useAlert();
   return useWriteElProjectAssignClaims({
     mutation: {
       onSuccess: () => {
@@ -60,28 +61,14 @@ export const useAssignClaims = () => {
 };
 
 export const useMintVouchers = () => {
-  const alert = useSwal();
-  const toastMixin = alert.mixin({
-    toast: true,
-    icon: 'success',
-    title: 'General Title',
-    animation: false,
-    position: 'top-right',
-    showConfirmButton: false,
-    timer: 3000,
-    timerProgressBar: true,
-    didOpen: (toast) => {
-      toast.addEventListener('mouseenter', alert.stopTimer);
-      toast.addEventListener('mouseleave', alert.resumeTimer);
-    },
-  });
+  const toastMixin = useAlert();
   return useWriteRahatDonorMintTokenAndApproveDescription({
     mutation: {
       onSuccess: () => {
         toastMixin.fire('It has been done');
       },
       onError: (err) => {
-        alert.fire({
+        toastMixin.fire({
           title: 'Error while minting vouchers',
           icon: 'error',
           text: err.message,
@@ -92,28 +79,17 @@ export const useMintVouchers = () => {
 };
 
 export const useOnlyMintVoucher = () => {
-  const alert = useSwal();
-  const toastMixin = alert.mixin({
-    toast: true,
-    icon: 'success',
-    title: 'General Title',
-    animation: false,
-    position: 'top-right',
-    showConfirmButton: false,
-    timer: 3000,
-    timerProgressBar: true,
-    didOpen: (toast) => {
-      toast.addEventListener('mouseenter', alert.stopTimer);
-      toast.addEventListener('mouseleave', alert.resumeTimer);
-    },
-  });
+  const toastMixin = useAlert();
   return useWriteRahatDonorMintTokenAndApprove({
     mutation: {
       onSuccess: () => {
-        toastMixin.fire('It has been done');
+        toastMixin.fire({
+          title: 'Success',
+          text: 'Voucher minted successfully',
+        });
       },
       onError: (err) => {
-        alert.fire({
+        toastMixin.fire({
           title: 'Error while minting vouchers',
           icon: 'error',
           text: err.message,
@@ -124,7 +100,7 @@ export const useOnlyMintVoucher = () => {
 };
 
 export const useAddVendors = () => {
-  const alert = useSwal();
+  const alert = useAlert();
   return useWriteElProjectUpdateVendor({
     mutation: {
       onSuccess: async () => {
@@ -145,7 +121,7 @@ export const useAddVendors = () => {
 };
 
 export const useCloseProject = () => {
-  const alert = useSwal();
+  const alert = useAlert();
   return useWriteElProjectCloseProject({
     mutation: {
       onSuccess: () => {
@@ -166,7 +142,7 @@ export const useCloseProject = () => {
 
 export const useBulkAssignVoucher = () => {
   const multi = useWriteElProjectMulticall();
-  const alert = useSwal();
+  const alert = useAlert();
 
   const multicall = useMutation({
     mutationFn: ({
@@ -209,7 +185,8 @@ export const useBulkAssignVoucher = () => {
 export const useAddManager = () => {
   const contract = useWriteAccessManagerUpdateProjectManager();
   const addUser = useUserCreate();
-  const alert = useSwal();
+  const alert = useAlert();
+  const route = useRouter();
 
   const functionCall = useMutation({
     mutationFn: ({
@@ -228,6 +205,7 @@ export const useAddManager = () => {
     },
     onSuccess: async (result, variables) => {
       await addUser.mutateAsync(variables.data);
+      route.push('/users');
     },
     onError: (err) => {
       alert.fire({
@@ -243,7 +221,8 @@ export const useAddManager = () => {
 export const useAddAdmin = () => {
   const contract = useWriteAccessManagerUpdateAdmin();
   const addUser = useUserCreate();
-  const alert = useSwal();
+  const alert = useAlert();
+  const route = useRouter();
 
   const functionCall = useMutation({
     mutationFn: ({
@@ -262,6 +241,7 @@ export const useAddAdmin = () => {
     },
     onSuccess: async (data, variables) => {
       await addUser.mutateAsync(variables.data);
+      route.push('/users');
     },
     onError: (err) => {
       alert.fire({
@@ -277,7 +257,7 @@ export const useAddAdmin = () => {
 export const useAddManagerRole = () => {
   const contract = useWriteAccessManagerUpdateProjectManager();
   const addUserRole = useUserAddRoles();
-  const alert = useSwal();
+  const alert = useAlert();
 
   const functionCall = useMutation({
     mutationFn: ({
@@ -312,7 +292,7 @@ export const useAddManagerRole = () => {
 export const useAddAdminRole = () => {
   const contract = useWriteAccessManagerUpdateAdmin();
   const addUserRole = useUserAddRoles();
-  const alert = useSwal();
+  const alert = useAlert();
 
   const functionCall = useMutation({
     mutationFn: ({

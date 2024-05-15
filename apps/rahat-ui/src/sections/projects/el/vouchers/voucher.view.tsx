@@ -33,9 +33,11 @@ const VoucherView = () => {
     contractSettings?.eyevoucher?.address || '',
   );
 
-  const {data: voucherDetails} = useReadElProjectGetProjectVoucherDetail({
-    address: contractSettings?.elproject?.address || ''
-  })
+  const { data: voucherDetails } = useReadElProjectGetProjectVoucherDetail({
+    address: contractSettings?.elproject?.address || '',
+  });
+
+  const voucherData = { ...voucherDetails, ...projectVoucher };
 
   return (
     <>
@@ -45,14 +47,14 @@ const VoucherView = () => {
         </div>
       ) : (
         <>
-          {voucherDetails?.eyeVoucherBudget ? (
+          {voucherDetails?.eyeVoucherBudget >= BigInt(1) ? (
             <div className="bg-secondary">
               <div className="grid grid-cols-2">
                 <div>
-                  <FreeVoucherInfo data={voucherDetails} />
+                  <FreeVoucherInfo data={voucherData} />
                 </div>
                 <div>
-                  <DiscountVoucherInfo data={voucherDetails} />
+                  <DiscountVoucherInfo data={voucherData} />
                 </div>
               </div>
 

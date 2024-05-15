@@ -27,9 +27,9 @@ const FormSchema = z.object({
   campaignName: z.string().min(2, {
     message: 'Campaign Name must be at least 2 characters.',
   }),
-  startTime: z.date({
-    required_error: 'Start time is required.',
-  }),
+  // startTime: z.date({
+  //   required_error: 'Start time is required.',
+  // }),
   campaignType: z.string({
     required_error: 'Camapign Type is required.',
   }),
@@ -62,6 +62,8 @@ const AddCampaignView = () => {
   const [selectedRows, setSelectedRows] = React.useState<SelectedRowType[]>([]);
   const [globalFilter, setGlobalFilter] = React.useState('');
   const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [audienceRequiredError, setAudienceRequiredError] =
+    React.useState(false);
 
   const showAddAudienceView = useBoolean(false);
   const router = useRouter();
@@ -76,14 +78,24 @@ const AddCampaignView = () => {
   });
 
   const debouncedHandleSubmit = debounce((data) => {
+    if (selectedRows.length === 0) {
+      setAudienceRequiredError(true);
+      return
+    }
     let transportId;
     transportData?.data.map((tdata) => {
       if (tdata.name.toLowerCase() === data?.campaignType.toLowerCase()) {
         transportId = tdata.id;
       }
     });
-
-    const audiences = audienceData?.data
+    const uniquePhoneNumbers = new Set();
+    const uniqueAudienceData: any = audienceData?.data.filter((data) => {
+      if (!uniquePhoneNumbers.has(data.details?.phone)) {
+        uniquePhoneNumbers.add(data.details?.phone);
+        return true;
+      }
+    });
+    const audiences = uniqueAudienceData
       .filter((audienceObject: Audience) =>
         selectedRows?.some(
           (selectedObject) =>
@@ -102,14 +114,15 @@ const AddCampaignView = () => {
       additionalData.audio = data.file;
     } else if (
       data?.campaignType === CAMPAIGN_TYPES.WHATSAPP &&
-      data?.message
-    ) {
-      additionalData.body = data?.message;
-    } else if (
-      data?.campaignType === CAMPAIGN_TYPES.WHATSAPP &&
       data?.messageSid
     ) {
       additionalData.messageSid = data?.messageSid;
+      additionalData.body = data?.message;
+    } else if (
+      data?.campaignType === CAMPAIGN_TYPES.WHATSAPP &&
+      !data?.messageSid
+    ) {
+      additionalData.body = data?.message;
     } else {
       additionalData.message = data?.message;
     }
@@ -117,7 +130,7 @@ const AddCampaignView = () => {
       .mutateAsync({
         audienceIds: audiences || [],
         name: data.campaignName,
-        startTime: data.startTime,
+        startTime: null,
         transportId: Number(transportId),
         type: data.campaignType,
         details: additionalData,
@@ -160,7 +173,7 @@ const AddCampaignView = () => {
         />
 
         {showAddAudienceView.value ? (
-          <div className="p-2">
+          <div className="p-2 h-full">
             <AddAudience
               form={form}
               globalFilter={globalFilter}
@@ -168,6 +181,8 @@ const AddCampaignView = () => {
               selectedRows={selectedRows}
               setSelectedRows={setSelectedRows}
               audienceData={audienceData}
+              setAudienceRequiredError={setAudienceRequiredError}
+              audienceRequiredError={audienceRequiredError}
             />
           </div>
         ) : null}

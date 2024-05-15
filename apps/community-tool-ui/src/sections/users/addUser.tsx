@@ -5,17 +5,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-import { useUserCreate, useUserRoleList } from '@rumsan/react-query';
-import { enumToObjectArray } from '@rumsan/sdk/utils';
-import { Role } from '@rumsan/sdk/types';
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@rahat-ui/shadcn/src/components/ui/select';
+import { useCommunityUserCreate, useRoleList } from '@rahat-ui/community-query';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   Form,
   FormControl,
@@ -24,9 +15,15 @@ import {
   FormMessage,
 } from '@rahat-ui/shadcn/src/components/ui/form';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@rahat-ui/shadcn/src/components/ui/select';
 import { Gender } from '@rahataid/community-tool-sdk/enums';
-import { useCommunityUserCreate, useRoleList } from '@rahat-ui/community-query';
 import { useEffect } from 'react';
 
 const FormSchema = z.object({
@@ -35,9 +32,7 @@ const FormSchema = z.object({
   gender: z.string(),
   role: z.string(),
   phone: z.string(),
-  wallet: z
-    .string()
-    .min(42, { message: 'The Ethereum address must be 42 characters long' }),
+  wallet: z.string(),
 });
 
 // Component
@@ -47,7 +42,7 @@ export default function AddUser() {
     resolver: zodResolver(FormSchema),
     defaultValues: {
       name: '',
-      gender: Gender.UKNOWN || '',
+      gender: '',
       email: '',
       phone: '',
       role: '',
@@ -68,7 +63,7 @@ export default function AddUser() {
     if (userCreate.isSuccess) {
       form.reset({
         name: '',
-        gender: Gender.UKNOWN || '',
+        gender: '',
         email: '',
         phone: '',
         role: '',

@@ -27,13 +27,17 @@ import { useSwal } from '../../../components/swal';
 import { NavItem } from '../components';
 import ConfirmModal from './confirm.modal';
 import CreateVoucherModal from './create-voucher-modal';
+import { useWaitForTransactionReceipt } from 'wagmi';
 
 export const useNavItems = () => {
   const { id } = useParams();
   const route = useRouter();
+  const [isTransacting, setisTransacting] = useState<boolean>(false)
   const contractSettings = useProjectSettingsStore(
     (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT] || null,
   );
+
+  const [voucherCreateTransactionHash, setVoucherCreateTransactionHash] = useState<`0x${string}`>()
 
   const dialog = useSwal();
   const createTokenSummaryModal = useBoolean();
@@ -44,8 +48,7 @@ export const useNavItems = () => {
     createTokenModal.onToggle();
     createTokenSummaryModal.onFalse();
   };
-  const handleSubmitCreateTokenModal = (e: any) => {
-    e.preventDefault();
+  const handleSubmitCreateTokenModal = () => {
     createTokenModal.onFalse();
     createTokenSummaryModal.onTrue();
   };
@@ -55,9 +58,6 @@ export const useNavItems = () => {
   };
   const handleCloseSummaryModal = () => {
     createTokenSummaryModal.onFalse();
-  };
-  const handleSummaryModal = () => {
-    createTokenModal.onToggle();
   };
 
   const [voucherInputs, setVoucherInputs] = useState({
@@ -114,12 +114,12 @@ export const useNavItems = () => {
   const createOnlyVoucher = useOnlyMintVoucher();
   const closeProject = useCloseProject();
 
-  // Free Voucher
   const handleCreateVoucherSubmit = async (e: any) => {
     e.preventDefault();
+    setisTransacting(true)
     if (!contractSettings) return;
     const referralLimit = 3;
-    await createOnlyVoucher.writeContractAsync({
+    const transactionHash = await createOnlyVoucher.writeContractAsync({
       address: contractSettings?.rahatdonor?.address,
       args: [
         contractSettings?.eyevoucher?.address,
@@ -129,9 +129,20 @@ export const useNavItems = () => {
         BigInt(referralLimit),
       ],
     });
+
+    setVoucherCreateTransactionHash(transactionHash)
     handleCloseSummaryModal();
-    route.push(`/projects/el/${id}/vouchers`);
+
+    // route.push(`/projects/el/${id}/vouchers`);
   };
+
+  const result = useWaitForTransactionReceipt({
+    hash: voucherCreateTransactionHash,
+  })
+
+  useEffect(() => {
+    result?.data && setisTransacting(false);
+  }, [result])
 
   const handleCloseProject = async () => {
     const { value } = await dialog.fire({
@@ -146,8 +157,6 @@ export const useNavItems = () => {
       });
     }
   };
-
-  console.log("project stats", projectStats)
 
   const navItems: NavItem[] = [
     {
@@ -206,6 +215,7 @@ export const useNavItems = () => {
                 setVoucherInputs={setVoucherInputs}
                 open={createTokenModal.value}
                 handleModal={handleOpenCreateTokenModal}
+                isTransacting = {isTransacting}
               />
               <ConfirmModal
                 open={createTokenSummaryModal.value}
@@ -215,16 +225,12 @@ export const useNavItems = () => {
                 handleClose={handleCloseSummaryModal}
                 handleCreateVoucherSubmit={handleCreateVoucherSubmit}
                 isLoading={createVoucher.isPending}
+                isTransacting={isTransacting}
               />
             </>
           ),
           title: 'Create Voucher',
         },
-        // {
-        //   title: 'Lock Project',
-        //   icon: <Lock size={18} strokeWidth={1.5} />,
-        //   onClick: handleLockProject,
-        // },
         {
           title: 'Close Project',
           onClick: handleCloseProject,

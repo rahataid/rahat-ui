@@ -1,9 +1,18 @@
 'use client';
 
 import { ColumnDef } from '@tanstack/react-table';
-import { ArrowUpDown, Copy, CopyCheck } from 'lucide-react';
+import { ArrowUpDown, Copy, CopyCheck, MoreHorizontal } from 'lucide-react';
 
+import { useUpdateElRedemption } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/components/button';
+import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from '@rahat-ui/shadcn/components/dropdown-menu';
 import {
   Tooltip,
   TooltipContent,
@@ -11,14 +20,11 @@ import {
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { truncateEthAddress } from '@rumsan/sdk/utils';
+import { useParams } from 'next/navigation';
 import React from 'react';
-import { useSecondPanel } from '../../../../providers/second-panel-provider';
 import { Redemption } from './redemption.table';
-import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
 
 export const useTableColumns = (handleAssignClick: any) => {
-  const { closeSecondPanel, setSecondPanelComponent } = useSecondPanel();
-
   const handleAssign = (row: any) => {
     handleAssignClick(row);
   };
@@ -30,26 +36,33 @@ export const useTableColumns = (handleAssignClick: any) => {
     setWalletAddressCopied(index);
   };
 
+  const uuid = useParams().id;
+
+  const updateRedemption = useUpdateElRedemption();
+
+  const handleApprove = async (row: any) => {
+    await updateRedemption.mutateAsync({
+      projectUUID: uuid,
+      redemptionUUID: [row.uuid],
+    });
+  };
+
   const columns: ColumnDef<Redemption>[] = [
     {
       id: 'select',
-      header: ({ table }) => (
-        <Checkbox
-          checked={
-            table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && 'indeterminate')
-          }
-          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-          aria-label="Select all"
-        />
-      ),
-      cell: ({ row }) => (
-        <Checkbox
-          checked={row.getIsSelected()}
-          onCheckedChange={(value) => row.toggleSelected(!!value)}
-          aria-label="Select row"
-        />
-      ),
+      header: '',
+      cell: ({ row }) => {
+        const isDisabled = row.getValue('status') === 'APPROVED';
+        const isChecked = row.getIsSelected() && !isDisabled;
+        return (
+          <Checkbox
+            checked={isChecked}
+            onCheckedChange={(value) => row.toggleSelected(!!value)}
+            aria-label="Select row"
+            disabled={isDisabled}
+          />
+        );
+      },
       enableSorting: false,
       enableHiding: false,
     },
@@ -99,6 +112,13 @@ export const useTableColumns = (handleAssignClick: any) => {
       ),
     },
     {
+      accessorKey: 'voucherType',
+      header: 'Voucher Type ',
+      cell: ({ row }) => (
+        <div className="capitalize">{row.getValue('voucherType')}</div>
+      ),
+    },
+    {
       accessorKey: 'tokenAmount',
       header: ({ column }) => {
         return (
@@ -112,14 +132,7 @@ export const useTableColumns = (handleAssignClick: any) => {
         );
       },
       cell: ({ row }) => (
-        <div className="lowercase">{row.getValue('tokenAmount')}</div>
-      ),
-    },
-    {
-      accessorKey: 'voucherType',
-      header: 'Voucher Type ',
-      cell: ({ row }) => (
-        <div className="capitalize">{row.getValue('voucherType')}</div>
+        <div className="w-1/3 text-center">{row.getValue('tokenAmount')}</div>
       ),
     },
     {
@@ -136,6 +149,30 @@ export const useTableColumns = (handleAssignClick: any) => {
         );
       },
       cell: ({ row }) => <div>{row.getValue('status')}</div>,
+    },
+    {
+      id: 'actions',
+      enableHiding: false,
+      cell: ({ row }) => {
+        const rowData = row.original;
+        if (rowData.status === 'APPROVED') return null;
+        return (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                <span className="sr-only">Open menu</span>
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+              <DropdownMenuItem onClick={() => handleApprove(rowData)}>
+                Approve Redemption
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        );
+      },
     },
   ];
 

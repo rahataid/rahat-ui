@@ -11,7 +11,9 @@ export default function ProjectLayoutRoot({
   children: React.ReactNode;
 }) {
   const pathName = usePathname();
-  const allowedPaths = ['/projects', '/projects/add'];
+  const allowedPaths: string[] = [];
+  // const allowedPaths = ['/projects', '/projects/add'];
+  //
   return (
     <DashboardLayout>
       {!allowedPaths.includes(pathName) ? (

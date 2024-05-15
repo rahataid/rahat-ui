@@ -33,32 +33,42 @@ export const useUserTableColumns = () => {
     {
       accessorKey: 'email',
       header: 'Email',
-      cell: ({ row }) => <div>{row.getValue('email')}</div>,
+      cell: ({ row }) => (
+        <div>{row.getValue('email') ? row.getValue('email') : 'N/A'}</div>
+      ),
     },
     {
       accessorKey: 'wallet',
       header: 'Wallet',
       cell: ({ row }) => (
-        <TooltipProvider delayDuration={100}>
-          <Tooltip>
-            <TooltipTrigger
-              className="flex gap-3 cursor-pointer"
-              onClick={() => clickToCopy(row.getValue('wallet'), row.index)}
-            >
-              <p>{truncateEthAddress(row.getValue('wallet'))}</p>
-              {walletAddressCopied === row.index ? (
-                <CopyCheck size={20} strokeWidth={1.5} />
-              ) : (
-                <Copy size={20} strokeWidth={1.5} />
-              )}
-            </TooltipTrigger>
-            <TooltipContent className="bg-secondary" side="bottom">
-              <p className="text-xs font-medium">
-                {walletAddressCopied === row.index ? 'copied' : 'click to copy'}
-              </p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+        <>
+          {row.getValue('wallet') ? (
+            <TooltipProvider delayDuration={100}>
+              <Tooltip>
+                <TooltipTrigger
+                  className="flex gap-3 cursor-pointer"
+                  onClick={() => clickToCopy(row.getValue('wallet'), row.index)}
+                >
+                  <p>{truncateEthAddress(row.getValue('wallet'))}</p>
+                  {walletAddressCopied === row.index ? (
+                    <CopyCheck size={20} strokeWidth={1.5} />
+                  ) : (
+                    <Copy size={20} strokeWidth={1.5} />
+                  )}
+                </TooltipTrigger>
+                <TooltipContent className="bg-secondary" side="bottom">
+                  <p className="text-xs font-medium">
+                    {walletAddressCopied === row.index
+                      ? 'copied'
+                      : 'click to copy'}
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          ) : (
+            'N/A'
+          )}
+        </>
       ),
     },
     {

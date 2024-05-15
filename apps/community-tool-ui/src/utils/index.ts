@@ -86,8 +86,8 @@ function moveErrorMsgToFirstKey(data: any) {
       const val = obj.errorMessage;
       delete obj.errorMessage;
       obj = { errorMessage: val, ...obj };
-      result.push(obj);
     }
+    result.push(obj);
   });
 
   return result;
@@ -140,26 +140,29 @@ export const splitValidAndDuplicates = (
   return { validData, sanitized: swapped };
 };
 
-function createInvalidFieldError(errFields: any) {
+function createInvalidFieldError(errFields: any, isDuplicate: boolean) {
   const errFieldsArr = errFields.map((err: any) => err.fieldName);
-  return `Invalid fields: ${errFieldsArr.join(', ')}`;
+  return `Invalid fields: ${errFieldsArr.join(', ')} ${
+    isDuplicate ? 'and This row is duplicate!' : ''
+  }`;
 }
 
+// Export both error and duplicate data to excel
 export const splitValidAndInvalid = (payload: [], errors: []) => {
   const invalidData = [] as any;
   const validData = [] as any;
   payload.forEach((p: any) => {
     const error = errors.find((error: any) => error.uuid === p.uuid);
-    // if (p.hasOwnProperty('isDuplicate')) {
-    //   delete p.isDuplicate;
-    // }
-    if (error) {
+    if (error || p.isDuplicate) {
       const errFields = errors.filter((err: any) => err.uuid === p.uuid);
       if (p.uuid) delete p.uuid;
       if (p.rawData) delete p.rawData;
       if (errFields.length) {
-        p.errorMessage = createInvalidFieldError(errFields);
-      }
+        p.errorMessage = createInvalidFieldError(
+          errFields,
+          p.isDuplicate || false,
+        );
+      } else p.errorMessage = 'This row is duplicate!';
       invalidData.push(p);
     } else {
       validData.push(p);
@@ -206,22 +209,22 @@ export const isURL = (value: string) => {
 
 export const humanizeString = (inputString: string) => {
   // Replace underscore with space
-  inputString = inputString.replace(/_/g, ' ');
+  inputString = inputString?.replace(/_/g, ' ');
 
-  let words = inputString.toLowerCase().split(' ');
+  let words = inputString?.toLowerCase().split(' ');
   // Capitalize the first letter of each word
-  for (let i = 0; i < words.length; i++) {
+  for (let i = 0; i < words?.length; i++) {
     words[i] = words[i].charAt(0).toUpperCase() + words[i].slice(1);
   }
 
-  const result = words.join(' ');
+  const result = words?.join(' ');
   return truncateString(result, 50);
 };
 
 function truncateString(inputStr: string, length: number) {
   if (!length) length = 10;
-  if (inputStr.length > length) {
-    return inputStr.slice(0, length) + '...';
+  if (inputStr?.length > length) {
+    return inputStr?.slice(0, length) + '...';
   }
   return inputStr;
 }

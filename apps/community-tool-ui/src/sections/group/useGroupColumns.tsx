@@ -1,23 +1,16 @@
-import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
 import {
   Beneficiary,
   GroupResponseById,
   ListGroup,
 } from '@rahataid/community-tool-sdk';
-import { truncateEthAddress } from '@rumsan/sdk/utils';
 import { ColumnDef } from '@tanstack/react-table';
 import { Eye } from 'lucide-react';
 import { useSecondPanel } from '../../providers/second-panel-provider';
-import GroupDetail from './groupdetails';
-import {
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
-} from '@rahat-ui/shadcn/src/components/ui/resizable';
+
+import Link from 'next/link';
+import EditGroupedBeneficiaries from './edit/editGroupedBeneficiaries';
 
 export const useCommunityGroupTableColumns = () => {
-  const { closeSecondPanel, setSecondPanelComponent } = useSecondPanel();
-
   const columns: ColumnDef<ListGroup>[] = [
     {
       header: 'ID',
@@ -30,26 +23,24 @@ export const useCommunityGroupTableColumns = () => {
       cell: ({ row }) => <div>{row.getValue('name')}</div>,
     },
     {
+      header: 'Created By',
+      cell: ({ row }) => {
+        return <div>{row.original.user?.name || '-'}</div>;
+      },
+    },
+    {
       id: 'actions',
       enableHiding: false,
       header: 'View Detail',
       cell: ({ row }) => {
         return (
-          <Eye
-            size={20}
-            strokeWidth={1.5}
-            className="cursor-pointer hover:text-primary"
-            onClick={() =>
-              setSecondPanelComponent(
-                <>
-                  <GroupDetail
-                    data={row.original}
-                    closeSecondPanel={closeSecondPanel}
-                  />
-                </>,
-              )
-            }
-          />
+          <Link href={`/group/${row.original.uuid}`}>
+            <Eye
+              size={20}
+              strokeWidth={1.5}
+              className="cursor-pointer hover:text-primary"
+            />
+          </Link>
         );
       },
     },
@@ -58,6 +49,8 @@ export const useCommunityGroupTableColumns = () => {
 };
 
 export const useCommunityGroupDeailsColumns = () => {
+  const { closeSecondPanel, setSecondPanelComponent } = useSecondPanel();
+
   const columns: ColumnDef<GroupResponseById[]>[] = [
     {
       accessorKey: 'beneficiary',
@@ -69,7 +62,7 @@ export const useCommunityGroupDeailsColumns = () => {
             return `${beneficiary.firstName}  ${beneficiary.lastName}`;
           }
         }
-        return '';
+        return '-';
       },
     },
     {
@@ -82,20 +75,7 @@ export const useCommunityGroupDeailsColumns = () => {
             return beneficiary.phone;
           }
         }
-        return 'null';
-      },
-    },
-    {
-      accessorKey: 'beneficiary',
-      header: 'Wallet Address',
-      cell: ({ row }) => {
-        if (row && row.getValue && typeof row.getValue === 'function') {
-          const beneficiary = row.getValue('beneficiary') as Beneficiary;
-          if (beneficiary && beneficiary.walletAddress) {
-            return truncateEthAddress(beneficiary.walletAddress);
-          }
-        }
-        return '';
+        return '-';
       },
     },
     {
@@ -121,21 +101,33 @@ export const useCommunityGroupDeailsColumns = () => {
             return beneficiary.govtIDNumber;
           }
         }
-        return 'null';
+        return '-';
       },
     },
     {
-      accessorKey: 'beneficiary',
-      header: 'Created Date',
+      id: 'actions',
+      enableHiding: false,
+      header: 'View Detail',
+
       cell: ({ row }) => {
         const beneficiary = row.getValue('beneficiary') as Beneficiary;
-        const changedDate = new Date(beneficiary.createdAt as Date);
-        const formattedDate = changedDate.toLocaleDateString('en-US', {
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric',
-        });
-        return <div>{formattedDate}</div>;
+        return (
+          <Eye
+            size={20}
+            strokeWidth={1.5}
+            className="cursor-pointer hover:text-primary"
+            onClick={() =>
+              setSecondPanelComponent(
+                <>
+                  <EditGroupedBeneficiaries
+                    uuid={beneficiary?.uuid as string}
+                    closeSecondPanel={closeSecondPanel}
+                  />
+                </>,
+              )
+            }
+          />
+        );
       },
     },
   ];

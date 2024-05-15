@@ -1,13 +1,14 @@
-import { ClusterMap, StyledMapContainer, THEMES } from '@rahat-ui/shadcn/maps';
-import { mapboxBasicConfig } from '../../../../../constants/config';
+import { StyledMapContainer, THEMES } from '@rahat-ui/shadcn/maps';
+import { mapboxBasicConfig } from 'apps/rahat-ui/src/constants/config';
 import { LineChart } from '@rahat-ui/shadcn/src/components/charts';
+import DHMMap from './map';
 
-const renderStatus = ({ warningLevel, dangerLevel, waterLevel }: any) => {
+const renderStatus = ({ readinessLevel, activationLevel, waterLevel }: any) => {
   let status;
-  if (waterLevel >= dangerLevel) {
-    status = 'danger';
-  } else if (waterLevel >= warningLevel) {
-    status = 'warning';
+  if (waterLevel >= activationLevel) {
+    status = 'activation';
+  } else if (waterLevel >= readinessLevel) {
+    status = 'readiness';
   } else {
     status = 'safe';
   }
@@ -16,17 +17,17 @@ const renderStatus = ({ warningLevel, dangerLevel, waterLevel }: any) => {
     <div>
       <p
         className={`mt-4 sm:mt-8 sm:w-2/3 ${
-          status === 'danger'
+          status === 'activation'
             ? 'text-red-500'
-            : status === 'warning'
+            : status === 'readiness'
             ? 'text-yellow-500'
             : 'text-green-500'
         }`}
       >
-        {status === 'danger'
-          ? 'Water is in danger level!'
-          : status === 'warning'
-          ? 'Water is in warning level!'
+        {status === 'activation'
+          ? 'Water is in activation level!'
+          : status === 'readiness'
+          ? 'Water is in readiness level!'
           : 'Water is in a safe level.'}
       </p>
     </div>
@@ -34,20 +35,23 @@ const renderStatus = ({ warningLevel, dangerLevel, waterLevel }: any) => {
 };
 
 export default function DHMContent({ data }: any) {
-  if (!data.length) {
-    return <p>Data not found for DHM.</p>;
+  if (!data?.length) {
+    return <p>Data not available for DHM.</p>;
   }
 
   const latestData = data[0];
-  const recentEight = data.slice(0, 8);
+  console.log(latestData);
+  const dhmData = data;
 
-  const xAxisLabel = recentEight.map((d: any) => {
-    const date = new Date(d.data.waterLevelOn);
+  const xAxisLabel = dhmData.map((d: any) => {
+    const date = new Date(d.createdAt);
     return date.toLocaleTimeString();
   });
 
-  const dangerLevel = latestData.dataSource.triggerStatement.dangerLevel;
-  const warningLevel = latestData.dataSource.triggerStatement.warningLevel;
+  const activationLevel = latestData.trigger.triggerStatement.activationLevel;
+  const readinessLevel = latestData.trigger.triggerStatement.readinessLevel;
+  const longitude = latestData.data.point.coordinates[0];
+  const latitude = latestData.data.point.coordinates[1];
 
   const chartOptions: ApexCharts.ApexOptions = {
     xaxis: {
@@ -65,25 +69,25 @@ export default function DHMContent({ data }: any) {
     annotations: {
       yaxis: [
         {
-          y: dangerLevel,
+          y: activationLevel,
           borderColor: '#D2042D',
           borderWidth: 2,
           label: {
             style: {
               color: '#D2042D',
             },
-            text: 'Danger Level',
+            text: 'Activation Level',
           },
         },
         {
-          y: warningLevel,
+          y: readinessLevel,
           borderColor: '#FFC300',
           borderWidth: 2,
           label: {
             style: {
               color: '#FFC300',
             },
-            text: 'Warning Level',
+            text: 'Readiness Level',
           },
         },
       ],
@@ -99,8 +103,8 @@ export default function DHMContent({ data }: any) {
     },
   };
 
-  const waterLevelData = recentEight.map((d: any) => {
-    return d.data.waterLevel;
+  const waterLevelData = dhmData.map((d: any) => {
+    return parseFloat(d.data.waterLevel).toFixed(2);
   });
 
   const seriesData = [
@@ -117,7 +121,11 @@ export default function DHMContent({ data }: any) {
       <div className="h-[calc(100vh-130px)] col-span-3 flex flex-col gap-2">
         <div className="h-1/2 overflow-hidden rounded-md">
           <StyledMapContainer>
-            <ClusterMap {...mapboxBasicConfig} mapStyle={THEMES.light} />
+            <DHMMap
+              coordinates={[longitude, latitude]}
+              {...mapboxBasicConfig}
+              mapStyle={THEMES.light}
+            />
           </StyledMapContainer>
         </div>
         <div className="h-1/2 bg-card rounded-md">
@@ -129,16 +137,15 @@ export default function DHMContent({ data }: any) {
           <h1 className="font-semibold text-lg">Real Time Status</h1>
           <p>Station: {latestData.data.title}</p>
           <p>Basin: {latestData.data.basin}</p>
-          {/* <p>Status: {latestData.data.status}</p>
-                    <p>Warning Level: N/A</p>
-                     */}
-          <p>Water Level: {latestData.data.waterLevel}</p>
+          <p>
+            Water Level: {parseFloat(latestData.data.waterLevel).toFixed(2)}
+          </p>
           <p>
             Water Level On:{' '}
             {new Date(latestData.data.waterLevelOn).toLocaleString()}
           </p>
-          <p>Longitude: {latestData.data.point.coordinates[0]}</p>
-          <p>Latitude: {latestData.data.point.coordinates[1]}</p>
+          <p>Longitude: {parseFloat(longitude).toFixed(2)}</p>
+          <p>Latitude: {parseFloat(latitude).toFixed(2)}</p>
           <p>Description: {latestData.data.description}</p>
         </div>
         <div className="bg-card p-4 rounded">
@@ -154,20 +161,21 @@ export default function DHMContent({ data }: any) {
         </div>
         <div className="bg-card p-4 rounded">
           <h1 className="font-semibold text-lg">
-            Water Level: {latestData.data.waterLevel}
+            Water Level: {parseFloat(latestData.data.waterLevel).toFixed(2)}
           </h1>
           <h1 className="font-semibold text-lg">
             <div>
-              Danger Level: {latestData.dataSource.triggerStatement.dangerLevel}
+              Activation Level:{' '}
+              {latestData.trigger.triggerStatement.activationLevel}
             </div>
             <div>
-              Warning Level:{' '}
-              {latestData.dataSource.triggerStatement.warningLevel}
+              Readiness Level:{' '}
+              {latestData.trigger.triggerStatement.readinessLevel}
             </div>
           </h1>
           {renderStatus({
-            warningLevel: warningLevel,
-            dangerLevel: dangerLevel,
+            readinessLevel: readinessLevel,
+            activationLevel: activationLevel,
             waterLevel: latestData.data.waterLevel,
           })}
           {/* <h1 className='font-semibold text-lg'>Phase: Readiness</h1> */}

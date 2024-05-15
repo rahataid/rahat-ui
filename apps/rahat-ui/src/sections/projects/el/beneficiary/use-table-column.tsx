@@ -1,20 +1,13 @@
 'use client';
 
-import { useState } from 'react';
-import { ColumnDef } from '@tanstack/react-table';
-import { Copy, CopyCheck, Eye } from 'lucide-react';
 import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
-import {
-  Tooltip,
-  TooltipProvider,
-  TooltipTrigger,
-  TooltipContent,
-} from '@rahat-ui/shadcn/src/components/ui/tooltip';
+import { ColumnDef } from '@tanstack/react-table';
+import { Eye } from 'lucide-react';
+import { useState } from 'react';
 import { useSecondPanel } from '../../../../providers/second-panel-provider';
 import BeneficiaryDetail from '../../../../sections/projects/el/beneficiary/beneficiary.detail';
-import { truncateEthAddress } from '@rumsan/sdk/utils';
 
-export const useProjectBeneficiaryTableColumns = () => {
+export const useProjectBeneficiaryTableColumns = (voucherType: string) => {
   const { setSecondPanelComponent, closeSecondPanel } = useSecondPanel();
   const [walletAddressCopied, setWalletAddressCopied] = useState<number>();
 
@@ -35,51 +28,33 @@ export const useProjectBeneficiaryTableColumns = () => {
   const columns: ColumnDef<any>[] = [
     {
       id: 'select',
-      header: ({ table }) => (
-        <Checkbox
-          checked={
-            table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && 'indeterminate')
-          }
-          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-          aria-label="Select all"
-        />
-      ),
-      cell: ({ row }) => (
-        <Checkbox
-          checked={row.getIsSelected()}
-          onCheckedChange={(value) => row.toggleSelected(!!value)}
-          aria-label="Select row"
-        />
-      ),
+      header: '',
+      // ({ table }) => (
+      //   <Checkbox
+      //     checked={
+      //       table.getIsAllPageRowsSelected() ||
+      //       (table.getIsSomePageRowsSelected() && 'indeterminate')
+      //     }
+      //     onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+      //     aria-label="Select all"
+      //   />
+      // ),
+      cell: ({ row }) => {
+        const isDisabled = voucherType != 'NOT_ASSIGNED';
+        const isChecked = row.getIsSelected() && !isDisabled;
+        return (
+          !isDisabled && (
+            <Checkbox
+              checked={isChecked}
+              onCheckedChange={(value) => row.toggleSelected(!!value)}
+              aria-label="Select row"
+              disabled={isDisabled}
+            />
+          )
+        );
+      },
       enableSorting: false,
       enableHiding: false,
-    },
-    {
-      accessorKey: 'wallet',
-      header: 'Wallet',
-      cell: ({ row }) => (
-        <TooltipProvider delayDuration={100}>
-          <Tooltip>
-            <TooltipTrigger
-              className="flex items-center gap-3 cursor-pointer"
-              onClick={() => clickToCopy(row.getValue('wallet'), row.index)}
-            >
-              <p>{truncateEthAddress(row.getValue('wallet'))}</p>
-              {walletAddressCopied === row.index ? (
-                <CopyCheck size={15} strokeWidth={1.5} />
-              ) : (
-                <Copy className="text-slate-500" size={15} strokeWidth={1.5} />
-              )}
-            </TooltipTrigger>
-            <TooltipContent className="bg-secondary" side="bottom">
-              <p className="text-xs font-medium">
-                {walletAddressCopied === row.index ? 'copied' : 'click to copy'}
-              </p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      ),
     },
     {
       accessorKey: 'name',
@@ -98,7 +73,7 @@ export const useProjectBeneficiaryTableColumns = () => {
       header: 'Type',
       cell: ({ row }) => <div> {row.getValue('type')}</div>,
     },
-    
+
     // {
     //   accessorKey: 'Type',
     //   header: 'Type',
@@ -127,9 +102,14 @@ export const useProjectBeneficiaryTableColumns = () => {
       cell: ({ row }) => <div> {row.getValue('gender')}</div>,
     },
     {
-      accessorKey: 'voucher',
+      accessorKey: 'voucherType',
       header: 'Voucher',
-      cell: ({ row }) => <div> {row.getValue('voucher')}</div>,
+      cell: ({ row }) => <div> {voucherType}</div>,
+    },
+    {
+      accessorKey: 'voucherClaimStatus',
+      header: 'Claim Status',
+      cell: ({ row }) => <div> {row.getValue('voucherClaimStatus')}</div>,
     },
     {
       id: 'actions',

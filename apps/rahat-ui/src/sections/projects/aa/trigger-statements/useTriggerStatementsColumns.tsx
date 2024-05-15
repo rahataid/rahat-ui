@@ -1,6 +1,4 @@
-'use client';
-
-import { useDeleteTriggerStatement } from '@rahat-ui/query';
+import { useParams, useRouter } from 'next/navigation';
 import {
   Tooltip,
   TooltipContent,
@@ -8,24 +6,20 @@ import {
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { ColumnDef } from '@tanstack/react-table';
-import { UUID } from 'crypto';
-import { TrashIcon } from 'lucide-react';
-import { useParams } from 'next/navigation';
+import { Eye, Pencil, Trash2 } from 'lucide-react';
 
 export const useTriggerStatementTableColumns = () => {
-  const { id: projectID } = useParams();
-  const deleteTriggerStatement = useDeleteTriggerStatement();
-
-  const deleteRow = (row: any) => {
-    deleteTriggerStatement.mutateAsync({
-      projectUUID: projectID as UUID,
-      triggerStatementPayload: {
-        repeatKey: row.repeatKey,
-      },
-    });
-  };
+  const { id } = useParams();
+  const router = useRouter();
 
   const columns: ColumnDef<any>[] = [
+    {
+      accessorKey: 'title',
+      header: 'Title',
+      cell: ({ row }) => {
+        return row.getValue('title');
+      },
+    },
     {
       accessorKey: 'dataSource',
       header: 'Data Source',
@@ -46,49 +40,57 @@ export const useTriggerStatementTableColumns = () => {
             </>
           );
         }
+        return row.getValue('dataSource');
       },
     },
     {
       accessorKey: 'location',
       header: 'River Basin',
       cell: ({ row }) => (
-        <div className="cursor-pointer">{row.getValue('location')}</div>
+        <div className="cursor-pointer w-max">
+          {row.getValue('location') || 'N/A'}
+        </div>
       ),
     },
-    {
-      accessorKey: 'triggerStatement',
-      header: 'Trigger Statement',
-      cell: ({ row }) => {
-        if (row.getValue('dataSource') === 'DHM') {
-          return (
-            <>
-              <div>
-                Danger Level: {row.original.triggerStatement.dangerLevel}
-              </div>
-              <div>
-                Warning Level: {row.original.triggerStatement.warningLevel}
-              </div>
-            </>
-          );
-        }
-      },
-    },
-    {
-      accessorKey: 'triggerActivity',
-      header: 'Trigger Activity',
-      cell: ({ row }) => <div>{row.getValue('triggerActivity')}</div>,
-    },
+    // {
+    //   accessorKey: 'triggerActivity',
+    //   header: 'Trigger Activity',
+    //   cell: ({ row }) => {
+    //     const triggerActivities = row.getValue('triggerActivity');
+
+    //     if (Array.isArray(triggerActivities) && triggerActivities.length) {
+    //       return (
+    //         <>
+    //           {triggerActivities.map((activity, index) => (
+    //             <div key={index}>{activity}</div>
+    //           ))}
+    //         </>
+    //       );
+    //     } else {
+    //       return <div>N/A</div>;
+    //     }
+    //   }
+    // },
     {
       id: 'actions',
+      header: 'Actions',
       enableHiding: false,
       cell: ({ row }) => {
         return (
-          <TrashIcon
-            size={20}
-            strokeWidth={1.5}
-            className="cursor-pointer hover:text-primary"
-            onClick={() => deleteRow(row.original)}
-          />
+          <div className="flex gap-4 w-max">
+            <Eye
+              className="hover:text-primary cursor-pointer"
+              size={20}
+              strokeWidth={1.5}
+              onClick={() =>
+                router.push(
+                  `/projects/aa/${id}/trigger-statements/${row.original.repeatKey}`,
+                )
+              }
+            />
+            <Pencil size={20} strokeWidth={1.5} className="text-primary" />
+            <Trash2 size={20} strokeWidth={1.5} color="red" />
+          </div>
         );
       },
     },

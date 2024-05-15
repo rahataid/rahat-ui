@@ -12,6 +12,7 @@ type ProjectDataCardProps = {
   totalBeneficiary: any;
   totalVendor: any;
   loading: any;
+  ELProjectStats: any;
   refetchBeneficiary: VoidFunction;
   refetchVoucher: VoidFunction;
 };
@@ -22,14 +23,15 @@ const ProjectDataCard: FC<ProjectDataCardProps> = ({
   loading,
   projectVoucher,
   voucherDetails,
+  ELProjectStats,
   refetchBeneficiary,
   refetchVoucher,
 }) => {
   const data = { ...projectVoucher, ...voucherDetails };
 
   const totalVoucherRedeemed =
-    Number(data?.eyeVoucherBudget?.toString()) +
-    Number(data?.referredVoucherBudget?.toString());
+    Number(data?.freeVoucherClaimed?.toString()) +
+    Number(data?.referredVoucherClaimed?.toString());
 
   const estimatedBudget =
     data?.eyeVoucherAssigned?.toString() * data?.freeVoucherPrice +
@@ -39,25 +41,30 @@ const ProjectDataCard: FC<ProjectDataCardProps> = ({
     data?.eyeVoucherClaimed?.toString() * data?.freeVoucherPrice +
     data?.referredVoucherClaimed?.toString() * data?.referredVoucherPrice;
 
+  const reconciliationRequested = ELProjectStats?.find(
+    (entry) => entry.name === 'RECONCILIATION',
+  )?.data.find((dataItem) => dataItem.id === 'REQUESTED')?.count;
+
+  const reconciliationApproved = ELProjectStats?.find(
+    (entry) => entry.name === 'RECONCILIATION',
+  )?.data.find((dataItem) => dataItem.id === 'APPROVED')?.count;
+
   return (
     <>
       <div className="my-2 grid lg:grid-cols-6 md:grid-cols-4 sm:grid-cols-2 gap-2">
         <SmallDataCard
-          className=""
           title="Beneficiaries"
           number={totalBeneficiary}
           subTitle="Total Beneficiaries"
           loading={loading}
         />
         <SmallDataCard
-          className=""
           title="Voucher Redeemed"
           number={totalVoucherRedeemed}
           subTitle="Total Vouchers Claimed"
           loading={loading}
         />
         <SmallDataCard
-          className=""
           title="Estimated Budget"
           number={estimatedBudget}
           currency={data?.referredVoucherCurrency}
@@ -65,7 +72,6 @@ const ProjectDataCard: FC<ProjectDataCardProps> = ({
           loading={loading}
         />
         <SmallDataCard
-          className=""
           title="Actual Budget"
           number={actualBudget}
           currency={data?.referredVoucherCurrency}
@@ -74,16 +80,16 @@ const ProjectDataCard: FC<ProjectDataCardProps> = ({
         />
 
         <SmallDataCard
-          className=""
           title="Reconcile Pending"
-          number={'12'}
+          number={reconciliationRequested}
+          currency=""
           subTitle="Request from Vendors"
           loading={loading}
         />
         <SmallDataCard
-          className=""
           title="Reconcile Proceeded"
-          number={'12'}
+          number={reconciliationApproved}
+          currency=""
           subTitle="Reconciliation Proceeded"
           loading={loading}
         />

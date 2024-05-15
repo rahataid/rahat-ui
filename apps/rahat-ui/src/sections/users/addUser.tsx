@@ -1,8 +1,8 @@
 'use client';
 
 // Import statements
-import { useEffect } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -18,6 +18,8 @@ import {
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
 // import { Gender } from '@rahat-ui/types';
+import { useRoleList, useSettingsStore, useUserCreate } from '@rahat-ui/query';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   Form,
   FormControl,
@@ -26,12 +28,11 @@ import {
   FormMessage,
 } from '@rahat-ui/shadcn/src/components/ui/form';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { useRoleList, useSettingsStore, useUserCreate } from '@rahat-ui/query';
 import {
   useAddAdmin,
   useAddManager,
 } from '../../hooks/el/contracts/el-contracts';
+import { useRouter } from 'next/navigation';
 
 // Constants
 // const genderList = enumToObjectArray(Gender);
@@ -40,7 +41,7 @@ const FormSchema = z.object({
   name: z.string().min(2, { message: 'Name must be at least 4 character' }),
   email: z.string().email(),
   gender: z.string(),
-  role: z.string(),
+  roles: z.array(z.string()),
   phone: z.string(),
   wallet: z
     .string()
@@ -56,33 +57,37 @@ export default function AddUser() {
       gender: 'UNKNOWN' || '',
       email: '',
       phone: '',
-      role: '',
+      roles: [''],
       wallet: '',
     },
   });
 
   const { data: roleData } = useRoleList();
   const contractSettings = useSettingsStore((state) => state.accessManager);
+  const route = useRouter();
 
   const userCreate = useUserCreate();
   const addManager = useAddManager();
   const addAdmin = useAddAdmin();
 
   const handleAddUser = async (data: any) => {
-    if (data.role === 'Manager') {
-      addManager.mutateAsync({
+    if (data.roles.includes('Manager')) {
+      await addManager.mutateAsync({
         data: data,
         walletAddress: data?.wallet,
-        contractAddress: contractSettings,
+        contractAddress: contractSettings as `0x${string}`,
       });
-    } else if (data.role === 'Admin') {
-      addAdmin.mutateAsync({
+    } else if (data.roles.includes('Admin')) {
+      await addAdmin.mutateAsync({
         data: data,
         walletAddress: data?.wallet,
-        contractAddress: contractSettings,
+        contractAddress: contractSettings as `0x${string}`,
       });
-    } else await userCreate.mutateAsync(data);
+    } else {
+      await userCreate.mutateAsync(data);
+    }
   };
+
   useEffect(() => {
     if (userCreate.isSuccess) {
       form.reset({
@@ -90,9 +95,10 @@ export default function AddUser() {
         gender: 'UNKOWN' || '',
         email: '',
         phone: '',
-        role: '',
+        roles: [''],
         wallet: '',
       });
+      route.push('/users');
     }
   }, [form, userCreate.isSuccess]);
 
@@ -171,13 +177,15 @@ export default function AddUser() {
             />
             <FormField
               control={form.control}
-              name="role"
+              name="roles"
               render={({ field }) => {
                 return (
                   <FormItem>
                     <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
+                      onValueChange={(value) => {
+                        field.onChange([value]);
+                      }}
+                      defaultValue={field.value[0]}
                     >
                       <FormControl>
                         <SelectTrigger>
@@ -220,7 +228,13 @@ export default function AddUser() {
             />
           </div>
           <div className="flex justify-end">
-            <Button>Create User</Button>
+            {userCreate.isPending ? (
+              <Button>
+                <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-primary" />
+              </Button>
+            ) : (
+              <Button>Create User</Button>
+            )}
           </div>
         </div>
       </form>

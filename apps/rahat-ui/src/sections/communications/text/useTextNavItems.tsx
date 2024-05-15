@@ -23,7 +23,7 @@ export const useNavItems = () => {
     {
       title: 'Actions',
       children: [
-        ...(params.id?.length && campaign.data.status !== 'COMPLETED'
+        ...(params.id?.length && campaign?.data.status !== 'COMPLETED'
           ? [
               {
                 title: 'Edit Campaign',

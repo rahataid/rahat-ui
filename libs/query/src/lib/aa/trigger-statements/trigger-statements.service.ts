@@ -25,7 +25,7 @@ export const useCreateTriggerStatement = () => {
       return q.mutateAsync({
         uuid: projectUUID,
         data: {
-          action: 'aaProject.schedule.add',
+          action: 'aaProject.triggers.add',
           payload: triggerStatementPayload,
         },
       });
@@ -41,7 +41,7 @@ export const useCreateTriggerStatement = () => {
       const errorMessage = error?.response?.data?.message || 'Error';
       q.reset();
       toast.fire({
-        title: 'Error while adding trigger statement.',
+        title: 'Error.',
         icon: 'error',
         text: errorMessage,
       });
@@ -72,7 +72,7 @@ export const useDeleteTriggerStatement = () => {
       return q.mutateAsync({
         uuid: projectUUID,
         data: {
-          action: 'aaProject.schedule.remove',
+          action: 'aaProject.triggers.remove',
           payload: triggerStatementPayload,
         },
       });
@@ -139,7 +139,10 @@ export const useDhmWaterLevels = (uuid: UUID) => {
         uuid,
         data: {
           action: 'aaProject.waterLevels.getDhm',
-          payload: {},
+          payload: {
+            page: 1,
+            perPage: 10,
+          },
         },
       });
       return mutate.data;
@@ -165,7 +168,7 @@ export const useAATriggerStatements = (uuid: UUID) => {
       const mutate = await q.mutateAsync({
         uuid,
         data: {
-          action: 'aaProject.schedule.getAll',
+          action: 'aaProject.triggers.getAll',
           payload: {},
         },
       });
@@ -173,5 +176,29 @@ export const useAATriggerStatements = (uuid: UUID) => {
     },
   });
 
+  return query;
+};
+
+export const useSingleTriggerStatement = (
+  uuid: UUID,
+  repeatKey: string | string[],
+) => {
+  const q = useProjectAction();
+
+  const query = useQuery({
+    queryKey: ['triggerStatement', uuid, repeatKey],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'aaProject.triggers.getOne',
+          payload: {
+            repeatKey: repeatKey,
+          },
+        },
+      });
+      return mutate.data;
+    },
+  });
   return query;
 };

@@ -1,42 +1,13 @@
-'use client';
-
-import React from 'react';
-import { useParams } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import { ColumnDef } from '@tanstack/react-table';
-import { useSecondPanel } from '../../../../providers/second-panel-provider';
-
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/alert-dialog';
-import { Eye, Trash2 } from 'lucide-react';
-import { IActivitiesItem } from '../../../../types/activities';
 import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
-import { ActivitiesDetailView } from '.';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
-import { useDeleteActivities } from '@rahat-ui/query';
-import { UUID } from 'crypto';
+import { Eye } from 'lucide-react';
+import { IActivitiesItem } from '../../../../types/activities';
 
 export default function useActivitiesTableColumn() {
-  const { id } = useParams();
-  const { setSecondPanelComponent, closeSecondPanel } = useSecondPanel();
-  const deleteActivity = useDeleteActivities();
-
-  const deleteRow = (row: any) => {
-    deleteActivity.mutateAsync({
-      projectUUID: id as UUID,
-      activityPayload: {
-        uuid: row.id,
-      },
-    });
-  };
+  const { id: projectID } = useParams();
+  const router = useRouter();
 
   const columns: ColumnDef<IActivitiesItem>[] = [
     {
@@ -70,9 +41,16 @@ export default function useActivitiesTableColumn() {
       accessorKey: 'category',
       header: 'Category',
       cell: ({ row }) => (
-        <Badge variant="secondary" className="rounded-md capitalize">
+        <Badge className="rounded-md capitalize w-max text-muted-foreground">
           {row.getValue('category')}
         </Badge>
+      ),
+    },
+    {
+      accessorKey: 'phase',
+      header: 'Phase',
+      cell: ({ row }) => (
+        <Badge className="rounded-md capitalize text-muted-foreground">{row.getValue('phase')}</Badge>
       ),
     },
     {
@@ -87,54 +65,34 @@ export default function useActivitiesTableColumn() {
     },
     {
       accessorKey: 'hazardType',
-      header: 'Hazard Type',
+      header: () => <div className='w-max'>Hazard Type</div>,
       cell: ({ row }) => <div>{row.getValue('hazardType')}</div>,
+    },
+    {
+      accessorKey: 'status',
+      header: 'Status',
+      cell: ({ row }) => (
+        <div className="flex gap-1">
+          <Badge
+            className={`rounded-md capitalize bg-red-100 text-red-600
+              }`}
+          >
+            {row.getValue('status')}
+          </Badge>
+        </div>
+      ),
     },
     {
       id: 'actions',
       enableHiding: false,
       cell: ({ row }) => {
         return (
-          <div className="flex gap-3 items-center">
-            <Eye
-              className="hover:text-primary cursor-pointer"
-              size={20}
-              strokeWidth={1.5}
-              onClick={() => {
-                setSecondPanelComponent(
-                  <ActivitiesDetailView
-                    activityDetail={row.original}
-                    closeSecondPanel={closeSecondPanel}
-                  />,
-                );
-              }}
-            />
-            <AlertDialog>
-              <AlertDialogTrigger>
-                <Trash2
-                  className="cursor-pointer"
-                  color="red"
-                  size={20}
-                  strokeWidth={1.5}
-                />
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    This action cannot be undone. This will permanently delete
-                    this activity.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction onClick={() => deleteRow(row.original)}>
-                    Continue
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-          </div>
+          <Eye
+            className="hover:text-primary cursor-pointer"
+            size={20}
+            strokeWidth={1.5}
+            onClick={() => router.push(`/projects/aa/${projectID}/activities/${row.original.id}`)}
+          />
         );
       },
     },

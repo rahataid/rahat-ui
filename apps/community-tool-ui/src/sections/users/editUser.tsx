@@ -36,9 +36,7 @@ export default function EditUser({ userDetail }: Iprops) {
     name: z.string().min(2, { message: 'Name must be at least 4 character' }),
     email: z.string(),
     phone: z.string(),
-    walletAddress: z
-      .string()
-      .min(42, { message: 'The Ethereum address must be 42 characters long' }),
+    walletAddress: z.string(),
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -62,7 +60,10 @@ export default function EditUser({ userDetail }: Iprops) {
   const handleEditUser = async (data: any) => {
     await updateUser.mutateAsync({
       uuid: userDetail.uuid as UUID,
-      payload: data,
+      payload: {
+        ...data,
+        wallet: data?.walletAddress,
+      },
     });
   };
 
@@ -70,7 +71,6 @@ export default function EditUser({ userDetail }: Iprops) {
     updateUser.data?.response.success && closeSecondPanel();
   }, [closeSecondPanel, updateUser.data?.response.success]);
 
-  console.log('do', userDetail);
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleEditUser)}>

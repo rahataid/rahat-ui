@@ -21,7 +21,6 @@ import { useSwal } from '../../swal';
 import { api } from '../../utils/api';
 import { useProjectSettingsStore, useProjectStore } from './project.store';
 
-
 export const PROJECT_SETTINGS_KEYS = {
   CONTRACT: 'CONTRACT',
   SUBGRAPH: 'SUBGRAPH_URL',
@@ -300,7 +299,7 @@ export const useProjectSubgraphSettings = (uuid: UUID) => {
 };
 
 export const useProjectList = (
-  payload: Pagination,
+  payload?: Pagination,
 ): UseQueryResult<FormattedResponse<Project[]>, Error> => {
   const { queryClient, rumsanService } = useRSQuery();
 
@@ -344,13 +343,14 @@ type GetProjectBeneficiaries = Pagination & {
   sort?: string;
   status?: string;
   projectUUID: UUID;
+  type?: string;
   vouchers?: any;
 };
 
 export const useProjectBeneficiaries = (payload: GetProjectBeneficiaries) => {
   const q = useProjectAction<Beneficiary[]>();
   const { projectUUID, ...restPayload } = payload;
-  
+
   const restPayloadString = JSON.stringify(restPayload);
 
   const queryKey = useMemo(
@@ -380,15 +380,17 @@ export const useProjectBeneficiaries = (payload: GetProjectBeneficiaries) => {
         ...query.data,
         data: query.data?.data?.length
           ? query.data.data.map((row: any) => ({
-              uuid: row?.Beneficiary?.uuid,
-              wallet: row?.Beneficiary?.walletAddress,
-              name: row?.piiData?.name,
-              gender: row?.Beneficiary?.gender,
+              uuid: row?.uuid?.toString(),
+              wallet: row?.walletAddress?.toString(),
+              voucherClaimStatus: row?.claimStatus,
+              name: row?.piiData?.name || "",
+              email: row?.piiData?.email || "",
+              gender: row?.projectData?.gender || "",
               phone: row?.piiData?.phone || 'N/A',
-              type: row?.Beneficiary?.type || 'N/A',
-              phoneStatus: row?.Beneficiary?.phoneStatus,
-              bankedStatus: row?.Beneficiary?.bankedStatus,
-              internetStatus: row?.Beneficiary?.internetStatus,
+              type: row?.type?.toString() || 'N/A',
+              phoneStatus: row?.projectData?.phoneStatus || "",
+              bankedStatus: row?.projectData?.bankedStatus || "",
+              internetStatus: row?.projectData?.internetStatus || "",
             }))
           : [],
       };

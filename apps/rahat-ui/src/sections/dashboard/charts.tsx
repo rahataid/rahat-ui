@@ -3,9 +3,15 @@ import { formatUnderScoredString } from '../../utils/string';
 import { DashboardRecentActivities } from './activities.dashboard';
 
 const Charts = ({ charts }: { charts: any }) => {
+  const filteredCharts = charts?.filter((d: any) => {
+    return (
+      d.name === 'BENEFICIARY_AGE_RANGE' || d.name === 'BENEFICIARY_GENDER'
+    );
+  });
+
   return (
-    <div className=" grid md:grid-cols-3 gap-2 mt-2">
-      {charts?.map((d: any) => {
+    <div className=" grid md:grid-cols-2 gap-2 mt-2 mb-2">
+      {filteredCharts?.map((d: any) => {
         const series = Array.isArray(d?.data)
           ? d?.data.map((item: any) => ({
               label: formatUnderScoredString(item.id),
@@ -26,8 +32,6 @@ const Charts = ({ charts }: { charts: any }) => {
           />
         );
       })}
-
-      <DashboardRecentActivities title="Recent Activities" />
     </div>
   );
 };

@@ -1,41 +1,23 @@
-import { Button } from '@rahat-ui/shadcn/components/button';
+import { useEffect, useState } from 'react';
 
-import React, { useState } from 'react';
-
-import { Role } from '@rumsan/sdk/types';
+import { useDeleteRole, useGetRole } from '@rahat-ui/community-query';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+} from '@rahat-ui/shadcn/src/components/ui/card';
+import { TabsList, TabsTrigger } from '@rahat-ui/shadcn/src/components/ui/tabs';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
-import { Minus, MoreVertical, Trash2 } from 'lucide-react';
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/dialog';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-} from '@rahat-ui/shadcn/src/components/ui/card';
-import EditRole from './editRole';
-import { useGetRole } from '@rahat-ui/community-query';
-import { TabsList, TabsTrigger } from '@rahat-ui/shadcn/src/components/ui/tabs';
 import { useUserCurrentUser } from '@rumsan/react-query';
+import { Role } from '@rumsan/sdk/types';
 import { ROLE_TYPE } from 'apps/community-tool-ui/src/constants/user.const';
+import { Minus } from 'lucide-react';
+import EditRole from './editRole';
 
 type IProps = {
   roleData: Role;
@@ -45,6 +27,7 @@ type IProps = {
 export default function RoleDetail({ roleData, closeSecondPanel }: IProps) {
   const { data: roleDetail } = useGetRole(roleData.name);
   const { data: currentUser } = useUserCurrentUser();
+  const deleteRole = useDeleteRole();
 
   const isAdmin = currentUser?.data?.roles.includes(ROLE_TYPE.ADMIN);
   const [activeTab, setActiveTab] = useState<'details' | 'edit' | null>(
@@ -60,6 +43,18 @@ export default function RoleDetail({ roleData, closeSecondPanel }: IProps) {
     month: 'long',
     day: 'numeric',
   });
+
+  const handleDeleteRole = async () => {
+    await deleteRole.mutateAsync({
+      name: roleDetail?.data?.role?.name as string,
+    });
+  };
+
+  useEffect(() => {
+    if (deleteRole.data?.response.success) {
+      closeSecondPanel();
+    }
+  }, [closeSecondPanel, deleteRole.data?.response.success]);
 
   return (
     <>
@@ -77,7 +72,7 @@ export default function RoleDetail({ roleData, closeSecondPanel }: IProps) {
         </TooltipProvider>
         <div className="flex gap-3">
           {/* Delete Role */}
-          <Dialog>
+          {/* <Dialog>
             <DialogTrigger>
               <TooltipProvider>
                 <Tooltip>
@@ -90,7 +85,7 @@ export default function RoleDetail({ roleData, closeSecondPanel }: IProps) {
                     />
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>Delete User</p>
+                    <p>Delete Role</p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
@@ -105,14 +100,16 @@ export default function RoleDetail({ roleData, closeSecondPanel }: IProps) {
               </DialogHeader>
               <DialogFooter>
                 <div className="flex items-center justify-center mt-2 gap-4">
-                  <Button variant="outline">Yes</Button>
+                  <Button variant="outline" onClick={() => handleDeleteRole()}>
+                    Yes
+                  </Button>
                   <DialogClose asChild>
                     <Button variant="outline">No</Button>
                   </DialogClose>
                 </div>
               </DialogFooter>
             </DialogContent>
-          </Dialog>
+          </Dialog> */}
 
           <TabsList className="w-full grid grid-cols-2 bg-transparent">
             <TabsTrigger
@@ -165,7 +162,7 @@ export default function RoleDetail({ roleData, closeSecondPanel }: IProps) {
 
                 <div className="text-right">
                   <p className="font-light text-base">
-                    {roleDetail?.data?.role?.isSystem ? 'true' : 'false'}
+                    {roleDetail?.data?.role?.isSystem ? 'Yes' : 'No'}
                   </p>
                   <p className="text-sm font-normal text-muted-foreground ">
                     Is System

@@ -218,7 +218,7 @@ export default function AddFieldDefinitions({ handleTabChange }: Iprops) {
                 name="isTargeting"
                 render={({ field }) => (
                   <div className="flex flex-row items-center gap-4 m-1">
-                    <Label>User for Targeting</Label>
+                    <Label> Select as targeting criteria</Label>
                     <Switch
                       {...field}
                       value={field.value ? 'false' : 'true'}

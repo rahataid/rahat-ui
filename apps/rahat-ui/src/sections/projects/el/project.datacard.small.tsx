@@ -13,26 +13,26 @@ type CardProps = {
   title: string;
   number: string;
   subTitle: string;
-  className: string;
-  currency: string;
+  currency?: string;
   refresh?: VoidFunction;
-  loading: boolean;
+  loading?: boolean;
+  className?: any;
 };
 
 const SmallDataCard = ({
   title,
   number,
   subTitle,
-  className,
   currency,
   loading,
+  className,
 }: CardProps) => {
   return (
     <Card
-      className={
-        (cn('flex flex-col rounded-sm justify-center border-none shadow'),
-        className)
-      }
+      className={cn(
+        'flex flex-col rounded justify-center border-none shadow',
+        className,
+      )}
     >
       <CardHeader className="pb-2">
         <CardDescription>{title}</CardDescription>
@@ -41,9 +41,9 @@ const SmallDataCard = ({
         ) : (
           <CardTitle className="text-xl text-primary">
             <span className="text-xs text-muted-foreground">
-              {currency || ' '}
+              {currency || ' '}{' '}
             </span>
-            {number}
+            {number || '-'}
           </CardTitle>
         )}
       </CardHeader>

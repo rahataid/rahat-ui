@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -20,39 +21,71 @@ import {
 import { Button } from "@rahat-ui/shadcn/src/components/ui/button";
 import { Input } from "@rahat-ui/shadcn/src/components/ui/input";
 import { Textarea } from "@rahat-ui/shadcn/src/components/ui/textarea";
-import { X, CloudUpload, Check } from 'lucide-react';
+import { X, CloudUpload, Check, LoaderCircle } from 'lucide-react';
+import { useUploadFile, useActivateTrigger } from '@rahat-ui/query';
+import { UUID } from 'crypto';
 
 export default function ManualTriggerDialog() {
-    const [documents, setDocuments] = React.useState<{ id: number, name: string }[]>([])
+    const { id: projectID, triggerID } = useParams();
+    const uploadFile = useUploadFile();
+    const activateTrigger = useActivateTrigger();
+    const [showModal, setShowModal] = React.useState<boolean>(false)
+    const [documents, setDocuments] = React.useState<{ id: number, name: string }[]>([]);
     const nextId = React.useRef(0);
+    const [allFiles, setAllFiles] = React.useState<{ mediaURL: string, fileName: string }[]>([]);
 
     const FormSchema = z.object({
-        note: z.string().min(5, { message: 'Must be at least 5 characters' }),
-        document: z
-            .instanceof(File) // Validate that the input is a File object
-            .refine((file) => file.size < 1024 * 1024, {
-                message: "File size must be less than 1MB",
-            }), // Example constraint: File size must be less than 1MB
+        notes: z.string().min(5, { message: 'Must be at least 5 characters' }),
+        triggerDocuments: z.array(z.object({
+            mediaURL: z.string(),
+            fileName: z.string()
+        })).min(1, { message: "Please upload document" }),
     });
 
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
         defaultValues: {
-            note: '',
-            document: undefined
-
+            notes: '',
+            triggerDocuments: []
         },
     });
 
+    const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (file) {
+            const newId = nextId.current++;
+            setDocuments(prev => [...prev, { id: newId, name: file.name }])
+            const formData = new FormData();
+            formData.append('file', file);
+            const { data: afterUpload } = await uploadFile.mutateAsync(formData);
+            setAllFiles(prev => [...prev, afterUpload])
+        }
+    }
+
+    React.useEffect(() => {
+        form.setValue('triggerDocuments', allFiles)
+    }, [allFiles, setAllFiles])
+
     const handleTriggerSubmit = async (data: z.infer<typeof FormSchema>) => {
-        alert('done')
-        console.log('data::', data)
+        try {
+            await activateTrigger.mutateAsync({
+                projectUUID: projectID as UUID,
+                activatePayload: { repeatKey: triggerID, ...data }
+            })
+        } catch (e) {
+            console.error('Activate Trigger Error::', e)
+        } finally {
+            form.reset();
+            setAllFiles([]);
+            setDocuments([]);
+            setShowModal(false)
+        }
     };
 
     return (
-        <Dialog>
+        <Dialog open={showModal} onOpenChange={() => setShowModal(!showModal)}>
             <DialogTrigger asChild>
-                <Button type="button" className="px-8">
+                <Button type="button" className="px-8" onClick={() => setShowModal(true)}>
                     Trigger
                 </Button>
             </DialogTrigger>
@@ -65,7 +98,7 @@ export default function ManualTriggerDialog() {
                         <div className="mt-4 grid gap-4">
                             <FormField
                                 control={form.control}
-                                name="note"
+                                name="notes"
                                 render={({ field }) => {
                                     return (
                                         <FormItem>
@@ -83,7 +116,7 @@ export default function ManualTriggerDialog() {
                             />
                             <FormField
                                 control={form.control}
-                                name="document"
+                                name="triggerDocuments"
                                 render={({ field }) => {
                                     return (
                                         <FormItem>
@@ -96,29 +129,30 @@ export default function ManualTriggerDialog() {
                                                     <Input
                                                         className='opacity-0'
                                                         type='file'
-                                                        onChange={(e) => {
-                                                            const files = e.target.files;
-                                                            if (files && files.length > 0) {
-                                                                const file = files[0];
-                                                                form.setValue('document', file);
-                                                                const newId = nextId.current++;
-                                                                setDocuments(prev => [...prev, { id: newId, name: file.name }])
-                                                            }
-                                                        }}
+                                                        onChange={handleFileChange}
                                                     />
                                                 </div>
                                             </FormControl>
                                             <FormMessage />
                                             {documents?.map((file) => (
-                                                <div key={file.id} className='flex justify-between items-center'>
-                                                    <p className='text-sm flex gap-2 items-center'><Check size={16} strokeWidth={2.5} className='text-green-600' />{file.name}</p>
+                                                <div key={file.name} className='flex justify-between items-center'>
+                                                    <p className='text-sm flex gap-2 items-center'>
+                                                        {
+                                                            uploadFile.isPending && documents?.[documents?.length - 1].name === file.name
+                                                                ? <LoaderCircle size={16} strokeWidth={2.5} className='text-green-600 animate-spin' />
+                                                                : <Check size={16} strokeWidth={2.5} className='text-green-600' />
+                                                        }
+                                                        {file.name}
+                                                    </p>
                                                     <div className='p-0.5 rounded-full border-2 hover:border-red-500 text-muted-foreground  hover:text-red-500 cursor-pointer'>
                                                         <X
                                                             size={16}
                                                             strokeWidth={2.5}
                                                             onClick={() => {
-                                                                const newDocuments = documents?.filter((doc) => doc.id !== file.id)
-                                                                setDocuments(newDocuments)
+                                                                const newDocuments = documents?.filter((doc) => doc.name !== file.name);
+                                                                setDocuments(newDocuments);
+                                                                const newFiles = allFiles.filter((f, index) => index !== file.id);
+                                                                setAllFiles(newFiles);
                                                             }} />
                                                     </div>
                                                 </div>
@@ -135,7 +169,7 @@ export default function ManualTriggerDialog() {
                                 >
                                     Cancel
                                 </Button>
-                                <Button type="submit" className="w-full">Submit</Button>
+                                <Button type="submit" className="w-full" disabled={uploadFile?.isPending || activateTrigger?.isPending}>Submit</Button>
                             </div>
                         </div>
                     </form>

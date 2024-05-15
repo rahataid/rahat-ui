@@ -41,7 +41,7 @@ export default function AddActivities() {
     phases: state.phases,
     hazardTypes: state.hazardTypes
   }))
-  const [documents, setDocuments] = React.useState<{ name: string }[]>([]);
+  const [documents, setDocuments] = React.useState<{ id: number, name: string }[]>([]);
   const [allFiles, setAllFiles] = React.useState<{ mediaURL: string, fileName: string }[]>([]);
   const [communicationAddForm, setCommunicationAddForm] = React.useState<{ id: number; form: React.ReactNode }[]>([]);
   const [communicationFormOpened, setCommunicationFormOpened] = React.useState<boolean>(false)
@@ -93,7 +93,7 @@ export default function AddActivities() {
       hazardTypeId: '',
       leadTime: '',
       description: '',
-      // activityDocuments: [],
+      activityDocuments: [],
       activityCommunication: [{ groupType: '', groupId: '', communicationType: '', message: '' }]
     },
   });
@@ -115,7 +115,8 @@ export default function AddActivities() {
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      setDocuments(prev => [...prev, { name: file.name }])
+      const newId = nextId.current++;
+      setDocuments(prev => [...prev, { id: newId, name: file.name }])
       const formData = new FormData();
       formData.append('file', file);
       const { data: afterUpload } = await uploadFile.mutateAsync(formData);
@@ -123,12 +124,15 @@ export default function AddActivities() {
     }
   }
 
+  React.useEffect(() => {
+    form.setValue('activityDocuments', allFiles)
+  }, [allFiles, setAllFiles])
+
   const handleCreateActivities = async (data: z.infer<typeof FormSchema>) => {
-    const payload = { ...data, activityDocuments: allFiles }
     try {
       await createActivity.mutateAsync({
         projectUUID: projectID as UUID,
-        activityPayload: payload,
+        activityPayload: data,
       });
     } catch (e) {
       console.error('Error::', e);
@@ -345,7 +349,9 @@ export default function AddActivities() {
                               strokeWidth={2.5}
                               onClick={() => {
                                 const newDocuments = documents?.filter((doc) => doc.name !== file.name)
-                                setDocuments(newDocuments)
+                                setDocuments(newDocuments);
+                                const newFiles = allFiles.filter((f, index) => index !== file.id);
+                                setAllFiles(newFiles);
                               }} />
                           </div>
                         </div>
@@ -384,7 +390,7 @@ export default function AddActivities() {
                   >
                     Cancel
                   </Button>
-                  <Button type='submit'>Create Activities</Button>
+                  <Button type='submit' disabled={createActivity?.isPending || uploadFile?.isPending} >Create Activities</Button>
                 </div>
               </div>
             </div>

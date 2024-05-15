@@ -27,22 +27,14 @@ export default function RequestTokenModal() {
         <DialogHeader>
           <DialogTitle>Request For Fund Release</DialogTitle>
         </DialogHeader>
-        <div className="flex items-center justify-between mt-4 mb-2">
+        <div className="flex items-center justify-between mt-4">
           <p>Current Project Balance</p>
+          <div className="flex items-center justify-end gap-2">100 USDC</div>
+        </div>
+        <div className="flex items-center justify-between mb-2">
+          <p>Request Balance</p>
           <div className="flex items-center justify-end gap-2">
             <Input id="usdc" className="w-1/4" placeholder="100" /> USDC
-          </div>
-        </div>
-        <div className="grid gap-4">
-          <div className="flex items-center gap-4">
-            <Label htmlFor="name" className="text-right">
-              Email
-            </Label>
-            <Input
-              id="email"
-              defaultValue="jondoe@example.com"
-              className="col-span-3"
-            />
           </div>
         </div>
         <DialogFooter>

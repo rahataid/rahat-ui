@@ -29,7 +29,9 @@ export default function RequestTokenModal() {
         </DialogHeader>
         <div className="flex items-center justify-between mt-4 mb-2">
           <p>Current Project Balance</p>
-          <p>100 USDC</p>
+          <div className="flex items-center justify-end gap-2">
+            <Input id="usdc" className="w-1/4" placeholder="100" /> USDC
+          </div>
         </div>
         <div className="grid gap-4">
           <div className="flex items-center gap-4">

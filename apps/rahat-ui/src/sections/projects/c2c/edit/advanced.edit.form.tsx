@@ -4,7 +4,6 @@ import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -25,6 +24,7 @@ import {
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { Info } from 'lucide-react';
+import { useState } from 'react';
 
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -33,6 +33,7 @@ export default function AdvancedEditForm() {
   const FormSchema = z.object({});
 
   const form = useForm<z.infer<typeof FormSchema>>({});
+  const [isMultisigChecked, setIsMultisigChecked] = useState(false);
 
   return (
     <Form {...form}>
@@ -60,18 +61,14 @@ export default function AdvancedEditForm() {
                         </Tooltip>
                       </TooltipProvider>
                     </FormLabel>
-                    {/* <FormDescription>
-                      Select the source from where you would like to transfer
-                      the crypto funds to beneficiaries.
-                    </FormDescription> */}
                   </div>
                   <FormMessage />
                   <div className="flex items-center justify-between">
                     <div className="items-top flex space-x-2">
-                      <Checkbox id="terms1" />
+                      <Checkbox id="projectBalance" />
                       <div className="grid gap-1.5 leading-none">
                         <label
-                          htmlFor="terms1"
+                          htmlFor="projectBalance"
                           className="text-sm leading-none text-muted-foreground peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                         >
                           Project Balance
@@ -79,10 +76,10 @@ export default function AdvancedEditForm() {
                       </div>
                     </div>
                     <div className="items-top flex space-x-2">
-                      <Checkbox id="terms1" />
+                      <Checkbox id="walletConnect" />
                       <div className="grid gap-1.5 leading-none">
                         <label
-                          htmlFor="terms1"
+                          htmlFor="walletConnect"
                           className="text-sm leading-none text-muted-foreground peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                         >
                           User's Wallet Connect
@@ -90,10 +87,10 @@ export default function AdvancedEditForm() {
                       </div>
                     </div>
                     <div className="items-top flex space-x-2">
-                      <Checkbox id="terms1" />
+                      <Checkbox id="multisigWallet" />
                       <div className="grid gap-1.5 leading-none">
                         <label
-                          htmlFor="terms1"
+                          htmlFor="multisigWallet"
                           className="text-sm text-muted-foreground leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                         >
                           Multisig Wallet
@@ -148,6 +145,7 @@ export default function AdvancedEditForm() {
                           type="text"
                           {...field}
                           placeholder="Enter project contract address"
+                          disabled
                         />
                       </div>
                     </FormControl>
@@ -156,28 +154,30 @@ export default function AdvancedEditForm() {
                 );
               }}
             />
-            <FormField
-              name="contractAddress"
-              render={({ field }) => {
-                return (
-                  <FormItem>
-                    <FormLabel className="text-muted-foreground">
-                      Multisig Wallet A/C
-                    </FormLabel>
-                    <FormControl>
-                      <div className="relative w-full">
-                        <Input
-                          type="text"
-                          {...field}
-                          placeholder="Enter multisig wallet account number"
-                        />
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            />
+            {isMultisigChecked && (
+              <FormField
+                name="multiSigWalletAC"
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <FormLabel className="text-muted-foreground">
+                        Multisig Wallet A/C
+                      </FormLabel>
+                      <FormControl>
+                        <div className="relative w-full">
+                          <Input
+                            type="text"
+                            {...field}
+                            placeholder="Enter multisig wallet account number"
+                          />
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
+            )}
           </div>
         </div>
       </div>

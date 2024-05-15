@@ -26,6 +26,21 @@ export const PROJECT_SETTINGS_KEYS = {
   SUBGRAPH: 'SUBGRAPH_URL',
 };
 
+export const TREASURY_SOURCES = [
+  {
+    value: 'project_balance',
+    label: 'Project Balance',
+  },
+  {
+    value: 'user_wallet',
+    label: 'User Wallet',
+  },
+  {
+    value: 'multi_sig',
+    label: 'MultiSig Wallet',
+  },
+];
+
 const createProject = async (payload: CreateProjectPayload) => {
   const res = await api.post('/projects', payload);
   return res.data;
@@ -383,14 +398,14 @@ export const useProjectBeneficiaries = (payload: GetProjectBeneficiaries) => {
               uuid: row?.uuid?.toString(),
               wallet: row?.walletAddress?.toString(),
               voucherClaimStatus: row?.claimStatus,
-              name: row?.piiData?.name || "",
-              email: row?.piiData?.email || "",
-              gender: row?.projectData?.gender || "",
+              name: row?.piiData?.name || '',
+              email: row?.piiData?.email || '',
+              gender: row?.projectData?.gender || '',
               phone: row?.piiData?.phone || 'N/A',
               type: row?.type?.toString() || 'N/A',
-              phoneStatus: row?.projectData?.phoneStatus || "",
-              bankedStatus: row?.projectData?.bankedStatus || "",
-              internetStatus: row?.projectData?.internetStatus || "",
+              phoneStatus: row?.projectData?.phoneStatus || '',
+              bankedStatus: row?.projectData?.bankedStatus || '',
+              internetStatus: row?.projectData?.internetStatus || '',
             }))
           : [],
       };

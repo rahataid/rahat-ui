@@ -1,5 +1,6 @@
 'use client';
 
+import { TREASURY_SOURCES } from '@rahat-ui/query';
 import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
 import {
   FormControl,
@@ -39,21 +40,6 @@ type AdvancedEditFormProps = {
   }>;
 };
 
-const treasurySources = [
-  {
-    value: 'project_balance',
-    label: 'Project Balance',
-  },
-  {
-    value: 'user_wallet',
-    label: 'User Wallet',
-  },
-  {
-    value: 'multi_sig',
-    label: 'MultiSig Wallet',
-  },
-];
-
 export default function AdvancedEditForm({ form }: AdvancedEditFormProps) {
   const chains = useChains();
   return (
@@ -86,7 +72,7 @@ export default function AdvancedEditForm({ form }: AdvancedEditFormProps) {
                   </div>
                   <FormMessage />
                   <div className="grid grid-cols-3 gap-4">
-                    {treasurySources.map((source) => (
+                    {TREASURY_SOURCES.map((source) => (
                       <div key={source.value}>
                         <FormLabel className="text-muted-foreground">
                           {source.label}

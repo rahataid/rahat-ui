@@ -96,14 +96,10 @@ export default function EditProject() {
     form.setValue('extras.treasury.contractAddress', projectContract);
   }, [form, projectContract]);
 
-  console.log('first', form.getValues().extras);
-
   const onAdvancedFormSubmit = async (data: z.infer<typeof FormSchema>) => {
     console.log('Advanced form submitted', data);
     return;
   };
-
-  console.log('first', form.formState.errors);
 
   return (
     <Form {...form}>

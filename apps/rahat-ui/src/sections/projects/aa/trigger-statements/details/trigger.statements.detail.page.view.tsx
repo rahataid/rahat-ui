@@ -17,19 +17,25 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/alert-dialog';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { ArrowLeft, ArchiveRestore, Pencil } from 'lucide-react';
-import TriggerDetailCards from './trigger.detail.cards';
-import TriggerDetailCard from './trigger.detail.card';
-import TriggerActivityListCard from './trigger.activity.list.card';
-import { useSingleTriggerStatement, useDeleteTriggerStatement } from '@rahat-ui/query';
+import AutomatedTriggerDetailCards from './automated.trigger.detail.cards';
+import AutomatedTriggerDetailCard from './automated.trigger.detail.card';
+import AutomatedTriggerActivityListCard from './automated.trigger.activity.list.card';
+import {
+  useSingleTriggerStatement,
+  useDeleteTriggerStatement,
+} from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import Loader from 'apps/rahat-ui/src/components/table.loader';
+import ManualTriggerDialog from './manual.trigger.dialog';
+import ManualTriggerDetailCard from './manual.trigger.detail.card';
+import ManualTriggerCommunicationsCard from './manual.trigger.communications.card';
+import ManualTriggerDocumentsCard from './manual.trigger.documents.card';
 
 export default function TriggerStatementsDetailView() {
   const { id: projectID } = useParams();
   const router = useRouter();
-  const triggerRepeatKey = window.location.href.split("/").slice(-1)[0]
+  const triggerRepeatKey = window.location.href.split('/').slice(-1)[0];
   const { data: triggerDetail, isLoading } = useSingleTriggerStatement(
     projectID as UUID,
     triggerRepeatKey,
@@ -40,16 +46,16 @@ export default function TriggerStatementsDetailView() {
     deleteTrigger.mutateAsync({
       projectUUID: projectID as UUID,
       triggerStatementPayload: {
-        repeatKey: triggerRepeatKey
-      }
-    })
-  }
+        repeatKey: triggerRepeatKey,
+      },
+    });
+  };
 
   React.useEffect(() => {
     deleteTrigger.isSuccess && router.back();
-  }, [deleteTrigger])
+  }, [deleteTrigger]);
 
-  if (isLoading) return <Loader />
+  if (isLoading) return <Loader />;
 
   return (
     <div className="h-[calc(100vh-65px)] bg-secondary p-4">
@@ -88,9 +94,7 @@ export default function TriggerStatementsDetailView() {
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                       <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction
-                        onClick={removeTrigger}
-                      >
+                      <AlertDialogAction onClick={removeTrigger}>
                         Continue
                       </AlertDialogAction>
                     </AlertDialogFooter>
@@ -102,16 +106,31 @@ export default function TriggerStatementsDetailView() {
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
-          <Button type="button" className="px-8">
-            Trigger
-          </Button>
+          {triggerDetail?.dataSource === "MANUAL"
+            ? <ManualTriggerDialog />
+            : null
+          }
         </div>
       </div>
-      <TriggerDetailCards triggerDetail={triggerDetail} />
-      <div className="grid grid-cols-2 gap-4 mt-4 h-[calc(100vh-252px)]">
-        <TriggerDetailCard triggerDetail={triggerDetail} />
-        <TriggerActivityListCard triggerDetail={triggerDetail} />
-      </div>
+      {triggerDetail?.dataSource === "MANUAL"
+        ? (
+          <div className="grid grid-cols-2 gap-4 mt-4 h-[calc(100vh-152px)]">
+            <ManualTriggerDetailCard status={triggerDetail?.isTriggered} notes={triggerDetail?.notes} />
+            <ManualTriggerCommunicationsCard />
+            <ManualTriggerDocumentsCard documents={triggerDetail?.triggerDocuments} />
+          </div>
+        )
+        : (
+          <>
+            <AutomatedTriggerDetailCards triggerDetail={triggerDetail} />
+            <div className="grid grid-cols-2 gap-4 mt-4 h-[calc(100vh-252px)]">
+              <AutomatedTriggerDetailCard triggerDetail={triggerDetail} />
+              <AutomatedTriggerActivityListCard triggerDetail={triggerDetail} />
+            </div>
+          </>
+        )
+      }
+
     </div>
   );
 }

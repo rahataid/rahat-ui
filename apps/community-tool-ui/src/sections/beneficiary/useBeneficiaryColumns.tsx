@@ -15,7 +15,16 @@ export const useCommunityBeneficiaryTableColumns = () => {
   const columns: ColumnDef<ListBeneficiary>[] = [
     {
       id: 'select',
-
+      header: ({ table }) => (
+        <Checkbox
+          checked={
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && 'indeterminate')
+          }
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          aria-label="Select all"
+        />
+      ),
       cell: ({ row, table }) => (
         <Checkbox
           checked={row.getIsSelected()}
@@ -44,6 +53,14 @@ export const useCommunityBeneficiaryTableColumns = () => {
       accessorKey: 'gender',
       header: 'Gender',
       cell: ({ row }) => <div>{humanizeString(row.getValue('gender'))}</div>,
+    },
+
+    {
+      accessorKey: 'location',
+      header: 'Location',
+      cell: ({ row }) => (
+        <div>{humanizeString(row.getValue('location')) || '-'}</div>
+      ),
     },
 
     {

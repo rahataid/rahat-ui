@@ -32,12 +32,12 @@ export default function Activities({ title, className, data }: CardProps) {
             <p className="text-sm text-muted-foreground">Redeemed</p>{' '}
           </div>
           <div className="flex items-center justify-center gap-2 ">
-            <div className="font-light text-sm flex flex-col items-start justify-between">
+            <div className="font-light text-sm flex flex-col items-end justify-between">
               <div>{data?.eyeVoucherBudget?.toString()}</div>
               <div>{data?.eyeVoucherAssigned?.toString()} </div>
               <div>{data?.eyeVoucherClaimed?.toString()}</div>
             </div>
-            <div className="font-light text-sm flex flex-col items-start justify-between gap-1">
+            <div className="font-light text-sm flex flex-col items-end justify-between gap-1">
               <div className="text-xs text-muted-foreground">
                 {data?.freeVoucherCurrency}{' '}
                 {data?.eyeVoucherBudget?.toString() * data?.freeVoucherPrice}
@@ -61,12 +61,12 @@ export default function Activities({ title, className, data }: CardProps) {
             <p className="text-sm text-muted-foreground">Redeemed</p>{' '}
           </div>
           <div className="flex items-center justify-center gap-2 ">
-            <div className="font-light text-sm flex flex-col items-start justify-between">
+            <div className="font-light text-sm flex flex-col items-end justify-between">
               <div>{data?.referredVoucherBudget?.toString()}</div>
               <div>{data?.referredVoucherAssigned?.toString()} </div>
               <div>{data?.referredVoucherClaimed?.toString()}</div>
             </div>
-            <div className="font-light text-sm flex flex-col items-start justify-between gap-1">
+            <div className="font-light text-sm flex flex-col items-end justify-between gap-1">
               <span className="text-xs  text-muted-foreground">
                 {data?.referredVoucherCurrency}{' '}
                 {data?.referredVoucherBudget?.toString() *

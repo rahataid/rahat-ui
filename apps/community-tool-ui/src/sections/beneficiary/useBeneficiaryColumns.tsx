@@ -47,6 +47,14 @@ export const useCommunityBeneficiaryTableColumns = () => {
     },
 
     {
+      accessorKey: 'location',
+      header: 'Location',
+      cell: ({ row }) => (
+        <div>{humanizeString(row.getValue('location')) || '-'}</div>
+      ),
+    },
+
+    {
       accessorKey: 'phone',
       header: 'Phone',
       cell: ({ row }) => <div>{humanizeString(row.getValue('phone'))}</div>,

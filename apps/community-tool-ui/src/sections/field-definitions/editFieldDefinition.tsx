@@ -17,18 +17,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
-import { useForm, useFieldArray } from 'react-hook-form';
+import { useFieldArray, useForm } from 'react-hook-form';
 
-import { z } from 'zod';
-import { FieldDefinition } from '@rahataid/community-tool-sdk/fieldDefinitions';
-import {
-  useFieldDefinitionsUpdate,
-  // useFieldDefinitionsStatusUpdate,
-} from '@rahat-ui/community-query';
+import { useFieldDefinitionsUpdate } from '@rahat-ui/community-query';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { Switch } from '@rahat-ui/shadcn/src/components/ui/switch';
-import React, { useEffect, useState } from 'react';
+import { FieldDefinition } from '@rahataid/community-tool-sdk/fieldDefinitions';
 import { Minus, Plus } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { z } from 'zod';
 import { FieldType } from '../../constants/fieldDefinition.const';
 
 export default function EditFieldDefinition({
@@ -85,6 +82,11 @@ export default function EditFieldDefinition({
       fieldPopulateBody = formData?.fieldPopulate;
     }
 
+    const optionsWithValue = fieldPopulateBody.filter((f) => f.value !== '');
+    const populate = optionsWithValue.length
+      ? { data: optionsWithValue }
+      : null;
+
     await updateFieldDefinition.mutateAsync({
       id: data?.id?.toString(),
       data: {
@@ -92,7 +94,7 @@ export default function EditFieldDefinition({
         fieldType: formData?.fieldType as FieldType,
         isActive: formData?.isActive,
         isTargeting: formData?.isTargeting,
-        fieldPopulate: { data: fieldPopulateBody },
+        fieldPopulate: populate,
       },
     });
   };
@@ -212,7 +214,7 @@ export default function EditFieldDefinition({
                 render={({ field }) => (
                   <div className="flex flex-col items-right">
                     <Label className="text-xs font-medium mb-1">
-                      User for Targeting
+                      Select as targeting criteria
                     </Label>
                     <Switch
                       {...field}

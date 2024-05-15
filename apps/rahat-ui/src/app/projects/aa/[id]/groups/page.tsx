@@ -1,9 +1,9 @@
 'use client';
 
-import { GroupsView } from "../../../../../sections/projects/aa/groups";
+import { GroupsView } from '../../../../../sections/projects/aa/groups';
 
 const Page = () => {
-    return <GroupsView />
-}
+  return <GroupsView />;
+};
 
-export default Page
+export default Page;

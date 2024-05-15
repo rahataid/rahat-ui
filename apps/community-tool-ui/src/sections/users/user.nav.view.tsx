@@ -1,4 +1,4 @@
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { FC, useState } from 'react';
 import { NavItem } from './nav-items.types';
 
@@ -18,6 +18,7 @@ const UserNavView: FC<UserNavViewProps> = ({ title, items }) => {
       router.push(item.path as string);
     }
   };
+  const pathName = usePathname();
 
   return (
     <div className="pb-2">
@@ -29,7 +30,9 @@ const UserNavView: FC<UserNavViewProps> = ({ title, items }) => {
           {items?.map((item) => (
             <div key={item.title}>
               <div
-                className={`flex justify-between p-2 items-center rounded-md cursor-pointer hover:bg-primary hover:text-white`}
+                className={`flex justify-between p-2 mb-1 items-center rounded-md cursor-pointer hover:bg-primary hover:text-white ${
+                  pathName === item.path && 'bg-primary text-white'
+                }`}
                 onClick={() => handleNav(item)}
                 {...item}
               >
@@ -74,7 +77,9 @@ const UserNavView: FC<UserNavViewProps> = ({ title, items }) => {
                   {item.children.map((subItem) => (
                     <div
                       key={subItem.title}
-                      className="flex justify-between p-2 items-center rounded-md cursor-pointer hover:bg-primary hover:text-white"
+                      className={`flex justify-between mb-1 p-2 items-center rounded-md cursor-pointer hover:bg-primary hover:text-white ${
+                        pathName === subItem.path && 'bg-primary text-white'
+                      }`}
                       onClick={() => subItem.path && router.push(subItem.path)}
                       {...subItem}
                     >

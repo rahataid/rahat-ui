@@ -38,9 +38,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
-import { useProjectList } from '@rahat-ui/query';
+import { usePagination, useProjectList } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import TableLoader from '../../components/table.loader';
+import CustomPagination from '../../components/customPagination';
 
 export type IVendor = {
   id: string;
@@ -60,7 +61,7 @@ type IProps = {
   selectedProject: UUID | undefined;
   setSelectedProject: (id: UUID) => void;
   handleAssignProject: VoidFunction;
-  projectModal: ProjectModalType;
+  projectModal: ProjectModalType
 };
 
 export default function VendorsTable({
@@ -68,7 +69,7 @@ export default function VendorsTable({
   selectedProject,
   setSelectedProject,
   handleAssignProject,
-  projectModal,
+  projectModal
 }: IProps) {
   const projectList = useProjectList({});
   const handleProjectChange = (d: UUID) => setSelectedProject(d);
@@ -172,7 +173,7 @@ export default function VendorsTable({
           </TableComponent>
         </div>
       </div>
-
+      
       <Dialog open={projectModal.value} onOpenChange={projectModal.onToggle}>
         <DialogContent>
           <DialogHeader>

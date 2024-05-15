@@ -14,7 +14,7 @@ import {
 import {
   useVendorList,
   usePagination,
-  useAssignVendorToProject,
+  useAssignVendorToProject
 } from '@rahat-ui/query';
 import { useBoolean } from '../../hooks/use-boolean';
 import { UUID } from 'crypto';
@@ -23,7 +23,13 @@ import VendorsTable from './vendors.list.table';
 import CustomPagination from '../../components/customPagination';
 
 function VendorsView() {
-  const { pagination, setNextPage, setPrevPage, setPerPage } = usePagination();
+
+  const {
+    pagination,
+    setNextPage,
+    setPrevPage,
+    setPerPage,
+  } = usePagination();
 
   const projectModal = useBoolean();
   const addVendor = useAssignVendorToProject();
@@ -35,6 +41,7 @@ function VendorsView() {
     setSelectedRow(row);
     projectModal.onTrue();
   };
+
   const handleAssignProject = async () => {
     if (!selectedProject) return alert('Please select a project');
     await addVendor.mutateAsync({
@@ -83,13 +90,12 @@ function VendorsView() {
         projectModal={projectModal}
       />
       <CustomPagination
-        meta={vendorData?.response?.meta || { total: 0, currentPage: 0 }}
-        handleNextPage={setNextPage}
-        handlePrevPage={setPrevPage}
-        // handlePageSizeChange={setPerPage}
         currentPage={pagination.page}
+        handleNextPage={setNextPage}
+        handlePageSizeChange={setPerPage}
+        handlePrevPage={setPrevPage}
+        meta={vendorData?.response?.meta || {}}
         perPage={pagination.perPage}
-        total={vendorData?.response?.meta.lastPage || 0}
       />
     </>
   );

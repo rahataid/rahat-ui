@@ -30,9 +30,9 @@ export default function InfoCards({ data }: { data: FieldDefinition }) {
                 </p>
               </div>
               <div>
-                <p>{data?.isTargeting ? 'True' : 'False'}</p>
+                <p>{data?.isTargeting ? 'Yes' : 'No'}</p>
                 <p className="text-sm font-normal text-muted-foreground">
-                  User for Targeting
+                  Select as targeting criteria
                 </p>
               </div>
             </div>

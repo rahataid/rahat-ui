@@ -8,7 +8,6 @@ import {
   useQueryClient,
 } from '@tanstack/react-query';
 import { TAGS } from '../../config';
-import { toast } from 'sonner';
 import { Beneficiary, MS_ACTIONS } from '@rahataid/sdk';
 import { getProjectClient } from '@rahataid/sdk/clients';
 import { Project, ProjectActions } from '@rahataid/sdk/project/project.types';
@@ -79,6 +78,11 @@ export const useAssignBenToProject = () => {
       projectUUID: UUID;
       beneficiaryUUID: UUID;
     }) => {
+      console.log(
+        'assigning beneficiary to project',
+        beneficiaryUUID,
+        projectUUID,
+      );
       return q.mutateAsync({
         uuid: projectUUID,
         data: {
@@ -302,8 +306,10 @@ export const useProjectList = (
   payload?: Pagination,
 ): UseQueryResult<FormattedResponse<Project[]>, Error> => {
   const { queryClient, rumsanService } = useRSQuery();
+  console.log({ queryClient, rumsanService });
 
   const projectClient = getProjectClient(rumsanService.client);
+  console.log({ projectClient });
   return useQuery(
     {
       queryKey: [TAGS.GET_ALL_PROJECTS, payload],
@@ -343,6 +349,7 @@ type GetProjectBeneficiaries = Pagination & {
   sort?: string;
   status?: string;
   projectUUID: UUID;
+  type?: string;
   vouchers?: any;
 };
 
@@ -379,16 +386,17 @@ export const useProjectBeneficiaries = (payload: GetProjectBeneficiaries) => {
         ...query.data,
         data: query.data?.data?.length
           ? query.data.data.map((row: any) => ({
-              uuid: row?.Beneficiary?.uuid,
-              wallet: row?.Beneficiary?.walletAddress,
-              name: row?.piiData?.name,
-              email: row?.piiData?.email,
-              gender: row?.Beneficiary?.gender,
+              uuid: row?.uuid?.toString(),
+              wallet: row?.walletAddress?.toString(),
+              voucherClaimStatus: row?.claimStatus,
+              name: row?.piiData?.name || "",
+              email: row?.piiData?.email || "",
+              gender: row?.projectData?.gender || "",
               phone: row?.piiData?.phone || 'N/A',
-              type: row?.Beneficiary?.type || 'N/A',
-              phoneStatus: row?.Beneficiary?.phoneStatus,
-              bankedStatus: row?.Beneficiary?.bankedStatus,
-              internetStatus: row?.Beneficiary?.internetStatus,
+              type: row?.type?.toString() || 'N/A',
+              phoneStatus: row?.projectData?.phoneStatus || "",
+              bankedStatus: row?.projectData?.bankedStatus || "",
+              internetStatus: row?.projectData?.internetStatus || "",
             }))
           : [],
       };

@@ -10,6 +10,7 @@ type Iprops = {
   open: boolean;
   close: boolean;
   isLoading: boolean;
+  isTransacting: boolean;
   voucherInputs: {
     tokens: string;
     amountInDollar: string;
@@ -31,11 +32,13 @@ type Iprops = {
 const SuccessModal = ({
   open,
   voucherInputs,
+  isTransacting,
   // handleGoBack,
   handleCreateVoucherSubmit,
   handleClose,
   isLoading,
 }: Iprops) => {
+  console.log(isTransacting)
   return (
     <Dialog open={open}>
       <DialogContent className="sm:max-w-[500px]">
@@ -62,7 +65,7 @@ const SuccessModal = ({
               <br /> Are you sure you want to continue ?
             </div>
             <div className="flex justify-center items-center gap-4">
-              <Button onClick={handleCreateVoucherSubmit}>Submit</Button>
+              <Button onClick={handleCreateVoucherSubmit} disabled={isTransacting}>{isTransacting ? 'Confirming transaction...' : 'Submit'}</Button>
               {/* <Button
             onClick={() => {
               handleGoBack();

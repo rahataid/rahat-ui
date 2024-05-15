@@ -43,7 +43,6 @@ const ProjectNavView: FC<ProjectNavViewProps> = ({ title, items }) => {
                         {item.icon}
                         <p>{item.title}</p>
                       </div>
-                      <p className="text-sm">{item.subtitle}</p>
                     </>
                   )}
 

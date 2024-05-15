@@ -85,7 +85,7 @@ function MultiSelectCheckBox({
           </FormControl>
 
           <SelectContent>
-            {options.length > 0
+            {options?.length > 0
               ? options.map((item: any) => (
                   <FormField
                     key={item.value}

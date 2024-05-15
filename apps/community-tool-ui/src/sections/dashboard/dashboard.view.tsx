@@ -11,7 +11,6 @@ export default function DashboardView() {
 
   const totalBenef =
     data?.data.find((f) => f.name === 'BENEFICIARY_TOTAL') || ([] as any);
-  console.log('totalBenef', totalBenef);
 
   return (
     <div>

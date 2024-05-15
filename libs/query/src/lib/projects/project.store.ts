@@ -1,7 +1,6 @@
 import { Project } from '@rahataid/sdk/project/project.types';
 import { localStore, zustandStore } from '@rumsan/react-query';
 import { FormattedResponse } from '@rumsan/sdk/utils';
-import { UUID } from 'crypto';
 
 type ProjectState = {
   singleProject: FormattedResponse<Project>['data'] | null;

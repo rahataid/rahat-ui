@@ -18,9 +18,9 @@ import {
   AlertDialogTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/alert-dialog';
 import { ArrowLeft, ArchiveRestore, Pencil } from 'lucide-react';
-import TriggerDetailCards from './trigger.detail.cards';
-import TriggerDetailCard from './trigger.detail.card';
-import TriggerActivityListCard from './trigger.activity.list.card';
+import AutomatedTriggerDetailCards from './automated.trigger.detail.cards';
+import AutomatedTriggerDetailCard from './automated.trigger.detail.card';
+import AutomatedTriggerActivityListCard from './automated.trigger.activity.list.card';
 import {
   useSingleTriggerStatement,
   useDeleteTriggerStatement,
@@ -122,10 +122,10 @@ export default function TriggerStatementsDetailView() {
         )
         : (
           <>
-            <TriggerDetailCards triggerDetail={triggerDetail} />
+            <AutomatedTriggerDetailCards triggerDetail={triggerDetail} />
             <div className="grid grid-cols-2 gap-4 mt-4 h-[calc(100vh-252px)]">
-              <TriggerDetailCard triggerDetail={triggerDetail} />
-              <TriggerActivityListCard triggerDetail={triggerDetail} />
+              <AutomatedTriggerDetailCard triggerDetail={triggerDetail} />
+              <AutomatedTriggerActivityListCard triggerDetail={triggerDetail} />
             </div>
           </>
         )

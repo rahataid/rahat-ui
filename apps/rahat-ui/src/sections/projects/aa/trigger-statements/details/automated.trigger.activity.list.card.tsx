@@ -1,6 +1,6 @@
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 
-export default function TriggerActivityListCard({ triggerDetail }: any) {
+export default function AutomatedTriggerActivityListCard({ triggerDetail }: any) {
   return (
     <div className="bg-card p-4 rounded">
       <h1 className="font-semibold text-lg">Activity List</h1>

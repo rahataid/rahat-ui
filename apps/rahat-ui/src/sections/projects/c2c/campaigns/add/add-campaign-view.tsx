@@ -90,7 +90,7 @@ const AddCampaignView = () => {
       }
     });
     const audiences = uniqueAudienceData
-      ?.filter((audienceObject: Audience) =>
+      .filter((audienceObject: Audience) =>
         selectedRows?.some(
           (selectedObject) =>
             selectedObject.phone === audienceObject?.details?.phone,

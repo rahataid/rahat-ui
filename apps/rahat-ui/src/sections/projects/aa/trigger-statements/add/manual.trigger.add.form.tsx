@@ -155,7 +155,7 @@ export default function AddManualTriggerForm() {
               render={({ field }) => {
                 return (
                   <FormItem className="w-full">
-                    <FormLabel>Trigger Title</FormLabel>
+                    <FormLabel>Notes</FormLabel>
                     <FormControl>
                       <Textarea placeholder="Enter Trigger Notes" {...field} />
                     </FormControl>

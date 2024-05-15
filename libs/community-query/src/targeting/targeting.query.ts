@@ -97,3 +97,15 @@ export const useTargetingLabelUpdate = () => {
     queryClient,
   );
 };
+
+export const useDownloadPinnedListBeneficiary = () => {
+  const { queryClient, rumsanService } = useRSQuery();
+  const targetingClient = getTargetClient(rumsanService.client);
+  return useMutation(
+    {
+      mutationKey: [TAGS.DOWNLOAD_TARGETING_LABEL],
+      mutationFn: targetingClient.downloadPinnedBeneficiary,
+    },
+    queryClient,
+  );
+};

@@ -21,14 +21,17 @@ import { ArrowLeft, ArchiveRestore, Pencil } from 'lucide-react';
 import ActivityDetailCard from './activity.detail.card';
 import ActivityDetailCards from './activity.detail.cards';
 import ActivityCommunicationListCard from './activity.communication.list.card';
-import ActivityPayoutCard from './activity.payout.card';
+// import ActivityPayoutCard from './activity.payout.card';
 import { useSingleActivity } from '@rahat-ui/query';
 import { UUID } from 'crypto';
+import Loader from 'apps/rahat-ui/src/components/table.loader';
 
 export default function ActivitiesDetailView() {
     const router = useRouter();
     const { id: projectID, activityID } = useParams();
-    const { data: activityDetail } = useSingleActivity(projectID as UUID, activityID);
+    const { data: activityDetail, isLoading } = useSingleActivity(projectID as UUID, activityID);
+
+    if (isLoading) return <Loader />
 
     return (
         <div className="h-[calc(100vh-65px)] bg-secondary p-4">
@@ -83,10 +86,10 @@ export default function ActivitiesDetailView() {
                 </div>
             </div>
             <ActivityDetailCards activityDetail={activityDetail} />
-            <div className="grid grid-cols-3 gap-4 mt-4">
+            <div className="grid grid-cols-2 gap-4 mt-4">
                 <ActivityDetailCard activityDetail={activityDetail} />
                 <ActivityCommunicationListCard activityDetail={activityDetail} projectId={projectID} />
-                <ActivityPayoutCard />
+                {/* <ActivityPayoutCard /> */}
             </div>
         </div>
     );

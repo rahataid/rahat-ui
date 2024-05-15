@@ -61,7 +61,8 @@ export default function EditActivity() {
                     groupType: z.string().min(1, { message: 'Please select group type' }),
                     groupId: z.string().min(1, { message: 'Please select group' }),
                     communicationType: z.string().min(1, { message: 'Please select communication type' }),
-                    message: z.string().min(5, { message: 'Must be at least 5 characters' })
+                    message: z.string().min(5, { message: 'Must be at least 5 characters' }),
+                    campaignId: z.number().optional()
                 })
             ).refine(
                 (val) => val.length > 0,
@@ -71,7 +72,8 @@ export default function EditActivity() {
                 groupType: z.string().optional(),
                 groupId: z.string().optional(),
                 communicationType: z.string().optional(),
-                message: z.string().optional()
+                message: z.string().optional(),
+                campaignId: z.number().optional()
             }))
     });
 
@@ -105,20 +107,24 @@ export default function EditActivity() {
     const [allFiles, setAllFiles] = React.useState<{ mediaURL: string, fileName: string }[]>(activityDetail?.activityDocuments);
     const [communicationAddForm, setCommunicationAddForm] = React.useState<{ id: number; form: React.ReactNode }[]>(prevCommunications);
     const nextId = React.useRef(0);
+    const formId = React.useRef(communicationAddForm?.length)
 
     useStakeholdersGroups(projectID as UUID, {})
 
     const removeCommunicationForm = (idToRemove: number) => {
         setCommunicationAddForm(prevForms => prevForms.filter(({ id }) => id !== idToRemove));
+    };
+
+    React.useEffect(() => {
         if (communicationAddForm.length < 1) {
             setCommunicationFormOpened(false);
             form.setValue('activityCommunication', [])
         }
-    };
+    }, [communicationAddForm])
 
     const addCommunicationForm = () => {
         setCommunicationFormOpened(true);
-        const newId = nextId.current++;
+        const newId = formId.current++;
         setCommunicationAddForm(prevForms => [...prevForms, { id: newId, form: <AddCommunicationForm key={newId} form={form} index={newId} onClose={() => removeCommunicationForm(newId)} /> }]);
     }
 

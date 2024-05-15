@@ -27,7 +27,8 @@ import {
     useActivitiesStore,
     useStakeholdersGroups,
     useUploadFile,
-    useSingleActivity
+    useSingleActivity,
+    useUpdateActivities
 } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import AddCommunicationForm from '../add/add.communication.form';
@@ -35,6 +36,7 @@ import Loader from 'apps/rahat-ui/src/components/table.loader';
 
 export default function EditActivity() {
     const uploadFile = useUploadFile();
+    const updateActivity = useUpdateActivities();
     const { id: projectID, activityID } = useParams();
     const { data: activityDetail, isLoading } = useSingleActivity(projectID as UUID, activityID);
 
@@ -137,21 +139,14 @@ export default function EditActivity() {
     }, [allFiles, setAllFiles])
 
     const handleUpdateActivity = async (data: z.infer<typeof FormSchema>) => {
-        // try {
-        //     await createActivity.mutateAsync({
-        //         projectUUID: projectID as UUID,
-        //         activityPayload: data,
-        //     });
-        // } catch (e) {
-        //     console.error('Error::', e);
-        // } finally {
-        //     form.reset();
-        //     setCommunicationAddForm([]);
-        //     setCommunicationFormOpened(false);
-        //     setAllFiles([]);
-        //     setDocuments([]);
-        // }
-        console.log('data::', data)
+        try {
+            await updateActivity.mutateAsync({
+                projectUUID: projectID as UUID,
+                activityUpdatePayload: { uuid: activityID, ...data },
+            });
+        } catch (e) {
+            console.error('Error::', e);
+        }
     };
 
     if (isLoading) return <Loader />

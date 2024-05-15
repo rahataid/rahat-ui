@@ -126,43 +126,43 @@ export const useNavItems = () => {
         ],
       ],
     },
-    {
-      title: 'Actions',
-      children: [
-        {
-          title: 'Add Stakeholders',
-          path: `/projects/aa/${params.id}/stakeholders/add`,
-          icon: <Plus size={18} strokeWidth={1.5} />,
-        },
-        {
-          title: 'Add Groups',
-          path: `/projects/aa/${params.id}/groups/add`,
-          icon: <Plus size={18} strokeWidth={1.5} />,
-        },
-        // {
-        //   title: 'Add Trigger Statement',
-        //   path: `/projects/aa/${params.id}/trigger-statements/add`,
-        //   icon: <Plus size={18} strokeWidth={1.5} />,
-        // },
-        {
-          title: 'Create Distribution',
-          icon: <PlusSquare size={18} strokeWidth={1.5} />,
-        },
-        {
-          title: 'Create Communication',
-          icon: <PlusSquare size={18} strokeWidth={1.5} />,
-        },
-        // {
-        //   title: 'Add Activities',
-        //   path: `/projects/aa/${params.id}/activities/add`,
-        //   icon: <Plus size={18} strokeWidth={1.5} />,
-        // },
-        {
-          title: 'Edit Project',
-          icon: <Pencil size={18} strokeWidth={1.5} />,
-        },
-      ],
-    },
+    // {
+    //   title: 'Actions',
+    //   children: [
+    //     {
+    //       title: 'Add Stakeholders',
+    //       path: `/projects/aa/${params.id}/stakeholders/add`,
+    //       icon: <Plus size={18} strokeWidth={1.5} />,
+    //     },
+    //     {
+    //       title: 'Add Groups',
+    //       path: `/projects/aa/${params.id}/groups/add`,
+    //       icon: <Plus size={18} strokeWidth={1.5} />,
+    //     },
+    //     {
+    //       title: 'Add Trigger Statement',
+    //       path: `/projects/aa/${params.id}/trigger-statements/add`,
+    //       icon: <Plus size={18} strokeWidth={1.5} />,
+    //     },
+    //     {
+    //       title: 'Create Distribution',
+    //       icon: <PlusSquare size={18} strokeWidth={1.5} />,
+    //     },
+    //     {
+    //       title: 'Create Communication',
+    //       icon: <PlusSquare size={18} strokeWidth={1.5} />,
+    //     },
+    //     {
+    //       title: 'Add Activities',
+    //       path: `/projects/aa/${params.id}/activities/add`,
+    //       icon: <Plus size={18} strokeWidth={1.5} />,
+    //     },
+    //     {
+    //       title: 'Edit Project',
+    //       icon: <Pencil size={18} strokeWidth={1.5} />,
+    //     },
+    //   ],
+    // },
   ];
 
   return { navItems };

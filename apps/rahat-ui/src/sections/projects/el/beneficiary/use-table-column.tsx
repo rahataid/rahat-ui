@@ -3,7 +3,7 @@
 import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
 import { ColumnDef } from '@tanstack/react-table';
 import { Eye } from 'lucide-react';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useSecondPanel } from '../../../../providers/second-panel-provider';
 import BeneficiaryDetail from '../../../../sections/projects/el/beneficiary/beneficiary.detail';
 
@@ -16,14 +16,14 @@ export const useProjectBeneficiaryTableColumns = (voucherType: string) => {
     setWalletAddressCopied(index);
   };
 
-  const openSplitDetailView = (rowDetail: any) => {
+  const openSplitDetailView = useCallback((rowDetail: any) => {
     setSecondPanelComponent(
       <BeneficiaryDetail
         closeSecondPanel={closeSecondPanel}
         beneficiaryDetails={rowDetail}
-      />,
+      />
     );
-  };
+  }, []);
 
   const columns: ColumnDef<any>[] = [
     {

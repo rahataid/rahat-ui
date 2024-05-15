@@ -50,4 +50,5 @@ export const TAGS = {
   LIST_KOBO_SETTINGS: 'list_kobo_settings',
   LIST_MAPPINGS_BY_IMPORT_ID: 'list_mappings_by_import_id',
   UPDATE_TARGETING_LABEL: 'update_targeting_label',
+  DOWNLOAD_TARGETING_LABEL: 'download_targeting_label',
 };

@@ -30,29 +30,40 @@ type AdvancedEditFormProps = {
   form: UseFormReturn<{
     extras: {
       treasury: {
-        hasProjectBalance: boolean;
-        hasUserWallet: boolean;
-        hasMultiSig: boolean;
         network: string;
         multiSigWalletAddress: string;
         contractAddress: string;
+        treasurySources: string[];
       };
     };
   }>;
 };
 
+const treasurySources = [
+  {
+    value: 'project_balance',
+    label: 'Project Balance',
+  },
+  {
+    value: 'user_wallet',
+    label: 'User Wallet',
+  },
+  {
+    value: 'multi_sig',
+    label: 'MultiSig Wallet',
+  },
+];
+
 export default function AdvancedEditForm({ form }: AdvancedEditFormProps) {
   const chains = useChains();
-  console.log('chains', chains);
   return (
     <div className="bg-card">
       <div className="shadow-md p-2 rounded-sm">
         <div className="grid grid-cols-2 gap-8 mt-6 mb-8">
           <FormField
             control={form.control}
-            name="extras.treasury"
-            render={({ field }) => {
-              console.log('field', field);
+            name="extras.treasury.treasurySources"
+            render={({ field, fieldState, formState }) => {
               return (
                 <FormItem>
                   <div className="mb-4">
@@ -74,58 +85,26 @@ export default function AdvancedEditForm({ form }: AdvancedEditFormProps) {
                     </FormLabel>
                   </div>
                   <FormMessage />
-                  <div className="flex items-center justify-between">
-                    <div className="items-top flex space-x-2">
-                      <Checkbox id="hasProjectBalance" />
-                      <div className="grid gap-1.5 leading-none">
-                        <label
-                          htmlFor="hasProjectBalance"
-                          className="text-sm leading-none text-muted-foreground peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                        >
-                          Project Balance
-                        </label>
+                  <div className="grid grid-cols-3 gap-4">
+                    {treasurySources.map((source) => (
+                      <div key={source.value}>
+                        <FormLabel className="text-muted-foreground">
+                          {source.label}
+                        </FormLabel>
+                        <Checkbox
+                          checked={field.value.includes(source.value)}
+                          onCheckedChange={(checked) => {
+                            if (checked) {
+                              field.onChange([...field.value, source.value]);
+                            } else {
+                              field.onChange(
+                                field.value.filter((v) => v !== source.value),
+                              );
+                            }
+                          }}
+                        />
                       </div>
-                    </div>
-                    <div className="items-top flex space-x-2">
-                      <Checkbox
-                        onCheckedChange={(checked) => {
-                          form.setValue(
-                            'extras.treasury.hasUserWallet',
-                            checked as boolean,
-                          );
-                        }}
-                        checked={field?.value?.hasUserWallet}
-                        id="hasUserWallet"
-                      />
-                      <div className="grid gap-1.5 leading-none">
-                        <label
-                          htmlFor="hasUserWallet"
-                          className="text-sm leading-none text-muted-foreground peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                        >
-                          User`s Wallet Connect
-                        </label>
-                      </div>
-                    </div>
-                    <div className="items-top flex space-x-2">
-                      <Checkbox
-                        id="hasMultiSig"
-                        checked={field?.value?.hasMultiSig}
-                        onCheckedChange={(checked) => {
-                          form.setValue(
-                            'extras.treasury.hasMultiSig',
-                            checked as boolean,
-                          );
-                        }}
-                      />
-                      <div className="grid gap-1.5 leading-none">
-                        <label
-                          htmlFor="hasMultiSig"
-                          className="text-sm text-muted-foreground leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                        >
-                          MultiSig Wallet
-                        </label>
-                      </div>
-                    </div>
+                    ))}
                   </div>
                 </FormItem>
               );
@@ -164,9 +143,7 @@ export default function AdvancedEditForm({ form }: AdvancedEditFormProps) {
         </div>
 
         <div className="grid grid-cols-2 gap-4 mt-8 mb-2">
-          <FormField
-            name="extras.treasury.contractAddress"
-            control={form.control}
+          {/* <FormField
             disabled
             render={({ field }) => {
               return (
@@ -174,22 +151,25 @@ export default function AdvancedEditForm({ form }: AdvancedEditFormProps) {
                   <FormLabel className="text-muted-foreground">
                     Project Contract
                   </FormLabel>
-                  <FormControl>
-                    <div className="relative w-full">
-                      <Input
-                        type="text"
-                        {...field}
-                        placeholder="Enter project contract address"
-                        disabled
-                      />
-                    </div>
-                  </FormControl>
+                  <FormControl> */}
+          <div className="relative w-full">
+            <Input
+              type="text"
+              disabled
+              value={form
+                ?.watch()
+                ?.extras?.treasury?.contractAddress?.valueOf()}
+            />
+          </div>
+          {/* </FormControl>
                   <FormMessage />
                 </FormItem>
               );
             }}
-          />
-          {form?.watch()?.extras?.treasury?.hasMultiSig?.valueOf() && (
+          /> */}
+          {form
+            ?.watch()
+            ?.extras?.treasury?.treasurySources.includes('multi_sig') && (
             <FormField
               control={form.control}
               name="extras.treasury.multiSigWalletAddress"

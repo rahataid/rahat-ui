@@ -214,7 +214,7 @@ export default function EditFieldDefinition({
                 render={({ field }) => (
                   <div className="flex flex-col items-right">
                     <Label className="text-xs font-medium mb-1">
-                      User for Targeting
+                      Select as targeting criteria
                     </Label>
                     <Switch
                       {...field}

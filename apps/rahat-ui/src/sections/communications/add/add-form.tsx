@@ -27,7 +27,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { CAMPAIGN_TYPES } from '@rahat-ui/types';
 import { format } from 'date-fns';
-import { CalendarIcon, Loader } from 'lucide-react';
+import { CalendarIcon, CheckIcon, Loader } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { FC } from 'react';
 import { UseFormReturn, useForm } from 'react-hook-form';
@@ -84,6 +84,7 @@ const CampaignForm: FC<CampaignFormProps> = ({
     form.getValues().campaignType?.toLowerCase(),
   );
   const [open, setOpen] = React.useState(false);
+  const [checkTemplate, setCheckTemplate] = React.useState(false);
   const [templatemessage, setTemplatemessage] = React.useState('');
   //   const includeFile = includeMessage ? 'message' : 'file';
   //   const excludeFile = includeMessage ? 'file' : 'message';
@@ -222,15 +223,41 @@ const CampaignForm: FC<CampaignFormProps> = ({
                                         className="gap-4"
                                         key={option?.sid}
                                         onSelect={() => {
-                                          form.setValue(
-                                            'messageSid',
-                                            option?.sid,
-                                          );
-                                          setTemplatemessage(
-                                            option?.types['twilio/text']?.body,
+                                          if (
+                                            (!checkTemplate &&
+                                              !form.getValues().messageSid) ||
+                                            form.getValues().messageSid !==
+                                              option?.sid
+                                          ) {
+                                            form.setValue(
+                                              'messageSid',
+                                              option?.sid,
+                                            );
+                                            form.setValue(
+                                              'message',
+                                              option?.types['twilio/text']
+                                                ?.body,
+                                            );
+                                            setTemplatemessage(
+                                              option?.types['twilio/text']
+                                                ?.body,
+                                            );
+                                          } else {
+                                            form.setValue('messageSid', '');
+                                            form.setValue('message', '');
+                                            setTemplatemessage('');
+                                          }
+                                          setCheckTemplate(
+                                            (preValue) => !preValue,
                                           );
                                         }}
                                       >
+                                        {option?.sid ===
+                                          form.getValues().messageSid && (
+                                          <CheckIcon
+                                            className={' h-4 w-4 opacity-100'}
+                                          />
+                                        )}
                                         <strong>{option?.friendly_name}</strong>{' '}
                                         {option?.types['twilio/text']?.body
                                           .length > 100
@@ -345,12 +372,14 @@ const CampaignForm: FC<CampaignFormProps> = ({
             )} */}
           </div>
         </div>
-        <ConfirmModal
-          open={campaignConfirmModal.value}
-          handleClose={handleCampaignAssignModalClose}
-          handleSubmit={handleSubmit}
-          isSubmitting={isSubmitting}
-        />
+        {campaignConfirmModal.value && (
+          <ConfirmModal
+            open={campaignConfirmModal.value}
+            handleClose={handleCampaignAssignModalClose}
+            handleSubmit={handleSubmit}
+            isSubmitting={isSubmitting}
+          />
+        )}
       </div>
     </>
   );

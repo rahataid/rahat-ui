@@ -42,7 +42,7 @@ export default function AddUser() {
     resolver: zodResolver(FormSchema),
     defaultValues: {
       name: '',
-      gender: Gender.UKNOWN || '',
+      gender: '',
       email: '',
       phone: '',
       role: '',
@@ -63,7 +63,7 @@ export default function AddUser() {
     if (userCreate.isSuccess) {
       form.reset({
         name: '',
-        gender: Gender.UKNOWN || '',
+        gender: '',
         email: '',
         phone: '',
         role: '',

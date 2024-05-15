@@ -21,8 +21,14 @@ import { Result } from '@rahataid/community-tool-sdk/targets';
 import CustomPagination from '../../../components/customPagination';
 import { useTargetingColumns } from '../useTargetingColumns';
 import FilterTargetingListView from './filters.listView';
+import { useRouter } from 'next/navigation';
+import { paths } from '../../../routes/paths';
+import Swal from 'sweetalert2';
+import useTargetingFormStore from '../../../targetingFormBuilder/form.store';
 
 export default function FiltersTargetingView() {
+  const { setTargetingQueries }: any = useTargetingFormStore();
+  const router = useRouter();
   const {
     pagination,
     selectedListItems,
@@ -31,7 +37,9 @@ export default function FiltersTargetingView() {
     setPrevPage,
     setPerPage,
   } = usePagination();
-  const { loading, targetUUID } = useCommunityTargetingStore();
+  const { loading, targetUUID, setTargetUUID } = useCommunityTargetingStore();
+
+  console.log({ targetUUID });
 
   const { data: beneficiaryData } = useTargetedBeneficiaryList(
     targetUUID as string,
@@ -60,9 +68,14 @@ export default function FiltersTargetingView() {
   });
 
   const handleUpdateTargetLabel = async (label: string) => {
+    if (!beneficiaryData?.data?.rows.length)
+      return Swal.fire({ title: 'No beneficiaries to pin!', icon: 'error' });
     const uuid = targetUUID as string;
     const payload = { label };
     await updateTargetLabel.mutateAsync({ uuid, payload });
+    setTargetingQueries([]);
+    setTargetUUID('');
+    router.push(paths.dashboard.targeting.list);
   };
 
   return (

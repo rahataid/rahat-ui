@@ -65,6 +65,10 @@ export default function ListView({
       name: 'All',
       value: undefined,
     },
+    {
+      name: 'Not Assigned',
+      value: 'NOT_ASSGNED',
+    },
     ...projects.map((p: any) => ({
       name: p.name,
       value: p.uuid,
@@ -74,7 +78,6 @@ export default function ListView({
   useEffect(() => {
     if (filters?.projectId) {
       const project = selectFilterProjectItems.find((p) => {
-        console.log('p', p);
         return p.value === filters?.projectId;
       });
       setSelectedProject(project);

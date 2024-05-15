@@ -28,6 +28,9 @@ import {
 import { UUID } from 'crypto';
 import Loader from 'apps/rahat-ui/src/components/table.loader';
 import ManualTriggerDialog from './manual.trigger.dialog';
+import ManualTriggerDetailCard from './manual.trigger.detail.card';
+import ManualTriggerCommunicationsCard from './manual.trigger.communications.card';
+import ManualTriggerDocumentsCard from './manual.trigger.documents.card';
 
 export default function TriggerStatementsDetailView() {
   const { id: projectID } = useParams();
@@ -103,16 +106,31 @@ export default function TriggerStatementsDetailView() {
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
-          {triggerDetail?.dataSource === "MANUAL" ? (
-            <ManualTriggerDialog />
-          ) : null}
+          {triggerDetail?.dataSource === "MANUAL"
+            ? <ManualTriggerDialog />
+            : null
+          }
         </div>
       </div>
-      <TriggerDetailCards triggerDetail={triggerDetail} />
-      <div className="grid grid-cols-2 gap-4 mt-4 h-[calc(100vh-252px)]">
-        <TriggerDetailCard triggerDetail={triggerDetail} />
-        <TriggerActivityListCard triggerDetail={triggerDetail} />
-      </div>
+      {triggerDetail?.dataSource === "MANUAL"
+        ? (
+          <div className="grid grid-cols-2 gap-4 mt-4 h-[calc(100vh-152px)]">
+            <ManualTriggerDetailCard status={triggerDetail?.isTriggered} notes={triggerDetail?.notes} />
+            <ManualTriggerCommunicationsCard />
+            <ManualTriggerDocumentsCard documents={triggerDetail?.triggerDocuments} />
+          </div>
+        )
+        : (
+          <>
+            <TriggerDetailCards triggerDetail={triggerDetail} />
+            <div className="grid grid-cols-2 gap-4 mt-4 h-[calc(100vh-252px)]">
+              <TriggerDetailCard triggerDetail={triggerDetail} />
+              <TriggerActivityListCard triggerDetail={triggerDetail} />
+            </div>
+          </>
+        )
+      }
+
     </div>
   );
 }

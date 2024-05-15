@@ -7,7 +7,7 @@ import {
 import { DHMView } from './DHM';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
-import { useDhmWaterLevels } from '@rahat-ui/query';
+import { PROJECT_SETTINGS_KEYS, useAATriggerStatements, useDhmWaterLevels, useProjectSettingsStore } from '@rahat-ui/query';
 import {
   Tooltip,
   TooltipContent,
@@ -20,8 +20,13 @@ export default function DataSourcesView() {
   const projectID = id as UUID;
   const { isLoading: isLoadingDhm, data: dhmData } =
     useDhmWaterLevels(projectID);
-    
-  console.log(dhmData)
+
+  const { data: triggerStatements, isLoading } = useAATriggerStatements(id as UUID);
+
+  const dhmLocation = useProjectSettingsStore(
+    (s) => s.settings?.[projectID]?.[PROJECT_SETTINGS_KEYS.DATASOURCE]?.dhm?.location);
+
+  const dhmStatements = triggerStatements?.filter((d: any) => (d.dataSource === 'DHM') && (d.location === dhmLocation))
 
   return (
     <div className="p-4 bg-secondary h-[calc(100vh-65px)]">
@@ -45,7 +50,7 @@ export default function DataSourcesView() {
           <TabsTrigger value="ncwrmf" className='w-36 border bg-card data-[state=active]:border-primary'>NCWRMF</TabsTrigger>
         </TabsList>
         <TabsContent value="dhm">
-          {isLoadingDhm ? 'Loading DHM data...' : <DHMView data={dhmData} />}
+          {isLoadingDhm ? 'Loading DHM data...' : <DHMView data={dhmData} dhmStatements={dhmStatements} />}
         </TabsContent>
         <TabsContent value="glofas">GLoFAS View</TabsContent>
         <TabsContent value="ncwrmf">NCWRMF View</TabsContent>

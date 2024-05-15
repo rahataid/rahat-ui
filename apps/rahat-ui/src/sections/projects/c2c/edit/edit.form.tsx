@@ -31,18 +31,82 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { format } from 'date-fns';
 
-import { CalendarIcon, Wallet } from 'lucide-react';
+import {
+  PROJECT_SETTINGS_KEYS,
+  useProjectSettingsStore,
+} from '@rahat-ui/query';
+import { CalendarIcon } from 'lucide-react';
+import { useParams } from 'next/navigation';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import AdvancedEditForm from './advanced.edit.form';
 
 export default function EditProject() {
-  const FormSchema = z.object({});
+  const { id } = useParams();
+  const projectContract = useProjectSettingsStore(
+    (state) =>
+      state?.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT]?.c2cproject
+        ?.address,
+  ) as string;
 
-  const form = useForm<z.infer<typeof FormSchema>>({});
+  const FormSchema = z.object({
+    name: z.string(),
+    projectType: z.string(),
+    location: z.string(),
+    longitude: z.string(),
+    latitude: z.string(),
+    projectManager: z.string(),
+    description: z.string(),
+    startDate: z.date(),
+    endDate: z.date(),
+    extras: z.object({
+      treasury: z.object({
+        hasProjectBalance: z.boolean(),
+        hasUserWallet: z.boolean(),
+        hasMultiSig: z.boolean(),
+        network: z.string(),
+        multiSigWalletAddress: z.string(),
+        contractAddress: z.string(),
+      }),
+    }),
+  });
+
+  const form = useForm<z.infer<typeof FormSchema>>({
+    defaultValues: {
+      description: '',
+      extras: {
+        treasury: {
+          contractAddress: projectContract,
+          hasMultiSig: true,
+          hasProjectBalance: false,
+          hasUserWallet: false,
+          multiSigWalletAddress: '',
+          network: '',
+        },
+      },
+      latitude: '',
+      location: '',
+      longitude: '',
+      name: '',
+      projectManager: '',
+      projectType: '',
+    },
+  });
+
+  useEffect(() => {
+    form.setValue('extras.treasury.contractAddress', projectContract);
+  }, [form, projectContract]);
+
+  console.log('form', form.getValues());
+
+  const onAdvancedFormSubmit = (d) => {
+    console.log('Advanced form submitted', d);
+    return;
+  };
 
   return (
-    <Form {...form}>
+    <Form {...form} handleSubmit={form.handleSubmit(onAdvancedFormSubmit)}>
       <div className="p-4 h-add bg-card">
         <div className="shadow-md p-4 rounded-sm">
           <h1 className="text-lg font-semibold mb-6">Edit Project</h1>
@@ -237,32 +301,14 @@ export default function EditProject() {
                 }}
               />
             </div>
-            <FormField
-              name="contractAddress"
-              render={({ field }) => {
-                return (
-                  <FormItem>
-                    <FormControl>
-                      <div className="relative w-full">
-                        <Wallet className="absolute right-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                        <Input
-                          type="text"
-                          placeholder="Contract Address"
-                          {...field}
-                        />
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            />
           </div>
           <Accordion type="single" collapsible className="w-full">
             <AccordionItem value="item-1">
-              <AccordionTrigger className="border-b">Advanced</AccordionTrigger>
+              <AccordionTrigger className="border rounded p-4 text-muted-foreground">
+                Advanced
+              </AccordionTrigger>
               <AccordionContent>
-                <AdvancedEditForm />
+                <AdvancedEditForm form={form as any} />
               </AccordionContent>
             </AccordionItem>
           </Accordion>

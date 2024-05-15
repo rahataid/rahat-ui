@@ -1,5 +1,6 @@
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 import {
+  ArrowLeftRight,
   Blocks,
   Coins,
   LayoutDashboard,
@@ -12,6 +13,7 @@ import {
   ProjectNavItemsReturnType,
 } from '../components/nav-items.types';
 import DepositTokenModal from './components/depositToken.modal';
+import RequestTokenModal from './components/request-token-flow/1-request.token';
 
 export const useNavItems = (): ProjectNavItemsReturnType => {
   const { id } = useParams();
@@ -37,6 +39,11 @@ export const useNavItems = (): ProjectNavItemsReturnType => {
           path: `/projects/c2c/${id}/fundManagement`,
           icon: <Coins size={18} strokeWidth={1.5} />,
         },
+        {
+          title: 'Transactions',
+          path: `/projects/c2c/${id}/transactions`,
+          icon: <ArrowLeftRight size={18} strokeWidth={1.5} />,
+        },
       ],
     },
     {
@@ -51,7 +58,12 @@ export const useNavItems = (): ProjectNavItemsReturnType => {
           title: 'Deposit Token',
         },
         {
-          icon: <Blocks size={18} strokeWidth={1.5} />,
+          component: (
+            <>
+              <RequestTokenModal />
+            </>
+          ),
+
           title: 'Request Token',
         },
         {

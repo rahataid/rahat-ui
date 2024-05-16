@@ -18,6 +18,7 @@ import { useParams } from 'next/navigation';
 import {
   PROJECT_SETTINGS_KEYS,
   useGetTreasurySourcesSettings,
+  useProject,
   useProjectSettingsStore,
 } from '@rahat-ui/query';
 import { UUID } from 'crypto';
@@ -44,9 +45,15 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
     (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT],
   );
   const disburseToken = useDisburseTokenToBeneficiaries();
-  const { data: treasurySources } = useGetTreasurySourcesSettings(id);
-  console.log('first', stepData);
+  // TODO: use this
+  // const { data: treasurySources } = useGetTreasurySourcesSettings(id);
+  // TODO: DONOT Use this
 
+  const { data: projectData } = useProject(id);
+  console.log('projectData', projectData);
+  console.log('first', stepData);
+  const treasurySources =
+    (projectData?.data?.extras?.treasury?.treasurySources as string[]) || [];
   const handleStepDataChange = (e) => {
     const { name, value } = e.target;
     setStepData((prev) => ({ ...prev, [name]: value }));
@@ -92,7 +99,8 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
           value={stepData.treasurySource}
           onChange={handleStepDataChange}
           projectSubgraphDetails={projectSubgraphDetails}
-          treasurySources={treasurySources?.treasurysources}
+          // treasurySources={treasurySources?.treasurysources}
+          treasurySources={treasurySources}
         />
       ),
       validation: {

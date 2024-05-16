@@ -1,4 +1,5 @@
 'use client';
+import * as React from 'react';
 
 import { usePagination, useProjectBeneficiaries } from '@rahat-ui/query';
 import {
@@ -30,7 +31,6 @@ import {
 } from '@tanstack/react-table';
 import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
-import * as React from 'react';
 import { benType } from '../../el/beneficiary/beneficiary.table';
 import { useProjectBeneficiaryTableColumns } from './useBeneficiaryColumns';
 
@@ -44,14 +44,12 @@ import DisburseFlow from '../components/disburse-flow/disburse-flow';
 
 const BeneficiaryDetailTableView = () => {
   const uuid = useParams().id as UUID;
-
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
   );
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
-
   const {
     pagination,
     filters,
@@ -63,11 +61,8 @@ const BeneficiaryDetailTableView = () => {
     setSelectedListItems,
     resetSelectedListItems,
   } = usePagination();
-
   const selectedRowAddresses = Object.keys(selectedListItems);
-
   const columns = useProjectBeneficiaryTableColumns();
-
   const projectBeneficiaries = useProjectBeneficiaries({
     page: pagination.page,
     perPage: pagination.perPage,
@@ -76,7 +71,6 @@ const BeneficiaryDetailTableView = () => {
     projectUUID: uuid,
     ...filters,
   });
-
   const table = useReactTable({
     manualPagination: true,
     data: projectBeneficiaries?.data?.data || [],
@@ -96,20 +90,17 @@ const BeneficiaryDetailTableView = () => {
       rowSelection: selectedListItems,
     },
   });
-
   const handleBenType = React.useCallback(
     (type: string) => {
       resetSelectedListItems();
       if (type === 'ALL') {
         setFilters({ ...filters, status: undefined });
-
         return;
         setFilters({ ...filters, status: type });
       }
     },
     [filters, setFilters],
   );
-
   return (
     <>
       <div className="p-2 bg-secondary">

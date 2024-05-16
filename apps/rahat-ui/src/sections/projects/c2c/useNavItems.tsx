@@ -5,6 +5,8 @@ import {
   Coins,
   LayoutDashboard,
   PencilRuler,
+  Plus,
+  Speech,
   UserRound,
 } from 'lucide-react';
 import { useParams } from 'next/navigation';
@@ -44,6 +46,11 @@ export const useNavItems = (): ProjectNavItemsReturnType => {
           path: `/projects/c2c/${id}/transactions`,
           icon: <ArrowLeftRight size={18} strokeWidth={1.5} />,
         },
+        {
+          title: 'Campaigns',
+          icon: <Speech size={18} strokeWidth={1.5} />,
+          path: `/projects/c2c/${id}/campaigns/text`,
+        },
       ],
     },
     {
@@ -70,6 +77,12 @@ export const useNavItems = (): ProjectNavItemsReturnType => {
           icon: <PencilRuler size={18} strokeWidth={1.5} />,
           title: 'Edit Project',
           path: `/projects/c2c/${id}/edit`,
+        },
+
+        {
+          title: 'Add Campaign',
+          path: `/projects/c2c/${id}/campaigns/add`,
+          icon: <Plus size={18} strokeWidth={1.5} />,
         },
       ],
     },

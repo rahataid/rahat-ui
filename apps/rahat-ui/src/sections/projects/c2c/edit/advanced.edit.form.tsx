@@ -78,12 +78,13 @@ export default function AdvancedEditForm({ form }: AdvancedEditFormProps) {
                           {source.label}
                         </FormLabel>
                         <Checkbox
-                          checked={field.value.includes(source.value)}
+                          checked={field?.value?.includes(source.value)}
                           onCheckedChange={(checked) => {
+                            console.log('field', field);
                             if (checked) {
-                              field.onChange([...field.value, source.value]);
+                              field?.onChange([...field.value, source.value]);
                             } else {
-                              field.onChange(
+                              field?.onChange(
                                 field.value.filter((v) => v !== source.value),
                               );
                             }
@@ -155,7 +156,7 @@ export default function AdvancedEditForm({ form }: AdvancedEditFormProps) {
           /> */}
           {form
             ?.watch()
-            ?.extras?.treasury?.treasurySources.includes('multi_sig') && (
+            ?.extras?.treasury?.treasurySources?.includes('multi_sig') && (
             <FormField
               control={form.control}
               name="extras.treasury.multiSigWalletAddress"

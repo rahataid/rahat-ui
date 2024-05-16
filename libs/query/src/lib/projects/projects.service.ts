@@ -508,3 +508,25 @@ export const useUpdateElRedemption = () => {
     },
   });
 };
+
+export const useProjectEdit = () => {
+  const { queryClient, rumsanService } = useRSQuery();
+  // const projectClient = getProjectClient(rumsanService.client);
+
+  return useMutation(
+    {
+      onError(error, variables, context) {
+        console.error('Error', error, variables, context);
+      },
+      onSuccess(data, variables, context) {
+        console.log('Success', data, variables, context);
+      },
+      mutationKey: ['projectEdit'],
+      mutationFn: async ({ uuid, data }: { uuid: UUID; data: any }) => {
+        const res = await rumsanService.client.patch(`/projects/${uuid}`, data);
+        return res;
+      },
+    },
+    queryClient,
+  );
+};

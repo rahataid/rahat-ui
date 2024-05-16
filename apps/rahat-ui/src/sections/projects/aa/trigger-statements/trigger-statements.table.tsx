@@ -1,9 +1,8 @@
 'use client';
 
 import * as React from 'react';
-import { useRouter } from 'next/navigation';
 import { Table, flexRender } from '@tanstack/react-table';
-import { Plus, Settings2, Search } from 'lucide-react';
+import { Settings2, Search } from 'lucide-react';
 import { Button } from '@rahat-ui/shadcn/components/button';
 import {
   DropdownMenu,
@@ -24,6 +23,7 @@ import {
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import TableLoader from 'apps/rahat-ui/src/components/table.loader';
+import AddButton from '../../components/add.btn';
 
 type IProps = {
   table: Table<any>;
@@ -36,7 +36,6 @@ export default function TriggerStatementsTable({
   projectId,
   loading,
 }: IProps) {
-  const router = useRouter();
   if (loading) return <TableLoader />;
   return (
     <>
@@ -90,13 +89,8 @@ export default function TriggerStatementsTable({
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
-          <Button
-            onClick={() =>
-              router.push(`/projects/aa/${projectId}/trigger-statements/add`)
-            }
-          >
-            <Plus size={18} className="mr-1" /> Add Trigger Statement
-          </Button>
+          {/* Add Trigger Statements Btn */}
+          <AddButton path={`/projects/aa/${projectId}/trigger-statements/add`} name='Trigger Statement' />
         </div>
         <div className="rounded border h-[calc(100vh-180px)] bg-card">
           <TableComponent>
@@ -110,9 +104,9 @@ export default function TriggerStatementsTable({
                           {header.isPlaceholder
                             ? null
                             : flexRender(
-                                header.column.columnDef.header,
-                                header.getContext(),
-                              )}
+                              header.column.columnDef.header,
+                              header.getContext(),
+                            )}
                         </TableHead>
                       );
                     })}

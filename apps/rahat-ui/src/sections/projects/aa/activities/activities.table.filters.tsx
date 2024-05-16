@@ -1,4 +1,3 @@
-import { useRouter } from 'next/navigation';
 import {
     Select,
     SelectContent,
@@ -8,9 +7,9 @@ import {
     SelectGroup,
 } from '@rahat-ui/shadcn/components/select';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { Search, Plus } from 'lucide-react';
+import { Search } from 'lucide-react';
 import { useActivitiesStore } from '@rahat-ui/query';
+import AddButton from '../../components/add.btn';
 
 type IProps = {
     handleFilter: (key: string, value: string) => void;
@@ -23,8 +22,6 @@ export default function ActivitiesTableFilters({ handleFilter, projectID }: IPro
         phases: state.phases,
         hazardTypes: state.hazardTypes
     }));
-
-    const router = useRouter();
 
     return (
         <div className="flex items-center gap-2 mb-2">
@@ -88,7 +85,7 @@ export default function ActivitiesTableFilters({ handleFilter, projectID }: IPro
                 </SelectContent>
             </Select>
             {/* Add Activities Btn */}
-            <Button type='button' onClick={() => router.push(`/projects/aa/${projectID}/activities/add`)}><Plus size={18} className='mr-1' /> Add Activities</Button>
+            <AddButton path={`/projects/aa/${projectID}/activities/add`} name='Activities' />
         </div>
     )
 }

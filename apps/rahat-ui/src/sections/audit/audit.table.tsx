@@ -65,6 +65,8 @@ export function AuditTable() {
   const [rowSelection, setRowSelection] = React.useState({});
   const { data } = useAuditList();
 
+  console.log('data', data?.data);
+
   const table = useReactTable({
     data: data?.data || [],
     columns,

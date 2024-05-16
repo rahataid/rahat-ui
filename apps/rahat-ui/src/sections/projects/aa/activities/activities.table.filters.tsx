@@ -11,14 +11,19 @@ import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { Search } from 'lucide-react';
 import { useActivitiesStore } from '@rahat-ui/query';
 import AddButton from '../../components/add.btn';
+import { UUID } from 'crypto';
 
 type IProps = {
     handleFilter: (key: string, value: string) => void;
-    projectID: string | string[];
+    projectID: UUID;
     handleSearch: (event: React.ChangeEvent<HTMLInputElement>) => void;
+    activity: string;
+    phase: string;
+    category: string;
+    hazardType: string
 }
 
-export default function ActivitiesTableFilters({ handleFilter, projectID, handleSearch }: IProps) {
+export default function ActivitiesTableFilters({ handleFilter, projectID, handleSearch, activity, phase, category, hazardType }: IProps) {
     const { categories, phases, hazardTypes } = useActivitiesStore((state) => ({
         categories: state.categories,
         phases: state.phases,
@@ -32,13 +37,14 @@ export default function ActivitiesTableFilters({ handleFilter, projectID, handle
                 <Input
                     type='text'
                     placeholder="Search Activities..."
-                    className="rounded-l rounded-r-none pl-8"
+                    className="pl-8"
+                    value={activity}
                     onChange={handleSearch}
                 />
             </div>
             {/* Filter Phases */}
-            <Select onValueChange={(value) => handleFilter("phase", value)}>
-                <SelectTrigger className='text-muted-foreground'>
+            <Select value={phase} onValueChange={(value) => handleFilter("phase", value)}>
+                <SelectTrigger className={phase ? "" : 'text-muted-foreground'}>
                     <SelectValue placeholder="Select a phase" />
                 </SelectTrigger>
                 <SelectContent>
@@ -55,8 +61,8 @@ export default function ActivitiesTableFilters({ handleFilter, projectID, handle
                 </SelectContent>
             </Select>
             {/* Filter Category */}
-            <Select onValueChange={(value) => handleFilter("category", value)}>
-                <SelectTrigger className='text-muted-foreground'>
+            <Select value={category} onValueChange={(value) => handleFilter("category", value)}>
+                <SelectTrigger className={category ? "" : "text-muted-foreground"}>
                     <SelectValue placeholder="Select a category" />
                 </SelectTrigger>
                 <SelectContent>
@@ -73,8 +79,8 @@ export default function ActivitiesTableFilters({ handleFilter, projectID, handle
                 </SelectContent>
             </Select>
             {/* Filter Hazard type */}
-            <Select onValueChange={(value) => handleFilter("hazardType", value)}>
-                <SelectTrigger className='text-muted-foreground'>
+            <Select value={hazardType} onValueChange={(value) => handleFilter("hazardType", value)}>
+                <SelectTrigger className={hazardType ? "" : "text-muted-foreground"}>
                     <SelectValue placeholder="Select a hazard type" />
                 </SelectTrigger>
                 <SelectContent>

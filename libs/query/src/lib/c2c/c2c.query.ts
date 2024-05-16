@@ -1,6 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
 import { UUID } from 'crypto';
-import { isEmpty } from 'lodash';
 import { PROJECT_SETTINGS_KEYS, TAGS } from '../../config';
 import { useProjectAction, useProjectSettingsStore } from '../projects';
 

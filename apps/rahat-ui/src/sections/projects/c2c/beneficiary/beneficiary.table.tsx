@@ -28,22 +28,19 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
 import * as React from 'react';
 import { benType } from '../../el/beneficiary/beneficiary.table';
 import { useProjectBeneficiaryTableColumns } from './useBeneficiaryColumns';
 
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import TableLoader from 'apps/rahat-ui/src/components/table.loader';
 import DisburseFlow from '../components/disburse-flow/disburse-flow';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
 
 const BeneficiaryDetailTableView = () => {
   const uuid = useParams().id as UUID;
@@ -79,7 +76,6 @@ const BeneficiaryDetailTableView = () => {
     projectUUID: uuid,
     ...filters,
   });
-  console.log('projectBeneficiaries', projectBeneficiaries);
 
   const table = useReactTable({
     manualPagination: true,
@@ -149,9 +145,7 @@ const BeneficiaryDetailTableView = () => {
               </Select>
             </div>
           </div>
-          {true ? (
-            // {table.getSelectedRowModel().rows.length ?
-
+          {selectedRowAddresses.length ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <DisburseFlow selectedBeneficiaries={selectedRowAddresses} />

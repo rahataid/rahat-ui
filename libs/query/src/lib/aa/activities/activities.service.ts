@@ -396,3 +396,53 @@ export const useTriggerCommunication = () => {
     },
   });
 };
+
+export const useUpdateActivityStatus = () => {
+  const q = useProjectAction();
+  const qc = useQueryClient();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+  return useMutation({
+    mutationFn: async ({
+      projectUUID,
+      activityStatusPayload,
+    }: {
+      projectUUID: UUID;
+      activityStatusPayload: {
+        uuid: string,
+        status: string
+      };
+    }) => {
+      return q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'aaProject.activities.updateStatus',
+          payload: activityStatusPayload,
+        },
+      });
+    },
+
+    onSuccess: () => {
+      q.reset();
+      qc.invalidateQueries({ queryKey: ['activity, activities'] });
+      toast.fire({
+        title: 'Status Updated',
+        icon: 'success',
+      });
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || 'Error';
+      q.reset();
+      toast.fire({
+        title: 'Status Update Failed',
+        icon: 'error',
+        text: errorMessage,
+      });
+    },
+  });
+};

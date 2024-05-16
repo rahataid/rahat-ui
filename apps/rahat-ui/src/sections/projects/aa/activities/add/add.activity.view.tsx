@@ -100,11 +100,14 @@ export default function AddActivities() {
 
   const removeCommunicationForm = (idToRemove: number) => {
     setCommunicationAddForm(prevForms => prevForms.filter(({ id }) => id !== idToRemove));
+  };
+
+  React.useEffect(() => {
     if (communicationAddForm.length < 1) {
       setCommunicationFormOpened(false);
       form.setValue('activityCommunication', [])
     }
-  };
+  }, [communicationAddForm])
 
   const addCommunicationForm = () => {
     setCommunicationFormOpened(true);

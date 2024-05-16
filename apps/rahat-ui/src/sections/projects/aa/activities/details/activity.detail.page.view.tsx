@@ -46,9 +46,18 @@ export default function ActivitiesDetailView() {
                     <h1 className="text-xl font-semibold">Demo Activity Title</h1>
                 </div>
                 <div className="flex gap-4 items-center">
-                    <div className="rounded-full border border-primary text-primary bg-card p-2">
-                        <Pencil size={20} strokeWidth={1.5} />
-                    </div>
+                    <TooltipProvider delayDuration={100}>
+                        <Tooltip>
+                            <TooltipTrigger>
+                                <div className="rounded-full border border-primary text-primary bg-card p-2" onClick={() => router.push(`/projects/aa/${projectID}/activities/${activityID}/edit`)}>
+                                    <Pencil size={20} strokeWidth={1.5} />
+                                </div>
+                            </TooltipTrigger>
+                            <TooltipContent className="bg-secondary ">
+                                <p className="text-xs font-medium">Edit</p>
+                            </TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
                     <TooltipProvider delayDuration={100}>
                         <Tooltip>
                             <TooltipTrigger>

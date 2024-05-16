@@ -59,7 +59,6 @@ export default function EditProject() {
   ) as string;
 
   const { data: project } = useProject(id);
-  console.log('project', project);
   const projectEdit = useProjectEdit();
 
   const FormSchema = z.object({

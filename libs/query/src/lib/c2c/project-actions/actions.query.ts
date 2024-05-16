@@ -1,7 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 import { UUID } from 'crypto';
-import { PROJECT_SETTINGS_KEYS, TAGS } from '../../config';
-import { useProjectAction, useProjectSettingsStore } from '../projects';
+import { TAGS } from '@rumsan/react-query/utils/tags';
+import { PROJECT_SETTINGS_KEYS } from '../../../config';
+import { useProjectAction, useProjectSettingsStore } from '../../projects';
 
 export const useGetTreasurySourcesSettings = (uuid: UUID) => {
   const projectActions = useProjectAction([
@@ -15,7 +16,7 @@ export const useGetTreasurySourcesSettings = (uuid: UUID) => {
 
   const query = useQuery({
     queryKey: [
-      TAGS.GET_PROJECT_SETTINGS,
+      'get-treasury-sources-settings',
       uuid,
       PROJECT_SETTINGS_KEYS.TREASURY_SOURCES,
     ],

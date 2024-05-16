@@ -1,27 +1,26 @@
-import React, { FC, useEffect, useState } from 'react';
-import Step1DisburseMethod from './1-disburse-method';
-import Step2DisburseAmount from './2-disburse-amount';
-import Step3DisburseSummary from './3-disburse-summary';
+import { AlertDialogHeader } from '@rahat-ui/shadcn/src/components/ui/alert-dialog';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   Dialog,
   DialogContent,
   DialogTitle,
   DialogTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dialog';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { AlertDialogHeader } from '@rahat-ui/shadcn/src/components/ui/alert-dialog';
-import {
-  useC2CProjectSubgraphStore,
-  useDisburseTokenToBeneficiaries,
-} from '@rahataid/c2c-query';
-import { useParams } from 'next/navigation';
+import { FC, useState } from 'react';
+import Step1DisburseMethod from './1-disburse-method';
+import Step2DisburseAmount from './2-disburse-amount';
+import Step3DisburseSummary from './3-disburse-summary';
+
 import {
   PROJECT_SETTINGS_KEYS,
-  useGetTreasurySourcesSettings,
+  useC2CProjectSubgraphStore,
+  useDisburseTokenToBeneficiaries,
+  // useGetTreasurySourcesSettings,
   useProject,
   useProjectSettingsStore,
 } from '@rahat-ui/query';
 import { UUID } from 'crypto';
+import { useParams } from 'next/navigation';
 
 type DisburseFlowProps = {
   selectedBeneficiaries: string[];
@@ -48,12 +47,10 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
   // TODO: use this
   // const { data: treasurySources } = useGetTreasurySourcesSettings(id);
   // TODO: DONOT Use this
-
   const { data: projectData } = useProject(id);
-  console.log('projectData', projectData);
-  console.log('first', stepData);
   const treasurySources =
     (projectData?.data?.extras?.treasury?.treasurySources as string[]) || [];
+
   const handleStepDataChange = (e) => {
     const { name, value } = e.target;
     setStepData((prev) => ({ ...prev, [name]: value }));

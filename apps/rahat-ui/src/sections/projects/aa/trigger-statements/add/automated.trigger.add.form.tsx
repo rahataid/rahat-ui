@@ -55,16 +55,15 @@ export default function AddAutomatedTriggerForm() {
   //   { title: 'Karnali at Chisapani' },
   // ];
 
-
   const dataSources = useProjectSettingsStore(
-    (s) => s.settings?.[projectID]?.[PROJECT_SETTINGS_KEYS.DATASOURCE]);
+    (s) => s.settings?.[projectID]?.[PROJECT_SETTINGS_KEYS.DATASOURCE],
+  );
 
-  
   const dhmStations = [
     {
-      title: dataSources.dhm.location
-    }
-  ]
+      title: dataSources.dhm.location,
+    },
+  ];
 
   const FormSchema = z.object({
     triggerTitle: z.string().min(2, { message: 'Please enter valid name' }),
@@ -316,7 +315,7 @@ export default function AddAutomatedTriggerForm() {
                 }}
               />
             )}
-            {phase === 'ACTION' && (
+            {phase === 'ACTIVATION' && (
               <FormField
                 control={form.control}
                 name="activationLevel"

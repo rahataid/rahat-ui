@@ -145,9 +145,7 @@ const BeneficiaryDetailTableView = () => {
               </Select>
             </div>
           </div>
-          {true ? (
-            // {selectedRowAddresses.length ? (
-
+          {selectedRowAddresses.length ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <DisburseFlow selectedBeneficiaries={selectedRowAddresses} />

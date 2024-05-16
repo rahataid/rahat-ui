@@ -18,9 +18,9 @@ import TableLoader from 'apps/rahat-ui/src/components/table.loader';
 import { UUID } from 'crypto';
 import ActivitiesTableFilters from './activities.table.filters';
 
-
 export default function ActivitiesList() {
   const { id: projectID } = useParams();
+  const [searchText, setSearchText] = React.useState<string>('');
 
   const {
     pagination,
@@ -39,7 +39,7 @@ export default function ActivitiesList() {
   }, []);
 
 
-  const { activitiesData, activitiesMeta, isLoading } = useActivities(projectID as UUID, { ...pagination, ...filters });
+  const { activitiesData, activitiesMeta, isLoading } = useActivities(projectID as UUID, { ...pagination, ...filters, title: searchText });
 
   useActivitiesCategories(projectID as UUID);
   useActivitiesHazardTypes(projectID as UUID);
@@ -85,6 +85,11 @@ export default function ActivitiesList() {
     [filters, setFilters]
   )
 
+  const handleSearch = React.useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    const searchText = event.target.value;
+    setSearchText(searchText);
+  }, [searchText])
+
   if (isLoading) {
     return <TableLoader />
   }
@@ -93,6 +98,7 @@ export default function ActivitiesList() {
       <ActivitiesTableFilters
         projectID={projectID}
         handleFilter={handleFilter}
+        handleSearch={handleSearch}
       />
       <div className='border bg-card rounded'>
         <ActivitiesTable table={table} />

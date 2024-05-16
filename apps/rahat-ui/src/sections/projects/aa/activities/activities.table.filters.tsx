@@ -1,3 +1,4 @@
+import * as React from 'react';
 import {
     Select,
     SelectContent,
@@ -14,9 +15,10 @@ import AddButton from '../../components/add.btn';
 type IProps = {
     handleFilter: (key: string, value: string) => void;
     projectID: string | string[];
+    handleSearch: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-export default function ActivitiesTableFilters({ handleFilter, projectID }: IProps) {
+export default function ActivitiesTableFilters({ handleFilter, projectID, handleSearch }: IProps) {
     const { categories, phases, hazardTypes } = useActivitiesStore((state) => ({
         categories: state.categories,
         phases: state.phases,
@@ -31,6 +33,7 @@ export default function ActivitiesTableFilters({ handleFilter, projectID }: IPro
                     type='text'
                     placeholder="Search Activities..."
                     className="rounded-l rounded-r-none pl-8"
+                    onChange={handleSearch}
                 />
             </div>
             {/* Filter Phases */}

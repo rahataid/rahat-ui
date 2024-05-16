@@ -19,9 +19,10 @@ import StakeholdersTable from './stakeholders.table';
 import useStakeholdersTableColumn from './useStakeholdersTableColumn';
 import CustomPagination from '../../../../components/customPagination';
 import { UUID } from 'crypto';
+import StakeholdersTableFilters from './stakeholders.table.filters';
 
 export default function StakeholdersList() {
-  const { id } = useParams();
+  const { id: projectID } = useParams();
 
   const { pagination, setNextPage, setPrevPage, setPerPage, setPagination } =
     usePagination();
@@ -30,7 +31,7 @@ export default function StakeholdersList() {
     setPagination({ page: 1, perPage: 10 });
   }, []);
 
-  useStakeholders(id as UUID, { ...pagination });
+  useStakeholders(projectID as UUID, { ...pagination });
 
   const { stakeholders, stakeholdersMeta } = useStakeholdersStore((state) => ({
     stakeholders: state.stakeholders,
@@ -67,27 +68,32 @@ export default function StakeholdersList() {
     },
   });
 
+  const handleFilter = () => { }
+
   return (
-    <>
-      <StakeholdersTable table={table} />
-      <CustomPagination
-        meta={
-          stakeholdersMeta || {
-            total: 0,
-            currentPage: 0,
-            lastPage: 0,
-            perPage: 0,
-            next: null,
-            prev: null,
+    <div className="p-2 bg-secondary h-[calc(100vh-65px)]">
+      <StakeholdersTableFilters projectID={projectID as UUID} handleFilter={handleFilter} />
+      <div className='border bg-card rounded'>
+        <StakeholdersTable table={table} />
+        <CustomPagination
+          meta={
+            stakeholdersMeta || {
+              total: 0,
+              currentPage: 0,
+              lastPage: 0,
+              perPage: 0,
+              next: null,
+              prev: null,
+            }
           }
-        }
-        handleNextPage={setNextPage}
-        handlePrevPage={setPrevPage}
-        handlePageSizeChange={setPerPage}
-        currentPage={pagination.page}
-        perPage={pagination.perPage}
-        total={stakeholdersMeta?.lastPage || 0}
-      />
-    </>
+          handleNextPage={setNextPage}
+          handlePrevPage={setPrevPage}
+          handlePageSizeChange={setPerPage}
+          currentPage={pagination.page}
+          perPage={pagination.perPage}
+          total={stakeholdersMeta?.lastPage || 0}
+        />
+      </div>
+    </div>
   );
 }

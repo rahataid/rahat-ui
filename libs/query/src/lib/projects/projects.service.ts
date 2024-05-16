@@ -293,6 +293,60 @@ export const useProjectSubgraphSettings = (uuid: UUID) => {
   return query;
 };
 
+export const useAAProjectSettingsDatasource = (uuid: UUID) => {
+  const q = useProjectAction([PROJECT_SETTINGS_KEYS.DATASOURCE]);
+  const { setSettings, settings } = useProjectSettingsStore((state) => ({
+    settings: state.settings,
+    setSettings: state.setSettings,
+  }));
+
+  const query = useQuery({
+    queryKey: [
+      TAGS.GET_PROJECT_SETTINGS,
+      uuid,
+      PROJECT_SETTINGS_KEYS.DATASOURCE,
+    ],
+    enabled: isEmpty(settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.DATASOURCE]),
+    // enabled: !!settings[uuid],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'settings.get',
+          payload: {
+            name: PROJECT_SETTINGS_KEYS.DATASOURCE,
+          },
+        },
+      });
+      return mutate.data.value;
+    },
+    // initialData: settings?.[uuid],
+  });
+
+  console.log(query);
+
+  useEffect(() => {
+    if (!isEmpty(query.data)) {
+      const settingsToUpdate = {
+        ...settings,
+        [uuid]: {
+          ...settings?.[uuid],
+          [PROJECT_SETTINGS_KEYS.DATASOURCE]: query?.data,
+        },
+      };
+      setSettings(settingsToUpdate);
+      window.location.reload();
+      // setSettings({
+      //   [uuid]: {
+      //     [PROJECT_SETTINGS_KEYS.SUBGRAPH]: query?.data,
+      //   },
+      // });
+    }
+  }, [query.data]);
+
+  return query;
+};
+
 export const useProjectList = (
   payload?: Pagination,
 ): UseQueryResult<FormattedResponse<Project[]>, Error> => {

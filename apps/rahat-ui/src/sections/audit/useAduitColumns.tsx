@@ -1,8 +1,5 @@
-import { cn } from '@rahat-ui/shadcn/src';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
-import { ColumnDef } from '@tanstack/react-table';
-import Image from 'next/image';
-import React from 'react';
+import Jdenticon from 'react-jdenticon';
 
 const useAduitColumns = () => {
   const formatDate = (timestamp) => {
@@ -34,13 +31,9 @@ const useAduitColumns = () => {
       header: 'User',
       cell: ({ row }) => (
         <div className="capitalize flex items-center gap-4">
-          <Image
-            className="rounded-full"
-            src={'/profile.png'}
-            height={30}
-            width={30}
-            alt="profile pic"
-          />
+          <div className="rounded-full">
+            <Jdenticon size="38" value={row.original.id} />
+          </div>
           {row.original.user.name}
         </div>
       ),

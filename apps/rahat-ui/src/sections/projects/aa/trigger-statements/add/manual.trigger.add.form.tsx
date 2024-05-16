@@ -14,7 +14,9 @@ import {
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
@@ -22,10 +24,13 @@ import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
 import { useActivitiesStore, useCreateTriggerStatement } from '@rahat-ui/query';
 import { UUID } from 'crypto';
+import { Plus, X } from 'lucide-react';
+import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
 
 export default function AddManualTriggerForm() {
   const { id: projectID } = useParams();
-  const { hazardTypes, phases } = useActivitiesStore((state) => ({
+  const { activities, hazardTypes, phases } = useActivitiesStore((state) => ({
+    activities: state.activities,
     hazardTypes: state.hazardTypes,
     phases: state.phases,
   }));
@@ -33,28 +38,54 @@ export default function AddManualTriggerForm() {
 
   const FormSchema = z.object({
     title: z.string().min(2, { message: 'Please enter valid title' }),
-    notes: z.string().min(5, { message: 'Must be at least 5 characters' }),
+    // notes: z.string().min(5, { message: 'Must be at least 5 characters' }),
     phaseId: z.string().min(1, { message: 'Please select phase' }),
     hazardTypeId: z.string().min(1, { message: 'Please select hazard type' }),
+    activity: z
+      .array(
+        z.object({
+          uuid: z.string(),
+          title: z.string(),
+        }),
+      )
+      .refine(
+        (value) =>
+          value.length > 0 && value.every((item) => item.uuid && item.title),
+        {
+          message: 'You have to select at least one activity',
+        },
+      ),
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
       title: '',
-      notes: '',
+      // notes: '',
       phaseId: '',
       hazardTypeId: '',
+      activity: [],
     },
   });
 
   const handleCreateTriggerStatement = async (
     data: z.infer<typeof FormSchema>,
   ) => {
+    const activities = data.activity.map((activity) => ({
+      uuid: activity.uuid,
+    }));
+
+    const payload = {
+      title: data.title,
+      hazardTypeId: data.hazardTypeId,
+      phaseId: data.phaseId,
+      activities: activities,
+      dataSource: 'MANUAL',
+    };
     try {
       await createTriggerStatement.mutateAsync({
         projectUUID: projectID as UUID,
-        triggerStatementPayload: { ...data, dataSource: 'MANUAL' },
+        triggerStatementPayload: payload,
       });
     } catch (e) {
       console.error('Create Manual Trigger Error::', e);
@@ -151,11 +182,108 @@ export default function AddManualTriggerForm() {
             />
             <FormField
               control={form.control}
+              name="activity"
+              render={({ field }) => {
+                return (
+                  <FormItem>
+                    <Select
+                      onValueChange={field.onChange}
+                      // defaultValue={field.value}
+                    >
+                      <FormLabel>Activity</FormLabel>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select Activity" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectGroup>
+                          <SelectLabel className="text-primary flex items-center gap-1 p-2 bg-secondary">
+                            Add new activity <Plus size={18} />
+                          </SelectLabel>
+                          {activities.map((item: any) => (
+                            <FormField
+                              key={item.id}
+                              control={form.control}
+                              name="activity"
+                              render={({ field }) => {
+                                return (
+                                  <FormItem
+                                    key={item.id}
+                                    className="flex flex-row items-start space-x-3 space-y-0 mx-1 my-2"
+                                  >
+                                    <FormControl>
+                                      <Checkbox
+                                        checked={field.value?.some(
+                                          (value) => value.uuid === item.uuid,
+                                        )}
+                                        onCheckedChange={(checked) => {
+                                          return checked
+                                            ? field.onChange([
+                                                ...field.value,
+                                                {
+                                                  uuid: item.uuid,
+                                                  title: item.title,
+                                                },
+                                              ])
+                                            : field.onChange(
+                                                field.value?.filter(
+                                                  (value) =>
+                                                    value.uuid !== item.uuid,
+                                                ),
+                                              );
+                                        }}
+                                      />
+                                    </FormControl>
+                                    <FormLabel className="text-sm font-normal">
+                                      {item.title}
+                                    </FormLabel>
+                                  </FormItem>
+                                );
+                              }}
+                            />
+                          ))}
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      {form.watch('activity').map((activity) => {
+                        const truncatedTitle =
+                          activity.title.length > 50
+                            ? activity.title.slice(0, 49) + '...'
+                            : activity.title;
+                        return (
+                          <div
+                            key={activity.uuid}
+                            className="px-2 py-1 flex gap-2 items-center bg-secondary rounded"
+                          >
+                            <p className="text-primary">{truncatedTitle}</p>
+                            <X
+                              className="cursor-pointer hover:text-red-500 ml-4"
+                              onClick={() => {
+                                const updatedValue = field.value?.filter(
+                                  (value) => value.uuid !== activity.uuid,
+                                );
+                                field.onChange(updatedValue);
+                              }}
+                              size={18}
+                            />
+                          </div>
+                        );
+                      })}
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+            {/* <FormField
+              control={form.control}
               name="notes"
               render={({ field }) => {
                 return (
                   <FormItem className="w-full">
-                    <FormLabel>Trigger Title</FormLabel>
+                    <FormLabel>Notes</FormLabel>
                     <FormControl>
                       <Textarea placeholder="Enter Trigger Notes" {...field} />
                     </FormControl>
@@ -163,7 +291,7 @@ export default function AddManualTriggerForm() {
                   </FormItem>
                 );
               }}
-            />
+            /> */}
           </div>
           <div className="flex justify-end mt-8">
             <div className="flex gap-2">

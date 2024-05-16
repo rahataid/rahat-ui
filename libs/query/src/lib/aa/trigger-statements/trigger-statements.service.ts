@@ -202,3 +202,52 @@ export const useSingleTriggerStatement = (
   });
   return query;
 };
+
+export const useActivateTrigger = () => {
+  const q = useProjectAction();
+  const qc = useQueryClient();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+  return useMutation({
+    mutationFn: async (
+      { projectUUID, activatePayload }
+        : {
+          projectUUID: UUID, activatePayload: {
+            repeatKey: string | string[],
+            notes: string,
+            triggerDocuments: Array<{ mediaURL: string, fileName: string }>
+          }
+        }
+    ) => {
+      return q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'aaProject.triggers.activate',
+          payload: activatePayload
+        }
+      })
+    },
+    onSuccess: () => {
+      q.reset();
+      qc.invalidateQueries({ queryKey: ['triggerstatement'] });
+      toast.fire({
+        title: 'Trigger activated.',
+        icon: 'success',
+      });
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || 'Error';
+      q.reset();
+      toast.fire({
+        title: 'Trigger activation failed.',
+        icon: 'error',
+        text: errorMessage,
+      });
+    },
+  })
+}

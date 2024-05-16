@@ -7,6 +7,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { ColumnDef } from '@tanstack/react-table';
 import { Eye, Pencil, Trash2 } from 'lucide-react';
+import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 
 export const useTriggerStatementTableColumns = () => {
   const { id } = useParams();
@@ -52,25 +53,24 @@ export const useTriggerStatementTableColumns = () => {
         </div>
       ),
     },
-    // {
-    //   accessorKey: 'triggerActivity',
-    //   header: 'Trigger Activity',
-    //   cell: ({ row }) => {
-    //     const triggerActivities = row.getValue('triggerActivity');
-
-    //     if (Array.isArray(triggerActivities) && triggerActivities.length) {
-    //       return (
-    //         <>
-    //           {triggerActivities.map((activity, index) => (
-    //             <div key={index}>{activity}</div>
-    //           ))}
-    //         </>
-    //       );
-    //     } else {
-    //       return <div>N/A</div>;
-    //     }
-    //   }
-    // },
+    {
+      accessorKey: 'isTriggered',
+      header: 'Status',
+      cell: ({ row }) => {
+        const isTriggered = row.getValue('isTriggered');
+        return (
+          <Badge
+            className={
+              !isTriggered
+                ? 'bg-green-100 text-green-600'
+                : 'bg-red-100 text-red-600'
+            }
+          >
+            {isTriggered ? 'Triggered' : 'Not Triggered'}
+          </Badge>
+        );
+      },
+    },
     {
       id: 'actions',
       header: 'Actions',

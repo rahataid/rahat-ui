@@ -1,4 +1,4 @@
-export default function TriggerDetailCard({ triggerDetail }: any) {
+export default function AutomatedTriggerDetailCard({ triggerDetail }: any) {
   const triggerDetailData = [
     {
       title: 'River Basin',

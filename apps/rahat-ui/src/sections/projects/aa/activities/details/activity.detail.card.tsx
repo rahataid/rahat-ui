@@ -1,5 +1,6 @@
-export default function ActivityDetailCard({ activityDetail }: any) {
+import DocumentCard from "../../../components/document.card"
 
+export default function ActivityDetailCard({ activityDetail }: any) {
     const detailData = [
         {
             title: 'Category',
@@ -25,6 +26,18 @@ export default function ActivityDetailCard({ activityDetail }: any) {
                         {item.content}
                     </div>
                 ))}
+            </div>
+            <div className="mt-4">
+                <h1 className="text-muted-foreground text-sm">Documents</h1>
+                {activityDetail?.activityDocuments?.length ? (
+                    <div className="grid gap-2 mt-2">
+                        {
+                            activityDetail?.activityDocuments?.map((d: any, index: number) => (
+                                <DocumentCard key={index} name={d.fileName} path={d.mediaURL} />
+                            ))
+                        }
+                    </div>
+                ) : "-"}
             </div>
         </div>
     )

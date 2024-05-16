@@ -21,15 +21,19 @@ export default function ErrorAlert({
         </div>
         <div>
           <p className="font-bold">{benefCount} Beneficiaries found</p>
-          <p className="text-sm text-red-500">{message}</p>
+          <p className="font-medium text-sm text-red-500">{message}</p>
         </div>
         <div className="p-1">
-          <ul className="list-outside list-disc ml-6">
+          <ul className="text-lg list-outside list-disc ml-6">
             <li className="text-red-400">
-              <span className="text-red-400">Error Data</span>
+              <span className="text-red-400 text-sm font-medium">
+                Denotes error data
+              </span>
             </li>
-            <li className="text-orange-400">
-              <span className="text-orange-400">Duplicate Data</span>
+            <li className="text-orange-300">
+              <span className="text-orange-400 text-sm font-medium">
+                Denotes duplicate data
+              </span>
             </li>
           </ul>
         </div>

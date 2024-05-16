@@ -38,6 +38,12 @@ import { useProjectBeneficiaryTableColumns } from './useBeneficiaryColumns';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import TableLoader from 'apps/rahat-ui/src/components/table.loader';
 import DisburseFlow from '../components/disburse-flow/disburse-flow';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
 
 const BeneficiaryDetailTableView = () => {
   const uuid = useParams().id as UUID;
@@ -133,9 +139,24 @@ const BeneficiaryDetailTableView = () => {
               </Select>
             </div>
           </div>
-          <div>
+          {table.getSelectedRowModel().rows.length ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <DisburseFlow selectedBeneficiaries={selectedRowAddresses} />
+              </DropdownMenuTrigger>
+              {/* <DropdownMenuContent align="end">
+                <DropdownMenuItem
+                  onClick={projectModal.onTrue}
+                  disabled={isBulkAssigning}
+                >
+                  Bulk Assign Project
+                </DropdownMenuItem>
+              </DropdownMenuContent> */}
+            </DropdownMenu>
+          ) : null}
+          {/* <div>
             <DisburseFlow selectedBeneficiaries={selectedRowAddresses} />
-          </div>
+          </div> */}
         </div>
         <div className="rounded border bg-card">
           <Table>

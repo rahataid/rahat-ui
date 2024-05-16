@@ -21352,7 +21352,11 @@ snapshots:
       '@swc/helpers': 0.5.11
 
   /@rahataid/community-tool-sdk@0.0.17:
-    resolution: {integrity: sha512-qN/MMh8OMpGn61SqfvWGqakzsNg6wRdneKiBLiWgW5pUsihpmHodZKPXDdmPGhQzT/VFjWrwKm6hssWcRa/5RQ==, tarball: https://npm.pkg.github.com/download/@rahataid/community-tool-sdk/0.0.17/ecd65067133af07f3137740c8d46a819f65731c8}
+    resolution:
+      {
+        integrity: sha512-qN/MMh8OMpGn61SqfvWGqakzsNg6wRdneKiBLiWgW5pUsihpmHodZKPXDdmPGhQzT/VFjWrwKm6hssWcRa/5RQ==,
+        tarball: https://npm.pkg.github.com/download/@rahataid/community-tool-sdk/0.0.17/ecd65067133af07f3137740c8d46a819f65731c8,
+      }
     dependencies:
       tslib: 2.6.2
 
@@ -25170,7 +25174,10 @@ snapshots:
       jake: 10.9.1
 
   /electron-to-chromium@1.4.760:
-    resolution: {integrity: sha512-xF6AWMVM/QGQseTPgXjUewfNjCW2fgUcV/z5cSG0r+SiYcgtvcmRAL3oH/MSZwHBBD+fyKTXdQ4qGENJMSedEQ==}
+    resolution:
+      {
+        integrity: sha512-xF6AWMVM/QGQseTPgXjUewfNjCW2fgUcV/z5cSG0r+SiYcgtvcmRAL3oH/MSZwHBBD+fyKTXdQ4qGENJMSedEQ==,
+      }
 
   elliptic@6.5.5:
     dependencies:
@@ -30588,8 +30595,11 @@ snapshots:
       stable: 0.1.8
 
   /svgo@3.3.1:
-    resolution: {integrity: sha512-xQQTIGRl3gHTO2PFlZFLl+Xwofj+CMOPitfoByGBNAniQnY6SbGgd31u3C8RTqdlqZqYNl9Sb83VXbimVHcU6w==}
-    engines: {node: '>=14.0.0'}
+    resolution:
+      {
+        integrity: sha512-xQQTIGRl3gHTO2PFlZFLl+Xwofj+CMOPitfoByGBNAniQnY6SbGgd31u3C8RTqdlqZqYNl9Sb83VXbimVHcU6w==,
+      }
+    engines: { node: '>=14.0.0' }
     hasBin: true
     dependencies:
       '@trysound/sax': 0.2.0
@@ -31235,8 +31245,11 @@ snapshots:
   validate-npm-package-name@5.0.1: {}
 
   /validator@13.11.0:
-    resolution: {integrity: sha512-Ii+sehpSfZy+At5nPdnyMhx78fEoPDkR2XW/zimHEL3MyGJQOCQ7WeP20jPYRz7ZCpcKLB21NxuXHF3bxjStBQ==}
-    engines: {node: '>= 0.10'}
+    resolution:
+      {
+        integrity: sha512-Ii+sehpSfZy+At5nPdnyMhx78fEoPDkR2XW/zimHEL3MyGJQOCQ7WeP20jPYRz7ZCpcKLB21NxuXHF3bxjStBQ==,
+      }
+    engines: { node: '>= 0.10' }
 
   valtio@1.11.2(@types/react@18.3.1)(react@18.2.0):
     dependencies:

@@ -237,30 +237,12 @@ export default function EditProject() {
                 }}
               />
             </div>
-            <FormField
-              name="contractAddress"
-              render={({ field }) => {
-                return (
-                  <FormItem>
-                    <FormControl>
-                      <div className="relative w-full">
-                        <Wallet className="absolute right-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                        <Input
-                          type="text"
-                          placeholder="Contract Address"
-                          {...field}
-                        />
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            />
           </div>
           <Accordion type="single" collapsible className="w-full">
             <AccordionItem value="item-1">
-              <AccordionTrigger className="border-b">Advanced</AccordionTrigger>
+              <AccordionTrigger className="border rounded p-4 text-muted-foreground">
+                Advanced
+              </AccordionTrigger>
               <AccordionContent>
                 <AdvancedEditForm />
               </AccordionContent>

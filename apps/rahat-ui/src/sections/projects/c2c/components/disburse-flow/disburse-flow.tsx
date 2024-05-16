@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import Step1DisburseMethod from './1-disburse-method';
 import Step2DisburseAmount from './2-disburse-amount';
 import Step3DisburseSummary from './3-disburse-summary';
@@ -17,26 +17,35 @@ import {
 import { useParams } from 'next/navigation';
 import {
   PROJECT_SETTINGS_KEYS,
+  useGetTreasurySourcesSettings,
   useProjectSettingsStore,
 } from '@rahat-ui/query';
+import { UUID } from 'crypto';
 
 type DisburseFlowProps = {
   selectedBeneficiaries: string[];
 };
 
+const initialStepData = {
+  treasurySource: '',
+  disburseAmount: '',
+};
+
 const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
   const [currentStep, setCurrentStep] = useState(0);
-  const [stepData, setStepData] = useState<Record<string, any>>({});
+  const [stepData, setStepData] =
+    useState<Record<string, any>>(initialStepData);
   const projectSubgraphDetails = useC2CProjectSubgraphStore(
     (state) => state.projectDetails,
   );
 
-  const { id } = useParams();
+  const { id } = useParams() as { id: UUID };
   const contractSettings = useProjectSettingsStore(
     (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT],
   );
-  console.log('contractSettings', contractSettings);
   const disburseToken = useDisburseTokenToBeneficiaries();
+  const { data: treasurySources } = useGetTreasurySourcesSettings(id);
+  console.log('first', stepData);
 
   const handleStepDataChange = (e) => {
     const { name, value } = e.target;
@@ -80,14 +89,15 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
       component: (
         <Step1DisburseMethod
           selectedBeneficiaries={selectedBeneficiaries}
-          value={stepData.depositMethod}
+          value={stepData.treasurySource}
           onChange={handleStepDataChange}
           projectSubgraphDetails={projectSubgraphDetails}
+          treasurySources={treasurySources?.treasurysources}
         />
       ),
       validation: {
         noMethodSelected: {
-          condition: () => !!stepData.disburseMethod,
+          condition: () => !stepData.treasurySource,
           message: 'Please select a disburse method',
         },
       },
@@ -126,6 +136,14 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
       validation: {},
     },
   ];
+
+  // //cleanup
+  // useEffect(() => {
+  //   return () => {
+  //     setCurrentStep(0);
+  //     setStepData(initialStepData);
+  //   };
+  // }, []);
 
   return (
     <Dialog>

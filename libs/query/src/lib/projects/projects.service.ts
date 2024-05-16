@@ -7,7 +7,7 @@ import {
   useQuery,
   useQueryClient,
 } from '@tanstack/react-query';
-import { TAGS } from '../../config';
+import { PROJECT_SETTINGS_KEYS, TAGS } from '../../config';
 import { toast } from 'sonner';
 import { Beneficiary, MS_ACTIONS } from '@rahataid/sdk';
 import { getProjectClient } from '@rahataid/sdk/clients';
@@ -20,26 +20,6 @@ import { useEffect, useMemo } from 'react';
 import { useSwal } from '../../swal';
 import { api } from '../../utils/api';
 import { useProjectSettingsStore, useProjectStore } from './project.store';
-
-export const PROJECT_SETTINGS_KEYS = {
-  CONTRACT: 'CONTRACT',
-  SUBGRAPH: 'SUBGRAPH_URL',
-};
-
-export const TREASURY_SOURCES = [
-  {
-    value: 'project_balance',
-    label: 'Project Balance',
-  },
-  {
-    value: 'user_wallet',
-    label: 'User Wallet',
-  },
-  {
-    value: 'multi_sig',
-    label: 'MultiSig Wallet',
-  },
-];
 
 const createProject = async (payload: CreateProjectPayload) => {
   const res = await api.post('/projects', payload);

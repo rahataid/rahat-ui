@@ -31,20 +31,21 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { format } from 'date-fns';
 
+import { zodResolver } from '@hookform/resolvers/zod';
 import {
   PROJECT_SETTINGS_KEYS,
   useProjectSettingsStore,
 } from '@rahat-ui/query';
+import { UUID } from 'crypto';
 import { CalendarIcon } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import AdvancedEditForm from './advanced.edit.form';
-import { zodResolver } from '@hookform/resolvers/zod';
 
 export default function EditProject() {
-  const { id } = useParams();
+  const { id } = useParams() as { id: UUID };
   const projectContract = useProjectSettingsStore(
     (state) =>
       state?.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT]?.c2cproject

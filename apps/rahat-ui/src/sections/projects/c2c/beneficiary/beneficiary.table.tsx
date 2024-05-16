@@ -29,12 +29,15 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
 import { benType } from '../../el/beneficiary/beneficiary.table';
 import { useProjectBeneficiaryTableColumns } from './useBeneficiaryColumns';
 
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import TableLoader from 'apps/rahat-ui/src/components/table.loader';
 import DisburseFlow from '../components/disburse-flow/disburse-flow';
@@ -93,6 +96,7 @@ const BeneficiaryDetailTableView = () => {
       rowSelection: selectedListItems,
     },
   });
+
   const handleBenType = React.useCallback(
     (type: string) => {
       resetSelectedListItems();

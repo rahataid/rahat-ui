@@ -1,8 +1,8 @@
 'use client';
 
+import { TREASURY_SOURCES } from '@rahat-ui/query';
 import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
 import {
-  Form,
   FormControl,
   FormField,
   FormItem,
@@ -23,26 +23,34 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
+import { useChains } from 'connectkit';
 import { Info } from 'lucide-react';
-import { useState } from 'react';
+import { UseFormReturn } from 'react-hook-form';
 
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
+type AdvancedEditFormProps = {
+  form: UseFormReturn<{
+    extras: {
+      treasury: {
+        network: string;
+        multiSigWalletAddress: string;
+        contractAddress: string;
+        treasurySources: string[];
+      };
+    };
+  }>;
+};
 
-export default function AdvancedEditForm() {
-  const FormSchema = z.object({});
-
-  const form = useForm<z.infer<typeof FormSchema>>({});
-  const [isMultisigChecked, setIsMultisigChecked] = useState(false);
-
+export default function AdvancedEditForm({ form }: AdvancedEditFormProps) {
+  const chains = useChains();
   return (
-    <Form {...form}>
-      <div className="bg-card">
-        <div className="shadow-md p-2 rounded-sm">
-          <div className="grid grid-cols-2 gap-8 mt-6 mb-8">
-            <FormField
-              name="treasury"
-              render={() => (
+    <div className="bg-card">
+      <div className="shadow-md p-2 rounded-sm">
+        <div className="grid grid-cols-2 gap-8 mt-6 mb-8">
+          <FormField
+            control={form.control}
+            name="extras.treasury.treasurySources"
+            render={({ field, fieldState, formState }) => {
+              return (
                 <FormItem>
                   <div className="mb-4">
                     <FormLabel className="text-muted-foreground flex items-center gap-2 mb-6">
@@ -63,89 +71,107 @@ export default function AdvancedEditForm() {
                     </FormLabel>
                   </div>
                   <FormMessage />
-                  <div className="flex items-center justify-between">
-                    <div className="items-top flex space-x-2">
-                      <Checkbox id="projectBalance" />
-                      <div className="grid gap-1.5 leading-none">
-                        <label
-                          htmlFor="projectBalance"
-                          className="text-sm leading-none text-muted-foreground peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                        >
-                          Project Balance
-                        </label>
+                  <div className="grid grid-cols-3 gap-4">
+                    {TREASURY_SOURCES.map((source) => (
+                      <div key={source.value}>
+                        <FormLabel className="text-muted-foreground">
+                          {source.label}
+                        </FormLabel>
+                        <Checkbox
+                          checked={field?.value?.includes(source.value)}
+                          onCheckedChange={(checked) => {
+                            console.log('field', field);
+                            if (checked) {
+                              field?.onChange([...field.value, source.value]);
+                            } else {
+                              field?.onChange(
+                                field.value.filter((v) => v !== source.value),
+                              );
+                            }
+                          }}
+                        />
                       </div>
-                    </div>
-                    <div className="items-top flex space-x-2">
-                      <Checkbox id="walletConnect" />
-                      <div className="grid gap-1.5 leading-none">
-                        <label
-                          htmlFor="walletConnect"
-                          className="text-sm leading-none text-muted-foreground peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                        >
-                          User's Wallet Connect
-                        </label>
-                      </div>
-                    </div>
-                    <div className="items-top flex space-x-2">
-                      <Checkbox id="multisigWallet" />
-                      <div className="grid gap-1.5 leading-none">
-                        <label
-                          htmlFor="multisigWallet"
-                          className="text-sm text-muted-foreground leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                        >
-                          Multisig Wallet
-                        </label>
-                      </div>
-                    </div>
+                    ))}
                   </div>
                 </FormItem>
-              )}
-            />
-            <FormField
-              name="projectType"
-              render={({ field }) => (
+              );
+            }}
+          />
+          <FormField
+            control={form.control}
+            name="extras.treasury.network"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-muted-foreground">
+                  Blockchain Network
+                </FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select blockchain network" />
+                      <SelectValue />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {chains.map((c) => (
+                      <SelectItem key={c.id} value={String(c.id)}>
+                        {c.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
+        <div className="grid grid-cols-2 gap-4 mt-8 mb-2">
+          {/* <FormField
+            disabled
+            render={({ field }) => {
+              return (
                 <FormItem>
                   <FormLabel className="text-muted-foreground">
-                    Blockchain Network
+                    Project Contract
                   </FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select blockchain network" />
-                        <SelectValue />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="polygon">Polygon</SelectItem>
-                      <SelectItem value="sepolia">Sepolia</SelectItem>
-                      <SelectItem value="ethereum">Ethereum</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
+                  <FormControl> */}
+          <div className="relative w-full">
+            <Input
+              type="text"
+              disabled
+              value={form
+                ?.watch()
+                ?.extras?.treasury?.contractAddress?.valueOf()}
             />
           </div>
-
-          <div className="grid grid-cols-2 gap-4 mt-8 mb-2">
+          {/* </FormControl>
+                  <FormMessage />
+                </FormItem>
+              );
+            }}
+          /> */}
+          {form
+            ?.watch()
+            ?.extras?.treasury?.treasurySources?.includes('multi_sig') && (
             <FormField
-              name="contractAddress"
+              control={form.control}
+              name="extras.treasury.multiSigWalletAddress"
               render={({ field }) => {
                 return (
                   <FormItem>
                     <FormLabel className="text-muted-foreground">
-                      Project Contract
+                      Multisig Wallet A/C
                     </FormLabel>
                     <FormControl>
                       <div className="relative w-full">
                         <Input
                           type="text"
                           {...field}
-                          placeholder="Enter project contract address"
-                          disabled
+                          placeholder="Enter multisig wallet account number"
                         />
                       </div>
                     </FormControl>
@@ -154,33 +180,9 @@ export default function AdvancedEditForm() {
                 );
               }}
             />
-            {isMultisigChecked && (
-              <FormField
-                name="multiSigWalletAC"
-                render={({ field }) => {
-                  return (
-                    <FormItem>
-                      <FormLabel className="text-muted-foreground">
-                        Multisig Wallet A/C
-                      </FormLabel>
-                      <FormControl>
-                        <div className="relative w-full">
-                          <Input
-                            type="text"
-                            {...field}
-                            placeholder="Enter multisig wallet account number"
-                          />
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  );
-                }}
-              />
-            )}
-          </div>
+          )}
         </div>
       </div>
-    </Form>
+    </div>
   );
 }

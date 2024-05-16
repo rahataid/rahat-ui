@@ -1,116 +1,189 @@
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from '@rahat-ui/shadcn/components/avatar';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '@rahat-ui/shadcn/components/card';
+'use client';
 
-export default function AuditTable() {
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@rahat-ui/shadcn/src/components/ui/table';
+import {
+  ColumnFiltersState,
+  SortingState,
+  VisibilityState,
+  flexRender,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  useReactTable,
+} from '@tanstack/react-table';
+import * as React from 'react';
+import useAduitColumns from './useAduitColumns';
+import {
+  // useAuditList,
+  useQuery,
+  useRSQuery,
+} from '@rumsan/react-query';
+import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+
+// const data = [
+//   {
+//     id: 'm5gr84i9',
+//     tableName: 'tbl_beneficiaries',
+//     operation: 'CREATE',
+//     fieldName:
+//       'gender, location, age, bankedStatus, internetStatus, phoneStatus, walletAddress',
+//     timestamp: '2024-05-08T11:59:26.026Z',
+//     userName: 'Jon doe',
+//   },
+//   {
+//     id: 'm5gr84i1',
+//     tableName: 'tbl_beneficiaries',
+//     operation: 'CREATE',
+//     fieldName:
+//       'gender, location, age, bankedStatus, internetStatus, phoneStatus, walletAddress',
+//     timestamp: '2024-05-08T11:59:26.026Z',
+//     userName: 'Jon doe',
+//   },
+//   {
+//     id: 'm5gr84i2',
+//     tableName: 'tbl_beneficiaries',
+//     operation: 'CREATE',
+//     fieldName:
+//       'gender, location, age, bankedStatus, internetStatus, phoneStatus, walletAddress',
+//     timestamp: '2024-05-08T11:59:26.026Z',
+//     userName: 'Jon doe',
+//   },
+//   {
+//     id: 'm5gr84i3',
+//     tableName: 'tbl_beneficiaries',
+//     operation: 'CREATE',
+//     fieldName:
+//       'gender, location, age, bankedStatus, internetStatus, phoneStatus, walletAddress',
+//     timestamp: '2024-05-08T11:59:26.026Z',
+//     userName: 'Jon doe',
+//   },
+//   {
+//     id: 'm5gr84i4',
+//     tableName: 'tbl_beneficiaries',
+//     operation: 'CREATE',
+//     fieldName:
+//       'gender, location, age, bankedStatus, internetStatus, phoneStatus, walletAddress',
+//     timestamp: '2024-05-08T11:59:26.026Z',
+//     userName: 'Jon doe',
+//   },
+// ];
+
+const useAuditList = (payload?: any) => {
+  const { queryClient, rumsanService } = useRSQuery();
+  const [isFetched, setIsFetched] = React.useState(false);
+  // const setAudit = useAuditStore((state) => state.setAuditList);
+
+  const query = useQuery(
+    {
+      queryKey: ['get_audits'], // [TAGS.GET_ALL_AUDIT],
+      enabled: !isFetched,
+      queryFn: async () => {
+        const res = await rumsanService.client.get('/audits');
+        return res.data;
+      },
+    },
+    queryClient,
+  );
+
+  React.useEffect(() => {
+    if (query.isFetched) {
+      setIsFetched(true);
+    }
+  }, [query.isFetched]);
+
+  return query;
+};
+
+export function AuditTable() {
+  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    [],
+  );
+  const columns = useAduitColumns();
+  const [columnVisibility, setColumnVisibility] =
+    React.useState<VisibilityState>({});
+  const [rowSelection, setRowSelection] = React.useState({});
+  const { data } = useAuditList();
+
+  const table = useReactTable({
+    data: data?.data || [],
+    columns,
+    onSortingChange: setSorting,
+    onColumnFiltersChange: setColumnFilters,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    onColumnVisibilityChange: setColumnVisibility,
+    onRowSelectionChange: setRowSelection,
+    state: {
+      sorting,
+      columnFilters,
+      columnVisibility,
+      rowSelection,
+    },
+  });
+
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Recent Sales</CardTitle>
-      </CardHeader>
-      <CardContent className="grid gap-8">
-        <div className="flex items-center justify-around gap-4">
-          <Avatar className="hidden h-9 w-9 sm:flex">
-            <AvatarImage src="/avatars/01.png" alt="Avatar" />
-            <AvatarFallback>OM</AvatarFallback>
-          </Avatar>
-          <div className="grid gap-1">
-            <p className="text-sm font-medium leading-none">Olivia Martin</p>
-            <p className="text-sm text-muted-foreground">
-              olivia.martin@email.com
-            </p>
-          </div>
-          <div className="ml-auto">
-            <p className="text-sm font-medium leading-none">Olivia Martin</p>
-            <p className="text-sm text-muted-foreground">
-              olivia.martin@email.com
-            </p>
-          </div>
-          <div className="ml-auto font-medium">+$1,999.00</div>
-        </div>
-        <div className="flex items-center justify-around gap-4">
-          <Avatar className="hidden h-9 w-9 sm:flex">
-            <AvatarImage src="/avatars/02.png" alt="Avatar" />
-            <AvatarFallback>JL</AvatarFallback>
-          </Avatar>
-          <div className="grid gap-1">
-            <p className="text-sm font-medium leading-none">Jackson Lee</p>
-            <p className="text-sm text-muted-foreground">
-              jackson.lee@email.com
-            </p>
-          </div>
-          <div className="ml-auto">
-            <p className="text-sm font-medium leading-none">Olivia Martin</p>
-            <p className="text-sm text-muted-foreground">
-              olivia.martin@email.com
-            </p>
-          </div>
-          <div className="ml-auto font-medium">+$39.00</div>
-        </div>
-        <div className="flex items-center justify-around gap-4">
-          <Avatar className="hidden h-9 w-9 sm:flex">
-            <AvatarImage src="/avatars/03.png" alt="Avatar" />
-            <AvatarFallback>IN</AvatarFallback>
-          </Avatar>
-          <div className="grid gap-1">
-            <p className="text-sm font-medium leading-none">Isabella Nguyen</p>
-            <p className="text-sm text-muted-foreground">
-              isabella.nguyen@email.com
-            </p>
-          </div>
-          <div className="ml-auto">
-            <p className="text-sm font-medium leading-none">Olivia Martin</p>
-            <p className="text-sm text-muted-foreground">
-              olivia.martin@email.com
-            </p>
-          </div>
-          <div className="ml-auto font-medium">+$299.00</div>
-        </div>
-        <div className="flex items-center justify-around gap-4">
-          <Avatar className="hidden h-9 w-9 sm:flex">
-            <AvatarImage src="/avatars/04.png" alt="Avatar" />
-            <AvatarFallback>WK</AvatarFallback>
-          </Avatar>
-          <div className="grid gap-1">
-            <p className="text-sm font-medium leading-none">William Kim</p>
-            <p className="text-sm text-muted-foreground">will@email.com</p>
-          </div>
-          <div className="ml-auto">
-            <p className="text-sm font-medium leading-none">Olivia Martin</p>
-            <p className="text-sm text-muted-foreground">
-              olivia.martin@email.com
-            </p>
-          </div>
-          <div className="ml-auto font-medium">+$99.00</div>
-        </div>
-        <div className="flex items-center justify-around gap-4">
-          <Avatar className="hidden h-9 w-9 sm:flex">
-            <AvatarImage src="/avatars/05.png" alt="Avatar" />
-            <AvatarFallback>SD</AvatarFallback>
-          </Avatar>
-          <div className="grid gap-1">
-            <p className="text-sm font-medium leading-none">Sofia Davis</p>
-            <p className="text-sm text-muted-foreground">
-              sofia.davis@email.com
-            </p>
-          </div>
-          <div className="ml-auto">
-            <p className="text-sm font-medium leading-none">Olivia Martin</p>
-            <p className="text-sm text-muted-foreground">
-              olivia.martin@email.com
-            </p>
-          </div>
-          <div className="ml-auto font-medium">+$39.00</div>
-        </div>
-      </CardContent>
-    </Card>
+    <div className="rounded border bg-card h-[calc(100vh-80px)]">
+      <Table>
+        <ScrollArea className="h-table1">
+          <TableHeader className="sticky top-0 bg-card">
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => {
+                  return (
+                    <TableHead key={header.id}>
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext(),
+                          )}
+                    </TableHead>
+                  );
+                })}
+              </TableRow>
+            ))}
+          </TableHeader>
+          <TableBody>
+            {table.getRowModel().rows?.length ? (
+              table.getRowModel().rows.map((row) => (
+                <TableRow
+                  key={row.id}
+                  data-state={row.getIsSelected() && 'selected'}
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id}>
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext(),
+                      )}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center"
+                >
+                  No results.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </ScrollArea>
+      </Table>
+    </div>
   );
 }

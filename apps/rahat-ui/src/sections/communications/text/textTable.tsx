@@ -1,13 +1,9 @@
 'use client';
 
 import {
-  ColumnFiltersState,
-  SortingState,
   VisibilityState,
   flexRender,
   getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
@@ -25,6 +21,7 @@ import {
 } from '@rahat-ui/shadcn/components/dropdown-menu';
 import { Input } from '@rahat-ui/shadcn/components/input';
 
+import { usePagination } from '@rahat-ui/query';
 import {
   Table,
   TableBody,
@@ -36,12 +33,11 @@ import {
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { CAMPAIGN_TYPES } from '@rahat-ui/types';
 import { useCampaignStore, useListCampaign } from '@rumsan/communication-query';
-import useTextTableColumn from './useTextTableColumn';
 import { ICampaignItemApiResponse } from '@rumsan/communication/types';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
-import { usePagination } from '@rahat-ui/query';
 import TableLoader from '../../../components/table.loader';
 import CommunicationSummary from '../components/communication.summary';
+import useTextTableColumn from './useTextTableColumn';
 
 export default function TextTableView() {
   const columns = useTextTableColumn();

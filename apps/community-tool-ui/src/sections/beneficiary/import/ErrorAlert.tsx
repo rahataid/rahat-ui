@@ -1,15 +1,18 @@
 import React from 'react';
 
-export default function ErrorAlert({ message = 'This is default message' }) {
+export default function ErrorAlert({
+  benefCount = 0,
+  message = 'This is default message',
+}) {
   return (
     <div
-      className="bg-red-100 border-t-4 border-red-400 rounded-b text-red-900 px-4 py-3 shadow-md"
+      className="bg-blue-100 border-t-4 border-blue-400 rounded-b text-blue-900 px-4 py-3 shadow-md"
       role="alert"
     >
       <div className="flex">
         <div className="py-1">
           <svg
-            className="fill-current h-6 w-6 text-red-500 mr-4"
+            className="fill-current h-6 w-6 text-blue-500 mr-4"
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 20 20"
           >
@@ -17,8 +20,18 @@ export default function ErrorAlert({ message = 'This is default message' }) {
           </svg>
         </div>
         <div>
-          <p className="font-bold">Validation Error!</p>
-          <p className="text-sm">{message}</p>
+          <p className="font-bold">{benefCount} Beneficiaries found</p>
+          <p className="text-sm text-red-500">{message}</p>
+        </div>
+        <div className="p-1">
+          <ul className="list-outside list-disc ml-6">
+            <li className="text-red-400">
+              <span className="text-red-400">Error Data</span>
+            </li>
+            <li className="text-orange-400">
+              <span className="text-orange-400">Duplicate Data</span>
+            </li>
+          </ul>
         </div>
       </div>
     </div>

@@ -28,54 +28,6 @@ import {
 } from '@rumsan/react-query';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 
-// const data = [
-//   {
-//     id: 'm5gr84i9',
-//     tableName: 'tbl_beneficiaries',
-//     operation: 'CREATE',
-//     fieldName:
-//       'gender, location, age, bankedStatus, internetStatus, phoneStatus, walletAddress',
-//     timestamp: '2024-05-08T11:59:26.026Z',
-//     userName: 'Jon doe',
-//   },
-//   {
-//     id: 'm5gr84i1',
-//     tableName: 'tbl_beneficiaries',
-//     operation: 'CREATE',
-//     fieldName:
-//       'gender, location, age, bankedStatus, internetStatus, phoneStatus, walletAddress',
-//     timestamp: '2024-05-08T11:59:26.026Z',
-//     userName: 'Jon doe',
-//   },
-//   {
-//     id: 'm5gr84i2',
-//     tableName: 'tbl_beneficiaries',
-//     operation: 'CREATE',
-//     fieldName:
-//       'gender, location, age, bankedStatus, internetStatus, phoneStatus, walletAddress',
-//     timestamp: '2024-05-08T11:59:26.026Z',
-//     userName: 'Jon doe',
-//   },
-//   {
-//     id: 'm5gr84i3',
-//     tableName: 'tbl_beneficiaries',
-//     operation: 'CREATE',
-//     fieldName:
-//       'gender, location, age, bankedStatus, internetStatus, phoneStatus, walletAddress',
-//     timestamp: '2024-05-08T11:59:26.026Z',
-//     userName: 'Jon doe',
-//   },
-//   {
-//     id: 'm5gr84i4',
-//     tableName: 'tbl_beneficiaries',
-//     operation: 'CREATE',
-//     fieldName:
-//       'gender, location, age, bankedStatus, internetStatus, phoneStatus, walletAddress',
-//     timestamp: '2024-05-08T11:59:26.026Z',
-//     userName: 'Jon doe',
-//   },
-// ];
-
 const useAuditList = (payload?: any) => {
   const { queryClient, rumsanService } = useRSQuery();
   const [isFetched, setIsFetched] = React.useState(false);

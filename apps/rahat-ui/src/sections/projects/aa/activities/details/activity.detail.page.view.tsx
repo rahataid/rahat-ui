@@ -94,7 +94,7 @@ export default function ActivitiesDetailView() {
                     </TooltipProvider>
                 </div>
             </div>
-            <ActivityDetailCards activityDetail={activityDetail} />
+            <ActivityDetailCards activityDetail={activityDetail} projectId={projectID as UUID} activityId={activityID as UUID} />
             <div className="grid grid-cols-2 gap-4 mt-4">
                 <ActivityDetailCard activityDetail={activityDetail} />
                 <ActivityCommunicationListCard activityDetail={activityDetail} projectId={projectID} />

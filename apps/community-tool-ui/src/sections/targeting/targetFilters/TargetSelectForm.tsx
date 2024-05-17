@@ -85,28 +85,28 @@ export default function TargetSelectForm() {
       <ScrollArea className="mx-2 h-[calc(100vh-250px)]">
         <form onSubmit={handleSubmit(handleTargetFormSubmit)}>
           <div>
-            <MultiSelectCheckBox
-              defaultName="gender"
-              defaultLabel="Gender"
-              defaultOptions={genderOptions}
+            <MultiSelect
+              fieldName="gender"
+              placeholder="Gender"
+              options={genderOptions}
             />
 
-            <MultiSelectCheckBox
-              defaultName="internetStatus"
-              defaultLabel="Internet Status"
-              defaultOptions={internetStatusOptions}
+            <MultiSelect
+              fieldName="internetStatus"
+              placeholder="Internet Status"
+              options={internetStatusOptions}
             />
 
-            <MultiSelectCheckBox
-              defaultName="phoneStatus"
-              defaultLabel="Phone Status"
-              defaultOptions={phoneStatusOptions}
+            <MultiSelect
+              fieldName="phoneStatus"
+              placeholder="Phone Status"
+              options={phoneStatusOptions}
             />
 
-            <MultiSelectCheckBox
-              defaultName="bankedStatus"
-              defaultLabel="Banked Status"
-              defaultOptions={bankedStatusOptions}
+            <MultiSelect
+              fieldName="bankedStatus"
+              placeholder="Banked Status"
+              options={bankedStatusOptions}
             />
 
             {definitions?.data?.rows.map((definition: any, index: number) => {
@@ -118,7 +118,7 @@ export default function TargetSelectForm() {
             })}
           </div>
           <div className="mt-6 text-end mr-2">
-            <Button type="submit" disabled={!isMultiFieldEmpty()}>
+            <Button type="submit" disabled={isQueryEmpty()}>
               Submit
             </Button>
           </div>

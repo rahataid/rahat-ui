@@ -8,7 +8,6 @@ import {
   useQueryClient,
 } from '@tanstack/react-query';
 import { TAGS } from '../../config';
-import { toast } from 'sonner';
 import { Beneficiary, MS_ACTIONS } from '@rahataid/sdk';
 import { getProjectClient } from '@rahataid/sdk/clients';
 import { Project, ProjectActions } from '@rahataid/sdk/project/project.types';
@@ -81,6 +80,11 @@ export const useAssignBenToProject = () => {
       projectUUID: UUID;
       beneficiaryUUID: UUID;
     }) => {
+      console.log(
+        'assigning beneficiary to project',
+        beneficiaryUUID,
+        projectUUID,
+      );
       return q.mutateAsync({
         uuid: projectUUID,
         data: {
@@ -354,8 +358,10 @@ export const useProjectList = (
   payload?: Pagination,
 ): UseQueryResult<FormattedResponse<Project[]>, Error> => {
   const { queryClient, rumsanService } = useRSQuery();
+  console.log({ queryClient, rumsanService });
 
   const projectClient = getProjectClient(rumsanService.client);
+  console.log({ projectClient });
   return useQuery(
     {
       queryKey: [TAGS.GET_ALL_PROJECTS, payload],

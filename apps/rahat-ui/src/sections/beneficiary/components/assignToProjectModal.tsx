@@ -62,7 +62,7 @@ export default function AssignToProjectModal({
 
   React.useEffect(() => {
     assignBeneficiary.isSuccess && projectModal.onFalse();
-  }, [assignBeneficiary])
+  }, [assignBeneficiary]);
 
   return (
     <Dialog open={projectModal.value} onOpenChange={projectModal.onToggle}>

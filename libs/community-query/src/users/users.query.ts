@@ -43,7 +43,9 @@ export const useCommunityUserCreate = () => {
       onError: (error: any) => {
         Swal.fire(
           'Error',
-          error.response.data.message || 'Encounter error on Creating Data',
+          Array.isArray(error?.response?.data?.message)
+            ? error.response.data.message[0]
+            : error.response.data.message,
           'error',
         );
       },

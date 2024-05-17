@@ -79,8 +79,8 @@ export default function AddToQueue({
       </div>
       <hr />
       <div
-        style={{ maxWidth: 1100 }}
-        className="table-wrp block h-screen overflow-x-auto"
+        // style={{ maxWidth: 1900 }}
+        className="table-wrp block h-screen import-container overflow-x-auto"
       >
         <table className="ml-2 w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
           <thead className="bg-white border-b sticky top-0">

@@ -1,4 +1,5 @@
 import * as React from 'react';
+import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -357,9 +358,13 @@ export default function AddAutomatedTriggerForm() {
                       </FormControl>
                       <SelectContent>
                         <SelectGroup>
-                          <SelectLabel className="text-primary flex items-center gap-1 p-2 bg-secondary">
-                            Add new activity <Plus size={18} />
-                          </SelectLabel>
+                          <Link
+                            href={`/projects/aa/${projectID}/activities/add`}
+                          >
+                            <SelectLabel className="text-primary flex items-center gap-1 p-2 bg-secondary">
+                              Add new activity <Plus size={18} />
+                            </SelectLabel>
+                          </Link>
                           {activities.map((item: any) => (
                             <FormField
                               key={item.id}

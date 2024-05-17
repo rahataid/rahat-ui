@@ -27,7 +27,7 @@ const Charts = ({ charts }: { charts: any }) => {
         );
       })}
 
-      <DashboardRecentActivities title="Recent Activities" />
+      {/* <DashboardRecentActivities title="Recent Activities" /> */}
     </div>
   );
 };

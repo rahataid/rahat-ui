@@ -10,22 +10,17 @@ import { Form } from '@rahat-ui/shadcn/src/components/ui/form';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import TargetingFormBuilder from '../../../targetingFormBuilder';
-import MultiSelectCheckBox from '../../../targetingFormBuilder/MultiSelectCheckBox';
 import useTargetingFormStore from '../../../targetingFormBuilder/form.store';
 import { ITargetingQueries } from '../../../types/targeting';
 
+import { FIELD_DEF_FETCH_LIMIT } from 'apps/community-tool-ui/src/constants/app.const';
+import { MultiSelect } from 'apps/community-tool-ui/src/targetingFormBuilder/MultiSelect';
 import {
   bankedStatusOptions,
   genderOptions,
   internetStatusOptions,
   phoneStatusOptions,
 } from '../../../constants/targeting.const';
-
-const FIELD_DEF_FETCH_LIMIT = 300;
-
-// type IProps = {
-//   onFormSubmit: (formData: ITargetingQueries) => Promise<void>;
-// };
 
 export default function TargetSelectForm() {
   const { pagination } = usePagination();
@@ -42,8 +37,7 @@ export default function TargetSelectForm() {
   });
 
   const { targetingQueries } = useTargetingFormStore();
-
-  const { handleSubmit, control } = useForm();
+  const { handleSubmit } = useForm();
 
   const FormSchema = z.object({
     location: z.string().min(1),
@@ -51,41 +45,21 @@ export default function TargetSelectForm() {
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
-    defaultValues: {
-      location: '',
-    },
+    defaultValues: {},
   });
 
-  function isMultiFieldEmpty(): boolean {
+  function isQueryEmpty(): boolean {
     if (Object.keys(targetingQueries).length === 0) {
-      return false;
+      return true;
     }
-    for (const key in targetingQueries) {
-      if (Object.prototype.hasOwnProperty.call(targetingQueries, key)) {
-        if (targetingQueries[key] === '') {
-          return false;
-        }
-        return true;
-      }
-      return false;
-    }
-    return true;
-  }
 
-  function isFormEmpty(): boolean {
-    const formData = {
-      ...form.getValues(),
-      location: form.getValues('location'),
-    };
-
-    for (const key in formData) {
-      if (Object.prototype.hasOwnProperty.call(formData, key)) {
-        const value = formData[key as keyof typeof formData];
-        if (value === '') {
-          return false;
-        }
+    for (let key in targetingQueries) {
+      console.log({ key });
+      if (targetingQueries.hasOwnProperty(key)) {
+        if (targetingQueries[key]) return false;
       }
     }
+
     return true;
   }
 
@@ -101,32 +75,33 @@ export default function TargetSelectForm() {
       setLoading(false);
     }, 3000);
   };
+
   return (
     <Form {...form}>
       <form onSubmit={handleSubmit(handleTargetFormSubmit)}>
         <div style={{ maxHeight: '55vh' }} className="m-2 overflow-y-auto">
-          <MultiSelectCheckBox
-            defaultName="gender"
-            defaultLabel="Gender"
-            defaultOptions={genderOptions}
+          <MultiSelect
+            fieldName="gender"
+            placeholder="Gender"
+            options={genderOptions}
           />
 
-          <MultiSelectCheckBox
-            defaultName="internetStatus"
-            defaultLabel="Internet Status"
-            defaultOptions={internetStatusOptions}
+          <MultiSelect
+            fieldName="internetStatus"
+            placeholder="Internet Status"
+            options={internetStatusOptions}
           />
 
-          <MultiSelectCheckBox
-            defaultName="phoneStatus"
-            defaultLabel="Phone Status"
-            defaultOptions={phoneStatusOptions}
+          <MultiSelect
+            fieldName="phoneStatus"
+            placeholder="Phone Status"
+            options={phoneStatusOptions}
           />
 
-          <MultiSelectCheckBox
-            defaultName="bankedStatus"
-            defaultLabel="Banked Status"
-            defaultOptions={bankedStatusOptions}
+          <MultiSelect
+            fieldName="bankedStatus"
+            placeholder="Banked Status"
+            options={bankedStatusOptions}
           />
 
           {definitions?.data?.rows.map((definition: any, index: number) => {
@@ -138,7 +113,7 @@ export default function TargetSelectForm() {
           })}
         </div>
         <div className="mt-6 text-end mr-2">
-          <Button type="submit" disabled={!isMultiFieldEmpty()}>
+          <Button type="submit" disabled={isQueryEmpty()}>
             Submit
           </Button>
         </div>

@@ -24,10 +24,13 @@ import {
 
 export default function TargetSelectForm() {
   const { pagination } = usePagination();
-  const { setLoading, setTargetUUID } = useCommunityTargetingStore((state) => ({
-    setLoading: state.setLoading,
-    setTargetUUID: state.setTargetUUID,
-  }));
+  const { loading, setLoading, setTargetUUID } = useCommunityTargetingStore(
+    (state) => ({
+      setLoading: state.setLoading,
+      setTargetUUID: state.setTargetUUID,
+      loading: state.loading,
+    }),
+  );
   const addTargeting = useTargetingCreate();
 
   const { data: definitions } = useFieldDefinitionsList({
@@ -73,7 +76,7 @@ export default function TargetSelectForm() {
     setTargetUUID(getTargetInfo?.data?.uuid);
     setTimeout(() => {
       setLoading(false);
-    }, 3000);
+    }, 1500);
   };
 
   return (
@@ -113,7 +116,7 @@ export default function TargetSelectForm() {
           })}
         </div>
         <div className="mt-6 text-end mr-2">
-          <Button type="submit" disabled={isQueryEmpty()}>
+          <Button type="submit" disabled={loading || isQueryEmpty()}>
             Submit
           </Button>
         </div>

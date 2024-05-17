@@ -453,6 +453,7 @@ export default function BenImp({ extraFields }: IProps) {
               data={processedData}
               handleImportClick={handleImportNowClick}
               invalidFields={invalidFields}
+              loading={loading}
             />
           </div>
         )}

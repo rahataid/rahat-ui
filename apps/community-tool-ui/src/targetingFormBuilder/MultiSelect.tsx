@@ -117,7 +117,7 @@ export function MultiSelect({
               />
             </div>
           </div>
-          <div className="absolute w-[320px] lg:w-[500px] mt-2">
+          <div className="absolute w-[200px] lg:w-[240px] xl:w-[258px] 2xl:w-[300px] mt-2">
             {open && selectables.length > 0 ? (
               <div className="absolute w-full top-0 z-10 rounded-md border bg-popover text-popover-foreground shadow-md outline-none animate-in">
                 <CommandGroup className="h-full z-50 overflow-auto">

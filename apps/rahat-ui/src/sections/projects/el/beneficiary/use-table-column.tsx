@@ -3,7 +3,7 @@
 import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
 import { ColumnDef } from '@tanstack/react-table';
 import { Eye } from 'lucide-react';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useSecondPanel } from '../../../../providers/second-panel-provider';
 import BeneficiaryDetail from '../../../../sections/projects/el/beneficiary/beneficiary.detail';
 
@@ -16,29 +16,34 @@ export const useProjectBeneficiaryTableColumns = (voucherType: string) => {
     setWalletAddressCopied(index);
   };
 
-  const openSplitDetailView = (rowDetail: any) => {
+  const openSplitDetailView = useCallback((rowDetail: any) => {
     setSecondPanelComponent(
       <BeneficiaryDetail
         closeSecondPanel={closeSecondPanel}
         beneficiaryDetails={rowDetail}
-      />,
+      />
     );
-  };
+  }, []);
 
   const columns: ColumnDef<any>[] = [
     {
       id: 'select',
-      header: '',
-      // ({ table }) => (
-      //   <Checkbox
-      //     checked={
-      //       table.getIsAllPageRowsSelected() ||
-      //       (table.getIsSomePageRowsSelected() && 'indeterminate')
-      //     }
-      //     onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-      //     aria-label="Select all"
-      //   />
-      // ),
+      header: 
+      ({ table }) => (
+        
+          voucherType === "NOT_ASSIGNED" && (
+            <Checkbox
+            checked={
+              table.getIsAllPageRowsSelected() ||
+              (table.getIsSomePageRowsSelected() && 'indeterminate')
+            }
+            onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+            aria-label="Select all"
+          />
+          )
+        
+       
+      ),
       cell: ({ row }) => {
         const isDisabled = voucherType != 'NOT_ASSIGNED';
         const isChecked = row.getIsSelected() && !isDisabled;

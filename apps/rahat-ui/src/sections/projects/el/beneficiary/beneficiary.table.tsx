@@ -55,7 +55,7 @@ import {
 } from '@rahat-ui/shadcn/components/tabs';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { UUID } from 'crypto';
-import { useParams } from 'next/navigation';
+import { useParams, usePathname, useSearchParams } from 'next/navigation';
 import { useProjectBeneficiaryTableColumns } from './use-table-column';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import { useBulkAssignVoucher } from 'apps/rahat-ui/src/hooks/el/contracts/el-contracts';
@@ -146,7 +146,16 @@ function BeneficiaryDetailTableView() {
   const assignVoucher = useBulkAssignVoucher();
   const { queryService } = useGraphService();
 
+  const pathname = usePathname();
+  const hash = window.location.hash;
+  const params = useSearchParams().get('voucherType');
   const [voucherType, setVoucherType] = useState('NOT_ASSIGNED');
+
+  useEffect(() => {
+    if(params) {
+      setVoucherType(params)
+    }
+  }, [params])  
 
   const projectBeneficiaries = useProjectBeneficiaries({
     page: pagination.page,
@@ -287,14 +296,15 @@ function BeneficiaryDetailTableView() {
           </DropdownMenu>
         </div>
         <div>
-          <Tabs defaultValue="notAssigned" className="w-full mb-1">
+          <Tabs value={voucherType} className="w-full mb-1">
             <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger
                 onClick={() => {
                   setVoucherType('NOT_ASSIGNED');
                   resetSelectedListItems();
+                  route.replace(`${pathname}?voucherType=NOT_ASSIGNED${hash}`)
                 }}
-                value="notAssigned"
+                value="NOT_ASSIGNED"
               >
                 Not Assigned
               </TabsTrigger>
@@ -302,8 +312,9 @@ function BeneficiaryDetailTableView() {
                 onClick={() => {
                   setVoucherType('FREE_VOUCHER');
                   resetSelectedListItems();
+                  route.replace(`${pathname}?voucherType=FREE_VOUCHER${hash}`)
                 }}
-                value="freeVoucher"
+                value="FREE_VOUCHER"
               >
                 Free Voucher
               </TabsTrigger>
@@ -311,8 +322,9 @@ function BeneficiaryDetailTableView() {
                 onClick={() => {
                   setVoucherType('REFERRED_VOUCHER');
                   resetSelectedListItems();
+                  route.replace(`${pathname}?voucherType=REFERRED_VOUCHER${hash}`)
                 }}
-                value="referredVoucher"
+                value="REFERRED_VOUCHER"
               >
                 Referred Voucher
               </TabsTrigger>

@@ -19,7 +19,7 @@ import {
   useGetApprovedTemplate,
 } from '@rumsan/communication-query';
 
-import { useRouter } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { paths } from 'apps/rahat-ui/src/routes/paths';
 import { debounce } from 'lodash';
 
@@ -56,6 +56,7 @@ export type SelectedRowType = {
 const AddCampaignView = () => {
   const { data: transportData } = useListTransport();
   const { data: audienceData } = useListAudience();
+  const { id } = useParams();
 
   const { data: audioData } = useGetAudio();
   const createCampaign = useCreateCampaign();
@@ -129,13 +130,14 @@ const AddCampaignView = () => {
         type: data.campaignType,
         details: additionalData,
         status: 'ONGOING',
+        projectId: id,
       })
       .then((data) => {
         if (data) {
           setIsSubmitting(false);
 
           toast.success('Campaign Created Success.');
-          router.push(paths.dashboard.communication.text);
+          router.push(`projects/c2c/${id}/campaigns/text`);
         }
       })
       .catch((e) => {

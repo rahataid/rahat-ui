@@ -1,4 +1,4 @@
-# RahatUi
+# RahatUI
 
 RahatUi serves as the Frontend Services for the Rahat project. It comprises the following components:
 

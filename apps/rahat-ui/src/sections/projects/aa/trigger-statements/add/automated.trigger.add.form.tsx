@@ -1,12 +1,15 @@
 import * as React from 'react';
+import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
+  PROJECT_SETTINGS_KEYS,
   useAAStationsStore,
   useActivitiesStore,
   useCreateTriggerStatement,
+  useProjectSettingsStore,
 } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
@@ -43,14 +46,24 @@ export default function AddAutomatedTriggerForm() {
     phases: state.phases,
   }));
 
-  const dhmStations = useAAStationsStore(
-    (state) => state.dhmStations![projectID],
-  );
+  // const dhmStations = useAAStationsStore(
+  //   (state) => state.dhmStations![projectID],
+  // );
 
   // TODO: refactor to searchable select
-  const stations = [
-    ...dhmStations.results.slice(0, 5),
-    { title: 'Karnali at Chisapani' },
+  // const stations = [
+  //   ...dhmStations.results.slice(0, 5),
+  //   { title: 'Karnali at Chisapani' },
+  // ];
+
+  const dataSources = useProjectSettingsStore(
+    (s) => s.settings?.[projectID]?.[PROJECT_SETTINGS_KEYS.DATASOURCE],
+  );
+
+  const dhmStations = [
+    {
+      title: dataSources.dhm.location,
+    },
   ];
 
   const FormSchema = z.object({
@@ -196,7 +209,7 @@ export default function AddAutomatedTriggerForm() {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {stations?.map((r: any) => {
+                          {dhmStations?.map((r: any) => {
                             return (
                               <SelectItem key={r.id} value={r.title}>
                                 {r.title}
@@ -303,7 +316,7 @@ export default function AddAutomatedTriggerForm() {
                 }}
               />
             )}
-            {phase === 'ACTION' && (
+            {phase === 'ACTIVATION' && (
               <FormField
                 control={form.control}
                 name="activationLevel"
@@ -345,9 +358,13 @@ export default function AddAutomatedTriggerForm() {
                       </FormControl>
                       <SelectContent>
                         <SelectGroup>
-                          <SelectLabel className="text-primary flex items-center gap-1 p-2 bg-secondary">
-                            Add new activity <Plus size={18} />
-                          </SelectLabel>
+                          <Link
+                            href={`/projects/aa/${projectID}/activities/add`}
+                          >
+                            <SelectLabel className="text-primary flex items-center gap-1 p-2 bg-secondary">
+                              Add new activity <Plus size={18} />
+                            </SelectLabel>
+                          </Link>
                           {activities.map((item: any) => (
                             <FormField
                               key={item.id}

@@ -20,7 +20,7 @@ import {
 import { ArrowLeft, ArchiveRestore, Pencil } from 'lucide-react';
 import AutomatedTriggerDetailCards from './automated.trigger.detail.cards';
 import AutomatedTriggerDetailCard from './automated.trigger.detail.card';
-import AutomatedTriggerActivityListCard from './automated.trigger.activity.list.card';
+import TriggerActivityListCard from './trigger.activity.list.card';
 import {
   useSingleTriggerStatement,
   useDeleteTriggerStatement,
@@ -29,7 +29,6 @@ import { UUID } from 'crypto';
 import Loader from 'apps/rahat-ui/src/components/table.loader';
 import ManualTriggerDialog from './manual.trigger.dialog';
 import ManualTriggerDetailCard from './manual.trigger.detail.card';
-import ManualTriggerCommunicationsCard from './manual.trigger.communications.card';
 import ManualTriggerDocumentsCard from './manual.trigger.documents.card';
 
 export default function TriggerStatementsDetailView() {
@@ -106,31 +105,32 @@ export default function TriggerStatementsDetailView() {
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
-          {triggerDetail?.dataSource === "MANUAL"
-            ? <ManualTriggerDialog />
-            : null
-          }
+          {triggerDetail?.dataSource === 'MANUAL' ? (
+            <ManualTriggerDialog />
+          ) : null}
         </div>
       </div>
-      {triggerDetail?.dataSource === "MANUAL"
-        ? (
-          <div className="grid grid-cols-2 gap-4 mt-4 h-[calc(100vh-152px)]">
-            <ManualTriggerDetailCard status={triggerDetail?.isTriggered} notes={triggerDetail?.notes} />
-            <ManualTriggerCommunicationsCard />
-            <ManualTriggerDocumentsCard documents={triggerDetail?.triggerDocuments} />
+      {triggerDetail?.dataSource === 'MANUAL' ? (
+        <div className="grid grid-cols-2 gap-4 mt-4 h-[calc(100vh-152px)]">
+          <ManualTriggerDetailCard
+            status={triggerDetail?.isTriggered}
+            notes={triggerDetail?.notes}
+            phase={triggerDetail?.phase?.name}
+          />
+          <TriggerActivityListCard triggerDetail={triggerDetail} />
+          <ManualTriggerDocumentsCard
+            documents={triggerDetail?.triggerDocuments}
+          />
+        </div>
+      ) : (
+        <>
+          <AutomatedTriggerDetailCards triggerDetail={triggerDetail} />
+          <div className="grid grid-cols-2 gap-4 mt-4 h-[calc(100vh-252px)]">
+            <AutomatedTriggerDetailCard triggerDetail={triggerDetail} />
+            <TriggerActivityListCard triggerDetail={triggerDetail} />
           </div>
-        )
-        : (
-          <>
-            <AutomatedTriggerDetailCards triggerDetail={triggerDetail} />
-            <div className="grid grid-cols-2 gap-4 mt-4 h-[calc(100vh-252px)]">
-              <AutomatedTriggerDetailCard triggerDetail={triggerDetail} />
-              <AutomatedTriggerActivityListCard triggerDetail={triggerDetail} />
-            </div>
-          </>
-        )
-      }
-
+        </>
+      )}
     </div>
   );
 }

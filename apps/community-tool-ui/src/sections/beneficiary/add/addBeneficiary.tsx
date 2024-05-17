@@ -46,8 +46,7 @@ import {
   formatDate,
   selectNonEmptyFields,
 } from 'apps/community-tool-ui/src/utils';
-
-const FIELD_DEF_FETCH_LIMIT = 200;
+import { FIELD_DEF_FETCH_LIMIT } from 'apps/community-tool-ui/src/constants/app.const';
 
 export default function AddBeneficiary() {
   const { extras }: any = useFormStore();

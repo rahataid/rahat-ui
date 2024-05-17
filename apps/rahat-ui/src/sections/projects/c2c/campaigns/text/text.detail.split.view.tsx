@@ -88,7 +88,7 @@ export default function TextDetailSplitView({
       </div>
       <div className="mt-5 flex flex-col gap-5">
         <InfoCard
-          id={details?.id}
+          campaignId={details?.id}
           name={details?.name}
           startTime={
             details?.startTime && new Date(details?.startTime).toLocaleString()
@@ -96,6 +96,7 @@ export default function TextDetailSplitView({
           status={details?.status}
           totalAudience={details?.totalAudiences ?? 0}
           type={details?.type}
+          closeSecondPanel={closeSecondPanel}
         />
         <Card className="shadow-md">
           <CardHeader>

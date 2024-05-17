@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { useRouter } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -63,96 +63,10 @@ export type Text = {
   totalAudiences: number;
 };
 
-// export const columns: ColumnDef<Text>[] = [
-//   {
-//     id: 'select',
-//     header: ({ table }) => (
-//       <Checkbox
-//         checked={
-//           table.getIsAllPageRowsSelected() ||
-//           (table.getIsSomePageRowsSelected() && 'indeterminate')
-//         }
-//         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-//         aria-label="Select all"
-//       />
-//     ),
-//     cell: ({ row }) => (
-//       <Checkbox
-//         checked={row.getIsSelected()}
-//         onCheckedChange={(value) => row.toggleSelected(!!value)}
-//         aria-label="Select row"
-//       />
-//     ),
-//     enableSorting: false,
-//     enableHiding: false,
-//   },
-//   {
-//     accessorKey: 'name',
-//     header: 'Text Campaigns',
-//     cell: ({ row }) => <div>{row.getValue('name')}</div>,
-//   },
-//   {
-//     accessorKey: 'startTime',
-//     header: 'Start Time',
-//     cell: ({ row }) => (
-//       <div className="capitalize">
-//         {new Date(row.getValue('startTime')).toLocaleString()}
-//       </div>
-//     ),
-//   },
-//   {
-//     accessorKey: 'status',
-//     header: 'Status',
-//     cell: ({ row }) => (
-//       <Badge variant="secondary" className="rounded-md capitalize">
-//         {row.getValue('status')}
-//       </Badge>
-//     ),
-//   },
-//   {
-//     accessorKey: 'transport',
-//     header: 'Transport',
-//     cell: ({ row }) => (
-//       <div className="capitalize">{row.getValue('transport')}</div>
-//     ),
-//   },
-//   {
-//     accessorKey: 'totalAudiences',
-//     header: 'Total Audiences',
-//     cell: ({ row }) => (
-//       <div className="capitalize">{row.getValue('totalAudiences')}</div>
-//     ),
-//   },
-//   {
-//     id: 'actions',
-//     enableHiding: false,
-//     cell: ({ row }) => {
-//       return (
-//         <Eye
-//           className="hover:text-primary cursor-pointer"
-//           size={20}
-//           strokeWidth={1.5}
-//           onClick={() => openSplitDetailView(row.original)}
-//         />
-//       );
-//     },
-//   },
-// ];
-
 export default function TextTable() {
-  const { setSecondPanelComponent, closeSecondPanel } = useSecondPanel();
-
-  const openSplitDetailView = (rowDetail: ICampaignItemApiResponse) => {
-    // setSecondPanelComponent(
-    //   <TextDetailSplitView
-    //     details={rowDetail}
-    //     closeSecondPanel={closeSecondPanel}
-    //   />,
-    // );
-  };
-
   const campaignStore = useCampaignStore();
   const columns = useTextTableColumn();
+  const { id } = useParams();
 
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -162,9 +76,9 @@ export default function TextTable() {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
-  const { data, isLoading, isError, isSuccess, isFetching } = useListCampaign(
-    {},
-  );
+  const { data, isLoading, isError, isSuccess, isFetching } = useListCampaign({
+    projectId: id,
+  });
 
   const tableData = React.useMemo(() => {
     const result = Array.isArray(data?.response.data.rows)
@@ -175,7 +89,7 @@ export default function TextTable() {
 
     campaignStore.setTotalTextCampaign(data?.response?.meta?.total || 0);
     return result;
-  }, [isSuccess]);
+  }, [isSuccess, data]);
 
   const table = useReactTable({
     data: tableData,

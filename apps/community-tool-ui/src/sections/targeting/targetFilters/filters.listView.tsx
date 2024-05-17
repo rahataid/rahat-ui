@@ -39,7 +39,7 @@ export default function ListView({
   const [label, setLabel] = useState<string>();
   return (
     <>
-      <div className="w-full -mt-2 p-2 bg-secondary">
+      <div className="w-full mt-1 p-2 bg-secondary">
         <div className="flex items-center mb-2">
           <TooltipProvider>
             <Tooltip>
@@ -53,12 +53,7 @@ export default function ListView({
                 />
               </TooltipTrigger>
               <TooltipContent>
-                {!targetUUID && (
-                  <p>
-                    Please search for the target beneficiary to enable label
-                    addition
-                  </p>
-                )}
+                {!targetUUID && <p>Please search target beneficiary first</p>}
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
@@ -76,7 +71,7 @@ export default function ListView({
         </div>
         <div className="rounded border bg-card">
           <TableComponent>
-            <ScrollArea className="h-[calc(100vh-180px)]">
+            <ScrollArea className="h-[calc(100vh-190px)]">
               <TableHeader className="bg-card sticky top-0">
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow key={headerGroup.id}>

@@ -22,23 +22,27 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import { Plus } from 'lucide-react';
+import { Plus, CloudUpload, Check, X, LoaderCircle } from 'lucide-react';
 import {
   useActivitiesStore,
   useCreateActivities,
-  useStakeholdersGroups
+  useStakeholdersGroups,
+  useUploadFile
 } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import AddCommunicationForm from './add.communication.form';
 
 export default function AddActivities() {
   const createActivity = useCreateActivities();
+  const uploadFile = useUploadFile();
   const { id: projectID } = useParams();
   const { categories, phases, hazardTypes } = useActivitiesStore((state) => ({
     categories: state.categories,
     phases: state.phases,
     hazardTypes: state.hazardTypes
   }))
+  const [documents, setDocuments] = React.useState<{ id: number, name: string }[]>([]);
+  const [allFiles, setAllFiles] = React.useState<{ mediaURL: string, fileName: string }[]>([]);
   const [communicationAddForm, setCommunicationAddForm] = React.useState<{ id: number; form: React.ReactNode }[]>([]);
   const [communicationFormOpened, setCommunicationFormOpened] = React.useState<boolean>(false)
   const nextId = React.useRef(0);
@@ -54,6 +58,10 @@ export default function AddActivities() {
     hazardTypeId: z.string().min(1, { message: 'Please select hazard type' }),
     leadTime: z.string().min(2, { message: "Please enter lead time" }),
     description: z.string().min(5, { message: 'Must be at least 5 characters' }),
+    activityDocuments: z.array(z.object({
+      mediaURL: z.string(),
+      fileName: z.string()
+    })).optional(),
     activityCommunication: communicationFormOpened
       ? z.array(
         z.object({
@@ -85,6 +93,7 @@ export default function AddActivities() {
       hazardTypeId: '',
       leadTime: '',
       description: '',
+      activityDocuments: [],
       activityCommunication: [{ groupType: '', groupId: '', communicationType: '', message: '' }]
     },
   });
@@ -93,11 +102,34 @@ export default function AddActivities() {
     setCommunicationAddForm(prevForms => prevForms.filter(({ id }) => id !== idToRemove));
   };
 
+  React.useEffect(() => {
+    if (communicationAddForm.length < 1) {
+      setCommunicationFormOpened(false);
+      form.setValue('activityCommunication', [])
+    }
+  }, [communicationAddForm])
+
   const addCommunicationForm = () => {
     setCommunicationFormOpened(true);
     const newId = nextId.current++;
     setCommunicationAddForm(prevForms => [...prevForms, { id: newId, form: <AddCommunicationForm key={newId} form={form} index={newId} onClose={() => removeCommunicationForm(newId)} /> }]);
   }
+
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const newId = nextId.current++;
+      setDocuments(prev => [...prev, { id: newId, name: file.name }])
+      const formData = new FormData();
+      formData.append('file', file);
+      const { data: afterUpload } = await uploadFile.mutateAsync(formData);
+      setAllFiles(prev => [...prev, afterUpload])
+    }
+  }
+
+  React.useEffect(() => {
+    form.setValue('activityDocuments', allFiles)
+  }, [allFiles, setAllFiles])
 
   const handleCreateActivities = async (data: z.infer<typeof FormSchema>) => {
     try {
@@ -111,6 +143,8 @@ export default function AddActivities() {
       form.reset();
       setCommunicationAddForm([]);
       setCommunicationFormOpened(false);
+      setAllFiles([]);
+      setDocuments([]);
     }
   };
   return (
@@ -282,6 +316,53 @@ export default function AddActivities() {
                   }}
                 />
               </div>
+              <FormField
+                control={form.control}
+                name="activityDocuments"
+                render={({ field }) => {
+                  return (
+                    <FormItem className='mt-4'>
+                      <FormControl>
+                        <div className='relative border border-dashed rounded p-1.5'>
+                          <div className='absolute inset-0 flex gap-2 items-center justify-center'>
+                            <CloudUpload size={25} strokeWidth={2} className='text-primary' />
+                            <p className='text-sm font-medium'>Drop files to upload, or <span className='text-primary cursor-pointer'>browse</span></p>
+                          </div>
+                          <Input
+                            className='opacity-0'
+                            type='file'
+                            onChange={handleFileChange}
+                          />
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                      {documents?.map((file) => (
+                        <div key={file.name} className='flex justify-between items-center'>
+                          <p className='text-sm flex gap-2 items-center'>
+                            {
+                              uploadFile.isPending && documents?.[documents?.length - 1].name === file.name
+                                ? <LoaderCircle size={16} strokeWidth={2.5} className='text-green-600 animate-spin' />
+                                : <Check size={16} strokeWidth={2.5} className='text-green-600' />
+                            }
+                            {file.name}
+                          </p>
+                          <div className='p-0.5 rounded-full border-2 hover:border-red-500 text-muted-foreground  hover:text-red-500 cursor-pointer'>
+                            <X
+                              size={16}
+                              strokeWidth={2.5}
+                              onClick={() => {
+                                const newDocuments = documents?.filter((doc) => doc.name !== file.name)
+                                setDocuments(newDocuments);
+                                const newFiles = allFiles.filter((f, index) => index !== file.id);
+                                setAllFiles(newFiles);
+                              }} />
+                          </div>
+                        </div>
+                      ))}
+                    </FormItem>
+                  );
+                }}
+              />
               {communicationAddForm?.map(({ id, form }) => (
                 <div key={id} className='mt-4'>{form}</div>
               ))}
@@ -312,7 +393,7 @@ export default function AddActivities() {
                   >
                     Cancel
                   </Button>
-                  <Button type='submit'>Create Activities</Button>
+                  <Button type='submit' disabled={createActivity?.isPending || uploadFile?.isPending} >Create Activities</Button>
                 </div>
               </div>
             </div>

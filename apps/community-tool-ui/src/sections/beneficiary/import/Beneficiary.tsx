@@ -389,20 +389,20 @@ export default function BenImp({ extraFields }: IProps) {
         )}
 
         {currentScreen === BENEF_IMPORT_SCREENS.VALIDATION && (
-          <div className="relative">
+          <div className="import-container">
             <InfoBox
               title="Field Mapping"
               message="Select matching field for your data"
             />
             {rawData.length > 0 && (
-              <div className="flex mb-5 mt-5 justify-between m-2">
+              <div className="flex mb-5 mt-5 justify-between">
                 <Button
                   onClick={handleBackClick}
                   className="w-40 bg-secondary hover:ring-2bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow"
                 >
                   <ArrowBigLeft size={18} strokeWidth={2} /> Back
                 </Button>
-
+                &nbsp;
                 <Button
                   disabled={loading}
                   onClick={() => validateOrImport(IMPORT_ACTION.VALIDATE)}
@@ -421,7 +421,7 @@ export default function BenImp({ extraFields }: IProps) {
               />
             )}
 
-            <div className="overflow-x-auto max-w-screen-lg">
+            <div className="import-container overflow-x-auto">
               <ColumnMappingTable
                 rawData={rawData}
                 uniqueDBFields={uniqueDBFields}
@@ -433,9 +433,12 @@ export default function BenImp({ extraFields }: IProps) {
         )}
 
         {currentScreen === BENEF_IMPORT_SCREENS.IMPORT_DATA && (
-          <>
+          <div className="import-container">
             {invalidFields.length > 0 ? (
-              <ErrorAlert message="Fieds with * have failed validation!" />
+              <ErrorAlert
+                benefCount={processedData.length}
+                message="Fieds with * have failed validation"
+              />
             ) : (
               <InfoBox
                 title="Import Beneficiary"
@@ -450,8 +453,9 @@ export default function BenImp({ extraFields }: IProps) {
               data={processedData}
               handleImportClick={handleImportNowClick}
               invalidFields={invalidFields}
+              loading={loading}
             />
-          </>
+          </div>
         )}
       </div>
     </div>

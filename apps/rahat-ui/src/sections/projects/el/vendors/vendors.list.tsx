@@ -11,6 +11,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import * as React from 'react';
+import Loader from 'apps/community-tool-ui/src/components/Loader';
 
 import { PROJECT_SETTINGS_KEYS, useProjectAction, useProjectSettingsStore } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/components/button';
@@ -29,6 +30,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { useVendorTable } from './useVendorTable';
 import TableLoader from 'apps/rahat-ui/src/components/table.loader';
 import { useAllVendorVoucher, useProjectVoucher, useVendorVoucher } from 'apps/rahat-ui/src/hooks/el/subgraph/querycall';
+import SpinnerLoader from '../../components/spinner.loader';
 
 export type Transaction = {
   id: string;
@@ -123,9 +125,10 @@ export default function VendorsList() {
     const vendorListArray = Object.values(vendorList?.data?.voucherArray || {});
 
     const filteredDataWithVoucher = filteredData?.map((row:any) => {
+      totalVoucher = 0;
       vendorListArray?.map((voucherRow:any) => {
         
-          if(row?.walletaddress?.toLowerCase() == voucherRow?.id?.toLowerCase()){
+          if(row?.walletaddress?.toLowerCase() === voucherRow?.id?.toLowerCase()){
             totalVoucher = Number(voucherRow?.freeVoucherRedeemed) + Number(voucherRow?.referredVoucherRedeemed)
           }
         
@@ -173,7 +176,7 @@ export default function VendorsList() {
                 </TableRow>
               ))}
             </TableHeader>
-            <TableBody>
+            {vendorList?.isFetched ? <TableBody>
               {table.getRowModel().rows?.length ? (
                 table.getRowModel().rows.map((row) => (
                   <TableRow
@@ -204,7 +207,7 @@ export default function VendorsList() {
                   </TableCell>
                 </TableRow>
               )}
-            </TableBody>
+            </TableBody>: <div className='w-full h-48 flex justify-center items-center' ><Loader /></div>}
           </ScrollArea>
         </Table>
       </div>

@@ -1,7 +1,7 @@
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Info, Text, SignalHigh, Gauge } from 'lucide-react';
 
-export default function TriggerDetailCards({ triggerDetail }: any) {
+export default function AutomatedTriggerDetailCards({ triggerDetail }: any) {
   const detailCardData = [
     {
       title: 'Status',

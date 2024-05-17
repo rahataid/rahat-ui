@@ -18,9 +18,12 @@ import TableLoader from 'apps/rahat-ui/src/components/table.loader';
 import { UUID } from 'crypto';
 import ActivitiesTableFilters from './activities.table.filters';
 
-
 export default function ActivitiesList() {
   const { id: projectID } = useParams();
+  const [searchText, setSearchText] = React.useState<string>('');
+  const [phaseFilterItem, setPhaseFilterItem] = React.useState<string>('');
+  const [categoryFilterItem, setCategoryFilterItem] = React.useState<string>('');
+  const [hazardTypeFilterItem, setHazardTypeFilterItem] = React.useState<string>('');
 
   const {
     pagination,
@@ -39,7 +42,7 @@ export default function ActivitiesList() {
   }, []);
 
 
-  const { activitiesData, activitiesMeta, isLoading } = useActivities(projectID as UUID, { ...pagination, ...filters });
+  const { activitiesData, activitiesMeta, isLoading } = useActivities(projectID as UUID, { ...pagination, ...filters, title: searchText });
 
   useActivitiesCategories(projectID as UUID);
   useActivitiesHazardTypes(projectID as UUID);
@@ -82,8 +85,19 @@ export default function ActivitiesList() {
       }
       setFilters({ ...filters, [key]: value })
     },
-    [filters, setFilters]
+    [filters]
   )
+
+  const handleSearch = React.useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    setFilters({ ...filters, title: event.target.value })
+  }, [filters])
+
+  React.useEffect(() => {
+    setSearchText(filters?.title ?? '');
+    setPhaseFilterItem(filters?.phase ?? '');
+    setCategoryFilterItem(filters?.category ?? '');
+    setHazardTypeFilterItem(filters?.hazardType ?? '')
+  }, [filters])
 
   if (isLoading) {
     return <TableLoader />
@@ -91,8 +105,13 @@ export default function ActivitiesList() {
   return (
     <div className="p-2 bg-secondary h-[calc(100vh-65px)]">
       <ActivitiesTableFilters
-        projectID={projectID}
+        projectID={projectID as UUID}
         handleFilter={handleFilter}
+        handleSearch={handleSearch}
+        activity={searchText}
+        phase={phaseFilterItem}
+        category={categoryFilterItem}
+        hazardType={hazardTypeFilterItem}
       />
       <div className='border bg-card rounded'>
         <ActivitiesTable table={table} />

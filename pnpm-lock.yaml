@@ -81,11 +81,11 @@ importers:
         specifier: 0.0.25
         version: 0.0.25(bufferutil@4.0.8)(typescript@5.4.5)(utf-8-validate@6.0.3)(zod@3.23.8)
       '@rumsan/communication':
-        specifier: ^0.0.10
-        version: 0.0.10
+        specifier: ^0.0.11
+        version: 0.0.11
       '@rumsan/communication-query':
-        specifier: ^0.0.5
-        version: 0.0.5(@types/react@18.3.1)
+        specifier: ^0.0.6
+        version: 0.0.6(@types/react@18.3.1)
       '@rumsan/core':
         specifier: ^3.0.133
         version: 3.0.140
@@ -3042,11 +3042,11 @@ packages:
       rollup:
         optional: true
 
-  '@rumsan/communication-query@0.0.5':
-    resolution: {integrity: sha512-IVRw61CNG9AbpH5Bbhtde7iXL/bJ3yzbHGRXydo103hFRi+3IdRXcwd254KPLF+/cIbLlF2u0AYVqJ0zuweiFQ==, tarball: https://npm.pkg.github.com/download/@rumsan/communication-query/0.0.5/486e3273499dc2f9d8b78e547a13061262ebfc8b}
+  '@rumsan/communication-query@0.0.6':
+    resolution: {integrity: sha512-6S1guoy9SCE6V3Ukh9MpfPsGfQh4dK2rIOWJht6ZvMz2OuuySG0cjIXoux9HZAppyOKWFGLB/HnH5g9pf9tttA==, tarball: https://npm.pkg.github.com/download/@rumsan/communication-query/0.0.6/2ee061d21536daccb5008c2c87ae44061b8874b2}
 
-  '@rumsan/communication@0.0.10':
-    resolution: {integrity: sha512-WiKCIuvooyjSetPeKxJcXGlv11i6Wc2vEM1b2dSm6Lbae2XBgbrjReI/3xphrntroRAhgJN0SV76n4qCV7f8oA==, tarball: https://npm.pkg.github.com/download/@rumsan/communication/0.0.10/4d06dce956623ec62ba2542e0e25f28a7f188c9c}
+  '@rumsan/communication@0.0.11':
+    resolution: {integrity: sha512-S64Vj0dHpX6LmVPEI3ehInJ2Kbg3OimFQdocsHZv412de68vk2I6xXzfYmqGNawBN2NYVusfJ5Gwx/Y9ieAL/w==, tarball: https://npm.pkg.github.com/download/@rumsan/communication/0.0.11/e2e780068c7b591e89bf0ad6916ca67f4873f28d}
 
   '@rumsan/communication@0.0.8':
     resolution: {integrity: sha512-Ht+vIdZVabacljbIO54QDm2FXYSH5CAKyDQ68/NcvQdqQz39x3wZLt4DWuliTGY6ZpaniddVyql57NTdcmae6Q==, tarball: https://npm.pkg.github.com/download/@rumsan/communication/0.0.8/b11e20c168799814e0d5058533ec77ed35f2d505}
@@ -14495,9 +14495,9 @@ snapshots:
     optionalDependencies:
       rollup: 2.79.1
 
-  '@rumsan/communication-query@0.0.5(@types/react@18.3.1)':
+  '@rumsan/communication-query@0.0.6(@types/react@18.3.1)':
     dependencies:
-      '@rumsan/communication': 0.0.10
+      '@rumsan/communication': 0.0.11
       '@tanstack/react-query': 5.22.2(react@18.2.0)
       axios: 1.6.8
       react: 18.2.0
@@ -14508,7 +14508,7 @@ snapshots:
       - debug
       - immer
 
-  '@rumsan/communication@0.0.10':
+  '@rumsan/communication@0.0.11':
     dependencies:
       axios: 1.6.8
     transitivePeerDependencies:

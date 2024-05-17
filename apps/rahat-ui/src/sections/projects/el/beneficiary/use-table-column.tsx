@@ -28,17 +28,22 @@ export const useProjectBeneficiaryTableColumns = (voucherType: string) => {
   const columns: ColumnDef<any>[] = [
     {
       id: 'select',
-      header: '',
-      // ({ table }) => (
-      //   <Checkbox
-      //     checked={
-      //       table.getIsAllPageRowsSelected() ||
-      //       (table.getIsSomePageRowsSelected() && 'indeterminate')
-      //     }
-      //     onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-      //     aria-label="Select all"
-      //   />
-      // ),
+      header: 
+      ({ table }) => (
+        
+          voucherType === "NOT_ASSIGNED" && (
+            <Checkbox
+            checked={
+              table.getIsAllPageRowsSelected() ||
+              (table.getIsSomePageRowsSelected() && 'indeterminate')
+            }
+            onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+            aria-label="Select all"
+          />
+          )
+        
+       
+      ),
       cell: ({ row }) => {
         const isDisabled = voucherType != 'NOT_ASSIGNED';
         const isChecked = row.getIsSelected() && !isDisabled;

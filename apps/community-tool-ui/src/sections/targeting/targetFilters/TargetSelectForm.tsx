@@ -10,10 +10,11 @@ import { Form } from '@rahat-ui/shadcn/src/components/ui/form';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import TargetingFormBuilder from '../../../targetingFormBuilder';
-import MultiSelectCheckBox from '../../../targetingFormBuilder/MultiSelectCheckBox';
 import useTargetingFormStore from '../../../targetingFormBuilder/form.store';
 import { ITargetingQueries } from '../../../types/targeting';
 
+import { FIELD_DEF_FETCH_LIMIT } from 'apps/community-tool-ui/src/constants/app.const';
+import { MultiSelect } from 'apps/community-tool-ui/src/targetingFormBuilder/MultiSelect';
 import {
   bankedStatusOptions,
   genderOptions,
@@ -22,18 +23,15 @@ import {
 } from '../../../constants/targeting.const';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 
-const FIELD_DEF_FETCH_LIMIT = 300;
-
-// type IProps = {
-//   onFormSubmit: (formData: ITargetingQueries) => Promise<void>;
-// };
-
 export default function TargetSelectForm() {
   const { pagination } = usePagination();
-  const { setLoading, setTargetUUID } = useCommunityTargetingStore((state) => ({
-    setLoading: state.setLoading,
-    setTargetUUID: state.setTargetUUID,
-  }));
+  const { loading, setLoading, setTargetUUID } = useCommunityTargetingStore(
+    (state) => ({
+      setLoading: state.setLoading,
+      setTargetUUID: state.setTargetUUID,
+      loading: state.loading,
+    }),
+  );
   const addTargeting = useTargetingCreate();
 
   const { data: definitions } = useFieldDefinitionsList({
@@ -43,8 +41,7 @@ export default function TargetSelectForm() {
   });
 
   const { targetingQueries } = useTargetingFormStore();
-
-  const { handleSubmit, control } = useForm();
+  const { handleSubmit } = useForm();
 
   const FormSchema = z.object({
     location: z.string().min(1),
@@ -52,41 +49,21 @@ export default function TargetSelectForm() {
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
-    defaultValues: {
-      location: '',
-    },
+    defaultValues: {},
   });
 
-  function isMultiFieldEmpty(): boolean {
+  function isQueryEmpty(): boolean {
     if (Object.keys(targetingQueries).length === 0) {
-      return false;
+      return true;
     }
-    for (const key in targetingQueries) {
-      if (Object.prototype.hasOwnProperty.call(targetingQueries, key)) {
-        if (targetingQueries[key] === '') {
-          return false;
-        }
-        return true;
-      }
-      return false;
-    }
-    return true;
-  }
 
-  function isFormEmpty(): boolean {
-    const formData = {
-      ...form.getValues(),
-      location: form.getValues('location'),
-    };
-
-    for (const key in formData) {
-      if (Object.prototype.hasOwnProperty.call(formData, key)) {
-        const value = formData[key as keyof typeof formData];
-        if (value === '') {
-          return false;
-        }
+    for (let key in targetingQueries) {
+      console.log({ key });
+      if (targetingQueries.hasOwnProperty(key)) {
+        if (targetingQueries[key]) return false;
       }
     }
+
     return true;
   }
 
@@ -100,8 +77,9 @@ export default function TargetSelectForm() {
     setTargetUUID(getTargetInfo?.data?.uuid);
     setTimeout(() => {
       setLoading(false);
-    }, 3000);
+    }, 1500);
   };
+
   return (
     <Form {...form}>
       <ScrollArea className="mx-2 h-[calc(100vh-250px)]">

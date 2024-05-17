@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -188,7 +189,7 @@ export default function AddManualTriggerForm() {
                   <FormItem>
                     <Select
                       onValueChange={field.onChange}
-                      // defaultValue={field.value}
+                    // defaultValue={field.value}
                     >
                       <FormLabel>Activity</FormLabel>
                       <FormControl>
@@ -198,9 +199,11 @@ export default function AddManualTriggerForm() {
                       </FormControl>
                       <SelectContent>
                         <SelectGroup>
-                          <SelectLabel className="text-primary flex items-center gap-1 p-2 bg-secondary">
-                            Add new activity <Plus size={18} />
-                          </SelectLabel>
+                          <Link href={`/projects/aa/${projectID}/activities/add`}>
+                            <SelectLabel className="text-primary flex items-center gap-1 p-2 bg-secondary">
+                              Add new activity <Plus size={18} />
+                            </SelectLabel>
+                          </Link>
                           {activities.map((item: any) => (
                             <FormField
                               key={item.id}
@@ -220,18 +223,18 @@ export default function AddManualTriggerForm() {
                                         onCheckedChange={(checked) => {
                                           return checked
                                             ? field.onChange([
-                                                ...field.value,
-                                                {
-                                                  uuid: item.uuid,
-                                                  title: item.title,
-                                                },
-                                              ])
+                                              ...field.value,
+                                              {
+                                                uuid: item.uuid,
+                                                title: item.title,
+                                              },
+                                            ])
                                             : field.onChange(
-                                                field.value?.filter(
-                                                  (value) =>
-                                                    value.uuid !== item.uuid,
-                                                ),
-                                              );
+                                              field.value?.filter(
+                                                (value) =>
+                                                  value.uuid !== item.uuid,
+                                              ),
+                                            );
                                         }}
                                       />
                                     </FormControl>

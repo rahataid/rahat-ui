@@ -56,16 +56,15 @@ export default function AddAutomatedTriggerForm() {
   //   { title: 'Karnali at Chisapani' },
   // ];
 
-
   const dataSources = useProjectSettingsStore(
-    (s) => s.settings?.[projectID]?.[PROJECT_SETTINGS_KEYS.DATASOURCE]);
-
+    (s) => s.settings?.[projectID]?.[PROJECT_SETTINGS_KEYS.DATASOURCE],
+  );
 
   const dhmStations = [
     {
-      title: dataSources.dhm.location
-    }
-  ]
+      title: dataSources.dhm.location,
+    },
+  ];
 
   const FormSchema = z.object({
     triggerTitle: z.string().min(2, { message: 'Please enter valid name' }),
@@ -317,7 +316,7 @@ export default function AddAutomatedTriggerForm() {
                 }}
               />
             )}
-            {phase === 'ACTION' && (
+            {phase === 'ACTIVATION' && (
               <FormField
                 control={form.control}
                 name="activationLevel"
@@ -349,7 +348,7 @@ export default function AddAutomatedTriggerForm() {
                   <FormItem>
                     <Select
                       onValueChange={field.onChange}
-                    // defaultValue={field.value}
+                      // defaultValue={field.value}
                     >
                       <FormLabel>Activity</FormLabel>
                       <FormControl>
@@ -359,7 +358,9 @@ export default function AddAutomatedTriggerForm() {
                       </FormControl>
                       <SelectContent>
                         <SelectGroup>
-                          <Link href={`/projects/aa/${projectID}/activities/add`}>
+                          <Link
+                            href={`/projects/aa/${projectID}/activities/add`}
+                          >
                             <SelectLabel className="text-primary flex items-center gap-1 p-2 bg-secondary">
                               Add new activity <Plus size={18} />
                             </SelectLabel>
@@ -383,18 +384,18 @@ export default function AddAutomatedTriggerForm() {
                                         onCheckedChange={(checked) => {
                                           return checked
                                             ? field.onChange([
-                                              ...field.value,
-                                              {
-                                                uuid: item.uuid,
-                                                title: item.title,
-                                              },
-                                            ])
+                                                ...field.value,
+                                                {
+                                                  uuid: item.uuid,
+                                                  title: item.title,
+                                                },
+                                              ])
                                             : field.onChange(
-                                              field.value?.filter(
-                                                (value) =>
-                                                  value.uuid !== item.uuid,
-                                              ),
-                                            );
+                                                field.value?.filter(
+                                                  (value) =>
+                                                    value.uuid !== item.uuid,
+                                                ),
+                                              );
                                         }}
                                       />
                                     </FormControl>

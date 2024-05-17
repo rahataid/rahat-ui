@@ -53,12 +53,7 @@ export default function ListView({
                 />
               </TooltipTrigger>
               <TooltipContent>
-                {!targetUUID && (
-                  <p>
-                    Please search for the target beneficiary to enable label
-                    addition
-                  </p>
-                )}
+                {!targetUUID && <p>Please search target beneficiary first</p>}
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>

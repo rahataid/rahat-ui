@@ -1,4 +1,4 @@
-name: Main DRC CI/CD
+name: Main EL CI/CD
 on:
   push:
     branches:
@@ -10,7 +10,7 @@ on:
 
 env:
   CI: false
-  env_main: ${{ secrets.ENV_MAIN_DRC }}
+  env_main: ${{ secrets.ENV_MAIN_EL }}
   env_npmrc: ${{ secrets.ENV_NPMRC }}
 
 jobs:
@@ -35,6 +35,7 @@ jobs:
         run: |
           npm install -g pnpm@8.14.1
           pnpm install
+          npx nx reset
           pnpm build:all
 
       - name: Set up Docker Buildx
@@ -55,15 +56,14 @@ jobs:
           file: Dockerfile.rahat-ui
           # push: ${{ github.event_name == 'push' && 'true' || 'false' }}
           push: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
-          tags: esatya/rahat-ui:drc
+          tags: esatya/rahat-ui:main-el
 
-      # Community-Tool-UI Image
-      - name: build && push community-tool-ui
-        id: build-push-community-tool-ui
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: Dockerfile.community-tool-ui
-          # push: ${{ github.event_name == 'push' && 'true' || 'false' }}
-          push: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
-          tags: esatya/community-tool-ui:drc
+    #   # Community-Tool-UI Image
+    #   - name: build && push community-tool-ui
+    #     id: build-push-community-tool-ui
+    #     uses: docker/build-push-action@v5
+    #     with:
+    #       context: .
+    #       file: Dockerfile.community-tool-ui
+    #       push: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
+    #       tags: esatya/community-tool-ui:main

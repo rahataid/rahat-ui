@@ -36,7 +36,7 @@ export default function PhaseTriggersListView({ triggersList }: IProps) {
     return (
         <div className='bg-card rounded border'>
             <TableComponent>
-                <ScrollArea className="h-[calc(100vh-242px)]">
+                <ScrollArea className="h-[calc(100vh-295px)]">
                     <TableHeader>
                         {table.getHeaderGroups().map((headerGroup) => (
                             <TableRow key={headerGroup.id}>

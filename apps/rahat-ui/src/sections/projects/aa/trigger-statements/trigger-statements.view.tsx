@@ -1,5 +1,3 @@
-'use client';
-
 import * as React from 'react';
 import {
   getCoreRowModel,
@@ -14,9 +12,12 @@ import { useAATriggerStatements, usePagination } from '@rahat-ui/query';
 import CustomPagination from '../../../../components/customPagination';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
+import TriggerStatementsTableFilters from './trigger.statements.table.filters';
+import TriggerPhaseCards from './trigger.phase.cards';
 
 export default function TriggerStatementsView() {
   const { id } = useParams();
+  const projectId = id as UUID;
 
   const { pagination, setNextPage, setPrevPage, setPerPage, setPagination } =
     usePagination();
@@ -26,7 +27,7 @@ export default function TriggerStatementsView() {
   }, []);
 
   const columns = useTriggerStatementTableColumns();
-  const { data: tableData, isLoading } = useAATriggerStatements(id as UUID);
+  const { data: tableData, isLoading } = useAATriggerStatements(projectId);
 
   const table = useReactTable({
     manualPagination: true,
@@ -43,29 +44,35 @@ export default function TriggerStatementsView() {
     // columnVisibility,
     // },
   });
+
+  const handleSearch = () => { }
+
   return (
-    <>
-      <TriggerStatementsTable
-        table={table}
-        projectId={id}
-        loading={isLoading}
-      />
-      <CustomPagination
-        meta={{
-          total: 0,
-          currentPage: 0,
-          lastPage: 0,
-          perPage: 0,
-          next: null,
-          prev: null,
-        }}
-        handleNextPage={setNextPage}
-        handlePrevPage={setPrevPage}
-        handlePageSizeChange={setPerPage}
-        currentPage={pagination.page}
-        perPage={pagination.perPage}
-        total={0}
-      />
-    </>
+    <div className="p-2 bg-secondary h-[calc(100vh-65px)]">
+      <TriggerPhaseCards />
+      <TriggerStatementsTableFilters projectId={projectId} handleSearch={handleSearch} table={table} />
+      <div className='border bg-card rounded'>
+        <TriggerStatementsTable
+          table={table}
+          loading={isLoading}
+        />
+        <CustomPagination
+          meta={{
+            total: 0,
+            currentPage: 0,
+            lastPage: 0,
+            perPage: 0,
+            next: null,
+            prev: null,
+          }}
+          handleNextPage={setNextPage}
+          handlePrevPage={setPrevPage}
+          handlePageSizeChange={setPerPage}
+          currentPage={pagination.page}
+          perPage={pagination.perPage}
+          total={0}
+        />
+      </div>
+    </div>
   );
 }

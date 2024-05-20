@@ -64,12 +64,6 @@ function BeneficiaryView() {
     },
   });
 
-  const [selectedData, setSelectedData] = useState(null) as any;
-
-  const handleBeneficiaryClick = useCallback((item: ListBeneficiary) => {
-    setSelectedData(item);
-  }, []);
-
   useEffect(() => {
     setSelectedBeneficiaries(
       Object.keys(selectedListItems).filter((key) => selectedListItems[key]),

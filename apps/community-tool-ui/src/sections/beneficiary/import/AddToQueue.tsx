@@ -18,6 +18,7 @@ interface IProps {
   invalidFields: any;
   handleExportInvalidClick: any;
   hasUUID: boolean;
+  loading: boolean;
 }
 
 export default function AddToQueue({
@@ -27,6 +28,7 @@ export default function AddToQueue({
   invalidFields,
   handleExportInvalidClick,
   hasUUID,
+  loading,
 }: IProps) {
   const mappedData =
     data.length > 0
@@ -48,6 +50,7 @@ export default function AddToQueue({
   const enableDisableImportButton = () => {
     if (hasUUID) return false;
     if (invalidFields.length || hasDuplicates) return true;
+    if (loading) return true;
   };
   return (
     <div className="relative mt-5">

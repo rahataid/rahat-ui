@@ -50,8 +50,7 @@ import {
 import { Calendar } from '@rahat-ui/shadcn/src/components/ui/calendar';
 import { formatDate, selectNonEmptyFields } from '../../utils';
 import { useEffect } from 'react';
-
-const FIELD_DEF_FETCH_LIMIT = 200;
+import { FIELD_DEF_FETCH_LIMIT } from '../../constants/app.const';
 
 export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
   const { extras }: any = useFormStore();

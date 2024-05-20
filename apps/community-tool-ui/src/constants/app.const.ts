@@ -125,3 +125,5 @@ export const PERMISSIONS = [
 ] as const;
 
 export const MAX_EXPORT_COUNT = 1000;
+
+export const FIELD_DEF_FETCH_LIMIT = 300;

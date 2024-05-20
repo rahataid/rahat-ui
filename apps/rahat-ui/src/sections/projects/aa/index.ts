@@ -1,1 +1,1 @@
-export { default as AAProjectView } from './project.main.view';
+export { default as AAProjectDetailView } from './project.detail.view';

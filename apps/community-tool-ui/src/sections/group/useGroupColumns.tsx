@@ -4,14 +4,20 @@ import {
   ListGroup,
 } from '@rahataid/community-tool-sdk';
 import { ColumnDef } from '@tanstack/react-table';
-import { Eye } from 'lucide-react';
+import { Eye, Trash, Trash2 } from 'lucide-react';
 import { useSecondPanel } from '../../providers/second-panel-provider';
 
 import Link from 'next/link';
 import EditGroupedBeneficiaries from './edit/editGroupedBeneficiaries';
 import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
+import { useCommunityGroupDelete } from '@rahat-ui/community-query';
 
 export const useCommunityGroupTableColumns = () => {
+  const deletegroup = useCommunityGroupDelete();
+  const handleDeleteGroup = (uuid: string) => {
+    deletegroup.mutateAsync(uuid);
+  };
+
   const columns: ColumnDef<ListGroup>[] = [
     {
       header: 'ID',
@@ -35,13 +41,23 @@ export const useCommunityGroupTableColumns = () => {
       header: 'View Detail',
       cell: ({ row }) => {
         return (
-          <Link href={`/group/${row.original.uuid}`}>
-            <Eye
+          <div className="flex gap-4">
+            <Link href={`/group/${row.original.uuid}`}>
+              <Eye
+                size={20}
+                strokeWidth={1.5}
+                className="cursor-pointer hover:text-primary"
+              />
+            </Link>
+
+            <Trash2
               size={20}
               strokeWidth={1.5}
               className="cursor-pointer hover:text-primary"
+              color="red"
+              onClick={() => handleDeleteGroup(row.original.uuid)}
             />
-          </Link>
+          </div>
         );
       },
     },
@@ -121,7 +137,6 @@ export const useCommunityGroupDeailsColumns = () => {
       header: 'View Detail',
 
       cell: ({ row }) => {
-        const beneficiary = row.getValue('beneficiary') as Beneficiary;
         return (
           <Eye
             size={20}

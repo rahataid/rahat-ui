@@ -55,6 +55,13 @@ export default function AddActivities() {
 
   useStakeholdersGroups(projectID as UUID, {});
 
+  const newCommunicationSchema = {
+    groupType: '',
+    groupId: '',
+    communicationType: '',
+    message: '',
+  };
+
   const FormSchema = z.object({
     title: z.string().min(2, { message: 'Title must be at least 4 character' }),
     responsibility: z
@@ -102,9 +109,7 @@ export default function AddActivities() {
       leadTime: '',
       description: '',
       activityDocuments: [],
-      activityCommunication: [
-        { groupType: '', groupId: '', communicationType: '', message: '' },
-      ],
+      activityCommunication: [],
     },
   });
 
@@ -122,10 +127,13 @@ export default function AddActivities() {
   ) => {
     const file = event.target.files?.[0];
     if (file) {
+      const newFileName = `${Date.now()}-${file.name}`;
+      const modifiedFile = new File([file], newFileName, { type: file.type });
+
       const newId = nextId.current++;
-      setDocuments((prev) => [...prev, { id: newId, name: file.name }]);
+      setDocuments((prev) => [...prev, { id: newId, name: modifiedFile.name }]);
       const formData = new FormData();
-      formData.append('file', file);
+      formData.append('file', modifiedFile);
       const { data: afterUpload } = await uploadFile.mutateAsync(formData);
       setAllFiles((prev) => [...prev, afterUpload]);
     }
@@ -149,6 +157,7 @@ export default function AddActivities() {
       setDocuments([]);
     }
   };
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleCreateActivities)}>
@@ -394,8 +403,8 @@ export default function AddActivities() {
                                   (doc) => doc.name !== file.name,
                                 );
                                 setDocuments(newDocuments);
-                                const newFiles = allFiles.filter(
-                                  (f, index) => index !== file.id,
+                                const newFiles = allFiles?.filter(
+                                  (f) => f.fileName !== file.name,
                                 );
                                 setAllFiles(newFiles);
                               }}
@@ -423,12 +432,7 @@ export default function AddActivities() {
                 variant="outline"
                 className="border-dashed border-primary text-primary text-md w-full mt-4"
                 onClick={() =>
-                  activityCommunicationAppend({
-                    groupType: '',
-                    groupId: '',
-                    communicationType: '',
-                    message: '',
-                  })
+                  activityCommunicationAppend(newCommunicationSchema)
                 }
               >
                 Add Communication

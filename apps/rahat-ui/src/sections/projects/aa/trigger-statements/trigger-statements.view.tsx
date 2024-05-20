@@ -49,7 +49,7 @@ export default function TriggerStatementsView() {
 
   return (
     <div className="p-2 bg-secondary h-[calc(100vh-65px)]">
-      <TriggerPhaseCards />
+      <TriggerPhaseCards projectId={projectId} />
       <TriggerStatementsTableFilters projectId={projectId} handleSearch={handleSearch} table={table} />
       <div className='border bg-card rounded'>
         <TriggerStatementsTable

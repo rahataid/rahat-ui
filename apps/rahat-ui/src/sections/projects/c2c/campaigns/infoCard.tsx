@@ -27,37 +27,54 @@ import { useQueryClient } from '@tanstack/react-query';
 import { TAGS } from '@rumsan/react-query/utils/tags';
 import { toast } from 'react-toastify';
 import { useTriggerCampaign } from '@rumsan/communication-query';
+import { useCommunicationQuery } from '@rumsan/communication-query/providers';
+import { useParams } from 'next/navigation';
 
 type IProps = {
-  id?: number;
+  campaignId?: number;
   name?: string;
   type?: string;
   startTime?: string;
   status?: string;
   totalAudience?: number;
+  closeSecondPanel: VoidFunction;
 };
 
 const InfoCard: React.FC<IProps> = ({
-  id,
+  campaignId,
   name,
   type,
   startTime,
   status,
   totalAudience,
+  closeSecondPanel,
 }) => {
-  const queryClient = useQueryClient();
+  const { queryClient } = useCommunicationQuery();
+  const { id } = useParams();
+  const [open, setOpen] = React.useState(false);
+  const [trigger, setTrigger] = React.useState(false);
 
   const triggerCampaign = useTriggerCampaign();
   const handleChange = (e: string) => {
+    setTrigger(true);
     if (e === 'trigger') {
       triggerCampaign
-        .mutateAsync(Number(id))
+        .mutateAsync(Number(campaignId))
         .then(() => {
           toast.success('Campaign Trigger Success.');
-          queryClient.invalidateQueries([TAGS.GET_CAMPAIGNS]);
+          queryClient.invalidateQueries({
+            queryKey: [TAGS.GET_ALL_CAMPAIGNS, { projectId: id }],
+          });
+          setOpen(false);
+          setTrigger(false);
+
+          closeSecondPanel();
         })
+
         .catch((e) => {
           toast.error('Failed to Trigger Campaign.');
+          setOpen(false);
+          setTrigger(false);
         });
     }
   };
@@ -71,7 +88,7 @@ const InfoCard: React.FC<IProps> = ({
               <SelectValue placeholder="Action" />
             </SelectTrigger>
             <SelectContent>
-              <Dialog>
+              <Dialog open={open} onOpenChange={setOpen}>
                 <DialogTrigger className="hover:bg-muted p-1 rounded text-sm text-left w-full">
                   Trigger Campaign
                 </DialogTrigger>
@@ -91,8 +108,9 @@ const InfoCard: React.FC<IProps> = ({
                       variant="ghost"
                       className="text-primary"
                       onClick={() => handleChange('trigger')}
+                      disabled={trigger}
                     >
-                      Trigger
+                      {trigger ? 'Triggering' : 'Trigger'}
                     </Button>
                   </DialogFooter>
                 </DialogContent>

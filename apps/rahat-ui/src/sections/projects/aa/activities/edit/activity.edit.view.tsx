@@ -4,6 +4,7 @@ import { useFieldArray, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
 import {
   Form,
   FormControl,
@@ -81,6 +82,7 @@ export default function EditActivity() {
     description: z
       .string()
       .min(5, { message: 'Must be at least 5 characters' }),
+    isAutomated: z.boolean().optional(),
     activityDocuments: z
       .array(
         z.object({
@@ -117,6 +119,7 @@ export default function EditActivity() {
       description: activityDetail?.description,
       activityDocuments: activityDetail?.activityDocuments,
       activityCommunication: activityDetail?.activityCommunication,
+      isAutomated: activityDetail?.isAutomated,
     },
   });
 
@@ -148,7 +151,6 @@ export default function EditActivity() {
 
   React.useEffect(() => {
     form.setValue('activityDocuments', allFiles);
-    console.log('yooo');
   }, [allFiles, setAllFiles]);
 
   React.useEffect(() => {
@@ -338,6 +340,30 @@ export default function EditActivity() {
                         </FormControl>
                         <FormMessage />
                       </FormItem>
+                    );
+                  }}
+                />
+                <FormField
+                  control={form.control}
+                  name="isAutomated"
+                  render={({ field }) => {
+                    return (
+                      <div className="grid gap-2 pl-2">
+                        <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                          <FormControl>
+                            <Checkbox
+                              checked={field.value}
+                              onCheckedChange={(checked) =>
+                                field.onChange(checked)
+                              }
+                            />
+                          </FormControl>
+                          <FormLabel className="text-sm font-normal">
+                            Is Automated Activity?
+                          </FormLabel>
+                          <FormMessage />
+                        </FormItem>
+                      </div>
                     );
                   }}
                 />

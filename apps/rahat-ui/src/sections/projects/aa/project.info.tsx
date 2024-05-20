@@ -1,44 +1,35 @@
-import { Project } from '@rahataid/sdk/project/project.types';
 import { FC } from 'react';
+import Image from 'next/image';
+import { Project } from '@rahataid/sdk/project/project.types';
+import EditButton from '../components/edit.btn';
+import DeleteButton from '../components/delete.btn';
 
 type ProjectInfoProps = {
   project: Project;
 };
 
 const ProjectInfo: FC<ProjectInfoProps> = ({ project }) => {
-  const renderExtras = (extras: JSON | string | Record<string, string>) => {
-    if (typeof extras === 'string') {
-      return <p className="font-light">{extras}</p>;
-    }
-    return Object.keys(extras).map((key) => {
-      return (
-        <div key={key}>
-          <p className="font-medium text-primary">{extras[key]}</p>
-          <p className="font-light">{key}</p>
-        </div>
-      );
-    });
-  };
+  const onDelete = () => { }
   return (
-    <div className="grid grid-cols-1 rounded-sm bg-card p-4 mb-2 shadow">
-      <div>
-        <p className="font-medium text-primary">{project?.name}</p>
-      </div>
-      <div className="flex items-center flex-wrap mt-4 sm:mt-6 gap-10 md:gap-32">
-        {renderExtras(project?.extras || {})}
-        <div>
-          <p className="font-medium text-primary">{project?.status}</p>
-          <p className="font-light">Status</p>
-        </div>
-        <div>
-          <p className="font-medium text-primary">{project?.type}</p>
-          <p className="font-light">Type</p>
+    <>
+      <div className='flex justify-between items-center mb-4'>
+        <h1 className='font-semibold text-xl'>{project?.name}</h1>
+        <div className="flex gap-4 items-center">
+          <EditButton path='/' />
+          <DeleteButton name='project' handleContinueClick={onDelete} />
         </div>
       </div>
-      <div>
-        <p className="mt-4 sm:mt-8 sm:w-2/3">{project?.description}</p>
+      <div className='grid grid-cols-5'>
+        <p className='col-span-3'>{project?.description}</p>
+        <Image
+          className="col-span-2 w-full rounded"
+          src='/svg/aa-project.svg'
+          alt="project"
+          height={100}
+          width={500}
+        />
       </div>
-    </div>
+    </>
   );
 };
 

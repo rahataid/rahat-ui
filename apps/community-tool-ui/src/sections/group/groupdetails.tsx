@@ -164,29 +164,43 @@ export default function GroupDetail({ uuid }: IProps) {
   // };
 
   const handlePurge = () => {
-    Swal.fire({
-      title: 'CAUTION!',
-      text: ' Selected beneficiaries will be deleted permanently!',
-      icon: 'warning',
-      showDenyButton: true,
-      confirmButtonText: 'Yes, I am sure!',
-      denyButtonText: 'No, cancel it!',
-      customClass: {
-        actions: 'my-actions',
-        confirmButton: 'order-1',
-        denyButton: 'order-2',
-      },
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        const data = {
-          groupUuid: uuid,
-          beneficiaryUuid: deleteSelectedBeneficiariesFromImport,
-        };
-        await purgeCommunityGroup.mutateAsync(data as GroupPurge);
-        resetDeletedSelectedBeneficiaries();
-        router.push('/group/import-logs');
-      }
-    });
+    if (deleteSelectedBeneficiariesFromImport.length > 0) {
+      Swal.fire({
+        title: 'CAUTION!',
+        text: ' Selected beneficiaries will be deleted permanently!',
+        icon: 'warning',
+        showDenyButton: true,
+        confirmButtonText: 'Yes, I am sure!',
+        denyButtonText: 'No, cancel it!',
+        customClass: {
+          actions: 'my-actions',
+          confirmButton: 'order-1',
+          denyButton: 'order-2',
+        },
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          const data = {
+            groupUuid: uuid,
+            beneficiaryUuid: deleteSelectedBeneficiariesFromImport,
+          };
+
+          await purgeCommunityGroup.mutateAsync(data as GroupPurge);
+          resetDeletedSelectedBeneficiaries();
+          router.push('/group/import-logs');
+        }
+      });
+    } else {
+      Swal.fire({
+        title: 'CAUTION!',
+        text: 'No beneficiary selected!',
+        icon: 'warning',
+        customClass: {
+          actions: 'my-actions',
+          confirmButton: 'order-1',
+          denyButton: 'order-2',
+        },
+      });
+    }
   };
 
   useEffect(() => {

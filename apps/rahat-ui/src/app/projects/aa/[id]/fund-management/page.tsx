@@ -1,4 +1,4 @@
-import { FundManagementView } from '../../../../../sections/projects/aa/fund-mangement';
+import { FundManagementView } from '../../../../../sections/projects/aa/fund-management';
 
 const Page = () => {
   return <FundManagementView />;

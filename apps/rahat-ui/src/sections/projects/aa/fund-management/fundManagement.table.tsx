@@ -137,9 +137,22 @@ export const columns: ColumnDef<FundManagement>[] = [
 
       return (
         <div className="flex items-center justify-evenly">
-          <Eye size={20} strokeWidth={1.25} />
-          <Pencil className="text-blue-600" size={20} strokeWidth={1.25} />
-          <Trash2 className="text-red-600" size={20} strokeWidth={1.25} />
+          <Eye
+            className="cursor-pointer"
+            onClick={() => console.log('click')}
+            size={20}
+            strokeWidth={1.25}
+          />
+          <Pencil
+            className="text-blue-600 cursor-pointer"
+            size={20}
+            strokeWidth={1.25}
+          />
+          <Trash2
+            className="text-red-600 cursor-pointer"
+            size={20}
+            strokeWidth={1.25}
+          />
         </div>
       );
     },

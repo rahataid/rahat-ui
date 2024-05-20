@@ -1,16 +1,19 @@
 import { UUID } from "crypto"
 import PhaseCard from "../../components/phase.card"
+import { useActivitiesPhase, useActivitiesStore } from "@rahat-ui/query"
 
 type IProps = {
     projectId: UUID
 }
 
 export default function TriggerPhaseCards({ projectId }: IProps) {
-    const phaseId = 1
+    useActivitiesPhase(projectId);
+    const phases = useActivitiesStore((state) => state.phases)
     return (
         <div className="flex gap-2 mb-2">
-            <PhaseCard initial="R" name="Readiness Phase" path={`/projects/aa/${projectId}/phase/${phaseId}`} />
-            <PhaseCard initial="A" name="Activation Phase" path={`/projects/aa/${projectId}/phase/${phaseId}`} />
+            {phases.filter(p => p.name !== "PREPAREDNESS").map(d => (
+                <PhaseCard name={d.name} path={`/projects/aa/${projectId}/phase/${d.uuid}`} />
+            ))}
         </div>
     )
 }

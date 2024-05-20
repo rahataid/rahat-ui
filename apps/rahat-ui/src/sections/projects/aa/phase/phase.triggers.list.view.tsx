@@ -10,7 +10,11 @@ import {
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { Switch } from '@rahat-ui/shadcn/src/components/ui/switch';
 
-export default function PhaseTriggersListView() {
+type IProps = {
+    triggersList: any
+}
+
+export default function PhaseTriggersListView({ triggersList }: IProps) {
     const columns: ColumnDef<any>[] = [
         {
             accessorKey: 'title',
@@ -25,7 +29,7 @@ export default function PhaseTriggersListView() {
     ];
 
     const table = useReactTable({
-        data: [{ title: 'Testing Title' }],
+        data: triggersList ?? [],
         columns,
         getCoreRowModel: getCoreRowModel(),
     });

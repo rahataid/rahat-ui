@@ -1,12 +1,17 @@
-import { Plus } from "lucide-react";
+import { useParams } from "next/navigation";
+import { useSinglePhase } from "@rahat-ui/query";
 import PhaseTriggersListView from "./phase.triggers.list.view";
 import { Button } from "@rahat-ui/shadcn/src/components/ui/button";
+import { Plus } from "lucide-react";
+import { UUID } from "crypto";
 
 export default function PhaseDetailView() {
+    const { id: projectId, phaseId } = useParams();
+    const { data: phaseDetail } = useSinglePhase(projectId as UUID, phaseId as UUID)
     return (
         <div className="p-2 h-[calc(100vh-65px)] bg-secondary">
             <div className="mb-4">
-                <h1 className="font-semibold text-lg mb-2">Phase Name</h1>
+                <h1 className="font-semibold text-lg mb-2">{phaseDetail?.name}</h1>
                 <div className="flex gap-2">
                     <div className="grid gap-2 px-4 py-2 bg-card rounded">
                         <h1 className="text-muted-foreground">Required Triggers</h1>
@@ -26,7 +31,7 @@ export default function PhaseDetailView() {
                         <p>Select Triggers</p>
                     </Button>
                 </div>
-                <PhaseTriggersListView />
+                <PhaseTriggersListView triggersList={phaseDetail?.triggers} />
             </div>
         </div>
     )

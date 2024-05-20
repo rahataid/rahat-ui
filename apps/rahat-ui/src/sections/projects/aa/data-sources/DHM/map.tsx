@@ -28,10 +28,10 @@ function MapClusters({ coordinates, ...other }: { coordinates: number[], other: 
     return (
         <Map
             initialViewState={{
-                longitude: coordinates[0],
-                latitude: coordinates[1],
+                longitude: 84.1240,
+                latitude: 28.3949,
                 zoom: 6,
-            }}
+            }}//Nepal's coordinates for initial view
             {...other}
         >
             <Source

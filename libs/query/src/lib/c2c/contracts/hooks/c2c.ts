@@ -42,7 +42,7 @@ export const useDisburseTokenToBeneficiaries = () => {
             return encodeFunctionData({
               abi: c2CProjectAbi,
               functionName: 'assignClaims',
-              args: [beneficiary, c2cProjectAddress, parseEther(amount)],
+              args: [beneficiary, rahatTokenAddress, BigInt(amount)],
             });
           },
         );
@@ -51,34 +51,31 @@ export const useDisburseTokenToBeneficiaries = () => {
           args: [encodeAssignClaimsToBeneficiary],
           address: c2cProjectAddress,
         });
-        console.log(`second`);
 
-        const encodeGetBeneficiaryClaims = beneficiaryAddresses.map(
-          (beneficiary) => {
-            return encodeFunctionData({
-              abi: c2CProjectAbi,
-              functionName: 'beneficiaryClaims',
-              args: [beneficiary],
-            });
-          },
-        );
-        console.log({ encodeGetBeneficiaryClaims });
+        // const encodeGetBeneficiaryClaims = beneficiaryAddresses.map(
+        //   (beneficiary) => {
+        //     return encodeFunctionData({
+        //       abi: c2CProjectAbi,
+        //       functionName: 'totalClaimsAssigned',
+        //       args: [],
+        //     });
+        //   },
+        // );
         // const claims = await multi.writeContractAsync({
         //   args: [encodeGetBeneficiaryClaims],
         //   address: rahatTokenAddress,
         // });
-        // console.log('claims', claims);
-        // const encodedForDisburse = beneficiaryAddresses.map((beneficiary) => {
-        //   return encodeFunctionData({
-        //     abi: c2CProjectAbi,
-        //     functionName: 'processTransferToBeneficiary',
-        //     args: [beneficiary, rahatTokenAddress, parseEther(amount)],
-        //   });
-        // });
-        // return multi.writeContractAsync({
-        //   args: [encodedForDisburse],
-        //   address: rahatTokenAddress,
-        // });
+        const encodedForDisburse = beneficiaryAddresses.map((beneficiary) => {
+          return encodeFunctionData({
+            abi: c2CProjectAbi,
+            functionName: 'processTransferToBeneficiary',
+            args: [beneficiary, rahatTokenAddress, BigInt(amount)],
+          });
+        });
+        return multi.writeContractAsync({
+          args: [encodedForDisburse],
+          address: c2cProjectAddress,
+        });
       },
     },
     queryClient,

@@ -139,7 +139,7 @@ const BeneficiaryDetailTableView = () => {
               </Select>
             </div>
           </div>
-          {table.getSelectedRowModel().rows.length ? (
+          {selectedRowAddresses.length ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <DisburseFlow selectedBeneficiaries={selectedRowAddresses} />

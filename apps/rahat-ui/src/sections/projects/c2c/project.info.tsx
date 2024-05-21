@@ -6,17 +6,26 @@ type ProjectInfoProps = {
 };
 
 const ProjectInfo: FC<ProjectInfoProps> = ({ project }) => {
-  const renderExtras = (extras: JSON | string | Record<string, string>) => {
+  const renderExtras = (extras: JSON | string | Record<string, any>) => {
     if (typeof extras === 'string') {
       return <p className="font-light">{extras}</p>;
     }
     return Object.keys(extras).map((key) => {
+      const value = (extras as Record<string, any>)[key];
+
+      if (key === 'treasury') {
+        return null;
+      }
       return (
         <div key={key}>
-          <p className="font-medium text-primary">
-            {(extras as Record<string, string>)[key]}
-          </p>
-          <p className="font-light">{key}</p>
+          {typeof value === 'object' && value !== null ? (
+            renderExtras(value)
+          ) : (
+            <>
+              <p className="font-medium text-primary">{key}</p>
+              <p className="font-light">{String(value)}</p>
+            </>
+          )}
         </div>
       );
     });

@@ -30,8 +30,8 @@ export default function Step2DisburseAmount({
         <div>
           Send Amount{' '}
           <span className="text-primary">
-            ({selectedBeneficiaries.length}Beneficiar
-            {selectedBeneficiaries.length > 1 ? 'ies' : 'y'} )
+            ({selectedBeneficiaries.length} Beneficiar
+            {selectedBeneficiaries.length > 1 ? 'ies' : 'y'})
           </span>
         </div>
         <div className="flex w-1/3 max-w-sm items-center space-x-2 gap-2">

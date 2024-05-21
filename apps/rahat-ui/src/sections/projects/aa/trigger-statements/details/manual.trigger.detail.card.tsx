@@ -35,7 +35,7 @@ export default function ManualTriggerDetailCard({
         </div>
         <div className="col-span-2">
           <p className="text-sm text-muted-foreground">Notes</p>
-          <p>{notes}</p>
+          <p>{notes ? notes : 'N/A'}</p>
         </div>
       </div>
     </div>

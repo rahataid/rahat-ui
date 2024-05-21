@@ -32,6 +32,7 @@ import {
 import { ChevronDown, Eye, Pencil, Trash2 } from 'lucide-react';
 import * as React from 'react';
 import AddButton from '../../components/add.btn';
+import { useParams, useRouter } from 'next/navigation';
 
 const data: FundManagement[] = [
   {
@@ -133,13 +134,11 @@ export const columns: ColumnDef<FundManagement>[] = [
     id: 'actions',
     enableHiding: false,
     cell: ({ row }) => {
-      const payment = row.original;
-
       return (
         <div className="flex items-center justify-evenly">
           <Eye
             className="cursor-pointer"
-            onClick={() => console.log('click')}
+            // onClick={() => router.push(`projects/aa/${pid}/fund-management/1`)}
             size={20}
             strokeWidth={1.25}
           />
@@ -167,6 +166,7 @@ export function FundManagementTable() {
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
+  const pid = useParams();
 
   const table = useReactTable({
     data,
@@ -224,7 +224,10 @@ export function FundManagementTable() {
               })}
           </DropdownMenuContent>
         </DropdownMenu>
-        <AddButton name="Add Fund Management" path="#" />
+        <AddButton
+          name="Add Fund Management"
+          path={`/projects/aa/${pid}/fund-management/add`}
+        />
       </div>
       <div className="rounded border bg-card">
         <Table>

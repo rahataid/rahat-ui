@@ -139,8 +139,10 @@ export const useCommunityGroupPurge = () => {
       // TODO
       mutationFn: groupClient.purgeGroup,
       onSuccess: () => {
-        Swal.fire('Group and all the beneficiaries deleted!', '', 'success');
-        qc.invalidateQueries({ queryKey: [TAGS.LIST_COMMUNITY_GROUP] });
+        Swal.fire('Selected Beneficiaries deleted!', '', 'success');
+        qc.invalidateQueries({
+          queryKey: [TAGS.LIST_COMMUNITY_GROUP, TAGS.GET_BENEFICIARIES],
+        });
       },
       onError: (error: any) => {
         Swal.fire({

@@ -173,7 +173,9 @@ export default function BenImp({ extraFields }: IProps) {
       const workbook = xlsx.read(data, { type: 'array' });
       const sheetName = workbook.SheetNames[0];
       const worksheet = workbook.Sheets[sheetName];
-      const json = xlsx.utils.sheet_to_json(worksheet) as any;
+      const json = xlsx.utils.sheet_to_json(worksheet, {
+        defval: '',
+      }) as any;
       const sanitized = removeFieldsWithUnderscore(json || []);
       setRawData(sanitized);
     };
@@ -369,6 +371,8 @@ export default function BenImp({ extraFields }: IProps) {
   if (extraFields.length) BENEF_DB_FIELDS.push(...extraFields);
   const uniqueDBFields = [...new Set(BENEF_DB_FIELDS)];
 
+  console.log('RawData=>', rawData);
+
   return (
     <div className="h-custom">
       <div className="h-full p-4">
@@ -453,6 +457,7 @@ export default function BenImp({ extraFields }: IProps) {
               data={processedData}
               handleImportClick={handleImportNowClick}
               invalidFields={invalidFields}
+              loading={loading}
             />
           </div>
         )}

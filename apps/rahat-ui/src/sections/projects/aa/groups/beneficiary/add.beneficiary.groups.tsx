@@ -1,5 +1,10 @@
+import * as React from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { usePagination, useProjectBeneficiaries } from '@rahat-ui/query';
+import {
+  usePagination,
+  useProjectBeneficiaries,
+  useCreateBenficiariesGroups,
+} from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   Form,
@@ -19,7 +24,6 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import { useParams } from 'next/navigation';
-import * as React from 'react';
 
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
@@ -28,6 +32,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { useProjectBeneficiaryTableColumns } from '../../beneficiary/use-table-column';
 import BeneficiaryMembersTable from '../beneficiary.members.table';
+import { toast } from 'react-toastify';
 
 export default function AddBeneficiaryGroups() {
   const [showMembers, setShowMembers] = React.useState(false);
@@ -37,7 +42,7 @@ export default function AddBeneficiaryGroups() {
   );
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
-
+  const { id: projectId } = useParams();
   const uuid = useParams().id as UUID;
 
   const {
@@ -86,6 +91,8 @@ export default function AddBeneficiaryGroups() {
     },
   });
 
+  const createBeneficiariesGroup = useCreateBenficiariesGroups();
+
   const FormSchema = z.object({
     name: z.string().min(2, { message: 'Please enter group name.' }),
   });
@@ -97,39 +104,37 @@ export default function AddBeneficiaryGroups() {
     },
   });
 
-  //   const handleCreateStakeholdersGroups = async (
-  //     data: z.infer<typeof FormSchema>,
-  //   ) => {
-  //     const stakeHolders = table
-  //       .getSelectedRowModel()
-  //       .rows?.map((stakeholder: any) => ({ uuid: stakeholder?.original?.uuid }));
-  //     try {
-  //       if (!stakeHolders.length) {
-  //         toast.error('Please select members to create group');
-  //         return;
-  //       }
-  //       await createStakeholdersGroup.mutateAsync({
-  //         projectUUID: projectId as UUID,
-  //         stakeholdersGroupPayload: {
-  //           ...data,
-  //           stakeholders: stakeHolders,
-  //         },
-  //       });
-  //     } catch (e) {
-  //       console.error('Creating Stakeholders Group Error::', e);
-  //     } finally {
-  //       if (stakeHolders.length) {
-  //         form.reset();
-  //         table.resetRowSelection();
-  //       }
-  //     }
-  //   };
+  const handleCreateBeneficiariesGroups = async (
+    data: z.infer<typeof FormSchema>,
+  ) => {
+    const beneficiaries = table
+      .getSelectedRowModel()
+      .rows?.map((beneficiary: any) => ({ uuid: beneficiary?.original?.uuid }));
+    try {
+      if (!beneficiaries.length) {
+        toast.error('Please select members to create group');
+        return;
+      }
+      await createBeneficiariesGroup.mutateAsync({
+        projectUUID: projectId as UUID,
+        beneficiariesGroupPayload: {
+          ...data,
+          beneficiaries: beneficiaries,
+        },
+      });
+    } catch (e) {
+      console.error('Creating Beneficiaries Group Error::', e);
+    } finally {
+      if (beneficiaries.length) {
+        form.reset();
+        table.resetRowSelection();
+      }
+    }
+  };
 
   return (
     <Form {...form}>
-      <form
-      //   onSubmit={form.handleSubmit(handleCreateStakeholdersGroups)}
-      >
+      <form onSubmit={form.handleSubmit(handleCreateBeneficiariesGroups)}>
         <div className="p-4 h-[calc(100vh-130px)] bg-card">
           <h1 className="text-lg font-semibold mb-6">
             Add : Beneficiaries Groups

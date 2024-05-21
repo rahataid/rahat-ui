@@ -12,15 +12,15 @@ import {
 } from '@tanstack/react-table';
 import {
   usePagination,
-  useStakeholdersGroups,
-  useStakeholdersGroupsStore,
+  useBeneficiariesGroups,
+  useBeneficiariesGroupStore,
 } from '@rahat-ui/query';
 import BeneficiaryGroupsTable from './beneficiary.groups.table';
 import useBeneficiaryGroupsTableColumn from './useBeneficiaryGroupsTableColumn';
 import CustomPagination from '../../../../../components/customPagination';
 import { UUID } from 'crypto';
 
-export default function StakeholdersGroupsListView() {
+export default function BeneficiariesGroupsListView() {
   const { id } = useParams();
 
   const { pagination, setNextPage, setPrevPage, setPerPage, setPagination } =
@@ -30,12 +30,12 @@ export default function StakeholdersGroupsListView() {
     setPagination({ page: 1, perPage: 10 });
   }, []);
 
-  useStakeholdersGroups(id as UUID, { ...pagination });
+  useBeneficiariesGroups(id as UUID, { ...pagination });
 
-  const { stakeholdersGroups, stakeholdersGroupsMeta } =
-    useStakeholdersGroupsStore((state) => ({
-      stakeholdersGroups: state.stakeholdersGroups,
-      stakeholdersGroupsMeta: state.stakeholdersGroupsMeta,
+  const { beneficiariesGroups, beneficiariesGroupsMeta } =
+    useBeneficiariesGroupStore((state) => ({
+      beneficiariesGroups: state.beneficiariesGroups,
+      beneficiariesGroupsMeta: state.beneficiariesGroupsMeta,
     }));
 
   const columns = useBeneficiaryGroupsTableColumn();
@@ -50,7 +50,7 @@ export default function StakeholdersGroupsListView() {
 
   const table = useReactTable({
     manualPagination: true,
-    data: stakeholdersGroups ?? [],
+    data: beneficiariesGroups ?? [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -73,7 +73,7 @@ export default function StakeholdersGroupsListView() {
       <BeneficiaryGroupsTable table={table} />
       <CustomPagination
         meta={
-          stakeholdersGroupsMeta || {
+          beneficiariesGroupsMeta || {
             total: 0,
             currentPage: 0,
             lastPage: 0,
@@ -87,7 +87,7 @@ export default function StakeholdersGroupsListView() {
         handlePageSizeChange={setPerPage}
         currentPage={pagination.page}
         perPage={pagination.perPage}
-        total={stakeholdersGroupsMeta?.lastPage || 0}
+        total={beneficiariesGroupsMeta?.lastPage || 0}
       />
     </div>
   );

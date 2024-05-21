@@ -5,6 +5,12 @@ import { Banknote, ReceiptText } from 'lucide-react';
 import RecentTransaction from './recent.transaction';
 import { useC2CProjectSubgraphStore } from '@rahataid/c2c-query';
 import { formatEther } from 'viem';
+import {
+  PROJECT_SETTINGS_KEYS,
+  useProjectSettingsStore,
+} from '@rahat-ui/query';
+import { useParams } from 'next/navigation';
+import { shortenAddress } from 'apps/rahat-ui/src/utils/getProjectAddress';
 
 const FundManagementView = () => {
   const mySeries = [
@@ -15,6 +21,12 @@ const FundManagementView = () => {
   ];
   const projectDetails = useC2CProjectSubgraphStore(
     (state) => state.projectDetails,
+  );
+
+  const { id } = useParams();
+
+  const contractSettings = useProjectSettingsStore(
+    (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT],
   );
   return (
     <>
@@ -31,7 +43,7 @@ const FundManagementView = () => {
         <DataCard
           className=""
           title="Project Contract Address"
-          smallNumber={'0x67FA...B91396'}
+          smallNumber={shortenAddress(contractSettings?.c2cproject?.address)}
           subTitle=""
           Icon={ReceiptText}
         />

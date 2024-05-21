@@ -21,12 +21,7 @@ export const useCommunityGroupCreate = () => {
     onSuccess: () => {
       Swal.fire('Group Created Successfully', '', 'success');
       queryClient.invalidateQueries({
-        queryKey: [
-          TAGS.LIST_COMMUNITY_GROUP,
-          {
-            exact: true,
-          },
-        ],
+        queryKey: [TAGS.LIST_COMMUNITY_GROUP],
       });
     },
     onError: (error: any) => {
@@ -50,7 +45,7 @@ export const useCommunityGroupList = (
   // }));
   const query = useQuery(
     {
-      queryKey: [TAGS.LIST_COMMUNITY_GROUP, { exact: true }, payload],
+      queryKey: [TAGS.LIST_COMMUNITY_GROUP, payload],
       queryFn: () => groupClient.list(payload),
     },
     queryClient,
@@ -93,7 +88,6 @@ export const useCommunityGroupedBeneficiariesDownload = () => {
 
 export const useCommunityGroupRemove = () => {
   const { queryClient, rumsanService } = useRSQuery();
-  const qc = useQueryClient();
   const groupClient = getGroupClient(rumsanService.client);
 
   return useMutation(
@@ -102,7 +96,9 @@ export const useCommunityGroupRemove = () => {
       mutationFn: groupClient.remove,
       onSuccess: () => {
         Swal.fire('Beneficiary Deleted Successfully', '', 'success');
-        qc.invalidateQueries({ queryKey: [TAGS.LIST_COMMUNITY_GROUP] });
+        queryClient.invalidateQueries({
+          queryKey: [TAGS.LIST_COMMUNITY_GROUP],
+        });
       },
       onError: (error: any) => {
         Swal.fire({
@@ -119,35 +115,54 @@ export const useCommunityGroupRemove = () => {
 
 export const useCommunityGroupPurge = () => {
   const { queryClient, rumsanService } = useRSQuery();
-  const qc = useQueryClient();
   const groupClient = getGroupClient(rumsanService.client);
 
   return useMutation(
     {
-      mutationKey: [
-        TAGS.PURGE_COMMUNITY_GROUP,
-        TAGS.LIST_COMMUNITY_BENFICIARIES,
-        { exact: true },
-      ],
-      // TODO
-      mutationFn: async (data: GroupPurge) =>
-        await groupClient.purgeGroup(data),
-      onSuccess: async (data: any) => {
-        await Swal.fire('Selected Beneficiaries deleted!', '', 'success');
-        await qc.invalidateQueries({
-          queryKey: [
-            TAGS.PURGE_COMMUNITY_GROUP,
-            TAGS.LIST_COMMUNITY_BENFICIARIES,
-            { exact: true },
-          ],
+      mutationKey: [TAGS.PURGE_COMMUNITY_GROUP],
+
+      mutationFn: async (data: GroupPurge) => {
+        const { value, isConfirmed } = await Swal.fire({
+          title: 'CAUTION!',
+          text: ' Selected beneficiaries will be deleted permanently!',
+          icon: 'warning',
+          showDenyButton: true,
+          confirmButtonText: 'Yes, I am sure!',
+          denyButtonText: 'No, cancel it!',
+          customClass: {
+            actions: 'my-actions',
+            confirmButton: 'order-1',
+            denyButton: 'order-2',
+          },
         });
+
+        if (!isConfirmed) return null;
+
+        return groupClient.purgeGroup(data);
+      },
+      onSuccess: async (data: any) => {
+        if (data) {
+          await Swal.fire('Selected Beneficiaries deleted!', '', 'success');
+          await queryClient.invalidateQueries({
+            queryKey: [TAGS.LIST_COMMUNITY_BENFICIARIES, { exact: true }],
+          });
+          return queryClient.invalidateQueries({
+            queryKey: [TAGS.LIST_COMMUNITY_GROUP],
+          });
+        }
       },
       onError: (error: any) => {
         Swal.fire({
           icon: 'error',
           title:
             error?.response?.data?.message ||
-            'Encounter error on Removing Data',
+            'Encounter error on Removing Data' ||
+            'Operation Canceled',
+        });
+      },
+      onSettled: () => {
+        queryClient.invalidateQueries({
+          queryKey: [TAGS.LIST_COMMUNITY_GROUP],
         });
       },
     },
@@ -157,25 +172,30 @@ export const useCommunityGroupPurge = () => {
 
 export const useCommunityGroupDelete = () => {
   const { queryClient, rumsanService } = useRSQuery();
-  const qc = useQueryClient();
   const groupClient = getGroupClient(rumsanService.client);
   return useMutation(
     {
       mutationKey: [TAGS.REMOVE_COMMUNITY_GROUP],
-      mutationFn: (uuid: string) => groupClient.deleteGroup(uuid as string),
-      onSuccess: (data: any) => {
-        Swal.fire({
-          icon: data?.response?.data?.flag === 'true' ? 'success' : 'info',
-          title: data?.response?.data?.message,
+      mutationFn: async (uuid: string) => {
+        const { isConfirmed } = await Swal.fire({
+          title: 'Delete Group',
+          text: 'Are you sure you want to delete this Group Permanently?',
+          showCancelButton: true,
+          confirmButtonText: 'Delete',
+          cancelButtonText: 'Cancel',
+          confirmButtonColor: '#dc3545',
         });
-
-        qc.invalidateQueries({
-          queryKey: [
-            TAGS.LIST_COMMUNITY_GROUP,
-            {
-              exact: true,
-            },
-          ],
+        if (!isConfirmed) return null;
+        return groupClient.deleteGroup(uuid as string);
+      },
+      onSuccess: (data: any) => {
+        if (data)
+          Swal.fire({
+            icon: 'success',
+            title: data?.response?.data,
+          });
+        queryClient.invalidateQueries({
+          queryKey: [TAGS.LIST_COMMUNITY_GROUP],
         });
       },
       onError: (error: any) => {

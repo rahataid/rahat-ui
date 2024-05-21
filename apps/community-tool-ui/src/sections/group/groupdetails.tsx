@@ -1,16 +1,11 @@
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from '@rahat-ui/shadcn/components/tabs';
+import { Tabs, TabsContent } from '@rahat-ui/shadcn/components/tabs';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/components/tooltip';
-import { Download, Minus, MoreVertical, Trash2 } from 'lucide-react';
+import { Download, MoreVertical, Trash2 } from 'lucide-react';
 
 import {
   VisibilityState,
@@ -35,13 +30,13 @@ import {
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
+import { GroupPurge } from '@rahataid/community-tool-sdk';
+import { useRouter } from 'next/navigation';
 import Swal from 'sweetalert2';
 import * as XLSX from 'xlsx';
 import CustomPagination from '../../components/customPagination';
 import GroupDetailTable from './group.table';
 import { useCommunityGroupDeailsColumns } from './useGroupColumns';
-import { useRouter } from 'next/navigation';
-import { GroupPurge } from '@rahataid/community-tool-sdk';
 
 type IProps = {
   uuid: string;
@@ -163,47 +158,25 @@ export default function GroupDetail({ uuid }: IProps) {
   //   });
   // };
 
-  const handlePurge = () => {
+  const handlePurge = async () => {
+    const data = {
+      groupUuid: uuid,
+      beneficiaryUuid: deleteSelectedBeneficiariesFromImport,
+    };
     if (deleteSelectedBeneficiariesFromImport.length > 0) {
-      Swal.fire({
-        title: 'CAUTION!',
-        text: ' Selected beneficiaries will be deleted permanently!',
-        icon: 'warning',
-        showDenyButton: true,
-        confirmButtonText: 'Yes, I am sure!',
-        denyButtonText: 'No, cancel it!',
-        customClass: {
-          actions: 'my-actions',
-          confirmButton: 'order-1',
-          denyButton: 'order-2',
-        },
-      }).then(async (result) => {
-        if (result.isConfirmed) {
-          const data = {
-            groupUuid: uuid,
-            beneficiaryUuid: deleteSelectedBeneficiariesFromImport,
-          };
-          await purgeCommunityGroup.mutateAsync(data as GroupPurge);
-          resetDeletedSelectedBeneficiaries();
-          router.push('/group/import-logs');
-        }
-      });
-    } else {
-      Swal.fire({
-        title: 'CAUTION!',
-        text: ' No beneficiary selected!',
-        icon: 'warning',
-        showDenyButton: true,
-        confirmButtonText: 'Yes, I am sure!',
-        denyButtonText: 'No, cancel it!',
-        customClass: {
-          actions: 'my-actions',
-          confirmButton: 'order-1',
-          denyButton: 'order-2',
-        },
-      });
+      await purgeCommunityGroup.mutateAsync(data as GroupPurge);
+      return resetDeletedSelectedBeneficiaries();
+      // return router.push('/group/import-logs');
     }
+
+    Swal.fire('Please select beneficiary to delete', '', 'warning');
   };
+
+  useEffect(() => {
+    if (purgeCommunityGroup.data) {
+      router.push('/group/import-logs');
+    }
+  }, [purgeCommunityGroup.data, router]);
 
   useEffect(() => {
     setDeleteSelectedBeneficiariesFromImport(

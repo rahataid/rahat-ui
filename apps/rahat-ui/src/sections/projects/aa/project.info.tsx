@@ -12,7 +12,7 @@ const ProjectInfo: FC<ProjectInfoProps> = ({ project }) => {
   const onDelete = () => { }
   return (
     <>
-      <div className='flex justify-between items-center mb-4'>
+      <div className='flex justify-between items-center'>
         <h1 className='font-semibold text-xl'>{project?.name}</h1>
         <div className="flex gap-4 items-center">
           <EditButton path='/' />

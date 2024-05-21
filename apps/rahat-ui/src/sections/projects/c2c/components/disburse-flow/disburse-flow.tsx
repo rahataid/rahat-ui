@@ -1,42 +1,55 @@
-import React, { FC, useState } from 'react';
-import Step1DisburseMethod from './1-disburse-method';
-import Step2DisburseAmount from './2-disburse-amount';
-import Step3DisburseSummary from './3-disburse-summary';
+import { AlertDialogHeader } from '@rahat-ui/shadcn/src/components/ui/alert-dialog';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   Dialog,
   DialogContent,
   DialogTitle,
   DialogTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dialog';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { AlertDialogHeader } from '@rahat-ui/shadcn/src/components/ui/alert-dialog';
-import {
-  useC2CProjectSubgraphStore,
-  useDisburseTokenToBeneficiaries,
-} from '@rahataid/c2c-query';
-import { useParams } from 'next/navigation';
+import { FC, useState } from 'react';
+import Step1DisburseMethod from './1-disburse-method';
+import Step2DisburseAmount from './2-disburse-amount';
+import Step3DisburseSummary from './3-disburse-summary';
+
 import {
   PROJECT_SETTINGS_KEYS,
+  useC2CProjectSubgraphStore,
+  useDisburseTokenToBeneficiaries,
+  // useGetTreasurySourcesSettings,
+  useProject,
   useProjectSettingsStore,
 } from '@rahat-ui/query';
+import { UUID } from 'crypto';
+import { useParams } from 'next/navigation';
 
 type DisburseFlowProps = {
   selectedBeneficiaries: string[];
 };
 
+const initialStepData = {
+  treasurySource: '',
+  disburseAmount: '',
+};
+
 const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
   const [currentStep, setCurrentStep] = useState(0);
-  const [stepData, setStepData] = useState<Record<string, any>>({});
+  const [stepData, setStepData] =
+    useState<Record<string, any>>(initialStepData);
   const projectSubgraphDetails = useC2CProjectSubgraphStore(
     (state) => state.projectDetails,
   );
 
-  const { id } = useParams();
+  const { id } = useParams() as { id: UUID };
   const contractSettings = useProjectSettingsStore(
     (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT],
   );
-  console.log('contractSettings', contractSettings);
   const disburseToken = useDisburseTokenToBeneficiaries();
+  // TODO: use this
+  // const { data: treasurySources } = useGetTreasurySourcesSettings(id);
+  // TODO: DONOT Use this
+  const { data: projectData } = useProject(id);
+  const treasurySources =
+    (projectData?.data?.extras?.treasury?.treasurySources as string[]) || [];
 
   const handleStepDataChange = (e) => {
     const { name, value } = e.target;
@@ -71,6 +84,7 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
       amount: stepData.disburseAmount,
       beneficiaryAddresses: selectedBeneficiaries as `0x${string}`[],
       rahatTokenAddress: contractSettings?.rahattoken?.address,
+      c2cProjectAddress: contractSettings?.c2cproject?.address,
     });
   };
   const steps = [
@@ -80,14 +94,16 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
       component: (
         <Step1DisburseMethod
           selectedBeneficiaries={selectedBeneficiaries}
-          value={stepData.depositMethod}
+          value={stepData.treasurySource}
           onChange={handleStepDataChange}
           projectSubgraphDetails={projectSubgraphDetails}
+          // treasurySources={treasurySources?.treasurysources}
+          treasurySources={treasurySources}
         />
       ),
       validation: {
         noMethodSelected: {
-          condition: () => !!stepData.disburseMethod,
+          condition: () => !stepData.treasurySource,
           message: 'Please select a disburse method',
         },
       },
@@ -126,6 +142,14 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
       validation: {},
     },
   ];
+
+  // //cleanup
+  // useEffect(() => {
+  //   return () => {
+  //     setCurrentStep(0);
+  //     setStepData(initialStepData);
+  //   };
+  // }, []);
 
   return (
     <Dialog>

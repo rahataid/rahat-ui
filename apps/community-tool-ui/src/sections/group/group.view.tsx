@@ -50,7 +50,7 @@ function ViewGroup() {
       rowSelection: selectedListItems,
     },
   });
-
+  console.log(data?.data?.rows);
   return (
     <Tabs defaultValue="groupList" className="h-full">
       <>

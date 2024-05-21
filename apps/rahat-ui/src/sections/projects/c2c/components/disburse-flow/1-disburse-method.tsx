@@ -1,23 +1,11 @@
-const disburseMethods = [
-  {
-    id: 'project_balance',
-    label: 'Project Balance',
-  },
-  {
-    id: 'your_wallet',
-    label: 'Your Wallet',
-  },
-  {
-    id: 'multisig_wallet',
-    label: 'Multisig Wallet A/C',
-  },
-];
+import { TREASURY_SOURCES } from '@rahat-ui/query';
 
 type Step1DisburseMethodProps = {
   selectedBeneficiaries: string[];
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   projectSubgraphDetails: any;
+  treasurySources: string[];
 };
 
 export default function Step1DisburseMethod({
@@ -25,20 +13,23 @@ export default function Step1DisburseMethod({
   selectedBeneficiaries,
   value,
   projectSubgraphDetails,
+  treasurySources,
 }: Step1DisburseMethodProps) {
   return (
     <div className="bg-card rounded px-4 pb-4 flex flex-col">
       <div className="mb-2">
         <div className="flex flex-col">
-          {disburseMethods.map((method) => (
-            <label key={method.id} className="inline-flex items-center mt-3">
+          {TREASURY_SOURCES.filter((t) =>
+            treasurySources.includes(t.value),
+          ).map((method) => (
+            <label key={method.value} className="inline-flex items-center mt-3">
               <input
                 type="radio"
                 className="form-radio h-4 w-4 text-gray-600"
-                checked={value === method.id}
+                checked={value === method.value}
                 onChange={() =>
                   onChange({
-                    target: { name: 'depositMethod', value: method.id },
+                    target: { name: 'treasurySource', value: method.value },
                   } as React.ChangeEvent<HTMLInputElement>)
                 }
               />

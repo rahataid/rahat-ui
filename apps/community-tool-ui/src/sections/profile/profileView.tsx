@@ -19,8 +19,14 @@ import { useCurrentUser } from '@rahat-ui/community-query';
 export default function ProfileView() {
   // const { data } = useUserCurrentUser();
   const { data } = useCurrentUser();
-  const changedDate = new Date(data?.data?.createdAt as Date);
-  const formattedDate = changedDate.toLocaleDateString('en-US', {
+  const createdDate = new Date(data?.data?.createdAt as Date);
+  const createFormattedDate = createdDate.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+  const updateDate = new Date(data?.data?.updatedAt as Date);
+  const updateFormattedDate = updateDate.toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
@@ -70,7 +76,12 @@ export default function ProfileView() {
           </div>
           <div>
             <p className="text-base font-medium">Created At</p>
-            <span className="text-sm font-light">{formattedDate}</span>
+            <span className="text-sm font-light">{createFormattedDate}</span>
+          </div>
+
+          <div>
+            <p className="text-base font-medium">Updated At</p>
+            <span className="text-sm font-light">{updateFormattedDate}</span>
           </div>
         </div>
       </ResizablePanel>

@@ -28,8 +28,14 @@ import { UUID } from 'crypto';
 import { Plus, X } from 'lucide-react';
 import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
 
-export default function AddManualTriggerForm() {
-  const { id: projectID } = useParams();
+type IProps = {
+  next: VoidFunction
+}
+
+export default function AddManualTriggerForm({ next }: IProps) {
+  const params = useParams();
+  const projectId = params.id as UUID
+  const phaseId = ''
   const { hazardTypes, phases } = useActivitiesStore((state) => ({
     // activities: state.activities,
     hazardTypes: state.hazardTypes,
@@ -40,7 +46,7 @@ export default function AddManualTriggerForm() {
   const FormSchema = z.object({
     title: z.string().min(2, { message: 'Please enter valid title' }),
     // notes: z.string().min(5, { message: 'Must be at least 5 characters' }),
-    phaseId: z.string().min(1, { message: 'Please select phase' }),
+    // phaseId: z.string().min(1, { message: 'Please select phase' }),
     hazardTypeId: z.string().min(1, { message: 'Please select hazard type' }),
     // activity: z
     //   .array(
@@ -63,7 +69,7 @@ export default function AddManualTriggerForm() {
     defaultValues: {
       title: '',
       // notes: '',
-      phaseId: '',
+      // phaseId: '',
       hazardTypeId: '',
       // activity: [],
     },
@@ -76,16 +82,19 @@ export default function AddManualTriggerForm() {
     //   uuid: activity.uuid,
     // }));
 
-    const payload = {
-      title: data.title,
-      hazardTypeId: data.hazardTypeId,
-      phaseId: data.phaseId,
-      // activities: activities,
-      dataSource: 'MANUAL',
-    };
+    // const payload = {
+    //   title: data.title,
+    //   hazardTypeId: data.hazardTypeId,
+    //   phaseId: data.phaseId,
+    //   // activities: activities,
+    //   dataSource: 'MANUAL',
+    // };
+
+    const payload = { ...data, phaseId: phaseId }
+    console.log('payload::', payload)
     try {
       await createTriggerStatement.mutateAsync({
-        projectUUID: projectID as UUID,
+        projectUUID: projectId,
         triggerStatementPayload: payload,
       });
     } catch (e) {
@@ -94,6 +103,12 @@ export default function AddManualTriggerForm() {
       form.reset();
     }
   };
+
+  const handleNext = () => {
+    if (form.formState.isValid) {
+      next()
+    } else return
+  }
 
   return (
     <>
@@ -119,7 +134,7 @@ export default function AddManualTriggerForm() {
                 );
               }}
             />
-            <FormField
+            {/* <FormField
               control={form.control}
               name="phaseId"
               render={({ field }) => {
@@ -149,7 +164,7 @@ export default function AddManualTriggerForm() {
                   </FormItem>
                 );
               }}
-            />
+            /> */}
             <FormField
               control={form.control}
               name="hazardTypeId"
@@ -301,6 +316,18 @@ export default function AddManualTriggerForm() {
           <div className="flex justify-end mt-8">
             <div className="flex gap-2">
               <Button
+                variant="secondary"
+                className="bg-red-100 text-red-600 w-36"
+                disabled
+              >
+                Cancel
+              </Button>
+              <Button className='px-8' onClick={handleNext}>Next</Button>
+            </div>
+          </div>
+          {/* <div className="flex justify-end mt-8">
+            <div className="flex gap-2">
+              <Button
                 type="button"
                 variant="secondary"
                 className="bg-red-100 text-red-600 w-36"
@@ -309,7 +336,7 @@ export default function AddManualTriggerForm() {
               </Button>
               <Button type="submit">Add Trigger Statement</Button>
             </div>
-          </div>
+          </div> */}
         </form>
       </Form>
     </>

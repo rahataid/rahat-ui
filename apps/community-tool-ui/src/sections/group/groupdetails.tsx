@@ -17,7 +17,7 @@ import { useEffect, useState } from 'react';
 
 import {
   useCommunityGroupListByID,
-  useCommunityGroupPurge,
+  usePurgeGroupedBeneficiary,
   useCommunityGroupRemove,
   useCommunityGroupStore,
   useCommunityGroupedBeneficiariesDownload,
@@ -59,7 +59,7 @@ export default function GroupDetail({ uuid }: IProps) {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const download = useCommunityGroupedBeneficiariesDownload();
   const removeCommunityGroup = useCommunityGroupRemove();
-  const purgeCommunityGroup = useCommunityGroupPurge();
+  const purgeCommunityGroup = usePurgeGroupedBeneficiary();
   const {
     deleteSelectedBeneficiariesFromImport,
     setDeleteSelectedBeneficiariesFromImport,
@@ -111,7 +111,7 @@ export default function GroupDetail({ uuid }: IProps) {
   const removeBeneficiaryFromGroup = () => {
     Swal.fire({
       title: 'Are you sure?',
-      text: 'Remove beneficiary from this group',
+      text: 'Remove beneficiary from this group only',
       icon: 'question',
       showDenyButton: true,
       confirmButtonText: 'Yes, I am sure!',
@@ -171,12 +171,6 @@ export default function GroupDetail({ uuid }: IProps) {
 
     Swal.fire('Please select beneficiary to delete', '', 'warning');
   };
-
-  useEffect(() => {
-    if (purgeCommunityGroup.data) {
-      router.push('/group/import-logs');
-    }
-  }, [purgeCommunityGroup.data, router]);
 
   useEffect(() => {
     setDeleteSelectedBeneficiariesFromImport(

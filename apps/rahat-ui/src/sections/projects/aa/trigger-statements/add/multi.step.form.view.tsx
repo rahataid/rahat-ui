@@ -6,13 +6,28 @@ import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { useSinglePhase } from '@rahat-ui/query';
+import { UUID } from 'crypto';
+import { useParams } from 'next/navigation';
+import { useCreateTriggerStatement } from '@rahat-ui/query';
 
 const steps = [{ label: 'Step 1' }, { label: 'Step 2' }];
 
 const MultiStepForm = () => {
+  const { id } = useParams();
+  const projectId = id as UUID;
+
   const selectedPhase = JSON.parse(
     localStorage.getItem('selectedPhase') as string,
   );
+
+  const { data: phaseDetail } = useSinglePhase(
+    projectId as UUID,
+    selectedPhase.phaseId as UUID,
+  );
+
+  const createTriggerStatement = useCreateTriggerStatement();
+
   const [activeTab, setActiveTab] = React.useState('automatedTrigger');
   const [activeStep, setActiveStep] = React.useState(0);
 
@@ -56,8 +71,6 @@ const MultiStepForm = () => {
     })
     .refine(
       (data) => {
-        console.log('submit data', data);
-
         if (selectedPhase.name === 'READINESS') {
           return (
             data.readinessLevel !== undefined && data.readinessLevel !== ''
@@ -91,11 +104,12 @@ const MultiStepForm = () => {
   const handleSubmitManualTrigger = async (
     data: z.infer<typeof ManualFormSchema>,
   ) => {
-    console.log(data);
     setActiveStep((prev) => prev + 1);
-    console.log('called manual');
-
-    // const payload = { ...data, phaseId: phaseId };
+    // const payload = {
+    //   ...data,
+    //   phaseId: selectedPhase.phaseId,
+    //   dataSource: 'MANUAL',
+    // };
     // console.log('payload::', payload);
     // try {
     //   await createTriggerStatement.mutateAsync({
@@ -112,10 +126,7 @@ const MultiStepForm = () => {
   const handleSubmitAutomatedTrigger = async (
     data: z.infer<typeof AutomatedFormSchema>,
   ) => {
-    console.log(data);
     setActiveStep((prev) => prev + 1);
-    console.log('called auto');
-
     // const payload = { ...data, phaseId: phaseId };
     // console.log('payload::', payload);
     // try {
@@ -151,7 +162,14 @@ const MultiStepForm = () => {
             next={nextStep}
           />
         )}
-        {activeStep === 1 && <ConfigurePhase previous={prevStep} />}
+        {activeStep === 1 && (
+          <ConfigurePhase
+            manualForm={manualForm}
+            automatedForm={automatedForm}
+            phaseDetail={phaseDetail}
+            activeTab={activeTab}
+          />
+        )}
 
         {activeStep === 0 && (
           <div className="flex justify-end mt-8">

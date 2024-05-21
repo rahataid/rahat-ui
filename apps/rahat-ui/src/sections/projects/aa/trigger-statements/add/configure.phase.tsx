@@ -11,31 +11,95 @@ import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { Separator } from '@rahat-ui/shadcn/src/components/ui/separator';
 import { Slider } from '@rahat-ui/shadcn/src/components/ui/slider';
 import { Minus, Plus } from 'lucide-react';
+import { UseFormReturn } from 'react-hook-form';
 
-const MandatoryTriggers = [
-  { title: 'Trigger 1', isOptional: false },
-  { title: 'Trigger 2', isOptional: false },
-];
+// const MandatoryTriggers = [
+//   { title: 'Trigger 1', isOptional: false },
+//   { title: 'Trigger 2', isOptional: false },
+// ];
 const OptionalTriggers = [
   { title: 'Trigger 3', isOptional: true },
   { title: 'Trigger 4', isOptional: true },
 ];
 
 type IProps = {
-  previous: VoidFunction;
+  manualForm: UseFormReturn<
+    {
+      title: string;
+      hazardTypeId: string;
+    },
+    any,
+    undefined
+  >;
+  automatedForm: UseFormReturn<
+    {
+      title: string;
+      hazardTypeId: string;
+      dataSource: string;
+      location: string;
+      readinessLevel?: string | undefined;
+      activationLevel?: string | undefined;
+    },
+    any,
+    undefined
+  >;
+  phaseDetail: any;
+  activeTab: string;
 };
 
-export default function ConfigurePhase({ previous }: IProps) {
-  const [sliderValue, setSliderValue] = React.useState(1);
+export default function ConfigurePhase({
+  phaseDetail,
+  manualForm,
+  automatedForm,
+  activeTab,
+}: IProps) {
+  const mandatoryTriggers = phaseDetail?.triggers?.filter(
+    (d: any) => d?.isMandatory,
+  );
+  const optionalTriggers = phaseDetail?.triggers?.filter(
+    (d: any) => !d?.isMandatory,
+  );
+
+  console.log(mandatoryTriggers);
+  console.log(optionalTriggers);
+
+  const [sliderValue, setSliderValue] = React.useState(0);
+
+  const [switchStates, setSwitchStates] = React.useState(() => {
+    const initialStates: any = {};
+    phaseDetail?.triggers?.forEach(
+      (trigger: { repeatKey: any; isMandatory: boolean }) => {
+        initialStates[trigger?.repeatKey] = trigger.isMandatory;
+      },
+    );
+    return initialStates;
+  });
+
+  const handleSwitchChange = (repeatKey: string, event: any) => {
+    console.log(event.target.checked);
+    // const isChecked = event.target.checked;
+    setSwitchStates((prevState: any) => ({
+      ...prevState,
+      [repeatKey]: false,
+    }));
+  };
 
   const handleSliderPlus = () => setSliderValue((prev) => prev + 1);
   const handleSliderMinus = () => setSliderValue((prev) => prev - 1);
 
   const plusBtnDisabled = sliderValue >= 5;
   const minusBtnDisabled = sliderValue <= 0;
+
+  // React.useEffect
+  const handleClick = () => {
+    console.log(switchStates);
+  };
+
   return (
     <>
-      <h1 className="text-lg font-semibold mb-6">Configure Phase</h1>
+      <h1 onClick={handleClick} className="text-lg font-semibold mb-6">
+        Configure Phase
+      </h1>
       <div className="grid gap-4">
         <Card>
           <CardHeader className="pb-1">
@@ -45,18 +109,26 @@ export default function ConfigurePhase({ previous }: IProps) {
           </CardHeader>
           <CardContent>
             <div>
-              {MandatoryTriggers.map((m, index) => (
+              {mandatoryTriggers?.map((t: any, index: number) => (
                 <>
-                  <div className="flex justify-between items-center h-12">
+                  <div
+                    key={t?.repeatKey}
+                    className="flex justify-between items-center h-12"
+                  >
                     <p>
-                      {index + 1}. {m.title}
+                      {index + 1}. {t.title}
                     </p>
                     <div className="flex items-center space-x-2">
-                      <Switch id="isOptional" checked={m.isOptional} />
+                      <Switch
+                        id={`switch-${t?.repeatKey}`}
+                        checked={switchStates[t?.repeatKey]}
+                        onChange={(e) => handleSwitchChange(t?.repeatKey, e)}
+                      />
+                      {/* <Switch id="isOptional" checked={m.isMandatory} /> */}
                       <Label htmlFor="isOptional">Optional?</Label>
                     </div>
                   </div>
-                  {index < MandatoryTriggers.length - 1 && <Separator />}
+                  {index < mandatoryTriggers?.length - 1 && <Separator />}
                 </>
               ))}
             </div>
@@ -70,18 +142,24 @@ export default function ConfigurePhase({ previous }: IProps) {
           </CardHeader>
           <CardContent>
             <div>
-              {OptionalTriggers.map((o, index) => (
+              {optionalTriggers?.map((t: any, index: number) => (
                 <>
                   <div className="flex justify-between items-center h-12">
                     <p>
-                      {index + 1}. {o.title}
+                      {index + 1}. {t.title}
                     </p>
                     <div className="flex items-center space-x-2">
-                      <Switch id="isOptional" checked={o.isOptional} />
+                      <Switch
+                        id={`switch-${t?.repeatKey}`}
+                        checked={switchStates[t?.repeatKey]}
+                        // onClick={(e) => handleSwitchChange(t?.repeatKey, e)}
+                        onChange={(e) => handleSwitchChange(t?.repeatKey, e)}
+                      />
+                      {/* <Switch id="isOptional" checked={o.isOptional} /> */}
                       <Label htmlFor="isOptional">Optional?</Label>
                     </div>
                   </div>
-                  {index < OptionalTriggers.length - 1 && <Separator />}
+                  {index < optionalTriggers?.length - 1 && <Separator />}
                 </>
               ))}
             </div>
@@ -121,19 +199,6 @@ export default function ConfigurePhase({ previous }: IProps) {
           </CardContent>
         </Card>
       </div>
-      {/* <div className="flex justify-end mt-8">
-                <div className="flex gap-2">
-                    <Button
-                        variant="secondary"
-                        className="bg-red-100 text-red-600 w-36"
-                        disabled
-                    >
-                        Cancel
-                    </Button>
-                    <Button onClick={previous}>Previous</Button>
-                    <Button type="submit">Add Trigger Statement</Button>
-                </div>
-            </div> */}
     </>
   );
 }

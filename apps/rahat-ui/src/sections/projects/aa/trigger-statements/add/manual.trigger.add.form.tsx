@@ -30,8 +30,8 @@ import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
 
 export default function AddManualTriggerForm() {
   const { id: projectID } = useParams();
-  const { activities, hazardTypes, phases } = useActivitiesStore((state) => ({
-    activities: state.activities,
+  const { hazardTypes, phases } = useActivitiesStore((state) => ({
+    // activities: state.activities,
     hazardTypes: state.hazardTypes,
     phases: state.phases,
   }));
@@ -42,20 +42,20 @@ export default function AddManualTriggerForm() {
     // notes: z.string().min(5, { message: 'Must be at least 5 characters' }),
     phaseId: z.string().min(1, { message: 'Please select phase' }),
     hazardTypeId: z.string().min(1, { message: 'Please select hazard type' }),
-    activity: z
-      .array(
-        z.object({
-          uuid: z.string(),
-          title: z.string(),
-        }),
-      )
-      .refine(
-        (value) =>
-          value.length > 0 && value.every((item) => item.uuid && item.title),
-        {
-          message: 'You have to select at least one activity',
-        },
-      ),
+    // activity: z
+    //   .array(
+    //     z.object({
+    //       uuid: z.string(),
+    //       title: z.string(),
+    //     }),
+    //   )
+    //   .refine(
+    //     (value) =>
+    //       value.length > 0 && value.every((item) => item.uuid && item.title),
+    //     {
+    //       message: 'You have to select at least one activity',
+    //     },
+    //   ),
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -65,22 +65,22 @@ export default function AddManualTriggerForm() {
       // notes: '',
       phaseId: '',
       hazardTypeId: '',
-      activity: [],
+      // activity: [],
     },
   });
 
   const handleCreateTriggerStatement = async (
     data: z.infer<typeof FormSchema>,
   ) => {
-    const activities = data.activity.map((activity) => ({
-      uuid: activity.uuid,
-    }));
+    // const activities = data.activity.map((activity) => ({
+    //   uuid: activity.uuid,
+    // }));
 
     const payload = {
       title: data.title,
       hazardTypeId: data.hazardTypeId,
       phaseId: data.phaseId,
-      activities: activities,
+      // activities: activities,
       dataSource: 'MANUAL',
     };
     try {
@@ -181,7 +181,7 @@ export default function AddManualTriggerForm() {
                 );
               }}
             />
-            <FormField
+            {/* <FormField
               control={form.control}
               name="activity"
               render={({ field }) => {
@@ -189,7 +189,7 @@ export default function AddManualTriggerForm() {
                   <FormItem>
                     <Select
                       onValueChange={field.onChange}
-                    // defaultValue={field.value}
+                      // defaultValue={field.value}
                     >
                       <FormLabel>Activity</FormLabel>
                       <FormControl>
@@ -199,7 +199,9 @@ export default function AddManualTriggerForm() {
                       </FormControl>
                       <SelectContent>
                         <SelectGroup>
-                          <Link href={`/projects/aa/${projectID}/activities/add`}>
+                          <Link
+                            href={`/projects/aa/${projectID}/activities/add`}
+                          >
                             <SelectLabel className="text-primary flex items-center gap-1 p-2 bg-secondary">
                               Add new activity <Plus size={18} />
                             </SelectLabel>
@@ -223,18 +225,18 @@ export default function AddManualTriggerForm() {
                                         onCheckedChange={(checked) => {
                                           return checked
                                             ? field.onChange([
-                                              ...field.value,
-                                              {
-                                                uuid: item.uuid,
-                                                title: item.title,
-                                              },
-                                            ])
+                                                ...field.value,
+                                                {
+                                                  uuid: item.uuid,
+                                                  title: item.title,
+                                                },
+                                              ])
                                             : field.onChange(
-                                              field.value?.filter(
-                                                (value) =>
-                                                  value.uuid !== item.uuid,
-                                              ),
-                                            );
+                                                field.value?.filter(
+                                                  (value) =>
+                                                    value.uuid !== item.uuid,
+                                                ),
+                                              );
                                         }}
                                       />
                                     </FormControl>
@@ -279,7 +281,7 @@ export default function AddManualTriggerForm() {
                   </FormItem>
                 );
               }}
-            />
+            /> */}
             {/* <FormField
               control={form.control}
               name="notes"

@@ -5,6 +5,7 @@ import {
   TabsContent,
 } from '@rahat-ui/shadcn/src/components/ui/tabs';
 import AddStakeholdersGroups from './add.stakeholders.groups';
+import AddBeneficiaryGroups from './beneficiary/add.beneficiary.groups';
 
 export default function GroupsAddView() {
   return (
@@ -21,7 +22,9 @@ export default function GroupsAddView() {
         <TabsContent value="stakeholdersGroups">
           <AddStakeholdersGroups />
         </TabsContent>
-        <TabsContent value="beneficiaryGroups">Beneficiary Groups</TabsContent>
+        <TabsContent value="beneficiaryGroups">
+          <AddBeneficiaryGroups />
+        </TabsContent>
       </Tabs>
     </div>
   );

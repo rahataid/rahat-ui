@@ -40,8 +40,8 @@ export default function AddAutomatedTriggerForm() {
   const [phase, setPhase] = React.useState('');
   const createTriggerStatement = useCreateTriggerStatement();
 
-  const { activities, hazardTypes, phases } = useActivitiesStore((state) => ({
-    activities: state.activities,
+  const { hazardTypes, phases } = useActivitiesStore((state) => ({
+    // activities: state.activities,
     hazardTypes: state.hazardTypes,
     phases: state.phases,
   }));
@@ -76,20 +76,20 @@ export default function AddAutomatedTriggerForm() {
     // activationLevel: z.string().regex(/^(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)$/, "Must be a positive integer or a decimal number").optional(),
     readinessLevel: z.string().optional(),
     activationLevel: z.string().optional(),
-    activity: z
-      .array(
-        z.object({
-          uuid: z.string(),
-          title: z.string(),
-        }),
-      )
-      .refine(
-        (value) =>
-          value.length > 0 && value.every((item) => item.uuid && item.title),
-        {
-          message: 'You have to select at least one activity',
-        },
-      ),
+    // activity: z
+    //   .array(
+    //     z.object({
+    //       uuid: z.string(),
+    //       title: z.string(),
+    //     }),
+    //   )
+    //   .refine(
+    //     (value) =>
+    //       value.length > 0 && value.every((item) => item.uuid && item.title),
+    //     {
+    //       message: 'You have to select at least one activity',
+    //     },
+    //   ),
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -102,16 +102,16 @@ export default function AddAutomatedTriggerForm() {
       phase: '',
       readinessLevel: '',
       activationLevel: '',
-      activity: [],
+      // activity: [],
     },
   });
 
   const handleCreateTriggerStatement = async (
     data: z.infer<typeof FormSchema>,
   ) => {
-    const activities = data.activity.map((activity) => ({
-      uuid: activity.uuid,
-    }));
+    // const activities = data.activity.map((activity) => ({
+    //   uuid: activity.uuid,
+    // }));
     const triggerStatement =
       phase === 'READINESS'
         ? { readinessLevel: data.readinessLevel }
@@ -123,7 +123,7 @@ export default function AddAutomatedTriggerForm() {
       hazardTypeId: data.hazardType,
       phaseId: data.phase,
       triggerStatement: triggerStatement,
-      activities: activities,
+      // activities: activities,
     };
     try {
       await createTriggerStatement.mutateAsync({
@@ -340,7 +340,7 @@ export default function AddAutomatedTriggerForm() {
                 }}
               />
             )}
-            <FormField
+            {/* <FormField
               control={form.control}
               name="activity"
               render={({ field }) => {
@@ -440,7 +440,7 @@ export default function AddAutomatedTriggerForm() {
                   </FormItem>
                 );
               }}
-            />
+            /> */}
           </div>
           <div className="flex justify-end mt-8">
             <div className="flex gap-2">

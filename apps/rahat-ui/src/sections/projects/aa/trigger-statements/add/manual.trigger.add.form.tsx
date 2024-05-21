@@ -33,7 +33,9 @@ type IProps = {
 }
 
 export default function AddManualTriggerForm({ next }: IProps) {
-  const { id: projectID } = useParams();
+  const params = useParams();
+  const projectId = params.id as UUID
+  const phaseId = ''
   const { hazardTypes, phases } = useActivitiesStore((state) => ({
     // activities: state.activities,
     hazardTypes: state.hazardTypes,
@@ -44,7 +46,7 @@ export default function AddManualTriggerForm({ next }: IProps) {
   const FormSchema = z.object({
     title: z.string().min(2, { message: 'Please enter valid title' }),
     // notes: z.string().min(5, { message: 'Must be at least 5 characters' }),
-    phaseId: z.string().min(1, { message: 'Please select phase' }),
+    // phaseId: z.string().min(1, { message: 'Please select phase' }),
     hazardTypeId: z.string().min(1, { message: 'Please select hazard type' }),
     // activity: z
     //   .array(
@@ -67,7 +69,7 @@ export default function AddManualTriggerForm({ next }: IProps) {
     defaultValues: {
       title: '',
       // notes: '',
-      phaseId: '',
+      // phaseId: '',
       hazardTypeId: '',
       // activity: [],
     },
@@ -80,16 +82,19 @@ export default function AddManualTriggerForm({ next }: IProps) {
     //   uuid: activity.uuid,
     // }));
 
-    const payload = {
-      title: data.title,
-      hazardTypeId: data.hazardTypeId,
-      phaseId: data.phaseId,
-      // activities: activities,
-      dataSource: 'MANUAL',
-    };
+    // const payload = {
+    //   title: data.title,
+    //   hazardTypeId: data.hazardTypeId,
+    //   phaseId: data.phaseId,
+    //   // activities: activities,
+    //   dataSource: 'MANUAL',
+    // };
+
+    const payload = { ...data, phaseId: phaseId }
+    console.log('payload::', payload)
     try {
       await createTriggerStatement.mutateAsync({
-        projectUUID: projectID as UUID,
+        projectUUID: projectId,
         triggerStatementPayload: payload,
       });
     } catch (e) {
@@ -129,7 +134,7 @@ export default function AddManualTriggerForm({ next }: IProps) {
                 );
               }}
             />
-            <FormField
+            {/* <FormField
               control={form.control}
               name="phaseId"
               render={({ field }) => {
@@ -159,7 +164,7 @@ export default function AddManualTriggerForm({ next }: IProps) {
                   </FormItem>
                 );
               }}
-            />
+            /> */}
             <FormField
               control={form.control}
               name="hazardTypeId"

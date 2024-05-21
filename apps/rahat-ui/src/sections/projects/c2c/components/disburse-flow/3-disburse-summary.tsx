@@ -29,9 +29,8 @@ export default function Step3DisburseSummary({
         <div>
           Send Amount{' '}
           <span className="text-primary">
-            (4{' '}
-            {selectedBeneficiaries.length > 1 ? 'Beneficiaries' : 'Beneficiary'}
-            )
+            ({selectedBeneficiaries.length} Beneficiar
+            {selectedBeneficiaries.length > 1 ? 'ies' : 'y'})
           </span>
         </div>
       </div>

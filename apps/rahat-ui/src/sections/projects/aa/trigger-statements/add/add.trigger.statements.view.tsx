@@ -18,7 +18,7 @@ export default function AddTriggerStatementView() {
   const { id: projectID } = useParams();
   useActivities(projectID as UUID, {});
   useActivitiesHazardTypes(projectID as UUID);
-  useActivitiesPhase(projectID as UUID);
+  // useActivitiesPhase(projectID as UUID);
 
   return (
     <div className="p-4 h-[calc(100vh-65px)]">

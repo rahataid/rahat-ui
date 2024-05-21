@@ -28,7 +28,11 @@ import { UUID } from 'crypto';
 import { Plus, X } from 'lucide-react';
 import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
 
-export default function AddManualTriggerForm() {
+type IProps = {
+  next: VoidFunction
+}
+
+export default function AddManualTriggerForm({ next }: IProps) {
   const { id: projectID } = useParams();
   const { hazardTypes, phases } = useActivitiesStore((state) => ({
     // activities: state.activities,
@@ -94,6 +98,12 @@ export default function AddManualTriggerForm() {
       form.reset();
     }
   };
+
+  const handleNext = () => {
+    if (form.formState.isValid) {
+      next()
+    } else return
+  }
 
   return (
     <>
@@ -301,6 +311,18 @@ export default function AddManualTriggerForm() {
           <div className="flex justify-end mt-8">
             <div className="flex gap-2">
               <Button
+                variant="secondary"
+                className="bg-red-100 text-red-600 w-36"
+                disabled
+              >
+                Cancel
+              </Button>
+              <Button className='px-8' onClick={handleNext}>Next</Button>
+            </div>
+          </div>
+          {/* <div className="flex justify-end mt-8">
+            <div className="flex gap-2">
+              <Button
                 type="button"
                 variant="secondary"
                 className="bg-red-100 text-red-600 w-36"
@@ -309,7 +331,7 @@ export default function AddManualTriggerForm() {
               </Button>
               <Button type="submit">Add Trigger Statement</Button>
             </div>
-          </div>
+          </div> */}
         </form>
       </Form>
     </>

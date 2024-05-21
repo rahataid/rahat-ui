@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@emotion/react':
+        specifier: ^11.11.4
+        version: 11.11.4(@types/react@18.3.1)(react@18.2.0)
       '@emotion/styled':
         specifier: ^11.11.0
         version: 11.11.5(@emotion/react@11.11.4(@types/react@18.3.1)(react@18.2.0))(@types/react@18.3.1)(react@18.2.0)
@@ -75,8 +78,8 @@ importers:
         specifier: 0.0.9
         version: 0.0.9
       '@rahataid/community-tool-sdk':
-        specifier: ^0.0.20
-        version: 0.0.20
+        specifier: ^0.0.23
+        version: 0.0.23
       '@rahataid/el-subgraph':
         specifier: 0.0.12
         version: 0.0.12
@@ -2885,8 +2888,8 @@ packages:
   '@rahataid/c2c-query@0.0.9':
     resolution: {integrity: sha512-YfwV2WjDN43lrZ4U0j1Qu6X1wfQdnJQsZZp8l1pT1YYXYbF89b7CVb/KwrIWl2Ffd+O3T+n/rowG55cZCYj/HQ==, tarball: https://npm.pkg.github.com/download/@rahataid/c2c-query/0.0.9/51f6bf7f9df92d71711a4005e8b2fb3b980bf98d}
 
-  '@rahataid/community-tool-sdk@0.0.20':
-    resolution: {integrity: sha512-CJFiJn6YQ+FzmKd3C2uuJL9/BNRhS3xqX2sueISFRRjf26WeRn1FbZ9FJrhJXUpgxhMXMDBpMq4brAh68Z5OwA==, tarball: https://npm.pkg.github.com/download/@rahataid/community-tool-sdk/0.0.20/6d670c4a873c302141fb0dfe0ad7d1e7731455ec}
+  '@rahataid/community-tool-sdk@0.0.23':
+    resolution: {integrity: sha512-GoDaB6P9DqvDvt+E4obcyjfJkMiHzymj0ZXCX9MrWjAQzyq1uabOQGPnNcJqHuN4m6vmjYkoY9Gg+Ish2bOanw==, tarball: https://npm.pkg.github.com/download/@rahataid/community-tool-sdk/0.0.23/3084c97b76fc5f417c30c47536b13a2cc632d6be}
 
   '@rahataid/el-subgraph@0.0.12':
     resolution: {integrity: sha512-dKmt0YueYPn+qNGVSby22vrM8xkpx0S1oWxW+vdjHDdRQpqhW9Z4CRqesWt2Qt2H4QnoPVpGh4Gf2pMPXLpG1Q==, tarball: https://npm.pkg.github.com/download/@rahataid/el-subgraph/0.0.12/91a92f6da8a9963862dc50d6f544d653dfa6392d}
@@ -14127,7 +14130,7 @@ snapshots:
     dependencies:
       '@swc/helpers': 0.5.11
 
-  '@rahataid/community-tool-sdk@0.0.20':
+  '@rahataid/community-tool-sdk@0.0.23':
     dependencies:
       tslib: 2.6.2
 

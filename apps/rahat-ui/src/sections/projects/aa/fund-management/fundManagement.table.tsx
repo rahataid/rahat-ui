@@ -32,6 +32,7 @@ import {
 import { ChevronDown, Eye, Pencil, Trash2 } from 'lucide-react';
 import * as React from 'react';
 import AddButton from '../../components/add.btn';
+import { useParams, useRouter } from 'next/navigation';
 
 const data: FundManagement[] = [
   {
@@ -134,12 +135,13 @@ export const columns: ColumnDef<FundManagement>[] = [
     enableHiding: false,
     cell: ({ row }) => {
       const payment = row.original;
-
+      const router = useRouter();
+      const pid = useParams();
       return (
         <div className="flex items-center justify-evenly">
           <Eye
             className="cursor-pointer"
-            onClick={() => console.log('click')}
+            // onClick={() => router.push(`projects/aa/${pid}/fund-management/1`)}
             size={20}
             strokeWidth={1.25}
           />

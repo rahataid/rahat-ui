@@ -137,7 +137,7 @@ const AddCampaignView = () => {
           setIsSubmitting(false);
 
           toast.success('Campaign Created Success.');
-          router.push(`projects/c2c/${id}/campaigns/text`);
+          router.push(`text`);
         }
       })
       .catch((e) => {

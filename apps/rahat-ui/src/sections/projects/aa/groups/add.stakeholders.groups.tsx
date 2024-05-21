@@ -35,19 +35,23 @@ import MembersTable from './members.table';
 import CustomPagination from '../../../../components/customPagination';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { toast } from 'react-toastify';
+import StakeholdersTableFilters from '../stakeholders/stakeholders.table.filters';
 
 export default function AddStakeholdersGroups() {
-  const { id } = useParams();
+  const { id: projectId } = useParams();
   const [showMembers, setShowMembers] = React.useState(false);
+  const [stakeholderSearchText, setStakeholderSearchText] = React.useState('');
+  const [organizationSearchText, setOrganizationSearchText] = React.useState('');
+  const [municipalitySearchText, setMunicipalitySearchText] = React.useState('');
 
-  const { pagination, setNextPage, setPrevPage, setPerPage, setPagination } =
+  const { pagination, setNextPage, setPrevPage, setPerPage, setPagination, setFilters, filters } =
     usePagination();
 
   React.useEffect(() => {
     setPagination({ page: 1, perPage: 10 });
   }, []);
 
-  useStakeholders(id as UUID, { ...pagination });
+  useStakeholders(projectId as UUID, { ...pagination, ...filters });
 
   const { stakeholders, stakeholdersMeta } = useStakeholdersStore((state) => ({
     stakeholders: state.stakeholders,
@@ -97,6 +101,18 @@ export default function AddStakeholdersGroups() {
     },
   });
 
+  const handleSearch = React.useCallback((event: React.ChangeEvent<HTMLInputElement>, key: string) => {
+    setFilters({
+      [key]: event.target.value
+    })
+  }, [filters])
+
+  React.useEffect(() => {
+    setStakeholderSearchText(filters?.name ?? '');
+    setOrganizationSearchText(filters?.organization ?? '');
+    setMunicipalitySearchText(filters?.municipality ?? '')
+  }, [filters])
+
   const handleCreateStakeholdersGroups = async (
     data: z.infer<typeof FormSchema>,
   ) => {
@@ -109,7 +125,7 @@ export default function AddStakeholdersGroups() {
         return;
       }
       await createStakeholdersGroup.mutateAsync({
-        projectUUID: id as UUID,
+        projectUUID: projectId as UUID,
         stakeholdersGroupPayload: {
           ...data,
           stakeholders: stakeHolders,
@@ -171,26 +187,35 @@ export default function AddStakeholdersGroups() {
             </div>
           </div>
           {showMembers && (
-            <div className="mt-4 border rounded-sm shadow-md bg-card">
-              <MembersTable table={table} />
-              <CustomPagination
-                meta={
-                  stakeholdersMeta || {
-                    total: 0,
-                    currentPage: 0,
-                    lastPage: 0,
-                    perPage: 0,
-                    next: null,
-                    prev: null,
-                  }
-                }
-                handleNextPage={setNextPage}
-                handlePrevPage={setPrevPage}
-                handlePageSizeChange={setPerPage}
-                currentPage={pagination.page}
-                perPage={pagination.perPage}
-                total={stakeholdersMeta?.lastPage || 0}
+            <div className='mt-4'>
+              <StakeholdersTableFilters
+                projectID={projectId as UUID}
+                handleSearch={handleSearch}
+                stakeholder={stakeholderSearchText}
+                organization={organizationSearchText}
+                municipality={municipalitySearchText}
               />
+              <div className="mt-2 border rounded-sm shadow-md bg-card">
+                <MembersTable table={table} />
+                <CustomPagination
+                  meta={
+                    stakeholdersMeta || {
+                      total: 0,
+                      currentPage: 0,
+                      lastPage: 0,
+                      perPage: 0,
+                      next: null,
+                      prev: null,
+                    }
+                  }
+                  handleNextPage={setNextPage}
+                  handlePrevPage={setPrevPage}
+                  handlePageSizeChange={setPerPage}
+                  currentPage={pagination.page}
+                  perPage={pagination.perPage}
+                  total={stakeholdersMeta?.lastPage || 0}
+                />
+              </div>
             </div>
           )}
         </div>

@@ -10,7 +10,7 @@ import Swal from 'sweetalert2';
 import { TAGS } from '../config';
 import { Pagination } from '@rumsan/sdk/types';
 import { useEffect } from 'react';
-import { ListGroup } from '@rahataid/community-tool-sdk/groups';
+import { GroupPurge, ListGroup } from '@rahataid/community-tool-sdk/groups';
 
 export const useCommunityGroupCreate = () => {
   const { queryClient, rumsanService } = useRSQuery();
@@ -50,7 +50,7 @@ export const useCommunityGroupList = (
   // }));
   const query = useQuery(
     {
-      queryKey: [TAGS.LIST_COMMUNITY_GROUP, payload],
+      queryKey: [TAGS.LIST_COMMUNITY_GROUP, { exact: true }, payload],
       queryFn: () => groupClient.list(payload),
     },
     queryClient,
@@ -78,17 +78,6 @@ export const useCommunityGroupListByID = (
     queryClient,
   );
 };
-
-// export const useCommunityGroupedBeneficiariesDownload = ()=>{
-
-//   const { queryClient, rumsanService } = useRSQuery();
-//   const groupClient = getGroupClient(rumsanService.client);
-//   return useQuery({
-//     queryKey: [TAGS.DOWNLOAD_COMMUNITY_GROUPED_BENEFICIARIES],
-//     queryFn: () => groupClient.download(),
-//     enabled: false
-//   })
-// }
 
 export const useCommunityGroupedBeneficiariesDownload = () => {
   const { queryClient, rumsanService } = useRSQuery();
@@ -135,13 +124,58 @@ export const useCommunityGroupPurge = () => {
 
   return useMutation(
     {
-      mutationKey: [TAGS.PURGE_COMMUNITY_GROUP],
+      mutationKey: [
+        TAGS.PURGE_COMMUNITY_GROUP,
+        TAGS.LIST_COMMUNITY_BENFICIARIES,
+        { exact: true },
+      ],
       // TODO
-      mutationFn: groupClient.purgeGroup,
-      onSuccess: () => {
-        Swal.fire('Selected Beneficiaries deleted!', '', 'success');
+      mutationFn: async (data: GroupPurge) =>
+        await groupClient.purgeGroup(data),
+      onSuccess: async (data: any) => {
+        await Swal.fire('Selected Beneficiaries deleted!', '', 'success');
+        await qc.invalidateQueries({
+          queryKey: [
+            TAGS.PURGE_COMMUNITY_GROUP,
+            TAGS.LIST_COMMUNITY_BENFICIARIES,
+            { exact: true },
+          ],
+        });
+      },
+      onError: (error: any) => {
+        Swal.fire({
+          icon: 'error',
+          title:
+            error?.response?.data?.message ||
+            'Encounter error on Removing Data',
+        });
+      },
+    },
+    queryClient,
+  );
+};
+
+export const useCommunityGroupDelete = () => {
+  const { queryClient, rumsanService } = useRSQuery();
+  const qc = useQueryClient();
+  const groupClient = getGroupClient(rumsanService.client);
+  return useMutation(
+    {
+      mutationKey: [TAGS.REMOVE_COMMUNITY_GROUP],
+      mutationFn: (uuid: string) => groupClient.deleteGroup(uuid as string),
+      onSuccess: (data: any) => {
+        Swal.fire({
+          icon: data?.response?.data?.flag === 'true' ? 'success' : 'info',
+          title: data?.response?.data?.message,
+        });
+
         qc.invalidateQueries({
-          queryKey: [TAGS.LIST_COMMUNITY_GROUP, TAGS.GET_BENEFICIARIES],
+          queryKey: [
+            TAGS.LIST_COMMUNITY_GROUP,
+            {
+              exact: true,
+            },
+          ],
         });
       },
       onError: (error: any) => {

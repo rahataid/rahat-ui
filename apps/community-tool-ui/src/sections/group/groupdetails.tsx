@@ -164,29 +164,45 @@ export default function GroupDetail({ uuid }: IProps) {
   // };
 
   const handlePurge = () => {
-    Swal.fire({
-      title: 'CAUTION!',
-      text: ' Selected beneficiaries will be deleted permanently!',
-      icon: 'warning',
-      showDenyButton: true,
-      confirmButtonText: 'Yes, I am sure!',
-      denyButtonText: 'No, cancel it!',
-      customClass: {
-        actions: 'my-actions',
-        confirmButton: 'order-1',
-        denyButton: 'order-2',
-      },
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        const data = {
-          groupUuid: uuid,
-          beneficiaryUuid: deleteSelectedBeneficiariesFromImport,
-        };
-        await purgeCommunityGroup.mutateAsync(data as GroupPurge);
-        resetDeletedSelectedBeneficiaries();
-        router.push('/group/import-logs');
-      }
-    });
+    if (deleteSelectedBeneficiariesFromImport.length > 0) {
+      Swal.fire({
+        title: 'CAUTION!',
+        text: ' Selected beneficiaries will be deleted permanently!',
+        icon: 'warning',
+        showDenyButton: true,
+        confirmButtonText: 'Yes, I am sure!',
+        denyButtonText: 'No, cancel it!',
+        customClass: {
+          actions: 'my-actions',
+          confirmButton: 'order-1',
+          denyButton: 'order-2',
+        },
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          const data = {
+            groupUuid: uuid,
+            beneficiaryUuid: deleteSelectedBeneficiariesFromImport,
+          };
+          await purgeCommunityGroup.mutateAsync(data as GroupPurge);
+          resetDeletedSelectedBeneficiaries();
+          router.push('/group/import-logs');
+        }
+      });
+    } else {
+      Swal.fire({
+        title: 'CAUTION!',
+        text: ' No beneficiary selected!',
+        icon: 'warning',
+        showDenyButton: true,
+        confirmButtonText: 'Yes, I am sure!',
+        denyButtonText: 'No, cancel it!',
+        customClass: {
+          actions: 'my-actions',
+          confirmButton: 'order-1',
+          denyButton: 'order-2',
+        },
+      });
+    }
   };
 
   useEffect(() => {
@@ -232,7 +248,8 @@ export default function GroupDetail({ uuid }: IProps) {
               </Tooltip>
             </TooltipProvider>
           </div>
-          <TabsList>
+
+          <div className="flex gap-3">
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild onClick={removeBeneficiaryFromGroup}>
@@ -248,9 +265,7 @@ export default function GroupDetail({ uuid }: IProps) {
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
-            <TabsTrigger value="detail" className="mr-2">
-              Details{' '}
-            </TabsTrigger>
+
             <DropdownMenu>
               <DropdownMenuTrigger>
                 <MoreVertical
@@ -263,10 +278,12 @@ export default function GroupDetail({ uuid }: IProps) {
                 {/* <DropdownMenuItem onClick={handleDelete}>
                   Delete
                 </DropdownMenuItem> */}
-                <DropdownMenuItem onClick={handlePurge}>Purge</DropdownMenuItem>
+                <DropdownMenuItem onClick={handlePurge}>
+                  Delete Beneficiary
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-          </TabsList>
+          </div>
         </div>
 
         <TabsContent value="detail">

@@ -134,9 +134,6 @@ export const columns: ColumnDef<FundManagement>[] = [
     id: 'actions',
     enableHiding: false,
     cell: ({ row }) => {
-      const payment = row.original;
-      const router = useRouter();
-      const pid = useParams();
       return (
         <div className="flex items-center justify-evenly">
           <Eye
@@ -169,6 +166,7 @@ export function FundManagementTable() {
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
+  const pid = useParams();
 
   const table = useReactTable({
     data,
@@ -226,7 +224,10 @@ export function FundManagementTable() {
               })}
           </DropdownMenuContent>
         </DropdownMenu>
-        <AddButton name="Add Fund Management" path="#" />
+        <AddButton
+          name="Add Fund Management"
+          path={`/projects/aa/${pid}/fund-management/add`}
+        />
       </div>
       <div className="rounded border bg-card">
         <Table>

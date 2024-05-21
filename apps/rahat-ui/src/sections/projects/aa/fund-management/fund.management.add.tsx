@@ -218,7 +218,12 @@ export default function AddFundManagementView() {
                 />
               </div>
               <div className="flex justify-end gap-2">
-                <Button className="text-red-600 bg-red-100">Cancel</Button>
+                <Button
+                  onClick={() => router.back()}
+                  className="text-red-600 bg-red-100 hover:bg-card hover:border border-red-600"
+                >
+                  Cancel
+                </Button>
                 <Button>Add Fund Management</Button>
               </div>
             </div>

@@ -1,21 +1,22 @@
 import { useParams } from "next/navigation";
 import { useSinglePhase } from "@rahat-ui/query";
-import PhaseTriggersListView from "./phase.triggers.list.view";
 import {
     Tabs,
     TabsList,
     TabsTrigger,
     TabsContent,
 } from '@rahat-ui/shadcn/src/components/ui/tabs';
-import { Button } from "@rahat-ui/shadcn/src/components/ui/button";
 import { Badge } from "@rahat-ui/shadcn/src/components/ui/badge";
-import { Plus } from "lucide-react";
 import { UUID } from "crypto";
+import TriggerStatementsList from "../trigger-statements/trigger.statements.list";
+import AddButton from "../../components/add.btn";
+import SearchInput from "../../components/search.input";
 
 export default function PhaseDetailView() {
     const { id: projectId, phaseId } = useParams();
-    const { data: phaseDetail } = useSinglePhase(projectId as UUID, phaseId as UUID)
+    const { data: phaseDetail, isLoading } = useSinglePhase(projectId as UUID, phaseId as UUID)
 
+    const handleSearch = () => { }
     return (
         <div className="p-2 h-[calc(100vh-65px)] bg-secondary">
             <div className="mb-4">
@@ -41,16 +42,18 @@ export default function PhaseDetailView() {
                     </TabsTrigger>
                 </TabsList>
                 <TabsContent value="triggers">
-                    <div>
-                        <div className="flex justify-between items-center">
-                            <h1 className="font-semibold text-lg mb-2">Triggers List</h1>
-                            <Button variant="ghost" className="text-primary gap-1 text-md">
-                                <Plus size={20} />
-                                <p>Select Triggers</p>
-                            </Button>
+                    <>
+                        <div className="flex justify-between items-center mb-2">
+                            <h1 className="font-semibold text-lg">Triggers List</h1>
+                            <div className="flex gap-2 items-center">
+                                {/* Search */}
+                                <SearchInput onSearch={handleSearch} />
+                                {/* Add Trigger Statements Btn */}
+                                <AddButton path={`/projects/aa/${projectId}/trigger-statements/add`} name='Trigger Statement' />
+                            </div>
                         </div>
-                        <PhaseTriggersListView triggersList={phaseDetail?.triggers} />
-                    </div>
+                        <TriggerStatementsList tableScrollAreaHeight="h-[calc(100vh-351px)]" isLoading={isLoading} tableData={phaseDetail?.triggers} />
+                    </>
                 </TabsContent>
                 <TabsContent value="activities">
                     <div className="bg-card p-4 rounded">

@@ -61,6 +61,7 @@ export default function ProjectStatistics({ phasesStats }: IProps) {
             title={d.phase?.name}
             value={Number(d.completedPercentage)}
             color={'red'}
+            isActive={d.phase?.isActive}
           />
         ))}
       </div>

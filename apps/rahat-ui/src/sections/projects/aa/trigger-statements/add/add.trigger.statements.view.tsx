@@ -5,31 +5,52 @@ import {
   TabsTrigger,
   TabsContent,
 } from '@rahat-ui/shadcn/src/components/ui/tabs';
-import {
-  useActivities,
-  useActivitiesHazardTypes,
-  useActivitiesPhase,
-} from '@rahat-ui/query';
+import { useActivities, useActivitiesHazardTypes } from '@rahat-ui/query';
 import AddAutomatedTriggerForm from './automated.trigger.add.form';
 import AddManualTriggerForm from './manual.trigger.add.form';
 import { UUID } from 'crypto';
+import { UseFormReturn } from 'react-hook-form';
 
 type IProps = {
-  next: VoidFunction
-}
+  activeTab: string;
+  onTabChange: (tab: string) => void;
+  next: VoidFunction;
+  manualForm: UseFormReturn<
+    {
+      title: string;
+      hazardTypeId: string;
+    },
+    any,
+    undefined
+  >;
+  automatedForm: UseFormReturn<
+    {
+      title: string;
+      hazardTypeId: string;
+      dataSource: string;
+      location: string;
+      readinessLevel?: string | undefined;
+      activationLevel?: string | undefined;
+    },
+    any,
+    undefined
+  >;
+};
 
-export default function AddTriggerStatementView({ next }: IProps) {
+export default function AddTriggerStatementView({
+  manualForm,
+  activeTab,
+  onTabChange,
+  automatedForm,
+}: IProps) {
   const { id: projectID } = useParams();
   useActivities(projectID as UUID, {});
   useActivitiesHazardTypes(projectID as UUID);
-  // useActivitiesPhase(projectID as UUID);
 
   return (
-    // <div className="p-4 h-[calc(100vh-65px)]">
     <>
       <h1 className="text-lg font-semibold mb-6">Add Trigger Statement</h1>
-      {/* <div className="border rounded p-4 shadow-md"> */}
-      <Tabs defaultValue="automatedTrigger">
+      <Tabs defaultValue={activeTab} onValueChange={onTabChange}>
         <TabsList>
           <TabsTrigger value="automatedTrigger" className="border w-52">
             Automated Trigger
@@ -39,14 +60,12 @@ export default function AddTriggerStatementView({ next }: IProps) {
           </TabsTrigger>
         </TabsList>
         <TabsContent value="automatedTrigger">
-          <AddAutomatedTriggerForm next={next} />
+          <AddAutomatedTriggerForm form={automatedForm} />
         </TabsContent>
         <TabsContent value="manualTrigger">
-          <AddManualTriggerForm next={next} />
+          <AddManualTriggerForm form={manualForm} />
         </TabsContent>
       </Tabs>
-      {/* </div> */}
     </>
-    // </div>
   );
 }

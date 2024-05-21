@@ -81,7 +81,7 @@ export default function FieldDefinitionsView() {
         handlePageSizeChange={setPerPage}
         currentPage={pagination.page}
         perPage={pagination.perPage}
-        total={data?.response?.meta.lastPage || 0}
+        total={data?.response?.meta.total || 0}
       />
     </>
   );

@@ -23,7 +23,10 @@ export const useDisburseTokenToBeneficiaries = () => {
       onError: (error) => {
         console.error(error);
       },
-      onSuccess: (d) => {
+      onSuccess: (d, { c2cProjectAddress }) => {
+        queryClient.invalidateQueries({
+          queryKey: ['ProjectDetails', c2cProjectAddress],
+        });
         console.log('success', d);
       },
       mutationFn: async ({
@@ -46,7 +49,7 @@ export const useDisburseTokenToBeneficiaries = () => {
             });
           },
         );
-        console.log(`first`);
+
         await multi.writeContractAsync({
           args: [encodeAssignClaimsToBeneficiary],
           address: c2cProjectAddress,

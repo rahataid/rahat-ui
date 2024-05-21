@@ -60,3 +60,31 @@
     font-feature-settings: 'rlig' 1, 'calt' 1;
   }
 }
+
+.import-container {
+  width: 100%;
+}
+
+@media (min-width: 1025px) and (max-width: 1200px) {
+  .import-container {
+    max-width: 800px;
+  }
+}
+
+@media (min-width: 1201px) and (max-width: 1440px) {
+  .import-container {
+    max-width: 1080px;
+  }
+}
+
+@media (min-width: 1441px) and (max-width: 1920px) {
+  .import-container {
+    max-width: 1400px;
+  }
+}
+
+@media (min-width: 1921px) {
+  .import-container {
+    max-width: 1800px;
+  }
+}

@@ -440,7 +440,7 @@ export const useProjectBeneficiaries = (payload: GetProjectBeneficiaries) => {
               voucherClaimStatus: row?.claimStatus,
               name: row?.piiData?.name || '',
               email: row?.piiData?.email || '',
-              gender: row?.projectData?.gender || '',
+              gender: row?.projectData?.gender?.toString() || '',
               phone: row?.piiData?.phone || 'N/A',
               type: row?.type?.toString() || 'N/A',
               phoneStatus: row?.projectData?.phoneStatus || '',

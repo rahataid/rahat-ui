@@ -15,6 +15,7 @@ import {
 import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
 import { useStakeholdersGroupsStore } from '@rahat-ui/query';
 import { X } from 'lucide-react';
+import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 
 type IProps = {
   form: any;
@@ -22,7 +23,11 @@ type IProps = {
   index: number;
 };
 
-export default function AddCommunicationForm({ form, onClose, index }: IProps) {
+export default function EditCommunicationForm({
+  form,
+  onClose,
+  index,
+}: IProps) {
   const stakeholdersGroups = useStakeholdersGroupsStore(
     (state) => state.stakeholdersGroups,
   );
@@ -100,6 +105,7 @@ export default function AddCommunicationForm({ form, onClose, index }: IProps) {
             </FormItem>
           )}
         />
+
         <FormField
           control={form.control}
           name={fieldName('message')}
@@ -115,6 +121,23 @@ export default function AddCommunicationForm({ form, onClose, index }: IProps) {
             );
           }}
         />
+        <div className="hidden">
+          <FormField
+            control={form.control}
+            name={fieldName('campaignId')}
+            render={({ field }) => {
+              return (
+                <FormItem>
+                  <FormLabel>CampaignId</FormLabel>
+                  <FormControl>
+                    <Input type="number" placeholder="campaignId" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              );
+            }}
+          />
+        </div>
       </div>
     </div>
   );

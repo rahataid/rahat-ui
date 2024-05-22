@@ -49,6 +49,8 @@ type AddAudienceProps = {
   selectedRows: Array<any>;
   audienceData: any;
   setSelectedRows: any;
+  audienceRequiredError: boolean;
+  setAudienceRequiredError: any;
 };
 
 const AddAudience: FC<AddAudienceProps> = ({
@@ -58,20 +60,16 @@ const AddAudience: FC<AddAudienceProps> = ({
   selectedRows,
   audienceData,
   setSelectedRows,
+  audienceRequiredError,
+  setAudienceRequiredError,
 }) => {
   const [columnVisibility, setColumnVisibility] = React.useState({});
   const [rowSelection, setRowSelection] = React.useState({});
 
   const projectsList = useProjectList({});
 
-  const {
-    pagination,
-    filters,
-    setFilters,
-    setNextPage,
-    setPrevPage,
-    setPerPage,
-  } = usePagination();
+  const { filters, setFilters } = usePagination();
+
   const { data: beneficiaryData } = useBeneficiaryPii({
     ...filters,
   });
@@ -134,9 +132,14 @@ const AddAudience: FC<AddAudienceProps> = ({
     tableData,
   });
 
-
+  if (selectedRows.length > 0) {
+    setAudienceRequiredError(false);
+  }
   return (
     <>
+      {audienceRequiredError && (
+        <h3 className="text-red-600">Select Audience</h3>
+      )}
       {/* header area start  */}
       <div className="flex items-center gap-2 pb-2">
         <Input
@@ -197,7 +200,7 @@ const AddAudience: FC<AddAudienceProps> = ({
           <FormItem>
             <div className="rounded border mb-8 bg-card">
               <Table>
-                <ScrollArea className="h-[calc(100vh-440px)]">
+                <ScrollArea className="h-[calc(100vh-460px)]">
                   <TableHeader>
                     {table.getHeaderGroups().map((headerGroup) => (
                       <TableRow key={headerGroup.id}>
@@ -265,7 +268,7 @@ const AddAudience: FC<AddAudienceProps> = ({
         perPage={pagination.perPage}
         total={beneficiaryData?.response?.meta?.lastPage || 0}
       /> */}
-      <div className="flex items-center justify-end space-x-8 py-4">
+      <div className="fixed bottom-0 flex items-center justify-end space-x-8 py-4">
         <div className="flex-1 text-sm text-muted-foreground">
           {table.getFilteredSelectedRowModel().rows.length} of{' '}
           {table.getFilteredRowModel().rows.length} row(s) selected.
@@ -299,7 +302,10 @@ const AddAudience: FC<AddAudienceProps> = ({
           <Button
             variant="outline"
             size="sm"
-            onClick={() => table.previousPage()}
+            onClick={(e) => {
+              e.preventDefault();
+              table.previousPage();
+            }}
             disabled={!table.getCanPreviousPage()}
           >
             Previous
@@ -307,7 +313,10 @@ const AddAudience: FC<AddAudienceProps> = ({
           <Button
             variant="outline"
             size="sm"
-            onClick={() => table.nextPage()}
+            onClick={(e) => {
+              e.preventDefault();
+              table.nextPage();
+            }}
             disabled={!table.getCanNextPage()}
           >
             Next

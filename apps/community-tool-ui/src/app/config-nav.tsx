@@ -16,6 +16,10 @@ export function useNavData() {
         title: 'Users',
         path: paths.dashboard.user,
       },
+      {
+        title: 'Targeting',
+        path: paths.dashboard.targeting.root,
+      },
     ],
     [],
   );

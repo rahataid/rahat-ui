@@ -1,22 +1,22 @@
-import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
 import {
   Beneficiary,
   GroupResponseById,
   ListGroup,
 } from '@rahataid/community-tool-sdk';
-import { truncateEthAddress } from '@rumsan/sdk/utils';
 import { ColumnDef } from '@tanstack/react-table';
-import { Eye } from 'lucide-react';
+import { Eye, Trash, Trash2 } from 'lucide-react';
 import { useSecondPanel } from '../../providers/second-panel-provider';
-import GroupDetail from './groupdetails';
-import {
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
-} from '@rahat-ui/shadcn/src/components/ui/resizable';
+
+import Link from 'next/link';
+import EditGroupedBeneficiaries from './edit/editGroupedBeneficiaries';
+import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
+import { useCommunityGroupDelete } from '@rahat-ui/community-query';
 
 export const useCommunityGroupTableColumns = () => {
-  const { closeSecondPanel, setSecondPanelComponent } = useSecondPanel();
+  const deletegroup = useCommunityGroupDelete();
+  const handleDeleteGroup = (uuid: string) => {
+    deletegroup.mutateAsync(uuid);
+  };
 
   const columns: ColumnDef<ListGroup>[] = [
     {
@@ -30,9 +30,112 @@ export const useCommunityGroupTableColumns = () => {
       cell: ({ row }) => <div>{row.getValue('name')}</div>,
     },
     {
+      header: 'Created By',
+      cell: ({ row }) => {
+        return <div>{row.original.user?.name || '-'}</div>;
+      },
+    },
+    {
       id: 'actions',
       enableHiding: false,
       header: 'View Detail',
+      cell: ({ row }) => {
+        return (
+          <div className="flex gap-4">
+            <Link href={`/group/${row.original.uuid}`}>
+              <Eye
+                size={20}
+                strokeWidth={1.5}
+                className="cursor-pointer hover:text-primary"
+              />
+            </Link>
+
+            <Trash2
+              size={20}
+              strokeWidth={1.5}
+              className="cursor-pointer hover:text-primary"
+              color="red"
+              onClick={() => handleDeleteGroup(row.original.uuid)}
+            />
+          </div>
+        );
+      },
+    },
+  ];
+  return columns;
+};
+
+export const useCommunityGroupDeailsColumns = () => {
+  const { closeSecondPanel, setSecondPanelComponent } = useSecondPanel();
+
+  const columns: ColumnDef<GroupResponseById>[] = [
+    {
+      id: 'select',
+      header: ({ table }) => (
+        <Checkbox
+          checked={
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && 'indeterminate')
+          }
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          aria-label="Select all"
+        />
+      ),
+      cell: ({ row }) => (
+        <Checkbox
+          checked={row.getIsSelected()}
+          disabled={!row.getCanSelect()}
+          onCheckedChange={(value) => {
+            row.toggleSelected(!!value);
+          }}
+          aria-label="Select row"
+        />
+      ),
+      enableSorting: false,
+      enableHiding: false,
+    },
+
+    {
+      id: 'fullName',
+      accessorKey: 'beneficiary',
+      header: 'Full Name',
+      cell: ({ row }) => {
+        return (
+          row.original.beneficiary.firstName +
+            ' ' +
+            row.original.beneficiary.lastName ?? '-'
+        );
+      },
+    },
+    {
+      id: 'phone',
+      accessorKey: 'beneficiary',
+      header: 'Phone',
+      cell: ({ row }) => {
+        return row.original.beneficiary.phone ?? '-';
+      },
+    },
+    {
+      id: 'gender',
+      accessorKey: 'beneficiary',
+      header: 'Gender',
+      cell: ({ row }) => {
+        return row.original.beneficiary.gender ?? '-';
+      },
+    },
+    {
+      id: 'govtIDNumber',
+      accessorKey: 'beneficiary',
+      header: 'Govt. ID Number',
+      cell: ({ row }) => {
+        return row.original.beneficiary.govtIDNumber ?? '-';
+      },
+    },
+    {
+      id: 'actions',
+      enableHiding: false,
+      header: 'View Detail',
+
       cell: ({ row }) => {
         return (
           <Eye
@@ -42,8 +145,8 @@ export const useCommunityGroupTableColumns = () => {
             onClick={() =>
               setSecondPanelComponent(
                 <>
-                  <GroupDetail
-                    data={row.original}
+                  <EditGroupedBeneficiaries
+                    uuid={row?.original?.beneficiary?.uuid as string}
                     closeSecondPanel={closeSecondPanel}
                   />
                 </>,
@@ -51,91 +154,6 @@ export const useCommunityGroupTableColumns = () => {
             }
           />
         );
-      },
-    },
-  ];
-  return columns;
-};
-
-export const useCommunityGroupDeailsColumns = () => {
-  const columns: ColumnDef<GroupResponseById[]>[] = [
-    {
-      accessorKey: 'beneficiary',
-      header: 'Full Name',
-      cell: ({ row }) => {
-        if (row && row.getValue && typeof row.getValue === 'function') {
-          const beneficiary = row.getValue('beneficiary') as Beneficiary;
-          if (beneficiary && beneficiary.firstName && beneficiary.lastName) {
-            return `${beneficiary.firstName}  ${beneficiary.lastName}`;
-          }
-        }
-        return '';
-      },
-    },
-    {
-      accessorKey: 'beneficiary',
-      header: 'Phone',
-      cell: ({ row }) => {
-        if (row && row.getValue && typeof row.getValue === 'function') {
-          const beneficiary = row.getValue('beneficiary') as Beneficiary;
-          if (beneficiary && beneficiary.phone) {
-            return beneficiary.phone;
-          }
-        }
-        return 'null';
-      },
-    },
-    {
-      accessorKey: 'beneficiary',
-      header: 'Wallet Address',
-      cell: ({ row }) => {
-        if (row && row.getValue && typeof row.getValue === 'function') {
-          const beneficiary = row.getValue('beneficiary') as Beneficiary;
-          if (beneficiary && beneficiary.walletAddress) {
-            return truncateEthAddress(beneficiary.walletAddress);
-          }
-        }
-        return '';
-      },
-    },
-    {
-      accessorKey: 'beneficiary',
-      header: 'Gender',
-      cell: ({ row }) => {
-        if (row && row.getValue && typeof row.getValue === 'function') {
-          const beneficiary = row.getValue('beneficiary') as Beneficiary;
-          if (beneficiary && beneficiary.gender) {
-            return beneficiary.gender;
-          }
-        }
-        return '';
-      },
-    },
-    {
-      accessorKey: 'beneficiary',
-      header: 'Govt. ID Number',
-      cell: ({ row }) => {
-        if (row && row.getValue && typeof row.getValue === 'function') {
-          const beneficiary = row.getValue('beneficiary') as Beneficiary;
-          if (beneficiary && beneficiary.govtIDNumber) {
-            return beneficiary.govtIDNumber;
-          }
-        }
-        return 'null';
-      },
-    },
-    {
-      accessorKey: 'beneficiary',
-      header: 'Created Date',
-      cell: ({ row }) => {
-        const beneficiary = row.getValue('beneficiary') as Beneficiary;
-        const changedDate = new Date(beneficiary.createdAt as Date);
-        const formattedDate = changedDate.toLocaleDateString('en-US', {
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric',
-        });
-        return <div>{formattedDate}</div>;
       },
     },
   ];

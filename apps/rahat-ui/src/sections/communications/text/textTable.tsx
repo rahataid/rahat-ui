@@ -35,12 +35,13 @@ import {
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { CAMPAIGN_TYPES } from '@rahat-ui/types';
-import { useCampaignStore, useListCampaign } from '@rumsan/communication-query';
+import { useCampaignStore, useListCampaign ,useGetStats} from '@rumsan/communication-query';
 import useTextTableColumn from './useTextTableColumn';
 import { ICampaignItemApiResponse } from '@rumsan/communication/types';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
-import { usePagination } from '@rahat-ui/query';
+import {  usePagination } from '@rahat-ui/query';
 import TableLoader from '../../../components/table.loader';
+import CommunicationSummary from '../components/communication.summary';
 
 export default function TextTableView() {
   const columns = useTextTableColumn();
@@ -54,6 +55,9 @@ export default function TextTableView() {
     setPerPage,
   } = usePagination();
   const { data, isSuccess, isLoading } = useListCampaign(pagination);
+
+  const{data:statsData,isLoading: statsLoading} = useGetStats();
+
 
   // const [sorting, setSorting] = React.useState<SortingState>([]);
   // const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -91,6 +95,10 @@ export default function TextTableView() {
 
   return (
     <div className="p-2 bg-secondary">
+      <CommunicationSummary statsData={statsData?.data}
+      isLoading={statsLoading}
+      />
+
       {isLoading ? (
         <>
           <TableLoader />

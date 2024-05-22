@@ -42,7 +42,6 @@ export default function BeneficiaryDetail({ data, closeSecondPanel }: IProps) {
   }, [data.uuid]);
 
   const deleteCommunityBeneficiary = useCommunityBeneficiaryRemove();
-
   const handleBeneficiaryDelete = () => {
     Swal.fire({
       title: 'Are you sure?',
@@ -74,7 +73,7 @@ export default function BeneficiaryDetail({ data, closeSecondPanel }: IProps) {
 
   return (
     <>
-      <Tabs defaultValue="detail">
+      <Tabs defaultValue="detailBenef">
         <div className="flex justify-between items-center p-4">
           <div className="flex gap-4">
             <TooltipProvider delayDuration={100}>
@@ -111,20 +110,20 @@ export default function BeneficiaryDetail({ data, closeSecondPanel }: IProps) {
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
-            <TabsTrigger value="detail">Details </TabsTrigger>
+            <TabsTrigger value="detailBenef">Details </TabsTrigger>
             {/* <TabsTrigger value="transaction-history">
               Transaction History
             </TabsTrigger> */}
-            <TabsTrigger value="edit">Edit</TabsTrigger>
+            <TabsTrigger value="editBenef">Edit</TabsTrigger>
           </TabsList>
         </div>
-        <TabsContent value="detail">
+        <TabsContent value="detailBenef">
           <InfoCards data={data} />
         </TabsContent>
         {/* <TabsContent value="transaction-history">
           <div className="p-4 border-y">Transaction History View</div>
         </TabsContent> */}
-        <TabsContent value="edit">
+        <TabsContent value="editBenef">
           <EditBeneficiary data={data} />
         </TabsContent>
       </Tabs>

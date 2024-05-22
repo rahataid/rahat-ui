@@ -1,36 +1,27 @@
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from '@rahat-ui/shadcn/components/tabs';
+import { Tabs, TabsContent } from '@rahat-ui/shadcn/components/tabs';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/components/tooltip';
-import { Download, Minus, Trash2, MoreVertical } from 'lucide-react';
+import { Download, MoreVertical, Trash2 } from 'lucide-react';
 
-import { ListGroup } from '@rahataid/community-tool-sdk/groups';
 import {
   VisibilityState,
   getCoreRowModel,
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import React, { useState } from 'react';
+import { useEffect, useState } from 'react';
 
-import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
-import GroupDetailTable from './group.table';
 import {
   useCommunityGroupListByID,
-  useCommunityGroupPurge,
+  usePurgeGroupedBeneficiary,
+  useCommunityGroupRemove,
+  useCommunityGroupStore,
   useCommunityGroupedBeneficiariesDownload,
 } from '@rahat-ui/community-query';
-import { useCommunityGroupDeailsColumns } from './useGroupColumns';
-import Swal from 'sweetalert2';
-import { useCommunityGroupRemove } from '@rahat-ui/community-query';
 import { usePagination } from '@rahat-ui/query';
 import {
   DropdownMenu,
@@ -38,15 +29,21 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
-import CustomPagination from '../../components/customPagination';
+import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
+import { GroupPurge } from '@rahataid/community-tool-sdk';
+import { useRouter } from 'next/navigation';
+import Swal from 'sweetalert2';
 import * as XLSX from 'xlsx';
+import CustomPagination from '../../components/customPagination';
+import GroupDetailTable from './group.table';
+import { useCommunityGroupDeailsColumns } from './useGroupColumns';
 
 type IProps = {
-  data: any;
-  closeSecondPanel: VoidFunction;
+  uuid: string;
+  // closeSecondPanel: VoidFunction;
 };
 
-export default function GroupDetail({ data, closeSecondPanel }: IProps) {
+export default function GroupDetail({ uuid }: IProps) {
   const {
     pagination,
     selectedListItems,
@@ -54,22 +51,21 @@ export default function GroupDetail({ data, closeSecondPanel }: IProps) {
     setNextPage,
     setPrevPage,
     setPerPage,
-    filters,
-    setFilters,
-    setPagination,
+    resetSelectedListItems,
   } = usePagination();
 
-  const { data: responseByUUID } = useCommunityGroupListByID(
-    data?.uuid,
-    pagination,
-  );
+  const { data: responseByUUID } = useCommunityGroupListByID(uuid, pagination);
   const columns = useCommunityGroupDeailsColumns();
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = useState({});
   const download = useCommunityGroupedBeneficiariesDownload();
   const removeCommunityGroup = useCommunityGroupRemove();
-  const purgeCommunityGroup = useCommunityGroupPurge();
-
+  const purgeCommunityGroup = usePurgeGroupedBeneficiary();
+  const {
+    deleteSelectedBeneficiariesFromImport,
+    setDeleteSelectedBeneficiariesFromImport,
+    resetDeletedSelectedBeneficiaries,
+  } = useCommunityGroupStore();
+  const router = useRouter();
   const table = useReactTable({
     manualPagination: true,
     data: responseByUUID?.data?.beneficiariesGroup || [],
@@ -77,7 +73,8 @@ export default function GroupDetail({ data, closeSecondPanel }: IProps) {
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setRowSelection,
+    onRowSelectionChange: setSelectedListItems,
+    getRowId: (row) => row.beneficiary.uuid as string,
     state: {
       columnVisibility,
       rowSelection: selectedListItems,
@@ -86,7 +83,7 @@ export default function GroupDetail({ data, closeSecondPanel }: IProps) {
 
   const handleClick = async () => {
     const response = await download.mutateAsync({
-      uuid: data?.uuid,
+      uuid: uuid,
       config: { responseType: 'arraybuffer' },
     });
 
@@ -114,7 +111,7 @@ export default function GroupDetail({ data, closeSecondPanel }: IProps) {
   const removeBeneficiaryFromGroup = () => {
     Swal.fire({
       title: 'Are you sure?',
-      text: 'Remove beneficiary from this group',
+      text: 'Remove beneficiary from this group only',
       icon: 'question',
       showDenyButton: true,
       confirmButtonText: 'Yes, I am sure!',
@@ -127,78 +124,74 @@ export default function GroupDetail({ data, closeSecondPanel }: IProps) {
     }).then(async (result) => {
       if (result.isConfirmed) {
         await removeCommunityGroup.mutateAsync({
-          uuid: data?.uuid,
+          uuid: uuid,
           deleteBeneficiaryFlag: false,
         });
-        closeSecondPanel();
+        router.push('/group');
       }
     });
   };
 
-  const handleDelete = () => {
-    Swal.fire({
-      title: 'Are you sure?',
-      text: 'Beneficiary will be removed from group and archived!',
-      icon: 'question',
-      showDenyButton: true,
-      confirmButtonText: 'Yes, I am sure!',
-      denyButtonText: 'No, cancel it!',
-      customClass: {
-        actions: 'my-actions',
-        confirmButton: 'order-1',
-        denyButton: 'order-2',
-      },
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        await removeCommunityGroup.mutateAsync({
-          uuid: data?.uuid,
-          deleteBeneficiaryFlag: true,
-        });
-        closeSecondPanel();
-      }
-    });
+  // const handleDelete = () => {
+  //   Swal.fire({
+  //     title: 'Are you sure?',
+  //     text: 'Beneficiary will be removed from group and archived!',
+  //     icon: 'question',
+  //     showDenyButton: true,
+  //     confirmButtonText: 'Yes, I am sure!',
+  //     denyButtonText: 'No, cancel it!',
+  //     customClass: {
+  //       actions: 'my-actions',
+  //       confirmButton: 'order-1',
+  //       denyButton: 'order-2',
+  //     },
+  //   }).then(async (result) => {
+  //     if (result.isConfirmed) {
+  //       await removeCommunityGroup.mutateAsync({
+  //         uuid: uuid,
+  //         deleteBeneficiaryFlag: true,
+  //       });
+  //       router.push('/group');
+
+  //       // closeSecondPanel();
+  //     }
+  //   });
+  // };
+
+  const handlePurge = async () => {
+    const data = {
+      groupUuid: uuid,
+      beneficiaryUuid: deleteSelectedBeneficiariesFromImport,
+    };
+    if (deleteSelectedBeneficiariesFromImport.length > 0) {
+      await purgeCommunityGroup.mutateAsync(data as GroupPurge);
+      return resetDeletedSelectedBeneficiaries();
+      // return router.push('/group/import-logs');
+    }
+
+    Swal.fire('Please select beneficiary to delete', '', 'warning');
   };
 
-  const handlePurge = () => {
-    Swal.fire({
-      title: 'CAUTION!',
-      text: 'Group and beneficiaries will be deleted permanently!',
-      icon: 'warning',
-      showDenyButton: true,
-      confirmButtonText: 'Yes, I am sure!',
-      denyButtonText: 'No, cancel it!',
-      customClass: {
-        actions: 'my-actions',
-        confirmButton: 'order-1',
-        denyButton: 'order-2',
-      },
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        await purgeCommunityGroup.mutateAsync(data?.uuid);
-        closeSecondPanel();
-      }
-    });
-  };
+  useEffect(() => {
+    setDeleteSelectedBeneficiariesFromImport(
+      Object.keys(selectedListItems).filter((key) => selectedListItems[key]),
+    );
+  }, [selectedListItems, setDeleteSelectedBeneficiariesFromImport]);
 
+  useEffect(() => {
+    if (deleteSelectedBeneficiariesFromImport.length === 0) {
+      resetSelectedListItems();
+    }
+  }, [deleteSelectedBeneficiariesFromImport.length, resetSelectedListItems]);
   return (
     <>
       <Tabs defaultValue="detail">
-        <div className="flex justify-between items-center p-4">
+        <div className="flex justify-between items-center p-4 pb-1">
           <div className="flex gap-4">
             <TooltipProvider delayDuration={100}>
               <Tooltip>
-                <TooltipTrigger onClick={closeSecondPanel}>
-                  <Minus size={20} strokeWidth={1.5} />
-                </TooltipTrigger>
-                <TooltipContent className="bg-secondary ">
-                  <p className="text-xs font-medium">Close</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-            <TooltipProvider delayDuration={100}>
-              <Tooltip>
                 <TooltipTrigger>
-                  <Label>{data.name}</Label>
+                  <Label>{responseByUUID?.data?.name}</Label>
                 </TooltipTrigger>
                 <TooltipContent className="bg-secondary ">
                   <p className="text-xs font-medium">Group Name</p>
@@ -222,7 +215,8 @@ export default function GroupDetail({ data, closeSecondPanel }: IProps) {
               </Tooltip>
             </TooltipProvider>
           </div>
-          <TabsList>
+
+          <div className="flex gap-3">
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild onClick={removeBeneficiaryFromGroup}>
@@ -238,9 +232,7 @@ export default function GroupDetail({ data, closeSecondPanel }: IProps) {
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
-            <TabsTrigger value="detail" className="mr-2">
-              Details{' '}
-            </TabsTrigger>
+
             <DropdownMenu>
               <DropdownMenuTrigger>
                 <MoreVertical
@@ -250,20 +242,19 @@ export default function GroupDetail({ data, closeSecondPanel }: IProps) {
                 />
               </DropdownMenuTrigger>
               <DropdownMenuContent>
-                <DropdownMenuItem onClick={handleDelete}>
+                {/* <DropdownMenuItem onClick={handleDelete}>
                   Delete
+                </DropdownMenuItem> */}
+                <DropdownMenuItem onClick={handlePurge}>
+                  Delete Beneficiary
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={handlePurge}>Purge</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-          </TabsList>
+          </div>
         </div>
 
         <TabsContent value="detail">
           <GroupDetailTable table={table} />
-          <p className="text-xs font-medium text-right mr-5 mt-1">
-            Total beneficiary Count :{responseByUUID?.response?.meta?.total}
-          </p>
         </TabsContent>
 
         <CustomPagination

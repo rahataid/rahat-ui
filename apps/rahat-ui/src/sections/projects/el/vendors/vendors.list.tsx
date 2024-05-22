@@ -11,8 +11,9 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import * as React from 'react';
+import Loader from 'apps/community-tool-ui/src/components/Loader';
 
-import { useProjectAction } from '@rahat-ui/query';
+import { PROJECT_SETTINGS_KEYS, useProjectAction, useProjectSettingsStore } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/components/button';
 import { Input } from '@rahat-ui/shadcn/components/input';
 import {
@@ -28,6 +29,8 @@ import { MS_ACTIONS } from '@rahataid/sdk';
 import { useParams, useRouter } from 'next/navigation';
 import { useVendorTable } from './useVendorTable';
 import TableLoader from 'apps/rahat-ui/src/components/table.loader';
+import { useAllVendorVoucher, useProjectVoucher, useVendorVoucher } from 'apps/rahat-ui/src/hooks/el/subgraph/querycall';
+import SpinnerLoader from '../../components/spinner.loader';
 
 export type Transaction = {
   id: string;
@@ -42,13 +45,25 @@ export default function VendorsList() {
   const router = useRouter();
   const uuid = useParams().id;
 
+  const vendorList = useAllVendorVoucher()
+
   const handleViewClick = (rowData: any) => {
     router.push(
       `/projects/el/${uuid}/vendors/${rowData.walletaddress}?phone=${rowData.phone}&&name=${rowData.name}&&walletAddress=${rowData.walletaddress} &&vendorId=${rowData.vendorId}`,
     );
   };
 
-  const columns = useVendorTable({ handleViewClick });
+  const contractSettings = useProjectSettingsStore(
+    (state) => state.settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.CONTRACT] || null,
+  );
+  const voucherDetail = useProjectVoucher(
+    contractSettings?.elproject?.address || '',
+    contractSettings?.eyevoucher?.address || '',
+  );
+
+  const voucherPrice = Number(voucherDetail?.data?.freeVoucherPrice);
+
+  const columns = useVendorTable({ handleViewClick, voucherPrice });
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
@@ -83,6 +98,7 @@ export default function VendorsList() {
   const [currentPage, setCurrentPage] = React.useState<number>(1);
 
   const fetchVendors = async () => {
+
     const result = await getVendors.mutateAsync({
       uuid,
       data: {
@@ -93,21 +109,39 @@ export default function VendorsList() {
         },
       },
     });
-
+    
     const filteredData = result?.data.map((row: any) => {
       return {
         name: row.User.name,
         walletaddress: row.User.wallet,
         phone: row.User.phone,
         vendorId: row.User.uuid,
+        redemptionNumber: row.redemptionNumber
       };
     });
-    setData(filteredData);
+
+    let totalVoucher:number;
+
+    const vendorListArray = Object.values(vendorList?.data?.voucherArray || {});
+
+    const filteredDataWithVoucher = filteredData?.map((row:any) => {
+      totalVoucher = 0;
+      vendorListArray?.map((voucherRow:any) => {
+        
+          if(row?.walletaddress?.toLowerCase() === voucherRow?.id?.toLowerCase()){
+            totalVoucher = Number(voucherRow?.freeVoucherRedeemed) + Number(voucherRow?.referredVoucherRedeemed)
+          }
+        
+      })
+      return{...row, totalVoucherRedemmed: totalVoucher}
+    })
+
+    setData(filteredDataWithVoucher);
   };
 
   React.useEffect(() => {
     fetchVendors();
-  }, []);
+  }, [vendorList?.isFetched]);
 
   return (
     <div className="w-full h-full p-2 bg-secondary">
@@ -142,7 +176,7 @@ export default function VendorsList() {
                 </TableRow>
               ))}
             </TableHeader>
-            <TableBody>
+            {vendorList?.isFetched ? <TableBody>
               {table.getRowModel().rows?.length ? (
                 table.getRowModel().rows.map((row) => (
                   <TableRow
@@ -173,7 +207,7 @@ export default function VendorsList() {
                   </TableCell>
                 </TableRow>
               )}
-            </TableBody>
+            </TableBody>: <div className='w-full h-48 flex justify-center items-center' ><Loader /></div>}
           </ScrollArea>
         </Table>
       </div>

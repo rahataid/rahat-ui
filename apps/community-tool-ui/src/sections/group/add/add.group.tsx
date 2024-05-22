@@ -28,7 +28,11 @@ function AddGroup() {
   const communityGroup = useCommunityGroupCreate();
 
   const handleForm = async (data: z.infer<typeof FormSchema>) => {
-    await communityGroup.mutateAsync(data);
+    const formData = {
+      ...data,
+      isSystem: false,
+    };
+    await communityGroup.mutateAsync(formData);
   };
 
   useEffect(() => {

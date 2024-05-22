@@ -42,7 +42,11 @@ import {
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { truncateEthAddress } from '@rumsan/core/utilities/string.utils';
-import { useUserAddRoles, useUserCurrentUser } from '@rumsan/react-query';
+import {
+  useAuthStore,
+  useUserAddRoles,
+  useUserCurrentUser,
+} from '@rumsan/react-query';
 import { User } from '@rumsan/sdk/types';
 import { UUID } from 'crypto';
 import { FilePenLine, MinusIcon, PlusIcon, Telescope } from 'lucide-react';
@@ -65,8 +69,9 @@ const FormSchema = z.object({
 export default function UserDetail({ userDetail, closeSecondPanel }: IProps) {
   const updateUserRole = useUserAddRoles();
   const { data } = useUserCurrentUser();
+  const isRole = useAuthStore((state) => state.roles);
 
-  const isAdmin = data?.data?.roles.includes(ROLE_TYPE.ADMIN);
+  // const isAdmin = data?.data?.roles.includes(ROLE_TYPE.ADMIN);
 
   const form = useForm({
     resolver: zodResolver(FormSchema),
@@ -98,7 +103,6 @@ export default function UserDetail({ userDetail, closeSecondPanel }: IProps) {
     month: 'long',
     day: 'numeric',
   });
-
   const handleAssignRole = (data: any) => {
     updateUserRole.mutateAsync({
       uuid: userDetail.uuid as UUID,
@@ -125,7 +129,7 @@ export default function UserDetail({ userDetail, closeSecondPanel }: IProps) {
         </TooltipProvider>
         <div className="flex gap-3">
           {/* Add Roles */}
-          {isAdmin && (
+          {isRole?.isAdmin === true && (
             <>
               <Dialog open={open} onOpenChange={setOpen}>
                 <DialogTrigger>
@@ -319,7 +323,7 @@ export default function UserDetail({ userDetail, closeSecondPanel }: IProps) {
             <div className="px-2">
               <UsersRoleTable
                 userRole={userDetail?.uuid as UUID}
-                isAdmin={isAdmin}
+                isAdmin={isRole?.isAdmin}
               />
             </div>
           </TabsContent>

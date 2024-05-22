@@ -2,6 +2,8 @@ export const TAGS = {
   GET_BENEFICIARY: 'get_one_beneficiary',
   GET_ALL_USER: 'get_all_user',
   GET_USER: 'get_user',
+  GET_ME: 'get_me',
+  UPDATE_ME: 'update_me',
   UPDATE_USER: 'update_user',
   CREATE_USER: 'create_user',
   GET_ALL_PROJECTS: 'get_all_projects',
@@ -49,4 +51,6 @@ export const TAGS = {
   GET_TARGETING_BENEFICIARIES: 'get_targeting_beneficiary',
   LIST_KOBO_SETTINGS: 'list_kobo_settings',
   LIST_MAPPINGS_BY_IMPORT_ID: 'list_mappings_by_import_id',
+  UPDATE_TARGETING_LABEL: 'update_targeting_label',
+  DOWNLOAD_TARGETING_LABEL: 'download_targeting_label',
 };

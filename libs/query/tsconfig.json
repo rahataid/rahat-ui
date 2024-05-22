@@ -11,6 +11,7 @@
     "noFallthroughCasesInSwitch": true,
     "rootDir": "./", // Set this to the root of your project
     // other options...
+    "esModuleInterop": true,
     "paths": {
       "@routes/paths": ["apps/rahat-ui/src/routes/paths.ts"]
     }

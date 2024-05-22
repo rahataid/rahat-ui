@@ -1,5 +1,10 @@
 import { CreateProjectPayload } from '@rahat-ui/types';
+import { Beneficiary, MS_ACTIONS } from '@rahataid/sdk';
+import { getProjectClient } from '@rahataid/sdk/clients';
+import { Project, ProjectActions } from '@rahataid/sdk/project/project.types';
 import { useRSQuery } from '@rumsan/react-query';
+import { Pagination } from '@rumsan/sdk/types';
+import { FormattedResponse } from '@rumsan/sdk/utils';
 import {
   UseQueryResult,
   keepPreviousData,
@@ -7,24 +12,13 @@ import {
   useQuery,
   useQueryClient,
 } from '@tanstack/react-query';
-import { TAGS } from '../../config';
-import { toast } from 'sonner';
-import { Beneficiary, MS_ACTIONS } from '@rahataid/sdk';
-import { getProjectClient } from '@rahataid/sdk/clients';
-import { Project, ProjectActions } from '@rahataid/sdk/project/project.types';
-import { Pagination } from '@rumsan/sdk/types';
-import { FormattedResponse } from '@rumsan/sdk/utils';
 import { UUID } from 'crypto';
 import { isEmpty } from 'lodash';
 import { useEffect, useMemo } from 'react';
+import { PROJECT_SETTINGS_KEYS, TAGS } from '../../config';
 import { useSwal } from '../../swal';
 import { api } from '../../utils/api';
 import { useProjectSettingsStore, useProjectStore } from './project.store';
-
-export const PROJECT_SETTINGS_KEYS = {
-  CONTRACT: 'CONTRACT',
-  SUBGRAPH: 'SUBGRAPH_URL',
-};
 
 const createProject = async (payload: CreateProjectPayload) => {
   const res = await api.post('/projects', payload);
@@ -79,6 +73,11 @@ export const useAssignBenToProject = () => {
       projectUUID: UUID;
       beneficiaryUUID: UUID;
     }) => {
+      console.log(
+        'assigning beneficiary to project',
+        beneficiaryUUID,
+        projectUUID,
+      );
       return q.mutateAsync({
         uuid: projectUUID,
         data: {
@@ -298,12 +297,68 @@ export const useProjectSubgraphSettings = (uuid: UUID) => {
   return query;
 };
 
+export const useAAProjectSettingsDatasource = (uuid: UUID) => {
+  const q = useProjectAction([PROJECT_SETTINGS_KEYS.DATASOURCE]);
+  const { setSettings, settings } = useProjectSettingsStore((state) => ({
+    settings: state.settings,
+    setSettings: state.setSettings,
+  }));
+
+  const query = useQuery({
+    queryKey: [
+      TAGS.GET_PROJECT_SETTINGS,
+      uuid,
+      PROJECT_SETTINGS_KEYS.DATASOURCE,
+    ],
+    enabled: isEmpty(settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.DATASOURCE]),
+    // enabled: !!settings[uuid],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'settings.get',
+          payload: {
+            name: PROJECT_SETTINGS_KEYS.DATASOURCE,
+          },
+        },
+      });
+      return mutate.data.value;
+    },
+    // initialData: settings?.[uuid],
+  });
+
+  console.log(query);
+
+  useEffect(() => {
+    if (!isEmpty(query.data)) {
+      const settingsToUpdate = {
+        ...settings,
+        [uuid]: {
+          ...settings?.[uuid],
+          [PROJECT_SETTINGS_KEYS.DATASOURCE]: query?.data,
+        },
+      };
+      setSettings(settingsToUpdate);
+      window.location.reload();
+      // setSettings({
+      //   [uuid]: {
+      //     [PROJECT_SETTINGS_KEYS.SUBGRAPH]: query?.data,
+      //   },
+      // });
+    }
+  }, [query.data]);
+
+  return query;
+};
+
 export const useProjectList = (
   payload?: Pagination,
 ): UseQueryResult<FormattedResponse<Project[]>, Error> => {
   const { queryClient, rumsanService } = useRSQuery();
+  console.log({ queryClient, rumsanService });
 
   const projectClient = getProjectClient(rumsanService.client);
+  console.log({ projectClient });
   return useQuery(
     {
       queryKey: [TAGS.GET_ALL_PROJECTS, payload],
@@ -343,6 +398,7 @@ type GetProjectBeneficiaries = Pagination & {
   sort?: string;
   status?: string;
   projectUUID: UUID;
+  type?: string;
   vouchers?: any;
 };
 
@@ -379,16 +435,17 @@ export const useProjectBeneficiaries = (payload: GetProjectBeneficiaries) => {
         ...query.data,
         data: query.data?.data?.length
           ? query.data.data.map((row: any) => ({
-              uuid: row?.Beneficiary?.uuid,
-              wallet: row?.Beneficiary?.walletAddress,
-              name: row?.piiData?.name,
-              email: row?.piiData?.email,
-              gender: row?.Beneficiary?.gender,
+              uuid: row?.uuid?.toString(),
+              wallet: row?.walletAddress?.toString(),
+              voucherClaimStatus: row?.claimStatus,
+              name: row?.piiData?.name || '',
+              email: row?.piiData?.email || '',
+              gender: row?.projectData?.gender?.toString() || '',
               phone: row?.piiData?.phone || 'N/A',
-              type: row?.Beneficiary?.type || 'N/A',
-              phoneStatus: row?.Beneficiary?.phoneStatus,
-              bankedStatus: row?.Beneficiary?.bankedStatus,
-              internetStatus: row?.Beneficiary?.internetStatus,
+              type: row?.type?.toString() || 'N/A',
+              phoneStatus: row?.projectData?.phoneStatus || '',
+              bankedStatus: row?.projectData?.bankedStatus || '',
+              internetStatus: row?.projectData?.internetStatus || '',
             }))
           : [],
       };
@@ -456,4 +513,26 @@ export const useUpdateElRedemption = () => {
       return m;
     },
   });
+};
+
+export const useProjectEdit = () => {
+  const { queryClient, rumsanService } = useRSQuery();
+  // const projectClient = getProjectClient(rumsanService.client);
+
+  return useMutation(
+    {
+      onError(error, variables, context) {
+        console.error('Error', error, variables, context);
+      },
+      onSuccess(data, variables, context) {
+        console.log('Success', data, variables, context);
+      },
+      mutationKey: ['projectEdit'],
+      mutationFn: async ({ uuid, data }: { uuid: UUID; data: any }) => {
+        const res = await rumsanService.client.patch(`/projects/${uuid}`, data);
+        return res;
+      },
+    },
+    queryClient,
+  );
 };

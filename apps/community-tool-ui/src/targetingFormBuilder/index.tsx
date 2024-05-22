@@ -1,43 +1,21 @@
-import React from 'react';
-import TextInput from './TextInput';
 import { FieldType } from '../constants/fieldDefinition.const';
-import NumberInput from './NumberInput';
-import TextAreaInput from './TextAreaInput';
-import PasswordInput from './PasswordInput';
-import RadioInput from './RadioInput';
-import DropDownInput from './DropdownInput';
-import CheckboxInput from './CheckboxInput';
+import { humanizeString } from '../utils';
+import { MultiSelect } from './MultiSelect';
 
 export default function Index({ formField }: any) {
   return (
     <>
-      {formField.fieldType === FieldType.TEXT && (
-        <TextInput formField={formField} className="mt-8" />
-      )}
+      {formField.fieldType === FieldType.TEXT ||
+        formField.fieldType === FieldType.NUMBER ||
+        formField.fieldType === FieldType.TEXTAREA ||
+        formField.fieldType === FieldType.DATE ||
+        (formField.fieldType === FieldType.PASSWORD && '')}
 
-      {formField.fieldType === FieldType.NUMBER && (
-        <NumberInput formField={formField} className="mt-8" />
-      )}
-
-      {formField.fieldType === FieldType.PASSWORD && (
-        <PasswordInput formField={formField} className="mt-8" />
-      )}
-
-      {formField.fieldType === FieldType.RADIO && (
-        <RadioInput formField={formField} className="mt-8" />
-      )}
-
-      {formField.fieldType === FieldType.DROPDOWN && (
-        <DropDownInput formField={formField} className="mt-8" />
-      )}
-
-      {formField.fieldType === FieldType.CHECKBOX && (
-        <CheckboxInput formField={formField} className="mt-8" />
-      )}
-
-      {formField.fieldType === FieldType.TEXTAREA && (
-        <TextAreaInput formField={formField} className="mt-8" />
-      )}
+      <MultiSelect
+        placeholder={humanizeString(formField.name)}
+        options={formField?.fieldPopulate?.data || []}
+        fieldName={formField.name}
+      />
     </>
   );
 }

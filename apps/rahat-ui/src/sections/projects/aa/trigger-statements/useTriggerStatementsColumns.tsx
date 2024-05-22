@@ -1,6 +1,4 @@
-'use client';
-
-import { useDeleteTriggerStatement } from '@rahat-ui/query';
+import { useParams, useRouter } from 'next/navigation';
 import {
   Tooltip,
   TooltipContent,
@@ -8,28 +6,27 @@ import {
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { ColumnDef } from '@tanstack/react-table';
-import { UUID } from 'crypto';
-import { TrashIcon } from 'lucide-react';
-import { useParams } from 'next/navigation';
+import { Eye, Pencil, Trash2 } from 'lucide-react';
+import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 
 export const useTriggerStatementTableColumns = () => {
-  const { id: projectID } = useParams();
-  const deleteTriggerStatement = useDeleteTriggerStatement();
-
-  const deleteRow = (row: any) => {
-    deleteTriggerStatement.mutateAsync({
-      projectUUID: projectID as UUID,
-      triggerStatementPayload: {
-        repeatKey: row.repeatKey,
-      },
-    });
-  };
+  const { id } = useParams();
+  const router = useRouter();
 
   const columns: ColumnDef<any>[] = [
+    {
+      accessorKey: 'title',
+      header: 'Title',
+      cell: ({ row }) => {
+        return row.getValue('title');
+      },
+    },
     {
       accessorKey: 'dataSource',
       header: 'Data Source',
       cell: ({ row }) => {
+        console.log(row.original);
+
         if (row.getValue('dataSource') === 'DHM') {
           return (
             <>
@@ -46,59 +43,65 @@ export const useTriggerStatementTableColumns = () => {
             </>
           );
         }
+        return row.getValue('dataSource');
       },
     },
     {
       accessorKey: 'location',
       header: 'River Basin',
       cell: ({ row }) => (
-        <div className="cursor-pointer">{row.getValue('location')}</div>
+        <div className="cursor-pointer w-max">
+          {row.getValue('location') || 'N/A'}
+        </div>
       ),
     },
     {
-      accessorKey: 'triggerStatement',
-      header: 'Trigger Statement',
+      accessorKey: 'phase',
+      header: 'Phase',
+      cell: ({ row }) => (
+        <div className="cursor-pointer w-max">
+          {row.original?.phase?.name || 'N/A'}
+        </div>
+      ),
+    },
+    {
+      accessorKey: 'isTriggered',
+      header: 'Status',
       cell: ({ row }) => {
-        if (row.getValue('dataSource') === 'DHM') {
-          return (
-            <>
-              <div>Readiness Level: {row.original.triggerStatement.readinessLevel}</div>
-              <div>Activation Level: {row.original.triggerStatement.activationLevel}</div>
-            </>
-          );
-        }
+        const isTriggered = row.getValue('isTriggered');
+        return (
+          <Badge
+            className={
+              !isTriggered
+                ? 'bg-green-100 text-green-600'
+                : 'bg-red-100 text-red-600'
+            }
+          >
+            {isTriggered ? 'Triggered' : 'Not Triggered'}
+          </Badge>
+        );
       },
     },
     {
-      accessorKey: 'triggerActivity',
-      header: 'Trigger Activity',
-      cell: ({ row }) => {
-        const triggerActivities = row.getValue('triggerActivity');
-
-        if (Array.isArray(triggerActivities) && triggerActivities.length) {
-          return (
-            <>
-              {triggerActivities.map((activity, index) => (
-                <div key={index}>{activity}</div> 
-              ))}
-            </>
-          );
-        } else {
-          return <div>N/A</div>; 
-        }
-      }
-    },
-    {
       id: 'actions',
+      header: 'Actions',
       enableHiding: false,
       cell: ({ row }) => {
         return (
-          <TrashIcon
-            size={20}
-            strokeWidth={1.5}
-            className="cursor-pointer hover:text-primary"
-            onClick={() => deleteRow(row.original)}
-          />
+          <div className="flex gap-4 w-max">
+            <Eye
+              className="hover:text-primary cursor-pointer"
+              size={20}
+              strokeWidth={1.5}
+              onClick={() =>
+                router.push(
+                  `/projects/aa/${id}/trigger-statements/${row.original.repeatKey}`,
+                )
+              }
+            />
+            <Pencil size={20} strokeWidth={1.5} className="text-primary" />
+            <Trash2 size={20} strokeWidth={1.5} color="red" />
+          </div>
         );
       },
     },

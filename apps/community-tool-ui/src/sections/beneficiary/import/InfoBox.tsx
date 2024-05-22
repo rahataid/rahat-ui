@@ -21,7 +21,7 @@ export default function InfoBox({
         </div>
         <div>
           <p className="font-bold">{title}</p>
-          <p className="text-sm">{message}.</p>
+          <p className="text-sm">{message}</p>
         </div>
       </div>
     </div>

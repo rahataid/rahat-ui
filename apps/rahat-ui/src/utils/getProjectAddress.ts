@@ -1,5 +1,6 @@
 import { UseMutationResult } from '@tanstack/react-query';
 import { PROJECT_SETTINGS } from '../constants/project.const';
+import { type Address } from 'viem';
 
 export const getProjectSettings = async (
   getProject: UseMutationResult<any, Error, any, unknown>,
@@ -31,4 +32,11 @@ export const getProjectAddress = async (
   });
 
   return res?.data;
+};
+
+export const shortenAddress = (address: Address) => {
+  if (!address) return '';
+  const start = address.slice(0, 6);
+  const end = address.slice(address.length - 4);
+  return `${start}...${end}`;
 };

@@ -1,5 +1,10 @@
 import { useEffect } from 'react';
-import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
 import { useProjectAction } from '../../projects';
 import { useActivitiesStore } from './activities.store';
 import { UUID } from 'crypto';
@@ -88,12 +93,11 @@ export const useActivitiesHazardTypes = (uuid: UUID) => {
 };
 
 export const useActivities = (uuid: UUID, payload: any) => {
-
   const q = useProjectAction();
 
   const { setActivities, setActivitiesMeta } = useActivitiesStore((state) => ({
     setActivities: state.setActivities,
-    setActivitiesMeta: state.setActivitiesMeta
+    setActivitiesMeta: state.setActivitiesMeta,
   }));
 
   const query = useQuery({
@@ -108,7 +112,7 @@ export const useActivities = (uuid: UUID, payload: any) => {
       });
       return mutate.response;
     },
-    placeholderData: keepPreviousData
+    placeholderData: keepPreviousData,
   });
 
   useEffect(() => {
@@ -127,12 +131,39 @@ export const useActivities = (uuid: UUID, payload: any) => {
     category: d.category?.name,
     description: d.description,
     phase: d.phase?.name,
-    isApproved: d.isApproved,
-    isComplete: d.isComplete,
-  }))
-
+    status: d.status,
+    activityType: d.activityType,
+    campaignId: d?.activityComm?.campaignId || null,
+    activtiyComm: d?.activityComm || null,
+    // isApproved: d.isApproved,
+    // isComplete: d.isComplete,
+  }));
 
   return { ...query, activitiesData, activitiesMeta: query?.data?.meta };
+};
+
+export const useSingleActivity = (
+  uuid: UUID,
+  activityId: string | string[],
+) => {
+  const q = useProjectAction();
+
+  const query = useQuery({
+    queryKey: ['activity', uuid, activityId],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'aaProject.activities.getOne',
+          payload: {
+            uuid: activityId,
+          },
+        },
+      });
+      return mutate.data;
+    },
+  });
+  return query;
 };
 
 export const useCreateActivities = () => {
@@ -179,6 +210,53 @@ export const useCreateActivities = () => {
   });
 };
 
+export const useUpdateActivities = () => {
+  const qc = useQueryClient();
+  const q = useProjectAction();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+  return useMutation({
+    mutationFn: async ({
+      projectUUID,
+      activityUpdatePayload,
+    }: {
+      projectUUID: UUID;
+      activityUpdatePayload: any
+    }) => {
+      return q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'aaProject.activities.update',
+          payload: activityUpdatePayload,
+        },
+      });
+    },
+    onSuccess: () => {
+      q.reset();
+      qc.invalidateQueries({ queryKey: ['activities', 'activity'] });
+      toast.fire({
+        title: 'Activity updated successfully',
+        icon: 'success',
+      });
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || 'Error';
+      q.reset();
+      toast.fire({
+        title: 'Error while updating activity.',
+        icon: 'error',
+        text: errorMessage,
+      });
+    },
+  });
+
+}
+
 export const useDeleteActivities = () => {
   const qc = useQueryClient();
   const q = useProjectAction();
@@ -220,6 +298,148 @@ export const useDeleteActivities = () => {
       q.reset();
       toast.fire({
         title: 'Error while removing activity.',
+        icon: 'error',
+        text: errorMessage,
+      });
+    },
+  });
+};
+
+export const useCreateActivityCommunication = () => {
+  const q = useProjectAction();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+  return useMutation({
+    mutationFn: async ({
+      projectUUID,
+      activityCommunicationPayload,
+    }: {
+      projectUUID: UUID;
+      activityCommunicationPayload: any;
+    }) => {
+      return q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'aaProject.activities.communication.add',
+          payload: activityCommunicationPayload,
+        },
+      });
+    },
+
+    onSuccess: () => {
+      q.reset();
+      toast.fire({
+        title: 'Communication added successfully',
+        icon: 'success',
+      });
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || 'Error';
+      q.reset();
+      toast.fire({
+        title: 'Error while adding communication.',
+        icon: 'error',
+        text: errorMessage,
+      });
+    },
+  });
+};
+
+export const useTriggerCommunication = () => {
+  const q = useProjectAction();
+  const qc = useQueryClient();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+  return useMutation({
+    mutationFn: async ({
+      projectUUID,
+      activityCommunicationPayload,
+    }: {
+      projectUUID: UUID;
+      activityCommunicationPayload: any;
+    }) => {
+      return q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'aaProject.activities.communication.trigger',
+          payload: activityCommunicationPayload,
+        },
+      });
+    },
+
+    onSuccess: () => {
+      q.reset();
+      qc.invalidateQueries({ queryKey: ['activity'] });
+      toast.fire({
+        title: 'Communication Trigger successfully',
+        icon: 'success',
+      });
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || 'Error';
+      q.reset();
+      toast.fire({
+        title: 'Error while triggering communication.',
+        icon: 'error',
+        text: errorMessage,
+      });
+    },
+  });
+};
+
+export const useUpdateActivityStatus = () => {
+  const q = useProjectAction();
+  const qc = useQueryClient();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+  return useMutation({
+    mutationFn: async ({
+      projectUUID,
+      activityStatusPayload,
+    }: {
+      projectUUID: UUID;
+      activityStatusPayload: {
+        uuid: string,
+        status: string
+      };
+    }) => {
+      return q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'aaProject.activities.updateStatus',
+          payload: activityStatusPayload,
+        },
+      });
+    },
+
+    onSuccess: () => {
+      q.reset();
+      qc.invalidateQueries({ queryKey: ['activity, activities'] });
+      toast.fire({
+        title: 'Status Updated',
+        icon: 'success',
+      });
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || 'Error';
+      q.reset();
+      toast.fire({
+        title: 'Status Update Failed',
         icon: 'error',
         text: errorMessage,
       });

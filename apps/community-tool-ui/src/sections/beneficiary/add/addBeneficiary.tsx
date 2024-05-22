@@ -46,8 +46,7 @@ import {
   formatDate,
   selectNonEmptyFields,
 } from 'apps/community-tool-ui/src/utils';
-
-const FIELD_DEF_FETCH_LIMIT = 200;
+import { FIELD_DEF_FETCH_LIMIT } from 'apps/community-tool-ui/src/constants/app.const';
 
 export default function AddBeneficiary() {
   const { extras }: any = useFormStore();
@@ -86,12 +85,12 @@ export default function AddBeneficiary() {
     defaultValues: {
       firstName: '',
       lastName: '',
-      gender: Gender.UKNOWN,
+      gender: '',
       walletAddress: '',
       phone: '',
-      bankedStatus: BankedStatus.UNKNOWN,
-      internetStatus: InternetStatus.UNKNOWN,
-      phoneStatus: PhoneStatus.UNKNOWN,
+      bankedStatus: '',
+      internetStatus: '',
+      phoneStatus: '',
       email: '',
       location: '',
       latitude: 0,
@@ -471,14 +470,17 @@ export default function AddBeneficiary() {
                   </FormItem>
                 )}
               />
-
-              <h3>
-                <b>Extra Fields:</b>
-              </h3>
+              {definitions?.data.length > 0 && (
+                <h3>
+                  <b>Extra Fields:</b>
+                </h3>
+              )}
               <br />
               {definitions?.data?.map((definition: any) => {
                 return (
-                  <FormBuilder key={definition.id} formField={definition} />
+                  <>
+                    <FormBuilder key={definition.id} formField={definition} />
+                  </>
                 );
               }) || 'No field definitions found!'}
             </div>

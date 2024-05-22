@@ -33,6 +33,7 @@ module.exports = {
         add: 'calc(100vh - 65px)',
       },
       colors: {
+        magenta: '#3D3D5A',
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',

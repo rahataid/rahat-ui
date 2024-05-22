@@ -47,7 +47,15 @@ const columns: ColumnDef<any>[] = [
     accessorKey: 'transactionHash',
     header: 'Txn Hash',
     cell: ({ row }) => (
-      <div>{truncateEthAddress(row.getValue('transactionHash'))}</div>
+      <a
+        href={`https://sepolia.arbiscan.io/tx/${row.getValue(
+          'transactionHash',
+        )}`}
+      >
+        {' '}
+        {truncateEthAddress(row.getValue('transactionHash'))}
+      </a>
+      // <div>{`https://sepolia.arbiscan.io/tx/${truncateEthAddress(row.getValue('transactionHash'))}`}</div>
     ),
   },
   {
@@ -103,13 +111,13 @@ export default function VendorTxnList({ walletAddress }: VendorTxnListProps) {
       <div className="w-full h-full bg-secondary">
         <div className="rounded border h-[calc(100vh-180px)] bg-card">
           <Table>
-            <ScrollArea className="w-full h-withPage p-4">
+            <ScrollArea className="w-full h-withPage px-4 py-1">
               <TableHeader>
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow key={headerGroup.id}>
                     {headerGroup.headers.map((header) => {
                       return (
-                        <TableHead key={header.id}>
+                        <TableHead className="text-primary" key={header.id}>
                           {header.isPlaceholder
                             ? null
                             : flexRender(

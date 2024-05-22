@@ -14,6 +14,7 @@ type Store = {
   processedData: any[];
   rawData: any[];
   validBenef: any[];
+  hasUUID: boolean;
   setCurrentScreen: (currentScreen: string) => void;
   setDuplicateData: (duplicateData: any[]) => void;
   setHasExistingMapping: (hasExistingMapping: boolean) => void;
@@ -26,6 +27,7 @@ type Store = {
   setProcessedData: (processedData: any[]) => void;
   setRawData: (rawData: any[]) => void;
   setValidBenef: (validBenef: any[]) => void;
+  setHasUUID: (hasUUID: boolean) => void;
 };
 
 const initialState = {
@@ -41,6 +43,7 @@ const initialState = {
   processedData: [],
   rawData: [],
   validBenef: [],
+  hasUUID: false,
 };
 
 export const useBeneficiaryImportStore = create<Store>((set) => ({
@@ -58,4 +61,5 @@ export const useBeneficiaryImportStore = create<Store>((set) => ({
   setProcessedData: (processedData: any[]) => set({ processedData }),
   setRawData: (rawData: any[]) => set({ rawData }),
   setValidBenef: (validBenef: any[]) => set({ validBenef }),
+  setHasUUID: (hasUUID: boolean) => set({ hasUUID }),
 }));

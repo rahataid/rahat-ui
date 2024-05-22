@@ -1,23 +1,21 @@
 'use client';
-import React, { useCallback, useState } from 'react';
+import { useState } from 'react';
 
-import GroupList from './list.group';
+import { useCommunityGroupList } from '@rahat-ui/community-query';
+import { usePagination } from '@rahat-ui/query';
+import { Tabs, TabsContent } from '@rahat-ui/shadcn/src/components/ui/tabs';
 import {
   VisibilityState,
   getCoreRowModel,
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { ListGroup } from '@rahataid/community-tool-sdk/groups';
 import CustomPagination from '../../components/customPagination';
-import { Tabs, TabsContent } from '@rahat-ui/shadcn/src/components/ui/tabs';
-import { useCommunityGroupList } from '@rahat-ui/community-query';
-import { usePagination } from '@rahat-ui/query';
-import { useCommunityGroupTableColumns } from './useGroupColumns';
 import { useDebounce } from '../../utils/debounceHooks';
+import GroupList from './list.group';
+import { useCommunityGroupTableColumns } from './useGroupColumns';
 
 function ViewGroup() {
-  const [selectedData, setSelectedData] = useState<ListGroup>();
   const {
     pagination,
     selectedListItems,
@@ -30,7 +28,8 @@ function ViewGroup() {
     setPagination,
   } = usePagination();
 
-  const debouncedFilters = useDebounce(filters, 500);
+  const debouncedFilters = useDebounce(filters, 500) as any;
+  debouncedFilters.autoCreated = false;
   const { data } = useCommunityGroupList({
     ...pagination,
     ...(debouncedFilters as any),
@@ -51,36 +50,28 @@ function ViewGroup() {
       rowSelection: selectedListItems,
     },
   });
-  const handleGroup = useCallback((item: ListGroup) => {
-    setSelectedData(item);
-  }, []);
-
-  const handleClose = () => {
-    setSelectedData(null);
-  };
-
+  console.log(data?.data?.rows);
   return (
     <Tabs defaultValue="groupList" className="h-full">
       <>
         <TabsContent value="groupList">
           <GroupList
             table={table}
-            handleClick={handleGroup}
             setFilters={setFilters}
             filters={filters}
             pagination={pagination}
             setPagination={setPagination}
           />
+          <CustomPagination
+            meta={data?.response?.meta || { total: 0, currentPage: 0 }}
+            handleNextPage={setNextPage}
+            handlePrevPage={setPrevPage}
+            handlePageSizeChange={setPerPage}
+            currentPage={pagination.page}
+            perPage={pagination.perPage}
+            total={data?.response?.meta.total || 0}
+          />
         </TabsContent>
-        <CustomPagination
-          meta={data?.response?.meta || { total: 0, currentPage: 0 }}
-          handleNextPage={setNextPage}
-          handlePrevPage={setPrevPage}
-          handlePageSizeChange={setPerPage}
-          currentPage={pagination.page}
-          perPage={pagination.perPage}
-          total={data?.response?.meta.lastPage || 0}
-        />
       </>
     </Tabs>
   );

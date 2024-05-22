@@ -207,3 +207,46 @@ export const useDeleteRole = () => {
   );
   return query;
 };
+
+export const useCurrentUser = () => {
+  const { queryClient, rumsanService } = useRSQuery();
+  const userClient = getUserClient(rumsanService.client);
+  const query = useQuery(
+    {
+      queryKey: [TAGS.GET_ME, { exact: true }],
+      queryFn: () => userClient.getMe(),
+    },
+    queryClient,
+  );
+  return query;
+};
+
+export const useUpdateMe = () => {
+  const { queryClient, rumsanService } = useRSQuery();
+  const userClient = getUserClient(rumsanService.client);
+  return useMutation(
+    {
+      mutationKey: [TAGS.UPDATE_ME],
+      mutationFn: ({ payload }: { payload: User }) =>
+        userClient.updateMe(payload),
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: [
+            TAGS.GET_ME,
+            {
+              exact: true,
+            },
+          ],
+        });
+      },
+      onError: (error: any) => {
+        Swal.fire(
+          'Error',
+          error.response.data.message || 'Encounter error on Creating Data',
+          'error',
+        );
+      },
+    },
+    queryClient,
+  );
+};

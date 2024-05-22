@@ -153,12 +153,12 @@ export const useBeneficiariesGroups = (uuid: UUID, payload: any) => {
     }));
 
   const query = useQuery({
-    queryKey: ['stakeholdersGroups', uuid, payload],
+    queryKey: ['beneficiaryGroups', uuid, payload],
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid,
         data: {
-          action: 'aaProject.stakeholders.getAllGroups',
+          action: 'aaProject.beneficiary.getAllGroups',
           payload: payload,
         },
       });

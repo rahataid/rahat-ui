@@ -162,7 +162,7 @@ export const useCommunityGroupDelete = () => {
           title: `${
             data?.pathName === '/group' ? 'Delete Group' : 'Delete Imports Logs'
           }`,
-          text: 'Are you sure you want to delete this Group Permanently?',
+          text: 'Are you sure you want to delete permanently?',
           showCancelButton: true,
           confirmButtonText: 'Delete',
           cancelButtonText: 'Cancel',

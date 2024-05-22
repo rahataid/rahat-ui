@@ -33,8 +33,8 @@ type IProps = {
       dataSource: string;
       location: string;
       isMandatory?: boolean | undefined;
-      readinessLevel?: string | undefined;
-      activationLevel?: string | undefined;
+      // readinessLevel?: string | undefined;
+      waterLevel: string;
     },
     any,
     undefined
@@ -186,31 +186,31 @@ export default function AddAutomatedTriggerForm({ form }: IProps) {
                 }}
               />
             </div>
-            {selectedPhase.name === 'READINESS' && (
-              <FormField
-                control={form.control}
-                name="readinessLevel"
-                render={({ field }) => {
-                  return (
-                    <FormItem>
-                      <FormLabel>Readiness Level</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="text"
-                          // inputMode="decimal"
-                          // pattern="[0-9]*[.,]?[0-9]*"
-                          // title="Please enter positive number"
-                          placeholder="Enter Readiness Level"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  );
-                }}
-              />
-            )}
-            {selectedPhase.name === 'ACTIVATION' && (
+            {/* {selectedPhase.name === 'READINESS' && ( */}
+            <FormField
+              control={form.control}
+              name="waterLevel"
+              render={({ field }) => {
+                return (
+                  <FormItem>
+                    <FormLabel>Threshold Level</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="text"
+                        // inputMode="decimal"
+                        // pattern="[0-9]*[.,]?[0-9]*"
+                        // title="Please enter positive number"
+                        placeholder="Enter water Level"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+            {/* )} */}
+            {/* {selectedPhase.name === 'ACTIVATION' && (
               <FormField
                 control={form.control}
                 name="activationLevel"
@@ -233,7 +233,7 @@ export default function AddAutomatedTriggerForm({ form }: IProps) {
                   );
                 }}
               />
-            )}
+            )} */}
             <FormField
               control={form.control}
               name="isMandatory"

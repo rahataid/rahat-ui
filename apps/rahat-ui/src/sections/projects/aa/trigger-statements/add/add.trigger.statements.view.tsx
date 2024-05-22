@@ -10,8 +10,10 @@ import AddAutomatedTriggerForm from './automated.trigger.add.form';
 import AddManualTriggerForm from './manual.trigger.add.form';
 import { UUID } from 'crypto';
 import { UseFormReturn } from 'react-hook-form';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 
 type IProps = {
+  nextStep: VoidFunction;
   activeTab: string;
   onTabChange: (tab: string) => void;
   manualForm: UseFormReturn<
@@ -31,8 +33,8 @@ type IProps = {
       location: string;
       isMandatory?: boolean | undefined;
 
-      readinessLevel?: string | undefined;
-      activationLevel?: string | undefined;
+      // readinessLevel?: string | undefined;
+      waterLevel: string;
     },
     any,
     undefined
@@ -44,6 +46,7 @@ export default function AddTriggerStatementView({
   activeTab,
   onTabChange,
   automatedForm,
+  nextStep,
 }: IProps) {
   const { id: projectID } = useParams();
   useActivities(projectID as UUID, {});
@@ -68,6 +71,20 @@ export default function AddTriggerStatementView({
           <AddManualTriggerForm form={manualForm} />
         </TabsContent>
       </Tabs>
+      <div className="flex justify-end mt-8">
+        <div className="flex gap-2">
+          <Button
+            variant="secondary"
+            className="bg-red-100 text-red-600 w-36"
+            disabled
+          >
+            Cancel
+          </Button>
+          <Button className="px-8" onClick={nextStep}>
+            Next
+          </Button>
+        </div>
+      </div>
     </>
   );
 }

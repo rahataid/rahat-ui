@@ -9,17 +9,20 @@ import { Separator } from '@rahat-ui/shadcn/src/components/ui/separator';
 import { Slider } from '@rahat-ui/shadcn/src/components/ui/slider';
 import { Minus, Plus } from 'lucide-react';
 import { UseFormReturn } from 'react-hook-form';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 
 // const MandatoryTriggers = [
 //   { title: 'Trigger 1', isOptional: false },
 //   { title: 'Trigger 2', isOptional: false },
 // ];
-const OptionalTriggers = [
-  { title: 'Trigger 3', isOptional: true },
-  { title: 'Trigger 4', isOptional: true },
-];
+// const OptionalTriggers = [
+//   { title: 'Trigger 3', isOptional: true },
+//   { title: 'Trigger 4', isOptional: true },
+// ];
 
 type IProps = {
+  handleAddTrigger: (data: any) => void;
+  prevStep: VoidFunction;
   manualForm: UseFormReturn<
     {
       title: string;
@@ -34,8 +37,8 @@ type IProps = {
       hazardTypeId: string;
       dataSource: string;
       location: string;
-      readinessLevel?: string | undefined;
-      activationLevel?: string | undefined;
+      waterLevel: string;
+      // activationLevel?: string | undefined;
     },
     any,
     undefined
@@ -49,6 +52,8 @@ export default function ConfigurePhase({
   manualForm,
   automatedForm,
   activeTab,
+  prevStep,
+  handleAddTrigger,
 }: IProps) {
   const mandatoryTriggers = phaseDetail?.triggers?.filter(
     (d: any) => d?.isMandatory,
@@ -57,15 +62,19 @@ export default function ConfigurePhase({
     (d: any) => !d?.isMandatory,
   );
 
-
   const [newTriggerData, setNewTriggerData] = React.useState<any>({});
-  const [allMandatoryTriggers, setAllMandatoryTriggers] = React.useState<any>([]);
-  const [allOptionalTriggers, setAllOptionalTriggers] = React.useState<any>([]);
 
-  const [sliderValue, setSliderValue] = React.useState(0);
+  const [allMandatoryTriggers, setAllMandatoryTriggers] =
+    React.useState<any>(mandatoryTriggers);
+
+  const [allOptionalTriggers, setAllOptionalTriggers] =
+    React.useState<any>(optionalTriggers);
+
+  const [sliderValue, setSliderValue] = React.useState(
+    phaseDetail?.requiredOptionalTriggers,
+  );
 
   React.useEffect(() => {
-
     if (activeTab === 'manualTrigger') {
       const formValues = manualForm.getValues();
       setNewTriggerData(formValues);
@@ -81,33 +90,12 @@ export default function ConfigurePhase({
     const isEmpty = (obj: any) => Object.keys(obj).length === 0;
     if (!isEmpty(newTriggerData)) {
       if (newTriggerData?.isMandatory) {
-        setAllMandatoryTriggers([...mandatoryTriggers, newTriggerData])
+        setAllMandatoryTriggers([...mandatoryTriggers, newTriggerData]);
       } else {
-        setAllOptionalTriggers([...optionalTriggers, newTriggerData])
+        setAllOptionalTriggers([...optionalTriggers, newTriggerData]);
       }
-    } else return
-  }, [newTriggerData])
-
-  // React.useEffect(() => {
-  //   console.log('called');
-
-  // if (newTriggerData?.isMandatory) {
-  //   mandatoryTriggers.push(newTriggerData);
-  // }
-
-  // if (!newTriggerData?.isMandatory) {
-  //   optionalTriggers.push(newTriggerData);
-  // }
-  // if (activeTab === 'manualTrigger') {
-  //   const formValues = manualForm.getValues();
-  //   setNewTriggerData(formValues);
-  // }
-
-  // if (activeTab === 'automatedTrigger') {
-  //   const formValues = automatedForm.getValues();
-  //   setNewTriggerData(formValues);
-  // }
-  // }, [newTriggerData]);
+    } else return;
+  }, [newTriggerData]);
 
   // const [switchStates, setSwitchStates] = React.useState(() => {
   //   const initialStates: any = {};
@@ -131,7 +119,7 @@ export default function ConfigurePhase({
   const handleSliderPlus = () => setSliderValue((prev) => prev + 1);
   const handleSliderMinus = () => setSliderValue((prev) => prev - 1);
 
-  const plusBtnDisabled = sliderValue >= 5;
+  const plusBtnDisabled = sliderValue >= allOptionalTriggers.length;
   const minusBtnDisabled = sliderValue <= 0;
 
   return (
@@ -146,31 +134,32 @@ export default function ConfigurePhase({
           </CardHeader>
           <CardContent>
             <div>
-              {allMandatoryTriggers?.length ?
-                allMandatoryTriggers?.map((t: any, index: number) => (
-                  <>
-                    <div
-                      key={t?.repeatKey}
-                      className="flex justify-between items-center h-12"
-                    >
-                      <p>
-                        {index + 1}. {t.title}
-                      </p>
-                      <div className="flex items-center space-x-2">
-                        {/* <Switch
+              {allMandatoryTriggers?.length
+                ? allMandatoryTriggers?.map((t: any, index: number) => (
+                    <>
+                      <div
+                        key={t?.repeatKey}
+                        className="flex justify-between items-center h-12"
+                      >
+                        <p>
+                          {index + 1}. {t.title}
+                        </p>
+                        <div className="flex items-center space-x-2">
+                          {/* <Switch
                         id={`switch-${t?.repeatKey}`}
                         checked={switchStates[t?.repeatKey]}
                         onChange={(e) => handleSwitchChange(t?.repeatKey, e)}
                       /> */}
-                        {/* <Switch id="isOptional" checked={m.isMandatory} /> */}
-                        {/* <Label htmlFor="isOptional">Optional?</Label> */}
+                          {/* <Switch id="isOptional" checked={m.isMandatory} /> */}
+                          {/* <Label htmlFor="isOptional">Optional?</Label> */}
+                        </div>
                       </div>
-                    </div>
-                    {index < allMandatoryTriggers?.length - 1 && <Separator />}
-                  </>
-                ))
-                : 'No data'
-              }
+                      {index < allMandatoryTriggers?.length - 1 && (
+                        <Separator />
+                      )}
+                    </>
+                  ))
+                : 'No data'}
             </div>
           </CardContent>
         </Card>
@@ -182,29 +171,28 @@ export default function ConfigurePhase({
           </CardHeader>
           <CardContent>
             <div>
-              {allOptionalTriggers?.length ?
-                allOptionalTriggers?.map((t: any, index: number) => (
-                  <>
-                    <div className="flex justify-between items-center h-12">
-                      <p>
-                        {index + 1}. {t.title}
-                      </p>
-                      <div className="flex items-center space-x-2">
-                        {/* <Switch
+              {allOptionalTriggers?.length
+                ? allOptionalTriggers?.map((t: any, index: number) => (
+                    <>
+                      <div className="flex justify-between items-center h-12">
+                        <p>
+                          {index + 1}. {t.title}
+                        </p>
+                        <div className="flex items-center space-x-2">
+                          {/* <Switch
                         id={`switch-${t?.repeatKey}`}
                         checked={switchStates[t?.repeatKey]}
                         // onClick={(e) => handleSwitchChange(t?.repeatKey, e)}
                         onChange={(e) => handleSwitchChange(t?.repeatKey, e)}
                       /> */}
-                        {/* <Switch id="isOptional" checked={o.isOptional} /> */}
-                        {/* <Label htmlFor="isOptional">Optional?</Label> */}
+                          {/* <Switch id="isOptional" checked={o.isOptional} /> */}
+                          {/* <Label htmlFor="isOptional">Optional?</Label> */}
+                        </div>
                       </div>
-                    </div>
-                    {index < allOptionalTriggers?.length - 1 && <Separator />}
-                  </>
-                ))
-                : 'No data'
-              }
+                      {index < allOptionalTriggers?.length - 1 && <Separator />}
+                    </>
+                  ))
+                : 'No data'}
             </div>
           </CardContent>
         </Card>
@@ -216,11 +204,16 @@ export default function ConfigurePhase({
           </CardHeader>
           <CardContent>
             <div className="flex justify-between items-center gap-8">
-              <Slider value={[sliderValue]} max={5} step={1} />
+              <Slider
+                value={[sliderValue]}
+                max={allOptionalTriggers.length}
+                step={1}
+              />
               <div className="flex gap-2 items-center">
                 <div
-                  className={`p-2 rounded border ${minusBtnDisabled ? 'pointer-events-none' : ''
-                    }`}
+                  className={`p-2 rounded border ${
+                    minusBtnDisabled ? 'pointer-events-none' : ''
+                  }`}
                   onClick={handleSliderMinus}
                 >
                   <Minus size={18} />
@@ -229,8 +222,9 @@ export default function ConfigurePhase({
                   {sliderValue}
                 </div>
                 <div
-                  className={`p-2 rounded border ${plusBtnDisabled ? 'pointer-events-none' : ''
-                    }`}
+                  className={`p-2 rounded border ${
+                    plusBtnDisabled ? 'pointer-events-none' : ''
+                  }`}
                   onClick={handleSliderPlus}
                 >
                   <Plus size={18} />
@@ -239,6 +233,32 @@ export default function ConfigurePhase({
             </div>
           </CardContent>
         </Card>
+
+        <div className="flex justify-end mt-8">
+          <div className="flex gap-2">
+            <Button
+              variant="secondary"
+              className="bg-red-100 text-red-600 w-36"
+              disabled
+            >
+              Cancel
+            </Button>
+            <Button onClick={prevStep}>Previous</Button>
+            <Button
+              onClick={() =>
+                handleAddTrigger({
+                  newTriggerData,
+                  allMandatoryTriggers,
+                  allOptionalTriggers,
+                  requiredOptionalTriggers: sliderValue,
+                })
+              }
+              type="submit"
+            >
+              Add Trigger Statement
+            </Button>
+          </div>
+        </div>
       </div>
     </>
   );

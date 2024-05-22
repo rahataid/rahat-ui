@@ -23,6 +23,7 @@ export default function PhaseCard({ path, name, phaseId }: IProps) {
 
   return (
     <div
+      className="cursor-pointer"
       onClick={() => {
         handleClick(path);
       }}

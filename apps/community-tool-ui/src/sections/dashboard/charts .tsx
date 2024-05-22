@@ -17,6 +17,7 @@ const Charts = ({ charts }: { charts: any }) => {
                 value: d?.data?.count || 0,
               },
             ];
+        console.log('series', series);
         return (
           <PieChart
             key={d.name}

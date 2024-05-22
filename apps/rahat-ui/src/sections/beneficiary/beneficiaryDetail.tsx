@@ -103,7 +103,7 @@ export default function BeneficiaryDetail({
         beneficiaryDetail={beneficiaryDetail}
         projectModal={projectModal}
       />
-      <div className="flex justify-between p-4 pt-5 bg-secondary border-b">
+      <div className="flex justify-between p-4 pt-5 bg-card border-b">
         <div className="flex gap-3">
           <TooltipProvider delayDuration={100}>
             <Tooltip>
@@ -190,9 +190,16 @@ export default function BeneficiaryDetail({
               />
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-              <DropdownMenuItem onClick={() => handleTabChange('edit')}>
-                Edit
-              </DropdownMenuItem>
+              {activeTab === 'details' ? (
+                <DropdownMenuItem onClick={() => handleTabChange('edit')}>
+                  Edit
+                </DropdownMenuItem>
+              ) : (
+                <DropdownMenuItem onClick={() => handleTabChange('details')}>
+                  Details
+                </DropdownMenuItem>
+              )}
+
               <DropdownMenuItem onClick={handleAssignModalClick}>
                 Assign to project
               </DropdownMenuItem>

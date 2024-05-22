@@ -48,12 +48,13 @@ export default function DHMContent({ data, dhmStatements }: any) {
     return date.toLocaleTimeString();
   });
 
-  const readinessLevel = dhmStatements?.find(
-    (d: any) => d?.triggerStatement?.readinessLevel,
-  )?.triggerStatement?.readinessLevel;
-  const activationLevel = dhmStatements?.find(
-    (d: any) => d?.triggerStatement?.activationLevel,
-  )?.triggerStatement?.activationLevel;
+  // do not remove
+  // const readinessLevel = dhmStatements?.find(
+  //   (d: any) => d?.triggerStatement?.readinessLevel,
+  // )?.triggerStatement?.readinessLevel;
+  // const activationLevel = dhmStatements?.find(
+  //   (d: any) => d?.triggerStatement?.activationLevel,
+  // )?.triggerStatement?.activationLevel;
 
   const longitude = latestData.data.point.coordinates[0];
   const latitude = latestData.data.point.coordinates[1];
@@ -85,35 +86,34 @@ export default function DHMContent({ data, dhmStatements }: any) {
     },
   };
 
-  if (activationLevel) {
-    chartOptions?.annotations?.yaxis?.push({
-      y: activationLevel,
-      borderColor: '#D2042D',
-      borderWidth: 2,
-      label: {
-        style: {
-          color: '#D2042D',
-        },
-        text: 'Activation Level',
-      },
-    });
-  }
+  // do not remove
+  // if (activationLevel) {
+  //   chartOptions?.annotations?.yaxis?.push({
+  //     y: activationLevel,
+  //     borderColor: '#D2042D',
+  //     borderWidth: 2,
+  //     label: {
+  //       style: {
+  //         color: '#D2042D',
+  //       },
+  //       text: 'Activation Level',
+  //     },
+  //   });
+  // }
 
-  if (readinessLevel) {
-    chartOptions?.annotations?.yaxis?.push({
-      y: readinessLevel,
-      borderColor: '#FFC300',
-      borderWidth: 2,
-      label: {
-        style: {
-          color: '#FFC300',
-        },
-        text: 'Readiness Level',
-      },
-    });
-  }
-
-  console.log(chartOptions);
+  // if (readinessLevel) {
+  //   chartOptions?.annotations?.yaxis?.push({
+  //     y: readinessLevel,
+  //     borderColor: '#FFC300',
+  //     borderWidth: 2,
+  //     label: {
+  //       style: {
+  //         color: '#FFC300',
+  //       },
+  //       text: 'Readiness Level',
+  //     },
+  //   });
+  // }
 
   const waterLevelData = dhmData?.map((d: any) => {
     return parseFloat(d.data.waterLevel).toFixed(2);
@@ -169,13 +169,14 @@ export default function DHMContent({ data, dhmStatements }: any) {
             <h1 className="text-muted-foreground text-sm">Description</h1>
             <p>{latestData.data.description}</p>
           </div>
-          <div className="text-right">
+          {/* do not remove */}
+          {/* <div className="text-right">
             {renderStatus({
               readinessLevel: readinessLevel,
               activationLevel: activationLevel,
               waterLevel: latestData.data.waterLevel,
             })}
-          </div>
+          </div> */}
         </div>
       </div>
 

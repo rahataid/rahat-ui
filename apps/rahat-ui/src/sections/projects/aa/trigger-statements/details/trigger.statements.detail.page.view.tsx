@@ -117,7 +117,7 @@ export default function TriggerStatementsDetailView() {
             notes={triggerDetail?.notes}
             phase={triggerDetail?.phase?.name}
           />
-          <TriggerActivityListCard triggerDetail={triggerDetail} />
+          {/* <TriggerActivityListCard triggerDetail={triggerDetail} /> */}
           <ManualTriggerDocumentsCard
             documents={triggerDetail?.triggerDocuments}
           />
@@ -125,9 +125,9 @@ export default function TriggerStatementsDetailView() {
       ) : (
         <>
           <AutomatedTriggerDetailCards triggerDetail={triggerDetail} />
-          <div className="grid grid-cols-2 gap-4 mt-4 h-[calc(100vh-252px)]">
+          <div className="mt-4 h-[calc(100vh-252px)]">
             <AutomatedTriggerDetailCard triggerDetail={triggerDetail} />
-            <TriggerActivityListCard triggerDetail={triggerDetail} />
+            {/* <TriggerActivityListCard triggerDetail={triggerDetail} /> */}
           </div>
         </>
       )}

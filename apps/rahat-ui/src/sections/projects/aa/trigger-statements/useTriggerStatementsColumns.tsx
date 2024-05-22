@@ -25,6 +25,8 @@ export const useTriggerStatementTableColumns = () => {
       accessorKey: 'dataSource',
       header: 'Data Source',
       cell: ({ row }) => {
+        console.log(row.original);
+
         if (row.getValue('dataSource') === 'DHM') {
           return (
             <>
@@ -50,6 +52,15 @@ export const useTriggerStatementTableColumns = () => {
       cell: ({ row }) => (
         <div className="cursor-pointer w-max">
           {row.getValue('location') || 'N/A'}
+        </div>
+      ),
+    },
+    {
+      accessorKey: 'phase',
+      header: 'Phase',
+      cell: ({ row }) => (
+        <div className="cursor-pointer w-max">
+          {row.original?.phase?.name || 'N/A'}
         </div>
       ),
     },

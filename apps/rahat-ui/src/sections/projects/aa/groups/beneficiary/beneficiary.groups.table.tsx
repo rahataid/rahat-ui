@@ -1,3 +1,6 @@
+'use client';
+
+import * as React from 'react';
 import { Table, flexRender } from '@tanstack/react-table';
 import {
   Table as TableComponent,
@@ -8,22 +11,16 @@ import {
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import TableLoader from 'apps/rahat-ui/src/components/table.loader';
 
 type IProps = {
   table: Table<any>;
-  loading: boolean;
 };
 
-export default function TriggerStatementsTable({
-  table,
-  loading,
-}: IProps) {
-  if (loading) return <TableLoader />;
+export default function BeneficiaryGroupsTable({ table }: IProps) {
   return (
     <TableComponent>
-      <ScrollArea className="h-[calc(100vh-336px)]">
-        <TableHeader className="sticky top-0">
+      <ScrollArea className="h-[calc(100vh-179px)]">
+        <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => {
@@ -32,9 +29,9 @@ export default function TriggerStatementsTable({
                     {header.isPlaceholder
                       ? null
                       : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext(),
-                      )}
+                          header.column.columnDef.header,
+                          header.getContext(),
+                        )}
                   </TableHead>
                 );
               })}
@@ -50,10 +47,7 @@ export default function TriggerStatementsTable({
               >
                 {row.getVisibleCells().map((cell) => (
                   <TableCell key={cell.id}>
-                    {flexRender(
-                      cell.column.columnDef.cell,
-                      cell.getContext(),
-                    )}
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}
               </TableRow>

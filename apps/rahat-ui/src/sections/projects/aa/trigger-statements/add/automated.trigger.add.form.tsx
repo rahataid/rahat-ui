@@ -34,16 +34,21 @@ import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { UUID } from 'crypto';
 import { Plus, X } from 'lucide-react';
 
-export default function AddAutomatedTriggerForm() {
+type IProps = {
+  next: VoidFunction
+}
+
+export default function AddAutomatedTriggerForm({ next }: IProps) {
   const params = useParams();
-  const projectID = params.id as UUID;
-  const [phase, setPhase] = React.useState('');
+  const projectId = params.id as UUID;
+  const phaseId = ''
+  // const [phase, setPhase] = React.useState('');
   const createTriggerStatement = useCreateTriggerStatement();
 
-  const { activities, hazardTypes, phases } = useActivitiesStore((state) => ({
-    activities: state.activities,
+  const { hazardTypes } = useActivitiesStore((state) => ({
+    // activities: state.activities,
     hazardTypes: state.hazardTypes,
-    phases: state.phases,
+    // phases: state.phases,
   }));
 
   // const dhmStations = useAAStationsStore(
@@ -57,7 +62,7 @@ export default function AddAutomatedTriggerForm() {
   // ];
 
   const dataSources = useProjectSettingsStore(
-    (s) => s.settings?.[projectID]?.[PROJECT_SETTINGS_KEYS.DATASOURCE],
+    (s) => s.settings?.[projectId]?.[PROJECT_SETTINGS_KEYS.DATASOURCE],
   );
 
   const dhmStations = [
@@ -67,86 +72,95 @@ export default function AddAutomatedTriggerForm() {
   ];
 
   const FormSchema = z.object({
-    triggerTitle: z.string().min(2, { message: 'Please enter valid name' }),
-    source: z.string().min(1, { message: 'Please select data source' }),
-    riverBasin: z.string().min(1, { message: 'Please select river basin' }),
-    hazardType: z.string().min(1, { message: 'Please select hazard type' }),
-    phase: z.string().min(1, { message: 'Please select phase' }),
+    title: z.string().min(2, { message: 'Please enter valid name' }),
+    dataSource: z.string().min(1, { message: 'Please select data source' }),
+    location: z.string().min(1, { message: 'Please select river basin' }),
+    hazardTypeId: z.string().min(1, { message: 'Please select hazard type' }),
+    // phase: z.string().min(1, { message: 'Please select phase' }),
     // readinessLevel: z.string().regex(/^(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)$/, "Must be a positive integer or a decimal number").optional(),
     // activationLevel: z.string().regex(/^(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)$/, "Must be a positive integer or a decimal number").optional(),
-    readinessLevel: z.string().optional(),
-    activationLevel: z.string().optional(),
-    activity: z
-      .array(
-        z.object({
-          uuid: z.string(),
-          title: z.string(),
-        }),
-      )
-      .refine(
-        (value) =>
-          value.length > 0 && value.every((item) => item.uuid && item.title),
-        {
-          message: 'You have to select at least one activity',
-        },
-      ),
+    // readinessLevel: z.string().optional(),
+    // activationLevel: z.string().optional(),
+    // activity: z
+    //   .array(
+    //     z.object({
+    //       uuid: z.string(),
+    //       title: z.string(),
+    //     }),
+    //   )
+    //   .refine(
+    //     (value) =>
+    //       value.length > 0 && value.every((item) => item.uuid && item.title),
+    //     {
+    //       message: 'You have to select at least one activity',
+    //     },
+    //   ),
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      triggerTitle: '',
-      source: '',
-      riverBasin: '',
-      hazardType: '',
-      phase: '',
-      readinessLevel: '',
-      activationLevel: '',
-      activity: [],
+      title: '',
+      dataSource: '',
+      location: '',
+      hazardTypeId: '',
+      // phase: '',
+      // readinessLevel: '',
+      // activationLevel: '',
+      // activity: [],
     },
   });
 
-  const handleCreateTriggerStatement = async (
-    data: z.infer<typeof FormSchema>,
-  ) => {
-    const activities = data.activity.map((activity) => ({
-      uuid: activity.uuid,
-    }));
-    const triggerStatement =
-      phase === 'READINESS'
-        ? { readinessLevel: data.readinessLevel }
-        : { activationLevel: data.activationLevel };
-    const payload = {
-      title: data.triggerTitle,
-      dataSource: data.source,
-      location: data.riverBasin,
-      hazardTypeId: data.hazardType,
-      phaseId: data.phase,
-      triggerStatement: triggerStatement,
-      activities: activities,
-    };
-    try {
-      await createTriggerStatement.mutateAsync({
-        projectUUID: projectID,
-        triggerStatementPayload: payload,
-      });
-    } catch (e) {
-      console.error('Create Automated Trigger Error::', e);
-    } finally {
-      setPhase('');
-      form.reset();
-    }
-  };
+  // const handleCreateTriggerStatement = async (
+  //   data: z.infer<typeof FormSchema>,
+  // ) => {
+  //   // const activities = data.activity.map((activity) => ({
+  //   //   uuid: activity.uuid,
+  //   // }));
+  //   // const triggerStatement =
+  //   //   phase === 'READINESS'
+  //   //     ? { readinessLevel: data.readinessLevel }
+  //   //     : { activationLevel: data.activationLevel };
+  //   // const payload = {
+  //   //   title: data.triggerTitle,
+  //   //   dataSource: data.source,
+  //   //   location: data.riverBasin,
+  //   //   hazardTypeId: data.hazardType,
+  //   //   phaseId: data.phase,
+  //   //   triggerStatement: triggerStatement,
+  //   //   activities: activities,
+  //   // };
+  //   const payload = { ...data, phaseId: phaseId }
+  //   try {
+  //     await createTriggerStatement.mutateAsync({
+  //       projectUUID: projectId,
+  //       triggerStatementPayload: payload,
+  //     });
+  //   } catch (e) {
+  //     console.error('Create Automated Trigger Error::', e);
+  //   } finally {
+  //     // setPhase('');
+  //     form.reset();
+  //   }
+  // };
+
+  const handleNext = (data: z.infer<typeof FormSchema>) => {
+    console.log('data::', data)
+    console.log('is valid::', form.formState.isValid)
+    if (form.formState.isValid) {
+      next()
+    } else return
+  }
 
   return (
     <>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleCreateTriggerStatement)}>
+        <form onSubmit={form.handleSubmit(handleNext)}>
           <div className="mt-4 grid gap-4">
             <div className="w-full flex gap-4">
               <FormField
                 control={form.control}
-                name="triggerTitle"
+                name="title"
                 render={({ field }) => {
                   return (
                     <FormItem className="w-full">
@@ -165,7 +179,7 @@ export default function AddAutomatedTriggerForm() {
               />
               <FormField
                 control={form.control}
-                name="source"
+                name="dataSource"
                 render={({ field }) => {
                   return (
                     <FormItem className="w-full">
@@ -194,7 +208,7 @@ export default function AddAutomatedTriggerForm() {
             <div className="w-full flex gap-4">
               <FormField
                 control={form.control}
-                name="riverBasin"
+                name="location"
                 render={({ field }) => {
                   return (
                     <FormItem className="w-full">
@@ -225,7 +239,7 @@ export default function AddAutomatedTriggerForm() {
               />
               <FormField
                 control={form.control}
-                name="hazardType"
+                name="hazardTypeId"
                 render={({ field }) => {
                   return (
                     <FormItem className="w-full">
@@ -255,7 +269,7 @@ export default function AddAutomatedTriggerForm() {
                 }}
               />
             </div>
-            <FormField
+            {/* <FormField
               control={form.control}
               name="phase"
               render={({ field }) => {
@@ -339,8 +353,8 @@ export default function AddAutomatedTriggerForm() {
                   );
                 }}
               />
-            )}
-            <FormField
+            )} */}
+            {/* <FormField
               control={form.control}
               name="activity"
               render={({ field }) => {
@@ -440,9 +454,21 @@ export default function AddAutomatedTriggerForm() {
                   </FormItem>
                 );
               }}
-            />
+            /> */}
           </div>
           <div className="flex justify-end mt-8">
+            <div className="flex gap-2">
+              <Button
+                variant="secondary"
+                className="bg-red-100 text-red-600 w-36"
+                disabled
+              >
+                Cancel
+              </Button>
+              <Button className='px-8' >Next</Button>
+            </div>
+          </div>
+          {/* <div className="flex justify-end mt-8">
             <div className="flex gap-2">
               <Button
                 type="button"
@@ -457,7 +483,7 @@ export default function AddAutomatedTriggerForm() {
               </Button>
               <Button type="submit">Add Trigger Statement</Button>
             </div>
-          </div>
+          </div> */}
         </form>
       </Form>
     </>

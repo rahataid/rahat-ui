@@ -103,7 +103,6 @@ export default function UserDetail({ userDetail, closeSecondPanel }: IProps) {
     month: 'long',
     day: 'numeric',
   });
-
   const handleAssignRole = (data: any) => {
     updateUserRole.mutateAsync({
       uuid: userDetail.uuid as UUID,

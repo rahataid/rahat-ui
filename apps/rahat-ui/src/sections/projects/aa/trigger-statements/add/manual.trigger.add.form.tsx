@@ -28,10 +28,16 @@ import { UUID } from 'crypto';
 import { Plus, X } from 'lucide-react';
 import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
 
-export default function AddManualTriggerForm() {
-  const { id: projectID } = useParams();
-  const { activities, hazardTypes, phases } = useActivitiesStore((state) => ({
-    activities: state.activities,
+type IProps = {
+  next: VoidFunction
+}
+
+export default function AddManualTriggerForm({ next }: IProps) {
+  const params = useParams();
+  const projectId = params.id as UUID
+  const phaseId = ''
+  const { hazardTypes, phases } = useActivitiesStore((state) => ({
+    // activities: state.activities,
     hazardTypes: state.hazardTypes,
     phases: state.phases,
   }));
@@ -40,22 +46,22 @@ export default function AddManualTriggerForm() {
   const FormSchema = z.object({
     title: z.string().min(2, { message: 'Please enter valid title' }),
     // notes: z.string().min(5, { message: 'Must be at least 5 characters' }),
-    phaseId: z.string().min(1, { message: 'Please select phase' }),
+    // phaseId: z.string().min(1, { message: 'Please select phase' }),
     hazardTypeId: z.string().min(1, { message: 'Please select hazard type' }),
-    activity: z
-      .array(
-        z.object({
-          uuid: z.string(),
-          title: z.string(),
-        }),
-      )
-      .refine(
-        (value) =>
-          value.length > 0 && value.every((item) => item.uuid && item.title),
-        {
-          message: 'You have to select at least one activity',
-        },
-      ),
+    // activity: z
+    //   .array(
+    //     z.object({
+    //       uuid: z.string(),
+    //       title: z.string(),
+    //     }),
+    //   )
+    //   .refine(
+    //     (value) =>
+    //       value.length > 0 && value.every((item) => item.uuid && item.title),
+    //     {
+    //       message: 'You have to select at least one activity',
+    //     },
+    //   ),
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -63,29 +69,32 @@ export default function AddManualTriggerForm() {
     defaultValues: {
       title: '',
       // notes: '',
-      phaseId: '',
+      // phaseId: '',
       hazardTypeId: '',
-      activity: [],
+      // activity: [],
     },
   });
 
   const handleCreateTriggerStatement = async (
     data: z.infer<typeof FormSchema>,
   ) => {
-    const activities = data.activity.map((activity) => ({
-      uuid: activity.uuid,
-    }));
+    // const activities = data.activity.map((activity) => ({
+    //   uuid: activity.uuid,
+    // }));
 
-    const payload = {
-      title: data.title,
-      hazardTypeId: data.hazardTypeId,
-      phaseId: data.phaseId,
-      activities: activities,
-      dataSource: 'MANUAL',
-    };
+    // const payload = {
+    //   title: data.title,
+    //   hazardTypeId: data.hazardTypeId,
+    //   phaseId: data.phaseId,
+    //   // activities: activities,
+    //   dataSource: 'MANUAL',
+    // };
+
+    const payload = { ...data, phaseId: phaseId }
+    console.log('payload::', payload)
     try {
       await createTriggerStatement.mutateAsync({
-        projectUUID: projectID as UUID,
+        projectUUID: projectId,
         triggerStatementPayload: payload,
       });
     } catch (e) {
@@ -94,6 +103,12 @@ export default function AddManualTriggerForm() {
       form.reset();
     }
   };
+
+  const handleNext = () => {
+    if (form.formState.isValid) {
+      next()
+    } else return
+  }
 
   return (
     <>
@@ -119,7 +134,7 @@ export default function AddManualTriggerForm() {
                 );
               }}
             />
-            <FormField
+            {/* <FormField
               control={form.control}
               name="phaseId"
               render={({ field }) => {
@@ -149,7 +164,7 @@ export default function AddManualTriggerForm() {
                   </FormItem>
                 );
               }}
-            />
+            /> */}
             <FormField
               control={form.control}
               name="hazardTypeId"
@@ -181,7 +196,7 @@ export default function AddManualTriggerForm() {
                 );
               }}
             />
-            <FormField
+            {/* <FormField
               control={form.control}
               name="activity"
               render={({ field }) => {
@@ -189,7 +204,7 @@ export default function AddManualTriggerForm() {
                   <FormItem>
                     <Select
                       onValueChange={field.onChange}
-                    // defaultValue={field.value}
+                      // defaultValue={field.value}
                     >
                       <FormLabel>Activity</FormLabel>
                       <FormControl>
@@ -199,7 +214,9 @@ export default function AddManualTriggerForm() {
                       </FormControl>
                       <SelectContent>
                         <SelectGroup>
-                          <Link href={`/projects/aa/${projectID}/activities/add`}>
+                          <Link
+                            href={`/projects/aa/${projectID}/activities/add`}
+                          >
                             <SelectLabel className="text-primary flex items-center gap-1 p-2 bg-secondary">
                               Add new activity <Plus size={18} />
                             </SelectLabel>
@@ -223,18 +240,18 @@ export default function AddManualTriggerForm() {
                                         onCheckedChange={(checked) => {
                                           return checked
                                             ? field.onChange([
-                                              ...field.value,
-                                              {
-                                                uuid: item.uuid,
-                                                title: item.title,
-                                              },
-                                            ])
+                                                ...field.value,
+                                                {
+                                                  uuid: item.uuid,
+                                                  title: item.title,
+                                                },
+                                              ])
                                             : field.onChange(
-                                              field.value?.filter(
-                                                (value) =>
-                                                  value.uuid !== item.uuid,
-                                              ),
-                                            );
+                                                field.value?.filter(
+                                                  (value) =>
+                                                    value.uuid !== item.uuid,
+                                                ),
+                                              );
                                         }}
                                       />
                                     </FormControl>
@@ -279,7 +296,7 @@ export default function AddManualTriggerForm() {
                   </FormItem>
                 );
               }}
-            />
+            /> */}
             {/* <FormField
               control={form.control}
               name="notes"
@@ -299,6 +316,18 @@ export default function AddManualTriggerForm() {
           <div className="flex justify-end mt-8">
             <div className="flex gap-2">
               <Button
+                variant="secondary"
+                className="bg-red-100 text-red-600 w-36"
+                disabled
+              >
+                Cancel
+              </Button>
+              <Button className='px-8' onClick={handleNext}>Next</Button>
+            </div>
+          </div>
+          {/* <div className="flex justify-end mt-8">
+            <div className="flex gap-2">
+              <Button
                 type="button"
                 variant="secondary"
                 className="bg-red-100 text-red-600 w-36"
@@ -307,7 +336,7 @@ export default function AddManualTriggerForm() {
               </Button>
               <Button type="submit">Add Trigger Statement</Button>
             </div>
-          </div>
+          </div> */}
         </form>
       </Form>
     </>

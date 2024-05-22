@@ -23,6 +23,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { UUID } from 'crypto';
+import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
 
 type IProps = {
   form: UseFormReturn<
@@ -31,6 +32,7 @@ type IProps = {
       hazardTypeId: string;
       dataSource: string;
       location: string;
+      isMandatory?: boolean | undefined;
       readinessLevel?: string | undefined;
       activationLevel?: string | undefined;
     },
@@ -232,6 +234,28 @@ export default function AddAutomatedTriggerForm({ form }: IProps) {
                 }}
               />
             )}
+            <FormField
+              control={form.control}
+              name="isMandatory"
+              render={({ field }) => {
+                return (
+                  <div className="grid gap-2 pl-2">
+                    <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                      <FormControl>
+                        <Checkbox
+                          checked={field.value}
+                          onCheckedChange={(checked) => field.onChange(checked)}
+                        />
+                      </FormControl>
+                      <FormLabel className="text-sm font-normal">
+                        Is Mandatory Trigger?
+                      </FormLabel>
+                      <FormMessage />
+                    </FormItem>
+                  </div>
+                );
+              }}
+            />
           </div>
         </form>
       </Form>

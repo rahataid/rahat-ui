@@ -14,11 +14,11 @@ import { UseFormReturn } from 'react-hook-form';
 type IProps = {
   activeTab: string;
   onTabChange: (tab: string) => void;
-  next: VoidFunction;
   manualForm: UseFormReturn<
     {
       title: string;
       hazardTypeId: string;
+      isMandatory?: boolean | undefined;
     },
     any,
     undefined
@@ -29,6 +29,8 @@ type IProps = {
       hazardTypeId: string;
       dataSource: string;
       location: string;
+      isMandatory?: boolean | undefined;
+
       readinessLevel?: string | undefined;
       activationLevel?: string | undefined;
     },

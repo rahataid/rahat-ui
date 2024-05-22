@@ -44,6 +44,7 @@ const MultiStepForm = () => {
   const ManualFormSchema = z.object({
     title: z.string().min(2, { message: 'Please enter valid title' }),
     hazardTypeId: z.string().min(1, { message: 'Please select hazard type' }),
+    isMandatory: z.boolean().optional(),
   });
 
   const manualForm = useForm<z.infer<typeof ManualFormSchema>>({
@@ -51,6 +52,7 @@ const MultiStepForm = () => {
     defaultValues: {
       title: '',
       hazardTypeId: '',
+      isMandatory: true,
     },
   });
 
@@ -60,6 +62,7 @@ const MultiStepForm = () => {
       dataSource: z.string().min(1, { message: 'Please select data source' }),
       location: z.string().min(1, { message: 'Please select river basin' }),
       hazardTypeId: z.string().min(1, { message: 'Please select hazard type' }),
+      isMandatory: z.boolean().optional(),
       readinessLevel: z
         .string()
         // .regex(/^(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)$/, 'Must be a positive number')
@@ -98,6 +101,7 @@ const MultiStepForm = () => {
       hazardTypeId: '',
       readinessLevel: '',
       activationLevel: '',
+      isMandatory: true,
     },
   });
 
@@ -159,7 +163,6 @@ const MultiStepForm = () => {
             onTabChange={handleTabChange}
             manualForm={manualForm}
             automatedForm={automatedForm}
-            next={nextStep}
           />
         )}
         {activeStep === 1 && (

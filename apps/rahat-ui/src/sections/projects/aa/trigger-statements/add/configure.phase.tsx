@@ -5,9 +5,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@rahat-ui/shadcn/src/components/ui/card';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { Switch } from '@rahat-ui/shadcn/src/components/ui/switch';
-import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { Separator } from '@rahat-ui/shadcn/src/components/ui/separator';
 import { Slider } from '@rahat-ui/shadcn/src/components/ui/slider';
 import { Minus, Plus } from 'lucide-react';
@@ -62,27 +59,73 @@ export default function ConfigurePhase({
 
   console.log(mandatoryTriggers);
   console.log(optionalTriggers);
+  const formValues = manualForm.getValues();
+  console.log(formValues);
+  console.log(activeTab);
+
+  const [newTriggerData, setNewTriggerData] = React.useState<any>({});
 
   const [sliderValue, setSliderValue] = React.useState(0);
 
-  const [switchStates, setSwitchStates] = React.useState(() => {
-    const initialStates: any = {};
-    phaseDetail?.triggers?.forEach(
-      (trigger: { repeatKey: any; isMandatory: boolean }) => {
-        initialStates[trigger?.repeatKey] = trigger.isMandatory;
-      },
-    );
-    return initialStates;
-  });
+  React.useEffect(() => {
+    console.log('effect');
 
-  const handleSwitchChange = (repeatKey: string, event: any) => {
-    console.log(event.target.checked);
-    // const isChecked = event.target.checked;
-    setSwitchStates((prevState: any) => ({
-      ...prevState,
-      [repeatKey]: false,
-    }));
-  };
+    if (activeTab === 'manualTrigger') {
+      console.log('effect1');
+
+      const formValues = manualForm.getValues();
+      // setNewTriggerData(formValues);
+      console.log(formValues);
+    }
+
+    if (activeTab === 'automatedTrigger') {
+      console.log('effect2');
+
+      const formValues = automatedForm.getValues();
+      // setNewTriggerData(formValues);
+      console.log(formValues);
+    }
+  }, []);
+
+  // React.useEffect(() => {
+  //   console.log('called');
+
+  // if (newTriggerData?.isMandatory) {
+  //   mandatoryTriggers.push(newTriggerData);
+  // }
+
+  // if (!newTriggerData?.isMandatory) {
+  //   optionalTriggers.push(newTriggerData);
+  // }
+  // if (activeTab === 'manualTrigger') {
+  //   const formValues = manualForm.getValues();
+  //   setNewTriggerData(formValues);
+  // }
+
+  // if (activeTab === 'automatedTrigger') {
+  //   const formValues = automatedForm.getValues();
+  //   setNewTriggerData(formValues);
+  // }
+  // }, [newTriggerData]);
+
+  // const [switchStates, setSwitchStates] = React.useState(() => {
+  //   const initialStates: any = {};
+  //   phaseDetail?.triggers?.forEach(
+  //     (trigger: { repeatKey: any; isMandatory: boolean }) => {
+  //       initialStates[trigger?.repeatKey] = trigger.isMandatory;
+  //     },
+  //   );
+  //   return initialStates;
+  // });
+
+  // const handleSwitchChange = (repeatKey: string, event: any) => {
+  //   console.log(event.target.checked);
+  //   // const isChecked = event.target.checked;
+  //   setSwitchStates((prevState: any) => ({
+  //     ...prevState,
+  //     [repeatKey]: false,
+  //   }));
+  // };
 
   const handleSliderPlus = () => setSliderValue((prev) => prev + 1);
   const handleSliderMinus = () => setSliderValue((prev) => prev - 1);
@@ -90,16 +133,9 @@ export default function ConfigurePhase({
   const plusBtnDisabled = sliderValue >= 5;
   const minusBtnDisabled = sliderValue <= 0;
 
-  // React.useEffect
-  const handleClick = () => {
-    console.log(switchStates);
-  };
-
   return (
     <>
-      <h1 onClick={handleClick} className="text-lg font-semibold mb-6">
-        Configure Phase
-      </h1>
+      <h1 className="text-lg font-semibold mb-6">Configure Phase</h1>
       <div className="grid gap-4">
         <Card>
           <CardHeader className="pb-1">
@@ -119,13 +155,13 @@ export default function ConfigurePhase({
                       {index + 1}. {t.title}
                     </p>
                     <div className="flex items-center space-x-2">
-                      <Switch
+                      {/* <Switch
                         id={`switch-${t?.repeatKey}`}
                         checked={switchStates[t?.repeatKey]}
                         onChange={(e) => handleSwitchChange(t?.repeatKey, e)}
-                      />
+                      /> */}
                       {/* <Switch id="isOptional" checked={m.isMandatory} /> */}
-                      <Label htmlFor="isOptional">Optional?</Label>
+                      {/* <Label htmlFor="isOptional">Optional?</Label> */}
                     </div>
                   </div>
                   {index < mandatoryTriggers?.length - 1 && <Separator />}
@@ -149,14 +185,14 @@ export default function ConfigurePhase({
                       {index + 1}. {t.title}
                     </p>
                     <div className="flex items-center space-x-2">
-                      <Switch
+                      {/* <Switch
                         id={`switch-${t?.repeatKey}`}
                         checked={switchStates[t?.repeatKey]}
                         // onClick={(e) => handleSwitchChange(t?.repeatKey, e)}
                         onChange={(e) => handleSwitchChange(t?.repeatKey, e)}
-                      />
+                      /> */}
                       {/* <Switch id="isOptional" checked={o.isOptional} /> */}
-                      <Label htmlFor="isOptional">Optional?</Label>
+                      {/* <Label htmlFor="isOptional">Optional?</Label> */}
                     </div>
                   </div>
                   {index < optionalTriggers?.length - 1 && <Separator />}

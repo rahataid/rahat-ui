@@ -11,11 +11,18 @@ import Link from 'next/link';
 import EditGroupedBeneficiaries from './edit/editGroupedBeneficiaries';
 import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
 import { useCommunityGroupDelete } from '@rahat-ui/community-query';
+import { usePathname } from 'next/navigation';
 
 export const useCommunityGroupTableColumns = () => {
   const deletegroup = useCommunityGroupDelete();
+  const pathName = usePathname();
+
   const handleDeleteGroup = (uuid: string) => {
-    deletegroup.mutateAsync(uuid);
+    const data = {
+      uuid,
+      pathName,
+    };
+    deletegroup.mutateAsync(data);
   };
 
   const columns: ColumnDef<ListGroup>[] = [

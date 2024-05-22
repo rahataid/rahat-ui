@@ -12,7 +12,7 @@ import {
   Users,
   Group,
   ParkingMeter,
-  BadgeDollarSign
+  BadgeDollarSign,
 } from 'lucide-react';
 
 export type NavItem = {
@@ -32,7 +32,6 @@ export const useNavItems = () => {
       title: 'Project Details',
 
       children: [
-
         {
           title: 'Dashboard',
           path: `/projects/aa/${params.id}`,
@@ -70,6 +69,7 @@ export const useNavItems = () => {
         },
         {
           title: 'Fund Management',
+          path: `/projects/aa/${params.id}/fund-management`,
           icon: <AlignVerticalJustifyCenter size={18} strokeWidth={1.5} />,
         },
         {

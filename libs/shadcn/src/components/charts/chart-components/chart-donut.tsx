@@ -6,25 +6,31 @@ import useChart from '../use-chart';
 // ----------------------------------------------------------------------
 
 type Props = {
+  labels: string[];
   series: number[];
+  donutSize: string;
 };
 
-export default function ChartDonut({ series }: Props) {
+export default function ChartDonut({ labels, series, donutSize }: Props) {
   const chartOptions = useChart({
-    labels: ['Apple', 'Mango', 'Orange', 'Watermelon'],
+    labels: labels,
     stroke: {
       show: false,
     },
     legend: {
-      horizontalAlign: 'center',
+      position: 'bottom',
+      horizontalAlign: 'left',
     },
     tooltip: {
       fillSeriesColor: false,
     },
+    dataLabels: {
+      enabled: false,
+    },
     plotOptions: {
       pie: {
         donut: {
-          size: '90%',
+          size: donutSize,
         },
       },
     },
@@ -37,6 +43,7 @@ export default function ChartDonut({ series }: Props) {
       series={series}
       options={chartOptions}
       width={400}
+      height={200}
     />
   );
 }

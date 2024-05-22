@@ -21,6 +21,7 @@ import {
   internetStatusOptions,
   phoneStatusOptions,
 } from '../../../constants/targeting.const';
+import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 
 export default function TargetSelectForm() {
   const { pagination } = usePagination();
@@ -81,46 +82,48 @@ export default function TargetSelectForm() {
 
   return (
     <Form {...form}>
-      <form onSubmit={handleSubmit(handleTargetFormSubmit)}>
-        <div style={{ maxHeight: '55vh' }} className="m-2 overflow-y-auto">
-          <MultiSelect
-            fieldName="gender"
-            placeholder="Gender"
-            options={genderOptions}
-          />
+      <ScrollArea className="mx-2 h-[calc(100vh-250px)]">
+        <form onSubmit={handleSubmit(handleTargetFormSubmit)}>
+          <div>
+            <MultiSelect
+              fieldName="gender"
+              placeholder="Gender"
+              options={genderOptions}
+            />
 
-          <MultiSelect
-            fieldName="internetStatus"
-            placeholder="Internet Status"
-            options={internetStatusOptions}
-          />
+            <MultiSelect
+              fieldName="internetStatus"
+              placeholder="Internet Status"
+              options={internetStatusOptions}
+            />
 
-          <MultiSelect
-            fieldName="phoneStatus"
-            placeholder="Phone Status"
-            options={phoneStatusOptions}
-          />
+            <MultiSelect
+              fieldName="phoneStatus"
+              placeholder="Phone Status"
+              options={phoneStatusOptions}
+            />
 
-          <MultiSelect
-            fieldName="bankedStatus"
-            placeholder="Banked Status"
-            options={bankedStatusOptions}
-          />
+            <MultiSelect
+              fieldName="bankedStatus"
+              placeholder="Banked Status"
+              options={bankedStatusOptions}
+            />
 
-          {definitions?.data?.rows.map((definition: any, index: number) => {
-            return (
-              <div key={index} className="mt-3">
-                <TargetingFormBuilder formField={definition} />
-              </div>
-            );
-          })}
-        </div>
-        <div className="mt-6 text-end mr-2">
-          <Button type="submit" disabled={loading || isQueryEmpty()}>
-            Submit
-          </Button>
-        </div>
-      </form>
+            {definitions?.data?.rows.map((definition: any, index: number) => {
+              return (
+                <div key={index} className="mt-3">
+                  <TargetingFormBuilder formField={definition} />
+                </div>
+              );
+            })}
+          </div>
+          <div className="mt-6 text-end mr-2">
+            <Button type="submit" disabled={isQueryEmpty()}>
+              Submit
+            </Button>
+          </div>
+        </form>
+      </ScrollArea>
     </Form>
   );
 }

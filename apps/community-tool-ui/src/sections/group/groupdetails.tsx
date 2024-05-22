@@ -1,16 +1,11 @@
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from '@rahat-ui/shadcn/components/tabs';
+import { Tabs, TabsContent } from '@rahat-ui/shadcn/components/tabs';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/components/tooltip';
-import { Download, Minus, MoreVertical, Trash2 } from 'lucide-react';
+import { Download, MoreVertical, Trash2 } from 'lucide-react';
 
 import {
   VisibilityState,
@@ -18,12 +13,13 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import {
   useCommunityGroupListByID,
-  useCommunityGroupPurge,
+  usePurgeGroupedBeneficiary,
   useCommunityGroupRemove,
+  useCommunityGroupStore,
   useCommunityGroupedBeneficiariesDownload,
 } from '@rahat-ui/community-query';
 import { usePagination } from '@rahat-ui/query';
@@ -34,12 +30,13 @@ import {
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
+import { GroupPurge } from '@rahataid/community-tool-sdk';
+import { useRouter } from 'next/navigation';
 import Swal from 'sweetalert2';
 import * as XLSX from 'xlsx';
 import CustomPagination from '../../components/customPagination';
 import GroupDetailTable from './group.table';
 import { useCommunityGroupDeailsColumns } from './useGroupColumns';
-import { useRouter } from 'next/navigation';
 
 type IProps = {
   uuid: string;
@@ -50,18 +47,24 @@ export default function GroupDetail({ uuid }: IProps) {
   const {
     pagination,
     selectedListItems,
+    setSelectedListItems,
     setNextPage,
     setPrevPage,
     setPerPage,
+    resetSelectedListItems,
   } = usePagination();
 
   const { data: responseByUUID } = useCommunityGroupListByID(uuid, pagination);
   const columns = useCommunityGroupDeailsColumns();
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = useState({});
   const download = useCommunityGroupedBeneficiariesDownload();
   const removeCommunityGroup = useCommunityGroupRemove();
-  const purgeCommunityGroup = useCommunityGroupPurge();
+  const purgeCommunityGroup = usePurgeGroupedBeneficiary();
+  const {
+    deleteSelectedBeneficiariesFromImport,
+    setDeleteSelectedBeneficiariesFromImport,
+    resetDeletedSelectedBeneficiaries,
+  } = useCommunityGroupStore();
   const router = useRouter();
   const table = useReactTable({
     manualPagination: true,
@@ -70,7 +73,8 @@ export default function GroupDetail({ uuid }: IProps) {
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setRowSelection,
+    onRowSelectionChange: setSelectedListItems,
+    getRowId: (row) => row.beneficiary.uuid as string,
     state: {
       columnVisibility,
       rowSelection: selectedListItems,
@@ -107,7 +111,7 @@ export default function GroupDetail({ uuid }: IProps) {
   const removeBeneficiaryFromGroup = () => {
     Swal.fire({
       title: 'Are you sure?',
-      text: 'Remove beneficiary from this group',
+      text: 'Remove beneficiary from this group only',
       icon: 'question',
       showDenyButton: true,
       confirmButtonText: 'Yes, I am sure!',
@@ -128,53 +132,57 @@ export default function GroupDetail({ uuid }: IProps) {
     });
   };
 
-  const handleDelete = () => {
-    Swal.fire({
-      title: 'Are you sure?',
-      text: 'Beneficiary will be removed from group and archived!',
-      icon: 'question',
-      showDenyButton: true,
-      confirmButtonText: 'Yes, I am sure!',
-      denyButtonText: 'No, cancel it!',
-      customClass: {
-        actions: 'my-actions',
-        confirmButton: 'order-1',
-        denyButton: 'order-2',
-      },
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        await removeCommunityGroup.mutateAsync({
-          uuid: uuid,
-          deleteBeneficiaryFlag: true,
-        });
-        router.push('/group');
+  // const handleDelete = () => {
+  //   Swal.fire({
+  //     title: 'Are you sure?',
+  //     text: 'Beneficiary will be removed from group and archived!',
+  //     icon: 'question',
+  //     showDenyButton: true,
+  //     confirmButtonText: 'Yes, I am sure!',
+  //     denyButtonText: 'No, cancel it!',
+  //     customClass: {
+  //       actions: 'my-actions',
+  //       confirmButton: 'order-1',
+  //       denyButton: 'order-2',
+  //     },
+  //   }).then(async (result) => {
+  //     if (result.isConfirmed) {
+  //       await removeCommunityGroup.mutateAsync({
+  //         uuid: uuid,
+  //         deleteBeneficiaryFlag: true,
+  //       });
+  //       router.push('/group');
 
-        // closeSecondPanel();
-      }
-    });
+  //       // closeSecondPanel();
+  //     }
+  //   });
+  // };
+
+  const handlePurge = async () => {
+    const data = {
+      groupUuid: uuid,
+      beneficiaryUuid: deleteSelectedBeneficiariesFromImport,
+    };
+    if (deleteSelectedBeneficiariesFromImport.length > 0) {
+      await purgeCommunityGroup.mutateAsync(data as GroupPurge);
+      return resetDeletedSelectedBeneficiaries();
+      // return router.push('/group/import-logs');
+    }
+
+    Swal.fire('Please select beneficiary to delete', '', 'warning');
   };
 
-  const handlePurge = () => {
-    Swal.fire({
-      title: 'CAUTION!',
-      text: 'Group and beneficiaries will be deleted permanently!',
-      icon: 'warning',
-      showDenyButton: true,
-      confirmButtonText: 'Yes, I am sure!',
-      denyButtonText: 'No, cancel it!',
-      customClass: {
-        actions: 'my-actions',
-        confirmButton: 'order-1',
-        denyButton: 'order-2',
-      },
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        await purgeCommunityGroup.mutateAsync(uuid);
-        // closeSecondPanel();
-        router.push('/group');
-      }
-    });
-  };
+  useEffect(() => {
+    setDeleteSelectedBeneficiariesFromImport(
+      Object.keys(selectedListItems).filter((key) => selectedListItems[key]),
+    );
+  }, [selectedListItems, setDeleteSelectedBeneficiariesFromImport]);
+
+  useEffect(() => {
+    if (deleteSelectedBeneficiariesFromImport.length === 0) {
+      resetSelectedListItems();
+    }
+  }, [deleteSelectedBeneficiariesFromImport.length, resetSelectedListItems]);
   return (
     <>
       <Tabs defaultValue="detail">
@@ -207,7 +215,8 @@ export default function GroupDetail({ uuid }: IProps) {
               </Tooltip>
             </TooltipProvider>
           </div>
-          <TabsList>
+
+          <div className="flex gap-3">
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild onClick={removeBeneficiaryFromGroup}>
@@ -223,9 +232,7 @@ export default function GroupDetail({ uuid }: IProps) {
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
-            <TabsTrigger value="detail" className="mr-2">
-              Details{' '}
-            </TabsTrigger>
+
             <DropdownMenu>
               <DropdownMenuTrigger>
                 <MoreVertical
@@ -235,13 +242,15 @@ export default function GroupDetail({ uuid }: IProps) {
                 />
               </DropdownMenuTrigger>
               <DropdownMenuContent>
-                <DropdownMenuItem onClick={handleDelete}>
+                {/* <DropdownMenuItem onClick={handleDelete}>
                   Delete
+                </DropdownMenuItem> */}
+                <DropdownMenuItem onClick={handlePurge}>
+                  Delete Beneficiary
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={handlePurge}>Purge</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-          </TabsList>
+          </div>
         </div>
 
         <TabsContent value="detail">

@@ -23,7 +23,7 @@ export const config = createConfig(
       rahatChain,
 
       // polygonMumbai,
-      arbitrumSepolia,
+      // arbitrumSepolia,
     ],
     batch: {
       multicall: true,

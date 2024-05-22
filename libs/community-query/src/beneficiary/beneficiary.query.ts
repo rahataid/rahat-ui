@@ -26,8 +26,8 @@ export const useCommunityBeneficaryList = (
   );
   const query = useQuery(
     {
-      queryKey: [TAGS.LIST_COMMUNITY_BENFICIARIES, payload],
-      queryFn: () => benClient.list(payload),
+      queryKey: [TAGS.LIST_COMMUNITY_BENFICIARIES, { exact: true }, payload],
+      queryFn: async () => await benClient.list(payload),
     },
     queryClient,
   );

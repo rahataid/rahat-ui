@@ -1,4 +1,5 @@
 'use client';
+import * as React from 'react';
 
 import { usePagination, useProjectBeneficiaries } from '@rahat-ui/query';
 import {
@@ -28,27 +29,29 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
-import * as React from 'react';
 import { benType } from '../../el/beneficiary/beneficiary.table';
 import { useProjectBeneficiaryTableColumns } from './useBeneficiaryColumns';
 
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import TableLoader from 'apps/rahat-ui/src/components/table.loader';
 import DisburseFlow from '../components/disburse-flow/disburse-flow';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
 
 const BeneficiaryDetailTableView = () => {
   const uuid = useParams().id as UUID;
-
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
   );
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
-
   const {
     pagination,
     filters,
@@ -60,11 +63,8 @@ const BeneficiaryDetailTableView = () => {
     setSelectedListItems,
     resetSelectedListItems,
   } = usePagination();
-
   const selectedRowAddresses = Object.keys(selectedListItems);
-
   const columns = useProjectBeneficiaryTableColumns();
-
   const projectBeneficiaries = useProjectBeneficiaries({
     page: pagination.page,
     perPage: pagination.perPage,
@@ -73,7 +73,6 @@ const BeneficiaryDetailTableView = () => {
     projectUUID: uuid,
     ...filters,
   });
-
   const table = useReactTable({
     manualPagination: true,
     data: projectBeneficiaries?.data?.data || [],
@@ -99,14 +98,12 @@ const BeneficiaryDetailTableView = () => {
       resetSelectedListItems();
       if (type === 'ALL') {
         setFilters({ ...filters, status: undefined });
-
         return;
         setFilters({ ...filters, status: type });
       }
     },
     [filters, setFilters],
   );
-
   return (
     <>
       <div className="p-2 bg-secondary">
@@ -142,9 +139,24 @@ const BeneficiaryDetailTableView = () => {
               </Select>
             </div>
           </div>
-          <div>
+          {selectedRowAddresses.length ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <DisburseFlow selectedBeneficiaries={selectedRowAddresses} />
+              </DropdownMenuTrigger>
+              {/* <DropdownMenuContent align="end">
+                <DropdownMenuItem
+                  onClick={projectModal.onTrue}
+                  disabled={isBulkAssigning}
+                >
+                  Bulk Assign Project
+                </DropdownMenuItem>
+              </DropdownMenuContent> */}
+            </DropdownMenu>
+          ) : null}
+          {/* <div>
             <DisburseFlow selectedBeneficiaries={selectedRowAddresses} />
-          </div>
+          </div> */}
         </div>
         <div className="rounded border bg-card">
           <Table>

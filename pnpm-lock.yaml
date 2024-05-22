@@ -78,8 +78,8 @@ dependencies:
     specifier: 0.0.9
     version: 0.0.9
   '@rahataid/community-tool-sdk':
-    specifier: ^0.0.17
-    version: 0.0.17
+    specifier: ^0.0.24
+    version: 0.0.24
   '@rahataid/el-subgraph':
     specifier: 0.0.12
     version: 0.0.12
@@ -5538,8 +5538,8 @@ packages:
       '@swc/helpers': 0.5.11
     dev: false
 
-  /@rahataid/community-tool-sdk@0.0.17:
-    resolution: {integrity: sha512-qN/MMh8OMpGn61SqfvWGqakzsNg6wRdneKiBLiWgW5pUsihpmHodZKPXDdmPGhQzT/VFjWrwKm6hssWcRa/5RQ==, tarball: https://npm.pkg.github.com/download/@rahataid/community-tool-sdk/0.0.17/ecd65067133af07f3137740c8d46a819f65731c8}
+  /@rahataid/community-tool-sdk@0.0.24:
+    resolution: {integrity: sha512-uoLVppiqHacz4uvdQ55rDEhvhfZj5OboIZY2FfMqVbzX2P6+0cmlDWnT8W7H3ITuvdylTYy0lPiHQIwQqZEIYw==, tarball: https://npm.pkg.github.com/download/@rahataid/community-tool-sdk/0.0.24/28d958c4bd53885775b7a37bb7b78b2803f64caa}
     dependencies:
       tslib: 2.6.2
     dev: false

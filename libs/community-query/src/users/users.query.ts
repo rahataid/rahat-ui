@@ -230,6 +230,7 @@ export const useUpdateMe = () => {
       mutationFn: ({ payload }: { payload: User }) =>
         userClient.updateMe(payload),
       onSuccess: () => {
+        Swal.fire('Profile Updated Successfully', '', 'success');
         queryClient.invalidateQueries({
           queryKey: [
             TAGS.GET_ME,

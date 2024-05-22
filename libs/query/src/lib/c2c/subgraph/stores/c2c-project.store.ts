@@ -12,7 +12,7 @@ export type C2CProjectState = {
 
 export type C2CProjectActions = {
   setProjectDetails: (
-    projectDetails: C2CProjectState['projectDetails']
+    projectDetails: C2CProjectState['projectDetails'],
   ) => void;
 };
 
@@ -21,7 +21,7 @@ export type C2CProjectStore = C2CProjectState & C2CProjectActions;
 const initialState: C2CProjectState = {
   projectDetails: {
     tokenBalance: {
-      balance: '10000000000000000000',
+      balance: '0',
       id: '',
     },
   },
@@ -42,5 +42,5 @@ export const useC2CProjectSubgraphStore: UseBoundStore<
       name: 'c2c-project-subgraph',
       getStorage: () => localStore,
     },
-  }
+  },
 );

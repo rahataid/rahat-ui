@@ -19,8 +19,6 @@ export default function PhaseDetailView() {
     phaseId as UUID,
   );
 
-  console.log('phse detail', phaseDetail);
-
   const handleSearch = () => {};
   return (
     <div className="p-2 h-[calc(100vh-65px)] bg-secondary">
@@ -93,12 +91,12 @@ export default function PhaseDetailView() {
           </TabsTrigger>
         </TabsList>
         <TabsContent value="triggers">
-          <>
+          <div className="bg-card p-4 rounded">
             <div className="flex justify-between items-center mb-2">
               <h1 className="font-semibold text-lg">Triggers List</h1>
               <div className="flex gap-2 items-center">
                 {/* Search */}
-                <SearchInput onSearch={handleSearch} />
+                <SearchInput onSearch={handleSearch} isDisabled={true} />
                 {/* Add Trigger Statements Btn */}
                 <AddButton
                   path={`/projects/aa/${projectId}/trigger-statements/add`}
@@ -107,11 +105,11 @@ export default function PhaseDetailView() {
               </div>
             </div>
             <TriggerStatementsList
-              tableScrollAreaHeight="h-[calc(100vh-351px)]"
+              tableScrollAreaHeight="h-[calc(100vh-456px)]"
               isLoading={isLoading}
               tableData={phaseDetail?.triggers}
             />
-          </>
+          </div>
         </TabsContent>
         <TabsContent value="activities">
           <div className="bg-card p-4 rounded">

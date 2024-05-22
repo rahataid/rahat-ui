@@ -8,12 +8,13 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useAddTriggerStatementToPhase, useSinglePhase } from '@rahat-ui/query';
 import { UUID } from 'crypto';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { useCreateTriggerStatement } from '@rahat-ui/query';
 
 const steps = [{ label: 'Step 1' }, { label: 'Step 2' }];
 
 const MultiStepForm = () => {
+  const router = useRouter();
   const { id } = useParams();
   const projectId = id as UUID;
 
@@ -116,8 +117,6 @@ const MultiStepForm = () => {
   };
 
   const handleAddTriggerStatement = async (data: any) => {
-    console.log('handle data', data);
-
     let payload;
     if (data?.newTriggerData?.dataSource) {
       const { waterLevel, ...restData } = data?.newTriggerData;
@@ -184,13 +183,19 @@ const MultiStepForm = () => {
       // const allTriggers = data.allMandatoryTriggers.map(d d>)
       // console.log('add response', response);
     } catch (e) {
-      console.error('Create Manual Trigger Error::', e);
+      console.error('Add Triggers To Phase::', e);
     }
   };
 
   const handleTabChange = (tab: string) => {
     setActiveTab(tab);
   };
+
+  React.useEffect(() => {
+    if (addTriggersToPhase.isSuccess) {
+      router.push(`/projects/aa/${projectId}/phase/${selectedPhase?.phaseId}`);
+    }
+  }, [addTriggersToPhase.isSuccess]);
 
   return (
     <div className="p-4 h-[calc(100vh-65px)] bg-secondary">

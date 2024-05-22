@@ -10,6 +10,7 @@ import { Slider } from '@rahat-ui/shadcn/src/components/ui/slider';
 import { Minus, Plus } from 'lucide-react';
 import { UseFormReturn } from 'react-hook-form';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 
 // const MandatoryTriggers = [
 //   { title: 'Trigger 1', isOptional: false },
@@ -116,8 +117,8 @@ export default function ConfigurePhase({
   //   }));
   // };
 
-  const handleSliderPlus = () => setSliderValue((prev) => prev + 1);
-  const handleSliderMinus = () => setSliderValue((prev) => prev - 1);
+  const handleSliderPlus = () => setSliderValue((prev: number) => prev + 1);
+  const handleSliderMinus = () => setSliderValue((prev: number) => prev - 1);
 
   const plusBtnDisabled = sliderValue >= allOptionalTriggers.length;
   const minusBtnDisabled = sliderValue <= 0;
@@ -125,139 +126,144 @@ export default function ConfigurePhase({
   return (
     <>
       <h1 className="text-lg font-semibold mb-6">Configure Phase</h1>
-      <div className="grid gap-4">
-        <Card>
-          <CardHeader className="pb-1">
-            <CardTitle className="text-md font-medium">
-              Mandatory Triggers
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div>
-              {allMandatoryTriggers?.length
-                ? allMandatoryTriggers?.map((t: any, index: number) => (
-                    <>
-                      <div
-                        key={t?.repeatKey}
-                        className="flex justify-between items-center h-12"
-                      >
-                        <p>
-                          {index + 1}. {t.title}
-                        </p>
-                        <div className="flex items-center space-x-2">
-                          {/* <Switch
+      <div className="bg-secondary p-2 pr-0 rounded">
+        <ScrollArea className="h-[calc(100vh-385px)] pr-2">
+          <div className="grid gap-4">
+            <Card>
+              <CardHeader className="pb-1">
+                <CardTitle className="text-md font-medium">
+                  Mandatory Triggers
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div>
+                  {allMandatoryTriggers?.length
+                    ? allMandatoryTriggers?.map((t: any, index: number) => (
+                        <>
+                          <div
+                            key={t?.repeatKey}
+                            className="flex justify-between items-center h-12"
+                          >
+                            <p>
+                              {index + 1}. {t.title}
+                            </p>
+                            <div className="flex items-center space-x-2">
+                              {/* <Switch
                         id={`switch-${t?.repeatKey}`}
                         checked={switchStates[t?.repeatKey]}
                         onChange={(e) => handleSwitchChange(t?.repeatKey, e)}
                       /> */}
-                          {/* <Switch id="isOptional" checked={m.isMandatory} /> */}
-                          {/* <Label htmlFor="isOptional">Optional?</Label> */}
-                        </div>
-                      </div>
-                      {index < allMandatoryTriggers?.length - 1 && (
-                        <Separator />
-                      )}
-                    </>
-                  ))
-                : 'No data'}
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-1">
-            <CardTitle className="text-md font-medium">
-              Optional Triggers
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div>
-              {allOptionalTriggers?.length
-                ? allOptionalTriggers?.map((t: any, index: number) => (
-                    <>
-                      <div className="flex justify-between items-center h-12">
-                        <p>
-                          {index + 1}. {t.title}
-                        </p>
-                        <div className="flex items-center space-x-2">
-                          {/* <Switch
+                              {/* <Switch id="isOptional" checked={m.isMandatory} /> */}
+                              {/* <Label htmlFor="isOptional">Optional?</Label> */}
+                            </div>
+                          </div>
+                          {index < allMandatoryTriggers?.length - 1 && (
+                            <Separator />
+                          )}
+                        </>
+                      ))
+                    : 'No data'}
+                </div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="pb-1">
+                <CardTitle className="text-md font-medium">
+                  Optional Triggers
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div>
+                  {allOptionalTriggers?.length
+                    ? allOptionalTriggers?.map((t: any, index: number) => (
+                        <>
+                          <div className="flex justify-between items-center h-12">
+                            <p>
+                              {index + 1}. {t.title}
+                            </p>
+                            <div className="flex items-center space-x-2">
+                              {/* <Switch
                         id={`switch-${t?.repeatKey}`}
                         checked={switchStates[t?.repeatKey]}
                         // onClick={(e) => handleSwitchChange(t?.repeatKey, e)}
                         onChange={(e) => handleSwitchChange(t?.repeatKey, e)}
                       /> */}
-                          {/* <Switch id="isOptional" checked={o.isOptional} /> */}
-                          {/* <Label htmlFor="isOptional">Optional?</Label> */}
-                        </div>
-                      </div>
-                      {index < allOptionalTriggers?.length - 1 && <Separator />}
-                    </>
-                  ))
-                : 'No data'}
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-1">
-            <CardTitle className="text-md font-medium">
-              Optional Triggered Required
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex justify-between items-center gap-8">
-              <Slider
-                value={[sliderValue]}
-                max={allOptionalTriggers.length}
-                step={1}
-              />
-              <div className="flex gap-2 items-center">
-                <div
-                  className={`p-2 rounded border ${
-                    minusBtnDisabled ? 'pointer-events-none' : ''
-                  }`}
-                  onClick={handleSliderMinus}
-                >
-                  <Minus size={18} />
+                              {/* <Switch id="isOptional" checked={o.isOptional} /> */}
+                              {/* <Label htmlFor="isOptional">Optional?</Label> */}
+                            </div>
+                          </div>
+                          {index < allOptionalTriggers?.length - 1 && (
+                            <Separator />
+                          )}
+                        </>
+                      ))
+                    : 'No data'}
                 </div>
-                <div className="px-8 py-2 rounded-md border w-20">
-                  {sliderValue}
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="pb-1">
+                <CardTitle className="text-md font-medium">
+                  Optional Triggered Required
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex justify-between items-center gap-8">
+                  <Slider
+                    value={[sliderValue]}
+                    max={allOptionalTriggers.length}
+                    step={1}
+                  />
+                  <div className="flex gap-2 items-center">
+                    <div
+                      className={`p-2 rounded border ${
+                        minusBtnDisabled ? 'pointer-events-none' : ''
+                      }`}
+                      onClick={handleSliderMinus}
+                    >
+                      <Minus size={18} />
+                    </div>
+                    <div className="px-8 py-2 rounded-md border w-20">
+                      {sliderValue}
+                    </div>
+                    <div
+                      className={`p-2 rounded border ${
+                        plusBtnDisabled ? 'pointer-events-none' : ''
+                      }`}
+                      onClick={handleSliderPlus}
+                    >
+                      <Plus size={18} />
+                    </div>
+                  </div>
                 </div>
-                <div
-                  className={`p-2 rounded border ${
-                    plusBtnDisabled ? 'pointer-events-none' : ''
-                  }`}
-                  onClick={handleSliderPlus}
-                >
-                  <Plus size={18} />
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <div className="flex justify-end mt-8">
-          <div className="flex gap-2">
-            <Button
-              variant="secondary"
-              className="bg-red-100 text-red-600 w-36"
-              disabled
-            >
-              Cancel
-            </Button>
-            <Button onClick={prevStep}>Previous</Button>
-            <Button
-              onClick={() =>
-                handleAddTrigger({
-                  newTriggerData,
-                  allMandatoryTriggers,
-                  allOptionalTriggers,
-                  requiredOptionalTriggers: sliderValue,
-                })
-              }
-              type="submit"
-            >
-              Add Trigger Statement
-            </Button>
+              </CardContent>
+            </Card>
           </div>
+        </ScrollArea>
+      </div>
+      <div className="flex justify-end mt-8">
+        <div className="flex gap-2">
+          <Button
+            variant="secondary"
+            className="bg-red-100 text-red-600 w-36"
+            disabled
+          >
+            Cancel
+          </Button>
+          <Button onClick={prevStep}>Previous</Button>
+          <Button
+            onClick={() =>
+              handleAddTrigger({
+                newTriggerData,
+                allMandatoryTriggers,
+                allOptionalTriggers,
+                requiredOptionalTriggers: sliderValue,
+              })
+            }
+            type="submit"
+          >
+            Add Trigger Statement
+          </Button>
         </div>
       </div>
     </>

@@ -1,4 +1,4 @@
-name: Stage EL CI/CD
+name: Stage AA CI/CD
 on:
   push:
     branches:

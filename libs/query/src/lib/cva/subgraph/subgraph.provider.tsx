@@ -14,7 +14,7 @@ type CVASubgraphProviderProps = {
   subgraphClient: Client;
 };
 
-const CVASubgraphProvider: FC<CVASubgraphProviderProps> = ({
+export const CVASubgraphProvider: FC<CVASubgraphProviderProps> = ({
   children,
   subgraphClient,
 }) => {
@@ -28,8 +28,6 @@ const CVASubgraphProvider: FC<CVASubgraphProviderProps> = ({
     </CVASubgraphContext.Provider>
   );
 };
-
-export default CVASubgraphProvider;
 
 export const useCVASubgraph = (): CVASubgraphContextType => {
   const context = useContext(CVASubgraphContext);

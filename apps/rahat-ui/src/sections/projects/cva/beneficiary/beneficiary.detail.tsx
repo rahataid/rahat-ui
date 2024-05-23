@@ -25,10 +25,13 @@ import InfoCards from '../../../beneficiary/infoCards';
 
 type IProps = {
   data: IBeneficiaryItem;
-  handleClose: VoidFunction;
+  closeSecondPanel: VoidFunction;
 };
 
-export default function BeneficiaryDetail({ data, handleClose }: IProps) {
+export default function BeneficiaryDetail({
+  data,
+  closeSecondPanel: VoidFunction,
+}: IProps) {
   const router = useRouter();
 
   const changedDate = new Date(data?.updatedAt);

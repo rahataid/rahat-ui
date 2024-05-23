@@ -11,12 +11,12 @@ import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { BadgePlus, Blocks } from 'lucide-react';
 
-export default function CreateTokenModal() {
+export default function AssignTokenModal() {
   return (
     <Dialog>
       <DialogTrigger asChild>
         <div className="w-full flex justify-between items-center">
-          <div className="flex gap-3 items-center">
+          <div className="flex gap-3 items-center cursor-pointer">
             <BadgePlus size={18} strokeWidth={1.5} />
             <p>Create Token</p>
           </div>

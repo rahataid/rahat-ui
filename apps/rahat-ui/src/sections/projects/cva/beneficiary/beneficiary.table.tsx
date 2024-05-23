@@ -121,11 +121,7 @@ export const columns: ColumnDef<Beneficiary>[] = [
 ];
 
 export default function BeneficiaryTable() {
-  const { pagination, filters, setPagination } = usePagination((state) => ({
-    pagination: state.pagination,
-    filters: state.filters,
-    setPagination: state.setPagination,
-  }));
+  const { pagination, filters, setPagination } = usePagination();
   const { setSecondPanelComponent, closeSecondPanel } = useSecondPanel();
 
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -134,6 +130,7 @@ export default function BeneficiaryTable() {
 
   const handlePrevPage = () => setCurrentPage(currentPage - 1);
   const beneficiaries = useBeneficiaryStore((state) => state.beneficiaries);
+  console.log({ beneficiaries });
   const meta = useBeneficiaryStore((state) => state.meta);
 
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});

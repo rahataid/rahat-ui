@@ -93,7 +93,7 @@ export const useNavItems = () => {
         },
         {
           title: 'Edit Project',
-          path: '/edit',
+          path: `/projects/cva/${params.id}/edit`,
           icon: <Pencil size={18} strokeWidth={1.5} />,
         },
       ],

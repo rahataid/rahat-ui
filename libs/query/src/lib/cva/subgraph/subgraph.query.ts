@@ -1,15 +1,15 @@
-import { useC2CSubgraph } from './subgraph.provider';
+import { useCVASubgraph } from './subgraph.provider';
 import { useQuery } from '@tanstack/react-query';
 import { useRSQuery } from '@rumsan/react-query';
 import { ProjectDetails } from './graph.query';
 import { useEffect } from 'react';
-import { useC2CProjectSubgraphStore } from './stores/c2c-project.store';
+import { useCVAProjectSubgraphStore } from './stores/cva-project.store';
 
-export const useProjectDetails = (projectAddress: string) => {
-  const { subgraphClient } = useC2CSubgraph();
+export const useCVAProjectDetails = (projectAddress: string) => {
+  const { subgraphClient } = useCVASubgraph();
   const { queryClient } = useRSQuery();
-  const setProjectDetails = useC2CProjectSubgraphStore(
-    (state) => state.setProjectDetails
+  const setProjectDetails = useCVAProjectSubgraphStore(
+    (state) => state.setProjectDetails,
   );
 
   const query = useQuery(
@@ -23,7 +23,7 @@ export const useProjectDetails = (projectAddress: string) => {
         return data;
       },
     },
-    queryClient
+    queryClient,
   );
 
   useEffect(() => {

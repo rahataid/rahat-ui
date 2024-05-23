@@ -1,7 +1,7 @@
 import { localStore, zustandStore } from '@rumsan/react-query';
 import { StoreApi, UseBoundStore } from 'zustand';
 
-export type C2CProjectState = {
+export type CVAProjectState = {
   projectDetails: {
     tokenBalance: {
       balance: string;
@@ -10,15 +10,15 @@ export type C2CProjectState = {
   };
 };
 
-export type C2CProjectActions = {
+export type CVAProjectActions = {
   setProjectDetails: (
-    projectDetails: C2CProjectState['projectDetails']
+    projectDetails: CVAProjectState['projectDetails'],
   ) => void;
 };
 
-export type C2CProjectStore = C2CProjectState & C2CProjectActions;
+export type CVAProjectStore = CVAProjectState & CVAProjectActions;
 
-const initialState: C2CProjectState = {
+const initialState: CVAProjectState = {
   projectDetails: {
     tokenBalance: {
       balance: '10000000000000000000',
@@ -27,9 +27,9 @@ const initialState: C2CProjectState = {
   },
 };
 
-export const useC2CProjectSubgraphStore: UseBoundStore<
-  StoreApi<C2CProjectStore>
-> = zustandStore<C2CProjectStore>(
+export const useCVAProjectSubgraphStore: UseBoundStore<
+  StoreApi<CVAProjectStore>
+> = zustandStore<CVAProjectStore>(
   (set, get) => ({
     ...initialState,
     setProjectDetails: (projectDetails) => {
@@ -39,8 +39,8 @@ export const useC2CProjectSubgraphStore: UseBoundStore<
   {
     devtoolsEnabled: true,
     persistOptions: {
-      name: 'c2c-project-subgraph',
+      name: 'CVA-project-subgraph',
       getStorage: () => localStore,
     },
-  }
+  },
 );

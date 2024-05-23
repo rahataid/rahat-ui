@@ -5,13 +5,13 @@ import { ColumnDef } from '@tanstack/react-table';
 import { SelectedRowType } from './add-campaign-view';
 
 export const useAudienceColumns = (
-  beneficiaryData: { data: { piiData: TPIIData }[] },
+  beneficiaryData: { data: { piiData: TPIIData; Beneficiary: any }[] },
   selectedRows: SelectedRowType[],
   audienceData: { data: Audience[] },
   createAudience: any,
   setSelectedRows: any,
 ) => {
-  const handleCreateAudience = (item: TPIIData) => {
+  const handleCreateAudience = (item: TPIIData & { sid: string }) => {
     const checkAudienceExist = audienceData?.data.some(
       (audience: Audience) => audience?.details?.phone === item.phone,
     );

@@ -50,7 +50,18 @@ export default function useActivitiesTableColumn() {
       accessorKey: 'phase',
       header: 'Phase',
       cell: ({ row }) => (
-        <Badge className="rounded-md capitalize text-muted-foreground">{row.getValue('phase')}</Badge>
+        <Badge className="rounded-md capitalize text-muted-foreground">
+          {row.getValue('phase')}
+        </Badge>
+      ),
+    },
+    {
+      accessorKey: 'isAutomated',
+      header: 'Type',
+      cell: ({ row }) => (
+        <Badge className="rounded-md capitalize text-muted-foreground">
+          {row.getValue('isAutomated') ? 'Automated' : 'Manual'}
+        </Badge>
       ),
     },
     {
@@ -65,7 +76,7 @@ export default function useActivitiesTableColumn() {
     },
     {
       accessorKey: 'hazardType',
-      header: () => <div className='w-max'>Hazard Type</div>,
+      header: () => <div className="w-max">Hazard Type</div>,
       cell: ({ row }) => <div>{row.getValue('hazardType')}</div>,
     },
     {
@@ -86,12 +97,17 @@ export default function useActivitiesTableColumn() {
       id: 'actions',
       enableHiding: false,
       cell: ({ row }) => {
+        console.log(row);
         return (
           <Eye
             className="hover:text-primary cursor-pointer"
             size={20}
             strokeWidth={1.5}
-            onClick={() => router.push(`/projects/aa/${projectID}/activities/${row.original.id}`)}
+            onClick={() =>
+              router.push(
+                `/projects/aa/${projectID}/activities/${row.original.id}`,
+              )
+            }
           />
         );
       },

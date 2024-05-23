@@ -226,13 +226,18 @@ function BeneficiaryDetailTableView() {
 
   const handleBulkAssign = async () => {
     setisTransacting(true);
-    const txnHash = await assignVoucher.mutateAsync({
+    try{
+      const txnHash = await assignVoucher.mutateAsync({
       addresses: selectedRowAddresses as `0x${string}`[],
       noOfTokens: 1,
       contractAddress: contractAddress.elproject.address,
     });
     setTransactionHash(txnHash as `0x-${string}`);
     handleTokenAssignModalClose();
+  }
+    catch(err){
+      setisTransacting(false)
+    }
   };
 
   useEffect(() => {

@@ -40,8 +40,7 @@ export default function AutomatedTriggerDetailCards({ triggerDetail }: any) {
       title: 'Level',
       content: (
         <p className="text-xl text-primary font-semibold">
-          {triggerDetail?.triggerStatement?.readinessLevel ||
-            triggerDetail?.triggerStatement?.activationLevel}
+          {triggerDetail?.triggerStatement?.waterLevel}
         </p>
       ),
       icon: <Gauge size={25} />,

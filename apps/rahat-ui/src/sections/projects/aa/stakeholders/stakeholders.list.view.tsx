@@ -22,12 +22,8 @@ import { UUID } from 'crypto';
 import StakeholdersTableFilters from './stakeholders.table.filters';
 
 export default function StakeholdersList() {
-  const { id: projectID } = useParams();
-  const [stakeholderSearchText, setStakeholderSearchText] = React.useState('');
-  const [organizationSearchText, setOrganizationSearchText] =
-    React.useState('');
-  const [municipalitySearchText, setMunicipalitySearchText] =
-    React.useState('');
+  const params = useParams();
+  const projectId = params.id as UUID;
 
   const {
     pagination,
@@ -43,7 +39,7 @@ export default function StakeholdersList() {
     setPagination({ page: 1, perPage: 10 });
   }, []);
 
-  useStakeholders(projectID as UUID, { ...pagination, ...filters });
+  useStakeholders(projectId, { ...pagination, ...filters });
 
   const { stakeholders, stakeholdersMeta } = useStakeholdersStore((state) => ({
     stakeholders: state.stakeholders,
@@ -80,29 +76,12 @@ export default function StakeholdersList() {
     },
   });
 
-  const handleSearch = React.useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>, key: string) => {
-      setFilters({
-        [key]: event.target.value,
-      });
-    },
-    [filters],
-  );
-
-  React.useEffect(() => {
-    setStakeholderSearchText(filters?.name ?? '');
-    setOrganizationSearchText(filters?.organization ?? '');
-    setMunicipalitySearchText(filters?.municipality ?? '');
-  }, [filters]);
-
   return (
     <div className="p-2 bg-secondary h-[calc(100vh-65px)]">
       <StakeholdersTableFilters
-        projectID={projectID as UUID}
-        handleSearch={handleSearch}
-        stakeholder={stakeholderSearchText}
-        organization={organizationSearchText}
-        municipality={municipalitySearchText}
+        projectID={projectId}
+        filters={filters}
+        setFilters={setFilters}
       />
       <div className="border bg-card rounded">
         <StakeholdersTable

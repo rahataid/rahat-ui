@@ -96,7 +96,11 @@ export default function PhaseDetailView() {
               <h1 className="font-semibold text-lg">Triggers List</h1>
               <div className="flex gap-2 items-center">
                 {/* Search */}
-                <SearchInput onSearch={handleSearch} isDisabled={true} />
+                <SearchInput
+                  onSearch={handleSearch}
+                  isDisabled={true}
+                  name="Trigger Statements"
+                />
                 {/* Add Trigger Statements Btn */}
                 <AddButton
                   path={`/projects/aa/${projectId}/trigger-statements/add`}

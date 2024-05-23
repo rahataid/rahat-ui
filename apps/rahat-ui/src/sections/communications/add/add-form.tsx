@@ -27,7 +27,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { CAMPAIGN_TYPES } from '@rahat-ui/types';
 import { format } from 'date-fns';
-import { CalendarIcon, CheckIcon, Loader } from 'lucide-react';
+import { CalendarIcon, CheckIcon, ChevronDown, Loader } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { FC } from 'react';
 import { UseFormReturn, useForm } from 'react-hook-form';
@@ -104,7 +104,7 @@ const CampaignForm: FC<CampaignFormProps> = ({
           Campaign: {data ? 'Edit' : 'Add'}
         </h2>
         <div className="shadow-md p-4 rounded-sm bg-card">
-          <div className="mb-4 w-full grid grid-cols-3 gap-4 ">
+          <div className="mb-4 w-full grid grid-cols-2 gap-4 ">
             <FormField
               control={form.control}
               name="campaignName"
@@ -199,17 +199,18 @@ const CampaignForm: FC<CampaignFormProps> = ({
                             variant="outline"
                             role="combobox"
                             aria-expanded={open}
-                            className="justify-between"
+                            className="justify-between w-full"
                           >
                             {field.value
                               ? templatemessage.length > 50
                                 ? templatemessage.slice(0, 25) + '...'
                                 : templatemessage
                               : 'Select from template'}
+                              <ChevronDown/>
                           </Button>
                         </FormControl>
                       </PopoverTrigger>
-                      <PopoverContent className=" p-0">
+                      <PopoverContent className="p-2 align-center w-fit">
                         <Command>
                           <CommandList>
                             <CommandInput placeholder="Search template..." />
@@ -350,13 +351,11 @@ const CampaignForm: FC<CampaignFormProps> = ({
             >
               {showAddAudience ? 'Hide Audiences' : 'Show Audiences'}
             </Button>
-            <Button
-              onClick={handleOpenModal}
-              variant={'default'}
-              disabled={loading}
-            >
-              {title}
-            </Button>
+            <ConfirmModal
+            handleSubmit={handleSubmit}
+            isSubmitting={isSubmitting}
+          />
+           
             {/* {isSubmitting ? (
               <Button variant={'default'} disabled={true}>
                 <Loader />
@@ -372,14 +371,6 @@ const CampaignForm: FC<CampaignFormProps> = ({
             )} */}
           </div>
         </div>
-        {campaignConfirmModal.value && (
-          <ConfirmModal
-            open={campaignConfirmModal.value}
-            handleClose={handleCampaignAssignModalClose}
-            handleSubmit={handleSubmit}
-            isSubmitting={isSubmitting}
-          />
-        )}
       </div>
     </>
   );

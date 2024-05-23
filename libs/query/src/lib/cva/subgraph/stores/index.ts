@@ -1,1 +1,1 @@
-export * from './c2c-project.store';
+export * from './cva-project.store';

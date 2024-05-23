@@ -9,7 +9,7 @@ import {
   useWriteCvaProjectMulticall,
 } from '../generated-hooks/cvaProject';
 
-export const useTokenMintAndApprove = () => {
+export const useTokenMintAndSend = () => {
   const { queryClient } = useRSQuery();
   const donorMintTokenAndSend = useWriteRahatDonorMintTokenAndSend();
   const alert = Swal.mixin({

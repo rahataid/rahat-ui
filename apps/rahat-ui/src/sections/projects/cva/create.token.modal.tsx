@@ -1,3 +1,5 @@
+'use client';
+
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   Dialog,
@@ -9,9 +11,32 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/dialog';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
-import { BadgePlus, Blocks } from 'lucide-react';
+import { BadgePlus } from 'lucide-react';
+import { useState } from 'react';
+import {
+  PROJECT_SETTINGS_KEYS,
+  useProjectSettingsStore,
+  useTokenMintAndSend,
+} from '@rahat-ui/query';
+import { useParams } from 'next/navigation';
 
 export default function CreateTokenModal() {
+  const [token, setToken] = useState('0');
+  const createToken = useTokenMintAndSend();
+  const { id } = useParams();
+  const contractSettings = useProjectSettingsStore(
+    (state) => state?.settings[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT],
+  ) as any;
+
+  const handleSubmit = async () => {
+    await createToken.mutateAsync({
+      amount: token,
+      projectAddress: contractSettings?.cvaproject.address,
+      rahatDonorAddress: contractSettings?.rahatdonor.address,
+      tokenAddress: contractSettings?.rahattoken.address,
+    });
+  };
+
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -34,11 +59,16 @@ export default function CreateTokenModal() {
             >
               No.of Token
             </Label>
-            <Input id="token" className="col-span-3" />
+            <Input
+              id="token"
+              className="col-span-3"
+              value={token}
+              onChange={(e) => setToken(e.target.value)}
+            />
           </div>
         </div>
         <DialogFooter>
-          <Button type="submit">Create</Button>
+          <Button onClick={handleSubmit}>Create</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

@@ -144,6 +144,30 @@ export const useStakeholdersGroups = (uuid: UUID, payload: any) => {
   return { ...query, stakeholdersGroupsMeta: query?.data?.meta };
 };
 
+export const useSingleStakeholdersGroup = (
+  uuid: UUID,
+  stakeholdersGroupId: UUID,
+) => {
+  const q = useProjectAction();
+
+  const query = useQuery({
+    queryKey: ['stakeholdersGroup', uuid, stakeholdersGroupId],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'aaProject.stakeholders.getOneGroup',
+          payload: {
+            uuid: stakeholdersGroupId,
+          },
+        },
+      });
+      return mutate.data;
+    },
+  });
+  return query;
+};
+
 export const useBeneficiariesGroups = (uuid: UUID, payload: any) => {
   const q = useProjectAction();
   const { setBeneficiariesGroups, setBeneficiariesGroupsMeta } =

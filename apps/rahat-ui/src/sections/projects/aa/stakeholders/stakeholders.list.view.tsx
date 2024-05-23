@@ -24,11 +24,20 @@ import StakeholdersTableFilters from './stakeholders.table.filters';
 export default function StakeholdersList() {
   const { id: projectID } = useParams();
   const [stakeholderSearchText, setStakeholderSearchText] = React.useState('');
-  const [organizationSearchText, setOrganizationSearchText] = React.useState('');
-  const [municipalitySearchText, setMunicipalitySearchText] = React.useState('');
+  const [organizationSearchText, setOrganizationSearchText] =
+    React.useState('');
+  const [municipalitySearchText, setMunicipalitySearchText] =
+    React.useState('');
 
-  const { pagination, setNextPage, setPrevPage, setPerPage, setPagination, setFilters, filters } =
-    usePagination();
+  const {
+    pagination,
+    setNextPage,
+    setPrevPage,
+    setPerPage,
+    setPagination,
+    setFilters,
+    filters,
+  } = usePagination();
 
   React.useEffect(() => {
     setPagination({ page: 1, perPage: 10 });
@@ -71,17 +80,20 @@ export default function StakeholdersList() {
     },
   });
 
-  const handleSearch = React.useCallback((event: React.ChangeEvent<HTMLInputElement>, key: string) => {
-    setFilters({
-      [key]: event.target.value
-    })
-  }, [filters])
+  const handleSearch = React.useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>, key: string) => {
+      setFilters({
+        [key]: event.target.value,
+      });
+    },
+    [filters],
+  );
 
   React.useEffect(() => {
     setStakeholderSearchText(filters?.name ?? '');
     setOrganizationSearchText(filters?.organization ?? '');
-    setMunicipalitySearchText(filters?.municipality ?? '')
-  }, [filters])
+    setMunicipalitySearchText(filters?.municipality ?? '');
+  }, [filters]);
 
   return (
     <div className="p-2 bg-secondary h-[calc(100vh-65px)]">
@@ -92,8 +104,11 @@ export default function StakeholdersList() {
         organization={organizationSearchText}
         municipality={municipalitySearchText}
       />
-      <div className='border bg-card rounded'>
-        <StakeholdersTable table={table} />
+      <div className="border bg-card rounded">
+        <StakeholdersTable
+          table={table}
+          tableScrollAreaHeight="h-[calc(100vh-179px)]"
+        />
         <CustomPagination
           meta={
             stakeholdersMeta || {

@@ -31,27 +31,37 @@ import {
   usePagination,
   useCreateStakeholdersGroups,
 } from '@rahat-ui/query';
-import MembersTable from './members.table';
 import CustomPagination from '../../../../components/customPagination';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { toast } from 'react-toastify';
 import StakeholdersTableFilters from '../stakeholders/stakeholders.table.filters';
+import StakeholdersTable from '../stakeholders/stakeholders.table';
 
 export default function AddStakeholdersGroups() {
-  const { id: projectId } = useParams();
+  const params = useParams();
+  const projectId = params.id as UUID;
   const [showMembers, setShowMembers] = React.useState(false);
   const [stakeholderSearchText, setStakeholderSearchText] = React.useState('');
-  const [organizationSearchText, setOrganizationSearchText] = React.useState('');
-  const [municipalitySearchText, setMunicipalitySearchText] = React.useState('');
+  const [organizationSearchText, setOrganizationSearchText] =
+    React.useState('');
+  const [municipalitySearchText, setMunicipalitySearchText] =
+    React.useState('');
 
-  const { pagination, setNextPage, setPrevPage, setPerPage, setPagination, setFilters, filters } =
-    usePagination();
+  const {
+    pagination,
+    setNextPage,
+    setPrevPage,
+    setPerPage,
+    setPagination,
+    setFilters,
+    filters,
+  } = usePagination();
 
   React.useEffect(() => {
     setPagination({ page: 1, perPage: 10 });
   }, []);
 
-  useStakeholders(projectId as UUID, { ...pagination, ...filters });
+  useStakeholders(projectId, { ...pagination, ...filters });
 
   const { stakeholders, stakeholdersMeta } = useStakeholdersStore((state) => ({
     stakeholders: state.stakeholders,
@@ -101,17 +111,20 @@ export default function AddStakeholdersGroups() {
     },
   });
 
-  const handleSearch = React.useCallback((event: React.ChangeEvent<HTMLInputElement>, key: string) => {
-    setFilters({
-      [key]: event.target.value
-    })
-  }, [filters])
+  const handleSearch = React.useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>, key: string) => {
+      setFilters({
+        [key]: event.target.value,
+      });
+    },
+    [filters],
+  );
 
   React.useEffect(() => {
     setStakeholderSearchText(filters?.name ?? '');
     setOrganizationSearchText(filters?.organization ?? '');
-    setMunicipalitySearchText(filters?.municipality ?? '')
-  }, [filters])
+    setMunicipalitySearchText(filters?.municipality ?? '');
+  }, [filters]);
 
   const handleCreateStakeholdersGroups = async (
     data: z.infer<typeof FormSchema>,
@@ -125,7 +138,7 @@ export default function AddStakeholdersGroups() {
         return;
       }
       await createStakeholdersGroup.mutateAsync({
-        projectUUID: projectId as UUID,
+        projectUUID: projectId,
         stakeholdersGroupPayload: {
           ...data,
           stakeholders: stakeHolders,
@@ -187,16 +200,19 @@ export default function AddStakeholdersGroups() {
             </div>
           </div>
           {showMembers && (
-            <div className='mt-4'>
+            <div className="mt-4">
               <StakeholdersTableFilters
-                projectID={projectId as UUID}
+                projectID={projectId}
                 handleSearch={handleSearch}
                 stakeholder={stakeholderSearchText}
                 organization={organizationSearchText}
                 municipality={municipalitySearchText}
               />
               <div className="mt-2 border rounded-sm shadow-md bg-card">
-                <MembersTable table={table} />
+                <StakeholdersTable
+                  table={table}
+                  tableScrollAreaHeight="h-[calc(100vh-418px)]"
+                />
                 <CustomPagination
                   meta={
                     stakeholdersMeta || {

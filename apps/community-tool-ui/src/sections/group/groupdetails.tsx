@@ -111,9 +111,7 @@ export default function GroupDetail({ uuid }: IProps) {
   const removeBeneficiaryFromGroup = () => {
     Swal.fire({
       title: 'Are you sure?',
-      text: `Disconnect beneficiary from ${
-        pathName === '/group' ? 'group' : 'import-logs'
-      } name :${responseByUUID?.data?.name} `,
+      text: `Disconnect beneficiary from ${responseByUUID?.data?.name} `,
       icon: 'question',
       showDenyButton: true,
       confirmButtonText: 'Yes, I am sure!',

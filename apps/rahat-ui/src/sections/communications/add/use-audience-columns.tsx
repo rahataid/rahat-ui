@@ -22,6 +22,7 @@ export const useAudienceColumns = (
           name: item.name,
           phone: item.phone,
           email: item.email,
+          sid: item?.sid,
         },
       });
     }
@@ -37,7 +38,10 @@ export const useAudienceColumns = (
               setSelectedRows([]);
 
               beneficiaryData?.data?.map((item) => {
-                handleCreateAudience(item.piiData);
+                handleCreateAudience({
+                  ...item.piiData,
+                  sid: item?.Beneficiary?.qrSid,
+                });
                 setSelectedRows((prevSelectedRows: SelectedRowType[]) => [
                   ...prevSelectedRows,
                   {

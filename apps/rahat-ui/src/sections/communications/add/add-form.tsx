@@ -8,6 +8,7 @@ import {
   FormControl,
   FormField,
   FormItem,
+  FormLabel,
   FormMessage,
 } from '@rahat-ui/shadcn/components/form';
 import { Input } from '@rahat-ui/shadcn/components/input';
@@ -44,6 +45,7 @@ import {
 import { paths } from 'apps/rahat-ui/src/routes/paths';
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 import ConfirmModal from './confirm.modal';
+import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
 
 type CampaignFormProps = {
   // Add props here
@@ -186,6 +188,25 @@ const CampaignForm: FC<CampaignFormProps> = ({
                 </FormItem>
               )}
             />
+            {isWhatsappMessage && (
+              <FormField
+                control={form.control}
+                name="isQrSender"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                    <FormControl>
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                    <div className="space-y-1 leading-none">
+                      <FormLabel>Send QR Code</FormLabel>
+                    </div>
+                  </FormItem>
+                )}
+              />
+            )}
             {includeMessage && isWhatsappMessage && (
               <FormField
                 control={form.control}

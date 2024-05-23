@@ -1,15 +1,12 @@
 'use client';
 
 import { useBeneficiaryStore, usePagination } from '@rahat-ui/query';
-import { flexRender } from '@tanstack/react-table';
-import { Settings2 } from 'lucide-react';
-import { useState } from 'react';
 import { Button } from '@rahat-ui/shadcn/components/button';
-import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -26,102 +23,21 @@ import {
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import {
-  ColumnDef,
   VisibilityState,
+  flexRender,
   getCoreRowModel,
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
-import { MoreHorizontal } from 'lucide-react';
 import { useSecondPanel } from 'apps/rahat-ui/src/providers/second-panel-provider';
+import { ChevronDown, Settings2 } from 'lucide-react';
+import { useState } from 'react';
 import BeneficiaryDetail from './beneficiary.detail';
-
-type IProps = {
-  handleClick: (item: Beneficiary) => void;
-};
-
-export type Beneficiary = {
-  name: string;
-  projectsInvolved: string;
-  internetAccess: string;
-  phone: string;
-  bank: string;
-};
-
-export const columns: ColumnDef<Beneficiary>[] = [
-  {
-    id: 'select',
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && 'indeterminate')
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
-    accessorKey: 'walletAddress',
-    header: 'Wallet Address',
-    cell: ({ row }) => <div>{row.getValue('walletAddress')}</div>,
-  },
-  {
-    accessorKey: 'gender',
-    header: 'Gender',
-    cell: ({ row }) => <div>{row.getValue('gender')}</div>,
-  },
-  {
-    accessorKey: 'internetStatus',
-    header: 'Internet Access',
-    cell: ({ row }) => <div>{row.getValue('internetStatus')}</div>,
-  },
-  {
-    accessorKey: 'phoneStatus',
-    header: 'Phone Type',
-    cell: ({ row }) => <div>{row.getValue('phoneStatus')}</div>,
-  },
-  {
-    accessorKey: 'bankedStatus',
-    header: 'Banking Status',
-    cell: ({ row }) => <div>{row.getValue('bankedStatus')}</div>,
-  },
-  {
-    id: 'actions',
-    enableHiding: false,
-    cell: () => {
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem>View Details</DropdownMenuItem>
-            {/* <DropdownMenuSeparator /> */}
-            {/* <DropdownMenuItem>Edit</DropdownMenuItem> */}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
-    },
-  },
-];
+import { useCvaBeneficiaryTableColumns } from './use.table.column';
+import AssignTokenModal from './assign.token.modal';
 
 export default function BeneficiaryTable() {
-  const { pagination, filters, setPagination } = usePagination();
   const { setSecondPanelComponent, closeSecondPanel } = useSecondPanel();
 
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -134,7 +50,19 @@ export default function BeneficiaryTable() {
   const meta = useBeneficiaryStore((state) => state.meta);
 
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = useState({});
+  const {
+    pagination,
+    filters,
+    setFilters,
+    setNextPage,
+    setPrevPage,
+    setPerPage,
+    selectedListItems,
+    setSelectedListItems,
+    resetSelectedListItems,
+    resetFilters,
+  } = usePagination();
+  const columns = useCvaBeneficiaryTableColumns();
 
   const table = useReactTable({
     manualPagination: true,
@@ -143,12 +71,15 @@ export default function BeneficiaryTable() {
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setRowSelection,
+    onRowSelectionChange: setSelectedListItems,
     state: {
       columnVisibility,
-      rowSelection,
+      rowSelection: selectedListItems,
     },
   });
+
+  const selectedRowAddresses = Object.keys(selectedListItems);
+
   return (
     <>
       <div className="w-full p-2 bg-secondary">
@@ -193,6 +124,23 @@ export default function BeneficiaryTable() {
                     </DropdownMenuCheckboxItem>
                   );
                 })}
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                // disabled={assignVoucher.isPending}
+                className="h-10 ml-2"
+              >
+                {selectedRowAddresses.length} - Beneficiary Selected
+                <ChevronDown strokeWidth={1.5} />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              align="center"
+              className="flex flex-col p-3 gap-2"
+            >
+              <AssignTokenModal beneficiaries={selectedRowAddresses.length} />
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
@@ -256,12 +204,12 @@ export default function BeneficiaryTable() {
             </ScrollArea>
           </TableComponent>
           <CustomPagination
-            meta={meta || { total: 0, currentPage: 0 }}
+            currentPage={pagination.page}
             handleNextPage={handleNextPage}
+            handlePageSizeChange={setPerPage}
             handlePrevPage={handlePrevPage}
-            handlePageSizeChange={(value) =>
-              setPagination({ perPage: Number(value) })
-            }
+            perPage={pagination.perPage}
+            meta={meta || { total: 0, currentPage: 0 }}
           />
         </div>
       </div>

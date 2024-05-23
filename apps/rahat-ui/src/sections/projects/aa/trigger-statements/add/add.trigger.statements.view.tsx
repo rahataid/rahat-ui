@@ -5,31 +5,57 @@ import {
   TabsTrigger,
   TabsContent,
 } from '@rahat-ui/shadcn/src/components/ui/tabs';
-import {
-  useActivities,
-  useActivitiesHazardTypes,
-  useActivitiesPhase,
-} from '@rahat-ui/query';
+import { useActivities, useActivitiesHazardTypes } from '@rahat-ui/query';
 import AddAutomatedTriggerForm from './automated.trigger.add.form';
 import AddManualTriggerForm from './manual.trigger.add.form';
 import { UUID } from 'crypto';
+import { UseFormReturn } from 'react-hook-form';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 
 type IProps = {
-  next: VoidFunction
-}
+  nextStep: VoidFunction;
+  activeTab: string;
+  onTabChange: (tab: string) => void;
+  manualForm: UseFormReturn<
+    {
+      title: string;
+      hazardTypeId: string;
+      isMandatory?: boolean | undefined;
+    },
+    any,
+    undefined
+  >;
+  automatedForm: UseFormReturn<
+    {
+      title: string;
+      hazardTypeId: string;
+      dataSource: string;
+      location: string;
+      isMandatory?: boolean | undefined;
 
-export default function AddTriggerStatementView({ next }: IProps) {
+      // readinessLevel?: string | undefined;
+      waterLevel: string;
+    },
+    any,
+    undefined
+  >;
+};
+
+export default function AddTriggerStatementView({
+  manualForm,
+  activeTab,
+  onTabChange,
+  automatedForm,
+  nextStep,
+}: IProps) {
   const { id: projectID } = useParams();
   useActivities(projectID as UUID, {});
   useActivitiesHazardTypes(projectID as UUID);
-  // useActivitiesPhase(projectID as UUID);
 
   return (
-    // <div className="p-4 h-[calc(100vh-65px)]">
     <>
       <h1 className="text-lg font-semibold mb-6">Add Trigger Statement</h1>
-      {/* <div className="border rounded p-4 shadow-md"> */}
-      <Tabs defaultValue="automatedTrigger">
+      <Tabs defaultValue={activeTab} onValueChange={onTabChange}>
         <TabsList>
           <TabsTrigger value="automatedTrigger" className="border w-52">
             Automated Trigger
@@ -39,14 +65,26 @@ export default function AddTriggerStatementView({ next }: IProps) {
           </TabsTrigger>
         </TabsList>
         <TabsContent value="automatedTrigger">
-          <AddAutomatedTriggerForm next={next} />
+          <AddAutomatedTriggerForm form={automatedForm} />
         </TabsContent>
         <TabsContent value="manualTrigger">
-          <AddManualTriggerForm next={next} />
+          <AddManualTriggerForm form={manualForm} />
         </TabsContent>
       </Tabs>
-      {/* </div> */}
+      <div className="flex justify-end mt-8">
+        <div className="flex gap-2">
+          <Button
+            variant="secondary"
+            className="bg-red-100 text-red-600 w-36"
+            disabled
+          >
+            Cancel
+          </Button>
+          <Button className="px-8" onClick={nextStep}>
+            Next
+          </Button>
+        </div>
+      </div>
     </>
-    // </div>
   );
 }

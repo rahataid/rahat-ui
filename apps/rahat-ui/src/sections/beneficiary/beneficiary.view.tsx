@@ -52,8 +52,12 @@ function BeneficiaryView() {
   const columns = useBeneficiaryTableColumns();
   const { closeSecondPanel, setSecondPanelComponent } = useSecondPanel();
   const projectModal = useBoolean();
+  const groupModal = useBoolean();
   const bulkAssign = useBulkAssignBenToProject();
-  const projectsList = useProjectList({});
+  const projectsList = useProjectList({
+    page: 1,
+    perPage: 10,
+  });
 
   const table = useReactTable({
     manualPagination: true,
@@ -78,12 +82,6 @@ function BeneficiaryView() {
     });
   };
 
-  const handleBeneficiaryClick = (row: any) => {
-    setSecondPanelComponent(
-      <BeneficiaryDetail data={row} handleClose={closeSecondPanel} />,
-    );
-  };
-
   const benUUIDs = Object.keys(selectedListItems);
 
   const handleBulkAssign = async (selectedProject: string) => {
@@ -92,13 +90,13 @@ function BeneficiaryView() {
     // TODO:Make this more cleaner
     const benNotAssignedToTheProject = data?.data
       ?.filter(
-        (ben) =>
+        (ben: any) =>
           !ben.BeneficiaryProject.some(
-            (project) => project.projectId === selectedProject,
+            (project: any) => project.projectId === selectedProject,
           ),
       )
-      .filter((ben) => benUUIDs.includes(ben.uuid))
-      .map((ben) => ben.uuid);
+      .filter((ben: any) => benUUIDs.includes(ben.uuid))
+      .map((ben: any) => ben.uuid);
 
     if (!benNotAssignedToTheProject)
       return alert(
@@ -111,26 +109,24 @@ function BeneficiaryView() {
     });
   };
 
+  const handleCreateGroup = async (data: any) => {
+    console.log(data);
+    console.log('create group called');
+  };
+
   return (
     <>
       <TabsContent value="list">
         <BeneficiaryListView
           table={table}
-          meta={data?.meta}
-          handleClick={handleBeneficiaryClick}
+          handleCreateGroup={handleCreateGroup}
           handleBulkAssign={handleBulkAssign}
           isBulkAssigning={false}
           projectModal={projectModal}
+          groupModal={groupModal}
           projects={projectsList?.data?.data || []}
-          loading={projectsList.isLoading}
           handleFilterProjectSelect={handleFilterProjectSelect}
           filters={filters}
-        />
-      </TabsContent>
-      <TabsContent value="grid">
-        <BeneficiaryGridView
-          handleClick={handleBeneficiaryClick}
-          data={data?.data}
         />
       </TabsContent>
       <CustomPagination

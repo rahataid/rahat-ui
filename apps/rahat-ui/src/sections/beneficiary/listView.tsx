@@ -26,18 +26,18 @@ import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { ListBeneficiary } from '@rahat-ui/types';
 import { useEffect, useState } from 'react';
 import BulkAssignToProjectModal from './components/bulkAssignToProjectModal';
-import { useProjectBeneficiaries } from '@rahat-ui/query';
+import CreateGroupModal from './components/createGroupModal';
 
 type IProps = {
   table: Table<ListBeneficiary>;
   handleBulkAssign: (selectedProject: string) => void;
   isBulkAssigning: boolean;
-  loading: boolean;
   projectModal: any;
+  groupModal: any;
   projects: any;
-  beneficiaries: any;
   handleFilterProjectSelect: (selectedProject: string) => void;
   filters: Record<string, any>;
+  handleCreateGroup: any;
 };
 
 export default function ListView({
@@ -46,9 +46,10 @@ export default function ListView({
   isBulkAssigning,
   projectModal,
   projects,
-  loading,
   handleFilterProjectSelect,
   filters,
+  handleCreateGroup,
+  groupModal,
 }: IProps) {
   const [selectedProject, setSelectedProject] = useState<null | Record<
     string,
@@ -92,6 +93,13 @@ export default function ListView({
         selectedBeneficiaries={table
           .getSelectedRowModel()
           .rows.map((row) => row.original.walletAddress)}
+      />
+      <CreateGroupModal
+        handleSubmit={handleCreateGroup}
+        groupModal={groupModal}
+        selectedBeneficiaries={table
+          .getSelectedRowModel()
+          .rows.map((row) => row.original.uuid)}
       />
       <div className="-mt-2 p-2 bg-secondary">
         <div className="flex items-center mb-2">
@@ -168,6 +176,12 @@ export default function ListView({
                   disabled={isBulkAssigning}
                 >
                   Bulk Assign Project
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={groupModal.onTrue}
+                  // disabled={isBulkAssigning}
+                >
+                  Create Group
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

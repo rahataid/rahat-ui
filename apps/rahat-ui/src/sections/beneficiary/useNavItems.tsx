@@ -28,7 +28,7 @@ export const useBeneficiaryNavItems = () => {
     setFilters({ type });
   };
   const totalBeneficiaries = useBeneficiaryStore(
-    (state) => state.meta.total || 0,
+    (state) => state?.meta?.total || 0,
   );
 
   const menuItems: NavItem[] = [

@@ -139,7 +139,7 @@ export default function BeneficiaryTable() {
               align="center"
               className="flex flex-col p-3 gap-2"
             >
-              <AssignTokenModal />
+              <AssignTokenModal beneficiaries={selectedRowAddresses.length} />
             </DropdownMenuContent>
           </DropdownMenu>
         </div>

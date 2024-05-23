@@ -9,36 +9,66 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/dialog';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
-import { BadgePlus, Blocks } from 'lucide-react';
+import { Separator } from '@rahat-ui/shadcn/src/components/ui/separator';
+import { BadgePlus } from 'lucide-react';
+import { useState } from 'react';
 
-export default function AssignTokenModal() {
+type IProps = {
+  beneficiaries: number;
+};
+
+export default function AssignTokenModal({ beneficiaries }: IProps) {
+  const [token, setToken] = useState('');
+  const totalTokens = token && beneficiaries ? token * beneficiaries : 'n/a';
+  const handleInputChange = (e: any) => {
+    setToken(e.target.value);
+  };
   return (
     <Dialog>
       <DialogTrigger asChild>
         <div className="w-full flex justify-between items-center">
           <div className="flex gap-3 items-center cursor-pointer">
             <BadgePlus size={18} strokeWidth={1.5} />
-            <p>Create Token</p>
+            <p>Assign Token</p>
           </div>
         </div>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>Create Token</DialogTitle>
+          <DialogTitle>Assign Token</DialogTitle>
         </DialogHeader>
-        <div className="grid gap-4">
+        <div className="flex flex-col items-start gap-2">
           <div>
-            <Label
-              htmlFor="token"
-              className="text-right text-muted-foreground mb-2"
-            >
+            <Label htmlFor="token" className="text-muted-foreground mb-2">
               No.of Token
             </Label>
-            <Input id="token" className="col-span-3" />
+          </div>
+          <div>
+            <Input value={token} onChange={handleInputChange} id="token" />
           </div>
         </div>
+        <Separator className="my-2" />
+        {token ? (
+          <>
+            <div className="flex items-center justify-between text-muted-foreground text-base">
+              <p>Number of token</p>
+              <p className="text-primary">{token || 'n/a'}</p>
+            </div>
+            <div className="flex items-center justify-between text-muted-foreground text-base">
+              <p>Number of beneficiaries</p>
+              <p className="text-primary">{beneficiaries || 'n/a'}</p>
+            </div>
+            <Separator className="my-2" />
+
+            <div className="flex items-center justify-between text-muted-foreground text-base">
+              <p>Total tokens to be assigned</p>
+              <p className="text-primary">{totalTokens}</p>
+            </div>
+          </>
+        ) : null}
+        <Separator className="my-2" />
         <DialogFooter>
-          <Button type="submit">Create</Button>
+          <Button type="submit">Assign</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

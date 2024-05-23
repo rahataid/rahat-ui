@@ -141,12 +141,13 @@ export const useBulkAssignClaimsToBeneficiaries = () => {
         tokenAmount: string;
         projectAddress: `0x${string}`;
       }) => {
+        console.log('first', beneficiaryAddresses, tokenAmount, projectAddress);
         const encodeAssignClaimsToBeneficiary = beneficiaryAddresses.map(
           (beneficiary) => {
             return encodeFunctionData({
               abi: cvaProjectAbi,
               functionName: 'assignClaims',
-              args: [beneficiary, parseEther(tokenAmount)],
+              args: [beneficiary, BigInt(tokenAmount)],
             });
           },
         );

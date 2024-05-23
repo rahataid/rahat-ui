@@ -14,15 +14,17 @@ import { BadgePlus } from 'lucide-react';
 import { useState } from 'react';
 
 type IProps = {
-  beneficiaries: number;
+  beneficiary: any;
+  handleSubmit: (numberOfTokens: string) => void;
 };
 
-export default function AssignTokenModal({ beneficiaries }: IProps) {
+export default function AssignToken({ beneficiary, handleSubmit }: IProps) {
   const [token, setToken] = useState('');
-  const totalTokens = token && beneficiaries ? token * beneficiaries : 'n/a';
   const handleInputChange = (e: any) => {
     setToken(e.target.value);
   };
+
+  console.log('beneficiary', beneficiary);
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -51,24 +53,13 @@ export default function AssignTokenModal({ beneficiaries }: IProps) {
         {token ? (
           <>
             <div className="flex items-center justify-between text-muted-foreground text-base">
-              <p>Number of token</p>
-              <p className="text-primary">{token || 'n/a'}</p>
-            </div>
-            <div className="flex items-center justify-between text-muted-foreground text-base">
-              <p>Number of beneficiaries</p>
-              <p className="text-primary">{beneficiaries || 'n/a'}</p>
-            </div>
-            <Separator className="my-2" />
-
-            <div className="flex items-center justify-between text-muted-foreground text-base">
-              <p>Total tokens to be assigned</p>
-              <p className="text-primary">{totalTokens}</p>
+              You are assigning {token} tokens to {beneficiary?.piiData?.name}
             </div>
           </>
         ) : null}
         <Separator className="my-2" />
         <DialogFooter>
-          <Button type="submit">Assign</Button>
+          <Button onClick={() => handleSubmit(token)}>Assign</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

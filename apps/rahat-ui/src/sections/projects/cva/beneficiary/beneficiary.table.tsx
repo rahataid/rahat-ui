@@ -1,13 +1,17 @@
 'use client';
 
-import { useBeneficiaryStore, usePagination } from '@rahat-ui/query';
+import {
+  PROJECT_SETTINGS_KEYS,
+  useBeneficiaryStore,
+  useBulkAssignClaimsToBeneficiaries,
+  usePagination,
+  useProjectSettingsStore,
+} from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/components/button';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
@@ -29,38 +33,30 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import { useSecondPanel } from 'apps/rahat-ui/src/providers/second-panel-provider';
+import { UUID } from 'crypto';
 import { ChevronDown, Settings2 } from 'lucide-react';
+import { useParams } from 'next/navigation';
 import { useState } from 'react';
 import BeneficiaryDetail from './beneficiary.detail';
+import BulkAssignToken from './bulk-assign-token.modal';
 import { useCvaBeneficiaryTableColumns } from './use.table.column';
-import AssignTokenModal from './assign.token.modal';
 
 export default function BeneficiaryTable() {
   const { setSecondPanelComponent, closeSecondPanel } = useSecondPanel();
+  const bulkAssignTokens = useBulkAssignClaimsToBeneficiaries();
 
-  const [currentPage, setCurrentPage] = useState<number>(1);
+  const { id } = useParams() as { id: UUID };
+  const contractSettings = useProjectSettingsStore(
+    (state) => state?.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT] as any,
+  );
 
-  const handleNextPage = () => setCurrentPage(currentPage + 1);
-
-  const handlePrevPage = () => setCurrentPage(currentPage - 1);
   const beneficiaries = useBeneficiaryStore((state) => state.beneficiaries);
   const meta = useBeneficiaryStore((state) => state.meta);
 
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-  const {
-    pagination,
-    filters,
-    setFilters,
-    setNextPage,
-    setPrevPage,
-    setPerPage,
-    selectedListItems,
-    setSelectedListItems,
-    resetSelectedListItems,
-    resetFilters,
-  } = usePagination();
+  const { pagination, setPerPage, selectedListItems, setSelectedListItems } =
+    usePagination();
   const columns = useCvaBeneficiaryTableColumns();
 
   const table = useReactTable({
@@ -71,6 +67,9 @@ export default function BeneficiaryTable() {
     getSortedRowModel: getSortedRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setSelectedListItems,
+    getRowId(originalRow, index, parent) {
+      return originalRow.walletAddress;
+    },
     state: {
       columnVisibility,
       rowSelection: selectedListItems,
@@ -78,6 +77,14 @@ export default function BeneficiaryTable() {
   });
 
   const selectedRowAddresses = Object.keys(selectedListItems);
+
+  const handleBulkAssignTokens = async (numberOfTokens: string) => {
+    await bulkAssignTokens.mutateAsync({
+      beneficiaryAddresses: selectedRowAddresses as any,
+      tokenAmount: numberOfTokens,
+      projectAddress: contractSettings?.cvaproject.address,
+    });
+  };
 
   return (
     <>
@@ -139,7 +146,10 @@ export default function BeneficiaryTable() {
               align="center"
               className="flex flex-col p-3 gap-2"
             >
-              <AssignTokenModal beneficiaries={selectedRowAddresses.length} />
+              <BulkAssignToken
+                beneficiaries={selectedRowAddresses.length}
+                handleSubmit={handleBulkAssignTokens}
+              />
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
@@ -166,29 +176,31 @@ export default function BeneficiaryTable() {
               </TableHeader>
               <TableBody>
                 {table.getRowModel().rows?.length ? (
-                  table.getRowModel().rows.map((row) => (
-                    <TableRow
-                      key={row.id}
-                      data-state={row.getIsSelected() && 'selected'}
-                      onClick={() => {
-                        setSecondPanelComponent(
-                          <BeneficiaryDetail
-                            data={row}
-                            handleClose={closeSecondPanel}
-                          />,
-                        );
-                      }}
-                    >
-                      {row.getVisibleCells().map((cell) => (
-                        <TableCell key={cell.id}>
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext(),
-                          )}
-                        </TableCell>
-                      ))}
-                    </TableRow>
-                  ))
+                  table.getRowModel().rows.map((row) => {
+                    return (
+                      <TableRow
+                        key={row.id}
+                        data-state={row.getIsSelected() && 'selected'}
+                        onClick={() => {
+                          setSecondPanelComponent(
+                            <BeneficiaryDetail
+                              beneficiaryDetails={row.original}
+                              handleClose={closeSecondPanel}
+                            />,
+                          );
+                        }}
+                      >
+                        {row.getVisibleCells().map((cell) => (
+                          <TableCell key={cell.id}>
+                            {flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext(),
+                            )}
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    );
+                  })
                 ) : (
                   <TableRow>
                     <TableCell
@@ -202,14 +214,14 @@ export default function BeneficiaryTable() {
               </TableBody>
             </ScrollArea>
           </TableComponent>
-          <CustomPagination
+          {/* <CustomPagination
             currentPage={pagination.page}
             handleNextPage={handleNextPage}
             handlePageSizeChange={setPerPage}
             handlePrevPage={handlePrevPage}
             perPage={pagination.perPage}
             meta={meta || { total: 0, currentPage: 0 }}
-          />
+          /> */}
         </div>
       </div>
     </>

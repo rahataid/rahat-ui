@@ -19,14 +19,15 @@ import {
   useTokenMintAndSend,
 } from '@rahat-ui/query';
 import { useParams } from 'next/navigation';
+import { UUID } from 'crypto';
 
 export default function CreateTokenModal() {
   const [token, setToken] = useState('0');
   const createToken = useTokenMintAndSend();
-  const { id } = useParams();
+  const { id } = useParams() as { id: UUID };
   const contractSettings = useProjectSettingsStore(
-    (state) => state?.settings[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT],
-  ) as any;
+    (state) => state?.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT] as any,
+  );
 
   const handleSubmit = async () => {
     await createToken.mutateAsync({

@@ -20,6 +20,11 @@ const createNewBeneficiary = async (payload: any) => {
   return response?.data;
 };
 
+const createNewBeneficiaryGroup = async (payload: any) => {
+  const response = await api.post('/beneficiaries/groups', payload);
+  return response?.data;
+};
+
 export const useCreateBeneficiary = () => {
   const qc = useQueryClient();
   return useMutation({
@@ -29,6 +34,17 @@ export const useCreateBeneficiary = () => {
     },
   });
 };
+
+export const useCreateBeneficiaryGroup = () => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (payload: any) => createNewBeneficiaryGroup(payload),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: [TAGS.GET_BENEFICIARIES_GROUPS] });
+    },
+  });
+};
+
 
 // Todo: Change type of return
 export const useBeneficiaryList = (payload: any): any => {

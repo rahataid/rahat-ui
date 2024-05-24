@@ -14,6 +14,8 @@ import { useEffect } from 'react';
 import { UUID } from 'crypto';
 import { useSwal } from '../../swal';
 import { Pagination } from '@rumsan/sdk/types';
+import { useBeneficiariesGroupStore } from '../aa';
+import { useBeneficiaryGroupsStore } from './beneficiary-groups.store';
 
 const createNewBeneficiary = async (payload: any) => {
   const response = await api.post('/beneficiaries', payload);
@@ -23,6 +25,51 @@ const createNewBeneficiary = async (payload: any) => {
 const createNewBeneficiaryGroup = async (payload: any) => {
   const response = await api.post('/beneficiaries/groups', payload);
   return response?.data;
+};
+
+const listBeneficiaryGroups = async (payload: Pagination) => {
+  const response = await api.get('/beneficiaries/groups/all', {
+    params: payload
+  });
+  return response?.data;
+};
+
+
+export const useBeneficiaryGroupsList = (payload: any): any => {
+  const { queryClient } = useRSQuery();
+
+  const { setBeneficiaryGroups, setMeta } = useBeneficiaryGroupsStore((state) => ({
+    setBeneficiaryGroups: state.setBeneficiaryGroups,
+    setMeta: state.setMeta,
+  }));
+
+  const benGroups = useQuery(
+    {
+      queryKey: [TAGS.GET_BENEFICIARIES_GROUPS, payload],
+      queryFn: () => listBeneficiaryGroups(payload),
+      placeholderData: keepPreviousData,
+    },
+    queryClient,
+  );
+
+  useEffect(() => {
+    if (benGroups.data) {
+      console.log("ben groups", benGroups);
+      setBeneficiaryGroups(benGroups?.data?.data as any[]);
+      setMeta(benGroups?.data?.meta);
+    }
+  }, [benGroups.data, setBeneficiaryGroups]);
+
+  const mappedGroupData = benGroups?.data?.data?.map((d: any) => ({
+    ...d,
+    totalMembers: d?._count?.groupedBeneficiaries
+  }))
+
+  return {
+    ...benGroups,
+    data: mappedGroupData,
+    meta: benGroups?.data?.meta
+  }
 };
 
 export const useCreateBeneficiary = () => {

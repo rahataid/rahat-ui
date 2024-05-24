@@ -21,16 +21,15 @@ import {
   useProjectList,
 } from '@rahat-ui/query';
 import { UUID } from 'crypto';
-import CustomPagination from '../../components/customPagination';
-import { useBoolean } from '../../hooks/use-boolean';
-import { useSecondPanel } from '../../providers/second-panel-provider';
-import BeneficiaryGridView from '../../sections/beneficiary/gridView';
-import BeneficiaryListView from '../../sections/beneficiary/listView';
-import { useBeneficiaryTableColumns } from './useBeneficiaryColumns';
+import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
+import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
+import { useSecondPanel } from 'apps/rahat-ui/src/providers/second-panel-provider';
+import BeneficiaryGroupsListView from './listView';
+import { useBeneficiaryGroupsTableColumns } from './useBeneficiaryGroupsColumns';
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/navigation';
 
-function BeneficiaryView() {
+function BeneficiaryGroupsView() {
   const router = useRouter();
   const {
     pagination,
@@ -48,16 +47,14 @@ function BeneficiaryView() {
     setPagination({ page: 1, perPage: 10, order: 'desc', sort: 'createdAt' });
   }, []);
 
-  useBeneficiaryGroupsList({ ...pagination });
-
-  const { data } = useBeneficiaryList({
+  const data = useBeneficiaryGroupsList({
     ...pagination,
-
     ...filters,
   });
+
   const createBeneficiaryGroup = useCreateBeneficiaryGroup();
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-  const columns = useBeneficiaryTableColumns();
+  const columns = useBeneficiaryGroupsTableColumns();
   const { closeSecondPanel, setSecondPanelComponent } = useSecondPanel();
   const projectModal = useBoolean();
   const groupModal = useBoolean();
@@ -117,34 +114,11 @@ function BeneficiaryView() {
     });
   };
 
-  const handleCreateGroup = async (data: any) => {
-    try {
-      console.log(data);
-      const payload = {
-        name: data?.groupName,
-        beneficiaries: data?.beneficiaries?.map((b: string) => ({
-          uuid: b,
-        })),
-      };
-      const result = await createBeneficiaryGroup.mutateAsync(payload);
-      if (result) {
-        toast.success('Beneficiary group added successfully!');
-        router.push('/beneficiary');
-        table.resetRowSelection(true);
-      }
-    } catch (e: any) {
-      toast.error(
-        e?.response?.data?.message || 'Failed to add beneficiary group!',
-      );
-    }
-  };
-
   return (
     <>
       <TabsContent value="list">
-        <BeneficiaryListView
+        <BeneficiaryGroupsListView
           table={table}
-          handleCreateGroup={handleCreateGroup}
           handleBulkAssign={handleBulkAssign}
           isBulkAssigning={false}
           projectModal={projectModal}
@@ -167,4 +141,4 @@ function BeneficiaryView() {
   );
 }
 
-export default memo(BeneficiaryView);
+export default memo(BeneficiaryGroupsView);

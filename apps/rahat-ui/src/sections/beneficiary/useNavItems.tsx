@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { NavItem } from './nav-items.types';
 import { TabsList, TabsTrigger } from '@rahat-ui/shadcn/src/components/ui/tabs';
+import { useBeneficiaryGroupsStore } from 'libs/query/src/lib/beneficiary/beneficiary-groups.store';
 
 const tabs = [
   {
@@ -28,6 +29,10 @@ export const useBeneficiaryNavItems = () => {
     setFilters({ type });
   };
   const totalBeneficiaries = useBeneficiaryStore(
+    (state) => state?.meta?.total || 0,
+  );
+
+  const totalGroups = useBeneficiaryGroupsStore(
     (state) => state?.meta?.total || 0,
   );
 
@@ -52,6 +57,12 @@ export const useBeneficiaryNavItems = () => {
           icon: <KanbanSquare size={18} strokeWidth={1.5} />,
           path: '/beneficiary',
           subtitle: totalBeneficiaries,
+        },
+        {
+          title: 'Beneficiaries Groups',
+          icon: <KanbanSquare size={18} strokeWidth={1.5} />,
+          path: '/beneficiary/groups',
+          subtitle: totalGroups,
         },
         {
           title: 'Archived',

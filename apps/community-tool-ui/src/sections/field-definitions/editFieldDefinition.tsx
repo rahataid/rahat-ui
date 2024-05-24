@@ -61,6 +61,22 @@ export default function EditFieldDefinition({
     },
   });
 
+  useEffect(() => {
+    form.reset({
+      name: data?.name || '',
+      fieldType: data?.fieldType || '',
+      isActive: data?.isActive || false,
+      isTargeting: data?.isTargeting || false,
+      fieldPopulate: data?.fieldPopulate?.data || [],
+    });
+  }, [
+    data?.fieldPopulate?.data,
+    data?.fieldType,
+    data?.isActive,
+    data?.isTargeting,
+    data?.name,
+    form,
+  ]);
   const { fields, append, remove } = useFieldArray({
     name: 'fieldPopulate',
     control: form.control,
@@ -159,32 +175,28 @@ export default function EditFieldDefinition({
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Field Type" />
+                            <SelectValue placeholder="Select Field Type" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <>
-                            <SelectItem value={FieldType.TEXT}>TEXT</SelectItem>
-                            <SelectItem value={FieldType.NUMBER}>
-                              NUMBER
-                            </SelectItem>
-                            <SelectItem value={FieldType.CHECKBOX}>
-                              CHECKBOX
-                            </SelectItem>
-                            <SelectItem value={FieldType.DROPDOWN}>
-                              DROPDOWN
-                            </SelectItem>
-                            <SelectItem value={FieldType.PASSWORD}>
-                              PASSWORD
-                            </SelectItem>
-                            <SelectItem value={FieldType.RADIO}>
-                              RADIO
-                            </SelectItem>
-                            <SelectItem value={FieldType.DATE}>DATE</SelectItem>
-                            <SelectItem value={FieldType.TEXTAREA}>
-                              TEXTAREA
-                            </SelectItem>
-                          </>
+                          <SelectItem value={FieldType.TEXT}>TEXT</SelectItem>
+                          <SelectItem value={FieldType.NUMBER}>
+                            NUMBER
+                          </SelectItem>
+                          <SelectItem value={FieldType.CHECKBOX}>
+                            CHECKBOX
+                          </SelectItem>
+                          <SelectItem value={FieldType.DROPDOWN}>
+                            DROPDOWN
+                          </SelectItem>
+                          <SelectItem value={FieldType.PASSWORD}>
+                            PASSWORD
+                          </SelectItem>
+                          <SelectItem value={FieldType.RADIO}>RADIO</SelectItem>
+                          <SelectItem value={FieldType.DATE}>DATE</SelectItem>
+                          <SelectItem value={FieldType.TEXTAREA}>
+                            TEXTAREA
+                          </SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />

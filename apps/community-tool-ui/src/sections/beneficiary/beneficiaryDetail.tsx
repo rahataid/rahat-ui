@@ -38,7 +38,7 @@ export default function BeneficiaryDetail({ data, closeSecondPanel }: IProps) {
     }
 
     return () => setExtras({});
-  }, [data.uuid]);
+  }, [data.extras, data.uuid, setExtras]);
 
   const deleteCommunityBeneficiary = useCommunityBeneficiaryRemove();
   const handleBeneficiaryDelete = () => {
@@ -105,18 +105,14 @@ export default function BeneficiaryDetail({ data, closeSecondPanel }: IProps) {
               </Tooltip>
             </TooltipProvider>
             <TabsTrigger value="detailBenef">Details </TabsTrigger>
-            {/* <TabsTrigger value="transaction-history">
-              Transaction History
-            </TabsTrigger> */}
+
             <TabsTrigger value="editBenef">Edit</TabsTrigger>
           </TabsList>
         </div>
         <TabsContent value="detailBenef">
           <InfoCards data={data} />
         </TabsContent>
-        {/* <TabsContent value="transaction-history">
-          <div className="p-4 border-y">Transaction History View</div>
-        </TabsContent> */}
+
         <TabsContent value="editBenef">
           <EditBeneficiary data={data} />
         </TabsContent>

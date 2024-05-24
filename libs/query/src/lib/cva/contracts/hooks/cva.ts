@@ -151,7 +151,7 @@ export const useBulkAssignClaimsToBeneficiaries = () => {
             return encodeFunctionData({
               abi: cvaProjectAbi,
               functionName: 'assignClaims',
-              args: [beneficiary, BigInt(tokenAmount)],
+              args: [beneficiary, parseEther(tokenAmount)],
             });
           },
         );

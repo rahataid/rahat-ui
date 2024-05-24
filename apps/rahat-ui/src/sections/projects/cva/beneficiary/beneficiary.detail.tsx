@@ -127,7 +127,7 @@ function Header({
   handleTabChange,
 }: IHeaderProps) {
   return (
-    <div className="flex justify-between p-4 pt-5 bg-secondary border-b">
+    <div className="flex justify-between p-4 pt-5 bg-card border-b">
       <TooltipProvider delayDuration={100}>
         <Tooltip>
           <TooltipTrigger onClick={closeSecondPanel}>
@@ -191,6 +191,9 @@ function Header({
             <DropdownMenuItem onClick={() => handleTabChange('edit')}>
               Edit
             </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleTabChange('details')}>
+              Details
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
@@ -211,7 +214,6 @@ function DetailsSection({
   walletAddressCopied,
   handleAssignSubmit,
 }: IDetailsSectionProps) {
-  console.log('beneficiaryDetails', beneficiaryDetails);
   return (
     <div className="p-4 bg-card flex gap-2 justify-between items-center flex-wrap">
       <div className="flex items-center gap-2">
@@ -257,10 +259,12 @@ function DetailsSection({
           </TooltipProvider>
         </div>
       </div>
-      <AssignToken
-        beneficiary={beneficiaryDetails}
-        handleSubmit={handleAssignSubmit}
-      />
+      <div>
+        <AssignToken
+          beneficiary={beneficiaryDetails}
+          handleSubmit={handleAssignSubmit}
+        />
+      </div>
     </div>
   );
 }
@@ -286,40 +290,65 @@ type IBeneficiaryInfoProps = {
 
 function BeneficiaryInfo({ beneficiaryDetails }: IBeneficiaryInfoProps) {
   return (
-    <div className="flex flex-col gap-2 p-2">
-      <Card className="shadow rounded">
+    <>
+      <div className="flex flex-col gap-2 p-2">
+        <Card className="shadow rounded">
+          <CardContent className="pt-6">
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <p className="font-light text-base">
+                  {beneficiaryDetails?.type}
+                </p>
+                <p className="text-sm font-normal text-muted-foreground">
+                  Beneficiary Type
+                </p>
+              </div>
+              <div className="text-right">
+                <p className="font-light text-base">
+                  {beneficiaryDetails?.gender}
+                </p>
+                <p className="text-sm font-normal text-muted-foreground">
+                  Gender
+                </p>
+              </div>
+              <div>
+                <p className="font-light text-base">
+                  {beneficiaryDetails?.email || 'N/A'}
+                </p>
+                <p className="text-sm font-normal text-muted-foreground">
+                  Email
+                </p>
+              </div>
+              <div className="text-right">
+                <p className="font-light text-base">
+                  {beneficiaryDetails?.phone}
+                </p>
+                <p className="text-sm font-normal text-muted-foreground">
+                  Phone
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+      <Card className="shadow rounded m-2">
         <CardContent className="pt-6">
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <p className="font-light text-base">{beneficiaryDetails?.type}</p>
-              <p className="text-sm font-normal text-muted-foreground">
-                Beneficiary Type
-              </p>
+          <div className="text-base font-500">Token Details</div>
+          <div className="mt-2">
+            <div className="flex items-center justify-between text-sm">
+              <p className="font-light">Token Assigned</p>
+              <p className="text-primary">12</p>
             </div>
-            <div className="text-right">
-              <p className="font-light text-base">
-                {beneficiaryDetails?.gender}
-              </p>
-              <p className="text-sm font-normal text-muted-foreground">
-                Gender
-              </p>
-            </div>
-            <div>
-              <p className="font-light text-base">
-                {beneficiaryDetails?.email || 'N/A'}
-              </p>
-              <p className="text-sm font-normal text-muted-foreground">Email</p>
-            </div>
-            <div className="text-right">
-              <p className="font-light text-base">
-                {beneficiaryDetails?.phone}
-              </p>
-              <p className="text-sm font-normal text-muted-foreground">Phone</p>
+          </div>
+          <div className="mt-2">
+            <div className="flex items-center justify-between text-sm">
+              <p className="font-light">Token Claimed</p>
+              <p className="text-primary">12</p>
             </div>
           </div>
         </CardContent>
       </Card>
-    </div>
+    </>
   );
 }
 

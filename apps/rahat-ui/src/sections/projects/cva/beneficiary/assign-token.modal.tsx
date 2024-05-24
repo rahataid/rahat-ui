@@ -30,8 +30,10 @@ export default function AssignToken({ beneficiary, handleSubmit }: IProps) {
       <DialogTrigger asChild>
         <div className="w-full flex justify-between items-center">
           <div className="flex gap-3 items-center cursor-pointer">
-            <BadgePlus size={18} strokeWidth={1.5} />
-            <p>Assign Token</p>
+            <Button className="felx items-center gap-2">
+              <BadgePlus size={18} strokeWidth={1.5} />
+              <p>Assign Token</p>
+            </Button>
           </div>
         </div>
       </DialogTrigger>

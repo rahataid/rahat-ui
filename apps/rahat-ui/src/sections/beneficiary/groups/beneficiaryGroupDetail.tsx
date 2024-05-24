@@ -1,7 +1,5 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useBeneficiaryStore, useSingleBeneficiary } from '@rahat-ui/query';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -26,26 +24,16 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
-import { truncateEthAddress } from '@rumsan/sdk/utils';
-import { UUID } from 'crypto';
-import {
-  Archive,
-  Expand,
-  Minus,
-  MoreVertical,
-  Trash2,
-  Copy,
-  CopyCheck,
-} from 'lucide-react';
-import Image from 'next/image';
+import { Archive, Minus, MoreVertical, Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
-// import { useBoolean } from '../../hooks/use-boolean';
 import AssignToProjectModal from './assignToProjectModal';
-// import SplitViewDetailCards from './components/split.view.detail.cards';
-// import EditBeneficiary from './editBeneficiary';
 import { ListBeneficiaryGroup } from '@rahat-ui/types';
-// import { useRemoveBeneficiary } from '@rahat-ui/query';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+} from '@rahat-ui/shadcn/src/components/ui/card';
 
 type IProps = {
   beneficiaryGroupDetail: ListBeneficiaryGroup;
@@ -57,9 +45,6 @@ export default function BeneficiaryGroupDetail({
   closeSecondPanel,
 }: IProps) {
   const router = useRouter();
-  useSingleBeneficiary(beneficiaryGroupDetail.uuid as UUID);
-  const beneficiary = useBeneficiaryStore((state) => state.singleBeneficiary);
-  // const deleteBeneficiary = useRemoveBeneficiary();
   const projectModal = useBoolean();
 
   const handleAssignModalClick = () => {
@@ -84,22 +69,6 @@ export default function BeneficiaryGroupDetail({
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
-          {/* <TooltipProvider delayDuration={100}>
-            <Tooltip>
-              <TooltipTrigger
-                onClick={() => {
-                  router.push(
-                    paths.dashboard.beneficiary.detail(walletAddress),
-                  );
-                }}
-              >
-                <Expand size={20} strokeWidth={1.5} />
-              </TooltipTrigger>
-              <TooltipContent className="bg-secondary ">
-                <p className="text-xs font-medium">Expand</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider> */}
         </div>
         <div className="flex gap-3">
           <TooltipProvider delayDuration={100}>
@@ -159,16 +128,6 @@ export default function BeneficiaryGroupDetail({
               />
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-              {/* {activeTab === 'details' ? (
-                <DropdownMenuItem onClick={() => handleTabChange('edit')}>
-                  Edit
-                </DropdownMenuItem>
-              ) : (
-                <DropdownMenuItem onClick={() => handleTabChange('details')}>
-                  Details
-                </DropdownMenuItem>
-              )} */}
-
               <DropdownMenuItem onClick={handleAssignModalClick}>
                 Assign to project
               </DropdownMenuItem>
@@ -176,6 +135,41 @@ export default function BeneficiaryGroupDetail({
           </DropdownMenu>
         </div>
       </div>
+      <Card className="shadow rounded">
+        <CardHeader>
+          <p className="font-mediun text-md">{beneficiaryGroupDetail.name}</p>
+        </CardHeader>
+        <CardHeader>
+          <p className="font-mediun text-md">Projects Involved</p>
+        </CardHeader>
+        <CardContent>
+          {beneficiaryGroupDetail?.beneficiaryGroupProject?.length ? (
+            beneficiaryGroupDetail?.beneficiaryGroupProject?.map(
+              (benProject: any) => {
+                return (
+                  <Badge
+                    key={benProject.id}
+                    variant="outline"
+                    color="primary"
+                    className="rounded cursor-pointer"
+                    onClick={() => {
+                      router.push(
+                        `/projects/${benProject.Project?.type}/${benProject.Project.uuid}`,
+                      );
+                    }}
+                  >
+                    {benProject.Project.name}
+                  </Badge>
+                );
+              },
+            )
+          ) : (
+            <p className="text-sm text-muted-foreground">
+              No projects involved
+            </p>
+          )}
+        </CardContent>
+      </Card>
     </>
   );
 }

@@ -14,8 +14,6 @@ import {
 
 import {
   useBeneficiaryGroupsList,
-  useBeneficiaryList,
-  useBulkAssignBenToProject,
   useCreateBeneficiaryGroup,
   usePagination,
   useProjectList,
@@ -23,14 +21,10 @@ import {
 import { UUID } from 'crypto';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
-import { useSecondPanel } from 'apps/rahat-ui/src/providers/second-panel-provider';
 import BeneficiaryGroupsListView from './listView';
 import { useBeneficiaryGroupsTableColumns } from './useBeneficiaryGroupsColumns';
-import { toast } from 'react-toastify';
-import { useRouter } from 'next/navigation';
 
 function BeneficiaryGroupsView() {
-  const router = useRouter();
   const {
     pagination,
     selectedListItems,
@@ -51,15 +45,14 @@ function BeneficiaryGroupsView() {
     ...pagination,
     ...filters,
   });
-  // const projectModal = useBoolean();
+
   const groupModal = useBoolean();
 
   const createBeneficiaryGroup = useCreateBeneficiaryGroup();
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const columns = useBeneficiaryGroupsTableColumns();
-  const { closeSecondPanel, setSecondPanelComponent } = useSecondPanel();
 
-  const bulkAssign = useBulkAssignBenToProject();
+  // const bulkAssign = useBulkAssignBenToProject();
   const projectsList = useProjectList({
     page: 1,
     perPage: 10,
@@ -92,27 +85,24 @@ function BeneficiaryGroupsView() {
 
   const handleBulkAssign = async (selectedProject: string) => {
     // from the list of selected beneficiaries, filter out the ones that are already assigned to the project
-
     // TODO:Make this more cleaner
-    const benNotAssignedToTheProject = data?.data
-      ?.filter(
-        (ben: any) =>
-          !ben.BeneficiaryProject.some(
-            (project: any) => project.projectId === selectedProject,
-          ),
-      )
-      .filter((ben: any) => benUUIDs.includes(ben.uuid))
-      .map((ben: any) => ben.uuid);
-
-    if (!benNotAssignedToTheProject)
-      return alert(
-        'All selected beneficiaries are already assigned to the project',
-      );
-
-    await bulkAssign.mutateAsync({
-      projectUUID: selectedProject as UUID,
-      beneficiaryUUIDs: benNotAssignedToTheProject as any[],
-    });
+    // const benNotAssignedToTheProject = data?.data
+    //   ?.filter(
+    //     (ben: any) =>
+    //       !ben.BeneficiaryProject.some(
+    //         (project: any) => project.projectId === selectedProject,
+    //       ),
+    //   )
+    //   .filter((ben: any) => benUUIDs.includes(ben.uuid))
+    //   .map((ben: any) => ben.uuid);
+    // if (!benNotAssignedToTheProject)
+    //   return alert(
+    //     'All selected beneficiaries are already assigned to the project',
+    //   );
+    // await bulkAssign.mutateAsync({
+    //   projectUUID: selectedProject as UUID,
+    //   beneficiaryUUIDs: benNotAssignedToTheProject as any[],
+    // });
   };
 
   return (
@@ -122,7 +112,6 @@ function BeneficiaryGroupsView() {
           table={table}
           handleBulkAssign={handleBulkAssign}
           isBulkAssigning={false}
-          // projectModal={projectModal}
           groupModal={groupModal}
           projects={projectsList?.data?.data || []}
           handleFilterProjectSelect={handleFilterProjectSelect}

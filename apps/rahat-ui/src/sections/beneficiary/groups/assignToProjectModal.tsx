@@ -1,6 +1,6 @@
 'use client';
 
-import { useAssignBenToProject, useProjectList } from '@rahat-ui/query';
+import { useAssignBenGroupToProject, useProjectList } from '@rahat-ui/query';
 import {
   Dialog,
   DialogClose,
@@ -37,6 +37,7 @@ export default function AssignBeneficiaryToProjectModal({
   projectModal,
   beneficiaryGroupDetail,
 }: IProps) {
+  const assignBeneficiaryGroup = useAssignBenGroupToProject();
   const projectsList = useProjectList({ page: 1, perPage: 10 });
 
   const [selectedProject, setSelectedProject] = React.useState<UUID>();
@@ -45,15 +46,15 @@ export default function AssignBeneficiaryToProjectModal({
 
   const handleAssignProject = async () => {
     if (!selectedProject) return alert('Please select a project');
-    // await assignBeneficiary.mutateAsync({
-    //   beneficiaryUUID: beneficiaryDetail?.uuid,
-    //   projectUUID: selectedProject,
-    // });
+    await assignBeneficiaryGroup.mutateAsync({
+      projectUUID: selectedProject,
+      beneficiaryGroupUUID: beneficiaryGroupDetail.uuid as UUID,
+    });
   };
 
-  // React.useEffect(() => {
-  //   assignBeneficiary.isSuccess && projectModal.onFalse();
-  // }, [assignBeneficiary]);
+  React.useEffect(() => {
+    assignBeneficiaryGroup.isSuccess && projectModal.onFalse();
+  }, [assignBeneficiaryGroup]);
 
   return (
     <Dialog open={projectModal.value} onOpenChange={projectModal.onToggle}>

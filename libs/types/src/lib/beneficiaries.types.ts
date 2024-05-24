@@ -40,6 +40,7 @@ export interface ListBeneficiaryGroup {
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date | null;
+  beneficiaryGroupProject?: any;
 }
 
 export interface UpdateBeneficiaryPayload {

@@ -1,11 +1,16 @@
 import { PieChart } from '@rahat-ui/shadcn/charts';
-import { DashboardRecentActivities } from './activities.dashboard';
 import { formatUnderScoredString } from 'apps/rahat-ui/src/utils/string';
 
 const Charts = ({ charts }: { charts: any }) => {
+  const validCharts = charts?.filter((chart: any) => {
+    return Array.isArray(chart.data)
+      ? chart.data.length > 0
+      : chart.data.count > 0;
+  });
+
   return (
     <div className=" grid md:grid-cols-3 gap-2 mt-2">
-      {charts?.map((d: any) => {
+      {validCharts?.map((d: any) => {
         const series = Array.isArray(d?.data)
           ? d?.data.map((item: any) => ({
               label: formatUnderScoredString(item.id),
@@ -17,7 +22,6 @@ const Charts = ({ charts }: { charts: any }) => {
                 value: d?.data?.count || 0,
               },
             ];
-        console.log('series', series);
         return (
           <PieChart
             key={d.name}

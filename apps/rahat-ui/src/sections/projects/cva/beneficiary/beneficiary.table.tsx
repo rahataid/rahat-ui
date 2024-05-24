@@ -51,13 +51,87 @@ export default function BeneficiaryTable() {
     (state) => state?.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT] as any,
   );
 
-  const beneficiaries = useBeneficiaryStore((state) => state.beneficiaries);
+  // const beneficiaries = useBeneficiaryStore((state) => state.beneficiaries);
   const meta = useBeneficiaryStore((state) => state.meta);
 
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const { pagination, setPerPage, selectedListItems, setSelectedListItems } =
     usePagination();
   const columns = useCvaBeneficiaryTableColumns();
+
+  //DUMMY DATA
+  const beneficiaries = [
+    {
+      walletAddress: '0x1234567890abcdef1234567890abcdef12345678',
+      gender: 'Male',
+      internetStatus: 'true',
+      phoneStatus: 'true',
+      bankedStatus: 'false',
+    },
+    {
+      walletAddress: '0xabcdef1234567890abcdef1234567890abcdef12',
+      gender: 'Female',
+      internetStatus: 'false',
+      phoneStatus: 'true',
+      bankedStatus: 'true',
+    },
+    {
+      walletAddress: '0x7890abcdef1234567890abcdef1234567890abcd',
+      gender: 'Non-binary',
+      internetStatus: 'true',
+      phoneStatus: 'false',
+      bankedStatus: 'false',
+    },
+    {
+      walletAddress: '0x4567890abcdef1234567890abcdef1234567890ab',
+      gender: 'Male',
+      internetStatus: 'true',
+      phoneStatus: 'true',
+      bankedStatus: 'true',
+    },
+    {
+      walletAddress: '0xabcdefabcdef1234567890abcdef1234567890ef',
+      gender: 'Female',
+      internetStatus: 'false',
+      phoneStatus: 'false',
+      bankedStatus: 'true',
+    },
+    {
+      walletAddress: '0x7890abcdabcd1234567890abcdef1234567890ef',
+      gender: 'Male',
+      internetStatus: 'true',
+      phoneStatus: 'true',
+      bankedStatus: 'false',
+    },
+    {
+      walletAddress: '0x1234567890abcdefabcdef1234567890abcdef12',
+      gender: 'Female',
+      internetStatus: 'true',
+      phoneStatus: 'false',
+      bankedStatus: 'true',
+    },
+    {
+      walletAddress: '0xabcdef1234567890abcdefabcdef1234567890ab',
+      gender: 'Non-binary',
+      internetStatus: 'false',
+      phoneStatus: 'true',
+      bankedStatus: 'false',
+    },
+    {
+      walletAddress: '0x7890abcdefabcdef1234567890abcdefabcdef12',
+      gender: 'Male',
+      internetStatus: 'true',
+      phoneStatus: 'false',
+      bankedStatus: 'true',
+    },
+    {
+      walletAddress: '0x4567890abcdefabcdef1234567890abcdefabcdef',
+      gender: 'Female',
+      internetStatus: 'false',
+      phoneStatus: 'true',
+      bankedStatus: 'false',
+    },
+  ];
 
   const table = useReactTable({
     manualPagination: true,
@@ -185,7 +259,7 @@ export default function BeneficiaryTable() {
                           setSecondPanelComponent(
                             <BeneficiaryDetail
                               beneficiaryDetails={row.original}
-                              handleClose={closeSecondPanel}
+                              closeSecondPanel={closeSecondPanel}
                             />,
                           );
                         }}

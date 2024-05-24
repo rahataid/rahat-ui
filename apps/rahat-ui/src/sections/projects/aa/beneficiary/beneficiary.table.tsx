@@ -106,7 +106,7 @@ function BeneficiaryDetailTableView() {
     page: pagination.page,
     perPage: pagination.perPage,
     order: 'desc',
-    sort: 'updatedAt',
+    sort: 'createdAt',
     projectUUID: uuid,
     ...filters,
   });

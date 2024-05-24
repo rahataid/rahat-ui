@@ -381,7 +381,7 @@ export default function BeneficiaryDetail({
                             </p>
                           </div>
                           <div className="flex justify-between items-center">
-                            <p>ClaimStatus</p>
+                            <p>Claimed</p>
                             <p className="text-sm font-light">
                               {beneficiaryVoucherDetails?.freeVoucherAddress !==
                                 undefined &&

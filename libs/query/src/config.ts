@@ -29,4 +29,27 @@ export const TAGS = {
   GET_PROJECT_DETAILS: 'get_project_details',
   GET_BENFICIARY_STATS: 'get_beneficiary_stats',
   GET_PROJECT_SETTINGS: 'get_project_settings',
+  GET_BENEFICIARIES_GROUPS: 'get_beneficiaries_groups'
+
 };
+export const PROJECT_SETTINGS_KEYS = {
+  CONTRACT: 'CONTRACT',
+  SUBGRAPH: 'SUBGRAPH_URL',
+  TREASURY_SOURCES: 'TREASURY_SOURCES',
+  DATASOURCE: 'DATASOURCE',
+};
+
+export const TREASURY_SOURCES = [
+  {
+    value: 'project_balance',
+    label: 'Project Balance',
+  },
+  {
+    value: 'user_wallet',
+    label: 'User Wallet',
+  },
+  {
+    value: 'multi_sig',
+    label: 'MultiSig Wallet',
+  },
+];

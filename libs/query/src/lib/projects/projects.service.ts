@@ -1,5 +1,10 @@
 import { CreateProjectPayload } from '@rahat-ui/types';
+import { Beneficiary, MS_ACTIONS } from '@rahataid/sdk';
+import { getProjectClient } from '@rahataid/sdk/clients';
+import { Project, ProjectActions } from '@rahataid/sdk/project/project.types';
 import { useRSQuery } from '@rumsan/react-query';
+import { Pagination } from '@rumsan/sdk/types';
+import { FormattedResponse } from '@rumsan/sdk/utils';
 import {
   UseQueryResult,
   keepPreviousData,
@@ -7,26 +12,13 @@ import {
   useQuery,
   useQueryClient,
 } from '@tanstack/react-query';
-import { TAGS } from '../../config';
-import { toast } from 'sonner';
-import { Beneficiary, MS_ACTIONS } from '@rahataid/sdk';
-import { getProjectClient } from '@rahataid/sdk/clients';
-import { Project, ProjectActions } from '@rahataid/sdk/project/project.types';
-import { Pagination } from '@rumsan/sdk/types';
-import { FormattedResponse } from '@rumsan/sdk/utils';
 import { UUID } from 'crypto';
 import { isEmpty } from 'lodash';
 import { useEffect, useMemo } from 'react';
+import { PROJECT_SETTINGS_KEYS, TAGS } from '../../config';
 import { useSwal } from '../../swal';
 import { api } from '../../utils/api';
 import { useProjectSettingsStore, useProjectStore } from './project.store';
-
-export const PROJECT_SETTINGS_KEYS = {
-  CONTRACT: 'CONTRACT',
-  SUBGRAPH: 'SUBGRAPH_URL',
-  DATASOURCE: 'DATASOURCE'
-
-};
 
 const createProject = async (payload: CreateProjectPayload) => {
   const res = await api.post('/projects', payload);
@@ -81,6 +73,11 @@ export const useAssignBenToProject = () => {
       projectUUID: UUID;
       beneficiaryUUID: UUID;
     }) => {
+      console.log(
+        'assigning beneficiary to project',
+        beneficiaryUUID,
+        projectUUID,
+      );
       return q.mutateAsync({
         uuid: projectUUID,
         data: {
@@ -109,6 +106,54 @@ export const useAssignBenToProject = () => {
     },
   });
 };
+
+export const useAssignBenGroupToProject = () => {
+  const q = useProjectAction();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+  return useMutation({
+    mutationFn: async ({
+      beneficiaryGroupUUID,
+      projectUUID,
+    }: {
+      projectUUID: UUID;
+      beneficiaryGroupUUID: UUID;
+    }) => {
+
+      return q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'beneficiary.assign_group_to_project',
+          payload: {
+            beneficiaryGroupId: beneficiaryGroupUUID,
+          },
+        },
+      });
+    },
+    onSuccess: () => {
+      q.reset();
+      toast.fire({
+        title: 'Beneficiary group assigned Successfully',
+        icon: 'success',
+      });
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || 'Error';
+      q.reset();
+      toast.fire({
+        title: 'Error while assigning beneficiary group',
+        icon: 'error',
+        text: errorMessage,
+      });
+    },
+  });
+};
+
 
 export const useBulkAssignBenToProject = () => {
   const q = useProjectAction();
@@ -308,7 +353,11 @@ export const useAAProjectSettingsDatasource = (uuid: UUID) => {
   }));
 
   const query = useQuery({
-    queryKey: [TAGS.GET_PROJECT_SETTINGS, uuid, PROJECT_SETTINGS_KEYS.DATASOURCE],
+    queryKey: [
+      TAGS.GET_PROJECT_SETTINGS,
+      uuid,
+      PROJECT_SETTINGS_KEYS.DATASOURCE,
+    ],
     enabled: isEmpty(settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.DATASOURCE]),
     // enabled: !!settings[uuid],
     queryFn: async () => {
@@ -326,7 +375,7 @@ export const useAAProjectSettingsDatasource = (uuid: UUID) => {
     // initialData: settings?.[uuid],
   });
 
-  console.log(query)
+  console.log(query);
 
   useEffect(() => {
     if (!isEmpty(query.data)) {
@@ -354,8 +403,10 @@ export const useProjectList = (
   payload?: Pagination,
 ): UseQueryResult<FormattedResponse<Project[]>, Error> => {
   const { queryClient, rumsanService } = useRSQuery();
+  console.log({ queryClient, rumsanService });
 
   const projectClient = getProjectClient(rumsanService.client);
+  console.log({ projectClient });
   return useQuery(
     {
       queryKey: [TAGS.GET_ALL_PROJECTS, payload],
@@ -435,14 +486,14 @@ export const useProjectBeneficiaries = (payload: GetProjectBeneficiaries) => {
             uuid: row?.uuid?.toString(),
             wallet: row?.walletAddress?.toString(),
             voucherClaimStatus: row?.claimStatus,
-            name: row?.piiData?.name || "",
-            email: row?.piiData?.email || "",
-            gender: row?.projectData?.gender || "",
+            name: row?.piiData?.name || '',
+            email: row?.piiData?.email || '',
+            gender: row?.projectData?.gender?.toString() || '',
             phone: row?.piiData?.phone || 'N/A',
             type: row?.type?.toString() || 'N/A',
-            phoneStatus: row?.projectData?.phoneStatus || "",
-            bankedStatus: row?.projectData?.bankedStatus || "",
-            internetStatus: row?.projectData?.internetStatus || "",
+            phoneStatus: row?.projectData?.phoneStatus || '',
+            bankedStatus: row?.projectData?.bankedStatus || '',
+            internetStatus: row?.projectData?.internetStatus || '',
           }))
           : [],
       };
@@ -510,4 +561,26 @@ export const useUpdateElRedemption = () => {
       return m;
     },
   });
+};
+
+export const useProjectEdit = () => {
+  const { queryClient, rumsanService } = useRSQuery();
+  // const projectClient = getProjectClient(rumsanService.client);
+
+  return useMutation(
+    {
+      onError(error, variables, context) {
+        console.error('Error', error, variables, context);
+      },
+      onSuccess(data, variables, context) {
+        console.log('Success', data, variables, context);
+      },
+      mutationKey: ['projectEdit'],
+      mutationFn: async ({ uuid, data }: { uuid: UUID; data: any }) => {
+        const res = await rumsanService.client.patch(`/projects/${uuid}`, data);
+        return res;
+      },
+    },
+    queryClient,
+  );
 };

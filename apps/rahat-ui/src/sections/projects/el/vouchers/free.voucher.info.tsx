@@ -32,7 +32,7 @@ const FreeVoucherInfo = ({ data }) => {
           </div>
           <div>
             <p className="font-medium text-primary text-right">{data?.freeVoucherPrice || 0}</p>
-            <p className="font-light">Price in {data?.freeVoucherCurrency || 'USD'}</p>
+            <p className="font-light">Value in {data?.freeVoucherCurrency || 'USD'}</p>
           </div>
           <div>
             <p className="font-medium text-primary text-right">

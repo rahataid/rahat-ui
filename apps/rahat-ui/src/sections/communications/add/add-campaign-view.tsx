@@ -33,6 +33,7 @@ const FormSchema = z.object({
   campaignType: z.string({
     required_error: 'Camapign Type is required.',
   }),
+  isQrSender: z.boolean().optional(),
 
   message: z.string().optional(),
   messageSid: z.string().optional(),
@@ -78,9 +79,11 @@ const AddCampaignView = () => {
   });
 
   const debouncedHandleSubmit = debounce((data) => {
+    if(isSubmitting) return;
     if (selectedRows.length === 0) {
       setAudienceRequiredError(true);
-      return
+      setIsSubmitting(false);
+      return;
     }
     let transportId;
     transportData?.data.map((tdata) => {
@@ -96,7 +99,7 @@ const AddCampaignView = () => {
       }
     });
     const audiences = uniqueAudienceData
-      .filter((audienceObject: Audience) =>
+      ?.filter((audienceObject: Audience) =>
         selectedRows?.some(
           (selectedObject) =>
             selectedObject.phone === audienceObject?.details?.phone,
@@ -135,13 +138,14 @@ const AddCampaignView = () => {
         type: data.campaignType,
         details: additionalData,
         status: 'ONGOING',
+        isQrSender:data.isQrSender
       })
       .then((data) => {
         if (data) {
           setIsSubmitting(false);
 
-          toast.success('Campaign Created Success.');
           router.push(paths.dashboard.communication.text);
+          toast.success('Campaign Created Success.');
         }
       })
       .catch((e) => {

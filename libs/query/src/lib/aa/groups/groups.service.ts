@@ -6,7 +6,10 @@ import {
   useQueryClient,
 } from '@tanstack/react-query';
 import { useProjectAction } from '../../projects';
-import { useStakeholdersGroupsStore } from './groups.store';
+import {
+  useStakeholdersGroupsStore,
+  useBeneficiariesGroupStore,
+} from './groups.store';
 import { UUID } from 'crypto';
 import { useSwal } from 'libs/query/src/swal';
 
@@ -59,6 +62,55 @@ export const useCreateStakeholdersGroups = () => {
   });
 };
 
+export const useCreateBenficiariesGroups = () => {
+  const q = useProjectAction();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+  return useMutation({
+    mutationFn: async ({
+      projectUUID,
+      beneficiariesGroupPayload,
+    }: {
+      projectUUID: UUID;
+      beneficiariesGroupPayload: {
+        name: string;
+        beneficiaries: Array<{
+          uuid: string;
+        }>;
+      };
+    }) => {
+      return q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'aaProject.beneficiary.addGroup',
+          payload: beneficiariesGroupPayload,
+        },
+      });
+    },
+    onSuccess: () => {
+      q.reset();
+      toast.fire({
+        title: 'Beneficiaries Group added successfully',
+        icon: 'success',
+      });
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || 'Error';
+      q.reset();
+      toast.fire({
+        title: 'Error while adding stakeholders group.',
+        icon: 'error',
+        text: errorMessage,
+      });
+    },
+  });
+};
+
 export const useStakeholdersGroups = (uuid: UUID, payload: any) => {
   const q = useProjectAction();
   const { setStakeholdersGroups, setStakeholdersGroupsMeta } =
@@ -86,6 +138,39 @@ export const useStakeholdersGroups = (uuid: UUID, payload: any) => {
     if (query?.data) {
       setStakeholdersGroups(query?.data?.data);
       setStakeholdersGroupsMeta(query?.data?.meta);
+    }
+  }, [query.data]);
+
+  return { ...query, stakeholdersGroupsMeta: query?.data?.meta };
+};
+
+export const useBeneficiariesGroups = (uuid: UUID, payload: any) => {
+  const q = useProjectAction();
+  const { setBeneficiariesGroups, setBeneficiariesGroupsMeta } =
+    useBeneficiariesGroupStore((state) => ({
+      setBeneficiariesGroups: state.setBeneficiariesGroup,
+      setBeneficiariesGroupsMeta: state.setBeneficiariesGroupMeta,
+    }));
+
+  const query = useQuery({
+    queryKey: ['beneficiaryGroups', uuid, payload],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'aaProject.beneficiary.getAllGroups',
+          payload: payload,
+        },
+      });
+      return mutate.response;
+    },
+    placeholderData: keepPreviousData,
+  });
+
+  useEffect(() => {
+    if (query?.data) {
+      setBeneficiariesGroups(query?.data?.data);
+      setBeneficiariesGroupsMeta(query?.data?.meta);
     }
   }, [query.data]);
 

@@ -147,12 +147,7 @@ export function Nav() {
                 <span>{currentUser?.data?.email ?? 'doe@john.com'}</span>
               </div>
               <Separator />
-              <Link
-                className="p-1 hover:bg-secondary rounded"
-                href={paths.profile.root}
-              >
-                Profile
-              </Link>
+
               <Link
                 className="p-1 hover:bg-secondary rounded"
                 href={paths.dashboard.root}
@@ -162,7 +157,7 @@ export function Nav() {
 
               <Link
                 className="p-1 hover:bg-secondary rounded"
-                href={paths.settings.root}
+                href={paths.profile.root}
               >
                 Settings
               </Link>

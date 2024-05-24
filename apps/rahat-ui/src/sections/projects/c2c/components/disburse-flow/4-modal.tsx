@@ -3,13 +3,11 @@ import {
   Dialog,
   DialogClose,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dialog';
-import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import Link from 'next/link';
 
 export default function Modal4() {

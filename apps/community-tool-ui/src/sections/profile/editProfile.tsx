@@ -23,16 +23,13 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { Gender } from '@rahataid/community-tool-sdk/enums';
 import { User } from '@rumsan/sdk/types';
-import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
 type Iprops = {
   userDetail: User | undefined;
 };
 export default function EditProfile({ userDetail }: Iprops) {
-  //   const updateUser = useCommunityUserUpdate();
   const updateUser = useUpdateMe();
-  const router = useRouter();
   const FormSchema = z.object({
     name: z.string().min(2, { message: 'Name must be at least 4 character' }),
     email: z.string(),

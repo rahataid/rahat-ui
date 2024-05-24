@@ -1,3 +1,4 @@
+'use client';
 import { UUID } from 'crypto';
 import { useAAStationsStore } from './trigger-statements.store';
 import { useProjectAction } from '../../projects/projects.service';
@@ -214,23 +215,24 @@ export const useActivateTrigger = () => {
     timer: 3000,
   });
   return useMutation({
-    mutationFn: async (
-      { projectUUID, activatePayload }
-        : {
-          projectUUID: UUID, activatePayload: {
-            repeatKey: string | string[],
-            notes: string,
-            triggerDocuments: Array<{ mediaURL: string, fileName: string }>
-          }
-        }
-    ) => {
+    mutationFn: async ({
+      projectUUID,
+      activatePayload,
+    }: {
+      projectUUID: UUID;
+      activatePayload: {
+        repeatKey: string | string[];
+        notes: string;
+        triggerDocuments: Array<{ mediaURL: string; fileName: string }>;
+      };
+    }) => {
       return q.mutateAsync({
         uuid: projectUUID,
         data: {
           action: 'aaProject.triggers.activate',
-          payload: activatePayload
-        }
-      })
+          payload: activatePayload,
+        },
+      });
     },
     onSuccess: () => {
       q.reset();
@@ -249,5 +251,5 @@ export const useActivateTrigger = () => {
         text: errorMessage,
       });
     },
-  })
-}
+  });
+};

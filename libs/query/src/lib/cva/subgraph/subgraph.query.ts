@@ -1,3 +1,4 @@
+'use client';
 import { useCVASubgraph } from './subgraph.provider';
 import { useQuery } from '@tanstack/react-query';
 import { useRSQuery } from '@rumsan/react-query';

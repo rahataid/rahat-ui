@@ -1,3 +1,4 @@
+'use client';
 import { CreateProjectPayload } from '@rahat-ui/types';
 import { Beneficiary, MS_ACTIONS } from '@rahataid/sdk';
 import { getProjectClient } from '@rahataid/sdk/clients';

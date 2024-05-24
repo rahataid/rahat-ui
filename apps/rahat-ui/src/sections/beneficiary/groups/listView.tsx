@@ -23,32 +23,28 @@ import {
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import { ListBeneficiary } from '@rahat-ui/types';
+import { ListBeneficiaryGroup } from '@rahat-ui/types';
 import { useEffect, useState } from 'react';
-import BulkAssignToProjectModal from './components/bulkAssignToProjectModal';
-import CreateGroupModal from './components/createGroupModal';
+// import BulkAssignToProjectModal from './components/bulkAssignToProjectModal';
+// import CreateGroupModal from './components/createGroupModal';
 
 type IProps = {
-  table: Table<ListBeneficiary>;
+  table: Table<ListBeneficiaryGroup>;
   handleBulkAssign: (selectedProject: string) => void;
   isBulkAssigning: boolean;
-  projectModal: any;
   groupModal: any;
   projects: any;
   handleFilterProjectSelect: (selectedProject: string) => void;
   filters: Record<string, any>;
-  handleCreateGroup: any;
 };
 
 export default function ListView({
   table,
   handleBulkAssign,
   isBulkAssigning,
-  projectModal,
   projects,
   handleFilterProjectSelect,
   filters,
-  handleCreateGroup,
   groupModal,
 }: IProps) {
   const [selectedProject, setSelectedProject] = useState<null | Record<
@@ -87,24 +83,18 @@ export default function ListView({
 
   return (
     <>
-      <BulkAssignToProjectModal
+      {/* <BulkAssignToProjectModal
         handleSubmit={handleBulkAssign}
         projectModal={projectModal}
         selectedBeneficiaries={table
           .getSelectedRowModel()
           .rows.map((row) => row.original.walletAddress)}
-      />
-      <CreateGroupModal
-        handleSubmit={handleCreateGroup}
-        groupModal={groupModal}
-        selectedBeneficiaries={table
-          .getSelectedRowModel()
-          .rows.map((row) => row.original.uuid)}
-      />
+      />*/}
+
       <div className="-mt-2 p-2 bg-secondary">
         <div className="flex items-center mb-2">
           <Input
-            placeholder="Filter beneficiary..."
+            placeholder="Filter beneficiary groups..."
             value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
             onChange={(event) =>
               table.getColumn('name')?.setFilterValue(event.target.value)
@@ -165,23 +155,17 @@ export default function ListView({
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button className="ml-2">
-                  {table.getSelectedRowModel().rows.length} - Beneficiary
+                  {table.getSelectedRowModel().rows.length} - Beneficiary Groups
                   Selected
                   <ChevronDown className="ml-1" strokeWidth={1.5} />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuItem
-                  onClick={projectModal.onTrue}
-                  disabled={isBulkAssigning}
+                // onClick={projectModal.onTrue}
+                // disabled={isBulkAssigning}
                 >
                   Bulk Assign Project
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={groupModal.onTrue}
-                  // disabled={isBulkAssigning}
-                >
-                  Create Group
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

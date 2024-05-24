@@ -7,6 +7,7 @@ import {
   PROJECT_SETTINGS_KEYS,
   useAssignClaimsToBeneficiary,
   useProjectSettingsStore,
+  useReadCvaProjectBeneficiaryClaims,
 } from '@rahat-ui/query';
 import {
   Tabs,
@@ -42,6 +43,7 @@ import {
 import { truncateEthAddress } from '@rumsan/sdk/utils';
 import { Copy, CopyCheck, Minus, MoreVertical, Trash2 } from 'lucide-react';
 import AssignToken from './assign-token.modal';
+import { UUID } from 'crypto';
 
 type IProps = {
   beneficiaryDetails: any;
@@ -52,13 +54,28 @@ export default function BeneficiaryDetail({
   beneficiaryDetails,
   closeSecondPanel,
 }: IProps) {
-  const { id } = useParams();
+  const { id } = useParams() as { id: UUID };
   const contractSettings = useProjectSettingsStore(
     (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT] || null,
   );
 
-  console.log('beneficiaryDetails', beneficiaryDetails);
   const assignToken = useAssignClaimsToBeneficiary();
+
+  const assignedTokens = useReadCvaProjectBeneficiaryClaims({
+    args: [beneficiaryDetails?.walletAddress],
+    address: contractSettings?.cvaproject?.address,
+    query: {
+      select(data) {
+        return data.toString() || 'N/a';
+      },
+    },
+  });
+
+  console.log(
+    'assignedTokens',
+    assignedTokens.data,
+    beneficiaryDetails?.walletAddress,
+  );
 
   const [activeTab, setActiveTab] = useState<'details' | 'edit'>('details');
   const [walletAddressCopied, setWalletAddressCopied] = useState(false);
@@ -99,11 +116,16 @@ export default function BeneficiaryDetail({
         clickToCopy={clickToCopy}
         walletAddressCopied={walletAddressCopied}
         handleAssignSubmit={handleAssignSubmit}
+        assignLoading={assignToken.isPending}
       />
       <Tabs defaultValue="details" value={activeTab}>
         <TabsNavigation handleTabChange={handleTabChange} />
         <TabsContent value="details">
-          <BeneficiaryInfo beneficiaryDetails={beneficiaryDetails} />
+          <BeneficiaryInfo
+            beneficiaryDetails={beneficiaryDetails}
+            assignedTokensCount={assignedTokens.data as string}
+            tokensClaimedCount={'N/a'}
+          />
         </TabsContent>
         <TabsContent value="transaction">
           <TransactionTab />
@@ -206,6 +228,8 @@ type IDetailsSectionProps = {
   clickToCopy: VoidFunction;
   walletAddressCopied: boolean;
   handleAssignSubmit: (numberOfTokens: string) => void;
+  assignLoading: boolean;
+  tokensAssigned: string;
 };
 
 function DetailsSection({
@@ -213,6 +237,8 @@ function DetailsSection({
   clickToCopy,
   walletAddressCopied,
   handleAssignSubmit,
+  assignLoading,
+  tokensAssigned,
 }: IDetailsSectionProps) {
   return (
     <div className="p-4 bg-card flex gap-2 justify-between items-center flex-wrap">
@@ -261,6 +287,7 @@ function DetailsSection({
       </div>
       <div>
         <AssignToken
+          loading={assignLoading}
           beneficiary={beneficiaryDetails}
           handleSubmit={handleAssignSubmit}
         />
@@ -286,9 +313,15 @@ function TabsNavigation({ handleTabChange }: ITabsNavigationProps) {
 
 type IBeneficiaryInfoProps = {
   beneficiaryDetails: any;
+  assignedTokensCount: string;
+  tokensClaimedCount: string;
 };
 
-function BeneficiaryInfo({ beneficiaryDetails }: IBeneficiaryInfoProps) {
+function BeneficiaryInfo({
+  beneficiaryDetails,
+  assignedTokensCount,
+  tokensClaimedCount,
+}: IBeneficiaryInfoProps) {
   return (
     <>
       <div className="flex flex-col gap-2 p-2">
@@ -329,13 +362,13 @@ function BeneficiaryInfo({ beneficiaryDetails }: IBeneficiaryInfoProps) {
           <div className="mt-2">
             <div className="flex items-center justify-between text-sm">
               <p className="font-light">Token Assigned</p>
-              <p className="text-primary">12</p>
+              <p className="text-primary">{assignedTokensCount}</p>
             </div>
           </div>
           <div className="mt-2">
             <div className="flex items-center justify-between text-sm">
               <p className="font-light">Token Claimed</p>
-              <p className="text-primary">12</p>
+              <p className="text-primary">{tokensClaimedCount}</p>
             </div>
           </div>
         </CardContent>

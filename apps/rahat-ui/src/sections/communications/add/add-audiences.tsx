@@ -116,7 +116,7 @@ const AddAudience: FC<AddAudienceProps> = ({
           id: item?.piiData?.beneficiaryId,
           phone: item?.piiData?.phone,
           email: item?.piiData?.email,
-          sid: item?.Beneficiary?.qrSid,
+          url: item?.Beneficiary?.qrUrl,
         }))
       );
     else return [];

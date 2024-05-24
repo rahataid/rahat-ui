@@ -11,7 +11,7 @@ export const useAudienceColumns = (
   createAudience: any,
   setSelectedRows: any,
 ) => {
-  const handleCreateAudience = (item: TPIIData & { sid: string }) => {
+  const handleCreateAudience = (item: TPIIData & { url: string }) => {
     const checkAudienceExist = audienceData?.data.some(
       (audience: Audience) => audience?.details?.phone === item.phone,
     );
@@ -22,7 +22,7 @@ export const useAudienceColumns = (
           name: item.name,
           phone: item.phone,
           email: item.email,
-          sid: item?.sid,
+          url: item?.url,
         },
       });
     }
@@ -40,7 +40,7 @@ export const useAudienceColumns = (
               beneficiaryData?.data?.map((item) => {
                 handleCreateAudience({
                   ...item.piiData,
-                  sid: item?.Beneficiary?.qrSid,
+                  url: item?.Beneficiary?.qrUrl,
                 });
                 setSelectedRows((prevSelectedRows: SelectedRowType[]) => [
                   ...prevSelectedRows,

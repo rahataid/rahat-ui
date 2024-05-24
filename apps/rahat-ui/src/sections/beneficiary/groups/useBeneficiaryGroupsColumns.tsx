@@ -1,29 +1,31 @@
 'use client';
 
 import { ColumnDef } from '@tanstack/react-table';
-import { useSecondPanel } from 'apps/rahat-ui/src/providers/second-panel-provider';
-// import { useSecondPanel } from '../../providers/second-panel-provider';
 import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
-import { Eye } from 'lucide-react';
-// import BeneficiaryDetail from './beneficiaryDetail';
+import { Eye, MoreVertical } from 'lucide-react';
+import { ListBeneficiaryGroup } from '@rahat-ui/types';
 import {
-  Tooltip,
-  TooltipProvider,
-  TooltipTrigger,
-  TooltipContent,
-} from '@rahat-ui/shadcn/src/components/ui/tooltip';
-import { ListBeneficiary, ListBeneficiaryGroup } from '@rahat-ui/types';
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
+import AssignBeneficiaryToProjectModal from './assignToProjectModal';
+import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
+import { useSecondPanel } from 'apps/rahat-ui/src/providers/second-panel-provider';
+import BeneficiaryGroupDetail from './beneficiaryGroupDetail';
 
 export const useBeneficiaryGroupsTableColumns = () => {
+  // const projectModal = useBoolean();
+
   const { setSecondPanelComponent, closeSecondPanel } = useSecondPanel();
 
   const openSplitDetailView = (rowDetail: ListBeneficiaryGroup) => {
     setSecondPanelComponent(
-      <p>second component</p>,
-      // <BeneficiaryDetail
-      //   beneficiaryDetail={rowDetail}
-      //   closeSecondPanel={closeSecondPanel}
-      // />,
+      <BeneficiaryGroupDetail
+        beneficiaryGroupDetail={rowDetail}
+        closeSecondPanel={closeSecondPanel}
+      />,
     );
   };
 
@@ -77,12 +79,16 @@ export const useBeneficiaryGroupsTableColumns = () => {
       enableHiding: false,
       cell: ({ row }) => {
         return (
-          <Eye
-            size={20}
-            strokeWidth={1.5}
-            className="cursor-pointer hover:text-primary"
-            onClick={() => openSplitDetailView(row.original)}
-          />
+          <>
+            <div className="flex gap-3 items-center">
+              <Eye
+                size={20}
+                strokeWidth={1.5}
+                className="cursor-pointer hover:text-primary"
+                onClick={() => openSplitDetailView(row.original)}
+              />
+            </div>
+          </>
         );
       },
     },

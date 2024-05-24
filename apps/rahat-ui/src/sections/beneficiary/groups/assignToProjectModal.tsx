@@ -1,0 +1,102 @@
+'use client';
+
+import { useAssignBenToProject, useProjectList } from '@rahat-ui/query';
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@rahat-ui/shadcn/components/dialog';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@rahat-ui/shadcn/components/select';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { ListBeneficiaryGroup } from '@rahat-ui/types';
+import { UUID } from 'crypto';
+import * as React from 'react';
+
+type ProjectModalType = {
+  value: boolean;
+  onToggle: () => void;
+  onFalse: () => void;
+};
+
+type IProps = {
+  beneficiaryGroupDetail: ListBeneficiaryGroup;
+  projectModal: ProjectModalType;
+};
+
+export default function AssignBeneficiaryToProjectModal({
+  projectModal,
+  beneficiaryGroupDetail,
+}: IProps) {
+  const projectsList = useProjectList({ page: 1, perPage: 10 });
+
+  const [selectedProject, setSelectedProject] = React.useState<UUID>();
+
+  const handleProjectChange = (d: UUID) => setSelectedProject(d);
+
+  const handleAssignProject = async () => {
+    if (!selectedProject) return alert('Please select a project');
+    // await assignBeneficiary.mutateAsync({
+    //   beneficiaryUUID: beneficiaryDetail?.uuid,
+    //   projectUUID: selectedProject,
+    // });
+  };
+
+  // React.useEffect(() => {
+  //   assignBeneficiary.isSuccess && projectModal.onFalse();
+  // }, [assignBeneficiary]);
+
+  return (
+    <Dialog open={projectModal.value} onOpenChange={projectModal.onToggle}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Assign Project</DialogTitle>
+          <DialogDescription>
+            Select the project to be assigned to the beneficiary group
+          </DialogDescription>
+        </DialogHeader>
+        <div>
+          <Select onValueChange={handleProjectChange}>
+            <SelectTrigger>
+              <SelectValue placeholder="Projects" />
+            </SelectTrigger>
+            <SelectContent>
+              {projectsList.data?.data.length &&
+                projectsList.data?.data.map((project) => {
+                  return (
+                    <SelectItem key={project.uuid} value={project.uuid as UUID}>
+                      {project.name}
+                    </SelectItem>
+                  );
+                })}
+            </SelectContent>
+          </Select>
+        </div>
+        <DialogFooter className="sm:justify-end">
+          <DialogClose asChild>
+            <Button type="button" variant="ghost">
+              Close
+            </Button>
+          </DialogClose>
+          <Button
+            onClick={handleAssignProject}
+            type="button"
+            variant="ghost"
+            className="text-primary"
+          >
+            Assign
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}

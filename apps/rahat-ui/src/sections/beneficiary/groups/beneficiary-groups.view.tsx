@@ -51,13 +51,14 @@ function BeneficiaryGroupsView() {
     ...pagination,
     ...filters,
   });
+  // const projectModal = useBoolean();
+  const groupModal = useBoolean();
 
   const createBeneficiaryGroup = useCreateBeneficiaryGroup();
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const columns = useBeneficiaryGroupsTableColumns();
   const { closeSecondPanel, setSecondPanelComponent } = useSecondPanel();
-  const projectModal = useBoolean();
-  const groupModal = useBoolean();
+
   const bulkAssign = useBulkAssignBenToProject();
   const projectsList = useProjectList({
     page: 1,
@@ -121,7 +122,7 @@ function BeneficiaryGroupsView() {
           table={table}
           handleBulkAssign={handleBulkAssign}
           isBulkAssigning={false}
-          projectModal={projectModal}
+          // projectModal={projectModal}
           groupModal={groupModal}
           projects={projectsList?.data?.data || []}
           handleFilterProjectSelect={handleFilterProjectSelect}

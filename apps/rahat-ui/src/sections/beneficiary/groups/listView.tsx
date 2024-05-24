@@ -25,6 +25,7 @@ import {
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { ListBeneficiaryGroup } from '@rahat-ui/types';
 import { useEffect, useState } from 'react';
+import AssignBeneficiaryToProjectModal from './assignToProjectModal';
 // import BulkAssignToProjectModal from './components/bulkAssignToProjectModal';
 // import CreateGroupModal from './components/createGroupModal';
 
@@ -32,7 +33,7 @@ type IProps = {
   table: Table<ListBeneficiaryGroup>;
   handleBulkAssign: (selectedProject: string) => void;
   isBulkAssigning: boolean;
-  projectModal: any;
+  // projectModal: any;
   groupModal: any;
   projects: any;
   handleFilterProjectSelect: (selectedProject: string) => void;
@@ -43,7 +44,7 @@ export default function ListView({
   table,
   handleBulkAssign,
   isBulkAssigning,
-  projectModal,
+  // projectModal,
   projects,
   handleFilterProjectSelect,
   filters,
@@ -92,6 +93,7 @@ export default function ListView({
           .getSelectedRowModel()
           .rows.map((row) => row.original.walletAddress)}
       />*/}
+
       <div className="-mt-2 p-2 bg-secondary">
         <div className="flex items-center mb-2">
           <Input
@@ -156,19 +158,19 @@ export default function ListView({
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button className="ml-2">
-                  {table.getSelectedRowModel().rows.length} - Beneficiary
+                  {table.getSelectedRowModel().rows.length} - Beneficiary Groups
                   Selected
                   <ChevronDown className="ml-1" strokeWidth={1.5} />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
+              {/* <DropdownMenuContent align="end">
                 <DropdownMenuItem
                   onClick={projectModal.onTrue}
                   disabled={isBulkAssigning}
                 >
                   Bulk Assign Project
                 </DropdownMenuItem>
-              </DropdownMenuContent>
+              </DropdownMenuContent> */}
             </DropdownMenu>
           ) : null}
         </div>

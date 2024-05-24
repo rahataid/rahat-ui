@@ -152,10 +152,10 @@ function BeneficiaryDetailTableView() {
   const [voucherType, setVoucherType] = useState('NOT_ASSIGNED');
 
   useEffect(() => {
-    if(params) {
-      setVoucherType(params)
+    if (params) {
+      setVoucherType(params);
     }
-  }, [params])  
+  }, [params]);
 
   const projectBeneficiaries = useProjectBeneficiaries({
     page: pagination.page,
@@ -226,17 +226,16 @@ function BeneficiaryDetailTableView() {
 
   const handleBulkAssign = async () => {
     setisTransacting(true);
-    try{
+    try {
       const txnHash = await assignVoucher.mutateAsync({
-      addresses: selectedRowAddresses as `0x${string}`[],
-      noOfTokens: 1,
-      contractAddress: contractAddress.elproject.address,
-    });
-    setTransactionHash(txnHash as `0x-${string}`);
-    handleTokenAssignModalClose();
-  }
-    catch(err){
-      setisTransacting(false)
+        addresses: selectedRowAddresses as `0x${string}`[],
+        noOfTokens: 1,
+        contractAddress: contractAddress.elproject.address,
+      });
+      setTransactionHash(txnHash as `0x-${string}`);
+      handleTokenAssignModalClose();
+    } catch (err) {
+      setisTransacting(false);
     }
   };
 
@@ -307,7 +306,7 @@ function BeneficiaryDetailTableView() {
                 onClick={() => {
                   setVoucherType('NOT_ASSIGNED');
                   resetSelectedListItems();
-                  route.replace(`${pathname}?voucherType=NOT_ASSIGNED${hash}`)
+                  route.replace(`${pathname}?voucherType=NOT_ASSIGNED${hash}`);
                 }}
                 value="NOT_ASSIGNED"
               >
@@ -317,7 +316,7 @@ function BeneficiaryDetailTableView() {
                 onClick={() => {
                   setVoucherType('FREE_VOUCHER');
                   resetSelectedListItems();
-                  route.replace(`${pathname}?voucherType=FREE_VOUCHER${hash}`)
+                  route.replace(`${pathname}?voucherType=FREE_VOUCHER${hash}`);
                 }}
                 value="FREE_VOUCHER"
               >
@@ -327,7 +326,9 @@ function BeneficiaryDetailTableView() {
                 onClick={() => {
                   setVoucherType('REFERRED_VOUCHER');
                   resetSelectedListItems();
-                  route.replace(`${pathname}?voucherType=REFERRED_VOUCHER${hash}`)
+                  route.replace(
+                    `${pathname}?voucherType=REFERRED_VOUCHER${hash}`,
+                  );
                 }}
                 value="REFERRED_VOUCHER"
               >

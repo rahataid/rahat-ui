@@ -34,6 +34,7 @@ export default function AddSetting() {
     handleSubmit,
     control,
     formState: { errors },
+    reset,
   } = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -74,7 +75,9 @@ export default function AddSetting() {
       isPrivate: data.isPrivate,
     };
     await communitySetting.mutateAsync(finalSettingData);
+    reset();
   };
+
   return (
     <form onSubmit={handleSubmit(handleAddSetting)}>
       <div className="p-4 h-add rounded border bg-white">

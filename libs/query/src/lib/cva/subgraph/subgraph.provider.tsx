@@ -1,3 +1,4 @@
+'use client';
 import { Client } from '@urql/core';
 import React, { FC, createContext, useContext } from 'react';
 

@@ -182,14 +182,6 @@ export default function BeneficiaryTable() {
                       <TableRow
                         key={row.id}
                         data-state={row.getIsSelected() && 'selected'}
-                        onClick={() => {
-                          setSecondPanelComponent(
-                            <BeneficiaryDetail
-                              beneficiaryDetails={row.original}
-                              closeSecondPanel={closeSecondPanel}
-                            />,
-                          );
-                        }}
                       >
                         {row.getVisibleCells().map((cell) => (
                           <TableCell key={cell.id}>

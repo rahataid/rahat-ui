@@ -327,16 +327,8 @@ function BeneficiaryInfo({
       <div className="flex flex-col gap-2 p-2">
         <Card className="shadow rounded">
           <CardContent className="pt-6">
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-3 gap-3">
               <div>
-                <p className="font-light text-base">
-                  {beneficiaryDetails?.type}
-                </p>
-                <p className="text-sm font-normal text-muted-foreground">
-                  Beneficiary Type
-                </p>
-              </div>
-              <div className="text-right">
                 <p className="font-light text-base">
                   {beneficiaryDetails?.gender}
                 </p>
@@ -354,7 +346,7 @@ function BeneficiaryInfo({
               </div>
               <div className="text-right">
                 <p className="font-light text-base">
-                  {beneficiaryDetails?.phone}
+                  {beneficiaryDetails?.phone || 'N/A'}
                 </p>
                 <p className="text-sm font-normal text-muted-foreground">
                   Phone

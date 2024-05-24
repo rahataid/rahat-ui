@@ -1,5 +1,6 @@
+'use client';
 import { useEffect } from 'react';
-import { useQuery  } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { useProjectAction } from '../../projects';
 import { useStatsStore } from './stats.store';
 import { UUID } from 'crypto';
@@ -7,7 +8,7 @@ import { UUID } from 'crypto';
 export const usePhasesStats = (uuid: UUID) => {
   const q = useProjectAction();
   const { setPhasesStats } = useStatsStore((state) => ({
-    setPhasesStats: state.setPhasesStats
+    setPhasesStats: state.setPhasesStats,
   }));
 
   const query = useQuery({
@@ -25,11 +26,10 @@ export const usePhasesStats = (uuid: UUID) => {
   });
 
   useEffect(() => {
-    console.log("kkkkk",query)
+    console.log('kkkkk', query);
     if (query.data) {
-      setPhasesStats(query?.data)
+      setPhasesStats(query?.data);
     }
   }, [query.data]);
   return query;
 };
-

@@ -1,3 +1,4 @@
+'use client';
 import { Pagination } from '@rumsan/sdk/types';
 import { useState, useEffect, useMemo, useCallback } from 'react';
 

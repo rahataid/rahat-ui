@@ -1,3 +1,4 @@
+'use client';
 import { useC2CSubgraph } from './subgraph.provider';
 import { useQuery } from '@tanstack/react-query';
 import { useRSQuery } from '@rumsan/react-query';
@@ -9,7 +10,7 @@ export const useProjectDetails = (projectAddress: string) => {
   const { subgraphClient } = useC2CSubgraph();
   const { queryClient } = useRSQuery();
   const setProjectDetails = useC2CProjectSubgraphStore(
-    (state) => state.setProjectDetails
+    (state) => state.setProjectDetails,
   );
 
   const query = useQuery(
@@ -23,7 +24,7 @@ export const useProjectDetails = (projectAddress: string) => {
         return data;
       },
     },
-    queryClient
+    queryClient,
   );
 
   useEffect(() => {

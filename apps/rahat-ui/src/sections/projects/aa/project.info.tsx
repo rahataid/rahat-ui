@@ -1,9 +1,9 @@
 import { FC } from 'react';
-import Image from 'next/image';
 import { Project } from '@rahataid/sdk/project/project.types';
 import EditButton from '../components/edit.btn';
 import DeleteButton from '../components/delete.btn';
 import Back from '../components/back';
+import { CarouselDemo } from '../components/carousel.demo';
 
 type ProjectInfoProps = {
   project: Project;
@@ -57,13 +57,7 @@ const ProjectInfo: FC<ProjectInfoProps> = ({ project }) => {
           type={project?.type ?? 'N/A'}
           description={project?.description ?? 'N/A'}
         />
-        <Image
-          className="rounded"
-          src="/svg/aa-project.svg"
-          alt="project"
-          height={100}
-          width={500}
-        />
+        <CarouselDemo />
       </div>
     </>
   );

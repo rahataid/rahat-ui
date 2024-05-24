@@ -1,8 +1,9 @@
 'use client';
 
-import DataCard from '../../../components/dataCard';
-import { Users, CircleDollarSign } from 'lucide-react';
-import { ProjectChart } from 'apps/rahat-ui/src/sections/projects';
+import {
+  PROJECT_SETTINGS_KEYS,
+  useProjectSettingsStore,
+} from '@rahat-ui/query';
 import {
   Card,
   CardContent,
@@ -10,8 +11,33 @@ import {
   CardHeader,
   CardTitle,
 } from '@rahat-ui/shadcn/src/components/ui/card';
+import {
+  useReadRahatTokenBalanceOf,
+  useWatchRahatTokenEvent,
+} from 'apps/rahat-ui/src/hooks/el/contracts/token';
+import { ProjectChart } from 'apps/rahat-ui/src/sections/projects';
+import { CircleDollarSign, Users } from 'lucide-react';
+import { useParams } from 'next/navigation';
+import DataCard from '../../../components/dataCard';
+import { useEffect } from 'react';
 
 export default function ProjectDetails() {
+  const { id } = useParams();
+  const contractSettings = useProjectSettingsStore(
+    (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT],
+  );
+  //temp contract call
+  const tokenBalance = useReadRahatTokenBalanceOf({
+    address: contractSettings?.rahattoken.address as `0x${string}`,
+    args: [contractSettings?.rahattoken.address as `0x${string}`],
+  });
+
+  // useEffect(() => {
+  //   return useWatchRahatTokenEvent({
+  //     address: contractSettings?.rahattoken.address as `0x${string}`,
+  //   });
+  // }, [contractSettings?.rahattoken.address]);
+
   return (
     <div className="p-4 bg-slate-100">
       <Card className="shadow-sm mb-4">
@@ -51,34 +77,28 @@ export default function ProjectDetails() {
         <DataCard
           className="h-40"
           title="Beneficiaries"
-          number1={'12'}
-          subTitle1="Total"
-          number2={'12'}
-          subTitle2="Total"
+          number={'0'}
           Icon={Users}
+          subTitle="Total"
         />
         <DataCard
           className=""
           title="Balance"
-          number1={'12'}
-          subTitle1="Total"
-          number2={'12'}
-          subTitle2="Total"
+          subTitle="Total"
+          number={tokenBalance.data?.toString()}
           Icon={CircleDollarSign}
         />
 
         <DataCard
-          className=""
+          className="h-40"
           title="Distributed"
-          number1={'12'}
-          subTitle1="Total"
-          number2={'12'}
-          subTitle2="Total"
+          number={'0'}
           Icon={Users}
+          subTitle="Total"
         />
       </div>
 
-      <ProjectChart />
+      <ProjectChart chartData={[]} />
     </div>
   );
 }

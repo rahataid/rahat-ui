@@ -40,7 +40,7 @@ export const useCVAProjectSubgraphStore: UseBoundStore<
     devtoolsEnabled: true,
     persistOptions: {
       name: 'CVA-project-subgraph',
-      getStorage: () => localStore,
+      storage: localStore,
     },
   },
 );

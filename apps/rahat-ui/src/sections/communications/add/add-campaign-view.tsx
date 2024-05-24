@@ -137,6 +137,7 @@ const AddCampaignView = () => {
         type: data.campaignType,
         details: additionalData,
         status: 'ONGOING',
+        isQrSender:data.isQrSender
       })
       .then((data) => {
         if (data) {

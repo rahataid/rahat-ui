@@ -1,5 +1,6 @@
 import { useRouter } from 'next/navigation';
 
+import { useCommunityBeneficiaryRemove } from '@rahat-ui/community-query';
 import {
   Tabs,
   TabsContent,
@@ -13,15 +14,13 @@ import {
   TooltipTrigger,
 } from '@rahat-ui/shadcn/components/tooltip';
 import { ListBeneficiary } from '@rahataid/community-tool-sdk/beneficiary';
+import { UUID } from 'crypto';
 import { Minus, Trash2 } from 'lucide-react';
+import { useEffect } from 'react';
+import Swal from 'sweetalert2';
+import useFormStore from '../../formBuilder/form.store';
 import EditBeneficiary from './editBeneficiary';
 import InfoCards from './infoCards';
-import Swal from 'sweetalert2';
-import { useCommunityBeneficiaryRemove } from '@rahat-ui/community-query';
-import { toast } from 'react-toastify';
-import { UUID } from 'crypto';
-import useFormStore from '../../formBuilder/form.store';
-import { useEffect } from 'react';
 
 type IProps = {
   data: ListBeneficiary;
@@ -58,13 +57,8 @@ export default function BeneficiaryDetail({ data, closeSecondPanel }: IProps) {
       },
     }).then(async (result) => {
       if (result.isConfirmed) {
-        try {
-          await deleteCommunityBeneficiary.mutateAsync(data?.uuid as UUID);
-          closeSecondPanel();
-        } catch (error) {
-          toast.error('Error deleting Beneficiary');
-          console.error('Error deleting Beneficiary:', error);
-        }
+        await deleteCommunityBeneficiary.mutateAsync(data?.uuid as UUID);
+        closeSecondPanel();
       } else if (result.isDenied) {
         Swal.fire('Cancelled', `The Beneficiary wasn't deleted.`, 'error');
       }

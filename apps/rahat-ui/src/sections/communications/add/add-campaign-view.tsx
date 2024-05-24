@@ -79,6 +79,7 @@ const AddCampaignView = () => {
   });
 
   const debouncedHandleSubmit = debounce((data) => {
+    if(isSubmitting) return;
     if (selectedRows.length === 0) {
       setAudienceRequiredError(true);
       setIsSubmitting(false);
@@ -143,8 +144,8 @@ const AddCampaignView = () => {
         if (data) {
           setIsSubmitting(false);
 
-          toast.success('Campaign Created Success.');
           router.push(paths.dashboard.communication.text);
+          toast.success('Campaign Created Success.');
         }
       })
       .catch((e) => {

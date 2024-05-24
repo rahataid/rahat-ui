@@ -40,6 +40,7 @@ import { benType } from '../../projects/el/beneficiary/beneficiary.table';
 import { useAudienceColumns } from './use-audience-columns';
 import { useAudienceTable } from './use-audience-table';
 import { UUID } from 'crypto';
+import TableLoader from 'apps/rahat-ui/src/components/table.loader';
 
 type AddAudienceProps = {
   form: UseFormReturn<z.infer<any>>;
@@ -70,7 +71,7 @@ const AddAudience: FC<AddAudienceProps> = ({
 
   const { filters, setFilters } = usePagination();
 
-  const { data: beneficiaryData } = useBeneficiaryPii({
+  const { data: beneficiaryData,isLoading } = useBeneficiaryPii({
     ...filters,
   });
   const createAudience = useCreateAudience();
@@ -199,6 +200,7 @@ const AddAudience: FC<AddAudienceProps> = ({
         name="audiences"
         render={() => (
           <FormItem>
+            {!isLoading ?
             <div className="rounded border mb-8 bg-card">
               <Table>
                 <ScrollArea className="h-[calc(100vh-460px)]">
@@ -250,7 +252,8 @@ const AddAudience: FC<AddAudienceProps> = ({
                   </TableBody>
                 </ScrollArea>
               </Table>
-            </div>
+            </div>:
+            <TableLoader/>}
             <FormMessage />
           </FormItem>
         )}

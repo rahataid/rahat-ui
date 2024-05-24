@@ -149,6 +149,7 @@ export default function EditFieldDefinition({
                       <Label className="text-xs font-medium">Name</Label>
                       <FormControl>
                         <Input
+                          disabled={true}
                           type="text"
                           placeholder="Name"
                           {...field}

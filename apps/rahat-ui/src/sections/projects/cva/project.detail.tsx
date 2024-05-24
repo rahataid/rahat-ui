@@ -1,85 +1,56 @@
-'use client';
+import { Project } from '@rahataid/sdk/project/project.types';
+import { FC } from 'react';
 
-import {
-  PROJECT_SETTINGS_KEYS,
-  useProjectSettingsStore,
-  useReadRahatTokenBalanceOf,
-} from '@rahat-ui/query';
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@rahat-ui/shadcn/src/components/ui/card';
-import { useProjectAction } from '@rahat-ui/query';
-import DataCard from 'apps/rahat-ui/src/components/dataCard';
-import { CircleDollarSign, Users } from 'lucide-react';
-
-type IProps = {
-  project: any;
+type ProjectInfoProps = {
+  project: Project;
 };
 
-export default function ProjectDetails({ project }: IProps) {
-  const projectClient = useProjectAction();
-  console.log('projectClient', projectClient?.data);
+const ProjectInfo: FC<ProjectInfoProps> = ({ project }) => {
+  const renderExtras = (extras: JSON | string | Record<string, any>) => {
+    if (typeof extras === 'string') {
+      return <p className="font-light">{extras}</p>;
+    }
+    return Object.keys(extras).map((key) => {
+      const value = (extras as Record<string, any>)[key];
 
+      if (key === 'treasury') {
+        return null;
+      }
+      return (
+        <div key={key}>
+          {typeof value === 'object' && value !== null ? (
+            renderExtras(value)
+          ) : (
+            <>
+              <p className="font-medium text-primary">{key}</p>
+              <p className="font-light">{String(value)}</p>
+            </>
+          )}
+        </div>
+      );
+    });
+  };
   return (
-    <div className="p-4 bg-slate-100">
-      <Card className="shadow-sm mb-4">
-        <CardHeader>
-          <CardTitle>{project?.name}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex justify-between gap-4 flex-wrap">
-            <div>
-              <p className="font-medium">Achyut</p>
-              <p className="font-light">Project Manager</p>
-            </div>
-            <div>
-              <p className="font-medium">12</p>
-              <p className="font-light">Vendors</p>
-            </div>
-            <div>
-              <p className="font-medium">01 Feb 2024</p>
-              <p className="font-light">Start Date</p>
-            </div>
-            <div>
-              <p className="font-medium">24 Feb 2024</p>
-              <p className="font-light">End Date</p>
-            </div>
-          </div>
-        </CardContent>
-        <CardFooter>
-          <p>{project?.description}</p>
-        </CardFooter>
-      </Card>
-      <div className="grid md:grid-cols-3 gap-4">
-        <DataCard
-          className="h-40"
-          title="Beneficiaries"
-          number={'0'}
-          Icon={Users}
-          subTitle="Total"
-        />
-        <DataCard
-          className=""
-          title="Balance"
-          subTitle="Total"
-          number={'12'}
-          Icon={CircleDollarSign}
-        />
-
-        <DataCard
-          className="h-40"
-          title="Distributed"
-          number={'0'}
-          Icon={Users}
-          subTitle="Total"
-        />
+    <div className="grid grid-cols-1 rounded-sm bg-card p-4 mb-2 shadow">
+      <div>
+        <p className="font-medium text-primary">{project?.name}</p>
       </div>
-
-      {/* <ProjectChart chartData={[]} /> */}
+      <div className="flex items-center flex-wrap mt-4 sm:mt-6 gap-10 md:gap-32">
+        {renderExtras(project?.extras || {})}
+        <div>
+          <p className="font-medium text-primary">{project?.status}</p>
+          <p className="font-light">Status</p>
+        </div>
+        <div>
+          <p className="font-medium text-primary">{project?.type}</p>
+          <p className="font-light">Type</p>
+        </div>
+      </div>
+      <div>
+        <p className="mt-4 sm:mt-8 sm:w-2/3">{project?.description}</p>
+      </div>
     </div>
   );
-}
+};
+
+export default ProjectInfo;

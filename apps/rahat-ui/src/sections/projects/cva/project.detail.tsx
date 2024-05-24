@@ -3,6 +3,7 @@
 import {
   PROJECT_SETTINGS_KEYS,
   useProjectSettingsStore,
+  useReadRahatTokenBalanceOf,
 } from '@rahat-ui/query';
 import {
   Card,
@@ -11,25 +12,27 @@ import {
   CardHeader,
   CardTitle,
 } from '@rahat-ui/shadcn/src/components/ui/card';
-import {
-  useReadRahatTokenBalanceOf,
-  useWatchRahatTokenEvent,
-} from 'apps/rahat-ui/src/hooks/el/contracts/token';
 import { ProjectChart } from 'apps/rahat-ui/src/sections/projects';
 import { CircleDollarSign, Users } from 'lucide-react';
 import { useParams } from 'next/navigation';
+import { formatEther } from 'viem';
 import DataCard from '../../../components/dataCard';
-import { useEffect } from 'react';
 
 export default function ProjectDetails() {
   const { id } = useParams();
   const contractSettings = useProjectSettingsStore(
     (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT],
   );
+
   //temp contract call
   const tokenBalance = useReadRahatTokenBalanceOf({
     address: contractSettings?.rahattoken.address as `0x${string}`,
-    args: [contractSettings?.rahattoken.address as `0x${string}`],
+    args: [contractSettings?.cvaproject.address as `0x${string}`],
+    query: {
+      select(data) {
+        return data ? formatEther(data) : 'N/A';
+      },
+    },
   });
 
   // useEffect(() => {

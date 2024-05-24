@@ -17,9 +17,10 @@ import { CircleDollarSign, Users } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import { formatEther } from 'viem';
 import DataCard from '../../../components/dataCard';
+import { UUID } from 'crypto';
 
 export default function ProjectDetails() {
-  const { id } = useParams();
+  const { id } = useParams() as { id: UUID };
   const contractSettings = useProjectSettingsStore(
     (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT],
   );

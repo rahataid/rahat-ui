@@ -10,6 +10,7 @@ import { ColumnDef } from '@tanstack/react-table';
 import { useSecondPanel } from 'apps/rahat-ui/src/providers/second-panel-provider';
 import { ArrowUpDown, MoreHorizontal } from 'lucide-react';
 import { useCallback, useState } from 'react';
+import VendorDetail from './vendors.detail';
 
 export type Payment = {
   id: string;
@@ -29,7 +30,9 @@ export const useCvaVendorsTableColumn = () => {
   };
 
   const openSplitDetailView = useCallback((rowDetail: any) => {
-    setSecondPanelComponent(<h1>Vendor Details</h1>);
+    setSecondPanelComponent(
+      <VendorDetail closeSecondPanel={closeSecondPanel} />,
+    );
   }, []);
 
   const columns: ColumnDef<Payment>[] = [

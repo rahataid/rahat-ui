@@ -21,6 +21,11 @@ export const useTokenMintAndSend = () => {
 
   return useMutation(
     {
+      onSettled(data, error, variables, context) {
+        console.log('data', data);
+        console.log('error', error);
+        console.log('variables', variables, context);
+      },
       onSuccess: () => {
         alert.fire({
           icon: 'success',

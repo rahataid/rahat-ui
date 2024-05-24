@@ -69,7 +69,12 @@ export default function CreateTokenModal() {
           </div>
         </div>
         <DialogFooter>
-          <Button onClick={handleSubmit}>Create</Button>
+          <Button
+            disabled={createToken.isPending || token === '0'}
+            onClick={handleSubmit}
+          >
+            Create
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

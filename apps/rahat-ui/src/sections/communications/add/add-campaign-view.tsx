@@ -33,6 +33,7 @@ const FormSchema = z.object({
   campaignType: z.string({
     required_error: 'Camapign Type is required.',
   }),
+  isQrSender: z.boolean().optional(),
 
   message: z.string().optional(),
   messageSid: z.string().optional(),
@@ -81,7 +82,8 @@ const AddCampaignView = () => {
     if(isSubmitting) return;
     if (selectedRows.length === 0) {
       setAudienceRequiredError(true);
-      return
+      setIsSubmitting(false);
+      return;
     }
     let transportId;
     transportData?.data.map((tdata) => {
@@ -136,6 +138,7 @@ const AddCampaignView = () => {
         type: data.campaignType,
         details: additionalData,
         status: 'ONGOING',
+        isQrSender:data.isQrSender
       })
       .then((data) => {
         if (data) {

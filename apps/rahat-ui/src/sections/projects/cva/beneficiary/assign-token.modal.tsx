@@ -16,15 +16,19 @@ import { useState } from 'react';
 type IProps = {
   beneficiary: any;
   handleSubmit: (numberOfTokens: string) => void;
+  loading: boolean;
 };
 
-export default function AssignToken({ beneficiary, handleSubmit }: IProps) {
+export default function AssignToken({
+  beneficiary,
+  handleSubmit,
+  loading,
+}: IProps) {
   const [token, setToken] = useState('');
   const handleInputChange = (e: any) => {
     setToken(e.target.value);
   };
 
-  console.log('beneficiary', beneficiary);
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -61,7 +65,9 @@ export default function AssignToken({ beneficiary, handleSubmit }: IProps) {
         ) : null}
         <Separator className="my-2" />
         <DialogFooter>
-          <Button onClick={() => handleSubmit(token)}>Assign</Button>
+          <Button disabled={loading} onClick={() => handleSubmit(token)}>
+            Assign
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

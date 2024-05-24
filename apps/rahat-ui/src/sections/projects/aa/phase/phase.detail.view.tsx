@@ -6,18 +6,17 @@ import {
   TabsTrigger,
   TabsContent,
 } from '@rahat-ui/shadcn/src/components/ui/tabs';
-import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
-import { UUID } from 'crypto';
 import TriggerStatementsList from '../trigger-statements/trigger.statements.list';
 import AddButton from '../../components/add.btn';
 import SearchInput from '../../components/search.input';
+import ActivitiesListCard from '../../components/activities.list.card';
+import { UUID } from 'crypto';
 
 export default function PhaseDetailView() {
-  const { id: projectId, phaseId } = useParams();
-  const { data: phaseDetail, isLoading } = useSinglePhase(
-    projectId as UUID,
-    phaseId as UUID,
-  );
+  const params = useParams();
+  const projectId = params.id as UUID;
+  const phaseId = params.phaseId as UUID;
+  const { data: phaseDetail, isLoading } = useSinglePhase(projectId, phaseId);
 
   const handleSearch = () => {};
   return (
@@ -99,7 +98,7 @@ export default function PhaseDetailView() {
                 <SearchInput
                   onSearch={handleSearch}
                   isDisabled={true}
-                  name="Trigger Statements"
+                  name="Trigger Statement"
                 />
                 {/* Add Trigger Statements Btn */}
                 <AddButton
@@ -116,37 +115,11 @@ export default function PhaseDetailView() {
           </div>
         </TabsContent>
         <TabsContent value="activities">
-          <div className="bg-card p-4 rounded">
-            <h1 className="font-semibold text-lg">Activity List</h1>
-            <div>
-              {phaseDetail?.activities?.length ? (
-                phaseDetail?.activities?.map((item: any) => {
-                  return (
-                    <div
-                      key={item.id}
-                      className="p-4 rounded-md bg-secondary mt-4 hover:underline hover:cursor-pointer"
-                    >
-                      <h1 className="font-medium">{item.title}</h1>
-                      <p className="text-muted-foreground text-sm mb-1">
-                        {item.activityType}
-                      </p>
-                      <Badge
-                        className={
-                          item.status === 'NOT_STARTED'
-                            ? 'bg-red-100 text-red-700'
-                            : 'bg-green-100 text-green-700'
-                        }
-                      >
-                        {item.status}
-                      </Badge>
-                    </div>
-                  );
-                })
-              ) : (
-                <p className="text-muted-foreground text-sm">No Activities</p>
-              )}
-            </div>
-          </div>
+          <ActivitiesListCard
+            gridClass="grid-cols-2"
+            projectId={projectId}
+            data={phaseDetail?.activities}
+          />
         </TabsContent>
       </Tabs>
     </div>

@@ -5,7 +5,6 @@ import { useProjectStore } from '@rahat-ui/query';
 
 const ProjectMainView = () => {
   const project = useProjectStore((state) => state.singleProject);
-  console.log('project', project);
 
   return (
     <>

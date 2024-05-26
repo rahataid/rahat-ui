@@ -241,7 +241,17 @@ export const useBeneficiariesGroups = (uuid: UUID, payload: any) => {
 
   useEffect(() => {
     if (query?.data) {
-      setBeneficiariesGroups(query?.data?.data);
+      const benfGroupsFormatted = query?.data?.data?.map((d: any) => {
+        return {
+          ...d,
+          members: d?.groupedBeneficiaries?.map((m: any) => {
+            return m?.Beneficiary
+          })
+        }
+      })
+
+      // setBeneficiariesGroups(query?.data?.data);
+      setBeneficiariesGroups(benfGroupsFormatted);
       setBeneficiariesGroupsMeta(query?.data?.meta);
     }
   }, [query.data]);

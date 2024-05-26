@@ -1,7 +1,11 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useBeneficiariesGroups, useReserveTokenForGroups } from '@rahat-ui/query';
+import {
+  useBeneficiariesGroupStore,
+  useBeneficiariesGroups,
+  useReserveTokenForGroups,
+} from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 
 import {
@@ -22,54 +26,77 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { UUID } from 'crypto';
 import { useParams, useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { isValidPhoneNumber } from 'react-phone-number-input';
 import { z } from 'zod';
 
 export default function AddFundManagementView() {
   const router = useRouter();
   const { id: projectId } = useParams();
+  const [totalToken, setTotalTokens] = useState(0);
+
   const FormSchema = z.object({
     title: z.string().min(2, { message: 'Title must be at least 4 character' }),
-    project: z.string(),
-    tokenValue: z.string(),
-    noOfToken: z.string(),
-    beneficiaryGroup: z.string()
+    numberOfTokens: z.coerce.number(),
+    beneficiaryGroup: z.string(),
+    totalTokensReserved: z.number(),
   });
 
-  const reserveTokenForGroups = useReserveTokenForGroups()
+  const reserveTokenForGroups = useReserveTokenForGroups();
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
       title: '',
-      project: '',
-      tokenValue: '',
-      noOfToken: ''
+      numberOfTokens: 0,
+      totalTokensReserved: 0,
     },
   });
 
-  const beneficiaryGroup = useBeneficiariesGroups(projectId as UUID, {page: 1, perPage: 100})
+  // Watch for changes in the form fields
+  const watchTokens = form.watch('numberOfTokens');
+  const watchBeneficiaryGroup = form.watch('beneficiaryGroup');
 
-  console.log('beneficiary group', beneficiaryGroup)
+  useEffect(() => {
+    const numberOfTokens = Number(watchTokens);
+    const selectedGroup = beneficiariesGroups?.find(
+      (g: any) => g?.uuid === watchBeneficiaryGroup,
+    );
+    if (selectedGroup && numberOfTokens) {
+      const groupMembers = selectedGroup?.members?.length;
+      form.setValue('totalTokensReserved', numberOfTokens * groupMembers);
+    }
+  }, [watchTokens, watchBeneficiaryGroup]);
+
+  useBeneficiariesGroups(projectId as UUID, {
+    page: 1,
+    perPage: 100,
+  });
+
+  const { beneficiariesGroups, beneficiariesGroupsMeta } =
+    useBeneficiariesGroupStore((state) => ({
+      beneficiariesGroups: state.beneficiariesGroups,
+      beneficiariesGroupsMeta: state.beneficiariesGroupsMeta,
+    }));
 
   const handleReserveTokenToGroup = async (
     data: z.infer<typeof FormSchema>,
   ) => {
     const reserveTokenPayload = {
-      uuid: data.beneficiaryGroup,
-      tokens: Number(data.noOfToken),
-      title: data.title
-    }
+      beneficiaryGroupId: data.beneficiaryGroup,
+      numberOfTokens: Number(data.numberOfTokens),
+      title: data.title,
+      totalTokensReserved: data.totalTokensReserved,
+    };
     try {
       await reserveTokenForGroups.mutateAsync({
         projectUUID: projectId as UUID,
-        reserveTokenPayload
+        reserveTokenPayload,
       });
     } catch (e) {
       console.error('Creating reserve token::', e);
     } finally {
-        form.reset();
+      form.reset();
     }
   };
 
@@ -79,160 +106,115 @@ export default function AddFundManagementView() {
         <form onSubmit={form.handleSubmit(handleReserveTokenToGroup)}>
           <div className="p-4 h-add">
             <div className="shadow-md p-4 rounded-sm bg-card">
-              <h1 className="text-lg font-semibold mb-6">
-                Add Fund Management
-              </h1>
-              <div className="grid grid-cols-2 gap-4 mb-4">
-                <FormField
-                  control={form.control}
-                  name="title"
-                  render={({ field }) => {
-                    return (
-                      <FormItem>
-                        <FormLabel>Title</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="text"
-                            placeholder="Enter title"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    );
-                  }}
-                />
-                <FormField
-                  control={form.control}
-                  name="project"
-                  render={({ field }) => {
-                    return (
-                      <FormItem>
-                        <FormLabel>Project</FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select Project" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="banked">Project 1</SelectItem>
-                            <SelectItem value="under_banked">
-                              Project 2
-                            </SelectItem>
-                            <SelectItem value="unBanked">Project 3</SelectItem>
-                            <SelectItem value="unknown">Project 4</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    );
-                  }}
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-4 mb-4">
-                <div>
-                  <FormField
-                    control={form.control}
-                    name="tokenValue"
-                    render={({ field }) => {
-                      return (
-                        <FormItem>
-                          <FormLabel>Token Value</FormLabel>
-                          <FormControl>
-                            <Input type="text" placeholder="0.00" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      );
-                    }}
-                  />
-                </div>
-                <div>
-                  <FormField
-                    control={form.control}
-                    name="noOfToken"
-                    render={({ field }) => {
-                      return (
-                        <FormItem>
-                          <FormLabel>No. of Tokens</FormLabel>
-                          <FormControl>
-                            <Input
-                              type="text"
-                              placeholder="Enter number of tokens"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      );
-                    }}
-                  />
-                </div>
-              </div>
+              <h1 className="text-lg font-semibold mb-6">Reserve Funds</h1>
+              <FormField
+                control={form.control}
+                name="title"
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <FormLabel>Title</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="text"
+                          placeholder="Enter title"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
 
-              <div className="grid grid-cols-2 gap-4 mb-4">
-                <FormField
-                  control={form.control}
-                  name="noOfToken"
-                  render={({ field }) => {
-                    return (
-                      <FormItem>
-                        <FormLabel>Fund Assigned</FormLabel>
+              <FormField
+                control={form.control}
+                name="numberOfTokens"
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <FormLabel>No. of Tokens</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          inputMode="decimal"
+                          placeholder="Enter number of tokens"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
+              <FormField
+                control={form.control}
+                name="totalTokensReserved"
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <FormLabel>Total tokens reserved</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          inputMode="decimal"
+                          placeholder="0"
+                          disabled
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
+              <FormField
+                control={form.control}
+                name="beneficiaryGroup"
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <FormLabel>Beneficiary Group</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                        value={field.value}
+                      >
                         <FormControl>
-                          <Input type="text" placeholder="0.00" {...field} />
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select beneficiary group" />
+                          </SelectTrigger>
                         </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    );
-                  }}
-                />
-                <FormField
-                  control={form.control}
-                  name="beneficiaryGroup"
-                  render={({ field }) => {
-                    return (
-                      <FormItem>
-                        <FormLabel>Beneficiary Group</FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select beneficiary group" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="644d12b8-9745-4783-8803-cd3a84dadffd">
-                              Beneficiary 1
-                            </SelectItem>
-                            <SelectItem value="644d12b8-9745-4783-8803-cd3a84dadff2">No Phone</SelectItem>
-                            <SelectItem value="644d12b8-9745-4783-8803-cd3a84dadff3">
-                              Beneficiary 2
-                            </SelectItem>
-                            <SelectItem value="644d12b8-9745-4783-8803-cd3a84dadff4">
-                              Beneficiary 3
-                            </SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    );
-                  }}
-                />
-              </div>
-              <div className="flex justify-end gap-2">
+                        <SelectContent>
+                          {beneficiariesGroups?.map((g: any) => {
+                            return (
+                              <>
+                                <SelectItem value={g?.uuid}>
+                                  {g?.name}
+                                </SelectItem>
+                              </>
+                            );
+                          })}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
+              <small>
+                {form.getValues('numberOfTokens')} tokens will be reserved for
+                each member of the group. Total reserved tokens will be{' '}
+                {form.getValues('totalTokensReserved')}
+              </small>
+              <div className="flex justify-end gap-2 my-4">
                 <Button
                   onClick={() => router.back()}
                   className="text-red-600 bg-red-100 hover:bg-card hover:border border-red-600"
                 >
                   Cancel
                 </Button>
-                <Button type='submit'>Add Fund Management</Button>
+                <Button type="submit">Add Fund Management</Button>
               </div>
             </div>
           </div>

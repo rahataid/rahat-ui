@@ -127,15 +127,16 @@ export const useReserveTokenForGroups = () => {
     }: {
       projectUUID: UUID;
       reserveTokenPayload: {
-        uuid: string;
-        tokens: number;
+        beneficiaryGroupId: string;
+        numberOfTokens: number;
+        totalTokensReserved: number;
         title: string;
       };
     }) => {
       return q.mutateAsync({
         uuid: projectUUID,
         data: {
-          action: 'aaProject.beneficiary.assign_token_to_group',
+          action: 'aaProject.beneficiary.reserve_token_to_group',
           payload: reserveTokenPayload,
         },
       });

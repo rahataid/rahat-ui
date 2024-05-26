@@ -2,7 +2,6 @@ import * as React from 'react';
 import { Stepper, Step } from 'react-form-stepper';
 import AddTriggerStatementView from './add.trigger.statements.view';
 import ConfigurePhase from './configure.phase';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -11,7 +10,10 @@ import { UUID } from 'crypto';
 import { useParams, useRouter } from 'next/navigation';
 import { useCreateTriggerStatement } from '@rahat-ui/query';
 
-const steps = [{ label: 'Step 1' }, { label: 'Step 2' }];
+const steps = [
+  { label: 'Add Trigger Statement' },
+  { label: 'Configure Phase' },
+];
 
 const MultiStepForm = () => {
   const router = useRouter();
@@ -200,7 +202,20 @@ const MultiStepForm = () => {
   return (
     <div className="p-4 h-[calc(100vh-65px)] bg-secondary">
       <div className="bg-card p-4 rounded">
-        <Stepper activeStep={activeStep}>
+        <Stepper
+          activeStep={activeStep}
+          styleConfig={{
+            completedBgColor: '#10b981',
+            activeBgColor: '#3b82f6',
+            inactiveBgColor: '#9ca3af',
+          }}
+          connectorStateColors={true}
+          connectorStyleConfig={{
+            completedColor: '#10b981',
+            activeColor: '#3b82f6',
+            disabledColor: '#9ca3af',
+          }}
+        >
           {steps.map((step, index) => (
             <Step key={index} label={step.label} />
           ))}

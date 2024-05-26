@@ -23,8 +23,8 @@ export default function ProjectDetails() {
   const { phasesStats } = useStatsStore();
 
   return (
-    <ScrollArea className="h-[calc(100vh-65px)]">
-      <div className="p-4 grid gap-8">
+    <ScrollArea className="h-[calc(100vh-65px)] bg-secondary">
+      <div className="p-4 grid gap-4">
         <ProjectInfo project={project} />
         <div className="h-96 overflow-hidden rounded">
           <StyledMapContainer>

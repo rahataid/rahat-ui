@@ -42,7 +42,7 @@ export default function ChartDonut({ labels, series, donutSize }: Props) {
       type="donut"
       series={series}
       options={chartOptions}
-      width={400}
+      width={230}
       height={200}
     />
   );

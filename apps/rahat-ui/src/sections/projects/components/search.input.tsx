@@ -1,17 +1,24 @@
+import * as React from 'react';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { Search } from 'lucide-react';
 import { cn } from '@rahat-ui/shadcn/src';
 
 type IProps = {
+  name: string;
   className?: string;
-  onSearch: VoidFunction;
-  isDisabled: boolean;
+  onSearch:
+    | VoidFunction
+    | ((event: React.ChangeEvent<HTMLInputElement>) => void);
+  isDisabled?: boolean;
+  value?: string;
 };
 
 export default function SearchInput({
+  name,
   className,
   onSearch,
-  isDisabled,
+  isDisabled = false,
+  value,
 }: IProps) {
   return (
     <div className={cn('relative', className)}>
@@ -21,8 +28,9 @@ export default function SearchInput({
         className="absolute left-2 top-3 text-muted-foreground"
       />
       <Input
-        placeholder="Search Trigger Statements..."
+        placeholder={`Search ${name}...`}
         className="pl-8"
+        value={value}
         onChange={onSearch}
         disabled={isDisabled}
       />

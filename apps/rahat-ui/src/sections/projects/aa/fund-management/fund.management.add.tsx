@@ -33,7 +33,6 @@ import { z } from 'zod';
 export default function AddFundManagementView() {
   const router = useRouter();
   const { id: projectId } = useParams();
-  const [totalToken, setTotalTokens] = useState(0);
 
   const FormSchema = z.object({
     title: z.string().min(2, { message: 'Title must be at least 4 character' }),

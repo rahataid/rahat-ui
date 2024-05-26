@@ -363,3 +363,24 @@ export const useDeleteStakeholdersGroups = () => {
     },
   });
 };
+
+
+export const useGroupsReservedFunds = (uuid: UUID, payload: any) => {
+  const q = useProjectAction();
+
+  const query = useQuery({
+    queryKey: ['groupsreservedfunds', uuid, payload],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'aaProject.beneficiary.get_all_token_reservation',
+          payload: payload
+        },
+      });
+      return mutate;
+    },
+  });
+
+  return query;
+};

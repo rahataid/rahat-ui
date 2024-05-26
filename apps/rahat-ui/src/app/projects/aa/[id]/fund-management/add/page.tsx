@@ -1,3 +1,5 @@
+'use client';
+
 import AddFundManagementView from 'apps/rahat-ui/src/sections/projects/aa/fund-management/fund.management.add';
 import React from 'react';
 

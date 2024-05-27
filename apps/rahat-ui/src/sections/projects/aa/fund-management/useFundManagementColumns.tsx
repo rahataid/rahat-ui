@@ -1,7 +1,11 @@
 import { ColumnDef } from '@tanstack/react-table';
 import { Eye, Pencil, Trash2 } from 'lucide-react';
+import { useParams, useRouter } from 'next/navigation';
 
 export const useFundManagementColumns = () => {
+  const router = useRouter();
+  const { id: projectID } = useParams();
+
   const columns: ColumnDef<any>[] = [
     {
       accessorKey: 'title',
@@ -30,7 +34,11 @@ export const useFundManagementColumns = () => {
           <div className="flex items-center justify-evenly">
             <Eye
               className="cursor-pointer"
-              // onClick={() => router.push(`projects/aa/${pid}/fund-management/1`)}
+              onClick={() =>
+                router.push(
+                  `/projects/aa/${projectID}/fund-management/${row?.original?.uuid}`,
+                )
+              }
               size={20}
               strokeWidth={1.25}
             />

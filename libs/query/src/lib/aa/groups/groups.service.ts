@@ -384,3 +384,29 @@ export const useGroupsReservedFunds = (uuid: UUID, payload: any) => {
 
   return query;
 };
+
+export const useSingleGroupReservedFunds = (
+  uuid: UUID,
+  fundId: string | string[],
+) => {
+  const q = useProjectAction();
+
+  const query = useQuery({
+    queryKey: ['fundmanagement', uuid, fundId],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'aaProject.beneficiary.get_one_token_reservation',
+          payload: {
+            uuid: fundId,
+          },
+        },
+      });
+
+      console.log(mutate)
+      return mutate.data;
+    },
+  });
+  return query;
+};

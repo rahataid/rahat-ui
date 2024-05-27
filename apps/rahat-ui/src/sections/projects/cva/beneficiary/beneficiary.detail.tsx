@@ -44,6 +44,7 @@ import { truncateEthAddress } from '@rumsan/sdk/utils';
 import { Copy, CopyCheck, Minus, MoreVertical, Trash2 } from 'lucide-react';
 import AssignToken from './assign-token.modal';
 import { UUID } from 'crypto';
+import { formatEther, parseEther, parseGwei } from 'viem';
 
 type IProps = {
   beneficiaryDetails: any;
@@ -66,7 +67,7 @@ export default function BeneficiaryDetail({
     address: contractSettings?.cvaproject?.address,
     query: {
       select(data) {
-        return data.toString() || 'N/a';
+        return formatEther(data) || 'N/a';
       },
     },
   });
@@ -229,7 +230,6 @@ type IDetailsSectionProps = {
   walletAddressCopied: boolean;
   handleAssignSubmit: (numberOfTokens: string) => void;
   assignLoading: boolean;
-  tokensAssigned: string;
 };
 
 function DetailsSection({
@@ -238,7 +238,6 @@ function DetailsSection({
   walletAddressCopied,
   handleAssignSubmit,
   assignLoading,
-  tokensAssigned,
 }: IDetailsSectionProps) {
   return (
     <div className="p-4 bg-card flex gap-2 justify-between items-center flex-wrap">

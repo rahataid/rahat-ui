@@ -36,12 +36,17 @@ export default function AssignToProjectModal({
   beneficiaryDetail,
   projectModal,
 }: IProps) {
+  console.log({ beneficiaryDetail, projectModal });
   const assignBeneficiary = useAssignBenToProject();
   const projectsList = useProjectList({ page: 1, perPage: 10 });
+  console.log(projectsList.data);
 
   const [selectedProject, setSelectedProject] = React.useState<UUID>();
 
-  const handleProjectChange = (d: UUID) => setSelectedProject(d);
+  const handleProjectChange = (d: UUID) => {
+    console.log({ d });
+    setSelectedProject(d);
+  };
 
   const handleAssignProject = async () => {
     if (!selectedProject) return alert('Please select a project');

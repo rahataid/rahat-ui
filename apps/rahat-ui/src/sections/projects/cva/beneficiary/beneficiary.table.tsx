@@ -51,6 +51,7 @@ export default function BeneficiaryTable() {
   );
 
   const beneficiaries = useBeneficiaryStore((state) => state.beneficiaries);
+  console.log({ beneficiaries });
   const meta = useBeneficiaryStore((state) => state.meta);
 
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});

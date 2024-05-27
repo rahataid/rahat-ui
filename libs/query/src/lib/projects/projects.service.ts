@@ -358,10 +358,7 @@ export const useProjectList = (
   payload?: Pagination,
 ): UseQueryResult<FormattedResponse<Project[]>, Error> => {
   const { queryClient, rumsanService } = useRSQuery();
-  console.log({ queryClient, rumsanService });
-
   const projectClient = getProjectClient(rumsanService.client);
-  console.log({ projectClient });
   return useQuery(
     {
       queryKey: [TAGS.GET_ALL_PROJECTS, payload],

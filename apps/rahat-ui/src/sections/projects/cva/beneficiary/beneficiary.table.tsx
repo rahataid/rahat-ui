@@ -38,7 +38,6 @@ import { UUID } from 'crypto';
 import { ChevronDown, Settings2 } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import { useState } from 'react';
-import BeneficiaryDetail from './beneficiary.detail';
 import BulkAssignToken from './bulk-assign-token.modal';
 import { useCvaBeneficiaryTableColumns } from './use.table.column';
 

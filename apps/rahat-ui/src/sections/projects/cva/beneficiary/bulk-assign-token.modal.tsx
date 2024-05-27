@@ -16,11 +16,13 @@ import { useState } from 'react';
 type IProps = {
   beneficiaries: number;
   handleSubmit: (numberOfTokens: string) => void;
+  loading: boolean;
 };
 
 export default function BulkAssignToken({
   beneficiaries,
   handleSubmit,
+  loading,
 }: IProps) {
   const [token, setToken] = useState('');
   const totalTokens = token && beneficiaries ? token * beneficiaries : 'n/a';
@@ -72,7 +74,12 @@ export default function BulkAssignToken({
         ) : null}
         <Separator className="my-2" />
         <DialogFooter>
-          <Button onClick={() => handleSubmit(token)}>Assign</Button>
+          <Button
+            disabled={loading || token === '0'}
+            onClick={() => handleSubmit(token)}
+          >
+            Assign
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

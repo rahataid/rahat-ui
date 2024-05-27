@@ -38,7 +38,6 @@ import { UUID } from 'crypto';
 import { ChevronDown, Settings2 } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import { useState } from 'react';
-import BeneficiaryDetail from './beneficiary.detail';
 import BulkAssignToken from './bulk-assign-token.modal';
 import { useCvaBeneficiaryTableColumns } from './use.table.column';
 
@@ -148,6 +147,7 @@ export default function BeneficiaryTable() {
               className="flex flex-col p-3 gap-2"
             >
               <BulkAssignToken
+                loading={bulkAssignTokens.isPending}
                 beneficiaries={selectedRowAddresses.length}
                 handleSubmit={handleBulkAssignTokens}
               />
@@ -182,14 +182,6 @@ export default function BeneficiaryTable() {
                       <TableRow
                         key={row.id}
                         data-state={row.getIsSelected() && 'selected'}
-                        onClick={() => {
-                          setSecondPanelComponent(
-                            <BeneficiaryDetail
-                              beneficiaryDetails={row.original}
-                              handleClose={closeSecondPanel}
-                            />,
-                          );
-                        }}
                       >
                         {row.getVisibleCells().map((cell) => (
                           <TableCell key={cell.id}>

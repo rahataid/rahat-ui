@@ -8,9 +8,16 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
 import { ColumnDef } from '@tanstack/react-table';
 import { useSecondPanel } from 'apps/rahat-ui/src/providers/second-panel-provider';
-import { MoreHorizontal } from 'lucide-react';
+import { Copy, CopyCheck, MoreHorizontal } from 'lucide-react';
 import BeneficiaryDetail from './beneficiary.detail';
 import { useCallback, useState } from 'react';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/tooltip';
+import { truncateEthAddress } from '@rumsan/sdk/utils';
 
 export type Beneficiary = {
   walletAddress: string;
@@ -29,14 +36,14 @@ export const useCvaBeneficiaryTableColumns = () => {
     setWalletAddressCopied(index);
   };
 
-  const openSplitDetailView = useCallback((rowDetail: any) => {
-    setSecondPanelComponent(
-      <BeneficiaryDetail
-        closeSecondPanel={closeSecondPanel}
-        data={rowDetail}
-      />,
-    );
-  }, []);
+  // const openSplitDetailView = useCallback((rowDetail: any) => {
+  //   setSecondPanelComponent(
+  //     <BeneficiaryDetail
+  //       closeSecondPanel={closeSecondPanel}
+  //       data={rowDetail}
+  //     />,
+  //   );
+  // }, []);
 
   const columns: ColumnDef<any>[] = [
     {
@@ -65,12 +72,28 @@ export const useCvaBeneficiaryTableColumns = () => {
       accessorKey: 'walletAddress',
       header: 'Wallet Address',
       cell: ({ row }) => (
-        <div
-          className="cursor-pointer"
-          onClick={() => openSplitDetailView(row.original)}
-        >
-          {row.getValue('walletAddress')}
-        </div>
+        <TooltipProvider delayDuration={100}>
+          <Tooltip>
+            <TooltipTrigger
+              className="flex items-center gap-3 cursor-pointer"
+              onClick={() =>
+                clickToCopy(row.getValue('walletAddress'), row.index)
+              }
+            >
+              <p>{truncateEthAddress(row.getValue('walletAddress'))}</p>
+              {walletAddressCopied === row.index ? (
+                <CopyCheck size={15} strokeWidth={1.5} />
+              ) : (
+                <Copy className="text-slate-500" size={15} strokeWidth={1.5} />
+              )}
+            </TooltipTrigger>
+            <TooltipContent className="bg-secondary" side="bottom">
+              <p className="text-xs font-medium">
+                {walletAddressCopied === row.index ? 'copied' : 'click to copy'}
+              </p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       ),
     },
     {
@@ -96,7 +119,7 @@ export const useCvaBeneficiaryTableColumns = () => {
     {
       id: 'actions',
       enableHiding: false,
-      cell: () => {
+      cell: ({ row }) => {
         return (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -106,7 +129,19 @@ export const useCvaBeneficiaryTableColumns = () => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem>View Details</DropdownMenuItem>
+              <DropdownMenuItem
+                className="cursor-pointer"
+                onClick={() => {
+                  setSecondPanelComponent(
+                    <BeneficiaryDetail
+                      beneficiaryDetails={row.original}
+                      closeSecondPanel={closeSecondPanel}
+                    />,
+                  );
+                }}
+              >
+                View Details
+              </DropdownMenuItem>
               {/* <DropdownMenuSeparator /> */}
               {/* <DropdownMenuItem>Edit</DropdownMenuItem> */}
             </DropdownMenuContent>

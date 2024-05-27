@@ -1,3 +1,4 @@
+'use client';
 import { useEffect } from 'react';
 import {
   keepPreviousData,
@@ -226,7 +227,7 @@ export const useUpdateActivities = () => {
       activityUpdatePayload,
     }: {
       projectUUID: UUID;
-      activityUpdatePayload: any
+      activityUpdatePayload: any;
     }) => {
       return q.mutateAsync({
         uuid: projectUUID,
@@ -254,8 +255,7 @@ export const useUpdateActivities = () => {
       });
     },
   });
-
-}
+};
 
 export const useDeleteActivities = () => {
   const qc = useQueryClient();
@@ -414,8 +414,8 @@ export const useUpdateActivityStatus = () => {
     }: {
       projectUUID: UUID;
       activityStatusPayload: {
-        uuid: string,
-        status: string
+        uuid: string;
+        status: string;
       };
     }) => {
       return q.mutateAsync({

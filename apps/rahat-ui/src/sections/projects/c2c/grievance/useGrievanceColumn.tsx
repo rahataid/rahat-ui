@@ -5,6 +5,7 @@ import { ColumnDef } from '@tanstack/react-table';
 import { Eye } from 'lucide-react';
 import { useState } from 'react';
 import { useSecondPanel } from '../../../../providers/second-panel-provider';
+import GrievanceDetail from './grievance.detail';
 // import BeneficiaryDetail from '../../../../sections/projects/el/beneficiary/beneficiary.detail';
 
 export const useGrievanceTableColumns = () => {
@@ -17,7 +18,12 @@ export const useGrievanceTableColumns = () => {
   };
 
   const openSplitDetailView = (rowDetail: any) => {
-    setSecondPanelComponent(<h1>Grievance Details</h1>);
+    setSecondPanelComponent(
+      <GrievanceDetail
+        closeSecondPanel={closeSecondPanel}
+        details={rowDetail}
+      />,
+    );
   };
 
   const columns: ColumnDef<any>[] = [
@@ -56,7 +62,7 @@ export const useGrievanceTableColumns = () => {
           className="cursor-pointer"
           onClick={() => openSplitDetailView(row.original)}
         >
-          {row.getValue('reporter')}
+          {row.original?.reportedBy?.name}
         </div>
       ),
     },

@@ -1,14 +1,7 @@
 'use client';
 import * as React from 'react';
 
-import { usePagination, useProjectBeneficiaries } from '@rahat-ui/query';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@rahat-ui/shadcn/components/select';
+import { usePagination } from '@rahat-ui/query';
 import {
   Table,
   TableBody,
@@ -31,16 +24,41 @@ import {
 } from '@tanstack/react-table';
 import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
-import { benType } from '../../el/beneficiary/beneficiary.table';
 import { useGrievanceTableColumns } from './useGrievanceColumn';
 
 import {
   DropdownMenu,
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
+import { useQuery, useRSQuery } from '@rumsan/react-query';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import TableLoader from 'apps/rahat-ui/src/components/table.loader';
 import DisburseFlow from '../components/disburse-flow/disburse-flow';
+
+const useGrievanceList = () => {
+  const { queryClient, rumsanService } = useRSQuery();
+  const [isFetched, setIsFetched] = React.useState(false);
+
+  const query = useQuery(
+    {
+      queryKey: ['get_grievances'],
+      queryFn: async () => {
+        const res = await rumsanService.client.get(
+          '/grievances?sort=createdAt&order=asc&page=1&perPage=10',
+        );
+        return res?.data;
+      },
+    },
+    queryClient,
+  );
+  React.useEffect(() => {
+    if (query.isFetched) {
+      setIsFetched(true);
+    }
+  }, [query.isFetched]);
+
+  return query;
+};
 
 const GrievanceTable = () => {
   const uuid = useParams().id as UUID;
@@ -48,6 +66,7 @@ const GrievanceTable = () => {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
   );
+  const { data } = useGrievanceList();
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const {
@@ -65,7 +84,7 @@ const GrievanceTable = () => {
   const columns = useGrievanceTableColumns();
   const table = useReactTable({
     manualPagination: true,
-    data: [],
+    data: data?.data || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -99,24 +118,6 @@ const GrievanceTable = () => {
               className="max-w-sm rounded mr-2"
             />
           </div>
-          {selectedRowAddresses.length ? (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <DisburseFlow selectedBeneficiaries={selectedRowAddresses} />
-              </DropdownMenuTrigger>
-              {/* <DropdownMenuContent align="end">
-                <DropdownMenuItem
-                  onClick={projectModal.onTrue}
-                  disabled={isBulkAssigning}
-                >
-                  Bulk Assign Project
-                </DropdownMenuItem>
-              </DropdownMenuContent> */}
-            </DropdownMenu>
-          ) : null}
-          {/* <div>
-            <DisburseFlow selectedBeneficiaries={selectedRowAddresses} />
-          </div> */}
         </div>
         <div className="rounded border bg-card">
           <Table>

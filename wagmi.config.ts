@@ -56,7 +56,6 @@ import { AAProjectABI } from './abis/aa/AAProject';
 import { AccessManagerAbi } from './abis/aa/AccessManager';
 import { RahatDonorABI } from './abis/aa/RahatDonor';
 import { RahatTokenABI } from './abis/aa/RahatToken';
-import { RahatTreasuryABI } from './abis/aa/RahatTreasury';
 import { TriggerManagerABI } from './abis/aa/TriggerManager';
 
 export default defineConfig([
@@ -96,16 +95,6 @@ export default defineConfig([
       {
         name: 'RahatToken',
         abi: RahatTokenABI,
-      },
-    ],
-    plugins: [react()],
-  },
-  {
-    out: 'apps/rahat-ui/src/hooks/aa/contracts/treasury.ts',
-    contracts: [
-      {
-        name: 'RahatTreasury',
-        abi: RahatTreasuryABI,
       },
     ],
     plugins: [react()],

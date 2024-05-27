@@ -15,7 +15,8 @@
     "prepare": "husky install",
     "format": "nx format:write --uncommitted",
     "checkFileSize": "node ./tools/scripts/checkFileSize.js",
-    "play": "ts-node play"
+    "play": "ts-node play",
+    "wagmi": "npx wagmi generate"
   },
   "private": true,
   "dependencies": {

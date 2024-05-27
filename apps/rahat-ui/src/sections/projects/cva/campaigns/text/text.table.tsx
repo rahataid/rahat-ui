@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { useRouter } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -14,7 +14,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { MoreHorizontal, Settings2 } from 'lucide-react';
+import { Eye, MoreHorizontal, Settings2 } from 'lucide-react';
 
 import { Button } from '@rahat-ui/shadcn/components/button';
 import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
@@ -48,7 +48,11 @@ import {
 import { paths } from 'apps/rahat-ui/src/routes/paths';
 import { useCampaignStore, useListCampaignQuery } from '@rahat-ui/query';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import { CAMPAIGN_TYPES } from '@rahat-ui/types';
+import { CAMPAIGN_TYPES, ICampaignItemApiResponse } from '@rahat-ui/types';
+import { useListCampaign } from '@rumsan/communication-query';
+import { useSecondPanel } from 'apps/rahat-ui/src/providers/second-panel-provider';
+import TextDetailSplitView from 'apps/rahat-ui/src/sections/communications/text/text.detail.split.view';
+import useTextTableColumn from './useTextTableColumn';
 
 export type Text = {
   id: number;
@@ -59,110 +63,10 @@ export type Text = {
   totalAudiences: number;
 };
 
-export const columns: ColumnDef<Text>[] = [
-  {
-    id: 'select',
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && 'indeterminate')
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
-    accessorKey: 'name',
-    header: 'Text Campaigns',
-    cell: ({ row }) => <div>{row.getValue('name')}</div>,
-  },
-  {
-    accessorKey: 'startTime',
-    header: 'Start Time',
-    cell: ({ row }) => (
-      <div className="capitalize">
-        {new Date(row.getValue('startTime')).toLocaleString()}
-      </div>
-    ),
-  },
-  {
-    accessorKey: 'status',
-    header: 'Status',
-    cell: ({ row }) => (
-      <Badge variant="secondary" className="rounded-md capitalize">
-        {row.getValue('status')}
-      </Badge>
-    ),
-  },
-  {
-    accessorKey: 'transport',
-    header: 'Transport',
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue('transport')}</div>
-    ),
-  },
-  {
-    accessorKey: 'totalAudiences',
-    header: 'Total Audiences',
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue('totalAudiences')}</div>
-    ),
-  },
-  {
-    id: 'actions',
-    enableHiding: false,
-    cell: ({ row }) => {
-      const router = useRouter();
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem
-              onClick={() =>
-                router.push(
-                  paths.dashboard.communication.textDetail(row.original.id),
-                )
-              }
-            >
-              View Details
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onClick={() =>
-                router.push(
-                  paths.dashboard.communication.editTextCampaign(
-                    row.original.id,
-                  ),
-                )
-              }
-            >
-              Edit
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
-    },
-  },
-];
-
 export default function TextTable() {
   const campaignStore = useCampaignStore();
+  const columns = useTextTableColumn();
+  const { id } = useParams();
 
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -172,19 +76,20 @@ export default function TextTable() {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
-  const { data, isLoading, isError, isSuccess, isFetched } =
-    useListCampaignQuery({});
+  const { data, isLoading, isError, isSuccess, isFetching } = useListCampaign({
+    projectId: id,
+  });
 
   const tableData = React.useMemo(() => {
-    const result = Array.isArray(data?.rows)
-      ? data?.rows.filter(
+    const result = Array.isArray(data?.response.data.rows)
+      ? data?.response?.data?.rows?.filter(
           (campaign: any) => campaign.type !== CAMPAIGN_TYPES.PHONE,
         )
       : [];
 
     campaignStore.setTotalTextCampaign(data?.response?.meta?.total || 0);
     return result;
-  }, [isSuccess]);
+  }, [isSuccess, data]);
 
   const table = useReactTable({
     data: tableData,
@@ -206,7 +111,7 @@ export default function TextTable() {
   });
 
   return (
-    <div className="p-2 bg-secondary">
+    <div className="w-full h-full p-2 bg-secondary">
       <div className="flex items-center mb-2">
         <Input
           placeholder="Filter campaigns..."
@@ -248,9 +153,9 @@ export default function TextTable() {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <div className="rounded border bg-white">
+      <div className="rounded border h-[calc(100vh-180px)]  bg-card">
         <Table>
-          <ScrollArea className="h-table1">
+          <ScrollArea className="w-full h-[calc(100vh-184px)]">
             <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
@@ -292,7 +197,15 @@ export default function TextTable() {
                     colSpan={columns.length}
                     className="h-24 text-center"
                   >
-                    No results.
+                    {isFetching ? (
+                      <div className="flex items-center justify-center space-x-2 h-full">
+                        <div className="h-2 w-2 animate-bounce rounded-full bg-primary [animation-delay:-0.3s]"></div>
+                        <div className="h-2 w-2 animate-bounce rounded-full bg-primary [animation-delay:-0.13s]"></div>
+                        <div className="h-2 w-2 animate-bounce rounded-full bg-primary"></div>
+                      </div>
+                    ) : (
+                      'No data available.'
+                    )}
                   </TableCell>
                 </TableRow>
               )}
@@ -300,37 +213,12 @@ export default function TextTable() {
           </ScrollArea>
         </Table>
       </div>
-      <div className="flex items-center justify-end space-x-8 p-2 border-t">
+      <div className="flex items-center justify-end space-x-2 p-2 border-t bg-card">
         <div className="flex-1 text-sm text-muted-foreground">
           {table.getFilteredSelectedRowModel().rows.length} of{' '}
           {table.getFilteredRowModel().rows.length} row(s) selected.
         </div>
-        <div className="flex items-center gap-2">
-          <div className="text-sm font-medium">Rows per page</div>
-          <Select
-            defaultValue="10"
-            onValueChange={(value) => table.setPageSize(Number(value))}
-          >
-            <SelectTrigger className="w-16">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectItem value="5">5</SelectItem>
-                <SelectItem value="10">10</SelectItem>
-                <SelectItem value="20">20</SelectItem>
-                <SelectItem value="30">30</SelectItem>
-                <SelectItem value="40">40</SelectItem>
-                <SelectItem value="50">50</SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-        </div>
-        <div>
-          Page {table.getState().pagination.pageIndex + 1} of{' '}
-          {table.getPageCount()}
-        </div>
-        <div className="space-x-4">
+        <div className="space-x-2">
           <Button
             variant="outline"
             size="sm"

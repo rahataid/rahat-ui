@@ -275,6 +275,8 @@ export const useProjectSubgraphSettings = (uuid: UUID) => {
     // initialData: settings?.[uuid],
   });
 
+  console.log('query.data', query.data);
+
   useEffect(() => {
     if (!isEmpty(query.data)) {
       const settingsToUpdate = {

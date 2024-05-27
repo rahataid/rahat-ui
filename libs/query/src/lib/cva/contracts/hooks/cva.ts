@@ -13,11 +13,10 @@ export const useTokenMintAndSend = () => {
   const { queryClient } = useRSQuery();
   const donorMintTokenAndSend = useWriteRahatDonorMintTokenAndSend();
   const alert = Swal.mixin({
-    customClass: {
-      confirmButton: 'btn btn-primary',
-      cancelButton: 'btn btn-secondary',
-    },
-    buttonsStyling: false,
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
   });
 
   return useMutation(
@@ -29,6 +28,7 @@ export const useTokenMintAndSend = () => {
         });
       },
       onError: (error) => {
+        console.log('error', error);
         alert.fire({
           icon: 'error',
           title: 'Error minting and approving token',
@@ -146,7 +146,7 @@ export const useBulkAssignClaimsToBeneficiaries = () => {
             return encodeFunctionData({
               abi: cvaProjectAbi,
               functionName: 'assignClaims',
-              args: [beneficiary, parseEther(tokenAmount)],
+              args: [beneficiary, BigInt(tokenAmount)],
             });
           },
         );

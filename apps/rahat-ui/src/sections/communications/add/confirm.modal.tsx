@@ -6,6 +6,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  DialogTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dialog';
 
 type Iprops = {
@@ -16,23 +17,24 @@ type Iprops = {
 };
 
 const CampaignModal = ({
-  open,
   handleSubmit,
-  handleClose,
   isSubmitting,
 }: Iprops) => {
   return (
-    <div className="py-2 w-full border-t">
-      <div className="p-4 flex flex-col gap-0.5 text-sm">
-        <Dialog open={open}>
+        <Dialog>
+        <DialogTrigger asChild>
+            <Button variant={'default'}>
+              Submit
+            </Button>
+        </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Confirm Project</DialogTitle>
+              <DialogTitle>Confirm Campaign</DialogTitle>
             </DialogHeader>
             <DialogContent>Are you sure ?</DialogContent>
             <DialogFooter className="sm:justify-end">
               <DialogClose asChild>
-                <Button onClick={handleClose} type="button" variant="ghost">
+                <Button type="button" variant="ghost">
                   Close
                 </Button>
               </DialogClose>
@@ -48,8 +50,6 @@ const CampaignModal = ({
             </DialogFooter>
           </DialogContent>
         </Dialog>
-      </div>
-    </div>
   );
 };
 

@@ -32,6 +32,17 @@ export interface ListBeneficiary {
   piiData?: TPIIData;
 }
 
+export interface ListBeneficiaryGroup {
+  id: number;
+  uuid: string;
+  name: string;
+  totalMembers: number;
+  createdAt: Date;
+  updatedAt: Date;
+  deletedAt: Date | null;
+  beneficiaryGroupProject?: any;
+}
+
 export interface UpdateBeneficiaryPayload {
   uuid?: string;
   gender?: Gender;

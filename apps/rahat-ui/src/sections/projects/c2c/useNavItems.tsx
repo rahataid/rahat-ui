@@ -51,6 +51,11 @@ export const useNavItems = (): ProjectNavItemsReturnType => {
           icon: <Speech size={18} strokeWidth={1.5} />,
           path: `/projects/c2c/${id}/campaigns/text`,
         },
+        {
+          title: 'Transactions',
+          path: `/projects/c2c/${id}/transactions`,
+          icon: <ArrowLeftRight size={18} strokeWidth={1.5} />,
+        },
       ],
     },
     {

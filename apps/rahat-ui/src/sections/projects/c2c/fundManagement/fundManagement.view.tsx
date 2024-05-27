@@ -3,7 +3,7 @@ import ChartLine from '@rahat-ui/shadcn/src/components/charts/chart-components/c
 import DataCard from 'apps/rahat-ui/src/components/dataCard';
 import { Banknote, ReceiptText } from 'lucide-react';
 import RecentTransaction from './recent.transaction';
-import { useC2CProjectSubgraphStore } from '@rahataid/c2c-query';
+import { useC2CProjectSubgraphStore } from '@rahat-ui/query';
 import { formatEther } from 'viem';
 import {
   PROJECT_SETTINGS_KEYS,

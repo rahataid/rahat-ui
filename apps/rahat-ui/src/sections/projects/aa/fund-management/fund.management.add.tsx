@@ -1,6 +1,7 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useBeneficiariesGroups, useReserveTokenForGroups } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 
 import {
@@ -19,56 +20,63 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
-import { useRouter } from 'next/navigation';
+import { UUID } from 'crypto';
+import { useParams, useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { isValidPhoneNumber } from 'react-phone-number-input';
 import { z } from 'zod';
 
 export default function AddFundManagementView() {
   const router = useRouter();
-
+  const { id: projectId } = useParams();
   const FormSchema = z.object({
-    name: z.string().min(2, { message: 'Name must be at least 4 character' }),
-    walletAddress: z.string(),
-    phone: z
-      .string()
-      .refine(isValidPhoneNumber, { message: 'Invalid phone number' }),
-    email: z.string().optional(),
-    gender: z
-      .string()
-      .toUpperCase()
-      .min(4, { message: 'Must select a Gender' }),
-    bankedStatus: z.string().toUpperCase(),
-    // .min(4, { message: 'Must select a Bank Status' }),
-    internetStatus: z.string().toUpperCase(),
-    // .min(4, { message: 'Must select Internet Status' }),
-    phoneStatus: z.string().toUpperCase(),
-    // .min(4, { message: 'Must select Phone Status' }),
-    address: z.string(),
-    // .min(4, { message: 'Must be valid address.' }),
-    age: z.string().min(1, { message: 'Must be valid age.' }),
+    title: z.string().min(2, { message: 'Title must be at least 4 character' }),
+    project: z.string(),
+    tokenValue: z.string(),
+    noOfToken: z.string(),
+    beneficiaryGroup: z.string()
   });
+
+  const reserveTokenForGroups = useReserveTokenForGroups()
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      name: '',
-      gender: '',
-      walletAddress: '',
-      email: '',
-      phone: '',
-      bankedStatus: '',
-      internetStatus: '',
-      phoneStatus: '',
-      age: '',
-      address: '',
+      title: '',
+      project: '',
+      tokenValue: '',
+      noOfToken: ''
     },
   });
+
+  const beneficiaryGroup = useBeneficiariesGroups(projectId as UUID, {page: 1, perPage: 100})
+
+  console.log('beneficiary group', beneficiaryGroup)
+
+  const handleReserveTokenToGroup = async (
+    data: z.infer<typeof FormSchema>,
+  ) => {
+    const reserveTokenPayload = {
+      uuid: data.beneficiaryGroup,
+      tokens: Number(data.noOfToken),
+      title: data.title
+    }
+    try {
+      await reserveTokenForGroups.mutateAsync({
+        projectUUID: projectId as UUID,
+        reserveTokenPayload
+      });
+    } catch (e) {
+      console.error('Creating reserve token::', e);
+    } finally {
+        form.reset();
+    }
+  };
 
   return (
     <>
       <Form {...form}>
-        <form>
+        <form onSubmit={form.handleSubmit(handleReserveTokenToGroup)}>
           <div className="p-4 h-add">
             <div className="shadow-md p-4 rounded-sm bg-card">
               <h1 className="text-lg font-semibold mb-6">
@@ -199,14 +207,14 @@ export default function AddFundManagementView() {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="smart_phone">
+                            <SelectItem value="644d12b8-9745-4783-8803-cd3a84dadffd">
                               Beneficiary 1
                             </SelectItem>
-                            <SelectItem value="no_phone">No Phone</SelectItem>
-                            <SelectItem value="feature_phone">
+                            <SelectItem value="644d12b8-9745-4783-8803-cd3a84dadff2">No Phone</SelectItem>
+                            <SelectItem value="644d12b8-9745-4783-8803-cd3a84dadff3">
                               Beneficiary 2
                             </SelectItem>
-                            <SelectItem value="unknown">
+                            <SelectItem value="644d12b8-9745-4783-8803-cd3a84dadff4">
                               Beneficiary 3
                             </SelectItem>
                           </SelectContent>
@@ -224,7 +232,7 @@ export default function AddFundManagementView() {
                 >
                   Cancel
                 </Button>
-                <Button>Add Fund Management</Button>
+                <Button type='submit'>Add Fund Management</Button>
               </div>
             </div>
           </div>

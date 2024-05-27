@@ -161,7 +161,7 @@ export default function VendorsDetailSplitView({
           </div>
         </div>
         {vendorsDetail.projectName === 'N/A' && <Button type="button" variant="default" onClick={assignVoucher}>
-          Assign voucher
+          Assign to Project
         </Button>}
         </div>
         <div>

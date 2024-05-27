@@ -112,6 +112,54 @@ export const useCreateBenficiariesGroups = () => {
   });
 };
 
+export const useReserveTokenForGroups = () => {
+  const q = useProjectAction();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+  return useMutation({
+    mutationFn: async ({
+      projectUUID,
+      reserveTokenPayload,
+    }: {
+      projectUUID: UUID;
+      reserveTokenPayload: {
+        uuid: string;
+        tokens: number;
+        title: string;
+      };
+    }) => {
+      return q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'aaProject.beneficiary.assign_token_to_group',
+          payload: reserveTokenPayload,
+        },
+      });
+    },
+    onSuccess: () => {
+      q.reset();
+      toast.fire({
+        title: 'Token reserve added successfully.',
+        icon: 'success',
+      });
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || 'Error';
+      q.reset();
+      toast.fire({
+        title: 'Error while reserving tokens.',
+        icon: 'error',
+        text: errorMessage,
+      });
+    },
+  });
+};
+
 export const useStakeholdersGroups = (uuid: UUID, payload: any) => {
   const q = useProjectAction();
   const { setStakeholdersGroups, setStakeholdersGroupsMeta } =
@@ -145,6 +193,30 @@ export const useStakeholdersGroups = (uuid: UUID, payload: any) => {
   return { ...query, stakeholdersGroupsMeta: query?.data?.meta };
 };
 
+export const useSingleStakeholdersGroup = (
+  uuid: UUID,
+  stakeholdersGroupId: UUID,
+) => {
+  const q = useProjectAction();
+
+  const query = useQuery({
+    queryKey: ['stakeholdersGroup', uuid, stakeholdersGroupId],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'aaProject.stakeholders.getOneGroup',
+          payload: {
+            uuid: stakeholdersGroupId,
+          },
+        },
+      });
+      return mutate.data;
+    },
+  });
+  return query;
+};
+
 export const useBeneficiariesGroups = (uuid: UUID, payload: any) => {
   const q = useProjectAction();
   const { setBeneficiariesGroups, setBeneficiariesGroupsMeta } =
@@ -154,12 +226,12 @@ export const useBeneficiariesGroups = (uuid: UUID, payload: any) => {
     }));
 
   const query = useQuery({
-    queryKey: ['stakeholdersGroups', uuid, payload],
+    queryKey: ['beneficiaryGroups', uuid, payload],
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid,
         data: {
-          action: 'aaProject.stakeholders.getAllGroups',
+          action: 'aaProject.beneficiary.getAllGroups',
           payload: payload,
         },
       });

@@ -11,6 +11,10 @@ import {
 import Swal from 'sweetalert2';
 import { TAGS } from '../config';
 
+type GroupState = {
+  uuid: string;
+  pathName: string;
+};
 export const useCommunityGroupCreate = () => {
   const { queryClient, rumsanService } = useRSQuery();
   const groupClient = getGroupClient(rumsanService.client);
@@ -84,7 +88,7 @@ export const useCommunityGroupRemove = () => {
       mutationKey: [TAGS.REMOVE_COMMUNITY_GROUP],
       mutationFn: groupClient.remove,
       onSuccess: () => {
-        Swal.fire('Beneficiary Deleted Successfully', '', 'success');
+        Swal.fire('Beneficiary Disconnected Successfully', '', 'success');
         queryClient.invalidateQueries({
           queryKey: [TAGS.LIST_COMMUNITY_GROUP],
         });
@@ -153,17 +157,19 @@ export const useCommunityGroupDelete = () => {
   return useMutation(
     {
       mutationKey: [TAGS.REMOVE_COMMUNITY_GROUP],
-      mutationFn: async (uuid: string) => {
+      mutationFn: async (data: GroupState) => {
         const { isConfirmed } = await Swal.fire({
-          title: 'Delete Group',
-          text: 'Are you sure you want to delete this Group Permanently?',
+          title: `${
+            data?.pathName === '/group' ? 'Delete Group' : 'Delete Imports Logs'
+          }`,
+          text: 'Are you sure you want to delete permanently?',
           showCancelButton: true,
           confirmButtonText: 'Delete',
           cancelButtonText: 'Cancel',
           confirmButtonColor: '#dc3545',
         });
         if (!isConfirmed) return null;
-        return groupClient.deleteGroup(uuid as string);
+        return groupClient.deleteGroup(data?.uuid as string);
       },
       onSuccess: (data: any) => {
         if (data)

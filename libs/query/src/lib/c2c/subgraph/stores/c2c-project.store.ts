@@ -21,7 +21,7 @@ export type C2CProjectStore = C2CProjectState & C2CProjectActions;
 const initialState: C2CProjectState = {
   projectDetails: {
     tokenBalance: {
-      balance: '10000000000000000000',
+      balance: '0',
       id: '',
     },
   },

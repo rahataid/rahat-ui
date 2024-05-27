@@ -1,20 +1,18 @@
 'use client';
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
 
 import {
   VisibilityState,
   getCoreRowModel,
-  getSortedRowModel,
   getFilteredRowModel,
+  getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
 
-import { FieldDefinition } from '@rahataid/community-tool-sdk/fieldDefinitions';
-import CustomPagination from '../../components/customPagination';
-import { FIELD_DEFINITON_NAV_ROUTE } from '../../constants/fieldDefinition.const';
-import FieldDefinitionsListView from '../../sections/field-definitions/listView';
 import { useFieldDefinitionsList } from '@rahat-ui/community-query';
 import { usePagination } from '@rahat-ui/query';
+import CustomPagination from '../../components/customPagination';
+import FieldDefinitionsListView from '../../sections/field-definitions/listView';
 import { useFieldDefinitionsTableColumns } from './useFieldDefinitionsColumns';
 
 export default function FieldDefinitionsView() {
@@ -52,24 +50,10 @@ export default function FieldDefinitionsView() {
     },
   });
 
-  const [selectedData, setSelectedData] = useState<FieldDefinition | null>();
-  const [active, setActive] = useState<string>(
-    FIELD_DEFINITON_NAV_ROUTE.DEFAULT,
-  );
-
-  const handleFieldDefClick = useCallback((item: FieldDefinition) => {
-    setSelectedData(item);
-  }, []);
-
-  const handleClose = () => {
-    setSelectedData(null);
-  };
-
   return (
     <>
       <FieldDefinitionsListView
         table={table}
-        handleClick={handleFieldDefClick}
         setFilters={setFilters}
         filters={filters}
       />

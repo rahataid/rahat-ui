@@ -16,7 +16,7 @@ type IProps = {
   table: Table<any>;
 };
 
-export default function BeneficiaryGroupsTable({ table }: IProps) {
+export default function GroupsTable({ table }: IProps) {
   return (
     <TableComponent>
       <ScrollArea className="h-[calc(100vh-179px)]">

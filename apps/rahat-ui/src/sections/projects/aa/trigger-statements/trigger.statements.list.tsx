@@ -3,6 +3,7 @@ import {
   flexRender,
   getCoreRowModel,
   useReactTable,
+  getPaginationRowModel,
 } from '@tanstack/react-table';
 import {
   Table as TableComponent,
@@ -13,38 +14,42 @@ import {
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  SelectGroup,
+} from '@rahat-ui/shadcn/src/components/ui/select';
 import { useTriggerStatementTableColumns } from './useTriggerStatementsColumns';
-import { usePagination } from '@rahat-ui/query';
-import CustomPagination from '../../../../components/customPagination';
 import TableLoader from 'apps/rahat-ui/src/components/table.loader';
 
 type IProps = {
-  isLoading: boolean
-  tableData: any
-  tableScrollAreaHeight: string
-}
+  isLoading: boolean;
+  tableData: any;
+  tableScrollAreaHeight: string;
+};
 
-export default function TriggerStatementsList({ isLoading, tableData, tableScrollAreaHeight }: IProps) {
-  const { pagination, setNextPage, setPrevPage, setPerPage, setPagination } =
-    usePagination();
-
-  React.useEffect(() => {
-    setPagination({ page: 1, perPage: 10 });
-  }, []);
-
+export default function TriggerStatementsList({
+  isLoading,
+  tableData,
+  tableScrollAreaHeight,
+}: IProps) {
   const columns = useTriggerStatementTableColumns();
 
   const table = useReactTable({
-    manualPagination: true,
     data: tableData || [],
     columns,
+    getPaginationRowModel: getPaginationRowModel(),
     getCoreRowModel: getCoreRowModel(),
   });
 
   if (isLoading) return <TableLoader />;
 
   return (
-    <div className='border bg-card rounded'>
+    <div className="border bg-card rounded">
       <TableComponent>
         <ScrollArea className={tableScrollAreaHeight}>
           <TableHeader className="sticky top-0">
@@ -56,9 +61,9 @@ export default function TriggerStatementsList({ isLoading, tableData, tableScrol
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext(),
-                        )}
+                            header.column.columnDef.header,
+                            header.getContext(),
+                          )}
                     </TableHead>
                   );
                 })}
@@ -95,23 +100,51 @@ export default function TriggerStatementsList({ isLoading, tableData, tableScrol
           </TableBody>
         </ScrollArea>
       </TableComponent>
-      {/* Custom Pagination  */}
-      <CustomPagination
-        meta={{
-          total: 0,
-          currentPage: 0,
-          lastPage: 0,
-          perPage: 0,
-          next: null,
-          prev: null,
-        }}
-        handleNextPage={setNextPage}
-        handlePrevPage={setPrevPage}
-        handlePageSizeChange={setPerPage}
-        currentPage={pagination.page}
-        perPage={pagination.perPage}
-        total={0}
-      />
+      <div className="flex items-center justify-end space-x-8 border-t px-4 py-2">
+        <div className="flex items-center gap-2">
+          <div className="text-sm font-medium">Rows per page</div>
+          <Select
+            defaultValue="10"
+            onValueChange={(value) => table.setPageSize(Number(value))}
+          >
+            <SelectTrigger className="w-16">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectItem value="5">5</SelectItem>
+                <SelectItem value="10">10</SelectItem>
+                <SelectItem value="20">20</SelectItem>
+                <SelectItem value="30">30</SelectItem>
+                <SelectItem value="40">40</SelectItem>
+                <SelectItem value="50">50</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
+        <div>
+          Page {table.getState().pagination.pageIndex + 1} of{' '}
+          {table.getPageCount()}
+        </div>
+        <div className="space-x-4">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage()}
+          >
+            Previous
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => table.nextPage()}
+            disabled={!table.getCanNextPage()}
+          >
+            Next
+          </Button>
+        </div>
+      </div>
     </div>
   );
 }

@@ -3,7 +3,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import {
   usePagination,
   useProjectBeneficiaries,
-  useCreateBenficiariesGroups,
+  useCreateBenficiariesGroups
 } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {

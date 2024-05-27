@@ -46,7 +46,7 @@ export const useBeneficiariesGroupStore =
     {
       devtoolsEnabled: true,
       persistOptions: {
-        name: 'aaGroupsStore',
+        name: 'aaBeneficiariesGroupStore',
         storage: localStore,
       },
     },
@@ -61,7 +61,7 @@ export const useStakeholdersGroupsStore = zustandStore<StakeholdersGroupsStore>(
   {
     devtoolsEnabled: true,
     persistOptions: {
-      name: 'aaGroupsStore',
+      name: 'aaStakeholdersGroupStore',
       storage: localStore,
     },
   },

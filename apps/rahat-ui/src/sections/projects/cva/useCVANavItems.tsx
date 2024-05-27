@@ -1,6 +1,7 @@
 import {
   Lock,
   Pencil,
+  Plus,
   PlusSquare,
   Receipt,
   Speech,
@@ -142,6 +143,11 @@ export const useNavItems = () => {
           title: 'Edit Project',
           path: '/edit',
           icon: <Pencil size={18} strokeWidth={1.5} />,
+        },
+        {
+          title: 'Add Campaign',
+          path: `/projects/cva/${params.id}/campaigns/add`,
+          icon: <Plus size={18} strokeWidth={1.5} />,
         },
       ],
     },

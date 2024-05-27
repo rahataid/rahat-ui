@@ -1,10 +1,11 @@
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 import {
   ArrowLeftRight,
-  Blocks,
   Coins,
+  FilePlus2,
   LayoutDashboard,
   PencilRuler,
+  PersonStanding,
   Plus,
   Speech,
   UserRound,
@@ -51,6 +52,11 @@ export const useNavItems = (): ProjectNavItemsReturnType => {
           icon: <Speech size={18} strokeWidth={1.5} />,
           path: `/projects/c2c/${id}/campaigns/text`,
         },
+        {
+          title: 'Grievance',
+          icon: <PersonStanding size={18} strokeWidth={1.5} />,
+          path: `/projects/c2c/${id}/grievance`,
+        },
       ],
     },
     {
@@ -83,6 +89,11 @@ export const useNavItems = (): ProjectNavItemsReturnType => {
           title: 'Add Campaign',
           path: `/projects/c2c/${id}/campaigns/add`,
           icon: <Plus size={18} strokeWidth={1.5} />,
+        },
+        {
+          title: 'Create grievance',
+          path: `/projects/c2c/${id}/grievance/add`,
+          icon: <FilePlus2 size={18} strokeWidth={1.5} />,
         },
       ],
     },

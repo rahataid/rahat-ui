@@ -65,7 +65,7 @@ export const useCvaVendorsTableColumn = () => {
       header: 'Name',
       cell: ({ row }) => (
         <div
-          className="capitalize"
+          className="capitalize cursor-pointer"
           onClick={() => openSplitDetailView(row.original)}
         >
           {row.getValue('name')}
@@ -117,8 +117,13 @@ export const useCvaVendorsTableColumn = () => {
                 <MoreHorizontal className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="bg-white">
-              <DropdownMenuItem>View Details</DropdownMenuItem>
+            <DropdownMenuContent align="end" className="bg-card">
+              <DropdownMenuItem
+                className="cursor-pointer"
+                onClick={() => openSplitDetailView(row.original)}
+              >
+                View Details
+              </DropdownMenuItem>
               <DropdownMenuItem>Edit details</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

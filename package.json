@@ -43,7 +43,7 @@
     "@radix-ui/react-toast": "^1.1.5",
     "@radix-ui/react-tooltip": "^1.0.7",
     "@rahataid/c2c-query": "0.0.9",
-    "@rahataid/community-tool-sdk": "^0.0.24",
+    "@rahataid/community-tool-sdk": "^0.0.17",
     "@rahataid/el-subgraph": "0.0.12",
     "@rahataid/sdk": "0.0.25",
     "@rumsan/communication": "^0.0.13",

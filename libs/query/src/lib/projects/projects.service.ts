@@ -1,3 +1,4 @@
+'use client';
 import { CreateProjectPayload } from '@rahat-ui/types';
 import { Beneficiary, MS_ACTIONS } from '@rahataid/sdk';
 import { getProjectClient } from '@rahataid/sdk/clients';
@@ -323,6 +324,8 @@ export const useProjectSubgraphSettings = (uuid: UUID) => {
     // initialData: settings?.[uuid],
   });
 
+  console.log('query.data', query.data);
+
   useEffect(() => {
     if (!isEmpty(query.data)) {
       const settingsToUpdate = {
@@ -403,10 +406,7 @@ export const useProjectList = (
   payload?: Pagination,
 ): UseQueryResult<FormattedResponse<Project[]>, Error> => {
   const { queryClient, rumsanService } = useRSQuery();
-  console.log({ queryClient, rumsanService });
-
   const projectClient = getProjectClient(rumsanService.client);
-  console.log({ projectClient });
   return useQuery(
     {
       queryKey: [TAGS.GET_ALL_PROJECTS, payload],

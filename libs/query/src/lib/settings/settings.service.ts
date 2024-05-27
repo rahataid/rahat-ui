@@ -1,3 +1,4 @@
+'use client';
 import { useRSQuery } from '@rumsan/react-query';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useEffect } from 'react';

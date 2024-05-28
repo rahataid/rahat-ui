@@ -33,6 +33,7 @@ import {
   useAddManager,
 } from '../../hooks/el/contracts/el-contracts';
 import { useRouter } from 'next/navigation';
+import { PhoneInput } from '@rahat-ui/shadcn/src/components/ui/phone-input';
 
 // Constants
 // const genderList = enumToObjectArray(Gender);
@@ -54,7 +55,7 @@ export default function AddUser() {
     resolver: zodResolver(FormSchema),
     defaultValues: {
       name: '',
-      gender: 'UNKNOWN' || '',
+      gender: '',
       email: '',
       phone: '',
       roles: [''],
@@ -92,7 +93,7 @@ export default function AddUser() {
     if (userCreate.isSuccess) {
       form.reset({
         name: '',
-        gender: 'UNKOWN' || '',
+        gender: '',
         email: '',
         phone: '',
         roles: [''],
@@ -154,7 +155,7 @@ export default function AddUser() {
                 return (
                   <FormItem>
                     <FormControl>
-                      <Input type="text" placeholder="Phone" {...field} />
+                      <PhoneInput placeholder="Phone" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

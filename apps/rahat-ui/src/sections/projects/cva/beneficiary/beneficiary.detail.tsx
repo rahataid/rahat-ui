@@ -93,11 +93,12 @@ export default function BeneficiaryDetail({
   };
 
   const handleAssignSubmit = async (numberOfTokens: string) => {
-    await assignToken.mutateAsync({
+    const ass = await assignToken.mutateAsync({
       beneficiary: beneficiaryDetails.walletAddress,
-      projectAddress: contractSettings?.cvaProject?.address,
+      projectAddress: contractSettings?.cvaproject?.address,
       tokenAmount: numberOfTokens,
     });
+    console.log('ass', ass);
   };
 
   const removeBeneficiary = (uuid: string) => {

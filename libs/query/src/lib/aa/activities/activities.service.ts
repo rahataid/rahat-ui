@@ -136,6 +136,7 @@ export const useActivities = (uuid: UUID, payload: any) => {
     activityType: d.activityType,
     campaignId: d?.activityComm?.campaignId || null,
     activtiyComm: d?.activityComm || null,
+    isAutomated: d?.isAutomated
     // isApproved: d.isApproved,
     // isComplete: d.isComplete,
   }));

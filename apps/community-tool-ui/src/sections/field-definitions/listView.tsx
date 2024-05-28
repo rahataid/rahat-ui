@@ -24,18 +24,13 @@ import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { FieldDefinition } from '@rahataid/community-tool-sdk/fieldDefinitions';
 
 type IProps = {
-  handleClick: (item: FieldDefinition) => void;
+  // handleClick: (item: FieldDefinition) => void;
   table: Table<FieldDefinition>;
   setFilters: (fiters: Record<string, any>) => void;
   filters: Record<string, any>;
 };
 
-export default function ListView({
-  handleClick,
-  table,
-  setFilters,
-  filters,
-}: IProps) {
+export default function ListView({ table, setFilters, filters }: IProps) {
   const handleFilterChange = (event: any) => {
     if (event && event.target) {
       const { name, value } = event.target;
@@ -117,9 +112,6 @@ export default function ListView({
                     <TableRow
                       key={row.id}
                       data-state={row.getIsSelected() && 'selected'}
-                      onClick={() => {
-                        handleClick(row.original);
-                      }}
                     >
                       {row.getVisibleCells().map((cell) => (
                         <TableCell key={cell.id}>

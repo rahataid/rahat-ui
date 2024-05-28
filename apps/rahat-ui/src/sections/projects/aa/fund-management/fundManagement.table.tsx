@@ -226,7 +226,7 @@ export function FundManagementTable() {
         </DropdownMenu>
         <AddButton
           name="Add Fund Management"
-          path={`/projects/aa/${pid}/fund-management/add`}
+          path={`/projects/aa/${pid.id}/fund-management/add`}
         />
       </div>
       <div className="rounded border bg-card">

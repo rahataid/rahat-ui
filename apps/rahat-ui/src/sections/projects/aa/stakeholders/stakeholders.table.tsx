@@ -15,12 +15,16 @@ import { IStakeholdersItem } from 'apps/rahat-ui/src/types/stakeholders';
 
 type IProps = {
   table: Table<IStakeholdersItem>;
+  tableScrollAreaHeight: string;
 };
 
-export default function StakeholdersTable({ table }: IProps) {
+export default function StakeholdersTable({
+  table,
+  tableScrollAreaHeight,
+}: IProps) {
   return (
     <TableComponent>
-      <ScrollArea className="h-[calc(100vh-179px)]">
+      <ScrollArea className={tableScrollAreaHeight}>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
@@ -30,9 +34,9 @@ export default function StakeholdersTable({ table }: IProps) {
                     {header.isPlaceholder
                       ? null
                       : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext(),
-                      )}
+                          header.column.columnDef.header,
+                          header.getContext(),
+                        )}
                   </TableHead>
                 );
               })}
@@ -48,10 +52,7 @@ export default function StakeholdersTable({ table }: IProps) {
               >
                 {row.getVisibleCells().map((cell) => (
                   <TableCell key={cell.id}>
-                    {flexRender(
-                      cell.column.columnDef.cell,
-                      cell.getContext(),
-                    )}
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}
               </TableRow>

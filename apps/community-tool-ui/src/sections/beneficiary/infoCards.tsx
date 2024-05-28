@@ -6,8 +6,13 @@ import {
 import { truncateEthAddress } from '@rumsan/sdk/utils';
 import { humanizeString } from '../../utils';
 import ExtraInfoCard from './ExtraInfo';
+import { ListBeneficiary } from '@rahataid/community-tool-sdk';
 
-export default function InfoCards({ data }) {
+type IProps = {
+  data: any;
+};
+
+export default function InfoCards({ data }: IProps) {
   return (
     <div
       style={{ maxHeight: '60vh' }}

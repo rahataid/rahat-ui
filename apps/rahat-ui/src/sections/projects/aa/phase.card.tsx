@@ -10,7 +10,7 @@ type IProps = {
 
 export default function PhaseCard({ title, value, color, isActive }: IProps) {
   return (
-    <div className="bg-secondary p-5 rounded w-full shadow">
+    <div className="bg-card p-5 rounded w-full shadow">
       <h1 className="font-semibold mb-0.5">{title}</h1>
       <Badge
         className={`my-1 px-2 py-1 rounded-md ${

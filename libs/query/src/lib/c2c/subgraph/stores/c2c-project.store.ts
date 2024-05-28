@@ -40,8 +40,7 @@ export const useC2CProjectSubgraphStore: UseBoundStore<
     devtoolsEnabled: true,
     persistOptions: {
       name: 'c2c-project-subgraph',
-
-      // getStorage: () => localStore,
+      storage: localStore,
     },
   },
 );

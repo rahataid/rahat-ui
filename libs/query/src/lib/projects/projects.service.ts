@@ -479,6 +479,9 @@ export const useProjectBeneficiaries = (payload: GetProjectBeneficiaries) => {
   return {
     ...query,
     data: useMemo(() => {
+
+      console.log(query.data);
+
       return {
         ...query.data,
         data: query.data?.data?.length
@@ -494,6 +497,7 @@ export const useProjectBeneficiaries = (payload: GetProjectBeneficiaries) => {
             phoneStatus: row?.projectData?.phoneStatus || '',
             bankedStatus: row?.projectData?.bankedStatus || '',
             internetStatus: row?.projectData?.internetStatus || '',
+            benTokens: row?.benTokens || 'N/A'
           }))
           : [],
       };

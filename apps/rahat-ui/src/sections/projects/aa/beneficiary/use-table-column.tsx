@@ -12,7 +12,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { useSecondPanel } from '../../../../providers/second-panel-provider';
 
-// import BeneficiaryDetail from './beneficiary.detail';
+import BeneficiaryDetail from './beneficiary.detail';
 import { truncateEthAddress } from '@rumsan/sdk/utils';
 
 export const useProjectBeneficiaryTableColumns = () => {
@@ -24,14 +24,14 @@ export const useProjectBeneficiaryTableColumns = () => {
     setWalletAddressCopied(index);
   };
 
-  // const openSplitDetailView = (rowDetail: any) => {
-  //   setSecondPanelComponent(
-  //     <BeneficiaryDetail
-  //       closeSecondPanel={closeSecondPanel}
-  //       beneficiaryDetails={rowDetail}
-  //     />,
-  //   );
-  // };
+  const openSplitDetailView = (rowDetail: any) => {
+    setSecondPanelComponent(
+      <BeneficiaryDetail
+        closeSecondPanel={closeSecondPanel}
+        beneficiaryDetails={rowDetail}
+      />,
+    );
+  };
 
   const columns: ColumnDef<any>[] = [
     {
@@ -109,20 +109,20 @@ export const useProjectBeneficiaryTableColumns = () => {
       header: 'Gender',
       cell: ({ row }) => <div> {row.getValue('gender')}</div>,
     },
-    // {
-    //   id: 'actions',
-    //   enableHiding: false,
-    //   cell: ({ row }) => {
-    //     return (
-    //       <Eye
-    //         size={20}
-    //         strokeWidth={1.5}
-    //         className="cursor-pointer hover:text-primary"
-    //         onClick={() => openSplitDetailView(row.original)}
-    //       />
-    //     );
-    //   },
-    // },
+    {
+      id: 'actions',
+      enableHiding: false,
+      cell: ({ row }) => {
+        return (
+          <Eye
+            size={20}
+            strokeWidth={1.5}
+            className="cursor-pointer hover:text-primary"
+            onClick={() => openSplitDetailView(row.original)}
+          />
+        );
+      },
+    },
   ];
 
   return columns;

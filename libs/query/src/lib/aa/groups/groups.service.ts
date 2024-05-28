@@ -410,3 +410,24 @@ export const useSingleGroupReservedFunds = (
   });
   return query;
 };
+
+export const useReservationStats = (
+  uuid: UUID
+) => {
+  const q = useProjectAction();
+
+  const query = useQuery({
+    queryKey: ['reservationstats', uuid],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'aaProject.beneficiary.get_reservation_stats',
+          payload: {},
+        },
+      });
+      return mutate;
+    },
+  });
+  return query;
+};

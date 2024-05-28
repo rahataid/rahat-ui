@@ -71,8 +71,6 @@ const ProjectInfo: FC<ProjectInfoProps> = ({ project }) => {
     args: [contractSettings?.rahattoken?.address],
   });
 
-  console.log(projectBudget);
-
   const parsedProjectBudget = Number(projectBudget);
   // console.log(data);
 

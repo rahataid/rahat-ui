@@ -1,11 +1,6 @@
 'use client';
 
-import {
-  PROJECT_SETTINGS_KEYS,
-  usePagination,
-  useProjectBeneficiaries,
-  useProjectSettingsStore,
-} from '@rahat-ui/query';
+import { usePagination, useProjectBeneficiaries } from '@rahat-ui/query';
 import {
   ColumnFiltersState,
   SortingState,
@@ -13,7 +8,6 @@ import {
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
-  getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
@@ -33,13 +27,6 @@ import {
 } from '@rahat-ui/shadcn/components/dropdown-menu';
 import { Input } from '@rahat-ui/shadcn/components/input';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@rahat-ui/shadcn/components/select';
-import {
   Table,
   TableBody,
   TableCell,
@@ -48,15 +35,15 @@ import {
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import { UUID } from 'crypto';
-import { useParams } from 'next/navigation';
-import { useProjectBeneficiaryTableColumns } from './use-table-column'
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import { useBulkAssignVoucher } from 'apps/rahat-ui/src/hooks/el/contracts/el-contracts';
+import { UUID } from 'crypto';
+import { useParams } from 'next/navigation';
 import { useBoolean } from '../../../../hooks/use-boolean';
+import { useProjectBeneficiaryTableColumns } from './use-table-column';
 // import TokenAssingnConfirm from './token.assign.confirm';
-import TableLoader from '../../../../components/table.loader';
 import { useRouter } from 'next/navigation';
+import TableLoader from '../../../../components/table.loader';
 
 // import { useBeneficiaryTransaction } from '../../hooks/el/subgraph/querycall';
 
@@ -106,11 +93,10 @@ function BeneficiaryDetailTableView() {
     page: pagination.page,
     perPage: pagination.perPage,
     order: 'desc',
-    sort: 'updatedAt',
+    sort: 'createdAt',
     projectUUID: uuid,
     ...filters,
   });
-
 
   const columns = useProjectBeneficiaryTableColumns();
 

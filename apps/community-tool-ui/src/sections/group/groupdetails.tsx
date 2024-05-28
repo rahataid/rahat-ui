@@ -5,7 +5,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/components/tooltip';
-import { Download, MoreVertical, Trash2 } from 'lucide-react';
+import { Download, MoreVertical, Trash2, Unplug } from 'lucide-react';
 
 import {
   VisibilityState,
@@ -31,7 +31,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { GroupPurge } from '@rahataid/community-tool-sdk';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import Swal from 'sweetalert2';
 import * as XLSX from 'xlsx';
 import CustomPagination from '../../components/customPagination';
@@ -53,7 +53,7 @@ export default function GroupDetail({ uuid }: IProps) {
     setPerPage,
     resetSelectedListItems,
   } = usePagination();
-
+  const pathName = usePathname();
   const { data: responseByUUID } = useCommunityGroupListByID(uuid, pagination);
   const columns = useCommunityGroupDeailsColumns();
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
@@ -93,25 +93,12 @@ export default function GroupDetail({ uuid }: IProps) {
     XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
 
     XLSX.writeFile(wb, 'beneficiaries.xlsx');
-
-    // const blob = new Blob([response.data], {
-    //   type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-    // });
-
-    // const url = window.URL.createObjectURL(blob);
-    // const a = document.createElement('a');
-    // a.href = url;
-    // a.download = 'beneficiaries.xlsx';
-    // document.body.appendChild(a);
-    // a.click();
-    // document.body.removeChild(a);
-    // window.URL.revokeObjectURL(url);
   };
 
   const removeBeneficiaryFromGroup = () => {
     Swal.fire({
       title: 'Are you sure?',
-      text: 'Remove beneficiary from this group only',
+      text: `Disconnect beneficiary from ${responseByUUID?.data?.name} `,
       icon: 'question',
       showDenyButton: true,
       confirmButtonText: 'Yes, I am sure!',
@@ -220,7 +207,7 @@ export default function GroupDetail({ uuid }: IProps) {
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild onClick={removeBeneficiaryFromGroup}>
-                  <Trash2
+                  <Unplug
                     className="cursor-pointer mr-3"
                     size={20}
                     strokeWidth={1.6}
@@ -228,7 +215,7 @@ export default function GroupDetail({ uuid }: IProps) {
                   />
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>Remove from Group</p>
+                  <p>Disconnect Beneficiaries from Group</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>

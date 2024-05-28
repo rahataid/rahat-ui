@@ -1,3 +1,4 @@
+'use client';
 import { UUID } from 'crypto';
 import { useAAStationsStore } from './trigger-statements.store';
 import { useProjectAction } from '../../projects/projects.service';
@@ -27,6 +28,50 @@ export const useCreateTriggerStatement = () => {
         data: {
           action: 'aaProject.triggers.add',
           payload: triggerStatementPayload,
+        },
+      });
+    },
+    onSuccess: () => {
+      q.reset();
+      // toast.fire({
+      //   title: 'Trigger statement added successfully.',
+      //   icon: 'success',
+      // });
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || 'Error';
+      q.reset();
+      toast.fire({
+        title: 'Error.',
+        icon: 'error',
+        text: errorMessage,
+      });
+    },
+  });
+};
+
+export const useAddTriggerStatementToPhase = () => {
+  const q = useProjectAction();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+  return useMutation({
+    mutationFn: async ({
+      projectUUID,
+      addToPhasePayload,
+    }: {
+      projectUUID: UUID;
+      addToPhasePayload: any;
+    }) => {
+      return q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'aaProject.phases.addTriggers',
+          payload: addToPhasePayload,
         },
       });
     },
@@ -214,23 +259,24 @@ export const useActivateTrigger = () => {
     timer: 3000,
   });
   return useMutation({
-    mutationFn: async (
-      { projectUUID, activatePayload }
-        : {
-          projectUUID: UUID, activatePayload: {
-            repeatKey: string | string[],
-            notes: string,
-            triggerDocuments: Array<{ mediaURL: string, fileName: string }>
-          }
-        }
-    ) => {
+    mutationFn: async ({
+      projectUUID,
+      activatePayload,
+    }: {
+      projectUUID: UUID;
+      activatePayload: {
+        repeatKey: string | string[];
+        notes: string;
+        triggerDocuments: Array<{ mediaURL: string; fileName: string }>;
+      };
+    }) => {
       return q.mutateAsync({
         uuid: projectUUID,
         data: {
           action: 'aaProject.triggers.activate',
-          payload: activatePayload
-        }
-      })
+          payload: activatePayload,
+        },
+      });
     },
     onSuccess: () => {
       q.reset();
@@ -249,5 +295,5 @@ export const useActivateTrigger = () => {
         text: errorMessage,
       });
     },
-  })
-}
+  });
+};

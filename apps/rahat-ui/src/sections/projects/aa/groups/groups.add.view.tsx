@@ -5,11 +5,13 @@ import {
   TabsContent,
 } from '@rahat-ui/shadcn/src/components/ui/tabs';
 import AddStakeholdersGroups from './add.stakeholders.groups';
+import AddBeneficiaryGroups from './beneficiary/add.beneficiary.groups';
 
 export default function GroupsAddView() {
   return (
     <div className="p-2 bg-secondary h-[calc(100vh-65px)]">
-      <Tabs defaultValue="stakeholdersGroups" className="w-full">
+      <AddStakeholdersGroups />
+      {/* <Tabs defaultValue="stakeholdersGroups" className="w-full">
         <TabsList className="grid grid-cols-2">
           <TabsTrigger value="stakeholdersGroups">
             Stakeholders Groups
@@ -21,8 +23,10 @@ export default function GroupsAddView() {
         <TabsContent value="stakeholdersGroups">
           <AddStakeholdersGroups />
         </TabsContent>
-        <TabsContent value="beneficiaryGroups">Beneficiary Groups</TabsContent>
-      </Tabs>
+        <TabsContent value="beneficiaryGroups">
+          <AddBeneficiaryGroups />
+        </TabsContent>
+      </Tabs> */}
     </div>
   );
 }

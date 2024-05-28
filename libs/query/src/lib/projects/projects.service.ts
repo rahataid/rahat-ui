@@ -1,3 +1,4 @@
+'use client';
 import { CreateProjectPayload } from '@rahat-ui/types';
 import { Beneficiary, MS_ACTIONS } from '@rahataid/sdk';
 import { getProjectClient } from '@rahataid/sdk/clients';
@@ -106,6 +107,54 @@ export const useAssignBenToProject = () => {
     },
   });
 };
+
+export const useAssignBenGroupToProject = () => {
+  const q = useProjectAction();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+  return useMutation({
+    mutationFn: async ({
+      beneficiaryGroupUUID,
+      projectUUID,
+    }: {
+      projectUUID: UUID;
+      beneficiaryGroupUUID: UUID;
+    }) => {
+
+      return q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'beneficiary.assign_group_to_project',
+          payload: {
+            beneficiaryGroupId: beneficiaryGroupUUID,
+          },
+        },
+      });
+    },
+    onSuccess: () => {
+      q.reset();
+      toast.fire({
+        title: 'Beneficiary group assigned Successfully',
+        icon: 'success',
+      });
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || 'Error';
+      q.reset();
+      toast.fire({
+        title: 'Error while assigning beneficiary group',
+        icon: 'error',
+        text: errorMessage,
+      });
+    },
+  });
+};
+
 
 export const useBulkAssignBenToProject = () => {
   const q = useProjectAction();
@@ -275,6 +324,8 @@ export const useProjectSubgraphSettings = (uuid: UUID) => {
     // initialData: settings?.[uuid],
   });
 
+  console.log('query.data', query.data);
+
   useEffect(() => {
     if (!isEmpty(query.data)) {
       const settingsToUpdate = {
@@ -355,10 +406,7 @@ export const useProjectList = (
   payload?: Pagination,
 ): UseQueryResult<FormattedResponse<Project[]>, Error> => {
   const { queryClient, rumsanService } = useRSQuery();
-  console.log({ queryClient, rumsanService });
-
   const projectClient = getProjectClient(rumsanService.client);
-  console.log({ projectClient });
   return useQuery(
     {
       queryKey: [TAGS.GET_ALL_PROJECTS, payload],
@@ -435,18 +483,18 @@ export const useProjectBeneficiaries = (payload: GetProjectBeneficiaries) => {
         ...query.data,
         data: query.data?.data?.length
           ? query.data.data.map((row: any) => ({
-              uuid: row?.uuid?.toString(),
-              wallet: row?.walletAddress?.toString(),
-              voucherClaimStatus: row?.claimStatus,
-              name: row?.piiData?.name || '',
-              email: row?.piiData?.email || '',
-              gender: row?.projectData?.gender?.toString() || '',
-              phone: row?.piiData?.phone || 'N/A',
-              type: row?.type?.toString() || 'N/A',
-              phoneStatus: row?.projectData?.phoneStatus || '',
-              bankedStatus: row?.projectData?.bankedStatus || '',
-              internetStatus: row?.projectData?.internetStatus || '',
-            }))
+            uuid: row?.uuid?.toString(),
+            wallet: row?.walletAddress?.toString(),
+            voucherClaimStatus: row?.claimStatus,
+            name: row?.piiData?.name || '',
+            email: row?.piiData?.email || '',
+            gender: row?.projectData?.gender?.toString() || '',
+            phone: row?.piiData?.phone || 'N/A',
+            type: row?.type?.toString() || 'N/A',
+            phoneStatus: row?.projectData?.phoneStatus || '',
+            bankedStatus: row?.projectData?.bankedStatus || '',
+            internetStatus: row?.projectData?.internetStatus || '',
+          }))
           : [],
       };
     }, [query.data]),

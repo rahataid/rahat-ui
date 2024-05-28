@@ -52,7 +52,7 @@ export default function ProjectStatistics({ phasesStats }: IProps) {
 
   return (
     <div className="grid gap-4">
-      <h1 className="font-semibold text-lg">Project Statistics</h1>
+      <h1 className="font-semibold text-xl">Project Statistics</h1>
       {/* Phase Cards  */}
       <div className="flex justify-between items-center gap-4">
         {phasesStats?.map((d) => (
@@ -80,7 +80,7 @@ export default function ProjectStatistics({ phasesStats }: IProps) {
       {/* Project Beneficiary Cards  */}
       <div className="flex justify-between items-center gap-4">
         {BeneficiaryCardData?.map((d) => (
-          <div key={d.title} className="shadow p-5 rounded w-full">
+          <div key={d.title} className="bg-card shadow p-5 rounded w-full">
             <h1 className="font-semibold mb-1">{d.title}</h1>
             <p className="text-muted-foreground text-sm mb-3">{d.subtitle}</p>
             <div className="flex justify-center">

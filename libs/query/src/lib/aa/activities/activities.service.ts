@@ -1,3 +1,4 @@
+'use client';
 import { useEffect } from 'react';
 import {
   keepPreviousData,
@@ -135,6 +136,7 @@ export const useActivities = (uuid: UUID, payload: any) => {
     activityType: d.activityType,
     campaignId: d?.activityComm?.campaignId || null,
     activtiyComm: d?.activityComm || null,
+    isAutomated: d?.isAutomated
     // isApproved: d.isApproved,
     // isComplete: d.isComplete,
   }));
@@ -226,7 +228,7 @@ export const useUpdateActivities = () => {
       activityUpdatePayload,
     }: {
       projectUUID: UUID;
-      activityUpdatePayload: any
+      activityUpdatePayload: any;
     }) => {
       return q.mutateAsync({
         uuid: projectUUID,
@@ -254,8 +256,7 @@ export const useUpdateActivities = () => {
       });
     },
   });
-
-}
+};
 
 export const useDeleteActivities = () => {
   const qc = useQueryClient();
@@ -414,8 +415,8 @@ export const useUpdateActivityStatus = () => {
     }: {
       projectUUID: UUID;
       activityStatusPayload: {
-        uuid: string,
-        status: string
+        uuid: string;
+        status: string;
       };
     }) => {
       return q.mutateAsync({

@@ -13,6 +13,7 @@ import ProjectInfo from './project.info';
 import { UUID } from 'crypto';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import ProjectStatistics from './project.statistics';
+import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 
 export default function ProjectDetails() {
   const project = useProjectStore((state) => state.singleProject) as Project;
@@ -23,8 +24,8 @@ export default function ProjectDetails() {
   const { phasesStats } = useStatsStore();
 
   return (
-    <ScrollArea className="h-[calc(100vh-65px)]">
-      <div className="p-4 grid gap-8">
+    <ScrollArea className="h-[calc(100vh-65px)] bg-secondary">
+      <div className="p-4 grid gap-4">
         <ProjectInfo project={project} />
         <div className="h-96 overflow-hidden rounded">
           <StyledMapContainer>

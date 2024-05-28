@@ -15,7 +15,7 @@ import {
   useStakeholdersGroups,
   useStakeholdersGroupsStore,
 } from '@rahat-ui/query';
-import StakeholdersGroupsTable from './stakeholders.groups.table';
+import StakeholdersGroupsTable from '../groups.table';
 import useStakeholdersGroupsTableColumn from './useStakeholdersGroupsTableColumn';
 import CustomPagination from '../../../../../components/customPagination';
 import { UUID } from 'crypto';

@@ -1,84 +1,85 @@
-'use client';
-
-import DataCard from '../../../components/dataCard';
-import { Users, CircleDollarSign } from 'lucide-react';
-import { ProjectChart } from 'apps/rahat-ui/src/sections/projects';
 import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@rahat-ui/shadcn/src/components/ui/card';
+  PROJECT_SETTINGS_KEYS,
+  useProjectSettingsStore,
+  useReadRahatTokenBalanceOf,
+} from '@rahat-ui/query';
+import { Project } from '@rahataid/sdk/project/project.types';
+import DataCard from 'apps/rahat-ui/src/components/dataCard';
+import { renderProjectDetailsExtras } from 'apps/rahat-ui/src/utils/render-extras';
+import { UUID } from 'crypto';
+import { CircleDollarSign, Users } from 'lucide-react';
+import { useParams } from 'next/navigation';
+import { FC } from 'react';
+import { formatEther } from 'viem';
 
-export default function ProjectDetails() {
+type ProjectInfoProps = {
+  project: Project;
+};
+
+const ProjectInfo: FC<ProjectInfoProps> = ({ project }) => {
+  const { id } = useParams() as { id: UUID };
+  const contractSettings = useProjectSettingsStore(
+    (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT],
+  );
+
+  //temp contract call
+  const tokenBalance = useReadRahatTokenBalanceOf({
+    address: contractSettings?.rahattoken.address as `0x${string}`,
+    args: [contractSettings?.cvaproject.address as `0x${string}`],
+    query: {
+      select(data) {
+        return data ? formatEther(data) : 'N/A';
+      },
+    },
+  });
+
   return (
     <div className="p-4 bg-slate-100">
-      <Card className="shadow-sm mb-4">
-        <CardHeader>
-          <CardTitle>Project Name</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex justify-between gap-4 flex-wrap">
-            <div>
-              <p className="font-medium">Achyut</p>
-              <p className="font-light">Project Manager</p>
-            </div>
-            <div>
-              <p className="font-medium">12</p>
-              <p className="font-light">Vendors</p>
-            </div>
-            <div>
-              <p className="font-medium">01 Feb 2024</p>
-              <p className="font-light">Start Date</p>
-            </div>
-            <div>
-              <p className="font-medium">24 Feb 2024</p>
-              <p className="font-light">End Date</p>
-            </div>
+      <div className="grid grid-cols-1 rounded-sm bg-card p-4 mb-2 shadow">
+        <div>
+          <p className="font-medium text-primary">{project?.name}</p>
+        </div>
+        <div className="flex items-center flex-wrap mt-4 sm:mt-6 gap-10 md:gap-32">
+          {renderProjectDetailsExtras(project?.extras || {})}
+          <div>
+            <p className="font-medium text-primary">{project?.status}</p>
+            <p className="font-light">Status</p>
           </div>
-        </CardContent>
-        <CardFooter>
-          <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quidem
-            nihil eligendi possimus accusantium explicabo error aliquam fugiat
-            voluptas ab enim aspernatur adipisci, non id ullam blanditiis
-            nesciunt, dolores sit odio.
-          </p>
-        </CardFooter>
-      </Card>
+          <div>
+            <p className="font-medium text-primary">{project?.type}</p>
+            <p className="font-light">Type</p>
+          </div>
+        </div>
+        <div>
+          <p className="mt-4 sm:mt-8 sm:w-2/3">{project?.description}</p>
+        </div>
+      </div>
       <div className="grid md:grid-cols-3 gap-4">
         <DataCard
           className="h-40"
           title="Beneficiaries"
-          number1={'12'}
-          subTitle1="Total"
-          number2={'12'}
-          subTitle2="Total"
+          number={'0'}
           Icon={Users}
+          subTitle="Total"
         />
         <DataCard
           className=""
           title="Balance"
-          number1={'12'}
-          subTitle1="Total"
-          number2={'12'}
-          subTitle2="Total"
+          subTitle="Total"
+          number={tokenBalance.data}
           Icon={CircleDollarSign}
         />
 
         <DataCard
-          className=""
+          className="h-40"
           title="Distributed"
-          number1={'12'}
-          subTitle1="Total"
-          number2={'12'}
-          subTitle2="Total"
+          number={'0'}
           Icon={Users}
+          subTitle="Total"
         />
       </div>
-
-      <ProjectChart />
     </div>
   );
-}
+};
+
+export default ProjectInfo;

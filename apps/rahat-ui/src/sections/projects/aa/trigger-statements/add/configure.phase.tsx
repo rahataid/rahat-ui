@@ -12,15 +12,6 @@ import { UseFormReturn } from 'react-hook-form';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 
-// const MandatoryTriggers = [
-//   { title: 'Trigger 1', isOptional: false },
-//   { title: 'Trigger 2', isOptional: false },
-// ];
-// const OptionalTriggers = [
-//   { title: 'Trigger 3', isOptional: true },
-//   { title: 'Trigger 4', isOptional: true },
-// ];
-
 type IProps = {
   handleAddTrigger: (data: any) => void;
   prevStep: VoidFunction;
@@ -201,43 +192,45 @@ export default function ConfigurePhase({
                 </div>
               </CardContent>
             </Card>
-            <Card>
-              <CardHeader className="pb-1">
-                <CardTitle className="text-md font-medium">
-                  Optional Triggered Required
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex justify-between items-center gap-8">
-                  <Slider
-                    value={[sliderValue]}
-                    max={allOptionalTriggers.length}
-                    step={1}
-                  />
-                  <div className="flex gap-2 items-center">
-                    <div
-                      className={`p-2 rounded border ${
-                        minusBtnDisabled ? 'pointer-events-none' : ''
-                      }`}
-                      onClick={handleSliderMinus}
-                    >
-                      <Minus size={18} />
-                    </div>
-                    <div className="px-8 py-2 rounded-md border w-20">
-                      {sliderValue}
-                    </div>
-                    <div
-                      className={`p-2 rounded border ${
-                        plusBtnDisabled ? 'pointer-events-none' : ''
-                      }`}
-                      onClick={handleSliderPlus}
-                    >
-                      <Plus size={18} />
+            {allOptionalTriggers?.length ? (
+              <Card>
+                <CardHeader className="pb-1">
+                  <CardTitle className="text-md font-medium">
+                    Optional Triggered Required
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex justify-between items-center gap-8">
+                    <Slider
+                      value={[sliderValue]}
+                      max={allOptionalTriggers.length}
+                      step={1}
+                    />
+                    <div className="flex gap-2 items-center">
+                      <div
+                        className={`p-2 rounded border ${
+                          minusBtnDisabled ? 'pointer-events-none' : ''
+                        }`}
+                        onClick={handleSliderMinus}
+                      >
+                        <Minus size={18} />
+                      </div>
+                      <div className="px-8 py-2 rounded-md border w-20">
+                        {sliderValue}
+                      </div>
+                      <div
+                        className={`p-2 rounded border ${
+                          plusBtnDisabled ? 'pointer-events-none' : ''
+                        }`}
+                        onClick={handleSliderPlus}
+                      >
+                        <Plus size={18} />
+                      </div>
                     </div>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            ) : null}
           </div>
         </ScrollArea>
       </div>

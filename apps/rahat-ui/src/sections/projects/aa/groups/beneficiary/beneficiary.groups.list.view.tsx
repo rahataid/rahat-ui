@@ -15,7 +15,7 @@ import {
   useBeneficiariesGroups,
   useBeneficiariesGroupStore,
 } from '@rahat-ui/query';
-import BeneficiaryGroupsTable from './beneficiary.groups.table';
+import BeneficiaryGroupsTable from '../groups.table';
 import useBeneficiaryGroupsTableColumn from './useBeneficiaryGroupsTableColumn';
 import CustomPagination from '../../../../../components/customPagination';
 import { UUID } from 'crypto';

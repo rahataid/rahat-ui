@@ -14,7 +14,12 @@ export default function TriggerStatementsListView() {
   return (
     <div className="p-2 bg-secondary h-[calc(100vh-65px)]">
       <TriggerPhaseCards projectId={projectId} />
-      <SearchInput className="mb-2" onSearch={handleSearch} isDisabled={true} />
+      <SearchInput
+        name="Trigger Statement"
+        className="mb-2"
+        onSearch={handleSearch}
+        isDisabled={true}
+      />
       <TriggerStatementsList
         tableScrollAreaHeight="h-[calc(100vh-344px)]"
         isLoading={isLoading}

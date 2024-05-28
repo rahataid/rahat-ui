@@ -94,6 +94,7 @@ export default function AddCommunicationForm({ form, onClose, index }: IProps) {
                 </FormControl>
                 <SelectContent>
                   <SelectItem value="EMAIL">Email</SelectItem>
+                  <SelectItem value="SMS">Sms</SelectItem>
                 </SelectContent>
               </Select>
               <FormMessage />

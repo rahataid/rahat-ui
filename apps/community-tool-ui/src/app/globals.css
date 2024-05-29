@@ -50,6 +50,17 @@
   }
 }
 
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  /* Hide scrollbar for IE, Edge and Firefox */
+  .no-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+}
+
 @layer base {
   * {
     @apply border-border;
@@ -79,7 +90,7 @@
 
 @media (min-width: 1441px) and (max-width: 1920px) {
   .import-container {
-    max-width: 1400px;
+    max-width: 1410px;
   }
 }
 

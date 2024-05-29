@@ -1,14 +1,7 @@
 'use client';
 import * as React from 'react';
 
-import { usePagination, useProjectBeneficiaries } from '@rahat-ui/query';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@rahat-ui/shadcn/components/select';
+import { useGrievanceList, usePagination } from '@rahat-ui/query';
 import {
   Table,
   TableBody,
@@ -31,23 +24,22 @@ import {
 } from '@tanstack/react-table';
 import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
-import { benType } from '../../el/beneficiary/beneficiary.table';
-import { useProjectBeneficiaryTableColumns } from './useBeneficiaryColumns';
+import { useGrievanceTableColumns } from './useGrievanceColumn';
 
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import TableLoader from 'apps/rahat-ui/src/components/table.loader';
-import DisburseFlow from '../components/disburse-flow/disburse-flow';
 
-const BeneficiaryDetailTableView = () => {
-  const uuid = useParams().id as UUID;
+const GrievanceTable = () => {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
   );
+  const grievanceList = useGrievanceList({
+    page: 1,
+    perPage: 20,
+    sort: 'createdAt',
+    order: 'asc',
+  });
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const {
@@ -62,18 +54,10 @@ const BeneficiaryDetailTableView = () => {
     resetSelectedListItems,
   } = usePagination();
   const selectedRowAddresses = Object.keys(selectedListItems);
-  const columns = useProjectBeneficiaryTableColumns();
-  const projectBeneficiaries = useProjectBeneficiaries({
-    page: pagination.page,
-    perPage: pagination.perPage,
-    order: 'desc',
-    sort: 'updatedAt',
-    projectUUID: uuid,
-    ...filters,
-  });
+  const columns = useGrievanceTableColumns();
   const table = useReactTable({
     manualPagination: true,
-    data: projectBeneficiaries?.data?.data || [],
+    data: grievanceList.data?.data || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -81,7 +65,7 @@ const BeneficiaryDetailTableView = () => {
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
-    getRowId: (row) => row.wallet,
+    getRowId: (row) => row.uuid,
     onRowSelectionChange: setSelectedListItems,
     state: {
       sorting,
@@ -91,70 +75,22 @@ const BeneficiaryDetailTableView = () => {
     },
   });
 
-  const handleBenType = React.useCallback(
-    (type: string) => {
-      resetSelectedListItems();
-      if (type === 'ALL') {
-        setFilters({ ...filters, status: undefined });
-        return;
-        setFilters({ ...filters, status: type });
-      }
-    },
-    [filters, setFilters],
-  );
   return (
     <>
       <div className="p-2 bg-secondary">
         <div className="flex justify-between items-center mb-2">
           <div className="flex">
             <Input
-              placeholder="Filter name..."
+              placeholder="Filter grievnace..."
               value={
-                (table.getColumn('name')?.getFilterValue() as string) ?? ''
+                (table.getColumn('reporter')?.getFilterValue() as string) ?? ''
               }
               onChange={(event) => {
-                table.getColumn('name')?.setFilterValue(event.target.value);
+                table.getColumn('reporter')?.setFilterValue(event.target.value);
               }}
               className="max-w-sm rounded mr-2"
             />
-            <div className="max-w-sm rounded mr-2">
-              <Select
-                onValueChange={handleBenType}
-                defaultValue={filters?.status || 'ALL'}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Beneficiary Type" />
-                </SelectTrigger>
-                <SelectContent>
-                  {benType.map((item) => {
-                    return (
-                      <SelectItem key={item.value} value={item.value}>
-                        {item.key}
-                      </SelectItem>
-                    );
-                  })}
-                </SelectContent>
-              </Select>
-            </div>
           </div>
-          {selectedRowAddresses.length ? (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <DisburseFlow selectedBeneficiaries={selectedRowAddresses} />
-              </DropdownMenuTrigger>
-              {/* <DropdownMenuContent align="end">
-                <DropdownMenuItem
-                  onClick={projectModal.onTrue}
-                  disabled={isBulkAssigning}
-                >
-                  Bulk Assign Project
-                </DropdownMenuItem>
-              </DropdownMenuContent> */}
-            </DropdownMenu>
-          ) : null}
-          {/* <div>
-            <DisburseFlow selectedBeneficiaries={selectedRowAddresses} />
-          </div> */}
         </div>
         <div className="rounded border bg-card">
           <Table>
@@ -200,11 +136,14 @@ const BeneficiaryDetailTableView = () => {
                       colSpan={columns.length}
                       className="h-24 text-center"
                     >
-                      {projectBeneficiaries.isFetching ? (
-                        <TableLoader />
-                      ) : (
-                        'No data available.'
-                      )}
+                      {
+                        //   projectBeneficiaries.isFetching
+                        grievanceList.isLoading ? (
+                          <TableLoader />
+                        ) : (
+                          'No data available.'
+                        )
+                      }
                     </TableCell>
                   </TableRow>
                 )}
@@ -218,11 +157,11 @@ const BeneficiaryDetailTableView = () => {
         handleNextPage={setNextPage}
         handlePageSizeChange={setPerPage}
         handlePrevPage={setPrevPage}
-        meta={projectBeneficiaries?.data?.response?.meta || {}}
+        // meta={projectBeneficiaries?.data?.response?.meta || {}}
         perPage={pagination.perPage}
       />
     </>
   );
 };
 
-export default BeneficiaryDetailTableView;
+export default GrievanceTable;

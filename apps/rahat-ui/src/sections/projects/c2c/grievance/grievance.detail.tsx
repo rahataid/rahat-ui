@@ -1,8 +1,7 @@
 'use client';
 
-import { useParams } from 'next/navigation';
-
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+import { Separator } from '@rahat-ui/shadcn/src/components/ui/separator';
 import {
   Tooltip,
   TooltipContent,
@@ -11,18 +10,14 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { Minus } from 'lucide-react';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
-import { Separator } from '@rahat-ui/shadcn/src/components/ui/separator';
+import { Grievance } from '@rahataid/sdk/grievance';
 
 type IProps = {
-  details: any;
+  details: Grievance;
   closeSecondPanel: VoidFunction;
 };
 
 export default function GrievanceDetail({ details, closeSecondPanel }: IProps) {
-  const { id } = useParams();
-  const route = useRouter();
-
   return (
     <>
       <div className="flex justify-between p-4 pt-5 bg-card border-b">
@@ -69,7 +64,7 @@ export default function GrievanceDetail({ details, closeSecondPanel }: IProps) {
           <p className="text-xs text-muted-foreground">Created By</p>
         </div>
         <div className="flex flex-col">
-          <p>{details?.createdAt}</p>
+          <p>{details?.createdAt || 'N/A'}</p>
           <p className="text-xs text-muted-foreground">Created On</p>
         </div>
       </div>

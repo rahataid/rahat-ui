@@ -6,7 +6,12 @@ import { ProjectTypes } from '@rahataid/sdk/enums';
 import { useSecondPanel } from 'apps/rahat-ui/src/providers/second-panel-provider';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
-import { PROJECT_SETTINGS_KEYS, useAAProjectSettingsDatasource, useProjectSettingsStore } from '@rahat-ui/query';
+import {
+  PROJECT_SETTINGS_KEYS,
+  useAAProjectSettingsDatasource,
+  useProjectContractSettings,
+  useProjectSettingsStore,
+} from '@rahat-ui/query';
 
 export default function ProjectLayoutRoot({
   children,
@@ -17,6 +22,7 @@ export default function ProjectLayoutRoot({
 
   const uuid = useParams().id as UUID;
   useAAProjectSettingsDatasource(uuid);
+  useProjectContractSettings(uuid);
 
   // const dataSources = useProjectSettingsStore(
   //   (s) => s.settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.DATASOURCE]);

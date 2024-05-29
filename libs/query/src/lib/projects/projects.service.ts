@@ -40,6 +40,7 @@ export const useProjectCreateMutation = () => {
 export const useProjectAction = <T = any>(key?: string[]) => {
   const { queryClient, rumsanService } = useRSQuery();
   const projectClient = getProjectClient(rumsanService.client);
+  console.log(projectClient.projectActions);
   return useMutation<
     FormattedResponse<T>,
     Error,
@@ -125,7 +126,6 @@ export const useAssignBenGroupToProject = () => {
       projectUUID: UUID;
       beneficiaryGroupUUID: UUID;
     }) => {
-
       return q.mutateAsync({
         uuid: projectUUID,
         data: {
@@ -154,7 +154,6 @@ export const useAssignBenGroupToProject = () => {
     },
   });
 };
-
 
 export const useBulkAssignBenToProject = () => {
   const q = useProjectAction();
@@ -483,18 +482,18 @@ export const useProjectBeneficiaries = (payload: GetProjectBeneficiaries) => {
         ...query.data,
         data: query.data?.data?.length
           ? query.data.data.map((row: any) => ({
-            uuid: row?.uuid?.toString(),
-            wallet: row?.walletAddress?.toString(),
-            voucherClaimStatus: row?.claimStatus,
-            name: row?.piiData?.name || '',
-            email: row?.piiData?.email || '',
-            gender: row?.projectData?.gender?.toString() || '',
-            phone: row?.piiData?.phone || 'N/A',
-            type: row?.type?.toString() || 'N/A',
-            phoneStatus: row?.projectData?.phoneStatus || '',
-            bankedStatus: row?.projectData?.bankedStatus || '',
-            internetStatus: row?.projectData?.internetStatus || '',
-          }))
+              uuid: row?.uuid?.toString(),
+              wallet: row?.walletAddress?.toString(),
+              voucherClaimStatus: row?.claimStatus,
+              name: row?.piiData?.name || '',
+              email: row?.piiData?.email || '',
+              gender: row?.projectData?.gender?.toString() || '',
+              phone: row?.piiData?.phone || 'N/A',
+              type: row?.type?.toString() || 'N/A',
+              phoneStatus: row?.projectData?.phoneStatus || '',
+              bankedStatus: row?.projectData?.bankedStatus || '',
+              internetStatus: row?.projectData?.internetStatus || '',
+            }))
           : [],
       };
     }, [query.data]),

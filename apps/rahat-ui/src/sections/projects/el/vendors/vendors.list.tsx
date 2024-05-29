@@ -13,7 +13,11 @@ import {
 import * as React from 'react';
 import Loader from 'apps/community-tool-ui/src/components/Loader';
 
-import { PROJECT_SETTINGS_KEYS, useProjectAction, useProjectSettingsStore } from '@rahat-ui/query';
+import {
+  PROJECT_SETTINGS_KEYS,
+  useProjectAction,
+  useProjectSettingsStore,
+} from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/components/button';
 import { Input } from '@rahat-ui/shadcn/components/input';
 import {
@@ -29,7 +33,11 @@ import { MS_ACTIONS } from '@rahataid/sdk';
 import { useParams, useRouter } from 'next/navigation';
 import { useVendorTable } from './useVendorTable';
 import TableLoader from 'apps/rahat-ui/src/components/table.loader';
-import { useAllVendorVoucher, useProjectVoucher, useVendorVoucher } from 'apps/rahat-ui/src/hooks/el/subgraph/querycall';
+import {
+  useAllVendorVoucher,
+  useProjectVoucher,
+  useVendorVoucher,
+} from 'apps/rahat-ui/src/hooks/el/subgraph/querycall';
 import SpinnerLoader from '../../components/spinner.loader';
 
 export type Transaction = {
@@ -45,7 +53,9 @@ export default function VendorsList() {
   const router = useRouter();
   const uuid = useParams().id;
 
-  const vendorList = useAllVendorVoucher()
+  const vendorList = useAllVendorVoucher();
+
+  console.log({ vendorList });
 
   const handleViewClick = (rowData: any) => {
     router.push(
@@ -98,7 +108,6 @@ export default function VendorsList() {
   const [currentPage, setCurrentPage] = React.useState<number>(1);
 
   const fetchVendors = async () => {
-
     const result = await getVendors.mutateAsync({
       uuid,
       data: {
@@ -109,33 +118,35 @@ export default function VendorsList() {
         },
       },
     });
-    
+
     const filteredData = result?.data.map((row: any) => {
       return {
         name: row.User.name,
         walletaddress: row.User.wallet,
         phone: row.User.phone,
         vendorId: row.User.uuid,
-        redemptionNumber: row.redemptionNumber
+        redemptionNumber: row.redemptionNumber,
       };
     });
 
-    let totalVoucher:number;
+    let totalVoucher: number;
 
     const vendorListArray = Object.values(vendorList?.data?.voucherArray || {});
 
-    const filteredDataWithVoucher = filteredData?.map((row:any) => {
+    const filteredDataWithVoucher = filteredData?.map((row: any) => {
       totalVoucher = 0;
-      vendorListArray?.map((voucherRow:any) => {
-        
-          if(row?.walletaddress?.toLowerCase() === voucherRow?.id?.toLowerCase()){
-            totalVoucher = Number(voucherRow?.freeVoucherRedeemed) + Number(voucherRow?.referredVoucherRedeemed)
-          }
-        
-      })
-      return{...row, totalVoucherRedemmed: totalVoucher}
-    })
-
+      vendorListArray?.map((voucherRow: any) => {
+        if (
+          row?.walletaddress?.toLowerCase() === voucherRow?.id?.toLowerCase()
+        ) {
+          totalVoucher =
+            Number(voucherRow?.freeVoucherRedeemed) +
+            Number(voucherRow?.referredVoucherRedeemed);
+        }
+      });
+      return { ...row, totalVoucherRedemmed: totalVoucher };
+    });
+    console.log({ filteredDataWithVoucher });
     setData(filteredDataWithVoucher);
   };
 
@@ -176,38 +187,44 @@ export default function VendorsList() {
                 </TableRow>
               ))}
             </TableHeader>
-            {vendorList?.isFetched ? <TableBody>
-              {table.getRowModel().rows?.length ? (
-                table.getRowModel().rows.map((row) => (
-                  <TableRow
-                    key={row.id}
-                    data-state={row.getIsSelected() && 'selected'}
-                  >
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext(),
-                        )}
-                      </TableCell>
-                    ))}
+            {vendorList?.isFetched ? (
+              <TableBody>
+                {table.getRowModel().rows?.length ? (
+                  table.getRowModel().rows.map((row) => (
+                    <TableRow
+                      key={row.id}
+                      data-state={row.getIsSelected() && 'selected'}
+                    >
+                      {row.getVisibleCells().map((cell) => (
+                        <TableCell key={cell.id}>
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext(),
+                          )}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell
+                      colSpan={columns.length}
+                      className="h-24 text-center"
+                    >
+                      {getVendors.isPending ? (
+                        <TableLoader />
+                      ) : (
+                        'No data available.'
+                      )}
+                    </TableCell>
                   </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell
-                    colSpan={columns.length}
-                    className="h-24 text-center"
-                  >
-                    {getVendors.isPending ? (
-                      <TableLoader />
-                    ) : (
-                      'No data available.'
-                    )}
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>: <div className='w-full h-48 flex justify-center items-center' ><Loader /></div>}
+                )}
+              </TableBody>
+            ) : (
+              <div className="w-full h-48 flex justify-center items-center">
+                <Loader />
+              </div>
+            )}
           </ScrollArea>
         </Table>
       </div>

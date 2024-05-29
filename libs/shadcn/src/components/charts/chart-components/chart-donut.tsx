@@ -8,10 +8,18 @@ import useChart from '../use-chart';
 type Props = {
   labels: string[];
   series: number[];
-  donutSize: string;
+  donutSize?: string;
+  width?: number | string;
+  height?: number | string;
 };
 
-export default function ChartDonut({ labels, series, donutSize }: Props) {
+export default function ChartDonut({
+  labels,
+  series,
+  donutSize,
+  width = 230,
+  height = 200,
+}: Props) {
   const chartOptions = useChart({
     labels: labels,
     stroke: {
@@ -42,8 +50,8 @@ export default function ChartDonut({ labels, series, donutSize }: Props) {
       type="donut"
       series={series}
       options={chartOptions}
-      width={230}
-      height={200}
+      width={width}
+      height={height}
     />
   );
 }

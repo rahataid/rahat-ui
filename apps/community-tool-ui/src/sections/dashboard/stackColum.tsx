@@ -1,3 +1,4 @@
+import { Separator } from '@radix-ui/react-separator';
 import { ChartColumnStacked } from '@rahat-ui/shadcn/charts';
 
 type IProps = {
@@ -70,7 +71,7 @@ const StackColumn = ({ data, stacked, width, height, title }: IProps) => {
 
   return (
     <div className="bg-card rounded shadow w-full ">
-      <p className="mt-2 mb-1 ml-4">{title}</p>
+      <p className="mt-6 mb-2 ml-4 text-primary">{title}</p>
       <ChartColumnStacked
         series={ageGroups}
         stacked={stacked}

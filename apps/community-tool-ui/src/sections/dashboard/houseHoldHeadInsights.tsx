@@ -28,7 +28,7 @@ const HouseHoldHeadInsights = ({ data }: Props) => {
         />
         <Donut
           beneficiaryGender={educationStats}
-          title="House Hold Literacy Status"
+          title="Household Literacy Status"
           height={265}
           width={'100%'}
         />

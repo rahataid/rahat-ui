@@ -1,6 +1,9 @@
 'use client';
 
+import * as React from 'react';
+import { useRouter } from 'next/navigation';
 import {
+  ColumnDef,
   ColumnFiltersState,
   SortingState,
   VisibilityState,
@@ -11,28 +14,29 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { Settings2 } from 'lucide-react';
-import * as React from 'react';
+import { MoreHorizontal, Settings2 } from 'lucide-react';
 
-import { useCampaignStore, useListCampaignQuery } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/components/button';
+import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
+import { Badge } from '@rahat-ui/shadcn/components/badge';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
+  DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/components/dropdown-menu';
-import { Input } from '@rahat-ui/shadcn/components/input';
 import {
   Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
+  SelectGroup,
 } from '@rahat-ui/shadcn/components/select';
+import { Input } from '@rahat-ui/shadcn/components/input';
 import {
   Table,
   TableBody,
@@ -41,13 +45,118 @@ import {
   TableHeader,
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
+import VoiceTableData from '../../../../../app/communications/voice/voiceData.json';
+import { paths } from '../../../../../routes/paths';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import { useCampaignStore, useListCampaignQuery } from '@rahat-ui/query';
 import { CAMPAIGN_TYPES } from '@rahat-ui/types';
-import { useVoiceTableColumn } from './useVoiceTableColumn';
+import TableLoader from 'apps/rahat-ui/src/components/table.loader';
+
+const data: Voice[] = VoiceTableData;
+
+export type Voice = {
+  id: number;
+  campaign: string;
+  startTime: string;
+  status: string;
+  transport: string;
+  totalAudiences: number;
+};
+
+export const columns: ColumnDef<Voice>[] = [
+  {
+    id: 'select',
+    header: ({ table }) => (
+      <Checkbox
+        checked={
+          table.getIsAllPageRowsSelected() ||
+          (table.getIsSomePageRowsSelected() && 'indeterminate')
+        }
+        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        aria-label="Select all"
+      />
+    ),
+    cell: ({ row }) => (
+      <Checkbox
+        checked={row.getIsSelected()}
+        onCheckedChange={(value) => row.toggleSelected(!!value)}
+        aria-label="Select row"
+      />
+    ),
+    enableSorting: false,
+    enableHiding: false,
+  },
+  {
+    accessorKey: 'name',
+    header: 'Voice Campaigns',
+    cell: ({ row }) => <div>{row.getValue('name')}</div>,
+  },
+  {
+    accessorKey: 'startTime',
+    header: 'Start Time',
+    cell: ({ row }) => (
+      <div className="capitalize">
+        {new Date(row.getValue('startTime')).toLocaleString()}
+      </div>
+    ),
+  },
+  {
+    accessorKey: 'status',
+    header: 'Status',
+    cell: ({ row }) => (
+      <Badge variant="secondary" className="rounded-md capitalize">
+        {row.getValue('status')}
+      </Badge>
+    ),
+  },
+  {
+    accessorKey: 'transport',
+    header: 'Transport',
+    cell: ({ row }) => (
+      <div className="capitalize">{row.getValue('transport')}</div>
+    ),
+  },
+  {
+    accessorKey: 'totalAudiences',
+    header: 'Total Audiences',
+    cell: ({ row }) => (
+      <div className="capitalize">{row.getValue('totalAudiences')}</div>
+    ),
+  },
+  {
+    id: 'actions',
+    enableHiding: false,
+    cell: ({ row }) => {
+      const router = useRouter();
+      return (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="h-8 w-8 p-0">
+              <span className="sr-only">Open menu</span>
+              <MoreHorizontal className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem
+              onClick={() =>
+                router.push(
+                  paths.dashboard.communication.voiceDetail(row.original.id),
+                )
+              }
+            >
+              View Details
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem>Edit</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      );
+    },
+  },
+];
 
 export default function VoiceTable() {
   const campaignStore = useCampaignStore();
-  const columns = useVoiceTableColumn();
 
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -57,7 +166,7 @@ export default function VoiceTable() {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
-  const { data, isLoading, isError, isSuccess, isFetched } =
+  const { data, isLoading, isError, isSuccess, isFetching } =
     useListCampaignQuery({});
 
   const tableData = React.useMemo(() => {
@@ -133,10 +242,10 @@ export default function VoiceTable() {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <div className="rounded border bg-white">
+      <div className="rounded border h-[calc(100vh-180px)] bg-card">
         <Table>
           <ScrollArea className="h-table1">
-            <TableHeader>
+            <TableHeader className="bg-card sticky top-0">
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
                   {headerGroup.headers.map((header) => {
@@ -177,7 +286,7 @@ export default function VoiceTable() {
                     colSpan={columns.length}
                     className="h-24 text-center"
                   >
-                    No results.
+                    {isFetching ? <TableLoader /> : 'No data available.'}
                   </TableCell>
                 </TableRow>
               )}
@@ -185,37 +294,12 @@ export default function VoiceTable() {
           </ScrollArea>
         </Table>
       </div>
-      <div className="flex items-center justify-end space-x-8 p-2 border-t">
+      <div className="sticky bottom-0 flex items-center justify-end space-x-4 px-4 py-1 bg-card">
         <div className="flex-1 text-sm text-muted-foreground">
           {table.getFilteredSelectedRowModel().rows.length} of{' '}
           {table.getFilteredRowModel().rows.length} row(s) selected.
         </div>
-        <div className="flex items-center gap-2">
-          <div className="text-sm font-medium">Rows per page</div>
-          <Select
-            defaultValue="10"
-            onValueChange={(value) => table.setPageSize(Number(value))}
-          >
-            <SelectTrigger className="w-16">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectItem value="5">5</SelectItem>
-                <SelectItem value="10">10</SelectItem>
-                <SelectItem value="20">20</SelectItem>
-                <SelectItem value="30">30</SelectItem>
-                <SelectItem value="40">40</SelectItem>
-                <SelectItem value="50">50</SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-        </div>
-        <div>
-          Page {table.getState().pagination.pageIndex + 1} of{' '}
-          {table.getPageCount()}
-        </div>
-        <div className="space-x-4">
+        <div className="space-x-2">
           <Button
             variant="outline"
             size="sm"

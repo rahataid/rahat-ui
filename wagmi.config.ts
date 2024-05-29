@@ -2,64 +2,111 @@ import { defineConfig } from '@wagmi/cli';
 import { react } from '@wagmi/cli/plugins';
 
 // Import ABI's for EL project
+import { AccessAbi } from './abis/AccessManager';
 import { ELAbi } from './abis/ELProject';
 import { RahatDonorAbi } from './abis/RahatDonor';
 import { RahatTokenAbi } from './abis/RahatToken';
-import { AccessAbi } from './abis/AccessManager';
 
-// Wagmi-config for el-project
-// export default defineConfig([
-//   {
-//     out: 'apps/rahat-ui/src/hooks/el/contracts/elProject.ts',
-//     contracts: [
-//       {
-//         name: 'ELProject',
-//         abi: ELAbi,
-//       },
-//     ],
-//     plugins: [react()],
-//   },
-//   {
-//     out: 'apps/rahat-ui/src/hooks/el/contracts/donor.ts',
-//     contracts: [
-//       {
-//         name: 'RahatDonor',
-//         abi: RahatDonorAbi,
-//       },
-//     ],
-//     plugins: [react()],
-//   },
-//   {
-//     out: 'apps/rahat-ui/src/hooks/el/contracts/token.ts',
-//     contracts: [
-//       {
-//         name: 'RahatToken',
-//         abi: RahatTokenAbi,
-//       },
-//     ],
-//     plugins: [react()],
-//   },
-//   {
-//     out: 'apps/rahat-ui/src/hooks/el/contracts/access.ts',
-//     contracts: [
-//       {
-//         name: 'AccessManager',
-//         abi: AccessAbi,
-//       },
-//     ],
-//     plugins: [react()],
-//   },
-// ]);
+// Import ABI's for CVA project
+import { CVAProjectAbi } from './abis/cva/CVAProject';
+import { RahatClaimAbi } from './abis/cva/RahatClaim';
+import { RahatDonorAbi as CVARahatDonorAbi } from './abis/cva/RahatDonor';
+import { RahatTokenAbi as CVARahatTokenAbi } from './abis/cva/RahatToken';
 
 // Import ABI's for AA project
 import { AAProjectABI } from './abis/aa/AAProject';
-import { AccessManagerAbi } from './abis/aa/AccessManager';
-import { RahatDonorABI } from './abis/aa/RahatDonor';
-import { RahatTokenABI } from './abis/aa/RahatToken';
-import { RahatTreasuryABI } from './abis/aa/RahatTreasury';
-import { TriggerManagerABI } from './abis/aa/TriggerManager';
+import { AccessManagerAbi as AAAccessManagerAbi } from './abis/aa/AccessManager';
+import { RahatDonorABI as AARahatDonorABI } from './abis/aa/RahatDonor';
+import { RahatTokenABI as AARahatTokenABI } from './abis/aa/RahatToken';
+import { TriggerManagerABI as AATriggerManagerABI } from './abis/aa/TriggerManager';
 
-export default defineConfig([
+const ELConfig = [
+  {
+    out: 'apps/rahat-ui/src/hooks/el/contracts/elProject.ts',
+    contracts: [
+      {
+        name: 'ELProject',
+        abi: ELAbi,
+      },
+    ],
+    plugins: [react()],
+  },
+  {
+    out: 'apps/rahat-ui/src/hooks/el/contracts/donor.ts',
+    contracts: [
+      {
+        name: 'RahatDonor',
+        abi: RahatDonorAbi,
+      },
+    ],
+    plugins: [react()],
+  },
+  {
+    out: 'apps/rahat-ui/src/hooks/el/contracts/token.ts',
+    contracts: [
+      {
+        name: 'RahatToken',
+        abi: RahatTokenAbi,
+      },
+    ],
+    plugins: [react()],
+  },
+  {
+    out: 'apps/rahat-ui/src/hooks/el/contracts/access.ts',
+    contracts: [
+      {
+        name: 'AccessManager',
+        abi: AccessAbi,
+      },
+    ],
+    plugins: [react()],
+  }
+]
+
+const CVAConfig = [
+  {
+    out: 'libs/query/src/lib/cva/contracts/generated-hooks/rahatDonor.ts',
+    contracts: [
+      {
+        name: 'RahatDonor',
+        abi: CVARahatDonorAbi,
+      },
+    ],
+    plugins: [react()],
+  },
+  {
+    out: 'libs/query/src/lib/cva/contracts/generated-hooks/rahatToken.ts',
+    contracts: [
+      {
+        name: 'RahatToken',
+        abi: CVARahatTokenAbi,
+      },
+    ],
+    plugins: [react()],
+  },
+  {
+    out: 'libs/query/src/lib/cva/contracts/generated-hooks/cvaProject.ts',
+    contracts: [
+      {
+        name: 'CVAProject',
+        abi: CVAProjectAbi,
+      },
+    ],
+    plugins: [react()],
+  },
+  {
+    out: 'libs/query/src/lib/cva/contracts/generated-hooks/rahatClaim.ts',
+    contracts: [
+      {
+        name: 'RahatClaim',
+        abi: RahatClaimAbi,
+      },
+    ],
+    plugins: [react()],
+  }
+]
+
+const AAConfig = [
   {
     out: 'apps/rahat-ui/src/hooks/aa/contracts/aaProject.ts',
     contracts: [
@@ -75,7 +122,7 @@ export default defineConfig([
     contracts: [
       {
         name: 'AccessManager',
-        abi: AccessManagerAbi,
+        abi: AAAccessManagerAbi,
       },
     ],
     plugins: [react()],
@@ -85,7 +132,7 @@ export default defineConfig([
     contracts: [
       {
         name: 'RahatDonor',
-        abi: RahatDonorABI,
+        abi: AARahatDonorABI,
       },
     ],
     plugins: [react()],
@@ -95,17 +142,7 @@ export default defineConfig([
     contracts: [
       {
         name: 'RahatToken',
-        abi: RahatTokenABI,
-      },
-    ],
-    plugins: [react()],
-  },
-  {
-    out: 'apps/rahat-ui/src/hooks/aa/contracts/treasury.ts',
-    contracts: [
-      {
-        name: 'RahatTreasury',
-        abi: RahatTreasuryABI,
+        abi: AARahatTokenABI,
       },
     ],
     plugins: [react()],
@@ -115,9 +152,11 @@ export default defineConfig([
     contracts: [
       {
         name: 'TriggerManager',
-        abi: TriggerManagerABI,
+        abi: AATriggerManagerABI,
       },
     ],
     plugins: [react()],
   },
-]);
+]
+
+export default defineConfig([...ELConfig, ...CVAConfig, ...AAConfig]);

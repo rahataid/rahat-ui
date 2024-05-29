@@ -32,7 +32,7 @@ export default function GroupsView() {
           {/* Add Groups Btn  */}
           <AddButton
             path={`/projects/aa/${projectId}/groups/add`}
-            name="Groups"
+            name="Stakeholders Groups"
           />
         </div>
         <TabsContent value="stakeholdersGroups">

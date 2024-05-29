@@ -22,6 +22,7 @@ import AssignToProjectModal from './components/assignToProjectModal';
 import ProjectConfirm from './projects.assign.confirm';
 // import ProjectAssign from './project.assign.modal';
 import { Copy, CopyCheck } from 'lucide-react';
+import ProjectAssign from './project.assign.modal';
 
 export default function InfoCards() {
   const addBeneficiary = useAssignBenToProject();

@@ -13,6 +13,7 @@ type CardProps = {
   subTitle: string;
   className: string;
   Icon: LucideIcon;
+  iconcolor?: string;
 };
 
 export default function DataCard({
@@ -21,6 +22,7 @@ export default function DataCard({
   subTitle,
   className,
   Icon,
+  iconcolor,
 }: CardProps) {
   return (
     <Card
@@ -35,6 +37,7 @@ export default function DataCard({
           size={20}
           strokeWidth={1.5}
           className="h-6 w-6 text-muted-foreground"
+          color={iconcolor}
         />
       </CardHeader>
       <CardContent>

@@ -3,6 +3,7 @@
 import { useParams } from 'next/navigation';
 
 import {
+  BeneficiaryAssignedToken,
   PROJECT_SETTINGS_KEYS,
   useProjectAction,
   useProjectSettingsStore,
@@ -62,6 +63,7 @@ import EditBeneficiary from './beneficiary.edit';
 import { useRemoveBeneficiary } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import { useWaitForTransactionReceipt } from 'wagmi';
+import { useQuery } from 'urql';
 
 type IProps = {
   beneficiaryDetails: any;
@@ -91,6 +93,15 @@ export default function BeneficiaryDetail({
 
   const isLoading = false;
 
+  const [result] = useQuery({
+    query: BeneficiaryAssignedToken,
+    variables: {
+      beneficiary: walletAddress,
+    },
+  });
+
+  console.log('rerrrrrr', result);
+
   // const {
   //   data: beneficiaryVoucherDetails,
   //   isLoading,
@@ -113,7 +124,7 @@ export default function BeneficiaryDetail({
     }
   };
 
-  const genderList = enumToObjectArray(Gender);
+  // const genderList = enumToObjectArray(Gender);
   const handleTabChange = (tab: 'details' | 'edit') => {
     setActiveTab(tab);
   };
@@ -396,6 +407,9 @@ export default function BeneficiaryDetail({
                           </div>
                           <div className="flex justify-between items-center">
                             <p>Assigned Status</p>
+                            {!result?.data?.benTokensAssigneds?.length
+                              ? 'None'
+                              : 'Complete'}
                             {/* <p className="text-sm font-light">
                               {beneficiaryVoucherDetails?.freeVoucherAddress !==
                                 undefined &&
@@ -434,7 +448,11 @@ export default function BeneficiaryDetail({
                 </TabsContent>
                 <TabsContent value="transaction">
                   <div className="p-2 pb-0">
-                    <TransactionTable walletAddress={walletAddress} />
+                    <TransactionTable
+                      transactionData={result?.data?.benTokensAssigneds}
+                      isFetching={result?.fetching}
+                      // walletAddress={walletAddress}
+                    />
                   </div>
                 </TabsContent>
               </Tabs>

@@ -278,6 +278,9 @@ importers:
       tslib:
         specifier: ^2.3.0
         version: 2.6.2
+      urql:
+        specifier: ^4.1.0
+        version: 4.1.0(@urql/core@4.3.0)(react@18.2.0)
       vaul:
         specifier: ^0.9.0
         version: 0.9.1(@types/react-dom@18.3.0)(@types/react@18.3.1)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
@@ -3805,9 +3808,6 @@ packages:
 
   '@urql/core@4.3.0':
     resolution: {integrity: sha512-wT+FeL8DG4x5o6RfHEnONNFVDM3616ouzATMYUClB6CB+iIu2mwfBKd7xSUxYOZmwtxna5/hDRQdMl3nbQZlnw==}
-
-  '@urql/core@5.0.3':
-    resolution: {integrity: sha512-NZ3YqRr6IphbpFjGqujJOuVuV8/QegYxfjy1zdmOSWpYYFLpmMBfVtzZ/L8IiqPERVAEAIKjUsryLnVtXJQo4w==}
 
   '@verdaccio/commons-api@10.2.0':
     resolution: {integrity: sha512-F/YZANu4DmpcEV0jronzI7v2fGVWkQ5Mwi+bVmV+ACJ+EzR0c9Jbhtbe5QyLUuzR97t8R5E/Xe53O0cc2LukdQ==}
@@ -10575,9 +10575,10 @@ packages:
   url-parse@1.5.10:
     resolution: {integrity: sha512-WypcfiRhfeUP9vvF0j6rw0J3hrWrw6iZv3+22h6iRMJ/8z1Tj6XfLP4DsUix5MhMPnXpiHDoKyoZ/bdCkwBCiQ==}
 
-  urql@4.0.7:
-    resolution: {integrity: sha512-wnOONtZoYEobmamM5ushUBGil6UCUPd7SH5uEAqsz5Y/qBV88/2QG6jq7v6xP+413x5Lqy0h0hCGRB0KIeG6Kg==}
+  urql@4.1.0:
+    resolution: {integrity: sha512-NfbfTvxy1sM89EQAJWm89qJZihUWk7BSMfrWgfljFXLOf+e7RK7DtV/Tbg2+82HnCG2x3LcEOJenxiFSYEC+bw==}
     peerDependencies:
+      '@urql/core': ^5.0.0
       react: '>= 16.8.0'
 
   use-callback-ref@1.3.2:
@@ -11298,7 +11299,7 @@ snapshots:
     dependencies:
       '@babel/core': 7.24.5
       '@babel/helper-environment-visitor': 7.22.20
-      '@babel/helper-plugin-utils': 7.24.5
+      '@babel/helper-plugin-utils': 7.24.6
       '@babel/helper-remap-async-to-generator': 7.22.20(@babel/core@7.24.5)
       '@babel/plugin-syntax-async-generators': 7.8.4(@babel/core@7.24.5)
 
@@ -11324,19 +11325,19 @@ snapshots:
   '@babel/plugin-proposal-logical-assignment-operators@7.20.7(@babel/core@7.24.5)':
     dependencies:
       '@babel/core': 7.24.5
-      '@babel/helper-plugin-utils': 7.24.5
+      '@babel/helper-plugin-utils': 7.24.6
       '@babel/plugin-syntax-logical-assignment-operators': 7.10.4(@babel/core@7.24.5)
 
   '@babel/plugin-proposal-nullish-coalescing-operator@7.18.6(@babel/core@7.24.5)':
     dependencies:
       '@babel/core': 7.24.5
-      '@babel/helper-plugin-utils': 7.24.5
+      '@babel/helper-plugin-utils': 7.24.6
       '@babel/plugin-syntax-nullish-coalescing-operator': 7.8.3(@babel/core@7.24.5)
 
   '@babel/plugin-proposal-numeric-separator@7.18.6(@babel/core@7.24.5)':
     dependencies:
       '@babel/core': 7.24.5
-      '@babel/helper-plugin-utils': 7.24.5
+      '@babel/helper-plugin-utils': 7.24.6
       '@babel/plugin-syntax-numeric-separator': 7.10.4(@babel/core@7.24.5)
 
   '@babel/plugin-proposal-object-rest-spread@7.20.7(@babel/core@7.24.5)':
@@ -11344,20 +11345,20 @@ snapshots:
       '@babel/compat-data': 7.24.4
       '@babel/core': 7.24.5
       '@babel/helper-compilation-targets': 7.23.6
-      '@babel/helper-plugin-utils': 7.24.5
+      '@babel/helper-plugin-utils': 7.24.6
       '@babel/plugin-syntax-object-rest-spread': 7.8.3(@babel/core@7.24.5)
       '@babel/plugin-transform-parameters': 7.24.5(@babel/core@7.24.5)
 
   '@babel/plugin-proposal-optional-catch-binding@7.18.6(@babel/core@7.24.5)':
     dependencies:
       '@babel/core': 7.24.5
-      '@babel/helper-plugin-utils': 7.24.5
+      '@babel/helper-plugin-utils': 7.24.6
       '@babel/plugin-syntax-optional-catch-binding': 7.8.3(@babel/core@7.24.5)
 
   '@babel/plugin-proposal-optional-chaining@7.21.0(@babel/core@7.24.5)':
     dependencies:
       '@babel/core': 7.24.5
-      '@babel/helper-plugin-utils': 7.24.5
+      '@babel/helper-plugin-utils': 7.24.6
       '@babel/helper-skip-transparent-expression-wrappers': 7.22.5
       '@babel/plugin-syntax-optional-chaining': 7.8.3(@babel/core@7.24.5)
 
@@ -14295,7 +14296,7 @@ snapshots:
       react: 18.2.0
       tslib: 2.6.2
       typescript: 5.4.5
-      urql: 4.0.7(react@18.2.0)
+      urql: 4.1.0(@urql/core@4.3.0)(react@18.2.0)
     transitivePeerDependencies:
       - graphql
 
@@ -15686,13 +15687,6 @@ snapshots:
   '@ungap/structured-clone@1.2.0': {}
 
   '@urql/core@4.3.0':
-    dependencies:
-      '@0no-co/graphql.web': 1.0.7
-      wonka: 6.3.4
-    transitivePeerDependencies:
-      - graphql
-
-  '@urql/core@5.0.3':
     dependencies:
       '@0no-co/graphql.web': 1.0.7
       wonka: 6.3.4
@@ -24245,13 +24239,11 @@ snapshots:
       querystringify: 2.2.0
       requires-port: 1.0.0
 
-  urql@4.0.7(react@18.2.0):
+  urql@4.1.0(@urql/core@4.3.0)(react@18.2.0):
     dependencies:
-      '@urql/core': 5.0.3
+      '@urql/core': 4.3.0
       react: 18.2.0
       wonka: 6.3.4
-    transitivePeerDependencies:
-      - graphql
 
   use-callback-ref@1.3.2(@types/react@18.3.1)(react@18.2.0):
     dependencies:

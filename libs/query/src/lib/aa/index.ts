@@ -4,3 +4,4 @@ export * from './trigger-statements';
 export * from './stakeholders';
 export * from './groups';
 export * from './phases';
+export * from './graph';

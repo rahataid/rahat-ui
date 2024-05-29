@@ -3,6 +3,7 @@
 import { useParams } from 'next/navigation';
 
 import {
+  BeneficiaryAssignedToken,
   PROJECT_SETTINGS_KEYS,
   useProjectAction,
   useProjectSettingsStore,
@@ -46,22 +47,23 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/alert-dialog';
 import { Gender } from '@rahataid/sdk/enums';
 import { enumToObjectArray, truncateEthAddress } from '@rumsan/sdk/utils';
-import { useAssignClaims } from 'apps/rahat-ui/src/hooks/el/contracts/el-contracts';
+// import { useAssignClaims } from 'apps/rahat-ui/src/hooks/el/contracts/el-contracts';
 import { getProjectAddress } from 'apps/rahat-ui/src/utils/getProjectAddress';
 import { Minus, MoreVertical, Copy, CopyCheck, Trash2 } from 'lucide-react';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import TransactionTable from './beneficiary.transaction.table';
-import { useReadElProjectGetBeneficiaryVoucherDetail } from 'apps/rahat-ui/src/hooks/el/contracts/elProject';
+// import { useReadElProjectGetBeneficiaryVoucherDetail } from 'apps/rahat-ui/src/hooks/el/contracts/elProject';
 import { zeroAddress } from 'viem';
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
-import AssignVoucherConfirm from './assign.voucher.confirm';
+// import AssignVoucherConfirm from './assign.voucher.confirm';
 import TableLoader from 'apps/rahat-ui/src/components/table.loader';
 import { useRouter } from 'next/navigation';
 import EditBeneficiary from './beneficiary.edit';
 import { useRemoveBeneficiary } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import { useWaitForTransactionReceipt } from 'wagmi';
+import { useQuery } from 'urql';
 
 type IProps = {
   beneficiaryDetails: any;
@@ -72,8 +74,9 @@ export default function BeneficiaryDetail({
   beneficiaryDetails,
   closeSecondPanel,
 }: IProps) {
-  // TODO: remove reference to el vouchers
-  const assignClaims = useAssignClaims();
+  console.log('benf detailsssssss', beneficiaryDetails);
+
+  // const assignClaims = useAssignClaims();
   const { id } = useParams();
   const getProject = useProjectAction();
   const route = useRouter();
@@ -88,14 +91,25 @@ export default function BeneficiaryDetail({
     (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT] || null,
   );
 
-  const {
-    data: beneficiaryVoucherDetails,
-    isLoading,
-    refetch,
-  } = useReadElProjectGetBeneficiaryVoucherDetail({
-    address: contractSettings?.elproject?.address,
-    args: [walletAddress],
+  const isLoading = false;
+
+  const [result] = useQuery({
+    query: BeneficiaryAssignedToken,
+    variables: {
+      beneficiary: walletAddress,
+    },
   });
+
+  console.log('rerrrrrr', result);
+
+  // const {
+  //   data: beneficiaryVoucherDetails,
+  //   isLoading,
+  //   refetch,
+  // } = useReadElProjectGetBeneficiaryVoucherDetail({
+  //   address: contractSettings?.elproject?.address,
+  //   args: [walletAddress],
+  // });
 
   const [activeTab, setActiveTab] = useState<'details' | 'edit' | null>(
     'details',
@@ -110,55 +124,55 @@ export default function BeneficiaryDetail({
     }
   };
 
-  const genderList = enumToObjectArray(Gender);
+  // const genderList = enumToObjectArray(Gender);
   const handleTabChange = (tab: 'details' | 'edit') => {
     setActiveTab(tab);
   };
 
-  const result = useWaitForTransactionReceipt({
-    hash: transactionHash,
-  });
+  // const result = useWaitForTransactionReceipt({
+  //   hash: transactionHash,
+  // });
 
-  useEffect(() => {
-    result?.data && setisTransacting(false);
-    refetch();
-  }, [result]);
+  // useEffect(() => {
+  //   result?.data && setisTransacting(false);
+  //   refetch();
+  // }, [result]);
 
-  const handleAssignVoucher = () => {
-    setisTransacting(true);
-    getProjectAddress(getProject, id as string).then(async (res) => {
-      const txnHash = await assignClaims.writeContractAsync({
-        address: res.value.elproject.address,
-        args: [walletAddress],
-      });
-      setTransactionHash(txnHash);
-    });
-  };
+  // const handleAssignVoucher = () => {
+  //   setisTransacting(true);
+  //   getProjectAddress(getProject, id as string).then(async (res) => {
+  //     const txnHash = await assignClaims.writeContractAsync({
+  //       address: res.value.elproject.address,
+  //       args: [walletAddress],
+  //     });
+  //     setTransactionHash(txnHash);
+  //   });
+  // };
 
-  useEffect(() => {
-    if (assignClaims.isSuccess) {
-      route.push(`/projects/el/${id}/beneficiary`);
-    }
-    if (assignClaims.isError) {
-      setisTransacting(false);
-    }
-  }, [assignClaims.isSuccess, assignClaims.isError]);
+  // useEffect(() => {
+  //   if (assignClaims.isSuccess) {
+  //     route.push(`/projects/el/${id}/beneficiary`);
+  //   }
+  //   if (assignClaims.isError) {
+  //     setisTransacting(false);
+  //   }
+  // }, [assignClaims.isSuccess, assignClaims.isError]);
 
-  useEffect(() => {
-    if (
-      beneficiaryVoucherDetails?.freeVoucherAddress === undefined ||
-      beneficiaryVoucherDetails?.referredVoucherAddress === undefined
-    )
-      return;
-    if (
-      beneficiaryVoucherDetails?.freeVoucherAddress?.toString() !==
-        zeroAddress ||
-      beneficiaryVoucherDetails?.referredVoucherAddress?.toString() !==
-        zeroAddress
-    ) {
-      setAssignStatus(true);
-    }
-  }, [beneficiaryVoucherDetails]);
+  // useEffect(() => {
+  //   if (
+  //     beneficiaryVoucherDetails?.freeVoucherAddress === undefined ||
+  //     beneficiaryVoucherDetails?.referredVoucherAddress === undefined
+  //   )
+  //     return;
+  //   if (
+  //     beneficiaryVoucherDetails?.freeVoucherAddress?.toString() !==
+  //       zeroAddress ||
+  //     beneficiaryVoucherDetails?.referredVoucherAddress?.toString() !==
+  //       zeroAddress
+  //   ) {
+  //     setAssignStatus(true);
+  //   }
+  // }, [beneficiaryVoucherDetails]);
 
   const voucherAssignModal = useBoolean();
 
@@ -298,7 +312,7 @@ export default function BeneficiaryDetail({
                 </TooltipProvider>
               </div>
             </div>
-            {!assignStatus && beneficiaryDetails?.type === 'ENROLLED' && (
+            {/* {!assignStatus && beneficiaryDetails?.type === 'ENROLLED' && (
               <div>
                 <Button disabled={isTransacting} onClick={handleAssignVoucher}>
                   {isTransacting
@@ -306,13 +320,13 @@ export default function BeneficiaryDetail({
                     : 'Assign Voucher'}
                 </Button>
               </div>
-            )}
+            )} */}
           </div>
-          <AssignVoucherConfirm
+          {/* <AssignVoucherConfirm
             open={voucherAssignModal.value}
             handleClose={handleVoucherAssignModalClose}
             handleSubmit={handleAssignVoucher}
-          />
+          /> */}
 
           {/* Details View */}
 
@@ -367,15 +381,17 @@ export default function BeneficiaryDetail({
                     </Card>
                     <Card className="shadow rounded">
                       <CardHeader>
-                        <CardTitle className="text-lg">
-                          Voucher Details
-                        </CardTitle>
+                        <CardTitle className="text-lg">Token Details</CardTitle>
                       </CardHeader>
                       <CardContent>
                         <div className="flex flex-col gap-4">
                           <div className="flex justify-between items-center">
-                            <p>Voucher Type</p>
+                            <p>Token Reserved</p>
                             <p className="text-sm font-light">
+                              {beneficiaryDetails?.benTokens}
+                            </p>
+
+                            {/* <p className="text-sm font-light">
                               {beneficiaryVoucherDetails?.freeVoucherAddress !==
                                 undefined &&
                               beneficiaryVoucherDetails?.freeVoucherAddress !==
@@ -387,11 +403,14 @@ export default function BeneficiaryDetail({
                                     zeroAddress
                                 ? 'Discount Voucher'
                                 : 'N/A'}
-                            </p>
+                            </p> */}
                           </div>
                           <div className="flex justify-between items-center">
-                            <p>ClaimStatus</p>
-                            <p className="text-sm font-light">
+                            <p>Assigned Status</p>
+                            {!result?.data?.benTokensAssigneds?.length
+                              ? 'None'
+                              : 'Complete'}
+                            {/* <p className="text-sm font-light">
                               {beneficiaryVoucherDetails?.freeVoucherAddress !==
                                 undefined &&
                               beneficiaryVoucherDetails?.freeVoucherAddress !==
@@ -403,7 +422,7 @@ export default function BeneficiaryDetail({
                                     zeroAddress
                                 ? beneficiaryVoucherDetails?.referredVoucherClaimStatus?.toString()
                                 : 'N/A'}
-                            </p>
+                            </p> */}
                           </div>
                           <div className="flex justify-between items-center">
                             <p>Wallet Address</p>
@@ -429,7 +448,11 @@ export default function BeneficiaryDetail({
                 </TabsContent>
                 <TabsContent value="transaction">
                   <div className="p-2 pb-0">
-                    <TransactionTable walletAddress={walletAddress} />
+                    <TransactionTable
+                      transactionData={result?.data?.benTokensAssigneds}
+                      isFetching={result?.fetching}
+                      // walletAddress={walletAddress}
+                    />
                   </div>
                 </TabsContent>
               </Tabs>

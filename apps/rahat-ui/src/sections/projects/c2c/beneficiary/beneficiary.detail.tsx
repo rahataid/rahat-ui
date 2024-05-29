@@ -72,6 +72,7 @@ export default function BeneficiaryDetail({
   beneficiaryDetails,
   closeSecondPanel,
 }: IProps) {
+  // TODO: remove reference to el vouchers
   const assignClaims = useAssignClaims();
   const { id } = useParams();
   const getProject = useProjectAction();

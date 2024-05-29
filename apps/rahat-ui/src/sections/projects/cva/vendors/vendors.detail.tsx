@@ -29,7 +29,7 @@ import React, { useState } from 'react';
 type IProps = {
   closeSecondPanel: VoidFunction;
 };
-const VendorDetail = ({ closeSecondPanel }: IProps) => {
+const VendorDetail = () => {
   const [activeTab, setActiveTab] = useState<'details' | 'edit'>('details');
 
   type ITabsNavigationProps = {
@@ -55,7 +55,7 @@ const VendorDetail = ({ closeSecondPanel }: IProps) => {
       <div className="flex justify-between p-4 pt-5 bg-card border-b">
         <TooltipProvider delayDuration={100}>
           <Tooltip>
-            <TooltipTrigger onClick={closeSecondPanel}>
+            <TooltipTrigger>
               <Minus size={20} strokeWidth={1.5} />
             </TooltipTrigger>
             <TooltipContent className="bg-secondary">

@@ -1,7 +1,7 @@
-import { CVAVendorView } from 'apps/rahat-ui/src/sections/projects/cva/vendors';
+import CVAVendorList from 'apps/rahat-ui/src/sections/projects/cva/vendors/vendors.list';
 
 const Page = () => {
-  return <CVAVendorView />;
+  return <CVAVendorList />;
 };
 
 export default Page;

@@ -18,10 +18,6 @@ export default function DashboardView() {
       </div>
     );
 
-  const vulnerabilityCategoryStats =
-    data?.data.find((f) => f.name === 'VULNERABILITY_CATEGORY_STATS') ||
-    ([] as any); //VULNERABILITY_CATEGORY_STATS
-
   return (
     <div>
       <ScrollArea className="h-[calc(100vh-68px)] px-4 py-2">

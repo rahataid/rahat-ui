@@ -22,7 +22,7 @@ const PopulationInsights = ({ data }: Props) => {
       <div className="grid sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-3 gap-2 mb-2 ">
         <div className="col-span-1">
           <Donut
-            beneficiaryGender={beneficiaryGender}
+            donutData={beneficiaryGender}
             totalBeneficiaries={totalBenef?.data?.count}
             title="Total Beneficiaries"
             height={250}

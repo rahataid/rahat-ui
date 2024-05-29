@@ -162,7 +162,7 @@ function GrievanceForm({
               >
                 Go Back
               </Button>
-              <Button type="submit">Create Project</Button>
+              <Button type="submit">Create Grievance</Button>
             </div>
           </div>
         </div>
@@ -203,6 +203,7 @@ export default function GrievanceAdd() {
     };
 
     await addGrievance.mutateAsync(grievance);
+    router.back();
   };
 
   return (

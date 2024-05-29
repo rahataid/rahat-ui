@@ -9,7 +9,7 @@ const Charts = ({ charts }: { charts: any }) => {
   });
 
   return (
-    <div className=" grid md:grid-cols-3 gap-2 mt-2">
+    <div className="grid lg:grid-cols-3 gap-2 w-full">
       {validCharts?.map((d: any) => {
         const series = Array.isArray(d?.data)
           ? d?.data.map((item: any) => ({
@@ -31,8 +31,6 @@ const Charts = ({ charts }: { charts: any }) => {
           />
         );
       })}
-
-      {/* <DashboardRecentActivities title="Recent Activities" /> */}
     </div>
   );
 };

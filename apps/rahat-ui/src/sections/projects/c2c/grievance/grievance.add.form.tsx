@@ -54,6 +54,7 @@ interface GrievanceFormProps {
   form: ReturnType<typeof useForm<FormData>>;
   handleSubmit: (data: FormData) => void;
   handleGoBack: () => void;
+  isPending: boolean;
 }
 
 const grievanceTypeOptions = enumToObjectArray(GrievanceType).map((type) => ({
@@ -119,6 +120,7 @@ function GrievanceForm({
   form,
   handleSubmit,
   handleGoBack,
+  isPending,
 }: GrievanceFormProps) {
   return (
     <Form {...form}>
@@ -162,7 +164,11 @@ function GrievanceForm({
               >
                 Go Back
               </Button>
-              <Button type="submit">Create Grievance</Button>
+              {isPending ? (
+                <Button type="submit">Loading....</Button>
+              ) : (
+                <Button type="submit">Create Grievance</Button>
+              )}
             </div>
           </div>
         </div>
@@ -171,7 +177,7 @@ function GrievanceForm({
   );
 }
 
-export default function GrievanceAdd() {
+export default function GrievanceAdd({ isSuccess }) {
   const router = useRouter();
   const addGrievance = useGrievanceAdd();
   const { id } = useParams();
@@ -191,7 +197,8 @@ export default function GrievanceAdd() {
     router.back();
   };
 
-  const handleCreateGrievance = async (data: FormData) => {
+  const handleCreateGrievance = async (data: FormData, e: any) => {
+    e.preventDefault();
     const grievance: Grievance = {
       reportedBy: data?.reportedBy,
       reporterContact: data?.contactInfo ?? '',
@@ -209,6 +216,7 @@ export default function GrievanceAdd() {
   return (
     <GrievanceForm
       form={form}
+      isPending={addGrievance.isPending}
       handleSubmit={handleCreateGrievance}
       handleGoBack={handleGoBack}
     />

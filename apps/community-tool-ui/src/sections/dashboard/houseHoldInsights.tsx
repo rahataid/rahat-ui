@@ -8,19 +8,13 @@ type Props = {
 };
 
 const HouseHoldInsights = ({ data }: Props) => {
-  const casteStats =
-    data?.data?.find((f) => f.name === 'CASTE_STATS') || ([] as any);
-
-  const bankedStatus =
-    data?.data?.find((f) => f.name === 'BENEFICIARY_BANKEDSTATUS') ||
-    ([] as any);
-
-  const phoneStatus =
-    data?.data?.find((f) => f.name === 'BENEFICIARY_PHONESTATUS') ||
-    ([] as any);
+  const chartData = [];
+  const casteStats = data?.data?.find((f) => f.name === 'CASTE_STATS') || null;
 
   const bankNameStatus =
-    data?.data.find((f) => f.name === 'BANK_NAME_STATS') || ([] as any);
+    data?.data.find((f) => f.name === 'BANK_NAME_STATS') || {};
+
+  if (casteStats) chartData.push(casteStats);
 
   return (
     <div className="mt-3">
@@ -44,7 +38,7 @@ const HouseHoldInsights = ({ data }: Props) => {
           iconcolor="red"
         />
       </div>
-      <Charts charts={[casteStats, bankedStatus, phoneStatus]} />
+      <Charts charts={chartData} />
       <div className="grid sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-2 mt-4">
         <BarCharts
           charts={bankNameStatus}

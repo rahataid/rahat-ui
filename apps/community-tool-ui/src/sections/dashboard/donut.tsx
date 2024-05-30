@@ -1,14 +1,14 @@
 import { ChartDonut } from '@rahat-ui/shadcn/charts';
 
 type IProps = {
-  beneficiaryGender: any;
+  donutData: any;
   totalBeneficiaries?: number;
   title?: string;
   height?: number | string;
   width?: number | string;
 };
 const Donut = ({
-  beneficiaryGender,
+  donutData,
   totalBeneficiaries,
   title,
   height,
@@ -21,14 +21,16 @@ const Donut = ({
       <p className="text-3xl font-bold text-left text-primary">
         {totalBeneficiaries}
       </p>
-      <div className="flex justify-center h-[calc(100vh-610px)] ">
-        <ChartDonut
-          donutSize="75%"
-          labels={beneficiaryGender?.data?.map((f) => f?.id)}
-          series={beneficiaryGender?.data?.map((f) => f?.count)}
-          height={height}
-          width={width}
-        />
+      <div className="flex justify-center">
+        {donutData && (
+          <ChartDonut
+            donutSize="75%"
+            labels={donutData?.data?.map((f) => f?.id)}
+            series={donutData?.data?.map((f) => f?.count)}
+            height={height}
+            width={width}
+          />
+        )}
       </div>
     </div>
   );

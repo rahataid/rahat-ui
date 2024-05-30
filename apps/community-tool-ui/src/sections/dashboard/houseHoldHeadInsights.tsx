@@ -13,7 +13,9 @@ const HouseHoldHeadInsights = ({ data }: Props) => {
     data?.data.find((f) => f.name === 'GOVT_ID_TYPE_STATS') || ([] as any);
 
   const educationStats =
-    data?.data.find((f) => f.name === 'EDUCATION_STATS') || ([] as any);
+    data?.data.find((f) => f.name === 'EDUCATION_STATS') || null;
+
+  console.log('educationStats', educationStats);
   return (
     <div>
       <h1 className="text-xl text-primary font-semibold mt-2 mb-2">
@@ -21,13 +23,13 @@ const HouseHoldHeadInsights = ({ data }: Props) => {
       </h1>
       <div className="grid sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-3 gap-2 mb-2 ">
         <Donut
-          beneficiaryGender={beneficiaryGender}
+          donutData={beneficiaryGender}
           title="Gender of Household Head"
           height={250}
           width={'100%'}
         />
         <Donut
-          beneficiaryGender={educationStats}
+          donutData={educationStats}
           title="Household Literacy Status"
           height={265}
           width={'100%'}

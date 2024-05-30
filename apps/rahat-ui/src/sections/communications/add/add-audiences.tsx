@@ -32,15 +32,13 @@ import {
 import { useCreateAudience } from '@rumsan/communication-query';
 
 import { flexRender } from '@tanstack/react-table';
-import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
+import TableLoader from 'apps/rahat-ui/src/components/table.loader';
 import React, { FC } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 import { z } from 'zod';
 import { benType } from '../../projects/el/beneficiary/beneficiary.table';
 import { useAudienceColumns } from './use-audience-columns';
 import { useAudienceTable } from './use-audience-table';
-import { UUID } from 'crypto';
-import TableLoader from 'apps/rahat-ui/src/components/table.loader';
 
 type AddAudienceProps = {
   form: UseFormReturn<z.infer<any>>;
@@ -71,7 +69,7 @@ const AddAudience: FC<AddAudienceProps> = ({
 
   const { filters, setFilters } = usePagination();
 
-  const { data: beneficiaryData,isLoading } = useBeneficiaryPii({
+  const { data: beneficiaryData, isLoading } = useBeneficiaryPii({
     ...filters,
   });
   const createAudience = useCreateAudience();
@@ -200,133 +198,125 @@ const AddAudience: FC<AddAudienceProps> = ({
         name="audiences"
         render={() => (
           <FormItem>
-            {!isLoading ?
-            <div className="rounded border mb-8 bg-card">
-              <Table>
-                <ScrollArea className="h-[calc(100vh-460px)]">
-                  <TableHeader>
-                    {table.getHeaderGroups().map((headerGroup) => (
-                      <TableRow key={headerGroup.id}>
-                        {headerGroup.headers.map((header) => {
-                          return (
-                            <TableHead key={header.id}>
-                              {header.isPlaceholder
-                                ? null
-                                : flexRender(
-                                    header.column.columnDef.header,
-                                    header.getContext(),
+            {!isLoading ? (
+              <div className={`w-full h-full bg-secondary`}>
+                <div className="rounded border mb-8 bg-card">
+                  <Table>
+                    <ScrollArea className="h-[calc(100vh-460px)]">
+                      <TableHeader>
+                        {table.getHeaderGroups().map((headerGroup) => (
+                          <TableRow key={headerGroup.id}>
+                            {headerGroup.headers.map((header) => {
+                              return (
+                                <TableHead key={header.id}>
+                                  {header.isPlaceholder
+                                    ? null
+                                    : flexRender(
+                                        header.column.columnDef.header,
+                                        header.getContext(),
+                                      )}
+                                </TableHead>
+                              );
+                            })}
+                          </TableRow>
+                        ))}
+                      </TableHeader>
+                      <TableBody>
+                        {table.getRowModel().rows?.length ? (
+                          table.getRowModel()?.rows.map((row) => (
+                            <TableRow
+                              key={row.id}
+                              data-state={row?.getIsSelected() && 'selected'}
+                            >
+                              {row.getVisibleCells().map((cell) => (
+                                <TableCell key={cell.id}>
+                                  {flexRender(
+                                    cell.column.columnDef.cell,
+                                    cell.getContext(),
                                   )}
-                            </TableHead>
-                          );
-                        })}
-                      </TableRow>
-                    ))}
-                  </TableHeader>
-                  <TableBody>
-                    {table.getRowModel().rows?.length ? (
-                      table.getRowModel()?.rows.map((row) => (
-                        <TableRow
-                          key={row.id}
-                          data-state={row?.getIsSelected() && 'selected'}
-                        >
-                          {row.getVisibleCells().map((cell) => (
-                            <TableCell key={cell.id}>
-                              {flexRender(
-                                cell.column.columnDef.cell,
-                                cell.getContext(),
-                              )}
+                                </TableCell>
+                              ))}
+                            </TableRow>
+                          ))
+                        ) : (
+                          <TableRow>
+                            <TableCell
+                              colSpan={columns.length}
+                              className="h-24 text-center"
+                            >
+                              No results.
                             </TableCell>
-                          ))}
-                        </TableRow>
-                      ))
-                    ) : (
-                      <TableRow>
-                        <TableCell
-                          colSpan={columns.length}
-                          className="h-24 text-center"
-                        >
-                          No results.
-                        </TableCell>
-                      </TableRow>
-                    )}
-                  </TableBody>
-                </ScrollArea>
-              </Table>
-            </div>:
-            <TableLoader/>}
+                          </TableRow>
+                        )}
+                      </TableBody>
+                    </ScrollArea>
+                  </Table>
+                  <div className="sticky bottom-0 flex items-center justify-end space-x-4 px-4 py-1 border-t-2 bg-card">
+                    <div className="flex-1 text-sm text-muted-foreground">
+                      {table.getFilteredSelectedRowModel().rows.length} of{' '}
+                      {table.getFilteredRowModel().rows.length} row(s) selected.
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="text-sm font-medium">Rows per page</div>
+                      <Select
+                        defaultValue="10"
+                        onValueChange={(value) =>
+                          table.setPageSize(Number(value))
+                        }
+                      >
+                        <SelectTrigger className="w-16">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectGroup>
+                            <SelectItem value="1">1</SelectItem>
+                            <SelectItem value="10">10</SelectItem>
+                            <SelectItem value="20">20</SelectItem>
+                            <SelectItem value="30">30</SelectItem>
+                            <SelectItem value="40">40</SelectItem>
+                            <SelectItem value="50">50</SelectItem>
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      Page {table.getState().pagination.pageIndex + 1} of{' '}
+                      {table.getPageCount()}
+                    </div>
+                    <div className="space-x-4">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          table.previousPage();
+                        }}
+                        disabled={!table.getCanPreviousPage()}
+                      >
+                        Previous
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          table.nextPage();
+                        }}
+                        disabled={!table.getCanNextPage()}
+                      >
+                        Next
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <TableLoader />
+            )}
             <FormMessage />
           </FormItem>
         )}
       />
-      {/* <CustomPagination
-        meta={
-          beneficiaryData?.response?.meta || {
-            total: 0,
-            currentPage: 0,
-          }
-        }
-        handleNextPage={setNextPage}
-        handlePrevPage={setPrevPage}
-        handlePageSizeChange={setPerPage}
-        currentPage={pagination.page}
-        perPage={pagination.perPage}
-        total={beneficiaryData?.response?.meta?.lastPage || 0}
-      /> */}
-      <div className="fixed bottom-0 flex items-center justify-end space-x-8 py-4">
-        <div className="flex-1 text-sm text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length} of{' '}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="text-sm font-medium">Rows per page</div>
-          <Select
-            defaultValue="10"
-            onValueChange={(value) => table.setPageSize(Number(value))}
-          >
-            <SelectTrigger className="w-16">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectItem value="1">1</SelectItem>
-                <SelectItem value="10">10</SelectItem>
-                <SelectItem value="20">20</SelectItem>
-                <SelectItem value="30">30</SelectItem>
-                <SelectItem value="40">40</SelectItem>
-                <SelectItem value="50">50</SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-        </div>
-        <div>
-          Page {table.getState().pagination.pageIndex + 1} of{' '}
-          {table.getPageCount()}
-        </div>
-        <div className="space-x-4">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={(e) => {
-              e.preventDefault();
-              table.previousPage();
-            }}
-            disabled={!table.getCanPreviousPage()}
-          >
-            Previous
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={(e) => {
-              e.preventDefault();
-              table.nextPage();
-            }}
-            disabled={!table.getCanNextPage()}
-          >
-            Next
-          </Button>
-        </div>
-      </div>
     </>
   );
 };

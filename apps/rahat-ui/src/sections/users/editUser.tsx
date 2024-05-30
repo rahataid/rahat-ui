@@ -4,14 +4,6 @@ import { z } from 'zod';
 
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
-// import {
-//   Select,
-//   SelectContent,
-//   SelectGroup,
-//   SelectItem,
-//   SelectTrigger,
-//   SelectValue,
-// } from '@rahat-ui/shadcn/components/select';
 import {
   Form,
   FormControl,
@@ -24,6 +16,7 @@ import { useEffect } from 'react';
 import { UUID } from 'crypto';
 import { useUserUpdate } from '@rahat-ui/query';
 import { useSecondPanel } from '../../providers/second-panel-provider';
+import { PhoneInput } from '@rahat-ui/shadcn/src/components/ui/phone-input';
 
 type Iprops = {
   userDetail: User;
@@ -110,7 +103,7 @@ export default function EditUser({ userDetail }: Iprops) {
                 return (
                   <FormItem>
                     <FormControl>
-                      <Input type="text" placeholder="Phone" {...field} />
+                      <PhoneInput placeholder="Phone" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

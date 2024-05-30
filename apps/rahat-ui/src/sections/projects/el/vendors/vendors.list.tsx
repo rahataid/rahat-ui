@@ -31,6 +31,7 @@ import { useVendorTable } from './useVendorTable';
 import TableLoader from 'apps/rahat-ui/src/components/table.loader';
 import { useAllVendorVoucher, useProjectVoucher, useVendorVoucher } from 'apps/rahat-ui/src/hooks/el/subgraph/querycall';
 import SpinnerLoader from '../../components/spinner.loader';
+import { useReadElProjectCheckVendorStatus } from 'apps/rahat-ui/src/hooks/el/contracts/elProject';
 
 export type Transaction = {
   id: string;
@@ -47,6 +48,8 @@ export default function VendorsList() {
 
   const vendorList = useAllVendorVoucher()
 
+  // const [vendorWalletAddress, setVendorWalletAddress] = React.useState<`0x${string}` | undefined>()
+
   const handleViewClick = (rowData: any) => {
     router.push(
       `/projects/el/${uuid}/vendors/${rowData.walletaddress}?phone=${rowData.phone}&&name=${rowData.name}&&walletAddress=${rowData.walletaddress} &&vendorId=${rowData.vendorId}`,
@@ -61,7 +64,14 @@ export default function VendorsList() {
     contractSettings?.eyevoucher?.address || '',
   );
 
+  console.log(vendorList)
+
   const voucherPrice = Number(voucherDetail?.data?.freeVoucherPrice);
+
+  // const { data: vendorStatus } = useReadElProjectCheckVendorStatus({
+  //   address: contractSettings?.elproject?.address,
+  //   args: [vendorWalletAddress as `0x${string}`],
+  // });
 
   const columns = useVendorTable({ handleViewClick, voucherPrice });
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -121,23 +131,28 @@ export default function VendorsList() {
     });
 
     let totalVoucher:number;
+    let approvedStatus: string;
 
     const vendorListArray = Object.values(vendorList?.data?.voucherArray || {});
 
     const filteredDataWithVoucher = filteredData?.map((row:any) => {
       totalVoucher = 0;
+      approvedStatus = 'Not Approved';
       vendorListArray?.map((voucherRow:any) => {
         
           if(row?.walletaddress?.toLowerCase() === voucherRow?.id?.toLowerCase()){
-            totalVoucher = Number(voucherRow?.freeVoucherRedeemed) + Number(voucherRow?.referredVoucherRedeemed)
+            totalVoucher = Number(voucherRow?.freeVoucherRedeemed) + Number(voucherRow?.referredVoucherRedeemed);
+            approvedStatus = 'Approved';
           }
         
       })
-      return{...row, totalVoucherRedemmed: totalVoucher}
+      return{...row, totalVoucherRedemmed: totalVoucher, approvedStatus}
     })
 
     setData(filteredDataWithVoucher);
   };
+
+
 
   React.useEffect(() => {
     fetchVendors();

@@ -63,6 +63,17 @@ export const useVendorTable = ({ handleViewClick, voucherPrice }: VendorTablePro
       ),
     },
     {
+      accessorKey: 'approvedStatus',
+      header: () => <div className="text-right">Approved Status</div>,
+      cell: ({ row }) => {
+        return (
+          <div className="text-right font-medium">
+            {row.getValue('approvedStatus')}
+          </div>
+        );
+      },
+    },
+    {
       id: 'actions',
       enableHiding: false,
       cell: ({ row }) => {

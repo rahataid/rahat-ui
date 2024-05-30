@@ -43,10 +43,10 @@ export default function FiltersTargetingView() {
     targetUUID as string,
     {
       ...pagination,
-      perPage: 50,
     },
   );
 
+  console.log(pagination);
   const updateTargetLabel = useTargetingLabelUpdate();
 
   console.log(beneficiaryData?.data?.rows);

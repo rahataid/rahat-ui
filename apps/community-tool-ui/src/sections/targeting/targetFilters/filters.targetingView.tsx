@@ -41,9 +41,15 @@ export default function FiltersTargetingView() {
 
   const { data: beneficiaryData } = useTargetedBeneficiaryList(
     targetUUID as string,
+    {
+      ...pagination,
+    },
   );
 
+  console.log(pagination);
   const updateTargetLabel = useTargetingLabelUpdate();
+
+  console.log(beneficiaryData?.data?.rows);
 
   const columns = useTargetingColumns();
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});

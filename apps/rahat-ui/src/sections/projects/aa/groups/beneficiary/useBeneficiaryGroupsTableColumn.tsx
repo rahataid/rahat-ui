@@ -36,18 +36,21 @@ export default function useBeneficiaryGroupsTableColumn() {
       cell: ({ row }) => <div>{row.getValue('name')}</div>,
     },
     {
-      accessorKey: 'stakeholders',
+      accessorKey: 'members',
       header: 'Members',
-      cell: ({ row }) => (
-        <div>
-          {row.original?.stakeholders?.map((member: any, index: number) => (
-            <span key={member?.id}>
-              {member?.name}
-              {index !== row.original.stakeholders.length - 1 && ', '}
-            </span>
-          ))}
-        </div>
-      ),
+      cell: ({ row }) => {
+        console.log(row);
+        return (
+          <div>
+            {row.original?.members?.map((member: any, index: number) => (
+              <span key={member?.id}>
+                {member?.pii?.name}
+                {index !== row?.original?.members?.length - 1 && ', '}
+              </span>
+            ))}
+          </div>
+        );
+      },
     },
     {
       id: 'actions',

@@ -30,12 +30,39 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 20.10.0
+    
+      - uses: pnpm/action-setup@v4
+        name: Install pnpm
+        with:
+          version: 8.14.1
+          run_install: false
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - uses: actions/cache@v4
+        name: Setup pnpm cache
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm install     
+
+      - uses: actions/cache@v4
+        name: Setup NX cache
+        with:
+          path: .nx/cache
+          key: ${{ runner.os }}-nx-cache-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-nx-cache-
 
       - name: install dependencies and build apps
         run: |
-          npm install -g pnpm@8.14.1
-          pnpm install
-          npx nx reset
           pnpm build:all
 
       - name: Set up Docker Buildx
@@ -53,6 +80,8 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
+          cache-from: type=gha,scope=${{ github.ref_name }}-rahat-ui
+          cache-to: type=gha,mode=max,scope=${{ github.ref_name }}-rahat-ui
           file: Dockerfile.rahat-ui
           # push: ${{ github.event_name == 'push' && 'true' || 'false' }}
           push: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
@@ -64,6 +93,8 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
+          cache-from: type=gha,scope=${{ github.ref_name }}-community-tool-ui
+          cache-to: type=gha,mode=max,scope=${{ github.ref_name }}-community-tool-ui
           file: Dockerfile.community-tool-ui
           push: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
           tags: esatya/community-tool-ui:stage

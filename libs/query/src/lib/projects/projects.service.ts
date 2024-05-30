@@ -1,3 +1,4 @@
+'use client';
 import { CreateProjectPayload } from '@rahat-ui/types';
 import { Beneficiary, MS_ACTIONS } from '@rahataid/sdk';
 import { getProjectClient } from '@rahataid/sdk/clients';
@@ -39,6 +40,7 @@ export const useProjectCreateMutation = () => {
 export const useProjectAction = <T = any>(key?: string[]) => {
   const { queryClient, rumsanService } = useRSQuery();
   const projectClient = getProjectClient(rumsanService.client);
+  console.log(projectClient.projectActions);
   return useMutation<
     FormattedResponse<T>,
     Error,
@@ -124,7 +126,6 @@ export const useAssignBenGroupToProject = () => {
       projectUUID: UUID;
       beneficiaryGroupUUID: UUID;
     }) => {
-
       return q.mutateAsync({
         uuid: projectUUID,
         data: {
@@ -153,7 +154,6 @@ export const useAssignBenGroupToProject = () => {
     },
   });
 };
-
 
 export const useBulkAssignBenToProject = () => {
   const q = useProjectAction();
@@ -323,6 +323,8 @@ export const useProjectSubgraphSettings = (uuid: UUID) => {
     // initialData: settings?.[uuid],
   });
 
+  console.log('query.data', query.data);
+
   useEffect(() => {
     if (!isEmpty(query.data)) {
       const settingsToUpdate = {
@@ -403,10 +405,7 @@ export const useProjectList = (
   payload?: Pagination,
 ): UseQueryResult<FormattedResponse<Project[]>, Error> => {
   const { queryClient, rumsanService } = useRSQuery();
-  console.log({ queryClient, rumsanService });
-
   const projectClient = getProjectClient(rumsanService.client);
-  console.log({ projectClient });
   return useQuery(
     {
       queryKey: [TAGS.GET_ALL_PROJECTS, payload],
@@ -479,6 +478,9 @@ export const useProjectBeneficiaries = (payload: GetProjectBeneficiaries) => {
   return {
     ...query,
     data: useMemo(() => {
+
+      console.log(query.data);
+
       return {
         ...query.data,
         data: query.data?.data?.length
@@ -494,6 +496,7 @@ export const useProjectBeneficiaries = (payload: GetProjectBeneficiaries) => {
             phoneStatus: row?.projectData?.phoneStatus || '',
             bankedStatus: row?.projectData?.bankedStatus || '',
             internetStatus: row?.projectData?.internetStatus || '',
+            benTokens: row?.benTokens || 'N/A'
           }))
           : [],
       };

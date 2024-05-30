@@ -52,14 +52,20 @@ export const useTargetingCreate = () => {
   );
 };
 
-export const useTargetedBeneficiaryList = (target_uuid: string) => {
+export const useTargetedBeneficiaryList = (
+  target_uuid: string,
+  payload: Pagination,
+) => {
   const { queryClient, rumsanService } = useRSQuery();
   const targetingClient = getTargetClient(rumsanService.client);
   const query = useQuery(
     {
-      queryKey: [TAGS.GET_TARGETING_BENEFICIARIES, target_uuid],
-      enabled: !!target_uuid,
-      queryFn: () => targetingClient.listByTargetUuid(target_uuid),
+      queryKey: [TAGS.GET_TARGETING_BENEFICIARIES, payload],
+      queryFn: () =>
+        targetingClient.listByTargetUuid({
+          target_uuid: target_uuid,
+          query: payload,
+        }),
     },
     queryClient,
   );

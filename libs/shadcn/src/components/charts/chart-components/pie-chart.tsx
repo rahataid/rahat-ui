@@ -92,7 +92,7 @@ export default function PieChart({ title, subheader, chart }: Props) {
 
   return (
     <div className="bg-card shadow rounded p-4 flex flex-col items-center justify-center">
-      <h2 className="text-lg font-medium">{title}</h2>
+      <h2 className="text-lg font-medium text-primary">{title}</h2>
       <StyledChart
         dir="ltr"
         type="pie"

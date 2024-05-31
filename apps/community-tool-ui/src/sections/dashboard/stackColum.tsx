@@ -70,7 +70,7 @@ const StackColumn = ({ data, stacked, width, height, title }: IProps) => {
   const categories = ['<5', '5-18', '19-49', '50-65', '>65'];
 
   return (
-    <div className="bg-card rounded shadow w-full ">
+    <div className="bg-card rounded shadow w-full mt-2 ">
       <p className="mt-6 mb-2 ml-4 text-primary">{title}</p>
       <ChartColumnStacked
         series={ageGroups}

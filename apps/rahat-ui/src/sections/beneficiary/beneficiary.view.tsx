@@ -115,6 +115,8 @@ function BeneficiaryView() {
       projectUUID: selectedProject as UUID,
       beneficiaryUUIDs: benNotAssignedToTheProject as any[],
     });
+
+    setSelectedListItems([])
   };
 
   const handleCreateGroup = async (data: any) => {

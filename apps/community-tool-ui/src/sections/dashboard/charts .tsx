@@ -3,7 +3,7 @@ import { formatUnderScoredString } from 'apps/rahat-ui/src/utils/string';
 
 const Charts = ({ charts }: { charts: any }) => {
   return (
-    <div className="grid lg:grid-cols-3 gap-2 w-full">
+    <div className="grid lg:grid-cols-4  w-full    sm:grid-cols-1 md:grid-cols-1 gap-2 mb-2  ">
       {charts &&
         charts.length > 0 &&
         charts.map((d: any) => {
@@ -23,7 +23,9 @@ const Charts = ({ charts }: { charts: any }) => {
               key={d.name}
               title={formatUnderScoredString(d.name)}
               subheader={d.subheader || ''}
-              chart={{ series }}
+              chart={{
+                series,
+              }}
             />
           );
         })}

@@ -73,7 +73,7 @@ export default function CustomPagination({
           onClick={handleNextPage}
           type="button"
           // disabled={!table.getCanNextPage()}
-          disabled={currentPage === meta?.lastPage}
+          disabled={meta.lastPage == 0 || currentPage === meta?.lastPage}
         >
           Next
         </Button>

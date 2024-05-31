@@ -8,6 +8,8 @@ type IProps = {
   overFlowProps?: boolean;
   title?: string;
   horizontal?: boolean;
+  className?: string;
+  colors?: string[];
 };
 
 const BarCharts = ({
@@ -17,6 +19,8 @@ const BarCharts = ({
   overFlowProps,
   title,
   horizontal,
+  className,
+  colors,
 }: IProps) => {
   const [categories, series] = charts?.data
     ? [
@@ -27,7 +31,7 @@ const BarCharts = ({
 
   const sumSeries = series.reduce((a: number, b: number) => a + b, 0);
   return (
-    <div className={`bg-card p-4 rounded `}>
+    <div className={`bg-card p-4 rounded  mt-2 ${className}`}>
       <h1 className=" text-lg mt-2 mb-1 ml-4 text-primary">{title}</h1>
       {overFlowProps && (
         <h1 className=" text-2xl font-semibold mt-2 mb-1 ml-4 text-primary">
@@ -49,6 +53,7 @@ const BarCharts = ({
           height={height}
           width={width}
           horizontal={horizontal}
+          colors={colors}
         />
       </div>
     </div>

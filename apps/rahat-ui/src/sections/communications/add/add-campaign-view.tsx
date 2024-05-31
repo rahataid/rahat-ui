@@ -79,7 +79,7 @@ const AddCampaignView = () => {
   });
 
   const debouncedHandleSubmit = debounce((data) => {
-    if(isSubmitting) return;
+    if (isSubmitting) return;
     if (selectedRows.length === 0) {
       setAudienceRequiredError(true);
       setIsSubmitting(false);
@@ -138,7 +138,7 @@ const AddCampaignView = () => {
         type: data.campaignType,
         details: additionalData,
         status: 'ONGOING',
-        isQrSender:data.isQrSender
+        isQrSender: data.isQrSender,
       })
       .then((data) => {
         if (data) {

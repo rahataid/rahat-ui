@@ -12,9 +12,8 @@ export default function DashboardView() {
 
   if (!data)
     return (
-      <div>
-        {' '}
-        <LucideShipWheel className="animate-spin" />
+      <div className="flex h-screen w-screen items-center justify-center">
+        <LucideShipWheel className="animate-spin" size={24} />
       </div>
     );
 

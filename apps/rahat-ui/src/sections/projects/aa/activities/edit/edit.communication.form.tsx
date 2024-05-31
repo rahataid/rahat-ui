@@ -31,6 +31,8 @@ export default function EditCommunicationForm({
   const stakeholdersGroups = useStakeholdersGroupsStore(
     (state) => state.stakeholdersGroups,
   );
+  console.log(stakeholdersGroups);
+
   const fieldName = (name: string) => `activityCommunication.${index}.${name}`; // Dynamic field name generator
   return (
     <div className="border border-dashed rounded p-4 my-8">
@@ -99,6 +101,7 @@ export default function EditCommunicationForm({
                 </FormControl>
                 <SelectContent>
                   <SelectItem value="EMAIL">Email</SelectItem>
+                  <SelectItem value="SMS">Sms</SelectItem>
                 </SelectContent>
               </Select>
               <FormMessage />

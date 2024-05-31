@@ -10,7 +10,7 @@ import { LucideIcon } from 'lucide-react';
 type CardProps = {
   title: string;
   number: string;
-  subTitle: string;
+  subTitle?: string;
   className: string;
   Icon: LucideIcon;
   iconcolor?: string;

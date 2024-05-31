@@ -27,6 +27,7 @@ import { useRouter } from 'next/navigation';
 
 export const useAddBeneficiary = () => {
   const alert = useAlert();
+  const route = useRouter();
   return useWriteElProjectAddBeneficiary({
     mutation: {
       onSuccess: () => {
@@ -62,10 +63,12 @@ export const useAssignClaims = () => {
 
 export const useMintVouchers = () => {
   const toastMixin = useAlert();
+  const route = useRouter();
   return useWriteRahatDonorMintTokenAndApproveDescription({
     mutation: {
       onSuccess: () => {
         toastMixin.fire('It has been done');
+        route.push('/dashboard');
       },
       onError: (err) => {
         toastMixin.fire({
@@ -186,7 +189,6 @@ export const useAddManager = () => {
   const contract = useWriteAccessManagerUpdateProjectManager();
   const addUser = useUserCreate();
   const alert = useAlert();
-  const route = useRouter();
 
   const functionCall = useMutation({
     mutationFn: ({

@@ -10,23 +10,34 @@ const HouseHoldHeadInsights = ({ data }: Props) => {
   const beneficiaryGender =
     data?.data?.find((f) => f.name === 'BENEFICIARY_GENDER') || ([] as any);
   const govtIdTypeStats =
-    data?.data.find((f) => f.name === 'GOVT_ID_TYPE_STATS') || ([] as any);
+    data?.data.find((f) => f.name === 'GOVT_ID_TYPE_STATS') || {};
 
   const educationStats =
     data?.data.find((f) => f.name === 'EDUCATION_STATS') || null;
 
-  console.log('educationStats', educationStats);
+  const houseHoldHeadVulnerabilityStats =
+    data?.data?.find((f) => f.name === 'VULNERABILITY_CATEGORY_STATS') || {};
   return (
     <div>
       <h1 className="text-xl text-primary font-semibold mt-2 mb-2">
         Household Head Insights
       </h1>
-      <div className="grid sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-3 gap-2 mb-2 ">
+      <div className="grid sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-4 gap-2 mb-2 ">
         <Donut
           donutData={beneficiaryGender}
           title="Gender of Household Head"
           height={250}
           width={'100%'}
+        />
+        <BarCharts
+          charts={houseHoldHeadVulnerabilityStats}
+          height={265}
+          width={'100%'}
+          title=" Household Head Vulnerability Status"
+          horizontal={true}
+          overFlowProps={true}
+          className="col-span-2"
+          colors={['#FFC107']}
         />
         <Donut
           donutData={educationStats}
@@ -34,12 +45,6 @@ const HouseHoldHeadInsights = ({ data }: Props) => {
           height={265}
           width={'100%'}
         />
-        <div className="bg-card shadow rounded mt-2">
-          <p className="mt-2 mb-1 ml-4">
-            {' '}
-            Household Head Vulnerability Status{' '}
-          </p>
-        </div>
       </div>
 
       <div className="grid sm:grid-cols-1 md:grid-cols-1  gap-2 mb-2 mt-4 ">

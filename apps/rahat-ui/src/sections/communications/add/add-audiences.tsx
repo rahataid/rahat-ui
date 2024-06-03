@@ -202,7 +202,7 @@ const AddAudience: FC<AddAudienceProps> = ({
               <div className={`w-full h-full bg-secondary`}>
                 <div className="rounded border mb-8 bg-card">
                   <Table>
-                    <ScrollArea className="h-[calc(100vh-460px)]">
+                    <ScrollArea className="h-[calc(100vh-520px)]">
                       <TableHeader>
                         {table.getHeaderGroups().map((headerGroup) => (
                           <TableRow key={headerGroup.id}>
@@ -242,7 +242,7 @@ const AddAudience: FC<AddAudienceProps> = ({
                           <TableRow>
                             <TableCell
                               colSpan={columns.length}
-                              className="h-24 text-center"
+                              className="text-center"
                             >
                               No results.
                             </TableCell>

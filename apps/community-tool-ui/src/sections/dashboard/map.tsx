@@ -17,7 +17,7 @@ export default function CommunityMap({
         initialViewState={{
           longitude: 85.324,
           latitude: 27.7172,
-          zoom: 3.5,
+          zoom: 6,
           bearing: 0,
           pitch: 0,
         }}

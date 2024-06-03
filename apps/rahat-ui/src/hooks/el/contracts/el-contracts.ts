@@ -64,21 +64,52 @@ export const useAssignClaims = () => {
 export const useMintVouchers = () => {
   const toastMixin = useAlert();
   const route = useRouter();
-  return useWriteRahatDonorMintTokenAndApproveDescription({
-    mutation: {
-      onSuccess: () => {
-        toastMixin.fire('It has been done');
-        route.push('/dashboard');
-      },
-      onError: (err) => {
-        toastMixin.fire({
-          title: 'Error while minting vouchers',
-          icon: 'error',
-          text: err.message,
-        });
-      },
+  const contract = useWriteRahatDonorMintTokenAndApproveDescription();
+
+  const functionCall = useMutation({
+    mutationFn: ({
+      id,
+      args,
+      contractAddress,
+    }: {
+      id: string;
+      args: any;
+      contractAddress: `0x${string}`;
+    }): Promise<unknown> => {
+      return contract.writeContractAsync({
+        args: args,
+        address: contractAddress,
+      });
+    },
+    onSuccess: async (result, variables) => {
+      toastMixin.fire('Voucher Minted Successfully');
+        route.push(`/projects/el/${variables.id}`);
+    },
+    onError: (err) => {
+      toastMixin.fire({
+        title: 'Error while minting vouchers',
+        icon: 'error',
+        text: err.message,
+      });
     },
   });
+  return functionCall
+  // return useWriteRahatDonorMintTokenAndApproveDescription({
+  //   mutation: {
+
+  //     onSuccess: () => {
+  //       toastMixin.fire('It has been done');
+  //       route.push(`/projects/}`);
+  //     },
+  //     onError: (err) => {
+  //       toastMixin.fire({
+  //         title: 'Error while minting vouchers',
+  //         icon: 'error',
+  //         text: err.message,
+  //       });
+  //     },
+  //   },
+  // });
 };
 
 export const useOnlyMintVoucher = () => {

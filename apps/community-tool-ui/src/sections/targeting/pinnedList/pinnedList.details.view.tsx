@@ -11,6 +11,7 @@ import {
 
 import {
   useDownloadPinnedListBeneficiary,
+  useExportPinnedListBeneficiary,
   useTargetedBeneficiaryList,
 } from '@rahat-ui/community-query';
 import { usePagination } from '@rahat-ui/query';
@@ -21,7 +22,11 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
-import { Download } from 'lucide-react';
+import {
+  ArrowUpRightIcon,
+  ArrowUpRightSquareIcon,
+  Download,
+} from 'lucide-react';
 import { useParams } from 'next/navigation';
 import * as XLSX from 'xlsx';
 import CustomPagination from '../../../components/customPagination';
@@ -39,10 +44,13 @@ export default function PinnedListDetailsView() {
   } = usePagination();
   const { uuid } = useParams();
 
-  const { data: beneficiaryData } = useTargetedBeneficiaryList(uuid as string);
+  const { data: beneficiaryData } = useTargetedBeneficiaryList(uuid as string, {
+    ...pagination,
+  });
   const columns = useTargetPinnedListDetailsTableColumns();
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const downloadPinnedListBeneficiary = useDownloadPinnedListBeneficiary();
+  const exportPinnedListBeneficiary = useExportPinnedListBeneficiary();
 
   const table = useReactTable({
     manualPagination: true,
@@ -74,21 +82,14 @@ export default function PinnedListDetailsView() {
     XLSX.writeFile(wb, 'label.xlsx');
   };
 
+  const handleExportPinnedBeneficiary = () => {
+    exportPinnedListBeneficiary.mutate(uuid as string);
+  };
+
   return (
     <>
       <div className="flex justify-between items-center p-4 pb-0">
         <div className="flex gap-4">
-          <TooltipProvider delayDuration={100}>
-            <Tooltip>
-              <TooltipTrigger>
-                <Label>{beneficiaryData?.data?.name}</Label>
-              </TooltipTrigger>
-              <TooltipContent className="bg-secondary ">
-                <p className="text-xs font-medium">Group Name</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger
@@ -97,13 +98,31 @@ export default function PinnedListDetailsView() {
               >
                 <Download
                   className="cursor-pointer"
-                  size={18}
-                  strokeWidth={1.6}
+                  size={20}
+                  strokeWidth={2}
                   color="#007bb6"
                 />
               </TooltipTrigger>
               <TooltipContent>
                 <p>Download</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
+
+        <div className="flex gap-4">
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild onClick={handleExportPinnedBeneficiary}>
+                <ArrowUpRightIcon
+                  className="cursor-pointer icon-button"
+                  size={20}
+                  strokeWidth={2}
+                  color="#007bb6"
+                />
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Export Pinned Beneficiaries</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>

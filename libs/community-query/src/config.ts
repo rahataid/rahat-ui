@@ -55,4 +55,5 @@ export const TAGS = {
   UPDATE_TARGETING_LABEL: 'update_targeting_label',
   DOWNLOAD_TARGETING_LABEL: 'download_targeting_label',
   LIST_PALIKA: 'list_palika',
+  EXPORT_TARGETED_BENEFICIARIES: 'export_targeted_beneficiaries',
 };

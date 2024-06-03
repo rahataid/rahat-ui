@@ -323,8 +323,6 @@ export const useProjectSubgraphSettings = (uuid: UUID) => {
     // initialData: settings?.[uuid],
   });
 
-  console.log('query.data', query.data);
-
   useEffect(() => {
     if (!isEmpty(query.data)) {
       const settingsToUpdate = {
@@ -478,26 +476,25 @@ export const useProjectBeneficiaries = (payload: GetProjectBeneficiaries) => {
   return {
     ...query,
     data: useMemo(() => {
-
       console.log(query.data);
 
       return {
         ...query.data,
         data: query.data?.data?.length
           ? query.data.data.map((row: any) => ({
-            uuid: row?.uuid?.toString(),
-            wallet: row?.walletAddress?.toString(),
-            voucherClaimStatus: row?.claimStatus,
-            name: row?.piiData?.name || '',
-            email: row?.piiData?.email || '',
-            gender: row?.projectData?.gender?.toString() || '',
-            phone: row?.piiData?.phone || 'N/A',
-            type: row?.type?.toString() || 'N/A',
-            phoneStatus: row?.projectData?.phoneStatus || '',
-            bankedStatus: row?.projectData?.bankedStatus || '',
-            internetStatus: row?.projectData?.internetStatus || '',
-            benTokens: row?.benTokens || 'N/A'
-          }))
+              uuid: row?.uuid?.toString(),
+              wallet: row?.walletAddress?.toString(),
+              voucherClaimStatus: row?.claimStatus,
+              name: row?.piiData?.name || '',
+              email: row?.piiData?.email || '',
+              gender: row?.projectData?.gender?.toString() || '',
+              phone: row?.piiData?.phone || 'N/A',
+              type: row?.type?.toString() || 'N/A',
+              phoneStatus: row?.projectData?.phoneStatus || '',
+              bankedStatus: row?.projectData?.bankedStatus || '',
+              internetStatus: row?.projectData?.internetStatus || '',
+              benTokens: row?.benTokens || 'N/A',
+            }))
           : [],
       };
     }, [query.data]),

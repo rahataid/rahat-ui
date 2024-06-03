@@ -32,6 +32,7 @@ import * as XLSX from 'xlsx';
 import CustomPagination from '../../../components/customPagination';
 import DetailsTable from './detailsTable';
 import { useTargetPinnedListDetailsTableColumns } from './useTargetLabelColumns';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 
 export default function PinnedListDetailsView() {
   const {
@@ -88,7 +89,7 @@ export default function PinnedListDetailsView() {
 
   return (
     <>
-      <div className="flex justify-between items-center p-4 pb-0">
+      <div className="flex justify-between items-center p-2 pb-0">
         <div className="flex gap-4">
           <TooltipProvider>
             <Tooltip>
@@ -96,12 +97,13 @@ export default function PinnedListDetailsView() {
                 asChild
                 onClick={downloadPinnedListBeneficiaryByLabel}
               >
-                <Download
-                  className="cursor-pointer"
-                  size={20}
-                  strokeWidth={2}
-                  color="#007bb6"
-                />
+                <Button
+                  size={'xs'}
+                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
+                >
+                  <Download size={20} className="mr-2" />
+                  Download
+                </Button>
               </TooltipTrigger>
               <TooltipContent>
                 <p>Download</p>
@@ -114,12 +116,12 @@ export default function PinnedListDetailsView() {
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild onClick={handleExportPinnedBeneficiary}>
-                <ArrowUpRightIcon
-                  className="cursor-pointer icon-button"
-                  size={20}
-                  strokeWidth={2}
-                  color="#007bb6"
-                />
+                <Button
+                  size={'xs'}
+                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
+                >
+                  Export
+                </Button>
               </TooltipTrigger>
               <TooltipContent>
                 <p>Export Pinned Beneficiaries</p>

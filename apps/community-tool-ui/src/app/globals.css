@@ -99,3 +99,12 @@
     max-width: 1800px;
   }
 }
+.mapboxgl-ctrl-attrib-inner {
+  display: none;
+}
+
+.mapboxgl-ctrl {
+  .mapboxgl-ctrl-logo {
+    display: none;
+  }
+}

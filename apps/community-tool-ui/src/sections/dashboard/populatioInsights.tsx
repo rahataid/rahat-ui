@@ -1,6 +1,6 @@
-import React from 'react';
-import Donut from './donut';
 import BarCharts from './barCharts';
+import Donut from './donut';
+import CommunityMap from './map';
 import StackColumn from './stackColum';
 
 type Props = {
@@ -28,11 +28,7 @@ const PopulationInsights = ({ data }: Props) => {
           width={'100%'}
           className="col-span-1"
         />
-        <div className="col-span-2">
-          <div className="bg-card shadow rounded h-[calc(100vh-500px)]">
-            <p className="mt-2 mb-1 ml-4">Maps</p>
-          </div>
-        </div>
+        <CommunityMap coordinates={[82.3886, 29.3863]} />
       </div>
 
       <div className="grid  sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-2 mt-4">
@@ -50,7 +46,6 @@ const PopulationInsights = ({ data }: Props) => {
           horizontal={true}
           colors={['#FFC107']}
         />
-        {/* vulnerability status TODO as props*/}
       </div>
     </div>
   );

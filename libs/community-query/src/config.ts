@@ -2,6 +2,7 @@ export const TAGS = {
   GET_BENEFICIARY: 'get_one_beneficiary',
   GET_ALL_USER: 'get_all_user',
   GET_USER: 'get_user',
+  GET_DASHBOARD: 'get_dashboard',
   GET_ME: 'get_me',
   UPDATE_ME: 'update_me',
   UPDATE_USER: 'update_user',
@@ -53,4 +54,5 @@ export const TAGS = {
   LIST_MAPPINGS_BY_IMPORT_ID: 'list_mappings_by_import_id',
   UPDATE_TARGETING_LABEL: 'update_targeting_label',
   DOWNLOAD_TARGETING_LABEL: 'download_targeting_label',
+  LIST_PALIKA: 'list_palika',
 };

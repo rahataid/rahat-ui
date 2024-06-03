@@ -20,18 +20,27 @@ import { cn } from '@rahat-ui/shadcn/src';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 
 type IProps = {
-  transformedData: {
-    value: string;
-    label: string;
-  }[];
+  transformedData:
+    | {
+        value: string;
+        label: string;
+      }[];
   title: string;
+  handleSelect: (key: string, value: string) => void;
 };
 export default function SearchDropdownComponent({
   transformedData,
   title,
+  handleSelect,
 }: IProps) {
   const [open, setOpen] = React.useState<boolean>(false);
   const [value, setValue] = React.useState<string>('');
+
+  const onSelect = (currentValue: string) => {
+    setValue(currentValue === value ? '' : currentValue);
+    setOpen(false);
+    handleSelect(title, currentValue);
+  };
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
@@ -58,10 +67,7 @@ export default function SearchDropdownComponent({
                   <CommandItem
                     key={d.value}
                     value={d.value}
-                    onSelect={(currentValue) => {
-                      setValue(currentValue === value ? '' : currentValue);
-                      setOpen(false);
-                    }}
+                    onSelect={onSelect}
                   >
                     <Check
                       className={cn(

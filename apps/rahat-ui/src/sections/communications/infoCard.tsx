@@ -35,7 +35,7 @@ type IProps = {
   startTime?: string;
   status?: string;
   totalAudience?: number;
-  refetch : any
+  // refetch : any
   
 };
 
@@ -46,7 +46,7 @@ const InfoCard: React.FC<IProps> = ({
   startTime,
   status,
   totalAudience,
-  refetch
+  // refetch
 }) => {
   const queryClient = useQueryClient();
 
@@ -58,7 +58,7 @@ const InfoCard: React.FC<IProps> = ({
         .then(() => {
           toast.success('Campaign Trigger Success.');
           queryClient.invalidateQueries([TAGS.GET_CAMPAIGNS]);
-          refetch();
+          // refetch();
         })
         .catch((e) => {
           toast.error('Failed to Trigger Campaign.');

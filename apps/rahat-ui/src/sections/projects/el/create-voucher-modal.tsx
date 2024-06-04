@@ -1,6 +1,10 @@
 'use client';
 
 import {
+  PROJECT_SETTINGS_KEYS,
+  useProjectSettingsStore,
+} from '@rahat-ui/query';
+import {
   Alert,
   AlertDescription,
   AlertTitle,
@@ -17,18 +21,11 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/dialog';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
+import { useReadElProjectGetProjectVoucherDetail } from 'apps/rahat-ui/src/hooks/el/contracts/elProject';
 import { Info, PlusSquare, TicketCheck } from 'lucide-react';
+import { useParams, useRouter } from 'next/navigation';
 import { FC, useState } from 'react';
 import { useProjectVoucher } from '../../../hooks/el/subgraph/querycall';
-import { useParams, useRouter } from 'next/navigation';
-import {
-  PROJECT_SETTINGS_KEYS,
-  useProjectSettingsStore,
-} from '@rahat-ui/query';
-import {
-  useReadElProjectGetProjectVoucherDetail,
-  useReadElProjectGetTotalBeneficiaries,
-} from 'apps/rahat-ui/src/hooks/el/contracts/elProject';
 
 interface CreateVoucherModalType {
   voucherInputs: {
@@ -48,15 +45,17 @@ interface CreateVoucherModalType {
   setVoucherInputs?: any;
   handleSubmit: () => void;
   handleModal: () => void;
+  handleCloseTokenModal: () => void;
   isTransacting: boolean;
 }
- 
+
 const CreateVoucherModal: FC<CreateVoucherModalType> = ({
   voucherInputs,
   handleInputChange,
   handleModal,
   handleSubmit,
-  isTransacting
+  handleCloseTokenModal,
+  isTransacting,
 }) => {
   const handleSelectChange = (value: string) => {
     handleInputChange({
@@ -78,6 +77,7 @@ const CreateVoucherModal: FC<CreateVoucherModalType> = ({
       setErrorMessage('Please enter the number of free vouchers.');
     } else {
       handleSubmit();
+      // handleCloseTokenModal();
     }
   };
 
@@ -175,7 +175,9 @@ const CreateVoucherModal: FC<CreateVoucherModalType> = ({
 
             <DialogFooter>
               <DialogClose asChild>
-                <Button onClick={handleSubmitCheck} disabled={isTransacting}>{isTransacting ? "Confirming Transaction..." : "Submit"}</Button>
+                <Button onClick={handleSubmitCheck} disabled={isTransacting}>
+                  {isTransacting ? 'Confirming Transaction...' : 'Submit'}
+                </Button>
               </DialogClose>
             </DialogFooter>
           </DialogContent>

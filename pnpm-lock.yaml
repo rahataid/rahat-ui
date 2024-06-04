@@ -81,8 +81,8 @@ importers:
         specifier: 0.0.9
         version: 0.0.9
       '@rahataid/community-tool-sdk':
-        specifier: ^0.0.25
-        version: 0.0.25
+        specifier: ^0.0.26
+        version: 0.0.26
       '@rahataid/el-subgraph':
         specifier: 0.0.12
         version: 0.0.12
@@ -2924,8 +2924,8 @@ packages:
   '@rahataid/c2c-query@0.0.9':
     resolution: {integrity: sha512-YfwV2WjDN43lrZ4U0j1Qu6X1wfQdnJQsZZp8l1pT1YYXYbF89b7CVb/KwrIWl2Ffd+O3T+n/rowG55cZCYj/HQ==, tarball: https://npm.pkg.github.com/download/@rahataid/c2c-query/0.0.9/51f6bf7f9df92d71711a4005e8b2fb3b980bf98d}
 
-  '@rahataid/community-tool-sdk@0.0.25':
-    resolution: {integrity: sha512-IK4Ym9dRtyzh3Et1MqqW4a3gVrZKYVcGiMJtL/fil3fVUzCw549cD5L/TG88SRINhsRyfyHOOeQylF2sDFqpQw==, tarball: https://npm.pkg.github.com/download/@rahataid/community-tool-sdk/0.0.25/8a52cc3d0c9d450bdba0b2959a3653162002cd8a}
+  '@rahataid/community-tool-sdk@0.0.26':
+    resolution: {integrity: sha512-d/Upqm/sUeaGfrvQb2a4EigpegbzmMvlYTIwaqgQEcAndYEBGxbs/Ppc0JKiW1wyyrk+PwNV7jibDr6lM9JDtQ==, tarball: https://npm.pkg.github.com/download/@rahataid/community-tool-sdk/0.0.26/fb2824b204d4c73299f3152bfed3fdfa40578bf7}
 
   '@rahataid/el-subgraph@0.0.12':
     resolution: {integrity: sha512-dKmt0YueYPn+qNGVSby22vrM8xkpx0S1oWxW+vdjHDdRQpqhW9Z4CRqesWt2Qt2H4QnoPVpGh4Gf2pMPXLpG1Q==, tarball: https://npm.pkg.github.com/download/@rahataid/el-subgraph/0.0.12/91a92f6da8a9963862dc50d6f544d653dfa6392d}
@@ -11307,7 +11307,7 @@ snapshots:
     dependencies:
       '@babel/core': 7.24.5
       '@babel/helper-environment-visitor': 7.22.20
-      '@babel/helper-plugin-utils': 7.24.5
+      '@babel/helper-plugin-utils': 7.24.6
       '@babel/helper-remap-async-to-generator': 7.22.20(@babel/core@7.24.5)
       '@babel/plugin-syntax-async-generators': 7.8.4(@babel/core@7.24.5)
 
@@ -11333,19 +11333,19 @@ snapshots:
   '@babel/plugin-proposal-logical-assignment-operators@7.20.7(@babel/core@7.24.5)':
     dependencies:
       '@babel/core': 7.24.5
-      '@babel/helper-plugin-utils': 7.24.5
+      '@babel/helper-plugin-utils': 7.24.6
       '@babel/plugin-syntax-logical-assignment-operators': 7.10.4(@babel/core@7.24.5)
 
   '@babel/plugin-proposal-nullish-coalescing-operator@7.18.6(@babel/core@7.24.5)':
     dependencies:
       '@babel/core': 7.24.5
-      '@babel/helper-plugin-utils': 7.24.5
+      '@babel/helper-plugin-utils': 7.24.6
       '@babel/plugin-syntax-nullish-coalescing-operator': 7.8.3(@babel/core@7.24.5)
 
   '@babel/plugin-proposal-numeric-separator@7.18.6(@babel/core@7.24.5)':
     dependencies:
       '@babel/core': 7.24.5
-      '@babel/helper-plugin-utils': 7.24.5
+      '@babel/helper-plugin-utils': 7.24.6
       '@babel/plugin-syntax-numeric-separator': 7.10.4(@babel/core@7.24.5)
 
   '@babel/plugin-proposal-object-rest-spread@7.20.7(@babel/core@7.24.5)':
@@ -11353,20 +11353,20 @@ snapshots:
       '@babel/compat-data': 7.24.4
       '@babel/core': 7.24.5
       '@babel/helper-compilation-targets': 7.23.6
-      '@babel/helper-plugin-utils': 7.24.5
+      '@babel/helper-plugin-utils': 7.24.6
       '@babel/plugin-syntax-object-rest-spread': 7.8.3(@babel/core@7.24.5)
       '@babel/plugin-transform-parameters': 7.24.5(@babel/core@7.24.5)
 
   '@babel/plugin-proposal-optional-catch-binding@7.18.6(@babel/core@7.24.5)':
     dependencies:
       '@babel/core': 7.24.5
-      '@babel/helper-plugin-utils': 7.24.5
+      '@babel/helper-plugin-utils': 7.24.6
       '@babel/plugin-syntax-optional-catch-binding': 7.8.3(@babel/core@7.24.5)
 
   '@babel/plugin-proposal-optional-chaining@7.21.0(@babel/core@7.24.5)':
     dependencies:
       '@babel/core': 7.24.5
-      '@babel/helper-plugin-utils': 7.24.5
+      '@babel/helper-plugin-utils': 7.24.6
       '@babel/helper-skip-transparent-expression-wrappers': 7.22.5
       '@babel/plugin-syntax-optional-chaining': 7.8.3(@babel/core@7.24.5)
 
@@ -14293,7 +14293,7 @@ snapshots:
     dependencies:
       '@swc/helpers': 0.5.11
 
-  '@rahataid/community-tool-sdk@0.0.25':
+  '@rahataid/community-tool-sdk@0.0.26':
     dependencies:
       tslib: 2.6.2
 

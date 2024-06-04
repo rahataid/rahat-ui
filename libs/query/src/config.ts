@@ -12,6 +12,7 @@ export const TAGS = {
   GET_ALL_AUDIENCE: 'get_all_audience',
   GET_BENEFICIARIES: 'get_beneficiaries',
   GET_BENEFICIARIES_STATS: 'get_beneficiaries_stats',
+  GET_VENDOr_STATS:'get_vendor_stats',
   GET_PROJECT_BENEFICIARIES_STATS: 'get_project_beneficiaries_stats',
   LIST_COMMUNITY_BENFICIARIES: 'list_community_beneficiaries',
   CREATE_COMMUNITY_BENEFICARY: 'create_community_beneficary',

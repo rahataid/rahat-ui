@@ -80,18 +80,6 @@ const ProjectMainView = () => {
     getElProjectStats();
   }, [getProjectStats, getElProjectStats]);
 
-  const filteredChartData = stats?.data?.data
-    ? stats.data.data
-        .filter((item) => {
-          const name = item?.name;
-          return name === `BENEFICIARY_AGE_RANGE_ID_${id}`;
-        })
-        .map((item) => ({
-          ...item,
-          name: item.name.replace(new RegExp(`_ID_${id}`), ''),
-        }))
-    : [];
-
   const filterdELChartData =
     ELProjectStats?.filter((item) => {
       const name = item?.name;
@@ -184,11 +172,7 @@ const ProjectMainView = () => {
           ELProjectStats={ELProjectStats}
         />
         <ProjectChart
-          chartData={[
-            ...filteredChartData,
-            ...filteredFootfallData,
-            ...filterdELChartData,
-          ]}
+          chartData={[...filteredFootfallData, ...filterdELChartData]}
         />
         <div className="grid md:grid-cols-1 lg:grid-cols-2 gap-2 mt-2">
           <div className="bg-card rounded">

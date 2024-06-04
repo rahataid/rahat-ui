@@ -9,6 +9,7 @@ import {
   SelectContent,
   SelectTrigger,
   SelectValue,
+  SelectItem,
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import {
   Dialog,
@@ -35,8 +36,7 @@ type IProps = {
   startTime?: string;
   status?: string;
   totalAudience?: number;
-  refetch : any
-  
+  refetch: any;
 };
 
 const InfoCard: React.FC<IProps> = ({
@@ -46,10 +46,10 @@ const InfoCard: React.FC<IProps> = ({
   startTime,
   status,
   totalAudience,
-  refetch
+  refetch,
 }) => {
   const queryClient = useQueryClient();
-
+  const [open, setOpen] = React.useState(false);
   const triggerCampaign = useTriggerCampaign();
   const handleChange = (e: string) => {
     if (e === 'trigger') {
@@ -58,10 +58,12 @@ const InfoCard: React.FC<IProps> = ({
         .then(() => {
           toast.success('Campaign Trigger Success.');
           queryClient.invalidateQueries([TAGS.GET_CAMPAIGNS]);
-          refetch();
+          setOpen(false);
+          // refetch();
         })
         .catch((e) => {
           toast.error('Failed to Trigger Campaign.');
+          setOpen(false);
         });
     }
   };
@@ -70,38 +72,37 @@ const InfoCard: React.FC<IProps> = ({
       <CardHeader className="flex flex-row justify-between">
         <CardTitle>{name}</CardTitle>
         {status !== 'COMPLETED' && (
-          <Select>
+          <Select value={''} onValueChange={() => setOpen(true)}>
             <SelectTrigger className="w-24">
               <SelectValue placeholder="Action" />
             </SelectTrigger>
             <SelectContent>
-              <Dialog>
-                <DialogTrigger className="hover:bg-muted p-1 rounded text-sm text-left w-full">
-                  Trigger Campaign
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>Trigger Campaign</DialogTitle>
-                    <DialogDescription>Are you sure?</DialogDescription>
-                  </DialogHeader>
-                  <DialogFooter className="sm:justify-end">
-                    <DialogClose asChild>
-                      <Button type="button" variant="ghost">
-                        Close
-                      </Button>
-                    </DialogClose>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      className="text-primary"
-                      onClick={() => handleChange('trigger')}
-                    >
-                      Trigger
-                    </Button>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
+              <SelectItem value="trigger-campaign">Trigger Campaign</SelectItem>
             </SelectContent>
+
+            <Dialog open={open} onOpenChange={setOpen}>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Trigger Campaign</DialogTitle>
+                  <DialogDescription>Are you sure?</DialogDescription>
+                </DialogHeader>
+                <DialogFooter className="sm:justify-end">
+                  <DialogClose asChild>
+                    <Button type="button" variant="ghost">
+                      Close
+                    </Button>
+                  </DialogClose>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    className="text-primary"
+                    onClick={() => handleChange('trigger')}
+                  >
+                    Trigger
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           </Select>
         )}
       </CardHeader>

@@ -28,8 +28,6 @@ const ProjectMainView = () => {
   const [ELProjectStats, setELProjectStats] = useState();
   const projectClient = useProjectAction(['count_ben_vendor']);
   const statsClient = useProjectAction(['stats']);
-
-  const stats = useGetProjectBeneficiaryStats(id);
   const project = useProjectStore((state) => state.singleProject);
   const contractSettings = useProjectSettingsStore(
     (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT] || null,
@@ -98,19 +96,35 @@ const ProjectMainView = () => {
 
   const enrolledNoGlass = ELProjectStats?.filter((item) => {
     return item.name === 'GLASS_STATUS';
-  })?.[0]?.data?.find((i) => i.id === 'ENROLLED_no_glass');
+  })?.[0]?.data?.find((i) => i.id === 'ENROLLED_GLASS_NOT_REQUIRED');
 
-  const enrolledGlass = ELProjectStats?.filter((item) => {
+  const enrolledReadingGlass = ELProjectStats?.filter((item) => {
     return item.name === 'GLASS_STATUS';
-  })?.[0]?.data?.find((i) => i.id === 'ENROLLED_require_glass');
+  })?.[0]?.data?.find((i) => i.id === 'ENROLLED_READING_GLASS');
 
-  const referredGlass = ELProjectStats?.filter((item) => {
+  const referredReadingGlass = ELProjectStats?.filter((item) => {
     return item.name === 'GLASS_STATUS';
-  })?.[0]?.data?.find((i) => i.id === 'REFERRED_require_glass');
+  })?.[0]?.data?.find((i) => i.id === 'REFERRED_READING_GLASS');
 
   const referredNoGlass = ELProjectStats?.filter((item) => {
     return item.name === 'GLASS_STATUS';
-  })?.[0]?.data?.find((i) => i.id === 'REFERRED_no_glass');
+  })?.[0]?.data?.find((i) => i.id === 'REFERRED_GLASS_NOT_REQUIRED');
+
+  const referredRegularSunGlass = ELProjectStats?.filter((item) => {
+    return item.name === 'GLASS_STATUS';
+  })?.[0]?.data?.find((i) => i.id === 'REFERRED_REGULAR_SUNGLASS');
+
+  const enrolledRegularSunGlass = ELProjectStats?.filter((item) => {
+    return item.name === 'GLASS_STATUS';
+  })?.[0]?.data?.find((i) => i.id === 'ENROLLED_REGULAR_SUNGLASS');
+
+  const referredNonPolarizedSunGlass = ELProjectStats?.filter((item) => {
+    return item.name === 'GLASS_STATUS';
+  })?.[0]?.data?.find((i) => i.id === 'REFERRED_NON_POLARIZED_SUNGLASS');
+
+  const enrolledNonPolarizedSunGlass = ELProjectStats?.filter((item) => {
+    return item.name === 'GLASS_STATUS';
+  })?.[0]?.data?.find((i) => i.id === 'ENROLLED_NON_PLOARISED_SUNGLASS');
 
   const referredEyeCheckupData = ELProjectStats?.filter((item) => {
     return item.name === 'EYE_CHECKUP';
@@ -142,12 +156,29 @@ const ProjectMainView = () => {
   ];
   const glassData = [
     {
-      name: 'Glass Required',
-      data: [enrolledGlass?.count || 0, referredGlass?.count || 0],
+      name: 'Reading Glass',
+      data: [
+        enrolledReadingGlass?.count || 0,
+        referredReadingGlass?.count || 0,
+      ],
     },
     {
       name: 'Glass Not Required',
       data: [enrolledNoGlass?.count || 0, referredNoGlass?.count || 0],
+    },
+    {
+      name: 'Regular Sunglass',
+      data: [
+        referredRegularSunGlass?.count || 0,
+        enrolledRegularSunGlass?.count || 0,
+      ],
+    },
+    {
+      name: 'Non Polarized Sunglass',
+      data: [
+        referredNonPolarizedSunGlass?.count || 0,
+        enrolledNonPolarizedSunGlass?.count || 0,
+      ],
     },
   ];
 

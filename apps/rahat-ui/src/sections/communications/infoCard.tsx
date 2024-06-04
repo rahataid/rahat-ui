@@ -36,7 +36,7 @@ type IProps = {
   startTime?: string;
   status?: string;
   totalAudience?: number;
-  refetch: any;
+  // refetch : any
 };
 
 const InfoCard: React.FC<IProps> = ({
@@ -46,7 +46,7 @@ const InfoCard: React.FC<IProps> = ({
   startTime,
   status,
   totalAudience,
-  refetch,
+  // refetch
 }) => {
   const queryClient = useQueryClient();
   const [open, setOpen] = React.useState(false);

@@ -38,7 +38,7 @@ export default function TextDetailView() {
                 status={data?.data?.status}
                 totalAudience={data?.data?.audiences.length}
                 type={data?.data?.type}
-                refetch={ refetch}
+                // refetch={ refetch}
               />
             </div>
             <Card className="shadow-md">

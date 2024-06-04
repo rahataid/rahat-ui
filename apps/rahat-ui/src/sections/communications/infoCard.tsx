@@ -35,8 +35,6 @@ type IProps = {
   startTime?: string;
   status?: string;
   totalAudience?: number;
-  // refetch : any
-  
 };
 
 const InfoCard: React.FC<IProps> = ({

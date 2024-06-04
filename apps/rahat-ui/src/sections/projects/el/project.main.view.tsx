@@ -2,8 +2,6 @@
 
 import {
   PROJECT_SETTINGS_KEYS,
-  useGetBeneficiaryStats,
-  useGetProjectBeneficiaryStats,
   useProjectAction,
   useProjectSettingsStore,
   useProjectStore,

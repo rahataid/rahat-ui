@@ -14,7 +14,7 @@ import TextDetailTable from './textDetailTable';
 import { useGetCampaign } from '@rumsan/communication-query';
 export default function TextDetailView() {
   const params = useParams<{ tag: string; id: string }>();
-  const { data, isLoading,refetch } = useGetCampaign({
+  const { data, isLoading} = useGetCampaign({
     id: Number(params.id),
   });
 

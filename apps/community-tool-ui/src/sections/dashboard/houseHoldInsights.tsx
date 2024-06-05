@@ -59,7 +59,7 @@ const HouseHoldInsights = ({ data }: Props) => {
           height={400}
           width={'100%'}
           overFlowProps={true}
-          title="Benniciary Associated Bank"
+          title="Beneficiary Associated Bank"
           horizontal={true}
         />
 

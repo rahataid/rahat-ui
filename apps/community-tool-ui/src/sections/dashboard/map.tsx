@@ -11,8 +11,9 @@ export default function CommunityMap({
   const mapRef = React.useRef<MapRef>(null);
 
   return (
-    <div className="bg-card shadow rounded h-[calc(100vh-500px)] mt-2 col-span-2 ">
+    <div className="bg-card shadow rounded h-[calc(100vh-500px)] mt-2 col-span-4">
       <Map
+        style={{ width: '100%', height: '100%' }}
         ref={mapRef}
         initialViewState={{
           longitude: 85.324,

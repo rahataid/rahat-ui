@@ -50,6 +50,17 @@
   }
 }
 
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  /* Hide scrollbar for IE, Edge and Firefox */
+  .no-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+}
+
 @layer base {
   * {
     @apply border-border;
@@ -86,5 +97,14 @@
 @media (min-width: 1921px) {
   .import-container {
     max-width: 1800px;
+  }
+}
+.mapboxgl-ctrl-attrib-inner {
+  display: none;
+}
+
+.mapboxgl-ctrl {
+  .mapboxgl-ctrl-logo {
+    display: none;
   }
 }

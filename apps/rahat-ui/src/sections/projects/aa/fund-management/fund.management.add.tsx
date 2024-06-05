@@ -42,8 +42,6 @@ export default function AddFundManagementView() {
   const { data: reservationStats, isLoading: isLoadingReservationStats } =
     useReservationStats(projectId as UUID);
 
-  // console.log(reservationStats);
-
   const contractSettings = useProjectSettingsStore(
     (s) => s.settings?.[projectId]?.[PROJECT_SETTINGS_KEYS.CONTRACT] || null,
   );
@@ -54,6 +52,9 @@ export default function AddFundManagementView() {
   });
 
   const parsedProjectBudget = Number(projectBudget);
+  const totalReservedTokens =
+    reservationStats?.data?.totalReservedTokens?._sum?.benTokens || 0;
+  const availableBudget = parsedProjectBudget - totalReservedTokens;
 
   const FormSchema = z.object({
     title: z.string().min(2, { message: 'Title must be at least 4 character' }),
@@ -76,6 +77,7 @@ export default function AddFundManagementView() {
   // Watch for changes in the form fields
   const watchTokens = form.watch('numberOfTokens');
   const watchBeneficiaryGroup = form.watch('beneficiaryGroup');
+  const watchTotalTokensReserved = form.watch('totalTokensReserved');
 
   useEffect(() => {
     const numberOfTokens = Number(watchTokens);
@@ -130,11 +132,13 @@ export default function AddFundManagementView() {
           ) : (
             <div>
               <p>Total project budget: {parsedProjectBudget}</p>
-              <p>
-                Total reserved budget:{' '}
-                {reservationStats?.data?.totalReservedTokens?._sum?.benTokens ||
-                  0}
-              </p>
+              <p>Total reserved budget: {totalReservedTokens}</p>
+              <p>Available budget: {availableBudget}</p>
+              {watchTotalTokensReserved > availableBudget && (
+                <p style={{ color: 'red' }}>
+                  Warning: Total reserved tokens exceed the available budget!
+                </p>
+              )}
             </div>
           )}
         </div>
@@ -163,6 +167,48 @@ export default function AddFundManagementView() {
                   }}
                 />
 
+                <div>
+                  <FormField
+                    control={form.control}
+                    name="beneficiaryGroup"
+                    render={({ field }) => {
+                      return (
+                        <FormItem>
+                          <FormLabel>Beneficiary Group</FormLabel>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                            value={field.value}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select beneficiary group" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {beneficiariesGroups?.map((g: any) => {
+                                return (
+                                  <>
+                                    <SelectItem value={g?.uuid}>
+                                      {g?.name}
+                                    </SelectItem>
+                                  </>
+                                );
+                              })}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      );
+                    }}
+                  />
+                  {/* <small>
+                    {form.getValues('numberOfTokens')} tokens will be reserved
+                    for each member of the group. Total reserved tokens will be{' '}
+                    {form.getValues('totalTokensReserved')}
+                  </small> */}
+                </div>
+
                 <FormField
                   control={form.control}
                   name="numberOfTokens"
@@ -174,7 +220,7 @@ export default function AddFundManagementView() {
                           <Input
                             type="number"
                             inputMode="decimal"
-                            placeholder="Enter number of tokens"
+                            placeholder="Enter number of tokens for each members"
                             {...field}
                           />
                         </FormControl>
@@ -204,45 +250,6 @@ export default function AddFundManagementView() {
                     );
                   }}
                 />
-                <FormField
-                  control={form.control}
-                  name="beneficiaryGroup"
-                  render={({ field }) => {
-                    return (
-                      <FormItem>
-                        <FormLabel>Beneficiary Group</FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                          value={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select beneficiary group" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {beneficiariesGroups?.map((g: any) => {
-                              return (
-                                <>
-                                  <SelectItem value={g?.uuid}>
-                                    {g?.name}
-                                  </SelectItem>
-                                </>
-                              );
-                            })}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    );
-                  }}
-                />
-                <small>
-                  {form.getValues('numberOfTokens')} tokens will be reserved for
-                  each member of the group. Total reserved tokens will be{' '}
-                  {form.getValues('totalTokensReserved')}
-                </small>
                 <div className="flex justify-end gap-2 my-4">
                   <Button
                     onClick={() => router.back()}

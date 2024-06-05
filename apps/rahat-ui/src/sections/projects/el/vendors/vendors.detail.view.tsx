@@ -76,12 +76,13 @@ export default function VendorsDetailPage() {
 
   const assignVendorToProjet = async () => {
     setisTransacting(true);
-    const txnHash = await updateVendor.writeContractAsync({
-      address: contractAddress,
-      args: [walletAddress, true],
-    });
+    const txnHash = await updateVendor
+      .writeContractAsync({
+        address: contractAddress,
+        args: [walletAddress, true],
+      })
+      .finally(() => handleAssignVendorClose());
     setTransactionHash(txnHash);
-    handleAssignVendorClose();
   };
 
   useEffect(() => {

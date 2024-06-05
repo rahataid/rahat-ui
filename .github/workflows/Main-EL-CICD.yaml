@@ -80,8 +80,8 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          cache-from: type=gha,scope=${{ github.ref_name }}-rahat-ui
-          cache-to: type=gha,mode=max,scope=${{ github.ref_name }}-rahat-ui
+          # cache-from: type=gha,scope=${{ github.ref_name }}-rahat-ui
+          # cache-to: type=gha,mode=max,scope=${{ github.ref_name }}-rahat-ui
           file: Dockerfile.rahat-ui
           # push: ${{ github.event_name == 'push' && 'true' || 'false' }}
           push: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}

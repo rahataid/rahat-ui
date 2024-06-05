@@ -209,8 +209,8 @@ export default function GrievanceAdd({ isSuccess }) {
       status: GrievanceStatus.NEW,
     };
 
-    await addGrievance.mutateAsync(grievance);
     router.back();
+    await addGrievance.mutateAsync(grievance);
   };
 
   return (

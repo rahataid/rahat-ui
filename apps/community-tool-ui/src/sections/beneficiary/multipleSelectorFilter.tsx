@@ -21,7 +21,8 @@ export default function Filter() {
   const commuinityBeneficiaryGroupCreate = useCommunityBeneficiaryGroupCreate();
 
   filters.autoCreated = 'false';
-  pagination.perPage = 50;
+  pagination.perPage = 20;
+  pagination.page = 1;
   const { data: groupData } = useCommunityGroupList({
     ...pagination,
     ...filters,

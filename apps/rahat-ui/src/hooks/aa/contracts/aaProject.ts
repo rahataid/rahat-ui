@@ -31,6 +31,25 @@ export const aaProjectAbi = [
     type: 'event',
     anonymous: false,
     inputs: [
+      {
+        name: 'beneficiary',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'amount',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: true,
+      },
+    ],
+    name: 'BenTokensAssigned',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
       { name: '', internalType: 'address', type: 'address', indexed: true },
     ],
     name: 'BeneficiaryAdded',
@@ -209,12 +228,28 @@ export const aaProjectAbi = [
     type: 'function',
     inputs: [
       { name: '_beneficiary', internalType: 'address', type: 'address' },
-      { name: '_tokenAddress', internalType: 'address', type: 'address' },
       { name: '_tokenAssigned', internalType: 'uint256', type: 'uint256' },
     ],
     name: 'assignClaims',
     outputs: [],
     stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: '_address', internalType: 'address', type: 'address' },
+      { name: '_amount', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'assignTokenToBeneficiary',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: '', internalType: 'address', type: 'address' }],
+    name: 'benTokens',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
   },
   {
     type: 'function',
@@ -308,6 +343,15 @@ export const aaProjectAbi = [
   {
     type: 'function',
     inputs: [],
+    name: 'totalClaimsAssigned',
+    outputs: [
+      { name: '_totalClaims', internalType: 'uint256', type: 'uint256' },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
     name: 'trustedForwarder',
     outputs: [{ name: '', internalType: 'address', type: 'address' }],
     stateMutability: 'view',
@@ -351,6 +395,14 @@ export const useReadAaProjectTriggerManager =
     abi: aaProjectAbi,
     functionName: 'TriggerManager',
   })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link aaProjectAbi}__ and `functionName` set to `"benTokens"`
+ */
+export const useReadAaProjectBenTokens = /*#__PURE__*/ createUseReadContract({
+  abi: aaProjectAbi,
+  functionName: 'benTokens',
+})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link aaProjectAbi}__ and `functionName` set to `"beneficiaryCount"`
@@ -430,6 +482,15 @@ export const useReadAaProjectTokenBudget = /*#__PURE__*/ createUseReadContract({
 })
 
 /**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link aaProjectAbi}__ and `functionName` set to `"totalClaimsAssigned"`
+ */
+export const useReadAaProjectTotalClaimsAssigned =
+  /*#__PURE__*/ createUseReadContract({
+    abi: aaProjectAbi,
+    functionName: 'totalClaimsAssigned',
+  })
+
+/**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link aaProjectAbi}__ and `functionName` set to `"trustedForwarder"`
  */
 export const useReadAaProjectTrustedForwarder =
@@ -461,6 +522,15 @@ export const useWriteAaProjectAssignClaims =
   /*#__PURE__*/ createUseWriteContract({
     abi: aaProjectAbi,
     functionName: 'assignClaims',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link aaProjectAbi}__ and `functionName` set to `"assignTokenToBeneficiary"`
+ */
+export const useWriteAaProjectAssignTokenToBeneficiary =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: aaProjectAbi,
+    functionName: 'assignTokenToBeneficiary',
   })
 
 /**
@@ -515,6 +585,15 @@ export const useSimulateAaProjectAssignClaims =
   })
 
 /**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link aaProjectAbi}__ and `functionName` set to `"assignTokenToBeneficiary"`
+ */
+export const useSimulateAaProjectAssignTokenToBeneficiary =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: aaProjectAbi,
+    functionName: 'assignTokenToBeneficiary',
+  })
+
+/**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link aaProjectAbi}__ and `functionName` set to `"increaseTokenBudget"`
  */
 export const useSimulateAaProjectIncreaseTokenBudget =
@@ -547,6 +626,15 @@ export const useSimulateAaProjectRemoveBeneficiary =
 export const useWatchAaProjectEvent = /*#__PURE__*/ createUseWatchContractEvent(
   { abi: aaProjectAbi },
 )
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link aaProjectAbi}__ and `eventName` set to `"BenTokensAssigned"`
+ */
+export const useWatchAaProjectBenTokensAssignedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: aaProjectAbi,
+    eventName: 'BenTokensAssigned',
+  })
 
 /**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link aaProjectAbi}__ and `eventName` set to `"BeneficiaryAdded"`

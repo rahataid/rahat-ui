@@ -185,3 +185,39 @@ export const useCommunityBeneficiaryStatsList = () => {
     queryClient,
   );
 };
+
+export const useListPalikas = () => {
+  const { queryClient, rumsanService } = useRSQuery();
+  const benClient = getBeneficiaryClient(rumsanService.client);
+  return useQuery(
+    {
+      queryKey: [TAGS.LIST_PALIKA],
+      queryFn: benClient.listDistinctLocations,
+    },
+    queryClient,
+  );
+};
+
+export const useExportPinnedListBeneficiary = () => {
+  return useMutation({
+    mutationKey: [TAGS.EXPORT_TARGETED_BENEFICIARIES],
+    mutationFn: async (payload: any) => {
+      const { isConfirmed } = await Swal.fire({
+        title: 'CAUTION!',
+        text: ' Are you sure you want to export targeted beneficiaries?',
+        icon: 'warning',
+        showDenyButton: true,
+        confirmButtonText: 'Yes, I am sure!',
+        denyButtonText: 'No, cancel it!',
+        customClass: {
+          actions: 'my-actions',
+          confirmButton: 'order-1',
+          denyButton: 'order-2',
+        },
+      });
+
+      if (!isConfirmed) return;
+      return alert("Exporting beneficiary's list...");
+    },
+  });
+};

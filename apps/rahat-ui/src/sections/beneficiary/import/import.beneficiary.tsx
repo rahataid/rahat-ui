@@ -2,11 +2,13 @@
 
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
-import { ChangeEvent, RefObject, useState } from 'react';
+import { ChangeEvent, RefObject, useEffect, useState } from 'react';
 import { useRumsanService } from '../../../providers/service.provider';
 import { toast } from 'react-toastify';
 import { useRef } from 'react';
 import { useUploadBeneficiary } from '@rahat-ui/query';
+import SpinnerLoader from '../../projects/components/spinner.loader';
+import { useRouter } from 'next/navigation';
 
 const DOWNLOAD_FILE_URL = '/files/beneficiary_sample.xlsx';
 
@@ -14,6 +16,8 @@ export default function ImportBeneficiary() {
   const fileInputRef: RefObject<HTMLInputElement> = useRef(null);
 
   const uploadBeneficiary = useUploadBeneficiary();
+
+  const router = useRouter();
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const allowedExtensions: { [key: string]: string } = {
@@ -51,6 +55,11 @@ export default function ImportBeneficiary() {
       doctype,
     });
   };
+
+  useEffect(() => {
+    if(uploadBeneficiary?.isSuccess){ toast.success('File uploaded successfully.'); router.push('/beneficiary');}
+    uploadBeneficiary?.isError && toast.error('File upload unsuccessful.')
+  }, [uploadBeneficiary?.isSuccess, uploadBeneficiary?.isError])
 
   const handleDownloadClick = () => {
     fetch(DOWNLOAD_FILE_URL)
@@ -103,8 +112,9 @@ export default function ImportBeneficiary() {
           <Button
             className="w-40 bg-primary hover:ring-2 ring-primary"
             onClick={handleUpload}
+            disabled={uploadBeneficiary?.isPending}
           >
-            Upload File
+          {uploadBeneficiary?.isPending ? <>Uploading...</> : "Upload File"}  
           </Button>
         </div>
       </div>

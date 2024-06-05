@@ -15,8 +15,10 @@ import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { useMintVouchers } from 'apps/rahat-ui/src/hooks/el/contracts/el-contracts';
+import { UUID } from 'crypto';
 import { currencies } from 'currencies.json';
 import { ChevronDown } from 'lucide-react';
+import { useParams } from 'next/navigation';
 import React, { useState } from 'react';
 
 type Checked = DropdownMenuCheckboxItemProps['checked'];
@@ -35,6 +37,8 @@ const AddVoucher = ({ contractSettings }: { contractSettings: any }) => {
     setSelectedCurrencySymbol(symbol);
   };
 
+  const uuid = useParams().id as UUID
+
   const handleCurrencyName = (name: React.SetStateAction<string>) => {
     setCurrencyName(name);
   };
@@ -44,9 +48,9 @@ const AddVoucher = ({ contractSettings }: { contractSettings: any }) => {
   const handleSubmit = async () => {
     const referralLimit = 3;
 
-    await createVoucher.writeContractAsync({
-      address: contractSettings?.rahatdonor?.address,
-      args: [
+    await createVoucher.mutateAsync({
+      id:uuid,
+      args:[
         contractSettings?.eyevoucher?.address,
         contractSettings?.referralvoucher?.address,
         contractSettings?.elproject?.address,
@@ -58,7 +62,25 @@ const AddVoucher = ({ contractSettings }: { contractSettings: any }) => {
         BigInt(referralLimit),
         selectedCurrencySymbol,
       ],
-    });
+      contractAddress:contractSettings?.rahatdonor?.address
+
+    })
+
+    // await createVoucher.writeContractAsync({
+    //   address: contractSettings?.rahatdonor?.address,
+      // args: [
+      //   contractSettings?.eyevoucher?.address,
+      //   contractSettings?.referralvoucher?.address,
+      //   contractSettings?.elproject?.address,
+      //   BigInt(noOfVoucherMinted),
+      //   description,
+      //   descriptionReferred,
+      //   BigInt(priceInUSD),
+      //   BigInt(referredPriceInUSD),
+      //   BigInt(referralLimit),
+      //   selectedCurrencySymbol,
+      // ],
+    // });
   };
 
   return (

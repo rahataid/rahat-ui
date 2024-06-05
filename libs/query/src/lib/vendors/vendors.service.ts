@@ -9,6 +9,8 @@ import { getVendorClient } from '@rahataid/sdk/clients';
 import { useVendorStore } from './vendors.store';
 import { TAGS } from '../../config';
 import { useEffect, useMemo } from 'react';
+import { api } from '../../utils/api';
+
 
 export const useVendorList = (payload: any): UseQueryResult<any, Error> => {
   const { rumsanService, queryClient } = useRSQuery();
@@ -58,3 +60,15 @@ export const useVendorList = (payload: any): UseQueryResult<any, Error> => {
 
   return vendor;
 };
+
+const listBeneficiaryStats = async() =>{
+  const response = await api.get('/vendors/stats');
+  return response?.data
+}
+
+export const useGetVendorStats =(): UseQueryResult<any,Error> =>{
+  return useQuery({
+    queryKey:[TAGS.GET_VENDOr_STATS],
+    queryFn: () => listBeneficiaryStats()
+  })
+}

@@ -106,7 +106,7 @@ const CampaignForm: FC<CampaignFormProps> = ({
           Campaign: {data ? 'Edit' : 'Add'}
         </h2>
         <div className="shadow-md p-4 rounded-sm bg-card">
-          <div className="mb-4 w-full grid grid-cols-2 gap-4 ">
+          <div className="mb-4 w-full grid grid-cols-3 gap-2 ">
             <FormField
               control={form.control}
               name="campaignName"
@@ -193,7 +193,7 @@ const CampaignForm: FC<CampaignFormProps> = ({
                 control={form.control}
                 name="isQrSender"
                 render={({ field }) => (
-                  <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                  <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-[10px]">
                     <FormControl>
                       <Checkbox
                         checked={field.value}
@@ -227,7 +227,7 @@ const CampaignForm: FC<CampaignFormProps> = ({
                                 ? templatemessage.slice(0, 25) + '...'
                                 : templatemessage
                               : 'Select from template'}
-                              <ChevronDown/>
+                            <ChevronDown />
                           </Button>
                         </FormControl>
                       </PopoverTrigger>
@@ -373,10 +373,10 @@ const CampaignForm: FC<CampaignFormProps> = ({
               {showAddAudience ? 'Hide Audiences' : 'Show Audiences'}
             </Button>
             <ConfirmModal
-            handleSubmit={handleSubmit}
-            isSubmitting={isSubmitting}
-          />
-           
+              handleSubmit={handleSubmit}
+              isSubmitting={isSubmitting}
+            />
+
             {/* {isSubmitting ? (
               <Button variant={'default'} disabled={true}>
                 <Loader />

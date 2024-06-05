@@ -15,7 +15,8 @@ import { Expand, Minus, Trash2, FilePenLine } from 'lucide-react';
 import { ICampaignItemApiResponse } from '@rahat-ui/types';
 import InfoCard from '../infoCard';
 import { paths } from 'apps/rahat-ui/src/routes/paths';
-
+import { useDeleteCampaign } from '@rumsan/communication-query';
+import { toast } from 'react-toastify';
 type IProps = {
   details: ICampaignItemApiResponse;
   closeSecondPanel: VoidFunction;
@@ -25,6 +26,8 @@ export default function TextDetailSplitView({
   details,
   closeSecondPanel,
 }: IProps) {
+  const deleteCampaign = useDeleteCampaign();
+
   const router = useRouter();
   return (
     <div className="px-2 py-4">
@@ -78,7 +81,16 @@ export default function TextDetailSplitView({
         <TooltipProvider delayDuration={100}>
           <Tooltip>
             <TooltipTrigger>
-              <Trash2 size={20} strokeWidth={1.5} />
+              <Trash2
+                size={20}
+                strokeWidth={1.5}
+                onClick={() => {
+                  deleteCampaign.mutateAsync(details.id).then(() => {
+                    toast.success('Successfully Deleted Campaign');
+                    closeSecondPanel();
+                  });
+                }}
+              />
             </TooltipTrigger>
             <TooltipContent className="bg-secondary ">
               <p className="text-xs font-medium">Delete</p>

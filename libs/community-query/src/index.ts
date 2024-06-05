@@ -10,7 +10,7 @@ export * from './fields/fields.query';
 export * from './targeting/targeting.query';
 export * from './targeting/targeting.store';
 export * from './beneficiary/beneficiary.store';
-
+export * from './app/appStats.query';
 export * from './beneficiaryImport/beneficiary.import.query';
 export * from './beneficiaryImport/beneficiary.import.store';
 export * from './constants';

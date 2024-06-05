@@ -227,6 +227,7 @@ function BeneficiaryDetailTableView() {
       handleTokenAssignModalClose();
     } catch (err) {
       setisTransacting(false);
+      handleTokenAssignModalClose();
     }
   };
 
@@ -331,7 +332,7 @@ function BeneficiaryDetailTableView() {
         <div></div>
         <div className="rounded border bg-card">
           <Table>
-            <ScrollArea className="h-[calc(100vh-182px)]">
+            <ScrollArea className="h-[calc(100vh-220px)]">
               <TableHeader className="bg-card sticky top-0">
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow key={headerGroup.id}>

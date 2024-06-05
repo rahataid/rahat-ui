@@ -28,6 +28,8 @@ export default function EditCampaign() {
   const [selectedRows, setSelectedRows] = useState<
     Array<{ id: number; phone: string; name: string }>
   >([]);
+  const [audienceRequiredError, setAudienceRequiredError] =
+    React.useState(false);
   const [globalFilter, setGlobalFilter] = React.useState('');
   const [isSubmitting, setIsSubmitting] = React.useState(false);
 
@@ -94,6 +96,11 @@ export default function EditCampaign() {
 
   const handleEditCampaign = async (data: z.infer<typeof FormSchema>) => {
     setIsSubmitting(true);
+    if (selectedRows.length === 0) {
+      setAudienceRequiredError(true);
+      setIsSubmitting(false);
+      return;
+    }
     let transportId;
     transportData?.data.map((tdata) => {
       if (tdata.name.toLowerCase() === data.campaignType.toLowerCase()) {
@@ -175,6 +182,7 @@ export default function EditCampaign() {
               form={form}
               data={data.data}
               isSubmitting={isSubmitting}
+              handleSubmit={form.handleSubmit(handleEditCampaign)}
             />
             {showAddAudienceView.value ? (
               <>
@@ -185,6 +193,8 @@ export default function EditCampaign() {
                   selectedRows={selectedRows}
                   setSelectedRows={setSelectedRows}
                   audienceData={audienceData}
+                  setAudienceRequiredError={setAudienceRequiredError}
+                  audienceRequiredError={audienceRequiredError}
                 />
               </>
             ) : null}

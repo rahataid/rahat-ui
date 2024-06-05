@@ -81,8 +81,8 @@ importers:
         specifier: 0.0.9
         version: 0.0.9
       '@rahataid/community-tool-sdk':
-        specifier: ^0.0.24
-        version: 0.0.24
+        specifier: ^0.0.26
+        version: 0.0.26
       '@rahataid/el-subgraph':
         specifier: 0.0.12
         version: 0.0.12
@@ -278,6 +278,9 @@ importers:
       tslib:
         specifier: ^2.3.0
         version: 2.6.2
+      urql:
+        specifier: ^4.1.0
+        version: 4.1.0(@urql/core@4.3.0)(react@18.2.0)
       vaul:
         specifier: ^0.9.0
         version: 0.9.1(@types/react-dom@18.3.0)(@types/react@18.3.1)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
@@ -2921,8 +2924,8 @@ packages:
   '@rahataid/c2c-query@0.0.9':
     resolution: {integrity: sha512-YfwV2WjDN43lrZ4U0j1Qu6X1wfQdnJQsZZp8l1pT1YYXYbF89b7CVb/KwrIWl2Ffd+O3T+n/rowG55cZCYj/HQ==, tarball: https://npm.pkg.github.com/download/@rahataid/c2c-query/0.0.9/51f6bf7f9df92d71711a4005e8b2fb3b980bf98d}
 
-  '@rahataid/community-tool-sdk@0.0.24':
-    resolution: {integrity: sha512-uoLVppiqHacz4uvdQ55rDEhvhfZj5OboIZY2FfMqVbzX2P6+0cmlDWnT8W7H3ITuvdylTYy0lPiHQIwQqZEIYw==, tarball: https://npm.pkg.github.com/download/@rahataid/community-tool-sdk/0.0.24/28d958c4bd53885775b7a37bb7b78b2803f64caa}
+  '@rahataid/community-tool-sdk@0.0.26':
+    resolution: {integrity: sha512-d/Upqm/sUeaGfrvQb2a4EigpegbzmMvlYTIwaqgQEcAndYEBGxbs/Ppc0JKiW1wyyrk+PwNV7jibDr6lM9JDtQ==, tarball: https://npm.pkg.github.com/download/@rahataid/community-tool-sdk/0.0.26/fb2824b204d4c73299f3152bfed3fdfa40578bf7}
 
   '@rahataid/el-subgraph@0.0.12':
     resolution: {integrity: sha512-dKmt0YueYPn+qNGVSby22vrM8xkpx0S1oWxW+vdjHDdRQpqhW9Z4CRqesWt2Qt2H4QnoPVpGh4Gf2pMPXLpG1Q==, tarball: https://npm.pkg.github.com/download/@rahataid/el-subgraph/0.0.12/91a92f6da8a9963862dc50d6f544d653dfa6392d}
@@ -3805,9 +3808,6 @@ packages:
 
   '@urql/core@4.3.0':
     resolution: {integrity: sha512-wT+FeL8DG4x5o6RfHEnONNFVDM3616ouzATMYUClB6CB+iIu2mwfBKd7xSUxYOZmwtxna5/hDRQdMl3nbQZlnw==}
-
-  '@urql/core@5.0.3':
-    resolution: {integrity: sha512-NZ3YqRr6IphbpFjGqujJOuVuV8/QegYxfjy1zdmOSWpYYFLpmMBfVtzZ/L8IiqPERVAEAIKjUsryLnVtXJQo4w==}
 
   '@verdaccio/commons-api@10.2.0':
     resolution: {integrity: sha512-F/YZANu4DmpcEV0jronzI7v2fGVWkQ5Mwi+bVmV+ACJ+EzR0c9Jbhtbe5QyLUuzR97t8R5E/Xe53O0cc2LukdQ==}
@@ -4827,8 +4827,8 @@ packages:
     engines: {node: '>=12.13.0'}
     hasBin: true
 
-  chrome-trace-event@1.0.3:
-    resolution: {integrity: sha512-p3KULyQg4S7NIHixdwbGX+nFHkoBiA4YQmyWtjb8XngSKV124nJmRysgAeujbUVb15vh+RvFUfCPqU7rXk+hZg==}
+  chrome-trace-event@1.0.4:
+    resolution: {integrity: sha512-rNjApaLzuwaOTjCiT8lSDdGN1APCiqkChLMJxJPWLunPAt5fy8xgU9/jNOchV84wfIxrA0lRQB7oCT8jrn/wrQ==}
     engines: {node: '>=6.0'}
 
   ci-info@2.0.0:
@@ -6214,8 +6214,8 @@ packages:
   flow-enums-runtime@0.0.6:
     resolution: {integrity: sha512-3PYnM29RFXwvAN6Pc/scUfkI7RwhQ/xqyLUyPNlXUp9S40zI8nup9tUSrTLSVnWGBN38FNiGWbwZOB6uR4OGdw==}
 
-  flow-parser@0.236.0:
-    resolution: {integrity: sha512-0OEk9Gr+Yj7wjDW2KgaNYUypKau71jAfFyeLQF5iVtxqc6uJHag/MT7pmaEApf4qM7u86DkBcd4ualddYMfbLw==}
+  flow-parser@0.237.1:
+    resolution: {integrity: sha512-PUeG8GQLmrv49vEcFcag7mriJvVs7Yyegnv1DGskvcokhP8UyqWsLV0KoTQ1iAW3ePVUIGUc3MFfBaXwz9MmIg==}
     engines: {node: '>=0.4.0'}
 
   follow-redirects@1.15.6:
@@ -6428,12 +6428,15 @@ packages:
 
   glob@5.0.15:
     resolution: {integrity: sha512-c9IPMazfRITpmAAKi22dK1VKxGDX9ehhqfABDriL/lzO92xcUKEJPQHrVA/2YHSNFB4iFlykVmWvwo48nr3OxA==}
+    deprecated: Glob versions prior to v9 are no longer supported
 
   glob@6.0.4:
     resolution: {integrity: sha512-MKZeRNyYZAVVVG1oZeLaWie1uweH40m9AZwIwxyPbTSX4hHrVYSzLg0Ro5Z5R7XKkIX+Cc6oD1rqeDJnwsB8/A==}
+    deprecated: Glob versions prior to v9 are no longer supported
 
   glob@7.2.3:
     resolution: {integrity: sha512-nFR0zLpU2YCaRxwoCJvL6UvCH2JFyFVIvwTLsIf21AuHlMskA1hhTdk+LlYJtOlYt9v6dvszD2BGRqBL+iQK9Q==}
+    deprecated: Glob versions prior to v9 are no longer supported
 
   global-dirs@3.0.1:
     resolution: {integrity: sha512-NBcGGFbBA9s1VzD41QXDG+3++t9Mn5t1FpLdhESY6oKY4gYTFpX4wO3sqGUa0Srjtbfj3szX0RnemmrVRUdULA==}
@@ -6742,6 +6745,7 @@ packages:
 
   inflight@1.0.6:
     resolution: {integrity: sha512-k92I/b08q4wvFscXCLvqfsHCrjrF7yiXsQuIVvVE7N82W3+aqpzuUdBbfhWcy/FZR3/4IgflMgKLOsvPDrGCJA==}
+    deprecated: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.
 
   inherits@2.0.3:
     resolution: {integrity: sha512-x00IRNXNy63jwGkJmzPigoySHbaqpNuzKbBOmzK+g2OdZpQ9w+sxCN+VSB3ja7IAge2OP2qpfxTjeNcyjmW1uw==}
@@ -8127,6 +8131,7 @@ packages:
 
   npx@10.2.2:
     resolution: {integrity: sha512-eImmySusyeWphzs5iNh791XbZnZG0FSNvM4KSah34pdQQIDsdTDhIwg1sjN3AIVcjGLpbQ/YcfqHPshKZQK1fA==}
+    deprecated: This package is now part of the npm CLI.
     hasBin: true
     bundledDependencies:
       - npm
@@ -9387,6 +9392,7 @@ packages:
 
   rimraf@2.4.5:
     resolution: {integrity: sha512-J5xnxTyqaiw06JjMftq7L9ouA448dw/E7dKghkP9WpKNuwmARNNg+Gk8/u5ryb9N/Yo2+z3MCwuqFK/+qPOPfQ==}
+    deprecated: Rimraf versions prior to v4 are no longer supported
     hasBin: true
 
   rimraf@2.6.3:
@@ -9396,10 +9402,12 @@ packages:
 
   rimraf@2.7.1:
     resolution: {integrity: sha512-uWjbaKIK3T1OSVptzX7Nl6PvQ3qAGtKEtVRjRuazjfL3Bx5eI409VZSqgND+4UNnmzLVdPj9FqFJNPqBZFve4w==}
+    deprecated: Rimraf versions prior to v4 are no longer supported
     hasBin: true
 
   rimraf@3.0.2:
     resolution: {integrity: sha512-JZkJMZkAGFFPP2YqXZXPbMlMBgsxzE8ILs4lMIX/2o0L9UBw9O/Y3o6wFw/i9YLapcUJWwqbi3kdxIPdC62TIA==}
+    deprecated: Rimraf versions prior to v4 are no longer supported
     hasBin: true
 
   rollup-plugin-copy@3.5.0:
@@ -10575,9 +10583,10 @@ packages:
   url-parse@1.5.10:
     resolution: {integrity: sha512-WypcfiRhfeUP9vvF0j6rw0J3hrWrw6iZv3+22h6iRMJ/8z1Tj6XfLP4DsUix5MhMPnXpiHDoKyoZ/bdCkwBCiQ==}
 
-  urql@4.0.7:
-    resolution: {integrity: sha512-wnOONtZoYEobmamM5ushUBGil6UCUPd7SH5uEAqsz5Y/qBV88/2QG6jq7v6xP+413x5Lqy0h0hCGRB0KIeG6Kg==}
+  urql@4.1.0:
+    resolution: {integrity: sha512-NfbfTvxy1sM89EQAJWm89qJZihUWk7BSMfrWgfljFXLOf+e7RK7DtV/Tbg2+82HnCG2x3LcEOJenxiFSYEC+bw==}
     peerDependencies:
+      '@urql/core': ^5.0.0
       react: '>= 16.8.0'
 
   use-callback-ref@1.3.2:
@@ -14284,7 +14293,7 @@ snapshots:
     dependencies:
       '@swc/helpers': 0.5.11
 
-  '@rahataid/community-tool-sdk@0.0.24':
+  '@rahataid/community-tool-sdk@0.0.26':
     dependencies:
       tslib: 2.6.2
 
@@ -14295,7 +14304,7 @@ snapshots:
       react: 18.2.0
       tslib: 2.6.2
       typescript: 5.4.5
-      urql: 4.0.7(react@18.2.0)
+      urql: 4.1.0(@urql/core@4.3.0)(react@18.2.0)
     transitivePeerDependencies:
       - graphql
 
@@ -15676,13 +15685,6 @@ snapshots:
   '@ungap/structured-clone@1.2.0': {}
 
   '@urql/core@4.3.0':
-    dependencies:
-      '@0no-co/graphql.web': 1.0.7
-      wonka: 6.3.4
-    transitivePeerDependencies:
-      - graphql
-
-  '@urql/core@5.0.3':
     dependencies:
       '@0no-co/graphql.web': 1.0.7
       wonka: 6.3.4
@@ -17260,7 +17262,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  chrome-trace-event@1.0.3: {}
+  chrome-trace-event@1.0.4: {}
 
   ci-info@2.0.0: {}
 
@@ -19119,7 +19121,7 @@ snapshots:
 
   flow-enums-runtime@0.0.6: {}
 
-  flow-parser@0.236.0: {}
+  flow-parser@0.237.1: {}
 
   follow-redirects@1.15.6: {}
 
@@ -20430,7 +20432,7 @@ snapshots:
       '@babel/register': 7.24.6(@babel/core@7.24.5)
       babel-core: 7.0.0-bridge.0(@babel/core@7.24.5)
       chalk: 4.1.2
-      flow-parser: 0.236.0
+      flow-parser: 0.237.1
       graceful-fs: 4.2.11
       micromatch: 4.0.5
       neo-async: 2.6.2
@@ -24235,13 +24237,11 @@ snapshots:
       querystringify: 2.2.0
       requires-port: 1.0.0
 
-  urql@4.0.7(react@18.2.0):
+  urql@4.1.0(@urql/core@4.3.0)(react@18.2.0):
     dependencies:
-      '@urql/core': 5.0.3
+      '@urql/core': 4.3.0
       react: 18.2.0
       wonka: 6.3.4
-    transitivePeerDependencies:
-      - graphql
 
   use-callback-ref@1.3.2(@types/react@18.3.1)(react@18.2.0):
     dependencies:
@@ -24552,7 +24552,7 @@ snapshots:
       acorn: 8.11.3
       acorn-import-assertions: 1.9.0(acorn@8.11.3)
       browserslist: 4.23.0
-      chrome-trace-event: 1.0.3
+      chrome-trace-event: 1.0.4
       enhanced-resolve: 5.16.1
       es-module-lexer: 1.5.3
       eslint-scope: 5.1.1

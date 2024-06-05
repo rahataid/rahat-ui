@@ -31,31 +31,36 @@ export default function Activities({ title, className, data }: CardProps) {
               <p className="text-sm text-muted-foreground">Assigned</p>
               <p className="text-sm text-muted-foreground">Redeemed</p>
             </div>
-            <div className="flex flex-col items-center space-y-1">
-              <p className="text-sm font-medium leading-none">Qty</p>
-              <div className="text-xs text-muted-foreground">
-                {data?.eyeVoucherBudget?.toString()}
-              </div>
-              <div className="text-xs text-muted-foreground">
-                {data?.eyeVoucherAssigned?.toString()}
-              </div>
-              <div className="text-xs text-muted-foreground">
-                {data?.eyeVoucherClaimed?.toString()}
+            <div className="flex flex-col items-center">
+              <div className="space-y-2">
+                <p className="text-sm font-medium leading-none">Qty</p>
+                <div className="text-xs text-muted-foreground">
+                  {data?.eyeVoucherBudget?.toString()}
+                </div>
+                <div className="text-xs text-muted-foreground">
+                  {data?.eyeVoucherAssigned?.toString()}
+                </div>
+                <div className="text-xs text-muted-foreground">
+                  {data?.eyeVoucherClaimed?.toString()}
+                </div>
               </div>
             </div>
             <div className="flex flex-col items-end space-y-1">
-              <p className="text-sm font-medium leading-none">Value</p>
-              <div className="text-xs text-muted-foreground">
-                {data?.freeVoucherCurrency}{' '}
-                {data?.eyeVoucherBudget?.toString() * data?.freeVoucherPrice}
-              </div>
-              <div className="text-xs text-muted-foreground">
-                {data?.freeVoucherCurrency}{' '}
-                {data?.eyeVoucherAssigned?.toString() * data?.freeVoucherPrice}
-              </div>
-              <div className="text-xs text-muted-foreground">
-                {data?.freeVoucherCurrency}{' '}
-                {data?.eyeVoucherClaimed?.toString() * data?.freeVoucherPrice}
+              <div className="space-y-2">
+                <p className="text-sm font-medium leading-none">Amount</p>
+                <div className="text-xs text-muted-foreground">
+                  {data?.freeVoucherCurrency}{' '}
+                  {data?.eyeVoucherBudget?.toString() * data?.freeVoucherPrice}
+                </div>
+                <div className="text-xs text-muted-foreground">
+                  {data?.freeVoucherCurrency}{' '}
+                  {data?.eyeVoucherAssigned?.toString() *
+                    data?.freeVoucherPrice}
+                </div>
+                <div className="text-xs text-muted-foreground">
+                  {data?.freeVoucherCurrency}{' '}
+                  {data?.eyeVoucherClaimed?.toString() * data?.freeVoucherPrice}
+                </div>
               </div>
             </div>
           </div>
@@ -69,33 +74,37 @@ export default function Activities({ title, className, data }: CardProps) {
               <p className="text-sm text-muted-foreground">Redeemed</p>
             </div>
             <div className="flex flex-col items-center space-y-1">
-              <p className="text-sm font-medium leading-none">Qty</p>
-              <div className="text-xs text-muted-foreground">
-                {data?.referredVoucherBudget?.toString()}
-              </div>
-              <div className="text-xs text-muted-foreground">
-                {data?.referredVoucherAssigned?.toString()}
-              </div>
-              <div className="text-xs text-muted-foreground">
-                {data?.referredVoucherClaimed?.toString()}
+              <div className="space-y-2">
+                <p className="text-sm font-medium leading-none">Qty</p>
+                <div className="text-xs text-muted-foreground">
+                  {data?.referredVoucherBudget?.toString()}
+                </div>
+                <div className="text-xs text-muted-foreground">
+                  {data?.referredVoucherAssigned?.toString()}
+                </div>
+                <div className="text-xs text-muted-foreground">
+                  {data?.referredVoucherClaimed?.toString()}
+                </div>
               </div>
             </div>
             <div className="flex flex-col items-end space-y-1">
-              <p className="text-sm font-medium leading-none">Value</p>
-              <div className="text-xs text-muted-foreground">
-                {data?.referredVoucherCurrency}{' '}
-                {data?.referredVoucherBudget?.toString() *
-                  data?.referredVoucherPrice}
-              </div>
-              <div className="text-xs text-muted-foreground">
-                {data?.referredVoucherCurrency}{' '}
-                {data?.referredVoucherAssigned?.toString() *
-                  data?.referredVoucherPrice}
-              </div>
-              <div className="text-xs text-muted-foreground">
-                {data?.referredVoucherCurrency}{' '}
-                {data?.referredVoucherClaimed?.toString() *
-                  data?.referredVoucherPrice}
+              <div className="space-y-2">
+                <p className="text-sm font-medium leading-none">Amount</p>
+                <div className="text-xs text-muted-foreground">
+                  {data?.referredVoucherCurrency}{' '}
+                  {data?.referredVoucherBudget?.toString() *
+                    data?.referredVoucherPrice}
+                </div>
+                <div className="text-xs text-muted-foreground">
+                  {data?.referredVoucherCurrency}{' '}
+                  {data?.referredVoucherAssigned?.toString() *
+                    data?.referredVoucherPrice}
+                </div>
+                <div className="text-xs text-muted-foreground">
+                  {data?.referredVoucherCurrency}{' '}
+                  {data?.referredVoucherClaimed?.toString() *
+                    data?.referredVoucherPrice}
+                </div>
               </div>
             </div>
           </div>

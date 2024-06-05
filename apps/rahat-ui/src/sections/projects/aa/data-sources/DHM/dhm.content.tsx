@@ -34,7 +34,7 @@ const renderStatus = ({ readinessLevel, activationLevel, waterLevel }: any) => {
   );
 };
 
-export default function DHMContent({ data, dhmStatements }: any) {
+export default function DHMContent({ data }: any) {
   if (!data?.length) {
     return <p>Data not available for DHM.</p>;
   }

@@ -227,6 +227,7 @@ function BeneficiaryDetailTableView() {
       handleTokenAssignModalClose();
     } catch (err) {
       setisTransacting(false);
+      handleTokenAssignModalClose();
     }
   };
 

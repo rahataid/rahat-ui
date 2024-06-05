@@ -19,7 +19,7 @@ type Props = {
 export default function ChartColumnStacked({
   series,
   height = 320,
-  width = 420,
+  width = 650,
   stacked = false,
   categories = ['Enrolled', 'Referred'],
 }: Props) {

@@ -11,8 +11,7 @@ import { ImgProps } from 'next/dist/shared/lib/get-img-props';
 
 type CardProps = {
   title: string;
-  number: string;
-  subTitle: string;
+  number: number;
   currency?: string;
   refresh?: VoidFunction;
   loading?: boolean;
@@ -22,7 +21,6 @@ type CardProps = {
 const SmallDataCard = ({
   title,
   number,
-  subTitle,
   currency,
   loading,
   className,
@@ -47,9 +45,7 @@ const SmallDataCard = ({
           </CardTitle>
         )}
       </CardHeader>
-      <CardContent>
-        <div className="text-xs text-muted-foreground">{subTitle}</div>
-      </CardContent>
+      <CardContent></CardContent>
     </Card>
   );
 };

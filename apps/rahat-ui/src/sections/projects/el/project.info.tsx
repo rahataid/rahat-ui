@@ -52,7 +52,7 @@ const ProjectInfo: FC<ProjectInfoProps> = ({
         <div className="col-span-1">
           <SmallDataCard
             className="h-full"
-            title="Vendors"
+            title="Total Vendors"
             number={totalVendor}
             subTitle="Total Vendors"
             loading={loading}

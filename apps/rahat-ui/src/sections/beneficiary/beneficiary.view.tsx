@@ -21,14 +21,13 @@ import {
   useProjectList,
 } from '@rahat-ui/query';
 import { UUID } from 'crypto';
+import { useRouter } from 'next/navigation';
+import { toast } from 'react-toastify';
 import CustomPagination from '../../components/customPagination';
 import { useBoolean } from '../../hooks/use-boolean';
 import { useSecondPanel } from '../../providers/second-panel-provider';
-import BeneficiaryGridView from '../../sections/beneficiary/gridView';
 import BeneficiaryListView from '../../sections/beneficiary/listView';
 import { useBeneficiaryTableColumns } from './useBeneficiaryColumns';
-import { toast } from 'react-toastify';
-import { useRouter } from 'next/navigation';
 
 function BeneficiaryView() {
   const router = useRouter();
@@ -116,7 +115,7 @@ function BeneficiaryView() {
       beneficiaryUUIDs: benNotAssignedToTheProject as any[],
     });
 
-    setSelectedListItems([])
+    setSelectedListItems([]);
   };
 
   const handleCreateGroup = async (data: any) => {

@@ -61,11 +61,10 @@ export const useNavItems = () => {
     createTokenSummaryModal.onFalse();
   };
 
-  const handleCloseTokenModal = () =>{
+  const handleCloseTokenModal = () => {
     createTokenModal.onToggle();
     createTokenSummaryModal.onFalse();
-
-  }
+  };
 
   const [voucherInputs, setVoucherInputs] = useState({
     tokens: '',
@@ -126,23 +125,23 @@ export const useNavItems = () => {
     setisTransacting(true);
     if (!contractSettings) return;
     const referralLimit = 3;
-    const transactionHash = await createOnlyVoucher.writeContractAsync({
-      address: contractSettings?.rahatdonor?.address,
-      args: [
-        contractSettings?.eyevoucher?.address,
-        contractSettings?.referralvoucher?.address,
-        contractSettings?.elproject?.address,
-        BigInt(voucherInputs.tokens),
-        BigInt(referralLimit),
-      ],
-    }).finally(()=>
-     { 
-      setisTransacting(false)
-      handleCloseSummaryModal();
-     }
-    );    
+    const transactionHash = await createOnlyVoucher
+      .writeContractAsync({
+        address: contractSettings?.rahatdonor?.address,
+        args: [
+          contractSettings?.eyevoucher?.address,
+          contractSettings?.referralvoucher?.address,
+          contractSettings?.elproject?.address,
+          BigInt(voucherInputs.tokens),
+          BigInt(referralLimit),
+        ],
+      })
+      .finally(() => {
+        setisTransacting(false);
+        route.refresh();
+        handleCloseSummaryModal();
+      });
     setVoucherCreateTransactionHash(transactionHash);
-   
 
     // route.push(`/projects/el/${id}/vouchers`);
   };

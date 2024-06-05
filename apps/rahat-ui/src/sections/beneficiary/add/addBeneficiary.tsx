@@ -51,7 +51,8 @@ export default function AddBeneficiaryForm() {
     // .min(4, { message: 'Must select Phone Status' }),
     address: z.string(),
     // .min(4, { message: 'Must be valid address.' }),
-    age: z.string().min(1, { message: 'Must be valid age.' }),
+    age: z.string(),
+    // .min(1, { message: 'Must be valid age.' }),
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -124,7 +125,7 @@ export default function AddBeneficiaryForm() {
                     );
                   }}
                 />
-           
+
                 <FormField
                   control={form.control}
                   name="phone"

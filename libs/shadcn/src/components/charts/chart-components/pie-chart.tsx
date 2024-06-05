@@ -22,6 +22,18 @@ const StyledChart = styled(Chart)({
   },
 });
 
+const CommunityStyledChart = styled(Chart)({
+  height: 300,
+  '& .apexcharts-canvas, .apexcharts-inner, svg, foreignObject': {
+    height: `100% !important`,
+  },
+  '& .apexcharts-legend': {
+    height: 50,
+    borderTop: `dashed 1px ${DIVIDER_COLOR}`,
+    top: `calc(${300 - 50}px) !important`,
+  },
+});
+
 // ----------------------------------------------------------------------
 
 interface Props {
@@ -35,9 +47,17 @@ interface Props {
     }[];
     options?: ApexOptions;
   };
+  communityTool?: boolean;
+  donutSize?: string;
 }
 
-export default function PieChart({ title, subheader, chart }: Props) {
+export default function PieChart({
+  title,
+  subheader,
+  chart,
+  communityTool = false,
+  donutSize = '90%',
+}: Props) {
   const {
     colors = ['#00b67a', '#8BC34A', '#FFA726', '#007bb6', '#7a00b6'],
     series = [],
@@ -53,10 +73,10 @@ export default function PieChart({ title, subheader, chart }: Props) {
     },
     colors,
     labels: series.map((i) => i.label),
-    stroke: { colors: [colors[0]] },
+    stroke: { colors: communityTool ? ['none'] : [colors[5]] },
     legend: {
       offsetY: 0,
-      floating: true,
+      floating: communityTool ? false : true,
       position: 'bottom',
       horizontalAlign: 'center',
     },
@@ -72,7 +92,7 @@ export default function PieChart({ title, subheader, chart }: Props) {
     plotOptions: {
       pie: {
         donut: {
-          size: '90%',
+          size: donutSize,
           labels: {
             value: {
               formatter: (value: number | string) => fNumber(value),
@@ -91,16 +111,34 @@ export default function PieChart({ title, subheader, chart }: Props) {
   });
 
   return (
-    <div className="bg-card shadow rounded p-4 flex flex-col items-center justify-center">
-      <h2 className="text-lg font-medium text-primary">{title}</h2>
-      <StyledChart
-        dir="ltr"
-        type="pie"
-        series={chartSeries}
-        options={chartOptions}
-        height={320}
-        width={400}
-      />
+    <div>
+      {communityTool ? (
+        <div className="bg-card shadow rounded p-4 flex flex-col items-center">
+          <h2 className={`text-lg font-medium p-0 text-left`}>{title}</h2>
+          <div className=" items-center justify-center">
+            <CommunityStyledChart
+              dir="ltr"
+              type="pie"
+              series={chartSeries}
+              options={chartOptions}
+              height={320}
+              width={400}
+            />
+          </div>
+        </div>
+      ) : (
+        <div className="bg-card shadow rounded p-4 flex flex-col items-center justify-center">
+          <h2 className={`text-lg font-medium p-0 text-left`}>{title}</h2>
+          <StyledChart
+            dir="ltr"
+            type="pie"
+            series={chartSeries}
+            options={chartOptions}
+            height={320}
+            width={400}
+          />
+        </div>
+      )}
     </div>
   );
 }

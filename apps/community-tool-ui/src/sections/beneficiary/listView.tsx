@@ -81,6 +81,18 @@ export default function ListView({
             onChange={(event) => handleFilterChange(event)}
             className="rounded mr-2"
           />
+
+          <Input
+            placeholder="Search by govt id number..."
+            name="govtIDNumber"
+            value={
+              (table.getColumn('govtIDNumber')?.getFilterValue() as string) ??
+              filters?.govtIDNumber
+            }
+            onChange={(event) => handleFilterChange(event)}
+            className="rounded mr-2"
+          />
+
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="ml-auto">

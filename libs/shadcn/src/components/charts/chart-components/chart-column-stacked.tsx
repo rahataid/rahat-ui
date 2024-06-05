@@ -40,7 +40,7 @@ export default function ChartColumnStacked({
     },
     plotOptions: {
       bar: {
-        columnWidth: '50%',
+        columnWidth: 30,
       },
     },
     stroke: {

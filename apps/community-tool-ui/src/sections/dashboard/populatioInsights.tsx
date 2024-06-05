@@ -1,3 +1,4 @@
+import { FocusEventHandler } from 'react';
 import BarCharts from './barCharts';
 import Donut from './donut';
 import CommunityMap from './map';
@@ -16,17 +17,13 @@ const PopulationInsights = ({ data }: Props) => {
     data?.data?.find((f) => f?.name === 'VULNERABIILTY_STATUS') || ([] as any);
   return (
     <div>
-      <h1 className="text-xl text-primary font-semibold mb-2">
-        Population Insights
-      </h1>
-      <div className="grid sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-3 gap-2 mb-2 ">
+      <div className="grid sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-5 gap-2 mb-2 ">
         <Donut
           donutData={totalGender}
           totalBeneficiaries={totalBenef?.data?.count || 0}
           title="Total Beneficiaries"
           height={250}
           width={'100%'}
-          className="col-span-1"
         />
         <CommunityMap coordinates={[82.3886, 29.3863]} />
       </div>
@@ -37,10 +34,12 @@ const PopulationInsights = ({ data }: Props) => {
           stacked={true}
           title="Age Groups"
           width={'100%'}
+          height={240}
         />
         <BarCharts
+          overFlowProps={true}
           charts={vulnerabilityStatus}
-          height={320}
+          height={240}
           width={'100%'}
           title="Vulnerability Status"
           horizontal={true}

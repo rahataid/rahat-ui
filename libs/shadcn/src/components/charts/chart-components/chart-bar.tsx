@@ -43,6 +43,7 @@ export default function ChartBar({
       categories,
       labels: {
         show: true,
+        formatter: (value: string) => value,
       },
       axisBorder: {
         show: false,

@@ -1,6 +1,5 @@
-import React from 'react';
-import Donut from './donut';
 import BarCharts from './barCharts';
+import Donut from './donut';
 
 type Props = {
   data: any;
@@ -17,12 +16,13 @@ const HouseHoldHeadInsights = ({ data }: Props) => {
 
   const houseHoldHeadVulnerabilityStats =
     data?.data?.find((f) => f.name === 'VULNERABILITY_CATEGORY_STATS') || {};
+
   return (
     <div>
       <h1 className="text-xl text-primary font-semibold mt-2 mb-2">
         Household Head Insights
       </h1>
-      <div className="grid sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-4 gap-2 mb-2 ">
+      <div className="grid sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-5 gap-2 mb-2 ">
         <Donut
           donutData={beneficiaryGender}
           title="Gender of Household Head"
@@ -31,12 +31,12 @@ const HouseHoldHeadInsights = ({ data }: Props) => {
         />
         <BarCharts
           charts={houseHoldHeadVulnerabilityStats}
-          height={265}
+          height={250}
           width={'100%'}
           title=" Household Head Vulnerability Status"
           horizontal={true}
           overFlowProps={true}
-          className="col-span-2"
+          className="col-span-3"
           colors={['#FFC107']}
         />
         <Donut
@@ -47,10 +47,10 @@ const HouseHoldHeadInsights = ({ data }: Props) => {
         />
       </div>
 
-      <div className="grid sm:grid-cols-1 md:grid-cols-1  gap-2 mb-2 mt-4 ">
+      <div className="grid sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-2 mb-4 mt-4 ">
         <BarCharts
           charts={govtIdTypeStats}
-          height={400}
+          height={240}
           width={'100%'}
           title=" Household Head Government Id Type"
         />

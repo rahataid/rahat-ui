@@ -62,7 +62,7 @@ export const useGrievanceTableColumns = () => {
           className="cursor-pointer"
           onClick={() => openSplitDetailView(row.original)}
         >
-          {row.original?.reportedBy?.name}
+          {row.original?.reportedBy}
         </div>
       ),
     },
@@ -80,12 +80,24 @@ export const useGrievanceTableColumns = () => {
     {
       accessorKey: 'createdBy',
       header: 'Created By',
-      cell: ({ row }) => <div> {row.getValue('createdBy')}</div>,
+      cell: ({ row }) => <div> {row.original?.reporterUser?.name}</div>,
     },
     {
       accessorKey: 'createdOn',
       header: 'Created On',
-      cell: ({ row }) => <div> {row.getValue('createdOn')}</div>,
+      cell: ({ row }) => {
+        const timestamp = row.original?.createdAt;
+        if (!timestamp) return null;
+
+        const [datePart, timePart] = timestamp.split('T');
+        const formattedTime = timePart.split('.')[0];
+
+        return (
+          <div>
+            {datePart} - {formattedTime}
+          </div>
+        );
+      },
     },
     {
       accessorKey: 'status',

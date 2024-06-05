@@ -77,7 +77,7 @@ const GrievanceTable = () => {
 
   return (
     <>
-      <div className="p-2 bg-secondary">
+      <div className="rounded border bg-card h-[calc(100vh-180px)]">
         <div className="flex justify-between items-center mb-2">
           <div className="flex">
             <Input

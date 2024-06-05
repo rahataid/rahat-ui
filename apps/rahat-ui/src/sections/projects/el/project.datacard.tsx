@@ -53,12 +53,12 @@ const ProjectDataCard: FC<ProjectDataCardProps> = ({
     <>
       <div className="my-2 grid lg:grid-cols-6 md:grid-cols-4 sm:grid-cols-2 gap-2">
         <SmallDataCard
-          title="Beneficiaries"
+          title="Total Beneficiaries"
           number={totalBeneficiary}
           loading={loading}
         />
         <SmallDataCard
-          title="Voucher Redeemed"
+          title="Total Voucher"
           number={totalVoucherRedeemed}
           loading={loading}
         />
@@ -69,7 +69,7 @@ const ProjectDataCard: FC<ProjectDataCardProps> = ({
           loading={loading}
         />
         <SmallDataCard
-          title="Actual Budget"
+          title="Redeemed Value"
           number={actualBudget}
           currency={data?.referredVoucherCurrency}
           loading={loading}
@@ -106,14 +106,14 @@ const ProjectDataCard: FC<ProjectDataCardProps> = ({
           />
           <DataCard
             className=""
-            title="Vouchers"
+            title="Free Vouchers"
             number={projectVoucher?.eyeVoucherBudget?.toString() || '-'}
             Icon={Users}
             refresh={refetchVoucher}
           />
           <DataCard
             className=""
-            title="Vouchers"
+            title="Referred Vouchers"
             number={projectVoucher?.referredVoucherBudget?.toString() || '-'}
             Icon={Users}
             refresh={refetchVoucher}

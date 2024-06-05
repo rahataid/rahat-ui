@@ -116,14 +116,6 @@ const ProjectMainView = () => {
     return item.name === 'GLASS_STATUS';
   })?.[0]?.data?.find((i) => i.id === 'ENROLLED_REGULAR_SUNGLASS');
 
-  const referredNonPolarizedSunGlass = ELProjectStats?.filter((item) => {
-    return item.name === 'GLASS_STATUS';
-  })?.[0]?.data?.find((i) => i.id === 'REFERRED_NON_POLARIZED_SUNGLASS');
-
-  const enrolledNonPolarizedSunGlass = ELProjectStats?.filter((item) => {
-    return item.name === 'GLASS_STATUS';
-  })?.[0]?.data?.find((i) => i.id === 'ENROLLED_NON_PLOARISED_SUNGLASS');
-
   const referredEyeCheckupData = ELProjectStats?.filter((item) => {
     return item.name === 'EYE_CHECKUP';
   })?.[0]?.data?.find((i) => i.id === 'REFERRED_EYE_CHECKUP');
@@ -165,17 +157,10 @@ const ProjectMainView = () => {
       data: [enrolledNoGlass?.count || 0, referredNoGlass?.count || 0],
     },
     {
-      name: 'Regular Sunglass',
+      name: 'Sunglass',
       data: [
         referredRegularSunGlass?.count || 0,
         enrolledRegularSunGlass?.count || 0,
-      ],
-    },
-    {
-      name: 'Non Polarized Sunglass',
-      data: [
-        referredNonPolarizedSunGlass?.count || 0,
-        enrolledNonPolarizedSunGlass?.count || 0,
       ],
     },
   ];

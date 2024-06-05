@@ -11,7 +11,7 @@ import { ImgProps } from 'next/dist/shared/lib/get-img-props';
 
 type CardProps = {
   title: string;
-  number: string;
+  number: number;
   currency?: string;
   refresh?: VoidFunction;
   loading?: boolean;

@@ -2,9 +2,11 @@ import { BadgeCent, HeartHandshake, Home, Users } from 'lucide-react';
 import DataCard from '../../components/dataCard';
 
 const DashboardSummary = ({ data }: { data: any }) => {
-  const beneficiaryTotal = data?.data?.data?.find(
+  const {beneficiaryStats,vendorStats} = data
+  const beneficiaryTotal = beneficiaryStats?.data?.data?.find(
     (item) => item.name === 'BENEFICIARY_TOTAL',
   );
+  const vendorTotal = vendorStats?.data?.data;
   const count = beneficiaryTotal ? beneficiaryTotal?.data?.count : 0;
 
   return (
@@ -14,17 +16,15 @@ const DashboardSummary = ({ data }: { data: any }) => {
           className=""
           title="Total beneficiaries"
           number={count}
-          subTitle="+2% from last month"
           Icon={Users}
         />
         <DataCard
           className=""
-          title="Communities Impacted"
-          number={'122'}
-          subTitle="+60% from last month"
-          Icon={Home}
+          title="Total  Vendors"
+          number={vendorTotal}
+          Icon={Users}
         />
-        <DataCard
+        {/* <DataCard
           className=""
           title="Amount Distributed"
           number={'₹' + ' 1,80,000'}
@@ -37,7 +37,7 @@ const DashboardSummary = ({ data }: { data: any }) => {
           number={'$' + 12}
           subTitle="$35% from last month"
           Icon={BadgeCent}
-        />
+        /> */}
       </div>
     </div>
   );

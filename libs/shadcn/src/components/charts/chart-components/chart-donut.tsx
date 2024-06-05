@@ -1,5 +1,6 @@
 // components
 
+import styled from '@emotion/styled';
 import Chart from '../chart';
 import useChart from '../use-chart';
 
@@ -27,7 +28,7 @@ export default function ChartDonut({
     },
     legend: {
       position: 'bottom',
-      horizontalAlign: 'left',
+      horizontalAlign: 'center',
     },
     tooltip: {
       fillSeriesColor: false,
@@ -38,6 +39,9 @@ export default function ChartDonut({
     plotOptions: {
       pie: {
         donut: {
+          labels: {
+            show: false,
+          },
           size: donutSize,
         },
       },

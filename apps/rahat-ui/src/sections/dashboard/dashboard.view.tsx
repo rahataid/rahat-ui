@@ -7,15 +7,21 @@ import { DashboardCharts } from '.';
 import { mapboxBasicConfig } from '../../constants/config';
 import DashboardSummary from './summary';
 import { useGetBeneficiaryStats } from '@rahat-ui/query';
+import { useGetVendorStats } from '@rahat-ui/query';
 
 export default function DashboardView() {
   const beneficiaryStats = useGetBeneficiaryStats();
+  const vendorStats = useGetVendorStats();
+  const data ={
+    beneficiaryStats,
+    vendorStats
+  }
   return (
     <div className="bg-secondary">
       <Tabs defaultValue="list">
         <ScrollArea className="h-[calc(100vh-68px)] px-2 py-2">
           <TabsContent value="list">
-            <DashboardSummary data={beneficiaryStats} />
+            <DashboardSummary data={data} />
             <DashboardCharts charts={beneficiaryStats?.data?.data} />
           </TabsContent>
           <StyledMapContainer>

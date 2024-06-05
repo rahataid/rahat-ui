@@ -32,12 +32,13 @@ import { useWaitForTransactionReceipt } from 'wagmi';
 export const useNavItems = () => {
   const { id } = useParams();
   const route = useRouter();
-  const [isTransacting, setisTransacting] = useState<boolean>(false)
+  const [isTransacting, setisTransacting] = useState<boolean>(false);
   const contractSettings = useProjectSettingsStore(
     (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT] || null,
   );
 
-  const [voucherCreateTransactionHash, setVoucherCreateTransactionHash] = useState<`0x${string}`>()
+  const [voucherCreateTransactionHash, setVoucherCreateTransactionHash] =
+    useState<`0x${string}`>();
 
   const dialog = useSwal();
   const createTokenSummaryModal = useBoolean();
@@ -57,6 +58,11 @@ export const useNavItems = () => {
     createTokenModal.onTrue();
   };
   const handleCloseSummaryModal = () => {
+    createTokenSummaryModal.onFalse();
+  };
+
+  const handleCloseTokenModal = () => {
+    createTokenModal.onToggle();
     createTokenSummaryModal.onFalse();
   };
 
@@ -116,33 +122,37 @@ export const useNavItems = () => {
 
   const handleCreateVoucherSubmit = async (e: any) => {
     e.preventDefault();
-    setisTransacting(true)
+    setisTransacting(true);
     if (!contractSettings) return;
     const referralLimit = 3;
-    const transactionHash = await createOnlyVoucher.writeContractAsync({
-      address: contractSettings?.rahatdonor?.address,
-      args: [
-        contractSettings?.eyevoucher?.address,
-        contractSettings?.referralvoucher?.address,
-        contractSettings?.elproject?.address,
-        BigInt(voucherInputs.tokens),
-        BigInt(referralLimit),
-      ],
-    });
-
-    setVoucherCreateTransactionHash(transactionHash)
-    handleCloseSummaryModal();
+    const transactionHash = await createOnlyVoucher
+      .writeContractAsync({
+        address: contractSettings?.rahatdonor?.address,
+        args: [
+          contractSettings?.eyevoucher?.address,
+          contractSettings?.referralvoucher?.address,
+          contractSettings?.elproject?.address,
+          BigInt(voucherInputs.tokens),
+          BigInt(referralLimit),
+        ],
+      })
+      .finally(() => {
+        setisTransacting(false);
+        route.refresh();
+        handleCloseSummaryModal();
+      });
+    setVoucherCreateTransactionHash(transactionHash);
 
     // route.push(`/projects/el/${id}/vouchers`);
   };
 
   const result = useWaitForTransactionReceipt({
     hash: voucherCreateTransactionHash,
-  })
+  });
 
   useEffect(() => {
     result?.data && setisTransacting(false);
-  }, [result])
+  }, [result]);
 
   const handleCloseProject = async () => {
     const { value } = await dialog.fire({
@@ -215,7 +225,7 @@ export const useNavItems = () => {
                 setVoucherInputs={setVoucherInputs}
                 open={createTokenModal.value}
                 handleModal={handleOpenCreateTokenModal}
-                isTransacting = {isTransacting}
+                isTransacting={isTransacting}
               />
               <ConfirmModal
                 open={createTokenSummaryModal.value}

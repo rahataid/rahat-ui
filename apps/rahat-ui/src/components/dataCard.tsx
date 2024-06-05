@@ -11,7 +11,6 @@ type CardProps = {
   title: string;
   number?: string;
   smallNumber?: string;
-  subTitle: string;
   className: string;
   Icon?: LucideIcon;
   refresh?: VoidFunction;
@@ -21,7 +20,6 @@ export default function DataCard({
   title,
   number,
   smallNumber,
-  subTitle,
   className,
   Icon,
   refresh,
@@ -35,7 +33,17 @@ export default function DataCard({
     >
       <CardHeader className="pb-2">
         <div className="flex items-start justify-between ">
-          <CardTitle className="text-md font-medium">{title}</CardTitle>
+          <div className="flex items-center gap-3">
+            <CardTitle className="text-md font-medium">{title}</CardTitle>
+            {refresh && (
+              <RefreshCcw
+                size={14}
+                strokeWidth={1.5}
+                className="text-primary cursor-pointer"
+                onClick={refresh}
+              />
+            )}
+          </div>
           <div>
             {Icon && (
               <Icon
@@ -51,19 +59,7 @@ export default function DataCard({
         <div>
           <div className="text-4xl font-semibold text-primary">{number}</div>
           <div className="text-xl font-normal text-primary">{smallNumber}</div>
-          <div className="flex items-end gap-4">
-            <p className="text-xs text-muted-foreground space-y-0 pt-2">
-              {subTitle}
-            </p>
-            {refresh && (
-              <RefreshCcw
-                size={14}
-                strokeWidth={1.5}
-                className="text-primary cursor-pointer"
-                onClick={refresh}
-              />
-            )}
-          </div>
+          <div className="flex items-end gap-4"></div>
         </div>
       </CardContent>
     </Card>

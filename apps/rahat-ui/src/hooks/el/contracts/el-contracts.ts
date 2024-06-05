@@ -87,9 +87,9 @@ export const useMintVouchers = () => {
     },
     onError: (err) => {
       toastMixin.fire({
-        title: 'Error while minting vouchers',
+        title: 'Error ',
         icon: 'error',
-        text: err.message,
+        text: 'Error while minting vouchers',
       });
     },
   });
@@ -124,9 +124,9 @@ export const useOnlyMintVoucher = () => {
       },
       onError: (err) => {
         toastMixin.fire({
-          title: 'Error while minting vouchers',
+          title: 'Error',
           icon: 'error',
-          text: err.message,
+          text: 'Error while minting voucher',
         });
       },
     },

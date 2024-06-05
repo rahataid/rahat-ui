@@ -71,7 +71,7 @@ const StackColumn = ({ data, stacked, width, height, title }: IProps) => {
 
   return (
     <div className="bg-card rounded shadow w-full mt-2 ">
-      <p className="mt-6 mb-2 ml-4 text-primary">{title}</p>
+      <p className="mt-6 mb-2 ml-4">{title}</p>
       <ChartColumnStacked
         series={ageGroups}
         stacked={stacked}

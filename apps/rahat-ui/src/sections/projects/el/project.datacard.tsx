@@ -55,27 +55,23 @@ const ProjectDataCard: FC<ProjectDataCardProps> = ({
         <SmallDataCard
           title="Beneficiaries"
           number={totalBeneficiary}
-          subTitle="Total Beneficiaries"
           loading={loading}
         />
         <SmallDataCard
           title="Voucher Redeemed"
           number={totalVoucherRedeemed}
-          subTitle="Total Vouchers Claimed"
           loading={loading}
         />
         <SmallDataCard
           title="Estimated Budget"
           number={estimatedBudget}
           currency={data?.referredVoucherCurrency}
-          subTitle="Vouchers Assigned"
           loading={loading}
         />
         <SmallDataCard
           title="Actual Budget"
           number={actualBudget}
           currency={data?.referredVoucherCurrency}
-          subTitle="Vouchers Redeemed Value"
           loading={loading}
         />
 
@@ -83,14 +79,12 @@ const ProjectDataCard: FC<ProjectDataCardProps> = ({
           title="Reconcile Pending"
           number={reconciliationRequested}
           currency=""
-          subTitle="Request from Vendors"
           loading={loading}
         />
         <SmallDataCard
           title="Reconcile Proceeded"
           number={reconciliationApproved}
           currency=""
-          subTitle="Reconciliation Proceeded"
           loading={loading}
         />
       </div>
@@ -100,7 +94,6 @@ const ProjectDataCard: FC<ProjectDataCardProps> = ({
             className=""
             title="Enrolled Beneficiary"
             number={beneficiaryDetails ? beneficiaryDetails[0].toString() : '-'}
-            subTitle="Enrolled"
             Icon={Users}
             refresh={refetchBeneficiary}
           />
@@ -108,7 +101,6 @@ const ProjectDataCard: FC<ProjectDataCardProps> = ({
             className=""
             title="Referred Beneficiary"
             number={beneficiaryDetails ? beneficiaryDetails[1].toString() : '-'}
-            subTitle="Referred"
             Icon={Users}
             refresh={refetchBeneficiary}
           />
@@ -116,7 +108,6 @@ const ProjectDataCard: FC<ProjectDataCardProps> = ({
             className=""
             title="Vouchers"
             number={projectVoucher?.eyeVoucherBudget?.toString() || '-'}
-            subTitle="Free"
             Icon={Users}
             refresh={refetchVoucher}
           />
@@ -124,7 +115,6 @@ const ProjectDataCard: FC<ProjectDataCardProps> = ({
             className=""
             title="Vouchers"
             number={projectVoucher?.referredVoucherBudget?.toString() || '-'}
-            subTitle="Discount"
             Icon={Users}
             refresh={refetchVoucher}
           />

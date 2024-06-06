@@ -173,14 +173,13 @@ const ProjectMainView = () => {
           totalBeneficiary={projectStats?.benTotal}
           totalVendor={projectStats?.vendorTotal}
           loading={isLoading}
-        />
-        <ProjectDataCard
+          refetchBeneficiary={refetchBeneficiary}
           beneficiaryDetails={beneficiaryDetails}
-          totalBeneficiary={projectStats?.benTotal}
-          totalVendor={projectStats?.vendorTotal}
           projectVoucher={projectVoucher}
           voucherDetails={voucherDetails}
-          refetchBeneficiary={refetchBeneficiary}
+        />
+        <ProjectDataCard
+          totalVendor={projectStats?.vendorTotal}
           refetchVoucher={refetchVoucher}
           loading={isLoading}
           ELProjectStats={ELProjectStats}

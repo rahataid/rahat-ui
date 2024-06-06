@@ -10,94 +10,67 @@ import {
   CardTitle,
 } from '@rahat-ui/shadcn/src/components/ui/card';
 import { ArrowDown, ArrowUp } from 'lucide-react';
+import { useQuery } from 'urql';
+import { TransactionDetails } from '@rahat-ui/query';
+import { Transaction, TransactionsObject } from './types';
+import { useEffect, useState } from 'react';
+import { mergeTransactions } from './utils';
+import { shortenAddress } from 'apps/rahat-ui/src/utils/getProjectAddress';
+import { formatEther } from 'viem';
 
 export default function RecentTransaction() {
+  const [transactionList, setTransactionList] = useState<Transaction[]>([]);
+
+  const [result] = useQuery({
+    query: TransactionDetails,
+  });
+
+  useEffect(() => {
+    (async () => {
+      const transactionsObject: TransactionsObject = result.data;
+      const transactionLists = await mergeTransactions(transactionsObject);
+      setTransactionList(transactionLists);
+    })();
+  });
+
   return (
     <Card className="rounded mr-2">
       <CardHeader>
         <CardTitle>Recent Transactions</CardTitle>
       </CardHeader>
       <CardContent className="grid gap-8">
-        <div className="flex items-center gap-4">
-          <Avatar className="h-9 w-9 sm:flex bg-green-200 flex items-center justify-center">
-            <ArrowUp size={20} strokeWidth={1.25} />
-          </Avatar>
-          <div className="grid gap-1">
-            <p className="text-sm font-medium leading-none">Contract address</p>
-            <p className="text-sm text-muted-foreground">transaction_hash</p>
+        {transactionList.map((transaction) => (
+          <div className="flex items-center gap-4" key={transaction.id}>
+            <Avatar
+              className={`h-9 w-9 sm:flex ${
+                transaction.__typename === 'TokenReceived'
+                  ? 'bg-green-200'
+                  : 'bg-red-200'
+              } flex items-center justify-center`}
+            >
+              {transaction.__typename === 'TokenReceived' ? (
+                <ArrowUp size={20} strokeWidth={1.25} />
+              ) : (
+                <ArrowDown size={20} strokeWidth={1.25} />
+              )}
+            </Avatar>
+            <div className="grid gap-1">
+              <p className="text-sm font-medium leading-none">
+                {transaction.__typename === 'TokenReceived'
+                  ? transaction.from
+                  : transaction._beneficiary}
+              </p>
+              <p className="text-sm text-muted-foreground">
+                {shortenAddress(`0x${transaction.transactionHash}`)}
+              </p>
+            </div>
+            <div className="ml-auto font-medium">
+              {transaction.__typename === 'TokenReceived'
+                ? `$${formatEther(BigInt(transaction.amount))}`
+                : `$${formatEther(BigInt(transaction._amount))}`}
+            </div>
           </div>
-          <div className="ml-auto font-medium">+$1,999.00</div>
-        </div>
-        <div className="flex items-center gap-4">
-          <Avatar className="h-9 w-9 sm:flex bg-red-200 flex items-center justify-center">
-            <ArrowDown size={20} strokeWidth={1.25} />
-          </Avatar>
-          <div className="grid gap-1">
-            <p className="text-sm font-medium leading-none">Contract address</p>
-            <p className="text-sm text-muted-foreground">transaction_hash</p>
-          </div>
-          <div className="ml-auto font-medium">+$1,999.00</div>
-        </div>
-        <div className="flex items-center gap-4">
-          <Avatar className="h-9 w-9 sm:flex bg-green-200 flex items-center justify-center">
-            <ArrowUp size={20} strokeWidth={1.25} />
-          </Avatar>
-          <div className="grid gap-1">
-            <p className="text-sm font-medium leading-none">Contract address</p>
-            <p className="text-sm text-muted-foreground">transaction_hash</p>
-          </div>
-          <div className="ml-auto font-medium">+$1,999.00</div>
-        </div>
-        <div className="flex items-center gap-4">
-          <Avatar className="h-9 w-9 sm:flex bg-red-200 flex items-center justify-center">
-            <ArrowDown size={20} strokeWidth={1.25} />
-          </Avatar>
-          <div className="grid gap-1">
-            <p className="text-sm font-medium leading-none">Contract address</p>
-            <p className="text-sm text-muted-foreground">transaction_hash</p>
-          </div>
-          <div className="ml-auto font-medium">+$1,999.00</div>
-        </div>
-        <div className="flex items-center gap-4">
-          <Avatar className="h-9 w-9 sm:flex bg-green-200 flex items-center justify-center">
-            <ArrowUp size={20} strokeWidth={1.25} />
-          </Avatar>
-          <div className="grid gap-1">
-            <p className="text-sm font-medium leading-none">Contract address</p>
-            <p className="text-sm text-muted-foreground">transaction_hash</p>
-          </div>
-          <div className="ml-auto font-medium">+$1,999.00</div>
-        </div>
-        <div className="flex items-center gap-4">
-          <Avatar className="h-9 w-9 sm:flex bg-red-200 flex items-center justify-center">
-            <ArrowDown size={20} strokeWidth={1.25} />
-          </Avatar>
-          <div className="grid gap-1">
-            <p className="text-sm font-medium leading-none">Contract address</p>
-            <p className="text-sm text-muted-foreground">transaction_hash</p>
-          </div>
-          <div className="ml-auto font-medium">+$1,999.00</div>
-        </div>
-        <div className="flex items-center gap-4">
-          <Avatar className="h-9 w-9 sm:flex bg-green-200 flex items-center justify-center">
-            <ArrowUp size={20} strokeWidth={1.25} />
-          </Avatar>
-          <div className="grid gap-1">
-            <p className="text-sm font-medium leading-none">Contract address</p>
-            <p className="text-sm text-muted-foreground">transaction_hash</p>
-          </div>
-          <div className="ml-auto font-medium">+$1,999.00</div>
-        </div>
-        <div className="flex items-center gap-4">
-          <Avatar className="h-9 w-9 sm:flex bg-red-200 flex items-center justify-center">
-            <ArrowDown size={20} strokeWidth={1.25} />
-          </Avatar>
-          <div className="grid gap-1">
-            <p className="text-sm font-medium leading-none">Contract address</p>
-            <p className="text-sm text-muted-foreground">transaction_hash</p>
-          </div>
-          <div className="ml-auto font-medium">+$1,999.00</div>
-        </div>
+        ))}
       </CardContent>
     </Card>
   );

@@ -1,4 +1,7 @@
 'use client';
+import { getBeneficiaryClient } from '@rahataid/sdk/clients';
+import { useRSQuery } from '@rumsan/react-query';
+import { Pagination } from '@rumsan/sdk/types';
 import {
   UseQueryResult,
   keepPreviousData,
@@ -6,17 +9,14 @@ import {
   useQuery,
   useQueryClient,
 } from '@tanstack/react-query';
-import { TAGS } from '../../config';
-import { api } from '../../utils/api';
-import { useRSQuery } from '@rumsan/react-query';
-import { getBeneficiaryClient } from '@rahataid/sdk/clients';
-import { useBeneficiaryStore } from './beneficiary.store';
-import { useEffect } from 'react';
 import { UUID } from 'crypto';
+import { useEffect } from 'react';
+import Swal from 'sweetalert2';
+import { TAGS } from '../../config';
 import { useSwal } from '../../swal';
-import { Pagination } from '@rumsan/sdk/types';
-import { useBeneficiariesGroupStore } from '../aa';
+import { api } from '../../utils/api';
 import { useBeneficiaryGroupsStore } from './beneficiary-groups.store';
+import { useBeneficiaryStore } from './beneficiary.store';
 
 const createNewBeneficiary = async (payload: any) => {
   const response = await api.post('/beneficiaries', payload);
@@ -30,19 +30,20 @@ const createNewBeneficiaryGroup = async (payload: any) => {
 
 const listBeneficiaryGroups = async (payload: Pagination) => {
   const response = await api.get('/beneficiaries/groups/all', {
-    params: payload
+    params: payload,
   });
   return response?.data;
 };
 
-
 export const useBeneficiaryGroupsList = (payload: any): any => {
   const { queryClient } = useRSQuery();
 
-  const { setBeneficiaryGroups, setMeta } = useBeneficiaryGroupsStore((state) => ({
-    setBeneficiaryGroups: state.setBeneficiaryGroups,
-    setMeta: state.setMeta,
-  }));
+  const { setBeneficiaryGroups, setMeta } = useBeneficiaryGroupsStore(
+    (state) => ({
+      setBeneficiaryGroups: state.setBeneficiaryGroups,
+      setMeta: state.setMeta,
+    }),
+  );
 
   const benGroups = useQuery(
     {
@@ -55,7 +56,7 @@ export const useBeneficiaryGroupsList = (payload: any): any => {
 
   useEffect(() => {
     if (benGroups.data) {
-      console.log("ben groups", benGroups);
+      console.log('ben groups', benGroups);
       setBeneficiaryGroups(benGroups?.data?.data as any[]);
       setMeta(benGroups?.data?.meta);
     }
@@ -63,14 +64,14 @@ export const useBeneficiaryGroupsList = (payload: any): any => {
 
   const mappedGroupData = benGroups?.data?.data?.map((d: any) => ({
     ...d,
-    totalMembers: d?._count?.groupedBeneficiaries
-  }))
+    totalMembers: d?._count?.groupedBeneficiaries,
+  }));
 
   return {
     ...benGroups,
     data: mappedGroupData,
-    meta: benGroups?.data?.meta
-  }
+    meta: benGroups?.data?.meta,
+  };
 };
 
 export const useCreateBeneficiary = () => {
@@ -92,7 +93,6 @@ export const useCreateBeneficiaryGroup = () => {
     },
   });
 };
-
 
 // Todo: Change type of return
 export const useBeneficiaryList = (payload: any): any => {
@@ -332,4 +332,107 @@ export const useSingleBeneficiary = (
   }, [query.data, setSingleBeneficiary]);
 
   return query;
+};
+
+export const useListTempGroups = (): UseQueryResult<any, Error> => {
+  const { rumsanService, queryClient } = useRSQuery();
+  const benClient = getBeneficiaryClient(rumsanService.client);
+  return useQuery(
+    {
+      queryKey: [TAGS.GET_TEMP_GROUPS],
+      queryFn: benClient.listTempGroups,
+    },
+    queryClient,
+  );
+};
+
+export const useListTempBeneficiary = (
+  payload: Pagination & { [key: string]: string },
+): UseQueryResult<any, Error> => {
+  const { rumsanService, queryClient } = useRSQuery();
+  const benClient = getBeneficiaryClient(rumsanService.client);
+  return useQuery(
+    {
+      queryKey: [TAGS.GET_TEMP_BENEFICIARIES, payload],
+      queryFn: () => benClient.listTempBeneficiary(payload),
+    },
+    queryClient,
+  );
+};
+
+export const useTempBeneficiaryImport = () => {
+  const { rumsanService, queryClient } = useRSQuery();
+
+  return useMutation({
+    mutationKey: [TAGS.ADD_COMMUNITY_BENEFICIARY_GROUP],
+    mutationFn: async (payload: any) => {
+      const { value } = await Swal.fire({
+        title: 'Assign Group',
+        text: 'Select group for importing  beneficiary',
+        showCancelButton: true,
+        confirmButtonText: 'Assign',
+        cancelButtonText: 'Cancel',
+        input: 'select',
+        inputOptions: payload.inputOptions,
+        inputPlaceholder: 'Select a Group',
+        inputAttributes: {
+          style: 'max-height: 200px; overflow-y: auto;',
+        },
+        preConfirm: (selectedValue) => {
+          if (!selectedValue) {
+            Swal.showValidationMessage('Please select a group to proceed!');
+          }
+          return selectedValue;
+        },
+      });
+
+      if (value !== undefined && value !== '') {
+        const inputData = {
+          beneficiaries: payload?.communityBeneficiariesUUID,
+          groupName: value,
+        };
+        // return await beneficiaryGroupClient.create(inputData as any);
+
+        return alert(inputData.groupName);
+      }
+      return null;
+    },
+    // onSuccess: async (data: any) => {
+    //   queryClient.invalidateQueries({
+    //     queryKey: [
+    //       TAGS.LIST_COMMUNITY_BENEFICIARY_GROUP,
+    //       TAGS.LIST_COMMUNITY_BENFICIARIES,
+    //     ],
+    //   });
+    //   if (data) {
+    //     queryClient.invalidateQueries({
+    //       queryKey: [
+    //         TAGS.LIST_COMMUNITY_BENEFICIARY_GROUP,
+    //         TAGS.LIST_COMMUNITY_BENFICIARIES,
+    //         { exact: true },
+    //       ],
+    //     });
+
+    //     data?.data?.info === false
+    //       ? await Swal.fire({
+    //           text: data?.data?.finalMessage,
+    //           icon: 'success',
+    //         })
+    //       : await Swal.fire({
+    //           title: data?.data?.finalMessage,
+    //           titleText: data?.data?.finalMessage,
+    //           text: data?.data?.info,
+
+    //           icon: 'success',
+    //         });
+    //   }
+    // },
+    // onError: (error: any) => {
+    //   Swal.fire({
+    //     icon: 'error',
+    //     title:
+    //       error.response.data.message || 'Encounter error on Creating Data',
+    //   });
+    // },
+  });
 };

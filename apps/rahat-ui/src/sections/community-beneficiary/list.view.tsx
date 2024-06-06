@@ -32,6 +32,9 @@ type IProps = {
   filters: Record<string, any>;
   setPagination: (pagination: Pagination) => void;
   pagination: Pagination;
+  tempGroups: {
+    groupName: string;
+  }[];
 };
 
 export default function ListView({
@@ -40,6 +43,7 @@ export default function ListView({
   setFilters,
   setPagination,
   pagination,
+  tempGroups,
 }: IProps) {
   const handleFilterChange = (event: any) => {
     if (event && event.target) {
@@ -66,7 +70,7 @@ export default function ListView({
   };
 
   const transformedGroupData =
-    GeroupData.map((item) => ({
+    tempGroups.map((item) => ({
       label: item.groupName.toString(),
       value: item.groupName.toString(),
     })) || [];

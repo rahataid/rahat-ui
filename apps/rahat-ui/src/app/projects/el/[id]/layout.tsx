@@ -1,14 +1,13 @@
 'use client';
 
 import { useProjectContractSettings } from '@rahat-ui/query';
+import { ProjectTypes } from '@rahataid/sdk/enums';
 import { GraphQueryProvider } from 'apps/rahat-ui/src/providers/subgraph-provider';
 import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
 import * as React from 'react';
 import { useSecondPanel } from '../../../../providers/second-panel-provider';
 import { ProjectLayout } from '../../../../sections/projects/components';
-import { ProjectTypes } from '@rahataid/sdk/enums';
-import Image from 'next/image';
 
 const ProjectLayoutRoot = ({ children }: { children: React.ReactNode }) => {
   const { secondPanel } = useSecondPanel();

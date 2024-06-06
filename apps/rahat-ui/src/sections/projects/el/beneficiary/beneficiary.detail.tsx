@@ -80,6 +80,8 @@ export default function BeneficiaryDetail({
   const [assignStatus, setAssignStatus] = useState(false);
   const [transactionHash, setTransactionHash] = useState<`0x${string}`>();
   const [isTransacting, setisTransacting] = useState<boolean>(false);
+  const [voucherType, setVoucherType] = useState<string>();
+  const [claimstatus, setClaimstatus] = useState<string>();
 
   const walletAddress = beneficiaryDetails.wallet;
 
@@ -95,6 +97,42 @@ export default function BeneficiaryDetail({
     address: contractSettings?.elproject?.address,
     args: [walletAddress],
   });
+
+  useEffect(() => {
+    {
+      if (
+        beneficiaryVoucherDetails?.freeVoucherAddress !== undefined &&
+        beneficiaryVoucherDetails?.freeVoucherAddress !== zeroAddress
+      ) {
+        setVoucherType('Free Voucher');
+      } else if (
+        beneficiaryVoucherDetails?.referredVoucherAddress !== undefined &&
+        beneficiaryVoucherDetails?.referredVoucherAddress !== zeroAddress
+      ) {
+        setVoucherType('Discount Voucher');
+      } else {
+        setVoucherType('N/A');
+      }
+    }
+  }, [beneficiaryVoucherDetails]);
+
+  useEffect(() => {
+    if (voucherType === 'Free Voucher') {
+      if (beneficiaryVoucherDetails?.freeVoucherClaimStatus === true) {
+        setClaimstatus('Claimed');
+      } else {
+        setClaimstatus('Not Claimed');
+      }
+    } else if (voucherType === 'Discount Voucher') {
+      if (beneficiaryVoucherDetails?.referredVoucherClaimStatus === true) {
+        setClaimstatus('Claimed');
+      } else {
+        setClaimstatus('Not Claimed');
+      }
+    } else {
+      setClaimstatus('N/A');
+    }
+  }, [beneficiaryVoucherDetails, voucherType]);
 
   const [activeTab, setActiveTab] = useState<'details' | 'edit' | null>(
     'details',
@@ -196,62 +234,64 @@ export default function BeneficiaryDetail({
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
-            <div className="flex gap-3">
-              <TooltipProvider delayDuration={100}>
-                <Tooltip>
-                  <TooltipTrigger>
-                    <AlertDialog>
-                      <AlertDialogTrigger className="flex items-center">
-                        <Trash2
-                          className="cursor-pointer"
-                          color="red"
-                          size={20}
-                          strokeWidth={1.5}
-                        />
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>
-                            Are you absolutely sure?
-                          </AlertDialogTitle>
-                          <AlertDialogDescription>
-                            This action cannot be undone. This will permanently
-                            delete this beneficiary.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancel</AlertDialogCancel>
-                          <AlertDialogAction
-                            onClick={() =>
-                              removeBeneficiary(beneficiaryDetails?.uuid)
-                            }
-                          >
-                            Continue
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                  </TooltipTrigger>
-                  <TooltipContent className="bg-secondary ">
-                    <p className="text-xs font-medium">Delete</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-              <DropdownMenu>
-                <DropdownMenuTrigger>
-                  <MoreVertical
-                    className="cursor-pointer"
-                    size={20}
-                    strokeWidth={1.5}
-                  />
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  <DropdownMenuItem onClick={() => handleTabChange('edit')}>
-                    Edit
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
+            {voucherType === 'N/A' ? (
+              <div className="flex gap-3">
+                <TooltipProvider delayDuration={100}>
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <AlertDialog>
+                        <AlertDialogTrigger className="flex items-center">
+                          <Trash2
+                            className="cursor-pointer"
+                            color="red"
+                            size={20}
+                            strokeWidth={1.5}
+                          />
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>
+                              Are you absolutely sure?
+                            </AlertDialogTitle>
+                            <AlertDialogDescription>
+                              This action cannot be undone. This will
+                              permanently delete this beneficiary.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={() =>
+                                removeBeneficiary(beneficiaryDetails?.uuid)
+                              }
+                            >
+                              Continue
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </TooltipTrigger>
+                    <TooltipContent className="bg-secondary ">
+                      <p className="text-xs font-medium">Delete</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                <DropdownMenu>
+                  <DropdownMenuTrigger>
+                    <MoreVertical
+                      className="cursor-pointer"
+                      size={20}
+                      strokeWidth={1.5}
+                    />
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    <DropdownMenuItem onClick={() => handleTabChange('edit')}>
+                      Edit
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            ) : null}
           </div>
           <div className="p-4 bg-card flex gap-2 justify-between items-center flex-wrap">
             <div className="flex items-center gap-2">
@@ -374,35 +414,11 @@ export default function BeneficiaryDetail({
                         <div className="flex flex-col gap-4">
                           <div className="flex justify-between items-center">
                             <p>Voucher Type</p>
-                            <p className="text-sm font-light">
-                              {beneficiaryVoucherDetails?.freeVoucherAddress !==
-                                undefined &&
-                              beneficiaryVoucherDetails?.freeVoucherAddress !==
-                                zeroAddress
-                                ? 'Free Voucher'
-                                : beneficiaryVoucherDetails?.referredVoucherAddress !==
-                                    undefined &&
-                                  beneficiaryVoucherDetails?.referredVoucherAddress !==
-                                    zeroAddress
-                                ? 'Discount Voucher'
-                                : 'N/A'}
-                            </p>
+                            <p className="text-sm font-light">{voucherType}</p>
                           </div>
                           <div className="flex justify-between items-center">
                             <p>Claimed</p>
-                            <p className="text-sm font-light">
-                              {beneficiaryVoucherDetails?.freeVoucherAddress !==
-                                undefined &&
-                              beneficiaryVoucherDetails?.freeVoucherAddress !==
-                                zeroAddress
-                                ? beneficiaryVoucherDetails?.freeVoucherClaimStatus?.toString()
-                                : beneficiaryVoucherDetails?.referredVoucherAddress !==
-                                    undefined &&
-                                  beneficiaryVoucherDetails?.referredVoucherAddress !==
-                                    zeroAddress
-                                ? beneficiaryVoucherDetails?.referredVoucherClaimStatus?.toString()
-                                : 'N/A'}
-                            </p>
+                            <p className="text-sm font-light">{claimstatus}</p>
                           </div>
                           <div className="flex justify-between items-center">
                             <p>Wallet Address</p>

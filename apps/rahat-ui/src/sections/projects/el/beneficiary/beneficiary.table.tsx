@@ -301,6 +301,7 @@ function BeneficiaryDetailTableView() {
                 onClick={() => {
                   setVoucherType('NOT_ASSIGNED');
                   resetSelectedListItems();
+                  closeSecondPanel();
                   route.replace(`${pathname}?voucherType=NOT_ASSIGNED${hash}`);
                 }}
                 value="NOT_ASSIGNED"

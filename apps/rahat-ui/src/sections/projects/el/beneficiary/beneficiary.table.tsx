@@ -321,14 +321,14 @@ function BeneficiaryDetailTableView() {
               </TabsTrigger>
               <TabsTrigger
                 onClick={() => {
-                  setVoucherType('REFERRED_VOUCHER');
+                  setVoucherType('DISCOUNT_VOUCHER');
                   resetSelectedListItems();
                   closeSecondPanel();
                   route.replace(
-                    `${pathname}?voucherType=REFERRED_VOUCHER${hash}`,
+                    `${pathname}?voucherType=DISCOUNT_VOUCHER${hash}`,
                   );
                 }}
-                value="REFERRED_VOUCHER"
+                value="DISCOUNT_VOUCHER"
               >
                 Discount Voucher
               </TabsTrigger>

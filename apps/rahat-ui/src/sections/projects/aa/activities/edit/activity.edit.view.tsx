@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -26,7 +26,7 @@ import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { Plus, CloudUpload, Check, X, LoaderCircle } from 'lucide-react';
 import {
   useActivitiesStore,
-  useCreateActivities,
+  useBeneficiariesGroups,
   useSingleActivity,
   useStakeholdersGroups,
   useUpdateActivities,
@@ -36,6 +36,7 @@ import { UUID } from 'crypto';
 import EditCommunicationForm from './edit.communication.form';
 
 export default function EditActivity() {
+  const router = useRouter();
   const uploadFile = useUploadFile();
   const updateActivity = useUpdateActivities();
   const { id: projectID, activityID } = useParams();
@@ -61,6 +62,7 @@ export default function EditActivity() {
   const nextId = React.useRef(0);
 
   useStakeholdersGroups(projectID as UUID, {});
+  useBeneficiariesGroups(projectID as UUID, {});
 
   const newCommunicationSchema = {
     groupType: '',
@@ -178,13 +180,19 @@ export default function EditActivity() {
     }
   };
 
+  React.useEffect(() => {
+    if (updateActivity.isSuccess) {
+      router.back();
+    }
+  }, [updateActivity.isSuccess]);
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleUpdateActivity)}>
         <div className="p-2 bg-secondary">
           <ScrollArea className="h-[calc(100vh-80px)]">
             <div className="p-4 rounded bg-card">
-              <h1 className="text-lg font-semibold mb-6">Add : Activities</h1>
+              <h1 className="text-lg font-semibold mb-6">Edit : Activities</h1>
               <div className="grid grid-cols-2 gap-4">
                 <FormField
                   control={form.control}

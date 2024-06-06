@@ -194,13 +194,26 @@ export const useDhmWaterLevels = (uuid: UUID) => {
     },
   });
 
-  // useEffect(() => {
-  //   if (query.data) {
-  //     setDhmStations({
-  //       [uuid]: query?.data,
-  //     });
-  //   }
-  // }, [query.data]);
+  return query;
+};
+
+export const useGlofasWaterLevels = (uuid: UUID) => {
+  const q = useProjectAction();
+
+  const query = useQuery({
+    queryKey: ['glofaswaterlevels', uuid],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'aaProject.waterLevels.getGlofas',
+          payload: {},
+        },
+      });
+      return mutate.data;
+    },
+  });
+
   return query;
 };
 

@@ -55,19 +55,23 @@ const ProjectDataCard: FC<ProjectDataCardProps> = ({
       <div className="grid grid-cols-5 gap-2 mt-2">
         <div className="col-span-3">
           <div className="grid grid-cols-3 gap-2">
-            <DataCard title="Vendors" number={totalVendor} loading={loading} />
             <DataCard
-              title="Reconcile Pending"
-              number={reconciliationRequested}
+              title="Total Vendors"
+              number={totalVendor || 'N/A'}
               loading={loading}
             />
             <DataCard
-              title="Reconcile Proceeded"
-              number={reconciliationApproved}
+              title="Redemption Pending"
+              number={reconciliationRequested || 'N/A'}
+              loading={loading}
+            />
+            <DataCard
+              title="Redemption Pending"
+              number={reconciliationApproved || 'N/A'}
               loading={loading}
             />
           </div>
-          <div className="grid grid-cols-2 gap-4 mt-2">
+          <div className="grid grid-cols-2 gap-2 mt-2">
             <DataCard
               title="Estimated Budget"
               number={estimatedBudget || 'N/A'}
@@ -77,7 +81,7 @@ const ProjectDataCard: FC<ProjectDataCardProps> = ({
             />
             <DataCard
               className=""
-              title="Actual Budget"
+              title="Redeemed Value"
               number={actualBudget || 'N/A'}
               subtitle="Vouchers Redeemed Value (Rp)"
               Icon={Users}

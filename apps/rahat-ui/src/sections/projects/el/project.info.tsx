@@ -84,7 +84,7 @@ const ProjectInfo: FC<ProjectInfoProps> = ({
           </div>
         </div>
         <div className="col-span-3">
-          <div className="mb-2 grid md:grid-cols-3 gap-4">
+          <div className="grid md:grid-cols-3 gap-2">
             <DataCard
               className="h-full"
               title="Total Beneficiary"

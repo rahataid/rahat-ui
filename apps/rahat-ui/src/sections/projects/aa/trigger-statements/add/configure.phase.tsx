@@ -29,7 +29,10 @@ type IProps = {
       hazardTypeId: string;
       dataSource: string;
       location: string;
-      waterLevel: string;
+      // waterLevel: string;
+      minLeadTimeDays: string;
+      maxLeadTimeDays: string;
+      probability: string;
       // activationLevel?: string | undefined;
     },
     any,

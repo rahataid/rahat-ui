@@ -32,9 +32,12 @@ type IProps = {
       dataSource: string;
       location: string;
       isMandatory?: boolean | undefined;
+      minLeadTimeDays: string;
+      maxLeadTimeDays: string;
+      probability: string;
 
       // readinessLevel?: string | undefined;
-      waterLevel: string;
+      // waterLevel: string;
     },
     any,
     undefined

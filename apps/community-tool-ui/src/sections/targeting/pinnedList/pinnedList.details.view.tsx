@@ -33,6 +33,7 @@ import CustomPagination from '../../../components/customPagination';
 import DetailsTable from './detailsTable';
 import { useTargetPinnedListDetailsTableColumns } from './useTargetLabelColumns';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { UUID } from 'crypto';
 
 export default function PinnedListDetailsView() {
   const {
@@ -84,7 +85,7 @@ export default function PinnedListDetailsView() {
   };
 
   const handleExportPinnedBeneficiary = () => {
-    exportPinnedListBeneficiary.mutate(uuid as string);
+    exportPinnedListBeneficiary.mutate({ targetUUID: uuid as string });
   };
 
   return (

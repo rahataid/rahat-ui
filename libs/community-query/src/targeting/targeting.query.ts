@@ -116,3 +116,51 @@ export const useDownloadPinnedListBeneficiary = () => {
     queryClient,
   );
 };
+
+export const useExportPinnedListBeneficiary = () => {
+  const { queryClient, rumsanService } = useRSQuery();
+  const targetingClient = getTargetClient(rumsanService.client);
+  return useMutation(
+    {
+      mutationKey: [TAGS.EXPORT_TARGETED_BENEFICIARIES],
+      mutationFn: async (payload: any) => {
+        const { isConfirmed } = await Swal.fire({
+          title: 'CAUTION!',
+          text: ' Are you sure you want to export targeted beneficiaries?',
+          icon: 'warning',
+          showDenyButton: true,
+          confirmButtonText: 'Yes, I am sure!',
+          denyButtonText: 'No, cancel it!',
+          customClass: {
+            actions: 'my-actions',
+            confirmButton: 'order-1',
+            denyButton: 'order-2',
+          },
+        });
+
+        if (!isConfirmed) return;
+        return targetingClient.exportTargetBeneficiary(payload);
+      },
+      onSuccess: (data: any) => {
+        Swal.fire(data?.data?.message, '', 'success');
+        queryClient.invalidateQueries({
+          queryKey: [
+            TAGS.LIST_COMMUNITY_BENFICIARIES,
+            {
+              exact: true,
+            },
+          ],
+        });
+      },
+      onError: (error: any) => {
+        Swal.fire(
+          'Error',
+          error?.response?.data?.message || 'Encounter error on Creating Data',
+          'error',
+        );
+      },
+    },
+
+    queryClient,
+  );
+};

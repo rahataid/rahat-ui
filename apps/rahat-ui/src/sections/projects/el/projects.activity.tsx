@@ -35,13 +35,13 @@ export default function Activities({ title, className, data }: CardProps) {
               <div className="space-y-2">
                 <p className="text-sm font-medium leading-none">Qty</p>
                 <div className="text-xs text-muted-foreground">
-                  {data?.eyeVoucherBudget?.toString()}
+                  {data?.eyeVoucherBudget?.toString() || 'N/A'}
                 </div>
                 <div className="text-xs text-muted-foreground">
-                  {data?.eyeVoucherAssigned?.toString()}
+                  {data?.eyeVoucherAssigned?.toString() || 'N/A'}
                 </div>
                 <div className="text-xs text-muted-foreground">
-                  {data?.eyeVoucherClaimed?.toString()}
+                  {data?.eyeVoucherClaimed?.toString() || 'N/A'}
                 </div>
               </div>
             </div>
@@ -77,13 +77,13 @@ export default function Activities({ title, className, data }: CardProps) {
               <div className="space-y-2">
                 <p className="text-sm font-medium leading-none">Qty</p>
                 <div className="text-xs text-muted-foreground">
-                  {data?.referredVoucherBudget?.toString()}
+                  {data?.referredVoucherBudget?.toString() || 'N/A'}
                 </div>
                 <div className="text-xs text-muted-foreground">
-                  {data?.referredVoucherAssigned?.toString()}
+                  {data?.referredVoucherAssigned?.toString() || 'N/A'}
                 </div>
                 <div className="text-xs text-muted-foreground">
-                  {data?.referredVoucherClaimed?.toString()}
+                  {data?.referredVoucherClaimed?.toString() || 'N/A'}
                 </div>
               </div>
             </div>

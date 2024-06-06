@@ -66,7 +66,7 @@ const ProjectDataCard: FC<ProjectDataCardProps> = ({
               loading={loading}
             />
             <DataCard
-              title="Redemption Pending"
+              title="Redemption Approved"
               number={reconciliationApproved || 'N/A'}
               loading={loading}
             />

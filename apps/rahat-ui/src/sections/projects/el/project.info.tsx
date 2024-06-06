@@ -111,7 +111,7 @@ const ProjectInfo: FC<ProjectInfoProps> = ({
             />
             <DataCard
               className=""
-              title="Vouchers Redemmed"
+              title="Vouchers Redeemed"
               number={totalVoucherRedeemed}
               Icon={Users}
               refresh={refetchBeneficiary}
@@ -125,7 +125,7 @@ const ProjectInfo: FC<ProjectInfoProps> = ({
             />
             <DataCard
               className=""
-              title="Referred Vouchers"
+              title="Discount Vouchers"
               number={projectVoucher?.referredVoucherBudget?.toString() || '-'}
               Icon={Users}
               refresh={refetchBeneficiary}

@@ -12,13 +12,12 @@ import { Eye } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 
 export type Disbursements = {
-  date: string;
-  type: string;
-  totalAmount: string;
-  status: string;
+  from: string;
+  to: string;
+  amount: string;
 };
 
-export const useDisburseTable = () => {
+export const useTransactionTable = () => {
   const { id } = useParams();
   const router = useRouter();
   const columns: ColumnDef<Disbursements>[] = [
@@ -45,30 +44,23 @@ export const useDisburseTable = () => {
       enableHiding: false,
     },
     {
-      accessorKey: 'date',
-      header: 'Date',
+      accessorKey: 'from',
+      header: 'From',
       cell: ({ row }) => (
-        <div className="capitalize">{row.getValue('date')}</div>
+        <div className="capitalize">{row.getValue('from')}</div>
       ),
     },
     {
-      accessorKey: 'type',
-      header: 'Type',
-      cell: ({ row }) => (
-        <div className="lowercase">{row.getValue('type')}</div>
-      ),
+      accessorKey: 'to',
+      header: 'To',
+      cell: ({ row }) => <div className="lowercase">{row.getValue('to')}</div>,
     },
     {
-      accessorKey: 'totalAmount',
-      header: 'Total Amount',
+      accessorKey: 'amount',
+      header: 'Amount',
       cell: ({ row }) => {
-        return <div>{row.getValue('totalAmount')}</div>;
+        return <div>{row.getValue('amount')}</div>;
       },
-    },
-    {
-      accessorKey: 'status',
-      header: 'Status',
-      cell: ({ row }) => <div>{row.getValue('status')}</div>,
     },
     {
       id: 'actions',

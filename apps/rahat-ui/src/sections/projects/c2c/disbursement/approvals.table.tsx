@@ -30,83 +30,16 @@ import {
 import { ChevronDown } from 'lucide-react';
 import * as React from 'react';
 import { useDisburseTable } from './useDisburseTable';
+import { useApprovalTable } from './useApprovalTable';
 
 const data = [
   {
-    date: '0x273d...B6Ed',
-    type: 'Project Balance',
-    totalAmount: '30000',
+    owner: '0x67FAB91396Bc0cC12308361337B25f0c469BC9B5',
     status: 'Completed',
-  },
-  {
-    date: '0x273d...B6Ed',
-    type: 'Wallet',
-    totalAmount: '50000',
-    status: 'Completed',
-  },
-  {
-    date: '0x273d...B6Ed',
-    type: 'Multisig Wallet',
-    totalAmount: '100000',
-    status: 'Pending',
-  },
-  {
-    date: '0x374f...A6Fg',
-    type: 'Project Balance',
-    totalAmount: '20000',
-    status: 'Completed',
-  },
-  {
-    date: '0x374f...A6Fg',
-    type: 'Wallet',
-    totalAmount: '45000',
-    status: 'Completed',
-  },
-  {
-    date: '0x374f...A6Fg',
-    type: 'Multisig Wallet',
-    totalAmount: '80000',
-    status: 'Pending',
-  },
-  {
-    date: '0x485g...C7Hh',
-    type: 'Project Balance',
-    totalAmount: '25000',
-    status: 'Completed',
-  },
-  {
-    date: '0x485g...C7Hh',
-    type: 'Wallet',
-    totalAmount: '40000',
-    status: 'Completed',
-  },
-  {
-    date: '0x485g...C7Hh',
-    type: 'Multisig Wallet',
-    totalAmount: '90000',
-    status: 'Pending',
-  },
-  {
-    date: '0x596h...D8Ii',
-    type: 'Project Balance',
-    totalAmount: '35000',
-    status: 'Completed',
-  },
-  {
-    date: '0x596h...D8Ii',
-    type: 'Wallet',
-    totalAmount: '60000',
-    status: 'Completed',
-  },
-  {
-    date: '0x596h...D8Ii',
-    type: 'Multisig Wallet',
-    totalAmount: '110000',
-    status: 'Pending',
   },
 ];
 
-export function DisburseTable() {
+export function ApprovalTable() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
@@ -115,7 +48,7 @@ export function DisburseTable() {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
   // const [data, setData] = React.useState([]);
-  const columns = useDisburseTable();
+  const columns = useApprovalTable();
 
   const table = useReactTable({
     data,
@@ -138,43 +71,7 @@ export function DisburseTable() {
 
   return (
     <div className="w-full">
-      <div className="flex items-center py-4">
-        <Input
-          placeholder="Filter date..."
-          value={(table.getColumn('date')?.getFilterValue() as string) ?? ''}
-          onChange={(event) =>
-            table.getColumn('date')?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm"
-        />
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto">
-              Columns <ChevronDown className="ml-2 h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {table
-              .getAllColumns()
-              .filter((column) => column.getCanHide())
-              .map((column) => {
-                return (
-                  <DropdownMenuCheckboxItem
-                    key={column.id}
-                    className="capitalize"
-                    checked={column.getIsVisible()}
-                    onCheckedChange={(value) =>
-                      column.toggleVisibility(!!value)
-                    }
-                  >
-                    {column.id}
-                  </DropdownMenuCheckboxItem>
-                );
-              })}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-      <div className="rounded h-[calc(100vh-180px)] bg-card">
+      <div className="rounded h-[calc(100vh-320px)] bg-card">
         <Table>
           <ScrollArea className="h-table1">
             <TableHeader>

@@ -1,7 +1,11 @@
-import React from 'react';
+import DisburseDetails from 'apps/rahat-ui/src/sections/projects/c2c/disbursement/disburse.details';
 
 const Page = () => {
-  return <div>Page</div>;
+  return (
+    <div className="px-2 bg-secondary">
+      <DisburseDetails />
+    </div>
+  );
 };
 
 export default Page;

@@ -52,45 +52,40 @@ const ProjectDataCard: FC<ProjectDataCardProps> = ({
 
   return (
     <>
-      <div className="grid grid-cols-5 gap-4 mt-1">
+      <div className="grid grid-cols-5 gap-2 mt-2">
         <div className="col-span-3">
-          <div className="grid grid-cols-3 gap-4">
-            <SmallDataCard
-              title="Vendors"
-              number={totalVendor}
-              currency={data?.referredVoucherCurrency}
-              loading={loading}
-            />
-            <SmallDataCard
+          <div className="grid grid-cols-3 gap-2">
+            <DataCard title="Vendors" number={totalVendor} loading={loading} />
+            <DataCard
               title="Reconcile Pending"
               number={reconciliationRequested}
-              currency=""
               loading={loading}
             />
-            <SmallDataCard
+            <DataCard
               title="Reconcile Proceeded"
               number={reconciliationApproved}
-              currency=""
               loading={loading}
             />
           </div>
-          <div className="grid grid-cols-2 gap-4 mt-4">
+          <div className="grid grid-cols-2 gap-4 mt-2">
             <DataCard
               title="Estimated Budget"
-              number={estimatedBudget}
+              number={estimatedBudget || 'N/A'}
+              subtitle="Vouchers Assigned (Rp)"
               currency={data?.referredVoucherCurrency}
               loading={loading}
             />
             <DataCard
               className=""
               title="Actual Budget"
-              number={'tbd'}
+              number={actualBudget || 'N/A'}
+              subtitle="Vouchers Redeemed Value (Rp)"
               Icon={Users}
               refresh={refetchBeneficiary}
             />
           </div>
         </div>
-        <div className="col-span-2 rounded bg-card p-4 shadow">
+        <div className="col-span-2">
           <Activities title="Vouchers" data={data} />
         </div>
       </div>

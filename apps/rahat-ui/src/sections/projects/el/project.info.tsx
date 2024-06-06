@@ -46,20 +46,26 @@ const ProjectInfo: FC<ProjectInfoProps> = ({
   };
   return (
     <>
-      <div className="grid grid-cols-5 grid-flow-col gap-4">
+      <div className="grid grid-cols-5 grid-flow-col gap-2">
         <div className="col-span-2 rounded bg-card p-4 shadow">
-          <div>
-            <p className="font-medium text-primary text-2xl">{project?.name}</p>
-          </div>
-          <div className="flex items-center justify-between flex-wrap mt-4 gap-10 md:gap-32 mb-4">
-            {renderExtras(project?.extras || {})}
+          <div className="mt-6">
             <div>
-              <p className="font-light text-xs text-muted-foreground">Status</p>
-              <p className="font-medium text-primary">{project?.status}</p>
+              <p className="font-medium text-primary text-2xl">
+                {project?.name}
+              </p>
             </div>
-            <div>
-              <p className="font-light text-xs text-muted-foreground">Type</p>
-              <p className="font-medium text-primary">{project?.type}</p>
+            <div className="flex items-center justify-between flex-wrap mt-4 gap-10 md:gap-32 mb-4">
+              {renderExtras(project?.extras || {})}
+              <div>
+                <p className="font-light text-xs text-muted-foreground">
+                  Status
+                </p>
+                <p className="font-medium text-primary">{project?.status}</p>
+              </div>
+              <div>
+                <p className="font-light text-xs text-muted-foreground">Type</p>
+                <p className="font-medium text-primary">{project?.type}</p>
+              </div>
             </div>
           </div>
           <div>
@@ -74,7 +80,7 @@ const ProjectInfo: FC<ProjectInfoProps> = ({
             {/* <p className="font-medium text-primary">{project?.status}</p> */}
           </div>
           <div>
-            <p className="mt-2 sm:w-2/3">{project?.description}</p>
+            <p className="mt-4 sm:w-2/3">{project?.description}</p>
           </div>
         </div>
         <div className="col-span-3">

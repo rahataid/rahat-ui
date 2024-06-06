@@ -37,10 +37,10 @@ export default function AutomatedTriggerDetailCards({ triggerDetail }: any) {
       icon: <SignalHigh size={25} />,
     },
     {
-      title: 'Level',
+      title: 'Probability',
       content: (
         <p className="text-xl text-primary font-semibold">
-          {triggerDetail?.triggerStatement?.waterLevel}
+          {`${triggerDetail?.triggerStatement?.probability}%`}
         </p>
       ),
       icon: <Gauge size={25} />,

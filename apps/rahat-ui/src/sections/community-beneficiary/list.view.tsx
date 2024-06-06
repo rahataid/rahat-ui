@@ -79,7 +79,7 @@ export default function ListView({
       <div className="-mt-2 p-2 bg-secondary">
         <div className="flex items-center mb-2">
           <Input
-            placeholder="Filters by ..."
+            placeholder="Filters by first name..."
             name="firstName"
             value={
               (table.getColumn('firstName')?.getFilterValue() as string) ??

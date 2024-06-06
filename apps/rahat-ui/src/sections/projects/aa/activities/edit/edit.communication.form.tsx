@@ -11,9 +11,14 @@ import {
   SelectValue,
   SelectContent,
   SelectItem,
+  SelectLabel,
+  SelectGroup,
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
-import { useStakeholdersGroupsStore } from '@rahat-ui/query';
+import {
+  useStakeholdersGroupsStore,
+  useBeneficiariesGroupStore,
+} from '@rahat-ui/query';
 import { X } from 'lucide-react';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 
@@ -31,9 +36,37 @@ export default function EditCommunicationForm({
   const stakeholdersGroups = useStakeholdersGroupsStore(
     (state) => state.stakeholdersGroups,
   );
-  console.log(stakeholdersGroups);
+
+  const beneficiaryGroups = useBeneficiariesGroupStore(
+    (state) => state.beneficiariesGroups,
+  );
 
   const fieldName = (name: string) => `activityCommunication.${index}.${name}`; // Dynamic field name generator
+
+  const renderGroups = () => {
+    const selectedGroupType = form.watch(fieldName('groupType'));
+    let groups = <SelectLabel>Please select group type</SelectLabel>;
+    switch (selectedGroupType) {
+      case 'STAKEHOLDERS':
+        groups = stakeholdersGroups.map((group: any) => (
+          <SelectItem key={group.id} value={group.uuid}>
+            {group.name}
+          </SelectItem>
+        ));
+        break;
+      case 'BENEFICIARY':
+        groups = beneficiaryGroups?.map((group: any) => (
+          <SelectItem key={group.id} value={group.uuid}>
+            {group.name}
+          </SelectItem>
+        ));
+        break;
+      default:
+        break;
+    }
+    return groups;
+  };
+
   return (
     <div className="border border-dashed rounded p-4 my-8">
       <div className="flex justify-between items-center mb-6">
@@ -57,6 +90,7 @@ export default function EditCommunicationForm({
                 </FormControl>
                 <SelectContent>
                   <SelectItem value="STAKEHOLDERS">Stakeholders</SelectItem>
+                  <SelectItem value="BENEFICIARY">Beneficiary</SelectItem>
                 </SelectContent>
               </Select>
               <FormMessage />
@@ -76,11 +110,7 @@ export default function EditCommunicationForm({
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {stakeholdersGroups.map((group: any) => (
-                    <SelectItem key={group.id} value={group.uuid}>
-                      {group.name}
-                    </SelectItem>
-                  ))}
+                  <SelectGroup>{renderGroups()}</SelectGroup>
                 </SelectContent>
               </Select>
               <FormMessage />

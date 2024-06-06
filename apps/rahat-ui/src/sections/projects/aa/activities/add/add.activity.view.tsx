@@ -26,6 +26,7 @@ import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { Plus, CloudUpload, Check, X, LoaderCircle } from 'lucide-react';
 import {
   useActivitiesStore,
+  useBeneficiariesGroups,
   useCreateActivities,
   useStakeholdersGroups,
   useUploadFile,
@@ -55,6 +56,7 @@ export default function AddActivities() {
   const nextId = React.useRef(0);
 
   useStakeholdersGroups(projectID as UUID, {});
+  useBeneficiariesGroups(projectID as UUID, {});
 
   const newCommunicationSchema = {
     groupType: '',

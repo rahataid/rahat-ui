@@ -34,12 +34,14 @@ export default function ImportTempCommunityBeneficiary() {
     communityBeneficiariesUUID && communityBeneficiariesUUID.length;
 
   const handleImportTempBeneficiaries = async () => {
-    await importTempBeneficiaries.mutateAsync({
+    const res = await importTempBeneficiaries.mutateAsync({
       inputOptions,
       communityBeneficiariesUUID,
     });
+    if(!res) return;
     setCommunityBeneficiariesUUID([]);
     setTimeout(() => {
+      if(res)
       router.push('/beneficiary')
     },1000);
   };

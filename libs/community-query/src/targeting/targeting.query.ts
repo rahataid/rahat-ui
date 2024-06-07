@@ -1,4 +1,4 @@
-import { UseQueryResult, useQuery, useMutation } from '@tanstack/react-query';
+import { UseQueryResult, useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useRSQuery } from '@rumsan/react-query';
 import { getTargetClient } from '@rahataid/community-tool-sdk/clients';
 import { TAGS } from '../config';
@@ -25,18 +25,16 @@ export const useTargetingList = (
 export const useTargetingCreate = () => {
   const { queryClient, rumsanService } = useRSQuery();
   const targetingClient = getTargetClient(rumsanService.client);
+  const qc = useQueryClient()
 
   return useMutation(
     {
       mutationKey: [TAGS.CREATE_TARGETING],
       mutationFn: targetingClient.create,
       onSuccess: () => {
-        queryClient.invalidateQueries({
+        qc.invalidateQueries({
           queryKey: [
-            TAGS.GET_TARGETING_BENEFICIARIES,
-            {
-              exact: true,
-            },
+            TAGS.GET_TARGETING_BENEFICIARIES
           ],
         });
       },
@@ -126,22 +124,17 @@ export const useExportPinnedListBeneficiary = () => {
       mutationFn: async (payload: any) => {
         const { isConfirmed } = await Swal.fire({
           title: 'CAUTION!',
-          text: ' Are you sure you want to export targeted beneficiaries?',
+          text: ' All targeted beneficiaries will be exported to Rahat!',
           icon: 'warning',
-          showDenyButton: true,
           confirmButtonText: 'Yes, I am sure!',
-          denyButtonText: 'No, cancel it!',
-          customClass: {
-            actions: 'my-actions',
-            confirmButton: 'order-1',
-            denyButton: 'order-2',
-          },
+          showCancelButton: true
         });
 
         if (!isConfirmed) return;
         return targetingClient.exportTargetBeneficiary(payload);
       },
       onSuccess: (data: any) => {
+        if(!data) return;
         Swal.fire(data?.data?.message, '', 'success');
         queryClient.invalidateQueries({
           queryKey: [

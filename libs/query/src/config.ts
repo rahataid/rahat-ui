@@ -33,6 +33,7 @@ export const TAGS = {
   GET_BENEFICIARIES_GROUPS: 'get_beneficiaries_groups',
   GET_TEMP_GROUPS: 'get_temp_groups',
   GET_TEMP_BENEFICIARIES: 'get_temp_beneficiaries',
+  IMPORT_TEMP_BENEFICIARIES: 'import_temp_beneficiaries',
 };
 export const PROJECT_SETTINGS_KEYS = {
   CONTRACT: 'CONTRACT',

@@ -1,4 +1,4 @@
-import { UseQueryResult, useQuery, useMutation } from '@tanstack/react-query';
+import { UseQueryResult, useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useRSQuery } from '@rumsan/react-query';
 import { getTargetClient } from '@rahataid/community-tool-sdk/clients';
 import { TAGS } from '../config';
@@ -25,18 +25,16 @@ export const useTargetingList = (
 export const useTargetingCreate = () => {
   const { queryClient, rumsanService } = useRSQuery();
   const targetingClient = getTargetClient(rumsanService.client);
+  const qc = useQueryClient()
 
   return useMutation(
     {
       mutationKey: [TAGS.CREATE_TARGETING],
       mutationFn: targetingClient.create,
       onSuccess: () => {
-        queryClient.invalidateQueries({
+        qc.invalidateQueries({
           queryKey: [
-            TAGS.GET_TARGETING_BENEFICIARIES,
-            {
-              exact: true,
-            },
+            TAGS.GET_TARGETING_BENEFICIARIES
           ],
         });
       },

@@ -65,6 +65,18 @@ export const useTriggerStatementTableColumns = () => {
       ),
     },
     {
+      accessorKey: 'isMandatory',
+      header: 'Type',
+      cell: ({ row }) => {
+        const isMandatory = row.getValue('isMandatory');
+        return (
+          <Badge>
+            {isMandatory ? 'Required' : 'Optional'}
+          </Badge>
+        );
+      },
+    },
+    {
       accessorKey: 'isTriggered',
       header: 'Status',
       cell: ({ row }) => {

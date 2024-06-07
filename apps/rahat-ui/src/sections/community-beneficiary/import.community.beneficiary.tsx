@@ -38,8 +38,8 @@ export default function ImportTempCommunityBeneficiary() {
       inputOptions,
       communityBeneficiariesUUID,
     });
-    setCommunityBeneficiariesUUID([]);
     if(!res) return;
+    setCommunityBeneficiariesUUID([]);
     setTimeout(() => {
       if(res)
       router.push('/beneficiary')

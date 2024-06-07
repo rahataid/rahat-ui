@@ -12,6 +12,7 @@ import {
   useProjectContractSettings,
   useProjectSettingsStore,
 } from '@rahat-ui/query';
+import GarphQlProvider from 'libs/query/src/lib/aa/graph/graphql-query-client';
 
 export default function ProjectLayoutRoot({
   children,
@@ -35,8 +36,10 @@ export default function ProjectLayoutRoot({
     return children;
   };
   return (
-    <ProjectLayout projectType={ProjectTypes.ANTICIPATORY_ACTION}>
-      {renderChildren()}
-    </ProjectLayout>
+    <GarphQlProvider>
+      <ProjectLayout projectType={ProjectTypes.ANTICIPATORY_ACTION}>
+        {renderChildren()}
+      </ProjectLayout>
+    </GarphQlProvider>
   );
 }

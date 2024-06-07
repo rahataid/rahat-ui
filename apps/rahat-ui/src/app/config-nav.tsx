@@ -48,6 +48,10 @@ export function useNavData() {
         title: 'Users',
         path: paths.dashboard.user,
       },
+      {
+        title: 'Community Beneficiaries',
+        path: paths.dashboard.communitybeneficiary,
+      },
     ],
     [],
   );

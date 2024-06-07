@@ -8,7 +8,7 @@ type ChartData = {
 
 const Charts: FC<ChartData> = ({ chartData = [] }) => {
   return (
-    <div className="grid md:grid-cols-3 gap-2 mt-1">
+    <div className="grid md:grid-cols-2 gap-2 mt-1">
       {chartData?.map((d: any) => {
         const series = Array.isArray(d?.data)
           ? d?.data.map((item: any) => ({

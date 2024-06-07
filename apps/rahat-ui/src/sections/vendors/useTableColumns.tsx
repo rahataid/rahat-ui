@@ -72,6 +72,7 @@ export const useTableColumns = (handleAssignClick: any) => {
         );
       },
     },
+    
     {
       header: () => <div className="text-center">Actions</div>,
       id: 'actions',

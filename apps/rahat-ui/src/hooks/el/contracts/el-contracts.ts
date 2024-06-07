@@ -27,6 +27,7 @@ import { useRouter } from 'next/navigation';
 
 export const useAddBeneficiary = () => {
   const alert = useAlert();
+  const route = useRouter();
   return useWriteElProjectAddBeneficiary({
     mutation: {
       onSuccess: () => {
@@ -62,20 +63,53 @@ export const useAssignClaims = () => {
 
 export const useMintVouchers = () => {
   const toastMixin = useAlert();
-  return useWriteRahatDonorMintTokenAndApproveDescription({
-    mutation: {
-      onSuccess: () => {
-        toastMixin.fire('It has been done');
-      },
-      onError: (err) => {
-        toastMixin.fire({
-          title: 'Error while minting vouchers',
-          icon: 'error',
-          text: err.message,
-        });
-      },
+  const route = useRouter();
+  const contract = useWriteRahatDonorMintTokenAndApproveDescription();
+
+  const functionCall = useMutation({
+    mutationFn: ({
+      id,
+      args,
+      contractAddress,
+    }: {
+      id: string;
+      args: any;
+      contractAddress: `0x${string}`;
+    }): Promise<unknown> => {
+      return contract.writeContractAsync({
+        args: args,
+        address: contractAddress,
+      });
+    },
+    onSuccess: async (result, variables) => {
+      toastMixin.fire('Voucher Minted Successfully');
+        route.push(`/projects/el/${variables.id}`);
+    },
+    onError: (err) => {
+      toastMixin.fire({
+        title: 'Error ',
+        icon: 'error',
+        text: 'Error while minting vouchers',
+      });
     },
   });
+  return functionCall
+  // return useWriteRahatDonorMintTokenAndApproveDescription({
+  //   mutation: {
+
+  //     onSuccess: () => {
+  //       toastMixin.fire('It has been done');
+  //       route.push(`/projects/}`);
+  //     },
+  //     onError: (err) => {
+  //       toastMixin.fire({
+  //         title: 'Error while minting vouchers',
+  //         icon: 'error',
+  //         text: err.message,
+  //       });
+  //     },
+  //   },
+  // });
 };
 
 export const useOnlyMintVoucher = () => {
@@ -90,9 +124,9 @@ export const useOnlyMintVoucher = () => {
       },
       onError: (err) => {
         toastMixin.fire({
-          title: 'Error while minting vouchers',
+          title: 'Error',
           icon: 'error',
-          text: err.message,
+          text: 'Error while minting voucher',
         });
       },
     },
@@ -186,7 +220,6 @@ export const useAddManager = () => {
   const contract = useWriteAccessManagerUpdateProjectManager();
   const addUser = useUserCreate();
   const alert = useAlert();
-  const route = useRouter();
 
   const functionCall = useMutation({
     mutationFn: ({

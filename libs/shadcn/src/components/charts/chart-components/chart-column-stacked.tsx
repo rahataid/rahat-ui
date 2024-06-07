@@ -10,12 +10,23 @@ type Props = {
     name: string;
     data: number[];
   }[];
+  width?: number | string;
+  height?: number | string;
+  stacked?: boolean;
+  categories?: string[];
 };
 
-export default function ChartColumnStacked({ series }: Props) {
+export default function ChartColumnStacked({
+  series,
+  height = 320,
+  width = 575,
+  stacked = false,
+  categories = ['Enrolled', 'Referred'],
+}: Props) {
   const chartOptions = useChart({
     chart: {
-      stacked: false,
+      stacked: stacked,
+
       zoom: {
         enabled: true,
       },
@@ -29,24 +40,24 @@ export default function ChartColumnStacked({ series }: Props) {
     },
     plotOptions: {
       bar: {
-        columnWidth: '50%',
+        columnWidth: 30,
       },
     },
     stroke: {
       show: false,
     },
     xaxis: {
-      categories: ['Enrolled', 'Referred'],
+      categories,
     },
   });
-
   return (
     <Chart
       dir="ltr"
       type="bar"
       series={series}
       options={chartOptions}
-      height={320}
+      height={height}
+      width={width}
     />
   );
 }

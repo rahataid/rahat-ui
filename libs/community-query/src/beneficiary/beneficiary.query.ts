@@ -185,3 +185,15 @@ export const useCommunityBeneficiaryStatsList = () => {
     queryClient,
   );
 };
+
+export const useListPalikas = () => {
+  const { queryClient, rumsanService } = useRSQuery();
+  const benClient = getBeneficiaryClient(rumsanService.client);
+  return useQuery(
+    {
+      queryKey: [TAGS.LIST_PALIKA],
+      queryFn: benClient.listDistinctLocations,
+    },
+    queryClient,
+  );
+};

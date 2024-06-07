@@ -125,7 +125,6 @@ export const useAssignBenGroupToProject = () => {
       projectUUID: UUID;
       beneficiaryGroupUUID: UUID;
     }) => {
-
       return q.mutateAsync({
         uuid: projectUUID,
         data: {
@@ -154,7 +153,6 @@ export const useAssignBenGroupToProject = () => {
     },
   });
 };
-
 
 export const useBulkAssignBenToProject = () => {
   const q = useProjectAction();
@@ -324,8 +322,6 @@ export const useProjectSubgraphSettings = (uuid: UUID) => {
     // initialData: settings?.[uuid],
   });
 
-  console.log('query.data', query.data);
-
   useEffect(() => {
     if (!isEmpty(query.data)) {
       const settingsToUpdate = {
@@ -378,10 +374,9 @@ export const useAAProjectSettingsDatasource = (uuid: UUID) => {
     // initialData: settings?.[uuid],
   });
 
-  console.log(query);
-
   useEffect(() => {
     if (!isEmpty(query.data)) {
+      console.log("query data", query.data);
       const settingsToUpdate = {
         ...settings,
         [uuid]: {
@@ -479,6 +474,8 @@ export const useProjectBeneficiaries = (payload: GetProjectBeneficiaries) => {
   return {
     ...query,
     data: useMemo(() => {
+      console.log(query.data);
+
       return {
         ...query.data,
         data: query.data?.data?.length
@@ -494,6 +491,7 @@ export const useProjectBeneficiaries = (payload: GetProjectBeneficiaries) => {
             phoneStatus: row?.projectData?.phoneStatus || '',
             bankedStatus: row?.projectData?.bankedStatus || '',
             internetStatus: row?.projectData?.internetStatus || '',
+            benTokens: row?.benTokens || 'N/A',
           }))
           : [],
       };

@@ -11,17 +11,18 @@ import {
 
 import {
   useDownloadPinnedListBeneficiary,
+  useExportPinnedListBeneficiary,
   useTargetedBeneficiaryList,
 } from '@rahat-ui/community-query';
 import { usePagination } from '@rahat-ui/query';
-import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
-import { Download } from 'lucide-react';
+import { Download, UploadCloud } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import * as XLSX from 'xlsx';
 import CustomPagination from '../../../components/customPagination';
@@ -39,10 +40,13 @@ export default function PinnedListDetailsView() {
   } = usePagination();
   const { uuid } = useParams();
 
-  const { data: beneficiaryData } = useTargetedBeneficiaryList(uuid as string);
+  const { data: beneficiaryData } = useTargetedBeneficiaryList(uuid as string, {
+    ...pagination,
+  });
   const columns = useTargetPinnedListDetailsTableColumns();
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const downloadPinnedListBeneficiary = useDownloadPinnedListBeneficiary();
+  const exportPinnedListBeneficiary = useExportPinnedListBeneficiary();
 
   const table = useReactTable({
     manualPagination: true,
@@ -74,36 +78,49 @@ export default function PinnedListDetailsView() {
     XLSX.writeFile(wb, 'label.xlsx');
   };
 
+  const handleExportPinnedBeneficiary = () => {
+    exportPinnedListBeneficiary.mutate({ targetUUID: uuid as string });
+  };
+
   return (
     <>
-      <div className="flex justify-between items-center p-4 pb-0">
+      <div className="flex justify-between items-center p-2 pb-0">
         <div className="flex gap-4">
-          <TooltipProvider delayDuration={100}>
-            <Tooltip>
-              <TooltipTrigger>
-                <Label>{beneficiaryData?.data?.name}</Label>
-              </TooltipTrigger>
-              <TooltipContent className="bg-secondary ">
-                <p className="text-xs font-medium">Group Name</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger
                 asChild
                 onClick={downloadPinnedListBeneficiaryByLabel}
               >
-                <Download
-                  className="cursor-pointer"
-                  size={18}
-                  strokeWidth={1.6}
-                  color="#007bb6"
-                />
+                <Button
+                  size={'xs'}
+                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
+                >
+                  <Download size={20} className="mr-2" />
+                  Download 
+                </Button>
               </TooltipTrigger>
               <TooltipContent>
-                <p>Download</p>
+                <p>Download Beneficiary</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
+
+        <div className="flex gap-4">
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild onClick={handleExportPinnedBeneficiary}>
+                <Button
+                  size={'xs'}
+                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
+                >
+                  <UploadCloud size={20} className="mr-2" />
+                  Export
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Export Beneficiary</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>

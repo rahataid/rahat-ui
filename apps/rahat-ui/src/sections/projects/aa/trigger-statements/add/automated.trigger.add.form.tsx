@@ -34,7 +34,10 @@ type IProps = {
       location: string;
       isMandatory?: boolean | undefined;
       // readinessLevel?: string | undefined;
-      waterLevel: string;
+      // waterLevel: string;
+      minLeadTimeDays: string;
+      maxLeadTimeDays: string;
+      probability: string;
     },
     any,
     undefined
@@ -56,9 +59,9 @@ export default function AddAutomatedTriggerForm({ form }: IProps) {
     (s) => s.settings?.[projectId]?.[PROJECT_SETTINGS_KEYS.DATASOURCE],
   );
 
-  const dhmStations = [
+  const glofasStations = [
     {
-      title: dataSources.dhm.location,
+      title: dataSources.glofas.location,
     },
   ];
 
@@ -111,9 +114,7 @@ export default function AddAutomatedTriggerForm({ form }: IProps) {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value={'DHM'}>
-                            Department of Hydrology and Meteorology (DHM)
-                          </SelectItem>
+                          <SelectItem value={'GLOFAS'}>GloFAS</SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />
@@ -140,7 +141,7 @@ export default function AddAutomatedTriggerForm({ form }: IProps) {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {dhmStations?.map((r: any) => {
+                          {glofasStations?.map((r: any) => {
                             return (
                               <SelectItem key={r.id} value={r.title}>
                                 {r.title}
@@ -186,45 +187,22 @@ export default function AddAutomatedTriggerForm({ form }: IProps) {
                 }}
               />
             </div>
-            {/* {selectedPhase.name === 'READINESS' && ( */}
-            <FormField
-              control={form.control}
-              name="waterLevel"
-              render={({ field }) => {
-                return (
-                  <FormItem>
-                    <FormLabel>Threshold Level</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="text"
-                        // inputMode="decimal"
-                        // pattern="[0-9]*[.,]?[0-9]*"
-                        // title="Please enter positive number"
-                        placeholder="Enter water Level"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            />
-            {/* )} */}
-            {/* {selectedPhase.name === 'ACTIVATION' && (
+
+            <div className="w-full flex gap-4">
               <FormField
                 control={form.control}
-                name="activationLevel"
+                name="minLeadTimeDays"
                 render={({ field }) => {
                   return (
-                    <FormItem>
-                      <FormLabel>Activation Level</FormLabel>
+                    <FormItem className="w-full">
+                      <FormLabel>Minimum Lead Time Days</FormLabel>
                       <FormControl>
                         <Input
                           type="text"
-                          // inputMode="decimal"
+                          inputMode="decimal"
                           // pattern="[0-9]*[.,]?[0-9]*"
                           // title="Please enter positive number"
-                          placeholder="Enter Activation Level"
+                          placeholder="Enter minimum lead time days"
                           {...field}
                         />
                       </FormControl>
@@ -233,7 +211,53 @@ export default function AddAutomatedTriggerForm({ form }: IProps) {
                   );
                 }}
               />
-            )} */}
+
+              <FormField
+                control={form.control}
+                name="maxLeadTimeDays"
+                render={({ field }) => {
+                  return (
+                    <FormItem className="w-full">
+                      <FormLabel>Maximum Lead Time Days</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="text"
+                          inputMode="decimal"
+                          // pattern="[0-9]*[.,]?[0-9]*"
+                          // title="Please enter positive number"
+                          placeholder="Enter maximum lead time days"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
+            </div>
+
+            <FormField
+              control={form.control}
+              name="probability"
+              render={({ field }) => {
+                return (
+                  <FormItem>
+                    <FormLabel>Forecast Probability</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="text"
+                        inputMode="decimal"
+                        // pattern="[0-9]*[.,]?[0-9]*"
+                        // title="Please enter positive number"
+                        placeholder="Enter forecast probability"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
             <FormField
               control={form.control}
               name="isMandatory"

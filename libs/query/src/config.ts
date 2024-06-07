@@ -12,6 +12,7 @@ export const TAGS = {
   GET_ALL_AUDIENCE: 'get_all_audience',
   GET_BENEFICIARIES: 'get_beneficiaries',
   GET_BENEFICIARIES_STATS: 'get_beneficiaries_stats',
+  GET_VENDOr_STATS: 'get_vendor_stats',
   GET_PROJECT_BENEFICIARIES_STATS: 'get_project_beneficiaries_stats',
   LIST_COMMUNITY_BENFICIARIES: 'list_community_beneficiaries',
   CREATE_COMMUNITY_BENEFICARY: 'create_community_beneficary',
@@ -29,8 +30,10 @@ export const TAGS = {
   GET_PROJECT_DETAILS: 'get_project_details',
   GET_BENFICIARY_STATS: 'get_beneficiary_stats',
   GET_PROJECT_SETTINGS: 'get_project_settings',
-  GET_BENEFICIARIES_GROUPS: 'get_beneficiaries_groups'
-
+  GET_BENEFICIARIES_GROUPS: 'get_beneficiaries_groups',
+  GET_TEMP_GROUPS: 'get_temp_groups',
+  GET_TEMP_BENEFICIARIES: 'get_temp_beneficiaries',
+  IMPORT_TEMP_BENEFICIARIES: 'import_temp_beneficiaries',
 };
 export const PROJECT_SETTINGS_KEYS = {
   CONTRACT: 'CONTRACT',

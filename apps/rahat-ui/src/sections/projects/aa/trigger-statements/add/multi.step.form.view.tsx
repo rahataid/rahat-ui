@@ -66,7 +66,14 @@ const MultiStepForm = () => {
     location: z.string().min(1, { message: 'Please select river basin' }),
     hazardTypeId: z.string().min(1, { message: 'Please select hazard type' }),
     isMandatory: z.boolean().optional(),
-    waterLevel: z.string().min(1, { message: 'Please enter water level' }),
+    minLeadTimeDays: z
+      .string()
+      .min(1, { message: 'Please enter minimum lead time days' }),
+    maxLeadTimeDays: z
+      .string()
+      .min(1, { message: 'Please enter maximum lead time days' }),
+    probability: z.string().min(1, { message: 'Please forecast probability' }),
+    // waterLevel: z.string().min(1, { message: 'Please enter water level' }),
     // .regex(/^(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)$/, 'Must be a positive number')
     // activationLevel: z
     // .string()
@@ -100,7 +107,10 @@ const MultiStepForm = () => {
       dataSource: '',
       location: '',
       hazardTypeId: '',
-      waterLevel: '',
+      maxLeadTimeDays: '',
+      minLeadTimeDays: '',
+      probability: '',
+      // waterLevel: '',
       // activationLevel: '',
       isMandatory: true,
     },
@@ -120,15 +130,38 @@ const MultiStepForm = () => {
 
   const handleAddTriggerStatement = async (data: any) => {
     let payload;
+    console.log('trigger data', data);
+
     if (data?.newTriggerData?.dataSource) {
-      const { waterLevel, ...restData } = data?.newTriggerData;
-      payload = {
-        ...restData,
-        triggerStatement: {
-          waterLevel: waterLevel,
-        },
-        phaseId: selectedPhase.phaseId,
-      };
+      const {
+        waterLevel,
+        maxLeadTimeDays,
+        minLeadTimeDays,
+        probability,
+        ...restData
+      } = data?.newTriggerData;
+
+      if (data?.newTriggerData?.dataSource === 'DHM') {
+        payload = {
+          ...restData,
+          triggerStatement: {
+            waterLevel: waterLevel,
+          },
+          phaseId: selectedPhase.phaseId,
+        };
+      }
+
+      if (data?.newTriggerData?.dataSource === 'GLOFAS') {
+        payload = {
+          ...restData,
+          triggerStatement: {
+            maxLeadTimeDays,
+            minLeadTimeDays,
+            probability,
+          },
+          phaseId: selectedPhase.phaseId,
+        };
+      }
     } else {
       payload = {
         ...data.newTriggerData,

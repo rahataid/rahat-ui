@@ -1,150 +1,61 @@
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/alert-dialog';
-import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
-import { TabsList, TabsTrigger } from '@rahat-ui/shadcn/src/components/ui/tabs';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/tooltip';
-import { Minus, MoreVertical, Trash2 } from 'lucide-react';
+'use client';
+
 import React, { useState } from 'react';
+import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
+import VendorHeader from './vendors.detail.header';
+import VendorsInfo from '../../../vendors/vendors.info';
+import { useParams, useSearchParams } from 'next/navigation';
+import DataCard from 'apps/rahat-ui/src/components/dataCard';
+import {
+  Tabs,
+  TabsList,
+  TabsTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/tabs';
+import { TabsContent } from '@radix-ui/react-tabs';
+import VendorTransactionList from 'apps/rahat-ui/src/sections/vendors/vendors.txn.list';
 
-type IProps = {
-  closeSecondPanel: VoidFunction;
-};
-const VendorDetail = ({ closeSecondPanel }: IProps) => {
-  const [activeTab, setActiveTab] = useState<'details' | 'edit'>('details');
-
-  type ITabsNavigationProps = {
-    handleTabChange: (tab: 'details' | 'edit') => void;
-  };
-
-  function TabsNavigation({ handleTabChange }: ITabsNavigationProps) {
-    return (
-      <div className="p-2">
-        <TabsList className="w-full grid grid-cols-2 border h-auto">
-          <TabsTrigger value="details">Details</TabsTrigger>
-          <TabsTrigger value="transaction">Transaction</TabsTrigger>
-        </TabsList>
-      </div>
-    );
+const VendorDetail = () => {
+  const searchParams = useSearchParams();
+  interface IParams {
+    uuid: string;
   }
-  const handleTabChange = (tab: 'details' | 'edit') => {
-    setActiveTab(tab);
-  };
 
+  const { uuid: walletAddress } = useParams<IParams>();
+  const phone = searchParams.get('phone');
+  const name = searchParams.get('name');
+  const vendorWallet = searchParams.get('walletAddress');
+  const vendorId = searchParams.get('vendorId');
+
+  console.log({ phone, name, vendorWallet, vendorId });
   return (
-    <>
-      <div className="flex justify-between p-4 pt-5 bg-card border-b">
-        <TooltipProvider delayDuration={100}>
-          <Tooltip>
-            <TooltipTrigger onClick={closeSecondPanel}>
-              <Minus size={20} strokeWidth={1.5} />
-            </TooltipTrigger>
-            <TooltipContent className="bg-secondary">
-              <p className="text-xs font-medium">Close</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-        <div className="flex gap-3">
-          <TooltipProvider delayDuration={100}>
-            <Tooltip>
-              <TooltipTrigger>
-                <AlertDialog>
-                  <AlertDialogTrigger className="flex items-center">
-                    <Trash2
-                      className="cursor-pointer"
-                      color="red"
-                      size={20}
-                      strokeWidth={1.5}
-                    />
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>
-                        Are you absolutely sure?
-                      </AlertDialogTitle>
-                      <AlertDialogDescription>
-                        This action cannot be undone. This will permanently
-                        delete this beneficiary.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction>Continue</AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-              </TooltipTrigger>
-              <TooltipContent className="bg-secondary">
-                <p className="text-xs font-medium">Delete</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-          <DropdownMenu>
-            <DropdownMenuTrigger>
-              <MoreVertical
-                className="cursor-pointer"
-                size={20}
-                strokeWidth={1.5}
-              />
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuItem onClick={() => handleTabChange('edit')}>
-                Edit
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleTabChange('details')}>
-                Details
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
+    <div className="bg-secondary">
+      <VendorHeader />
+      <div className="grid md:grid-cols-2 gap-2 mx-2">
+        <VendorsInfo vendorData={{ name, phone, vendorWallet }} />
+        <DataCard
+          className="mt-2"
+          title="Total Token Disburse"
+          number="0"
+          subTitle="USDT"
+        />
       </div>
-      <div className="flex flex-col gap-2 p-2">
-        <Card className="shadow rounded">
-          <CardContent className="pt-6">
-            <h1>Vendor Name</h1>
-            <div className="grid grid-cols-3 gap-3 mt-2">
-              <div>
-                <p className="font-light text-base">{'gender'}</p>
-                <p className="text-sm font-normal text-muted-foreground">
-                  Gender
-                </p>
-              </div>
-              <div>
-                <p className="font-light text-base">{'N/A'}</p>
-                <p className="text-sm font-normal text-muted-foreground">
-                  Email
-                </p>
-              </div>
-              <div className="text-right">
-                <p className="font-light text-base">{'N/A'}</p>
-                <p className="text-sm font-normal text-muted-foreground">
-                  Phone
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+      <div className="mt-2 mx-2 w-full">
+        <Tabs defaultValue="transactions">
+          <div className="flex justify-between items-center">
+            <Card className="rounded h-14 w-full mr-2 flex items-center justify-between">
+              <TabsList className="gap-2">
+                <TabsTrigger value="transactions">
+                  Transaction History
+                </TabsTrigger>
+              </TabsList>
+            </Card>
+          </div>
+          <TabsContent value="transactions">
+            <VendorTransactionList walletAddress={walletAddress} />
+          </TabsContent>
+        </Tabs>
       </div>
-    </>
+    </div>
   );
 };
 

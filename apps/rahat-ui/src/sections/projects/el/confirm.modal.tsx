@@ -38,7 +38,6 @@ const SuccessModal = ({
   handleClose,
   isLoading,
 }: Iprops) => {
-  console.log(isTransacting)
   return (
     <Dialog open={open}>
       <DialogContent className="sm:max-w-[500px]">
@@ -65,7 +64,12 @@ const SuccessModal = ({
               <br /> Are you sure you want to continue ?
             </div>
             <div className="flex justify-center items-center gap-4">
-              <Button onClick={handleCreateVoucherSubmit} disabled={isTransacting}>{isTransacting ? 'Confirming transaction...' : 'Submit'}</Button>
+              <Button
+                onClick={handleCreateVoucherSubmit}
+                disabled={isTransacting}
+              >
+                {isTransacting ? 'Confirming transaction...' : 'Submit'}
+              </Button>
               {/* <Button
             onClick={() => {
               handleGoBack();

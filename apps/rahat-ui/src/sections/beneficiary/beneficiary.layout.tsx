@@ -8,8 +8,8 @@ import {
 // import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { Tabs } from '@rahat-ui/shadcn/src/components/ui/tabs';
 import { FC } from 'react';
-import { NavItem } from './nav-items.types';
 import BeneficiaryNavView from './beneficiary.nav.view';
+import { NavItem } from './nav-items.types';
 
 type BeneficiaryLayoutProps = {
   children: React.ReactNode | React.ReactNode[];

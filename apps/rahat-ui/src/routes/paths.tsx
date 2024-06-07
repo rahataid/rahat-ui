@@ -8,6 +8,7 @@ const ROOTS = {
   VENDOR: '/vendors',
   COMMUNICATION: '/communications',
   PROFILE: '/profile',
+  COMMUNITYBENEFICIARY: '/community-beneficiary',
 };
 
 export const paths = {
@@ -39,5 +40,6 @@ export const paths = {
       editTextCampaign: (id: number) =>
         `${ROOTS.COMMUNICATION}/text/${id}/edit`,
     },
+    communitybeneficiary: ROOTS.COMMUNITYBENEFICIARY,
   },
 };

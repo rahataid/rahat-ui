@@ -2,8 +2,6 @@
 
 import {
   PROJECT_SETTINGS_KEYS,
-  useGetBeneficiaryStats,
-  useGetProjectBeneficiaryStats,
   useProjectAction,
   useProjectSettingsStore,
   useProjectStore,
@@ -28,8 +26,6 @@ const ProjectMainView = () => {
   const [ELProjectStats, setELProjectStats] = useState();
   const projectClient = useProjectAction(['count_ben_vendor']);
   const statsClient = useProjectAction(['stats']);
-
-  const stats = useGetProjectBeneficiaryStats(id);
   const project = useProjectStore((state) => state.singleProject);
   const contractSettings = useProjectSettingsStore(
     (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT] || null,
@@ -39,7 +35,6 @@ const ProjectMainView = () => {
     useReadElProjectGetTotalBeneficiaries({
       address: contractSettings?.elproject?.address,
     });
-
   const { data: projectVoucher } = useReadElProjectGetProjectVoucherDetail({
     address: contractSettings?.elproject?.address,
   });
@@ -80,18 +75,6 @@ const ProjectMainView = () => {
     getElProjectStats();
   }, [getProjectStats, getElProjectStats]);
 
-  const filteredChartData = stats?.data?.data
-    ? stats.data.data
-        .filter((item) => {
-          const name = item?.name;
-          return name === `BENEFICIARY_AGE_RANGE_ID_${id}`;
-        })
-        .map((item) => ({
-          ...item,
-          name: item.name.replace(new RegExp(`_ID_${id}`), ''),
-        }))
-    : [];
-
   const filterdELChartData =
     ELProjectStats?.filter((item) => {
       const name = item?.name;
@@ -106,35 +89,43 @@ const ProjectMainView = () => {
 
   const enrolledEyeCheckupData = ELProjectStats?.filter((item) => {
     return item.name === 'EYE_CHECKUP';
-  })?.[0]?.data?.find((i) => i.id === 'ENROLLED_EYE_CHECKUP');
+  })?.[0]?.data?.find((i) => i.id === 'ENROLLED_EYE_CHECKUP_DONE');
 
   const enrolledNoGlass = ELProjectStats?.filter((item) => {
     return item.name === 'GLASS_STATUS';
-  })?.[0]?.data?.find((i) => i.id === 'ENROLLED_no_glass');
+  })?.[0]?.data?.find((i) => i.id === 'ENROLLED_GLASS_NOT_REQUIRED');
 
-  const enrolledGlass = ELProjectStats?.filter((item) => {
+  const enrolledReadingGlass = ELProjectStats?.filter((item) => {
     return item.name === 'GLASS_STATUS';
-  })?.[0]?.data?.find((i) => i.id === 'ENROLLED_require_glass');
+  })?.[0]?.data?.find((i) => i.id === 'ENROLLED_READING_GLASS');
 
-  const referredGlass = ELProjectStats?.filter((item) => {
+  const referredReadingGlass = ELProjectStats?.filter((item) => {
     return item.name === 'GLASS_STATUS';
-  })?.[0]?.data?.find((i) => i.id === 'REFERRED_require_glass');
+  })?.[0]?.data?.find((i) => i.id === 'REFERRED_READING_GLASS');
 
   const referredNoGlass = ELProjectStats?.filter((item) => {
     return item.name === 'GLASS_STATUS';
-  })?.[0]?.data?.find((i) => i.id === 'REFERRED_no_glass');
+  })?.[0]?.data?.find((i) => i.id === 'REFERRED_GLASS_NOT_REQUIRED');
+
+  const referredRegularSunGlass = ELProjectStats?.filter((item) => {
+    return item.name === 'GLASS_STATUS';
+  })?.[0]?.data?.find((i) => i.id === 'REFERRED_REGULAR_SUNGLASS');
+
+  const enrolledRegularSunGlass = ELProjectStats?.filter((item) => {
+    return item.name === 'GLASS_STATUS';
+  })?.[0]?.data?.find((i) => i.id === 'ENROLLED_REGULAR_SUNGLASS');
 
   const referredEyeCheckupData = ELProjectStats?.filter((item) => {
     return item.name === 'EYE_CHECKUP';
-  })?.[0]?.data?.find((i) => i.id === 'REFERRED_EYE_CHECKUP');
+  })?.[0]?.data?.find((i) => i.id === 'REFERRED_EYE_CHECKUP_DONE');
 
   const enrolledNoEyeCheckupData = ELProjectStats?.filter((item) => {
     return item.name === 'EYE_CHECKUP';
-  })?.[0]?.data?.find((i) => i.id === 'ENROLLED_NO_EYE_CHECKUP');
+  })?.[0]?.data?.find((i) => i.id === 'ENROLLED_EYE_CHECKUP_NOT_DONE');
 
   const referredNoEyeCheckupData = ELProjectStats?.filter((item) => {
     return item.name === 'EYE_CHECKUP';
-  })?.[0]?.data?.find((i) => i.id === 'REFERRED_NO_EYE_CHECKUP');
+  })?.[0]?.data?.find((i) => i.id === 'REFERRED_EYE_CHECKUP_NOT_DONE');
 
   const eyeCheckupData = [
     {
@@ -154,12 +145,22 @@ const ProjectMainView = () => {
   ];
   const glassData = [
     {
-      name: 'Glass Required',
-      data: [enrolledGlass?.count || 0, referredGlass?.count || 0],
+      name: 'Reading Glass',
+      data: [
+        enrolledReadingGlass?.count || 0,
+        referredReadingGlass?.count || 0,
+      ],
     },
     {
       name: 'Glass Not Required',
       data: [enrolledNoGlass?.count || 0, referredNoGlass?.count || 0],
+    },
+    {
+      name: 'Sunglass',
+      data: [
+        referredRegularSunGlass?.count || 0,
+        enrolledRegularSunGlass?.count || 0,
+      ],
     },
   ];
 
@@ -171,24 +172,21 @@ const ProjectMainView = () => {
           totalBeneficiary={projectStats?.benTotal}
           totalVendor={projectStats?.vendorTotal}
           loading={isLoading}
-        />
-        <ProjectDataCard
+          refetchBeneficiary={refetchBeneficiary}
           beneficiaryDetails={beneficiaryDetails}
-          totalBeneficiary={projectStats?.benTotal}
-          totalVendor={projectStats?.vendorTotal}
           projectVoucher={projectVoucher}
           voucherDetails={voucherDetails}
-          refetchBeneficiary={refetchBeneficiary}
+        />
+        <ProjectDataCard
+          totalVendor={projectStats?.vendorTotal}
           refetchVoucher={refetchVoucher}
           loading={isLoading}
           ELProjectStats={ELProjectStats}
+          projectVoucher={projectVoucher}
+          voucherDetails={voucherDetails}
         />
         <ProjectChart
-          chartData={[
-            ...filteredChartData,
-            ...filteredFootfallData,
-            ...filterdELChartData,
-          ]}
+          chartData={[...filteredFootfallData, ...filterdELChartData]}
         />
         <div className="grid md:grid-cols-1 lg:grid-cols-2 gap-2 mt-2">
           <div className="bg-card rounded">

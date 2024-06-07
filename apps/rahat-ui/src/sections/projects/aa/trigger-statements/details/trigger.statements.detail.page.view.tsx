@@ -73,9 +73,9 @@ export default function TriggerStatementsDetailView() {
           <h1 className="text-xl font-semibold">{triggerDetail?.title}</h1>
         </div>
         <div className="flex gap-4 items-center">
-          <div className="rounded-full border border-primary text-primary bg-card p-2">
+          {/* <div className="rounded-full border border-primary text-primary bg-card p-2">
             <Pencil size={20} strokeWidth={1.5} />
-          </div>
+          </div> */}
           <TooltipProvider delayDuration={100}>
             <Tooltip>
               <TooltipTrigger>

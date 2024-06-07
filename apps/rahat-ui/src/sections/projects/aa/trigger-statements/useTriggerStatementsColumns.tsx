@@ -83,6 +83,21 @@ export const useTriggerStatementTableColumns = () => {
       },
     },
     {
+      accessorKey: 'triggeredAt',
+      header: 'Triggered Date',
+      cell: ({ row }) => {
+        const triggeredAt = row.getValue('triggeredAt') as string;
+        console.log("triggered at", triggeredAt)
+        if(triggeredAt){
+          const d =  new Date(triggeredAt)
+          const localeDate = d.toLocaleDateString()
+          const localeTime = d.toLocaleTimeString()
+          return `${localeDate} ${localeTime}`
+        }
+        return 'N/A'
+      },
+    },
+    {
       id: 'actions',
       header: 'Actions',
       enableHiding: false,

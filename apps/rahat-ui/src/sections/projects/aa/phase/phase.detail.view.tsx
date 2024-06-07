@@ -121,7 +121,7 @@ export default function PhaseDetailView() {
                   phaseDetail?.canRevert && (
                     <Button
                       onClick={handleRevert}
-                      // disabled={!phaseDetail?.isActive}
+                      disabled={!phaseDetail?.isActive}
 
                     >
                       Revert Phase

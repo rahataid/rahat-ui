@@ -64,6 +64,7 @@ export default function AddAutomatedTriggerForm({ form }: IProps) {
       title: dataSources.glofas.location,
     },
   ];
+  const riverBasin = dataSources?.glofas?.location;
 
   return (
     <>
@@ -124,37 +125,13 @@ export default function AddAutomatedTriggerForm({ form }: IProps) {
               />
             </div>
             <div className="w-full flex gap-4">
-              <FormField
-                control={form.control}
-                name="location"
-                render={({ field }) => {
-                  return (
-                    <FormItem className="w-full">
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
-                        <FormLabel>River Basin</FormLabel>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select River Basin" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {glofasStations?.map((r: any) => {
-                            return (
-                              <SelectItem key={r.id} value={r.title}>
-                                {r.title}
-                              </SelectItem>
-                            );
-                          })}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  );
-                }}
-              />
+              <FormItem className="w-full">
+                <FormLabel>River Basin</FormLabel>
+                <FormControl>
+                  <Input type="text" value={riverBasin} disabled />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
               <FormField
                 control={form.control}
                 name="hazardTypeId"

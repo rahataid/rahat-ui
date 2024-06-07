@@ -8,7 +8,11 @@ import { z } from 'zod';
 import { useAddTriggerStatementToPhase, useSinglePhase } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import { useParams, useRouter } from 'next/navigation';
-import { useCreateTriggerStatement } from '@rahat-ui/query';
+import {
+  useCreateTriggerStatement,
+  PROJECT_SETTINGS_KEYS,
+  useProjectSettingsStore,
+} from '@rahat-ui/query';
 
 const steps = [
   { label: 'Add Trigger Statement' },
@@ -45,6 +49,12 @@ const MultiStepForm = () => {
   };
   const prevStep = () => setActiveStep((prev) => prev - 1);
 
+  const dataSources = useProjectSettingsStore(
+    (s) => s.settings?.[projectId]?.[PROJECT_SETTINGS_KEYS.DATASOURCE],
+  );
+
+  const riverBasin = dataSources?.glofas?.location;
+
   const ManualFormSchema = z.object({
     title: z.string().min(2, { message: 'Please enter valid title' }),
     hazardTypeId: z.string().min(1, { message: 'Please select hazard type' }),
@@ -63,7 +73,7 @@ const MultiStepForm = () => {
   const AutomatedFormSchema = z.object({
     title: z.string().min(2, { message: 'Please enter valid name' }),
     dataSource: z.string().min(1, { message: 'Please select data source' }),
-    location: z.string().min(1, { message: 'Please select river basin' }),
+    // location: z.string().min(1, { message: 'Please select river basin' }),
     hazardTypeId: z.string().min(1, { message: 'Please select hazard type' }),
     isMandatory: z.boolean().optional(),
     minLeadTimeDays: z
@@ -105,7 +115,7 @@ const MultiStepForm = () => {
     defaultValues: {
       title: '',
       dataSource: '',
-      location: '',
+      // location: '',
       hazardTypeId: '',
       maxLeadTimeDays: '',
       minLeadTimeDays: '',
@@ -160,6 +170,7 @@ const MultiStepForm = () => {
             probability,
           },
           phaseId: selectedPhase.phaseId,
+          location: riverBasin,
         };
       }
     } else {

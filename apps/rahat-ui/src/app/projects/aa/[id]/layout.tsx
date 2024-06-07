@@ -9,6 +9,7 @@ import { UUID } from 'crypto';
 import {
   PROJECT_SETTINGS_KEYS,
   useAAProjectSettingsDatasource,
+  useAAProjectSettingsHazardType,
   useProjectContractSettings,
   useProjectSettingsStore,
 } from '@rahat-ui/query';
@@ -24,6 +25,7 @@ export default function ProjectLayoutRoot({
   const uuid = useParams().id as UUID;
   useAAProjectSettingsDatasource(uuid);
   useProjectContractSettings(uuid);
+  useAAProjectSettingsHazardType(uuid)
 
   // const dataSources = useProjectSettingsStore(
   //   (s) => s.settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.DATASOURCE]);

@@ -14,6 +14,10 @@ export default function ActivityDetailCard({ activityDetail }: any) {
             title: 'Hazard Type',
             content: <p>{activityDetail?.hazardType?.name}</p>
         },
+        {
+            title: 'Description',
+            content: <p>{activityDetail?.description}</p>
+        },
     ]
 
     return (

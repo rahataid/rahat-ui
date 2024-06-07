@@ -35,7 +35,6 @@ const ProjectMainView = () => {
     useReadElProjectGetTotalBeneficiaries({
       address: contractSettings?.elproject?.address,
     });
-
   const { data: projectVoucher } = useReadElProjectGetProjectVoucherDetail({
     address: contractSettings?.elproject?.address,
   });
@@ -183,6 +182,8 @@ const ProjectMainView = () => {
           refetchVoucher={refetchVoucher}
           loading={isLoading}
           ELProjectStats={ELProjectStats}
+          projectVoucher={projectVoucher}
+          voucherDetails={voucherDetails}
         />
         <ProjectChart
           chartData={[...filteredFootfallData, ...filterdELChartData]}

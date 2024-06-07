@@ -84,7 +84,7 @@ export const useTriggerStatementTableColumns = () => {
     },
     {
       accessorKey: 'triggeredAt',
-      header: 'Triggered Date',
+      header: 'Triggered At',
       cell: ({ row }) => {
         const triggeredAt = row.getValue('triggeredAt') as string;
         console.log("triggered at", triggeredAt)

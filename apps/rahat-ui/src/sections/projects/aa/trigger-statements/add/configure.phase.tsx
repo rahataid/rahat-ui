@@ -18,7 +18,7 @@ type IProps = {
   manualForm: UseFormReturn<
     {
       title: string;
-      hazardTypeId: string;
+      // hazardTypeId: string;
     },
     any,
     undefined
@@ -26,9 +26,9 @@ type IProps = {
   automatedForm: UseFormReturn<
     {
       title: string;
-      hazardTypeId: string;
+      // hazardTypeId: string;
       dataSource: string;
-      location: string;
+      // location: string;
       // waterLevel: string;
       minLeadTimeDays: string;
       maxLeadTimeDays: string;

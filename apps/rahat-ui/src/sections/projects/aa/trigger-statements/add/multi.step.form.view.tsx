@@ -57,7 +57,7 @@ const MultiStepForm = () => {
 
   const ManualFormSchema = z.object({
     title: z.string().min(2, { message: 'Please enter valid title' }),
-    hazardTypeId: z.string().min(1, { message: 'Please select hazard type' }),
+    // hazardTypeId: z.string().min(1, { message: 'Please select hazard type' }),
     isMandatory: z.boolean().optional(),
   });
 
@@ -65,7 +65,7 @@ const MultiStepForm = () => {
     resolver: zodResolver(ManualFormSchema),
     defaultValues: {
       title: '',
-      hazardTypeId: '',
+      // hazardTypeId: '',
       isMandatory: true,
     },
   });
@@ -74,7 +74,7 @@ const MultiStepForm = () => {
     title: z.string().min(2, { message: 'Please enter valid name' }),
     dataSource: z.string().min(1, { message: 'Please select data source' }),
     // location: z.string().min(1, { message: 'Please select river basin' }),
-    hazardTypeId: z.string().min(1, { message: 'Please select hazard type' }),
+    // hazardTypeId: z.string().min(1, { message: 'Please select hazard type' }),
     isMandatory: z.boolean().optional(),
     minLeadTimeDays: z
       .string()
@@ -116,7 +116,7 @@ const MultiStepForm = () => {
       title: '',
       dataSource: '',
       // location: '',
-      hazardTypeId: '',
+      // hazardTypeId: '',
       maxLeadTimeDays: '',
       minLeadTimeDays: '',
       probability: '',

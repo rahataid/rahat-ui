@@ -29,9 +29,9 @@ type IProps = {
   form: UseFormReturn<
     {
       title: string;
-      hazardTypeId: string;
+      // hazardTypeId: string;
       dataSource: string;
-      location: string;
+      // location: string;
       isMandatory?: boolean | undefined;
       // readinessLevel?: string | undefined;
       // waterLevel: string;
@@ -51,9 +51,9 @@ export default function AddAutomatedTriggerForm({ form }: IProps) {
     localStorage.getItem('selectedPhase') as string,
   );
 
-  const { hazardTypes } = useActivitiesStore((state) => ({
-    hazardTypes: state.hazardTypes,
-  }));
+  // const { hazardTypes } = useActivitiesStore((state) => ({
+  //   hazardTypes: state.hazardTypes,
+  // }));
 
   const dataSources = useProjectSettingsStore(
     (s) => s.settings?.[projectId]?.[PROJECT_SETTINGS_KEYS.DATASOURCE],
@@ -132,7 +132,7 @@ export default function AddAutomatedTriggerForm({ form }: IProps) {
                 </FormControl>
                 <FormMessage />
               </FormItem>
-              <FormField
+              {/* <FormField
                 control={form.control}
                 name="hazardTypeId"
                 render={({ field }) => {
@@ -162,7 +162,7 @@ export default function AddAutomatedTriggerForm({ form }: IProps) {
                     </FormItem>
                   );
                 }}
-              />
+              /> */}
             </div>
 
             <div className="w-full flex gap-4">

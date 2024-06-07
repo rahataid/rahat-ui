@@ -11,8 +11,11 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@rahat-ui/shadcn/components/accordion';
+import { useRouter } from 'next/navigation';
 
 export default function ImportTempCommunityBeneficiary() {
+  const router = useRouter();
+
   const { communityBeneficiariesUUID, setCommunityBeneficiariesUUID } =
     useBeneficiaryStore();
 
@@ -35,8 +38,10 @@ export default function ImportTempCommunityBeneficiary() {
       inputOptions,
       communityBeneficiariesUUID,
     });
-
     setCommunityBeneficiariesUUID([]);
+    setTimeout(() => {
+      router.push('/beneficiary')
+    },1000);
   };
 
   return (
@@ -56,7 +61,7 @@ export default function ImportTempCommunityBeneficiary() {
             className="p-2 hover:bg-muted rounded cursor-pointer"
             onClick={handleImportTempBeneficiaries}
           >
-            Import Temp Beneficiaries
+            Import Selected Beneficiaries
           </div>
         </AccordionContent>
       </AccordionItem>

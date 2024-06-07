@@ -362,15 +362,15 @@ export const useListTempBeneficiary = (
 
 export const useTempBeneficiaryImport = () => {
   const { rumsanService, queryClient } = useRSQuery();
-
+  const benClient = getBeneficiaryClient(rumsanService.client);
   return useMutation({
-    mutationKey: [TAGS.ADD_COMMUNITY_BENEFICIARY_GROUP],
+    mutationKey: [TAGS.IMPORT_TEMP_BENEFICIARIES],
     mutationFn: async (payload: any) => {
       const { value } = await Swal.fire({
-        title: 'Assign Group',
+        title: 'Import Beneficiary',
         text: 'Select group for importing  beneficiary',
         showCancelButton: true,
-        confirmButtonText: 'Assign',
+        confirmButtonText: 'Import',
         cancelButtonText: 'Cancel',
         input: 'select',
         inputOptions: payload.inputOptions,
@@ -391,48 +391,28 @@ export const useTempBeneficiaryImport = () => {
           beneficiaries: payload?.communityBeneficiariesUUID,
           groupName: value,
         };
-        // return await beneficiaryGroupClient.create(inputData as any);
-
-        return alert(inputData.groupName);
+        return await benClient.importTempBeneficiaries(inputData as any);
       }
       return null;
     },
-    // onSuccess: async (data: any) => {
-    //   queryClient.invalidateQueries({
-    //     queryKey: [
-    //       TAGS.LIST_COMMUNITY_BENEFICIARY_GROUP,
-    //       TAGS.LIST_COMMUNITY_BENFICIARIES,
-    //     ],
-    //   });
-    //   if (data) {
-    //     queryClient.invalidateQueries({
-    //       queryKey: [
-    //         TAGS.LIST_COMMUNITY_BENEFICIARY_GROUP,
-    //         TAGS.LIST_COMMUNITY_BENFICIARIES,
-    //         { exact: true },
-    //       ],
-    //     });
-
-    //     data?.data?.info === false
-    //       ? await Swal.fire({
-    //           text: data?.data?.finalMessage,
-    //           icon: 'success',
-    //         })
-    //       : await Swal.fire({
-    //           title: data?.data?.finalMessage,
-    //           titleText: data?.data?.finalMessage,
-    //           text: data?.data?.info,
-
-    //           icon: 'success',
-    //         });
-    //   }
-    // },
-    // onError: (error: any) => {
-    //   Swal.fire({
-    //     icon: 'error',
-    //     title:
-    //       error.response.data.message || 'Encounter error on Creating Data',
-    //   });
-    // },
+    onSuccess: (d) => {
+      if(!d) return;
+      Swal.fire('Beneficiary added to the import queue', '', 'success');
+      queryClient.invalidateQueries({
+        queryKey: [
+          TAGS.GET_TEMP_BENEFICIARIES,
+          {
+            exact: true,
+          },
+        ],
+      });
+    },
+    onError: (error: any) => {
+      Swal.fire(
+        'Error',
+        error.response.data.message || 'Encounter error on Creating Data',
+        'error',
+      );
+    },
   });
 };

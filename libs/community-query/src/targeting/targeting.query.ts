@@ -124,22 +124,17 @@ export const useExportPinnedListBeneficiary = () => {
       mutationFn: async (payload: any) => {
         const { isConfirmed } = await Swal.fire({
           title: 'CAUTION!',
-          text: ' Are you sure you want to export targeted beneficiaries?',
+          text: ' All targeted beneficiaries will be exported to Rahat!',
           icon: 'warning',
-          showDenyButton: true,
           confirmButtonText: 'Yes, I am sure!',
-          denyButtonText: 'No, cancel it!',
-          customClass: {
-            actions: 'my-actions',
-            confirmButton: 'order-1',
-            denyButton: 'order-2',
-          },
+          showCancelButton: true
         });
 
         if (!isConfirmed) return;
         return targetingClient.exportTargetBeneficiary(payload);
       },
       onSuccess: (data: any) => {
+        if(!data) return;
         Swal.fire(data?.data?.message, '', 'success');
         queryClient.invalidateQueries({
           queryKey: [

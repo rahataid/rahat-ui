@@ -6,6 +6,7 @@ type BeneficiaryState = {
   singleBeneficiary: FormattedResponse<Beneficiary>['data'] | null;
   beneficiaries: FormattedResponse<Beneficiary[]>['data'] | null;
   meta: FormattedResponse<Beneficiary>['response']['meta'];
+  communityBeneficiariesUUID: string[] | [];
 };
 
 type BeneficiaryStateAction = {
@@ -17,6 +18,7 @@ type BeneficiaryStateAction = {
   ) => void;
   resetBeneficiary: () => void;
   setMeta: (meta: any) => void;
+  setCommunityBeneficiariesUUID: (communityBeneficiariesUUID: string[]) => void;
 };
 
 type BeneficiaryStore = BeneficiaryState & BeneficiaryStateAction;
@@ -24,6 +26,7 @@ type BeneficiaryStore = BeneficiaryState & BeneficiaryStateAction;
 const initialStore = {
   singleBeneficiary: null,
   beneficiaries: [],
+  communityBeneficiariesUUID: [],
 };
 
 export const useBeneficiaryStore = zustandStore<BeneficiaryStore>(
@@ -34,6 +37,9 @@ export const useBeneficiaryStore = zustandStore<BeneficiaryStore>(
       set({ singleBeneficiary: beneficiary }),
     setBeneficiaries: (beneficiaries) => set({ beneficiaries }),
     resetBeneficiary: () => set({ ...initialStore }),
+    setCommunityBeneficiariesUUID(communityBeneficiariesUUID) {
+      set({ communityBeneficiariesUUID });
+    },
     setMeta: (meta: FormattedResponse<Beneficiary>['response']['meta']) =>
       set({ meta }),
   }),

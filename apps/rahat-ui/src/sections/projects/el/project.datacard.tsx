@@ -3,7 +3,6 @@ import DataCard from 'apps/rahat-ui/src/components/dataCard';
 import { Users } from 'lucide-react';
 import { FC } from 'react';
 import Activities from './projects.activity';
-import SmallDataCard from './project.datacard.small';
 
 type ProjectDataCardProps = {
   beneficiaryDetails: any;
@@ -17,20 +16,14 @@ type ProjectDataCardProps = {
 };
 
 const ProjectDataCard: FC<ProjectDataCardProps> = ({
-  beneficiaryDetails,
   loading,
   projectVoucher,
   voucherDetails,
   ELProjectStats,
   totalVendor,
   refetchBeneficiary,
-  refetchVoucher,
 }) => {
   const data = { ...projectVoucher, ...voucherDetails };
-
-  const totalVoucherRedeemed =
-    Number(data?.freeVoucherClaimed?.toString()) +
-    Number(data?.referredVoucherClaimed?.toString());
 
   const estimatedBudget =
     data?.eyeVoucherAssigned?.toString() * data?.freeVoucherPrice +

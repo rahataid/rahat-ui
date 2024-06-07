@@ -89,7 +89,7 @@ const ProjectMainView = () => {
 
   const enrolledEyeCheckupData = ELProjectStats?.filter((item) => {
     return item.name === 'EYE_CHECKUP';
-  })?.[0]?.data?.find((i) => i.id === 'ENROLLED_EYE_CHECKUP');
+  })?.[0]?.data?.find((i) => i.id === 'ENROLLED_EYE_CHECKUP_DONE');
 
   const enrolledNoGlass = ELProjectStats?.filter((item) => {
     return item.name === 'GLASS_STATUS';
@@ -117,15 +117,15 @@ const ProjectMainView = () => {
 
   const referredEyeCheckupData = ELProjectStats?.filter((item) => {
     return item.name === 'EYE_CHECKUP';
-  })?.[0]?.data?.find((i) => i.id === 'REFERRED_EYE_CHECKUP');
+  })?.[0]?.data?.find((i) => i.id === 'REFERRED_EYE_CHECKUP_DONE');
 
   const enrolledNoEyeCheckupData = ELProjectStats?.filter((item) => {
     return item.name === 'EYE_CHECKUP';
-  })?.[0]?.data?.find((i) => i.id === 'ENROLLED_NO_EYE_CHECKUP');
+  })?.[0]?.data?.find((i) => i.id === 'ENROLLED_EYE_CHECKUP_NOT_DONE');
 
   const referredNoEyeCheckupData = ELProjectStats?.filter((item) => {
     return item.name === 'EYE_CHECKUP';
-  })?.[0]?.data?.find((i) => i.id === 'REFERRED_NO_EYE_CHECKUP');
+  })?.[0]?.data?.find((i) => i.id === 'REFERRED_EYE_CHECKUP_NOT_DONE');
 
   const eyeCheckupData = [
     {

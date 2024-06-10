@@ -196,7 +196,7 @@ export const useNavItems = () => {
         },
         {
           title: 'Claims',
-          path: `/projects/el/${id}/redemptions`,
+          path: `/projects/el/${id}/claims`,
           subtitle: projectStats?.redemptionTotal,
           icon: <TicketCheck size={18} strokeWidth={1.5} />,
         },

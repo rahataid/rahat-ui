@@ -1,9 +1,11 @@
-'use client';
-
 import { ColumnDef } from '@tanstack/react-table';
 import { ArrowUpDown, Copy, CopyCheck, MoreHorizontal } from 'lucide-react';
 
-import { useUpdateElRedemption } from '@rahat-ui/query';
+import {
+  PROJECT_SETTINGS_KEYS,
+  useProjectSettingsStore,
+  useUpdateElRedemption,
+} from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/components/button';
 import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
 import {
@@ -23,8 +25,21 @@ import { truncateEthAddress } from '@rumsan/sdk/utils';
 import { useParams } from 'next/navigation';
 import React from 'react';
 import { Redemption } from './redemption.table';
+import { useProjectVoucher } from 'apps/rahat-ui/src/hooks/el/subgraph/querycall';
+import TableLoader from 'apps/rahat-ui/src/components/table.loader';
 
 export const useTableColumns = (handleAssignClick: any) => {
+  const { id } = useParams();
+
+  const contractSettings = useProjectSettingsStore(
+    (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT] || null,
+  );
+
+  const projectVoucher = useProjectVoucher(
+    contractSettings?.elproject?.address || '',
+    contractSettings?.eyevoucher?.address || '',
+  );
+
   const handleAssign = (row: any) => {
     handleAssignClick(row);
   };
@@ -52,7 +67,6 @@ export const useTableColumns = (handleAssignClick: any) => {
       id: 'select',
       header: '',
       cell: ({ row }) => {
-        console.log('row.original', row.original);
         const isDisabled = row.getValue('status') === 'APPROVED';
         const isChecked = row.getIsSelected() && !isDisabled;
         return (
@@ -141,9 +155,20 @@ export const useTableColumns = (handleAssignClick: any) => {
       header: 'Claim',
       cell: ({ row }) => {
         return (
-          <div className="w-1/3 text-center">
-            {row.original.tokenAmount * 30000}
-          </div>
+          <>
+            {projectVoucher?.data?.referredVoucherPrice ? (
+              <div className="w-1/3 text-center">
+                {row.original.tokenAmount *
+                  projectVoucher?.data?.referredVoucherPrice}
+              </div>
+            ) : (
+              <div className="flex items-center justify-center space-x-1 h-full">
+                <div className="h-2 w-2 animate-bounce rounded-full bg-primary [animation-delay:-0.3s]"></div>
+                <div className="h-2 w-2 animate-bounce rounded-full bg-primary [animation-delay:-0.13s]"></div>
+                <div className="h-2 w-2 animate-bounce rounded-full bg-primary"></div>
+              </div>
+            )}
+          </>
         );
       },
     },

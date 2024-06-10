@@ -1,6 +1,10 @@
 'use client';
 
-import { TransactionDetails } from '@rahat-ui/query';
+import {
+  TransactionDetails,
+  useProjectSettingsStore,
+  PROJECT_SETTINGS_KEYS,
+} from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
 import {
@@ -40,141 +44,7 @@ import { Transaction, TransactionsObject } from './types';
 import { mergeTransactions } from './utils';
 import { formatEther } from 'viem';
 import { shortenTxHash } from 'apps/rahat-ui/src/utils/getProjectAddress';
-
-const data: Transaction[] = [
-  {
-    id: 'm5gr84i9',
-    topic: 'Received',
-    beneficiaryId: 'xas21w213dwq',
-    from: 'sda.....sd',
-    to: 'sd2.......ad',
-    timestamp: '2024-02-27T09:00:00Z',
-    txnHash: 'x23......2w',
-    amount: '100 USDC',
-    txnFee: '0.009 USDC',
-  },
-  {
-    id: 'm5gr84i9',
-    topic: 'Disbursed',
-    beneficiaryId: 'xas21w213dwq',
-    from: 'sda........sd',
-    to: 'sd2.........ad',
-    timestamp: '2024-02-27T09:00:00Z',
-    txnHash: 'x23......2w',
-    amount: '500 USDC',
-    txnFee: '0.009 USDC',
-  },
-  {
-    id: 'm5gr84i9',
-    topic: 'Received',
-    beneficiaryId: 'xas21w213dwq',
-    from: 'sda....sd',
-    to: 'sd2.......ad',
-    timestamp: '2024-02-27T09:00:00Z',
-    txnHash: 'x23......2w',
-    amount: '100 USDC',
-    txnFee: '0.009 USDC',
-  },
-  {
-    id: 'm5gr84i9',
-    topic: 'Disbursed',
-    beneficiaryId: 'xas21w213dwq',
-    from: 'sda.......sd',
-    to: 'sd2........ad',
-    timestamp: '2024-02-27T09:00:00Z',
-    txnHash: 'x23......2w',
-    amount: '500 USDC',
-    txnFee: '0.009 USDC',
-  },
-  {
-    id: 'm5gr84i9',
-    topic: 'Received',
-    beneficiaryId: 'xas21w213dwq',
-    from: 'sda........sd',
-    to: 'sd2........ad',
-    timestamp: '2024-02-27T09:00:00Z',
-    txnHash: 'x23......2w',
-    amount: '100 USDC',
-    txnFee: '0.009 USDC',
-  },
-  {
-    id: 'm5gr84i9',
-    topic: 'Disbursed',
-    beneficiaryId: 'xas21w213dwq',
-    from: 'soa...',
-    to: 'sd2........ad',
-    timestamp: '2024-02-27T09:00:00Z',
-    txnHash: '...sd',
-    amount: '500 USDC',
-    txnFee: '0.009 USDC',
-  },
-  {
-    id: 'm5gr84i9',
-    topic: 'Received',
-    beneficiaryId: 'xas21w213dwq',
-    from: 'sda.....sd',
-    to: 'sd2.......ad',
-    timestamp: '2024-02-27T09:00:00Z',
-    txnHash: 'x23......2w',
-    amount: '100 USDC',
-    txnFee: '0.009 USDC',
-  },
-  {
-    id: 'm5gr84i9',
-    topic: 'Disbursed',
-    beneficiaryId: 'xas21w213dwq',
-    from: 'sda........sd',
-    to: 'sd2.........ad',
-    timestamp: '2024-02-27T09:00:00Z',
-    txnHash: 'x23......2w',
-    amount: '500 USDC',
-    txnFee: '0.009 USDC',
-  },
-  {
-    id: 'm5gr84i9',
-    topic: 'Received',
-    beneficiaryId: 'xas21w213dwq',
-    from: 'sda....sd',
-    to: 'sd2.......ad',
-    timestamp: '2024-02-27T09:00:00Z',
-    txnHash: 'x23......2w',
-    amount: '100 USDC',
-    txnFee: '0.009 USDC',
-  },
-  {
-    id: 'm5gr84i9',
-    topic: 'Disbursed',
-    beneficiaryId: 'xas21w213dwq',
-    from: 'sda.......sd',
-    to: 'sd2........ad',
-    timestamp: '2024-02-27T09:00:00Z',
-    txnHash: 'x23......2w',
-    amount: '500 USDC',
-    txnFee: '0.009 USDC',
-  },
-  {
-    id: 'm5gr84i9',
-    topic: 'Received',
-    beneficiaryId: 'xas21w213dwq',
-    from: 'sda........sd',
-    to: 'sd2........ad',
-    timestamp: '2024-02-27T09:00:00Z',
-    txnHash: 'x23......2w',
-    amount: '100 USDC',
-    txnFee: '0.009 USDC',
-  },
-  {
-    id: 'm5gr84i9',
-    topic: 'Disbursed',
-    beneficiaryId: 'xas21w213dwq',
-    from: 'soa...',
-    to: 'sd2........ad',
-    timestamp: '2024-02-27T09:00:00Z',
-    txnHash: '...sd',
-    amount: '500 USDC',
-    txnFee: '0.009 USDC',
-  },
-];
+import { useParams } from 'next/navigation';
 
 // export type Transaction = {
 //   id: string;
@@ -272,6 +142,7 @@ export const columns: ColumnDef<Transaction>[] = [
 ];
 
 export default function TransactionView() {
+  const { id } = useParams();
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [transactionList, setTransactionList] = React.useState<Transaction[]>(
     [],
@@ -302,8 +173,19 @@ export default function TransactionView() {
     },
   });
 
+  const contractSettings = useProjectSettingsStore(
+    (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT] || null,
+  );
+  const contractAddress = contractSettings?.c2cproject?.address;
+
+  console.log({ contractAddress });
+
   const [result] = useQuery({
     query: TransactionDetails,
+    variables: {
+      contractAddress,
+    },
+    pause: !contractAddress,
   });
 
   React.useEffect(() => {

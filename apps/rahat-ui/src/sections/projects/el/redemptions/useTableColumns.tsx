@@ -52,6 +52,7 @@ export const useTableColumns = (handleAssignClick: any) => {
       id: 'select',
       header: '',
       cell: ({ row }) => {
+        console.log('row.original', row.original);
         const isDisabled = row.getValue('status') === 'APPROVED';
         const isChecked = row.getIsSelected() && !isDisabled;
         return (
@@ -134,6 +135,17 @@ export const useTableColumns = (handleAssignClick: any) => {
       cell: ({ row }) => (
         <div className="w-1/3 text-center">{row.getValue('tokenAmount')}</div>
       ),
+    },
+    {
+      accessorKey: 'claimValue',
+      header: 'Claim',
+      cell: ({ row }) => {
+        return (
+          <div className="w-1/3 text-center">
+            {row.original.tokenAmount * 30000}
+          </div>
+        );
+      },
     },
     {
       accessorKey: 'status',

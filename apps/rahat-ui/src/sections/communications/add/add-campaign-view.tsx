@@ -44,7 +44,7 @@ const FormSchema = z.object({
       beneficiaryId: z.number(),
     }),
   ),
-  file: z.string().optional(),
+  file: z.any().optional(),
 });
 
 export type SelectedRowType = {
@@ -79,7 +79,8 @@ const AddCampaignView = () => {
   });
 
   const debouncedHandleSubmit = debounce((data) => {
-    if(isSubmitting) return;
+    console.log(data);
+    if (isSubmitting) return;
     if (selectedRows.length === 0) {
       setAudienceRequiredError(true);
       setIsSubmitting(false);
@@ -127,18 +128,19 @@ const AddCampaignView = () => {
     ) {
       additionalData.body = data?.message;
     } else {
-      additionalData.message = data?.message;
+      additionalData.message = data?.message || '';
     }
     createCampaign
       .mutateAsync({
-        audienceIds: audiences || [],
+        audienceIds: JSON.stringify(audiences) || [],
         name: data.campaignName,
         startTime: null,
         transportId: Number(transportId),
         type: data.campaignType,
         details: additionalData,
         status: 'ONGOING',
-        isQrSender:data.isQrSender
+        isQrSender: data.isQrSender,
+        file: data?.file,
       })
       .then((data) => {
         if (data) {
@@ -159,6 +161,7 @@ const AddCampaignView = () => {
     data: z.infer<typeof FormSchema>,
     event: any,
   ) => {
+    event.preventDefault();
     setIsSubmitting(true);
     debouncedHandleSubmit(data);
   };

@@ -15,24 +15,19 @@ import {
   useTargetedBeneficiaryList,
 } from '@rahat-ui/community-query';
 import { usePagination } from '@rahat-ui/query';
-import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
-import {
-  ArrowUpRightIcon,
-  ArrowUpRightSquareIcon,
-  Download,
-} from 'lucide-react';
+import { Download, UploadCloud } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import * as XLSX from 'xlsx';
 import CustomPagination from '../../../components/customPagination';
 import DetailsTable from './detailsTable';
 import { useTargetPinnedListDetailsTableColumns } from './useTargetLabelColumns';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 
 export default function PinnedListDetailsView() {
   const {
@@ -84,7 +79,7 @@ export default function PinnedListDetailsView() {
   };
 
   const handleExportPinnedBeneficiary = () => {
-    exportPinnedListBeneficiary.mutate(uuid as string);
+    exportPinnedListBeneficiary.mutate({ targetUUID: uuid as string });
   };
 
   return (
@@ -102,11 +97,11 @@ export default function PinnedListDetailsView() {
                   className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
                 >
                   <Download size={20} className="mr-2" />
-                  Download
+                  Download 
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
-                <p>Download</p>
+                <p>Download Beneficiary</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
@@ -120,11 +115,12 @@ export default function PinnedListDetailsView() {
                   size={'xs'}
                   className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
                 >
+                  <UploadCloud size={20} className="mr-2" />
                   Export
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
-                <p>Export Pinned Beneficiaries</p>
+                <p>Export Beneficiary</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>

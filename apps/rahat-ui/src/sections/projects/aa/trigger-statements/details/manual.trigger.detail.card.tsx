@@ -4,13 +4,26 @@ type IProps = {
   status: boolean;
   notes: string;
   phase: string;
+  triggeredAt: string;
 };
+
+function renderTimestamp (timestamp: string) {
+  const d =  new Date(timestamp)
+  const localeDate = d.toLocaleDateString()
+  const localeTime = d.toLocaleTimeString()
+
+  return `${localeDate} ${localeTime}`
+}
 
 export default function ManualTriggerDetailCard({
   status,
   notes,
   phase,
+  triggeredAt
 }: IProps) {
+
+
+
   return (
     <div className="bg-card rounded p-4">
       <h1 className="font-medium mb-4">Trigger Details</h1>
@@ -28,6 +41,20 @@ export default function ManualTriggerDetailCard({
         <div>
           <p className="text-sm text-muted-foreground">Trigger Type</p>
           <p>Manual</p>
+        </div>
+        <div className="col-span-2 mt-1">
+          <p className="text-sm text-muted-foreground">Triggered At</p>
+          {
+            status ? (
+              <p>
+                {
+                  renderTimestamp(triggeredAt)
+                }
+              </p>
+            ) : (
+              <p>{'N/A'}</p>
+            )
+          }
         </div>
         <div className="col-span-2">
           <p className="text-sm text-muted-foreground">Phase</p>

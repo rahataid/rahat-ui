@@ -490,14 +490,14 @@ export default function EditActivity() {
                 Add Communication
                 <Plus className="ml-2" size={16} strokeWidth={3} />
               </Button>
-              <Button
+              {/* <Button
                 type="button"
                 variant="outline"
                 className="border-dashed border-primary text-primary text-md w-full mt-4"
               >
                 Add Payout
                 <Plus className="ml-2" size={16} strokeWidth={3} />
-              </Button>
+              </Button> */}
               <div className="flex justify-end mt-8">
                 <div className="flex gap-2">
                   <Button

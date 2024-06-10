@@ -22,7 +22,7 @@ type IProps = {
   form: UseFormReturn<
     {
       title: string;
-      hazardTypeId: string;
+      // hazardTypeId: string;
       isMandatory?: boolean | undefined;
     },
     any,
@@ -34,9 +34,9 @@ export default function AddManualTriggerForm({ form }: IProps) {
   const selectedPhase = JSON.parse(
     localStorage.getItem('selectedPhase') as string,
   );
-  const { hazardTypes } = useActivitiesStore((state) => ({
-    hazardTypes: state.hazardTypes,
-  }));
+  // const { hazardTypes } = useActivitiesStore((state) => ({
+  //   hazardTypes: state.hazardTypes,
+  // }));
 
   return (
     <>
@@ -71,7 +71,7 @@ export default function AddManualTriggerForm({ form }: IProps) {
               }}
             />
 
-            <FormField
+            {/* <FormField
               control={form.control}
               name="hazardTypeId"
               render={({ field }) => {
@@ -101,7 +101,7 @@ export default function AddManualTriggerForm({ form }: IProps) {
                   </FormItem>
                 );
               }}
-            />
+            /> */}
 
             <FormField
               control={form.control}

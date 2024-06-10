@@ -19,7 +19,7 @@ type IProps = {
   manualForm: UseFormReturn<
     {
       title: string;
-      hazardTypeId: string;
+      // hazardTypeId: string;
       isMandatory?: boolean | undefined;
     },
     any,
@@ -28,9 +28,9 @@ type IProps = {
   automatedForm: UseFormReturn<
     {
       title: string;
-      hazardTypeId: string;
+      // hazardTypeId: string;
       dataSource: string;
-      location: string;
+      // location: string;
       isMandatory?: boolean | undefined;
       minLeadTimeDays: string;
       maxLeadTimeDays: string;
@@ -53,7 +53,7 @@ export default function AddTriggerStatementView({
 }: IProps) {
   const { id: projectID } = useParams();
   useActivities(projectID as UUID, {});
-  useActivitiesHazardTypes(projectID as UUID);
+  // useActivitiesHazardTypes(projectID as UUID);
 
   return (
     <>

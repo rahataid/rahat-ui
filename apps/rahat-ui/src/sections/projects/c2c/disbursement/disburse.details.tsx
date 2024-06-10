@@ -15,8 +15,17 @@ import DataCard from '../../../../components/dataCard';
 import { TransactionTable } from './transactions.table';
 import { ApprovalTable } from './approvals.table';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+import { useGetDisbursement } from '@rahat-ui/query';
+import { useParams } from 'next/navigation';
+import { UUID } from 'crypto';
 
 export default function DisburseDetails() {
+  const { id: projectUUID, uuid } = useParams() as {
+    id: UUID;
+    uuid: UUID;
+  };
+  const { data } = useGetDisbursement(projectUUID, uuid);
+  console.log('data', data);
   return (
     <div className="bg-secondary">
       {/* Data Cards */}

@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { UUID } from 'crypto';
 import { PROJECT_SETTINGS_KEYS } from '../../../config';
 import { useProjectAction, useProjectSettingsStore } from '../../projects';
+import { Pagination } from '@rumsan/sdk/types';
 
 export const useGetTreasurySourcesSettings = (uuid: UUID) => {
   const projectActions = useProjectAction([
@@ -57,8 +58,13 @@ export const useGetTreasurySourcesSettings = (uuid: UUID) => {
   return query;
 };
 
-export const useGetDisbursements = (projectUUID: UUID) => {
+type DisbursementListHookParams = {
+  projectUUID: UUID;
+} & Pagination;
+
+export const useGetDisbursements = (params: DisbursementListHookParams) => {
   const projectActions = useProjectAction(['c2c', 'disbursements-actions']);
+  const { projectUUID, ...restParams } = params;
 
   const query = useQuery({
     queryKey: ['get-disbursements'],
@@ -67,9 +73,7 @@ export const useGetDisbursements = (projectUUID: UUID) => {
         uuid: projectUUID,
         data: {
           action: 'disbursements.get',
-          payload: {
-            projectUUID: projectUUID,
-          },
+          payload: restParams,
         },
       });
       return response.data;
@@ -93,7 +97,6 @@ export const useGetDisbursement = (
         data: {
           action: 'disbursement.get',
           payload: {
-            projectUUID: projectUUID,
             disbursementUUID: disbursementUUID,
           },
         },
@@ -105,11 +108,16 @@ export const useGetDisbursement = (
   return query;
 };
 
+type DisbursementTransactionHookParams = {
+  projectUUID: UUID;
+  disbursementUUID: UUID;
+} & Pagination;
+
 export const useGetDisbursementTransactions = (
-  projectUUID: UUID,
-  disbursementUUID: UUID,
+  params: DisbursementTransactionHookParams,
 ) => {
   const projectActions = useProjectAction(['c2c', 'disbursements-actions']);
+  const { projectUUID, disbursementUUID, ...restParams } = params;
 
   const query = useQuery({
     queryKey: ['get-disbursement-transactions', disbursementUUID],
@@ -119,8 +127,8 @@ export const useGetDisbursementTransactions = (
         data: {
           action: 'disbursement.transactions.get',
           payload: {
-            projectUUID: projectUUID,
             disbursementUUID: disbursementUUID,
+            ...restParams,
           },
         },
       });
@@ -131,11 +139,16 @@ export const useGetDisbursementTransactions = (
   return query;
 };
 
+type DisbursementApprovalsHookParams = {
+  projectUUID: UUID;
+  disbursementUUID: UUID;
+} & Pagination;
+
 export const useGetDisbursementApprovals = (
-  projectUUID: UUID,
-  disbursementUUID: UUID,
+  params: DisbursementApprovalsHookParams,
 ) => {
   const projectActions = useProjectAction(['c2c', 'disbursements-actions']);
+  const { projectUUID, disbursementUUID, ...restParams } = params;
 
   const query = useQuery({
     queryKey: ['get-disbursement-approvals', disbursementUUID],
@@ -146,7 +159,7 @@ export const useGetDisbursementApprovals = (
           action: 'disbursement.approvals.get',
           payload: {
             projectUUID: projectUUID,
-            disbursementUUID: disbursementUUID,
+            ...restParams,
           },
         },
       });

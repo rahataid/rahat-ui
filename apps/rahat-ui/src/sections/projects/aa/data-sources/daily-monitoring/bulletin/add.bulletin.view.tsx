@@ -1,4 +1,5 @@
-import { useParams } from 'next/navigation';
+import * as React from 'react';
+import { useParams, useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
@@ -28,10 +29,14 @@ import {
   CardTitle,
 } from '@rahat-ui/shadcn/src/components/ui/card';
 import { UUID } from 'crypto';
+import { useCreateDailyMonitoring } from '@rahat-ui/query';
 
 export default function AddBulletin() {
   const params = useParams();
   const projectId = params.id as UUID;
+  const router = useRouter();
+
+  const createDailyMonitoring = useCreateDailyMonitoring();
 
   const FormSchema = z
     .object({
@@ -178,15 +183,26 @@ export default function AddBulletin() {
   };
 
   const handleCreateBulletin = async (data: z.infer<typeof FormSchema>) => {
+    console.log('data::', data);
     try {
-      console.log('data::', data);
-      alert('done');
+      await createDailyMonitoring.mutateAsync({
+        projectUUID: projectId,
+        monitoringPayload: data,
+      });
     } catch (e) {
       console.error('Create Bulletin Error::', e);
     } finally {
       form.reset();
     }
   };
+
+  React.useEffect(() => {
+    if (createDailyMonitoring.isSuccess) {
+      form.reset();
+      router.back();
+    }
+  }, [createDailyMonitoring.isSuccess]);
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleCreateBulletin)}>

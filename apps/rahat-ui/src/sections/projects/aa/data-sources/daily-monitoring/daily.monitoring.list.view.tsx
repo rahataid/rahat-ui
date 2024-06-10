@@ -1,6 +1,6 @@
 import { useParams } from 'next/navigation';
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
-import { usePagination } from '@rahat-ui/query';
+import { useDailyMonitoring, usePagination } from '@rahat-ui/query';
 import DailyMonitoringTable from './daily.monitoring.table';
 import useDailyMonitoringTableColumn from './useDailyMonitoringTableColumn';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
@@ -14,9 +14,12 @@ export default function DailyMonitoringListView() {
   const { pagination, setNextPage, setPrevPage, setPerPage } = usePagination();
   const columns = useDailyMonitoringTableColumn();
 
+  const { data: MonitoringData } = useDailyMonitoring(projectId, {});
+  console.log('data::', MonitoringData?.data);
+
   const table = useReactTable({
     manualPagination: true,
-    data: [],
+    data: MonitoringData?.data ?? [],
     columns,
     getCoreRowModel: getCoreRowModel(),
   });

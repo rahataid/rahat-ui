@@ -1,8 +1,9 @@
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { UUID } from 'crypto';
 import { PROJECT_SETTINGS_KEYS } from '../../../config';
 import { useProjectAction, useProjectSettingsStore } from '../../projects';
 import { Pagination } from '@rumsan/sdk/types';
+import { Beneficiary } from '@rahataid/sdk';
 
 export const useGetTreasurySourcesSettings = (uuid: UUID) => {
   const projectActions = useProjectAction([
@@ -169,4 +170,95 @@ export const useGetDisbursementApprovals = (
   });
 
   return query;
+};
+
+export type Disbursement = {
+  id: number;
+  uuid: string;
+  DisbursementBeneficiary: DisbursementBeneficiary[];
+  type: DisbursementType;
+  status: DisbursementStatus;
+  timestamp?: string;
+  amount?: number;
+  transactionHash?: string;
+  extras?: any;
+  createdAt: Date;
+  updatedAt?: Date;
+};
+
+export type DisbursementBeneficiary = {
+  id: number;
+  disbursementId: number;
+  beneficiaryId: number;
+  Disbursement: Disbursement;
+  Beneficiary: Beneficiary;
+  from?: string;
+  amount?: number;
+  transactionHash?: string;
+  extras?: any;
+  createdAt: Date;
+  updatedAt?: Date;
+};
+
+export enum DisbursementType {
+  PROJECT = 'PROJECT',
+  EOA = 'EOA',
+  MULTISIG = 'MULTISIG',
+}
+
+export enum DisbursementStatus {
+  DRAFT = 'DRAFT',
+  PENDING = 'PENDING',
+  COMPLETED = 'COMPLETED',
+  REJECTED = 'REJECTED',
+}
+
+export const useAddDisbursement = (projectUUID: UUID) => {
+  const projectActions = useProjectAction(['c2c', 'disbursements-actions']);
+
+  return useMutation({
+    mutationKey: ['add-disbursement'],
+    mutationFn: async (data: {
+      type: DisbursementType;
+      amount: number;
+      beneficiaries: `0x{string}`[];
+      transactionHash: string;
+      from: string;
+      timestamp: string;
+    }) => {
+      const response = await projectActions.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'c2cProject.disbursement.create',
+          payload: data,
+        },
+      });
+      return response.data;
+    },
+  });
+};
+
+export const useUpdateDisbursement = (projectUUID: UUID) => {
+  const projectActions = useProjectAction(['c2c', 'disbursements-actions']);
+
+  return useMutation({
+    mutationKey: ['update-disbursement'],
+    mutationFn: async (data: {
+      type: DisbursementType;
+      amount: number;
+      beneficiaries: `0x{string}`[];
+      transactionHash: string;
+      from: string;
+      timestamp: string;
+    }) => {
+      const response = await projectActions.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'c2cProject.disbursement.update',
+          payload: data,
+        },
+      });
+      return response.data;
+    },
+  });
 };

@@ -40,3 +40,10 @@ export const shortenAddress = (address: Address) => {
   const end = address.slice(address.length - 4);
   return `${start}...${end}`;
 };
+
+export const shortenTxHash = (txHash: string) => {
+  if (!txHash) return '';
+  const start = txHash.slice(0, 15);
+  const end = txHash.slice(txHash.length - 15);
+  return `${start}...${end}`;
+};

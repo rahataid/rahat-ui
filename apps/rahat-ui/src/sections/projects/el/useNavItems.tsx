@@ -195,8 +195,8 @@ export const useNavItems = () => {
           icon: <Receipt size={18} strokeWidth={1.5} />,
         },
         {
-          title: 'Redemptions',
-          path: `/projects/el/${id}/redemptions`,
+          title: 'Claims',
+          path: `/projects/el/${id}/claims`,
           subtitle: projectStats?.redemptionTotal,
           icon: <TicketCheck size={18} strokeWidth={1.5} />,
         },

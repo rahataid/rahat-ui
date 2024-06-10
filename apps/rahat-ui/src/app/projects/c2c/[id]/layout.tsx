@@ -7,7 +7,7 @@ import {
   useProjectSubgraphSettings,
 } from '@rahat-ui/query';
 import { useProjectDetails as useProjectSubgraphDetails } from '@rahataid/c2c-query';
-import C2CSubgraphProvider from '@rahataid/c2c-query/src/subgraph/subgraph.provider';
+import { C2CSubgraphProvider } from '@rahat-ui/query';
 import { Client, cacheExchange, fetchExchange } from '@urql/core';
 import { useSecondPanel } from 'apps/rahat-ui/src/providers/second-panel-provider';
 import { ProjectLayout } from 'apps/rahat-ui/src/sections/projects/components';

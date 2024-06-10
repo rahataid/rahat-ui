@@ -1,9 +1,8 @@
-import { Project } from '@rahataid/sdk/project/project.types';
-import { FC } from 'react';
-import SmallDataCard from './project.datacard.small';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+import { Project } from '@rahataid/sdk/project/project.types';
 import DataCard from 'apps/rahat-ui/src/components/dataCard';
 import { Users } from 'lucide-react';
+import { FC } from 'react';
 
 type ProjectInfoProps = {
   project: Project;

@@ -16,9 +16,11 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import { useFundManagementColumns } from './useFundManagementColumns';
+import TableFilter from './fm.table.filter';
 
 const FundManagementView = () => {
-  const { id: projectID } = useParams();
+  const params = useParams();
+  const projectId = params.id as UUID;
   const {
     pagination,
     setNextPage,
@@ -43,7 +45,7 @@ const FundManagementView = () => {
     React.useState<VisibilityState>({});
 
   const { data: groupsFundsData, isLoading } = useGroupsReservedFunds(
-    projectID as UUID,
+    projectId,
     {
       ...pagination,
       ...filters,
@@ -73,10 +75,9 @@ const FundManagementView = () => {
 
   return (
     <div className="p-2 bg-secondary h-[calc(100vh-65px)]">
+      <TableFilter table={table} projectId={projectId} />
       <div className="border bg-card rounded">
         <FundManagementTable table={table} />
-      </div>
-      <div className="border bg-card rounded">
         <CustomPagination
           meta={
             groupsFundsData?.response?.meta || {

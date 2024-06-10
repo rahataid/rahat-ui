@@ -29,9 +29,9 @@ type IProps = {
   form: UseFormReturn<
     {
       title: string;
-      hazardTypeId: string;
+      // hazardTypeId: string;
       dataSource: string;
-      location: string;
+      // location: string;
       isMandatory?: boolean | undefined;
       // readinessLevel?: string | undefined;
       // waterLevel: string;
@@ -51,9 +51,9 @@ export default function AddAutomatedTriggerForm({ form }: IProps) {
     localStorage.getItem('selectedPhase') as string,
   );
 
-  const { hazardTypes } = useActivitiesStore((state) => ({
-    hazardTypes: state.hazardTypes,
-  }));
+  // const { hazardTypes } = useActivitiesStore((state) => ({
+  //   hazardTypes: state.hazardTypes,
+  // }));
 
   const dataSources = useProjectSettingsStore(
     (s) => s.settings?.[projectId]?.[PROJECT_SETTINGS_KEYS.DATASOURCE],
@@ -64,6 +64,7 @@ export default function AddAutomatedTriggerForm({ form }: IProps) {
       title: dataSources.glofas.location,
     },
   ];
+  const riverBasin = dataSources?.glofas?.location;
 
   return (
     <>
@@ -124,38 +125,14 @@ export default function AddAutomatedTriggerForm({ form }: IProps) {
               />
             </div>
             <div className="w-full flex gap-4">
-              <FormField
-                control={form.control}
-                name="location"
-                render={({ field }) => {
-                  return (
-                    <FormItem className="w-full">
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
-                        <FormLabel>River Basin</FormLabel>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select River Basin" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {glofasStations?.map((r: any) => {
-                            return (
-                              <SelectItem key={r.id} value={r.title}>
-                                {r.title}
-                              </SelectItem>
-                            );
-                          })}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  );
-                }}
-              />
-              <FormField
+              <FormItem className="w-full">
+                <FormLabel>River Basin</FormLabel>
+                <FormControl>
+                  <Input type="text" value={riverBasin} disabled />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+              {/* <FormField
                 control={form.control}
                 name="hazardTypeId"
                 render={({ field }) => {
@@ -185,7 +162,7 @@ export default function AddAutomatedTriggerForm({ form }: IProps) {
                     </FormItem>
                   );
                 }}
-              />
+              /> */}
             </div>
 
             <div className="w-full flex gap-4">

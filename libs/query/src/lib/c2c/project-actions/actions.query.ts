@@ -72,7 +72,7 @@ export const useGetDisbursements = (params: DisbursementListHookParams) => {
       const response = await projectActions.mutateAsync({
         uuid: projectUUID,
         data: {
-          action: 'disbursements.get',
+          action: 'rahat.jobs.disbursements.get',
           payload: restParams,
         },
       });
@@ -95,7 +95,7 @@ export const useGetDisbursement = (
       const response = await projectActions.mutateAsync({
         uuid: projectUUID,
         data: {
-          action: 'disbursement.get',
+          action: 'rahat.jobs.disbursement.get',
           payload: {
             disbursementUUID: disbursementUUID,
           },
@@ -125,7 +125,7 @@ export const useGetDisbursementTransactions = (
       const response = await projectActions.mutateAsync({
         uuid: projectUUID,
         data: {
-          action: 'disbursement.transactions.get',
+          action: 'rahat.jobs.disbursement.transactions.get',
           payload: {
             disbursementUUID: disbursementUUID,
             ...restParams,
@@ -156,7 +156,7 @@ export const useGetDisbursementApprovals = (
       const response = await projectActions.mutateAsync({
         uuid: projectUUID,
         data: {
-          action: 'disbursement.approvals.get',
+          action: 'rahat.jobs.disbursement.approvals.get',
           payload: {
             projectUUID: projectUUID,
             ...restParams,

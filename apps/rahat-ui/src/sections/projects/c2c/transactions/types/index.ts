@@ -1,8 +1,8 @@
-export type TokenReceived = {
+export type Transfers = {
   id: string;
   __typename: 'TokenReceived';
   from: string;
-  amount: string;
+  value: string;
   blockTimestamp: string;
   transactionHash: string;
   token: string;
@@ -21,7 +21,7 @@ export type TransferProcessed = {
   blockNumber: string;
 };
 
-export type MergeTransactions = TokenReceived | TransferProcessed;
+export type MergeTransactions = Transfers | TransferProcessed;
 
 export type Transaction = {
   id: string;
@@ -34,6 +34,6 @@ export type Transaction = {
 };
 
 export type TransactionsObject = {
-  tokenReceiveds: TokenReceived[];
+  transfers: Transfers[];
   transferProcesseds: TransferProcessed[];
 };

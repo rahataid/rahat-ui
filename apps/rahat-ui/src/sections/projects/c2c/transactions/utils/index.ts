@@ -1,5 +1,5 @@
 import {
-  TokenReceived,
+  Transfers,
   Transaction,
   TransactionsObject,
   MergeTransactions,
@@ -9,11 +9,11 @@ export const mergeTransactions = async (
   transactionsObj: TransactionsObject,
 ) => {
   console.log({ transactionsObj });
-  const { tokenReceiveds, transferProcesseds } = transactionsObj;
+  const { transfers, transferProcesseds } = transactionsObj;
 
-  // Combine the arrays
   const mergedTransactions: MergeTransactions[] = [
-    ...tokenReceiveds.map((transaction) => ({
+    // Combine the arrays
+    ...transfers.map((transaction) => ({
       ...transaction,
       topic: 'Received',
       date: new Date(
@@ -21,6 +21,7 @@ export const mergeTransactions = async (
       ).toLocaleDateString('en-US', {
         timeZone: 'UTC',
       }),
+      amount: transaction.value,
     })),
     ...transferProcesseds.map((transaction) => ({
       ...transaction,

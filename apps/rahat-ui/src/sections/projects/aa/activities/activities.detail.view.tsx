@@ -50,7 +50,7 @@ export default function ActivitiesDetail({
   useEffect(() => {
     deleteActivity.isSuccess && closeSecondPanel();
   }, [deleteActivity]);
-  console.log(activityDetail);
+
   return (
     <>
       <div className="flex justify-between items-center py-5 px-2 bg-secondary">

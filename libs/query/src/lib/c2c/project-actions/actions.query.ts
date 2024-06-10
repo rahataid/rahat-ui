@@ -213,24 +213,32 @@ export enum DisbursementStatus {
   REJECTED = 'REJECTED',
 }
 
-export const useAddDisbursement = (projectUUID: UUID) => {
+export const useAddDisbursement = () => {
   const projectActions = useProjectAction(['c2c', 'disbursements-actions']);
 
   return useMutation({
     mutationKey: ['add-disbursement'],
+    onSuccess(data, variables, context) {
+      console.log('onSuccess', data, variables, context);
+    },
+    onError(error, variables, context) {
+      console.log('onError', error, variables, context);
+    },
     mutationFn: async (data: {
+      projectUUID: UUID;
       type: DisbursementType;
-      amount: number;
-      beneficiaries: `0x{string}`[];
+      amount: string;
+      beneficiaries: any;
       transactionHash: string;
       from: string;
       timestamp: string;
     }) => {
+      const { projectUUID, ...restData } = data;
       const response = await projectActions.mutateAsync({
         uuid: projectUUID,
         data: {
           action: 'c2cProject.disbursement.create',
-          payload: data,
+          payload: restData,
         },
       });
       return response.data;

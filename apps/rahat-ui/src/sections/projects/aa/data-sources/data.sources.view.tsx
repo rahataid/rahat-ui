@@ -20,6 +20,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
+import { DailyMonitoringListView } from './daily-monitoring';
 
 export default function DataSourcesView() {
   const { id } = useParams();
@@ -64,6 +65,12 @@ export default function DataSourcesView() {
               </Tooltip>
             </TooltipProvider>
           </TabsTrigger>
+          <TabsTrigger
+            value="dailyMonitoring"
+            className="w-36 border bg-card data-[state=active]:border-primary"
+          >
+            Daily Monitoring
+          </TabsTrigger>
         </TabsList>
         <TabsContent value="glofas">
           {isLoadingDhm ? (
@@ -74,6 +81,9 @@ export default function DataSourcesView() {
         </TabsContent>
         <TabsContent value="dhm">
           {isLoadingDhm ? 'Loading DHM data...' : <DHMView data={dhmData} />}
+        </TabsContent>
+        <TabsContent value="dailyMonitoring">
+          <DailyMonitoringListView />
         </TabsContent>
       </Tabs>
     </div>

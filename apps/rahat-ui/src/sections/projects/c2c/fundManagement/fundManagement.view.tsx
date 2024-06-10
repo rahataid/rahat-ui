@@ -63,7 +63,9 @@ const FundManagementView = () => {
         <div className="col-span-2">
           <ChartLine series={mySeries} />
         </div>
-        <RecentTransaction />
+        <RecentTransaction
+          contractAddress={contractSettings?.c2cproject?.address}
+        />
       </div>
     </>
   );

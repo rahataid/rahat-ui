@@ -3,6 +3,7 @@
 import { useParams } from 'next/navigation';
 
 import {
+  BeneficiaryTransaction,
   PROJECT_SETTINGS_KEYS,
   useProjectAction,
   useProjectSettingsStore,
@@ -62,6 +63,9 @@ import EditBeneficiary from './beneficiary.edit';
 import { useRemoveBeneficiary } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import { useWaitForTransactionReceipt } from 'wagmi';
+import { useQuery } from 'urql';
+import { Transaction, TransactionsObject } from './types';
+import { mergeTransactions } from './utils';
 
 type IProps = {
   beneficiaryDetails: any;
@@ -81,6 +85,7 @@ export default function BeneficiaryDetail({
   const [assignStatus, setAssignStatus] = useState(false);
   const [transactionHash, setTransactionHash] = useState<`0x${string}`>();
   const [isTransacting, setisTransacting] = useState<boolean>(false);
+  const [transactionList, setTransactionList] = useState<Transaction[]>([]);
 
   const walletAddress = beneficiaryDetails.wallet;
 
@@ -102,6 +107,21 @@ export default function BeneficiaryDetail({
   );
   const [walletAddressCopied, setWalletAddressCopied] =
     useState<boolean>(false);
+
+  const [transactionResult] = useQuery({
+    query: BeneficiaryTransaction,
+    variables: {
+      beneficiary: walletAddress,
+    },
+  });
+
+  useEffect(() => {
+    (async () => {
+      const transactionObject: TransactionsObject = transactionResult.data;
+      const transactionLists = await mergeTransactions(transactionObject);
+      setTransactionList(transactionLists);
+    })();
+  }, [transactionResult]);
 
   const clickToCopy = () => {
     if (walletAddress) {
@@ -429,7 +449,10 @@ export default function BeneficiaryDetail({
                 </TabsContent>
                 <TabsContent value="transaction">
                   <div className="p-2 pb-0">
-                    <TransactionTable walletAddress={walletAddress} />
+                    <TransactionTable
+                      walletAddress={walletAddress}
+                      transaction={transactionList}
+                    />
                   </div>
                 </TabsContent>
               </Tabs>

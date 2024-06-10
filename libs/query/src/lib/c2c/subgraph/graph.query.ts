@@ -32,9 +32,9 @@ export const TransactionDetails = `
 `;
 
 export const ReceivedTransactionDetails = `
-  query ReceivedTransactionDetails {
-    tokenReceiveds {
-      amount
+  query ReceivedTransactionDetails($contractAddress: String) {
+    transfers(where: {to: $contractAddress}) {
+      value
       blockTimestamp
       from
       transactionHash

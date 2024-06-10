@@ -1,5 +1,6 @@
 'use client';
 
+import { TransactionDetails } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
 import {
@@ -34,6 +35,11 @@ import {
 } from '@tanstack/react-table';
 import { ArrowUpDown, MoreHorizontal } from 'lucide-react';
 import * as React from 'react';
+import { useQuery } from 'urql';
+import { Transaction, TransactionsObject } from './types';
+import { mergeTransactions } from './utils';
+import { formatEther } from 'viem';
+import { shortenTxHash } from 'apps/rahat-ui/src/utils/getProjectAddress';
 
 const data: Transaction[] = [
   {
@@ -170,17 +176,17 @@ const data: Transaction[] = [
   },
 ];
 
-export type Transaction = {
-  id: string;
-  topic: string;
-  beneficiaryId: string;
-  from: string;
-  to: string;
-  timestamp: string;
-  txnHash: string;
-  amount: string;
-  txnFee: string;
-};
+// export type Transaction = {
+//   id: string;
+//   topic: string;
+//   beneficiaryId: string;
+//   from: string;
+//   to: string;
+//   timestamp: string;
+//   txnHash: string;
+//   amount: string;
+//   txnFee: string;
+// };
 
 export const columns: ColumnDef<Transaction>[] = [
   {
@@ -212,42 +218,47 @@ export const columns: ColumnDef<Transaction>[] = [
       <div className="capitalize">{row.getValue('topic')}</div>
     ),
   },
-  {
-    accessorKey: 'beneficiaryId',
-    header: 'BeneficiaryId',
-    cell: ({ row }) => (
-      <div className="lowercase">{row.getValue('beneficiaryId')}</div>
-    ),
-  },
+
   {
     accessorKey: 'from',
     header: 'From',
-    cell: ({ row }) => <div className="capitalize">{row.getValue('from')}</div>,
+    cell: ({ row }) => (
+      <div className="capitalize">{row.getValue('from') || 'C2C'}</div>
+    ),
   },
   {
     accessorKey: 'to',
     header: 'To',
-    cell: ({ row }) => <div className="capitalize">{row.getValue('to')}</div>,
-  },
-  {
-    accessorKey: 'timestamp',
-    header: 'Timestamp',
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue('timestamp')}</div>
+      <div className="capitalize">{row.getValue('to') || 'C2C'}</div>
     ),
   },
   {
-    accessorKey: 'txnHash',
-    header: 'TxnHash',
+    accessorKey: 'date',
+    header: 'Timestamp',
+    cell: ({ row }) => <div className="capitalize">{row.getValue('date')}</div>,
+  },
+  {
+    accessorKey: 'blockNumber',
+    header: 'Block Number',
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue('txnHash')}</div>
+      <div className="capitalize">{row.getValue('blockNumber')}</div>
+    ),
+  },
+  {
+    accessorKey: 'transactionHash',
+    header: 'TransactionHash',
+    cell: ({ row }) => (
+      <div className="capitalize">
+        {shortenTxHash(row.getValue('transactionHash'))}
+      </div>
     ),
   },
   {
     accessorKey: 'amount',
     header: () => <div className="text-right">Amount</div>,
     cell: ({ row }) => {
-      const amount = parseFloat(row.getValue('amount'));
+      const amount = parseFloat(formatEther(BigInt(row.getValue('amount'))));
 
       // Format the amount as a dollar amount
       const formatted = new Intl.NumberFormat('en-US', {
@@ -258,43 +269,13 @@ export const columns: ColumnDef<Transaction>[] = [
       return <div className="text-right font-medium">{formatted}</div>;
     },
   },
-  {
-    accessorKey: 'txnFee',
-    header: 'TxnFee',
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue('txnFee')}</div>
-    ),
-  },
-  {
-    id: 'actions',
-    enableHiding: false,
-    cell: ({ row }) => {
-      const transaction = row.original;
-
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(transaction.id)}
-            >
-              Copy payment ID
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
-    },
-  },
 ];
 
 export default function TransactionView() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [transactionList, setTransactionList] = React.useState<Transaction[]>(
+    [],
+  );
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
   );
@@ -303,7 +284,7 @@ export default function TransactionView() {
   const [rowSelection, setRowSelection] = React.useState({});
 
   const table = useReactTable({
-    data,
+    data: transactionList,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -320,6 +301,20 @@ export default function TransactionView() {
       rowSelection,
     },
   });
+
+  const [result] = useQuery({
+    query: TransactionDetails,
+  });
+
+  React.useEffect(() => {
+    (async () => {
+      const transactionsObject: TransactionsObject = result.data;
+      const transactionLists = await mergeTransactions(transactionsObject);
+      setTransactionList(transactionLists);
+    })();
+  }, [result.data]);
+
+  console.log({ transactionList });
 
   return (
     <div className="p-2 bg-secondary">

@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { Tabs, TabsContent } from '@rahat-ui/shadcn/components/tabs';
 
@@ -11,7 +11,12 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 
-import { usePagination } from '@rahat-ui/query';
+import {
+  useBeneficiaryStore,
+  useListTempBeneficiary,
+  useListTempGroups,
+  usePagination,
+} from '@rahat-ui/query';
 import CustomPagination from '../../components/customPagination';
 import { useDebounce } from '../../utils/useDebouncehooks';
 import ListView from './list.view';
@@ -32,17 +37,19 @@ function ViewCommunityBeneficiary() {
   } = usePagination();
 
   const debouncedFilters = useDebounce(filters, 500);
+  const { setCommunityBeneficiariesUUID, communityBeneficiariesUUID } =
+    useBeneficiaryStore();
+  const { data: tempGroups } = useListTempGroups();
 
-  //   const { data } = useCommunityBeneficaryList({
-  //     ...pagination,
-  //     ...(debouncedFilters as any),
-  //   });
-
+  const { data } = useListTempBeneficiary({
+    ...pagination,
+    ...(debouncedFilters as any),
+  });
   const columns = useCommunityBeneficiaryTableColumns();
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const table = useReactTable({
     manualPagination: true,
-    data: [],
+    data: data?.data || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -56,17 +63,17 @@ function ViewCommunityBeneficiary() {
     },
   });
 
-  //   useEffect(() => {
-  //     setSelectedBeneficiaries(
-  //       Object.keys(selectedListItems).filter((key) => selectedListItems[key]),
-  //     );
-  //   }, [selectedListItems, setSelectedBeneficiaries]);
+  useEffect(() => {
+    setCommunityBeneficiariesUUID(
+      Object.keys(selectedListItems).filter((key) => selectedListItems[key]),
+    );
+  }, [selectedListItems, setCommunityBeneficiariesUUID]);
 
-  //   useEffect(() => {
-  //     if (selectedBeneficiaries.length === 0) {
-  //       resetSelectedListItems();
-  //     }
-  //   }, [resetSelectedListItems, selectedBeneficiaries.length]);
+  useEffect(() => {
+    if (communityBeneficiariesUUID.length === 0) {
+      resetSelectedListItems();
+    }
+  }, [resetSelectedListItems, communityBeneficiariesUUID.length]);
 
   return (
     <Tabs defaultValue="list" className="h-full">
@@ -78,6 +85,7 @@ function ViewCommunityBeneficiary() {
             filters={filters}
             pagination={pagination}
             setPagination={setPagination}
+            tempGroups={tempGroups?.data || []}
           />
         </TabsContent>
 
@@ -86,7 +94,7 @@ function ViewCommunityBeneficiary() {
           handleNextPage={setNextPage}
           handlePrevPage={setPrevPage}
           handlePageSizeChange={setPerPage}
-          meta={{ total: 0, currentPage: 0 }}
+          meta={data?.response?.meta || { total: 0, currentPage: 0 }}
           perPage={pagination?.perPage}
           total={0}
         />

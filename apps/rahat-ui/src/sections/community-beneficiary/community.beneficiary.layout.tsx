@@ -8,18 +8,23 @@ import {
 // import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { Tabs } from '@rahat-ui/shadcn/src/components/ui/tabs';
 import { FC } from 'react';
-import BeneficiaryNavView from './beneficiary.nav.view';
 import { NavItem } from './nav-items.types';
 
-type BeneficiaryLayoutProps = {
+import { useBeneficiaryStore } from '@rahat-ui/query';
+import { Separator } from '@rahat-ui/shadcn/src/components/ui/separator';
+import ImportTempCommunityBeneficiary from '../community-beneficiary/import.community.beneficiary';
+import CommunityBeneficiaryNavView from './community.beneficiary.nav.view';
+
+type CommunityBeneficiaryLayoutProps = {
   children: React.ReactNode | React.ReactNode[];
   menuItems: NavItem[];
 };
 
-const BeneficiaryLayout: FC<BeneficiaryLayoutProps> = ({
+const CommunityBeneficiaryLayout: FC<CommunityBeneficiaryLayoutProps> = ({
   children,
   menuItems,
 }) => {
+  const { communityBeneficiariesUUID } = useBeneficiaryStore();
   const renderResizablePanel = (children: React.ReactNode, index?: number) => {
     return (
       <ResizablePanel minSize={30} key={index}>
@@ -53,13 +58,20 @@ const BeneficiaryLayout: FC<BeneficiaryLayoutProps> = ({
         <ResizablePanelGroup direction="horizontal">
           <ResizablePanel defaultSize={18} minSize={18} maxSize={18}>
             {menuItems.map((item) => (
-              <BeneficiaryNavView
+              <CommunityBeneficiaryNavView
                 key={item.title}
                 title={item.title}
                 items={item.children}
                 item={item}
               />
             ))}
+            <Separator />
+            {communityBeneficiariesUUID &&
+              communityBeneficiariesUUID.length > 0 && (
+                <>
+                  <ImportTempCommunityBeneficiary />
+                </>
+              )}
           </ResizablePanel>
           {renderChildren()}
         </ResizablePanelGroup>
@@ -68,4 +80,4 @@ const BeneficiaryLayout: FC<BeneficiaryLayoutProps> = ({
   );
 };
 
-export default BeneficiaryLayout;
+export default CommunityBeneficiaryLayout;

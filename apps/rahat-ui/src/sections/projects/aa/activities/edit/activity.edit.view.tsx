@@ -79,7 +79,7 @@ export default function EditActivity() {
     source: z.string().min(2, { message: 'Please enter source' }),
     phaseId: z.string().min(1, { message: 'Please select phase' }),
     categoryId: z.string().min(1, { message: 'Please select category' }),
-    hazardTypeId: z.string().min(1, { message: 'Please select hazard type' }),
+    // hazardTypeId: z.string().min(1, { message: 'Please select hazard type' }),
     leadTime: z.string().min(2, { message: 'Please enter lead time' }),
     description: z
       .string()
@@ -116,7 +116,7 @@ export default function EditActivity() {
       source: activityDetail?.source,
       phaseId: activityDetail?.phaseId,
       categoryId: activityDetail?.categoryId,
-      hazardTypeId: activityDetail?.hazardTypeId,
+      // hazardTypeId: activityDetail?.hazardTypeId,
       leadTime: activityDetail?.leadTime,
       description: activityDetail?.description,
       activityDocuments: activityDetail?.activityDocuments,
@@ -305,7 +305,7 @@ export default function EditActivity() {
                     </FormItem>
                   )}
                 />
-                <FormField
+                {/* <FormField
                   control={form.control}
                   name="hazardTypeId"
                   render={({ field }) => (
@@ -331,7 +331,7 @@ export default function EditActivity() {
                       <FormMessage />
                     </FormItem>
                   )}
-                />
+                /> */}
                 <FormField
                   control={form.control}
                   name="leadTime"
@@ -490,14 +490,14 @@ export default function EditActivity() {
                 Add Communication
                 <Plus className="ml-2" size={16} strokeWidth={3} />
               </Button>
-              <Button
+              {/* <Button
                 type="button"
                 variant="outline"
                 className="border-dashed border-primary text-primary text-md w-full mt-4"
               >
                 Add Payout
                 <Plus className="ml-2" size={16} strokeWidth={3} />
-              </Button>
+              </Button> */}
               <div className="flex justify-end mt-8">
                 <div className="flex gap-2">
                   <Button

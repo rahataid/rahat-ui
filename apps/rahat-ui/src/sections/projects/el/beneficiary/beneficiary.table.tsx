@@ -61,6 +61,8 @@ import { useBoolean } from '../../../../hooks/use-boolean';
 import { useGraphService } from '../../../../providers/subgraph-provider';
 import TokenAssingnConfirm from './token.assign.confirm';
 import { useProjectBeneficiaryTableColumns } from './use-table-column';
+import { useSecondPanel } from '../../../../providers/second-panel-provider';
+
 // import { useBeneficiaryTransaction } from '../../hooks/el/subgraph/querycall';
 
 export type Transaction = {
@@ -105,6 +107,7 @@ function BeneficiaryDetailTableView() {
   const tokenAssignModal = useBoolean();
   const route = useRouter();
   const id = useParams();
+  const { closeSecondPanel } = useSecondPanel();
   // TODO: Refactor it
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -243,7 +246,7 @@ function BeneficiaryDetailTableView() {
 
   return (
     <>
-      <div className="p-2 bg-secondary">
+      <div className="p-2 bg-card">
         <div className="flex items-center mb-2">
           <Input
             placeholder="Filter name..."
@@ -298,6 +301,7 @@ function BeneficiaryDetailTableView() {
                 onClick={() => {
                   setVoucherType('NOT_ASSIGNED');
                   resetSelectedListItems();
+                  closeSecondPanel();
                   route.replace(`${pathname}?voucherType=NOT_ASSIGNED${hash}`);
                 }}
                 value="NOT_ASSIGNED"
@@ -308,6 +312,7 @@ function BeneficiaryDetailTableView() {
                 onClick={() => {
                   setVoucherType('FREE_VOUCHER');
                   resetSelectedListItems();
+                  closeSecondPanel();
                   route.replace(`${pathname}?voucherType=FREE_VOUCHER${hash}`);
                 }}
                 value="FREE_VOUCHER"
@@ -316,15 +321,16 @@ function BeneficiaryDetailTableView() {
               </TabsTrigger>
               <TabsTrigger
                 onClick={() => {
-                  setVoucherType('REFERRED_VOUCHER');
+                  setVoucherType('DISCOUNT_VOUCHER');
                   resetSelectedListItems();
+                  closeSecondPanel();
                   route.replace(
-                    `${pathname}?voucherType=REFERRED_VOUCHER${hash}`,
+                    `${pathname}?voucherType=DISCOUNT_VOUCHER${hash}`,
                   );
                 }}
-                value="REFERRED_VOUCHER"
+                value="DISCOUNT_VOUCHER"
               >
-                Referred Voucher
+                Discount Voucher
               </TabsTrigger>
             </TabsList>
           </Tabs>

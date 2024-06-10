@@ -1,18 +1,20 @@
-import { usePathname, useRouter } from 'next/navigation';
+import React from 'react';
+import { useRouter } from 'next/navigation';
 import { FC, useState } from 'react';
 import { NavItem } from './nav-items.types';
 
-type CommunicationNavViewProps = {
+type CommunityBeneficiaryNavViewProps = {
   title: string;
   items?: NavItem[];
+  item: NavItem;
 };
 
-const CommunicationNavView: FC<CommunicationNavViewProps> = ({
+const CommunityBeneficiaryNavView: FC<CommunityBeneficiaryNavViewProps> = ({
   title,
   items,
+  item,
 }) => {
   const router = useRouter();
-  const pathName = usePathname();
   const [openSubmenu, setOpenSubmenu] = useState<string | null>(null);
 
   const handleNav = (item: NavItem) => {
@@ -26,18 +28,18 @@ const CommunicationNavView: FC<CommunicationNavViewProps> = ({
   return (
     <div className="pb-2">
       <div className="flex items-center justify-between p-4">
-        <h1 className="font-semibold text-xl text-primary">{title}</h1>
+        {item.component ? (
+          item.component
+        ) : (
+          <h1 className="font-semibold text-xl text-primary">{title}</h1>
+        )}
       </div>
       <div className="px-2 ">
         <nav>
           {items?.map((item) => (
             <div key={item.title}>
               <div
-                className={`flex justify-between p-2 items-center rounded-md cursor-pointer ${
-                  pathName === item.path
-                    ? 'bg-primary text-white'
-                    : 'hover:bg-secondary'
-                }`}
+                className={`flex justify-between p-2 items-center rounded-md cursor-pointer hover:bg-primary hover:text-white`}
                 onClick={() => handleNav(item)}
                 {...item}
               >
@@ -110,4 +112,4 @@ const CommunicationNavView: FC<CommunicationNavViewProps> = ({
   );
 };
 
-export default CommunicationNavView;
+export default CommunityBeneficiaryNavView;

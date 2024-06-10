@@ -35,7 +35,6 @@ const ProjectMainView = () => {
     useReadElProjectGetTotalBeneficiaries({
       address: contractSettings?.elproject?.address,
     });
-
   const { data: projectVoucher } = useReadElProjectGetProjectVoucherDetail({
     address: contractSettings?.elproject?.address,
   });
@@ -90,7 +89,7 @@ const ProjectMainView = () => {
 
   const enrolledEyeCheckupData = ELProjectStats?.filter((item) => {
     return item.name === 'EYE_CHECKUP';
-  })?.[0]?.data?.find((i) => i.id === 'ENROLLED_EYE_CHECKUP');
+  })?.[0]?.data?.find((i) => i.id === 'ENROLLED_EYE_CHECK_UP_DONE');
 
   const enrolledNoGlass = ELProjectStats?.filter((item) => {
     return item.name === 'GLASS_STATUS';
@@ -118,15 +117,15 @@ const ProjectMainView = () => {
 
   const referredEyeCheckupData = ELProjectStats?.filter((item) => {
     return item.name === 'EYE_CHECKUP';
-  })?.[0]?.data?.find((i) => i.id === 'REFERRED_EYE_CHECKUP');
+  })?.[0]?.data?.find((i) => i.id === 'REFERRED_EYE_CHECK_UP_DONE');
 
   const enrolledNoEyeCheckupData = ELProjectStats?.filter((item) => {
     return item.name === 'EYE_CHECKUP';
-  })?.[0]?.data?.find((i) => i.id === 'ENROLLED_NO_EYE_CHECKUP');
+  })?.[0]?.data?.find((i) => i.id === 'ENROLLED_EYE_CHECK_UP_NOT_DONE');
 
   const referredNoEyeCheckupData = ELProjectStats?.filter((item) => {
     return item.name === 'EYE_CHECKUP';
-  })?.[0]?.data?.find((i) => i.id === 'REFERRED_NO_EYE_CHECKUP');
+  })?.[0]?.data?.find((i) => i.id === 'REFERRED_EYE_CHECK_UP_NOT_DONE');
 
   const eyeCheckupData = [
     {
@@ -173,17 +172,18 @@ const ProjectMainView = () => {
           totalBeneficiary={projectStats?.benTotal}
           totalVendor={projectStats?.vendorTotal}
           loading={isLoading}
-        />
-        <ProjectDataCard
+          refetchBeneficiary={refetchBeneficiary}
           beneficiaryDetails={beneficiaryDetails}
-          totalBeneficiary={projectStats?.benTotal}
-          totalVendor={projectStats?.vendorTotal}
           projectVoucher={projectVoucher}
           voucherDetails={voucherDetails}
-          refetchBeneficiary={refetchBeneficiary}
+        />
+        <ProjectDataCard
+          totalVendor={projectStats?.vendorTotal}
           refetchVoucher={refetchVoucher}
           loading={isLoading}
           ELProjectStats={ELProjectStats}
+          projectVoucher={projectVoucher}
+          voucherDetails={voucherDetails}
         />
         <ProjectChart
           chartData={[...filteredFootfallData, ...filterdELChartData]}

@@ -1,3 +1,4 @@
+import { useParams } from 'next/navigation';
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { usePagination } from '@rahat-ui/query';
 import DailyMonitoringTable from './daily.monitoring.table';
@@ -5,8 +6,11 @@ import useDailyMonitoringTableColumn from './useDailyMonitoringTableColumn';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import DailyMonitoringTableFilters from './daily.monitoring.table.filters';
 import AddButton from '../../../components/add.btn';
+import { UUID } from 'crypto';
 
 export default function DailyMonitoringListView() {
+  const params = useParams();
+  const projectId = params.id as UUID;
   const { pagination, setNextPage, setPrevPage, setPerPage } = usePagination();
   const columns = useDailyMonitoringTableColumn();
 
@@ -26,7 +30,10 @@ export default function DailyMonitoringListView() {
           handleSearch={handleSearch}
           handleFilter={handleFilter}
         />
-        <AddButton name="Bulletin" path="" />
+        <AddButton
+          name="Bulletin"
+          path={`/projects/aa/${projectId}/data-sources/bulletin/add`}
+        />
       </div>
       <div className="border bg-card rounded">
         <DailyMonitoringTable table={table} />

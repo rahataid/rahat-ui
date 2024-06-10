@@ -11,27 +11,30 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/card';
 import { ArrowDown, ArrowUp } from 'lucide-react';
 import { useQuery } from 'urql';
-import { TransactionDetails } from '@rahat-ui/query';
+import {
+  TransactionDetails,
+  ReceivedTransactionDetails,
+} from '@rahat-ui/query';
 import { Transaction, TransactionsObject } from './types';
 import { useEffect, useState } from 'react';
 import { mergeTransactions } from './utils';
-import { shortenAddress } from 'apps/rahat-ui/src/utils/getProjectAddress';
+import { shortenTxHash } from 'apps/rahat-ui/src/utils/getProjectAddress';
 import { formatEther } from 'viem';
 
 export default function RecentTransaction() {
   const [transactionList, setTransactionList] = useState<Transaction[]>([]);
 
   const [result] = useQuery({
-    query: TransactionDetails,
+    query: ReceivedTransactionDetails,
   });
 
   useEffect(() => {
     (async () => {
-      const transactionsObject: TransactionsObject = result.data;
-      const transactionLists = await mergeTransactions(transactionsObject);
-      setTransactionList(transactionLists);
+      result.data
+        ? setTransactionList(result.data.tokenReceiveds)
+        : setTransactionList([]);
     })();
-  });
+  }, [result.data]);
 
   return (
     <Card className="rounded mr-2">
@@ -60,8 +63,15 @@ export default function RecentTransaction() {
                   ? transaction.from
                   : transaction._beneficiary}
               </p>
-              <p className="text-sm text-muted-foreground">
-                {shortenAddress(`0x${transaction.transactionHash}`)}
+              <p>
+                <a
+                  href={`https://sepolia.arbiscan.io/tx/${transaction.transactionHash}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm text-muted-foreground hover:underline"
+                >
+                  {shortenTxHash(`${transaction.transactionHash}`)}
+                </a>
               </p>
             </div>
             <div className="ml-auto font-medium">

@@ -17,6 +17,7 @@ export const useDepositTokenToProject = () => {
 export const useDisburseTokenToBeneficiaries = () => {
   const multi = useWriteC2CProjectMulticall();
   const { queryClient } = useRSQuery();
+  console.log({ multi, queryClient });
 
   return useMutation(
     {
@@ -36,24 +37,24 @@ export const useDisburseTokenToBeneficiaries = () => {
         c2cProjectAddress,
       }: {
         beneficiaryAddresses: `0x${string}`[];
-        amount: string;
+        amount: bigint;
         rahatTokenAddress: `0x{string}`;
         c2cProjectAddress: `0x{string}`;
       }) => {
-        const encodeAssignClaimsToBeneficiary = beneficiaryAddresses.map(
-          (beneficiary) => {
-            return encodeFunctionData({
-              abi: c2CProjectAbi,
-              functionName: 'assignClaims',
-              args: [beneficiary, rahatTokenAddress, BigInt(amount)],
-            });
-          },
-        );
+        // const encodeAssignClaimsToBeneficiary = beneficiaryAddresses.map(
+        //   (beneficiary) => {
+        //     return encodeFunctionData({
+        //       abi: c2CProjectAbi,
+        //       functionName: 'assignClaims',
+        //       args: [beneficiary, rahatTokenAddress, BigInt(amount)],
+        //     });
+        //   },
+        // );
 
-        await multi.writeContractAsync({
-          args: [encodeAssignClaimsToBeneficiary],
-          address: c2cProjectAddress,
-        });
+        // await multi.writeContractAsync({
+        //   args: [encodeAssignClaimsToBeneficiary],
+        //   address: c2cProjectAddress,
+        // });
 
         // const encodeGetBeneficiaryClaims = beneficiaryAddresses.map(
         //   (beneficiary) => {
@@ -68,7 +69,9 @@ export const useDisburseTokenToBeneficiaries = () => {
         //   args: [encodeGetBeneficiaryClaims],
         //   address: rahatTokenAddress,
         // });
+        console.log({ c2CProjectAbi, rahatTokenAddress, amount });
         const encodedForDisburse = beneficiaryAddresses.map((beneficiary) => {
+          console.log({ beneficiary });
           return encodeFunctionData({
             abi: c2CProjectAbi,
             functionName: 'processTransferToBeneficiary',

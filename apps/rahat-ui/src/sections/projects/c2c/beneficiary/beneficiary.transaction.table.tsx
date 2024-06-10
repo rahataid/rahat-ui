@@ -49,9 +49,9 @@ export type Transaction = {
 
 export const columns: ColumnDef<Transaction>[] = [
   {
-    accessorKey: 'topic',
-    header: 'Topic',
-    cell: ({ row }) => <div>{row.getValue('topic')}</div>,
+    accessorKey: 'topicano',
+    header: 'Topicano',
+    cell: ({ row }) => <div>{row.getValue('topicano')}</div>,
   },
   {
     accessorKey: 'processedBy',

@@ -16,6 +16,7 @@ import {
   useProjectSettingsStore,
 } from '@rahat-ui/query';
 import { useParams } from 'next/navigation';
+import { UUID } from 'crypto';
 
 type ProjectInfoProps = {
   project: Project;
@@ -26,11 +27,13 @@ const ProjectInfoCard = ({
   type,
   description,
   budget,
+  hazardType
 }: {
   status: string;
   type: string;
   description: string;
   budget: number;
+  hazardType: string;
 }) => {
   return (
     <div className="w-full rounded bg-card p-4 shadow">
@@ -41,7 +44,11 @@ const ProjectInfoCard = ({
         </div>
         <div>
           <p className="font-medium text-primary">{type}</p>
-          <p className="font-light">Type</p>
+          <p className="font-light">Project Type</p>
+        </div>
+        <div>
+          <p className="font-medium text-primary">{hazardType}</p>
+          <p className="font-light">Hazard Type</p>
         </div>
         <div>
           <p className="font-medium text-primary">{budget}</p>
@@ -56,13 +63,16 @@ const ProjectInfoCard = ({
 };
 
 const ProjectInfo: FC<ProjectInfoProps> = ({ project }) => {
-  const { id: projectID } = useParams();
+  const { id } = useParams();
+  const projectID = id as UUID
 
   const contractSettings = useProjectSettingsStore(
     (s) => s.settings?.[projectID]?.[PROJECT_SETTINGS_KEYS.CONTRACT] || null,
   );
 
-  console.log(contractSettings);
+  const hazardType = useProjectSettingsStore(
+    (s) => s.settings?.[projectID]?.[PROJECT_SETTINGS_KEYS.HAZARD_TYPE]
+  );
 
   const onDelete = () => {};
   const fundsModal = useBoolean();
@@ -72,7 +82,6 @@ const ProjectInfo: FC<ProjectInfoProps> = ({ project }) => {
   });
 
   const parsedProjectBudget = Number(projectBudget);
-  // console.log(data);
 
   return (
     <>
@@ -95,6 +104,7 @@ const ProjectInfo: FC<ProjectInfoProps> = ({ project }) => {
           status={project?.status ?? 'N/A'}
           type={project?.type ?? 'N/A'}
           description={project?.description ?? 'N/A'}
+          hazardType={hazardType}
         />
         <CarouselDemo />
       </div>

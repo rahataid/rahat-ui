@@ -115,9 +115,9 @@ export default function ActivityDetailCards({
           <Gauge size={25} />
         </div>
         <div>
-          <h1 className="font-medium">Hazard Type</h1>
+          <h1 className="font-medium">Lead Time</h1>
           <p className="text-xl text-primary font-semibold">
-            {activityDetail?.hazardType?.name}
+            {activityDetail?.leadTime}
           </p>
         </div>
       </div> */}

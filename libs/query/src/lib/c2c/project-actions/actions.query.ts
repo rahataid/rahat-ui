@@ -72,7 +72,8 @@ export const useGetDisbursements = (params: DisbursementListHookParams) => {
       const response = await projectActions.mutateAsync({
         uuid: projectUUID,
         data: {
-          action: 'rahat.jobs.disbursements.get',
+          // TODO: use dynamically from MS_ACTIONS
+          action: 'c2cProject.disbursements.get',
           payload: restParams,
         },
       });
@@ -95,7 +96,7 @@ export const useGetDisbursement = (
       const response = await projectActions.mutateAsync({
         uuid: projectUUID,
         data: {
-          action: 'rahat.jobs.disbursement.get',
+          action: 'c2cProject.disbursement.get',
           payload: {
             disbursementUUID: disbursementUUID,
           },
@@ -125,7 +126,7 @@ export const useGetDisbursementTransactions = (
       const response = await projectActions.mutateAsync({
         uuid: projectUUID,
         data: {
-          action: 'rahat.jobs.disbursement.transactions.get',
+          action: 'c2cProject.disbursement.transactions.get',
           payload: {
             disbursementUUID: disbursementUUID,
             ...restParams,
@@ -156,7 +157,7 @@ export const useGetDisbursementApprovals = (
       const response = await projectActions.mutateAsync({
         uuid: projectUUID,
         data: {
-          action: 'rahat.jobs.disbursement.approvals.get',
+          action: 'c2cProject.disbursement.approvals.get',
           payload: {
             projectUUID: projectUUID,
             ...restParams,

@@ -205,11 +205,11 @@ export const useNavItems = () => {
           path: `/projects/el/${id}/vouchers`,
           icon: <ReceiptText size={18} strokeWidth={1.5} />,
         },
-        {
-          title: 'Campaigns',
-          icon: <Speech size={18} strokeWidth={1.5} />,
-          path: `/projects/el/${id}/campaigns/text`,
-        },
+        // {
+        //   title: 'Campaigns',
+        //   icon: <Speech size={18} strokeWidth={1.5} />,
+        //   path: `/projects/el/${id}/campaigns/text`,
+        // },
       ],
     },
     {
@@ -246,11 +246,11 @@ export const useNavItems = () => {
           onClick: handleCloseProject,
           icon: <XCircle size={18} strokeWidth={1.5} />,
         },
-        {
-          title: 'Edit Project',
-          path: `/projects/el/${id}/edit`,
-          icon: <Pencil size={18} strokeWidth={1.5} />,
-        },
+        // {
+        //   title: 'Edit Project',
+        //   path: `/projects/el/${id}/edit`,
+        //   icon: <Pencil size={18} strokeWidth={1.5} />,
+        // },
       ],
     },
   ];

@@ -9,6 +9,7 @@ export default function TriggerStatementsListView() {
   const { id } = useParams();
   const projectId = id as UUID;
   const { data: tableData, isLoading } = useAATriggerStatements(projectId);
+  console.log(tableData)
 
   const handleSearch = () => {};
   return (

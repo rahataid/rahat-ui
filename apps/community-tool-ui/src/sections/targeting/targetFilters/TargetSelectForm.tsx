@@ -25,6 +25,7 @@ import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 
 export default function TargetSelectForm() {
   const { pagination } = usePagination();
+  
   const { loading, setLoading, setTargetUUID } = useCommunityTargetingStore(
     (state) => ({
       setLoading: state.setLoading,
@@ -70,14 +71,16 @@ export default function TargetSelectForm() {
   const handleTargetFormSubmit = async (formData: ITargetingQueries) => {
     setLoading(true);
     const payload = { ...formData, ...targetingQueries };
-
-    const getTargetInfo = await addTargeting.mutateAsync({
+    const target = await addTargeting.mutateAsync({
       filterOptions: [{ data: payload }],
     });
-    setTargetUUID(getTargetInfo?.data?.uuid);
+    const { uuid } = target?.data as any;
+    // setTargetUUID(uuid);
     setTimeout(() => {
       setLoading(false);
-    }, 1500);
+      if(uuid) window.location.replace(`/targeting/filters?targetUUID=${uuid}`);
+      // router.push(`/targeting/filters?targetID=${uuid}`);
+    }, 2000)
   };
 
   return (
@@ -118,7 +121,7 @@ export default function TargetSelectForm() {
             })}
           </div>
           <div className="mt-6 text-end mr-2">
-            <Button type="submit" disabled={isQueryEmpty()}>
+            <Button type="submit" disabled={loading || isQueryEmpty()}>
               Submit
             </Button>
           </div>

@@ -1,13 +1,27 @@
 export default function AutomatedTriggerDetailCard({ triggerDetail }: any) {
+  console.log(triggerDetail);
+
   const triggerDetailData = [
     {
       title: 'River Basin',
       content: <p>{triggerDetail?.location}</p>,
     },
     {
-      title: 'Hazard Type',
-      content: <p>{triggerDetail?.hazardType?.name}</p>,
+      title: 'Minimum Lead Time',
+      content: (
+        <p>{`${triggerDetail?.triggerStatement?.minLeadTimeDays} days`}</p>
+      ),
     },
+    {
+      title: 'Maximum Lead Time',
+      content: (
+        <p>{`${triggerDetail?.triggerStatement?.maxLeadTimeDays} days`}</p>
+      ),
+    },
+    // {
+    //   title: 'Hazard Type',
+    //   content: <p>{triggerDetail?.hazardType?.name}</p>,
+    // },
     {
       title: 'Trigger Type',
       content: (

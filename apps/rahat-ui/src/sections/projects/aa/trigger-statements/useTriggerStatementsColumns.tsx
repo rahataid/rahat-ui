@@ -65,6 +65,18 @@ export const useTriggerStatementTableColumns = () => {
       ),
     },
     {
+      accessorKey: 'isMandatory',
+      header: 'Type',
+      cell: ({ row }) => {
+        const isMandatory = row.getValue('isMandatory');
+        return (
+          <Badge>
+            {isMandatory ? 'Required' : 'Optional'}
+          </Badge>
+        );
+      },
+    },
+    {
       accessorKey: 'isTriggered',
       header: 'Status',
       cell: ({ row }) => {
@@ -80,6 +92,21 @@ export const useTriggerStatementTableColumns = () => {
             {isTriggered ? 'Triggered' : 'Not Triggered'}
           </Badge>
         );
+      },
+    },
+    {
+      accessorKey: 'triggeredAt',
+      header: 'Triggered At',
+      cell: ({ row }) => {
+        const triggeredAt = row.getValue('triggeredAt') as string;
+        console.log("triggered at", triggeredAt)
+        if(triggeredAt){
+          const d =  new Date(triggeredAt)
+          const localeDate = d.toLocaleDateString()
+          const localeTime = d.toLocaleTimeString()
+          return `${localeDate} ${localeTime}`
+        }
+        return 'N/A'
       },
     },
     {
@@ -99,8 +126,8 @@ export const useTriggerStatementTableColumns = () => {
                 )
               }
             />
-            <Pencil size={20} strokeWidth={1.5} className="text-primary" />
-            <Trash2 size={20} strokeWidth={1.5} color="red" />
+            {/* <Pencil size={20} strokeWidth={1.5} className="text-primary" />
+            <Trash2 size={20} strokeWidth={1.5} color="red" /> */}
           </div>
         );
       },

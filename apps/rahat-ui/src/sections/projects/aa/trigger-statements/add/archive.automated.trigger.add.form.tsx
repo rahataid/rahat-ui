@@ -34,10 +34,7 @@ type IProps = {
       // location: string;
       isMandatory?: boolean | undefined;
       // readinessLevel?: string | undefined;
-      // waterLevel: string;
-      minLeadTimeDays: string;
-      maxLeadTimeDays: string;
-      probability: string;
+      waterLevel: string;
     },
     any,
     undefined
@@ -59,12 +56,11 @@ export default function AddAutomatedTriggerForm({ form }: IProps) {
     (s) => s.settings?.[projectId]?.[PROJECT_SETTINGS_KEYS.DATASOURCE],
   );
 
-  const glofasStations = [
+  const dhmStations = [
     {
-      title: dataSources.glofas.location,
+      title: dataSources.dhm.location,
     },
   ];
-  const riverBasin = dataSources?.glofas?.location;
 
   return (
     <>
@@ -115,7 +111,9 @@ export default function AddAutomatedTriggerForm({ form }: IProps) {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value={'GLOFAS'}>GloFAS</SelectItem>
+                          <SelectItem value={'DHM'}>
+                            Department of Hydrology and Meteorology (DHM)
+                          </SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />
@@ -125,13 +123,37 @@ export default function AddAutomatedTriggerForm({ form }: IProps) {
               />
             </div>
             <div className="w-full flex gap-4">
-              <FormItem className="w-full">
-                <FormLabel>River Basin</FormLabel>
-                <FormControl>
-                  <Input type="text" value={riverBasin} disabled />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
+              <FormField
+                control={form.control}
+                name="location"
+                render={({ field }) => {
+                  return (
+                    <FormItem className="w-full">
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormLabel>River Basin</FormLabel>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select River Basin" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {dhmStations?.map((r: any) => {
+                            return (
+                              <SelectItem key={r.id} value={r.title}>
+                                {r.title}
+                              </SelectItem>
+                            );
+                          })}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
               {/* <FormField
                 control={form.control}
                 name="hazardTypeId"
@@ -164,69 +186,21 @@ export default function AddAutomatedTriggerForm({ form }: IProps) {
                 }}
               /> */}
             </div>
-
-            <div className="w-full flex gap-4">
-              <FormField
-                control={form.control}
-                name="minLeadTimeDays"
-                render={({ field }) => {
-                  return (
-                    <FormItem className="w-full">
-                      <FormLabel>Minimum Lead Time Days</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="text"
-                          inputMode="decimal"
-                          // pattern="[0-9]*[.,]?[0-9]*"
-                          // title="Please enter positive number"
-                          placeholder="Enter minimum lead time days"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  );
-                }}
-              />
-
-              <FormField
-                control={form.control}
-                name="maxLeadTimeDays"
-                render={({ field }) => {
-                  return (
-                    <FormItem className="w-full">
-                      <FormLabel>Maximum Lead Time Days</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="text"
-                          inputMode="decimal"
-                          // pattern="[0-9]*[.,]?[0-9]*"
-                          // title="Please enter positive number"
-                          placeholder="Enter maximum lead time days"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  );
-                }}
-              />
-            </div>
-
+            {/* {selectedPhase.name === 'READINESS' && ( */}
             <FormField
               control={form.control}
-              name="probability"
+              name="waterLevel"
               render={({ field }) => {
                 return (
                   <FormItem>
-                    <FormLabel>Forecast Probability</FormLabel>
+                    <FormLabel>Threshold Level</FormLabel>
                     <FormControl>
                       <Input
                         type="text"
-                        inputMode="decimal"
+                        // inputMode="decimal"
                         // pattern="[0-9]*[.,]?[0-9]*"
                         // title="Please enter positive number"
-                        placeholder="Enter forecast probability"
+                        placeholder="Enter water Level"
                         {...field}
                       />
                     </FormControl>
@@ -235,6 +209,31 @@ export default function AddAutomatedTriggerForm({ form }: IProps) {
                 );
               }}
             />
+            {/* )} */}
+            {/* {selectedPhase.name === 'ACTIVATION' && (
+              <FormField
+                control={form.control}
+                name="activationLevel"
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <FormLabel>Activation Level</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="text"
+                          // inputMode="decimal"
+                          // pattern="[0-9]*[.,]?[0-9]*"
+                          // title="Please enter positive number"
+                          placeholder="Enter Activation Level"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
+            )} */}
             <FormField
               control={form.control}
               name="isMandatory"

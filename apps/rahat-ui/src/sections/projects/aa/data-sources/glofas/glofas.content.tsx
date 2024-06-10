@@ -1,3 +1,17 @@
+const getCellColor = (cell: string) => {
+  const cellValue = cell ? Number(cell) : 0;
+  if (cellValue >= 30 && cellValue < 50) {
+    return 'bg-yellow-100';
+  }
+  if (cellValue >= 50 && cellValue < 70) {
+    return 'bg-yellow-200';
+  }
+  if (cellValue >= 70) {
+    return 'bg-yellow-300';
+  }
+  return 'bg-green-50';
+};
+
 export default function GlofasContent({ location, glofasData }: any) {
   if (!glofasData) {
     return <p>Data not available for GloFAS.</p>;
@@ -7,8 +21,6 @@ export default function GlofasContent({ location, glofasData }: any) {
     glofasData?.returnPeriodTable?.returnPeriodHeaders;
 
   const returnPeriodData = glofasData?.returnPeriodTable?.returnPeriodData;
-
-  console.log(glofasData);
 
   return (
     <div className="grid grid-cols-5 gap-4 h-[calc(100vh-215px)]">
@@ -89,14 +101,21 @@ export default function GlofasContent({ location, glofasData }: any) {
             <tbody>
               {returnPeriodData.map((row: string[], rowIndex: number) => (
                 <tr key={rowIndex}>
-                  {row.map((cell: string, cellIndex: number) => (
-                    <td
-                      className="p-2 border border-gray-200 text-center text-sm text-gray-700"
-                      key={cellIndex}
-                    >
-                      {cell}
-                    </td>
-                  ))}
+                  {row.map((cell: string, cellIndex: number) => {
+                    let bgColor;
+                    if (cellIndex > 0) {
+                      bgColor = getCellColor(cell);
+                    }
+
+                    return (
+                      <td
+                        className={`p-2 border border-gray-200 text-center text-sm text-gray-700 ${bgColor}`}
+                        key={cellIndex}
+                      >
+                        {cell}
+                      </td>
+                    );
+                  })}
                 </tr>
               ))}
             </tbody>

@@ -19,7 +19,7 @@ type IProps = {
   manualForm: UseFormReturn<
     {
       title: string;
-      hazardTypeId: string;
+      // hazardTypeId: string;
       isMandatory?: boolean | undefined;
     },
     any,
@@ -28,18 +28,25 @@ type IProps = {
   automatedForm: UseFormReturn<
     {
       title: string;
-      hazardTypeId: string;
+      // hazardTypeId: string;
       dataSource: string;
-      location: string;
+      // location: string;
       isMandatory?: boolean | undefined;
+      minLeadTimeDays: string;
+      maxLeadTimeDays: string;
+      probability: string;
 
       // readinessLevel?: string | undefined;
-      waterLevel: string;
+      // waterLevel: string;
     },
     any,
     undefined
   >;
 };
+
+function capitalizeFirstLetter(string: string) {
+  return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
+}
 
 export default function AddTriggerStatementView({
   manualForm,
@@ -50,11 +57,15 @@ export default function AddTriggerStatementView({
 }: IProps) {
   const { id: projectID } = useParams();
   useActivities(projectID as UUID, {});
-  useActivitiesHazardTypes(projectID as UUID);
+  // useActivitiesHazardTypes(projectID as UUID);
+
+  const selectedPhase = JSON.parse(
+    localStorage.getItem('selectedPhase') as string,
+  );
 
   return (
     <>
-      <h1 className="text-lg font-semibold mb-6">Add Trigger Statement</h1>
+      <h1 className="text-lg font-semibold mb-6">Add {capitalizeFirstLetter(selectedPhase.name)} Trigger Statement</h1>
       <Tabs defaultValue={activeTab} onValueChange={onTabChange}>
         <TabsList>
           <TabsTrigger value="automatedTrigger" className="border w-52">

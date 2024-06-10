@@ -1,6 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
 import { UUID } from 'crypto';
-import { TAGS } from '@rumsan/react-query/utils/tags';
 import { PROJECT_SETTINGS_KEYS } from '../../../config';
 import { useProjectAction, useProjectSettingsStore } from '../../projects';
 
@@ -54,6 +53,106 @@ export const useGetTreasurySourcesSettings = (uuid: UUID) => {
   //       // });
   //     }
   //   }, [query.data]);
+
+  return query;
+};
+
+export const useGetDisbursements = (projectUUID: UUID) => {
+  const projectActions = useProjectAction(['c2c', 'disbursements-actions']);
+
+  const query = useQuery({
+    queryKey: ['get-disbursements'],
+    queryFn: async () => {
+      const response = await projectActions.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'disbursements.get',
+          payload: {
+            projectUUID: projectUUID,
+          },
+        },
+      });
+      return response.data;
+    },
+  });
+
+  return query;
+};
+
+export const useGetDisbursement = (
+  projectUUID: UUID,
+  disbursementUUID: UUID,
+) => {
+  const projectActions = useProjectAction(['c2c', 'disbursements-actions']);
+
+  const query = useQuery({
+    queryKey: ['get-disbursement', disbursementUUID],
+    queryFn: async () => {
+      const response = await projectActions.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'disbursement.get',
+          payload: {
+            projectUUID: projectUUID,
+            disbursementUUID: disbursementUUID,
+          },
+        },
+      });
+      return response.data;
+    },
+  });
+
+  return query;
+};
+
+export const useGetDisbursementTransactions = (
+  projectUUID: UUID,
+  disbursementUUID: UUID,
+) => {
+  const projectActions = useProjectAction(['c2c', 'disbursements-actions']);
+
+  const query = useQuery({
+    queryKey: ['get-disbursement-transactions', disbursementUUID],
+    queryFn: async () => {
+      const response = await projectActions.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'disbursement.transactions.get',
+          payload: {
+            projectUUID: projectUUID,
+            disbursementUUID: disbursementUUID,
+          },
+        },
+      });
+      return response.data;
+    },
+  });
+
+  return query;
+};
+
+export const useGetDisbursementApprovals = (
+  projectUUID: UUID,
+  disbursementUUID: UUID,
+) => {
+  const projectActions = useProjectAction(['c2c', 'disbursements-actions']);
+
+  const query = useQuery({
+    queryKey: ['get-disbursement-approvals', disbursementUUID],
+    queryFn: async () => {
+      const response = await projectActions.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'disbursement.approvals.get',
+          payload: {
+            projectUUID: projectUUID,
+            disbursementUUID: disbursementUUID,
+          },
+        },
+      });
+      return response.data;
+    },
+  });
 
   return query;
 };

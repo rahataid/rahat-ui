@@ -1,4 +1,4 @@
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { FC, useState } from 'react';
 import { NavItem } from './nav-items.types';
 
@@ -12,6 +12,7 @@ const CommunicationNavView: FC<CommunicationNavViewProps> = ({
   items,
 }) => {
   const router = useRouter();
+  const pathName = usePathname();
   const [openSubmenu, setOpenSubmenu] = useState<string | null>(null);
 
   const handleNav = (item: NavItem) => {
@@ -32,7 +33,11 @@ const CommunicationNavView: FC<CommunicationNavViewProps> = ({
           {items?.map((item) => (
             <div key={item.title}>
               <div
-                className="flex justify-between p-2 items-center rounded-md cursor-pointer hover:bg-primary hover:text-white"
+                className={`flex justify-between p-2 items-center rounded-md cursor-pointer ${
+                  pathName === item.path
+                    ? 'bg-primary text-white'
+                    : 'hover:bg-secondary'
+                }`}
                 onClick={() => handleNav(item)}
                 {...item}
               >

@@ -72,6 +72,7 @@ export const useGetDisbursements = (params: DisbursementListHookParams) => {
       const response = await projectActions.mutateAsync({
         uuid: projectUUID,
         data: {
+          // TODO: use dynamically from MS_ACTIONS
           action: 'c2cProject.disbursements.get',
           payload: restParams,
         },

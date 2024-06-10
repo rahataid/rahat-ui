@@ -40,7 +40,6 @@ const FundManagementView = () => {
 
   const projectBalance = isLoading ? '0' : formatEther(BigInt(data));
 
-  console.log({ data, error, isLoading });
   return (
     <>
       <div className="grid grid-cols-2 gap-4 m-2">

@@ -9,25 +9,24 @@ export const ProjectDetails = `
 `;
 
 export const TransactionDetails = `
-  query MyQuery {
-  tokenReceiveds {
-    id
-    from
-    amount
-    blockTimestamp
-    transactionHash
-    token
-    blockNumber
-  }
-  transferProcesseds {
-    blockTimestamp
-    transactionHash
-    _beneficiary
-    _amount
-    _tokenAddress
-    blockNumber
-    id
-  }
+  query MyQuery($contractAddress: String) {
+    transfers(where: {to: $contractAddress}) {
+      blockNumber
+      blockTimestamp
+      from
+      id
+      transactionHash
+      value
+    }
+    transferProcesseds {
+      blockTimestamp
+      transactionHash
+      _beneficiary
+      _amount
+      _tokenAddress
+      blockNumber
+      id
+    }
 }
 `;
 

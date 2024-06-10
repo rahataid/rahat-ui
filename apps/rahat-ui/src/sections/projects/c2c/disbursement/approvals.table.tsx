@@ -1,12 +1,5 @@
 'use client';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
-import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import {
   Table,
@@ -27,10 +20,11 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { ChevronDown } from 'lucide-react';
 import * as React from 'react';
-import { useDisburseTable } from './useDisburseTable';
 import { useApprovalTable } from './useApprovalTable';
+import { useGetDisbursementApprovals } from '@rahat-ui/query';
+import { useParams } from 'next/navigation';
+import { UUID } from 'crypto';
 
 const data = [
   {
@@ -49,9 +43,21 @@ export function ApprovalTable() {
   const [rowSelection, setRowSelection] = React.useState({});
   // const [data, setData] = React.useState([]);
   const columns = useApprovalTable();
+  const { id: projectUUID, uuid } = useParams() as {
+    id: UUID;
+    uuid: UUID;
+  };
+  const { data } = useGetDisbursementApprovals({
+    disbursementUUID: uuid,
+    projectUUID: projectUUID,
+    page: 1,
+    perPage: 10,
+  });
+
+  console.log(data);
 
   const table = useReactTable({
-    data,
+    data: data || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,

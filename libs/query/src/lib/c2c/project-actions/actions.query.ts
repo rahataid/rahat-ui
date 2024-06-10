@@ -151,7 +151,7 @@ export const useGetDisbursementApprovals = (
   const { projectUUID, disbursementUUID, ...restParams } = params;
 
   const query = useQuery({
-    queryKey: ['get-disbursement-approvals', disbursementUUID],
+    queryKey: ['get-disbursement-approvals'],
     queryFn: async () => {
       const response = await projectActions.mutateAsync({
         uuid: projectUUID,

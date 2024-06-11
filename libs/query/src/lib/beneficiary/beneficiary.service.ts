@@ -342,6 +342,7 @@ export const useListTempGroups = (
   return useQuery(
     {
       queryKey: [TAGS.GET_TEMP_GROUPS, payload],
+      // @ts-ignore
       queryFn: () => benClient.listTempGroups(payload),
     },
     queryClient,

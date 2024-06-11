@@ -83,7 +83,9 @@ export const useDisburseTableColumns = () => {
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuItem
                 onClick={() =>
-                  router.push(`/projects/c2c/${id}/disbursement/1`)
+                  router.push(
+                    `/projects/c2c/${id}/disbursement/${payment.Disbursement.uuid}`,
+                  )
                 }
               >
                 View Details

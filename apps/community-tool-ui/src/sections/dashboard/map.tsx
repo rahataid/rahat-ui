@@ -2,7 +2,8 @@ import * as React from 'react';
 import Map, { GeolocateControl, MapRef, Marker, NavigationControl } from 'react-map-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { communityMapboxBasicConfig } from '../../utils/mapconfigs';
-import { FlagIcon } from 'lucide-react';
+import {  MapPin } from 'lucide-react';
+import MarkerDetails from './MarkerDetails';
 
 const DEFAULT_LAT = 27.712021;
 const DEFAULT_LNG = 85.31295;
@@ -15,12 +16,25 @@ interface IPROPS {
   }]
 }
 
+interface IBENEF {
+  name: string,
+  latitude: number,
+  longitude: number
+}
 
 export default function CommunityMap({
   coordinates
 }: IPROPS) {
-  console.log("coods=>", coordinates)
   const mapRef = React.useRef<MapRef>(null);
+  const [selectedMarker, setSelectedMarker] = React.useState(null) as any;
+
+  const zoomToSelectedLoc = (e: React.SyntheticEvent, benef:IBENEF) => {
+		// stop event bubble-up which triggers unnecessary events
+		e.stopPropagation();
+		setSelectedMarker(benef);
+		mapRef?.current?.flyTo({ center: [benef.longitude, benef.latitude], zoom: 10 });
+	};
+
 
   return (
     <div className="bg-card shadow rounded h-[calc(100vh-500px)] mt-2 col-span-4">
@@ -40,14 +54,23 @@ export default function CommunityMap({
         <GeolocateControl position="top-left" />
         <NavigationControl position="top-left" />
 
+        {selectedMarker ? (
+					<MarkerDetails
+						selectedMarker={selectedMarker}
+						closeSelectedMarker={() => setSelectedMarker(null)}
+					/>
+				) : null}
+
         {coordinates.map((benef: any, index:number) => {
 					return (
 						<Marker key={index} longitude={Number(benef.longitude)} latitude={Number(benef.latitude)}>
 							<button
 								type="button"
 								className="cursor-pointer"
+                onClick={(e) => zoomToSelectedLoc(e, benef, index)}
+
 							>
-								{<FlagIcon size={30}  />}
+								{<MapPin size={20} color='green' />}
 							</button>
 						</Marker>
 					);

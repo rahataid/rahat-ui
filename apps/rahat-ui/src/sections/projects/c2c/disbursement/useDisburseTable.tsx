@@ -1,3 +1,4 @@
+import { DisbursementBeneficiary } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
 import {
@@ -8,20 +9,14 @@ import {
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
 import { ColumnDef } from '@tanstack/react-table';
+import { formatdbDate } from 'apps/rahat-ui/src/utils';
 import { Eye } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
-
-export type Disbursements = {
-  date: string;
-  type: string;
-  totalAmount: string;
-  status: string;
-};
 
 export const useDisburseTableColumns = () => {
   const { id } = useParams();
   const router = useRouter();
-  const columns: ColumnDef<Disbursements>[] = [
+  const columns: ColumnDef<DisbursementBeneficiary>[] = [
     {
       id: 'select',
       header: ({ table }) => (
@@ -48,27 +43,27 @@ export const useDisburseTableColumns = () => {
       accessorKey: 'date',
       header: 'Date',
       cell: ({ row }) => (
-        <div className="capitalize">{row.getValue('date')}</div>
+        <div className="capitalize">
+          {formatdbDate(row.original?.Disbursement?.createdAt)}
+        </div>
       ),
     },
     {
       accessorKey: 'type',
       header: 'Type',
-      cell: ({ row }) => (
-        <div className="lowercase">{row.getValue('type')}</div>
-      ),
+      cell: ({ row }) => <div>{row.original?.Disbursement?.type}</div>,
     },
     {
       accessorKey: 'totalAmount',
       header: 'Total Amount',
       cell: ({ row }) => {
-        return <div>{row.getValue('totalAmount')}</div>;
+        return <div>{row.original.Disbursement.amount}</div>;
       },
     },
     {
       accessorKey: 'status',
       header: 'Status',
-      cell: ({ row }) => <div>{row.getValue('status')}</div>,
+      cell: ({ row }) => <div>{row.original?.Disbursement?.status}</div>,
     },
     {
       id: 'actions',

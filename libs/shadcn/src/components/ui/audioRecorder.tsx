@@ -99,7 +99,11 @@ export const AudioRecorder = ({ className, timerClassName, form }: Props) => {
             audioContext: audioCtx,
           };
 
-          const mimeType = 'audio/wav';
+          const mimeType = MediaRecorder.isTypeSupported('audio/mpeg')
+            ? 'audio/mpeg'
+            : MediaRecorder.isTypeSupported('audio/webm')
+            ? 'audio/webm'
+            : 'audio/wav';
 
           const options = { mimeType };
           mediaRecorderRef.current.mediaRecorder = new MediaRecorder(

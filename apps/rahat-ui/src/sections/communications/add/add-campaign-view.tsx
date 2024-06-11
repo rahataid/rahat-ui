@@ -79,7 +79,6 @@ const AddCampaignView = () => {
   });
 
   const debouncedHandleSubmit = debounce((data) => {
-    console.log(data);
     if (isSubmitting) return;
     if (selectedRows.length === 0) {
       setAudienceRequiredError(true);

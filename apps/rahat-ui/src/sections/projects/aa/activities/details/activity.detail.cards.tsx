@@ -8,7 +8,7 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
-import { Info, Text, SignalHigh, Gauge, Pencil } from 'lucide-react';
+import { Info, Text, SignalHigh, Gauge, Pencil, Book } from 'lucide-react';
 import { useUpdateActivityStatus } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 
@@ -107,6 +107,17 @@ export default function ActivityDetailCards({
           <h1 className="font-medium">Phase</h1>
           <p className="text-xl text-primary font-semibold">
             {activityDetail?.phase?.name}
+          </p>
+        </div>
+      </div>
+      <div className="p-4 rounded bg-card flex items-center gap-4">
+        <div className="p-3 bg-secondary text-primary rounded">
+          <Book size={25} />
+        </div>
+        <div>
+          <h1 className="font-medium">Activity Type</h1>
+          <p className="text-xl text-primary font-semibold">
+            {activityDetail?.isAutomated ? 'Automated' : 'Manual'}
           </p>
         </div>
       </div>

@@ -117,6 +117,7 @@ export const AudioRecorder = ({ className, timerClassName, form }: Props) => {
           recorder.start();
 
           recorder.ondataavailable = (e) => {
+            // @ts-ignore
             setRecordingChunks((prevChunks) => [...prevChunks, event.data]);
           };
         })
@@ -182,7 +183,7 @@ export const AudioRecorder = ({ className, timerClassName, form }: Props) => {
     }
   }
 
-  const handleSubmit = async (blob) => {
+  const handleSubmit = async (blob: any) => {
     const file = new File([blob], `${new Date().valueOf()}.wav`, {
       type: 'audio/wav',
     });

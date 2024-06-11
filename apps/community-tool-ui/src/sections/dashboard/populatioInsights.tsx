@@ -1,10 +1,7 @@
-import { FocusEventHandler } from 'react';
 import BarCharts from './barCharts';
 import Donut from './donut';
 import CommunityMap from './map';
 import StackColumn from './stackColum';
-
-
 
 type Props = {
   data: any;
@@ -21,9 +18,9 @@ const PopulationInsights = ({ data }: Props) => {
     const benefMapStats =
     data?.data?.find((f) => f?.name === "BENEFICIARY_MAP_STATS") || ([] as any);
 
-    const filtered = benefMapStats?.data.filter(b => {
+    const filtered = benefMapStats && benefMapStats.data ? benefMapStats.data.filter(b => {
       return b.latitude && b.longitude
-    }) ?? [];
+    }) : [];
 
   return (
     <div>

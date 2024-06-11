@@ -4,9 +4,13 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import { communityMapboxBasicConfig } from '../../utils/mapconfigs';
 import {  MapPin } from 'lucide-react';
 import MarkerDetails from './MarkerDetails';
+import * as turf from "@turf/turf";
 
 const DEFAULT_LAT = 27.712021;
 const DEFAULT_LNG = 85.31295;
+
+const KARNALI_RIVER_LAT = 29.20272;
+const KARNALI_RIVER_LNG = 81.6145214;
 
 interface IPROPS {
   coordinates: [{
@@ -35,6 +39,18 @@ export default function CommunityMap({
 		mapRef?.current?.flyTo({ center: [benef.longitude, benef.latitude], zoom: 10 });
 	};
 
+  function renderMarkerColor(d:IBENEF) {
+		const source = turf.point([d.longitude, d.latitude]);
+		const destination = turf.point([KARNALI_RIVER_LNG,KARNALI_RIVER_LAT]); 
+		const distance = turf.distance(source, destination, {
+			units: "kilometers",
+		});
+    const fixedDistance = Number((distance * 100).toFixed(2))
+    if(fixedDistance <= 50) return "#B80505 "; // Red
+		if (fixedDistance > 50 && fixedDistance <=200 ) return "#f1c40f"; // Yellow 
+	  return '#0C9B46'; // Green
+	}
+
 
   return (
     <div className="bg-card shadow rounded mt-2 col-span-4">
@@ -44,7 +60,7 @@ export default function CommunityMap({
         initialViewState={{
           longitude: DEFAULT_LNG,
           latitude: DEFAULT_LAT,
-          zoom: 6,
+          zoom: 5.5,
           bearing: 0,
           pitch: 0,
         }}
@@ -70,7 +86,7 @@ export default function CommunityMap({
                 onClick={(e) => zoomToSelectedLoc(e, benef)}
 
 							>
-								{<MapPin size={20} color='green' />}
+								{<MapPin fill={renderMarkerColor(benef)} size={20} color={renderMarkerColor(benef)} />}
 							</button>
 						</Marker>
 					);

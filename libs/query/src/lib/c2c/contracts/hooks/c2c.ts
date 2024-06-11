@@ -50,10 +50,14 @@ export const useDisburseTokenToBeneficiaries = () => {
         });
         await addDisbursement.mutateAsync({
           amount: formatEther(amount),
-          beneficiaries: beneficiaryAddresses,
+          beneficiaries: beneficiaryAddresses.map((ben) => ({
+            address: ben,
+            amount: formatEther(amount),
+            walletAddress: ben,
+          })),
           from: c2cProjectAddress,
           transactionHash: d,
-          type: DisbursementType.PROJECT,
+          type: disburseMethod as DisbursementType,
           timestamp: new Date().toISOString(),
           projectUUID,
         });

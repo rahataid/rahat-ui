@@ -86,6 +86,8 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
       beneficiaryAddresses: selectedBeneficiaries as `0x${string}`[],
       rahatTokenAddress: contractSettings?.rahattoken?.address,
       c2cProjectAddress: contractSettings?.c2cproject?.address,
+      disburseMethod: stepData.treasurySource,
+      projectUUID: id,
     });
   };
   const steps = [

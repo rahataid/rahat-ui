@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useRSQuery } from '@rumsan/react-query';
 import { ProjectDetails } from './graph.query';
 import { useEffect } from 'react';
-import { useC2CProjectSubgraphStore } from './stores/c2c-project.store';
+import { useC2CProjectSubgraphStore } from '../stores/c2c-project.store';
 
 export const useProjectDetails = (projectAddress: string) => {
   // const { queryClient } = useRSQuery();

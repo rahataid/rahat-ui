@@ -29,82 +29,10 @@ import {
 } from '@tanstack/react-table';
 import { ChevronDown } from 'lucide-react';
 import * as React from 'react';
-import { useDisburseTable } from './useDisburseTable';
-
-const data = [
-  {
-    date: '0x273d...B6Ed',
-    type: 'Project Balance',
-    totalAmount: '30000',
-    status: 'Completed',
-  },
-  {
-    date: '0x273d...B6Ed',
-    type: 'Wallet',
-    totalAmount: '50000',
-    status: 'Completed',
-  },
-  {
-    date: '0x273d...B6Ed',
-    type: 'Multisig Wallet',
-    totalAmount: '100000',
-    status: 'Pending',
-  },
-  {
-    date: '0x374f...A6Fg',
-    type: 'Project Balance',
-    totalAmount: '20000',
-    status: 'Completed',
-  },
-  {
-    date: '0x374f...A6Fg',
-    type: 'Wallet',
-    totalAmount: '45000',
-    status: 'Completed',
-  },
-  {
-    date: '0x374f...A6Fg',
-    type: 'Multisig Wallet',
-    totalAmount: '80000',
-    status: 'Pending',
-  },
-  {
-    date: '0x485g...C7Hh',
-    type: 'Project Balance',
-    totalAmount: '25000',
-    status: 'Completed',
-  },
-  {
-    date: '0x485g...C7Hh',
-    type: 'Wallet',
-    totalAmount: '40000',
-    status: 'Completed',
-  },
-  {
-    date: '0x485g...C7Hh',
-    type: 'Multisig Wallet',
-    totalAmount: '90000',
-    status: 'Pending',
-  },
-  {
-    date: '0x596h...D8Ii',
-    type: 'Project Balance',
-    totalAmount: '35000',
-    status: 'Completed',
-  },
-  {
-    date: '0x596h...D8Ii',
-    type: 'Wallet',
-    totalAmount: '60000',
-    status: 'Completed',
-  },
-  {
-    date: '0x596h...D8Ii',
-    type: 'Multisig Wallet',
-    totalAmount: '110000',
-    status: 'Pending',
-  },
-];
+import { useDisburseTableColumns } from './useDisburseTable';
+import { useGetDisbursements } from '@rahat-ui/query';
+import { useParams } from 'next/navigation';
+import { UUID } from 'crypto';
 
 export function DisburseTable() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -114,11 +42,17 @@ export function DisburseTable() {
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
+  const { id } = useParams() as { id: UUID };
   // const [data, setData] = React.useState([]);
-  const columns = useDisburseTable();
+  const { data } = useGetDisbursements({
+    projectUUID: id,
+    page: 1,
+    perPage: 10,
+  });
+  const columns = useDisburseTableColumns();
 
   const table = useReactTable({
-    data,
+    data: data || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,

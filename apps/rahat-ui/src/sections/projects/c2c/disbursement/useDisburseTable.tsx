@@ -18,7 +18,7 @@ export type Disbursements = {
   status: string;
 };
 
-export const useDisburseTable = () => {
+export const useDisburseTableColumns = () => {
   const { id } = useParams();
   const router = useRouter();
   const columns: ColumnDef<Disbursements>[] = [

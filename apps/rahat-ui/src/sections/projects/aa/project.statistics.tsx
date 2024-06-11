@@ -74,7 +74,7 @@ export default function ProjectStatistics({ phasesStats }: IProps) {
             key={d.title}
             className="w-full"
             title={d.title}
-            subTitle={d.subtitle}
+            subtitle={d.subtitle}
             number={d.number}
           />
         ))}

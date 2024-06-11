@@ -4,6 +4,8 @@ import Donut from './donut';
 import CommunityMap from './map';
 import StackColumn from './stackColum';
 
+
+
 type Props = {
   data: any;
 };
@@ -15,6 +17,14 @@ const PopulationInsights = ({ data }: Props) => {
     data?.data?.find((f) => f.name === 'TOTAL_WITH_GENDER') || ([] as any);
   const vulnerabilityStatus =
     data?.data?.find((f) => f?.name === 'VULNERABIILTY_STATUS') || ([] as any);
+
+    const benefMapStats =
+    data?.data?.find((f) => f?.name === "BENEFICIARY_MAP_STATS") || ([] as any);
+
+    const filtered = benefMapStats?.data.filter(b => {
+      return b.latitude && b.longitude
+    }) ?? [];
+
   return (
     <div>
       <div className="grid sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-5 gap-2 mb-2 ">
@@ -25,7 +35,7 @@ const PopulationInsights = ({ data }: Props) => {
           height={250}
           width={'100%'}
         />
-        <CommunityMap coordinates={[82.3886, 29.3863]} />
+        <CommunityMap coordinates={ filtered } />
       </div>
 
       <div className="grid  sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-2 mt-4">

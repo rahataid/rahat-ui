@@ -1,3 +1,4 @@
+import MapIndicators from './MapIndicators';
 import BarCharts from './barCharts';
 import Donut from './donut';
 import CommunityMap from './map';
@@ -15,12 +16,15 @@ const PopulationInsights = ({ data }: Props) => {
   const vulnerabilityStatus =
     data?.data?.find((f) => f?.name === 'VULNERABIILTY_STATUS') || ([] as any);
 
-    const benefMapStats =
-    data?.data?.find((f) => f?.name === "BENEFICIARY_MAP_STATS") || ([] as any);
+  const benefMapStats =
+    data?.data?.find((f) => f?.name === 'BENEFICIARY_MAP_STATS') || ([] as any);
 
-    const filtered = benefMapStats && benefMapStats.data ? benefMapStats.data.filter(b => {
-      return b.latitude && b.longitude
-    }) : [];
+  const filtered =
+    benefMapStats && benefMapStats.data
+      ? benefMapStats.data.filter((b) => {
+          return b.latitude && b.longitude;
+        })
+      : [];
 
   return (
     <div>
@@ -32,7 +36,9 @@ const PopulationInsights = ({ data }: Props) => {
           height={250}
           width={'100%'}
         />
-        <CommunityMap coordinates={ filtered } />
+
+        {/* <MapIndicators /> */}
+        <CommunityMap coordinates={filtered} />
       </div>
 
       <div className="grid  sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-2 mt-4">

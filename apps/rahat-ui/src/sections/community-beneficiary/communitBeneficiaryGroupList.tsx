@@ -23,15 +23,16 @@ import {
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { Pagination } from '@rumsan/sdk/types';
+import { TempBeneficiary } from '@rahataid/sdk';
 type IProps = {
-  table: Table<any>;
+  table: Table<TempBeneficiary>;
   setFilters: (fiters: Record<string, any>) => void;
   filters: Record<string, any>;
   setPagination: (pagination: Pagination) => void;
   pagination: Pagination;
 };
 
-export default function ListView({
+export default function GroupListView({
   table,
   filters,
   setFilters,
@@ -58,11 +59,11 @@ export default function ListView({
       <div className="-mt-2 p-2 bg-secondary">
         <div className="flex items-center mb-2">
           <Input
-            placeholder="Filters by first name..."
-            name="firstName"
+            placeholder="Filters by group Name..."
+            name="groupName"
             value={
-              (table.getColumn('firstName')?.getFilterValue() as string) ??
-              filters?.firstName
+              (table.getColumn('groupName')?.getFilterValue() as string) ??
+              filters?.groupName
             }
             onChange={(event) => handleFilterChange(event)}
             className="rounded mr-2"

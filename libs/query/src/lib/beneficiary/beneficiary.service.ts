@@ -334,13 +334,15 @@ export const useSingleBeneficiary = (
   return query;
 };
 
-export const useListTempGroups = (): UseQueryResult<any, Error> => {
+export const useListTempGroups = (
+  payload: Pagination & { [key: string]: string },
+): UseQueryResult<any, Error> => {
   const { rumsanService, queryClient } = useRSQuery();
   const benClient = getBeneficiaryClient(rumsanService.client);
   return useQuery(
     {
-      queryKey: [TAGS.GET_TEMP_GROUPS],
-      queryFn: benClient.listTempGroups,
+      queryKey: [TAGS.GET_TEMP_GROUPS, payload],
+      queryFn: () => benClient.listTempGroups(payload),
     },
     queryClient,
   );
@@ -366,38 +368,21 @@ export const useTempBeneficiaryImport = () => {
   return useMutation({
     mutationKey: [TAGS.IMPORT_TEMP_BENEFICIARIES],
     mutationFn: async (payload: any) => {
-      const { value } = await Swal.fire({
-        title: 'Import Beneficiary',
-        text: 'Select group for importing  beneficiary',
+      const { isConfirmed } = await Swal.fire({
+        title: 'CAUTION!',
+        text: ' Are you sure , you want to import beneficiary?',
+        icon: 'warning',
+        confirmButtonText: 'Yes, I am sure!',
         showCancelButton: true,
-        confirmButtonText: 'Import',
-        cancelButtonText: 'Cancel',
-        input: 'select',
-        inputOptions: payload.inputOptions,
-        inputPlaceholder: 'Select a Group',
-        inputAttributes: {
-          style: 'max-height: 200px; overflow-y: auto;',
-        },
-        preConfirm: (selectedValue) => {
-          if (!selectedValue) {
-            Swal.showValidationMessage('Please select a group to proceed!');
-          }
-          return selectedValue;
-        },
       });
 
-      if (value !== undefined && value !== '') {
-        const inputData = {
-          beneficiaries: payload?.communityBeneficiariesUUID,
-          groupName: value,
-        };
-        return await benClient.importTempBeneficiaries(inputData as any);
-      }
-      return null;
+      if (!isConfirmed) return;
+
+      return await benClient.importTempBeneficiaries(payload);
     },
     onSuccess: (d) => {
-      if(!d) return;
-      Swal.fire('Beneficiary added to the import queue', '', 'success');
+      if (!d) return;
+      Swal.fire('Beneficiaries will be imported shortly!', '', 'success');
       queryClient.invalidateQueries({
         queryKey: [
           TAGS.GET_TEMP_BENEFICIARIES,

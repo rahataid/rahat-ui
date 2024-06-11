@@ -10,9 +10,7 @@ import { Tabs } from '@rahat-ui/shadcn/src/components/ui/tabs';
 import { FC } from 'react';
 import { NavItem } from './nav-items.types';
 
-import { useBeneficiaryStore } from '@rahat-ui/query';
 import { Separator } from '@rahat-ui/shadcn/src/components/ui/separator';
-import ImportTempCommunityBeneficiary from '../community-beneficiary/import.community.beneficiary';
 import CommunityBeneficiaryNavView from './community.beneficiary.nav.view';
 
 type CommunityBeneficiaryLayoutProps = {
@@ -24,7 +22,6 @@ const CommunityBeneficiaryLayout: FC<CommunityBeneficiaryLayoutProps> = ({
   children,
   menuItems,
 }) => {
-  const { communityBeneficiariesUUID } = useBeneficiaryStore();
   const renderResizablePanel = (children: React.ReactNode, index?: number) => {
     return (
       <ResizablePanel minSize={30} key={index}>
@@ -66,12 +63,6 @@ const CommunityBeneficiaryLayout: FC<CommunityBeneficiaryLayoutProps> = ({
               />
             ))}
             <Separator />
-            {communityBeneficiariesUUID &&
-              communityBeneficiariesUUID.length > 0 && (
-                <>
-                  <ImportTempCommunityBeneficiary />
-                </>
-              )}
           </ResizablePanel>
           {renderChildren()}
         </ResizablePanelGroup>

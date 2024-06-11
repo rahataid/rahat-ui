@@ -1,5 +1,9 @@
+import { useCommunicationStats } from "@rahat-ui/query";
 import DataCard from "apps/rahat-ui/src/components/dataCard";
+import TableLoader from "apps/rahat-ui/src/components/table.loader";
 import getIcon from "apps/rahat-ui/src/utils/getIcon";
+import { UUID } from "crypto";
+import { useParams } from "next/navigation";
 
 const dummyLogs = [
     {
@@ -54,6 +58,13 @@ const dummyLogs = [
 
 
 export default function CommunicationLogsView() {
+    const { id: projectID } = useParams();
+    const {data,isLoading} = useCommunicationStats(projectID as UUID)
+
+    console.log(data)
+
+    if(isLoading) return <TableLoader />
+
     return (
         <div className="p-4 bg-secondary h-[calc(100vh-65px)]">
 

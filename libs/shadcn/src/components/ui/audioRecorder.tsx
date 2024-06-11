@@ -165,7 +165,7 @@ export const AudioRecorder = ({ className, timerClassName, form }: Props) => {
       audioContext.close();
     }
     setIsRecording(false);
-    setIsRecordingFinished(true);
+    // setIsRecordingFinished(true);
     setTimer(0);
     clearTimeout(timerTimeout);
 
@@ -189,6 +189,7 @@ export const AudioRecorder = ({ className, timerClassName, form }: Props) => {
 
     form.setValue('file', file);
     setIsRecording(false);
+    setIsRecordingFinished(false);
   };
 
   // Effect to update the timer every second
@@ -268,7 +269,7 @@ export const AudioRecorder = ({ className, timerClassName, form }: Props) => {
   return (
     <div
       className={cn(
-        'flex h-16 rounded-md relative w-full items-center justify-center gap-2 max-w-5xl',
+        'flex h-16 rounded-md relative w-full justify-center gap-2 max-w-5xl',
         {
           'border p-1': isRecording,
           'border-none p-0': !isRecording,

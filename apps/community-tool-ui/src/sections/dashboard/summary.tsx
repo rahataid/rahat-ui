@@ -8,7 +8,7 @@ const DashboardSummary = ({
 }) => {
   return (
     <div>
-      <div className=" grid md:grid-cols-4 gap-4">
+      <div className="grid md:grid-cols-4 gap-4">
         <DataCard
           className=""
           title="Total beneficiaries"

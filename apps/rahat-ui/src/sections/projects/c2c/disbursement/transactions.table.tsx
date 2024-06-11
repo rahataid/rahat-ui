@@ -30,6 +30,9 @@ import {
 import { ChevronDown } from 'lucide-react';
 import * as React from 'react';
 import { useTransactionTable } from './useTransactionTable';
+import { useGetDisbursementTransactions } from '@rahat-ui/query';
+import { useParams } from 'next/navigation';
+import { UUID } from 'crypto';
 
 const data = [
   {
@@ -49,9 +52,21 @@ export function TransactionTable() {
   const [rowSelection, setRowSelection] = React.useState({});
   // const [data, setData] = React.useState([]);
   const columns = useTransactionTable();
+  const { id: projectUUID, uuid } = useParams() as {
+    id: UUID;
+    uuid: UUID;
+  };
+  const { data } = useGetDisbursementTransactions({
+    disbursementUUID: uuid,
+    projectUUID: projectUUID,
+    page: 1,
+    perPage: 10,
+  });
+
+  console.log(data);
 
   const table = useReactTable({
-    data,
+    data: data || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -93,7 +108,7 @@ export function TransactionTable() {
               ))}
             </TableHeader>
             <TableBody>
-              {table.getRowModel().rows?.length ? (
+              {table?.getRowModel().rows?.length ? (
                 table.getRowModel().rows.map((row) => (
                   <TableRow
                     key={row.id}

@@ -1,27 +1,17 @@
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from '@rahat-ui/shadcn/src/components/ui/avatar';
+import { ReceivedTransactionDetails } from '@rahat-ui/query';
+import { Avatar } from '@rahat-ui/shadcn/src/components/ui/avatar';
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
 } from '@rahat-ui/shadcn/src/components/ui/card';
-import { ArrowDown, ArrowUp } from 'lucide-react';
-import { useQuery } from 'urql';
-import {
-  TransactionDetails,
-  ReceivedTransactionDetails,
-  useProjectSettingsStore,
-  PROJECT_SETTINGS_KEYS,
-} from '@rahat-ui/query';
-import { Transaction, TransactionsObject } from './types';
-import { useEffect, useState } from 'react';
-import { mergeTransactions } from './utils';
 import { shortenTxHash } from 'apps/rahat-ui/src/utils/getProjectAddress';
+import { ArrowUp } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { useQuery } from 'urql';
 import { formatEther } from 'viem';
+import { Transaction } from './types';
 
 export default function RecentTransaction({
   contractAddress,
@@ -32,6 +22,7 @@ export default function RecentTransaction({
 
   console.log({ contractAddress });
 
+  // TODO: refactor and add to libraries
   const [result] = useQuery({
     query: ReceivedTransactionDetails,
     variables: {

@@ -39,12 +39,14 @@ const BeneficiaryCardData = [
 ];
 
 type IProps = {
-  phasesStats: Array<{
-    totalActivities: Number;
-    totalCompletedActivities: Number;
-    completedPercentage: Number;
-    phase: any;
-  }>;
+  phasesStats: {
+    data: Array<{
+      totalActivities: Number;
+      totalCompletedActivities: Number;
+      completedPercentage: Number;
+      phase: any;
+    }>;
+  }
 };
 
 export default function ProjectStatistics({ phasesStats }: IProps) {
@@ -55,7 +57,7 @@ export default function ProjectStatistics({ phasesStats }: IProps) {
       <h1 className="font-semibold text-xl">Project Statistics</h1>
       {/* Phase Cards  */}
       <div className="flex justify-between items-center gap-4">
-        {phasesStats?.map((d) => (
+        {phasesStats?.data?.map((d) => (
           <AAPhaseCard
             key={d.phase?.uuid}
             title={d.phase?.name}

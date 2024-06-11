@@ -5,7 +5,7 @@ import { ColumnDef } from '@tanstack/react-table';
 import { Eye } from 'lucide-react';
 import { useState } from 'react';
 import { useSecondPanel } from '../../../../providers/second-panel-provider';
-import BeneficiaryDetail from '../../../../sections/projects/el/beneficiary/beneficiary.detail';
+import BeneficiaryDetail from './beneficiary.detail';
 
 export const useProjectBeneficiaryTableColumns = () => {
   const { setSecondPanelComponent, closeSecondPanel } = useSecondPanel();

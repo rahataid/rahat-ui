@@ -1,6 +1,7 @@
 import { useRouter, useParams } from 'next/navigation';
 import { ColumnDef } from '@tanstack/react-table';
 import { Eye, Pencil, Trash2 } from 'lucide-react';
+import { formatdbDate } from 'apps/rahat-ui/src/utils';
 
 export default function useDailyMonitoringTableColumn() {
   const { id: projectId } = useParams();
@@ -10,29 +11,25 @@ export default function useDailyMonitoringTableColumn() {
     {
       accessorKey: 'date',
       header: 'Date',
-      cell: ({ row }) => {
-        return row.getValue('date');
-      },
+      cell: ({ row }) => <div>{formatdbDate(row.original.createdAt)}</div>,
     },
     {
       accessorKey: 'time',
       header: 'Time',
-      cell: ({ row }) => {
-        return row.getValue('time');
-      },
+      cell: ({ row }) => (
+        <div>{new Date(row.original.createdAt).toLocaleTimeString()}</div>
+      ),
     },
     {
       accessorKey: 'dataEntryBy',
       header: 'Data Entry By',
-      cell: ({ row }) => {
-        return row.getValue('dataEntryBy');
-      },
+      cell: ({ row }) => <div>{row.original.data.name}</div>,
     },
     {
-      accessorKey: 'riverBasin',
+      accessorKey: 'location',
       header: 'River Basin',
       cell: ({ row }) => {
-        return row.getValue('riverBasin');
+        return row.getValue('location');
       },
     },
     {
@@ -45,9 +42,7 @@ export default function useDailyMonitoringTableColumn() {
     {
       accessorKey: 'forecast',
       header: 'Forecast',
-      cell: ({ row }) => {
-        return row.getValue('forecast');
-      },
+      cell: ({ row }) => <div>{row.original.data.forecast}</div>,
     },
     {
       id: 'actions',
@@ -60,11 +55,11 @@ export default function useDailyMonitoringTableColumn() {
               className="cursor-pointer"
               size={20}
               strokeWidth={1.5}
-              // onClick={() =>
-              //     router.push(
-              //         `/projects/aa/${projectId}/activities/${row.original.id}`,
-              //     )
-              // }
+              onClick={() =>
+                router.push(
+                  `/projects/aa/${projectId}/data-sources/bulletin/${row.original.uuid}`,
+                )
+              }
             />
             <Pencil className="text-primary" size={20} strokeWidth={1.5} />
             <Trash2 className="text-red-500" size={20} strokeWidth={1.5} />

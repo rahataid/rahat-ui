@@ -66,6 +66,7 @@ export default function DataSourcesView() {
             </TooltipProvider>
           </TabsTrigger>
           <TabsTrigger
+            id="monitoring"
             value="dailyMonitoring"
             className="w-36 border bg-card data-[state=active]:border-primary"
           >

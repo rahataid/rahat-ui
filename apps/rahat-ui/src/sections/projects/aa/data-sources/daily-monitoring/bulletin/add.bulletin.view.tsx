@@ -29,83 +29,88 @@ import {
   CardTitle,
 } from '@rahat-ui/shadcn/src/components/ui/card';
 import { UUID } from 'crypto';
-import { useCreateDailyMonitoring } from '@rahat-ui/query';
+import {
+  PROJECT_SETTINGS_KEYS,
+  useProjectSettingsStore,
+  useCreateDailyMonitoring,
+} from '@rahat-ui/query';
 
 export default function AddBulletin() {
   const params = useParams();
   const projectId = params.id as UUID;
   const router = useRouter();
 
+  const dataSources = useProjectSettingsStore(
+    (s) => s.settings?.[projectId]?.[PROJECT_SETTINGS_KEYS.DATASOURCE],
+  );
+
   const createDailyMonitoring = useCreateDailyMonitoring();
 
-  const FormSchema = z
-    .object({
-      dataEntryBy: z.string().min(2, { message: 'Please enter name.' }),
-      riverBasin: z
-        .string()
-        .min(1, { message: 'Please select a river basin.' }),
-      source: z.string().min(1, { message: 'Please select a source.' }),
-      forecast: z.string().min(1, { message: 'Please select a forecast.' }),
-      todayStatus: z.string().optional(),
-      tomorrowStatus: z.string().optional(),
-      dayAfterTommorrowStatus: z.string().optional(),
-      hours24: z.string().optional(),
-      hours48: z.string().optional(),
-      hours72: z.string().optional(),
-    })
-    .superRefine((data, ctx) => {
-      if (data.source === 'x') {
-        if (!data.todayStatus) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            path: ['todayStatus'],
-            message: "Please select today's status.",
-          });
-        }
-        if (!data.tomorrowStatus) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            path: ['tomorrowStatus'],
-            message: "Please select tomorrow's status.",
-          });
-        }
-        if (!data.dayAfterTommorrowStatus) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            path: ['dayAfterTommorrowStatus'],
-            message: "Please select the day after tomorrow's status.",
-          });
-        }
-      } else if (data.source === 'y') {
-        if (!data.hours24) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            path: ['hours24'],
-            message: 'Please select 24 hours status.',
-          });
-        }
-        if (!data.hours48) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            path: ['hours48'],
-            message: 'Please select 48 hours status.',
-          });
-        }
-        if (!data.hours72) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            path: ['hours72'],
-            message: 'Please select 72 hours status.',
-          });
-        }
-      }
-    });
+  const FormSchema = z.object({
+    name: z.string().min(2, { message: 'Please enter name.' }),
+    location: z.string().min(1, { message: 'Please select a river basin.' }),
+    source: z.string().min(1, { message: 'Please select a source.' }),
+    forecast: z.string().min(1, { message: 'Please select a forecast.' }),
+    todayStatus: z.string().optional(),
+    tomorrowStatus: z.string().optional(),
+    dayAfterTommorrowStatus: z.string().optional(),
+    hours24Status: z.string().optional(),
+    hours48Status: z.string().optional(),
+    hours72Status: z.string().optional(),
+  });
+  // .superRefine((data, ctx) => {
+  //   if (data.source === 'dhm') {
+  //     if (!data.todayStatus) {
+  //       ctx.addIssue({
+  //         code: z.ZodIssueCode.custom,
+  //         path: ['todayStatus'],
+  //         message: "Please select today's status.",
+  //       });
+  //     }
+  //     if (!data.tomorrowStatus) {
+  //       ctx.addIssue({
+  //         code: z.ZodIssueCode.custom,
+  //         path: ['tomorrowStatus'],
+  //         message: "Please select tomorrow's status.",
+  //       });
+  //     }
+  //     if (!data.dayAfterTommorrowStatus) {
+  //       ctx.addIssue({
+  //         code: z.ZodIssueCode.custom,
+  //         path: ['dayAfterTommorrowStatus'],
+  //         message: "Please select the day after tomorrow's status.",
+  //       });
+  //     }
+  //   } else if (data.source === 'y') {
+  //     if (!data.hours24Status) {
+  //       ctx.addIssue({
+  //         code: z.ZodIssueCode.custom,
+  //         path: ['hours24Status'],
+  //         message: 'Please select 24 hours status.',
+  //       });
+  //     }
+  //     if (!data.hours48Status) {
+  //       ctx.addIssue({
+  //         code: z.ZodIssueCode.custom,
+  //         path: ['hours48Status'],
+  //         message: 'Please select 48 hours status.',
+  //       });
+  //     }
+  //     if (!data.hours72Status) {
+  //       ctx.addIssue({
+  //         code: z.ZodIssueCode.custom,
+  //         path: ['hours72Status'],
+  //         message: 'Please select 72 hours status.',
+  //       });
+  //     }
+  //   }
+  // });
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      dataEntryBy: '',
-      riverBasin: '',
+      name: '',
+      location: '',
       source: '',
       forecast: '',
     },
@@ -116,9 +121,9 @@ export default function AddBulletin() {
       | 'todayStatus'
       | 'tomorrowStatus'
       | 'dayAfterTommorrowStatus'
-      | 'hours24'
-      | 'hours48'
-      | 'hours72';
+      | 'hours24Status'
+      | 'hours48Status'
+      | 'hours72Status';
     label: string;
   };
 
@@ -155,7 +160,7 @@ export default function AddBulletin() {
     const selectedSource = form.watch('source');
     let fields;
     switch (selectedSource) {
-      case 'x':
+      case 'dhm':
         fields = (
           <>
             <SelectFormField name="todayStatus" label="Today's status" />
@@ -170,9 +175,9 @@ export default function AddBulletin() {
       case 'y':
         fields = (
           <>
-            <SelectFormField name="hours24" label="24 hours" />
-            <SelectFormField name="hours48" label="48 hours" />
-            <SelectFormField name="hours72" label="72 hours" />
+            <SelectFormField name="hours24Status" label="24 hours" />
+            <SelectFormField name="hours48Status" label="48 hours" />
+            <SelectFormField name="hours72Status" label="72 hours" />
           </>
         );
         break;
@@ -183,11 +188,28 @@ export default function AddBulletin() {
   };
 
   const handleCreateBulletin = async (data: z.infer<typeof FormSchema>) => {
-    console.log('data::', data);
+    let payload = {
+      name: data.name,
+      source: data.source,
+      location: data.location,
+      forecast: data.forecast,
+      ...(data.source === 'dhm' && {
+        ...(data.todayStatus && { todayStatus: data.todayStatus }),
+        ...(data.tomorrowStatus && { tomorrowStatus: data.tomorrowStatus }),
+        ...(data.dayAfterTommorrowStatus && {
+          dayAfterTommorrowStatus: data.dayAfterTommorrowStatus,
+        }),
+      }),
+      ...(data.source === 'y' && {
+        ...(data.hours24Status && { hours24Status: data.hours24Status }),
+        ...(data.hours48Status && { hours48Status: data.hours48Status }),
+        ...(data.hours72Status && { hours72Status: data.hours72Status }),
+      }),
+    };
     try {
       await createDailyMonitoring.mutateAsync({
         projectUUID: projectId,
-        monitoringPayload: data,
+        monitoringPayload: payload,
       });
     } catch (e) {
       console.error('Create Bulletin Error::', e);
@@ -215,7 +237,7 @@ export default function AddBulletin() {
               <div className="grid grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
-                  name="dataEntryBy"
+                  name="name"
                   render={({ field }) => {
                     return (
                       <FormItem>
@@ -230,30 +252,6 @@ export default function AddBulletin() {
                       </FormItem>
                     );
                   }}
-                />
-                <FormField
-                  control={form.control}
-                  name="riverBasin"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>River Basin</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                        value={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select River Basin" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="demo">Demo</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
                 />
                 <FormField
                   control={form.control}
@@ -272,8 +270,38 @@ export default function AddBulletin() {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="x">X</SelectItem>
+                          <SelectItem value="dhm">DHM</SelectItem>
                           <SelectItem value="y">Y</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="location"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>River Basin</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                        value={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select River Basin" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {form.watch('source') === 'dhm' ? (
+                            <SelectItem value={dataSources?.dhm?.location}>
+                              {dataSources?.dhm?.location}
+                            </SelectItem>
+                          ) : (
+                            <SelectItem value="demo">Demo</SelectItem>
+                          )}
                         </SelectContent>
                       </Select>
                       <FormMessage />

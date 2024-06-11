@@ -1,4 +1,4 @@
-import { useQuery, useMutation } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useProjectAction } from '../../projects';
 import { useSwal } from 'libs/query/src/swal';
 import { UUID } from 'crypto';
@@ -64,4 +64,73 @@ export const useDailyMonitoring = (uuid: UUID, payload: any) => {
     },
   });
   return query;
+};
+
+export const useSingleMonitoring = (uuid: UUID, monitoringId: UUID) => {
+  const q = useProjectAction();
+
+  const query = useQuery({
+    queryKey: ['dailyMonitoring', uuid, monitoringId],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'aaProject.dailyMonitoring.getOne',
+          payload: {
+            uuid: monitoringId,
+          },
+        },
+      });
+      return mutate.response;
+    },
+  });
+  return query;
+};
+
+export const useRemoveMonitoring = () => {
+  const qc = useQueryClient();
+  const q = useProjectAction();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+  return useMutation({
+    mutationFn: async ({
+      projectUUID,
+      monitoringPayload,
+    }: {
+      projectUUID: UUID;
+      monitoringPayload: {
+        uuid: UUID;
+      };
+    }) => {
+      return q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'aaProject.dailyMonitoring.remove',
+          payload: monitoringPayload,
+        },
+      });
+    },
+    onSuccess: () => {
+      q.reset();
+      qc.invalidateQueries({ queryKey: ['dailyMonitorings'] });
+      toast.fire({
+        title: 'Removed successfully',
+        icon: 'success',
+      });
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || 'Error';
+      q.reset();
+      toast.fire({
+        title: 'Error while removing.',
+        icon: 'error',
+        text: errorMessage,
+      });
+    },
+  });
 };

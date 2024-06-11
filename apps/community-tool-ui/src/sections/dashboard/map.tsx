@@ -67,7 +67,7 @@ export default function CommunityMap({
 							<button
 								type="button"
 								className="cursor-pointer"
-                onClick={(e) => zoomToSelectedLoc(e, benef, index)}
+                onClick={(e) => zoomToSelectedLoc(e, benef)}
 
 							>
 								{<MapPin size={20} color='green' />}

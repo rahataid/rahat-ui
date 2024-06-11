@@ -61,22 +61,51 @@ const DepositTokenModal: FC<DepositTokenModalType> = ({ handleModal }) => {
   );
 
   const handleDepositToken = async () => {
-    console.log({ rahatChain });
-    if (!address) {
-      await connectAsync({
+    try {
+      console.log({ rahatChain });
+
+      if (!address) {
+        await connectAsync({
+          chainId: rahatChain.id,
+          connector: injected(),
+        });
+      }
+      const recipientAddress = contractSettings?.c2cproject?.address;
+      const tokenAddress = contractSettings?.rahattoken?.address;
+      const amountInWei = parseEther(tokenInputs);
+
+      // Validate the recipient address
+      if (!recipientAddress) {
+        console.error('Invalid recipient address');
+        return;
+      }
+
+      // Validate the token address
+      if (!tokenAddress) {
+        console.error('Invalid token address');
+        return;
+      }
+
+      // Validate the amount in Wei
+      if (!amountInWei) {
+        console.error('Invalid token amount');
+        return;
+      }
+
+      const data = await writeContractAsync({
         chainId: rahatChain.id,
-        connector: injected(),
+        address: tokenAddress,
+        functionName: 'transfer',
+        abi: rahatTokenAbi,
+        args: [recipientAddress, BigInt(amountInWei)],
       });
+
+      // console.log('Transaction successful:', data);
+      // console.log('Recipient address:', recipientAddress);
+      // console.log('Sender address:', address);
+    } catch (error) {
+      console.error('Transaction failed:', error);
     }
-    const data = await writeContractAsync({
-      chainId: rahatChain.id,
-      address: contractSettings?.rahattoken?.address,
-      functionName: 'transfer',
-      abi: rahatTokenAbi,
-      args: [contractSettings?.c2cproject?.address, parseEther(tokenInputs)],
-    });
-    console.log(contractSettings?.c2cproject?.address);
-    console.log(address);
   };
 
   return (

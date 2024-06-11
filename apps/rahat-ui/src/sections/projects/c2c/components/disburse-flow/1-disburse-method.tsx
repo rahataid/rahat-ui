@@ -15,13 +15,12 @@ export default function Step1DisburseMethod({
   projectSubgraphDetails,
   treasurySources,
 }: Step1DisburseMethodProps) {
+  console.log({ treasurySources });
   return (
     <div className="bg-card rounded px-4 pb-4 flex flex-col">
       <div className="mb-2">
         <div className="flex flex-col">
-          {TREASURY_SOURCES.filter((t) =>
-            treasurySources.includes(t.value),
-          ).map((method) => (
+          {TREASURY_SOURCES.map((method) => (
             <label key={method.value} className="inline-flex items-center mt-3">
               <input
                 type="radio"

@@ -7,7 +7,7 @@ export interface IActivitiesItem {
   phase: string;
   category: string;
   description: string;
-  hazardType: string;
+  // hazardType: string;
   status: string;
   activityType: string;
   activtiyComm: Record<string, any>;

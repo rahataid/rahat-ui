@@ -1,9 +1,8 @@
-import { Project } from '@rahataid/sdk/project/project.types';
-import { FC } from 'react';
-import SmallDataCard from './project.datacard.small';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+import { Project } from '@rahataid/sdk/project/project.types';
 import DataCard from 'apps/rahat-ui/src/components/dataCard';
 import { Users } from 'lucide-react';
+import { FC } from 'react';
 
 type ProjectInfoProps = {
   project: Project;
@@ -38,12 +37,13 @@ const ProjectInfo: FC<ProjectInfoProps> = ({
     return Object.keys(extras).map((key) => {
       return (
         <div key={key}>
+          <p className="font-light text-xs text-muted-foreground">{key}</p>
           <p className="font-medium text-primary">{extras[key]}</p>
-          <p className="font-light">{key}</p>
         </div>
       );
     });
   };
+  console.log(renderExtras(project?.extras || {}));
   return (
     <>
       <div className="grid grid-cols-5 grid-flow-col gap-2">
@@ -56,12 +56,6 @@ const ProjectInfo: FC<ProjectInfoProps> = ({
             </div>
             <div className="flex items-center justify-between flex-wrap mt-4 gap-10 md:gap-32 mb-4">
               {renderExtras(project?.extras || {})}
-              <div>
-                <p className="font-light text-xs text-muted-foreground">
-                  Status
-                </p>
-                <p className="font-medium text-primary">{project?.status}</p>
-              </div>
               <div>
                 <p className="font-light text-xs text-muted-foreground">Type</p>
                 <p className="font-medium text-primary">{project?.type}</p>
@@ -88,7 +82,7 @@ const ProjectInfo: FC<ProjectInfoProps> = ({
             <DataCard
               className="h-full"
               title="Total Beneficiary"
-              number={totalBeneficiary}
+              number={totalBeneficiary || 'N/A'}
               loading={loading}
             />
             <DataCard
@@ -112,7 +106,7 @@ const ProjectInfo: FC<ProjectInfoProps> = ({
             <DataCard
               className=""
               title="Vouchers Redeemed"
-              number={totalVoucherRedeemed}
+              number={totalVoucherRedeemed || 'N/A'}
               Icon={Users}
               refresh={refetchBeneficiary}
             />

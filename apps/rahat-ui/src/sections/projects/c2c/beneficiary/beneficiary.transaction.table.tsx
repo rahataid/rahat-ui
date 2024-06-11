@@ -34,6 +34,9 @@ import {
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { useBeneficiaryTransaction } from 'apps/rahat-ui/src/hooks/el/subgraph/querycall';
 import TableLoader from 'apps/rahat-ui/src/components/table.loader';
+import { useQuery } from 'urql';
+import { BeneficiaryTransaction } from '@rahat-ui/query';
+import { formatEther } from 'viem';
 
 export type Transaction = {
   beneficiary: any;
@@ -68,9 +71,9 @@ export const columns: ColumnDef<Transaction>[] = [
     ),
   },
   {
-    accessorKey: 'timeStamp',
+    accessorKey: 'date',
     header: 'Time Stamp',
-    cell: ({ row }) => <div> {row.getValue('timeStamp')}</div>,
+    cell: ({ row }) => <div> {row.getValue('date')}</div>,
   },
   {
     accessorKey: 'transactionHash',
@@ -91,14 +94,26 @@ export const columns: ColumnDef<Transaction>[] = [
   {
     accessorKey: 'amount',
     header: 'Amount',
-    cell: ({ row }) => <div> {row.getValue('amount')}</div>,
+    cell: ({ row }) => {
+      const amount = parseFloat(formatEther(BigInt(row.getValue('amount'))));
+
+      // Format the amount as a dollar amount
+      const formatted = new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+      }).format(amount);
+
+      return <div className="text-right font-medium">{formatted}</div>;
+    },
   },
 ];
 
 export default function BeneficiaryDetailTableView({
   walletAddress,
+  transaction,
 }: {
   walletAddress: string;
+  transaction: any;
 }) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -112,7 +127,7 @@ export default function BeneficiaryDetailTableView({
 
   const table = useReactTable({
     manualPagination: true,
-    data: beneficiaryTransaction || [],
+    data: transaction || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -129,6 +144,16 @@ export default function BeneficiaryDetailTableView({
       rowSelection,
     },
   });
+
+  console.log({ transaction });
+
+  // const [result] = useQuery({
+  //   query: BeneficiaryTransaction,
+  //   variables: { beneficiary: walletAddress },
+  // });
+  // console.log({ result });
+  // console.log(result.data);
+  console.log({ walletAddress });
 
   return (
     <>

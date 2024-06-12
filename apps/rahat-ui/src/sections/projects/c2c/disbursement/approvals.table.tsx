@@ -22,14 +22,28 @@ import {
 } from '@tanstack/react-table';
 import * as React from 'react';
 import { useApprovalTable } from './useApprovalTable';
-import { useGetDisbursementApprovals } from '@rahat-ui/query';
+import {
+  PROJECT_SETTINGS_KEYS,
+  useDisburseTokenUsingMultisig,
+  useGetDisbursementApprovals,
+  useMultiSigDisburseToken,
+  useProject,
+  useProjectSettingsStore,
+} from '@rahat-ui/query';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
 
 export function ApprovalTable({ disbursement }: { disbursement: any }) {
+  const { id } = useParams();
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
+  );
+  const contractSettings = useProjectSettingsStore(
+    (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT],
+  );
+  const safeWallet = useProjectSettingsStore(
+    (state) => state?.settings?.[id]?.['SAFE_WALLET']?.address,
   );
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
@@ -47,6 +61,7 @@ export function ApprovalTable({ disbursement }: { disbursement: any }) {
     perPage: 10,
     transactionHash: disbursement?.transactionHash,
   });
+  console.log(data?.approvals);
   const table = useReactTable({
     data: data?.approvals || [],
     columns,
@@ -66,13 +81,25 @@ export function ApprovalTable({ disbursement }: { disbursement: any }) {
     },
   });
 
+  const disburseMultiSig = useMultiSigDisburseToken();
+
+  const handleMigSigTransaction = async () => {
+    await disburseMultiSig.mutateAsync({
+      amount: data?.approvals.amount,
+      beneficiaryAddresses: data?.approvals.beneficiaries as `0x${string}`[],
+      rahatTokenAddress: contractSettings?.rahattoken?.address,
+      safeAddress: safeWallet,
+      c2cProjectAddress: contractSettings?.c2cproject?.address,
+    });
+  };
+
   console.log('data', data);
 
   return (
     <div className="w-full">
       {data?.isExecuted && (
         <div className="flex items-center justify-between px-4 py-2 border-b-2 bg-card">
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" onClick={handleMigSigTransaction}>
             Execute Transaction
           </Button>
         </div>

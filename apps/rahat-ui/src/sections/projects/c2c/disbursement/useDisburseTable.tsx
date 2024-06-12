@@ -1,4 +1,4 @@
-import { DisbursementBeneficiary } from '@rahat-ui/query';
+import { Disbursement, DisbursementBeneficiary } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
 import {
@@ -16,7 +16,7 @@ import { useParams, useRouter } from 'next/navigation';
 export const useDisburseTableColumns = () => {
   const { id } = useParams();
   const router = useRouter();
-  const columns: ColumnDef<DisbursementBeneficiary>[] = [
+  const columns: ColumnDef<Disbursement>[] = [
     {
       id: 'select',
       header: ({ table }) => (
@@ -44,26 +44,26 @@ export const useDisburseTableColumns = () => {
       header: 'Date',
       cell: ({ row }) => (
         <div className="capitalize">
-          {formatdbDate(row.original?.Disbursement?.createdAt)}
+          {formatdbDate(row.original?.createdAt)}
         </div>
       ),
     },
     {
       accessorKey: 'type',
       header: 'Type',
-      cell: ({ row }) => <div>{row.original?.Disbursement?.type}</div>,
+      cell: ({ row }) => <div>{row.original?.type}</div>,
     },
     {
       accessorKey: 'totalAmount',
       header: 'Total Amount',
       cell: ({ row }) => {
-        return <div>{row.original.Disbursement.amount}</div>;
+        return <div>{row.original.amount}</div>;
       },
     },
     {
       accessorKey: 'status',
       header: 'Status',
-      cell: ({ row }) => <div>{row.original?.Disbursement?.status}</div>,
+      cell: ({ row }) => <div>{row.original?.status}</div>,
     },
     {
       id: 'actions',
@@ -84,7 +84,7 @@ export const useDisburseTableColumns = () => {
               <DropdownMenuItem
                 onClick={() =>
                   router.push(
-                    `/projects/c2c/${id}/disbursement/${payment.Disbursement.uuid}`,
+                    `/projects/c2c/${id}/disbursement/${payment.uuid}`,
                   )
                 }
               >

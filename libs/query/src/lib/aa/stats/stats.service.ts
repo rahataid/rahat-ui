@@ -26,10 +26,30 @@ export const usePhasesStats = (uuid: UUID) => {
   });
 
   useEffect(() => {
-    console.log('kkkkk', query);
     if (query.data) {
       setPhasesStats(query?.data);
     }
   }, [query.data]);
+  return query;
+};
+
+
+export const useCommunicationStats = (uuid: UUID) => {
+  const q = useProjectAction();
+
+  const query = useQuery({
+    queryKey: ['communicationStats', uuid],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'aaProject.stats.getComms',
+          payload: {},
+        },
+      });
+      return mutate.data;
+    },
+  });
+ 
   return query;
 };

@@ -47,6 +47,7 @@ export const useMultiSigDisburseToken = () => {
         safeAddress,
         c2cProjectAddress,
       });
+      // console.log("amount", amount, BigInt(parseEther(amount.toString())))
       const encodedForDisburse = beneficiaryAddresses.map((beneficiary) => {
         return encodeFunctionData({
           abi: c2CProjectAbi,
@@ -55,10 +56,11 @@ export const useMultiSigDisburseToken = () => {
             rahatTokenAddress,
             beneficiary,
             safeAddress,
-            parseEther(BigInt(amount).toString()),
+            amount,
           ],
         });
       });
+      console.log({ encodedForDisburse })
       return multi.writeContractAsync({
         args: [encodedForDisburse],
         address: c2cProjectAddress,

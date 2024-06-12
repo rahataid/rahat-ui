@@ -54,7 +54,7 @@ export function ApprovalTable({ disbursement }: { disbursement: any }) {
     id: UUID;
     uuid: UUID;
   };
-  const { data } = useGetDisbursementApprovals({
+  const { data, isLoading } = useGetDisbursementApprovals({
     disbursementUUID: uuid,
     projectUUID: projectUUID,
     page: 1,
@@ -95,13 +95,25 @@ export function ApprovalTable({ disbursement }: { disbursement: any }) {
     });
   };
 
-  console.log('data', data);
-
+  if (isLoading) {
+    return (
+      <div className="w-full">
+        <div className="flex items-center justify-between px-4 py-2 border-b-2 bg-card">
+          Loading...
+        </div>
+      </div>
+    );
+  }
   return (
     <div className="w-full">
       {data?.isExecuted && (
         <div className="flex items-center justify-end px-4 py-2 border-b-2 bg-card">
-          <Button variant="outline" size="sm" onClick={handleMigSigTransaction}>
+          <Button
+            disabled={disburseMultiSig.isPending}
+            variant="outline"
+            size="sm"
+            onClick={handleMigSigTransaction}
+          >
             Execute Transaction
           </Button>
         </div>

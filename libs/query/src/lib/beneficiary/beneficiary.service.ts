@@ -350,14 +350,15 @@ export const useListTempGroups = (
 };
 
 export const useListTempBeneficiary = (
-  payload: Pagination & { [key: string]: string },
+  uuid: string,
+  data?: Pagination & { [key: string]: string },
 ): UseQueryResult<any, Error> => {
   const { rumsanService, queryClient } = useRSQuery();
   const benClient = getBeneficiaryClient(rumsanService.client);
   return useQuery(
     {
-      queryKey: [TAGS.GET_TEMP_BENEFICIARIES, payload],
-      queryFn: () => benClient.listTempBeneficiary(payload),
+      queryKey: [TAGS.GET_TEMP_BENEFICIARIES, uuid, data],
+      queryFn: () => benClient.listTempBeneficiary(uuid, data),
     },
     queryClient,
   );

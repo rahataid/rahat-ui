@@ -21,7 +21,7 @@ export const TransactionDetails = `
     transferProcesseds {
       blockTimestamp
       transactionHash
-      _beneficiary
+      _to
       _amount
       _tokenAddress
       blockNumber
@@ -43,24 +43,38 @@ export const ReceivedTransactionDetails = `
 export const BeneficiaryTransaction = `
   query beneficiaryTransaction($beneficiary: String) {
     tokenReceiveds(where: {from: $beneficiary}) {
-    amount
-    blockTimestamp
-    from
-    transactionHash
-    token
-    id
-    blockNumber
-  }
-  transferProcesseds(
-    where: {_beneficiary: $beneficiary}
-  ) {
-    blockTimestamp
-    transactionHash
-    _beneficiary
-    _amount
-    _tokenAddress
-    blockNumber
-    id
+      amount
+      blockTimestamp
+      from
+      transactionHash
+      token
+      id
+      blockNumber
+    }
+    transferProcesseds(
+      where: {_to: $beneficiary}
+    ) {
+      blockTimestamp
+      transactionHash
+      _to
+      _amount
+      _tokenAddress
+      blockNumber
+      id
   }
   }  
+`;
+
+export const BeneficiaryTransactionDetails = `
+  query BeneficiaryTransactionDetail($beneficiary: String, $contractAddress: String) {
+    transfers(where: {to: $beneficiary, from: $contractAddress}) {
+      blockNumber
+      blockTimestamp
+      from
+      id
+      to
+      transactionHash
+      value
+    }
+  }
 `;

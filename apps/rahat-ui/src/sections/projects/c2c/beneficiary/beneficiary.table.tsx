@@ -158,7 +158,7 @@ const BeneficiaryDetailTableView = () => {
         </div>
         <div className="rounded border bg-card">
           <Table>
-            <ScrollArea className="h-[cal(100vh-182px)]">
+            <ScrollArea className="h-[calc(100vh-182px)]">
               <TableHeader className="bg-card sticky top-0">
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow key={headerGroup.id}>

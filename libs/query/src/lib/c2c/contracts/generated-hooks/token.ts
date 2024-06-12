@@ -180,13 +180,6 @@ export const rahatTokenAbi = [
   },
   {
     type: 'function',
-    inputs: [],
-    name: 'getSender',
-    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
     inputs: [{ name: '_address', internalType: 'address', type: 'address' }],
     name: 'isOwner',
     outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
@@ -307,14 +300,6 @@ export const useReadRahatTokenBalanceOf = /*#__PURE__*/ createUseReadContract({
 export const useReadRahatTokenDecimals = /*#__PURE__*/ createUseReadContract({
   abi: rahatTokenAbi,
   functionName: 'decimals',
-})
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link rahatTokenAbi}__ and `functionName` set to `"getSender"`
- */
-export const useReadRahatTokenGetSender = /*#__PURE__*/ createUseReadContract({
-  abi: rahatTokenAbi,
-  functionName: 'getSender',
 })
 
 /**

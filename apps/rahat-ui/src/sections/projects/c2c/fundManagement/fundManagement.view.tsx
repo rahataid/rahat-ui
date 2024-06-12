@@ -13,6 +13,7 @@ import { useParams } from 'next/navigation';
 import { shortenAddress } from 'apps/rahat-ui/src/utils/getProjectAddress';
 import { useReadContract } from 'wagmi';
 import { useReactTable } from '@tanstack/react-table';
+import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 
 const FundManagementView = () => {
   const mySeries = [
@@ -38,7 +39,8 @@ const FundManagementView = () => {
     args: [contractSettings?.c2cproject?.address],
   });
 
-  const projectBalance = isLoading ? '0' : formatEther(BigInt(data));
+  // const projectBalance = isLoading ? '0' : formatEther(BigInt(data));
+  const projectBalance = '0';
 
   return (
     <>
@@ -58,7 +60,7 @@ const FundManagementView = () => {
           Icon={ReceiptText}
         />
       </div>
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-3 gap-4 h-[calc(100vh-192px)]">
         <div className="col-span-2">
           <ChartLine series={mySeries} />
         </div>

@@ -97,7 +97,7 @@ export const useGetDisbursement = (
       const response = await projectActions.mutateAsync({
         uuid: projectUUID,
         data: {
-          action: 'c2cProject.disbursement.getOne',
+          action: 'c2cProject.disbursement.list',
           payload: {
             disbursementUUID: disbursementUUID,
           },

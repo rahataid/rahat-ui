@@ -50,10 +50,14 @@ export const useDisburseTokenToBeneficiaries = () => {
         });
         await addDisbursement.mutateAsync({
           amount: formatEther(amount),
-          beneficiaries: beneficiaryAddresses,
+          beneficiaries: beneficiaryAddresses.map((ben) => ({
+            address: ben,
+            amount: formatEther(amount),
+            walletAddress: ben,
+          })),
           from: c2cProjectAddress,
           transactionHash: d,
-          type: DisbursementType.PROJECT,
+          type: disburseMethod as DisbursementType,
           timestamp: new Date().toISOString(),
           projectUUID,
         });
@@ -110,8 +114,8 @@ export const useDisburseTokenToBeneficiaries = () => {
           console.log({ beneficiary });
           return encodeFunctionData({
             abi: c2CProjectAbi,
-            functionName: 'processTransferToBeneficiary',
-            args: [beneficiary, rahatTokenAddress, BigInt(amount)],
+            functionName: 'disburseProjectToken',
+            args: [rahatTokenAddress, beneficiary, BigInt(amount)],
           });
         });
         return multi.writeContractAsync({

@@ -16,7 +16,7 @@ export type TransferProcessed = {
   _amount: string;
   timestamp: string;
   blockTimestamp: string;
-  _beneficiary: string;
+  _to: string;
   _tokenAddress: string;
   blockNumber: string;
 };

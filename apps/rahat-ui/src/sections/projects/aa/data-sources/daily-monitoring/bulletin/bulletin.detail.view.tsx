@@ -45,10 +45,10 @@ export default function BulletinDetailView() {
       <div className="flex gap-4 items-center mb-4">
         <DetailsHeadCard
           title="Forecast"
-          content="Demo"
+          content={details?.forecast}
           icon={<Info size={20} />}
         />
-        {details?.source === 'dhm' && (
+        {details?.source === 'DHM' && (
           <>
             <DetailsHeadCard
               title="Today"
@@ -67,7 +67,7 @@ export default function BulletinDetailView() {
             />
           </>
         )}
-        {details?.source === 'y' && (
+        {details?.source === 'NCMWRF' && (
           <>
             <DetailsHeadCard
               title="24 hours"
@@ -90,7 +90,7 @@ export default function BulletinDetailView() {
       <div className="bg-card p-4 grid grid-cols-2 w-1/2 gap-4">
         <div>
           <h1 className="text-muted-foreground text-sm">Data Entry By</h1>
-          <p>{details?.name}</p>
+          <p>{details?.dataEntryBy}</p>
         </div>
         <div>
           <h1 className="text-muted-foreground text-sm">River Basin</h1>

@@ -23,7 +23,9 @@ export default function useDailyMonitoringTableColumn() {
     {
       accessorKey: 'dataEntryBy',
       header: 'Data Entry By',
-      cell: ({ row }) => <div>{row.original.data.name}</div>,
+      cell: ({ row }) => {
+        return row.getValue('dataEntryBy');
+      },
     },
     {
       accessorKey: 'location',

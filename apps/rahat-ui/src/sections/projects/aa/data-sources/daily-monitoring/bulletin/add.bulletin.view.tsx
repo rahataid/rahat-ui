@@ -10,16 +10,9 @@ import {
   FormLabel,
   FormMessage,
 } from '@rahat-ui/shadcn/src/components/ui/form';
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from '@rahat-ui/shadcn/src/components/ui/select';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 
-import { useForm } from 'react-hook-form';
+import { useFieldArray, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import {
   Card,
@@ -34,6 +27,10 @@ import {
   useProjectSettingsStore,
   useCreateDailyMonitoring,
 } from '@rahat-ui/query';
+import { Plus } from 'lucide-react';
+import AddAnotherDataSource from './add.another.data.source';
+import SelectFormField from './select.form.field';
+import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 
 export default function AddBulletin() {
   const params = useParams();
@@ -46,138 +43,106 @@ export default function AddBulletin() {
 
   const createDailyMonitoring = useCreateDailyMonitoring();
 
+  const anotherDataSourceSchema = {
+    source: '',
+    forecast: '',
+  };
+
   const FormSchema = z.object({
-    name: z.string().min(2, { message: 'Please enter name.' }),
-    location: z.string().min(1, { message: 'Please select a river basin.' }),
-    source: z.string().min(1, { message: 'Please select a source.' }),
-    forecast: z.string().min(1, { message: 'Please select a forecast.' }),
-    todayStatus: z.string().optional(),
-    tomorrowStatus: z.string().optional(),
-    dayAfterTommorrowStatus: z.string().optional(),
-    hours24Status: z.string().optional(),
-    hours48Status: z.string().optional(),
-    hours72Status: z.string().optional(),
+    dataEntryBy: z.string().min(2, { message: 'Please enter name.' }),
+    dataSource: z.array(
+      z.object({
+        source: z.string().min(1, { message: 'Please select a source.' }),
+        forecast: z.string().min(1, { message: 'Please select a forecast.' }),
+        todayStatus: z.string().optional(),
+        tomorrowStatus: z.string().optional(),
+        dayAfterTomorrowStatus: z.string().optional(),
+        hours24Status: z.string().optional(),
+        hours48Status: z.string().optional(),
+        hours72Status: z.string().optional(),
+      }),
+    ),
   });
-  // .superRefine((data, ctx) => {
-  //   if (data.source === 'dhm') {
-  //     if (!data.todayStatus) {
-  //       ctx.addIssue({
-  //         code: z.ZodIssueCode.custom,
-  //         path: ['todayStatus'],
-  //         message: "Please select today's status.",
-  //       });
-  //     }
-  //     if (!data.tomorrowStatus) {
-  //       ctx.addIssue({
-  //         code: z.ZodIssueCode.custom,
-  //         path: ['tomorrowStatus'],
-  //         message: "Please select tomorrow's status.",
-  //       });
-  //     }
-  //     if (!data.dayAfterTommorrowStatus) {
-  //       ctx.addIssue({
-  //         code: z.ZodIssueCode.custom,
-  //         path: ['dayAfterTommorrowStatus'],
-  //         message: "Please select the day after tomorrow's status.",
-  //       });
-  //     }
-  //   } else if (data.source === 'y') {
-  //     if (!data.hours24Status) {
-  //       ctx.addIssue({
-  //         code: z.ZodIssueCode.custom,
-  //         path: ['hours24Status'],
-  //         message: 'Please select 24 hours status.',
-  //       });
-  //     }
-  //     if (!data.hours48Status) {
-  //       ctx.addIssue({
-  //         code: z.ZodIssueCode.custom,
-  //         path: ['hours48Status'],
-  //         message: 'Please select 48 hours status.',
-  //       });
-  //     }
-  //     if (!data.hours72Status) {
-  //       ctx.addIssue({
-  //         code: z.ZodIssueCode.custom,
-  //         path: ['hours72Status'],
-  //         message: 'Please select 72 hours status.',
-  //       });
-  //     }
-  //   }
-  // });
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      name: '',
-      location: '',
-      source: '',
-      forecast: '',
+      dataEntryBy: '',
+      dataSource: [],
     },
   });
 
-  type ISelectFormField = {
-    name:
-      | 'todayStatus'
-      | 'tomorrowStatus'
-      | 'dayAfterTommorrowStatus'
-      | 'hours24Status'
-      | 'hours48Status'
-      | 'hours72Status';
-    label: string;
-  };
+  const {
+    fields: anotherDataSourceFields,
+    append: anotherDataSourceAppend,
+    remove: anotherDataSourceRemove,
+  } = useFieldArray({
+    control: form.control,
+    name: 'dataSource',
+  });
 
-  const SelectFormField = ({ name, label }: ISelectFormField) => {
-    return (
-      <FormField
-        control={form.control}
-        name={name}
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>{label}</FormLabel>
-            <Select
-              onValueChange={field.onChange}
-              defaultValue={field.value}
-              value={field.value}
-            >
-              <FormControl>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select Status" />
-                </SelectTrigger>
-              </FormControl>
-              <SelectContent>
-                <SelectItem value="demo">Demo</SelectItem>
-              </SelectContent>
-            </Select>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-    );
-  };
+  const selectedRiverBasin =
+    form.watch('dataSource.0.source') === 'DHM'
+      ? dataSources?.dhm?.location
+      : form.watch('dataSource.0.source') === 'NCMWRF'
+      ? dataSources?.ncmwrf?.location ?? 'Karnali at Chisapani'
+      : '';
 
   const renderConditionalFields = () => {
-    const selectedSource = form.watch('source');
+    const selectedSource = form.watch(`dataSource.0.source`);
     let fields;
     switch (selectedSource) {
-      case 'dhm':
+      case 'DHM':
         fields = (
           <>
-            <SelectFormField name="todayStatus" label="Today's status" />
-            <SelectFormField name="tomorrowStatus" label="Tomorrow's status" />
             <SelectFormField
-              name="dayAfterTommorrowStatus"
+              form={form}
+              name="dataSource.0.todayStatus"
+              label="Today's status"
+              placeholder="Select status"
+              selectItems={[{ value: 'status1', label: 'Status 1' }]}
+            />
+            <SelectFormField
+              form={form}
+              name="dataSource.0.tomorrowStatus"
+              label="Tomorrow's status"
+              placeholder="Select status"
+              selectItems={[{ value: 'status1', label: 'Status 1' }]}
+            />
+            <SelectFormField
+              form={form}
+              name="dataSource.0.dayAfterTomorrowStatus"
               label="The day after tomorrow's status"
+              placeholder="Select status"
+              selectItems={[{ value: 'status1', label: 'Status 1' }]}
             />
           </>
         );
         break;
-      case 'y':
+      case 'NCMWRF':
         fields = (
           <>
-            <SelectFormField name="hours24Status" label="24 hours" />
-            <SelectFormField name="hours48Status" label="48 hours" />
-            <SelectFormField name="hours72Status" label="72 hours" />
+            <SelectFormField
+              form={form}
+              name="dataSource.0.hours24Status"
+              label="24 hours"
+              placeholder="Select status"
+              selectItems={[{ value: 'status1', label: 'Status 1' }]}
+            />
+            <SelectFormField
+              form={form}
+              name="dataSource.0.hours48Status"
+              label="48 hours"
+              placeholder="Select status"
+              selectItems={[{ value: 'status1', label: 'Status 1' }]}
+            />
+            <SelectFormField
+              form={form}
+              name="dataSource.0.hours72Status"
+              label="72 hours"
+              placeholder="Select status"
+              selectItems={[{ value: 'status1', label: 'Status 1' }]}
+            />
           </>
         );
         break;
@@ -188,23 +153,10 @@ export default function AddBulletin() {
   };
 
   const handleCreateBulletin = async (data: z.infer<typeof FormSchema>) => {
-    let payload = {
-      name: data.name,
-      source: data.source,
-      location: data.location,
-      forecast: data.forecast,
-      ...(data.source === 'dhm' && {
-        ...(data.todayStatus && { todayStatus: data.todayStatus }),
-        ...(data.tomorrowStatus && { tomorrowStatus: data.tomorrowStatus }),
-        ...(data.dayAfterTommorrowStatus && {
-          dayAfterTommorrowStatus: data.dayAfterTommorrowStatus,
-        }),
-      }),
-      ...(data.source === 'y' && {
-        ...(data.hours24Status && { hours24Status: data.hours24Status }),
-        ...(data.hours48Status && { hours48Status: data.hours48Status }),
-        ...(data.hours72Status && { hours72Status: data.hours72Status }),
-      }),
+    const payload = {
+      dataEntryBy: data.dataEntryBy,
+      location: selectedRiverBasin,
+      data: data.dataSource,
     };
     try {
       await createDailyMonitoring.mutateAsync({
@@ -213,15 +165,13 @@ export default function AddBulletin() {
       });
     } catch (e) {
       console.error('Create Bulletin Error::', e);
-    } finally {
-      form.reset();
     }
   };
 
   React.useEffect(() => {
     if (createDailyMonitoring.isSuccess) {
       form.reset();
-      router.back();
+      router.push(`/projects/aa/${projectId}/data-sources/#monitoring`);
     }
   }, [createDailyMonitoring.isSuccess]);
 
@@ -231,110 +181,86 @@ export default function AddBulletin() {
         <div className="h-add p-4 bg-secondary">
           <Card className="rounded-sm">
             <CardHeader>
-              <CardTitle className="text-lg">Add Bulletin</CardTitle>
+              <CardTitle className="text-lg">Add Daily Monitoring</CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 gap-4">
-                <FormField
-                  control={form.control}
-                  name="name"
-                  render={({ field }) => {
-                    return (
-                      <FormItem>
-                        <FormLabel>Data Entry By</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="Enter Data Entry Personal"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    );
-                  }}
-                />
-                <FormField
-                  control={form.control}
-                  name="source"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Source</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                        value={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select Data Source" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="dhm">DHM</SelectItem>
-                          <SelectItem value="y">Y</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="location"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>River Basin</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                        value={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select River Basin" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {form.watch('source') === 'dhm' ? (
-                            <SelectItem value={dataSources?.dhm?.location}>
-                              {dataSources?.dhm?.location}
-                            </SelectItem>
-                          ) : (
-                            <SelectItem value="demo">Demo</SelectItem>
-                          )}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="forecast"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Forecast</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                        value={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select Forecast" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="demo">Demo</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                {renderConditionalFields()}
-              </div>
-            </CardContent>
+            <ScrollArea className="h-[calc(100vh-238px)]">
+              <CardContent>
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="dataEntryBy"
+                    render={({ field }) => {
+                      return (
+                        <FormItem>
+                          <FormLabel>Data Entry By</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="Enter Data Entry Personal"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      );
+                    }}
+                  />
+                  <FormItem>
+                    <FormLabel>River Basin</FormLabel>
+                    <Input
+                      value={selectedRiverBasin}
+                      placeholder="Select data source to display river basin"
+                      disabled
+                    />
+                  </FormItem>
+                  <SelectFormField
+                    form={form}
+                    name="dataSource.0.source"
+                    label="Source"
+                    placeholder="Select Data Source"
+                    selectItems={[
+                      { value: 'DHM', label: 'DHM' },
+                      { value: 'NCMWRF', label: 'NCMWRF' },
+                    ]}
+                  />
+                  <SelectFormField
+                    form={form}
+                    name="dataSource.0.forecast"
+                    label="Forecast"
+                    placeholder="Select Forecast"
+                    selectItems={[
+                      { value: 'forecast1', label: 'Forecast 1' },
+                      { value: 'forecast2', label: 'Forecast 2' },
+                    ]}
+                  />
+                  {renderConditionalFields()}
+                </div>
+                {anotherDataSourceFields
+                  .filter((_, index) => index !== 0)
+                  .map((_, index) => (
+                    <AddAnotherDataSource
+                      key={index}
+                      form={form}
+                      index={index + 1}
+                      onClose={() => {
+                        anotherDataSourceRemove(index);
+                      }}
+                    />
+                  ))}
+
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="border-dashed border-primary text-primary text-sm w-full mt-4"
+                  onClick={() =>
+                    anotherDataSourceAppend(anotherDataSourceSchema)
+                  }
+                >
+                  Add Another Data Source
+                  <Plus className="ml-2" size={16} strokeWidth={3} />
+                </Button>
+              </CardContent>
+            </ScrollArea>
+
             <CardFooter>
               <div className="flex justify-end w-full gap-2">
                 <Button
@@ -347,7 +273,9 @@ export default function AddBulletin() {
                 >
                   Cancel
                 </Button>
-                <Button type="submit">Create Bulletin</Button>
+                <Button type="submit" className="w-32">
+                  Update
+                </Button>
               </div>
             </CardFooter>
           </Card>

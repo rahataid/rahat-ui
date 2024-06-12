@@ -15,7 +15,6 @@ export default function DailyMonitoringListView() {
   const columns = useDailyMonitoringTableColumn();
 
   const { data: MonitoringData } = useDailyMonitoring(projectId, {});
-  console.log('data::', MonitoringData?.data);
 
   const table = useReactTable({
     manualPagination: true,
@@ -34,7 +33,7 @@ export default function DailyMonitoringListView() {
           handleFilter={handleFilter}
         />
         <AddButton
-          name="Bulletin"
+          name=""
           path={`/projects/aa/${projectId}/data-sources/bulletin/add`}
         />
       </div>

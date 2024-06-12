@@ -87,6 +87,19 @@ const ProjectMainView = () => {
       return name === 'FOOTFALL';
     }) || [];
 
+    const footfallEyeCheckUp = ELProjectStats?.filter((item)=>{
+      return item?.name === 'FOOTFALL';
+    })?.[0]?.data?.find((i) =>i.id ==='EYE_CHECK_UP_DONE')
+
+    const footfallEyeCheckUpNotDone = ELProjectStats?.filter((item)=>{
+      return item?.name === 'FOOTFALL';
+    })?.[0]?.data?.find((i) =>i.id ==='EYE_CHECK_UP_NOT_DONE')
+
+    const footfallUnknown = ELProjectStats?.filter((item)=>{
+      return item?.name === 'FOOTFALL';
+    })?.[0]?.data?.find((i) =>i.id ==='UNKNOWN')
+
+
   const enrolledEyeCheckupData = ELProjectStats?.filter((item) => {
     return item.name === 'EYE_CHECKUP';
   })?.[0]?.data?.find((i) => i.id === 'ENROLLED_EYE_CHECK_UP_DONE');
@@ -126,6 +139,24 @@ const ProjectMainView = () => {
   const referredNoEyeCheckupData = ELProjectStats?.filter((item) => {
     return item.name === 'EYE_CHECKUP';
   })?.[0]?.data?.find((i) => i.id === 'REFERRED_EYE_CHECK_UP_NOT_DONE');
+
+
+  const footfallFilteredData = [{
+    name:"FOOTFALL",
+    group:'footfall',
+    data:[
+    {
+      id:'Eye_Check_Up',
+      count:footfallEyeCheckUp?.count || 0
+    },
+    {
+      id:'No_Eye_Check_Up',
+      count:footfallEyeCheckUpNotDone?.count || 0 
+      
+    },
+    ]
+  }]
+  
 
   const eyeCheckupData = [
     {
@@ -186,7 +217,7 @@ const ProjectMainView = () => {
           voucherDetails={voucherDetails}
         />
         <ProjectChart
-          chartData={[...filteredFootfallData, ...filterdELChartData]}
+          chartData={[...footfallFilteredData, ...filterdELChartData]}
         />
         <div className="grid md:grid-cols-1 lg:grid-cols-2 gap-2 mt-2">
           <div className="bg-card rounded">

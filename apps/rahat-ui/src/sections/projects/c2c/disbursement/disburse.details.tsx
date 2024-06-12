@@ -19,6 +19,8 @@ import { useGetDisbursement } from '@rahat-ui/query';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import { formatdbDate } from 'apps/rahat-ui/src/utils';
+import { WalletCards } from 'lucide-react';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 
 export default function DisburseDetails() {
   const { id: projectUUID, uuid } = useParams() as {
@@ -71,6 +73,17 @@ export default function DisburseDetails() {
                   <TabsTrigger value="referrals">Approvals</TabsTrigger>
                 )}
               </TabsList>
+              {/* //TODO get safe wallet from backend */}
+              <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                <a
+                  href="https://app.safe.global/transactions/queue?safe=basesep:0x8241F385c739F7091632EEE5e72Dbb62f2717E76"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ marginRight: '10px' }}
+                >
+                  <WalletCards />
+                </a>
+              </div>
             </Card>
           </div>
           <TabsContent value="transactions">

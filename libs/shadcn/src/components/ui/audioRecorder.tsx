@@ -10,6 +10,7 @@ import { Button } from './button';
 import { Mic, Trash, StopCircle, UploadIcon } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { cn } from '../../utils';
+import { useUploadFile } from '../../../../query/src';
 
 type Props = {
   className?: string;
@@ -32,6 +33,8 @@ const padWithLeadingZeros = (num: number, length: number): string => {
 };
 
 export const AudioRecorder = ({ className, timerClassName, form }: Props) => {
+  const uploadFile = useUploadFile();
+
   const { theme } = useTheme();
   // States
   const [isRecording, setIsRecording] = useState<boolean>(false);
@@ -188,7 +191,12 @@ export const AudioRecorder = ({ className, timerClassName, form }: Props) => {
       type: 'audio/wav',
     });
 
-    form.setValue('file', file);
+    const formData = new FormData();
+    formData.append('file', file);
+    const { data: afterUpload } = await uploadFile.mutateAsync(formData);
+
+    form.setValue('file', afterUpload);
+
     setIsRecording(false);
     setIsRecordingFinished(false);
   };
@@ -346,7 +354,7 @@ export const AudioRecorder = ({ className, timerClassName, form }: Props) => {
               ) : (
                 <Button
                   type="button"
-                  disabled={!isRecordingFinished}
+                  disabled={!isRecordingFinished || uploadFile.isPending}
                   onClick={() =>
                     handleSubmit(
                       new Blob(recordingChunks, { type: 'audio/wav' }),

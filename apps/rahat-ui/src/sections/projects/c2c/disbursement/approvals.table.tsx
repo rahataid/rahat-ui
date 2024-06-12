@@ -54,14 +54,14 @@ export function ApprovalTable({ disbursement }: { disbursement: any }) {
     id: UUID;
     uuid: UUID;
   };
-  const { data } = useGetDisbursementApprovals({
+  const { data, isLoading } = useGetDisbursementApprovals({
     disbursementUUID: uuid,
     projectUUID: projectUUID,
     page: 1,
     perPage: 10,
     transactionHash: disbursement?.transactionHash,
   });
-  console.log(data?.approvals);
+  console.log(disbursement);
   const table = useReactTable({
     data: data?.approvals || [],
     columns,
@@ -85,8 +85,10 @@ export function ApprovalTable({ disbursement }: { disbursement: any }) {
 
   const handleMigSigTransaction = async () => {
     await disburseMultiSig.mutateAsync({
-      amount: data?.approvals.amount,
-      beneficiaryAddresses: data?.approvals.beneficiaries as `0x${string}`[],
+      amount: disbursement?.DisbursementBeneficiary[0]?.amount,
+      beneficiaryAddresses: disbursement?.DisbursementBeneficiary?.map(
+        (d: any) => d.beneficiaryWalletAddress,
+      ) as `0x${string}`[],
       rahatTokenAddress: contractSettings?.rahattoken?.address,
       safeAddress: safeWallet,
       c2cProjectAddress: contractSettings?.c2cproject?.address,
@@ -95,6 +97,15 @@ export function ApprovalTable({ disbursement }: { disbursement: any }) {
 
   console.log('data', data);
 
+  if (isLoading) {
+    return (
+      <div className="w-full">
+        <div className="flex items-center justify-between px-4 py-2 border-b-2 bg-card">
+          Loading...
+        </div>
+      </div>
+    );
+  }
   return (
     <div className="w-full">
       {data?.isExecuted && (

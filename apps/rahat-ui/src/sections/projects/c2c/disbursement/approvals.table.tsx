@@ -66,8 +66,17 @@ export function ApprovalTable({ disbursement }: { disbursement: any }) {
     },
   });
 
+  console.log('data', data);
+
   return (
     <div className="w-full">
+      {data?.isExecuted && (
+        <div className="flex items-center justify-between px-4 py-2 border-b-2 bg-card">
+          <Button variant="outline" size="sm">
+            Execute Transaction
+          </Button>
+        </div>
+      )}
       <div className="rounded h-[calc(100vh-320px)] bg-card">
         <Table>
           <ScrollArea className="h-table1">
@@ -80,9 +89,9 @@ export function ApprovalTable({ disbursement }: { disbursement: any }) {
                         {header.isPlaceholder
                           ? null
                           : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext(),
-                          )}
+                              header.column.columnDef.header,
+                              header.getContext(),
+                            )}
                       </TableHead>
                     );
                   })}

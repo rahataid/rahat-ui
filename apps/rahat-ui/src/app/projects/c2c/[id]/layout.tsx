@@ -29,6 +29,7 @@ export default function ProjectLayoutRoot({
   const subgraphSettings = useProjectSettingsStore(
     (s) => s.settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.SUBGRAPH]?.url,
   );
+
   const contractSettings = useProjectSettingsStore(
     (state) => state.settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.CONTRACT],
   );

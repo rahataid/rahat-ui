@@ -95,8 +95,6 @@ export function ApprovalTable({ disbursement }: { disbursement: any }) {
     });
   };
 
-  console.log('data', data);
-
   if (isLoading) {
     return (
       <div className="w-full">
@@ -110,7 +108,12 @@ export function ApprovalTable({ disbursement }: { disbursement: any }) {
     <div className="w-full">
       {data?.isExecuted && (
         <div className="flex items-center justify-between px-4 py-2 border-b-2 bg-card">
-          <Button variant="outline" size="sm" onClick={handleMigSigTransaction}>
+          <Button
+            disabled={disburseMultiSig.isPending}
+            variant="outline"
+            size="sm"
+            onClick={handleMigSigTransaction}
+          >
             Execute Transaction
           </Button>
         </div>

@@ -100,7 +100,7 @@ export function ApprovalTable({ disbursement }: { disbursement: any }) {
   return (
     <div className="w-full">
       {data?.isExecuted && (
-        <div className="flex items-center justify-between px-4 py-2 border-b-2 bg-card">
+        <div className="flex items-center justify-end px-4 py-2 border-b-2 bg-card">
           <Button variant="outline" size="sm" onClick={handleMigSigTransaction}>
             Execute Transaction
           </Button>
@@ -118,9 +118,9 @@ export function ApprovalTable({ disbursement }: { disbursement: any }) {
                         {header.isPlaceholder
                           ? null
                           : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext(),
-                            )}
+                            header.column.columnDef.header,
+                            header.getContext(),
+                          )}
                       </TableHead>
                     );
                   })}

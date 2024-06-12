@@ -12,6 +12,8 @@ import { useEffect, useState } from 'react';
 import { useQuery } from 'urql';
 import { formatEther } from 'viem';
 import { Transaction } from './types';
+import { truncateEthAddress } from '@rumsan/sdk/utils';
+
 
 export default function RecentTransaction({
   contractAddress,
@@ -58,7 +60,7 @@ export default function RecentTransaction({
               </Avatar>
               <div className="grid gap-1">
                 <p className="text-sm font-medium leading-none">
-                  {transaction.from}
+                  {truncateEthAddress(transaction.from)}
                 </p>
                 <p>
                   <a

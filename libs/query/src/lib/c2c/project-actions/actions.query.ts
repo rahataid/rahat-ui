@@ -99,7 +99,7 @@ export const useGetDisbursement = (
       const response = await projectActions.mutateAsync({
         uuid: projectUUID,
         data: {
-          action: 'c2cProject.disbursement.list',
+          action: 'c2cProject.disbursement.getOne',
           payload: {
             disbursementUUID: disbursementUUID,
           },
@@ -146,21 +146,25 @@ export const useGetDisbursementTransactions = (
 type DisbursementApprovalsHookParams = {
   projectUUID: UUID;
   disbursementUUID: UUID;
+  transactionHash: string;
 } & Pagination;
 
 export const useGetDisbursementApprovals = (
   params: DisbursementApprovalsHookParams,
 ) => {
-  const projectActions = useProjectAction(['c2c', 'disbursements-actions']);
+  const projectActions = useProjectAction([
+    'c2c',
+    'disbursements-actions-approvals',
+  ]);
   const { projectUUID, disbursementUUID, ...restParams } = params;
 
   const query = useQuery({
-    queryKey: ['get-disbursement-approvals'],
+    queryKey: ['get-disbursement-approvals', disbursementUUID],
     queryFn: async () => {
       const response = await projectActions.mutateAsync({
         uuid: projectUUID,
         data: {
-          action: 'c2cProject.disbursement.approvals.get',
+          action: 'c2cProject.getSafeTransaction',
           payload: {
             projectUUID: projectUUID,
             ...restParams,

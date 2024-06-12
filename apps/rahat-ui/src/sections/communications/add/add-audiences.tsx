@@ -6,8 +6,10 @@ import {
   useProjectList,
 } from '@rahat-ui/query';
 import {
+  FormControl,
   FormField,
   FormItem,
+  FormLabel,
   FormMessage,
 } from '@rahat-ui/shadcn/components/form';
 import {
@@ -18,8 +20,15 @@ import {
   TableHeader,
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
+import { cn } from '@rahat-ui/shadcn/src';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { Calendar } from '@rahat-ui/shadcn/src/components/ui/calendar';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/popover';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import {
   Select,
@@ -33,6 +42,7 @@ import { useCreateAudience } from '@rumsan/communication-query';
 
 import { flexRender } from '@tanstack/react-table';
 import TableLoader from 'apps/rahat-ui/src/components/table.loader';
+import { CalendarIcon } from 'lucide-react';
 import React, { FC } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 import { z } from 'zod';
@@ -64,6 +74,8 @@ const AddAudience: FC<AddAudienceProps> = ({
 }) => {
   const [columnVisibility, setColumnVisibility] = React.useState({});
   const [rowSelection, setRowSelection] = React.useState({});
+  const [toDate, setToDate] = React.useState<Date | undefined>();
+  const [fromDate, setFromDate] = React.useState<Date | undefined>();
 
   const projectsList = useProjectList({});
 
@@ -150,6 +162,55 @@ const AddAudience: FC<AddAudienceProps> = ({
           }}
           className="max-w-sm"
         />
+
+        <Popover>
+          <PopoverTrigger asChild>
+            <FormControl>
+              <Button
+                variant={'outline'}
+                className={cn('pl-3 text-left font-normal')}
+              >
+                {fromDate ? fromDate.toLocaleDateString() : <span>From</span>}
+              </Button>
+            </FormControl>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="start">
+            <Calendar
+              mode="single"
+              selected={fromDate}
+              onSelect={(date) => {
+                setFromDate(date);
+                setFilters({ ...filters, from: date });
+              }}
+              className="rounded-md border"
+            />
+          </PopoverContent>
+        </Popover>
+
+        <Popover>
+          <PopoverTrigger asChild>
+            <FormControl>
+              <Button
+                variant={'outline'}
+                className={cn('pl-3 text-left font-normal')}
+              >
+                {toDate ? toDate.toLocaleDateString() : <span>To</span>}
+              </Button>
+            </FormControl>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="start">
+            <Calendar
+              mode="single"
+              selected={toDate}
+              onSelect={(date) => {
+                setToDate(date);
+                setFilters({ ...filters, to: date });
+              }}
+              className="rounded-md border"
+            />
+          </PopoverContent>
+        </Popover>
+
         <Select onValueChange={filterBenByProjectId}>
           <SelectTrigger className="max-w-32">
             <SelectValue placeholder="Projects" />

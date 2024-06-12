@@ -17,9 +17,15 @@ export default function Step1DisburseMethod({
 }: Step1DisburseMethodProps) {
   console.log({ treasurySources });
   return (
-    <div className="bg-card rounded px-4 pb-4 flex flex-col">
+    <div className="bg-card rounded px-4 pb-4 flex flex-col min-h-96">
       <div className="mb-2">
         <div className="flex flex-col">
+          <p className="mt-8 mb-4 text-lg font-semibold">
+            Select Distribution Method
+          </p>
+          <p className="font-normal text-lg">
+            How do you like to disburse the fund ?
+          </p>
           {TREASURY_SOURCES.map((method) => (
             <label key={method.value} className="inline-flex items-center mt-3">
               <input

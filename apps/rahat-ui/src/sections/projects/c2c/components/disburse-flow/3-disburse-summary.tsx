@@ -2,6 +2,7 @@ import {
   PROJECT_SETTINGS_KEYS,
   useProjectSettingsStore,
 } from '@rahat-ui/query';
+import { Separator } from '@rahat-ui/shadcn/src/components/ui/separator';
 import { useParams } from 'next/navigation';
 import { formatEther } from 'viem';
 import { useReadContract } from 'wagmi';
@@ -37,29 +38,36 @@ export default function Step3DisburseSummary({
   const projectBalance = data ? formatEther(BigInt(data)) : '0';
 
   return (
-    <div className="px-2 pb-4">
-      <p className="text-primary mt-2">Disburse USDC To Beneficiary</p>
-      <div className="flex items-center justify-between mb-4">
-        <h1>Project Balance</h1>
-        <h1>
-          {projectBalance}
-          {tokenName}
-        </h1>
-      </div>
-      <div className="flex items-center justify-between mb-4">
-        <div>
-          Send Amount{' '}
-          <span className="text-primary">
-            ({selectedBeneficiaries.length} Beneficiar
-            {selectedBeneficiaries.length > 1 ? 'ies' : 'y'})
-          </span>
+    <div className="bg-card rounded-lg px-4 pb-4 flex flex-col min-h-96">
+      <p className="mt-8 mb-4 text-lg font-semibold">Confirmation</p>
+      <div className="px-4 py-4 rounded-sm bg-neutral-100">
+        <div className="flex flex-col gap-4 items-start">
+          <div className="flex gap-4">
+            <p className="w-52 text-right text-neutral-400">
+              Beneficiaries Selected:
+            </p>
+            <p className="text-slate-800">{selectedBeneficiaries.length}</p>
+          </div>
+          <div className="flex gap-4">
+            <p className="w-52 text-right text-neutral-400">Project Balance:</p>
+            <p className="text-slate-800">
+              {projectBalance} {tokenName}
+            </p>
+          </div>
+          <div className="flex gap-4">
+            <p className="w-52 text-right text-neutral-400">Send Amount:</p>
+            <p className="text-slate-800">
+              {value} {token}
+            </p>
+          </div>
+          <Separator className="my-4" />
+          <div className="flex gap-4">
+            <p className="w-52 text-right text-neutral-400">Total Amount:</p>
+            <p className="text-slate-800">
+              {value} {token}
+            </p>
+          </div>
         </div>
-      </div>
-      <div className="flex items-center justify-between border-t mb-4">
-        <h1 className="mt-2">Total Amount</h1>
-        <h1 className="mt-2">
-          {value} {token}
-        </h1>
       </div>
     </div>
   );

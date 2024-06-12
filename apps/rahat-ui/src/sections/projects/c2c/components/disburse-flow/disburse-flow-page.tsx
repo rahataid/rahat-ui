@@ -159,20 +159,20 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
   };
 
   return (
-    <div className="sm:max-w-[450px]">
+    <div className="p-4 h-[calc(100vh-65px)] bg-secondary">
       <div className="bg-card p-4 rounded">
         <Stepper
           steps={steps.map((step) => ({ label: step.title }))}
           activeStep={currentStep}
           styleConfig={{
             completedBgColor: '#10b981',
-            activeBgColor: '#3b82f6',
+            activeBgColor: '#3D3D5A',
             inactiveBgColor: '#9ca3af',
           }}
           connectorStateColors={true}
           connectorStyleConfig={{
             completedColor: '#10b981',
-            activeColor: '#3b82f6',
+            activeColor: '#3D3D5A',
             disabledColor: '#9ca3af',
           }}
         />
@@ -180,11 +180,16 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
       <div className="mt-4">
         <div>{renderComponent()}</div>
         {!disburseToken.isSuccess && !disburseMultiSig.isSuccess && (
-          <div className="flex justify-between mt-4">
-            <Button onClick={handlePrevious} disabled={currentStep === 0}>
+          <div className="flex items-center gap-4 justify-end mt-4">
+            <Button
+              className="w-48"
+              onClick={handlePrevious}
+              disabled={currentStep === 0}
+            >
               Back
             </Button>
             <Button
+              className="w-48"
               onClick={
                 steps[currentStep].id === 'confirm_send'
                   ? handleDisburseToken

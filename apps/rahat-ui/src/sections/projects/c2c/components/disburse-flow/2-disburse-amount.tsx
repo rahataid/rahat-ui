@@ -39,29 +39,43 @@ export default function Step2DisburseAmount({
 
   // const [amount, setAmount] = useState<string>('0');
   return (
-    <div className="px-2 pb-4 mb-2">
-      <div className="flex items-center justify-between mb-4">
-        <h1>Project Balance</h1>
-        <h1>
-          {projectBalance} {tokenName}
-        </h1>
-      </div>
-      <div className="flex items-center justify-between">
-        <div>
-          Send Amount{' '}
-          <span className="text-primary">
-            ({selectedBeneficiaries.length} Beneficiar
-            {selectedBeneficiaries.length > 1 ? 'ies' : 'y'})
-          </span>
-        </div>
-        <div className="flex w-1/3 max-w-sm items-center space-x-2 gap-2">
-          <Input
-            name="disburseAmount"
-            placeholder="Amount"
-            value={value}
-            onChange={onChange}
-          />
-          {tokenName}
+    <div className="bg-card rounded px-4 pb-4 flex flex-col min-h-96">
+      <div className="mb-2">
+        <p className="mt-8 mb-4 text-lg text-slate-800 font-semibold">
+          Enter Distribution Amount
+        </p>
+        <div className="flex flex-col gap-6">
+          <div>
+            <p className="text-slate-800">Beneficiaries Selected</p>
+            <Input
+              className="w-2/4 bg-gray-100"
+              name="projectBalance"
+              value={selectedBeneficiaries.length}
+              disabled
+            />
+          </div>
+          <div>
+            <p className="text-slate-800">Project Balance</p>
+            <Input
+              className="w-2/4 bg-gray-100"
+              name="projectBalance"
+              value={projectBalance + ' ' + tokenName}
+              disabled
+            />
+          </div>
+          <div className="mb-4">
+            <p className="text-slate-800">Send Amount</p>
+            <div className="flex items-center gap-2">
+              <Input
+                className="w-2/4"
+                name="disburseAmount"
+                placeholder="Enter Amount To Send"
+                value={value}
+                onChange={onChange}
+              />
+              {tokenName}
+            </div>
+          </div>
         </div>
       </div>
     </div>

@@ -130,7 +130,6 @@ export default function BeneficiaryDetail({
     }
   };
 
-  const genderList = enumToObjectArray(Gender);
   const handleTabChange = (tab: 'details' | 'edit') => {
     setActiveTab(tab);
   };
@@ -138,53 +137,6 @@ export default function BeneficiaryDetail({
   const result = useWaitForTransactionReceipt({
     hash: transactionHash,
   });
-
-  useEffect(() => {
-    result?.data && setisTransacting(false);
-    refetch();
-  }, [result]);
-
-  const handleAssignVoucher = () => {
-    setisTransacting(true);
-    getProjectAddress(getProject, id as string).then(async (res) => {
-      const txnHash = await assignClaims.writeContractAsync({
-        address: res.value.elproject.address,
-        args: [walletAddress],
-      });
-      setTransactionHash(txnHash);
-    });
-  };
-
-  useEffect(() => {
-    if (assignClaims.isSuccess) {
-      route.push(`/projects/el/${id}/beneficiary`);
-    }
-    if (assignClaims.isError) {
-      setisTransacting(false);
-    }
-  }, [assignClaims.isSuccess, assignClaims.isError]);
-
-  useEffect(() => {
-    if (
-      beneficiaryVoucherDetails?.freeVoucherAddress === undefined ||
-      beneficiaryVoucherDetails?.referredVoucherAddress === undefined
-    )
-      return;
-    if (
-      beneficiaryVoucherDetails?.freeVoucherAddress?.toString() !==
-        zeroAddress ||
-      beneficiaryVoucherDetails?.referredVoucherAddress?.toString() !==
-        zeroAddress
-    ) {
-      setAssignStatus(true);
-    }
-  }, [beneficiaryVoucherDetails]);
-
-  const voucherAssignModal = useBoolean();
-
-  const handleVoucherAssignModalClose = () => {
-    voucherAssignModal.onFalse();
-  };
 
   const removeBeneficiary = (id: string | undefined) => {
     try {
@@ -195,10 +147,6 @@ export default function BeneficiaryDetail({
       console.error('Error::', e);
     }
   };
-
-  useEffect(() => {
-    deleteBeneficiary.isSuccess && closeSecondPanel();
-  }, [deleteBeneficiary]);
 
   return (
     <>

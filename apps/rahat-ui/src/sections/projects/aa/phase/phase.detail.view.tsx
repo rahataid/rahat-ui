@@ -1,5 +1,5 @@
 import { useParams } from 'next/navigation';
-import { useSinglePhase } from '@rahat-ui/query';
+import { useRevertPhase, useSinglePhase } from '@rahat-ui/query';
 import {
   Tabs,
   TabsList,
@@ -11,14 +11,26 @@ import AddButton from '../../components/add.btn';
 import SearchInput from '../../components/search.input';
 import ActivitiesListCard from '../../components/activities.list.card';
 import { UUID } from 'crypto';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 
 export default function PhaseDetailView() {
   const params = useParams();
   const projectId = params.id as UUID;
   const phaseId = params.phaseId as UUID;
   const { data: phaseDetail, isLoading } = useSinglePhase(projectId, phaseId);
+  const revertPhase = useRevertPhase()
 
-  const handleSearch = () => {};
+  const handleRevert = () => {
+    revertPhase.mutateAsync({
+      projectUUID: projectId,
+      payload: {
+        phaseId
+      }
+    })
+  }
+
+
+  const handleSearch = () => { };
   return (
     <div className="p-2 h-[calc(100vh-65px)] bg-secondary">
       <div className="mb-4">
@@ -105,6 +117,17 @@ export default function PhaseDetailView() {
                   path={`/projects/aa/${projectId}/trigger-statements/add`}
                   name="Trigger Statement"
                 />
+                {
+                  phaseDetail?.canRevert && (
+                    <Button
+                      onClick={handleRevert}
+                      disabled={!phaseDetail?.isActive}
+
+                    >
+                      Revert Phase
+                    </Button>
+                  )
+                }
               </div>
             </div>
             <TriggerStatementsList

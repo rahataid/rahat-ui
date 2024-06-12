@@ -22,19 +22,13 @@ import {
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import { useEffect, useState } from 'react';
 import { Pagination } from '@rumsan/sdk/types';
-import SearchDropdownComponent from '../../components/searchDropdownComponent';
-import GeroupData from '../../utils/groupData.json';
 type IProps = {
   table: Table<any>;
   setFilters: (fiters: Record<string, any>) => void;
   filters: Record<string, any>;
   setPagination: (pagination: Pagination) => void;
   pagination: Pagination;
-  tempGroups: {
-    groupName: string;
-  }[];
 };
 
 export default function ListView({
@@ -43,7 +37,6 @@ export default function ListView({
   setFilters,
   setPagination,
   pagination,
-  tempGroups,
 }: IProps) {
   const handleFilterChange = (event: any) => {
     if (event && event.target) {
@@ -59,21 +52,7 @@ export default function ListView({
       page: 1,
     });
   };
-  const handleSelect = (key: string, value: string) => {
-    if (key === 'group by name') {
-      setFilters({ ...filters, groupName: value });
-    }
-    setPagination({
-      ...pagination,
-      page: 1,
-    });
-  };
 
-  const transformedGroupData =
-    tempGroups.map((item) => ({
-      label: item.groupName.toString(),
-      value: item.groupName.toString(),
-    })) || [];
   return (
     <>
       <div className="-mt-2 p-2 bg-secondary">
@@ -88,11 +67,7 @@ export default function ListView({
             onChange={(event) => handleFilterChange(event)}
             className="rounded mr-2"
           />
-          <SearchDropdownComponent
-            transformedData={transformedGroupData}
-            title={'group by name'}
-            handleSelect={handleSelect}
-          />
+
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="ml-auto">

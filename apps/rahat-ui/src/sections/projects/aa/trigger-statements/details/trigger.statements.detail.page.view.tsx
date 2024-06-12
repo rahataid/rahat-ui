@@ -20,11 +20,12 @@ import {
 import { ArrowLeft, ArchiveRestore, Pencil } from 'lucide-react';
 import AutomatedTriggerDetailCards from './automated.trigger.detail.cards';
 import AutomatedTriggerDetailCard from './automated.trigger.detail.card';
-import TriggerActivityListCard from './trigger.activity.list.card';
+
 import {
   useSingleTriggerStatement,
   useDeleteTriggerStatement,
 } from '@rahat-ui/query';
+
 import { UUID } from 'crypto';
 import Loader from 'apps/rahat-ui/src/components/table.loader';
 import ManualTriggerDialog from './manual.trigger.dialog';
@@ -39,6 +40,9 @@ export default function TriggerStatementsDetailView() {
     projectID as UUID,
     triggerRepeatKey,
   );
+
+  // console.log(triggerDetail)
+
   const deleteTrigger = useDeleteTriggerStatement();
 
   const removeTrigger = () => {
@@ -69,9 +73,9 @@ export default function TriggerStatementsDetailView() {
           <h1 className="text-xl font-semibold">{triggerDetail?.title}</h1>
         </div>
         <div className="flex gap-4 items-center">
-          <div className="rounded-full border border-primary text-primary bg-card p-2">
+          {/* <div className="rounded-full border border-primary text-primary bg-card p-2">
             <Pencil size={20} strokeWidth={1.5} />
-          </div>
+          </div> */}
           <TooltipProvider delayDuration={100}>
             <Tooltip>
               <TooltipTrigger>
@@ -114,6 +118,7 @@ export default function TriggerStatementsDetailView() {
         <div className="grid grid-cols-2 gap-4 mt-4 h-[calc(100vh-152px)]">
           <ManualTriggerDetailCard
             status={triggerDetail?.isTriggered}
+            triggeredAt={triggerDetail?.triggeredAt}
             notes={triggerDetail?.notes}
             phase={triggerDetail?.phase?.name}
           />

@@ -1,6 +1,5 @@
-import React from 'react';
-import ViewCommunityBeneficiary from '../../sections/community-beneficiary/view';
+import ViewCommunityGroup from '../../sections/community-beneficiary/groupView';
 
 export default function Page() {
-  return <ViewCommunityBeneficiary />;
+  return <ViewCommunityGroup />;
 }

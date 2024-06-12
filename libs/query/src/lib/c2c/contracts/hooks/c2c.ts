@@ -1,10 +1,12 @@
 import { useMutation } from '@tanstack/react-query';
-import { encodeFunctionData, parseEther } from 'viem';
+import { encodeFunctionData, formatEther, parseEther } from 'viem';
 import {
   c2CProjectAbi,
   useWriteC2CProjectMulticall,
 } from '../generated-hooks/c2c';
 import { useRSQuery } from '@rumsan/react-query';
+import { DisbursementType, useAddDisbursement } from '../../project-actions';
+import { UUID } from 'crypto';
 
 //Temporary solution, should be changed when crypto is implemented
 export const useDepositTokenToProject = () => {
@@ -17,17 +19,54 @@ export const useDepositTokenToProject = () => {
 export const useDisburseTokenToBeneficiaries = () => {
   const multi = useWriteC2CProjectMulticall();
   const { queryClient } = useRSQuery();
+  console.log({ multi, queryClient });
+  const addDisbursement = useAddDisbursement();
 
   return useMutation(
     {
       onError: (error) => {
         console.error(error);
       },
-      onSuccess: (d, { c2cProjectAddress }) => {
+      onSuccess: async (
+        d,
+        {
+          rahatTokenAddress,
+          c2cProjectAddress,
+          amount,
+          beneficiaryAddresses,
+          disburseMethod,
+          projectUUID,
+        },
+      ) => {
         queryClient.invalidateQueries({
           queryKey: ['ProjectDetails', c2cProjectAddress],
         });
         console.log('success', d);
+        console.log({
+          amount,
+          beneficiaryAddresses,
+          c2cProjectAddress,
+          rahatTokenAddress,
+        });
+        await addDisbursement.mutateAsync({
+          amount: formatEther(amount),
+          beneficiaries: beneficiaryAddresses.map((ben) => ({
+            address: ben,
+            amount: formatEther(amount),
+            walletAddress: ben,
+          })),
+          from: c2cProjectAddress,
+          transactionHash: d,
+          type: disburseMethod as DisbursementType,
+          timestamp: new Date().toISOString(),
+          projectUUID,
+        });
+
+        // await addDisbursement.mutateAsync({
+        //   amount: d,
+        //   c2cProjectAddress
+
+        // })
       },
       mutationFn: async ({
         amount,
@@ -36,24 +75,26 @@ export const useDisburseTokenToBeneficiaries = () => {
         c2cProjectAddress,
       }: {
         beneficiaryAddresses: `0x${string}`[];
-        amount: string;
+        amount: bigint;
         rahatTokenAddress: `0x{string}`;
         c2cProjectAddress: `0x{string}`;
+        disburseMethod: string;
+        projectUUID: UUID;
       }) => {
-        const encodeAssignClaimsToBeneficiary = beneficiaryAddresses.map(
-          (beneficiary) => {
-            return encodeFunctionData({
-              abi: c2CProjectAbi,
-              functionName: 'assignClaims',
-              args: [beneficiary, rahatTokenAddress, BigInt(amount)],
-            });
-          },
-        );
+        // const encodeAssignClaimsToBeneficiary = beneficiaryAddresses.map(
+        //   (beneficiary) => {
+        //     return encodeFunctionData({
+        //       abi: c2CProjectAbi,
+        //       functionName: 'assignClaims',
+        //       args: [beneficiary, rahatTokenAddress, BigInt(amount)],
+        //     });
+        //   },
+        // );
 
-        await multi.writeContractAsync({
-          args: [encodeAssignClaimsToBeneficiary],
-          address: c2cProjectAddress,
-        });
+        // await multi.writeContractAsync({
+        //   args: [encodeAssignClaimsToBeneficiary],
+        //   address: c2cProjectAddress,
+        // });
 
         // const encodeGetBeneficiaryClaims = beneficiaryAddresses.map(
         //   (beneficiary) => {
@@ -68,11 +109,13 @@ export const useDisburseTokenToBeneficiaries = () => {
         //   args: [encodeGetBeneficiaryClaims],
         //   address: rahatTokenAddress,
         // });
+        console.log({ c2CProjectAbi, rahatTokenAddress, amount });
         const encodedForDisburse = beneficiaryAddresses.map((beneficiary) => {
+          console.log({ beneficiary });
           return encodeFunctionData({
             abi: c2CProjectAbi,
-            functionName: 'processTransferToBeneficiary',
-            args: [beneficiary, rahatTokenAddress, BigInt(amount)],
+            functionName: 'disburseProjectToken',
+            args: [rahatTokenAddress, beneficiary, BigInt(amount)],
           });
         });
         return multi.writeContractAsync({

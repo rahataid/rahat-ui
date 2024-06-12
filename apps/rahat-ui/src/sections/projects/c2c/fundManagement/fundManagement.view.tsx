@@ -11,6 +11,9 @@ import {
 } from '@rahat-ui/query';
 import { useParams } from 'next/navigation';
 import { shortenAddress } from 'apps/rahat-ui/src/utils/getProjectAddress';
+import { useReadContract } from 'wagmi';
+import { useReactTable } from '@tanstack/react-table';
+import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 
 const FundManagementView = () => {
   const mySeries = [
@@ -28,15 +31,24 @@ const FundManagementView = () => {
   const contractSettings = useProjectSettingsStore(
     (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT],
   );
+
+  const { data, error, isLoading } = useReadContract({
+    address: contractSettings?.rahattoken?.address,
+    abi: contractSettings?.rahattoken?.abi,
+    functionName: 'balanceOf',
+    args: [contractSettings?.c2cproject?.address],
+  });
+
+  // const projectBalance = isLoading ? '0' : formatEther(BigInt(data));
+  const projectBalance = '0';
+
   return (
     <>
       <div className="grid grid-cols-2 gap-4 m-2">
         <DataCard
           className=""
           title="Project Balance"
-          smallNumber={`${formatEther(
-            BigInt(projectDetails.tokenBalance.balance),
-          )} USDC`}
+          smallNumber={`${projectBalance} USDC`}
           subTitle="Total"
           Icon={Banknote}
         />
@@ -48,11 +60,13 @@ const FundManagementView = () => {
           Icon={ReceiptText}
         />
       </div>
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-3 gap-4 h-[calc(100vh-192px)]">
         <div className="col-span-2">
           <ChartLine series={mySeries} />
         </div>
-        <RecentTransaction />
+        <RecentTransaction
+          contractAddress={contractSettings?.c2cproject?.address}
+        />
       </div>
     </>
   );

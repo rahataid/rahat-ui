@@ -14,15 +14,16 @@ import {
 import {
   useBeneficiaryStore,
   useListTempBeneficiary,
-  useListTempGroups,
   usePagination,
 } from '@rahat-ui/query';
 import CustomPagination from '../../components/customPagination';
 import { useDebounce } from '../../utils/useDebouncehooks';
 import ListView from './list.view';
-import { useCommunityBeneficiaryTableColumns } from './useBeneficiaryColumns';
+import { useCommunityBeneficiaryTableColumns } from './useCommunityBeneficiaryColumn';
+import { usePathname } from 'next/navigation';
+// import { useCommunityBeneficiaryTableColumns } from './useBeneficiaryColumns';
 
-function ViewCommunityBeneficiary() {
+function ViewCommunityBeneficiaryByGroupName() {
   const {
     pagination,
     selectedListItems,
@@ -36,10 +37,11 @@ function ViewCommunityBeneficiary() {
     resetSelectedListItems,
   } = usePagination();
 
+  const pathName = usePathname();
+  filters.groupName = pathName.split('/')[2].replace('%20', ' ');
   const debouncedFilters = useDebounce(filters, 500);
   const { setCommunityBeneficiariesUUID, communityBeneficiariesUUID } =
     useBeneficiaryStore();
-  const { data: tempGroups } = useListTempGroups();
 
   const { data } = useListTempBeneficiary({
     ...pagination,
@@ -85,7 +87,6 @@ function ViewCommunityBeneficiary() {
             filters={filters}
             pagination={pagination}
             setPagination={setPagination}
-            tempGroups={tempGroups?.data || []}
           />
         </TabsContent>
 
@@ -103,4 +104,4 @@ function ViewCommunityBeneficiary() {
   );
 }
 
-export default ViewCommunityBeneficiary;
+export default ViewCommunityBeneficiaryByGroupName;

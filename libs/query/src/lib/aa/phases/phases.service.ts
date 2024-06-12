@@ -1,6 +1,7 @@
 import { UUID } from "crypto";
 import { useProjectAction } from "../../projects";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { useSwal } from "libs/query/src/swal";
 
 export const useSinglePhase = (
     uuid: UUID,
@@ -24,3 +25,49 @@ export const useSinglePhase = (
     });
     return query;
 };
+
+export const useRevertPhase = () => {
+    const q = useProjectAction();
+    const alert = useSwal();
+    const toast = alert.mixin({
+      toast: true,
+      position: 'top-end',
+      showConfirmButton: false,
+      timer: 2000,
+    });
+    return useMutation({
+      mutationFn: async ({
+        projectUUID,
+        payload,
+      }: {
+        projectUUID: UUID;
+        payload: {
+            phaseId: UUID;
+        };
+      }) => {
+        return q.mutateAsync({
+          uuid: projectUUID,
+          data: {
+            action: 'aaProject.phases.revertPhase',
+            payload,
+          },
+        });
+      },
+      onSuccess: () => {
+        q.reset();
+        toast.fire({
+          title: 'Phase reverted successfully.',
+          icon: 'success',
+        });
+      },
+      onError: (error: any) => {
+        const errorMessage = error?.response?.data?.message || 'Error';
+        q.reset();
+        toast.fire({
+          title: 'Error while reverting phase.',
+          icon: 'error',
+          text: errorMessage,
+        });
+      },
+    });
+  };

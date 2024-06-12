@@ -51,7 +51,12 @@ export const useMultiSigDisburseToken = () => {
         return encodeFunctionData({
           abi: c2CProjectAbi,
           functionName: 'disburseExternalToken',
-          args: [rahatTokenAddress, beneficiary, safeAddress, BigInt(amount)],
+          args: [
+            rahatTokenAddress,
+            beneficiary,
+            safeAddress,
+            parseEther(BigInt(amount).toString()),
+          ],
         });
       });
       return multi.writeContractAsync({

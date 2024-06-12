@@ -48,10 +48,8 @@ export function ApprovalTable({ disbursement }: { disbursement: any }) {
     transactionHash: disbursement?.transactionHash,
   });
 
-  console.log(disbursement);
-
   const table = useReactTable({
-    data: data || [],
+    data: data?.approvals || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,

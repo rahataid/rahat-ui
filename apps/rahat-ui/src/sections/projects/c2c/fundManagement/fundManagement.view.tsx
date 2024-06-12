@@ -39,8 +39,7 @@ const FundManagementView = () => {
     args: [contractSettings?.c2cproject?.address],
   });
 
-  // const projectBalance = isLoading ? '0' : formatEther(BigInt(data));
-  const projectBalance = '0';
+  const projectBalance = isLoading ? '0' : formatEther(BigInt(data));
 
   return (
     <>
@@ -60,7 +59,7 @@ const FundManagementView = () => {
           Icon={ReceiptText}
         />
       </div>
-      <div className="grid grid-cols-3 gap-4 h-[calc(100vh-192px)]">
+      <div className="grid grid-cols-3 gap-4 h-[calc(100vh-420px)]">
         <div className="col-span-2">
           <ChartLine series={mySeries} />
         </div>

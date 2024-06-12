@@ -1,13 +1,10 @@
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
+import { useTempBeneficiaryImport } from '@rahat-ui/query';
 import { ListBeneficiary } from '@rahataid/community-tool-sdk';
 import { ColumnDef } from '@tanstack/react-table';
 import { Eye, Import } from 'lucide-react';
 import Link from 'next/link';
 import { humanReadableDate, humanizeString } from '../../utils';
 import { TempBeneficiary } from '@rahataid/sdk';
-import { useTempBeneficiaryImport } from '@rahat-ui/query';
-import { group } from 'console';
 import { useRouter } from 'next/navigation';
 import {
   Tooltip,
@@ -23,9 +20,10 @@ export const useCommunityBeneficiaryGroupTableColumns = () => {
     const res = await importTempBeneficiaries.mutateAsync({
       groupUUID: args,
     });
-    console.log(res);
     if (res?.response?.success) {
-      router.push('/beneficiary');
+      setTimeout(() => {
+        router.push('/beneficiary');
+      }, 1500);
     }
   };
   const columns: ColumnDef<TempBeneficiary>[] = [
@@ -93,31 +91,6 @@ export const useCommunityBeneficiaryGroupTableColumns = () => {
 
 export const useCommunityBeneficiaryTableColumns = () => {
   const columns: ColumnDef<ListBeneficiary>[] = [
-    // {
-    //   id: 'select',
-    //   header: ({ table }) => (
-    //     <Checkbox
-    //       checked={
-    //         table.getIsAllPageRowsSelected() ||
-    //         (table.getIsSomePageRowsSelected() && 'indeterminate')
-    //       }
-    //       onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-    //       aria-label="Select all"
-    //     />
-    //   ),
-    //   cell: ({ row, table }) => (
-    //     <Checkbox
-    //       checked={row.getIsSelected()}
-    //       disabled={!row.getCanSelect()}
-    //       onCheckedChange={(value) => {
-    //         row.toggleSelected(!!value);
-    //       }}
-    //       aria-label="Select row"
-    //     />
-    //   ),
-    //   enableSorting: false,
-    //   enableHiding: false,
-    // },
     {
       header: 'Beneficiary Name',
       cell: ({ row }) => {

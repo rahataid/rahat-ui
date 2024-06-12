@@ -22,7 +22,7 @@ import ActivityDetailCard from './activity.detail.card';
 import ActivityDetailCards from './activity.detail.cards';
 import ActivityCommunicationListCard from './activity.communication.list.card';
 // import ActivityPayoutCard from './activity.payout.card';
-import { useSingleActivity } from '@rahat-ui/query';
+import { useDeleteActivities, useSingleActivity } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import Loader from 'apps/rahat-ui/src/components/table.loader';
 
@@ -33,6 +33,21 @@ export default function ActivitiesDetailView() {
     projectID as UUID,
     activityID,
   );
+
+  const deleteActivity = useDeleteActivities();
+
+  const removeActivity = (activity: any) => {
+    deleteActivity.mutateAsync({
+      projectUUID: projectID as UUID,
+      activityPayload: {
+        uuid: activity,
+      },
+    });
+  };
+
+  React.useEffect(() => {
+    deleteActivity.isSuccess && router.push(`/projects/aa/${projectID}/activities`);
+  }, [deleteActivity]);
 
   if (isLoading) return <Loader />;
 
@@ -89,7 +104,9 @@ export default function ActivitiesDetailView() {
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                       <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction>Continue</AlertDialogAction>
+                      <AlertDialogAction
+                        onClick={() => removeActivity(activityDetail.uuid)}
+                      >Continue</AlertDialogAction>
                     </AlertDialogFooter>
                   </AlertDialogContent>
                 </AlertDialog>

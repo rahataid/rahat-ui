@@ -2,10 +2,11 @@
 
 import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
 import { ColumnDef } from '@tanstack/react-table';
-import { Eye } from 'lucide-react';
+import { ArrowUpDown, Eye } from 'lucide-react';
 import { useCallback, useState } from 'react';
 import { useSecondPanel } from '../../../../providers/second-panel-provider';
 import BeneficiaryDetail from '../../../../sections/projects/el/beneficiary/beneficiary.detail';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 
 export const useProjectBeneficiaryTableColumns = (voucherType: string) => {
   const { setSecondPanelComponent, closeSecondPanel } = useSecondPanel();
@@ -21,29 +22,26 @@ export const useProjectBeneficiaryTableColumns = (voucherType: string) => {
       <BeneficiaryDetail
         closeSecondPanel={closeSecondPanel}
         beneficiaryDetails={rowDetail}
-      />
+      />,
     );
   }, []);
 
   const columns: ColumnDef<any>[] = [
     {
       id: 'select',
-      header: 
-      ({ table }) => (
-        
-          voucherType === "NOT_ASSIGNED" && (
-            <Checkbox
+      header: ({ table }) =>
+        voucherType === 'NOT_ASSIGNED' && (
+          <Checkbox
             checked={
               table.getIsAllPageRowsSelected() ||
               (table.getIsSomePageRowsSelected() && 'indeterminate')
             }
-            onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+            onCheckedChange={(value) =>
+              table.toggleAllPageRowsSelected(!!value)
+            }
             aria-label="Select all"
           />
-          )
-        
-       
-      ),
+        ),
       cell: ({ row }) => {
         const isDisabled = voucherType != 'NOT_ASSIGNED';
         const isChecked = row.getIsSelected() && !isDisabled;
@@ -113,8 +111,20 @@ export const useProjectBeneficiaryTableColumns = (voucherType: string) => {
     },
     {
       accessorKey: 'voucherClaimStatus',
-      header: 'Claim Status',
-      cell: ({ row }) => <div> {row.getValue('voucherClaimStatus')}</div>,
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          >
+            Claim Status
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        );
+      },
+      cell: ({ row }) => (
+        <div className="ml-5"> {row.getValue('voucherClaimStatus')}</div>
+      ),
     },
     {
       id: 'actions',

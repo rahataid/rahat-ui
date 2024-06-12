@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 import { Tabs, TabsContent } from '@rahat-ui/shadcn/components/tabs';
 
@@ -11,19 +11,12 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 
-import {
-  useBeneficiaryStore,
-  useListTempBeneficiary,
-  usePagination,
-} from '@rahat-ui/query';
+import { useListTempGroups, usePagination } from '@rahat-ui/query';
 import CustomPagination from '../../components/customPagination';
-import { useDebounce } from '../../utils/useDebouncehooks';
-import ListView from './list.view';
-import { useCommunityBeneficiaryTableColumns } from './useCommunityBeneficiaryColumn';
-import { usePathname } from 'next/navigation';
-// import { useCommunityBeneficiaryTableColumns } from './useBeneficiaryColumns';
+import GroupListView from './communitBeneficiaryGroupList';
+import { useCommunityBeneficiaryGroupTableColumns } from './useCommunityBeneficiaryColumn';
 
-function ViewCommunityBeneficiaryByGroupName() {
+function ViewCommunityGroup() {
   const {
     pagination,
     selectedListItems,
@@ -34,54 +27,36 @@ function ViewCommunityBeneficiaryByGroupName() {
     filters,
     setFilters,
     setPagination,
-    resetSelectedListItems,
   } = usePagination();
 
-  const pathName = usePathname();
-  filters.groupName = pathName.split('/')[2].replace('%20', ' ');
-  const debouncedFilters = useDebounce(filters, 500);
-  const { setCommunityBeneficiariesUUID, communityBeneficiariesUUID } =
-    useBeneficiaryStore();
-
-  const { data } = useListTempBeneficiary({
+  const { data: tempGroups } = useListTempGroups({
     ...pagination,
-    ...(debouncedFilters as any),
+    ...(filters as any),
   });
-  const columns = useCommunityBeneficiaryTableColumns();
+
+  const columns = useCommunityBeneficiaryGroupTableColumns();
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const table = useReactTable({
     manualPagination: true,
-    data: data?.data || [],
+    data: tempGroups?.data || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setSelectedListItems,
-    getRowId: (row) => row.uuid as string,
+    getRowId: (row) => row?.uuid as string,
     state: {
       columnVisibility,
       rowSelection: selectedListItems,
     },
   });
 
-  useEffect(() => {
-    setCommunityBeneficiariesUUID(
-      Object.keys(selectedListItems).filter((key) => selectedListItems[key]),
-    );
-  }, [selectedListItems, setCommunityBeneficiariesUUID]);
-
-  useEffect(() => {
-    if (communityBeneficiariesUUID.length === 0) {
-      resetSelectedListItems();
-    }
-  }, [resetSelectedListItems, communityBeneficiariesUUID.length]);
-
   return (
     <Tabs defaultValue="list" className="h-full">
       <>
         <TabsContent value="list">
-          <ListView
+          <GroupListView
             table={table}
             setFilters={setFilters}
             filters={filters}
@@ -95,13 +70,13 @@ function ViewCommunityBeneficiaryByGroupName() {
           handleNextPage={setNextPage}
           handlePrevPage={setPrevPage}
           handlePageSizeChange={setPerPage}
-          meta={data?.response?.meta || { total: 0, currentPage: 0 }}
+          meta={tempGroups?.response?.meta || { total: 0, currentPage: 0 }}
           perPage={pagination?.perPage}
-          total={0}
+          total={tempGroups?.response?.meta?.total || 0}
         />
       </>
     </Tabs>
   );
 }
 
-export default ViewCommunityBeneficiaryByGroupName;
+export default ViewCommunityGroup;

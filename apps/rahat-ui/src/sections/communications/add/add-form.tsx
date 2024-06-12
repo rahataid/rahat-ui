@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button } from '@rahat-ui/shadcn/components/button';
 import { Calendar } from '@rahat-ui/shadcn/components/calendar';
 import {
@@ -46,6 +46,7 @@ import { paths } from 'apps/rahat-ui/src/routes/paths';
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 import ConfirmModal from './confirm.modal';
 import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
+import { AudioRecorder } from '@rahat-ui/shadcn/src/components/ui/audioRecorder';
 
 type CampaignFormProps = {
   // Add props here
@@ -82,6 +83,7 @@ const CampaignForm: FC<CampaignFormProps> = ({
   );
   const isWhatsappMessage =
     form.getValues().campaignType?.toLowerCase() === 'whatsapp';
+  const isIvrMessage = form.getValues().campaignType?.toLowerCase() === 'ivr';
   const includeAudio = ['phone'].includes(
     form.getValues().campaignType?.toLowerCase(),
   );
@@ -188,6 +190,7 @@ const CampaignForm: FC<CampaignFormProps> = ({
                 </FormItem>
               )}
             />
+            {isIvrMessage && <AudioRecorder form={form} />}
             {isWhatsappMessage && (
               <FormField
                 control={form.control}

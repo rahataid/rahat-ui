@@ -4,6 +4,8 @@ import { PROJECT_SETTINGS_KEYS } from '../../../config';
 import { useProjectAction, useProjectSettingsStore } from '../../projects';
 import { Pagination } from '@rumsan/sdk/types';
 import { Beneficiary } from '@rahataid/sdk';
+import Swal from 'sweetalert2';
+import { formatEther } from 'viem';
 
 export const useGetTreasurySourcesSettings = (uuid: UUID) => {
   const projectActions = useProjectAction([
@@ -97,7 +99,7 @@ export const useGetDisbursement = (
       const response = await projectActions.mutateAsync({
         uuid: projectUUID,
         data: {
-          action: 'c2cProject.disbursement.list',
+          action: 'c2cProject.disbursement.getOne',
           payload: {
             disbursementUUID: disbursementUUID,
           },
@@ -144,21 +146,25 @@ export const useGetDisbursementTransactions = (
 type DisbursementApprovalsHookParams = {
   projectUUID: UUID;
   disbursementUUID: UUID;
+  transactionHash: string;
 } & Pagination;
 
 export const useGetDisbursementApprovals = (
   params: DisbursementApprovalsHookParams,
 ) => {
-  const projectActions = useProjectAction(['c2c', 'disbursements-actions']);
+  const projectActions = useProjectAction([
+    'c2c',
+    'disbursements-actions-approvals',
+  ]);
   const { projectUUID, disbursementUUID, ...restParams } = params;
 
   const query = useQuery({
-    queryKey: ['get-disbursement-approvals'],
+    queryKey: ['get-disbursement-approvals', disbursementUUID],
     queryFn: async () => {
       const response = await projectActions.mutateAsync({
         uuid: projectUUID,
         data: {
-          action: 'c2cProject.disbursement.approvals.get',
+          action: 'c2cProject.getSafeTransaction',
           payload: {
             projectUUID: projectUUID,
             ...restParams,
@@ -219,10 +225,21 @@ export const useAddDisbursement = () => {
   return useMutation({
     mutationKey: ['add-disbursement'],
     onSuccess(data, variables, context) {
-      console.log('onSuccess', data, variables, context);
+      Swal.fire({
+        title: 'Disbursement Created',
+        icon: 'success',
+        showConfirmButton: false,
+        timer: 1500,
+      });
     },
     onError(error, variables, context) {
-      console.log('onError', error, variables, context);
+      Swal.fire({
+        title: 'Error',
+        text: error.message,
+        icon: 'error',
+        showConfirmButton: false,
+        timer: 1500,
+      });
     },
     mutationFn: async (data: {
       projectUUID: UUID;
@@ -238,7 +255,14 @@ export const useAddDisbursement = () => {
         uuid: projectUUID,
         data: {
           action: 'c2cProject.disbursement.create',
-          payload: restData,
+          payload: {
+            ...restData,
+            beneficiaries: restData.beneficiaries.map((ben: any) => ({
+              address: ben,
+              amount: restData.amount,
+              walletAddress: ben,
+            })),
+          },
         },
       });
       return response.data;
@@ -264,6 +288,49 @@ export const useUpdateDisbursement = (projectUUID: UUID) => {
         data: {
           action: 'c2cProject.disbursement.update',
           payload: data,
+        },
+      });
+      return response.data;
+    },
+  });
+};
+
+export const useDisburseTokenUsingMultisig = () => {
+  const projectActions = useProjectAction(['c2c', 'disbursements-actions']);
+  const addDisbursement = useAddDisbursement();
+
+  return useMutation({
+    mutationKey: ['disburse-token-using-multisig'],
+    async onSuccess(data, variables, context) {
+      await addDisbursement.mutateAsync({
+        amount: variables.amount,
+        projectUUID: variables.projectUUID,
+        type: DisbursementType.MULTISIG,
+        beneficiaries: variables.beneficiaryAddresses,
+        transactionHash: data.safeTxHash,
+        from: variables.c2cProjectAddress,
+        timestamp: String(Math.floor(Date.now() / 1000)), // Convert to seconds timestamp
+      });
+      console.log('onSuccess', data, variables, context);
+    },
+    mutationFn: async ({
+      amount,
+      projectUUID,
+    }: {
+      amount: string;
+      projectUUID: UUID;
+      beneficiaryAddresses: `0x${string}`[];
+      disburseMethod: string;
+      rahatTokenAddress: string;
+      c2cProjectAddress: string;
+    }) => {
+      const response = await projectActions.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'c2cProject.createSafeTransaction',
+          payload: {
+            amount,
+          },
         },
       });
       return response.data;

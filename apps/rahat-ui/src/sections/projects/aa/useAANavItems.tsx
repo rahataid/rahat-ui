@@ -73,20 +73,9 @@ export const useNavItems = () => {
           icon: <AlignVerticalJustifyCenter size={18} strokeWidth={1.5} />,
         },
         {
-          title: 'Communication Log',
+          title: 'Communication Logs',
           icon: <Speech size={18} strokeWidth={1.5} />,
-          children: [
-            {
-              title: 'Voice',
-              icon: <Phone size={18} strokeWidth={1.5} />,
-              path: `/projects/aa/${params.id}/communications/voice`,
-            },
-            {
-              title: 'Text',
-              icon: <MessageSquare size={18} strokeWidth={1.5} />,
-              path: `/projects/aa/${params.id}/communications/text`,
-            },
-          ],
+          path: `/projects/aa/${params.id}/communication-logs`,
         },
         {
           title: 'Transaction Log',

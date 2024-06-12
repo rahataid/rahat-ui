@@ -46,3 +46,13 @@ function truncateString(inputStr: string, length: number) {
   }
   return inputStr;
 }
+
+export function humanReadableDate(date: Date) {
+  const changedDate = new Date(date);
+  const year = changedDate.getFullYear();
+  const month = (changedDate.getMonth() + 1).toString().padStart(2, '0');
+  const day = changedDate.getDate().toString().padStart(2, '0');
+  const formattedDate = `${year}-${month}-${day}`;
+
+  return formattedDate;
+}

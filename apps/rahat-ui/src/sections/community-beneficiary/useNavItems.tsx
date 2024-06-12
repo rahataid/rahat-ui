@@ -15,8 +15,13 @@ export const useCommunityBeneficiaryNavItems = () => {
         </div>
       ),
       children: [
+        // {
+        //   title: 'Temporary Beneficiaries',
+        //   icon: <KanbanSquare size={18} strokeWidth={1.5} />,
+        //   path: paths.dashboard.communitybeneficiary,
+        // },
         {
-          title: 'Temporary Beneficiaries',
+          title: 'Temp Group List',
           icon: <KanbanSquare size={18} strokeWidth={1.5} />,
           path: paths.dashboard.communitybeneficiary,
         },

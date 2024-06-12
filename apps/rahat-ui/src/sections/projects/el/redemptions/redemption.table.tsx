@@ -220,7 +220,7 @@ export default function RedemptionTable({}) {
       <div className="w-full h-full p-2 bg-secondary">
         <div className="flex items-center mb-2">
           <Input
-            placeholder="Filter Redemptions..."
+            placeholder="Filter Claims..."
             value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
             onChange={(event) =>
               table.getColumn('name')?.setFilterValue(event.target.value)
@@ -233,7 +233,7 @@ export default function RedemptionTable({}) {
               // defaultValue={filters?.status || 'ALL'}
             >
               <SelectTrigger>
-                <SelectValue placeholder="REDEMPTION TYPE" />
+                <SelectValue placeholder="CLAIMS TYPE" />
               </SelectTrigger>
               <SelectContent>
                 {redType.map((item) => {

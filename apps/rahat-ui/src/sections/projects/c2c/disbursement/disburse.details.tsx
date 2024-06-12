@@ -18,6 +18,7 @@ import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { useGetDisbursement } from '@rahat-ui/query';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
+import { formatdbDate } from 'apps/rahat-ui/src/utils';
 
 export default function DisburseDetails() {
   const { id: projectUUID, uuid } = useParams() as {
@@ -33,18 +34,32 @@ export default function DisburseDetails() {
         <Card className="mt-2 rounded shadow">
           <div className="mt-3">
             <CardContent>
-              <p className="text-primary">10-10-2025</p>
-              <CardDescription>Disbursement on</CardDescription>
+              <p className="text-primary">{formatdbDate(data?.createdAt)}</p>
+              <CardDescription>Disbursed on</CardDescription>
             </CardContent>
             <CardContent>
-              <Badge className="bg-green-200 text-green-800">Complete</Badge>
-              <CardDescription>Disbursement Status</CardDescription>
+              <Badge className="bg-green-200 text-green-800">
+                {data?.status}
+              </Badge>
+              <CardDescription>Status</CardDescription>
             </CardContent>
           </div>
         </Card>
-        <DataCard className="mt-2" title="Total Disburse Amount" number={'0'} />
-        <DataCard className="mt-2" title="Total Beneficiaries" number={'0'} />
-        <DataCard className="mt-2" title="Disbursement Type" number={'0'} />
+        <DataCard
+          className="mt-2"
+          title="Total Disburse Amount"
+          number={data?.amount}
+        />
+        <DataCard
+          className="mt-2"
+          title="Total Beneficiaries"
+          number={data?._count?.DisbursementBeneficiary}
+        />
+        <DataCard
+          className="mt-2"
+          title="Disbursement Type"
+          number={data?.type}
+        />
       </div>
       <div className="mt-2 w-full">
         <Tabs defaultValue="transactions">
@@ -52,7 +67,9 @@ export default function DisburseDetails() {
             <Card className="rounded h-14 w-full mr-2 flex items-center justify-between">
               <TabsList className="gap-2">
                 <TabsTrigger value="transactions">Transactions</TabsTrigger>
-                <TabsTrigger value="referrals">Approvals</TabsTrigger>
+                {data?.type === 'MULTISIG' && (
+                  <TabsTrigger value="referrals">Approvals</TabsTrigger>
+                )}
               </TabsList>
             </Card>
           </div>
@@ -60,7 +77,7 @@ export default function DisburseDetails() {
             <TransactionTable />
           </TabsContent>
           <TabsContent value="referrals">
-            <ApprovalTable />
+            <ApprovalTable disbursement={data} />
           </TabsContent>
         </Tabs>
       </div>

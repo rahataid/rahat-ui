@@ -13,7 +13,7 @@ export default function ActivityDetailCard({ activityDetail }: any) {
         {
             title: 'Description',
             content: <p>{activityDetail?.description}</p>
-        },
+        }
     ]
 
   return (

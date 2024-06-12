@@ -629,6 +629,30 @@ export const ELAbi =[
     "inputs": [
       {
         "internalType": "address",
+        "name": "",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "beneficiaryRevertStatus",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
         "name": "_address",
         "type": "address"
       }
@@ -771,6 +795,16 @@ export const ELAbi =[
           {
             "internalType": "bool",
             "name": "referredVoucherClaimStatus",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "freeVoucherRevertStatus",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "referredVoucherRevertStatus",
             "type": "bool"
           }
         ],

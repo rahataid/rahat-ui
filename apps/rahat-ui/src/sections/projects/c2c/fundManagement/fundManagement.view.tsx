@@ -39,8 +39,7 @@ const FundManagementView = () => {
     args: [contractSettings?.c2cproject?.address],
   });
 
-  // const projectBalance = isLoading ? '0' : formatEther(BigInt(data));
-  const projectBalance = '0';
+  const projectBalance = isLoading ? '0' : formatEther(BigInt(data));
 
   return (
     <>

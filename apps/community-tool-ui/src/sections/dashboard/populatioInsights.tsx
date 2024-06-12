@@ -26,6 +26,8 @@ const PopulationInsights = ({ data }: Props) => {
         })
       : [];
 
+      console.log("TG=>",totalGender)
+
   return (
     <div>
       <div className="grid sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-5 gap-2 mb-2 ">

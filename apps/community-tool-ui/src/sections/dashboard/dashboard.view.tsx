@@ -69,7 +69,9 @@ export default function DashboardView() {
       ) : (
         <ScrollArea className="h-[calc(100vh-100px)] px-4 py-2">
           <PopulationInsights data={data} />
+          <div className='mt-8'></div>
           <HouseHoldInsights data={data} />
+          <div className='mt-8'></div>
           <HouseHoldHeadInsights data={data} />
         </ScrollArea>
       )}

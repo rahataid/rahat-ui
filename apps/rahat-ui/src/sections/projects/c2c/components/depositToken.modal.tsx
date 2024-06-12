@@ -64,12 +64,12 @@ const DepositTokenModal: FC<DepositTokenModalType> = ({ handleModal }) => {
     try {
       console.log({ rahatChain });
 
-      if (!address) {
-        await connectAsync({
-          chainId: rahatChain.id,
-          connector: injected(),
-        });
-      }
+      // if (!address) {
+      //   await connectAsync({
+      //     chainId: rahatChain.id,
+      //     connector: injected(),
+      //   });
+      // }
       const recipientAddress = contractSettings?.c2cproject?.address;
       const tokenAddress = contractSettings?.rahattoken?.address;
       const amountInWei = parseEther(tokenInputs);

@@ -61,7 +61,7 @@ export function ApprovalTable({ disbursement }: { disbursement: any }) {
     perPage: 10,
     transactionHash: disbursement?.transactionHash,
   });
-  console.log(data?.approvals);
+  console.log(disbursement);
   const table = useReactTable({
     data: data?.approvals || [],
     columns,
@@ -85,8 +85,10 @@ export function ApprovalTable({ disbursement }: { disbursement: any }) {
 
   const handleMigSigTransaction = async () => {
     await disburseMultiSig.mutateAsync({
-      amount: data?.approvals.amount,
-      beneficiaryAddresses: data?.approvals.beneficiaries as `0x${string}`[],
+      amount: disbursement?.DisbursementBeneficiary[0]?.amount,
+      beneficiaryAddresses: disbursement?.DisbursementBeneficiary?.map(
+        (d: any) => d.beneficiaryWalletAddress,
+      ) as `0x${string}`[],
       rahatTokenAddress: contractSettings?.rahattoken?.address,
       safeAddress: safeWallet,
       c2cProjectAddress: contractSettings?.c2cproject?.address,

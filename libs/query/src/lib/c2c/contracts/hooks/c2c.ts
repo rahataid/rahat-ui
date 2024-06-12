@@ -40,8 +40,14 @@ export const useMultiSigDisburseToken = () => {
       safeAddress: `0x{string}`;
       c2cProjectAddress: `0x{string}`;
     }) => {
+      console.log('beneficiaryAddresses', {
+        amount,
+        beneficiaryAddresses,
+        rahatTokenAddress,
+        safeAddress,
+        c2cProjectAddress,
+      });
       const encodedForDisburse = beneficiaryAddresses.map((beneficiary) => {
-        console.log({ beneficiary });
         return encodeFunctionData({
           abi: c2CProjectAbi,
           functionName: 'disburseExternalToken',

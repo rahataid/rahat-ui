@@ -383,7 +383,7 @@ export const useTempBeneficiaryImport = () => {
     },
     onSuccess: (d) => {
       if (!d) return;
-      Swal.fire('Beneficiary added to the import queue', '', 'success');
+      Swal.fire('Beneficiaries will be imported shortly!', '', 'success');
       queryClient.invalidateQueries({
         queryKey: [
           TAGS.GET_TEMP_BENEFICIARIES,

@@ -15,6 +15,7 @@ import { RahatTokenAbi as CVARahatTokenAbi } from './abis/cva/RahatToken';
 
 // Import ABI's for AA project
 import { AAProjectABI } from './abis/aa/AAProject';
+import { C2CProjectABI, RahatTokenABI } from './abis/c2c';
 import { AccessManagerAbi as AAAccessManagerAbi } from './abis/aa/AccessManager';
 import { RahatDonorABI as AARahatDonorABI } from './abis/aa/RahatDonor';
 import { RahatTokenABI as AARahatTokenABI } from './abis/aa/RahatToken';
@@ -60,8 +61,8 @@ const ELConfig = [
       },
     ],
     plugins: [react()],
-  }
-]
+  },
+];
 
 const CVAConfig = [
   {
@@ -103,8 +104,8 @@ const CVAConfig = [
       },
     ],
     plugins: [react()],
-  }
-]
+  },
+];
 
 const AAConfig = [
   {
@@ -157,6 +158,34 @@ const AAConfig = [
     ],
     plugins: [react()],
   },
-]
+];
 
-export default defineConfig([...ELConfig, ...CVAConfig, ...AAConfig]);
+const C2CConfig = [
+  {
+    out: 'apps/rahat-ui/src/hooks/c2c/contracts/c2cProject.ts',
+    contracts: [
+      {
+        name: 'C2CProject',
+        abi: C2CProjectABI,
+      },
+    ],
+    plugins: [react()],
+  },
+  {
+    out: 'apps/rahat-ui/src/hooks/c2c/contracts/rahatToken.ts',
+    contracts: [
+      {
+        name: 'RahatToken',
+        abi: RahatTokenABI,
+      },
+    ],
+    plugins: [react()],
+  },
+];
+
+export default defineConfig([
+  ...ELConfig,
+  ...CVAConfig,
+  ...AAConfig,
+  ...C2CConfig,
+]);

@@ -26,14 +26,7 @@ import { useGetDisbursementApprovals } from '@rahat-ui/query';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
 
-const data = [
-  {
-    owner: '0x67FAB91396Bc0cC12308361337B25f0c469BC9B5',
-    status: 'Completed',
-  },
-];
-
-export function ApprovalTable() {
+export function ApprovalTable({ disbursement }: { disbursement: any }) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
@@ -52,12 +45,11 @@ export function ApprovalTable() {
     projectUUID: projectUUID,
     page: 1,
     perPage: 10,
+    transactionHash: disbursement?.transactionHash,
   });
 
-  console.log(data);
-
   const table = useReactTable({
-    data: data || [],
+    data: data?.approvals || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,

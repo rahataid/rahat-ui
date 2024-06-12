@@ -1,14 +1,11 @@
+import { useTempBeneficiaryImport } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
 import { ListBeneficiary } from '@rahataid/community-tool-sdk';
-import { ColumnDef } from '@tanstack/react-table';
-import { Eye } from 'lucide-react';
-import Link from 'next/link';
-import { humanReadableDate, humanizeString } from '../../utils';
 import { TempBeneficiary } from '@rahataid/sdk';
-import { useTempBeneficiaryImport } from '@rahat-ui/query';
-import { group } from 'console';
+import { ColumnDef } from '@tanstack/react-table';
 import { useRouter } from 'next/navigation';
+import { humanReadableDate, humanizeString } from '../../utils';
 
 export const useCommunityBeneficiaryGroupTableColumns = () => {
   const importTempBeneficiaries = useTempBeneficiaryImport();
@@ -17,9 +14,10 @@ export const useCommunityBeneficiaryGroupTableColumns = () => {
     const res = await importTempBeneficiaries.mutateAsync({
       groupUUID: args,
     });
-    console.log(res);
     if (res?.response?.success) {
-      router.push('/beneficiary');
+      setTimeout(() => {
+        router.push('/beneficiary');
+      }, 1500);
     }
   };
   const columns: ColumnDef<TempBeneficiary>[] = [

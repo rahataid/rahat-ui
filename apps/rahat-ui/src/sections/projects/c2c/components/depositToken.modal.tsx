@@ -31,7 +31,7 @@ import { sepolia } from 'viem/chains';
 import { useAccount, useConnect, useWriteContract } from 'wagmi';
 import { rahatChain } from 'apps/rahat-ui/src/chain-custom';
 import { injected } from 'wagmi/connectors';
-import { rahatTokenAbi } from 'apps/rahat-ui/src/hooks/el/contracts/token';
+import { rahatTokenAbi } from 'apps/rahat-ui/src/hooks/c2c/contracts/rahatToken';
 
 interface DepositTokenModalType {
   handleModal: UseBooleanReturnType;

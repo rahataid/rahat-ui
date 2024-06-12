@@ -23,11 +23,14 @@ export default function Step1DisburseMethod({
           <p className="mt-8 mb-4 text-lg font-semibold">
             Select Distribution Method
           </p>
-          <p className="font-normal text-lg">
+          <p className="font-normal text-lg mb-3">
             How do you like to disburse the fund ?
           </p>
           {TREASURY_SOURCES.map((method) => (
-            <label key={method.value} className="inline-flex items-center mt-3">
+            <label
+              key={method.value}
+              className="inline-flex items-center mt-3 mb-4"
+            >
               <input
                 type="radio"
                 className="form-radio h-4 w-4 text-gray-600"

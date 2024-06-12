@@ -63,9 +63,7 @@ export default function Step3DisburseSummary({
           <Separator className="my-4" />
           <div className="flex gap-4">
             <p className="w-52 text-right text-neutral-400">Total Amount:</p>
-            <p className="text-slate-800">
-              {value} {token}
-            </p>
+            <p className="text-slate-800">{selectedBeneficiaries}</p>
           </div>
         </div>
       </div>

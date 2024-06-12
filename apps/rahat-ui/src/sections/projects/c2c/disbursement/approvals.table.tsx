@@ -47,7 +47,6 @@ export function ApprovalTable({ disbursement }: { disbursement: any }) {
     perPage: 10,
     transactionHash: disbursement?.transactionHash,
   });
-
   const table = useReactTable({
     data: data?.approvals || [],
     columns,
@@ -81,9 +80,9 @@ export function ApprovalTable({ disbursement }: { disbursement: any }) {
                         {header.isPlaceholder
                           ? null
                           : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext(),
-                            )}
+                            header.column.columnDef.header,
+                            header.getContext(),
+                          )}
                       </TableHead>
                     );
                   })}

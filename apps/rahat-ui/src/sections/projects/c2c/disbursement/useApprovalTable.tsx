@@ -40,7 +40,7 @@ export const useApprovalTable = () => {
       ),
     },
     {
-      accessorKey: 'status',
+      accessorKey: 'hasApproved',
       header: 'Status',
       cell: ({ row }) => (
         <div>{row.getValue('hasApproved') ? 'Approved' : 'Not Approved'}</div>
@@ -50,7 +50,7 @@ export const useApprovalTable = () => {
       accessorKey: 'submissionDate',
       header: 'Submission Date',
       cell: ({ row }) => (
-        <div>{formatdbDate(row.getValue('submissionDate')) || 'N/A'}</div>
+        <div>{row.getValue('submissionDate') ? formatdbDate(row.getValue('submissionDate')) : 'N/A'}</div>
       ),
     },
   ];

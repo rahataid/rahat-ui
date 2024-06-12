@@ -185,7 +185,7 @@ export default function AddBeneficiaryForm() {
                         <FormItem>
                           <FormControl>
                             <Input
-                              type="text"
+                              type="number"
                               placeholder="Estimated Age"
                               {...field}
                             />

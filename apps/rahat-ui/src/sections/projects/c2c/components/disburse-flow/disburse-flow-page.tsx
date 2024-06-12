@@ -1,7 +1,7 @@
 'use client';
-
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { FC, useState } from 'react';
+import { Stepper } from 'react-form-stepper';
 import Step1DisburseMethod from './1-disburse-method';
 import Step2DisburseAmount from './2-disburse-amount';
 import Step3DisburseSummary from './3-disburse-summary';
@@ -10,7 +10,7 @@ import {
   PROJECT_SETTINGS_KEYS,
   useC2CProjectSubgraphStore,
   useDisburseTokenToBeneficiaries,
-  // useGetTreasurySourcesSettings,
+  useDisburseTokenUsingMultisig,
   useProject,
   useProjectSettingsStore,
 } from '@rahat-ui/query';
@@ -27,7 +27,7 @@ const initialStepData = {
   disburseAmount: '',
 };
 
-const DisburseFlowPage: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
+const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [stepData, setStepData] =
     useState<Record<string, any>>(initialStepData);
@@ -40,9 +40,7 @@ const DisburseFlowPage: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
     (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT],
   );
   const disburseToken = useDisburseTokenToBeneficiaries();
-  // TODO: use this
-  // const { data: treasurySources } = useGetTreasurySourcesSettings(id);
-  // TODO: DONOT Use this
+  const disburseMultiSig = useDisburseTokenUsingMultisig();
   const { data: projectData } = useProject(id);
   const treasurySources =
     (projectData?.data?.extras?.treasury?.treasurySources as string[]) || [];
@@ -76,6 +74,17 @@ const DisburseFlowPage: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
   };
 
   const handleDisburseToken = async () => {
+    if (stepData.treasurySource === 'MULTISIG') {
+      await disburseMultiSig.mutateAsync({
+        amount: stepData.disburseAmount,
+        projectUUID: id,
+        beneficiaryAddresses: selectedBeneficiaries as `0x${string}`[],
+        disburseMethod: stepData.treasurySource,
+        rahatTokenAddress: contractSettings?.rahattoken?.address,
+        c2cProjectAddress: contractSettings?.c2cproject?.address,
+      });
+      return;
+    }
     await disburseToken.mutateAsync({
       amount: parseEther(stepData.disburseAmount),
       beneficiaryAddresses: selectedBeneficiaries as `0x${string}`[],
@@ -85,6 +94,7 @@ const DisburseFlowPage: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
       projectUUID: id,
     });
   };
+
   const steps = [
     {
       id: 'step1',
@@ -95,7 +105,6 @@ const DisburseFlowPage: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
           value={stepData.treasurySource}
           onChange={handleStepDataChange}
           projectSubgraphDetails={projectSubgraphDetails}
-          // treasurySources={treasurySources?.treasurysources}
           treasurySources={treasurySources}
         />
       ),
@@ -119,9 +128,7 @@ const DisburseFlowPage: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
       ),
       validation: {
         noAmountEntered: {
-          condition: () => {
-            return !stepData.disburseAmount;
-          },
+          condition: () => !stepData.disburseAmount,
           message: 'Please enter an amount',
         },
       },
@@ -141,39 +148,56 @@ const DisburseFlowPage: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
     },
   ];
 
-  // //cleanup
-  // useEffect(() => {
-  //   return () => {
-  //     setCurrentStep(0);
-  //     setStepData(initialStepData);
-  //   };
-  // }, []);
+  const renderComponent = () => {
+    if (disburseToken.isSuccess || disburseMultiSig.isSuccess) {
+      return <div>Disbursement Successful</div>;
+    }
+    if (disburseMultiSig.isPending) {
+      return <div>Creating MultiSig...</div>;
+    }
+    return steps[currentStep].component;
+  };
 
   return (
-    <>
-      <>
-        <>{steps[currentStep].title}</>
-      </>
-      <div>
-        <div>{steps[currentStep].component}</div>
-        <div className="flex justify-between">
-          <Button onClick={handlePrevious} disabled={currentStep === 0}>
-            Back
-          </Button>
-          <Button
-            onClick={
-              steps[currentStep].id === 'confirm_send'
-                ? handleDisburseToken
-                : handleNext
-            }
-            // disabled={currentStep === steps.length - 1}
-          >
-            {currentStep === steps.length - 1 ? 'Confirm' : 'Proceed'}
-          </Button>
-        </div>
+    <div className="sm:max-w-[450px]">
+      <div className="bg-card p-4 rounded">
+        <Stepper
+          steps={steps.map((step) => ({ label: step.title }))}
+          activeStep={currentStep}
+          styleConfig={{
+            completedBgColor: '#10b981',
+            activeBgColor: '#3b82f6',
+            inactiveBgColor: '#9ca3af',
+          }}
+          connectorStateColors={true}
+          connectorStyleConfig={{
+            completedColor: '#10b981',
+            activeColor: '#3b82f6',
+            disabledColor: '#9ca3af',
+          }}
+        />
       </div>
-    </>
+      <div className="mt-4">
+        <div>{renderComponent()}</div>
+        {!disburseToken.isSuccess && !disburseMultiSig.isSuccess && (
+          <div className="flex justify-between mt-4">
+            <Button onClick={handlePrevious} disabled={currentStep === 0}>
+              Back
+            </Button>
+            <Button
+              onClick={
+                steps[currentStep].id === 'confirm_send'
+                  ? handleDisburseToken
+                  : handleNext
+              }
+            >
+              {currentStep === steps.length - 1 ? 'Confirm' : 'Proceed'}
+            </Button>
+          </div>
+        )}
+      </div>
+    </div>
   );
 };
 
-export default DisburseFlowPage;
+export default DisburseFlow;

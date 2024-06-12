@@ -30,7 +30,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import { UUID } from 'crypto';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { benType } from '../../el/beneficiary/beneficiary.table';
 import { useProjectBeneficiaryTableColumns } from './useBeneficiaryColumns';
 
@@ -40,10 +40,11 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import TableLoader from 'apps/rahat-ui/src/components/table.loader';
-import DisburseFlow from '../components/disburse-flow/disburse-flow';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 
 const BeneficiaryDetailTableView = () => {
   const uuid = useParams().id as UUID;
+  const router = useRouter();
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
@@ -140,7 +141,14 @@ const BeneficiaryDetailTableView = () => {
           {selectedRowAddresses.length ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <DisburseFlow selectedBeneficiaries={selectedRowAddresses} />
+                <Button
+                  onClick={() =>
+                    router.push(`/projects/c2c/${uuid}/disburse-token`)
+                  }
+                >
+                  Disburse Token
+                </Button>
+                {/* <DisburseFlow selectedBeneficiaries={selectedRowAddresses} /> */}
               </DropdownMenuTrigger>
               {/* <DropdownMenuContent align="end">
                 <DropdownMenuItem

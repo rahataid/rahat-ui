@@ -30,7 +30,7 @@ export const config = createConfig(
       baseSepolia,
 
       // polygonMumbai,
-      arbitrumSepolia,
+      // arbitrumSepolia,
     ],
     batch: {
       multicall: true,

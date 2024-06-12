@@ -25,7 +25,7 @@ export const mergeTransactions = async (
     })),
     ...transferProcesseds.map((transaction) => ({
       ...transaction,
-      to: transaction._beneficiary,
+      to: transaction._to,
       amount: transaction._amount,
       token: transaction._tokenAddress,
       topic: 'Disbursed',

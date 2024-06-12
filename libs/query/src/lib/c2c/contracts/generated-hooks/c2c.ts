@@ -12,10 +12,7 @@ import {
 export const c2CProjectAbi = [
   {
     type: 'constructor',
-    inputs: [
-      { name: '_name', internalType: 'string', type: 'string' },
-      { name: '_community', internalType: 'address', type: 'address' },
-    ],
+    inputs: [{ name: '_name', internalType: 'string', type: 'string' }],
     stateMutability: 'nonpayable',
   },
   {
@@ -40,52 +37,6 @@ export const c2CProjectAbi = [
     ],
     name: 'BeneficiaryRemoved',
   },
-  {
-    type: 'event',
-    anonymous: false,
-    inputs: [
-      {
-        name: '_beneficiary',
-        internalType: 'address',
-        type: 'address',
-        indexed: true,
-      },
-      {
-        name: '_amount',
-        internalType: 'uint256',
-        type: 'uint256',
-        indexed: false,
-      },
-    ],
-    name: 'ClaimAssigned',
-  },
-  {
-    type: 'event',
-    anonymous: false,
-    inputs: [
-      {
-        name: '_beneficiary',
-        internalType: 'address',
-        type: 'address',
-        indexed: true,
-      },
-      {
-        name: '_tokenAddress',
-        internalType: 'address',
-        type: 'address',
-        indexed: true,
-      },
-      {
-        name: '_amount',
-        internalType: 'uint256',
-        type: 'uint256',
-        indexed: false,
-      },
-    ],
-    name: 'ClaimProcessed',
-  },
-  { type: 'event', anonymous: false, inputs: [], name: 'ProjectLocked' },
-  { type: 'event', anonymous: false, inputs: [], name: 'ProjectUnlocked' },
   {
     type: 'event',
     anonymous: false,
@@ -178,19 +129,36 @@ export const c2CProjectAbi = [
     name: 'TokenTransfer',
   },
   {
-    type: 'function',
-    inputs: [],
-    name: 'IID_RAHAT_PROJECT',
-    outputs: [{ name: '', internalType: 'bytes4', type: 'bytes4' }],
-    stateMutability: 'view',
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: '_tokenAddress',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      { name: '_to', internalType: 'address', type: 'address', indexed: true },
+      {
+        name: '_from',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: '_amount',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+    ],
+    name: 'TransferProcessed',
   },
   {
     type: 'function',
     inputs: [],
-    name: 'RahatCommunity',
-    outputs: [
-      { name: '', internalType: 'contract IRahatCommunity', type: 'address' },
-    ],
+    name: 'IID_RAHAT_PROJECT',
+    outputs: [{ name: '', internalType: 'bytes4', type: 'bytes4' }],
     stateMutability: 'view',
   },
   {
@@ -215,24 +183,6 @@ export const c2CProjectAbi = [
   },
   {
     type: 'function',
-    inputs: [
-      { name: '_beneficiary', internalType: 'address', type: 'address' },
-      { name: '_tokenAddress', internalType: 'address', type: 'address' },
-      { name: '_amount', internalType: 'uint256', type: 'uint256' },
-    ],
-    name: 'assignClaims',
-    outputs: [],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    inputs: [{ name: '', internalType: 'address', type: 'address' }],
-    name: 'beneficiaryClaims',
-    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
     inputs: [],
     name: 'beneficiaryCount',
     outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
@@ -240,10 +190,37 @@ export const c2CProjectAbi = [
   },
   {
     type: 'function',
-    inputs: [],
-    name: 'community',
-    outputs: [{ name: '', internalType: 'address', type: 'address' }],
-    stateMutability: 'view',
+    inputs: [
+      { name: '_tokenAddress', internalType: 'address', type: 'address' },
+      { name: '_beneficiary', internalType: 'address', type: 'address' },
+      { name: '_tokenOwner', internalType: 'address', type: 'address' },
+      { name: '_amount', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'disburseExternalToken',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: '_tokenAddress', internalType: 'address', type: 'address' },
+      { name: '_beneficiary', internalType: 'address', type: 'address' },
+      { name: '_amount', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'disburseOwnedToken',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: '_tokenAddress', internalType: 'address', type: 'address' },
+      { name: '_beneficiary', internalType: 'address', type: 'address' },
+      { name: '_amount', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'disburseProjectToken',
+    outputs: [],
+    stateMutability: 'nonpayable',
   },
   {
     type: 'function',
@@ -277,18 +254,6 @@ export const c2CProjectAbi = [
     type: 'function',
     inputs: [
       { name: '_beneficiary', internalType: 'address', type: 'address' },
-      { name: '_tokenAddress', internalType: 'address', type: 'address' },
-      { name: '_amount', internalType: 'uint256', type: 'uint256' },
-    ],
-    name: 'processTransferToBeneficiary',
-    outputs: [],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    inputs: [
-      { name: '_beneficiary', internalType: 'address', type: 'address' },
-      { name: '_tokenAddress', internalType: 'address', type: 'address' },
     ],
     name: 'removeBeneficiary',
     outputs: [],
@@ -312,17 +277,9 @@ export const c2CProjectAbi = [
   },
   {
     type: 'function',
-    inputs: [],
-    name: 'totalClaimsAssigned',
-    outputs: [
-      { name: '_totalClaims', internalType: 'uint256', type: 'uint256' },
-    ],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
     inputs: [
       { name: '_tokenAddress', internalType: 'address', type: 'address' },
+      { name: '_withdrawAddress', internalType: 'address', type: 'address' },
     ],
     name: 'withdrawToken',
     outputs: [],
@@ -351,24 +308,6 @@ export const useReadC2CProjectIidRahatProject =
   })
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link c2CProjectAbi}__ and `functionName` set to `"RahatCommunity"`
- */
-export const useReadC2CProjectRahatCommunity =
-  /*#__PURE__*/ createUseReadContract({
-    abi: c2CProjectAbi,
-    functionName: 'RahatCommunity',
-  })
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link c2CProjectAbi}__ and `functionName` set to `"beneficiaryClaims"`
- */
-export const useReadC2CProjectBeneficiaryClaims =
-  /*#__PURE__*/ createUseReadContract({
-    abi: c2CProjectAbi,
-    functionName: 'beneficiaryClaims',
-  })
-
-/**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link c2CProjectAbi}__ and `functionName` set to `"beneficiaryCount"`
  */
 export const useReadC2CProjectBeneficiaryCount =
@@ -376,14 +315,6 @@ export const useReadC2CProjectBeneficiaryCount =
     abi: c2CProjectAbi,
     functionName: 'beneficiaryCount',
   })
-
-/**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link c2CProjectAbi}__ and `functionName` set to `"community"`
- */
-export const useReadC2CProjectCommunity = /*#__PURE__*/ createUseReadContract({
-  abi: c2CProjectAbi,
-  functionName: 'community',
-})
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link c2CProjectAbi}__ and `functionName` set to `"isBeneficiary"`
@@ -427,15 +358,6 @@ export const useReadC2CProjectTokenBudget = /*#__PURE__*/ createUseReadContract(
 )
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link c2CProjectAbi}__ and `functionName` set to `"totalClaimsAssigned"`
- */
-export const useReadC2CProjectTotalClaimsAssigned =
-  /*#__PURE__*/ createUseReadContract({
-    abi: c2CProjectAbi,
-    functionName: 'totalClaimsAssigned',
-  })
-
-/**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link c2CProjectAbi}__
  */
 export const useWriteC2CProject = /*#__PURE__*/ createUseWriteContract({
@@ -461,12 +383,30 @@ export const useWriteC2CProjectAddBeneficiary =
   })
 
 /**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link c2CProjectAbi}__ and `functionName` set to `"assignClaims"`
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link c2CProjectAbi}__ and `functionName` set to `"disburseExternalToken"`
  */
-export const useWriteC2CProjectAssignClaims =
+export const useWriteC2CProjectDisburseExternalToken =
   /*#__PURE__*/ createUseWriteContract({
     abi: c2CProjectAbi,
-    functionName: 'assignClaims',
+    functionName: 'disburseExternalToken',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link c2CProjectAbi}__ and `functionName` set to `"disburseOwnedToken"`
+ */
+export const useWriteC2CProjectDisburseOwnedToken =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: c2CProjectAbi,
+    functionName: 'disburseOwnedToken',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link c2CProjectAbi}__ and `functionName` set to `"disburseProjectToken"`
+ */
+export const useWriteC2CProjectDisburseProjectToken =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: c2CProjectAbi,
+    functionName: 'disburseProjectToken',
   })
 
 /**
@@ -475,15 +415,6 @@ export const useWriteC2CProjectAssignClaims =
 export const useWriteC2CProjectMulticall = /*#__PURE__*/ createUseWriteContract(
   { abi: c2CProjectAbi, functionName: 'multicall' },
 )
-
-/**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link c2CProjectAbi}__ and `functionName` set to `"processTransferToBeneficiary"`
- */
-export const useWriteC2CProjectProcessTransferToBeneficiary =
-  /*#__PURE__*/ createUseWriteContract({
-    abi: c2CProjectAbi,
-    functionName: 'processTransferToBeneficiary',
-  })
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link c2CProjectAbi}__ and `functionName` set to `"removeBeneficiary"`
@@ -529,12 +460,30 @@ export const useSimulateC2CProjectAddBeneficiary =
   })
 
 /**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link c2CProjectAbi}__ and `functionName` set to `"assignClaims"`
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link c2CProjectAbi}__ and `functionName` set to `"disburseExternalToken"`
  */
-export const useSimulateC2CProjectAssignClaims =
+export const useSimulateC2CProjectDisburseExternalToken =
   /*#__PURE__*/ createUseSimulateContract({
     abi: c2CProjectAbi,
-    functionName: 'assignClaims',
+    functionName: 'disburseExternalToken',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link c2CProjectAbi}__ and `functionName` set to `"disburseOwnedToken"`
+ */
+export const useSimulateC2CProjectDisburseOwnedToken =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: c2CProjectAbi,
+    functionName: 'disburseOwnedToken',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link c2CProjectAbi}__ and `functionName` set to `"disburseProjectToken"`
+ */
+export const useSimulateC2CProjectDisburseProjectToken =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: c2CProjectAbi,
+    functionName: 'disburseProjectToken',
   })
 
 /**
@@ -544,15 +493,6 @@ export const useSimulateC2CProjectMulticall =
   /*#__PURE__*/ createUseSimulateContract({
     abi: c2CProjectAbi,
     functionName: 'multicall',
-  })
-
-/**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link c2CProjectAbi}__ and `functionName` set to `"processTransferToBeneficiary"`
- */
-export const useSimulateC2CProjectProcessTransferToBeneficiary =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: c2CProjectAbi,
-    functionName: 'processTransferToBeneficiary',
   })
 
 /**
@@ -598,42 +538,6 @@ export const useWatchC2CProjectBeneficiaryRemovedEvent =
   })
 
 /**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link c2CProjectAbi}__ and `eventName` set to `"ClaimAssigned"`
- */
-export const useWatchC2CProjectClaimAssignedEvent =
-  /*#__PURE__*/ createUseWatchContractEvent({
-    abi: c2CProjectAbi,
-    eventName: 'ClaimAssigned',
-  })
-
-/**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link c2CProjectAbi}__ and `eventName` set to `"ClaimProcessed"`
- */
-export const useWatchC2CProjectClaimProcessedEvent =
-  /*#__PURE__*/ createUseWatchContractEvent({
-    abi: c2CProjectAbi,
-    eventName: 'ClaimProcessed',
-  })
-
-/**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link c2CProjectAbi}__ and `eventName` set to `"ProjectLocked"`
- */
-export const useWatchC2CProjectProjectLockedEvent =
-  /*#__PURE__*/ createUseWatchContractEvent({
-    abi: c2CProjectAbi,
-    eventName: 'ProjectLocked',
-  })
-
-/**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link c2CProjectAbi}__ and `eventName` set to `"ProjectUnlocked"`
- */
-export const useWatchC2CProjectProjectUnlockedEvent =
-  /*#__PURE__*/ createUseWatchContractEvent({
-    abi: c2CProjectAbi,
-    eventName: 'ProjectUnlocked',
-  })
-
-/**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link c2CProjectAbi}__ and `eventName` set to `"TokenBudgetDecrease"`
  */
 export const useWatchC2CProjectTokenBudgetDecreaseEvent =
@@ -676,4 +580,13 @@ export const useWatchC2CProjectTokenTransferEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
     abi: c2CProjectAbi,
     eventName: 'TokenTransfer',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link c2CProjectAbi}__ and `eventName` set to `"TransferProcessed"`
+ */
+export const useWatchC2CProjectTransferProcessedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: c2CProjectAbi,
+    eventName: 'TransferProcessed',
   })

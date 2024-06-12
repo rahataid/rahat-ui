@@ -1,26 +1,11 @@
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
 import { ColumnDef } from '@tanstack/react-table';
-import { Eye } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
-
-export type Disbursements = {
-  from: string;
-  to: string;
-  amount: string;
-};
 
 export const useTransactionTable = () => {
   const { id } = useParams();
   const router = useRouter();
-  const columns: ColumnDef<Disbursements>[] = [
+  const columns: ColumnDef<any>[] = [
     {
       id: 'select',
       header: ({ table }) => (
@@ -53,7 +38,7 @@ export const useTransactionTable = () => {
     {
       accessorKey: 'to',
       header: 'To',
-      cell: ({ row }) => <div className="lowercase">{row.getValue('to')}</div>,
+      cell: ({ row }) => <div>{row.original.beneficiaryWalletAddress}</div>,
     },
     {
       accessorKey: 'amount',

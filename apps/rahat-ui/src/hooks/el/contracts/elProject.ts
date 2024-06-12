@@ -451,6 +451,16 @@ export const elProjectAbi = [
   },
   {
     type: 'function',
+    inputs: [
+      { name: '', internalType: 'address', type: 'address' },
+      { name: '', internalType: 'address', type: 'address' },
+    ],
+    name: 'beneficiaryRevertStatus',
+    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
     inputs: [{ name: '_address', internalType: 'address', type: 'address' }],
     name: 'checkAdminStatus',
     outputs: [{ name: '_status', internalType: 'bool', type: 'bool' }],
@@ -532,6 +542,16 @@ export const elProjectAbi = [
           },
           {
             name: 'referredVoucherClaimStatus',
+            internalType: 'bool',
+            type: 'bool',
+          },
+          {
+            name: 'freeVoucherRevertStatus',
+            internalType: 'bool',
+            type: 'bool',
+          },
+          {
+            name: 'referredVoucherRevertStatus',
             internalType: 'bool',
             type: 'bool',
           },
@@ -957,6 +977,15 @@ export const useReadElProjectBeneficiaryReferredVoucher =
   /*#__PURE__*/ createUseReadContract({
     abi: elProjectAbi,
     functionName: 'beneficiaryReferredVoucher',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link elProjectAbi}__ and `functionName` set to `"beneficiaryRevertStatus"`
+ */
+export const useReadElProjectBeneficiaryRevertStatus =
+  /*#__PURE__*/ createUseReadContract({
+    abi: elProjectAbi,
+    functionName: 'beneficiaryRevertStatus',
   })
 
 /**

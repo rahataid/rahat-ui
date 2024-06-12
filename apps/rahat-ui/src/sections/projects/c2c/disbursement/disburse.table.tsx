@@ -51,6 +51,8 @@ export function DisburseTable() {
   });
   const columns = useDisburseTableColumns();
 
+  console.log('data', data);
+
   const table = useReactTable({
     data: data || [],
     columns,

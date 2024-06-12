@@ -318,21 +318,21 @@ export default function BeneficiaryDetail({
                 </TooltipProvider>
               </div>
             </div>
-            {!assignStatus && beneficiaryDetails?.type === 'ENROLLED' && (
+            {/* {!assignStatus && beneficiaryDetails?.type === 'ENROLLED' && (
               <div>
                 <Button disabled={isTransacting} onClick={handleAssignVoucher}>
                   {isTransacting
                     ? 'Confirming transaction...'
-                    : 'Assign Voucher'}
+                    : 'Assign Tokens'}
                 </Button>
-              </div>
-            )}
+              </div> */}
+            {/* )} */}
           </div>
-          <AssignVoucherConfirm
+          {/* <AssignVoucherConfirm
             open={voucherAssignModal.value}
             handleClose={handleVoucherAssignModalClose}
             handleSubmit={handleAssignVoucher}
-          />
+          /> */}
 
           {/* Details View */}
 
@@ -381,66 +381,6 @@ export default function BeneficiaryDetail({
                             <p className="text-sm font-normal text-muted-foreground ">
                               Phone
                             </p>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                    <Card className="shadow rounded">
-                      <CardHeader>
-                        <CardTitle className="text-lg">
-                          Voucher Details
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="flex flex-col gap-4">
-                          <div className="flex justify-between items-center">
-                            <p>Voucher Type</p>
-                            <p className="text-sm font-light">
-                              {beneficiaryVoucherDetails?.freeVoucherAddress !==
-                                undefined &&
-                              beneficiaryVoucherDetails?.freeVoucherAddress !==
-                                zeroAddress
-                                ? 'Free Voucher'
-                                : beneficiaryVoucherDetails?.referredVoucherAddress !==
-                                    undefined &&
-                                  beneficiaryVoucherDetails?.referredVoucherAddress !==
-                                    zeroAddress
-                                ? 'Discount Voucher'
-                                : 'N/A'}
-                            </p>
-                          </div>
-                          <div className="flex justify-between items-center">
-                            <p>ClaimStatus</p>
-                            <p className="text-sm font-light">
-                              {beneficiaryVoucherDetails?.freeVoucherAddress !==
-                                undefined &&
-                              beneficiaryVoucherDetails?.freeVoucherAddress !==
-                                zeroAddress
-                                ? beneficiaryVoucherDetails?.freeVoucherClaimStatus?.toString()
-                                : beneficiaryVoucherDetails?.referredVoucherAddress !==
-                                    undefined &&
-                                  beneficiaryVoucherDetails?.referredVoucherAddress !==
-                                    zeroAddress
-                                ? beneficiaryVoucherDetails?.referredVoucherClaimStatus?.toString()
-                                : 'N/A'}
-                            </p>
-                          </div>
-                          <div className="flex justify-between items-center">
-                            <p>Wallet Address</p>
-                            <TooltipProvider delayDuration={100}>
-                              <Tooltip>
-                                <TooltipTrigger>
-                                  <p className="text-sm font-medium">
-                                    {truncateEthAddress(walletAddress)}
-                                  </p>
-                                </TooltipTrigger>
-                                <TooltipContent className="bg-secondary ">
-                                  <p className="text-xs font-medium">
-                                    click to copy
-                                  </p>
-                                </TooltipContent>
-                              </Tooltip>
-                            </TooltipProvider>
                           </div>
                         </div>
                       </CardContent>

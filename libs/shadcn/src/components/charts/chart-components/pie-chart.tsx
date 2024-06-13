@@ -49,6 +49,8 @@ interface Props {
   };
   communityTool?: boolean;
   donutSize?: string;
+  width?: number;
+  height?: number;
 }
 
 export default function PieChart({
@@ -57,6 +59,8 @@ export default function PieChart({
   chart,
   communityTool = false,
   donutSize = '90%',
+  width = 400,
+  height = 320,
 }: Props) {
   const {
     colors = ['#00b67a', '#8BC34A', '#FFA726', '#007bb6', '#7a00b6'],
@@ -73,10 +77,10 @@ export default function PieChart({
     },
     colors,
     labels: series.map((i) => i.label),
-    stroke: { colors: communityTool ? ['none'] : [colors[5]] },
+    stroke: { colors: communityTool ? ['none'] : [colors[5]], show: false },
     legend: {
       offsetY: 0,
-      floating: communityTool ? false : true,
+      floating: false,
       position: 'bottom',
       horizontalAlign: 'left',
     },
@@ -114,7 +118,7 @@ export default function PieChart({
     <div>
       {communityTool ? (
         <div className="bg-card shadow rounded p-4 flex flex-col">
-          <h2  className={`font-medium p-0 text-left`}>{title}</h2>
+          <h2 className={`font-medium p-0 text-left`}>{title}</h2>
           <div className=" items-center justify-center">
             <CommunityStyledChart
               dir="ltr"
@@ -127,17 +131,14 @@ export default function PieChart({
           </div>
         </div>
       ) : (
-        <div className="bg-card shadow rounded p-4 flex flex-col items-center justify-center">
-          <h2 className={`text-lg font-medium p-0 text-left`}>{title}</h2>
-          <StyledChart
-            dir="ltr"
-            type="pie"
-            series={chartSeries}
-            options={chartOptions}
-            height={320}
-            width={400}
-          />
-        </div>
+        <Chart
+          dir="ltr"
+          type="pie"
+          series={chartSeries}
+          options={chartOptions}
+          height={height}
+          width={width}
+        />
       )}
     </div>
   );

@@ -1,6 +1,6 @@
 'use client';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { FC, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { Stepper } from 'react-form-stepper';
 import Step1DisburseMethod from './1-disburse-method';
 import Step2DisburseAmount from './2-disburse-amount';
@@ -15,26 +15,22 @@ import {
   useProjectSettingsStore,
 } from '@rahat-ui/query';
 import { UUID } from 'crypto';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { parseEther } from 'viem';
-
-type DisburseFlowProps = {
-  selectedBeneficiaries: string[];
-};
 
 const initialStepData = {
   treasurySource: '',
   disburseAmount: '',
 };
 
-const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
+const DisburseFlow = () => {
+  const router = useRouter();
   const [currentStep, setCurrentStep] = useState(0);
   const [stepData, setStepData] =
     useState<Record<string, any>>(initialStepData);
   const projectSubgraphDetails = useC2CProjectSubgraphStore(
     (state) => state.projectDetails,
   );
-
   const { id } = useParams() as { id: UUID };
   const contractSettings = useProjectSettingsStore(
     (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT],
@@ -44,6 +40,16 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
   const { data: projectData } = useProject(id);
   const treasurySources =
     (projectData?.data?.extras?.treasury?.treasurySources as string[]) || [];
+  const [selectedBeneficiaries, setSelectedBeneficiaries] = useState([]);
+
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const beneficiaries = searchParams.get('beneficiaries');
+    if (beneficiaries) {
+      setSelectedBeneficiaries(beneficiaries?.split(','));
+    }
+  }, [searchParams]);
 
   const handleStepDataChange = (e) => {
     const { name, value } = e.target;
@@ -101,7 +107,6 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
       title: 'Disburse Method',
       component: (
         <Step1DisburseMethod
-          selectedBeneficiaries={selectedBeneficiaries}
           value={stepData.treasurySource}
           onChange={handleStepDataChange}
           projectSubgraphDetails={projectSubgraphDetails}

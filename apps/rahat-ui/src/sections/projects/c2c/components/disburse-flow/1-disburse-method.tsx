@@ -1,7 +1,6 @@
 import { TREASURY_SOURCES } from '@rahat-ui/query';
 
 type Step1DisburseMethodProps = {
-  selectedBeneficiaries: string[];
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   projectSubgraphDetails: any;
@@ -10,7 +9,6 @@ type Step1DisburseMethodProps = {
 
 export default function Step1DisburseMethod({
   onChange,
-  selectedBeneficiaries,
   value,
   projectSubgraphDetails,
   treasurySources,

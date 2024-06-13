@@ -142,22 +142,17 @@ const BeneficiaryDetailTableView = () => {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
-                  onClick={() =>
-                    router.push(`/projects/c2c/${uuid}/disburse-token`)
-                  }
+                  onClick={() => {
+                    const selectedBeneficiaries =
+                      selectedRowAddresses.join(',');
+                    router.push(
+                      `/projects/c2c/${uuid}/disburse-token?beneficiaries=${selectedBeneficiaries}`,
+                    );
+                  }}
                 >
                   Disburse Token
                 </Button>
-                {/* <DisburseFlow selectedBeneficiaries={selectedRowAddresses} /> */}
               </DropdownMenuTrigger>
-              {/* <DropdownMenuContent align="end">
-                <DropdownMenuItem
-                  onClick={projectModal.onTrue}
-                  disabled={isBulkAssigning}
-                >
-                  Bulk Assign Project
-                </DropdownMenuItem>
-              </DropdownMenuContent> */}
             </DropdownMenu>
           ) : null}
           {/* <div>

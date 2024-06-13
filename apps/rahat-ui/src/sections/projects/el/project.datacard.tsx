@@ -74,9 +74,9 @@ const ProjectDataCard: FC<ProjectDataCardProps> = ({
             />
             <DataCard
               className=""
-              title="Claim Value"
+              title="Redeemption Value"
               number={actualBudget || 'N/A'}
-              subtitle="Vouchers Claimed Value (Rp)"
+              subtitle="Vouchers Redeemed Value (Rp)"
               Icon={Users}
               refresh={refetchBeneficiary}
             />

@@ -45,7 +45,11 @@ export const useRecentTransactionsList = (contractAddress: string) => {
   useEffect(() => {
     (async () => {
       result.data
-        ? setTransactionList(result.data.transfers)
+        ? setTransactionList(
+            result.data.transfers.sort(
+              (a: any, b: any) => +a.blockTimestamp - +b.blockTimestamp,
+            ),
+          )
         : setTransactionList([]);
     })();
   }, [result.data]);

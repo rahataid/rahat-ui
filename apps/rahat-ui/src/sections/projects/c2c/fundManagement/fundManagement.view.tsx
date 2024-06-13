@@ -13,6 +13,7 @@ import { useParams } from 'next/navigation';
 import { formatEther } from 'viem';
 import { useReadContract } from 'wagmi';
 import RecentTransaction from './recent.transaction';
+import { Transaction } from '../transactions/types';
 
 const FundManagementView = () => {
   const { id } = useParams();
@@ -34,7 +35,7 @@ const FundManagementView = () => {
     functionName: 'balanceOf',
     args: [c2cProjectAddress],
     query: {
-      select(data) {
+      select(data: bigint) {
         return data ? formatEther(data as bigint) : '0';
       },
     },
@@ -49,6 +50,10 @@ const FundManagementView = () => {
   const chartCategories = transactionList.map((t) =>
     formatDate(+t.blockTimestamp),
   );
+
+  // const sortByLatest = transactionList.sort(
+  //   (a: Transaction, b: Transaction) => +b.blockTimestamp - +a.blockTimestamp,
+  // );
 
   return (
     <>

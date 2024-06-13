@@ -1,9 +1,9 @@
 'use client';
-import { useQuery } from '@tanstack/react-query';
-import { useRSQuery } from '@rumsan/react-query';
-import { ProjectDetails } from './graph.query';
-import { useEffect } from 'react';
-import { useC2CProjectSubgraphStore } from '../stores/c2c-project.store';
+
+import { useQuery } from 'urql';
+import { ReceivedTransactionDetails } from './graph.query';
+import { useEffect, useState } from 'react';
+import { Transaction } from 'viem';
 
 export const useProjectDetails = (projectAddress: string) => {
   // const { queryClient } = useRSQuery();
@@ -29,4 +29,26 @@ export const useProjectDetails = (projectAddress: string) => {
   //   }
   // }, [query, projectAddress, queryClient]);
   // return query;
+};
+
+export const useRecentTransactionsList = (contractAddress: string) => {
+  const [transactionList, setTransactionList] = useState<Transaction[]>([]);
+
+  const [result, ...restInfo] = useQuery({
+    query: ReceivedTransactionDetails,
+    variables: {
+      contractAddress,
+    },
+    pause: !contractAddress,
+  });
+
+  useEffect(() => {
+    (async () => {
+      result.data
+        ? setTransactionList(result.data.transfers)
+        : setTransactionList([]);
+    })();
+  }, [result.data]);
+
+  return [transactionList as Transaction[], ...restInfo];
 };

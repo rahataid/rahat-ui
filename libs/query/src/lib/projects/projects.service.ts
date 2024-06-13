@@ -296,6 +296,57 @@ export const useProjectContractSettings = (uuid: UUID) => {
   return query;
 };
 
+export const useProjectSafeWalletSettings = (uuid: UUID) => {
+  const q = useProjectAction(['PROJECT_SETTINGS_KEYS.SAFE_WALLET']);
+  const { setSettings, settings } = useProjectSettingsStore((state) => ({
+    settings: state.settings,
+    setSettings: state.setSettings,
+  }));
+
+  const query = useQuery({
+    queryKey: [
+      TAGS.GET_PROJECT_SETTINGS,
+      uuid,
+      PROJECT_SETTINGS_KEYS.SAFE_WALLET,
+    ],
+    enabled: isEmpty(settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.SAFE_WALLET]),
+    // enabled: !!settings[uuid],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'settings.get',
+          payload: {
+            name: PROJECT_SETTINGS_KEYS.SAFE_WALLET,
+          },
+        },
+      });
+      return mutate.data.value;
+    },
+    // initialData: settings?.[uuid],
+  });
+
+  useEffect(() => {
+    if (query.isSuccess) {
+      const settingsToUpdate = {
+        ...settings,
+        [uuid]: {
+          ...settings?.[uuid],
+          [PROJECT_SETTINGS_KEYS.SAFE_WALLET]: query?.data,
+        },
+      };
+      setSettings(settingsToUpdate);
+      // setSettings({
+      //   [uuid]: {
+      //     [PROJECT_SETTINGS_KEYS.CONTRACT]: query?.data,
+      //   },
+      // });
+    }
+  }, [query.data]);
+
+  return query;
+};
+
 export const useProjectSubgraphSettings = (uuid: UUID) => {
   const q = useProjectAction(['PROJECT_SETTINGS_KEYS.SUBGRAPH']);
   const { setSettings, settings } = useProjectSettingsStore((state) => ({
@@ -376,7 +427,7 @@ export const useAAProjectSettingsDatasource = (uuid: UUID) => {
 
   useEffect(() => {
     if (!isEmpty(query.data)) {
-      console.log("query data", query.data);
+      console.log('query data', query.data);
       const settingsToUpdate = {
         ...settings,
         [uuid]: {
@@ -429,7 +480,7 @@ export const useAAProjectSettingsHazardType = (uuid: UUID) => {
 
   useEffect(() => {
     if (!isEmpty(query.data)) {
-      console.log("query data", query.data);
+      console.log('query data', query.data);
       const settingsToUpdate = {
         ...settings,
         [uuid]: {
@@ -533,19 +584,19 @@ export const useProjectBeneficiaries = (payload: GetProjectBeneficiaries) => {
         ...query.data,
         data: query.data?.data?.length
           ? query.data.data.map((row: any) => ({
-            uuid: row?.uuid?.toString(),
-            wallet: row?.walletAddress?.toString(),
-            voucherClaimStatus: row?.claimStatus,
-            name: row?.piiData?.name || '',
-            email: row?.piiData?.email || '',
-            gender: row?.projectData?.gender?.toString() || '',
-            phone: row?.piiData?.phone || 'N/A',
-            type: row?.type?.toString() || 'N/A',
-            phoneStatus: row?.projectData?.phoneStatus || '',
-            bankedStatus: row?.projectData?.bankedStatus || '',
-            internetStatus: row?.projectData?.internetStatus || '',
-            benTokens: row?.benTokens || 'N/A',
-          }))
+              uuid: row?.uuid?.toString(),
+              wallet: row?.walletAddress?.toString(),
+              voucherClaimStatus: row?.claimStatus,
+              name: row?.piiData?.name || '',
+              email: row?.piiData?.email || '',
+              gender: row?.projectData?.gender?.toString() || '',
+              phone: row?.piiData?.phone || 'N/A',
+              type: row?.type?.toString() || 'N/A',
+              phoneStatus: row?.projectData?.phoneStatus || '',
+              bankedStatus: row?.projectData?.bankedStatus || '',
+              internetStatus: row?.projectData?.internetStatus || '',
+              benTokens: row?.benTokens || 'N/A',
+            }))
           : [],
       };
     }, [query.data]),

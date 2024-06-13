@@ -31,7 +31,7 @@ import { sepolia } from 'viem/chains';
 import { useAccount, useConnect, useWriteContract } from 'wagmi';
 import { rahatChain } from 'apps/rahat-ui/src/chain-custom';
 import { injected } from 'wagmi/connectors';
-import { rahatTokenAbi } from 'apps/rahat-ui/src/hooks/el/contracts/token';
+import { rahatTokenAbi } from 'apps/rahat-ui/src/hooks/c2c/contracts/rahatToken';
 
 interface DepositTokenModalType {
   handleModal: UseBooleanReturnType;
@@ -64,12 +64,12 @@ const DepositTokenModal: FC<DepositTokenModalType> = ({ handleModal }) => {
     try {
       console.log({ rahatChain });
 
-      if (!address) {
-        await connectAsync({
-          chainId: rahatChain.id,
-          connector: injected(),
-        });
-      }
+      // if (!address) {
+      //   await connectAsync({
+      //     chainId: rahatChain.id,
+      //     connector: injected(),
+      //   });
+      // }
       const recipientAddress = contractSettings?.c2cproject?.address;
       const tokenAddress = contractSettings?.rahattoken?.address;
       const amountInWei = parseEther(tokenInputs);
@@ -93,7 +93,6 @@ const DepositTokenModal: FC<DepositTokenModalType> = ({ handleModal }) => {
       }
 
       const data = await writeContractAsync({
-        chainId: rahatChain.id,
         address: tokenAddress,
         functionName: 'transfer',
         abi: rahatTokenAbi,

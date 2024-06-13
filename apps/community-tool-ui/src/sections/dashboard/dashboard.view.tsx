@@ -37,25 +37,27 @@ export default function DashboardView() {
       value: item.wardnumber.toString(),
     })) || [];
 
+    console.log("StatsData=>", data)
+
   return (
     <div>
       <div className="grid grid-cols grid-cols-2 gap-4 px-4 pt-2 place-content-between">
         <div className="cols-span-1 flex items-center text-xl text-primary font-semibold">
           {!data ? 'Dashboard Loading' : 'Population Insights'}
         </div>
-        <div className=" cols-span-1 flex items-center place-content-end gap-2">
+        <div className=" cols-span-1 flex items-center place-content-end gap-0">
           <SearchDropdownComponent
             transformedData={transformedData}
-            title={'palika'}
+            title={'Palika'}
             handleSelect={handleSelect}
           />
           <SearchDropdownComponent
             transformedData={transformedWardNumber}
-            title={'ward number'}
+            title={'Ward'}
             handleSelect={handleSelect}
           />
 
-          <Button className="mx-2 rounded" size={'sm'}>
+          <Button className="mx-1 hover:bg-white bg-white text-black rounded" size={'sm'}>
             <DownloadCloud className="mr-2 h-3 w-3" />
             Download
           </Button>
@@ -69,7 +71,9 @@ export default function DashboardView() {
       ) : (
         <ScrollArea className="h-[calc(100vh-100px)] px-4 py-2">
           <PopulationInsights data={data} />
+          <div className='mt-8'></div>
           <HouseHoldInsights data={data} />
+          <div className='mt-8'></div>
           <HouseHoldHeadInsights data={data} />
         </ScrollArea>
       )}

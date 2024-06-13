@@ -3,6 +3,7 @@
 import {
   PROJECT_SETTINGS_KEYS,
   useProjectContractSettings,
+  useProjectSafeWalletSettings,
   useProjectSettingsStore,
   useProjectSubgraphSettings,
 } from '@rahat-ui/query';
@@ -25,10 +26,12 @@ export default function ProjectLayoutRoot({
   const uuid = useParams().id as UUID;
   useProjectSubgraphSettings(uuid);
   useProjectContractSettings(uuid);
+  useProjectSafeWalletSettings(uuid);
 
   const subgraphSettings = useProjectSettingsStore(
     (s) => s.settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.SUBGRAPH]?.url,
   );
+
   const contractSettings = useProjectSettingsStore(
     (state) => state.settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.CONTRACT],
   );

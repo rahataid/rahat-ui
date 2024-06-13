@@ -1,5 +1,5 @@
 export const communityMapboxBasicConfig = {
-  mapboxAccessToken: process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN || '',
+  mapboxAccessToken: process.env.NEXT_PUBLIC_MAPBOX_TOKEN || '',
   minZoom: 1,
 };
 

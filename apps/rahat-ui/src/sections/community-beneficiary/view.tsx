@@ -20,7 +20,7 @@ import CustomPagination from '../../components/customPagination';
 import { useDebounce } from '../../utils/useDebouncehooks';
 import ListView from './list.view';
 import { useCommunityBeneficiaryTableColumns } from './useCommunityBeneficiaryColumn';
-import { usePathname } from 'next/navigation';
+import { useParams, usePathname } from 'next/navigation';
 // import { useCommunityBeneficiaryTableColumns } from './useBeneficiaryColumns';
 
 function ViewCommunityBeneficiaryByGroupName() {
@@ -37,13 +37,12 @@ function ViewCommunityBeneficiaryByGroupName() {
     resetSelectedListItems,
   } = usePagination();
 
-  const pathName = usePathname();
-  filters.groupName = pathName.split('/')[2].replace('%20', ' ');
+  const { uuid } = useParams();
   const debouncedFilters = useDebounce(filters, 500);
   const { setCommunityBeneficiariesUUID, communityBeneficiariesUUID } =
     useBeneficiaryStore();
 
-  const { data } = useListTempBeneficiary({
+  const { data } = useListTempBeneficiary(uuid as string, {
     ...pagination,
     ...(debouncedFilters as any),
   });
@@ -51,7 +50,7 @@ function ViewCommunityBeneficiaryByGroupName() {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const table = useReactTable({
     manualPagination: true,
-    data: data?.data || [],
+    data: data?.data?.tempeBeneficiary || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -76,7 +75,6 @@ function ViewCommunityBeneficiaryByGroupName() {
       resetSelectedListItems();
     }
   }, [resetSelectedListItems, communityBeneficiariesUUID.length]);
-
   return (
     <Tabs defaultValue="list" className="h-full">
       <>
@@ -91,13 +89,13 @@ function ViewCommunityBeneficiaryByGroupName() {
         </TabsContent>
 
         <CustomPagination
-          currentPage={pagination.page}
+          meta={data?.response?.meta || { total: 0, currentPage: 0 }}
           handleNextPage={setNextPage}
           handlePrevPage={setPrevPage}
           handlePageSizeChange={setPerPage}
-          meta={data?.response?.meta || { total: 0, currentPage: 0 }}
-          perPage={pagination?.perPage}
-          total={0}
+          currentPage={pagination.page}
+          perPage={pagination.perPage}
+          total={data?.response?.meta?.total || 0}
         />
       </>
     </Tabs>

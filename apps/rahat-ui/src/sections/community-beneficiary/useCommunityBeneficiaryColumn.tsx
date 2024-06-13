@@ -1,11 +1,17 @@
 import { useTempBeneficiaryImport } from '@rahat-ui/query';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
 import { ListBeneficiary } from '@rahataid/community-tool-sdk';
-import { TempBeneficiary } from '@rahataid/sdk';
 import { ColumnDef } from '@tanstack/react-table';
-import { useRouter } from 'next/navigation';
+import { Eye, Import } from 'lucide-react';
+import Link from 'next/link';
 import { humanReadableDate, humanizeString } from '../../utils';
+import { TempBeneficiary } from '@rahataid/sdk';
+import { useRouter } from 'next/navigation';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/tooltip';
 
 export const useCommunityBeneficiaryGroupTableColumns = () => {
   const importTempBeneficiaries = useTempBeneficiaryImport();
@@ -41,23 +47,40 @@ export const useCommunityBeneficiaryGroupTableColumns = () => {
       cell: ({ row }) => {
         return (
           <div className="flex gap-4 items-center">
-            {/* <Link href={`/community-beneficiary/${groupName}`}>
-              <Eye
-                size={20}
-                strokeWidth={1.5}
-                className="cursor-pointer hover:text-primary"
-              />
-            </Link> */}
+            <TooltipProvider delayDuration={100}>
+              <Tooltip>
+                <TooltipTrigger>
+                  <Link href={`/community-beneficiary/${row.original.uuid}`}>
+                    <Eye
+                      size={20}
+                      strokeWidth={1.5}
+                      className="bg-transparent hover:bg-blue-500 text-blue-700  hover:text-white p-1  border border-blue-500 hover:border-transparent rounded w-6 h-6"
+                    />
+                  </Link>
+                </TooltipTrigger>
+                <TooltipContent className="bg-secondary">
+                  <p className="text-xs font-medium">View Details</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
 
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() =>
-                handleImportBeneficiaries(row.original.uuid as string)
-              }
-            >
-              Import
-            </Button>
+            <TooltipProvider delayDuration={100}>
+              <Tooltip>
+                <TooltipTrigger
+                  onClick={() =>
+                    handleImportBeneficiaries(row.original.uuid as string)
+                  }
+                >
+                  <Import
+                    className="bg-transparent hover:bg-blue-500 text-blue-700  hover:text-white p-1  border border-blue-500 hover:border-transparent rounded w-6 h-6"
+                    size={40}
+                  />
+                </TooltipTrigger>
+                <TooltipContent className="bg-secondary">
+                  <p className="text-xs font-medium">Import</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </div>
         );
       },
@@ -68,31 +91,6 @@ export const useCommunityBeneficiaryGroupTableColumns = () => {
 
 export const useCommunityBeneficiaryTableColumns = () => {
   const columns: ColumnDef<ListBeneficiary>[] = [
-    {
-      id: 'select',
-      header: ({ table }) => (
-        <Checkbox
-          checked={
-            table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && 'indeterminate')
-          }
-          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-          aria-label="Select all"
-        />
-      ),
-      cell: ({ row, table }) => (
-        <Checkbox
-          checked={row.getIsSelected()}
-          disabled={!row.getCanSelect()}
-          onCheckedChange={(value) => {
-            row.toggleSelected(!!value);
-          }}
-          aria-label="Select row"
-        />
-      ),
-      enableSorting: false,
-      enableHiding: false,
-    },
     {
       header: 'Beneficiary Name',
       cell: ({ row }) => {

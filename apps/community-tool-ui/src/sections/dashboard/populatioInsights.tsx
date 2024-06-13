@@ -1,4 +1,3 @@
-import MapIndicators from './MapIndicators';
 import BarCharts from './barCharts';
 import Donut from './donut';
 import CommunityMap from './map';
@@ -39,7 +38,6 @@ const PopulationInsights = ({ data }: Props) => {
           width={'100%'}
         />
 
-        {/* <MapIndicators /> */}
         <CommunityMap coordinates={filtered} />
       </div>
 

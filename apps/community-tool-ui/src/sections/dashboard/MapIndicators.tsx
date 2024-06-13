@@ -4,7 +4,7 @@ import { Landmark, Home} from 'lucide-react'
 
 export default function MapIndicators() {
   return (
-    <div className="absolute top-6 right-6 bg-white p-4 rounded shadow-lg z-10 text-xs">
+    <div className="absolute top-2 right-2 bg-white p-4 rounded shadow-lg z-10 text-xs">
             <div className="flex space-x-2 mb-1">
               <div className="w-3 h-3 bg-red-500 rounded-full"></div>
               <div >Below 50m</div>

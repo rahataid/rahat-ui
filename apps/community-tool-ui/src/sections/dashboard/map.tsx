@@ -5,6 +5,7 @@ import { communityMapboxBasicConfig } from '../../utils/mapconfigs';
 import {  MapPin } from 'lucide-react';
 import MarkerDetails from './MarkerDetails';
 import * as turf from "@turf/turf";
+import MapIndicators from './MapIndicators';
 
 const DEFAULT_LAT = 27.712021;
 const DEFAULT_LNG = 85.31295;
@@ -53,7 +54,8 @@ export default function CommunityMap({
 
 
   return (
-    <div className="bg-card shadow rounded mt-2 col-span-4">
+    <div className="relative bg-card shadow rounded mt-2 col-span-4">
+      <MapIndicators />
       <Map
         style={{ width: '100%', height: '330px' }}
         ref={mapRef}

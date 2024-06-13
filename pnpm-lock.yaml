@@ -84,8 +84,8 @@ dependencies:
     specifier: 0.0.12
     version: 0.0.12
   '@rahataid/sdk':
-    specifier: 0.0.30
-    version: 0.0.30
+    specifier: 0.0.31
+    version: 0.0.31
   '@rumsan/communication':
     specifier: ^0.0.14
     version: 0.0.14
@@ -5599,8 +5599,8 @@ packages:
       - graphql
     dev: false
 
-  /@rahataid/sdk@0.0.30:
-    resolution: {integrity: sha512-vxFOaiCTpQbWxnIitLjTXhEueetA0Tk2kogPFdhgVStWNdAqTaOz2dxoXxfnKOAAOQ36chSn4Fx3g0Gx9no6Bw==, tarball: https://npm.pkg.github.com/download/@rahataid/sdk/0.0.30/123011c847d8177ccbbae67e2b9a8ce6731d6a03}
+  /@rahataid/sdk@0.0.31:
+    resolution: {integrity: sha512-2BgvMK9YWV8Sm1A1qPhgt1eIBgTzYG3k4Wlf491N645fxtfcXIb4564qiskvX7LgvKnta0i7g77udZ+OGoHFWA==, tarball: https://npm.pkg.github.com/download/@rahataid/sdk/0.0.31/0ba0b194116dcbb797dd70b91ae69c79611633bb}
     dev: false
 
   /@react-native-community/cli-clean@13.6.6:

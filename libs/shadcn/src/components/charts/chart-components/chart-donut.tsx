@@ -31,7 +31,7 @@ export default function ChartDonut({
       horizontalAlign: 'center',
     },
     tooltip: {
-      fillSeriesColor: false,
+      fillSeriesColor: true,
     },
     dataLabels: {
       enabled: false,

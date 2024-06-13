@@ -1,4 +1,3 @@
-import { FocusEventHandler } from 'react';
 import BarCharts from './barCharts';
 import Donut from './donut';
 import CommunityMap from './map';
@@ -15,6 +14,19 @@ const PopulationInsights = ({ data }: Props) => {
     data?.data?.find((f) => f.name === 'TOTAL_WITH_GENDER') || ([] as any);
   const vulnerabilityStatus =
     data?.data?.find((f) => f?.name === 'VULNERABIILTY_STATUS') || ([] as any);
+
+  const benefMapStats =
+    data?.data?.find((f) => f?.name === 'BENEFICIARY_MAP_STATS') || ([] as any);
+
+  const filtered =
+    benefMapStats && benefMapStats.data
+      ? benefMapStats.data.filter((b) => {
+          return b.latitude && b.longitude;
+        })
+      : [];
+
+      console.log("TG=>",totalGender)
+
   return (
     <div>
       <div className="grid sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-5 gap-2 mb-2 ">
@@ -25,7 +37,8 @@ const PopulationInsights = ({ data }: Props) => {
           height={250}
           width={'100%'}
         />
-        <CommunityMap coordinates={[82.3886, 29.3863]} />
+
+        <CommunityMap coordinates={filtered} />
       </div>
 
       <div className="grid  sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-2 mt-4">

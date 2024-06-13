@@ -93,7 +93,6 @@ const DepositTokenModal: FC<DepositTokenModalType> = ({ handleModal }) => {
       }
 
       const data = await writeContractAsync({
-        chainId: rahatChain.id,
         address: tokenAddress,
         functionName: 'transfer',
         abi: rahatTokenAbi,

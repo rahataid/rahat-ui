@@ -13,19 +13,21 @@ import TargetingFormBuilder from '../../../targetingFormBuilder';
 import useTargetingFormStore from '../../../targetingFormBuilder/form.store';
 import { ITargetingQueries } from '../../../types/targeting';
 
+import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { FIELD_DEF_FETCH_LIMIT } from 'apps/community-tool-ui/src/constants/app.const';
 import { MultiSelect } from 'apps/community-tool-ui/src/targetingFormBuilder/MultiSelect';
+import { useRouter } from 'next/navigation';
 import {
   bankedStatusOptions,
   genderOptions,
   internetStatusOptions,
   phoneStatusOptions,
 } from '../../../constants/targeting.const';
-import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 
 export default function TargetSelectForm() {
   const { pagination } = usePagination();
-  
+  const router = useRouter();
+
   const { loading, setLoading, setTargetUUID } = useCommunityTargetingStore(
     (state) => ({
       setLoading: state.setLoading,
@@ -59,7 +61,6 @@ export default function TargetSelectForm() {
     }
 
     for (let key in targetingQueries) {
-      console.log({ key });
       if (targetingQueries.hasOwnProperty(key)) {
         if (targetingQueries[key]) return false;
       }
@@ -75,12 +76,10 @@ export default function TargetSelectForm() {
       filterOptions: [{ data: payload }],
     });
     const { uuid } = target?.data as any;
-    // setTargetUUID(uuid);
     setTimeout(() => {
+      router.push(`/targeting/filters?targetUUID=${uuid}`);
       setLoading(false);
-      if(uuid) window.location.replace(`/targeting/filters?targetUUID=${uuid}`);
-      // router.push(`/targeting/filters?targetID=${uuid}`);
-    }, 2000)
+    }, 2000);
   };
 
   return (

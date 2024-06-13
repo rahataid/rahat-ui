@@ -37,6 +37,8 @@ export default function DashboardView() {
       value: item.wardnumber.toString(),
     })) || [];
 
+    console.log("StatsData=>", data)
+
   return (
     <div>
       <div className="grid grid-cols grid-cols-2 gap-4 px-4 pt-2 place-content-between">

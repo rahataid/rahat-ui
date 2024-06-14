@@ -10,12 +10,13 @@ import { Button } from './button';
 import { Mic, Trash, StopCircle, UploadIcon } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { cn } from '../../utils';
-import { useUploadFile } from '../../../../query/src';
+// import { useUploadFile } from '../../../../query/src';
 
 type Props = {
   className?: string;
   timerClassName?: string;
   form?: any;
+  uploadFile: any
 };
 
 type Record = {
@@ -32,8 +33,8 @@ const padWithLeadingZeros = (num: number, length: number): string => {
   return String(num).padStart(length, '0');
 };
 
-export const AudioRecorder = ({ className, timerClassName, form }: Props) => {
-  const uploadFile = useUploadFile();
+export const AudioRecorder = ({ className, timerClassName, form, uploadFile }: Props) => {
+  // const uploadFile = useUploadFile();
 
   const { theme } = useTheme();
   // States
@@ -193,7 +194,7 @@ export const AudioRecorder = ({ className, timerClassName, form }: Props) => {
 
     const formData = new FormData();
     formData.append('file', file);
-    const { data: afterUpload } = await uploadFile.mutateAsync(formData);
+    const { data: afterUpload } = await uploadFile?.mutateAsync(formData);
 
     form.setValue('file', afterUpload);
 

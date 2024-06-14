@@ -34,7 +34,7 @@ export const mergeTransactions = async (transactionsObj: any) => {
       new Date(b.blockTimestamp).getTime(),
   );
   const cleanedTransactions = mergedTransactions.map(
-    ({ blockTimestamp, __typename, ...rest }) => rest,
+    ({ blockTimestamp, __typename, ...rest }: any) => rest,
   );
 
   return cleanedTransactions;

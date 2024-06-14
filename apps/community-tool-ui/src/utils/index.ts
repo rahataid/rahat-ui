@@ -148,7 +148,7 @@ function createInvalidFieldError(errFields: any, isDuplicate: boolean) {
 }
 
 // Export both error and duplicate data to excel
-export const splitValidAndInvalid = (payload: [], errors: []) => {
+export const splitValidAndInvalid = (payload: any[], errors: []) => {
   const invalidData = [] as any;
   const validData = [] as any;
   payload.forEach((p: any) => {
@@ -168,6 +168,8 @@ export const splitValidAndInvalid = (payload: [], errors: []) => {
       validData.push(p);
     }
   });
+
+
 
   const swapped = moveErrorMsgToFirstKey(invalidData);
   return { invalidData: swapped, validData };

@@ -55,7 +55,7 @@ export default function CommunityMap({
 
   return (
     <div className="relative bg-card shadow rounded mt-2 col-span-4">
-      {/* <MapIndicators />
+      <MapIndicators />
       <Map
         style={{ width: '100%', height: '330px' }}
         ref={mapRef}
@@ -93,7 +93,7 @@ export default function CommunityMap({
 						</Marker>
 					);
 				})}
-      </Map> */}
+      </Map>
     </div>
   );
 }

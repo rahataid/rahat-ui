@@ -29,7 +29,6 @@ const CommunityStyledChart = styled(Chart)({
   },
   '& .apexcharts-legend': {
     height: 50,
-    borderTop: `dashed 1px ${DIVIDER_COLOR}`,
     top: `calc(${300 - 50}px) !important`,
   },
 });
@@ -68,7 +67,6 @@ export default function PieChart({
     options = {},
   } = chart;
   const chartSeries = series.map((i) => i.value);
-
   const chartOptions = useChart({
     chart: {
       // sparkline: {
@@ -82,7 +80,8 @@ export default function PieChart({
       offsetY: 0,
       floating: false,
       position: 'bottom',
-      horizontalAlign: 'left',
+      horizontalAlign: 'center',
+      fontSize: '12px',
     },
     tooltip: {
       fillSeriesColor: true,
@@ -98,10 +97,12 @@ export default function PieChart({
         donut: {
           size: donutSize,
           labels: {
+            show: communityTool ? false : true,
             value: {
               formatter: (value: number | string) => fNumber(value),
             },
             total: {
+              show: communityTool ? false : true,
               formatter: (w: { globals: { seriesTotals: number[] } }) => {
                 const sum = w.globals.seriesTotals.reduce((a, b) => a + b, 0);
                 return fNumber(sum);
@@ -117,16 +118,16 @@ export default function PieChart({
   return (
     <div>
       {communityTool ? (
-        <div className="bg-card shadow rounded p-4 flex flex-col">
+        <div className="bg-card shadow rounded p-4  ">
           <h2 className={`font-medium p-0 text-left`}>{title}</h2>
-          <div className=" items-center justify-center">
+          <div className="flex flex-col items-center justify-center">
             <CommunityStyledChart
               dir="ltr"
               type="pie"
               series={chartSeries}
               options={chartOptions}
               height={320}
-              width={400}
+              width={350}
             />
           </div>
         </div>

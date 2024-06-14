@@ -31,7 +31,7 @@ export default function ChartBar({
     stroke: { show: false },
     chart: {
       type: 'bar',
-      height: 400,
+      height: 500,
     },
 
     plotOptions: {

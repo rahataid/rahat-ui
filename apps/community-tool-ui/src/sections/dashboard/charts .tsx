@@ -9,11 +9,11 @@ const titleMappings = [
 ];
 const Charts = ({ charts }: { charts: any }) => {
   return (
-    <div className="grid lg:grid-cols-4  w-full    sm:grid-cols-1 md:grid-cols-1 gap-2 mb-2  ">
+    <div className="grid lg:grid-cols-4  w-full sm:grid-cols-1 md:grid-cols-1 gap-2 mb-2  ">
       {charts &&
         charts.length > 0 &&
         charts.map((d: any, index: number) => {
-          const series = Array.isArray(d?.data)
+          const series = Array.isArray(d?.data) && d.data.length 
             ? d?.data.map((item: any) => ({
                 label: formatUnderScoredString(item.id),
                 value: item?.count || 0,

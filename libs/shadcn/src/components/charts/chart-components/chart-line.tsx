@@ -11,12 +11,17 @@ type Props = {
     name: string;
     data: number[];
   }[];
+  categories: string[];
 };
 
-export default function ChartLine({ series, lineChartOptions }: Props) {
+export default function ChartLine({
+  series,
+  lineChartOptions,
+  categories,
+}: Props) {
   const defaultOptions = {
     xaxis: {
-      categories: [
+      categories: categories || [
         'Jan',
         'Feb',
         'Mar',

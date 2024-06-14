@@ -78,10 +78,10 @@ export default function PieChart({
       offsetY: 0,
       floating: communityTool ? false : true,
       position: 'bottom',
-      horizontalAlign: 'center',
+      horizontalAlign: 'left',
     },
     tooltip: {
-      fillSeriesColor: false,
+      fillSeriesColor: true,
       y: {
         formatter: (value: number) => fNumber(value),
         title: {
@@ -113,8 +113,8 @@ export default function PieChart({
   return (
     <div>
       {communityTool ? (
-        <div className="bg-card shadow rounded p-4 flex flex-col items-center">
-          <h2 className={`text-lg font-medium p-0 text-left`}>{title}</h2>
+        <div className="bg-card shadow rounded p-4 flex flex-col">
+          <h2  className={`font-medium p-0 text-left`}>{title}</h2>
           <div className=" items-center justify-center">
             <CommunityStyledChart
               dir="ltr"

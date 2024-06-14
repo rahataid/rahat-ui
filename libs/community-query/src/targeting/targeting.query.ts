@@ -1,4 +1,9 @@
-import { UseQueryResult, useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import {
+  UseQueryResult,
+  useQuery,
+  useMutation,
+  useQueryClient,
+} from '@tanstack/react-query';
 import { useRSQuery } from '@rumsan/react-query';
 import { getTargetClient } from '@rahataid/community-tool-sdk/clients';
 import { TAGS } from '../config';
@@ -25,7 +30,7 @@ export const useTargetingList = (
 export const useTargetingCreate = () => {
   const { queryClient, rumsanService } = useRSQuery();
   const targetingClient = getTargetClient(rumsanService.client);
-  const qc = useQueryClient()
+  const qc = useQueryClient();
 
   return useMutation(
     {
@@ -33,9 +38,7 @@ export const useTargetingCreate = () => {
       mutationFn: targetingClient.create,
       onSuccess: () => {
         qc.invalidateQueries({
-          queryKey: [
-            TAGS.GET_TARGETING_BENEFICIARIES
-          ],
+          queryKey: [TAGS.GET_TARGETING_BENEFICIARIES],
         });
       },
       onError: (error: any) => {
@@ -58,7 +61,7 @@ export const useTargetedBeneficiaryList = (
   const targetingClient = getTargetClient(rumsanService.client);
   const query = useQuery(
     {
-      queryKey: [TAGS.GET_TARGETING_BENEFICIARIES, payload],
+      queryKey: [TAGS.GET_TARGETING_BENEFICIARIES, target_uuid, payload],
       queryFn: () =>
         //@ts-ignore
         targetingClient.listByTargetUuid({
@@ -127,14 +130,14 @@ export const useExportPinnedListBeneficiary = () => {
           text: ' All targeted beneficiaries will be exported to Rahat!',
           icon: 'warning',
           confirmButtonText: 'Yes, I am sure!',
-          showCancelButton: true
+          showCancelButton: true,
         });
 
         if (!isConfirmed) return;
         return targetingClient.exportTargetBeneficiary(payload);
       },
       onSuccess: (data: any) => {
-        if(!data) return;
+        if (!data) return;
         Swal.fire(data?.data?.message, '', 'success');
         queryClient.invalidateQueries({
           queryKey: [

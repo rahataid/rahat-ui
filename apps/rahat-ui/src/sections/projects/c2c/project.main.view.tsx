@@ -9,6 +9,7 @@ import {
 import { useBalance } from 'wagmi';
 import ProjectInfo from './project.info';
 import { useParams } from 'next/navigation';
+import ProjectCharts from './project.charts';
 
 const ProjectView = () => {
   const project = useProjectStore((state) => state.singleProject);
@@ -34,15 +35,7 @@ const ProjectView = () => {
     <div className="p-2 bg-secondary">
       <ScrollArea className="h-[calc(100vh-80px)]">
         <ProjectInfo project={project} />
-        {/* Temp Display */}
-        {balance.data && (
-          <div>
-            <h1>Balance</h1>
-            <p>
-              {balance.data.formatted} {balance.data.symbol}
-            </p>
-          </div>
-        )}
+        <ProjectCharts />
       </ScrollArea>
     </div>
   );

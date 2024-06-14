@@ -1,6 +1,5 @@
 import {
   PROJECT_SETTINGS_KEYS,
-  useC2CProjectSubgraphStore,
   useProjectSettingsStore,
   useRecentTransactionsList,
 } from '@rahat-ui/query';
@@ -13,12 +12,13 @@ import { useParams } from 'next/navigation';
 import { formatEther } from 'viem';
 import { useReadContract } from 'wagmi';
 import RecentTransaction from './recent.transaction';
+import { UUID } from 'crypto';
 
 const FundManagementView = () => {
-  const { id } = useParams();
-  const projectDetails = useC2CProjectSubgraphStore(
-    (state) => state.projectDetails,
-  );
+  const { id }: { id: UUID } = useParams();
+  // const projectDetails = useC2CProjectSubgraphStore(
+  //   (state) => state.projectDetails,
+  // );
   const contractSettings = useProjectSettingsStore(
     (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT],
   );
@@ -26,7 +26,8 @@ const FundManagementView = () => {
   const rahatTokenAddress = contractSettings?.rahattoken?.address;
   const rahatTokenAbi = contractSettings?.rahattoken?.abi;
 
-  const [transactionList] = useRecentTransactionsList(c2cProjectAddress);
+  const { data: transactionList, isLoading: isFetchingTransactionList } =
+    useRecentTransactionsList(c2cProjectAddress);
 
   const { data: projectBalance, isLoading } = useReadContract({
     address: rahatTokenAddress,
@@ -34,7 +35,7 @@ const FundManagementView = () => {
     functionName: 'balanceOf',
     args: [c2cProjectAddress],
     query: {
-      select(data) {
+      select(data: unknown) {
         return data ? formatEther(data as bigint) : '0';
       },
     },
@@ -50,12 +51,16 @@ const FundManagementView = () => {
     formatDate(+t.blockTimestamp),
   );
 
+  // const sortByLatest = transactionList.sort(
+  //   (a: Transaction, b: Transaction) => +b.blockTimestamp - +a.blockTimestamp,
+  // );
+
   return (
     <>
       <div className="grid grid-cols-2 gap-4 m-2">
         <DataCard
           title="Project Balance"
-          smallNumber={`${projectBalance} USDC`}
+          smallNumber={isLoading ? 'Loading...' : `${projectBalance} USDC`}
           Icon={Banknote}
         />
         <DataCard
@@ -64,12 +69,18 @@ const FundManagementView = () => {
           Icon={ReceiptText}
         />
       </div>
-      <div className="grid grid-cols-3 gap-4 h-[calc(100vh-420px)]">
-        <div className="col-span-2">
-          <ChartLine series={mySeries} categories={chartCategories} />
+      {isFetchingTransactionList ? (
+        <div className="flex justify-center items-center h-[calc(100vh-420px)]">
+          <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-gray-900"></div>
         </div>
-        <RecentTransaction transactions={transactionList} />
-      </div>
+      ) : (
+        <div className="grid grid-cols-3 gap-4 h-[calc(100vh-420px)]">
+          <div className="col-span-2">
+            <ChartLine series={mySeries} categories={chartCategories} />
+          </div>
+          <RecentTransaction transactions={transactionList} />
+        </div>
+      )}
     </>
   );
 };

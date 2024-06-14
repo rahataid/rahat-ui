@@ -1,5 +1,5 @@
 'use client';
-import {  useState } from 'react';
+import { useState } from 'react';
 
 import { Tabs } from '@rahat-ui/shadcn/components/tabs';
 
@@ -21,20 +21,18 @@ import { Result } from '@rahataid/community-tool-sdk/targets';
 import CustomPagination from '../../../components/customPagination';
 import { useTargetingColumns } from '../useTargetingColumns';
 import FilterTargetingListView from './filters.listView';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { paths } from '../../../routes/paths';
 import Swal from 'sweetalert2';
 import useTargetingFormStore from '../../../targetingFormBuilder/form.store';
 
-import { useParams } from 'next/navigation'
-
+import { useParams } from 'next/navigation';
 
 export default function FiltersTargetingView() {
   const params = useSearchParams();
-  const targetUUID = params.get("targetUUID");
-
+  const targetUUID = params.get('targetUUID');
   const { setTargetingQueries }: any = useTargetingFormStore();
-  const router = useRouter();
+
   const {
     pagination,
     selectedListItems,
@@ -43,8 +41,7 @@ export default function FiltersTargetingView() {
     setPrevPage,
     setPerPage,
   } = usePagination();
-  const { loading,  setTargetUUID } = useCommunityTargetingStore();
-
+  const { loading, setTargetUUID } = useCommunityTargetingStore();
 
   const { data: beneficiaryData } = useTargetedBeneficiaryList(
     targetUUID as string,
@@ -83,10 +80,8 @@ export default function FiltersTargetingView() {
     await updateTargetLabel.mutateAsync({ uuid, payload });
     setTargetingQueries([]);
     setTargetUUID('');
-    router.push(paths.dashboard.targeting.list);
+    // router.push(paths.dashboard.targeting.list);
   };
-
-
 
   return (
     <Tabs defaultValue="list" className="h-full">

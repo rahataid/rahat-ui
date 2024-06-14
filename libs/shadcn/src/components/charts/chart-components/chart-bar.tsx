@@ -12,6 +12,8 @@ type Props = {
   height?: number | string;
   horizontal?: boolean;
   colors?: string[];
+  xaxisLabels?: boolean;
+  barHeight?: number;
 };
 
 export default function ChartBar({
@@ -21,6 +23,8 @@ export default function ChartBar({
   height = 400,
   horizontal = false,
   colors = ['#007BFF'],
+  xaxisLabels = true,
+  barHeight = 20,
 }: Props) {
   const chartOptions = useChart({
     colors,
@@ -33,7 +37,7 @@ export default function ChartBar({
     plotOptions: {
       bar: {
         horizontal: horizontal,
-        barHeight: 20,
+        barHeight: barHeight,
         columnWidth: '12%',
         borderRadius: 4,
         borderRadiusApplication: 'end',
@@ -42,7 +46,7 @@ export default function ChartBar({
     xaxis: {
       categories,
       labels: {
-        show: true,
+        show: xaxisLabels,
         formatter: (value: string) => value,
       },
       axisBorder: {

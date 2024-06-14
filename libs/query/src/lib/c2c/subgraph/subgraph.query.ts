@@ -1,9 +1,13 @@
 'use client';
 
 import { useQuery } from 'urql';
-import { ReceivedTransactionDetails } from './graph.query';
+import {
+  BeneficiaryTransaction,
+  ReceivedTransactionDetails,
+} from './graph.query';
 import { useEffect, useState } from 'react';
 import { Transaction } from 'viem';
+import { mergeTransactions } from '../utils';
 
 export const useProjectDetails = (projectAddress: string) => {
   // const { queryClient } = useRSQuery();
@@ -34,7 +38,7 @@ export const useProjectDetails = (projectAddress: string) => {
 export const useRecentTransactionsList = (contractAddress: string) => {
   const [transactionList, setTransactionList] = useState<Transaction[]>([]);
 
-  const [result, ...restInfo] = useQuery({
+  const [result] = useQuery({
     query: ReceivedTransactionDetails,
     variables: {
       contractAddress,
@@ -44,11 +48,51 @@ export const useRecentTransactionsList = (contractAddress: string) => {
 
   useEffect(() => {
     (async () => {
-      result.data
-        ? setTransactionList(result.data.transfers)
-        : setTransactionList([]);
+      if (result.data) {
+        setTransactionList(
+          result.data.transfers.sort(
+            (a: any, b: any) => +a.blockTimestamp - +b.blockTimestamp,
+          ),
+        );
+      } else {
+        setTransactionList([]);
+      }
     })();
   }, [result.data]);
 
-  return [transactionList as Transaction[], ...restInfo];
+  return {
+    data: transactionList,
+    isLoading: result.fetching,
+    error: result.error,
+  };
+};
+
+export const useBeneficiaryTransaction = (beneficiaryAddress: string) => {
+  const [transactionList, setTransactionList] = useState<Transaction[]>([]);
+
+  const [result] = useQuery({
+    query: BeneficiaryTransaction,
+    variables: {
+      beneficiary: beneficiaryAddress,
+    },
+    pause: !beneficiaryAddress,
+  });
+
+  useEffect(() => {
+    (async () => {
+      if (result.data) {
+        const transactionObject = result.data;
+        const transactionLists = await mergeTransactions(transactionObject);
+        setTransactionList(transactionLists);
+      } else {
+        setTransactionList([]);
+      }
+    })();
+  }, [result.data]);
+
+  return {
+    data: transactionList,
+    isLoading: result.fetching,
+    error: result.error,
+  };
 };

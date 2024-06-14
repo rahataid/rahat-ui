@@ -57,18 +57,9 @@ export const columns: ColumnDef<Transaction>[] = [
     cell: ({ row }) => <div>{row.getValue('topic')}</div>,
   },
   {
-    accessorKey: 'processedBy',
-    header: 'Processed By',
-    cell: ({ row }) => (
-      <div className="capitalize">
-        {row.getValue('processedBy')
-          ? `${row.getValue('processedBy')?.toString().substring(0, 4)}....${row
-              .getValue('processedBy')
-              ?.toString()
-              ?.slice(-3)}`
-          : 'N/A'}
-      </div>
-    ),
+    accessorKey: 'blockNumber',
+    header: 'Block Number',
+    cell: ({ row }) => <div>{row.getValue('blockNumber')}</div>,
   },
   {
     accessorKey: 'date',

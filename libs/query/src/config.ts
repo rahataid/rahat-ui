@@ -40,20 +40,21 @@ export const PROJECT_SETTINGS_KEYS = {
   SUBGRAPH: 'SUBGRAPH_URL',
   TREASURY_SOURCES: 'TREASURY_SOURCES',
   DATASOURCE: 'DATASOURCE',
-  HAZARD_TYPE: 'HAZARD_TYPE'
+  HAZARD_TYPE: 'HAZARD_TYPE',
+  SAFE_WALLET: 'SAFE_WALLET',
 };
 
 export const TREASURY_SOURCES = [
   {
-    value: 'project_balance',
+    value: 'PROJECT',
     label: 'Project Balance',
   },
   {
-    value: 'user_wallet',
+    value: 'EOA',
     label: 'User Wallet',
   },
   {
-    value: 'multi_sig',
+    value: 'MULTISIG',
     label: 'MultiSig Wallet',
   },
 ];

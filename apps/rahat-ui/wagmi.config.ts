@@ -2,7 +2,13 @@
 
 import { getDefaultConfig } from 'connectkit';
 import { createConfig, http } from 'wagmi';
-import { arbitrumSepolia, mainnet, polygonMumbai, sepolia } from 'wagmi/chains';
+import {
+  arbitrumSepolia,
+  baseSepolia,
+  mainnet,
+  polygonMumbai,
+  sepolia,
+} from 'wagmi/chains';
 import { safe } from 'wagmi/connectors';
 import { rahatChain } from './src/chain-custom';
 
@@ -21,6 +27,7 @@ export const config = createConfig(
       // arbitrumGoerli,
       // polygon,
       rahatChain,
+      baseSepolia,
 
       // polygonMumbai,
       arbitrumSepolia,
@@ -40,6 +47,7 @@ export const config = createConfig(
       [sepolia.id]: http(),
       [arbitrumSepolia.id]: http(),
       [polygonMumbai.id]: http(),
+      [baseSepolia.id]: http(),
     },
     walletConnectProjectId: '',
     // Required App Info

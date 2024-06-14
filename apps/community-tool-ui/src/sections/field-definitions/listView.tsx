@@ -32,12 +32,13 @@ type IProps = {
 
 export default function ListView({ table, setFilters, filters }: IProps) {
   const handleFilterChange = (event: any) => {
+    console.log(event.target.value.replace(/\s+/g, '_'));
     if (event && event.target) {
       const { name, value } = event.target;
       table.getColumn(name)?.setFilterValue(value);
       setFilters({
         ...filters,
-        [name]: value,
+        [name]: value.replace(/\s+/g, '_'),
       });
     }
   };

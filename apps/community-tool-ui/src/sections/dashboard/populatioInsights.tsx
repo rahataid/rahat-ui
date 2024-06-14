@@ -20,12 +20,10 @@ const PopulationInsights = ({ data }: Props) => {
 
   const filtered =
     benefMapStats && benefMapStats.data
-      ? benefMapStats.data.filter((b) => {
+      ? benefMapStats.data.filter((b: any) => {
           return b.latitude && b.longitude;
         })
       : [];
-
-      console.log("TG=>",totalGender)
 
   return (
     <div>

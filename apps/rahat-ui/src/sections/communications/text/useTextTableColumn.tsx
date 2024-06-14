@@ -24,6 +24,7 @@ export default function useTextTableColumn() {
     {
       accessorKey: 'name',
       header: 'Campaigns',
+      id: 'name',
       cell: ({ row }) => (
         <div
           className="cursor-pointer"

@@ -135,6 +135,7 @@ const AddAudience: FC<AddAudienceProps> = ({
   if (selectedRows.length > 0) {
     setAudienceRequiredError(false);
   }
+  console.log(selectedRows);
   return (
     <>
       {audienceRequiredError && (
@@ -253,7 +254,7 @@ const AddAudience: FC<AddAudienceProps> = ({
                   </Table>
                   <div className="sticky bottom-0 flex items-center justify-end space-x-4 px-4 py-1 border-t-2 bg-card">
                     <div className="flex-1 text-sm text-muted-foreground">
-                      {table.getFilteredSelectedRowModel().rows.length} of{' '}
+                      {selectedRows.length} of{' '}
                       {table.getFilteredRowModel().rows.length} row(s) selected.
                     </div>
                     <div className="flex items-center gap-2">

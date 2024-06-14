@@ -29,6 +29,7 @@ export default function EditBeneficiary({ beneficiary }: any) {
 
   const FormSchema = z.object({
     name: z.string().min(2, { message: 'Name must be at least 4 character' }),
+    email: z.string().email('Please enter valid email').optional(),
     walletAddress: z
       .string()
       .min(42, { message: 'The Ethereum address must be 42 characters long' }),
@@ -55,6 +56,7 @@ export default function EditBeneficiary({ beneficiary }: any) {
     resolver: zodResolver(FormSchema),
     defaultValues: {
       name: beneficiary?.name,
+      email: beneficiary?.email,
       phone: beneficiary?.phone,
       gender: beneficiary?.gender,
       walletAddress: beneficiary?.wallet,
@@ -75,6 +77,7 @@ export default function EditBeneficiary({ beneficiary }: any) {
         piiData: {
           name: data.name,
           phone: data.phone,
+          email: data.email,
         },
         walletAddress: data.walletAddress,
       });
@@ -86,6 +89,17 @@ export default function EditBeneficiary({ beneficiary }: any) {
   useEffect(() => {
     updateBeneficiary.isSuccess && closeSecondPanel();
   }, [updateBeneficiary]);
+  console.log('EDIT', beneficiary);
+  useEffect(() => {
+    form.setValue('name', beneficiary?.name);
+    form.setValue('email', beneficiary?.email);
+    form.setValue('phone', beneficiary?.phone);
+    form.setValue('gender', beneficiary?.gender);
+    form.setValue('walletAddress', beneficiary?.wallet);
+    form.setValue('bankedStatus', beneficiary?.bankedStatus);
+    form.setValue('internetStatus', beneficiary?.internetStatus);
+    form.setValue('phoneStatus', beneficiary?.phoneStatus);
+  }, [beneficiary]);
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleEditBeneficiary)}>
@@ -100,6 +114,20 @@ export default function EditBeneficiary({ beneficiary }: any) {
                   <FormItem>
                     <FormControl>
                       <Input type="text" placeholder="Name" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => {
+                return (
+                  <FormItem>
+                    <FormControl>
+                      <Input type="email" placeholder="email" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -144,11 +172,13 @@ export default function EditBeneficiary({ beneficiary }: any) {
               control={form.control}
               name="bankedStatus"
               render={({ field }) => {
+                console.log(field.value);
                 return (
                   <FormItem>
                     <Select
                       onValueChange={field.onChange}
-                      defaultValue={field.value}
+                      defaultValue={field.value || beneficiary?.bankedStatus}
+                      value={field.value}
                     >
                       <FormControl>
                         <SelectTrigger>
@@ -178,7 +208,8 @@ export default function EditBeneficiary({ beneficiary }: any) {
                   <FormItem>
                     <Select
                       onValueChange={field.onChange}
-                      defaultValue={field.value}
+                      defaultValue={field.value || beneficiary?.gender}
+                      value={field.value}
                     >
                       <FormControl>
                         <SelectTrigger>
@@ -205,7 +236,8 @@ export default function EditBeneficiary({ beneficiary }: any) {
                   <FormItem>
                     <Select
                       onValueChange={field.onChange}
-                      defaultValue={field.value}
+                      defaultValue={field.value || beneficiary?.internetStatus}
+                      value={field.value}
                     >
                       <FormControl>
                         <SelectTrigger>
@@ -236,7 +268,8 @@ export default function EditBeneficiary({ beneficiary }: any) {
                   <FormItem>
                     <Select
                       onValueChange={field.onChange}
-                      defaultValue={field.value}
+                      defaultValue={field.value || beneficiary?.phoneStatus}
+                      value={field.value}
                     >
                       <FormControl>
                         <SelectTrigger>

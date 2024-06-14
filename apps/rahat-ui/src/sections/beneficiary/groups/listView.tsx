@@ -160,14 +160,14 @@ export default function ListView({
                   <ChevronDown className="ml-1" strokeWidth={1.5} />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem
+              {/* <DropdownMenuContent align="end"> */}
+              {/* <DropdownMenuItem
                 // onClick={projectModal.onTrue}
                 // disabled={isBulkAssigning}
                 >
                   Bulk Assign Project
-                </DropdownMenuItem>
-              </DropdownMenuContent>
+                </DropdownMenuItem> */}
+              {/* </DropdownMenuContent> */}
             </DropdownMenu>
           ) : null}
         </div>

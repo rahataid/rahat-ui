@@ -100,6 +100,7 @@
     "react-modal": "^3.16.1",
     "react-phone-number-input": "^3.3.9",
     "react-resizable-panels": "^2.0.12",
+    "react-router-dom": "^6.23.1",
     "react-toastify": "^10.0.4",
     "shadcn-ui": "^0.8.0",
     "sonner": "^1.4.41",

@@ -34,20 +34,22 @@ export const useAudienceColumns = (
         <Checkbox
           checked={beneficiaryData?.data?.length === selectedRows.length}
           onCheckedChange={(value) => {
+            console.log('item', table.getFilteredRowModel());
+            const filteredRowModel = table.getFilteredRowModel().rows;
             if (value) {
               setSelectedRows([]);
 
-              beneficiaryData?.data?.map((item) => {
+              filteredRowModel?.map((item) => {
                 handleCreateAudience({
-                  ...item.piiData,
-                  url: item?.Beneficiary?.qrUrl,
+                  ...item.original,
+                  // url: item?.Beneficiary?.qrUrl,
                 });
                 setSelectedRows((prevSelectedRows: SelectedRowType[]) => [
                   ...prevSelectedRows,
                   {
-                    name: item?.piiData?.name,
-                    id: item?.piiData?.beneficiaryId,
-                    phone: item?.piiData?.phone,
+                    name: item?.original?.name,
+                    id: item?.original?.id,
+                    phone: item?.original?.phone,
                   },
                 ]);
               });

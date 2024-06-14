@@ -4,7 +4,7 @@ import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { CirclePlus } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useBoolean } from '../../hooks/use-boolean';
 import { ProjectCard } from '../../sections/projects';
 import AddProjectConfirmModal from './addProject.confirm';
@@ -15,7 +15,7 @@ export default function ProjectListView() {
   const { data } = useProjectList();
   const AddProjectModal = useBoolean();
 
-  const [filterValue, setFilterValue] = useState('');
+  const [filterValue, setFilterValue] = useState([]);
 
   const openAddProjectModal = () => {
     AddProjectModal.onTrue();
@@ -26,8 +26,24 @@ export default function ProjectListView() {
   };
 
   const handleFilterChange = (event) => {
-    setFilterValue(event.target.value);
+    // setFilterValue(event.target.value);
+    const name = event.target.value;
+    const project = data?.data?.filter((project) => {
+      console.log(project);
+
+      if (
+        project.name?.toLowerCase().includes(name.toLowerCase()) ||
+        name.length === 0
+      )
+        return project;
+    });
+    setFilterValue(project as any);
   };
+  console.log(filterValue);
+
+  useEffect(() => {
+    setFilterValue(data?.data as any);
+  }, [data?.data]);
 
   return (
     <div className="-mt-2 p-2 bg-secondary">
@@ -39,7 +55,7 @@ export default function ProjectListView() {
         <Input
           placeholder="Filter projects..."
           className="rounded mt-2"
-          value={filterValue}
+          // value={filterValue}
           onChange={handleFilterChange}
         />
         <Button
@@ -53,7 +69,7 @@ export default function ProjectListView() {
       </div>
       <ScrollArea className="px-2 pb-2 h-[calc(100vh-122px)]">
         <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-2">
-          {data?.data?.map((project) => (
+          {filterValue?.map((project) => (
             <ProjectCard
               address={project?.uuid}
               key={project.uuid}

@@ -21,7 +21,7 @@ const PopulationInsights = ({ data }: Props) => {
 
   const filteredCoords =
     benefMapStats && benefMapStats.data
-      ? benefMapStats.data.filter((b:any) => {
+      ? benefMapStats.data.filter((b: any) => {
           return b.latitude && b.longitude;
         })
       : [];

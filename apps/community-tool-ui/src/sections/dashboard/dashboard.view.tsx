@@ -16,12 +16,11 @@ import WARDNUMBER from '../../utils/wardData.json';
 
 export default function DashboardView() {
   const [filters, setFilters] = React.useState<FilterStatsDto>({});
-  const [activeComponent, setActiveComponent] = React.useState('');
   const handleSelect = (key: string, value: string) => {
-    if (key === 'palika') {
+    if (key === 'Palika') {
       setFilters({ ...filters, location: value });
     }
-    if (key === 'ward number') {
+    if (key === 'Ward') {
       setFilters({ ...filters, ward_no: value });
     }
   };
@@ -33,6 +32,8 @@ export default function DashboardView() {
       value: item.location as string,
     })) || [];
 
+  transformedData.unshift({ label: 'All', value: '' });
+
   const transformedWardNumber =
     WARDNUMBER.map((item) => ({
       label: item.wardnumber.toString(),
@@ -43,6 +44,7 @@ export default function DashboardView() {
   const handleDownloadClick = () => {
       return sanitizeAndExportReport(data?.data || []);
   }
+  transformedWardNumber.unshift({ label: 'All', value: '' });
 
   return (
     <div>
@@ -76,9 +78,9 @@ export default function DashboardView() {
       ) : (
         <ScrollArea className="h-[calc(100vh-100px)] px-4 py-2">
           <PopulationInsights data={data} />
-          <div className='mt-8'></div>
+          <div className="mt-8"></div>
           <HouseHoldInsights data={data} />
-          <div className='mt-8'></div>
+          <div className="mt-8"></div>
           <HouseHoldHeadInsights data={data} />
         </ScrollArea>
       )}

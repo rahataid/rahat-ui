@@ -21,26 +21,33 @@ interface VendorTableProps {
 
 export const useVendorTable = ({ handleViewClick }: VendorTableProps) => {
   const columns: ColumnDef<VendorType>[] = [
+    // {
+    //   accessorKey: 'name',
+    //   header: 'Name',
+    //   cell: ({ row }) => (
+    //     <div className="capitalize">{row.getValue('name')}</div>
+    //   ),
+    // },
     {
-      accessorKey: 'name',
-      header: 'Name',
+      accessorKey: 'walletAddress',
+      header: 'Wallet Address',
       cell: ({ row }) => (
-        <div className="capitalize">{row.getValue('name')}</div>
+        <div className="capitalize">{row.getValue('walletAddress')}</div>
       ),
     },
-    {
-      accessorKey: 'phone',
-      header: 'Phone',
-      cell: ({ row }) => <div>{row.getValue('phone')}</div>,
-    },
+    // {
+    //   accessorKey: 'phone',
+    //   header: 'Phone',
+    //   cell: ({ row }) => <div>{row.getValue('phone')}</div>,
+    // },
 
-    {
-      accessorKey: 'totalTokenRedeemed',
-      header: 'Total Tokens Redeemed',
-      cell: ({ row }) => (
-        <div>{truncateEthAddress(row.getValue('tokenTokenRedeemed'))}</div>
-      ),
-    },
+    // {
+    //   accessorKey: 'totalTokenRedeemed',
+    //   header: 'Total Tokens Redeemed',
+    //   cell: ({ row }) => (
+    //     <div>{truncateEthAddress(row.getValue('tokenTokenRedeemed'))}</div>
+    //   ),
+    // },
     {
       id: 'actions',
       enableHiding: false,

@@ -3,7 +3,7 @@ import {
   PROJECT_SETTINGS_KEYS,
   useGetDisbursementApprovals,
   useMultiSigDisburseToken,
-  useProjectSettingsStore
+  useProjectSettingsStore,
 } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
@@ -30,7 +30,7 @@ import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
 import * as React from 'react';
 import { useApprovalTable } from './useApprovalTable';
-
+import { formatEther, parseEther } from 'viem';
 
 export function ApprovalTable({ disbursement }: { disbursement: any }) {
   const { id } = useParams();
@@ -83,8 +83,12 @@ export function ApprovalTable({ disbursement }: { disbursement: any }) {
   const disburseMultiSig = useMultiSigDisburseToken();
 
   const handleMigSigTransaction = async () => {
+    const amountString = disbursement?.DisbursementBeneficiary[0]?.amount
+      ? disbursement?.DisbursementBeneficiary[0]?.amount.toString()
+      : '0';
+    const parsedAmount = parseEther(amountString);
     await disburseMultiSig.mutateAsync({
-      amount: disbursement?.DisbursementBeneficiary[0]?.amount,
+      amount: parsedAmount,
       beneficiaryAddresses: disbursement?.DisbursementBeneficiary?.map(
         (d: any) => d.beneficiaryWalletAddress,
       ) as `0x${string}`[],
@@ -129,9 +133,9 @@ export function ApprovalTable({ disbursement }: { disbursement: any }) {
                         {header.isPlaceholder
                           ? null
                           : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext(),
-                          )}
+                              header.column.columnDef.header,
+                              header.getContext(),
+                            )}
                       </TableHead>
                     );
                   })}

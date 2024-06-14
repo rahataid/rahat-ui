@@ -14,12 +14,11 @@ import SearchDropdownComponent from '../../components/searchDropdownComponent';
 import WARDNUMBER from '../../utils/wardData.json';
 export default function DashboardView() {
   const [filters, setFilters] = React.useState<FilterStatsDto>({});
-  const [activeComponent, setActiveComponent] = React.useState('');
   const handleSelect = (key: string, value: string) => {
-    if (key === 'palika') {
+    if (key === 'Palika') {
       setFilters({ ...filters, location: value });
     }
-    if (key === 'ward number') {
+    if (key === 'Ward') {
       setFilters({ ...filters, ward_no: value });
     }
   };
@@ -31,13 +30,14 @@ export default function DashboardView() {
       value: item.location as string,
     })) || [];
 
+  transformedData.unshift({ label: 'All', value: '' });
+
   const transformedWardNumber =
     WARDNUMBER.map((item) => ({
       label: item.wardnumber.toString(),
       value: item.wardnumber.toString(),
     })) || [];
-
-    console.log("StatsData=>", data)
+  transformedWardNumber.unshift({ label: 'All', value: '' });
 
   return (
     <div>
@@ -57,7 +57,10 @@ export default function DashboardView() {
             handleSelect={handleSelect}
           />
 
-          <Button className="mx-1 hover:bg-white bg-white text-black rounded" size={'sm'}>
+          <Button
+            className="mx-1 hover:bg-white bg-white text-black rounded"
+            size={'sm'}
+          >
             <DownloadCloud className="mr-2 h-3 w-3" />
             Download
           </Button>
@@ -71,9 +74,9 @@ export default function DashboardView() {
       ) : (
         <ScrollArea className="h-[calc(100vh-100px)] px-4 py-2">
           <PopulationInsights data={data} />
-          <div className='mt-8'></div>
+          <div className="mt-8"></div>
           <HouseHoldInsights data={data} />
-          <div className='mt-8'></div>
+          <div className="mt-8"></div>
           <HouseHoldHeadInsights data={data} />
         </ScrollArea>
       )}

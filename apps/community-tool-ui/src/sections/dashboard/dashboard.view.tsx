@@ -11,7 +11,9 @@ import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { FilterStatsDto } from '@rahataid/community-tool-sdk/app';
 import React from 'react';
 import SearchDropdownComponent from '../../components/searchDropdownComponent';
+import { sanitizeAndExportReport } from '../../utils';
 import WARDNUMBER from '../../utils/wardData.json';
+
 export default function DashboardView() {
   const [filters, setFilters] = React.useState<FilterStatsDto>({});
   const [activeComponent, setActiveComponent] = React.useState('');
@@ -37,13 +39,16 @@ export default function DashboardView() {
       value: item.wardnumber.toString(),
     })) || [];
 
-    console.log("StatsData=>", data)
+
+  const handleDownloadClick = () => {
+      return sanitizeAndExportReport(data?.data || []);
+  }
 
   return (
     <div>
       <div className="grid grid-cols grid-cols-2 gap-4 px-4 pt-2 place-content-between">
         <div className="cols-span-1 flex items-center text-xl text-primary font-semibold">
-          {!data ? 'Dashboard Loading' : 'Population Insights'}
+          {!data ? 'Loading...' : 'Population Insights'}
         </div>
         <div className=" cols-span-1 flex items-center place-content-end gap-0">
           <SearchDropdownComponent
@@ -57,7 +62,7 @@ export default function DashboardView() {
             handleSelect={handleSelect}
           />
 
-          <Button className="mx-1 hover:bg-white bg-white text-black rounded" size={'sm'}>
+          <Button onClick={handleDownloadClick} className="mx-1 hover:bg-white bg-white text-black rounded" size={'sm'}>
             <DownloadCloud className="mr-2 h-3 w-3" />
             Download
           </Button>

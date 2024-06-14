@@ -250,3 +250,29 @@ export const selectNonEmptyFields = (data: any) => {
   });
   return nonEmptyFields;
 };
+
+export const sanitizeAndExportReport = (data: any) => {
+  if(!data.length) return;
+  const filtered = data.filter((f:any) => f.name !== "BENEFICIARY_MAP_STATS");
+  const sanitized  = filtered.map((d:any) => {
+    if(d.name === 'BENEFICIARY_TOTAL' || d.name === 'TOTAL_VULNERABLE_HOUSEHOLD'){
+      d.data = [d.data]
+    }
+    return d;
+  })
+  return exportReportToExcel(sanitized);
+}
+
+const exportReportToExcel = (exportData:[]) => {
+  const workbook = XLSX.utils.book_new();
+  exportData.forEach((section:any) => {
+      const worksheetData = section.data.map((item:any) => ({
+          'Label': item.id ? humanizeString(item.id) : 'Total',
+          'Count': item.count
+      }));
+      const worksheet = XLSX.utils.json_to_sheet(worksheetData);
+      XLSX.utils.book_append_sheet(workbook, worksheet, section.name);
+  });
+
+  XLSX.writeFile(workbook, 'community-dashboard-report.xlsx');
+};

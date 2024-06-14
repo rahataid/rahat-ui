@@ -32,6 +32,7 @@ const HouseHoldInsights = ({ data }: Props) => {
   if (typeofPhone) chartData.push(typeofPhone);
   if (bankStatus) chartData.push(bankStatus);
   if (phoneAvailibility) chartData.push(phoneAvailibility);
+
   return (
     <div className="mt-3">
       <h1 className="text-xl text-primary font-semibold mb-2">

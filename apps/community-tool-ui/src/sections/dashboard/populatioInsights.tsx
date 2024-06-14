@@ -1,4 +1,5 @@
 import BarCharts from './barCharts';
+import { BANK_COORDS } from './data';
 import Donut from './donut';
 import CommunityMap from './map';
 import StackColumn from './stackColum';
@@ -18,14 +19,15 @@ const PopulationInsights = ({ data }: Props) => {
   const benefMapStats =
     data?.data?.find((f) => f?.name === 'BENEFICIARY_MAP_STATS') || ([] as any);
 
-  const filtered =
+  const filteredCoords =
     benefMapStats && benefMapStats.data
-      ? benefMapStats.data.filter((b) => {
+      ? benefMapStats.data.filter((b:any) => {
           return b.latitude && b.longitude;
         })
       : [];
 
-      console.log("TG=>",totalGender)
+      const combinedCoords = [...filteredCoords,...BANK_COORDS]
+
 
   return (
     <div>
@@ -38,7 +40,7 @@ const PopulationInsights = ({ data }: Props) => {
           width={'100%'}
         />
 
-        <CommunityMap coordinates={filtered} />
+        <CommunityMap coordinates={combinedCoords} />
       </div>
 
       <div className="grid  sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-2 mt-4">

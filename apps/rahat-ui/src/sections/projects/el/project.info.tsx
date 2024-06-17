@@ -98,24 +98,24 @@ const ProjectInfo: FC<ProjectInfoProps> = ({
             />
             <DataCard
               className=""
-              title="Vouchers Redeemed"
+              title="Total Vouchers Redeemed"
               number={totalVoucherRedeemed || 'N/A'}
               Icon={Users}
-              refresh={refetchBeneficiary}
+              // refresh={refetchBeneficiary}
             />
             <DataCard
               className=""
-              title="Free Vouchers"
+              title="Free Vouchers Redeemed"
               number={projectVoucher?.eyeVoucherBudget?.toString() || '-'}
               Icon={Users}
-              refresh={refetchBeneficiary}
+              // refresh={refetchBeneficiary}
             />
             <DataCard
               className=""
-              title="Discount Vouchers"
+              title="Discount Vouchers Redeemed"
               number={projectVoucher?.referredVoucherBudget?.toString() || '-'}
               Icon={Users}
-              refresh={refetchBeneficiary}
+              // refresh={refetchBeneficiary}
             />
           </div>
         </div>

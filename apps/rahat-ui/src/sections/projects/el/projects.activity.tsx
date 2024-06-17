@@ -27,7 +27,7 @@ export default function Activities({ title, className, data }: CardProps) {
           <div className="flex justify-between items-start">
             <div className="space-y-1">
               <p className="text-sm font-medium leading-none">Free</p>
-              <p className="text-sm text-muted-foreground">Total</p>
+              <p className="text-sm text-muted-foreground">Minted</p>
               <p className="text-sm text-muted-foreground">Assigned</p>
               <p className="text-sm text-muted-foreground">Redeemed</p>
             </div>
@@ -73,7 +73,7 @@ export default function Activities({ title, className, data }: CardProps) {
           <div className="flex justify-between items-start">
             <div className="space-y-1">
               <p className="text-sm font-medium leading-none">Discount</p>
-              <p className="text-sm text-muted-foreground">Total</p>
+              <p className="text-sm text-muted-foreground">Minted</p>
               <p className="text-sm text-muted-foreground">Assigned</p>
               <p className="text-sm text-muted-foreground">Redeemed</p>
             </div>

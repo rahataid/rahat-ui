@@ -47,19 +47,12 @@ const ProjectInfo: FC<ProjectInfoProps> = ({
   return (
     <>
       <div className="grid grid-cols-5 grid-flow-col gap-2">
-        <div className="col-span-2 rounded bg-card p-4 shadow">
+        <div className="col-span-2 rounded bg-card p-4 shadow flex flex-col justify-between">
           <div className="mt-6">
             <div>
               <p className="font-medium text-primary text-2xl">
                 {project?.name}
               </p>
-            </div>
-            <div className="flex items-center justify-between flex-wrap mt-4 gap-10 md:gap-32 mb-4">
-              {renderExtras(project?.extras || {})}
-              <div>
-                <p className="font-light text-xs text-muted-foreground">Type</p>
-                <p className="font-medium text-primary">{project?.type}</p>
-              </div>
             </div>
           </div>
           <div>

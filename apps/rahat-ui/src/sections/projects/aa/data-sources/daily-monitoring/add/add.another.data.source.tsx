@@ -1,7 +1,7 @@
 import { X } from 'lucide-react';
 import SelectFormField from '../../../../../../components/select.form.field';
 import InputFormField from '../../../../../../components/input.form.field';
-import { useSelectItems } from './useSelectItems';
+import { useSelectItems } from '../useSelectItems';
 
 type IProps = {
   form: any;

@@ -8,11 +8,11 @@ import { Calendar, Info } from 'lucide-react';
 import { UUID } from 'crypto';
 import { useRemoveMonitoring, useSingleMonitoring } from '@rahat-ui/query';
 
-export default function BulletinDetailView() {
+export default function DailyMonitoringDetailView() {
   const router = useRouter();
   const params = useParams();
   const projectId = params.id as UUID;
-  const monitoringId = params.bulletinId as UUID;
+  const monitoringId = params.monitoringId as UUID;
 
   const { data } = useSingleMonitoring(projectId, monitoringId);
   const details = data?.data;

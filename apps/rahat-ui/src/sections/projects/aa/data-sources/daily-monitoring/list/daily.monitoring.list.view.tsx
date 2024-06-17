@@ -2,10 +2,10 @@ import { useParams } from 'next/navigation';
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { useDailyMonitoring, usePagination } from '@rahat-ui/query';
 import DailyMonitoringTable from './daily.monitoring.table';
-import useDailyMonitoringTableColumn from './useDailyMonitoringTableColumn';
+import useDailyMonitoringTableColumn from '../useDailyMonitoringTableColumn';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import DailyMonitoringTableFilters from './daily.monitoring.table.filters';
-import AddButton from '../../../components/add.btn';
+import AddButton from '../../../../components/add.btn';
 import { UUID } from 'crypto';
 
 export default function DailyMonitoringListView() {
@@ -34,7 +34,7 @@ export default function DailyMonitoringListView() {
         />
         <AddButton
           name=""
-          path={`/projects/aa/${projectId}/data-sources/bulletin/add`}
+          path={`/projects/aa/${projectId}/data-sources/daily-monitoring/add`}
         />
       </div>
       <div className="border bg-card rounded">

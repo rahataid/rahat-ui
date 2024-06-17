@@ -59,7 +59,7 @@ export default function useDailyMonitoringTableColumn() {
               strokeWidth={1.5}
               onClick={() =>
                 router.push(
-                  `/projects/aa/${projectId}/data-sources/bulletin/${row.original.uuid}`,
+                  `/projects/aa/${projectId}/data-sources/daily-monitoring/${row.original.uuid}`,
                 )
               }
             />

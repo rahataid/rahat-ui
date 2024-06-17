@@ -29,9 +29,9 @@ import AddAnotherDataSource from './add.another.data.source';
 import SelectFormField from '../../../../../../components/select.form.field';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import InputFormField from '../../../../../../components/input.form.field';
-import { useSelectItems } from './useSelectItems';
+import { useSelectItems } from '../useSelectItems';
 
-export default function AddBulletin() {
+export default function AddDailyMonitoring() {
   const params = useParams();
   const projectId = params.id as UUID;
   const router = useRouter();

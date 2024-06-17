@@ -79,7 +79,7 @@ export default function AddDailyMonitoring() {
         hours24NWP: z.string().optional(),
         hours48: z.string().optional(),
         hours72NWP: z.string().optional(),
-        // NCMRWF Accumulated
+        // NCMWRF Accumulated
         heavyRainfallForecastInKarnaliBasin: z.string().optional(),
         hours24: z.string().optional(),
         hours72: z.string().optional(),
@@ -382,10 +382,94 @@ export default function AddDailyMonitoring() {
   };
 
   const handleCreateBulletin = async (data: z.infer<typeof FormSchema>) => {
+    const dataPayload = [];
+    for (const item of data.dataSource) {
+      switch (item.source) {
+        case 'DHM':
+          switch (item?.forecast) {
+            case '3 Days Flood forecast Bulletin':
+              dataPayload.push({
+                source: item.source,
+                forecast: item?.forecast,
+                today: item?.today,
+                tomorrow: item?.tomorrow,
+                dayAfterTomorrow: item?.dayAfterTomorrow,
+              });
+              break;
+            case '3 Days Rainfall forecast Bulletin':
+              dataPayload.push({
+                source: item.source,
+                forecast: item?.forecast,
+                todayAfternoon: item?.todayAfternoon,
+                todayNight: item?.todayNight,
+                tomorrowAfternoon: item?.tomorrowAfternoon,
+                tomorrowNight: item?.tomorrowNight,
+                dayAfterTomorrowAfternoon: item?.dayAfterTomorrowAfternoon,
+                dayAfterTomorrowNight: item?.dayAfterTomorrowNight,
+              });
+              break;
+            case 'Real time Monitoring(River Watch)':
+              dataPayload.push({
+                source: item.source,
+                forecast: item?.forecast,
+                waterLevel: item?.waterLevel,
+              });
+              break;
+            case 'NWP':
+              dataPayload.push({
+                source: item.source,
+                forecast: item?.forecast,
+                hours24NWP: item?.hours24NWP,
+                hours48: item?.hours48,
+                hours72NWP: item?.hours72NWP,
+              });
+              break;
+            default:
+              break;
+          }
+          break;
+        case 'NCMWRF Accumulated':
+          dataPayload.push({
+            source: item.source,
+            heavyRainfallForecastInKarnaliBasin:
+              item?.heavyRainfallForecastInKarnaliBasin,
+            hours24: item?.hours24,
+            hours72: item?.hours72,
+            hours168: item?.hours168,
+          });
+          break;
+        case 'NCMWRF Deterministic & Probabilistic':
+          dataPayload.push({
+            source: item.source,
+            extremeWeatherOutlook: item?.extremeWeatherOutlook,
+            deterministicsPredictionSystem:
+              item?.deterministicsPredictionSystem,
+            probabilisticPredictionSystem: item?.probabilisticPredictionSystem,
+          });
+          break;
+        case 'GLOFAS':
+          dataPayload.push({
+            source: item.source,
+            todayGLOFAS: item?.todayGLOFAS,
+            days3: item?.days3,
+            days5: item?.days5,
+            inBetweenTodayUntil7DaysIsThereAnyPossibilityOfPeak:
+              item?.inBetweenTodayUntil7DaysIsThereAnyPossibilityOfPeak,
+          });
+          break;
+        case 'Flash Flood Risk Monitoring':
+          dataPayload.push({
+            source: item.source,
+            status: item?.status,
+          });
+        default:
+          break;
+      }
+    }
     const payload = {
       dataEntryBy: data.dataEntryBy,
       location: selectedRiverBasin,
-      data: data.dataSource,
+      data: dataPayload,
     };
     try {
       await createDailyMonitoring.mutateAsync({

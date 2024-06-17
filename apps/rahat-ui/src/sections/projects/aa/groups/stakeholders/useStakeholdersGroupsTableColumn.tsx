@@ -39,18 +39,30 @@ export default function useStakeholdersGroupsTableColumn() {
     },
     {
       accessorKey: 'stakeholders',
-      header: 'Members',
-      cell: ({ row }) => (
-        <div>
-          {row.original?.stakeholders?.map((member: any, index: number) => (
-            <span key={member?.id}>
-              {member?.name}
-              {index !== row.original.stakeholders.length - 1 && ', '}
-            </span>
-          ))}
-        </div>
-      ),
+      header: 'Member Count',
+      cell: ({ row }) => {
+        console.log(row)
+        return ((
+          <div>
+           {row?.original?._count?.stakeholders}
+          </div>
+        ))
+      },
     },
+    // {
+    //   accessorKey: 'stakeholders',
+    //   header: 'Member',
+    //   cell: ({ row }) => (
+    //     <div>
+    //       {row.original?.stakeholders?.map((member: any, index: number) => (
+    //         <span key={member?.id}>
+    //           {member?.name}
+    //           {index !== row.original.stakeholders.length - 1 && ', '}
+    //         </span>
+    //       ))}
+    //     </div>
+    //   ),
+    // },
     {
       id: 'actions',
       enableHiding: false,

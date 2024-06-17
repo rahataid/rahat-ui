@@ -34,6 +34,18 @@ const renderStatus = ({ readinessLevel, activationLevel, waterLevel }: any) => {
   );
 };
 
+const LINE_CHART_CATEGORIES=[
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+]
+
 export default function DHMContent({ data }: any) {
   if (!data?.length) {
     return <p>Data not available for DHM.</p>;
@@ -180,7 +192,7 @@ export default function DHMContent({ data }: any) {
         </div>
       </div>
 
-      <div className="bg-card p-4 rounded col-span-2">
+      {/* <div className="bg-card p-4 rounded col-span-2">
         <div className="flex justify-between items-center mb-4">
           <h1 className="font-semibold text-lg">Bulletin Today</h1>
           <DHMBulletinDialog />
@@ -211,11 +223,11 @@ export default function DHMContent({ data }: any) {
             <Badge className="bg-green-100 text-green-600">Normal</Badge>
           </div>
         </div>
-      </div>
+      </div> */}
 
-      <div className="bg-card rounded-md col-span-3">
+      <div className="bg-card rounded-md col-span-5">
         <h1 className="p-4 pb-2 font-semibold text-lg">Water Level Stats</h1>
-        <LineChart series={seriesData} lineChartOptions={chartOptions} />
+        <LineChart categories={LINE_CHART_CATEGORIES} series={seriesData} lineChartOptions={chartOptions} />
       </div>
     </div>
   );

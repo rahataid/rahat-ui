@@ -54,7 +54,7 @@ export default function useDailyMonitoringTableColumn() {
         return (
           <div className="flex gap-4 items-center">
             <Eye
-              className="cursor-pointer"
+              className="cursor-pointer hover:text-primary"
               size={20}
               strokeWidth={1.5}
               onClick={() =>
@@ -63,8 +63,8 @@ export default function useDailyMonitoringTableColumn() {
                 )
               }
             />
-            <Pencil className="text-primary" size={20} strokeWidth={1.5} />
-            <Trash2 className="text-red-500" size={20} strokeWidth={1.5} />
+            {/* <Pencil className="text-primary" size={20} strokeWidth={1.5} />
+            <Trash2 className="text-red-500" size={20} strokeWidth={1.5} /> */}
           </div>
         );
       },

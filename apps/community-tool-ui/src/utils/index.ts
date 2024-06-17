@@ -253,7 +253,8 @@ export const selectNonEmptyFields = (data: any) => {
 
 export const sanitizeAndExportReport = (data: any) => {
   if(!data.length) return;
-  const filtered = data.filter((f:any) => f.name !== "BENEFICIARY_MAP_STATS");
+  const dataWithName = data.filter((d:any) => d.name);
+  const filtered = dataWithName.filter((f:any) => f.name !== "BENEFICIARY_MAP_STATS");
   const sanitized  = filtered.map((d:any) => {
     if(d.name === 'BENEFICIARY_TOTAL' || d.name === 'TOTAL_VULNERABLE_HOUSEHOLD'){
       d.data = [d.data]

@@ -1,73 +1,86 @@
-import React from 'react';
-import ChartLine from '@rahat-ui/shadcn/src/components/charts/chart-components/chart-line';
-import DataCard from 'apps/rahat-ui/src/components/dataCard';
-import { Banknote, ReceiptText } from 'lucide-react';
-import RecentTransaction from './recent.transaction';
-import { useC2CProjectSubgraphStore } from '@rahat-ui/query';
-import { formatEther } from 'viem';
 import {
   PROJECT_SETTINGS_KEYS,
   useProjectSettingsStore,
+  useRecentTransactionsList,
 } from '@rahat-ui/query';
-import { useParams } from 'next/navigation';
+import ChartLine from '@rahat-ui/shadcn/src/components/charts/chart-components/chart-line';
+import DataCard from 'apps/rahat-ui/src/components/dataCard';
+import { formatDate } from 'apps/rahat-ui/src/utils';
 import { shortenAddress } from 'apps/rahat-ui/src/utils/getProjectAddress';
+import { Banknote, ReceiptText } from 'lucide-react';
+import { useParams } from 'next/navigation';
+import { formatEther } from 'viem';
 import { useReadContract } from 'wagmi';
-import { useReactTable } from '@tanstack/react-table';
-import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import RecentTransaction from './recent.transaction';
+import { UUID } from 'crypto';
 
 const FundManagementView = () => {
-  const mySeries = [
-    {
-      name: 'Series 1',
-      data: [10, 20, 30, 40, 50, 60, 70, 80, 90],
-    },
-  ];
-  const projectDetails = useC2CProjectSubgraphStore(
-    (state) => state.projectDetails,
-  );
-
-  const { id } = useParams();
-
+  const { id }: { id: UUID } = useParams();
+  // const projectDetails = useC2CProjectSubgraphStore(
+  //   (state) => state.projectDetails,
+  // );
   const contractSettings = useProjectSettingsStore(
     (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT],
   );
+  const c2cProjectAddress = contractSettings?.c2cproject?.address;
+  const rahatTokenAddress = contractSettings?.rahattoken?.address;
+  const rahatTokenAbi = contractSettings?.rahattoken?.abi;
 
-  const { data, error, isLoading } = useReadContract({
-    address: contractSettings?.rahattoken?.address,
-    abi: contractSettings?.rahattoken?.abi,
+  const { data: transactionList, isLoading: isFetchingTransactionList } =
+    useRecentTransactionsList(c2cProjectAddress);
+
+  const { data: projectBalance, isLoading } = useReadContract({
+    address: rahatTokenAddress,
+    abi: rahatTokenAbi,
     functionName: 'balanceOf',
-    args: [contractSettings?.c2cproject?.address],
+    args: [c2cProjectAddress],
+    query: {
+      select(data: unknown) {
+        return data ? formatEther(data as bigint) : '0';
+      },
+    },
   });
 
-  // const projectBalance = isLoading ? '0' : formatEther(BigInt(data));
-  const projectBalance = '0';
+  const mySeries = [
+    {
+      name: 'Recent Deposits',
+      data: transactionList.map((t) => Number(formatEther(BigInt(t.value)))),
+    },
+  ];
+  const chartCategories = transactionList.map((t) =>
+    formatDate(+t.blockTimestamp),
+  );
+
+  // const sortByLatest = transactionList.sort(
+  //   (a: Transaction, b: Transaction) => +b.blockTimestamp - +a.blockTimestamp,
+  // );
 
   return (
     <>
       <div className="grid grid-cols-2 gap-4 m-2">
         <DataCard
-          className=""
           title="Project Balance"
-          smallNumber={`${projectBalance} USDC`}
-          subTitle="Total"
+          smallNumber={isLoading ? 'Loading...' : `${projectBalance} USDC`}
           Icon={Banknote}
         />
         <DataCard
-          className=""
           title="Project Contract Address"
-          smallNumber={shortenAddress(contractSettings?.c2cproject?.address)}
-          subTitle=""
+          smallNumber={shortenAddress(c2cProjectAddress)}
           Icon={ReceiptText}
         />
       </div>
-      <div className="grid grid-cols-3 gap-4 h-[calc(100vh-192px)]">
-        <div className="col-span-2">
-          <ChartLine series={mySeries} />
+      {isFetchingTransactionList ? (
+        <div className="flex justify-center items-center h-[calc(100vh-420px)]">
+          <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-gray-900"></div>
         </div>
-        <RecentTransaction
-          contractAddress={contractSettings?.c2cproject?.address}
-        />
-      </div>
+      ) : (
+        <div className="grid grid-cols-3 gap-4 h-[calc(100vh-420px)]">
+          <div className="col-span-2">
+            <ChartLine series={mySeries} categories={chartCategories} />
+          </div>
+          <RecentTransaction transactions={transactionList} />
+        </div>
+      )}
     </>
   );
 };

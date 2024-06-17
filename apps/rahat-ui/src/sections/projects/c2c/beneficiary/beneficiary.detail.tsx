@@ -1,12 +1,8 @@
 'use client';
 
-import { useParams } from 'next/navigation';
-
 import {
-  BeneficiaryTransaction,
-  PROJECT_SETTINGS_KEYS,
-  useProjectAction,
-  useProjectSettingsStore,
+  useBeneficiaryTransaction,
+  useRemoveBeneficiary,
 } from '@rahat-ui/query';
 import {
   Tabs,
@@ -14,14 +10,19 @@ import {
   TabsList,
   TabsTrigger,
 } from '@rahat-ui/shadcn/components/tabs';
-import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '@rahat-ui/shadcn/src/components/ui/card';
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/alert-dialog';
+import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -34,38 +35,14 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/alert-dialog';
-import { Gender } from '@rahataid/sdk/enums';
-import { enumToObjectArray, truncateEthAddress } from '@rumsan/sdk/utils';
-import { useAssignClaims } from 'apps/rahat-ui/src/hooks/el/contracts/el-contracts';
-import { getProjectAddress } from 'apps/rahat-ui/src/utils/getProjectAddress';
-import { Minus, MoreVertical, Copy, CopyCheck, Trash2 } from 'lucide-react';
-import Image from 'next/image';
-import { useEffect, useState } from 'react';
-import TransactionTable from './beneficiary.transaction.table';
-import { useReadElProjectGetBeneficiaryVoucherDetail } from 'apps/rahat-ui/src/hooks/el/contracts/elProject';
-import { zeroAddress } from 'viem';
-import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
-import AssignVoucherConfirm from './assign.voucher.confirm';
+import { truncateEthAddress } from '@rumsan/sdk/utils';
 import TableLoader from 'apps/rahat-ui/src/components/table.loader';
-import { useRouter } from 'next/navigation';
-import EditBeneficiary from './beneficiary.edit';
-import { useRemoveBeneficiary } from '@rahat-ui/query';
 import { UUID } from 'crypto';
-import { useWaitForTransactionReceipt } from 'wagmi';
-import { useQuery } from 'urql';
-import { Transaction, TransactionsObject } from './types';
-import { mergeTransactions } from './utils';
+import { Copy, CopyCheck, Minus, MoreVertical, Trash2 } from 'lucide-react';
+import Image from 'next/image';
+import { useState } from 'react';
+import EditBeneficiary from './beneficiary.edit';
+import TransactionTable from './beneficiary.transaction.table';
 
 type IProps = {
   beneficiaryDetails: any;
@@ -77,51 +54,18 @@ export default function BeneficiaryDetail({
   closeSecondPanel,
 }: IProps) {
   // TODO: remove reference to el vouchers
-  const assignClaims = useAssignClaims();
-  const { id } = useParams();
-  const getProject = useProjectAction();
-  const route = useRouter();
   const deleteBeneficiary = useRemoveBeneficiary();
-  const [assignStatus, setAssignStatus] = useState(false);
-  const [transactionHash, setTransactionHash] = useState<`0x${string}`>();
-  const [isTransacting, setisTransacting] = useState<boolean>(false);
-  const [transactionList, setTransactionList] = useState<Transaction[]>([]);
 
   const walletAddress = beneficiaryDetails.wallet;
 
-  const contractSettings = useProjectSettingsStore(
-    (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT] || null,
-  );
-
-  const {
-    data: beneficiaryVoucherDetails,
-    isLoading,
-    refetch,
-  } = useReadElProjectGetBeneficiaryVoucherDetail({
-    address: contractSettings?.elproject?.address,
-    args: [walletAddress],
-  });
+  const { data: transactionList, isLoading } =
+    useBeneficiaryTransaction(walletAddress);
 
   const [activeTab, setActiveTab] = useState<'details' | 'edit' | null>(
     'details',
   );
   const [walletAddressCopied, setWalletAddressCopied] =
     useState<boolean>(false);
-
-  const [transactionResult] = useQuery({
-    query: BeneficiaryTransaction,
-    variables: {
-      beneficiary: walletAddress,
-    },
-  });
-
-  useEffect(() => {
-    (async () => {
-      const transactionObject: TransactionsObject = transactionResult.data;
-      const transactionLists = await mergeTransactions(transactionObject);
-      setTransactionList(transactionLists);
-    })();
-  }, [transactionResult]);
 
   const clickToCopy = () => {
     if (walletAddress) {
@@ -130,60 +74,8 @@ export default function BeneficiaryDetail({
     }
   };
 
-  const genderList = enumToObjectArray(Gender);
   const handleTabChange = (tab: 'details' | 'edit') => {
     setActiveTab(tab);
-  };
-
-  const result = useWaitForTransactionReceipt({
-    hash: transactionHash,
-  });
-
-  useEffect(() => {
-    result?.data && setisTransacting(false);
-    refetch();
-  }, [result]);
-
-  const handleAssignVoucher = () => {
-    setisTransacting(true);
-    getProjectAddress(getProject, id as string).then(async (res) => {
-      const txnHash = await assignClaims.writeContractAsync({
-        address: res.value.elproject.address,
-        args: [walletAddress],
-      });
-      setTransactionHash(txnHash);
-    });
-  };
-
-  useEffect(() => {
-    if (assignClaims.isSuccess) {
-      route.push(`/projects/el/${id}/beneficiary`);
-    }
-    if (assignClaims.isError) {
-      setisTransacting(false);
-    }
-  }, [assignClaims.isSuccess, assignClaims.isError]);
-
-  useEffect(() => {
-    if (
-      beneficiaryVoucherDetails?.freeVoucherAddress === undefined ||
-      beneficiaryVoucherDetails?.referredVoucherAddress === undefined
-    )
-      return;
-    if (
-      beneficiaryVoucherDetails?.freeVoucherAddress?.toString() !==
-        zeroAddress ||
-      beneficiaryVoucherDetails?.referredVoucherAddress?.toString() !==
-        zeroAddress
-    ) {
-      setAssignStatus(true);
-    }
-  }, [beneficiaryVoucherDetails]);
-
-  const voucherAssignModal = useBoolean();
-
-  const handleVoucherAssignModalClose = () => {
-    voucherAssignModal.onFalse();
   };
 
   const removeBeneficiary = (id: string | undefined) => {
@@ -195,10 +87,6 @@ export default function BeneficiaryDetail({
       console.error('Error::', e);
     }
   };
-
-  useEffect(() => {
-    deleteBeneficiary.isSuccess && closeSecondPanel();
-  }, [deleteBeneficiary]);
 
   return (
     <>
@@ -318,21 +206,21 @@ export default function BeneficiaryDetail({
                 </TooltipProvider>
               </div>
             </div>
-            {!assignStatus && beneficiaryDetails?.type === 'ENROLLED' && (
+            {/* {!assignStatus && beneficiaryDetails?.type === 'ENROLLED' && (
               <div>
                 <Button disabled={isTransacting} onClick={handleAssignVoucher}>
                   {isTransacting
                     ? 'Confirming transaction...'
-                    : 'Assign Voucher'}
+                    : 'Assign Tokens'}
                 </Button>
-              </div>
-            )}
+              </div> */}
+            {/* )} */}
           </div>
-          <AssignVoucherConfirm
+          {/* <AssignVoucherConfirm
             open={voucherAssignModal.value}
             handleClose={handleVoucherAssignModalClose}
             handleSubmit={handleAssignVoucher}
-          />
+          /> */}
 
           {/* Details View */}
 
@@ -381,66 +269,6 @@ export default function BeneficiaryDetail({
                             <p className="text-sm font-normal text-muted-foreground ">
                               Phone
                             </p>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                    <Card className="shadow rounded">
-                      <CardHeader>
-                        <CardTitle className="text-lg">
-                          Voucher Details
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="flex flex-col gap-4">
-                          <div className="flex justify-between items-center">
-                            <p>Voucher Type</p>
-                            <p className="text-sm font-light">
-                              {beneficiaryVoucherDetails?.freeVoucherAddress !==
-                                undefined &&
-                              beneficiaryVoucherDetails?.freeVoucherAddress !==
-                                zeroAddress
-                                ? 'Free Voucher'
-                                : beneficiaryVoucherDetails?.referredVoucherAddress !==
-                                    undefined &&
-                                  beneficiaryVoucherDetails?.referredVoucherAddress !==
-                                    zeroAddress
-                                ? 'Discount Voucher'
-                                : 'N/A'}
-                            </p>
-                          </div>
-                          <div className="flex justify-between items-center">
-                            <p>ClaimStatus</p>
-                            <p className="text-sm font-light">
-                              {beneficiaryVoucherDetails?.freeVoucherAddress !==
-                                undefined &&
-                              beneficiaryVoucherDetails?.freeVoucherAddress !==
-                                zeroAddress
-                                ? beneficiaryVoucherDetails?.freeVoucherClaimStatus?.toString()
-                                : beneficiaryVoucherDetails?.referredVoucherAddress !==
-                                    undefined &&
-                                  beneficiaryVoucherDetails?.referredVoucherAddress !==
-                                    zeroAddress
-                                ? beneficiaryVoucherDetails?.referredVoucherClaimStatus?.toString()
-                                : 'N/A'}
-                            </p>
-                          </div>
-                          <div className="flex justify-between items-center">
-                            <p>Wallet Address</p>
-                            <TooltipProvider delayDuration={100}>
-                              <Tooltip>
-                                <TooltipTrigger>
-                                  <p className="text-sm font-medium">
-                                    {truncateEthAddress(walletAddress)}
-                                  </p>
-                                </TooltipTrigger>
-                                <TooltipContent className="bg-secondary ">
-                                  <p className="text-xs font-medium">
-                                    click to copy
-                                  </p>
-                                </TooltipContent>
-                              </Tooltip>
-                            </TooltipProvider>
                           </div>
                         </div>
                       </CardContent>

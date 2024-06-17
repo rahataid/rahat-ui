@@ -1,4 +1,5 @@
 import { ChartDonut } from '@rahat-ui/shadcn/charts';
+import { humanizeString } from '../../utils';
 
 type IProps = {
   donutData: any;
@@ -20,9 +21,9 @@ const Donut = ({
   const sumSeries = k?.reduce((a: number, b: number) => a + b, 0);
   return (
     <div className={`bg-card shadow rounded p-6 mt-2 w-full ${className}`}>
-      <h2 className="text-lg font-2xl text-left ">{title}</h2>
+      <h2 className="text-lg font-medium font-2xl text-left ">{title}</h2>
 
-      <h3 className="text-3xl font-bold text-left">
+      <h3 className="text-3xl text-blue-500 font-bold text-left">
         {totalBeneficiaries && (sumSeries || 0)}
         {/* {sumSeries} */}
       </h3>
@@ -31,7 +32,7 @@ const Donut = ({
           donutSize="75%"
           labels={
             donutData?.data?.length > 0
-              ? donutData?.data?.map((f) => f?.id)
+              ?  donutData?.data?.map((f) => humanizeString(f?.id))
               : ['NO DATA']
           }
           series={

@@ -1,4 +1,10 @@
 'use client';
+import {
+  PROJECT_SETTINGS_KEYS,
+  useGetDisbursementApprovals,
+  useMultiSigDisburseToken,
+  useProjectSettingsStore,
+} from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import {
@@ -20,23 +26,23 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
+import { UUID } from 'crypto';
+import { useParams } from 'next/navigation';
 import * as React from 'react';
 import { useApprovalTable } from './useApprovalTable';
-import { useGetDisbursementApprovals } from '@rahat-ui/query';
-import { useParams } from 'next/navigation';
-import { UUID } from 'crypto';
+import { formatEther, parseEther } from 'viem';
 
-const data = [
-  {
-    owner: '0x67FAB91396Bc0cC12308361337B25f0c469BC9B5',
-    status: 'Completed',
-  },
-];
-
-export function ApprovalTable() {
+export function ApprovalTable({ disbursement }: { disbursement: any }) {
+  const { id } = useParams();
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
+  );
+  const contractSettings = useProjectSettingsStore(
+    (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT],
+  );
+  const safeWallet = useProjectSettingsStore(
+    (state) => state?.settings?.[id]?.['SAFE_WALLET']?.address,
   );
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
@@ -47,17 +53,16 @@ export function ApprovalTable() {
     id: UUID;
     uuid: UUID;
   };
-  const { data } = useGetDisbursementApprovals({
+  const { data, isLoading } = useGetDisbursementApprovals({
     disbursementUUID: uuid,
     projectUUID: projectUUID,
     page: 1,
     perPage: 10,
+    transactionHash: disbursement?.transactionHash,
   });
-
-  console.log(data);
-
+  console.log(disbursement);
   const table = useReactTable({
-    data: data || [],
+    data: data?.approvals || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -75,8 +80,47 @@ export function ApprovalTable() {
     },
   });
 
+  const disburseMultiSig = useMultiSigDisburseToken();
+
+  const handleMigSigTransaction = async () => {
+    const amountString = disbursement?.DisbursementBeneficiary[0]?.amount
+      ? disbursement?.DisbursementBeneficiary[0]?.amount.toString()
+      : '0';
+    const parsedAmount = parseEther(amountString);
+    await disburseMultiSig.mutateAsync({
+      amount: parsedAmount,
+      beneficiaryAddresses: disbursement?.DisbursementBeneficiary?.map(
+        (d: any) => d.beneficiaryWalletAddress,
+      ) as `0x${string}`[],
+      rahatTokenAddress: contractSettings?.rahattoken?.address,
+      safeAddress: safeWallet,
+      c2cProjectAddress: contractSettings?.c2cproject?.address,
+    });
+  };
+
+  if (isLoading) {
+    return (
+      <div className="w-full">
+        <div className="flex items-center justify-between px-4 py-2 border-b-2 bg-card">
+          Loading...
+        </div>
+      </div>
+    );
+  }
   return (
     <div className="w-full">
+      {data?.isExecuted && (
+        <div className="flex items-center justify-end px-4 py-2 border-b-2 bg-card">
+          <Button
+            disabled={disburseMultiSig.isPending}
+            variant="outline"
+            size="sm"
+            onClick={handleMigSigTransaction}
+          >
+            Execute Transaction
+          </Button>
+        </div>
+      )}
       <div className="rounded h-[calc(100vh-320px)] bg-card">
         <Table>
           <ScrollArea className="h-table1">

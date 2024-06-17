@@ -16,6 +16,53 @@ export const useDepositTokenToProject = () => {
   // })
 };
 
+export const useMultiSigDisburseToken = () => {
+  const multi = useWriteC2CProjectMulticall();
+  const { queryClient } = useRSQuery();
+
+  return useMutation({
+    onError: (error) => {
+      console.error(error);
+    },
+    onSuccess(data, variables, context) {
+      console.log({ data });
+    },
+    mutationFn: async ({
+      amount,
+      beneficiaryAddresses,
+      rahatTokenAddress,
+      safeAddress,
+      c2cProjectAddress,
+    }: {
+      beneficiaryAddresses: `0x${string}`[];
+      amount: bigint;
+      rahatTokenAddress: `0x{string}`;
+      safeAddress: `0x{string}`;
+      c2cProjectAddress: `0x{string}`;
+    }) => {
+      console.log('beneficiaryAddresses', {
+        amount,
+        beneficiaryAddresses,
+        rahatTokenAddress,
+        safeAddress,
+        c2cProjectAddress,
+      });
+      // console.log("amount", amount, BigInt(parseEther(amount.toString())))
+      const encodedForDisburse = beneficiaryAddresses.map((beneficiary) => {
+        return encodeFunctionData({
+          abi: c2CProjectAbi,
+          functionName: 'disburseExternalToken',
+          args: [rahatTokenAddress, beneficiary, safeAddress, amount],
+        });
+      });
+      return multi.writeContractAsync({
+        args: [encodedForDisburse],
+        address: c2cProjectAddress,
+      });
+    },
+  });
+};
+
 export const useDisburseTokenToBeneficiaries = () => {
   const multi = useWriteC2CProjectMulticall();
   const { queryClient } = useRSQuery();
@@ -50,11 +97,7 @@ export const useDisburseTokenToBeneficiaries = () => {
         });
         await addDisbursement.mutateAsync({
           amount: formatEther(amount),
-          beneficiaries: beneficiaryAddresses.map((ben) => ({
-            address: ben,
-            amount: formatEther(amount),
-            walletAddress: ben,
-          })),
+          beneficiaries: beneficiaryAddresses,
           from: c2cProjectAddress,
           transactionHash: d,
           type: disburseMethod as DisbursementType,

@@ -48,18 +48,18 @@ export default function SearchDropdownComponent({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-[200px] justify-between mx-2"
+          className="w-[200px] justify-between mx-1 text-gray-400"
         >
           {value
             ? transformedData.find((d) => d.value === value)?.label
-            : `Select ${title}..`}
+            : `Select ${title}`}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[400px] p-0">
+      <PopoverContent className="w-[300px] h-[200px] ">
         <Command>
           <CommandInput placeholder="--Select Field--" />
-          <ScrollArea className="h-[200px]">
+          <ScrollArea>
             <CommandEmpty>No field found.</CommandEmpty>
             <CommandList>
               <CommandGroup>

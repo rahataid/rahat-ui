@@ -1,9 +1,13 @@
 'use client';
-import { useQuery } from '@tanstack/react-query';
-import { useRSQuery } from '@rumsan/react-query';
-import { ProjectDetails } from './graph.query';
-import { useEffect } from 'react';
-import { useC2CProjectSubgraphStore } from '../stores/c2c-project.store';
+
+import { useQuery } from 'urql';
+import {
+  BeneficiaryTransaction,
+  ReceivedTransactionDetails,
+} from './graph.query';
+import { useEffect, useState } from 'react';
+import { Transaction } from 'viem';
+import { mergeTransactions } from '../utils';
 
 export const useProjectDetails = (projectAddress: string) => {
   // const { queryClient } = useRSQuery();
@@ -29,4 +33,66 @@ export const useProjectDetails = (projectAddress: string) => {
   //   }
   // }, [query, projectAddress, queryClient]);
   // return query;
+};
+
+export const useRecentTransactionsList = (contractAddress: string) => {
+  const [transactionList, setTransactionList] = useState<Transaction[]>([]);
+
+  const [result] = useQuery({
+    query: ReceivedTransactionDetails,
+    variables: {
+      contractAddress,
+    },
+    pause: !contractAddress,
+  });
+
+  useEffect(() => {
+    (async () => {
+      if (result.data) {
+        setTransactionList(
+          result.data.transfers.sort(
+            (a: any, b: any) => +a.blockTimestamp - +b.blockTimestamp,
+          ),
+        );
+      } else {
+        setTransactionList([]);
+      }
+    })();
+  }, [result.data]);
+
+  return {
+    data: transactionList,
+    isLoading: result.fetching,
+    error: result.error,
+  };
+};
+
+export const useBeneficiaryTransaction = (beneficiaryAddress: string) => {
+  const [transactionList, setTransactionList] = useState<Transaction[]>([]);
+
+  const [result] = useQuery({
+    query: BeneficiaryTransaction,
+    variables: {
+      beneficiary: beneficiaryAddress,
+    },
+    pause: !beneficiaryAddress,
+  });
+
+  useEffect(() => {
+    (async () => {
+      if (result.data) {
+        const transactionObject = result.data;
+        const transactionLists = await mergeTransactions(transactionObject);
+        setTransactionList(transactionLists);
+      } else {
+        setTransactionList([]);
+      }
+    })();
+  }, [result.data]);
+
+  return {
+    data: transactionList,
+    isLoading: result.fetching,
+    error: result.error,
+  };
 };

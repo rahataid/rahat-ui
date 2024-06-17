@@ -1,24 +1,14 @@
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
 import { ColumnDef } from '@tanstack/react-table';
-import { Eye } from 'lucide-react';
-import { useParams, useRouter } from 'next/navigation';
+import { formatdbDate } from 'apps/rahat-ui/src/utils';
 
 export type Disbursements = {
   owner: string;
-  status: string;
+  hasApproved: boolean;
+  submissionDate: string;
 };
 
 export const useApprovalTable = () => {
-  const { id } = useParams();
-  const router = useRouter();
   const columns: ColumnDef<Disbursements>[] = [
     {
       id: 'select',
@@ -50,9 +40,18 @@ export const useApprovalTable = () => {
       ),
     },
     {
-      accessorKey: 'status',
+      accessorKey: 'hasApproved',
       header: 'Status',
-      cell: ({ row }) => <div>{row.getValue('status')}</div>,
+      cell: ({ row }) => (
+        <div>{row.getValue('hasApproved') ? 'Approved' : 'Not Approved'}</div>
+      ),
+    },
+    {
+      accessorKey: 'submissionDate',
+      header: 'Submission Date',
+      cell: ({ row }) => (
+        <div>{row.getValue('submissionDate') ? formatdbDate(row.getValue('submissionDate')) : 'N/A'}</div>
+      ),
     },
   ];
   return columns;

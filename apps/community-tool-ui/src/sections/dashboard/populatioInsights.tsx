@@ -1,5 +1,5 @@
-import { FocusEventHandler } from 'react';
 import BarCharts from './barCharts';
+import { BANK_COORDS } from './data';
 import Donut from './donut';
 import CommunityMap from './map';
 import StackColumn from './stackColum';
@@ -15,6 +15,20 @@ const PopulationInsights = ({ data }: Props) => {
     data?.data?.find((f) => f.name === 'TOTAL_WITH_GENDER') || ([] as any);
   const vulnerabilityStatus =
     data?.data?.find((f) => f?.name === 'VULNERABIILTY_STATUS') || ([] as any);
+
+  const benefMapStats =
+    data?.data?.find((f) => f?.name === 'BENEFICIARY_MAP_STATS') || ([] as any);
+
+  const filteredCoords =
+    benefMapStats && benefMapStats.data
+      ? benefMapStats.data.filter((b: any) => {
+          return b.latitude && b.longitude;
+        })
+      : [];
+
+      const combinedCoords = [...filteredCoords,...BANK_COORDS]
+
+
   return (
     <div>
       <div className="grid sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-5 gap-2 mb-2 ">
@@ -25,7 +39,8 @@ const PopulationInsights = ({ data }: Props) => {
           height={250}
           width={'100%'}
         />
-        <CommunityMap coordinates={[82.3886, 29.3863]} />
+
+        <CommunityMap coordinates={combinedCoords} />
       </div>
 
       <div className="grid  sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-2 mt-4">

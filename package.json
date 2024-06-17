@@ -16,7 +16,8 @@
     "format": "nx format:write --uncommitted",
     "checkFileSize": "node ./tools/scripts/checkFileSize.js",
     "play": "ts-node play",
-    "wagmi": "npx wagmi generate"
+    "wagmi": "npx wagmi generate",
+    "i": "pnpm i --frozen-lockfile"
   },
   "private": true,
   "dependencies": {
@@ -46,7 +47,7 @@
     "@rahataid/c2c-query": "0.0.9",
     "@rahataid/community-tool-sdk": "^0.0.28",
     "@rahataid/el-subgraph": "0.0.12",
-    "@rahataid/sdk": "0.0.30",
+    "@rahataid/sdk": "0.0.31",
     "@rumsan/communication": "^0.0.14",
     "@rumsan/communication-query": "^0.0.8",
     "@rumsan/core": "^3.0.133",
@@ -59,6 +60,7 @@
     "@tanstack/react-query": "5.22.2",
     "@tanstack/react-query-devtools": "^5.18.1",
     "@tanstack/react-table": "^8.12.0",
+    "@turf/turf": "^7.0.0",
     "@types/jsonwebtoken": "^9.0.5",
     "@types/lodash": "^4.14.202",
     "@types/numeral": "^2.0.5",

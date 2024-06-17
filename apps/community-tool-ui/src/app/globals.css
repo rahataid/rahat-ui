@@ -76,27 +76,31 @@
   width: 100%;
 }
 
+/* ====1025px to 1200px */
 @media (min-width: 1025px) and (max-width: 1200px) {
   .import-container {
     max-width: 800px;
   }
 }
 
+/* ====1201px to 1440px */
 @media (min-width: 1201px) and (max-width: 1440px) {
   .import-container {
     max-width: 1080px;
   }
 }
 
+/* ====1441px to 1920px */
 @media (min-width: 1441px) and (max-width: 1920px) {
   .import-container {
-    max-width: 1410px;
+    max-width: 1350px;
   }
 }
 
+/* ====1921px Onwards */
 @media (min-width: 1921px) {
   .import-container {
-    max-width: 1800px;
+    max-width: 1720px;
   }
 }
 .mapboxgl-ctrl-attrib-inner {

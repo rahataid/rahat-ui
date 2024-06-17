@@ -81,7 +81,8 @@ export default function BeneficiaryGroupDetail({
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
-          <TooltipProvider delayDuration={100}>
+          {/* NOT IMPLEMENTED  */}
+          {/* <TooltipProvider delayDuration={100}>
             <Tooltip>
               <TooltipTrigger>
                 <AlertDialog>
@@ -118,7 +119,7 @@ export default function BeneficiaryGroupDetail({
                 <p className="text-xs font-medium">Delete</p>
               </TooltipContent>
             </Tooltip>
-          </TooltipProvider>
+          </TooltipProvider> */}
           <DropdownMenu>
             <DropdownMenuTrigger>
               <MoreVertical

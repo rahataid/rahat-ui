@@ -244,7 +244,7 @@ const MultiStepForm = () => {
   }, [addTriggersToPhase.isSuccess]);
 
   return (
-    <div className="p-4 h-[calc(100vh-65px)] bg-secondary">
+    <div className="p-4 bg-secondary">
       <div className="bg-card p-4 rounded">
         <Stepper
           activeStep={activeStep}

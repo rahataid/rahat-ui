@@ -159,7 +159,7 @@ export function Nav() {
               </Link>
               <ThemeSwitch />
               <Badge
-                className="mt-2 rounded bg-primary  text-white hover:border w-full p-1 flex justify-center"
+                className="mt-2 rounded bg-primary  text-white hover:border hover:cursor-pointer w-full p-1 flex justify-center"
                 onClick={handleLogout}
               >
                 Logout

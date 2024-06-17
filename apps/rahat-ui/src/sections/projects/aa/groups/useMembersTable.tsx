@@ -37,7 +37,7 @@ export default function useMembersTableColumn(members?: any) {
               if (prevData) {
                 setPrevData((prevData: any) => ({
                   ...prevData,
-                  stakeholders: prevData.stakeholders.filter(
+                  stakeholders: prevData?.stakeholders?.filter(
                     (s: any) => s.uuid !== row.original.uuid,
                   ),
                 }));

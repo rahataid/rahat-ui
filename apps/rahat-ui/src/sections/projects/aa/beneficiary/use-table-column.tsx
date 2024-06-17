@@ -87,7 +87,7 @@ export const useProjectBeneficiaryTableColumns = () => {
       header: 'Name',
       cell: ({ row }) => (
         <div
-          className="cursor-pointer"
+          className=""
           // onClick={() => openSplitDetailView(row.original)}
         >
           {row.getValue('name')}

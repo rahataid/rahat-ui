@@ -1,4 +1,4 @@
-import { useParams } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
@@ -19,6 +19,10 @@ import { UUID } from 'crypto';
 
 export default function AddStakeholders() {
   const { id } = useParams();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const addedFromGroup = searchParams.get('fromGroup');
   const createStakeholder = useCreateStakeholders();
 
   const isValidPhoneNumberRefinement = (value: string | undefined) => {
@@ -27,18 +31,28 @@ export default function AddStakeholders() {
   };
 
   const FormSchema = z.object({
-    name: z.string().min(2, { message: 'Please enter name.' }),
-    phone: z
+    name: z
       .string()
-      .optional()
-      .refine(isValidPhoneNumberRefinement, {
-        message: 'Invalid phone number',
-      }),
+      .regex(/^[A-Za-z\s]*$/, 'Only only alphabetic characters are allowed.')
+      .min(2, { message: 'Please enter name.' }),
+    phone: z.string().optional().refine(isValidPhoneNumberRefinement, {
+      message: 'Invalid phone number',
+    }),
     email: z.string().optional(),
-    designation: z.string().min(2, { message: 'Please enter designation.' }),
-    organization: z.string().min(2, { message: 'Please enter organization.' }),
+    designation: z
+      .string()
+      .regex(/^[A-Za-z\s]*$/, 'Only only alphabetic characters are allowed.')
+      .min(2, { message: 'Please enter designation.' }),
+    organization: z
+      .string()
+      .regex(/^[A-Za-z\s]*$/, 'Only only alphabetic characters are allowed.')
+      .min(2, { message: 'Please enter organization.' }),
     district: z.string().min(2, { message: 'Please enter district.' }),
-    municipality: z.string().min(2, { message: 'Please enter municipality' }),
+    municipality: z
+      .string()
+      .regex(/^[A-Za-z\s]*$/, 'Only only alphabetic characters are allowed.')
+
+      .min(2, { message: 'Please enter municipality' }),
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -60,6 +74,9 @@ export default function AddStakeholders() {
         projectUUID: id as UUID,
         stakeholderPayload: data,
       });
+      if (addedFromGroup == 'true') {
+        router.push(`/projects/aa/${id}/groups/add`);
+      } else router.push(`/projects/aa/${id}/stakeholders`);
     } catch (e) {
       console.error('Create Stakeholder Error::', e);
     } finally {

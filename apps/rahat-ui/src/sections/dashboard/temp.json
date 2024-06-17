@@ -68,6 +68,11 @@
         "name": "BENEFICIARY_BANKEDSTATUS",
         "type": "pie",
         "title": "Banked Status"
+      },
+      {
+        "name": "TotalBeneficiaries.BENEFICIARY_AGE_RANGE",
+        "type": "pie",
+        "title": "Beneficiary Age Range"
       }
     ]
   ]

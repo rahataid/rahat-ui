@@ -77,6 +77,7 @@ const DynamicReports: FC<DynamicReportProps> = ({ data, ui }) => {
               ? dynamicData[col.name]
               : reportData?.data;
 
+          // TODO: consider for the nested api resposes as well
           let component: JSX.Element | null = null;
           switch (col.type) {
             case 'pie':

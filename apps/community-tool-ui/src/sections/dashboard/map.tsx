@@ -2,7 +2,7 @@ import * as React from 'react';
 import Map, { GeolocateControl, MapRef, Marker, NavigationControl } from 'react-map-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { communityMapboxBasicConfig } from '../../utils/mapconfigs';
-import {  MapPin } from 'lucide-react';
+import {  MapPin, Landmark } from 'lucide-react';
 import MarkerDetails from './MarkerDetails';
 import * as turf from "@turf/turf";
 import MapIndicators from './MapIndicators';
@@ -13,14 +13,6 @@ const DEFAULT_LNG = 85.31295;
 const KARNALI_RIVER_LAT = 29.20272;
 const KARNALI_RIVER_LNG = 81.6145214;
 
-interface IPROPS {
-  coordinates: [{
-    name: string, 
-    latitude: number,
-    longitude: number
-  }]
-}
-
 interface IBENEF {
   name: string,
   latitude: number,
@@ -29,7 +21,7 @@ interface IBENEF {
 
 export default function CommunityMap({
   coordinates
-}: IPROPS) {
+}: any) {
   const mapRef = React.useRef<MapRef>(null);
   const [selectedMarker, setSelectedMarker] = React.useState(null) as any;
 
@@ -79,16 +71,17 @@ export default function CommunityMap({
 					/>
 				) : null}
 
-        {coordinates.map((benef: any, index:number) => {
+        {coordinates.map((item: any, index:number) => {
 					return (
-						<Marker key={index} longitude={Number(benef.longitude)} latitude={Number(benef.latitude)}>
+						<Marker key={index} longitude={Number(item.longitude)} latitude={Number(item.latitude)}>
 							<button
 								type="button"
 								className="cursor-pointer"
-                onClick={(e) => zoomToSelectedLoc(e, benef)}
+                onClick={(e) => zoomToSelectedLoc(e, item)}
 
 							>
-								{<MapPin fill={renderMarkerColor(benef)} size={20} color={renderMarkerColor(benef)} />}
+                {item.type === 'Bank' && 	<Landmark color='#0C609B' size={16} />}
+							<MapPin fill={renderMarkerColor(item)} size={20} color={renderMarkerColor(item)} />
 							</button>
 						</Marker>
 					);

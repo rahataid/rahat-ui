@@ -52,7 +52,7 @@ export default function TriggerStatementsList({
     <div className="border bg-card rounded">
       <TableComponent>
         <ScrollArea className={tableScrollAreaHeight}>
-          <TableHeader className="sticky top-0">
+          <TableHeader className="sticky top-0 bg-slate-50">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {

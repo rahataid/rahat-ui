@@ -136,7 +136,6 @@ function BeneficiaryDetailTableView() {
       route.push(`/projects/el/${id}`);
     }
   }, []);
-
   return (
     <>
       <div className="p-2 bg-secondary">

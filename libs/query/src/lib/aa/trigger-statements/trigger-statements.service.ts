@@ -186,7 +186,7 @@ export const useDhmWaterLevels = (uuid: UUID) => {
           action: 'aaProject.waterLevels.getDhm',
           payload: {
             page: 1,
-            perPage: 10,
+            perPage: 15,
           },
         },
       });

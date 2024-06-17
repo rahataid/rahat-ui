@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -38,6 +38,7 @@ export default function AddActivities() {
   const createActivity = useCreateActivities();
   const uploadFile = useUploadFile();
   const { id: projectID } = useParams();
+  const router = useRouter();
 
   const { categories, phases, hazardTypes } = useActivitiesStore((state) => ({
     categories: state.categories,
@@ -154,6 +155,7 @@ export default function AddActivities() {
         projectUUID: projectID as UUID,
         activityPayload: data,
       });
+      router.push(`/projects/aa/${projectID}/activities`);
     } catch (e) {
       console.error('Error::', e);
     } finally {

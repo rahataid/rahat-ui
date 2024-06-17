@@ -16,7 +16,8 @@
     "format": "nx format:write --uncommitted",
     "checkFileSize": "node ./tools/scripts/checkFileSize.js",
     "play": "ts-node play",
-    "wagmi": "npx wagmi generate"
+    "wagmi": "npx wagmi generate",
+    "i": "pnpm i --frozen-lockfile"
   },
   "private": true,
   "dependencies": {

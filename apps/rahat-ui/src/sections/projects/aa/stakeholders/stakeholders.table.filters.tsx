@@ -27,13 +27,11 @@ export default function StakeholdersTableFilters({
 
   const handleSearch: IHandleSearch = React.useCallback(
     (event, key) => {
-      setFilters({
-        [key]: event.target.value,
-      });
+      setFilters({ ...filters, [key]: event.target.value });
     },
     [filters],
   );
-
+  const fromGroup = window.location.pathname.split('/').includes('groups');
   React.useEffect(() => {
     setStakeholderSearchText(filters?.name ?? '');
     setOrganizationSearchText(filters?.organization ?? '');
@@ -67,7 +65,7 @@ export default function StakeholdersTableFilters({
 
       {/* Add Stakeholders Btn */}
       <AddButton
-        path={`/projects/aa/${projectID}/stakeholders/add`}
+        path={`/projects/aa/${projectID}/stakeholders/add?fromGroup=${fromGroup}`}
         name="Stakeholder"
       />
     </div>

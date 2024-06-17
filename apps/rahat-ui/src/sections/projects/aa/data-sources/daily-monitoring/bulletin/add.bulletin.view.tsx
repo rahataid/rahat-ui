@@ -26,9 +26,9 @@ import {
 } from '@rahat-ui/query';
 import { Plus } from 'lucide-react';
 import AddAnotherDataSource from './add.another.data.source';
-import SelectFormField from './select.form.field';
+import SelectFormField from '../../../../../../components/select.form.field';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import InputFormField from './input.form.field';
+import InputFormField from '../../../../../../components/input.form.field';
 import { useSelectItems } from './useSelectItems';
 
 export default function AddBulletin() {

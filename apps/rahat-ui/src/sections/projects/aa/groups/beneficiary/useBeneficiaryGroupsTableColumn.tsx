@@ -3,10 +3,11 @@ import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
 import { Eye } from 'lucide-react';
 import { useSecondPanel } from 'apps/rahat-ui/src/providers/second-panel-provider';
 import BeneficiaryGroupsDetailView from './beneficiary.groups.detail.view';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 export default function useBeneficiaryGroupsTableColumn() {
+  const router = useRouter()
   const { setSecondPanelComponent, closeSecondPanel } = useSecondPanel();
 
   const { id: projectId } = useParams();
@@ -42,17 +43,17 @@ export default function useBeneficiaryGroupsTableColumn() {
       cell: ({ row }) => <div>{row.getValue('name')}</div>,
     },
     {
-        accessorKey: 'members',
-        header: 'Member Count',
-        cell: ({ row }) => {
-          console.log(row);
-          return (
-            <div>
-              {row.original?._count?.groupedBeneficiaries}
-            </div>
-          );
-        },
+      accessorKey: 'members',
+      header: 'Member Count',
+      cell: ({ row }) => {
+        console.log(row);
+        return (
+          <div>
+            {row.original?._count?.groupedBeneficiaries}
+          </div>
+        );
       },
+    },
     // {
     //   accessorKey: 'members',
     //   header: 'Members',
@@ -75,13 +76,14 @@ export default function useBeneficiaryGroupsTableColumn() {
       enableHiding: false,
       cell: ({ row }) => {
         return (
-          <Link href={groupDetailPath(row?.original?.uuid)}>
-            <Eye
-              className="hover:text-primary cursor-pointer"
-              size={20}
-              strokeWidth={1.5}
-            />
-          </Link>
+          // <Link href={groupDetailPath(row?.original?.uuid)}>
+          <Eye
+            onClick={() => router.push(groupDetailPath(row?.original?.uuid))}
+            className="hover:text-primary cursor-pointer"
+            size={20}
+            strokeWidth={1.5}
+          />
+          // </Link>
         );
       },
     },

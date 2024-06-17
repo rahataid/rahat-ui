@@ -1,5 +1,7 @@
 import { X } from 'lucide-react';
 import SelectFormField from './select.form.field';
+import InputFormField from './input.form.field';
+import { useSelectItems } from './useSelectItems';
 
 type IProps = {
   form: any;
@@ -10,7 +12,16 @@ type IProps = {
 export default function AddAnotherDataSource({ form, onClose, index }: IProps) {
   const fieldName = (name: string) => `dataSource.${index}.${name}`; // Dynamic field name generator
 
-  const renderConditionalFields = () => {
+  const {
+    dataSourceSelectItems,
+    dhmForecastSelectItems,
+    flashFloodRiskSelectItems,
+    rainfallForecastSelectItems,
+    rainfallSelectItems,
+    floodForecastSelectItems,
+  } = useSelectItems();
+
+  const renderFieldsBasedOnSource = () => {
     const selectedSource = form.watch(`dataSource.${index}.source`);
     let fields;
     switch (selectedSource) {
@@ -19,51 +30,240 @@ export default function AddAnotherDataSource({ form, onClose, index }: IProps) {
           <>
             <SelectFormField
               form={form}
-              name={`dataSource.${index}.todayStatus`}
-              label="Today's status"
-              placeholder="Select status"
-              selectItems={[{ value: 'status1', label: 'Status 1' }]}
+              name={`dataSource.${index}.forecast`}
+              label="Forecast"
+              placeholder="Select forecast"
+              selectItems={dhmForecastSelectItems}
             />
-            <SelectFormField
+            {renderFieldsBasedOnDHMForecast()}
+          </>
+        );
+        break;
+      case 'GLOFAS':
+        fields = (
+          <>
+            <InputFormField
               form={form}
-              name={`dataSource.${index}.tomorrowStatus`}
-              label="Tomorrow's status"
-              placeholder="Select status"
-              selectItems={[{ value: 'status1', label: 'Status 1' }]}
+              name={`dataSource.${index}.todayGLOFAS`}
+              label="Today"
+              placeholder="Enter today's status"
             />
-            <SelectFormField
+            <InputFormField
               form={form}
-              name={`dataSource.${index}.dayAfterTomorrowStatus`}
-              label="The day after tomorrow's status"
-              placeholder="Select status"
-              selectItems={[{ value: 'status1', label: 'Status 1' }]}
+              name={`dataSource.${index}.days3`}
+              label="3 days"
+              placeholder="Enter 3 day's status"
+            />
+            <InputFormField
+              form={form}
+              name={`dataSource.${index}.days5`}
+              label="5 days"
+              placeholder="Enter 5 day's status"
+            />
+            <InputFormField
+              form={form}
+              name={`dataSource.${index}.inBetweenTodayUntil7DaysIsThereAnyPossibilityOfPeak`}
+              label="In between today until 7 Days is there any possibility of peak"
+              placeholder="Enter possibility"
             />
           </>
         );
         break;
-      case 'NCMWRF':
+      case 'Flash Flood Risk Monitoring':
+        fields = (
+          <SelectFormField
+            form={form}
+            name={`dataSource.${index}.status`}
+            label="Status"
+            placeholder="Select status"
+            selectItems={flashFloodRiskSelectItems}
+          />
+        );
+        break;
+      case 'NCMWRF Accumulated':
         fields = (
           <>
             <SelectFormField
               form={form}
-              name={`dataSource.${index}.hours24Status`}
+              name={`dataSource.${index}.heavyRainfallForecastInKarnaliBasin`}
+              label="Heavy Rainfall Forecast in Karnali Basin (upstream areas)"
+              subLabel="(more than 100mm in consecutive 2-3 days)"
+              placeholder="Select status"
+              selectItems={[
+                { value: 'Yes', label: 'Yes' },
+                { value: 'No', label: 'No' },
+              ]}
+            />
+            <SelectFormField
+              form={form}
+              name={`dataSource.${index}.hours24`}
               label="24 hours"
               placeholder="Select status"
-              selectItems={[{ value: 'status1', label: 'Status 1' }]}
+              selectItems={rainfallSelectItems}
             />
             <SelectFormField
               form={form}
-              name={`dataSource.${index}.hours48Status`}
-              label="48 hours"
-              placeholder="Select status"
-              selectItems={[{ value: 'status1', label: 'Status 1' }]}
-            />
-            <SelectFormField
-              form={form}
-              name={`dataSource.${index}.hours72Status`}
+              name={`dataSource.${index}.hours72`}
               label="72 hours"
               placeholder="Select status"
-              selectItems={[{ value: 'status1', label: 'Status 1' }]}
+              selectItems={rainfallSelectItems}
+            />
+            <SelectFormField
+              form={form}
+              name={`dataSource.${index}.hours168`}
+              label="168 hours"
+              placeholder="Select status"
+              selectItems={rainfallSelectItems}
+            />
+          </>
+        );
+        break;
+      case 'NCMWRF Deterministic & Probabilistic':
+        fields = (
+          <>
+            <InputFormField
+              form={form}
+              name={`dataSource.${index}.extremeWeatherOutlook`}
+              label="Extreme Weather Outlook"
+              subLabel="Severe Weather Event -Extreme Rainfall >95 Percentile purple dots over Karnali Watershed"
+              placeholder="Enter status"
+            />
+            <InputFormField
+              form={form}
+              name={`dataSource.${index}.deterministicsPredictionSystem`}
+              label="Deterministics Prediction System"
+              subLabel="Predicts commulative rainfall more than 300 MM in next 3 to 5 Days"
+              placeholder="Enter status"
+            />
+            <InputFormField
+              form={form}
+              name={`dataSource.${index}.probabilisticPredictionSystem`}
+              label="Probabilistic Prediction System"
+              subLabel="Heavy Rainfall 115 MM per day 80 percent probablity in next 3 to 5 days"
+              placeholder="Enter status"
+            />
+          </>
+        );
+        break;
+      default:
+        break;
+    }
+    return fields;
+  };
+
+  const renderFieldsBasedOnDHMForecast = () => {
+    const selectedForecast = form.watch(`dataSource.${index}.forecast`);
+    let fields;
+    switch (selectedForecast) {
+      case '3 Days Flood forecast Bulletin':
+        fields = (
+          <>
+            <SelectFormField
+              form={form}
+              name={`dataSource.${index}.today`}
+              label="Today"
+              placeholder="Select status"
+              selectItems={floodForecastSelectItems}
+            />
+            <SelectFormField
+              form={form}
+              name={`dataSource.${index}.tomorrow`}
+              label="Tomorrow"
+              placeholder="Select status"
+              selectItems={floodForecastSelectItems}
+            />
+            <SelectFormField
+              form={form}
+              name={`dataSource.${index}.dayAfterTomorrow`}
+              label="Day After Tomorrow"
+              placeholder="Select status"
+              selectItems={floodForecastSelectItems}
+            />
+          </>
+        );
+        break;
+      case '3 Days Rainfall forecast Bulletin':
+        fields = (
+          <>
+            <SelectFormField
+              form={form}
+              name={`dataSource.${index}.todayAfternoon`}
+              label="Today Afternoon"
+              placeholder="Select status"
+              selectItems={rainfallForecastSelectItems}
+            />
+            <SelectFormField
+              form={form}
+              name={`dataSource.${index}.todayNight`}
+              label="Today Night"
+              placeholder="Select status"
+              selectItems={rainfallForecastSelectItems}
+            />
+            <SelectFormField
+              form={form}
+              name={`dataSource.${index}.tomorrowAfternoon`}
+              label="Tomorrow Afternoon"
+              placeholder="Select status"
+              selectItems={rainfallForecastSelectItems}
+            />
+            <SelectFormField
+              form={form}
+              name={`dataSource.${index}.tomorrowNight`}
+              label="Tomorrow Night"
+              placeholder="Select status"
+              selectItems={rainfallForecastSelectItems}
+            />
+            <SelectFormField
+              form={form}
+              name={`dataSource.${index}.dayAfterTomorrowAfternoon`}
+              label="Day After Tomorrow Afternoon"
+              placeholder="Select status"
+              selectItems={rainfallForecastSelectItems}
+            />
+            <SelectFormField
+              form={form}
+              name={`dataSource.${index}.dayAfterTomorrowNight`}
+              label="Day After Tomorrow Night"
+              placeholder="Select status"
+              selectItems={rainfallForecastSelectItems}
+            />
+          </>
+        );
+        break;
+      case 'Real time Monitoring(River Watch)':
+        fields = (
+          <InputFormField
+            form={form}
+            name={`dataSource.${index}.waterLevel`}
+            label="Water Level(Meter)"
+            subLabel="Danger Level 10.8m"
+            placeholder="Enter Water Level"
+          />
+        );
+        break;
+      case 'NWP':
+        fields = (
+          <>
+            <SelectFormField
+              form={form}
+              name={`dataSource.${index}.hours24NWP`}
+              label="24 hours"
+              placeholder="Select status"
+              selectItems={rainfallSelectItems}
+            />
+            <SelectFormField
+              form={form}
+              name={`dataSource.${index}.hours48`}
+              label="48 hours"
+              placeholder="Select status"
+              selectItems={rainfallSelectItems}
+            />
+            <SelectFormField
+              form={form}
+              name={`dataSource.${index}.hours72NWP`}
+              label="72 hours"
+              placeholder="Select status"
+              selectItems={rainfallSelectItems}
             />
           </>
         );
@@ -88,22 +288,9 @@ export default function AddAnotherDataSource({ form, onClose, index }: IProps) {
           name={fieldName('source')}
           label="Source"
           placeholder="Select Data Source"
-          selectItems={[
-            { value: 'DHM', label: 'DHM' },
-            { value: 'NCMWRF', label: 'NCMWRF' },
-          ]}
+          selectItems={dataSourceSelectItems}
         />
-        <SelectFormField
-          form={form}
-          name={fieldName('forecast')}
-          label="Forecast"
-          placeholder="Select Forecast"
-          selectItems={[
-            { value: 'forecast1', label: 'Forecast 1' },
-            { value: 'forecast2', label: 'Forecast 2' },
-          ]}
-        />
-        {renderConditionalFields()}
+        {renderFieldsBasedOnSource()}
       </div>
     </div>
   );

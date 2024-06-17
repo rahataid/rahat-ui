@@ -44,7 +44,7 @@ export default function useDailyMonitoringTableColumn() {
     {
       accessorKey: 'forecast',
       header: 'Forecast',
-      cell: ({ row }) => <div>{row.original.data.forecast}</div>,
+      cell: ({ row }) => <div>{row.original.data.forecast ?? 'N/A'}</div>,
     },
     {
       id: 'actions',

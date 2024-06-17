@@ -67,7 +67,7 @@ const ProjectInfo: FC<ProjectInfoProps> = ({
             {/* <p className="font-medium text-primary">{project?.status}</p> */}
           </div>
           <div>
-            <p className="mt-4 sm:w-2/3">{project?.description}</p>
+            <p className="mt-4 sm:w-2/3 italic">{project?.description}</p>
           </div>
         </div>
         <div className="col-span-3">
@@ -80,7 +80,7 @@ const ProjectInfo: FC<ProjectInfoProps> = ({
             />
             <DataCard
               className=""
-              title="Enrolled Beneficiary"
+              title="Enrolled Beneficiaries"
               number={
                 beneficiaryDetails ? beneficiaryDetails[0].toString() : '-'
               }
@@ -89,7 +89,7 @@ const ProjectInfo: FC<ProjectInfoProps> = ({
             />
             <DataCard
               className=""
-              title="Referred Beneficiary"
+              title="Referred Beneficiaries"
               number={
                 beneficiaryDetails ? beneficiaryDetails[1].toString() : '-'
               }
@@ -98,7 +98,7 @@ const ProjectInfo: FC<ProjectInfoProps> = ({
             />
             <DataCard
               className=""
-              title="Total Vouchers Redeemed"
+              title="Total Redemptions"
               number={totalVoucherRedeemed || 'N/A'}
               Icon={Users}
               // refresh={refetchBeneficiary}

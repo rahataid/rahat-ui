@@ -27,7 +27,7 @@ export default function Activities({ title, className, data }: CardProps) {
           <div className="flex justify-between items-start">
             <div className="space-y-1">
               <p className="text-sm font-medium leading-none">Free</p>
-              <p className="text-sm text-muted-foreground">Minted</p>
+              <p className="text-sm text-muted-foreground">Created</p>
               <p className="text-sm text-muted-foreground">Assigned</p>
               <p className="text-sm text-muted-foreground">Redeemed</p>
             </div>
@@ -50,17 +50,14 @@ export default function Activities({ title, className, data }: CardProps) {
                 <div className="space-y-2">
                   <p className="text-sm font-medium leading-none">Amount</p>
                   <div className="text-xs text-muted-foreground">
-                    {data?.freeVoucherCurrency}{' '}
                     {data?.eyeVoucherBudget?.toString() *
                       data?.freeVoucherPrice}
                   </div>
                   <div className="text-xs text-muted-foreground">
-                    {data?.freeVoucherCurrency}{' '}
                     {data?.eyeVoucherAssigned?.toString() *
                       data?.freeVoucherPrice}
                   </div>
                   <div className="text-xs text-muted-foreground">
-                    {data?.freeVoucherCurrency}{' '}
                     {data?.eyeVoucherClaimed?.toString() *
                       data?.freeVoucherPrice}
                   </div>
@@ -73,7 +70,7 @@ export default function Activities({ title, className, data }: CardProps) {
           <div className="flex justify-between items-start">
             <div className="space-y-1">
               <p className="text-sm font-medium leading-none">Discount</p>
-              <p className="text-sm text-muted-foreground">Minted</p>
+              <p className="text-sm text-muted-foreground">Created</p>
               <p className="text-sm text-muted-foreground">Assigned</p>
               <p className="text-sm text-muted-foreground">Redeemed</p>
             </div>
@@ -98,17 +95,14 @@ export default function Activities({ title, className, data }: CardProps) {
                 <div className="space-y-2">
                   <p className="text-sm font-medium leading-none">Amount</p>
                   <div className="text-xs text-muted-foreground">
-                    {data?.referredVoucherCurrency}{' '}
                     {data?.referredVoucherBudget?.toString() *
                       data?.referredVoucherPrice}
                   </div>
                   <div className="text-xs text-muted-foreground">
-                    {data?.referredVoucherCurrency}{' '}
                     {data?.referredVoucherAssigned?.toString() *
                       data?.referredVoucherPrice}
                   </div>
                   <div className="text-xs text-muted-foreground">
-                    {data?.referredVoucherCurrency}{' '}
                     {data?.referredVoucherClaimed?.toString() *
                       data?.referredVoucherPrice}
                   </div>

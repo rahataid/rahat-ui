@@ -31,7 +31,6 @@ export default function BeneficiaryGroupDetailView() {
     groupId,
   );
 
-  console.log("benf group details", groupDetails)
 
   // const deleteStakeholdersGroup = useDeleteStakeholdersGroups();
 
@@ -89,7 +88,7 @@ export default function BeneficiaryGroupDetailView() {
           {/* Table Starts  */}
           <div className="flex justify-between gap-2">
             <SearchInput
-              name="Stakeholder"
+              name="Beneficiary"
               className="mb-2 w-full"
               value={
                 (table.getColumn('name')?.getFilterValue() as string) ?? ''
@@ -99,28 +98,15 @@ export default function BeneficiaryGroupDetailView() {
               }
             />
             <SearchInput
-              name="Organization"
+              name="Location"
               className="mb-2 w-full"
               value={
-                (table.getColumn('organization')?.getFilterValue() as string) ??
+                (table.getColumn('location')?.getFilterValue() as string) ??
                 ''
               }
               onSearch={(event: React.ChangeEvent<HTMLInputElement>) =>
                 table
-                  .getColumn('organization')
-                  ?.setFilterValue(event.target.value)
-              }
-            />
-            <SearchInput
-              name="Municipality"
-              className="mb-2 w-full"
-              value={
-                (table.getColumn('municipality')?.getFilterValue() as string) ??
-                ''
-              }
-              onSearch={(event: React.ChangeEvent<HTMLInputElement>) =>
-                table
-                  .getColumn('municipality')
+                  .getColumn('location')
                   ?.setFilterValue(event.target.value)
               }
             />

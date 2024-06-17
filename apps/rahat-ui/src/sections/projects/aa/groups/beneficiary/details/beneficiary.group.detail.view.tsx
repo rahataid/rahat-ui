@@ -1,8 +1,7 @@
 import * as React from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import {
-  useSingleStakeholdersGroup,
-  useDeleteStakeholdersGroups,
+  useSingleBeneficiaryGroup,
 } from '@rahat-ui/query';
 import {
   ColumnFiltersState,
@@ -11,7 +10,6 @@ import {
   getFilteredRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import StakeholdersTable from '../../../stakeholders/stakeholders.table';
 import ClientSidePagination from '../../../../components/client.side.pagination';
 import EditButton from '../../../../components/edit.btn';
 import DeleteButton from '../../../../components/delete.btn';
@@ -28,15 +26,17 @@ export default function BeneficiaryGroupDetailView() {
   const projectId = params.id as UUID;
   const groupId = params.groupId as UUID;
 
-  const { data: groupDetails, isLoading } = useSingleStakeholdersGroup(
+  const { data: groupDetails, isLoading } = useSingleBeneficiaryGroup(
     projectId,
     groupId,
   );
 
-  const deleteStakeholdersGroup = useDeleteStakeholdersGroups();
+  console.log("benf group details", groupDetails)
+
+  // const deleteStakeholdersGroup = useDeleteStakeholdersGroups();
 
   const groupPath = `/projects/aa/${projectId}/groups`;
-  const editPath = `/projects/aa/${projectId}/groups/stakeholders/${groupId}/edit`;
+  // const editPath = `/projects/aa/${projectId}/groups/stakeholders/${groupId}/edit`;
 
   const columns = useDetailsBeneficiaryTableColumn();
 
@@ -45,7 +45,7 @@ export default function BeneficiaryGroupDetailView() {
   );
 
   const table = useReactTable({
-    data: groupDetails?.stakeholders ?? [],
+    data: groupDetails?.groupedBeneficiaries ?? [],
     columns,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
@@ -56,16 +56,16 @@ export default function BeneficiaryGroupDetailView() {
     },
   });
 
-  const handleDelete = () => {
-    deleteStakeholdersGroup.mutateAsync({
-      projectUUID: projectId,
-      stakeholdersGroupPayload: { uuid: groupId },
-    });
-  };
+  // const handleDelete = () => {
+  //   deleteStakeholdersGroup.mutateAsync({
+  //     projectUUID: projectId,
+  //     stakeholdersGroupPayload: { uuid: groupId },
+  //   });
+  // };
 
-  React.useEffect(() => {
-    deleteStakeholdersGroup.isSuccess && router.push(groupPath);
-  }, [deleteStakeholdersGroup.isSuccess]);
+  // React.useEffect(() => {
+  //   deleteStakeholdersGroup.isSuccess && router.push(groupPath);
+  // }, [deleteStakeholdersGroup.isSuccess]);
 
   return (
     <div className="p-2 bg-secondary h-[calc(100vh-65px)]">
@@ -79,11 +79,11 @@ export default function BeneficiaryGroupDetailView() {
               <h1 className="text-2xl font-semibold">{groupDetails?.name}</h1>
             </div>
             <div className="flex gap-4 items-center">
-              <EditButton path={editPath} />
+              {/* <EditButton path={editPath} />
               <DeleteButton
                 name="Stakeholders Group"
                 handleContinueClick={handleDelete}
-              />
+              /> */}
             </div>
           </div>
           {/* Table Starts  */}

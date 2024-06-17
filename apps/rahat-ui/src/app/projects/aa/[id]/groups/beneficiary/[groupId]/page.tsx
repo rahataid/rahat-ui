@@ -1,9 +1,9 @@
 'use client'
 
-import { AAStakeholdersGroupDetailView } from "../../../../../../../sections/projects/aa/groups";
+import { AABeneficiaryGroupDetailView } from "../../../../../../../sections/projects/aa/groups";
 
 const Page = () => {
-    return <AAStakeholdersGroupDetailView />
+    return <AABeneficiaryGroupDetailView />
 }
 
 export default Page;

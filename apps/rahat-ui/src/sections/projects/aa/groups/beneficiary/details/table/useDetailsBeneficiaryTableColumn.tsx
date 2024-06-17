@@ -1,43 +1,27 @@
 import { ColumnDef } from '@tanstack/react-table';
-import { IStakeholdersItem } from 'apps/rahat-ui/src/types/stakeholders';
 
 export default function useDetailsBeneficiaryTableColumn() {
-    const columns: ColumnDef<IStakeholdersItem>[] = [
+    const columns: ColumnDef<any>[] = [
         {
             accessorKey: 'name',
             header: 'Name',
-            cell: ({ row }) => <div>{row.getValue('name')}</div>,
+            cell: ({ row }) => <div>{row?.original?.Beneficiary?.pii?.name}</div>,
         },
         {
             accessorKey: 'phone',
             header: 'Phone',
-            cell: ({ row }) => <div>{row.getValue('phone') || 'N/A'}</div>,
+            cell: ({ row }) => <div>{row?.original?.Beneficiary?.pii?.phone || 'N/A'}</div>,
         },
         {
             accessorKey: 'email',
             header: 'Email Address',
-            cell: ({ row }) => <div>{row.getValue('email') || 'N/A'}</div>,
+            cell: ({ row }) => <div>{row?.original?.Beneficiary?.pii?.email || 'N/A'}</div>,
         },
         {
-            accessorKey: 'designation',
-            header: 'Designation',
-            cell: ({ row }) => <div>{row.getValue('designation')}</div>,
-        },
-        {
-            accessorKey: 'organization',
-            header: 'Organization',
-            cell: ({ row }) => <div>{row.getValue('organization')}</div>,
-        },
-        {
-            accessorKey: 'district',
-            header: 'District',
-            cell: ({ row }) => <div>{row.getValue('district')}</div>,
-        },
-        {
-            accessorKey: 'municipality',
-            header: 'Municipality',
-            cell: ({ row }) => <div>{row.getValue('municipality')}</div>,
-        },
+            accessorKey: 'location',
+            header: 'Location',
+            cell: ({ row }) => <div>{row?.original?.Beneficiary?.location || 'N/A'}</div>,
+        }
     ];
 
     return columns;

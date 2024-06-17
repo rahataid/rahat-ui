@@ -3,9 +3,15 @@ import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
 import { Eye } from 'lucide-react';
 import { useSecondPanel } from 'apps/rahat-ui/src/providers/second-panel-provider';
 import BeneficiaryGroupsDetailView from './beneficiary.groups.detail.view';
+import { useParams } from 'next/navigation';
+import Link from 'next/link';
 
 export default function useBeneficiaryGroupsTableColumn() {
   const { setSecondPanelComponent, closeSecondPanel } = useSecondPanel();
+
+  const { id: projectId } = useParams();
+  const groupDetailPath = (groupId: string) =>
+    `/projects/aa/${projectId}/groups/beneficiary/${groupId}`;
 
   const columns: ColumnDef<any>[] = [
     {
@@ -36,43 +42,70 @@ export default function useBeneficiaryGroupsTableColumn() {
       cell: ({ row }) => <div>{row.getValue('name')}</div>,
     },
     {
-      accessorKey: 'members',
-      header: 'Members',
-      cell: ({ row }) => {
-        console.log(row);
-        return (
-          <div>
-            {row.original?.members?.map((member: any, index: number) => (
-              <span key={member?.id}>
-                {member?.pii?.name}
-                {index !== row?.original?.members?.length - 1 && ', '}
-              </span>
-            ))}
-          </div>
-        );
+        accessorKey: 'members',
+        header: 'Member Count',
+        cell: ({ row }) => {
+          console.log(row);
+          return (
+            <div>
+              {row.original?._count?.groupedBeneficiaries}
+            </div>
+          );
+        },
       },
-    },
+    // {
+    //   accessorKey: 'members',
+    //   header: 'Members',
+    //   cell: ({ row }) => {
+    //     console.log(row);
+    //     return (
+    //       <div>
+    //         {row.original?.members?.map((member: any, index: number) => (
+    //           <span key={member?.id}>
+    //             {member?.pii?.name}
+    //             {index !== row?.original?.members?.length - 1 && ', '}
+    //           </span>
+    //         ))}
+    //       </div>
+    //     );
+    //   },
+    // },
     {
       id: 'actions',
       enableHiding: false,
       cell: ({ row }) => {
         return (
-          <Eye
-            className="hover:text-primary cursor-pointer"
-            size={20}
-            strokeWidth={1.5}
-            onClick={() => {
-              setSecondPanelComponent(
-                <BeneficiaryGroupsDetailView
-                  stakeholdersGroupDetail={row.original}
-                  closeSecondPanel={closeSecondPanel}
-                />,
-              );
-            }}
-          />
+          <Link href={groupDetailPath(row?.original?.uuid)}>
+            <Eye
+              className="hover:text-primary cursor-pointer"
+              size={20}
+              strokeWidth={1.5}
+            />
+          </Link>
         );
       },
     },
+    // {
+    //   id: 'actions',
+    //   enableHiding: false,
+    //   cell: ({ row }) => {
+    //     return (
+    //       <Eye
+    //         className="hover:text-primary cursor-pointer"
+    //         size={20}
+    //         strokeWidth={1.5}
+    //         onClick={() => {
+    //           setSecondPanelComponent(
+    //             <BeneficiaryGroupsDetailView
+    //               stakeholdersGroupDetail={row.original}
+    //               closeSecondPanel={closeSecondPanel}
+    //             />,
+    //           );
+    //         }}
+    //       />
+    //     );
+    //   },
+    // },
   ];
 
   return columns;

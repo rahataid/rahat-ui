@@ -246,9 +246,9 @@ export const useBeneficiariesGroups = (uuid: UUID, payload: any) => {
       const benfGroupsFormatted = query?.data?.data?.map((d: any) => {
         return {
           ...d,
-          members: d?.groupedBeneficiaries?.map((m: any) => {
-            return m?.Beneficiary
-          })
+          // members: d?.groupedBeneficiaries?.map((m: any) => {
+          //   return m?.Beneficiary
+          // })
         }
       })
 

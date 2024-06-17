@@ -36,22 +36,34 @@ export default function useBeneficiaryGroupsTableColumn() {
       cell: ({ row }) => <div>{row.getValue('name')}</div>,
     },
     {
-      accessorKey: 'members',
-      header: 'Members',
-      cell: ({ row }) => {
-        console.log(row);
-        return (
-          <div>
-            {row.original?.members?.map((member: any, index: number) => (
-              <span key={member?.id}>
-                {member?.pii?.name}
-                {index !== row?.original?.members?.length - 1 && ', '}
-              </span>
-            ))}
-          </div>
-        );
+        accessorKey: 'members',
+        header: 'Member Count',
+        cell: ({ row }) => {
+          console.log(row);
+          return (
+            <div>
+              {row.original?._count?.groupedBeneficiaries}
+            </div>
+          );
+        },
       },
-    },
+    // {
+    //   accessorKey: 'members',
+    //   header: 'Members',
+    //   cell: ({ row }) => {
+    //     console.log(row);
+    //     return (
+    //       <div>
+    //         {row.original?.members?.map((member: any, index: number) => (
+    //           <span key={member?.id}>
+    //             {member?.pii?.name}
+    //             {index !== row?.original?.members?.length - 1 && ', '}
+    //           </span>
+    //         ))}
+    //       </div>
+    //     );
+    //   },
+    // },
     {
       id: 'actions',
       enableHiding: false,

@@ -136,7 +136,6 @@ function BeneficiaryDetailTableView() {
       route.push(`/projects/el/${id}`);
     }
   }, []);
-  console.log(pagination.perPage);
   return (
     <>
       <div className="p-2 bg-secondary">

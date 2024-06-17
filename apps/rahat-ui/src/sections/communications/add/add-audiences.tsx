@@ -135,7 +135,6 @@ const AddAudience: FC<AddAudienceProps> = ({
   if (selectedRows.length > 0) {
     setAudienceRequiredError(false);
   }
-  console.log(selectedRows);
   return (
     <>
       {audienceRequiredError && (

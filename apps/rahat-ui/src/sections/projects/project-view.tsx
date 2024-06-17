@@ -29,8 +29,6 @@ export default function ProjectListView() {
     // setFilterValue(event.target.value);
     const name = event.target.value;
     const project = data?.data?.filter((project) => {
-      console.log(project);
-
       if (
         project.name?.toLowerCase().includes(name.toLowerCase()) ||
         name.length === 0
@@ -39,7 +37,6 @@ export default function ProjectListView() {
     });
     setFilterValue(project as any);
   };
-  console.log(filterValue);
 
   useEffect(() => {
     setFilterValue(data?.data as any);

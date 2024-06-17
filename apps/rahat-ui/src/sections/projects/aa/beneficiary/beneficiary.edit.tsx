@@ -89,7 +89,6 @@ export default function EditBeneficiary({ beneficiary }: any) {
   useEffect(() => {
     updateBeneficiary.isSuccess && closeSecondPanel();
   }, [updateBeneficiary]);
-  console.log('EDIT', beneficiary);
   useEffect(() => {
     form.setValue('name', beneficiary?.name);
     form.setValue('email', beneficiary?.email);
@@ -172,7 +171,6 @@ export default function EditBeneficiary({ beneficiary }: any) {
               control={form.control}
               name="bankedStatus"
               render={({ field }) => {
-                console.log(field.value);
                 return (
                   <FormItem>
                     <Select

@@ -51,7 +51,6 @@ export default function AuthPage() {
     await verifyOtp({ otp, challenge, service });
     router.push(paths.dashboard.root);
   };
-  console.log(otpinputError);
   return (
     <div className="h-full grid place-items-center relative">
       {/* <Link

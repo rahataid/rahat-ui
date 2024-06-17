@@ -34,7 +34,6 @@ export const useAudienceColumns = (
         <Checkbox
           checked={beneficiaryData?.data?.length === selectedRows.length}
           onCheckedChange={(value) => {
-            console.log('item', table.getFilteredRowModel());
             const filteredRowModel = table.getFilteredRowModel().rows;
             if (value) {
               setSelectedRows([]);

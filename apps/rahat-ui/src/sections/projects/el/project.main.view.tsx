@@ -84,29 +84,34 @@ const ProjectMainView = () => {
       return name === 'BENEFICIARY_TYPE';
     }) || [];
 
+  const freeVoucher = ELProjectStats?.filter((item) => {
+    return item?.name === 'VOUCHERCLAIMS';
+  })?.[0]?.data;
+
+  const freeVoucherCounts = freeVoucher
+    ? Object.values(freeVoucher).map((entry) => entry?.FREE_VOUCHER)
+    : [];
+
+  const refferedVoucher = ELProjectStats?.filter((item) => {
+    return item?.name === 'VOUCHERCLAIMS';
+  })?.[0]?.data;
+
+  const referredVoucherCounts = refferedVoucher
+    ? Object.values(refferedVoucher).map((entry) => entry?.REFERRED_VOUCHER)
+    : [];
+
   const seriesData = [
     {
-      name: 'Sales',
-      data: [10, 41, 35, 51, 49, 62, 69, 91, 148],
+      name: 'Free Voucher',
+      data: freeVoucherCounts,
     },
     {
-      name: 'Revenue',
-      data: [20, 30, 45, 60, 70, 80, 100, 110, 120],
+      name: 'Referred Voucher',
+      data: referredVoucherCounts,
     },
   ];
 
-  const categoriesData = [
-    'Jan',
-    'Feb',
-    'Mar',
-    'Apr',
-    'May',
-    'Jun',
-    'Jul',
-    'Aug',
-    'Sep',
-  ];
-  console.log('ELProjectStats', ELProjectStats);
+  const dates = freeVoucher ? Object.keys(freeVoucher) : [];
 
   const footfallEyeCheckUp = ELProjectStats?.filter((item) => {
     return item?.name === 'FOOTFALL';
@@ -232,7 +237,7 @@ const ProjectMainView = () => {
           voucherDetails={voucherDetails}
         />
         <div className="grid grid-cols-1 mt-2 mb-2 bg-card h-80">
-          <ChartLine series={seriesData} categories={categoriesData} />
+          <ChartLine series={seriesData} categories={dates} />
         </div>
         <ProjectChart
           chartData={[...footfallFilteredData, ...filterdELChartData]}

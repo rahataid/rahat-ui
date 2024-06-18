@@ -46,6 +46,8 @@ export default function AddActivities() {
     hazardTypes: state.hazardTypes,
   }));
 
+  console.log("phases", phases)
+
   const [documents, setDocuments] = React.useState<
     { id: number; name: string }[]
   >([]);
@@ -145,9 +147,18 @@ export default function AddActivities() {
     }
   };
 
+  const selectedPhaseId = form.watch("phaseId")
+  const selectedPhase = phases.find((d) => d.uuid === selectedPhaseId)
+
   React.useEffect(() => {
     form.setValue('activityDocuments', allFiles);
   }, [allFiles, setAllFiles]);
+
+  React.useEffect(() => {
+    if(selectedPhase?.name === "PREPAREDNESS"){
+      form.setValue("isAutomated", false)
+    }
+  }, [selectedPhase]);
 
   const handleCreateActivities = async (data: z.infer<typeof FormSchema>) => {
     try {
@@ -164,6 +175,7 @@ export default function AddActivities() {
       setDocuments([]);
     }
   };
+
 
   return (
     <Form {...form}>
@@ -286,6 +298,35 @@ export default function AddActivities() {
                     </FormItem>
                   )}
                 />
+
+                {
+                  selectedPhase && selectedPhase?.name !== "PREPAREDNESS" && (
+                    <FormField
+                      control={form.control}
+                      name="isAutomated"
+                      render={({ field }) => {
+                        return (
+                          <FormItem className="col-span-2">
+                            <FormControl>
+                              <Checkbox
+                                checked={field.value}
+                                onCheckedChange={(checked) =>
+                                  field.onChange(checked)
+                                }
+                              />
+                            </FormControl>
+                            <FormLabel className="text-sm font-normal ml-2">
+                              Is Automated Activity?
+                            </FormLabel>
+                            <FormMessage />
+                          </FormItem>
+                        );
+                      }}
+                    />
+                  )
+                }
+
+
                 {/* <FormField
                   control={form.control}
                   name="hazardTypeId"
@@ -333,30 +374,7 @@ export default function AddActivities() {
                     );
                   }}
                 />
-                <FormField
-                  control={form.control}
-                  name="isAutomated"
-                  render={({ field }) => {
-                    return (
-                      <div className="grid gap-2 pl-2">
-                        <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                          <FormControl>
-                            <Checkbox
-                              checked={field.value}
-                              onCheckedChange={(checked) =>
-                                field.onChange(checked)
-                              }
-                            />
-                          </FormControl>
-                          <FormLabel className="text-sm font-normal">
-                            Is Automated Activity?
-                          </FormLabel>
-                          <FormMessage />
-                        </FormItem>
-                      </div>
-                    );
-                  }}
-                />
+
                 <FormField
                   control={form.control}
                   name="description"
@@ -412,7 +430,7 @@ export default function AddActivities() {
                         >
                           <p className="text-sm flex gap-2 items-center">
                             {uploadFile.isPending &&
-                            documents?.[documents?.length - 1].name ===
+                              documents?.[documents?.length - 1].name ===
                               file.name ? (
                               <LoaderCircle
                                 size={16}
@@ -498,7 +516,7 @@ export default function AddActivities() {
                       createActivity?.isPending || uploadFile?.isPending
                     }
                   >
-                    Create Activities
+                    Create Activity
                   </Button>
                 </div>
               </div>

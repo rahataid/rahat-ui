@@ -20,6 +20,26 @@ type IProps = {
 
 const statusList = ['NOT_STARTED', 'WORK_IN_PROGRESS', 'COMPLETED', 'DELAYED'];
 
+function getStatusBg(status: string){
+  if (status === 'NOT_STARTED') {
+    return 'bg-gray-200';
+  }
+
+  if (status === 'WORK_IN_PROGRESS') {
+    return 'bg-orange-200';
+  }
+
+  if (status === 'COMPLETED') {
+    return 'bg-green-200';
+  }
+
+  if (status === 'DELAYED') {
+    return 'bg-red-200';
+  }
+
+  return '';
+}
+
 export default function ActivityDetailCards({
   activityDetail,
   projectId,
@@ -83,7 +103,7 @@ export default function ActivityDetailCards({
             <h1 className="font-medium">Status</h1>
             {renderStatusDropdown}
           </div>
-          <Badge className="bg-orange-100 text-orange-600">
+          <Badge className={`${getStatusBg(activityDetail?.status)}`}>
             {activityDetail?.status}
           </Badge>
         </div>

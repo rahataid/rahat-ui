@@ -5,6 +5,42 @@ import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Eye } from 'lucide-react';
 import { IActivitiesItem } from '../../../../types/activities';
 
+function getPhaseBg(phase: string){
+  if(phase === 'PREPAREDNESS'){
+    return 'bg-yellow-200'
+  }
+
+  if(phase === 'READINESS'){
+    return 'bg-green-200'
+  }
+
+  if(phase === 'ACTIVATION'){
+    return 'bg-red-200'
+  }
+
+  return ''
+}
+
+function getStatusBg(status: string){
+  if (status === 'NOT_STARTED') {
+    return 'bg-gray-200';
+  }
+
+  if (status === 'WORK_IN_PROGRESS') {
+    return 'bg-orange-200';
+  }
+
+  if (status === 'COMPLETED') {
+    return 'bg-green-200';
+  }
+
+  if (status === 'DELAYED') {
+    return 'bg-red-200';
+  }
+
+  return '';
+}
+
 export default function useActivitiesTableColumn() {
   const { id: projectID } = useParams();
   const router = useRouter();
@@ -49,11 +85,15 @@ export default function useActivitiesTableColumn() {
     {
       accessorKey: 'phase',
       header: 'Phase',
-      cell: ({ row }) => (
-        <Badge className="rounded-md capitalize text-muted-foreground">
-          {row.getValue('phase')}
-        </Badge>
-      ),
+      cell: ({ row }) => {
+        const phase = row.getValue('phase') as string
+        const bgColor = getPhaseBg(phase)
+        return (
+          <Badge className={`rounded-md capitalize ${bgColor}`}>
+            {phase}
+          </Badge>
+        )
+      },
     },
     {
       accessorKey: 'isAutomated',
@@ -82,16 +122,19 @@ export default function useActivitiesTableColumn() {
     {
       accessorKey: 'status',
       header: 'Status',
-      cell: ({ row }) => (
-        <div className="flex gap-1">
-          <Badge
-            className={`rounded-md capitalize bg-red-100 text-red-600
-              }`}
-          >
-            {row.getValue('status')}
-          </Badge>
-        </div>
-      ),
+      cell: ({ row }) => {
+        const status = row.getValue('status') as string
+        const bgColor = getStatusBg(status)
+        return (
+          <div className="flex gap-1">
+            <Badge
+              className={`rounded-md capitalize ${bgColor}`}
+            >
+              {status}
+            </Badge>
+          </div>
+        )
+      } ,
     },
     {
       id: 'actions',

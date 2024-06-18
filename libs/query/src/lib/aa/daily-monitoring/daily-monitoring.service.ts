@@ -87,6 +87,54 @@ export const useSingleMonitoring = (uuid: UUID, monitoringId: UUID) => {
   return query;
 };
 
+export const useUpdateMonitoring = () => {
+  const qc = useQueryClient();
+  const q = useProjectAction();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+  return useMutation({
+    mutationFn: async ({
+      projectUUID,
+      monitoringPayload,
+    }: {
+      projectUUID: UUID;
+      monitoringPayload: { uuid: UUID };
+    }) => {
+      return q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'aaProject.dailyMonitoring.update',
+          payload: monitoringPayload,
+        },
+      });
+    },
+    onSuccess: () => {
+      q.reset();
+      qc.invalidateQueries({
+        queryKey: ['dailyMonitorings', 'dailyMonitoring'],
+      });
+      toast.fire({
+        title: 'Updated successfully',
+        icon: 'success',
+      });
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || 'Error';
+      q.reset();
+      toast.fire({
+        title: 'Error while updating.',
+        icon: 'error',
+        text: errorMessage,
+      });
+    },
+  });
+};
+
 export const useRemoveMonitoring = () => {
   const qc = useQueryClient();
   const q = useProjectAction();

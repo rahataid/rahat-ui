@@ -44,7 +44,7 @@ export default function useDailyMonitoringTableColumn() {
     {
       accessorKey: 'forecast',
       header: 'Forecast',
-      cell: ({ row }) => <div>{row.original.data.forecast}</div>,
+      cell: ({ row }) => <div>{row.original.data.forecast ?? 'N/A'}</div>,
     },
     {
       id: 'actions',
@@ -54,17 +54,17 @@ export default function useDailyMonitoringTableColumn() {
         return (
           <div className="flex gap-4 items-center">
             <Eye
-              className="cursor-pointer"
+              className="cursor-pointer hover:text-primary"
               size={20}
               strokeWidth={1.5}
               onClick={() =>
                 router.push(
-                  `/projects/aa/${projectId}/data-sources/bulletin/${row.original.uuid}`,
+                  `/projects/aa/${projectId}/data-sources/daily-monitoring/${row.original.uuid}`,
                 )
               }
             />
-            <Pencil className="text-primary" size={20} strokeWidth={1.5} />
-            <Trash2 className="text-red-500" size={20} strokeWidth={1.5} />
+            {/* <Pencil className="text-primary" size={20} strokeWidth={1.5} />
+            <Trash2 className="text-red-500" size={20} strokeWidth={1.5} /> */}
           </div>
         );
       },

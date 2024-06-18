@@ -16,7 +16,9 @@ import {
 type IProps = {
   form: any;
   name: string;
+  className?: string;
   label: string;
+  subLabel?: string;
   placeholder: string;
   selectItems: Array<{ value: string; label: string }>;
 };
@@ -24,7 +26,9 @@ type IProps = {
 export default function SelectFormField({
   form,
   name,
+  className = '',
   label,
+  subLabel,
   placeholder,
   selectItems,
 }: IProps) {
@@ -33,8 +37,15 @@ export default function SelectFormField({
       control={form.control}
       name={name}
       render={({ field }) => (
-        <FormItem>
-          <FormLabel>{label}</FormLabel>
+        <FormItem className={className}>
+          <FormLabel>
+            {label}
+            {subLabel && (
+              <p className="text-sm text-muted-foreground font-normal">
+                {subLabel}
+              </p>
+            )}
+          </FormLabel>
           <Select
             onValueChange={field.onChange}
             defaultValue={field.value}

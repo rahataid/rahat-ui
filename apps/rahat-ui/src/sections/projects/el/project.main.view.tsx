@@ -25,8 +25,6 @@ const ProjectMainView = () => {
   const { id } = useParams();
   const [projectStats, setProjectStats] = useState();
   const [ELProjectStats, setELProjectStats] = useState();
-  // const [seriesData, setSeriesData] = useState([]);
-  // const [categoriesData, setCategoriesData] = useState([]);
   const projectClient = useProjectAction(['count_ben_vendor']);
   const statsClient = useProjectAction(['stats']);
   const project = useProjectStore((state) => state.singleProject);

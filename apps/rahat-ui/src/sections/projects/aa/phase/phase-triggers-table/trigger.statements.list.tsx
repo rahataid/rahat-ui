@@ -18,15 +18,19 @@ import {
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import { useTriggerStatementTableColumns } from './useTriggerStatementsColumns';
 import TableLoader from 'apps/rahat-ui/src/components/table.loader';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import { useAATriggerStatements, usePagination } from '@rahat-ui/query';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
+import { useTriggerStatementTableColumns } from './useTriggerStatementsColumns';
 
 
-export default function TriggerStatementsList() {
+export default function PhaseTriggerStatementsList({
+  phaseId
+}: {
+  phaseId: string
+}) {
   const columns = useTriggerStatementTableColumns();
 
   const { id } = useParams();
@@ -42,7 +46,9 @@ export default function TriggerStatementsList() {
     setPagination({ page: 1, perPage: 10 });
   }, []);
 
-  const { data, isLoading } = useAATriggerStatements(projectId, { ...pagination, ...filters });
+  console.log(phaseId)
+
+  const { data, isLoading } = useAATriggerStatements(projectId, { ...pagination, ...filters, phaseId });
 
   const tableData = data?.httpReponse.data?.data;
   const tableMeta = data?.httpReponse.data?.meta;
@@ -78,7 +84,7 @@ export default function TriggerStatementsList() {
   return (
     <div className="border bg-card rounded">
       <TableComponent>
-        <ScrollArea className={"h-[calc(100vh-344px)]"}>
+        <ScrollArea className={"h-[calc(100vh-456px)]"}>
           <TableHeader className="sticky top-0 bg-slate-50">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>

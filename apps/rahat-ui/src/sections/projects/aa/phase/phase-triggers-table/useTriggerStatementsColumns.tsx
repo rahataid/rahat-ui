@@ -123,8 +123,6 @@ export const useTriggerStatementTableColumns = () => {
                 )
               }
             />
-            {/* <Pencil size={20} strokeWidth={1.5} className="text-primary" />
-            <Trash2 size={20} strokeWidth={1.5} color="red" /> */}
           </div>
         );
       },

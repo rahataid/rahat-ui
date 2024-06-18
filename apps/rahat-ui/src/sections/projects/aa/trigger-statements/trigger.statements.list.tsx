@@ -4,6 +4,10 @@ import {
   getCoreRowModel,
   useReactTable,
   getPaginationRowModel,
+  SortingState,
+  ColumnFiltersState,
+  getSortedRowModel,
+  getFilteredRowModel,
 } from '@tanstack/react-table';
 import {
   Table as TableComponent,
@@ -14,32 +18,55 @@ import {
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  SelectGroup,
-} from '@rahat-ui/shadcn/src/components/ui/select';
 import { useTriggerStatementTableColumns } from './useTriggerStatementsColumns';
 import TableLoader from 'apps/rahat-ui/src/components/table.loader';
+import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
+import { useAATriggerStatements, usePagination } from '@rahat-ui/query';
+import { useParams } from 'next/navigation';
+import { UUID } from 'crypto';
 
-type IProps = {
-  isLoading: boolean;
-  tableData: any;
-  tableScrollAreaHeight: string;
-};
 
-export default function TriggerStatementsList({
-  isLoading,
-  tableData,
-  tableScrollAreaHeight,
-}: IProps) {
+export default function TriggerStatementsList() {
   const columns = useTriggerStatementTableColumns();
 
+  const { id } = useParams();
+  const projectId = id as UUID;
+
+  const { pagination, setNextPage, setPrevPage, setPerPage, setPagination, filters } = usePagination();
+  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    [],
+  );
+
+  React.useEffect(() => {
+    setPagination({ page: 1, perPage: 10 });
+  }, []);
+
+  const { data, isLoading } = useAATriggerStatements(projectId, { ...pagination, ...filters });
+
+  const tableData = data?.httpReponse.data?.data;
+  const tableMeta = data?.httpReponse.data?.meta;
+
+  console.log(tableData)
+  console.log(tableMeta)
+
   const table = useReactTable({
+    manualPagination: true,
+    data: tableData ?? [],
+    columns,
+    onSortingChange: setSorting,
+    onColumnFiltersChange: setColumnFilters,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    state: {
+      sorting,
+      columnFilters,
+    },
+  });
+
+  const tatble = useReactTable({
     data: tableData || [],
     columns,
     getPaginationRowModel: getPaginationRowModel(),
@@ -51,7 +78,7 @@ export default function TriggerStatementsList({
   return (
     <div className="border bg-card rounded">
       <TableComponent>
-        <ScrollArea className={tableScrollAreaHeight}>
+        <ScrollArea className={"h-[calc(100vh-344px)]"}>
           <TableHeader className="sticky top-0 bg-slate-50">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
@@ -100,51 +127,24 @@ export default function TriggerStatementsList({
           </TableBody>
         </ScrollArea>
       </TableComponent>
-      <div className="flex items-center justify-end space-x-8 border-t px-4 py-2">
-        <div className="flex items-center gap-2">
-          <div className="text-sm font-medium">Rows per page</div>
-          <Select
-            defaultValue="10"
-            onValueChange={(value) => table.setPageSize(Number(value))}
-          >
-            <SelectTrigger className="w-16">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectItem value="5">5</SelectItem>
-                <SelectItem value="10">10</SelectItem>
-                <SelectItem value="20">20</SelectItem>
-                <SelectItem value="30">30</SelectItem>
-                <SelectItem value="40">40</SelectItem>
-                <SelectItem value="50">50</SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-        </div>
-        <div>
-          Page {table.getState().pagination.pageIndex + 1} of{' '}
-          {table.getPageCount()}
-        </div>
-        <div className="space-x-4">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            Previous
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            Next
-          </Button>
-        </div>
-      </div>
+      <CustomPagination
+        meta={
+          tableMeta || {
+            total: 0,
+            currentPage: 0,
+            lastPage: 0,
+            perPage: 0,
+            next: null,
+            prev: null,
+          }
+        }
+        handleNextPage={setNextPage}
+        handlePrevPage={setPrevPage}
+        handlePageSizeChange={setPerPage}
+        currentPage={pagination.page}
+        perPage={pagination.perPage}
+        total={tableMeta?.lastPage || 0}
+      />
     </div>
   );
 }

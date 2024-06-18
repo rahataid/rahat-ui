@@ -1,11 +1,10 @@
-import React, { FC, useEffect, useState } from 'react';
 import {
-  PieChart,
   BarChart,
   ChartColumnStacked,
+  PieChart,
 } from '@rahat-ui/shadcn/src/components/charts';
+import { FC, useEffect, useState } from 'react';
 import DataCard from '../../components/dataCard';
-import { formatUnderScoredString } from '../../utils/string';
 import ErrorBoundary from '../../utils/error-boundary';
 
 const fetchData = async (url: string): Promise<number[] | null> => {
@@ -54,13 +53,24 @@ const DynamicReports: FC<DynamicReportProps> = ({ data, ui }) => {
         dynamicReports.map((report) => fetchData(report.data as string)),
       );
 
-      const dataMap = dynamicReports.reduce((acc, report, index) => {
-        if (report.name && fetchedData[index]) {
-          acc[report.name] = fetchedData[index] as number[];
+      const dataMap = data.reduce((acc, report) => {
+        if (typeof report.data === 'string') {
+          // Find the fetched data corresponding to this report
+          const dynamicReportIndex = dynamicReports.findIndex(
+            (dynamicReport) => dynamicReport.name === report.name,
+          );
+          const fetchedValue = fetchedData[dynamicReportIndex];
+          if (fetchedValue) {
+            acc[report.name] = fetchedValue;
+          }
+        } else {
+          // For non-string data, add directly
+          acc[report.name] = report.data;
         }
         return acc;
       }, {} as DynamicData);
 
+      console.log('dataMap', dataMap);
       setDynamicData(dataMap);
     };
 
@@ -78,6 +88,13 @@ const DynamicReports: FC<DynamicReportProps> = ({ data, ui }) => {
               : reportData?.data;
 
           // TODO: consider for the nested api resposes as well
+
+          console.log('actualData', {
+            dynamicData,
+            actualData,
+            name: col.name,
+            reportData,
+          });
           let component: JSX.Element | null = null;
           switch (col.type) {
             case 'pie':
@@ -108,7 +125,7 @@ const DynamicReports: FC<DynamicReportProps> = ({ data, ui }) => {
                   <DataCard
                     key={colIndex}
                     title={col.title}
-                    number={actualData as number}
+                    number={actualData as unknown as string}
                   />
                 </ErrorBoundary>
               ) : (

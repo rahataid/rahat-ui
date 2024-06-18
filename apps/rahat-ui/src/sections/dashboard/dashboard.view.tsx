@@ -8,8 +8,7 @@ import { mapboxBasicConfig } from '../../constants/config';
 import DashboardSummary from './summary';
 import { useGetBeneficiaryStats } from '@rahat-ui/query';
 import { useGetVendorStats } from '@rahat-ui/query';
-import DynamicReports from './dynamic-reports';
-import tempReport from './temp.json';
+import { DynamicReports, tempReport } from '../chart-reports';
 
 export default function DashboardView() {
   const beneficiaryStats = useGetBeneficiaryStats();

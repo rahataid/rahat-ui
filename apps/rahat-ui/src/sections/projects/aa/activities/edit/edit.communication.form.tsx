@@ -172,7 +172,7 @@ export default function EditCommunicationForm({
                 <FormItem>
                   <FormLabel>Upload an audio</FormLabel>
                   <FormControl>
-                    <Input type="file" onChange={handleAudioFileChange} />
+                    <Input disabled={true} type="file" onChange={handleAudioFileChange} />
                   </FormControl>
                   <div className="flex justify-end">
                     {fileUpload.isPending && (

@@ -151,8 +151,8 @@ export default function AddCommunicationForm({ form, onClose, index }: IProps) {
                 </FormControl>
                 <SelectContent>
                   <SelectItem value="EMAIL">Email</SelectItem>
-                  <SelectItem value="SMS">Sms</SelectItem>
-                  <SelectItem value="IVR">Ivr</SelectItem>
+                  <SelectItem value="SMS">SMS</SelectItem>
+                  <SelectItem value="IVR">IVR</SelectItem>
                 </SelectContent>
               </Select>
               <FormMessage />
@@ -166,13 +166,19 @@ export default function AddCommunicationForm({ form, onClose, index }: IProps) {
             render={() => {
               return (
                 <FormItem>
-                  <FormLabel>Upload an audio</FormLabel>
+                  <FormLabel>Upload audio</FormLabel>
                   <FormControl>
-                    <Input type="file" onChange={handleAudioFileChange} />
+                    <Input type="file" accept="audio/*" onChange={handleAudioFileChange} />
                   </FormControl>
                   <div className="flex justify-end">
                     {fileUpload.isPending && (
                       <p className="text-green-600 text-xs">uploading...</p>
+                    )}
+                     {fileUpload.isSuccess && (
+                      <p className="text-green-600 text-xs">upload complete</p>
+                    )}
+                      {fileUpload.isError && (
+                      <p className="text-red-600 text-xs">upload error</p>
                     )}
                   </div>
                   <FormMessage />

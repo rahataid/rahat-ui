@@ -135,6 +135,7 @@ function BeneficiaryDetailTableView() {
     selectedListItems,
     setSelectedListItems,
     resetSelectedListItems,
+    setPagination,
     resetFilters,
   } = usePagination();
   const assignVoucher = useBulkAssignVoucher();
@@ -169,7 +170,7 @@ function BeneficiaryDetailTableView() {
     (state) => state.settings?.[uuid][PROJECT_SETTINGS_KEYS.CONTRACT] || null,
   );
 
-  const columns = useProjectBeneficiaryTableColumns(voucherType);
+  const columns = useProjectBeneficiaryTableColumns(voucherType, projectBeneficiaries);
 
   const handleBenType = React.useCallback(
     (type: string) => {
@@ -215,7 +216,10 @@ function BeneficiaryDetailTableView() {
   });
 
   useEffect(() => {
-    result?.data && setisTransacting(false);
+    if(result?.data){
+      setisTransacting(false);
+      projectBeneficiaries.refetch();
+    }
   }, [result]);
 
   const handleBulkAssign = async () => {
@@ -301,6 +305,7 @@ function BeneficiaryDetailTableView() {
                 onClick={() => {
                   setVoucherType('NOT_ASSIGNED');
                   resetSelectedListItems();
+                  setPagination({page: 1, perPage: 5})
                   closeSecondPanel();
                   route.replace(`${pathname}?voucherType=NOT_ASSIGNED${hash}`);
                 }}
@@ -311,6 +316,7 @@ function BeneficiaryDetailTableView() {
               <TabsTrigger
                 onClick={() => {
                   setVoucherType('FREE_VOUCHER');
+                  setPagination({page: 1, perPage: 5})
                   resetSelectedListItems();
                   closeSecondPanel();
                   route.replace(`${pathname}?voucherType=FREE_VOUCHER${hash}`);
@@ -322,6 +328,7 @@ function BeneficiaryDetailTableView() {
               <TabsTrigger
                 onClick={() => {
                   setVoucherType('DISCOUNT_VOUCHER');
+                  setPagination({page: 1, perPage: 5})
                   resetSelectedListItems();
                   closeSecondPanel();
                   route.replace(

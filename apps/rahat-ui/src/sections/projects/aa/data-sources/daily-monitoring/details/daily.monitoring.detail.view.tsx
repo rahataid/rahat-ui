@@ -7,15 +7,19 @@ import DetailsHeadCard from '../../../../components/details.head.card';
 import { Calendar, Info } from 'lucide-react';
 import { UUID } from 'crypto';
 import { useRemoveMonitoring, useSingleMonitoring } from '@rahat-ui/query';
+import Loader from 'apps/rahat-ui/src/components/table.loader';
 
-export default function BulletinDetailView() {
+export default function DailyMonitoringDetailView() {
   const router = useRouter();
   const params = useParams();
   const projectId = params.id as UUID;
-  const monitoringId = params.bulletinId as UUID;
+  const monitoringId = params.monitoringId as UUID;
 
-  const { data } = useSingleMonitoring(projectId, monitoringId);
+  const { data, isLoading } = useSingleMonitoring(projectId, monitoringId);
   const details = data?.data;
+
+  const dailyMonitoringListPath = `/projects/aa/${projectId}/data-sources/#monitoring`;
+  const dailyMonitoringEditPath = `/projects/aa/${projectId}/data-sources/daily-monitoring/${monitoringId}/edit`;
 
   const deleteMonitoring = useRemoveMonitoring();
 
@@ -27,18 +31,19 @@ export default function BulletinDetailView() {
   };
 
   React.useEffect(() => {
-    deleteMonitoring.isSuccess &&
-      router.push(`/projects/aa/${projectId}/data-sources/#monitoring`);
+    deleteMonitoring.isSuccess && router.push(dailyMonitoringListPath);
   }, [deleteMonitoring.isSuccess]);
-  return (
+  return isLoading ? (
+    <Loader />
+  ) : (
     <div className="h-[calc(100vh-65px)] bg-secondary p-4">
       <div className="mb-4 flex justify-between items-center">
         <div className="flex gap-4 items-center">
-          <Back path={`/projects/aa/${projectId}/data-sources/#monitoring`} />
+          <Back path={dailyMonitoringListPath} />
           <h1 className="font-semibold text-xl">Bulletin Details</h1>
         </div>
         <div className="flex gap-4 items-center">
-          <EditButton path="/" />
+          <EditButton path={dailyMonitoringEditPath} />
           <DeleteButton name="project" handleContinueClick={onDelete} />
         </div>
       </div>

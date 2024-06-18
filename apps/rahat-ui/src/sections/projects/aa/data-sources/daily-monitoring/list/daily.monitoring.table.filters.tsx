@@ -6,7 +6,7 @@ import {
   SelectValue,
   SelectGroup,
 } from '@rahat-ui/shadcn/components/select';
-import SearchInput from '../../../components/search.input';
+import SearchInput from '../../../../components/search.input';
 
 type IProps = {
   handleSearch: (event: React.ChangeEvent<HTMLInputElement>) => void;

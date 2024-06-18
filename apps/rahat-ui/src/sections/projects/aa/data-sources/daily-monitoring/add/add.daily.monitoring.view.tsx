@@ -284,7 +284,7 @@ export default function AddDailyMonitoring() {
                   Cancel
                 </Button>
                 <Button type="submit" className="w-32">
-                  Update
+                  Add
                 </Button>
               </div>
             </CardFooter>

@@ -69,6 +69,7 @@ export default function EditActivity() {
     groupId: '',
     communicationType: '',
     message: '',
+    audioURL: { mediaURL: '', fileName: '' },
   };
 
   const FormSchema = z.object({
@@ -100,9 +101,13 @@ export default function EditActivity() {
         communicationType: z
           .string()
           .min(1, { message: 'Please select communication type' }),
-        message: z
-          .string()
-          .min(5, { message: 'Must be at least 5 characters' }),
+        message: z.string().optional(),
+        audioURL: z
+          .object({
+            mediaURL: z.string().optional(),
+            fileName: z.string().optional(),
+          })
+          .optional(),
         campaignId: z.number().optional(),
       }),
     ),
@@ -170,10 +175,45 @@ export default function EditActivity() {
   }, [activityDetail, isLoading]);
 
   const handleUpdateActivity = async (data: z.infer<typeof FormSchema>) => {
+    let payload;
+    const activityCommunicationPayload = [];
+    if (data?.activityCommunication?.length) {
+      for (const comms of data.activityCommunication) {
+        const selectedCommunicationType = comms.communicationType;
+        switch (selectedCommunicationType) {
+          case 'IVR':
+            activityCommunicationPayload.push({
+              groupType: comms.groupType,
+              groupId: comms.groupId,
+              communicationType: comms.communicationType,
+              audioURL: comms.audioURL,
+            });
+            break;
+          case 'EMAIL':
+          case 'SMS':
+            activityCommunicationPayload.push({
+              groupType: comms.groupType,
+              groupId: comms.groupId,
+              communicationType: comms.communicationType,
+              message: comms.message,
+            });
+            break;
+          default:
+            break;
+        }
+      }
+      payload = {
+        uuid: activityID,
+        ...data,
+        activityCommunication: activityCommunicationPayload,
+      };
+    } else {
+      payload = { uuid: activityID, ...data };
+    }
     try {
       await updateActivity.mutateAsync({
         projectUUID: projectID as UUID,
-        activityUpdatePayload: { uuid: activityID, ...data },
+        activityUpdatePayload: payload,
       });
     } catch (e) {
       console.error('Error::', e);

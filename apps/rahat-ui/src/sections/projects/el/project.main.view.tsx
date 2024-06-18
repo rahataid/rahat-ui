@@ -19,11 +19,14 @@ import { useCallback, useEffect, useState } from 'react';
 import { ProjectChart } from '..';
 import ProjectDataCard from './project.datacard';
 import ProjectInfo from './project.info';
+import ChartLine from '@rahat-ui/shadcn/src/components/charts/chart-components/chart-line';
 
 const ProjectMainView = () => {
   const { id } = useParams();
   const [projectStats, setProjectStats] = useState();
   const [ELProjectStats, setELProjectStats] = useState();
+  // const [seriesData, setSeriesData] = useState([]);
+  // const [categoriesData, setCategoriesData] = useState([]);
   const projectClient = useProjectAction(['count_ben_vendor']);
   const statsClient = useProjectAction(['stats']);
   const project = useProjectStore((state) => state.singleProject);
@@ -81,11 +84,29 @@ const ProjectMainView = () => {
       return name === 'BENEFICIARY_TYPE';
     }) || [];
 
-  const filteredFootfallData =
-    ELProjectStats?.filter((item) => {
-      const name = item?.name;
-      return name === 'FOOTFALL';
-    }) || [];
+  const seriesData = [
+    {
+      name: 'Sales',
+      data: [10, 41, 35, 51, 49, 62, 69, 91, 148],
+    },
+    {
+      name: 'Revenue',
+      data: [20, 30, 45, 60, 70, 80, 100, 110, 120],
+    },
+  ];
+
+  const categoriesData = [
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+  ];
+  console.log('ELProjectStats', ELProjectStats);
 
   const footfallEyeCheckUp = ELProjectStats?.filter((item) => {
     return item?.name === 'FOOTFALL';
@@ -94,10 +115,6 @@ const ProjectMainView = () => {
   const footfallEyeCheckUpNotDone = ELProjectStats?.filter((item) => {
     return item?.name === 'FOOTFALL';
   })?.[0]?.data?.find((i) => i.id === 'EYE_CHECK_UP_NOT_DONE');
-
-  const footfallUnknown = ELProjectStats?.filter((item) => {
-    return item?.name === 'FOOTFALL';
-  })?.[0]?.data?.find((i) => i.id === 'UNKNOWN');
 
   const enrolledEyeCheckupData = ELProjectStats?.filter((item) => {
     return item.name === 'EYE_CHECKUP';
@@ -214,6 +231,9 @@ const ProjectMainView = () => {
           projectVoucher={projectVoucher}
           voucherDetails={voucherDetails}
         />
+        <div className="grid grid-cols-1 mt-2 mb-2 bg-card h-80">
+          <ChartLine series={seriesData} categories={categoriesData} />
+        </div>
         <ProjectChart
           chartData={[...footfallFilteredData, ...filterdELChartData]}
         />

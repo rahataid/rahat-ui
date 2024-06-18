@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -18,43 +18,65 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dialog';
+import {
+  RadioGroup,
+  RadioGroupItem,
+} from '@rahat-ui/shadcn/src/components/ui/radio-group';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
-import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
-import { X, CloudUpload, Check, LoaderCircle } from 'lucide-react';
-import { useUploadFile, useActivateTrigger } from '@rahat-ui/query';
+import { X, CloudUpload, Check, LoaderCircle, Pencil } from 'lucide-react';
+import { useUploadFile, useUpdateActivityStatus } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 
-export default function ManualTriggerDialog() {
-  const { id: projectID, triggerID } = useParams();
-  const uploadFile = useUploadFile();
-  const activateTrigger = useActivateTrigger();
+type IProps = {
+  activityDetail: any;
+  loading: boolean;
+};
+
+const statusList = ['NOT_STARTED', 'WORK_IN_PROGRESS', 'COMPLETED', 'DELAYED'];
+
+export default function UpdateActivityStatusDialog({
+  activityDetail,
+  loading,
+}: IProps) {
+  const router = useRouter();
+  const params = useParams();
+
+  const projectId = params.id as UUID;
+  const activityId = params.activityID as UUID;
+
+  const activitiesListPath = `/projects/aa/${projectId}/activities`;
+
   const [showModal, setShowModal] = React.useState<boolean>(false);
   const [documents, setDocuments] = React.useState<
     { id: number; name: string }[]
   >([]);
-  const nextId = React.useRef(0);
   const [allFiles, setAllFiles] = React.useState<
     { mediaURL: string; fileName: string }[]
   >([]);
 
+  const nextId = React.useRef(0);
+
+  const uploadFile = useUploadFile();
+  const updateStatus = useUpdateActivityStatus();
+
   const FormSchema = z.object({
-    notes: z.string().min(5, { message: 'Must be at least 5 characters' }),
-    triggerDocuments: z
+    status: z.string().min(1, { message: 'Please select status' }),
+    activityDocuments: z
       .array(
         z.object({
           mediaURL: z.string(),
           fileName: z.string(),
         }),
       )
-      .min(1, { message: 'Please upload document' }),
+      .optional(),
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      notes: '',
-      triggerDocuments: [],
+      status: '',
+      activityDocuments: activityDetail?.activityDocuments || [],
     },
   });
 
@@ -73,17 +95,35 @@ export default function ManualTriggerDialog() {
   };
 
   React.useEffect(() => {
-    form.setValue('triggerDocuments', allFiles);
+    form.setValue('activityDocuments', allFiles);
   }, [allFiles, setAllFiles]);
 
-  const handleTriggerSubmit = async (data: z.infer<typeof FormSchema>) => {
+  React.useEffect(() => {
+    if (activityDetail?.activityDocuments && !loading) {
+      const files = activityDetail?.activityDocuments?.map((data: any) => data);
+      const allDocs = activityDetail?.activityDocuments?.map(
+        (data: any, index: number) => ({
+          id: nextId.current++,
+          name: data.fileName,
+        }),
+      );
+      setAllFiles(files);
+      setDocuments(allDocs);
+    }
+  }, [activityDetail, loading]);
+
+  const handleDialogSubmit = async (data: z.infer<typeof FormSchema>) => {
+    const payload = {
+      uuid: activityId,
+      ...data,
+    };
     try {
-      await activateTrigger.mutateAsync({
-        projectUUID: projectID as UUID,
-        activatePayload: { repeatKey: triggerID, ...data },
+      await updateStatus.mutateAsync({
+        projectUUID: projectId,
+        activityStatusPayload: payload,
       });
     } catch (e) {
-      console.error('Activate Trigger Error::', e);
+      console.error('Update Status Error::', e);
     } finally {
       form.reset();
       setAllFiles([]);
@@ -92,42 +132,59 @@ export default function ManualTriggerDialog() {
     }
   };
 
+  React.useEffect(() => {
+    updateStatus.isSuccess && router.push(activitiesListPath);
+  }, [updateStatus.isSuccess]);
+
   return (
     <Dialog open={showModal} onOpenChange={() => setShowModal(!showModal)}>
       <DialogTrigger asChild>
         <Button
-          type="button"
-          className="px-8"
+          variant={'link'}
+          className="h-6"
           onClick={() => setShowModal(true)}
         >
-          Trigger
+          <Pencil className="w-3 h-3 mr-1" /> update
         </Button>
       </DialogTrigger>
       <DialogContent>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleTriggerSubmit)}>
+          <form onSubmit={form.handleSubmit(handleDialogSubmit)}>
             <DialogHeader>
-              <DialogTitle>Trigger</DialogTitle>
+              <DialogTitle>Update Status</DialogTitle>
             </DialogHeader>
             <div className="mt-4 grid gap-4">
               <FormField
                 control={form.control}
-                name="notes"
-                render={({ field }) => {
-                  return (
-                    <FormItem>
-                      <FormLabel>Add note</FormLabel>
-                      <FormControl>
-                        <Textarea placeholder="Write note" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  );
-                }}
+                name="status"
+                render={({ field }) => (
+                  <FormItem className="space-y-3">
+                    <FormLabel>Status:</FormLabel>
+                    <FormControl>
+                      <RadioGroup
+                        onValueChange={field.onChange}
+                        defaultValue={activityDetail?.status}
+                        className="flex flex-col space-y-1"
+                      >
+                        {statusList.map((status) => (
+                          <FormItem className="flex items-center space-x-3 space-y-0">
+                            <FormControl>
+                              <RadioGroupItem value={status} />
+                            </FormControl>
+                            <FormLabel className="font-normal">
+                              {status}
+                            </FormLabel>
+                          </FormItem>
+                        ))}
+                      </RadioGroup>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
               <FormField
                 control={form.control}
-                name="triggerDocuments"
+                name="activityDocuments"
                 render={({ field }) => {
                   return (
                     <FormItem>
@@ -186,8 +243,8 @@ export default function ManualTriggerDialog() {
                                   (doc) => doc.name !== file.name,
                                 );
                                 setDocuments(newDocuments);
-                                const newFiles = allFiles.filter(
-                                  (f, index) => index !== file.id,
+                                const newFiles = allFiles?.filter(
+                                  (f) => f.fileName !== file.name,
                                 );
                                 setAllFiles(newFiles);
                               }}
@@ -211,7 +268,7 @@ export default function ManualTriggerDialog() {
                 <Button
                   type="submit"
                   className="w-full"
-                  disabled={uploadFile?.isPending || activateTrigger?.isPending}
+                  disabled={uploadFile?.isPending || updateStatus?.isPending}
                 >
                   Submit
                 </Button>

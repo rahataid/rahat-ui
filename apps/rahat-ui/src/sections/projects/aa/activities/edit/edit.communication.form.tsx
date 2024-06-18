@@ -1,3 +1,4 @@
+import * as React from 'react';
 import {
   FormControl,
   FormField,
@@ -18,6 +19,7 @@ import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
 import {
   useStakeholdersGroupsStore,
   useBeneficiariesGroupStore,
+  useUploadFile,
 } from '@rahat-ui/query';
 import { X } from 'lucide-react';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
@@ -33,6 +35,8 @@ export default function EditCommunicationForm({
   onClose,
   index,
 }: IProps) {
+  const [audioFile, setAudioFile] = React.useState({});
+
   const stakeholdersGroups = useStakeholdersGroupsStore(
     (state) => state.stakeholdersGroups,
   );
@@ -42,6 +46,10 @@ export default function EditCommunicationForm({
   );
 
   const fieldName = (name: string) => `activityCommunication.${index}.${name}`; // Dynamic field name generator
+
+  const selectedCommunicationType = form.watch(fieldName('communicationType'));
+
+  const fileUpload = useUploadFile();
 
   const renderGroups = () => {
     const selectedGroupType = form.watch(fieldName('groupType'));
@@ -66,6 +74,22 @@ export default function EditCommunicationForm({
     }
     return groups;
   };
+
+  const handleAudioFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const formData = new FormData();
+      formData.append('file', file);
+      const { data: afterUpload } = await fileUpload.mutateAsync(formData);
+      setAudioFile(afterUpload);
+    }
+  };
+
+  React.useEffect(() => {
+    form.setValue(fieldName('audioURL'), audioFile);
+  }, [audioFile, setAudioFile]);
 
   return (
     <div className="border border-dashed rounded p-4 my-8">
@@ -132,28 +156,51 @@ export default function EditCommunicationForm({
                 <SelectContent>
                   <SelectItem value="EMAIL">Email</SelectItem>
                   <SelectItem value="SMS">Sms</SelectItem>
+                  <SelectItem value="IVR">Ivr</SelectItem>
                 </SelectContent>
               </Select>
               <FormMessage />
             </FormItem>
           )}
         />
-
-        <FormField
-          control={form.control}
-          name={fieldName('message')}
-          render={({ field }) => {
-            return (
-              <FormItem className="col-span-2">
-                <FormLabel>Message</FormLabel>
-                <FormControl>
-                  <Textarea placeholder="Write message" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            );
-          }}
-        />
+        {selectedCommunicationType === 'IVR' ? (
+          <FormField
+            control={form.control}
+            name={fieldName('audioURL')}
+            render={() => {
+              return (
+                <FormItem>
+                  <FormLabel>Upload an audio</FormLabel>
+                  <FormControl>
+                    <Input disabled={true} type="file" onChange={handleAudioFileChange} />
+                  </FormControl>
+                  <div className="flex justify-end">
+                    {fileUpload.isPending && (
+                      <p className="text-green-600 text-xs">uploading...</p>
+                    )}
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              );
+            }}
+          />
+        ) : (
+          <FormField
+            control={form.control}
+            name={fieldName('message')}
+            render={({ field }) => {
+              return (
+                <FormItem className="col-span-2">
+                  <FormLabel>Message</FormLabel>
+                  <FormControl>
+                    <Textarea placeholder="Write message" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              );
+            }}
+          />
+        )}
         <div className="hidden">
           <FormField
             control={form.control}

@@ -1,5 +1,6 @@
 import BarCharts from './barCharts';
-import { BANK_COORDS } from './data';
+import { BANK_COORDS, EVACUATION_COORDS } from './data';
+
 import Donut from './donut';
 import CommunityMap from './map';
 import StackColumn from './stackColum';
@@ -26,8 +27,11 @@ const PopulationInsights = ({ data }: Props) => {
         })
       : [];
 
-      const combinedCoords = [...filteredCoords,...BANK_COORDS]
-
+  const combinedCoords = [
+    ...filteredCoords,
+    ...BANK_COORDS,
+    ...EVACUATION_COORDS,
+  ];
 
   return (
     <div>

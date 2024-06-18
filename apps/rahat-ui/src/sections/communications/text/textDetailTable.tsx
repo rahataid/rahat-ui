@@ -77,18 +77,11 @@ export const columns: ColumnDef<TextDetail>[] = [
     ),
   },
   {
-    id: 'actions',
-    enableHiding: false,
-    cell: ({ row }) => {
-      return (
-        <Eye
-          className="hover:text-primary cursor-pointer"
-          size={20}
-          strokeWidth={1.5}
-          // onClick={() => handleSplitDetail(row.original)}
-        />
-      );
-    },
+    accessorKey: 'status',
+    header: 'Status',
+    cell: ({ row }) => (
+      <div className="capitalize">{row.getValue('status')}</div>
+    ),
   },
 ];
 
@@ -108,6 +101,7 @@ export default function TextDetailTableView({ data, type }: IProps) {
   const tableData = React.useMemo(() => {
     return data?.map((item: any) => ({
       createdAt: new Date(item.createdAt).toLocaleString(),
+      status: item?.status,
       to:
         type === CAMPAIGN_TYPES.EMAIL
           ? item?.details?.envelope?.to

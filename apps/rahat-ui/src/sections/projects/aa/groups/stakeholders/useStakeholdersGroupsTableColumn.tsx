@@ -1,10 +1,12 @@
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { ColumnDef } from '@tanstack/react-table';
 import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
 import { Eye } from 'lucide-react';
 
 export default function useStakeholdersGroupsTableColumn() {
+  const router = useRouter()
+
   const { id: projectId } = useParams();
   const groupDetailPath = (groupId: string) =>
     `/projects/aa/${projectId}/groups/stakeholders/${groupId}`;
@@ -39,30 +41,43 @@ export default function useStakeholdersGroupsTableColumn() {
     },
     {
       accessorKey: 'stakeholders',
-      header: 'Members',
-      cell: ({ row }) => (
-        <div>
-          {row.original?.stakeholders?.map((member: any, index: number) => (
-            <span key={member?.id}>
-              {member?.name}
-              {index !== row.original.stakeholders.length - 1 && ', '}
-            </span>
-          ))}
-        </div>
-      ),
+      header: 'Member Count',
+      cell: ({ row }) => {
+        console.log(row)
+        return ((
+          <div>
+            {row?.original?._count?.stakeholders}
+          </div>
+        ))
+      },
     },
+    // {
+    //   accessorKey: 'stakeholders',
+    //   header: 'Member',
+    //   cell: ({ row }) => (
+    //     <div>
+    //       {row.original?.stakeholders?.map((member: any, index: number) => (
+    //         <span key={member?.id}>
+    //           {member?.name}
+    //           {index !== row.original.stakeholders.length - 1 && ', '}
+    //         </span>
+    //       ))}
+    //     </div>
+    //   ),
+    // },
     {
       id: 'actions',
       enableHiding: false,
       cell: ({ row }) => {
         return (
-          <Link href={groupDetailPath(row?.original?.uuid)}>
+          // <Link href={groupDetailPath(row?.original?.uuid)}>
             <Eye
+              onClick={() => router.push(groupDetailPath(row?.original?.uuid))}
               className="hover:text-primary cursor-pointer"
               size={20}
               strokeWidth={1.5}
             />
-          </Link>
+          // </Link>
         );
       },
     },

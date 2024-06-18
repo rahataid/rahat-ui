@@ -31,13 +31,15 @@ export default function ActivityCommunicationListCard({
             <div key={comm?.id} className="p-4 rounded-md bg-secondary mt-4">
               <div className="flex justify-between items-center">
                 <h1 className="font-medium text-primary">{comm?.groupName}</h1>
-                <Button
-                  type="button"
-                  className="h-7 w-24"
-                  onClick={() => triggerCommunication(comm?.campaignId)}
-                >
-                  {trigger.isPending ? <SpinnerLoader /> : 'Trigger'}
-                </Button>
+                {comm?.campaignData?.status !== 'COMPLETED' && (
+                  <Button
+                    type="button"
+                    className="h-7 w-24"
+                    onClick={() => triggerCommunication(comm?.campaignId)}
+                  >
+                    {trigger.isPending ? <SpinnerLoader /> : 'Trigger'}
+                  </Button>
+                )}
               </div>
               <div className="grid grid-cols-2 gap-4 mt-4">
                 <div>

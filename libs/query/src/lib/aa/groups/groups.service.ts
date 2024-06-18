@@ -218,6 +218,30 @@ export const useSingleStakeholdersGroup = (
   return query;
 };
 
+export const useSingleBeneficiaryGroup = (
+  uuid: UUID,
+  beneficiariesGroupID: UUID,
+) => {
+  const q = useProjectAction();
+
+  const query = useQuery({
+    queryKey: ['beneficiaryGroup', uuid, beneficiariesGroupID],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'aaProject.beneficiary.getOneGroup',
+          payload: {
+            uuid: beneficiariesGroupID
+          },
+        },
+      });
+      return mutate.data;
+    },
+  });
+  return query;
+};
+
 export const useBeneficiariesGroups = (uuid: UUID, payload: any) => {
   const q = useProjectAction();
   const { setBeneficiariesGroups, setBeneficiariesGroupsMeta } =
@@ -246,9 +270,9 @@ export const useBeneficiariesGroups = (uuid: UUID, payload: any) => {
       const benfGroupsFormatted = query?.data?.data?.map((d: any) => {
         return {
           ...d,
-          members: d?.groupedBeneficiaries?.map((m: any) => {
-            return m?.Beneficiary
-          })
+          // members: d?.groupedBeneficiaries?.map((m: any) => {
+          //   return m?.Beneficiary
+          // })
         }
       })
 

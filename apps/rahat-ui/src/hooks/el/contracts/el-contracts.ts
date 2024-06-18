@@ -144,7 +144,6 @@ export const useAddVendors = () => {
         });
       },
       onError: (err) => {
-        console.log('Err==>', err);
         alert.fire({
           title: 'Failed to approve vendor!',
           icon: 'error',

@@ -17,6 +17,7 @@ export default function AuthPage() {
   const router = useRouter();
   // const { authQuery } = useRumsanService();
   const [otp, setOtp] = useState('');
+  const [otpinputError, setOtpinputError] = useState(false);
   const [optSent, setOtpSent] = useState(false);
 
   const { address, challenge, service, setAddress, setChallenge, error } =
@@ -29,7 +30,7 @@ export default function AuthPage() {
       error: state.error,
     }));
 
-  const { mutateAsync: requestOtp, isSuccess,isPending } = useRequestOtp();
+  const { mutateAsync: requestOtp, isSuccess, isPending } = useRequestOtp();
   const { mutateAsync: verifyOtp } = useVerifyOtp();
 
   const onRequestOtp = async (e: React.SyntheticEvent) => {
@@ -50,7 +51,6 @@ export default function AuthPage() {
     await verifyOtp({ otp, challenge, service });
     router.push(paths.dashboard.root);
   };
-
   return (
     <div className="h-full grid place-items-center relative">
       {/* <Link
@@ -98,7 +98,9 @@ export default function AuthPage() {
                     {error?.response?.data?.message}
                   </p>
                 )}
-                <Button type="submit" disabled={isPending }>Send OTP</Button>
+                <Button type="submit" disabled={isPending}>
+                  Send OTP
+                </Button>
               </div>
             </form>
           ) : (
@@ -108,6 +110,9 @@ export default function AuthPage() {
                   <Label className="sr-only" htmlFor="otp">
                     OTP
                   </Label>
+                  {otpinputError && (
+                    <div className="text-red-700">Please enter valid OTP</div>
+                  )}
                   <Input
                     id="otp"
                     placeholder="Enter OTP"
@@ -116,7 +121,18 @@ export default function AuthPage() {
                     autoComplete="otp"
                     autoCorrect="off"
                     value={otp}
-                    onChange={(e) => setOtp(e.target.value)}
+                    onChange={(e) => {
+                      const integerRegex = /^\d*$/;
+
+                      const value = e.target.value;
+
+                      if (integerRegex.test(value)) {
+                        otpinputError && setOtpinputError(false);
+                        setOtp(e.target.value);
+                      } else {
+                        setOtpinputError(true);
+                      }
+                    }}
                   />
                 </div>
                 <Button type="submit">Verify</Button>
@@ -134,7 +150,10 @@ export default function AuthPage() {
             </Button> */}
             <span
               className="underline font-medium ml-2 cursor-pointer"
-              onClick={() => optSent && setOtpSent(false)}
+              onClick={() => {
+                setOtp('');
+                optSent && setOtpSent(false);
+              }}
             >
               {!optSent ? 'Get Started' : 'Resend'}
             </span>

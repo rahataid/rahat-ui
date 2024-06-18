@@ -54,12 +54,12 @@ const ProjectDataCard: FC<ProjectDataCardProps> = ({
               loading={loading}
             />
             <DataCard
-              title="Claim Pending"
+              title="Claims Pending"
               number={reconciliationRequested || 'N/A'}
               loading={loading}
             />
             <DataCard
-              title="Claim Approved"
+              title="Claims Approved"
               number={reconciliationApproved || 'N/A'}
               loading={loading}
             />
@@ -74,7 +74,7 @@ const ProjectDataCard: FC<ProjectDataCardProps> = ({
             />
             <DataCard
               className=""
-              title="Redeemption Value"
+              title="Actual Budget"
               number={actualBudget || 'N/A'}
               subtitle="Vouchers Redeemed Value (Rp)"
               Icon={Users}

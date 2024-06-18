@@ -82,7 +82,7 @@ export default function EditCommunicationForm({
           render={({ field }) => (
             <FormItem>
               <FormLabel>Group Type</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <Select disabled={true} onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder="Select group type" />
@@ -103,7 +103,7 @@ export default function EditCommunicationForm({
           render={({ field }) => (
             <FormItem>
               <FormLabel>Group</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <Select disabled={true} onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder="Select group" />
@@ -123,7 +123,7 @@ export default function EditCommunicationForm({
           render={({ field }) => (
             <FormItem>
               <FormLabel>Communication Type</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <Select disabled={true} onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder="Select communication type" />

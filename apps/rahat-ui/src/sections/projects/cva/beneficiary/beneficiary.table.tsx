@@ -89,7 +89,7 @@ export default function BeneficiaryTable() {
     onRowSelectionChange: setSelectedListItems,
     getRowId(originalRow, index, parent) {
       console.log('originalRow', originalRow);
-      return originalRow.wallet;
+      return originalRow.walletAddress;
     },
     state: {
       columnVisibility,

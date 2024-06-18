@@ -36,7 +36,7 @@ export default function DataCard({
         className,
       )}
     >
-      <CardHeader className="pb-2">
+      <CardHeader className="pb-2 p-4">
         <div className="flex items-start justify-between ">
           <div className="flex items-center gap-3">
             <CardTitle className="text-md font-medium">{title}</CardTitle>

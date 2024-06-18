@@ -66,6 +66,7 @@ export default function AddActivities() {
     groupId: '',
     communicationType: '',
     message: '',
+    audioURL: { mediaURL: '', fileName: '' },
   };
 
   const FormSchema = z.object({
@@ -97,9 +98,13 @@ export default function AddActivities() {
         communicationType: z
           .string()
           .min(1, { message: 'Please select communication type' }),
-        message: z
-          .string()
-          .min(5, { message: 'Must be at least 5 characters' }),
+        message: z.string().optional(),
+        audioURL: z
+          .object({
+            mediaURL: z.string().optional(),
+            fileName: z.string().optional(),
+          })
+          .optional(),
       }),
     ),
   });
@@ -161,10 +166,44 @@ export default function AddActivities() {
   }, [selectedPhase]);
 
   const handleCreateActivities = async (data: z.infer<typeof FormSchema>) => {
+    let payload;
+    const activityCommunicationPayload = [];
+    if (data?.activityCommunication?.length) {
+      for (const comms of data.activityCommunication) {
+        const selectedCommunicationType = comms.communicationType;
+        switch (selectedCommunicationType) {
+          case 'IVR':
+            activityCommunicationPayload.push({
+              groupType: comms.groupType,
+              groupId: comms.groupId,
+              communicationType: comms.communicationType,
+              audioURL: comms.audioURL,
+            });
+            break;
+          case 'EMAIL':
+          case 'SMS':
+            activityCommunicationPayload.push({
+              groupType: comms.groupType,
+              groupId: comms.groupId,
+              communicationType: comms.communicationType,
+              message: comms.message,
+            });
+            break;
+          default:
+            break;
+        }
+      }
+      payload = {
+        ...data,
+        activityCommunication: activityCommunicationPayload,
+      };
+    } else {
+      payload = data;
+    }
     try {
       await createActivity.mutateAsync({
         projectUUID: projectID as UUID,
-        activityPayload: data,
+        activityPayload: payload,
       });
       router.push(`/projects/aa/${projectID}/activities`);
     } catch (e) {
@@ -471,6 +510,7 @@ export default function AddActivities() {
 
               {activityCommunicationFields.map((_, index) => (
                 <AddCommunicationForm
+                  key={index}
                   onClose={() => {
                     activityCommunicationRemove(index);
                   }}

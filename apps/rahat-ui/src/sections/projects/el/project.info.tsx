@@ -75,7 +75,9 @@ const ProjectInfo: FC<ProjectInfoProps> = ({
             <DataCard
               className="h-full"
               title="Total Beneficiary"
-              number={totalBeneficiary || 'N/A'}
+              number={(Number(projectVoucher?.eyeVoucherAssigned)+Number(projectVoucher?.
+                referredVoucherAssigned)
+                ).toString() || 'N/A'}
               loading={loading}
             />
             <DataCard
@@ -91,7 +93,8 @@ const ProjectInfo: FC<ProjectInfoProps> = ({
               className=""
               title="Referred Beneficiaries"
               number={
-                beneficiaryDetails ? beneficiaryDetails[1].toString() : '-'
+                Number(projectVoucher?.
+                  referredVoucherAssigned).toString()|| '-'
               }
               Icon={Users}
               refresh={refetchBeneficiary}
@@ -105,15 +108,15 @@ const ProjectInfo: FC<ProjectInfoProps> = ({
             />
             <DataCard
               className=""
-              title="Free Vouchers Redeemed"
-              number={projectVoucher?.eyeVoucherBudget?.toString() || '-'}
+              title="Successful Enrollment"
+              number={projectVoucher?.eyeVoucherClaimed?.toString() || '-'}
               Icon={Users}
               // refresh={refetchBeneficiary}
             />
             <DataCard
               className=""
-              title="Discount Vouchers Redeemed"
-              number={projectVoucher?.referredVoucherBudget?.toString() || '-'}
+              title="Successful Referrals"
+              number={projectVoucher?.referredVoucherClaimed?.toString() || '-'}
               Icon={Users}
               // refresh={refetchBeneficiary}
             />

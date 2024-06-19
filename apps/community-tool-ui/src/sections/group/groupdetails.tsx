@@ -21,6 +21,8 @@ import {
   useCommunityGroupRemove,
   useCommunityGroupStore,
   useCommunityGroupedBeneficiariesDownload,
+  useCommunitySettingList,
+  useExportPinnedListBeneficiary,
 } from '@rahat-ui/community-query';
 import { usePagination } from '@rahat-ui/query';
 import {
@@ -37,6 +39,7 @@ import * as XLSX from 'xlsx';
 import CustomPagination from '../../components/customPagination';
 import GroupDetailTable from './group.table';
 import { useCommunityGroupDeailsColumns } from './useGroupColumns';
+import { SETTINGS_NAME } from '../../constants/settings.const';
 
 type IProps = {
   uuid: string;
@@ -60,6 +63,9 @@ export default function GroupDetail({ uuid }: IProps) {
   const download = useCommunityGroupedBeneficiariesDownload();
   const removeCommunityGroup = useCommunityGroupRemove();
   const purgeCommunityGroup = usePurgeGroupedBeneficiary();
+  const { data: settingsData } = useCommunitySettingList();
+  const exportPinnedListBeneficiary = useExportPinnedListBeneficiary();
+
   const {
     deleteSelectedBeneficiariesFromImport,
     setDeleteSelectedBeneficiariesFromImport,
@@ -159,6 +165,24 @@ export default function GroupDetail({ uuid }: IProps) {
     Swal.fire('Please select beneficiary to delete', '', 'warning');
   };
 
+  const handleExportPinnedBeneficiary = () => {
+    const filteredValue: any = settingsData?.data?.find(
+      (item: any) => item.name === SETTINGS_NAME.APP_NAME,
+    )?.value;
+
+    const obj = filteredValue
+      ? Object.entries(filteredValue).reduce((acc, [key, value]) => {
+          acc[value] = key;
+          return acc;
+        }, {} as { [key: string]: string })
+      : {};
+    const payload = {
+      groupUUID: uuid as string,
+      config: obj,
+    };
+    exportPinnedListBeneficiary.mutate(payload);
+  };
+
   useEffect(() => {
     setDeleteSelectedBeneficiariesFromImport(
       Object.keys(selectedListItems).filter((key) => selectedListItems[key]),
@@ -229,9 +253,9 @@ export default function GroupDetail({ uuid }: IProps) {
                 />
               </DropdownMenuTrigger>
               <DropdownMenuContent>
-                {/* <DropdownMenuItem onClick={handleDelete}>
-                  Delete
-                </DropdownMenuItem> */}
+                <DropdownMenuItem onClick={handleExportPinnedBeneficiary}>
+                  Export Beneficiaries
+                </DropdownMenuItem>
                 <DropdownMenuItem onClick={handlePurge}>
                   Delete Beneficiary
                 </DropdownMenuItem>

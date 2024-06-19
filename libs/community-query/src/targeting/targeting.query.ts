@@ -129,24 +129,24 @@ export const useExportPinnedListBeneficiary = () => {
           await Swal.fire({
             icon: 'info',
             title: 'No Settings Available',
-            text: 'There are no URL available to assign.',
+            text: 'Please add app URL from settings',
             confirmButtonText: 'Ok',
           });
           return null;
         }
 
         const { value } = await Swal.fire({
-          title: 'Assign Settings',
-          text: 'Select URL to proceed',
+          title: 'Export Beneficiary',
+          text: 'Select app to proceed',
           showCancelButton: true,
-          confirmButtonText: 'Assign',
+          confirmButtonText: 'Export',
           cancelButtonText: 'Cancel',
           input: 'select',
           inputOptions: payload.config,
-          inputPlaceholder: 'Select URL',
+          inputPlaceholder: 'Select app',
           preConfirm: (value) => {
             if (!value) {
-              Swal.showValidationMessage('Please select a group to proceed!');
+              Swal.showValidationMessage('Please select app to proceed!');
             }
             return value;
           },
@@ -154,9 +154,10 @@ export const useExportPinnedListBeneficiary = () => {
 
         if (value !== undefined && value !== '') {
           const inputData = {
-            targetUUID: payload?.targetUUID,
+            groupUUID: payload?.groupUUID,
             appURL: value,
           };
+          console.log(inputData);
           return targetingClient.exportTargetBeneficiary(inputData as any);
         }
         return null;

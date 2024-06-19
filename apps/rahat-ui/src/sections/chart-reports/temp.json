@@ -1,0 +1,79 @@
+{
+  "success": true,
+  "data": [
+    {
+      "name": "BENEFICIARY_BANKEDSTATUS",
+      "data": [
+        { "label": "UNKNOWN", "value": 4 },
+        { "label": "UNBANKED", "value": 2 },
+        { "label": "BANKED", "value": 2 },
+        { "label": "UNDER_BANKED", "value": 4 }
+      ]
+    },
+    {
+      "name": "Glasses Required",
+      "categories": ["Enrolled", "Referred"],
+      "data": [
+        { "name": "Reading Glass", "data": [40, 8] },
+        { "name": "Sunglasses", "data": [50, 20] }
+      ]
+    },
+    {
+      "name": "Total Vendors",
+      "data": "https://api.nx.dev.rahat.io/v1/vendors/stats"
+    },
+
+    {
+      "name": "BB",
+      "data": [
+        { "label": "BA", "value": 6 },
+        { "label": "B%", "value": 4 }
+      ]
+    },
+    {
+      "name": "Total Beneficiaries",
+      "data": "https://api.nx.dev.rahat.io/v1/beneficiaries/stats"
+    }
+  ],
+  "ui": [
+    [
+      {
+        "name": "BENEFICIARY_BANKEDSTATUS",
+        "type": "pie",
+        "title": "Banked Status"
+      },
+      {
+        "name": "Glasses Required",
+        "type": "stacked_bar",
+        "title": "Glasses Required"
+      },
+      {
+        "name": "Total Vendors",
+        "type": "datacard",
+        "title": "Total Vendors"
+      },
+      {
+        "name": "Total Beneficiaries",
+        "type": "pie",
+        "title": "Total Beneficiaries"
+      }
+    ],
+    [
+      {
+        "name": "BB",
+        "type": "pie",
+        "title": "Banked Status"
+      },
+      {
+        "name": "BENEFICIARY_BANKEDSTATUS",
+        "type": "pie",
+        "title": "Banked Status"
+      },
+      {
+        "name": "BENEFICIARY_AGE_RANGE",
+        "type": "pie",
+        "title": "Beneficiary Age Range"
+      }
+    ]
+  ]
+}

@@ -36,7 +36,7 @@ import {
 } from '@tanstack/react-table';
 import { useSecondPanel } from 'apps/rahat-ui/src/providers/second-panel-provider';
 import { UUID } from 'crypto';
-import { ChevronDown, Settings2 } from 'lucide-react';
+import { ChevronDown, Plus, Settings2 } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import { useState } from 'react';
 import BulkAssignToken from './bulk-assign-token.modal';
@@ -50,6 +50,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
+import Image from 'next/image';
 
 export default function BeneficiaryTable() {
   const { setSecondPanelComponent, closeSecondPanel } = useSecondPanel();
@@ -293,9 +294,21 @@ export default function BeneficiaryTable() {
                   <TableRow>
                     <TableCell
                       colSpan={table.getAllColumns().length}
-                      className="h-24 text-center"
+                      className="h-full"
                     >
-                      No results.
+                      <div className="flex flex-col items-center justify-center mt-64">
+                        <Image
+                          src="/noData.png"
+                          height={250}
+                          width={250}
+                          alt="no data"
+                        />
+                        <Button>
+                          {' '}
+                          <Plus className="mr-2" size={20} strokeWidth={1.5} />
+                          Add Beneficiary Data
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 )}

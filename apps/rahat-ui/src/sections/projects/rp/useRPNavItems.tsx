@@ -84,9 +84,9 @@ export const useNavItems = () => {
           title: 'Create Token',
         },
         {
-          title: 'Lock Project',
-          icon: <Lock size={18} strokeWidth={1.5} />,
-          onClick: handleLockProject,
+          title: 'Add Beneficiary',
+          path: `/projects/rp/${params.id}/beneficiary/add`,
+          icon: <PlusSquare size={18} strokeWidth={1.5} />,
         },
         {
           title: 'Close Project',

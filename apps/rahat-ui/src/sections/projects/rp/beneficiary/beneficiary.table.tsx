@@ -34,17 +34,15 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { useSecondPanel } from 'apps/rahat-ui/src/providers/second-panel-provider';
+import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import { UUID } from 'crypto';
 import { ChevronDown, Settings2 } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import { useState } from 'react';
 import BulkAssignToken from './bulk-assign-token.modal';
 import { useCvaBeneficiaryTableColumns } from './use.table.column';
-import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 
 export default function BeneficiaryTable() {
-  const { setSecondPanelComponent, closeSecondPanel } = useSecondPanel();
   const bulkAssignTokens = useBulkAssignClaimsToBeneficiaries();
 
   const { id } = useParams() as { id: UUID };

@@ -1,3 +1,4 @@
+import ChartLine from '@rahat-ui/shadcn/src/components/charts/chart-components/chart-line';
 import { Avatar } from '@rahat-ui/shadcn/src/components/ui/avatar';
 import {
   Card,
@@ -9,11 +10,32 @@ import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import DataCard from 'apps/rahat-ui/src/components/dataCard';
 import { ArrowUp, Users } from 'lucide-react';
 
+const sampleSeries = [
+  {
+    name: 'Series 1',
+    data: [10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120],
+  },
+];
+
+const sampleCategories = [
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
+];
+
 const FundManagementView = () => {
   return (
     <>
-      <div className="grid grid-cols-12 gap-2 p-4 bg-secondary h-[calc(100vh-105px)]">
-        {/* Beneficiaries Card 1 */}
+      <div className="grid grid-cols-12 gap-2 p-4 bg-secondary h-[calc(100vh-75px)]">
         <div className="col-span-12 md:col-span-4">
           <DataCard
             className="rounded-sm"
@@ -22,8 +44,6 @@ const FundManagementView = () => {
             Icon={Users}
           />
         </div>
-
-        {/* Beneficiaries Card 2 */}
         <div className="col-span-12 md:col-span-4">
           <DataCard
             className="rounded-sm"
@@ -34,7 +54,7 @@ const FundManagementView = () => {
         </div>
 
         {/* Recent Sales */}
-        <div className="col-span-12 md:col-span-4 md:row-span-2">
+        <div className="col-span-12 md:col-span-4 md:row-span-3 rounded-sm">
           <Card className="h-full">
             <CardHeader>
               <CardTitle>Recent Sales</CardTitle>
@@ -63,9 +83,8 @@ const FundManagementView = () => {
         </div>
 
         {/* Tokens Deposits Chart */}
-        <div className="col-span-12 md:col-span-8 md:row-span-2 p-4 shadow rounded bg-card">
-          <div>Tokens Deposits</div>
-          <div>[Chart Component]</div>
+        <div className="col-span-12 md:col-span-8 md:row-span-2 p-2 shadow rounded bg-card h-full">
+          <ChartLine series={sampleSeries} categories={sampleCategories} />
         </div>
 
         {/* Disbursement Plan */}

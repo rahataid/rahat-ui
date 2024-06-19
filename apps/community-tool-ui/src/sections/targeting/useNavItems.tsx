@@ -13,7 +13,7 @@ export const useTargetingNavItems = () => {
           icon: <ListFilter size={18} strokeWidth={1.5} />,
         },
         {
-          title: 'Pinned list',
+          title: 'Groups',
           path: `${paths.dashboard.targeting.list}`,
           icon: <PinIcon size={18} strokeWidth={1.5} />,
         },

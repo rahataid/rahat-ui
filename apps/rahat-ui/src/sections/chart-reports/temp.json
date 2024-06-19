@@ -1,0 +1,45 @@
+{
+  "success": true,
+  "data": [
+    {
+      "name": "Total Vendors",
+      "data": "https://api.nx.dev.rahat.io/v1/vendors/stats"
+    },
+    {
+      "name": "Total Beneficiaries",
+      "data": "https://api.nx.dev.rahat.io/v1/beneficiaries/stats"
+    }
+  ],
+  "ui": [
+    [
+      {
+        "name": "Total Vendors",
+        "type": "datacard",
+        "title": "Total Vendors"
+      },
+      {
+        "name": "BENEFICIARY_GENDER",
+        "type": "pie",
+        "title": "Banked Gender"
+      },
+
+      {
+        "name": "BENEFICIARY_PHONESTATUS",
+        "type": "pie",
+        "title": "Beneficiary Phone Status"
+      }
+    ],
+    [
+      {
+        "name": "BENEFICIARY_BANKEDSTATUS",
+        "type": "pie",
+        "title": "Banked Status"
+      },
+      {
+        "name": "BENEFICIARY_AGE_RANGE",
+        "type": "pie",
+        "title": "BENEFICIARY_AGE_RANGE"
+      }
+    ]
+  ]
+}

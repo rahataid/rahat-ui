@@ -12,10 +12,11 @@ export default function ProjectLayoutRoot({
 }) {
   const pathName = usePathname();
   const allowedPaths: string[] = [];
+  const allowNavPaths = ['/projects'];
   // const allowedPaths = ['/projects', '/projects/add'];
   //
   return (
-    <DashboardLayout>
+    <DashboardLayout hasDefaultHeader={allowNavPaths.includes(pathName)}>
       {!allowedPaths.includes(pathName) ? (
         <>{children}</>
       ) : (

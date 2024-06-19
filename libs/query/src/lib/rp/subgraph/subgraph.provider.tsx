@@ -2,38 +2,38 @@
 import { Client } from '@urql/core';
 import React, { FC, createContext, useContext } from 'react';
 
-export type CVASubgraphContextType = {
+export type RPSubgraphContextType = {
   subgraphClient: Client;
 };
 
-const CVASubgraphContext = createContext({
+const RPSubgraphContext = createContext({
   subgraphClient: {} as Client,
 });
 
-type CVASubgraphProviderProps = {
+type RPSubgraphProviderProps = {
   children: React.ReactNode;
   subgraphClient: Client;
 };
 
-export const CVASubgraphProvider: FC<CVASubgraphProviderProps> = ({
+export const RPSubgraphProvider: FC<RPSubgraphProviderProps> = ({
   children,
   subgraphClient,
 }) => {
   return (
-    <CVASubgraphContext.Provider
+    <RPSubgraphContext.Provider
       value={{
         subgraphClient: subgraphClient as Client,
       }}
     >
       {children}
-    </CVASubgraphContext.Provider>
+    </RPSubgraphContext.Provider>
   );
 };
 
-export const useCVASubgraph = (): CVASubgraphContextType => {
-  const context = useContext(CVASubgraphContext);
+export const useRPSubgraph = (): RPSubgraphContextType => {
+  const context = useContext(RPSubgraphContext);
   if (context === undefined) {
-    throw new Error('useCVASubgraph must be used within a CVASubgraphProvider');
+    throw new Error('useRPSubgraph must be used within a RPSubgraphProvider');
   }
   return context;
 };

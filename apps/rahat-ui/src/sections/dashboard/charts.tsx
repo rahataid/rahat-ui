@@ -1,6 +1,5 @@
 import { PieChart } from '@rahat-ui/shadcn/charts';
 import { formatUnderScoredString } from '../../utils/string';
-import { DashboardRecentActivities } from './activities.dashboard';
 
 const Charts = ({ charts }: { charts: any }) => {
   const filteredCharts = charts?.filter((d: any) => {

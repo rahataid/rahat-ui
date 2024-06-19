@@ -5,7 +5,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/components/tooltip';
-import { Download, MoreVertical, Trash2, Unplug } from 'lucide-react';
+import { Download, MoreVertical, Trash2 } from 'lucide-react';
 
 import {
   VisibilityState,
@@ -207,7 +207,7 @@ export default function GroupDetail({ uuid }: IProps) {
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild onClick={removeBeneficiaryFromGroup}>
-                  <Unplug
+                  <Trash2
                     className="cursor-pointer mr-3"
                     size={20}
                     strokeWidth={1.6}
@@ -215,7 +215,7 @@ export default function GroupDetail({ uuid }: IProps) {
                   />
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>Disconnect Beneficiaries from Group</p>
+                  <p>Disconnect beneficiaries from Group</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>

@@ -84,7 +84,7 @@ export const useTargetingLabelUpdate = () => {
       mutationKey: [TAGS.UPDATE_TARGETING_LABEL],
       mutationFn: targetingClient.patchLabel,
       onSuccess: () => {
-        Swal.fire('Target beneficiary pinned successfully', '', 'success');
+        Swal.fire('Beneficiaries added to the group', '', 'success');
         queryClient.invalidateQueries({
           queryKey: [
             TAGS.GET_TARGETING_BENEFICIARIES,

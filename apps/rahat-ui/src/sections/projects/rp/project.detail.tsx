@@ -24,8 +24,8 @@ const ProjectInfo: FC<ProjectInfoProps> = ({ project }) => {
 
   //temp contract call
   const tokenBalance = useReadRahatTokenBalanceOf({
-    address: contractSettings?.rahattoken.address as `0x${string}`,
-    args: [contractSettings?.rpproject.address as `0x${string}`],
+    address: contractSettings?.rahattoken?.address as `0x${string}`,
+    args: [contractSettings?.rpproject?.address as `0x${string}`],
     query: {
       select(data) {
         return data ? formatEther(data) : 'N/A';

@@ -28,17 +28,23 @@ import Loader from 'apps/rahat-ui/src/components/table.loader';
 
 export default function ActivitiesDetailView() {
   const router = useRouter();
-  const { id: projectID, activityID } = useParams();
+  const params = useParams();
+  const projectId = params.id as UUID;
+  const activityId = params.activityID as UUID;
+
+  const activitiesListPath = `/projects/aa/${projectId}/activities`;
+  const activitiesEditPath = `/projects/aa/${projectId}/activities/${activityId}/edit`;
+
   const { data: activityDetail, isLoading } = useSingleActivity(
-    projectID as UUID,
-    activityID,
+    projectId,
+    activityId,
   );
 
   const deleteActivity = useDeleteActivities();
 
   const removeActivity = (activity: any) => {
     deleteActivity.mutateAsync({
-      projectUUID: projectID as UUID,
+      projectUUID: projectId,
       activityPayload: {
         uuid: activity,
       },
@@ -46,12 +52,12 @@ export default function ActivitiesDetailView() {
   };
 
   React.useEffect(() => {
-    deleteActivity.isSuccess && router.push(`/projects/aa/${projectID}/activities`);
+    deleteActivity.isSuccess && router.push(activitiesListPath);
   }, [deleteActivity]);
 
-  if (isLoading) return <Loader />;
-
-  return (
+  return isLoading ? (
+    <Loader />
+  ) : (
     <div className="h-[calc(100vh-65px)] bg-secondary p-4">
       <div className="flex justify-between">
         <div className="flex gap-4 items-center">
@@ -69,11 +75,7 @@ export default function ActivitiesDetailView() {
               <TooltipTrigger>
                 <div
                   className="rounded-full border border-primary text-primary bg-card p-2"
-                  onClick={() =>
-                    router.push(
-                      `/projects/aa/${projectID}/activities/${activityID}/edit`,
-                    )
-                  }
+                  onClick={() => router.push(activitiesEditPath)}
                 >
                   <Pencil size={20} strokeWidth={1.5} />
                 </div>
@@ -106,7 +108,9 @@ export default function ActivitiesDetailView() {
                       <AlertDialogCancel>Cancel</AlertDialogCancel>
                       <AlertDialogAction
                         onClick={() => removeActivity(activityDetail.uuid)}
-                      >Continue</AlertDialogAction>
+                      >
+                        Continue
+                      </AlertDialogAction>
                     </AlertDialogFooter>
                   </AlertDialogContent>
                 </AlertDialog>
@@ -120,14 +124,13 @@ export default function ActivitiesDetailView() {
       </div>
       <ActivityDetailCards
         activityDetail={activityDetail}
-        projectId={projectID as UUID}
-        activityId={activityID as UUID}
+        loading={isLoading}
       />
       <div className="grid grid-cols-2 gap-4 mt-4">
         <ActivityDetailCard activityDetail={activityDetail} />
         <ActivityCommunicationListCard
           activityDetail={activityDetail}
-          projectId={projectID}
+          projectId={projectId}
         />
         {/* <ActivityPayoutCard /> */}
       </div>

@@ -59,7 +59,7 @@ const DynamicReports: FC<DynamicReportProps> = ({ data, ui }) => {
           if (Array.isArray(fetchedData[index])) {
             const formattedData = fetchedData[index].reduce(
               (dataAcc, item, itemIndex) => {
-                const itemName = item.name;
+                const itemName = `${report.name}.${item.name}`;
                 const itemData = item.data;
                 dataAcc[itemName] = Array.isArray(itemData)
                   ? itemData.map((d) => ({
@@ -100,17 +100,19 @@ const DynamicReports: FC<DynamicReportProps> = ({ data, ui }) => {
           const actualData =
             typeof reportData?.data === 'string'
               ? dynamicData[col.name]
-              : reportData?.data;
+              : (reportData?.data as any);
 
           // TODO: consider for the nested api resposes as well
           let component: JSX.Element | null = null;
+
           switch (col.type) {
             case 'pie':
               component = (
                 <ErrorBoundary>
                   <PieChart
                     key={colIndex}
-                    title={col.title}
+                    title={formatUnderScoredString(col.title)}
+                    // title={formatUnderScoredString(col.name)}
                     chart={{ series: actualData as number[] }}
                   />
                 </ErrorBoundary>
@@ -133,7 +135,12 @@ const DynamicReports: FC<DynamicReportProps> = ({ data, ui }) => {
                   <DataCard
                     key={colIndex}
                     title={col.title}
-                    number={actualData as unknown as string}
+                    number={
+                      typeof actualData === 'string' ||
+                      typeof actualData === 'number'
+                        ? (actualData as string)
+                        : (actualData?.count as unknown as string)
+                    }
                   />
                 </ErrorBoundary>
               ) : (

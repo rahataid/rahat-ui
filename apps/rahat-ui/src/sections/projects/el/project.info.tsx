@@ -75,14 +75,16 @@ const ProjectInfo: FC<ProjectInfoProps> = ({
             <DataCard
               className="h-full"
               title="Total Beneficiary"
-              number={totalBeneficiary || 'N/A'}
+              number={(Number(projectVoucher?.eyeVoucherAssigned)+Number(projectVoucher?.
+                referredVoucherAssigned)
+                ).toString() || 'N/A'}
               loading={loading}
             />
             <DataCard
               className=""
               title="Enrolled Beneficiaries"
               number={
-                beneficiaryDetails ? beneficiaryDetails[0].toString() : '-'
+                projectVoucher?.eyeVoucherAssigned.toLocaleString() || '-'
               }
               Icon={Users}
               refresh={refetchBeneficiary}
@@ -91,7 +93,8 @@ const ProjectInfo: FC<ProjectInfoProps> = ({
               className=""
               title="Referred Beneficiaries"
               number={
-                beneficiaryDetails ? beneficiaryDetails[1].toString() : '-'
+                Number(projectVoucher?.
+                  referredVoucherAssigned).toLocaleString()|| '-'
               }
               Icon={Users}
               refresh={refetchBeneficiary}
@@ -99,21 +102,21 @@ const ProjectInfo: FC<ProjectInfoProps> = ({
             <DataCard
               className=""
               title="Total Redemptions"
-              number={totalVoucherRedeemed || 'N/A'}
+              number={totalVoucherRedeemed.toLocaleString() || 'N/A'}
               Icon={Users}
               // refresh={refetchBeneficiary}
             />
             <DataCard
               className=""
-              title="Free Vouchers Redeemed"
-              number={projectVoucher?.eyeVoucherBudget?.toString() || '-'}
+              title="Successful Enrollment"
+              number={projectVoucher?.eyeVoucherClaimed?.toLocaleString() || '-'}
               Icon={Users}
               // refresh={refetchBeneficiary}
             />
             <DataCard
               className=""
-              title="Discount Vouchers Redeemed"
-              number={projectVoucher?.referredVoucherBudget?.toString() || '-'}
+              title="Successful Referrals"
+              number={projectVoucher?.referredVoucherClaimed?.toLocaleString() || '-'}
               Icon={Users}
               // refresh={refetchBeneficiary}
             />

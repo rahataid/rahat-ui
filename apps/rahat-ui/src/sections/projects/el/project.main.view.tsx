@@ -81,11 +81,7 @@ const ProjectMainView = () => {
       return name === 'BENEFICIARY_TYPE';
     }) || [];
 
-  const filteredFootfallData =
-    ELProjectStats?.filter((item) => {
-      const name = item?.name;
-      return name === 'FOOTFALL';
-    }) || [];
+ 
 
   const footfallEyeCheckUp = ELProjectStats?.filter((item) => {
     return item?.name === 'FOOTFALL';
@@ -156,6 +152,23 @@ const ProjectMainView = () => {
     },
   ];
 
+  const beneficiaryFilteredData =[
+    {
+      name:'BENEFICIARY_TYPE',
+      grpup:'beneficiary_type',
+      data:[
+        {
+          id:'Enrolled',
+          count:Number(projectVoucher?.eyeVoucherAssigned) || 0
+        },
+        {
+          id:'Referred',
+          count:Number(projectVoucher?.referredVoucherAssigned) || 0
+        }
+      ]
+    }
+  ]
+
   const eyeCheckupData = [
     {
       name: 'Eye Checkup',
@@ -215,7 +228,7 @@ const ProjectMainView = () => {
           voucherDetails={voucherDetails}
         />
         <ProjectChart
-          chartData={[...footfallFilteredData, ...filterdELChartData]}
+          chartData={[...footfallFilteredData, ...beneficiaryFilteredData]}
         />
         <div className="grid md:grid-cols-1 lg:grid-cols-2 gap-2 mt-2">
           <div className="bg-card rounded">

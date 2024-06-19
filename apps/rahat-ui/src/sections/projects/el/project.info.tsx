@@ -43,7 +43,6 @@ const ProjectInfo: FC<ProjectInfoProps> = ({
       );
     });
   };
-  console.log(renderExtras(project?.extras || {}));
   return (
     <>
       <div className="grid grid-cols-5 grid-flow-col gap-2">
@@ -52,7 +51,7 @@ const ProjectInfo: FC<ProjectInfoProps> = ({
             <div>
               <p className="font-medium text-primary text-2xl">
                 {project?.name}
-              </p>
+              </p>            
             </div>
           </div>
           <div>

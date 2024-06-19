@@ -262,9 +262,11 @@ const ProjectMainView = () => {
           )}
         >
           <div className="bg-card h-96">
+            <p>Redemption</p>
             <ChartLine series={seriesDataVouchers} categories={dates} />
           </div>
           <div className="bg-card h-96">
+            <p>Referrals</p>
             <ChartLine series={seriesDataReferred} categories={datesReferred} />
           </div>
         </div>

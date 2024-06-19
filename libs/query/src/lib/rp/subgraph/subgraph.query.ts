@@ -1,5 +1,5 @@
 'use client';
-import { useCVASubgraph } from './subgraph.provider';
+import { useRPSubgraph } from './subgraph.provider';
 import { useQuery } from '@tanstack/react-query';
 import { useRSQuery } from '@rumsan/react-query';
 import { ProjectDetails } from './graph.query';
@@ -7,7 +7,7 @@ import { useEffect } from 'react';
 import { useCVAProjectSubgraphStore } from './stores/rp-project.store';
 
 export const useCVAProjectDetails = (projectAddress: string) => {
-  const { subgraphClient } = useCVASubgraph();
+  const { subgraphClient } = useRPSubgraph();
   const { queryClient } = useRSQuery();
   const setProjectDetails = useCVAProjectSubgraphStore(
     (state) => state.setProjectDetails,

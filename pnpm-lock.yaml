@@ -87,8 +87,8 @@ importers:
         specifier: 0.0.12
         version: 0.0.12
       '@rahataid/sdk':
-        specifier: 0.0.31
-        version: 0.0.31
+        specifier: 0.0.32
+        version: 0.0.32(bufferutil@4.0.8)(typescript@5.4.5)(zod@3.23.8)
       '@rumsan/communication':
         specifier: ^0.0.14
         version: 0.0.14
@@ -2920,8 +2920,8 @@ packages:
   '@rahataid/el-subgraph@0.0.12':
     resolution: {integrity: sha512-dKmt0YueYPn+qNGVSby22vrM8xkpx0S1oWxW+vdjHDdRQpqhW9Z4CRqesWt2Qt2H4QnoPVpGh4Gf2pMPXLpG1Q==, tarball: https://npm.pkg.github.com/download/@rahataid/el-subgraph/0.0.12/91a92f6da8a9963862dc50d6f544d653dfa6392d}
 
-  '@rahataid/sdk@0.0.31':
-    resolution: {integrity: sha512-2BgvMK9YWV8Sm1A1qPhgt1eIBgTzYG3k4Wlf491N645fxtfcXIb4564qiskvX7LgvKnta0i7g77udZ+OGoHFWA==, tarball: https://npm.pkg.github.com/download/@rahataid/sdk/0.0.31/0ba0b194116dcbb797dd70b91ae69c79611633bb}
+  '@rahataid/sdk@0.0.32':
+    resolution: {integrity: sha512-ywErHAq5J57ep9tmICHeTISkTFwQOXmgl9qEOn3kSu9dpUkbJllF3InWt5sz3pZV7Jnwe6hXIaImBoWI34r40w==, tarball: https://npm.pkg.github.com/download/@rahataid/sdk/0.0.32/54ce33e228eafc830231a6b056a4127a1555c296}
 
   '@react-native-community/cli-clean@13.6.8':
     resolution: {integrity: sha512-B1uxlm1N4BQuWFvBL3yRl3LVvydjswsdbTi7tMrHMtSxfRio1p9HjcmDzlzKco09Y+8qBGgakm3jcMZGLbhXQQ==}
@@ -14886,7 +14886,17 @@ snapshots:
     transitivePeerDependencies:
       - graphql
 
-  '@rahataid/sdk@0.0.31': {}
+  '@rahataid/sdk@0.0.32(bufferutil@4.0.8)(typescript@5.4.5)(zod@3.23.8)':
+    dependencies:
+      '@rumsan/sdk': 0.0.44
+      axios: 1.7.2
+      viem: 2.14.2(bufferutil@4.0.8)(typescript@5.4.5)(zod@3.23.8)
+    transitivePeerDependencies:
+      - bufferutil
+      - debug
+      - typescript
+      - utf-8-validate
+      - zod
 
   '@react-native-community/cli-clean@13.6.8':
     dependencies:

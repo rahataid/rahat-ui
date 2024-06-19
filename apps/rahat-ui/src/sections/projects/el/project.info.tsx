@@ -54,6 +54,9 @@ const ProjectInfo: FC<ProjectInfoProps> = ({
                 {project?.name}
               </p>
             </div>
+            <div className="flex items-center justify-between flex-wrap mt-4 gap-10 md:gap-32 mb-4">
+              {renderExtras(project?.extras || {})}                
+              </div>    
           </div>
           <div>
             <p className="font-light text-xs text-muted-foreground">Status</p>

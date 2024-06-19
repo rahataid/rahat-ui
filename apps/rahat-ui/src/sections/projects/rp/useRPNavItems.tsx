@@ -1,7 +1,6 @@
 import {
   Coins,
   LayoutDashboard,
-  Lock,
   Pencil,
   Plus,
   PlusSquare,
@@ -12,30 +11,11 @@ import {
   XCircle,
 } from 'lucide-react';
 import { useParams } from 'next/navigation';
-import { useSwal } from '../../../components/swal';
 import { NavItem } from '../components';
 import CreateTokenModal from './create.token.modal';
 
 export const useNavItems = () => {
-  const { id, params } = useParams();
-  const dialog = useSwal();
-  // const beneficiary = useBeneficiaryStore(state=>state.beneficiary)
-
-  const handleLockProject = async () => {
-    const { value } = await dialog.fire({
-      title: 'Lock Project',
-      text: 'Are you sure you want to lock the project?',
-      showCancelButton: true,
-      confirmButtonText: 'Lock',
-    });
-    if (value) {
-      dialog.fire({
-        title: 'Project Locked',
-        text: 'Project has been locked successfully',
-        icon: 'success',
-      });
-    }
-  };
+  const { id } = useParams();
 
   const navItems: NavItem[] = [
     {
@@ -91,7 +71,7 @@ export const useNavItems = () => {
         },
         {
           title: 'Add Beneficiary',
-          path: `/projects/rp/${params.id}/beneficiary/add`,
+          path: `/projects/rp/${id}/beneficiary/add`,
           icon: <PlusSquare size={18} strokeWidth={1.5} />,
         },
         {

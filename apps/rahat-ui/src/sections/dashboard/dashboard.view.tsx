@@ -7,12 +7,6 @@ import { mapboxBasicConfig } from '../../constants/config';
 import { DynamicReports, tempReport } from '../chart-reports';
 
 export default function DashboardView() {
-  // const beneficiaryStats = useGetBeneficiaryStats();
-  // const vendorStats = useGetVendorStats();
-  // const data = {
-  //   beneficiaryStats,
-  //   vendorStats,
-  // };
   return (
     <div className="bg-secondary">
       <Tabs defaultValue="list">

@@ -12,15 +12,8 @@ import { ArrowUp, Users } from 'lucide-react';
 const FundManagementView = () => {
   return (
     <>
-      <div className="grid grid-cols-12 gap-2 p-4 bg-secondary h-[calc(100vh-55px)]">
-        <div className="col-span-12 md:col-span-4">
-          <DataCard
-            className="rounded-sm"
-            title="Beneficiaries"
-            number={'0'}
-            Icon={Users}
-          />
-        </div>
+      <div className="grid grid-cols-12 gap-2 p-4 bg-secondary h-[calc(100vh-105px)]">
+        {/* Beneficiaries Card 1 */}
         <div className="col-span-12 md:col-span-4">
           <DataCard
             className="rounded-sm"
@@ -30,9 +23,19 @@ const FundManagementView = () => {
           />
         </div>
 
-        {/* Recent Deposits */}
+        {/* Beneficiaries Card 2 */}
+        <div className="col-span-12 md:col-span-4">
+          <DataCard
+            className="rounded-sm"
+            title="Beneficiaries"
+            number={'0'}
+            Icon={Users}
+          />
+        </div>
+
+        {/* Recent Sales */}
         <div className="col-span-12 md:col-span-4 md:row-span-2">
-          <Card>
+          <Card className="h-full">
             <CardHeader>
               <CardTitle>Recent Sales</CardTitle>
             </CardHeader>
@@ -60,21 +63,14 @@ const FundManagementView = () => {
         </div>
 
         {/* Tokens Deposits Chart */}
-        <div className="md:col-span-8 p-4 shadow rounded bg-card">
+        <div className="col-span-12 md:col-span-8 md:row-span-2 p-4 shadow rounded bg-card">
           <div>Tokens Deposits</div>
           <div>[Chart Component]</div>
         </div>
 
         {/* Disbursement Plan */}
-        <div className="col-span-12 p-4 shadow rounded flex flex-col items-center justify-center bg-card">
+        <div className="col-span-12 p-4 shadow rounded flex flex-col items-center justify-center bg-card h-72">
           <div className="text-center">
-            {/* <Image
-              src="/noData.png"
-              height={500}
-              width={500}
-              alt="No data available"
-              className="mb-4"
-            /> */}
             <div className="text-xl">No data available</div>
             <p>
               There is no content at the moment. Create a disbursement plan to
@@ -85,7 +81,7 @@ const FundManagementView = () => {
             </button>
           </div>
         </div>
-      </div>
+      </div>{' '}
     </>
   );
 };

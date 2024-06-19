@@ -303,6 +303,12 @@ export default function BeneficiaryTable() {
                           width={250}
                           alt="no data"
                         />
+                        <p className="text-medium text-base mb-1">
+                          No Data Available
+                        </p>
+                        <p className="text-sm mb-4">
+                          There are no beneficiaries to display at the moment
+                        </p>
                         <Button>
                           {' '}
                           <Plus className="mr-2" size={20} strokeWidth={1.5} />

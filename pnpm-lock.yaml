@@ -81,8 +81,8 @@ importers:
         specifier: 0.0.9
         version: 0.0.9
       '@rahataid/community-tool-sdk':
-        specifier: ^0.0.28
-        version: 0.0.28
+        specifier: ^0.0.29
+        version: 0.0.29
       '@rahataid/el-subgraph':
         specifier: 0.0.12
         version: 0.0.12
@@ -2914,8 +2914,8 @@ packages:
   '@rahataid/c2c-query@0.0.9':
     resolution: {integrity: sha512-YfwV2WjDN43lrZ4U0j1Qu6X1wfQdnJQsZZp8l1pT1YYXYbF89b7CVb/KwrIWl2Ffd+O3T+n/rowG55cZCYj/HQ==, tarball: https://npm.pkg.github.com/download/@rahataid/c2c-query/0.0.9/51f6bf7f9df92d71711a4005e8b2fb3b980bf98d}
 
-  '@rahataid/community-tool-sdk@0.0.28':
-    resolution: {integrity: sha512-GHRAl+aHb+votc4apoXt85tV7kUINKP/4y7uovPv4LOwUFPx+GSsIQ6k5gFNeqT0+/XSb2QwUSlYg/jt0nAZlg==, tarball: https://npm.pkg.github.com/download/@rahataid/community-tool-sdk/0.0.28/0cace20ee2f8905f557488ababcb50d2a51ea9ba}
+  '@rahataid/community-tool-sdk@0.0.29':
+    resolution: {integrity: sha512-LWBIf2YmbwlRF1dwALhotS+4Zc/bFM+Hqqy1GsmtcUSq6xZlgR4pNfVYdwiIXgjwkMen32jm9smlWw28PmcOcg==, tarball: https://npm.pkg.github.com/download/@rahataid/community-tool-sdk/0.0.29/5daa95cf636a0df62e7a352a503c333558bf2ac9}
 
   '@rahataid/el-subgraph@0.0.12':
     resolution: {integrity: sha512-dKmt0YueYPn+qNGVSby22vrM8xkpx0S1oWxW+vdjHDdRQpqhW9Z4CRqesWt2Qt2H4QnoPVpGh4Gf2pMPXLpG1Q==, tarball: https://npm.pkg.github.com/download/@rahataid/el-subgraph/0.0.12/91a92f6da8a9963862dc50d6f544d653dfa6392d}
@@ -14871,7 +14871,7 @@ snapshots:
     dependencies:
       '@swc/helpers': 0.5.11
 
-  '@rahataid/community-tool-sdk@0.0.28':
+  '@rahataid/community-tool-sdk@0.0.29':
     dependencies:
       tslib: 2.6.3
 

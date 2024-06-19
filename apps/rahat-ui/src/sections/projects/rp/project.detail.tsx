@@ -76,7 +76,7 @@ const ProjectInfo: FC<ProjectInfoProps> = ({ project }) => {
         />
       </div>
       {/* CAROUSEL AND PROJECT INFO SECTION */}
-      <div className="grid grid-cols-3 mt-2 bg-card p-3 rounded-sm">
+      <div className="grid grid-cols-3 mt-2 bg-card p-3 rounded-sm h-[calc(100vh-282px)]">
         {/* CAROUSEL SECTION */}
         <div className="col-span-2 mr-4 rounded-sm mb-2">
           <Carousel>
@@ -99,7 +99,7 @@ const ProjectInfo: FC<ProjectInfoProps> = ({ project }) => {
           </p>
         </div>
         {/* PROJECT INFO SECTION */}
-        <div className="rounded-sm bg-slate-100 p-4 mb-2 shadow min-h-96">
+        <div className="rounded-sm bg-slate-100 p-4 mb-2 shadow max-h-96">
           <div className="flex flex-col items-start flex-wrap mt-4 sm:mt-3 gap-10 md:gap-5">
             {renderRowBasedProjectDetailsExtras(project?.extras || {})}
             <div>

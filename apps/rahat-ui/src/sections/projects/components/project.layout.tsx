@@ -6,13 +6,11 @@ import {
   ResizablePanelGroup,
 } from '@rahat-ui/shadcn/src/components/ui/resizable';
 import { FC } from 'react';
-import ProjectNavView from './project.nav.view';
-import { useProjectNavItems } from './useProjectNavItems';
 import { ProjectType } from './nav-items.types';
-import Image from 'next/image';
-import { useTheme } from 'next-themes';
 import { ProjectNav } from './project-header';
+import ProjectNavView from './project.nav.view';
 import { useProjectHeaderItems } from './useProjectHeaderItems';
+import { useProjectNavItems } from './useProjectNavItems';
 
 type ProjectLayoutProps = {
   children: React.ReactNode | React.ReactNode[];

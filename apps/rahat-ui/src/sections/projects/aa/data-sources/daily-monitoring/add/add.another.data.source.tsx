@@ -279,7 +279,7 @@ export default function AddAnotherDataSource({ form, onClose, index }: IProps) {
   return (
     <div className="border border-dashed rounded-sm p-4 my-8">
       <div className="flex justify-between items-center mb-4">
-        <h1 className="text-md font-semibold">Add another data source</h1>
+        <h1 className="text-md font-semibold">Data Source Reporting</h1>
         <div className="p-0.5 rounded-full bg-red-100 hover:bg-red-200 text-red-500 hover:text-red-600 cursor-pointer">
           <X size={16} strokeWidth={2.5} onClick={onClose} />
         </div>

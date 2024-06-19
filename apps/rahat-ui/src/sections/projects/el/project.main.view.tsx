@@ -20,6 +20,7 @@ import { ProjectChart } from '..';
 import ProjectDataCard from './project.datacard';
 import ProjectInfo from './project.info';
 import ChartLine from '@rahat-ui/shadcn/src/components/charts/chart-components/chart-line';
+import { cn } from '@rahat-ui/shadcn/src';
 
 const ProjectMainView = () => {
   const { id } = useParams();
@@ -97,7 +98,7 @@ const ProjectMainView = () => {
   })?.[0]?.data;
 
   const freeVoucherCounts = freeVoucher
-    ? Object.values(freeVoucher).map((entry) => entry?.FREE_VOUCHER)
+    ? Object.values(freeVoucher).map((entry) => entry?.FREE_VOUCHER || null)
     : [];
 
   const refferedVoucher = ELProjectStats?.filter((item) => {
@@ -105,7 +106,9 @@ const ProjectMainView = () => {
   })?.[0]?.data;
 
   const referredVoucherCounts = refferedVoucher
-    ? Object.values(refferedVoucher).map((entry) => entry?.REFERRED_VOUCHER)
+    ? Object.values(refferedVoucher).map((entry) => {
+        return entry?.DISCOUNT_VOUCHER || null;
+      })
     : [];
 
   const seriesDataVouchers = [
@@ -114,7 +117,7 @@ const ProjectMainView = () => {
       data: freeVoucherCounts,
     },
     {
-      name: 'Referred Voucher',
+      name: 'Discount Voucher',
       data: referredVoucherCounts,
     },
   ];
@@ -251,11 +254,17 @@ const ProjectMainView = () => {
           projectVoucher={projectVoucher}
           voucherDetails={voucherDetails}
         />
-        <div className="grid grid-cols-2 mt-2 mb-2 gap-2">
-          <div className="bg-card h-80">
+        <div
+          className={cn(
+            `grid ${
+              dates.length > 6 ? 'grid-cols-1' : 'grid-cols-2'
+            } mt-2 mb-2 gap-2`,
+          )}
+        >
+          <div className="bg-card h-96">
             <ChartLine series={seriesDataVouchers} categories={dates} />
           </div>
-          <div className="bg-card h-80">
+          <div className="bg-card h-96">
             <ChartLine series={seriesDataReferred} categories={datesReferred} />
           </div>
         </div>

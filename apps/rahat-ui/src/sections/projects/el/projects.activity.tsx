@@ -99,11 +99,11 @@ export default function Activities({ title, className, data }: CardProps) {
                       data?.referredVoucherPrice)?.toLocaleString()}
                   </div>
                   <div className="text-xs text-muted-foreground">
-                    {(data?.referredVoucherAssigned *
+                    {(data?.referredVoucherAssigned?.toString() *
                       data?.referredVoucherPrice)?.toLocaleString()}
                   </div>
                   <div className="text-xs text-muted-foreground">
-                    {(data?.referredVoucherClaimed *
+                    {(data?.referredVoucherClaimed?.toString() *
                       data?.referredVoucherPrice)?.toLocaleString()}
                   </div>
                 </div>

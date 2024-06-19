@@ -1,4 +1,5 @@
 import {
+  Coins,
   LayoutDashboard,
   Lock,
   Pencil,
@@ -16,7 +17,7 @@ import { NavItem } from '../components';
 import CreateTokenModal from './create.token.modal';
 
 export const useNavItems = () => {
-  const params = useParams();
+  const { id, params } = useParams();
   const dialog = useSwal();
   // const beneficiary = useBeneficiaryStore(state=>state.beneficiary)
 
@@ -42,33 +43,38 @@ export const useNavItems = () => {
       children: [
         {
           title: 'Dashboard',
-          path: `/projects/rp/${params.id}`,
+          path: `/projects/rp/${id}`,
           subtitle: 20,
           icon: <LayoutDashboard size={18} strokeWidth={1.5} />,
         },
         {
           title: 'Beneficiaries',
-          path: `/projects/rp/${params.id}/beneficiary`,
+          path: `/projects/rp/${id}/beneficiary`,
           subtitle: 20,
           icon: <UsersRound size={18} strokeWidth={1.5} />,
         },
         {
           title: 'Vendors',
-          path: `/projects/rp/${params.id}/vendors`,
+          path: `/projects/rp/${id}/vendors`,
           subtitle: 20,
           icon: <Store size={18} strokeWidth={1.5} />,
         },
         {
           title: 'Transactions',
-          path: `/projects/rp/${params.id}/transactions`,
+          path: `/projects/rp/${id}/transactions`,
           subtitle: 20,
           icon: <Receipt size={18} strokeWidth={1.5} />,
+        },
+        {
+          title: 'Fund Management',
+          path: `/projects/rp/${id}/fundManagement`,
+          icon: <Coins size={18} strokeWidth={1.5} />,
         },
         {
           title: 'Campaigns',
           subtitle: 20,
           icon: <Speech size={18} strokeWidth={1.5} />,
-          path: `/projects/rp/${params.id}/campaigns/text`,
+          path: `/projects/rp/${id}/campaigns/text`,
         },
       ],
     },
@@ -95,12 +101,12 @@ export const useNavItems = () => {
         },
         {
           title: 'Edit Project',
-          path: `/projects/rp/${params.id}/edit`,
+          path: `/projects/rp/${id}/edit`,
           icon: <Pencil size={18} strokeWidth={1.5} />,
         },
         {
           title: 'Add Campaign',
-          path: `/projects/rp/${params.id}/campaigns/add`,
+          path: `/projects/rp/${id}/campaigns/add`,
           icon: <Plus size={18} strokeWidth={1.5} />,
         },
       ],

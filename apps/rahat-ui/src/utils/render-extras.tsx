@@ -44,3 +44,36 @@ export const renderProjectDetailsExtras = (
     );
   });
 };
+
+// RP PROJECT EXTRAS
+export const renderRowBasedProjectDetailsExtras = (
+  extras: JSON | string | Record<string, any>,
+) => {
+  if (typeof extras === 'string') {
+    return <p className="font-light">{extras}</p>;
+  }
+  return Object.keys(extras).map((key) => {
+    const value = (extras as Record<string, any>)[key];
+
+    if (key === 'treasury') {
+      return null;
+    }
+
+    const formattedKey = formatKey(key);
+
+    return (
+      <div key={key}>
+        {typeof value === 'object' && value !== null ? (
+          renderProjectDetailsExtras(value)
+        ) : (
+          <>
+            <p className="font-normal text-neutral-400 text-sm">
+              {formattedKey}
+            </p>
+            <p className="font-normal text-base">{String(value)}</p>
+          </>
+        )}
+      </div>
+    );
+  });
+};

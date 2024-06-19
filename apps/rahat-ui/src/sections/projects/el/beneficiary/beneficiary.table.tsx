@@ -209,7 +209,6 @@ function BeneficiaryDetailTableView() {
   });
 
   const selectedRowAddresses = Object.keys(selectedListItems);
-  console.log({selectedRowAddresses})
 
   const result = useWaitForTransactionReceipt({
     hash: transactionHash,

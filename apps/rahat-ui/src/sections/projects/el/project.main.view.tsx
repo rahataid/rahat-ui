@@ -82,6 +82,16 @@ const ProjectMainView = () => {
       return name === 'BENEFICIARY_TYPE';
     }) || [];
 
+  const referred = ELProjectStats?.filter((item) => {
+    return item?.name === 'REFERRAL';
+  })?.[0]?.data;
+
+  const referredCounts = referred
+    ? Object.values(referred).map((entry) => entry?.REFERRED)
+    : [];
+
+  const datesReferred = referred ? Object.keys(referred) : [];
+
   const freeVoucher = ELProjectStats?.filter((item) => {
     return item?.name === 'VOUCHERCLAIMS';
   })?.[0]?.data;
@@ -98,7 +108,7 @@ const ProjectMainView = () => {
     ? Object.values(refferedVoucher).map((entry) => entry?.REFERRED_VOUCHER)
     : [];
 
-  const seriesData = [
+  const seriesDataVouchers = [
     {
       name: 'Free Voucher',
       data: freeVoucherCounts,
@@ -106,6 +116,13 @@ const ProjectMainView = () => {
     {
       name: 'Referred Voucher',
       data: referredVoucherCounts,
+    },
+  ];
+
+  const seriesDataReferred = [
+    {
+      name: 'Referred',
+      data: referredCounts,
     },
   ];
 
@@ -234,8 +251,13 @@ const ProjectMainView = () => {
           projectVoucher={projectVoucher}
           voucherDetails={voucherDetails}
         />
-        <div className="grid grid-cols-1 mt-2 mb-2 bg-card h-80">
-          <ChartLine series={seriesData} categories={dates} />
+        <div className="grid grid-cols-2 mt-2 mb-2 gap-2">
+          <div className="bg-card h-80">
+            <ChartLine series={seriesDataVouchers} categories={dates} />
+          </div>
+          <div className="bg-card h-80">
+            <ChartLine series={seriesDataReferred} categories={datesReferred} />
+          </div>
         </div>
         <ProjectChart
           chartData={[...footfallFilteredData, ...filterdELChartData]}

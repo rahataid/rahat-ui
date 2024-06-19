@@ -35,13 +35,13 @@ export default function Activities({ title, className, data }: CardProps) {
               <div className="space-y-2 min-w-10 text-right">
                 <p className="text-sm font-medium leading-none">Qty</p>
                 <div className="text-xs text-muted-foreground">
-                  {data?.eyeVoucherBudget?.toString() || 'N/A'}
+                  {data?.eyeVoucherBudget?.toLocaleString()|| 'N/A'}
                 </div>
                 <div className="text-xs text-muted-foreground">
-                  {data?.eyeVoucherAssigned?.toString() || 'N/A'}
+                  {data?.eyeVoucherAssigned?.toLocaleString()|| 'N/A'}
                 </div>
                 <div className="text-xs text-muted-foreground">
-                  {data?.eyeVoucherClaimed?.toString() || 'N/A'}
+                  {data?.eyeVoucherClaimed?.toLocaleString() || 'N/A'}
                 </div>
               </div>
             </div>
@@ -50,16 +50,16 @@ export default function Activities({ title, className, data }: CardProps) {
                 <div className="space-y-2">
                   <p className="text-sm font-medium leading-none">Amount</p>
                   <div className="text-xs text-muted-foreground">
-                    {data?.eyeVoucherBudget?.toString() *
-                      data?.freeVoucherPrice}
+                    {(data?.eyeVoucherBudget?.toString() *
+                      data?.freeVoucherPrice)?.toLocaleString()}
                   </div>
                   <div className="text-xs text-muted-foreground">
-                    {data?.eyeVoucherAssigned?.toString() *
-                      data?.freeVoucherPrice}
+                    {(data?.eyeVoucherAssigned?.toString() *
+                      data?.freeVoucherPrice).toLocaleString()}
                   </div>
                   <div className="text-xs text-muted-foreground">
-                    {data?.eyeVoucherClaimed?.toString() *
-                      data?.freeVoucherPrice}
+                    {(data?.eyeVoucherClaimed?.toString() *
+                      data?.freeVoucherPrice).toLocaleString()}
                   </div>
                 </div>
               </div>
@@ -79,13 +79,13 @@ export default function Activities({ title, className, data }: CardProps) {
                 <div className="space-y-2">
                   <p className="text-sm font-medium leading-none">Qty</p>
                   <div className="text-xs text-muted-foreground">
-                    {data?.referredVoucherBudget?.toString() || 'N/A'}
+                    {data?.referredVoucherBudget?.toLocaleString() || 'N/A'}
                   </div>
                   <div className="text-xs text-muted-foreground">
-                    {data?.referredVoucherAssigned?.toString() || 'N/A'}
+                    {data?.referredVoucherAssigned?.toLocaleString() || 'N/A'}
                   </div>
                   <div className="text-xs text-muted-foreground">
-                    {data?.referredVoucherClaimed?.toString() || 'N/A'}
+                    {data?.referredVoucherClaimed?.toLocaleString() || 'N/A'}
                   </div>
                 </div>
               </div>
@@ -95,16 +95,16 @@ export default function Activities({ title, className, data }: CardProps) {
                 <div className="space-y-2">
                   <p className="text-sm font-medium leading-none">Amount</p>
                   <div className="text-xs text-muted-foreground">
-                    {data?.referredVoucherBudget?.toString() *
-                      data?.referredVoucherPrice}
+                    {(data?.referredVoucherBudget?.toString() *
+                      data?.referredVoucherPrice)?.toLocaleString()}
                   </div>
                   <div className="text-xs text-muted-foreground">
-                    {data?.referredVoucherAssigned?.toString() *
-                      data?.referredVoucherPrice}
+                    {(data?.referredVoucherAssigned *
+                      data?.referredVoucherPrice)?.toLocaleString()}
                   </div>
                   <div className="text-xs text-muted-foreground">
-                    {data?.referredVoucherClaimed?.toString() *
-                      data?.referredVoucherPrice}
+                    {(data?.referredVoucherClaimed *
+                      data?.referredVoucherPrice)?.toLocaleString()}
                   </div>
                 </div>
               </div>

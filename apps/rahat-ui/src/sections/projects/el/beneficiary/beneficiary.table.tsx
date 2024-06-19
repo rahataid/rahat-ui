@@ -209,7 +209,6 @@ function BeneficiaryDetailTableView() {
   });
 
   const selectedRowAddresses = Object.keys(selectedListItems);
-  console.log({selectedRowAddresses})
 
   const result = useWaitForTransactionReceipt({
     hash: transactionHash,
@@ -290,7 +289,7 @@ function BeneficiaryDetailTableView() {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem onClick={handleTokenAssignModal}>
-                Assign Tokens To All
+                Assign Vouchers To All
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

@@ -4,5 +4,5 @@ export const SETTINGS_NAV_ROUTE = {
 };
 
 export const SETTINGS_NAME = {
-  APP_NAME: 'EXTERNAL_APPS',
+  EXTERNAL_APPS: 'EXTERNAL_APPS',
 };

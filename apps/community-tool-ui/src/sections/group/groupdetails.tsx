@@ -167,7 +167,7 @@ export default function GroupDetail({ uuid }: IProps) {
 
   const handleExportPinnedBeneficiary = () => {
     const filteredValue: any = settingsData?.data?.find(
-      (item: any) => item.name === SETTINGS_NAME.APP_NAME,
+      (item: any) => item.name === SETTINGS_NAME.EXTERNAL_APPS,
     )?.value;
 
     const obj = filteredValue

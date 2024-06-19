@@ -20,6 +20,7 @@ import { ProjectChart } from '..';
 import ProjectDataCard from './project.datacard';
 import ProjectInfo from './project.info';
 import ChartLine from '@rahat-ui/shadcn/src/components/charts/chart-components/chart-line';
+import { cn } from '@rahat-ui/shadcn/src';
 
 const ProjectMainView = () => {
   const { id } = useParams();
@@ -253,8 +254,14 @@ const ProjectMainView = () => {
           projectVoucher={projectVoucher}
           voucherDetails={voucherDetails}
         />
-        <div className="grid grid-cols-2 mt-2 mb-2 gap-2">
-          <div className="bg-card h-80">
+        <div
+          className={cn(
+            `grid ${
+              dates.length > 6 ? 'grid-cols-1' : 'grid-cols-2'
+            } mt-2 mb-2 gap-2`,
+          )}
+        >
+          <div className="bg-card h-96">
             <ChartLine series={seriesDataVouchers} categories={dates} />
           </div>
           <div className="bg-card h-96">

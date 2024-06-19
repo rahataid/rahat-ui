@@ -69,11 +69,7 @@ export const useNavItems = () => {
           ),
           title: 'Create Token',
         },
-        {
-          title: 'Add Beneficiary',
-          path: `/projects/rp/${id}/beneficiary/add`,
-          icon: <PlusSquare size={18} strokeWidth={1.5} />,
-        },
+
         {
           title: 'Close Project',
           path: '/edit',
@@ -83,6 +79,11 @@ export const useNavItems = () => {
           title: 'Edit Project',
           path: `/projects/rp/${id}/edit`,
           icon: <Pencil size={18} strokeWidth={1.5} />,
+        },
+        {
+          title: 'Create Beneficiary',
+          path: `/projects/rp/${id}/beneficiary/add`,
+          icon: <PlusSquare size={18} strokeWidth={1.5} />,
         },
         {
           title: 'Add Campaign',

@@ -1,7 +1,8 @@
+import { AddRPBeneficiary } from 'apps/rahat-ui/src/sections/projects/rp/beneficiary/add';
 import React from 'react';
 
 const AddBeneficiary = () => {
-  return <div>AddBeneficiary</div>;
+  return <AddRPBeneficiary />;
 };
 
 export default AddBeneficiary;

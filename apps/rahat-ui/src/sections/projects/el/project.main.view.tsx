@@ -97,7 +97,7 @@ const ProjectMainView = () => {
   })?.[0]?.data;
 
   const freeVoucherCounts = freeVoucher
-    ? Object.values(freeVoucher).map((entry) => entry?.FREE_VOUCHER)
+    ? Object.values(freeVoucher).map((entry) => entry?.FREE_VOUCHER || null)
     : [];
 
   const refferedVoucher = ELProjectStats?.filter((item) => {
@@ -105,7 +105,9 @@ const ProjectMainView = () => {
   })?.[0]?.data;
 
   const referredVoucherCounts = refferedVoucher
-    ? Object.values(refferedVoucher).map((entry) => entry?.REFERRED_VOUCHER)
+    ? Object.values(refferedVoucher).map((entry) => {
+        return entry?.DISCOUNT_VOUCHER || null;
+      })
     : [];
 
   const seriesDataVouchers = [
@@ -114,7 +116,7 @@ const ProjectMainView = () => {
       data: freeVoucherCounts,
     },
     {
-      name: 'Referred Voucher',
+      name: 'Discount Voucher',
       data: referredVoucherCounts,
     },
   ];
@@ -255,7 +257,7 @@ const ProjectMainView = () => {
           <div className="bg-card h-80">
             <ChartLine series={seriesDataVouchers} categories={dates} />
           </div>
-          <div className="bg-card h-80">
+          <div className="bg-card h-96">
             <ChartLine series={seriesDataReferred} categories={datesReferred} />
           </div>
         </div>

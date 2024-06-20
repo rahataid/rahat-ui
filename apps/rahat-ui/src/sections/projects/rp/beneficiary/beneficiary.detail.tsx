@@ -59,6 +59,7 @@ import AssignToken from './assign-token.modal';
 import { UUID } from 'crypto';
 import { formatEther } from 'viem';
 import DataCard from 'apps/rahat-ui/src/components/dataCard';
+import { TransactionTable } from './transaction.table';
 
 type IProps = {
   beneficiaryDetails: any;
@@ -409,8 +410,7 @@ function BeneficiaryInfo({
 function TransactionTab() {
   return (
     <div className="p-2 pb-0">
-      {/* <TransactionTable walletAddress={walletAddress} /> */}
-      Transaction Table Placeholder
+      <TransactionTable />
     </div>
   );
 }

@@ -17,6 +17,7 @@ export default function DashboardView() {
       data: `${process.env.NEXT_PUBLIC_API_HOST_URL}/v1/beneficiaries/stats`,
     },
   ];
+
   return (
     <div className="bg-secondary">
       <Tabs defaultValue="list">

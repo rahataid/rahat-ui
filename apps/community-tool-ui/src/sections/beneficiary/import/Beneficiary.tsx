@@ -37,6 +37,7 @@ import {
 import { useRSQuery } from '@rumsan/react-query';
 import ColumnMappingTable from './ColumnMappingTable';
 import MyAlert from './MyAlert';
+import { EMPTY_SELECTION } from './Combobox';
 
 interface IProps {
   fieldDefinitions: [];
@@ -148,7 +149,11 @@ export default function BenImp({ fieldDefinitions }: IProps) {
     sourceField: string,
     targetField: string,
   ) => {
-    if (targetField === 'None') return;
+    if (sourceField === EMPTY_SELECTION) {
+      const filtered = mappings.filter((f) => f.targetField !== targetField);
+      return setMappings(filtered);
+    }
+
     const index = mappings.findIndex(
       (item: any) => item.sourceField === sourceField,
     );

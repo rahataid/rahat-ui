@@ -25,7 +25,7 @@ export default function ColumnMappingTable({
   mappings,
 }: ColumnMappingTableProps) {
   const [columns, setColumns] = useState([]) as any[];
-  const { mappings: targetMapping, setMappings } = useBeneficiaryImportStore();
+  const { setMappings } = useBeneficiaryImportStore();
 
   const extractColumns = () => {
     if (rawData.length > 0) {
@@ -34,14 +34,6 @@ export default function ColumnMappingTable({
       setColumns(keys);
     }
   };
-
-  // function isFieldSelected(dbField: string, key: string) {
-  //   const found = mappings.find((m) => {
-  //     return m.targetField === dbField && m.sourceField === key;
-  //   });
-  //   if (!found) return '';
-  //   return found.targetField;
-  // }
 
   function renderField(item: any, key: string) {
     const isUrl = isURL(item[key]);

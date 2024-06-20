@@ -28,7 +28,7 @@ export default function Step2DisburseAmount({
     (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT],
   );
 
-  const { data, error, isLoading } = useReadContract({
+  const { data } = useReadContract({
     address: contractSettings?.rahattoken?.address,
     abi: contractSettings?.rahattoken?.abi,
     functionName: 'balanceOf',

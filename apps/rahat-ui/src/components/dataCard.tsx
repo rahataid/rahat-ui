@@ -39,7 +39,9 @@ export default function DataCard({
       <CardHeader className="pb-2 p-4">
         <div className="flex items-start justify-between ">
           <div className="flex items-center gap-3">
-            <CardTitle className="text-md font-medium">{title}</CardTitle>
+            <CardTitle className="text-md font-normal text-neutral-800 text-lg">
+              {title}
+            </CardTitle>
             {refresh && (
               <RefreshCcw
                 size={14}
@@ -49,15 +51,12 @@ export default function DataCard({
               />
             )}
           </div>
-          <div>
-            {Icon && (
-              <Icon
-                size={20}
-                strokeWidth={1.5}
-                className="text-muted-foreground"
-              />
-            )}
-          </div>
+
+          {Icon && (
+            <div className="bg-indigo-50 rounded-full h-8 w-8 flex items-center justify-center">
+              <Icon size={20} strokeWidth={1.5} className="text-primary " />
+            </div>
+          )}
         </div>
         <p className="text-sm text-muted-foreground">{subtitle}</p>
       </CardHeader>

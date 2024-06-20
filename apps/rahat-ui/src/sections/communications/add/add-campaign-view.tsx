@@ -131,7 +131,7 @@ const AddCampaignView = () => {
     }
     createCampaign
       .mutateAsync({
-        audienceIds: JSON.stringify(audiences) || [],
+        audienceIds: audiences || [],
         name: data.campaignName,
         startTime: null,
         transportId: Number(transportId),

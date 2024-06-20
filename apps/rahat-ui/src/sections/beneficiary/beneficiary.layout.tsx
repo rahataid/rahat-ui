@@ -22,7 +22,7 @@ const BeneficiaryLayout: FC<BeneficiaryLayoutProps> = ({
 }) => {
   const renderResizablePanel = (children: React.ReactNode, index?: number) => {
     return (
-      <ResizablePanel minSize={30} key={index}>
+      <ResizablePanel minSize={80} key={index}>
         {children}
         {/* <ScrollArea className="h-[calc(100vh-66px)]">{children}</ScrollArea> */}
       </ResizablePanel>
@@ -33,7 +33,7 @@ const BeneficiaryLayout: FC<BeneficiaryLayoutProps> = ({
       return children.map((child, index) => {
         return (
           <>
-            <ResizableHandle withHandle />
+            <ResizableHandle />
             {renderResizablePanel(child, index)}
           </>
         );

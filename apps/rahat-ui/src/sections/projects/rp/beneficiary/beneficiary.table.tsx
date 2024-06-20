@@ -93,7 +93,6 @@ export default function BeneficiaryTable() {
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setSelectedListItems,
     getRowId(originalRow, index, parent) {
-      console.log('originalRow', originalRow);
       return originalRow.walletAddress;
     },
     state: {
@@ -101,7 +100,6 @@ export default function BeneficiaryTable() {
       rowSelection: selectedListItems,
     },
   });
-
   const selectedRowAddresses = Object.keys(selectedListItems);
 
   const handleBulkAssignTokens = async (numberOfTokens: string) => {
@@ -215,37 +213,6 @@ export default function BeneficiaryTable() {
             />
           </div>
         </div>
-        {/* <div className="flex items-center mb-2">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="ml-auto">
-                <Settings2 className="mr-2 h-4 w-5" />
-                View
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Toggle Columns</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              {table
-                .getAllColumns()
-                .filter((column) => column.getCanHide())
-                .map((column) => {
-                  return (
-                    <DropdownMenuCheckboxItem
-                      key={column.id}
-                      className="capitalize"
-                      checked={column.getIsVisible()}
-                      onCheckedChange={(value) =>
-                        column.toggleVisibility(!!value)
-                      }
-                    >
-                      {column.id}
-                    </DropdownMenuCheckboxItem>
-                  );
-                })}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div> */}
         <div className="rounded border bg-card">
           <TableComponent>
             <ScrollArea className="h-[calc(100vh-182px)]">

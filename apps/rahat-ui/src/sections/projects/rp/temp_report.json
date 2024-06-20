@@ -1,33 +1,33 @@
 {
-  "success": true,
-  "data": [
-    {
-      "name": "TOTAL_VENDORS",
-      "data": "https://api.nx.dev.rahat.io/v1/vendors/stats"
-    },
-    {
-      "name": "BENEFICIARIES",
-      "data": "https://api.nx.dev.rahat.io/v1/beneficiaries/stats"
-    }
-  ],
-  "ui": [
+  "datacards": [
     [
       {
-        "name": "TOTAL_VENDORS",
+        "name": "BENEFICIARIES",
         "type": "datacard",
-        "title": "Total Vendors"
+        "title": "Beneficiaries",
+        "icon": "Users"
       },
       {
-        "name": "BENEFICIARIES.BENEFICIARY_TOTAL",
+        "name": "BALANCE",
         "type": "datacard",
-        "title": "Total Beneficiaries"
+        "title": "Balance",
+        "icon": "DollarSign"
       },
       {
-        "name": "BENEFICIARIES.BENEFICIARY_TOTAL",
+        "name": "DISTRIBUTED",
         "type": "datacard",
-        "title": "TBD"
+        "title": "Distributed",
+        "icon": "DollarSign"
+      },
+      {
+        "name": "CAMPAIGNS",
+        "type": "datacard",
+        "title": "Campaigns",
+        "icon": "SmartphoneNfc"
       }
-    ],
+    ]
+  ],
+  "charts": [
     [
       {
         "name": "BENEFICIARIES.BENEFICIARY_GENDER",
@@ -44,10 +44,7 @@
         "name": "BENEFICIARIES.BENEFICIARY_BANKEDSTATUS",
         "type": "pie",
         "title": "Banked Status"
-      }
-    ],
-
-    [
+      },
       {
         "name": "BENEFICIARIES.BENEFICIARY_AGE_RANGE",
         "type": "pie",

@@ -1,14 +1,6 @@
 'use client';
-import {
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
-} from '@rahat-ui/shadcn/src/components/ui/resizable';
-import { Tabs } from '@rahat-ui/shadcn/src/components/ui/tabs';
-import React from 'react';
-import BeneficiaryNav from '../../../sections/beneficiary/nav';
-import ImportBen from './Beneficiary';
 import { useActiveFieldDefinitionsList } from '@rahat-ui/community-query';
+import ImportBen from './Beneficiary';
 
 export default function ImportBeneficiary() {
   let extraFields = [];

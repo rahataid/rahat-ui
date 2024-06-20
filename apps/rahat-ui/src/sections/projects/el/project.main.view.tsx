@@ -200,8 +200,8 @@ const ProjectMainView = () => {
     {
       name: 'Regular Sunglasses',
       data: [
-        referredRegularSunGlass?.count || 0,
         enrolledRegularSunGlass?.count || 0,
+        referredRegularSunGlass?.count || 0,
       ],
     },
   ];

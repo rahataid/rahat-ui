@@ -5,12 +5,14 @@ import { useNavItems as useELNavItems } from '../el/useNavItems';
 import { useProjectListNavItems } from '../useNavItems';
 import { useProjectNavItemsType } from './nav-items.types';
 import { useNavItems as useC2CNavItems } from '../c2c/useNavItems';
+import { useNavItems as useRPNavItems } from '../rp/useRPNavItems';
 
 const hooks = {
   [ProjectTypes.ANTICIPATORY_ACTION]: useAANavItems,
   [ProjectTypes.EL]: useELNavItems,
   [ProjectTypes.CVA]: useCVANavItems,
-  C2C: useC2CNavItems,
+  [ProjectTypes.C2C]: useC2CNavItems,
+  [ProjectTypes.RP]: useRPNavItems,
   ALL: useProjectListNavItems,
 };
 

@@ -85,7 +85,7 @@ export default function BeneficiaryDetail({
   const [transactionHash, setTransactionHash] = useState<`0x${string}`>();
   const [isTransacting, setisTransacting] = useState<boolean>(false);
 
-  const walletAddress = beneficiaryDetails.wallet;
+  const walletAddress = beneficiaryDetails.walletAddress;
 
   const contractSettings = useProjectSettingsStore(
     (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT] || null,

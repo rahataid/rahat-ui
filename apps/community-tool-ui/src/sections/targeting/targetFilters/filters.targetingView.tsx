@@ -18,20 +18,20 @@ import {
 } from '@rahat-ui/community-query';
 import { usePagination } from '@rahat-ui/query';
 import { Result } from '@rahataid/community-tool-sdk/targets';
+import { useSearchParams } from 'next/navigation';
+import Swal from 'sweetalert2';
 import CustomPagination from '../../../components/customPagination';
+import useTargetingFormStore from '../../../targetingFormBuilder/form.store';
 import { useTargetingColumns } from '../useTargetingColumns';
 import FilterTargetingListView from './filters.listView';
-import { useSearchParams } from 'next/navigation';
-import { paths } from '../../../routes/paths';
-import Swal from 'sweetalert2';
-import useTargetingFormStore from '../../../targetingFormBuilder/form.store';
-
-import { useParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
+import { paths } from 'apps/community-tool-ui/src/routes/paths';
 
 export default function FiltersTargetingView() {
   const params = useSearchParams();
   const targetUUID = params.get('targetUUID');
   const { setTargetingQueries }: any = useTargetingFormStore();
+  const router = useRouter();
 
   const {
     pagination,
@@ -50,7 +50,7 @@ export default function FiltersTargetingView() {
     },
   );
 
-  const updateTargetLabel = useTargetingLabelUpdate();
+  const targetQuery = useTargetingLabelUpdate();
 
   const columns = useTargetingColumns();
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
@@ -72,15 +72,15 @@ export default function FiltersTargetingView() {
     },
   });
 
-  const handleUpdateTargetLabel = async (label: string) => {
+  const handleSaveTargetResults = async (label: string) => {
     if (!beneficiaryData?.data?.rows.length)
-      return Swal.fire({ title: 'No beneficiaries to pin!', icon: 'error' });
+      return Swal.fire({ title: 'No beneficiaries to save!', icon: 'error' });
     const uuid = targetUUID as string;
     const payload = { label };
-    await updateTargetLabel.mutateAsync({ uuid, payload });
+    await targetQuery.mutateAsync({ uuid, payload });
     setTargetingQueries([]);
     setTargetUUID('');
-    // router.push(paths.dashboard.targeting.list);
+    router.push(paths.dashboard.group.root);
   };
 
   return (
@@ -88,7 +88,7 @@ export default function FiltersTargetingView() {
       <FilterTargetingListView
         loading={loading}
         table={table}
-        handleUpdateTargetLabel={handleUpdateTargetLabel}
+        handleSaveTargetResults={handleSaveTargetResults}
         targetUUID={targetUUID as string}
       />
 

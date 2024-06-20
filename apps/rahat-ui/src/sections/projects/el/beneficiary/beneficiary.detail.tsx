@@ -83,7 +83,7 @@ export default function BeneficiaryDetail({
   const [voucherType, setVoucherType] = useState<string>();
   const [claimstatus, setClaimstatus] = useState<string>();
 
-  const walletAddress = beneficiaryDetails.wallet;
+  const walletAddress = beneficiaryDetails.walletAddress;
 
   const contractSettings = useProjectSettingsStore(
     (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT] || null,

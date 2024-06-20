@@ -84,7 +84,7 @@ export const useTargetingLabelUpdate = () => {
       mutationKey: [TAGS.UPDATE_TARGETING_LABEL],
       mutationFn: targetingClient.patchLabel,
       onSuccess: () => {
-        Swal.fire('Target beneficiary pinned successfully', '', 'success');
+        Swal.fire('Beneficiaries added to the group', '', 'success');
         queryClient.invalidateQueries({
           queryKey: [
             TAGS.GET_TARGETING_BENEFICIARIES,
@@ -125,18 +125,45 @@ export const useExportPinnedListBeneficiary = () => {
     {
       mutationKey: [TAGS.EXPORT_TARGETED_BENEFICIARIES],
       mutationFn: async (payload: any) => {
-        const { isConfirmed } = await Swal.fire({
-          title: 'CAUTION!',
-          text: ' All targeted beneficiaries will be exported to Rahat!',
-          icon: 'warning',
-          confirmButtonText: 'Yes, I am sure!',
+        if (!payload.config || Object.keys(payload.config).length === 0) {
+          await Swal.fire({
+            icon: 'info',
+            title: 'No Settings Available',
+            text: 'Please add app URL from settings',
+            confirmButtonText: 'Ok',
+          });
+          return null;
+        }
+
+        const { value } = await Swal.fire({
+          title: 'Export Beneficiary',
+          text: 'Select app to proceed',
           showCancelButton: true,
+          confirmButtonText: 'Export',
+          cancelButtonText: 'Cancel',
+          input: 'select',
+          inputOptions: payload.config,
+          inputPlaceholder: 'Select app',
+          preConfirm: (value) => {
+            if (!value) {
+              Swal.showValidationMessage('Please select app to proceed!');
+            }
+            return value;
+          },
         });
 
-        if (!isConfirmed) return;
-        return targetingClient.exportTargetBeneficiary(payload);
+        if (value !== undefined && value !== '') {
+          const inputData = {
+            groupUUID: payload?.groupUUID,
+            appURL: value,
+          };
+          console.log(inputData);
+          return targetingClient.exportTargetBeneficiary(inputData as any);
+        }
+        return null;
       },
       onSuccess: (data: any) => {
+        console.log(data);
         if (!data) return;
         Swal.fire(data?.data?.message, '', 'success');
         queryClient.invalidateQueries({

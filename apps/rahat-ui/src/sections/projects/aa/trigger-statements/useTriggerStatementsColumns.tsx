@@ -25,8 +25,6 @@ export const useTriggerStatementTableColumns = () => {
       accessorKey: 'dataSource',
       header: 'Data Source',
       cell: ({ row }) => {
-        console.log(row.original);
-
         if (row.getValue('dataSource') === 'DHM') {
           return (
             <>
@@ -99,7 +97,6 @@ export const useTriggerStatementTableColumns = () => {
       header: 'Triggered At',
       cell: ({ row }) => {
         const triggeredAt = row.getValue('triggeredAt') as string;
-        console.log("triggered at", triggeredAt)
         if(triggeredAt){
           const d =  new Date(triggeredAt)
           const localeDate = d.toLocaleDateString()

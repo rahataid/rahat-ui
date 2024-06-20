@@ -36,7 +36,7 @@ const sampleCategories = [
 
 const FundManagementView = () => {
   const route = useRouter();
-  const id = useParams();
+  const { id } = useParams();
   return (
     <>
       <div className="grid grid-cols-12 gap-2 p-4 bg-secondary h-[calc(100vh-75px)]">

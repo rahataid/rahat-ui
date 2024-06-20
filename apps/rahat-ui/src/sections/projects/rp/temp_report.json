@@ -2,27 +2,27 @@
   "datacards": [
     [
       {
-        "name": "Beneficiaries",
+        "name": "BENEFICIARIES",
         "type": "datacard",
-        "title": "Total Vendors",
+        "title": "Beneficiaries",
         "icon": "Users"
       },
       {
-        "name": "Balance",
+        "name": "BALANCE",
         "type": "datacard",
-        "title": "Total Beneficiaries",
+        "title": "Balance",
         "icon": "DollarSign"
       },
       {
-        "name": "Distributed",
+        "name": "DISTRIBUTED",
         "type": "datacard",
         "title": "Distributed",
         "icon": "DollarSign"
       },
       {
-        "name": "Total Campaigns",
+        "name": "CAMPAIGNS",
         "type": "datacard",
-        "title": "Total Campaigns",
+        "title": "Campaigns",
         "icon": "SmartphoneNfc"
       }
     ]

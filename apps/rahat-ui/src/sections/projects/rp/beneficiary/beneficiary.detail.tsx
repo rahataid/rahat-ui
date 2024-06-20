@@ -402,23 +402,6 @@ function BeneficiaryInfo({
           Icon={Home}
         />
       </div>
-      {/* <Card className="shadow rounded m-2">
-        <CardContent className="pt-6">
-          <div className="text-base font-500">Token Details</div>
-          <div className="mt-2">
-            <div className="flex items-center justify-between text-sm">
-              <p className="font-light">Token Assigned</p>
-              <p className="text-primary">{assignedTokensCount}</p>
-            </div>
-          </div>
-          <div className="mt-2">
-            <div className="flex items-center justify-between text-sm">
-              <p className="font-light">Token Claimed</p>
-              <p className="text-primary">{tokensClaimedCount}</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card> */}
     </>
   );
 }

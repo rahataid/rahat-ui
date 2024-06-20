@@ -13,7 +13,7 @@ import {
   useReadElProjectGetProjectVoucherDetail,
   useReadElProjectGetTotalBeneficiaries,
 } from 'apps/rahat-ui/src/hooks/el/contracts/elProject';
-import { useProjectVoucher } from 'apps/rahat-ui/src/hooks/el/subgraph/querycall';
+import { useProjectVoucher, useAllVendorVoucher } from 'apps/rahat-ui/src/hooks/el/subgraph/querycall';
 import { useParams } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 import { ProjectChart } from '..';
@@ -22,14 +22,14 @@ import ProjectInfo from './project.info';
 
 const ProjectMainView = () => {
   const { id } = useParams();
-  const [projectStats, setProjectStats] = useState();
   const [ELProjectStats, setELProjectStats] = useState();
-  const projectClient = useProjectAction(['count_ben_vendor']);
   const statsClient = useProjectAction(['stats']);
   const project = useProjectStore((state) => state.singleProject);
   const contractSettings = useProjectSettingsStore(
     (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT] || null,
   );
+
+  const[vendorCount,setVendorCount] = useState(0)
 
   const { data: beneficiaryDetails, refetch: refetchBeneficiary } =
     useReadElProjectGetTotalBeneficiaries({
@@ -48,16 +48,7 @@ const ProjectMainView = () => {
     contractSettings?.eyevoucher?.address,
   );
 
-  const getProjectStats = useCallback(async () => {
-    const result = await projectClient.mutateAsync({
-      uuid: id,
-      data: {
-        action: 'elProject.count_ben_vendor',
-        payload: {},
-      },
-    });
-    setProjectStats(result.data);
-  }, [id]);
+  const {data:vendorDetails} = useAllVendorVoucher();  
 
   const getElProjectStats = useCallback(async () => {
     const result = await statsClient.mutateAsync({
@@ -71,9 +62,14 @@ const ProjectMainView = () => {
   }, [id]);
 
   useEffect(() => {
-    getProjectStats();
     getElProjectStats();
-  }, [getProjectStats, getElProjectStats]);
+  }, [getElProjectStats]);
+
+  useEffect(()=>{
+    if(!vendorDetails?.voucherArray) return;
+    const count = Object.keys(vendorDetails?.voucherArray).length;
+    setVendorCount(count);
+  },[vendorDetails])
 
   const filterdELChartData =
     ELProjectStats?.filter((item) => {
@@ -211,8 +207,7 @@ const ProjectMainView = () => {
       <ScrollArea className="h-[calc(100vh-80px)]">
         <ProjectInfo
           project={project}
-          totalBeneficiary={projectStats?.benTotal}
-          totalVendor={projectStats?.vendorTotal}
+          totalVendor={vendorCount}
           loading={isLoading}
           refetchBeneficiary={refetchBeneficiary}
           beneficiaryDetails={beneficiaryDetails}
@@ -220,7 +215,7 @@ const ProjectMainView = () => {
           voucherDetails={voucherDetails}
         />
         <ProjectDataCard
-          totalVendor={projectStats?.vendorTotal}
+          totalVendor={vendorCount}
           refetchVoucher={refetchVoucher}
           loading={isLoading}
           ELProjectStats={ELProjectStats}

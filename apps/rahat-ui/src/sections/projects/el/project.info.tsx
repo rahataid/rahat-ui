@@ -10,7 +10,6 @@ type ProjectInfoProps = {
   loading: any;
   className?: any;
   beneficiaryDetails: any;
-  totalBeneficiary: any;
   refetchBeneficiary: VoidFunction;
   projectVoucher: any;
   voucherDetails: any;
@@ -19,7 +18,6 @@ type ProjectInfoProps = {
 const ProjectInfo: FC<ProjectInfoProps> = ({
   project,
   beneficiaryDetails,
-  totalBeneficiary,
   refetchBeneficiary,
   loading,
   projectVoucher,

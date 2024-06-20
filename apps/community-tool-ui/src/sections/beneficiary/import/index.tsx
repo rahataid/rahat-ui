@@ -6,9 +6,14 @@ export default function ImportBeneficiary() {
   let extraFields = [];
   const { data } = useActiveFieldDefinitionsList();
   if (data && data.data.length > 0) {
-    const myFields = data.data.map((obj: any) => obj.name);
+    const myFields = data.data.map((obj: any) => {
+      return {
+        name: obj.name,
+        variations: obj.variations || [],
+      };
+    });
     extraFields = myFields;
   }
 
-  return <ImportBen extraFields={extraFields} />;
+  return <ImportBen fieldDefinitions={extraFields} />;
 }

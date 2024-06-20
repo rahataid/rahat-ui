@@ -39,10 +39,10 @@ import ColumnMappingTable from './ColumnMappingTable';
 import MyAlert from './MyAlert';
 
 interface IProps {
-  extraFields: string[];
+  fieldDefinitions: [];
 }
 
-export default function BenImp({ extraFields }: IProps) {
+export default function BenImp({ fieldDefinitions }: IProps) {
   const form = useForm({});
   const { rumsanService } = useRSQuery();
   const { data: kbSettings } = useFetchKoboSettings();
@@ -368,8 +368,7 @@ export default function BenImp({ extraFields }: IProps) {
     }
   };
 
-  // if (extraFields.length) BENEF_DB_FIELDS.push(...extraFields);
-  const uniqueDBFields = [...new Set(extraFields.length ? extraFields : [])];
+  console.log('Mappings=>', mappings);
 
   return (
     <div className="h-custom">
@@ -426,7 +425,7 @@ export default function BenImp({ extraFields }: IProps) {
             <div className="import-container overflow-x-auto">
               <ColumnMappingTable
                 rawData={rawData}
-                uniqueDBFields={uniqueDBFields}
+                fieldDefs={fieldDefinitions}
                 handleTargetFieldChange={handleTargetFieldChange}
                 mappings={mappings}
               />

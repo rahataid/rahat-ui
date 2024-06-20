@@ -7,21 +7,25 @@ import {
 import { isURL, truncatedText } from 'apps/community-tool-ui/src/utils';
 import React, { useState } from 'react';
 import { ComboBox } from './Combobox';
+import { useBeneficiaryImportStore } from '@rahat-ui/community-query';
 
 interface ColumnMappingTableProps {
   rawData: any[];
   handleTargetFieldChange: (key: string, value: string) => void;
-  uniqueDBFields: string[];
+  fieldDefs: [];
   mappings: any[];
 }
+
+const myMappings = [] as any;
 
 export default function ColumnMappingTable({
   rawData,
   handleTargetFieldChange,
-  uniqueDBFields,
+  fieldDefs,
   mappings,
 }: ColumnMappingTableProps) {
   const [columns, setColumns] = useState([]) as any[];
+  const { mappings: targetMapping, setMappings } = useBeneficiaryImportStore();
 
   const extractColumns = () => {
     if (rawData.length > 0) {
@@ -54,14 +58,57 @@ export default function ColumnMappingTable({
     extractColumns();
   }, [rawData]);
 
-  const sortedData = uniqueDBFields?.sort() || [];
+  const fieldNameOnly = fieldDefs.length
+    ? fieldDefs.map((f: any) => f.name)
+    : [];
+
+  const uniqueDBFields = [...new Set(fieldNameOnly)];
+
+  const sortedData = uniqueDBFields.sort() || [];
 
   function getSelectedField(sourceField: string) {
-    const found = mappings.find((m) => {
-      return m.sourceField === sourceField;
+    if (mappings.length) {
+      const found = mappings.find((m) => {
+        return m.sourceField === sourceField;
+      });
+      if (!found) return '';
+      return found.targetField;
+    } else {
+      // Search for match
+      const found = findFieldName(sourceField);
+      if (!found) return '';
+      myMappings.push({
+        sourceField: found.sourceField,
+        targetField: found.targetField,
+      });
+      const filtered = filterUniqueTargetsOnly(myMappings, 'targetField');
+      setMappings(filtered);
+      return found.targetField;
+    }
+  }
+
+  function filterUniqueTargetsOnly(arr: [], key: string) {
+    const seen = new Set();
+    return arr.filter((item) => {
+      const keyValue = item[key];
+      if (seen.has(keyValue)) {
+        return false;
+      }
+      seen.add(keyValue);
+      return true;
     });
-    if (!found) return '';
-    return found.targetField;
+  }
+
+  function findFieldName(inputField: string) {
+    const normalizedInput = inputField.toLowerCase().trim();
+
+    const field = fieldDefs.find((field: any) =>
+      field.variations.some(
+        (v: any) => v.toLowerCase().trim() === normalizedInput,
+      ),
+    ) as any;
+
+    return field ? { sourceField: inputField, targetField: field.name } : null;
   }
 
   return (

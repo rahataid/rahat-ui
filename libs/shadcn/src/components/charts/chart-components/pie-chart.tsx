@@ -116,9 +116,9 @@ export default function PieChart({
   });
 
   return (
-    <div>
+    <div className="bg-card shadow rounded p-4 flex items-center justify-center">
       {communityTool ? (
-        <div className="bg-card shadow rounded p-4  ">
+        <div>
           <h2 className={`font-medium p-0 text-left`}>{title}</h2>
           <div className="flex flex-col items-center justify-center">
             <CommunityStyledChart

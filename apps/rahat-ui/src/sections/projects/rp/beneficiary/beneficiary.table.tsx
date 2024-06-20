@@ -43,7 +43,7 @@ import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import { UUID } from 'crypto';
 import { ChevronDown, Plus } from 'lucide-react';
 import Image from 'next/image';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import BulkAssignToken from './bulk-assign-token.modal';
 import { useCvaBeneficiaryTableColumns } from './use.table.column';
@@ -73,6 +73,7 @@ export default function BeneficiaryTable() {
     resetSelectedListItems,
   } = usePagination();
   const columns = useCvaBeneficiaryTableColumns();
+  const router = useRouter();
 
   const beneficiaries = useProjectBeneficiaries({
     page: pagination.page,
@@ -304,7 +305,11 @@ export default function BeneficiaryTable() {
                         <p className="text-sm mb-4">
                           There are no beneficiaries to display at the moment
                         </p>
-                        <Button>
+                        <Button
+                          onClick={() =>
+                            router.push(`/projects/rp/${id}/beneficiary/add`)
+                          }
+                        >
                           {' '}
                           <Plus className="mr-2" size={20} strokeWidth={1.5} />
                           Add Beneficiary Data

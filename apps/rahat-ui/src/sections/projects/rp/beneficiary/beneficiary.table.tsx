@@ -292,7 +292,7 @@ export default function BeneficiaryTable() {
                       colSpan={table.getAllColumns().length}
                       className="h-full"
                     >
-                      <div className="flex flex-col items-center justify-center mt-64">
+                      <div className="flex flex-col items-center justify-center">
                         <Image
                           src="/noData.png"
                           height={250}
@@ -302,7 +302,7 @@ export default function BeneficiaryTable() {
                         <p className="text-medium text-base mb-1">
                           No Data Available
                         </p>
-                        <p className="text-sm mb-4">
+                        <p className="text-sm mb-4 text-gray-500">
                           There are no beneficiaries to display at the moment
                         </p>
                         <Button

@@ -85,6 +85,11 @@ export default function AddFundsModal({ fundsModal }: IProps) {
             value={tokens}
             onChange={(e) => setTokens(e.target.value)}
             placeholder="Tokens"
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                handleAdd(tokens);
+              }
+            }}
           />
         </div>
         <DialogFooter className="sm:justify-end">

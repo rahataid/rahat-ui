@@ -32,6 +32,7 @@ const HouseHoldInsights = ({ data }: Props) => {
   if (typeofPhone) chartData.push(typeofPhone);
   if (bankStatus) chartData.push(bankStatus);
   if (phoneAvailibility) chartData.push(phoneAvailibility);
+
   return (
     <div className="mt-3">
       <h1 className="text-xl text-primary font-semibold mb-2">
@@ -49,14 +50,13 @@ const HouseHoldInsights = ({ data }: Props) => {
           title="Total Vulnerable Households"
           number={totalVulnerableHousehold?.data?.count || 0}
           Icon={HomeIcon}
-          iconcolor="red"
         />
       </div>
       <Charts charts={chartData} />
       <div className="grid sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-2 mt-4">
         <BarCharts
           charts={bankNameStatus}
-          height={400}
+          height={300}
           width={'100%'}
           overFlowProps={true}
           title="Beneficiary Associated Bank"

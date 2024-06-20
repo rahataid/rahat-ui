@@ -1,6 +1,5 @@
 import {
   PROJECT_SETTINGS_KEYS,
-  useC2CProjectSubgraphStore,
   useProjectSettingsStore,
   useRecentTransactionsList,
 } from '@rahat-ui/query';
@@ -13,13 +12,13 @@ import { useParams } from 'next/navigation';
 import { formatEther } from 'viem';
 import { useReadContract } from 'wagmi';
 import RecentTransaction from './recent.transaction';
-import { Transaction } from '../transactions/types';
+import { UUID } from 'crypto';
 
 const FundManagementView = () => {
-  const { id } = useParams();
-  const projectDetails = useC2CProjectSubgraphStore(
-    (state) => state.projectDetails,
-  );
+  const { id }: { id: UUID } = useParams();
+  // const projectDetails = useC2CProjectSubgraphStore(
+  //   (state) => state.projectDetails,
+  // );
   const contractSettings = useProjectSettingsStore(
     (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT],
   );
@@ -36,7 +35,7 @@ const FundManagementView = () => {
     functionName: 'balanceOf',
     args: [c2cProjectAddress],
     query: {
-      select(data: bigint) {
+      select(data: unknown) {
         return data ? formatEther(data as bigint) : '0';
       },
     },

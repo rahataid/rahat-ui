@@ -371,7 +371,6 @@ export default function BenImp({ extraFields }: IProps) {
   if (extraFields.length) BENEF_DB_FIELDS.push(...extraFields);
   const uniqueDBFields = [...new Set(BENEF_DB_FIELDS)];
 
-  console.log('RawData=>', rawData);
 
   return (
     <div className="h-custom">

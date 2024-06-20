@@ -50,32 +50,32 @@ const ProjectDataCard: FC<ProjectDataCardProps> = ({
           <div className="grid grid-cols-3 gap-2">
             <DataCard
               title="Total Vendors"
-              number={totalVendor || 'N/A'}
+              number={totalVendor?.toLocaleString() || 'N/A'}
               loading={loading}
             />
             <DataCard
-              title="Redemption Pending"
-              number={reconciliationRequested || 'N/A'}
+              title="Claims Pending"
+              number={reconciliationRequested?.toLocaleString() || 'N/A'}
               loading={loading}
             />
             <DataCard
-              title="Redemption Approved"
-              number={reconciliationApproved || 'N/A'}
+              title="Claims Approved"
+              number={reconciliationApproved?.toLocaleString() || 'N/A'}
               loading={loading}
             />
           </div>
           <div className="grid grid-cols-2 gap-2 mt-2">
             <DataCard
               title="Estimated Budget"
-              number={estimatedBudget || 'N/A'}
+              number={estimatedBudget?.toLocaleString() || 'N/A'}
               subtitle="Vouchers Assigned (Rp)"
               currency={data?.referredVoucherCurrency}
               loading={loading}
             />
             <DataCard
               className=""
-              title="Redeemed Value"
-              number={actualBudget || 'N/A'}
+              title="Actual Budget"
+              number={actualBudget?.toLocaleString() || 'N/A'}
               subtitle="Vouchers Redeemed Value (Rp)"
               Icon={Users}
               refresh={refetchBeneficiary}

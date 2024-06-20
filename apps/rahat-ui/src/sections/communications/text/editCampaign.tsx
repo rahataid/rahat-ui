@@ -70,16 +70,15 @@ export default function EditCampaign() {
       // const audienceIds =
       //   data?.data?.audiences?.map((audience) => audience?.id) || [];
 
-      data?.data?.audiences?.map((audience) => {
-        setSelectedRows((prevSelectedRows) => [
-          ...prevSelectedRows,
-          {
-            name: audience?.details.name,
-            id: audience?.id,
-            phone: audience?.details?.phone,
-          },
-        ]);
+      const audiences = data?.data?.audiences?.map((audience) => {
+        return {
+          name: audience?.details.name,
+          id: audience?.id,
+          phone: audience?.details?.phone,
+        };
       });
+
+      setSelectedRows(audiences);
 
       form.setValue('campaignName', data?.data?.name);
       form.setValue(

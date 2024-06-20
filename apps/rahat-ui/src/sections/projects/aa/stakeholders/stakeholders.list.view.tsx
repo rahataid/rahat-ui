@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { useParams } from 'next/navigation';
+
+import { useParams,  } from 'next/navigation';
 import {
   ColumnFiltersState,
   SortingState,
@@ -23,6 +24,7 @@ import StakeholdersTableFilters from './stakeholders.table.filters';
 
 export default function StakeholdersList() {
   const params = useParams();
+
   const projectId = params.id as UUID;
 
   const {

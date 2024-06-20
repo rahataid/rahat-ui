@@ -27,39 +27,40 @@ export default function Activities({ title, className, data }: CardProps) {
           <div className="flex justify-between items-start">
             <div className="space-y-1">
               <p className="text-sm font-medium leading-none">Free</p>
-              <p className="text-sm text-muted-foreground">Total</p>
+              <p className="text-sm text-muted-foreground">Created</p>
               <p className="text-sm text-muted-foreground">Assigned</p>
               <p className="text-sm text-muted-foreground">Redeemed</p>
             </div>
             <div className="flex flex-col items-center">
-              <div className="space-y-2">
+              <div className="space-y-2 min-w-10 text-right">
                 <p className="text-sm font-medium leading-none">Qty</p>
                 <div className="text-xs text-muted-foreground">
-                  {data?.eyeVoucherBudget?.toString() || 'N/A'}
+                  {data?.eyeVoucherBudget?.toLocaleString()|| 'N/A'}
                 </div>
                 <div className="text-xs text-muted-foreground">
-                  {data?.eyeVoucherAssigned?.toString() || 'N/A'}
+                  {data?.eyeVoucherAssigned?.toLocaleString()|| 'N/A'}
                 </div>
                 <div className="text-xs text-muted-foreground">
-                  {data?.eyeVoucherClaimed?.toString() || 'N/A'}
+                  {data?.eyeVoucherClaimed?.toLocaleString() || 'N/A'}
                 </div>
               </div>
             </div>
             <div className="flex flex-col items-end space-y-1">
-              <div className="space-y-2">
-                <p className="text-sm font-medium leading-none">Amount</p>
-                <div className="text-xs text-muted-foreground">
-                  {data?.freeVoucherCurrency}{' '}
-                  {data?.eyeVoucherBudget?.toString() * data?.freeVoucherPrice}
-                </div>
-                <div className="text-xs text-muted-foreground">
-                  {data?.freeVoucherCurrency}{' '}
-                  {data?.eyeVoucherAssigned?.toString() *
-                    data?.freeVoucherPrice}
-                </div>
-                <div className="text-xs text-muted-foreground">
-                  {data?.freeVoucherCurrency}{' '}
-                  {data?.eyeVoucherClaimed?.toString() * data?.freeVoucherPrice}
+              <div className="min-w-10 text-right">
+                <div className="space-y-2">
+                  <p className="text-sm font-medium leading-none">Amount</p>
+                  <div className="text-xs text-muted-foreground">
+                    {(data?.eyeVoucherBudget?.toString() *
+                      data?.freeVoucherPrice)?.toLocaleString()}
+                  </div>
+                  <div className="text-xs text-muted-foreground">
+                    {(data?.eyeVoucherAssigned?.toString() *
+                      data?.freeVoucherPrice).toLocaleString()}
+                  </div>
+                  <div className="text-xs text-muted-foreground">
+                    {(data?.eyeVoucherClaimed?.toString() *
+                      data?.freeVoucherPrice).toLocaleString()}
+                  </div>
                 </div>
               </div>
             </div>
@@ -69,41 +70,42 @@ export default function Activities({ title, className, data }: CardProps) {
           <div className="flex justify-between items-start">
             <div className="space-y-1">
               <p className="text-sm font-medium leading-none">Discount</p>
-              <p className="text-sm text-muted-foreground">Total</p>
+              <p className="text-sm text-muted-foreground">Created</p>
               <p className="text-sm text-muted-foreground">Assigned</p>
               <p className="text-sm text-muted-foreground">Redeemed</p>
             </div>
             <div className="flex flex-col items-center space-y-1">
-              <div className="space-y-2">
-                <p className="text-sm font-medium leading-none">Qty</p>
-                <div className="text-xs text-muted-foreground">
-                  {data?.referredVoucherBudget?.toString() || 'N/A'}
-                </div>
-                <div className="text-xs text-muted-foreground">
-                  {data?.referredVoucherAssigned?.toString() || 'N/A'}
-                </div>
-                <div className="text-xs text-muted-foreground">
-                  {data?.referredVoucherClaimed?.toString() || 'N/A'}
+              <div className="min-w-10 text-right">
+                <div className="space-y-2">
+                  <p className="text-sm font-medium leading-none">Qty</p>
+                  <div className="text-xs text-muted-foreground">
+                    {data?.referredVoucherBudget?.toLocaleString() || 'N/A'}
+                  </div>
+                  <div className="text-xs text-muted-foreground">
+                    {data?.referredVoucherAssigned?.toLocaleString() || 'N/A'}
+                  </div>
+                  <div className="text-xs text-muted-foreground">
+                    {data?.referredVoucherClaimed?.toLocaleString() || 'N/A'}
+                  </div>
                 </div>
               </div>
             </div>
             <div className="flex flex-col items-end space-y-1">
-              <div className="space-y-2">
-                <p className="text-sm font-medium leading-none">Amount</p>
-                <div className="text-xs text-muted-foreground">
-                  {data?.referredVoucherCurrency}{' '}
-                  {data?.referredVoucherBudget?.toString() *
-                    data?.referredVoucherPrice}
-                </div>
-                <div className="text-xs text-muted-foreground">
-                  {data?.referredVoucherCurrency}{' '}
-                  {data?.referredVoucherAssigned?.toString() *
-                    data?.referredVoucherPrice}
-                </div>
-                <div className="text-xs text-muted-foreground">
-                  {data?.referredVoucherCurrency}{' '}
-                  {data?.referredVoucherClaimed?.toString() *
-                    data?.referredVoucherPrice}
+              <div className="min-w-10 text-right">
+                <div className="space-y-2">
+                  <p className="text-sm font-medium leading-none">Amount</p>
+                  <div className="text-xs text-muted-foreground">
+                    {(data?.referredVoucherBudget?.toString() *
+                      data?.referredVoucherPrice)?.toLocaleString()}
+                  </div>
+                  <div className="text-xs text-muted-foreground">
+                    {(data?.referredVoucherAssigned?.toString() *
+                      data?.referredVoucherPrice)?.toLocaleString()}
+                  </div>
+                  <div className="text-xs text-muted-foreground">
+                    {(data?.referredVoucherClaimed?.toString() *
+                      data?.referredVoucherPrice)?.toLocaleString()}
+                  </div>
                 </div>
               </div>
             </div>

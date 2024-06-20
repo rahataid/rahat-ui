@@ -47,6 +47,7 @@ import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 import ConfirmModal from './confirm.modal';
 import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
 import { AudioRecorder } from '@rahat-ui/shadcn/src/components/ui/audioRecorder';
+import { useUploadFile } from '@rahat-ui/query';
 
 type CampaignFormProps = {
   // Add props here
@@ -90,6 +91,9 @@ const CampaignForm: FC<CampaignFormProps> = ({
   const [open, setOpen] = React.useState(false);
   const [checkTemplate, setCheckTemplate] = React.useState(false);
   const [templatemessage, setTemplatemessage] = React.useState('');
+
+  const uploadFile = useUploadFile()
+
   //   const includeFile = includeMessage ? 'message' : 'file';
   //   const excludeFile = includeMessage ? 'file' : 'message';
   if (!form) return 'loading...';
@@ -190,7 +194,7 @@ const CampaignForm: FC<CampaignFormProps> = ({
                 </FormItem>
               )}
             />
-            {isIvrMessage && <AudioRecorder form={form} />}
+            {isIvrMessage && <AudioRecorder uploadFile={uploadFile} form={form} />}
             {isWhatsappMessage && (
               <FormField
                 control={form.control}

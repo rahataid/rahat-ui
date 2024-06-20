@@ -12,6 +12,7 @@ import SearchInput from '../../components/search.input';
 import ActivitiesListCard from '../../components/activities.list.card';
 import { UUID } from 'crypto';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import PhaseTriggerStatementsList from './phase-triggers-table/trigger.statements.list';
 
 export default function PhaseDetailView() {
   const params = useParams();
@@ -130,11 +131,12 @@ export default function PhaseDetailView() {
                 }
               </div>
             </div>
-            <TriggerStatementsList
+            <PhaseTriggerStatementsList phaseId={phaseId} />
+            {/* <TriggerStatementsList
               tableScrollAreaHeight="h-[calc(100vh-456px)]"
               isLoading={isLoading}
               tableData={phaseDetail?.triggers}
-            />
+            /> */}
           </div>
         </TabsContent>
         <TabsContent value="activities">

@@ -1,17 +1,16 @@
 import { useParams } from 'next/navigation';
-import { useAATriggerStatements } from '@rahat-ui/query';
+import { useAATriggerStatements, usePagination } from '@rahat-ui/query';
 import TriggerPhaseCards from './trigger.phase.cards';
 import TriggerStatementsList from './trigger.statements.list';
 import { UUID } from 'crypto';
 import SearchInput from '../../components/search.input';
+import React from 'react';
 
 export default function TriggerStatementsListView() {
   const { id } = useParams();
   const projectId = id as UUID;
-  const { data: tableData, isLoading } = useAATriggerStatements(projectId);
-  console.log(tableData)
 
-  const handleSearch = () => {};
+  const handleSearch = () => { };
   return (
     <div className="p-2 bg-secondary h-[calc(100vh-65px)]">
       <TriggerPhaseCards projectId={projectId} />
@@ -21,11 +20,7 @@ export default function TriggerStatementsListView() {
         onSearch={handleSearch}
         isDisabled={true}
       />
-      <TriggerStatementsList
-        tableScrollAreaHeight="h-[calc(100vh-344px)]"
-        isLoading={isLoading}
-        tableData={tableData}
-      />
+      <TriggerStatementsList />
     </div>
   );
 }

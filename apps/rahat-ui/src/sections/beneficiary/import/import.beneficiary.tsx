@@ -13,7 +13,7 @@ import { useRouter } from 'next/navigation';
 const DOWNLOAD_FILE_URL = '/files/beneficiary_sample.xlsx';
 
 export default function ImportBeneficiary() {
-  const fileInputRef: RefObject<HTMLInputElement> = useRef(null);
+  const fileInputRef = useRef(null);
 
   const uploadBeneficiary = useUploadBeneficiary();
 
@@ -57,9 +57,12 @@ export default function ImportBeneficiary() {
   };
 
   useEffect(() => {
-    if(uploadBeneficiary?.isSuccess){ toast.success('File uploaded successfully.'); router.push('/beneficiary');}
-    uploadBeneficiary?.isError && toast.error('File upload unsuccessful.')
-  }, [uploadBeneficiary?.isSuccess, uploadBeneficiary?.isError])
+    if (uploadBeneficiary?.isSuccess) {
+      // toast.success('File uploaded successfully.'); commented due to overlap
+      router.push('/beneficiary');
+    }
+    // uploadBeneficiary?.isError && toast.error('File upload unsuccessful.');
+  }, [uploadBeneficiary?.isSuccess, uploadBeneficiary?.isError]);
 
   const handleDownloadClick = () => {
     fetch(DOWNLOAD_FILE_URL)
@@ -108,13 +111,23 @@ export default function ImportBeneficiary() {
             </svg>
             <span>Download Sample</span>
           </button>
+          <Button
+            className="w-40 mr-2 bg-primary hover:ring-2 ring-primary"
+            onClick={() => {
+              setSelectedFile(null);
+              if (fileInputRef.current) fileInputRef.current.value = null;
+            }}
+            disabled={selectedFile ? false : true}
+          >
+            Cancel Upload
+          </Button>
 
           <Button
             className="w-40 bg-primary hover:ring-2 ring-primary"
             onClick={handleUpload}
             disabled={uploadBeneficiary?.isPending}
           >
-          {uploadBeneficiary?.isPending ? <>Uploading...</> : "Upload File"}  
+            {uploadBeneficiary?.isPending ? <>Uploading...</> : 'Upload File'}
           </Button>
         </div>
       </div>

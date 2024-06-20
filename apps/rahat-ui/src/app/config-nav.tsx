@@ -1,6 +1,5 @@
 import { useMemo } from 'react';
 import { paths } from '../routes/paths';
-import { Phone, MessageSquareMore } from 'lucide-react';
 
 export function useNavData() {
   const data = useMemo(

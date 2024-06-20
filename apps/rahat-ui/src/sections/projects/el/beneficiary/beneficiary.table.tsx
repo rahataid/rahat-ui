@@ -199,7 +199,7 @@ function BeneficiaryDetailTableView() {
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
-    getRowId: (row) => row.wallet,
+    getRowId: (row) => row.walletAddress,
     onRowSelectionChange: setSelectedListItems,
     state: {
       sorting,
@@ -293,7 +293,7 @@ function BeneficiaryDetailTableView() {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem onClick={handleTokenAssignModal}>
-                Assign Tokens To All
+                Assign Vouchers To All
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

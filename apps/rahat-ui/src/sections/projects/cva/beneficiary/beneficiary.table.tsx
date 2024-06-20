@@ -5,6 +5,7 @@ import {
   useBeneficiaryStore,
   useBulkAssignClaimsToBeneficiaries,
   usePagination,
+  useProjectBeneficiaries,
   useProjectSettingsStore,
 } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/components/button';
@@ -40,6 +41,7 @@ import { useParams } from 'next/navigation';
 import { useState } from 'react';
 import BulkAssignToken from './bulk-assign-token.modal';
 import { useCvaBeneficiaryTableColumns } from './use.table.column';
+import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 
 export default function BeneficiaryTable() {
   const { setSecondPanelComponent, closeSecondPanel } = useSecondPanel();
@@ -50,24 +52,43 @@ export default function BeneficiaryTable() {
     (state) => state?.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT] as any,
   );
 
-  const beneficiaries = useBeneficiaryStore((state) => state.beneficiaries);
-  console.log({ beneficiaries });
+  // const beneficiaries = useBeneficiaryStore((state) => state.beneficiaries);
+  // console.log({ beneficiaries });
   const meta = useBeneficiaryStore((state) => state.meta);
 
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-  const { pagination, setPerPage, selectedListItems, setSelectedListItems } =
-    usePagination();
+  const {
+    pagination,
+    filters,
+    setFilters,
+    setNextPage,
+    setPrevPage,
+    setPerPage,
+    selectedListItems,
+    setSelectedListItems,
+    resetSelectedListItems,
+  } = usePagination();
   const columns = useCvaBeneficiaryTableColumns();
+
+  const beneficiaries = useProjectBeneficiaries({
+    page: pagination.page,
+    perPage: pagination.perPage,
+    order: 'desc',
+    sort: 'updatedAt',
+    projectUUID: id,
+    ...filters,
+  });
 
   const table = useReactTable({
     manualPagination: true,
-    data: beneficiaries || [],
+    data: beneficiaries.data?.data || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setSelectedListItems,
     getRowId(originalRow, index, parent) {
+      console.log('originalRow', originalRow);
       return originalRow.walletAddress;
     },
     state: {
@@ -207,14 +228,14 @@ export default function BeneficiaryTable() {
               </TableBody>
             </ScrollArea>
           </TableComponent>
-          {/* <CustomPagination
+          <CustomPagination
             currentPage={pagination.page}
-            handleNextPage={handleNextPage}
+            handleNextPage={setNextPage}
             handlePageSizeChange={setPerPage}
-            handlePrevPage={handlePrevPage}
+            handlePrevPage={setPrevPage}
             perPage={pagination.perPage}
             meta={meta || { total: 0, currentPage: 0 }}
-          /> */}
+          />
         </div>
       </div>
     </>

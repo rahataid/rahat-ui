@@ -57,7 +57,7 @@ export default function EditBeneficiary({ beneficiary }: any) {
       name: beneficiary?.name,
       phone: beneficiary?.phone,
       gender: beneficiary?.gender,
-      walletAddress: beneficiary?.wallet,
+      walletAddress: beneficiary?.walletAddress,
       bankedStatus: beneficiary?.bankedStatus,
       internetStatus: beneficiary?.internetStatus,
       phoneStatus: beneficiary?.phoneStatus,

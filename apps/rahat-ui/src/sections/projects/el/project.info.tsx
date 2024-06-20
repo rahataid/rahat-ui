@@ -10,7 +10,6 @@ type ProjectInfoProps = {
   loading: any;
   className?: any;
   beneficiaryDetails: any;
-  totalBeneficiary: any;
   refetchBeneficiary: VoidFunction;
   projectVoucher: any;
   voucherDetails: any;
@@ -19,7 +18,6 @@ type ProjectInfoProps = {
 const ProjectInfo: FC<ProjectInfoProps> = ({
   project,
   beneficiaryDetails,
-  totalBeneficiary,
   refetchBeneficiary,
   loading,
   projectVoucher,
@@ -47,7 +45,7 @@ const ProjectInfo: FC<ProjectInfoProps> = ({
   return (
     <>
       <div className="grid grid-cols-5 grid-flow-col gap-2">
-        <div className="col-span-2 rounded bg-card p-4 shadow">
+        <div className="col-span-2 rounded bg-card p-4 shadow flex flex-col justify-between">
           <div className="mt-6">
             <div>
               <p className="font-medium text-primary text-2xl">
@@ -55,12 +53,8 @@ const ProjectInfo: FC<ProjectInfoProps> = ({
               </p>
             </div>
             <div className="flex items-center justify-between flex-wrap mt-4 gap-10 md:gap-32 mb-4">
-              {renderExtras(project?.extras || {})}
-              <div>
-                <p className="font-light text-xs text-muted-foreground">Type</p>
-                <p className="font-medium text-primary">{project?.type}</p>
-              </div>
-            </div>
+              {renderExtras(project?.extras || {})}                
+              </div>    
           </div>
           <div>
             <p className="font-light text-xs text-muted-foreground">Status</p>
@@ -74,7 +68,7 @@ const ProjectInfo: FC<ProjectInfoProps> = ({
             {/* <p className="font-medium text-primary">{project?.status}</p> */}
           </div>
           <div>
-            <p className="mt-4 sm:w-2/3">{project?.description}</p>
+            <p className="mt-4 sm:w-2/3 italic">{project?.description}</p>
           </div>
         </div>
         <div className="col-span-3">
@@ -82,47 +76,50 @@ const ProjectInfo: FC<ProjectInfoProps> = ({
             <DataCard
               className="h-full"
               title="Total Beneficiary"
-              number={totalBeneficiary || 'N/A'}
+              number={(Number(projectVoucher?.eyeVoucherAssigned)+Number(projectVoucher?.
+                referredVoucherAssigned)
+                ).toString() || 'N/A'}
               loading={loading}
             />
             <DataCard
               className=""
-              title="Enrolled Beneficiary"
+              title="Enrolled Beneficiaries"
               number={
-                beneficiaryDetails ? beneficiaryDetails[0].toString() : '-'
+                projectVoucher?.eyeVoucherAssigned.toLocaleString() || '-'
               }
               Icon={Users}
               refresh={refetchBeneficiary}
             />
             <DataCard
               className=""
-              title="Referred Beneficiary"
+              title="Referred Beneficiaries"
               number={
-                beneficiaryDetails ? beneficiaryDetails[1].toString() : '-'
+                Number(projectVoucher?.
+                  referredVoucherAssigned).toLocaleString()|| '-'
               }
               Icon={Users}
               refresh={refetchBeneficiary}
             />
             <DataCard
               className=""
-              title="Vouchers Redeemed"
-              number={totalVoucherRedeemed || 'N/A'}
+              title="Total Redemptions"
+              number={totalVoucherRedeemed.toLocaleString() || 'N/A'}
               Icon={Users}
-              refresh={refetchBeneficiary}
+              // refresh={refetchBeneficiary}
             />
             <DataCard
               className=""
-              title="Free Vouchers"
-              number={projectVoucher?.eyeVoucherBudget?.toString() || '-'}
+              title="Successful Enrollment"
+              number={projectVoucher?.eyeVoucherClaimed?.toLocaleString() || '-'}
               Icon={Users}
-              refresh={refetchBeneficiary}
+              // refresh={refetchBeneficiary}
             />
             <DataCard
               className=""
-              title="Discount Vouchers"
-              number={projectVoucher?.referredVoucherBudget?.toString() || '-'}
+              title="Successful Referrals"
+              number={projectVoucher?.referredVoucherClaimed?.toLocaleString() || '-'}
               Icon={Users}
-              refresh={refetchBeneficiary}
+              // refresh={refetchBeneficiary}
             />
           </div>
         </div>

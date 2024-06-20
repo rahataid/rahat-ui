@@ -13,7 +13,7 @@ import {
   useReadElProjectGetProjectVoucherDetail,
   useReadElProjectGetTotalBeneficiaries,
 } from 'apps/rahat-ui/src/hooks/el/contracts/elProject';
-import { useProjectVoucher } from 'apps/rahat-ui/src/hooks/el/subgraph/querycall';
+import { useProjectVoucher, useAllVendorVoucher } from 'apps/rahat-ui/src/hooks/el/subgraph/querycall';
 import { useParams } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 import { ProjectChart } from '..';
@@ -24,14 +24,14 @@ import { cn } from '@rahat-ui/shadcn/src';
 
 const ProjectMainView = () => {
   const { id } = useParams();
-  const [projectStats, setProjectStats] = useState();
   const [ELProjectStats, setELProjectStats] = useState();
-  const projectClient = useProjectAction(['count_ben_vendor']);
   const statsClient = useProjectAction(['stats']);
   const project = useProjectStore((state) => state.singleProject);
   const contractSettings = useProjectSettingsStore(
     (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT] || null,
   );
+
+  const[vendorCount,setVendorCount] = useState(0)
 
   const { data: beneficiaryDetails, refetch: refetchBeneficiary } =
     useReadElProjectGetTotalBeneficiaries({
@@ -50,16 +50,7 @@ const ProjectMainView = () => {
     contractSettings?.eyevoucher?.address,
   );
 
-  const getProjectStats = useCallback(async () => {
-    const result = await projectClient.mutateAsync({
-      uuid: id,
-      data: {
-        action: 'elProject.count_ben_vendor',
-        payload: {},
-      },
-    });
-    setProjectStats(result.data);
-  }, [id]);
+  const {data:vendorDetails} = useAllVendorVoucher();  
 
   const getElProjectStats = useCallback(async () => {
     const result = await statsClient.mutateAsync({
@@ -73,9 +64,14 @@ const ProjectMainView = () => {
   }, [id]);
 
   useEffect(() => {
-    getProjectStats();
     getElProjectStats();
-  }, [getProjectStats, getElProjectStats]);
+  }, [getElProjectStats]);
+
+  useEffect(()=>{
+    if(!vendorDetails?.voucherArray) return;
+    const count = Object.keys(vendorDetails?.voucherArray).length;
+    setVendorCount(count);
+  },[vendorDetails])
 
   const filterdELChartData =
     ELProjectStats?.filter((item) => {
@@ -196,6 +192,23 @@ const ProjectMainView = () => {
     },
   ];
 
+  const beneficiaryFilteredData =[
+    {
+      name:'BENEFICIARY_TYPE',
+      grpup:'beneficiary_type',
+      data:[
+        {
+          id:'Enrolled',
+          count:Number(projectVoucher?.eyeVoucherAssigned) || 0
+        },
+        {
+          id:'Referred',
+          count:Number(projectVoucher?.referredVoucherAssigned) || 0
+        }
+      ]
+    }
+  ]
+
   const eyeCheckupData = [
     {
       name: 'Eye Checkup',
@@ -227,8 +240,8 @@ const ProjectMainView = () => {
     {
       name: 'Regular Sunglasses',
       data: [
-        referredRegularSunGlass?.count || 0,
         enrolledRegularSunGlass?.count || 0,
+        referredRegularSunGlass?.count || 0,
       ],
     },
   ];
@@ -238,8 +251,7 @@ const ProjectMainView = () => {
       <ScrollArea className="h-[calc(100vh-80px)]">
         <ProjectInfo
           project={project}
-          totalBeneficiary={projectStats?.benTotal}
-          totalVendor={projectStats?.vendorTotal}
+          totalVendor={vendorCount}
           loading={isLoading}
           refetchBeneficiary={refetchBeneficiary}
           beneficiaryDetails={beneficiaryDetails}
@@ -247,7 +259,7 @@ const ProjectMainView = () => {
           voucherDetails={voucherDetails}
         />
         <ProjectDataCard
-          totalVendor={projectStats?.vendorTotal}
+          totalVendor={vendorCount}
           refetchVoucher={refetchVoucher}
           loading={isLoading}
           ELProjectStats={ELProjectStats}
@@ -271,7 +283,7 @@ const ProjectMainView = () => {
           </div>
         </div>
         <ProjectChart
-          chartData={[...footfallFilteredData, ...filterdELChartData]}
+          chartData={[...footfallFilteredData, ...beneficiaryFilteredData]}
         />
         <div className="grid md:grid-cols-1 lg:grid-cols-2 gap-2 mt-2">
           <div className="bg-card rounded">

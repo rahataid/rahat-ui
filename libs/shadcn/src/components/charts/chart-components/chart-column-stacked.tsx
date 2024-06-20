@@ -51,13 +51,15 @@ export default function ChartColumnStacked({
     },
   });
   return (
-    <Chart
-      dir="ltr"
-      type="bar"
-      series={series}
-      options={chartOptions}
-      height={height}
-      width={width}
-    />
+    <div className="bg-white shadow-md rounded-lg overflow-hidden p-4">
+      <Chart
+        dir="ltr"
+        type="bar"
+        series={series}
+        options={chartOptions}
+        height={height}
+        width={width}
+      />
+    </div>
   );
 }

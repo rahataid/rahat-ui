@@ -289,7 +289,7 @@ function BeneficiaryDetailTableView() {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem onClick={handleTokenAssignModal}>
-                Assign Tokens To All
+                Assign Vouchers To All
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

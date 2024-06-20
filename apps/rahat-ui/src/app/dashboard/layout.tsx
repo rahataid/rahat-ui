@@ -10,12 +10,14 @@ import {
 
 export default function DashboardLayout({
   children,
+  hasDefaultHeader = true,
 }: {
   children: React.ReactNode;
+  hasDefaultHeader?: boolean;
 }) {
   return (
     <AuthGuard>
-      <Nav />
+      {hasDefaultHeader && <Nav />}
       <div className="mx-2">
         <ResizablePanelGroup direction="horizontal" className="border">
           <ResizablePanel minSize={20} defaultSize={20} maxSize={20}>

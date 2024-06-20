@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { getGrievanceClient } from '@rahataid/sdk/clients/grievance.client';
 import { useMutation } from '@tanstack/react-query';
 
-export const useGrievanceList = (payload: Pagination) => {
+export const useGrievanceList: any = (payload: Pagination) => {
   const { queryClient, rumsanService } = useRSQuery();
   const [isFetched, setIsFetched] = useState(false);
 
@@ -27,7 +27,7 @@ export const useGrievanceList = (payload: Pagination) => {
   return query;
 };
 
-export const useGrievanceAdd = () => {
+export const useGrievanceAdd: any = () => {
   const { queryClient, rumsanService } = useRSQuery();
   const grievanceClient = getGrievanceClient(rumsanService.client);
 

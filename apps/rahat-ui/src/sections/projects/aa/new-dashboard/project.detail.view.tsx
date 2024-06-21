@@ -1,6 +1,7 @@
 import { useParams } from 'next/navigation';
 import {
   useAAStations,
+  useAllStats,
   usePhasesStats,
   useProjectStore,
   useStatsStore,
@@ -19,14 +20,16 @@ import SimplePhaseCardContainer from './simple.phase.cards.container';
 import { UUID } from 'crypto';
 import SimpleDataCardsContainer from './simple.data.cards.container';
 import ChartsContainer from './charts.container';
+import Loader from 'apps/rahat-ui/src/components/table.loader';
 
 export default function ProjectDetails() {
   const project = useProjectStore((state) => state.singleProject) as Project;
   const { id } = useParams();
-  const projectID = id as UUID;
-  useAAStations(projectID);
-  usePhasesStats(projectID);
+  const projectId = id as UUID;
+  useAAStations(projectId);
+  usePhasesStats(projectId);
   const { phasesStats } = useStatsStore();
+  const { data: allStats, isLoading } = useAllStats(projectId);
 
   const fundsModal = useBoolean();
   const onDelete = () => {};
@@ -37,22 +40,37 @@ export default function ProjectDetails() {
       <div className="flex gap-4 items-center justify-end pr-4">
         <EditButton path="/" />
         <DeleteButton name="project" handleContinueClick={onDelete} />
-        <Button type="button" variant="outline">
+        <Button type="button" variant="outline" className="shadow-md">
           <CloudDownload size={18} className="mr-1" />
           Download receipt
         </Button>
-        <Button onClick={fundsModal.onTrue}>Add Budget</Button>
+        <Button onClick={fundsModal.onTrue} className="shadow-md">
+          Add Budget
+        </Button>
       </div>
       <ScrollArea className="mt-4 h-[calc(100vh-150px)] pr-4">
-        <div className="grid gap-4">
-          <div className="grid grid-cols-3 gap-4">
-            <ProjectInfoCard />
-            <SimplePhaseCardContainer />
-            <CarouselDemo />
+        {isLoading ? (
+          <Loader />
+        ) : (
+          <div className="grid gap-4">
+            <div className="grid grid-cols-3 gap-4">
+              <ProjectInfoCard project={project} />
+              <SimplePhaseCardContainer
+                phasesStats={phasesStats?.phaseActivities?.data}
+              />
+              <CarouselDemo />
+            </div>
+            <SimpleDataCardsContainer
+              allStats={allStats}
+              projectId={projectId}
+            />
+            <ChartsContainer
+              allStats={allStats?.filter(
+                (data: any) => data.group === 'beneficiary',
+              )}
+            />
           </div>
-          <SimpleDataCardsContainer />
-          <ChartsContainer />
-        </div>
+        )}
       </ScrollArea>
     </div>
   );

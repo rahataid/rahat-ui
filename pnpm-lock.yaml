@@ -105,8 +105,8 @@ importers:
         specifier: ^1.0.125
         version: 1.0.130(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1)
       '@rumsan/react-query':
-        specifier: 0.0.41
-        version: 0.0.41(@types/react@18.3.3)(bufferutil@4.0.8)(typescript@5.4.5)(utf-8-validate@6.0.4)(zod@3.23.8)
+        specifier: 0.0.43
+        version: 0.0.43(@types/react@18.3.3)(bufferutil@4.0.8)(typescript@5.4.5)(utf-8-validate@6.0.4)(zod@3.23.8)
       '@rumsan/sdk':
         specifier: ^0.0.45
         version: 0.0.45
@@ -3109,8 +3109,8 @@ packages:
   '@rumsan/prisma@1.0.130':
     resolution: {integrity: sha512-tIWGpPr+vL1gBaAC3xxEAtzpRApmHaAFQ2k+RBLxOJBTCu/iVv/poJSiqPFT4Ez9Knn4+BiTisGfPpjYrcvPrQ==, tarball: https://npm.pkg.github.com/download/@rumsan/prisma/1.0.130/dfca28563b229e9ea50bfb28f21af3da5469a352}
 
-  '@rumsan/react-query@0.0.41':
-    resolution: {integrity: sha512-zAKqWTaUhDv1c+GOlHB6MFxNdIHzpwxwXEfiy4ylBBwsPyGK2NFPHuOpLqu0v1HnQ25F8l7iAWf//JdjaDQ5Hw==, tarball: https://npm.pkg.github.com/download/@rumsan/react-query/0.0.41/8731ccbd3528d0b1c4182e646a6848348609f6bc}
+  '@rumsan/react-query@0.0.43':
+    resolution: {integrity: sha512-q2YpTo1fg5rCKzW+8tFk+4cIDVwxIzUHXEOVf02uBRAO8P+UsL7fGQ8LFCKU2WbwotK/FcAWNRARDVo+bru4CA==, tarball: https://npm.pkg.github.com/download/@rumsan/react-query/0.0.43/258b14d1ca072f065d117519612fe233565bd482}
 
   '@rumsan/sdk@0.0.42':
     resolution: {integrity: sha512-/u9Oj9UtyZxMqpQoYZijoVq2mdO/ejxUYB2Bevxc5jAySo5Qb9rwmIraki2vNhXoZTnNwD8asaV46621o+1ZxQ==, tarball: https://npm.pkg.github.com/download/@rumsan/sdk/0.0.42/88f1ecdcfbe72064f64782ae015c94178c35a1a7}
@@ -15380,7 +15380,7 @@ snapshots:
       - reflect-metadata
       - rxjs
 
-  '@rumsan/react-query@0.0.41(@types/react@18.3.3)(bufferutil@4.0.8)(typescript@5.4.5)(utf-8-validate@6.0.4)(zod@3.23.8)':
+  '@rumsan/react-query@0.0.43(@types/react@18.3.3)(bufferutil@4.0.8)(typescript@5.4.5)(utf-8-validate@6.0.4)(zod@3.23.8)':
     dependencies:
       '@rumsan/communication': 0.0.8
       '@rumsan/sdk': 0.0.44

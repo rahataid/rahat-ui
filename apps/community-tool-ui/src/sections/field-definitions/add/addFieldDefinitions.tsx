@@ -197,7 +197,7 @@ export default function AddFieldDefinitions({ handleTabChange }: Iprops) {
                           {...field}
                           activeTagIndex={activeTagIndex}
                           setActiveTagIndex={setActiveTagIndex}
-                          placeholder="Enter field variations"
+                          placeholder="Enter value and press ENTER"
                           tags={variationTags}
                           className="min-h-[23px]"
                           setTags={(newTags: Tag) => {

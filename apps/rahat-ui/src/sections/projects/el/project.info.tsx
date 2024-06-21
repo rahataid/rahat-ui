@@ -10,7 +10,6 @@ type ProjectInfoProps = {
   loading: any;
   className?: any;
   beneficiaryDetails: any;
-  totalBeneficiary: any;
   refetchBeneficiary: VoidFunction;
   projectVoucher: any;
   voucherDetails: any;
@@ -19,7 +18,6 @@ type ProjectInfoProps = {
 const ProjectInfo: FC<ProjectInfoProps> = ({
   project,
   beneficiaryDetails,
-  totalBeneficiary,
   refetchBeneficiary,
   loading,
   projectVoucher,
@@ -43,7 +41,6 @@ const ProjectInfo: FC<ProjectInfoProps> = ({
       );
     });
   };
-  console.log(renderExtras(project?.extras || {}));
   return (
     <>
       <div className="grid grid-cols-5 grid-flow-col gap-2">
@@ -52,7 +49,7 @@ const ProjectInfo: FC<ProjectInfoProps> = ({
             <div>
               <p className="font-medium text-primary text-2xl">
                 {project?.name}
-              </p>
+              </p>            
             </div>
             <div className="flex items-center justify-between flex-wrap mt-4 gap-10 md:gap-32 mb-4">
               {renderExtras(project?.extras || {})}                

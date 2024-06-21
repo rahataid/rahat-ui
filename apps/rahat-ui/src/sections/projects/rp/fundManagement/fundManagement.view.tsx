@@ -1,5 +1,6 @@
 import ChartLine from '@rahat-ui/shadcn/src/components/charts/chart-components/chart-line';
 import { Avatar } from '@rahat-ui/shadcn/src/components/ui/avatar';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   Card,
   CardContent,
@@ -9,6 +10,7 @@ import {
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import DataCard from 'apps/rahat-ui/src/components/dataCard';
 import { ArrowUp, Users } from 'lucide-react';
+import { useRouter, useParams } from 'next/navigation';
 
 const sampleSeries = [
   {
@@ -33,6 +35,8 @@ const sampleCategories = [
 ];
 
 const FundManagementView = () => {
+  const route = useRouter();
+  const { id } = useParams();
   return (
     <>
       <div className="grid grid-cols-12 gap-2 p-4 bg-secondary h-[calc(100vh-75px)]">
@@ -95,9 +99,14 @@ const FundManagementView = () => {
               There is no content at the moment. Create a disbursement plan to
               add data.
             </p>
-            <button className="mt-4 bg-blue-500 text-white px-4 py-2 rounded">
+            <Button
+              onClick={() =>
+                route.push(`/projects/rp/${id}/fundManagement/disburse`)
+              }
+              className="mt-4 bg-blue-500 text-white px-4 py-2 rounded"
+            >
               Create Disbursement Plan
-            </button>
+            </Button>
           </div>
         </div>
       </div>{' '}

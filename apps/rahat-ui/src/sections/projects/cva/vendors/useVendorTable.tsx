@@ -19,20 +19,27 @@ interface VendorTableProps {
   handleViewClick: any;
 }
 
+//TEMP DATA
+const vendorNames = ['Alice', 'Bob', 'Charlie', 'David', 'Eve', 'Frank'];
+
+//select random vendor name
+const randomVendorName = () => vendorNames[Math.floor(Math.random() * vendorNames.length)];
+//endRegion
+
 export const useVendorTable = ({ handleViewClick }: VendorTableProps) => {
   const columns: ColumnDef<VendorType>[] = [
-    // {
-    //   accessorKey: 'name',
-    //   header: 'Name',
-    //   cell: ({ row }) => (
-    //     <div className="capitalize">{row.getValue('name')}</div>
-    //   ),
-    // },
+    {
+      accessorKey: 'name',
+      header: 'Name',
+      cell: ({ row }) => (
+        <div className="capitalize">{row.getValue('name') || randomVendorName()}</div>
+      ),
+    },
     {
       accessorKey: 'walletAddress',
       header: 'Wallet Address',
       cell: ({ row }) => (
-        <div className="capitalize">{row.getValue('walletAddress')}</div>
+        <div className="capitalize">{truncateEthAddress(row.getValue('walletAddress'))}</div>
       ),
     },
     // {

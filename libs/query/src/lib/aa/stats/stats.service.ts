@@ -70,3 +70,23 @@ export const useGetCommunicationLogs = (uuid: UUID) => {
 
   return query;
 };
+
+export const useAllStats = (uuid: UUID) => {
+  const q = useProjectAction();
+
+  const query = useQuery({
+    queryKey: ['allStats', uuid],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'aaProject.stats.getAll',
+          payload: {},
+        },
+      });
+      return mutate.data;
+    },
+  });
+
+  return query;
+};

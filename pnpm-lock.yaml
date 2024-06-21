@@ -90,11 +90,11 @@ importers:
         specifier: 0.0.32
         version: 0.0.32(bufferutil@4.0.8)(typescript@5.4.5)(zod@3.23.8)
       '@rumsan/communication':
-        specifier: ^0.0.15
-        version: 0.0.15
+        specifier: ^0.0.16
+        version: 0.0.16
       '@rumsan/communication-query':
-        specifier: ^0.0.8
-        version: 0.0.8(@types/react@18.3.3)
+        specifier: ^0.0.9
+        version: 0.0.9
       '@rumsan/core':
         specifier: ^3.0.133
         version: 3.0.140
@@ -3087,14 +3087,11 @@ packages:
       rollup:
         optional: true
 
-  '@rumsan/communication-query@0.0.8':
-    resolution: {integrity: sha512-0hX9wkXMv8vJrqW4gLGt1UyAezwRpayXpQNTS/nsC3xSj9nypElp/H2uKfs9YexBXg+s1CSactDnDOjA9gKl0A==, tarball: https://npm.pkg.github.com/download/@rumsan/communication-query/0.0.8/8f5d8128fa871613480a5874691ed1a0fd8feaab}
+  '@rumsan/communication-query@0.0.9':
+    resolution: {integrity: sha512-rxHKo8kkNGMMF2CcYT7EZsVa+oybWznlw+wpmv4kV51Ewq+AokavcDJ5EOzuiO+iKcEdKXMRHhSQvN3C50afvA==, tarball: https://npm.pkg.github.com/download/@rumsan/communication-query/0.0.9/1252b7c8a030419929645936f876f111693e150a}
 
-  '@rumsan/communication@0.0.13':
-    resolution: {integrity: sha512-kW1yOQHen9Gcc482vR9iSyHgBP0HSqRzP8zYeh3XpHmZkSllHooMEORD9yWB4bO5d78U5tV8XUmin19NdGl5XQ==, tarball: https://npm.pkg.github.com/download/@rumsan/communication/0.0.13/5c3237e6acbbd2a66c4a5e24f00a7de7160c21c9}
-
-  '@rumsan/communication@0.0.15':
-    resolution: {integrity: sha512-4T5Y2nBXYp0BOR6dmVsVY5uJkuvo7Tev0sPXNkPy1MXWTxftt3SCQtrYYkZYuVcEeuZlVmc06gwUaeIg1Sh+rQ==, tarball: https://npm.pkg.github.com/download/@rumsan/communication/0.0.15/458dd42a4b98370659e09010878888b45c65e7dc}
+  '@rumsan/communication@0.0.16':
+    resolution: {integrity: sha512-UG1EQkWStLJM5sOW5t+VYYoWh+0uacVmRj68gQkHA1PVVJt03xJrgrmdsG7xeZQZyEWaDWFgd1VsRyVh4d7UNg==, tarball: https://npm.pkg.github.com/download/@rumsan/communication/0.0.16/d9c79f84a5d7dc4a9b3ff082c72e35577777fd21}
 
   '@rumsan/communication@0.0.8':
     resolution: {integrity: sha512-Ht+vIdZVabacljbIO54QDm2FXYSH5CAKyDQ68/NcvQdqQz39x3wZLt4DWuliTGY6ZpaniddVyql57NTdcmae6Q==, tarball: https://npm.pkg.github.com/download/@rumsan/communication/0.0.8/b11e20c168799814e0d5058533ec77ed35f2d505}
@@ -15268,26 +15265,11 @@ snapshots:
     optionalDependencies:
       rollup: 2.79.1
 
-  '@rumsan/communication-query@0.0.8(@types/react@18.3.3)':
+  '@rumsan/communication-query@0.0.9':
     dependencies:
-      '@rumsan/communication': 0.0.13
-      '@tanstack/react-query': 5.22.2(react@18.2.0)
-      axios: 1.7.2
-      react: 18.2.0
       tslib: 2.6.3
-      zustand: 4.5.2(@types/react@18.3.3)(react@18.2.0)
-    transitivePeerDependencies:
-      - '@types/react'
-      - debug
-      - immer
 
-  '@rumsan/communication@0.0.13':
-    dependencies:
-      axios: 1.7.2
-    transitivePeerDependencies:
-      - debug
-
-  '@rumsan/communication@0.0.15': {}
+  '@rumsan/communication@0.0.16': {}
 
   '@rumsan/communication@0.0.8':
     dependencies:

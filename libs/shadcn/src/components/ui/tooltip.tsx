@@ -9,19 +9,6 @@ import {
 } from '@radix-ui/react-tooltip';
 import { cn } from '../../utils';
 
-<<<<<<< HEAD
-=======
-// const TooltipProvider = TooltipPrimitive.Provider;
-// const x = TooltipPrimitive.Provider;
-
-import { TooltipProvider, TooltipTrigger, Tooltip } from '@radix-ui/react-tooltip';
-
-
-// const Tooltip = TooltipPrimitive.Root;
-
-// const TooltipTrigger = TooltipPrimitive.Trigger;
-
->>>>>>> comms-version-upgrade
 const TooltipContent = React.forwardRef<
   React.ElementRef<typeof Content>,
   React.ComponentPropsWithoutRef<typeof Content>

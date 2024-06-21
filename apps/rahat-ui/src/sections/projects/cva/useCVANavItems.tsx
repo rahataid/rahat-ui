@@ -83,11 +83,11 @@ export const useNavItems = () => {
           ),
           title: 'Create Token',
         },
-        {
-          title: 'Lock Project',
-          icon: <Lock size={18} strokeWidth={1.5} />,
-          onClick: handleLockProject,
-        },
+        // {
+        //   title: 'Lock Project',
+        //   icon: <Lock size={18} strokeWidth={1.5} />,
+        //   onClick: handleLockProject,
+        // },
         {
           title: 'Close Project',
           path: '/edit',

@@ -45,7 +45,6 @@ export default function StakeholdersGroupsDetailView({
   React.useEffect(() => {
     deleteStakeholdersGroup.isSuccess && closeSecondPanel();
   }, [deleteStakeholdersGroup]);
-
   return (
     <>
       <div className="py-5 px-2 bg-secondary flex justify-between">
@@ -123,11 +122,15 @@ export default function StakeholdersGroupsDetailView({
           </div>
           <div className="pl-2">
             <h1 className="font-semibold">Members</h1>
-            {stakeholdersGroupDetail?.stakeholders?.map((member: any) => (
-              <p>
-                {member?.name} ({member?.designation})
-              </p>
-            ))}
+            {stakeholdersGroupDetail?.stakeholders?.length > 0
+              ? stakeholdersGroupDetail?.stakeholders?.map((member: any) => (
+                  <p>
+                    {member?.name} ({member?.designation})
+                  </p>
+                ))
+              : stakeholdersGroupDetail?.members?.map((member: any) => {
+                  return <p>{member?.pii?.name}</p>;
+                })}
           </div>
         </div>
       ) : (

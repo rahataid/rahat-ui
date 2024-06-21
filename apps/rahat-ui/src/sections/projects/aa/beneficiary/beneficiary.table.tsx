@@ -110,7 +110,7 @@ function BeneficiaryDetailTableView() {
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
-    getRowId: (row) => row.wallet,
+    getRowId: (row) => row.walletAddress,
     onRowSelectionChange: setSelectedListItems,
     state: {
       sorting,
@@ -136,7 +136,6 @@ function BeneficiaryDetailTableView() {
       route.push(`/projects/el/${id}`);
     }
   }, []);
-
   return (
     <>
       <div className="p-2 bg-secondary">

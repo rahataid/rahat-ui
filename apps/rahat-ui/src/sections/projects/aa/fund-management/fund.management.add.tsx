@@ -84,9 +84,12 @@ export default function AddFundManagementView() {
     const selectedGroup = beneficiariesGroups?.find(
       (g: any) => g?.uuid === watchBeneficiaryGroup,
     );
+
     if (selectedGroup && numberOfTokens) {
       const groupMembers = selectedGroup?.members?.length;
       form.setValue('totalTokensReserved', numberOfTokens * groupMembers);
+    } else {
+      form.setValue('totalTokensReserved', 0);
     }
   }, [watchTokens, watchBeneficiaryGroup]);
 

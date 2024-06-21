@@ -20,7 +20,7 @@ const AddProjectConfirmModal: React.FC<AddProjectConfirmModalProps> = ({
   handleClose,
 }) => {
   return (
-    <Dialog open={open}>
+    <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Add Project</DialogTitle>

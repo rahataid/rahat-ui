@@ -70,7 +70,7 @@ export default function AddAutomatedTriggerForm({ form }: IProps) {
     <>
       <Form {...form}>
         <form>
-          <div className="mt-4 grid gap-4">
+          <div className="mt-4 grid gap-4 ">
             <FormItem className="w-full">
               <FormLabel>Selected Phase</FormLabel>
               <FormControl>

@@ -33,6 +33,7 @@ export default function ActivityCommunicationListCard({
                 <h1 className="font-medium text-primary">{comm?.groupName}</h1>
                 <Button
                   type="button"
+                  disabled={comm?.campaignData?.status === 'COMPLETED'}
                   className="h-7 w-24"
                   onClick={() => triggerCommunication(comm?.campaignId)}
                 >

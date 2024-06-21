@@ -28,11 +28,11 @@ const TokenAssingnConfirm = ({
     <Dialog open={open}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Confirm Token Assign</DialogTitle>
+          <DialogTitle>Confirm Voucher Assign</DialogTitle>
         </DialogHeader>
         <DialogDescription className="text-muted-foreground">
-          Are you sure you want to assign {tokens}{' '}
-          {tokens > 1 ? 'tokens' : 'token'} to selected beneficiaries ?
+          Are you sure you want to assign {} 
+          {tokens > 1 ? 'vouchers' : 'voucher'} to selected beneficiaries ?
         </DialogDescription>
         <DialogFooter className="sm:justify-end">
           <DialogClose asChild>

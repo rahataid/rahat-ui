@@ -8,7 +8,7 @@ import { ICampaignItemApiResponse } from '@rahat-ui/types';
 import { useSecondPanel } from 'apps/rahat-ui/src/providers/second-panel-provider';
 import TextDetailSplitView from './text.detail.split.view';
 
-export default function useTextTableColumn() {
+export default function useTextTableColumn(refetch : any) {
   const { setSecondPanelComponent, closeSecondPanel } = useSecondPanel();
 
   const openSplitDetailView = (rowDetail: ICampaignItemApiResponse) => {
@@ -16,6 +16,7 @@ export default function useTextTableColumn() {
       <TextDetailSplitView
         details={rowDetail}
         closeSecondPanel={closeSecondPanel}
+        refetch={refetch}
       />,
     );
   };

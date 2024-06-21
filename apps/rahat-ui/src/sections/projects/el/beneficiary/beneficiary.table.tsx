@@ -218,9 +218,10 @@ function BeneficiaryDetailTableView() {
   useEffect(() => {
     if(result?.data){
       setisTransacting(false);
+      setVoucherType('FREE_VOUCHER');
       projectBeneficiaries.refetch();
     }
-  }, [result]);
+  }, [result.isFetching]);
 
   const handleBulkAssign = async () => {
     setisTransacting(true);
@@ -305,9 +306,9 @@ function BeneficiaryDetailTableView() {
                 onClick={() => {
                   setVoucherType('NOT_ASSIGNED');
                   resetSelectedListItems();
-                  setPagination({page: 1, perPage: 5})
+                  setPagination({page: 1, perPage: pagination.perPage})
                   closeSecondPanel();
-                  route.replace(`${pathname}?voucherType=NOT_ASSIGNED${hash}`);
+                  // route.replace(`${pathname}?voucherType=NOT_ASSIGNED${hash}`);
                 }}
                 value="NOT_ASSIGNED"
               >
@@ -316,10 +317,10 @@ function BeneficiaryDetailTableView() {
               <TabsTrigger
                 onClick={() => {
                   setVoucherType('FREE_VOUCHER');
-                  setPagination({page: 1, perPage: 5})
+                  setPagination({page: 1, perPage: pagination.perPage})
                   resetSelectedListItems();
                   closeSecondPanel();
-                  route.replace(`${pathname}?voucherType=FREE_VOUCHER${hash}`);
+                  // route.replace(`${pathname}?voucherType=FREE_VOUCHER${hash}`);
                 }}
                 value="FREE_VOUCHER"
               >
@@ -328,12 +329,10 @@ function BeneficiaryDetailTableView() {
               <TabsTrigger
                 onClick={() => {
                   setVoucherType('DISCOUNT_VOUCHER');
-                  setPagination({page: 1, perPage: 5})
+                  setPagination({page: 1, perPage: pagination.perPage})
                   resetSelectedListItems();
                   closeSecondPanel();
-                  route.replace(
-                    `${pathname}?voucherType=DISCOUNT_VOUCHER${hash}`,
-                  );
+                  // route.replace(`${pathname}?voucherType=DISCOUNT_VOUCHER${hash}`);
                 }}
                 value="DISCOUNT_VOUCHER"
               >

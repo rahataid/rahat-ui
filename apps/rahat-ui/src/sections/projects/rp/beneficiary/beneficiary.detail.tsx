@@ -391,13 +391,13 @@ function BeneficiaryInfo({
       </div>
       <div className="flex items-center justify-between gap-3 mx-2">
         <DataCard
-          className="w-[350px]"
+          className="w-screen"
           title="Tickets Assigned"
           number={'0'}
           Icon={Home}
         />
         <DataCard
-          className="w-[350px]"
+          className="w-screen"
           title="Tickets Claimed"
           number={'0'}
           Icon={Home}

@@ -5,5 +5,9 @@ export const metadata = {
 };
 
 export default function TreasuryPage() {
-  return <TreasuryView />;
+  return (
+    <div className="bg-secondary p-6 h-[calc(100vh-80px)]">
+      <TreasuryView />
+    </div>
+  );
 }

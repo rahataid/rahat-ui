@@ -1,7 +1,8 @@
 import React from 'react';
+import TreasuryDetails from './treasury.details';
 
 const TreasuryView = () => {
-  return <div>TreasuryView</div>;
+  return <TreasuryDetails />;
 };
 
 export default TreasuryView;

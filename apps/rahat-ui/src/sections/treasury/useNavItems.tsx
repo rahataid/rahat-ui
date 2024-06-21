@@ -38,7 +38,7 @@ export const useTreasuryNavItems = () => {
       children: [
         {
           title: 'Create Token',
-          path: `/projects/createToken`,
+          path: `/treasury/createToken`,
           icon: <PlusSquare size={18} strokeWidth={1.5} />,
         },
       ],

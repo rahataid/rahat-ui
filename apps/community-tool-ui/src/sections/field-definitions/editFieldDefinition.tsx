@@ -27,6 +27,7 @@ import { Minus, Plus } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { z } from 'zod';
 import { FieldType } from '../../constants/fieldDefinition.const';
+import { Tag, TagInput } from 'emblor';
 
 export default function EditFieldDefinition({
   data,
@@ -36,12 +37,20 @@ export default function EditFieldDefinition({
   const updateFieldDefinition = useFieldDefinitionsUpdate();
 
   const [showLabelValue, setShowLabelValue] = useState(false);
+  const [variationTags, setVariationTags] = useState<Tag[]>([]);
+  const [activeTagIndex, setActiveTagIndex] = useState<number | null>(null);
 
   const FormSchema = z.object({
     name: z.string(),
     fieldType: z.string().toUpperCase(),
     isActive: z.boolean(),
     isTargeting: z.boolean(),
+    variations: z.array(
+      z.object({
+        id: z.string(),
+        text: z.string(),
+      }),
+    ),
     fieldPopulate: z.array(
       z.object({
         label: z.string(),
@@ -49,6 +58,15 @@ export default function EditFieldDefinition({
       }),
     ),
   });
+
+  const formattedVariations = data.variations?.length
+    ? data.variations.map((d) => {
+        return {
+          id: d,
+          text: d,
+        };
+      })
+    : [];
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -58,10 +76,13 @@ export default function EditFieldDefinition({
       isActive: data?.isActive || false,
       isTargeting: data?.isTargeting || false,
       fieldPopulate: data?.fieldPopulate?.data || [],
+      variations: variationTags,
     },
   });
 
   useEffect(() => {
+    if (formattedVariations.length) setVariationTags(formattedVariations);
+
     form.reset({
       name: data?.name || '',
       fieldType: data?.fieldType || '',
@@ -70,6 +91,7 @@ export default function EditFieldDefinition({
       fieldPopulate: data?.fieldPopulate?.data || [],
     });
   }, [
+    data?.variations,
     data?.fieldPopulate?.data,
     data?.fieldType,
     data?.isActive,
@@ -77,6 +99,7 @@ export default function EditFieldDefinition({
     data?.name,
     form,
   ]);
+
   const { fields, append, remove } = useFieldArray({
     name: 'fieldPopulate',
     control: form.control,
@@ -98,6 +121,10 @@ export default function EditFieldDefinition({
       fieldPopulateBody = formData?.fieldPopulate;
     }
 
+    const variationNames = variationTags.length
+      ? variationTags.map((d) => d.text)
+      : [];
+
     const optionsWithValue = fieldPopulateBody.filter((f) => f.value !== '');
     const populate = optionsWithValue.length
       ? { data: optionsWithValue }
@@ -111,6 +138,7 @@ export default function EditFieldDefinition({
         isActive: formData?.isActive,
         isTargeting: formData?.isTargeting,
         fieldPopulate: populate,
+        variations: variationNames,
       },
     });
   };
@@ -130,6 +158,8 @@ export default function EditFieldDefinition({
       }
     }
   }, [showLabelValue, fields, append, form]);
+
+  const { setValue } = form;
 
   return (
     <Form {...form}>
@@ -163,6 +193,34 @@ export default function EditFieldDefinition({
                   );
                 }}
               />
+
+              <FormField
+                control={form.control}
+                name="variations"
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <Label className="text-xs font-medium">Variations</Label>
+                      <FormControl>
+                        <TagInput
+                          {...field}
+                          activeTagIndex={activeTagIndex}
+                          setActiveTagIndex={setActiveTagIndex}
+                          placeholder="Enter field variations"
+                          tags={variationTags}
+                          className="min-h-[23px]"
+                          setTags={(newTags: Tag) => {
+                            setVariationTags(newTags);
+                            setValue('variations', newTags as [Tag, ...Tag[]]);
+                          }}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
+
               <FormField
                 control={form.control}
                 name="fieldType"

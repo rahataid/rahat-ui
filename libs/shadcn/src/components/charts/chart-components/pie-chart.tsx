@@ -36,6 +36,7 @@ const CommunityStyledChart = styled(Chart)({
 // ----------------------------------------------------------------------
 
 interface Props {
+  custom?: boolean;
   title?: string;
   subheader?: string;
   chart: {
@@ -53,6 +54,7 @@ interface Props {
 }
 
 export default function PieChart({
+  custom,
   title,
   subheader,
   chart,
@@ -131,6 +133,15 @@ export default function PieChart({
             />
           </div>
         </div>
+      ) : custom ? (
+        <Chart
+          dir="ltr"
+          type="pie"
+          series={chartSeries}
+          options={chartOptions}
+          height={height}
+          width={width}
+        />
       ) : (
         <div className="bg-white shadow-md rounded-lg overflow-hidden p-4">
           <div className="flex flex-col items-center justify-center">

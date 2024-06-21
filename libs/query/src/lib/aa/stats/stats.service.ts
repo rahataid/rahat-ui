@@ -49,6 +49,24 @@ export const useCommunicationStats = (uuid: UUID) => {
       return mutate.data;
     },
   });
+  return query;
+};
+export const useGetCommunicationLogs = (uuid: UUID) => {
+  const q = useProjectAction();
+
+  const query = useQuery({
+    queryKey: ['communicationlogs', uuid],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'aa.jobs.communication.getCommunicationLogs',
+          payload: {},
+        },
+      });
+      return mutate.data;
+    },
+  });
 
   return query;
 };

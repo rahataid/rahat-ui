@@ -78,20 +78,20 @@ dependencies:
     specifier: 0.0.9
     version: 0.0.9
   '@rahataid/community-tool-sdk':
-    specifier: ^0.0.29
-    version: 0.0.29
+    specifier: ^0.0.30
+    version: 0.0.30
   '@rahataid/el-subgraph':
-    specifier: 0.0.12
-    version: 0.0.12
+    specifier: 0.0.13
+    version: 0.0.13
   '@rahataid/sdk':
     specifier: 0.0.32
     version: 0.0.32(typescript@5.4.5)(zod@3.23.8)
   '@rumsan/communication':
-    specifier: ^0.0.15
-    version: 0.0.15
+    specifier: ^0.0.17
+    version: 0.0.17
   '@rumsan/communication-query':
-    specifier: ^0.0.8
-    version: 0.0.8(@types/react@18.3.3)
+    specifier: ^0.0.10
+    version: 0.0.10
   '@rumsan/core':
     specifier: ^3.0.133
     version: 3.0.140
@@ -444,7 +444,7 @@ devDependencies:
     version: 3.4.3(ts-node@10.9.2)
   ts-jest:
     specifier: ^29.1.2
-    version: 29.1.4(@babel/core@7.24.6)(babel-jest@29.7.0)(esbuild@0.19.12)(jest@29.7.0)(typescript@5.4.5)
+    version: 29.1.4(@babel/core@7.24.6)(babel-jest@29.7.0)(esbuild@0.17.19)(jest@29.7.0)(typescript@5.4.5)
   ts-node:
     specifier: 10.9.2
     version: 10.9.2(@swc/core@1.4.17)(@types/node@20.12.13)(typescript@5.4.5)
@@ -2221,6 +2221,7 @@ packages:
     cpu: [ppc64]
     os: [aix]
     requiresBuild: true
+    dev: true
     optional: true
 
   /@esbuild/android-arm64@0.17.19:
@@ -2229,7 +2230,6 @@ packages:
     cpu: [arm64]
     os: [android]
     requiresBuild: true
-    dev: false
     optional: true
 
   /@esbuild/android-arm64@0.19.12:
@@ -2238,6 +2238,7 @@ packages:
     cpu: [arm64]
     os: [android]
     requiresBuild: true
+    dev: true
     optional: true
 
   /@esbuild/android-arm@0.17.19:
@@ -2246,7 +2247,6 @@ packages:
     cpu: [arm]
     os: [android]
     requiresBuild: true
-    dev: false
     optional: true
 
   /@esbuild/android-arm@0.19.12:
@@ -2255,6 +2255,7 @@ packages:
     cpu: [arm]
     os: [android]
     requiresBuild: true
+    dev: true
     optional: true
 
   /@esbuild/android-x64@0.17.19:
@@ -2263,7 +2264,6 @@ packages:
     cpu: [x64]
     os: [android]
     requiresBuild: true
-    dev: false
     optional: true
 
   /@esbuild/android-x64@0.19.12:
@@ -2272,6 +2272,7 @@ packages:
     cpu: [x64]
     os: [android]
     requiresBuild: true
+    dev: true
     optional: true
 
   /@esbuild/darwin-arm64@0.17.19:
@@ -2280,7 +2281,6 @@ packages:
     cpu: [arm64]
     os: [darwin]
     requiresBuild: true
-    dev: false
     optional: true
 
   /@esbuild/darwin-arm64@0.19.12:
@@ -2289,6 +2289,7 @@ packages:
     cpu: [arm64]
     os: [darwin]
     requiresBuild: true
+    dev: true
     optional: true
 
   /@esbuild/darwin-x64@0.17.19:
@@ -2297,7 +2298,6 @@ packages:
     cpu: [x64]
     os: [darwin]
     requiresBuild: true
-    dev: false
     optional: true
 
   /@esbuild/darwin-x64@0.19.12:
@@ -2306,6 +2306,7 @@ packages:
     cpu: [x64]
     os: [darwin]
     requiresBuild: true
+    dev: true
     optional: true
 
   /@esbuild/freebsd-arm64@0.17.19:
@@ -2314,7 +2315,6 @@ packages:
     cpu: [arm64]
     os: [freebsd]
     requiresBuild: true
-    dev: false
     optional: true
 
   /@esbuild/freebsd-arm64@0.19.12:
@@ -2323,6 +2323,7 @@ packages:
     cpu: [arm64]
     os: [freebsd]
     requiresBuild: true
+    dev: true
     optional: true
 
   /@esbuild/freebsd-x64@0.17.19:
@@ -2331,7 +2332,6 @@ packages:
     cpu: [x64]
     os: [freebsd]
     requiresBuild: true
-    dev: false
     optional: true
 
   /@esbuild/freebsd-x64@0.19.12:
@@ -2340,6 +2340,7 @@ packages:
     cpu: [x64]
     os: [freebsd]
     requiresBuild: true
+    dev: true
     optional: true
 
   /@esbuild/linux-arm64@0.17.19:
@@ -2348,7 +2349,6 @@ packages:
     cpu: [arm64]
     os: [linux]
     requiresBuild: true
-    dev: false
     optional: true
 
   /@esbuild/linux-arm64@0.19.12:
@@ -2357,6 +2357,7 @@ packages:
     cpu: [arm64]
     os: [linux]
     requiresBuild: true
+    dev: true
     optional: true
 
   /@esbuild/linux-arm@0.17.19:
@@ -2365,7 +2366,6 @@ packages:
     cpu: [arm]
     os: [linux]
     requiresBuild: true
-    dev: false
     optional: true
 
   /@esbuild/linux-arm@0.19.12:
@@ -2374,6 +2374,7 @@ packages:
     cpu: [arm]
     os: [linux]
     requiresBuild: true
+    dev: true
     optional: true
 
   /@esbuild/linux-ia32@0.17.19:
@@ -2382,7 +2383,6 @@ packages:
     cpu: [ia32]
     os: [linux]
     requiresBuild: true
-    dev: false
     optional: true
 
   /@esbuild/linux-ia32@0.19.12:
@@ -2391,6 +2391,7 @@ packages:
     cpu: [ia32]
     os: [linux]
     requiresBuild: true
+    dev: true
     optional: true
 
   /@esbuild/linux-loong64@0.17.19:
@@ -2399,7 +2400,6 @@ packages:
     cpu: [loong64]
     os: [linux]
     requiresBuild: true
-    dev: false
     optional: true
 
   /@esbuild/linux-loong64@0.19.12:
@@ -2408,6 +2408,7 @@ packages:
     cpu: [loong64]
     os: [linux]
     requiresBuild: true
+    dev: true
     optional: true
 
   /@esbuild/linux-mips64el@0.17.19:
@@ -2416,7 +2417,6 @@ packages:
     cpu: [mips64el]
     os: [linux]
     requiresBuild: true
-    dev: false
     optional: true
 
   /@esbuild/linux-mips64el@0.19.12:
@@ -2425,6 +2425,7 @@ packages:
     cpu: [mips64el]
     os: [linux]
     requiresBuild: true
+    dev: true
     optional: true
 
   /@esbuild/linux-ppc64@0.17.19:
@@ -2433,7 +2434,6 @@ packages:
     cpu: [ppc64]
     os: [linux]
     requiresBuild: true
-    dev: false
     optional: true
 
   /@esbuild/linux-ppc64@0.19.12:
@@ -2442,6 +2442,7 @@ packages:
     cpu: [ppc64]
     os: [linux]
     requiresBuild: true
+    dev: true
     optional: true
 
   /@esbuild/linux-riscv64@0.17.19:
@@ -2450,7 +2451,6 @@ packages:
     cpu: [riscv64]
     os: [linux]
     requiresBuild: true
-    dev: false
     optional: true
 
   /@esbuild/linux-riscv64@0.19.12:
@@ -2459,6 +2459,7 @@ packages:
     cpu: [riscv64]
     os: [linux]
     requiresBuild: true
+    dev: true
     optional: true
 
   /@esbuild/linux-s390x@0.17.19:
@@ -2467,7 +2468,6 @@ packages:
     cpu: [s390x]
     os: [linux]
     requiresBuild: true
-    dev: false
     optional: true
 
   /@esbuild/linux-s390x@0.19.12:
@@ -2476,6 +2476,7 @@ packages:
     cpu: [s390x]
     os: [linux]
     requiresBuild: true
+    dev: true
     optional: true
 
   /@esbuild/linux-x64@0.17.19:
@@ -2484,7 +2485,6 @@ packages:
     cpu: [x64]
     os: [linux]
     requiresBuild: true
-    dev: false
     optional: true
 
   /@esbuild/linux-x64@0.19.12:
@@ -2493,6 +2493,7 @@ packages:
     cpu: [x64]
     os: [linux]
     requiresBuild: true
+    dev: true
     optional: true
 
   /@esbuild/netbsd-x64@0.17.19:
@@ -2501,7 +2502,6 @@ packages:
     cpu: [x64]
     os: [netbsd]
     requiresBuild: true
-    dev: false
     optional: true
 
   /@esbuild/netbsd-x64@0.19.12:
@@ -2510,6 +2510,7 @@ packages:
     cpu: [x64]
     os: [netbsd]
     requiresBuild: true
+    dev: true
     optional: true
 
   /@esbuild/openbsd-x64@0.17.19:
@@ -2518,7 +2519,6 @@ packages:
     cpu: [x64]
     os: [openbsd]
     requiresBuild: true
-    dev: false
     optional: true
 
   /@esbuild/openbsd-x64@0.19.12:
@@ -2527,6 +2527,7 @@ packages:
     cpu: [x64]
     os: [openbsd]
     requiresBuild: true
+    dev: true
     optional: true
 
   /@esbuild/sunos-x64@0.17.19:
@@ -2535,7 +2536,6 @@ packages:
     cpu: [x64]
     os: [sunos]
     requiresBuild: true
-    dev: false
     optional: true
 
   /@esbuild/sunos-x64@0.19.12:
@@ -2544,6 +2544,7 @@ packages:
     cpu: [x64]
     os: [sunos]
     requiresBuild: true
+    dev: true
     optional: true
 
   /@esbuild/win32-arm64@0.17.19:
@@ -2552,7 +2553,6 @@ packages:
     cpu: [arm64]
     os: [win32]
     requiresBuild: true
-    dev: false
     optional: true
 
   /@esbuild/win32-arm64@0.19.12:
@@ -2561,6 +2561,7 @@ packages:
     cpu: [arm64]
     os: [win32]
     requiresBuild: true
+    dev: true
     optional: true
 
   /@esbuild/win32-ia32@0.17.19:
@@ -2569,7 +2570,6 @@ packages:
     cpu: [ia32]
     os: [win32]
     requiresBuild: true
-    dev: false
     optional: true
 
   /@esbuild/win32-ia32@0.19.12:
@@ -2578,6 +2578,7 @@ packages:
     cpu: [ia32]
     os: [win32]
     requiresBuild: true
+    dev: true
     optional: true
 
   /@esbuild/win32-x64@0.17.19:
@@ -2586,7 +2587,6 @@ packages:
     cpu: [x64]
     os: [win32]
     requiresBuild: true
-    dev: false
     optional: true
 
   /@esbuild/win32-x64@0.19.12:
@@ -2595,6 +2595,7 @@ packages:
     cpu: [x64]
     os: [win32]
     requiresBuild: true
+    dev: true
     optional: true
 
   /@eslint-community/eslint-utils@4.4.0(eslint@8.57.0):
@@ -6069,14 +6070,14 @@ packages:
       '@swc/helpers': 0.5.11
     dev: false
 
-  /@rahataid/community-tool-sdk@0.0.29:
-    resolution: {integrity: sha512-LWBIf2YmbwlRF1dwALhotS+4Zc/bFM+Hqqy1GsmtcUSq6xZlgR4pNfVYdwiIXgjwkMen32jm9smlWw28PmcOcg==, tarball: https://npm.pkg.github.com/download/@rahataid/community-tool-sdk/0.0.29/5daa95cf636a0df62e7a352a503c333558bf2ac9}
+  /@rahataid/community-tool-sdk@0.0.30:
+    resolution: {integrity: sha512-qPzZ+UuAw5dP780eIBf1K2E/yoK89+FKgf5VnhHxIMkc4MFxqyYR7czG9znAd6klht4RWowHQfpZyK8gOZOHIA==, tarball: https://npm.pkg.github.com/download/@rahataid/community-tool-sdk/0.0.30/b8c845e3f356af9baa9c333e0ac8efc020205fe4}
     dependencies:
       tslib: 2.6.2
     dev: false
 
-  /@rahataid/el-subgraph@0.0.12:
-    resolution: {integrity: sha512-dKmt0YueYPn+qNGVSby22vrM8xkpx0S1oWxW+vdjHDdRQpqhW9Z4CRqesWt2Qt2H4QnoPVpGh4Gf2pMPXLpG1Q==, tarball: https://npm.pkg.github.com/download/@rahataid/el-subgraph/0.0.12/91a92f6da8a9963862dc50d6f544d653dfa6392d}
+  /@rahataid/el-subgraph@0.0.13:
+    resolution: {integrity: sha512-dBG1shH1k+mUtKjSv9nGybRfwEunVxmGSNNUcWdUi/chaNXKM8JDtUPgmQUU3+/Px83WDnaAMoYqCMhFqczCRQ==, tarball: https://npm.pkg.github.com/download/@rahataid/el-subgraph/0.0.13/7208692d795b8f294b836e417f194fe41392142c}
     dependencies:
       '@types/react': 18.3.3
       '@urql/core': 4.3.0
@@ -6594,31 +6595,15 @@ packages:
       picomatch: 2.3.1
       rollup: 2.79.1
 
-  /@rumsan/communication-query@0.0.8(@types/react@18.3.3):
-    resolution: {integrity: sha512-0hX9wkXMv8vJrqW4gLGt1UyAezwRpayXpQNTS/nsC3xSj9nypElp/H2uKfs9YexBXg+s1CSactDnDOjA9gKl0A==, tarball: https://npm.pkg.github.com/download/@rumsan/communication-query/0.0.8/8f5d8128fa871613480a5874691ed1a0fd8feaab}
+  /@rumsan/communication-query@0.0.10:
+    resolution: {integrity: sha512-DAOvgAnEWpFT/WNUcDewDBGtzoifN30LwUq/Tk3QpkNjjHF5njs4TOY/Eufe5zacNtuMlFVwDKbU3K+EZy/59w==, tarball: https://npm.pkg.github.com/download/@rumsan/communication-query/0.0.10/c87da5ef40878b9ae316d75f9230be18ed06e7af}
     dependencies:
-      '@rumsan/communication': 0.0.13
-      '@tanstack/react-query': 5.22.2(react@18.2.0)
-      axios: 1.7.2
-      react: 18.2.0
+      '@rumsan/communication': 0.0.17
       tslib: 2.6.2
-      zustand: 4.5.2(@types/react@18.3.3)(react@18.2.0)
-    transitivePeerDependencies:
-      - '@types/react'
-      - debug
-      - immer
     dev: false
 
-  /@rumsan/communication@0.0.13:
-    resolution: {integrity: sha512-kW1yOQHen9Gcc482vR9iSyHgBP0HSqRzP8zYeh3XpHmZkSllHooMEORD9yWB4bO5d78U5tV8XUmin19NdGl5XQ==, tarball: https://npm.pkg.github.com/download/@rumsan/communication/0.0.13/5c3237e6acbbd2a66c4a5e24f00a7de7160c21c9}
-    dependencies:
-      axios: 1.7.2
-    transitivePeerDependencies:
-      - debug
-    dev: false
-
-  /@rumsan/communication@0.0.15:
-    resolution: {integrity: sha512-4T5Y2nBXYp0BOR6dmVsVY5uJkuvo7Tev0sPXNkPy1MXWTxftt3SCQtrYYkZYuVcEeuZlVmc06gwUaeIg1Sh+rQ==, tarball: https://npm.pkg.github.com/download/@rumsan/communication/0.0.15/458dd42a4b98370659e09010878888b45c65e7dc}
+  /@rumsan/communication@0.0.17:
+    resolution: {integrity: sha512-bqkJVzonn78LAaZlSwQ/WVuLEkS4DuPJRVA+z35LzWKImDS8jA1RzJMA6r7nP8LXsg+r0nJms6bj0L9L1Lm/jQ==, tarball: https://npm.pkg.github.com/download/@rumsan/communication/0.0.17/7ae8bd62a30349860de4ec5d38647add940e6cff}
     dev: false
 
   /@rumsan/communication@0.0.8:
@@ -12113,7 +12098,7 @@ packages:
       normalize-path: 3.0.0
       schema-utils: 4.2.0
       serialize-javascript: 6.0.2
-      webpack: 5.91.0(@swc/core@1.4.17)(esbuild@0.19.12)
+      webpack: 5.91.0(@swc/core@1.4.17)(esbuild@0.17.19)
     dev: true
 
   /core-js-compat@3.37.1:
@@ -13417,7 +13402,6 @@ packages:
       '@esbuild/win32-arm64': 0.17.19
       '@esbuild/win32-ia32': 0.17.19
       '@esbuild/win32-x64': 0.17.19
-    dev: false
 
   /esbuild@0.19.12:
     resolution: {integrity: sha512-aARqgq8roFBj054KvQr5f1sFu0D65G+miZRCuJyJ0G13Zwx7vRar5Zhn2tkQNzIXcBrNVsv/8stehpj+GAjgbg==}
@@ -13448,6 +13432,7 @@ packages:
       '@esbuild/win32-arm64': 0.19.12
       '@esbuild/win32-ia32': 0.19.12
       '@esbuild/win32-x64': 0.19.12
+    dev: true
 
   /escalade@3.1.2:
     resolution: {integrity: sha512-ErCHMCae19vR8vQGe50xIsVomy19rg6gFu3+r3jkEO46suLMWBksvVyoGgQV+jOfl84ZSOSlmv6Gxa89PmTGmA==}
@@ -21832,7 +21817,7 @@ packages:
     dependencies:
       '@swc/core': 1.4.17(@swc/helpers@0.5.11)
       loader-utils: 2.0.4
-      webpack: 5.91.0(@swc/core@1.4.17)(esbuild@0.19.12)
+      webpack: 5.91.0(@swc/core@1.4.17)(esbuild@0.17.19)
     dev: true
 
   /sweepline-intersections@1.5.0:
@@ -21998,7 +21983,7 @@ packages:
       rimraf: 2.6.3
     dev: false
 
-  /terser-webpack-plugin@5.3.10(@swc/core@1.4.17)(esbuild@0.19.12)(webpack@5.91.0):
+  /terser-webpack-plugin@5.3.10(@swc/core@1.4.17)(esbuild@0.17.19)(webpack@5.91.0):
     resolution: {integrity: sha512-BKFPWlPDndPs+NGGCr1U59t0XScL5317Y0UReNrHaw9/FwhPENlq6bfgs+4yPfyP51vqC1bQ4rp1EfXW5ZSH9w==}
     engines: {node: '>= 10.13.0'}
     peerDependencies:
@@ -22016,12 +22001,12 @@ packages:
     dependencies:
       '@jridgewell/trace-mapping': 0.3.25
       '@swc/core': 1.4.17(@swc/helpers@0.5.11)
-      esbuild: 0.19.12
+      esbuild: 0.17.19
       jest-worker: 27.5.1
       schema-utils: 3.3.0
       serialize-javascript: 6.0.2
       terser: 5.31.0
-      webpack: 5.91.0(@swc/core@1.4.17)(esbuild@0.19.12)
+      webpack: 5.91.0(@swc/core@1.4.17)(esbuild@0.17.19)
 
   /terser@5.31.0:
     resolution: {integrity: sha512-Q1JFAoUKE5IMfI4Z/lkE/E6+SwgzO+x4tq4v1AyBLRj8VSYvRO6A/rQrPg1yud4g0En9EKI1TvFRF2tQFcoUkg==}
@@ -22250,7 +22235,7 @@ packages:
   /ts-interface-checker@0.1.13:
     resolution: {integrity: sha512-Y/arvbn+rrz3JCKl9C4kVNfTfSm2/mEp5FSz5EsZSANGPSlQrpRI5M4PKF+mJnE52jOO90PnPSc3Ur3bTQw0gA==}
 
-  /ts-jest@29.1.4(@babel/core@7.24.6)(babel-jest@29.7.0)(esbuild@0.19.12)(jest@29.7.0)(typescript@5.4.5):
+  /ts-jest@29.1.4(@babel/core@7.24.6)(babel-jest@29.7.0)(esbuild@0.17.19)(jest@29.7.0)(typescript@5.4.5):
     resolution: {integrity: sha512-YiHwDhSvCiItoAgsKtoLFCuakDzDsJ1DLDnSouTaTmdOcOwIkSzbLXduaQ6M5DRVhuZC/NYaaZ/mtHbWMv/S6Q==}
     engines: {node: ^14.15.0 || ^16.10.0 || ^18.0.0 || >=20.0.0}
     hasBin: true
@@ -22277,7 +22262,7 @@ packages:
       '@babel/core': 7.24.6
       babel-jest: 29.7.0(@babel/core@7.24.6)
       bs-logger: 0.2.6
-      esbuild: 0.19.12
+      esbuild: 0.17.19
       fast-json-stable-stringify: 2.1.0
       jest: 29.7.0(@types/node@20.12.13)(ts-node@10.9.2)
       jest-util: 29.7.0
@@ -22302,7 +22287,7 @@ packages:
       semver: 7.6.2
       source-map: 0.7.4
       typescript: 5.4.5
-      webpack: 5.91.0(@swc/core@1.4.17)(esbuild@0.19.12)
+      webpack: 5.91.0(@swc/core@1.4.17)(esbuild@0.17.19)
     dev: false
 
   /ts-morph@18.0.0:
@@ -22849,7 +22834,7 @@ packages:
       loader-utils: 2.0.4
       mime-types: 2.1.35
       schema-utils: 3.3.0
-      webpack: 5.91.0(@swc/core@1.4.17)(esbuild@0.19.12)
+      webpack: 5.91.0(@swc/core@1.4.17)(esbuild@0.17.19)
     dev: true
 
   /url-parse@1.5.10:
@@ -23320,7 +23305,7 @@ packages:
     resolution: {integrity: sha512-poXpCylU7ExuvZK8z+On3kX+S8o/2dQ/SVYueKA0D4WEMXROXgY8Ez50/bQEUmvoSMMrWcrJqCHuhAbsiwg7Dg==}
     dev: false
 
-  /webpack@5.91.0(@swc/core@1.4.17)(esbuild@0.19.12):
+  /webpack@5.91.0(@swc/core@1.4.17)(esbuild@0.17.19):
     resolution: {integrity: sha512-rzVwlLeBWHJbmgTC/8TvAcu5vpJNII+MelQpylD4jNERPwpBJOE2lEcko1zJX3QJeLjTTAnQxn/OJ8bjDzVQaw==}
     engines: {node: '>=10.13.0'}
     hasBin: true
@@ -23351,7 +23336,7 @@ packages:
       neo-async: 2.6.2
       schema-utils: 3.3.0
       tapable: 2.2.1
-      terser-webpack-plugin: 5.3.10(@swc/core@1.4.17)(esbuild@0.19.12)(webpack@5.91.0)
+      terser-webpack-plugin: 5.3.10(@swc/core@1.4.17)(esbuild@0.17.19)(webpack@5.91.0)
       watchpack: 2.4.1
       webpack-sources: 3.2.3
     transitivePeerDependencies:

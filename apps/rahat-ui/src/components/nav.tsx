@@ -37,6 +37,8 @@ export function Nav() {
   const handleLogout = () => {
     clearUser();
     clearAuth();
+    localStorage.clear()
+    
     window.location.reload();
   };
 

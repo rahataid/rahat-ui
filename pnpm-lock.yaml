@@ -90,19 +90,11 @@ importers:
         specifier: 0.0.32
         version: 0.0.32(bufferutil@4.0.8)(typescript@5.4.5)(zod@3.23.8)
       '@rumsan/communication':
-<<<<<<< HEAD
         specifier: ^0.0.17
         version: 0.0.17
       '@rumsan/communication-query':
         specifier: ^0.0.10
         version: 0.0.10
-=======
-        specifier: ^0.0.16
-        version: 0.0.16
-      '@rumsan/communication-query':
-        specifier: ^0.0.9
-        version: 0.0.9
->>>>>>> comms-version-upgrade
       '@rumsan/core':
         specifier: ^3.0.133
         version: 3.0.140
@@ -168,11 +160,7 @@ importers:
         version: 1.0.0(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       connectkit:
         specifier: ^1.7.1
-<<<<<<< HEAD
-        version: 1.7.3(@babel/core@7.24.6)(@tanstack/react-query@5.22.2(react@18.2.0))(react-dom@18.2.0(react@18.2.0))(react-is@18.3.1)(react@18.2.0)(viem@2.13.2(bufferutil@4.0.8)(typescript@5.4.5)(zod@3.23.8))(wagmi@2.9.8(@tanstack/query-core@5.22.2)(@tanstack/react-query@5.22.2(react@18.2.0))(@types/react@18.3.3)(bufferutil@4.0.8)(react-dom@18.2.0(react@18.2.0))(react-i18next@13.5.0(i18next@22.5.1)(react-dom@18.2.0(react@18.2.0))(react-native@0.74.1(@babel/core@7.24.6)(@babel/preset-env@7.24.6(@babel/core@7.24.6))(@types/react@18.3.3)(bufferutil@4.0.8)(react@18.2.0))(react@18.2.0))(react-native@0.74.1(@babel/core@7.24.6)(@babel/preset-env@7.24.6(@babel/core@7.24.6))(@types/react@18.3.3)(bufferutil@4.0.8)(react@18.2.0))(react@18.2.0)(rollup@2.79.1)(typescript@5.4.5)(viem@2.13.2(bufferutil@4.0.8)(typescript@5.4.5)(zod@3.23.8))(zod@3.23.8))
-=======
         version: 1.8.2(@babel/core@7.24.7)(@tanstack/react-query@5.22.2(react@18.2.0))(react-dom@18.2.0(react@18.2.0))(react-is@18.3.1)(react@18.2.0)(viem@2.16.0(bufferutil@4.0.8)(typescript@5.4.5)(zod@3.23.8))(wagmi@2.10.4(@tanstack/query-core@5.22.2)(@tanstack/react-query@5.22.2(react@18.2.0))(@types/react@18.3.3)(bufferutil@4.0.8)(react-dom@18.2.0(react@18.2.0))(react-i18next@13.5.0(i18next@22.5.1)(react-dom@18.2.0(react@18.2.0))(react-native@0.74.2(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(@types/react@18.3.3)(bufferutil@4.0.8)(react@18.2.0))(react@18.2.0))(react-native@0.74.2(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(@types/react@18.3.3)(bufferutil@4.0.8)(react@18.2.0))(react@18.2.0)(rollup@2.79.1)(typescript@5.4.5)(viem@2.16.0(bufferutil@4.0.8)(typescript@5.4.5)(zod@3.23.8))(zod@3.23.8))
->>>>>>> comms-version-upgrade
       currencies.json:
         specifier: ^1.0.2
         version: 1.0.2
@@ -301,17 +289,10 @@ importers:
         version: 0.9.1(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       viem:
         specifier: ^2.8.5
-<<<<<<< HEAD
-        version: 2.13.2(bufferutil@4.0.8)(typescript@5.4.5)(zod@3.23.8)
-      wagmi:
-        specifier: ^2.5.7
-        version: 2.9.8(@tanstack/query-core@5.22.2)(@tanstack/react-query@5.22.2(react@18.2.0))(@types/react@18.3.3)(bufferutil@4.0.8)(react-dom@18.2.0(react@18.2.0))(react-i18next@13.5.0(i18next@22.5.1)(react-dom@18.2.0(react@18.2.0))(react-native@0.74.1(@babel/core@7.24.6)(@babel/preset-env@7.24.6(@babel/core@7.24.6))(@types/react@18.3.3)(bufferutil@4.0.8)(react@18.2.0))(react@18.2.0))(react-native@0.74.1(@babel/core@7.24.6)(@babel/preset-env@7.24.6(@babel/core@7.24.6))(@types/react@18.3.3)(bufferutil@4.0.8)(react@18.2.0))(react@18.2.0)(rollup@2.79.1)(typescript@5.4.5)(viem@2.13.2(bufferutil@4.0.8)(typescript@5.4.5)(zod@3.23.8))(zod@3.23.8)
-=======
         version: 2.16.0(bufferutil@4.0.8)(typescript@5.4.5)(zod@3.23.8)
       wagmi:
         specifier: ^2.5.7
         version: 2.10.4(@tanstack/query-core@5.22.2)(@tanstack/react-query@5.22.2(react@18.2.0))(@types/react@18.3.3)(bufferutil@4.0.8)(react-dom@18.2.0(react@18.2.0))(react-i18next@13.5.0(i18next@22.5.1)(react-dom@18.2.0(react@18.2.0))(react-native@0.74.2(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(@types/react@18.3.3)(bufferutil@4.0.8)(react@18.2.0))(react@18.2.0))(react-native@0.74.2(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(@types/react@18.3.3)(bufferutil@4.0.8)(react@18.2.0))(react@18.2.0)(rollup@2.79.1)(typescript@5.4.5)(viem@2.16.0(bufferutil@4.0.8)(typescript@5.4.5)(zod@3.23.8))(zod@3.23.8)
->>>>>>> comms-version-upgrade
       xlsx:
         specifier: ^0.18.5
         version: 0.18.5
@@ -396,11 +377,7 @@ importers:
         version: 7.13.1(eslint@8.57.0)(typescript@5.4.5)
       '@wagmi/cli':
         specifier: ^2.1.2
-<<<<<<< HEAD
-        version: 2.1.8(bufferutil@4.0.8)(typescript@5.4.5)
-=======
         version: 2.1.10(bufferutil@4.0.8)(typescript@5.4.5)
->>>>>>> comms-version-upgrade
       autoprefixer:
         specifier: ^10.4.18
         version: 10.4.19(postcss@8.4.38)
@@ -3272,19 +3249,11 @@ packages:
       rollup:
         optional: true
 
-<<<<<<< HEAD
   '@rumsan/communication-query@0.0.10':
     resolution: {integrity: sha512-DAOvgAnEWpFT/WNUcDewDBGtzoifN30LwUq/Tk3QpkNjjHF5njs4TOY/Eufe5zacNtuMlFVwDKbU3K+EZy/59w==, tarball: https://npm.pkg.github.com/download/@rumsan/communication-query/0.0.10/c87da5ef40878b9ae316d75f9230be18ed06e7af}
 
   '@rumsan/communication@0.0.17':
     resolution: {integrity: sha512-bqkJVzonn78LAaZlSwQ/WVuLEkS4DuPJRVA+z35LzWKImDS8jA1RzJMA6r7nP8LXsg+r0nJms6bj0L9L1Lm/jQ==, tarball: https://npm.pkg.github.com/download/@rumsan/communication/0.0.17/7ae8bd62a30349860de4ec5d38647add940e6cff}
-=======
-  '@rumsan/communication-query@0.0.9':
-    resolution: {integrity: sha512-rxHKo8kkNGMMF2CcYT7EZsVa+oybWznlw+wpmv4kV51Ewq+AokavcDJ5EOzuiO+iKcEdKXMRHhSQvN3C50afvA==, tarball: https://npm.pkg.github.com/download/@rumsan/communication-query/0.0.9/1252b7c8a030419929645936f876f111693e150a}
-
-  '@rumsan/communication@0.0.16':
-    resolution: {integrity: sha512-UG1EQkWStLJM5sOW5t+VYYoWh+0uacVmRj68gQkHA1PVVJt03xJrgrmdsG7xeZQZyEWaDWFgd1VsRyVh4d7UNg==, tarball: https://npm.pkg.github.com/download/@rumsan/communication/0.0.16/d9c79f84a5d7dc4a9b3ff082c72e35577777fd21}
->>>>>>> comms-version-upgrade
 
   '@rumsan/communication@0.0.8':
     resolution: {integrity: sha512-Ht+vIdZVabacljbIO54QDm2FXYSH5CAKyDQ68/NcvQdqQz39x3wZLt4DWuliTGY6ZpaniddVyql57NTdcmae6Q==, tarball: https://npm.pkg.github.com/download/@rumsan/communication/0.0.8/b11e20c168799814e0d5058533ec77ed35f2d505}
@@ -13439,11 +13408,7 @@ snapshots:
 
   '@metamask/safe-event-emitter@3.1.1': {}
 
-<<<<<<< HEAD
-  '@metamask/sdk-communication-layer@0.20.2(cross-fetch@4.0.0)(eciesjs@0.3.18)(eventemitter2@6.4.9)(readable-stream@3.6.2)(socket.io-client@4.7.5(bufferutil@4.0.8))':
-=======
   '@metamask/sdk-communication-layer@0.26.0(cross-fetch@4.0.0)(eciesjs@0.3.19)(eventemitter2@6.4.9)(readable-stream@3.6.2)(socket.io-client@4.7.5(bufferutil@4.0.8))':
->>>>>>> comms-version-upgrade
     dependencies:
       bufferutil: 4.0.8
       cross-fetch: 4.0.0
@@ -13458,24 +13423,6 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-<<<<<<< HEAD
-  '@metamask/sdk-install-modal-web@0.20.2(i18next@22.5.1)(react-dom@18.2.0(react@18.2.0))(react-i18next@13.5.0(i18next@22.5.1)(react-dom@18.2.0(react@18.2.0))(react-native@0.74.1(@babel/core@7.24.6)(@babel/preset-env@7.24.6(@babel/core@7.24.6))(@types/react@18.3.3)(bufferutil@4.0.8)(react@18.2.0))(react@18.2.0))(react-native@0.74.1(@babel/core@7.24.6)(@babel/preset-env@7.24.6(@babel/core@7.24.6))(@types/react@18.3.3)(bufferutil@4.0.8)(react@18.2.0))(react@18.2.0)':
-    dependencies:
-      i18next: 22.5.1
-      qr-code-styling: 1.6.0-rc.1
-      react-i18next: 13.5.0(i18next@22.5.1)(react-dom@18.2.0(react@18.2.0))(react-native@0.74.1(@babel/core@7.24.6)(@babel/preset-env@7.24.6(@babel/core@7.24.6))(@types/react@18.3.3)(bufferutil@4.0.8)(react@18.2.0))(react@18.2.0)
-    optionalDependencies:
-      react: 18.2.0
-      react-dom: 18.2.0(react@18.2.0)
-      react-native: 0.74.1(@babel/core@7.24.6)(@babel/preset-env@7.24.6(@babel/core@7.24.6))(@types/react@18.3.3)(bufferutil@4.0.8)(react@18.2.0)
-
-  '@metamask/sdk@0.20.3(bufferutil@4.0.8)(react-dom@18.2.0(react@18.2.0))(react-i18next@13.5.0(i18next@22.5.1)(react-dom@18.2.0(react@18.2.0))(react-native@0.74.1(@babel/core@7.24.6)(@babel/preset-env@7.24.6(@babel/core@7.24.6))(@types/react@18.3.3)(bufferutil@4.0.8)(react@18.2.0))(react@18.2.0))(react-native@0.74.1(@babel/core@7.24.6)(@babel/preset-env@7.24.6(@babel/core@7.24.6))(@types/react@18.3.3)(bufferutil@4.0.8)(react@18.2.0))(react@18.2.0)(rollup@2.79.1)':
-    dependencies:
-      '@metamask/onboarding': 1.0.1
-      '@metamask/providers': 15.0.0
-      '@metamask/sdk-communication-layer': 0.20.2(cross-fetch@4.0.0)(eciesjs@0.3.18)(eventemitter2@6.4.9)(readable-stream@3.6.2)(socket.io-client@4.7.5(bufferutil@4.0.8))
-      '@metamask/sdk-install-modal-web': 0.20.2(i18next@22.5.1)(react-dom@18.2.0(react@18.2.0))(react-i18next@13.5.0(i18next@22.5.1)(react-dom@18.2.0(react@18.2.0))(react-native@0.74.1(@babel/core@7.24.6)(@babel/preset-env@7.24.6(@babel/core@7.24.6))(@types/react@18.3.3)(bufferutil@4.0.8)(react@18.2.0))(react@18.2.0))(react-native@0.74.1(@babel/core@7.24.6)(@babel/preset-env@7.24.6(@babel/core@7.24.6))(@types/react@18.3.3)(bufferutil@4.0.8)(react@18.2.0))(react@18.2.0)
-=======
   '@metamask/sdk-install-modal-web@0.26.0(i18next@22.5.1)(react-dom@18.2.0(react@18.2.0))(react-i18next@13.5.0(i18next@22.5.1)(react-dom@18.2.0(react@18.2.0))(react-native@0.74.2(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(@types/react@18.3.3)(bufferutil@4.0.8)(react@18.2.0))(react@18.2.0))(react-native@0.74.2(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(@types/react@18.3.3)(bufferutil@4.0.8)(react@18.2.0))(react@18.2.0)':
     dependencies:
       i18next: 22.5.1
@@ -13492,7 +13439,6 @@ snapshots:
       '@metamask/providers': 15.0.0
       '@metamask/sdk-communication-layer': 0.26.0(cross-fetch@4.0.0)(eciesjs@0.3.19)(eventemitter2@6.4.9)(readable-stream@3.6.2)(socket.io-client@4.7.5(bufferutil@4.0.8))
       '@metamask/sdk-install-modal-web': 0.26.0(i18next@22.5.1)(react-dom@18.2.0(react@18.2.0))(react-i18next@13.5.0(i18next@22.5.1)(react-dom@18.2.0(react@18.2.0))(react-native@0.74.2(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(@types/react@18.3.3)(bufferutil@4.0.8)(react@18.2.0))(react@18.2.0))(react-native@0.74.2(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(@types/react@18.3.3)(bufferutil@4.0.8)(react@18.2.0))(react@18.2.0)
->>>>>>> comms-version-upgrade
       '@types/dom-screen-wake-lock': 1.0.3
       bowser: 2.11.0
       cross-fetch: 4.0.0
@@ -13505,11 +13451,7 @@ snapshots:
       obj-multiplex: 1.0.0
       pump: 3.0.0
       qrcode-terminal-nooctal: 0.12.1
-<<<<<<< HEAD
-      react-native-webview: 11.26.1(react-native@0.74.1(@babel/core@7.24.6)(@babel/preset-env@7.24.6(@babel/core@7.24.6))(@types/react@18.3.3)(bufferutil@4.0.8)(react@18.2.0))(react@18.2.0)
-=======
       react-native-webview: 11.26.1(react-native@0.74.2(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(@types/react@18.3.3)(bufferutil@4.0.8)(react@18.2.0))(react@18.2.0)
->>>>>>> comms-version-upgrade
       readable-stream: 3.6.2
       rollup-plugin-visualizer: 5.12.0(rollup@2.79.1)
       socket.io-client: 4.7.5(bufferutil@4.0.8)
@@ -13652,11 +13594,7 @@ snapshots:
       tslib: 2.6.2
       uid: 2.0.2
     optionalDependencies:
-<<<<<<< HEAD
-      '@nestjs/microservices': 10.3.8(@nestjs/common@10.3.8(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@10.3.8)(amqplib@0.5.2)(reflect-metadata@0.2.2)(rxjs@7.8.1)
-=======
       '@nestjs/microservices': 10.3.9(@nestjs/common@10.3.9(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@10.3.9)(amqplib@0.5.2)(reflect-metadata@0.2.2)(rxjs@7.8.1)
->>>>>>> comms-version-upgrade
     transitivePeerDependencies:
       - encoding
 
@@ -13680,11 +13618,7 @@ snapshots:
       class-transformer: 0.5.1
       class-validator: 0.14.1
 
-<<<<<<< HEAD
-  '@nestjs/microservices@10.3.8(@nestjs/common@10.3.8(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@10.3.8)(amqplib@0.5.2)(reflect-metadata@0.2.2)(rxjs@7.8.1)':
-=======
   '@nestjs/microservices@10.3.9(@nestjs/common@10.3.9(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@10.3.9)(amqplib@0.5.2)(reflect-metadata@0.2.2)(rxjs@7.8.1)':
->>>>>>> comms-version-upgrade
     dependencies:
       '@nestjs/common': 10.3.9(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1)
       '@nestjs/core': 10.3.9(@nestjs/common@10.3.9(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/microservices@10.3.9)(reflect-metadata@0.2.2)(rxjs@7.8.1)
@@ -15213,11 +15147,7 @@ snapshots:
     dependencies:
       '@rumsan/sdk': 0.0.44
       axios: 1.7.2
-<<<<<<< HEAD
-      viem: 2.13.2(bufferutil@4.0.8)(typescript@5.4.5)(zod@3.23.8)
-=======
       viem: 2.16.0(bufferutil@4.0.8)(typescript@5.4.5)(zod@3.23.8)
->>>>>>> comms-version-upgrade
     transitivePeerDependencies:
       - bufferutil
       - debug
@@ -15310,11 +15240,7 @@ snapshots:
     transitivePeerDependencies:
       - encoding
 
-<<<<<<< HEAD
-  '@react-native-community/cli-server-api@13.6.6(bufferutil@4.0.8)':
-=======
   '@react-native-community/cli-server-api@13.6.8(bufferutil@4.0.8)':
->>>>>>> comms-version-upgrade
     dependencies:
       '@react-native-community/cli-debugger-ui': 13.6.8
       '@react-native-community/cli-tools': 13.6.8
@@ -15324,11 +15250,7 @@ snapshots:
       nocache: 3.0.4
       pretty-format: 26.6.2
       serve-static: 1.15.0
-<<<<<<< HEAD
-      ws: 6.2.2(bufferutil@4.0.8)
-=======
       ws: 6.2.3(bufferutil@4.0.8)
->>>>>>> comms-version-upgrade
     transitivePeerDependencies:
       - bufferutil
       - encoding
@@ -15355,18 +15277,6 @@ snapshots:
     dependencies:
       joi: 17.13.3
 
-<<<<<<< HEAD
-  '@react-native-community/cli@13.6.6(bufferutil@4.0.8)':
-    dependencies:
-      '@react-native-community/cli-clean': 13.6.6
-      '@react-native-community/cli-config': 13.6.6
-      '@react-native-community/cli-debugger-ui': 13.6.6
-      '@react-native-community/cli-doctor': 13.6.6
-      '@react-native-community/cli-hermes': 13.6.6
-      '@react-native-community/cli-server-api': 13.6.6(bufferutil@4.0.8)
-      '@react-native-community/cli-tools': 13.6.6
-      '@react-native-community/cli-types': 13.6.6
-=======
   '@react-native-community/cli@13.6.8(bufferutil@4.0.8)':
     dependencies:
       '@react-native-community/cli-clean': 13.6.8
@@ -15377,7 +15287,6 @@ snapshots:
       '@react-native-community/cli-server-api': 13.6.8(bufferutil@4.0.8)
       '@react-native-community/cli-tools': 13.6.8
       '@react-native-community/cli-types': 13.6.8
->>>>>>> comms-version-upgrade
       chalk: 4.1.2
       commander: 9.5.0
       deepmerge: 4.3.1
@@ -15464,21 +15373,12 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-<<<<<<< HEAD
-  '@react-native/community-cli-plugin@0.74.83(@babel/core@7.24.6)(@babel/preset-env@7.24.6(@babel/core@7.24.6))(bufferutil@4.0.8)':
-    dependencies:
-      '@react-native-community/cli-server-api': 13.6.6(bufferutil@4.0.8)
-      '@react-native-community/cli-tools': 13.6.6
-      '@react-native/dev-middleware': 0.74.83(bufferutil@4.0.8)
-      '@react-native/metro-babel-transformer': 0.74.83(@babel/core@7.24.6)(@babel/preset-env@7.24.6(@babel/core@7.24.6))
-=======
   '@react-native/community-cli-plugin@0.74.84(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(bufferutil@4.0.8)':
     dependencies:
       '@react-native-community/cli-server-api': 13.6.8(bufferutil@4.0.8)
       '@react-native-community/cli-tools': 13.6.8
       '@react-native/dev-middleware': 0.74.84(bufferutil@4.0.8)
       '@react-native/metro-babel-transformer': 0.74.84(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))
->>>>>>> comms-version-upgrade
       chalk: 4.1.2
       execa: 5.1.1
       metro: 0.80.9(bufferutil@4.0.8)
@@ -15497,11 +15397,7 @@ snapshots:
 
   '@react-native/debugger-frontend@0.74.84': {}
 
-<<<<<<< HEAD
-  '@react-native/dev-middleware@0.74.83(bufferutil@4.0.8)':
-=======
   '@react-native/dev-middleware@0.74.84(bufferutil@4.0.8)':
->>>>>>> comms-version-upgrade
     dependencies:
       '@isaacs/ttlcache': 1.4.1
       '@react-native/debugger-frontend': 0.74.84
@@ -15515,11 +15411,7 @@ snapshots:
       selfsigned: 2.4.1
       serve-static: 1.15.0
       temp-dir: 2.0.0
-<<<<<<< HEAD
-      ws: 6.2.2(bufferutil@4.0.8)
-=======
       ws: 6.2.3(bufferutil@4.0.8)
->>>>>>> comms-version-upgrade
     transitivePeerDependencies:
       - bufferutil
       - encoding
@@ -15542,20 +15434,12 @@ snapshots:
 
   '@react-native/normalize-colors@0.74.84': {}
 
-<<<<<<< HEAD
-  '@react-native/virtualized-lists@0.74.83(@types/react@18.3.3)(react-native@0.74.1(@babel/core@7.24.6)(@babel/preset-env@7.24.6(@babel/core@7.24.6))(@types/react@18.3.3)(bufferutil@4.0.8)(react@18.2.0))(react@18.2.0)':
-=======
   '@react-native/virtualized-lists@0.74.84(@types/react@18.3.3)(react-native@0.74.2(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(@types/react@18.3.3)(bufferutil@4.0.8)(react@18.2.0))(react@18.2.0)':
->>>>>>> comms-version-upgrade
     dependencies:
       invariant: 2.2.4
       nullthrows: 1.1.1
       react: 18.2.0
-<<<<<<< HEAD
-      react-native: 0.74.1(@babel/core@7.24.6)(@babel/preset-env@7.24.6(@babel/core@7.24.6))(@types/react@18.3.3)(bufferutil@4.0.8)(react@18.2.0)
-=======
       react-native: 0.74.2(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(@types/react@18.3.3)(bufferutil@4.0.8)(react@18.2.0)
->>>>>>> comms-version-upgrade
     optionalDependencies:
       '@types/react': 18.3.3
 
@@ -15641,20 +15525,12 @@ snapshots:
     optionalDependencies:
       rollup: 2.79.1
 
-<<<<<<< HEAD
   '@rumsan/communication-query@0.0.10':
     dependencies:
       '@rumsan/communication': 0.0.17
-      tslib: 2.6.2
-
-  '@rumsan/communication@0.0.17': {}
-=======
-  '@rumsan/communication-query@0.0.9':
-    dependencies:
       tslib: 2.6.3
 
-  '@rumsan/communication@0.0.16': {}
->>>>>>> comms-version-upgrade
+  '@rumsan/communication@0.0.17': {}
 
   '@rumsan/communication@0.0.8':
     dependencies:
@@ -15668,17 +15544,10 @@ snapshots:
 
   '@rumsan/extensions@0.0.22(@nestjs/core@10.3.9(@nestjs/common@10.3.9(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/microservices@10.3.9)(reflect-metadata@0.2.2)(rxjs@7.8.1))(amqplib@0.5.2)(reflect-metadata@0.2.2)':
     dependencies:
-<<<<<<< HEAD
-      '@nestjs/common': 10.3.8(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1)
-      '@nestjs/microservices': 10.3.8(@nestjs/common@10.3.8(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@10.3.8)(amqplib@0.5.2)(reflect-metadata@0.2.2)(rxjs@7.8.1)
-      '@nestjs/swagger': 7.3.1(@nestjs/common@10.3.8(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@10.3.8(@nestjs/common@10.3.8(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/microservices@10.3.8)(reflect-metadata@0.2.2)(rxjs@7.8.1))(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)
-      '@prisma/client': 5.14.0
-=======
       '@nestjs/common': 10.3.9(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1)
       '@nestjs/microservices': 10.3.9(@nestjs/common@10.3.9(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@10.3.9)(amqplib@0.5.2)(reflect-metadata@0.2.2)(rxjs@7.8.1)
       '@nestjs/swagger': 7.3.1(@nestjs/common@10.3.9(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@10.3.9(@nestjs/common@10.3.9(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/microservices@10.3.9)(reflect-metadata@0.2.2)(rxjs@7.8.1))(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)
       '@prisma/client': 5.15.1
->>>>>>> comms-version-upgrade
       '@rumsan/core': 3.0.140
       '@rumsan/prisma': 1.0.130(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1)
       '@rumsan/sdk': 0.0.44
@@ -15706,17 +15575,10 @@ snapshots:
 
   '@rumsan/extensions@0.0.24(@nestjs/core@10.3.9(@nestjs/common@10.3.9(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/microservices@10.3.9)(reflect-metadata@0.2.2)(rxjs@7.8.1))(amqplib@0.5.2)(reflect-metadata@0.2.2)':
     dependencies:
-<<<<<<< HEAD
-      '@nestjs/common': 10.3.8(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1)
-      '@nestjs/microservices': 10.3.8(@nestjs/common@10.3.8(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@10.3.8)(amqplib@0.5.2)(reflect-metadata@0.2.2)(rxjs@7.8.1)
-      '@nestjs/swagger': 7.3.1(@nestjs/common@10.3.8(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@10.3.8(@nestjs/common@10.3.8(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/microservices@10.3.8)(reflect-metadata@0.2.2)(rxjs@7.8.1))(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)
-      '@prisma/client': 5.14.0
-=======
       '@nestjs/common': 10.3.9(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1)
       '@nestjs/microservices': 10.3.9(@nestjs/common@10.3.9(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@10.3.9)(amqplib@0.5.2)(reflect-metadata@0.2.2)(rxjs@7.8.1)
       '@nestjs/swagger': 7.3.1(@nestjs/common@10.3.9(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@10.3.9(@nestjs/common@10.3.9(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/microservices@10.3.9)(reflect-metadata@0.2.2)(rxjs@7.8.1))(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)
       '@prisma/client': 5.15.1
->>>>>>> comms-version-upgrade
       '@rumsan/core': 3.0.140
       '@rumsan/prisma': 1.0.130(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1)
       '@rumsan/sdk': 0.0.44
@@ -15766,11 +15628,7 @@ snapshots:
       http-status-codes: 2.3.0
       react: 18.2.0
       tslib: 2.6.2
-<<<<<<< HEAD
-      viem: 2.13.2(bufferutil@4.0.8)(typescript@5.4.5)(zod@3.23.8)
-=======
       viem: 2.16.0(bufferutil@4.0.8)(typescript@5.4.5)(zod@3.23.8)
->>>>>>> comms-version-upgrade
       zustand: 4.5.2(@types/react@18.3.3)(react@18.2.0)
     transitivePeerDependencies:
       - '@types/react'
@@ -15807,17 +15665,6 @@ snapshots:
   '@rumsan/user@3.0.159(amqplib@0.5.2)(bufferutil@4.0.8)(passport@0.7.0)(reflect-metadata@0.2.2)(typescript@5.4.5)(zod@3.23.8)':
     dependencies:
       '@casl/ability': 6.7.1
-<<<<<<< HEAD
-      '@nestjs/common': 10.3.8(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1)
-      '@nestjs/config': 3.2.2(@nestjs/common@10.3.8(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(rxjs@7.8.1)
-      '@nestjs/core': 10.3.8(@nestjs/common@10.3.8(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/microservices@10.3.8)(reflect-metadata@0.2.2)(rxjs@7.8.1)
-      '@nestjs/event-emitter': 2.0.4(@nestjs/common@10.3.8(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@10.3.8(@nestjs/common@10.3.8(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/microservices@10.3.8)(reflect-metadata@0.2.2)(rxjs@7.8.1))
-      '@nestjs/jwt': 10.2.0(@nestjs/common@10.3.8(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))
-      '@nestjs/microservices': 10.3.8(@nestjs/common@10.3.8(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@10.3.8)(amqplib@0.5.2)(reflect-metadata@0.2.2)(rxjs@7.8.1)
-      '@nestjs/passport': 10.0.3(@nestjs/common@10.3.8(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(passport@0.7.0)
-      '@nestjs/swagger': 7.3.1(@nestjs/common@10.3.8(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@10.3.8(@nestjs/common@10.3.8(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/microservices@10.3.8)(reflect-metadata@0.2.2)(rxjs@7.8.1))(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)
-      '@prisma/client': 5.14.0
-=======
       '@nestjs/common': 10.3.9(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1)
       '@nestjs/config': 3.2.2(@nestjs/common@10.3.9(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(rxjs@7.8.1)
       '@nestjs/core': 10.3.9(@nestjs/common@10.3.9(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/microservices@10.3.9)(reflect-metadata@0.2.2)(rxjs@7.8.1)
@@ -15827,7 +15674,6 @@ snapshots:
       '@nestjs/passport': 10.0.3(@nestjs/common@10.3.9(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(passport@0.7.0)
       '@nestjs/swagger': 7.3.1(@nestjs/common@10.3.9(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@10.3.9(@nestjs/common@10.3.9(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/microservices@10.3.9)(reflect-metadata@0.2.2)(rxjs@7.8.1))(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)
       '@prisma/client': 5.15.1
->>>>>>> comms-version-upgrade
       '@rumsan/core': 3.0.140
       '@rumsan/extensions': 0.0.24(@nestjs/core@10.3.9(@nestjs/common@10.3.9(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/microservices@10.3.9)(reflect-metadata@0.2.2)(rxjs@7.8.1))(amqplib@0.5.2)(reflect-metadata@0.2.2)
       '@rumsan/prisma': 1.0.130(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1)
@@ -15840,11 +15686,7 @@ snapshots:
       rxjs: 7.8.1
       tslib: 2.6.2
       uuid: 9.0.1
-<<<<<<< HEAD
-      viem: 2.13.2(bufferutil@4.0.8)(typescript@5.4.5)(zod@3.23.8)
-=======
       viem: 2.16.0(bufferutil@4.0.8)(typescript@5.4.5)(zod@3.23.8)
->>>>>>> comms-version-upgrade
       zlib: 1.0.5
     transitivePeerDependencies:
       - '@fastify/static'
@@ -15882,11 +15724,7 @@ snapshots:
 
   '@safe-global/safe-apps-sdk@8.1.0(bufferutil@4.0.8)(typescript@5.4.5)(zod@3.23.8)':
     dependencies:
-<<<<<<< HEAD
-      '@safe-global/safe-gateway-typescript-sdk': 3.21.1
-=======
       '@safe-global/safe-gateway-typescript-sdk': 3.21.4
->>>>>>> comms-version-upgrade
       viem: 1.21.4(bufferutil@4.0.8)(typescript@5.4.5)(zod@3.23.8)
     transitivePeerDependencies:
       - bufferutil
@@ -17816,11 +17654,7 @@ snapshots:
       minimatch: 7.4.6
       semver: 7.6.0
 
-<<<<<<< HEAD
-  '@wagmi/cli@2.1.8(bufferutil@4.0.8)(typescript@5.4.5)':
-=======
   '@wagmi/cli@2.1.10(bufferutil@4.0.8)(typescript@5.4.5)':
->>>>>>> comms-version-upgrade
     dependencies:
       abitype: 1.0.4(typescript@5.4.5)(zod@3.23.8)
       bundle-require: 4.2.1(esbuild@0.19.12)
@@ -17838,13 +17672,8 @@ snapshots:
       ora: 6.3.1
       pathe: 1.1.2
       picocolors: 1.0.1
-<<<<<<< HEAD
-      prettier: 3.2.5
-      viem: 2.13.2(bufferutil@4.0.8)(typescript@5.4.5)(zod@3.23.8)
-=======
       prettier: 3.3.2
       viem: 2.16.0(bufferutil@4.0.8)(typescript@5.4.5)(zod@3.23.8)
->>>>>>> comms-version-upgrade
       zod: 3.23.8
     optionalDependencies:
       typescript: 5.4.5
@@ -17852,19 +17681,6 @@ snapshots:
       - bufferutil
       - utf-8-validate
 
-<<<<<<< HEAD
-  '@wagmi/connectors@5.0.7(@types/react@18.3.3)(@wagmi/core@2.10.5(@tanstack/query-core@5.22.2)(@types/react@18.3.3)(bufferutil@4.0.8)(react@18.2.0)(typescript@5.4.5)(viem@2.13.2(bufferutil@4.0.8)(typescript@5.4.5)(zod@3.23.8))(zod@3.23.8))(bufferutil@4.0.8)(react-dom@18.2.0(react@18.2.0))(react-i18next@13.5.0(i18next@22.5.1)(react-dom@18.2.0(react@18.2.0))(react-native@0.74.1(@babel/core@7.24.6)(@babel/preset-env@7.24.6(@babel/core@7.24.6))(@types/react@18.3.3)(bufferutil@4.0.8)(react@18.2.0))(react@18.2.0))(react-native@0.74.1(@babel/core@7.24.6)(@babel/preset-env@7.24.6(@babel/core@7.24.6))(@types/react@18.3.3)(bufferutil@4.0.8)(react@18.2.0))(react@18.2.0)(rollup@2.79.1)(typescript@5.4.5)(viem@2.13.2(bufferutil@4.0.8)(typescript@5.4.5)(zod@3.23.8))(zod@3.23.8)':
-    dependencies:
-      '@coinbase/wallet-sdk': 4.0.2
-      '@metamask/sdk': 0.20.3(bufferutil@4.0.8)(react-dom@18.2.0(react@18.2.0))(react-i18next@13.5.0(i18next@22.5.1)(react-dom@18.2.0(react@18.2.0))(react-native@0.74.1(@babel/core@7.24.6)(@babel/preset-env@7.24.6(@babel/core@7.24.6))(@types/react@18.3.3)(bufferutil@4.0.8)(react@18.2.0))(react@18.2.0))(react-native@0.74.1(@babel/core@7.24.6)(@babel/preset-env@7.24.6(@babel/core@7.24.6))(@types/react@18.3.3)(bufferutil@4.0.8)(react@18.2.0))(react@18.2.0)(rollup@2.79.1)
-      '@safe-global/safe-apps-provider': 0.18.1(bufferutil@4.0.8)(typescript@5.4.5)(zod@3.23.8)
-      '@safe-global/safe-apps-sdk': 8.1.0(bufferutil@4.0.8)(typescript@5.4.5)(zod@3.23.8)
-      '@wagmi/core': 2.10.5(@tanstack/query-core@5.22.2)(@types/react@18.3.3)(bufferutil@4.0.8)(react@18.2.0)(typescript@5.4.5)(viem@2.13.2(bufferutil@4.0.8)(typescript@5.4.5)(zod@3.23.8))(zod@3.23.8)
-      '@walletconnect/ethereum-provider': 2.13.0(@types/react@18.3.3)(bufferutil@4.0.8)(react@18.2.0)
-      '@walletconnect/modal': 2.6.2(@types/react@18.3.3)(react@18.2.0)
-      cbw-sdk: '@coinbase/wallet-sdk@3.9.3'
-      viem: 2.13.2(bufferutil@4.0.8)(typescript@5.4.5)(zod@3.23.8)
-=======
   '@wagmi/connectors@5.0.16(@types/react@18.3.3)(@wagmi/core@2.11.4(@tanstack/query-core@5.22.2)(@types/react@18.3.3)(bufferutil@4.0.8)(react@18.2.0)(typescript@5.4.5)(viem@2.16.0(bufferutil@4.0.8)(typescript@5.4.5)(zod@3.23.8))(zod@3.23.8))(bufferutil@4.0.8)(react-dom@18.2.0(react@18.2.0))(react-i18next@13.5.0(i18next@22.5.1)(react-dom@18.2.0(react@18.2.0))(react-native@0.74.2(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(@types/react@18.3.3)(bufferutil@4.0.8)(react@18.2.0))(react@18.2.0))(react-native@0.74.2(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(@types/react@18.3.3)(bufferutil@4.0.8)(react@18.2.0))(react@18.2.0)(rollup@2.79.1)(typescript@5.4.5)(viem@2.16.0(bufferutil@4.0.8)(typescript@5.4.5)(zod@3.23.8))(zod@3.23.8)':
     dependencies:
       '@coinbase/wallet-sdk': 4.0.3
@@ -17876,7 +17692,6 @@ snapshots:
       '@walletconnect/modal': 2.6.2(@types/react@18.3.3)(react@18.2.0)
       cbw-sdk: '@coinbase/wallet-sdk@3.9.3'
       viem: 2.16.0(bufferutil@4.0.8)(typescript@5.4.5)(zod@3.23.8)
->>>>>>> comms-version-upgrade
     optionalDependencies:
       typescript: 5.4.5
     transitivePeerDependencies:
@@ -17906,19 +17721,11 @@ snapshots:
       - utf-8-validate
       - zod
 
-<<<<<<< HEAD
-  '@wagmi/core@2.10.5(@tanstack/query-core@5.22.2)(@types/react@18.3.3)(bufferutil@4.0.8)(react@18.2.0)(typescript@5.4.5)(viem@2.13.2(bufferutil@4.0.8)(typescript@5.4.5)(zod@3.23.8))(zod@3.23.8)':
-    dependencies:
-      eventemitter3: 5.0.1
-      mipd: 0.0.5(bufferutil@4.0.8)(typescript@5.4.5)(zod@3.23.8)
-      viem: 2.13.2(bufferutil@4.0.8)(typescript@5.4.5)(zod@3.23.8)
-=======
   '@wagmi/core@2.11.4(@tanstack/query-core@5.22.2)(@types/react@18.3.3)(bufferutil@4.0.8)(react@18.2.0)(typescript@5.4.5)(viem@2.16.0(bufferutil@4.0.8)(typescript@5.4.5)(zod@3.23.8))(zod@3.23.8)':
     dependencies:
       eventemitter3: 5.0.1
       mipd: 0.0.5(bufferutil@4.0.8)(typescript@5.4.5)(zod@3.23.8)
       viem: 2.16.0(bufferutil@4.0.8)(typescript@5.4.5)(zod@3.23.8)
->>>>>>> comms-version-upgrade
       zustand: 4.4.1(@types/react@18.3.3)(react@18.2.0)
     optionalDependencies:
       '@tanstack/query-core': 5.22.2
@@ -18048,11 +17855,7 @@ snapshots:
       '@walletconnect/jsonrpc-utils': 1.0.8
       '@walletconnect/safe-json': 1.0.2
       events: 3.3.0
-<<<<<<< HEAD
-      ws: 7.5.9(bufferutil@4.0.8)
-=======
       ws: 7.5.10(bufferutil@4.0.8)
->>>>>>> comms-version-upgrade
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -19539,11 +19342,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-<<<<<<< HEAD
-  connectkit@1.7.3(@babel/core@7.24.6)(@tanstack/react-query@5.22.2(react@18.2.0))(react-dom@18.2.0(react@18.2.0))(react-is@18.3.1)(react@18.2.0)(viem@2.13.2(bufferutil@4.0.8)(typescript@5.4.5)(zod@3.23.8))(wagmi@2.9.8(@tanstack/query-core@5.22.2)(@tanstack/react-query@5.22.2(react@18.2.0))(@types/react@18.3.3)(bufferutil@4.0.8)(react-dom@18.2.0(react@18.2.0))(react-i18next@13.5.0(i18next@22.5.1)(react-dom@18.2.0(react@18.2.0))(react-native@0.74.1(@babel/core@7.24.6)(@babel/preset-env@7.24.6(@babel/core@7.24.6))(@types/react@18.3.3)(bufferutil@4.0.8)(react@18.2.0))(react@18.2.0))(react-native@0.74.1(@babel/core@7.24.6)(@babel/preset-env@7.24.6(@babel/core@7.24.6))(@types/react@18.3.3)(bufferutil@4.0.8)(react@18.2.0))(react@18.2.0)(rollup@2.79.1)(typescript@5.4.5)(viem@2.13.2(bufferutil@4.0.8)(typescript@5.4.5)(zod@3.23.8))(zod@3.23.8)):
-=======
   connectkit@1.8.2(@babel/core@7.24.7)(@tanstack/react-query@5.22.2(react@18.2.0))(react-dom@18.2.0(react@18.2.0))(react-is@18.3.1)(react@18.2.0)(viem@2.16.0(bufferutil@4.0.8)(typescript@5.4.5)(zod@3.23.8))(wagmi@2.10.4(@tanstack/query-core@5.22.2)(@tanstack/react-query@5.22.2(react@18.2.0))(@types/react@18.3.3)(bufferutil@4.0.8)(react-dom@18.2.0(react@18.2.0))(react-i18next@13.5.0(i18next@22.5.1)(react-dom@18.2.0(react@18.2.0))(react-native@0.74.2(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(@types/react@18.3.3)(bufferutil@4.0.8)(react@18.2.0))(react@18.2.0))(react-native@0.74.2(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(@types/react@18.3.3)(bufferutil@4.0.8)(react@18.2.0))(react@18.2.0)(rollup@2.79.1)(typescript@5.4.5)(viem@2.16.0(bufferutil@4.0.8)(typescript@5.4.5)(zod@3.23.8))(zod@3.23.8)):
->>>>>>> comms-version-upgrade
     dependencies:
       '@tanstack/react-query': 5.22.2(react@18.2.0)
       buffer: 6.0.3
@@ -19555,15 +19354,9 @@ snapshots:
       react-transition-state: 1.1.5(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       react-use-measure: 2.1.1(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       resize-observer-polyfill: 1.5.1
-<<<<<<< HEAD
-      styled-components: 5.3.11(@babel/core@7.24.6)(react-dom@18.2.0(react@18.2.0))(react-is@18.3.1)(react@18.2.0)
-      viem: 2.13.2(bufferutil@4.0.8)(typescript@5.4.5)(zod@3.23.8)
-      wagmi: 2.9.8(@tanstack/query-core@5.22.2)(@tanstack/react-query@5.22.2(react@18.2.0))(@types/react@18.3.3)(bufferutil@4.0.8)(react-dom@18.2.0(react@18.2.0))(react-i18next@13.5.0(i18next@22.5.1)(react-dom@18.2.0(react@18.2.0))(react-native@0.74.1(@babel/core@7.24.6)(@babel/preset-env@7.24.6(@babel/core@7.24.6))(@types/react@18.3.3)(bufferutil@4.0.8)(react@18.2.0))(react@18.2.0))(react-native@0.74.1(@babel/core@7.24.6)(@babel/preset-env@7.24.6(@babel/core@7.24.6))(@types/react@18.3.3)(bufferutil@4.0.8)(react@18.2.0))(react@18.2.0)(rollup@2.79.1)(typescript@5.4.5)(viem@2.13.2(bufferutil@4.0.8)(typescript@5.4.5)(zod@3.23.8))(zod@3.23.8)
-=======
       styled-components: 5.3.11(@babel/core@7.24.7)(react-dom@18.2.0(react@18.2.0))(react-is@18.3.1)(react@18.2.0)
       viem: 2.16.0(bufferutil@4.0.8)(typescript@5.4.5)(zod@3.23.8)
       wagmi: 2.10.4(@tanstack/query-core@5.22.2)(@tanstack/react-query@5.22.2(react@18.2.0))(@types/react@18.3.3)(bufferutil@4.0.8)(react-dom@18.2.0(react@18.2.0))(react-i18next@13.5.0(i18next@22.5.1)(react-dom@18.2.0(react@18.2.0))(react-native@0.74.2(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(@types/react@18.3.3)(bufferutil@4.0.8)(react@18.2.0))(react@18.2.0))(react-native@0.74.2(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(@types/react@18.3.3)(bufferutil@4.0.8)(react@18.2.0))(react@18.2.0)(rollup@2.79.1)(typescript@5.4.5)(viem@2.16.0(bufferutil@4.0.8)(typescript@5.4.5)(zod@3.23.8))(zod@3.23.8)
->>>>>>> comms-version-upgrade
     transitivePeerDependencies:
       - '@babel/core'
       - react-is
@@ -20283,20 +20076,12 @@ snapshots:
     dependencies:
       once: 1.4.0
 
-<<<<<<< HEAD
-  engine.io-client@6.5.3(bufferutil@4.0.8):
-=======
   engine.io-client@6.5.4(bufferutil@4.0.8):
->>>>>>> comms-version-upgrade
     dependencies:
       '@socket.io/component-emitter': 3.1.2
       debug: 4.3.5(supports-color@5.5.0)
       engine.io-parser: 5.2.2
-<<<<<<< HEAD
-      ws: 8.11.0(bufferutil@4.0.8)
-=======
       ws: 8.17.1(bufferutil@4.0.8)
->>>>>>> comms-version-upgrade
       xmlhttprequest-ssl: 2.0.0
     transitivePeerDependencies:
       - bufferutil
@@ -22089,15 +21874,9 @@ snapshots:
     dependencies:
       ws: 8.13.0(bufferutil@4.0.8)
 
-<<<<<<< HEAD
-  isows@1.0.4(ws@8.13.0(bufferutil@4.0.8)):
-    dependencies:
-      ws: 8.13.0(bufferutil@4.0.8)
-=======
   isows@1.0.4(ws@8.17.1(bufferutil@4.0.8)):
     dependencies:
       ws: 8.17.1(bufferutil@4.0.8)
->>>>>>> comms-version-upgrade
 
   isstream@0.1.2: {}
 
@@ -22587,11 +22366,7 @@ snapshots:
       whatwg-encoding: 2.0.0
       whatwg-mimetype: 3.0.0
       whatwg-url: 11.0.0
-<<<<<<< HEAD
-      ws: 8.17.0(bufferutil@4.0.8)
-=======
       ws: 8.17.1(bufferutil@4.0.8)
->>>>>>> comms-version-upgrade
       xml-name-validator: 4.0.0
     transitivePeerDependencies:
       - bufferutil
@@ -23267,17 +23042,10 @@ snapshots:
 
   metro-transform-worker@0.80.9(bufferutil@4.0.8):
     dependencies:
-<<<<<<< HEAD
-      '@babel/core': 7.24.6
-      '@babel/generator': 7.24.6
-      '@babel/parser': 7.24.6
-      '@babel/types': 7.24.6
-=======
       '@babel/core': 7.24.7
       '@babel/generator': 7.24.7
       '@babel/parser': 7.24.7
       '@babel/types': 7.24.7
->>>>>>> comms-version-upgrade
       metro: 0.80.9(bufferutil@4.0.8)
       metro-babel-transformer: 0.80.9
       metro-cache: 0.80.9
@@ -23335,11 +23103,7 @@ snapshots:
       source-map: 0.5.7
       strip-ansi: 6.0.1
       throat: 5.0.0
-<<<<<<< HEAD
-      ws: 7.5.9(bufferutil@4.0.8)
-=======
       ws: 7.5.10(bufferutil@4.0.8)
->>>>>>> comms-version-upgrade
       yargs: 17.7.2
     transitivePeerDependencies:
       - bufferutil
@@ -24681,11 +24445,7 @@ snapshots:
   react-devtools-core@5.2.0(bufferutil@4.0.8):
     dependencies:
       shell-quote: 1.8.1
-<<<<<<< HEAD
-      ws: 7.5.9(bufferutil@4.0.8)
-=======
       ws: 7.5.10(bufferutil@4.0.8)
->>>>>>> comms-version-upgrade
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -24709,11 +24469,7 @@ snapshots:
     dependencies:
       react: 18.2.0
 
-<<<<<<< HEAD
-  react-i18next@13.5.0(i18next@22.5.1)(react-dom@18.2.0(react@18.2.0))(react-native@0.74.1(@babel/core@7.24.6)(@babel/preset-env@7.24.6(@babel/core@7.24.6))(@types/react@18.3.3)(bufferutil@4.0.8)(react@18.2.0))(react@18.2.0):
-=======
   react-i18next@13.5.0(i18next@22.5.1)(react-dom@18.2.0(react@18.2.0))(react-native@0.74.2(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(@types/react@18.3.3)(bufferutil@4.0.8)(react@18.2.0))(react@18.2.0):
->>>>>>> comms-version-upgrade
     dependencies:
       '@babel/runtime': 7.24.7
       html-parse-stringify: 3.0.1
@@ -24721,11 +24477,7 @@ snapshots:
       react: 18.2.0
     optionalDependencies:
       react-dom: 18.2.0(react@18.2.0)
-<<<<<<< HEAD
-      react-native: 0.74.1(@babel/core@7.24.6)(@babel/preset-env@7.24.6(@babel/core@7.24.6))(@types/react@18.3.3)(bufferutil@4.0.8)(react@18.2.0)
-=======
       react-native: 0.74.2(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(@types/react@18.3.3)(bufferutil@4.0.8)(react@18.2.0)
->>>>>>> comms-version-upgrade
 
   react-icons@5.2.1(react@18.2.0):
     dependencies:
@@ -24772,32 +24524,11 @@ snapshots:
       react-lifecycles-compat: 3.0.4
       warning: 4.0.3
 
-<<<<<<< HEAD
-  react-native-webview@11.26.1(react-native@0.74.1(@babel/core@7.24.6)(@babel/preset-env@7.24.6(@babel/core@7.24.6))(@types/react@18.3.3)(bufferutil@4.0.8)(react@18.2.0))(react@18.2.0):
-=======
   react-native-webview@11.26.1(react-native@0.74.2(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(@types/react@18.3.3)(bufferutil@4.0.8)(react@18.2.0))(react@18.2.0):
->>>>>>> comms-version-upgrade
     dependencies:
       escape-string-regexp: 2.0.0
       invariant: 2.2.4
       react: 18.2.0
-<<<<<<< HEAD
-      react-native: 0.74.1(@babel/core@7.24.6)(@babel/preset-env@7.24.6(@babel/core@7.24.6))(@types/react@18.3.3)(bufferutil@4.0.8)(react@18.2.0)
-
-  react-native@0.74.1(@babel/core@7.24.6)(@babel/preset-env@7.24.6(@babel/core@7.24.6))(@types/react@18.3.3)(bufferutil@4.0.8)(react@18.2.0):
-    dependencies:
-      '@jest/create-cache-key-function': 29.7.0
-      '@react-native-community/cli': 13.6.6(bufferutil@4.0.8)
-      '@react-native-community/cli-platform-android': 13.6.6
-      '@react-native-community/cli-platform-ios': 13.6.6
-      '@react-native/assets-registry': 0.74.83
-      '@react-native/codegen': 0.74.83(@babel/preset-env@7.24.6(@babel/core@7.24.6))
-      '@react-native/community-cli-plugin': 0.74.83(@babel/core@7.24.6)(@babel/preset-env@7.24.6(@babel/core@7.24.6))(bufferutil@4.0.8)
-      '@react-native/gradle-plugin': 0.74.83
-      '@react-native/js-polyfills': 0.74.83
-      '@react-native/normalize-colors': 0.74.83
-      '@react-native/virtualized-lists': 0.74.83(@types/react@18.3.3)(react-native@0.74.1(@babel/core@7.24.6)(@babel/preset-env@7.24.6(@babel/core@7.24.6))(@types/react@18.3.3)(bufferutil@4.0.8)(react@18.2.0))(react@18.2.0)
-=======
       react-native: 0.74.2(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(@types/react@18.3.3)(bufferutil@4.0.8)(react@18.2.0)
 
   react-native@0.74.2(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(@types/react@18.3.3)(bufferutil@4.0.8)(react@18.2.0):
@@ -24813,7 +24544,6 @@ snapshots:
       '@react-native/js-polyfills': 0.74.84
       '@react-native/normalize-colors': 0.74.84
       '@react-native/virtualized-lists': 0.74.84(@types/react@18.3.3)(react-native@0.74.2(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(@types/react@18.3.3)(bufferutil@4.0.8)(react@18.2.0))(react@18.2.0)
->>>>>>> comms-version-upgrade
       abort-controller: 3.0.0
       anser: 1.4.10
       ansi-regex: 5.0.1
@@ -24839,11 +24569,7 @@ snapshots:
       scheduler: 0.24.0-canary-efb381bbf-20230505
       stacktrace-parser: 0.1.10
       whatwg-fetch: 3.6.20
-<<<<<<< HEAD
-      ws: 6.2.2(bufferutil@4.0.8)
-=======
       ws: 6.2.3(bufferutil@4.0.8)
->>>>>>> comms-version-upgrade
       yargs: 17.7.2
     optionalDependencies:
       '@types/react': 18.3.3
@@ -25525,13 +25251,8 @@ snapshots:
   socket.io-client@4.7.5(bufferutil@4.0.8):
     dependencies:
       '@socket.io/component-emitter': 3.1.2
-<<<<<<< HEAD
-      debug: 4.3.4(supports-color@5.5.0)
-      engine.io-client: 6.5.3(bufferutil@4.0.8)
-=======
       debug: 4.3.5(supports-color@5.5.0)
       engine.io-client: 6.5.4(bufferutil@4.0.8)
->>>>>>> comms-version-upgrade
       socket.io-parser: 4.2.4
     transitivePeerDependencies:
       - bufferutil
@@ -26720,26 +26441,16 @@ snapshots:
       - utf-8-validate
       - zod
 
-<<<<<<< HEAD
-  viem@2.13.2(bufferutil@4.0.8)(typescript@5.4.5)(zod@3.23.8):
-=======
   viem@2.16.0(bufferutil@4.0.8)(typescript@5.4.5)(zod@3.23.8):
->>>>>>> comms-version-upgrade
     dependencies:
       '@adraffy/ens-normalize': 1.10.0
       '@noble/curves': 1.2.0
       '@noble/hashes': 1.3.2
       '@scure/bip32': 1.3.2
       '@scure/bip39': 1.2.1
-<<<<<<< HEAD
-      abitype: 1.0.0(typescript@5.4.5)(zod@3.23.8)
-      isows: 1.0.4(ws@8.13.0(bufferutil@4.0.8))
-      ws: 8.13.0(bufferutil@4.0.8)
-=======
       abitype: 1.0.4(typescript@5.4.5)(zod@3.23.8)
       isows: 1.0.4(ws@8.17.1(bufferutil@4.0.8))
       ws: 8.17.1(bufferutil@4.0.8)
->>>>>>> comms-version-upgrade
     optionalDependencies:
       typescript: 5.4.5
     transitivePeerDependencies:
@@ -26761,16 +26472,6 @@ snapshots:
     dependencies:
       xml-name-validator: 4.0.0
 
-<<<<<<< HEAD
-  wagmi@2.9.8(@tanstack/query-core@5.22.2)(@tanstack/react-query@5.22.2(react@18.2.0))(@types/react@18.3.3)(bufferutil@4.0.8)(react-dom@18.2.0(react@18.2.0))(react-i18next@13.5.0(i18next@22.5.1)(react-dom@18.2.0(react@18.2.0))(react-native@0.74.1(@babel/core@7.24.6)(@babel/preset-env@7.24.6(@babel/core@7.24.6))(@types/react@18.3.3)(bufferutil@4.0.8)(react@18.2.0))(react@18.2.0))(react-native@0.74.1(@babel/core@7.24.6)(@babel/preset-env@7.24.6(@babel/core@7.24.6))(@types/react@18.3.3)(bufferutil@4.0.8)(react@18.2.0))(react@18.2.0)(rollup@2.79.1)(typescript@5.4.5)(viem@2.13.2(bufferutil@4.0.8)(typescript@5.4.5)(zod@3.23.8))(zod@3.23.8):
-    dependencies:
-      '@tanstack/react-query': 5.22.2(react@18.2.0)
-      '@wagmi/connectors': 5.0.7(@types/react@18.3.3)(@wagmi/core@2.10.5(@tanstack/query-core@5.22.2)(@types/react@18.3.3)(bufferutil@4.0.8)(react@18.2.0)(typescript@5.4.5)(viem@2.13.2(bufferutil@4.0.8)(typescript@5.4.5)(zod@3.23.8))(zod@3.23.8))(bufferutil@4.0.8)(react-dom@18.2.0(react@18.2.0))(react-i18next@13.5.0(i18next@22.5.1)(react-dom@18.2.0(react@18.2.0))(react-native@0.74.1(@babel/core@7.24.6)(@babel/preset-env@7.24.6(@babel/core@7.24.6))(@types/react@18.3.3)(bufferutil@4.0.8)(react@18.2.0))(react@18.2.0))(react-native@0.74.1(@babel/core@7.24.6)(@babel/preset-env@7.24.6(@babel/core@7.24.6))(@types/react@18.3.3)(bufferutil@4.0.8)(react@18.2.0))(react@18.2.0)(rollup@2.79.1)(typescript@5.4.5)(viem@2.13.2(bufferutil@4.0.8)(typescript@5.4.5)(zod@3.23.8))(zod@3.23.8)
-      '@wagmi/core': 2.10.5(@tanstack/query-core@5.22.2)(@types/react@18.3.3)(bufferutil@4.0.8)(react@18.2.0)(typescript@5.4.5)(viem@2.13.2(bufferutil@4.0.8)(typescript@5.4.5)(zod@3.23.8))(zod@3.23.8)
-      react: 18.2.0
-      use-sync-external-store: 1.2.0(react@18.2.0)
-      viem: 2.13.2(bufferutil@4.0.8)(typescript@5.4.5)(zod@3.23.8)
-=======
   wagmi@2.10.4(@tanstack/query-core@5.22.2)(@tanstack/react-query@5.22.2(react@18.2.0))(@types/react@18.3.3)(bufferutil@4.0.8)(react-dom@18.2.0(react@18.2.0))(react-i18next@13.5.0(i18next@22.5.1)(react-dom@18.2.0(react@18.2.0))(react-native@0.74.2(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(@types/react@18.3.3)(bufferutil@4.0.8)(react@18.2.0))(react@18.2.0))(react-native@0.74.2(@babel/core@7.24.7)(@babel/preset-env@7.24.7(@babel/core@7.24.7))(@types/react@18.3.3)(bufferutil@4.0.8)(react@18.2.0))(react@18.2.0)(rollup@2.79.1)(typescript@5.4.5)(viem@2.16.0(bufferutil@4.0.8)(typescript@5.4.5)(zod@3.23.8))(zod@3.23.8):
     dependencies:
       '@tanstack/react-query': 5.22.2(react@18.2.0)
@@ -26779,7 +26480,6 @@ snapshots:
       react: 18.2.0
       use-sync-external-store: 1.2.0(react@18.2.0)
       viem: 2.16.0(bufferutil@4.0.8)(typescript@5.4.5)(zod@3.23.8)
->>>>>>> comms-version-upgrade
     optionalDependencies:
       typescript: 5.4.5
     transitivePeerDependencies:
@@ -27010,33 +26710,12 @@ snapshots:
     optionalDependencies:
       bufferutil: 4.0.8
 
-<<<<<<< HEAD
-  ws@6.2.2(bufferutil@4.0.8):
-=======
   ws@6.2.3(bufferutil@4.0.8):
->>>>>>> comms-version-upgrade
     dependencies:
       async-limiter: 1.0.1
     optionalDependencies:
       bufferutil: 4.0.8
 
-<<<<<<< HEAD
-  ws@7.5.9(bufferutil@4.0.8):
-    optionalDependencies:
-      bufferutil: 4.0.8
-
-  ws@8.11.0(bufferutil@4.0.8):
-    optionalDependencies:
-      bufferutil: 4.0.8
-
-  ws@8.13.0(bufferutil@4.0.8):
-    optionalDependencies:
-      bufferutil: 4.0.8
-
-  ws@8.17.0(bufferutil@4.0.8):
-    optionalDependencies:
-      bufferutil: 4.0.8
-=======
   ws@7.5.10(bufferutil@4.0.8):
     optionalDependencies:
       bufferutil: 4.0.8
@@ -27048,7 +26727,6 @@ snapshots:
   ws@8.17.1(bufferutil@4.0.8):
     optionalDependencies:
       bufferutil: 4.0.8
->>>>>>> comms-version-upgrade
 
   xlsx@0.18.5:
     dependencies:

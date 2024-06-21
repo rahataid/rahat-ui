@@ -53,7 +53,7 @@
     "@rumsan/core": "^3.0.133",
     "@rumsan/extensions": "^0.0.22",
     "@rumsan/prisma": "^1.0.125",
-    "@rumsan/react-query": "0.0.41",
+    "@rumsan/react-query": "0.0.43",
     "@rumsan/sdk": "^0.0.45",
     "@rumsan/user": "^3.0.158",
     "@tanstack/match-sorter-utils": "^8.11.8",

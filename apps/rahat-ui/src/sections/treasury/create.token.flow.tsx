@@ -76,7 +76,7 @@ const CreateTokenFlow = () => {
     <div>
       <div>{renderComponent()}</div>
       {
-        <div className="flex items-center justify-end gap-4 mx-4">
+        <div className="flex items-center justify-end gap-4 mx-4 mb-4">
           <Button
             className="w-48 text-red-600 bg-pink-200 hover:bg-pink-300"
             onClick={handlePrevious}

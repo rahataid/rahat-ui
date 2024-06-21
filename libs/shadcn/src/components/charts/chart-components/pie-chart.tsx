@@ -54,7 +54,7 @@ interface Props {
 }
 
 export default function PieChart({
-  custom,
+  custom = false,
   title,
   subheader,
   chart,
@@ -117,7 +117,16 @@ export default function PieChart({
     ...options,
   });
 
-  return (
+  return custom ? (
+    <Chart
+      dir="ltr"
+      type="pie"
+      series={chartSeries}
+      options={chartOptions}
+      height={height}
+      width={width}
+    />
+  ) : (
     <div className="bg-card shadow rounded p-4 flex items-center justify-center">
       {communityTool ? (
         <div>
@@ -133,15 +142,6 @@ export default function PieChart({
             />
           </div>
         </div>
-      ) : custom ? (
-        <Chart
-          dir="ltr"
-          type="pie"
-          series={chartSeries}
-          options={chartOptions}
-          height={height}
-          width={width}
-        />
       ) : (
         <div className="bg-white shadow-md rounded-lg overflow-hidden p-4">
           <div className="flex flex-col items-center justify-center">

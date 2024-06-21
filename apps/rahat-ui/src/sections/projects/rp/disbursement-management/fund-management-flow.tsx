@@ -4,6 +4,9 @@ import React, { FC, useState } from 'react';
 import DisbursementPlan from './1-disbursement-plan';
 import DisbursementCondition from './2-disbursement-condition';
 import DisbursementConfirmation from './3-confirmation';
+import { usePagination, useProjectBeneficiaries } from '@rahat-ui/query';
+import { useParams } from 'next/navigation';
+import { UUID } from 'crypto';
 
 // type FundManagementFlowProps = {
 //   selectedBeneficiaries: {
@@ -17,12 +20,33 @@ const FundManagementFlow = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [stepData, setStepData] =
     useState<typeof initialStepData>(initialStepData);
+  const { id } = useParams() as { id: UUID };
+  const {
+    pagination,
+    filters,
+    setFilters,
+    setNextPage,
+    setPrevPage,
+    setPerPage,
+    selectedListItems,
+    setSelectedListItems,
+    resetSelectedListItems,
+  } = usePagination();
+
+  const projectBeneficiaries = useProjectBeneficiaries({
+    page: pagination.page,
+    perPage: pagination.perPage,
+    order: 'desc',
+    sort: 'updatedAt',
+    projectUUID: id,
+    ...filters,
+  });
 
   const steps = [
     {
       id: 'step1',
       title: 'Disburse Method',
-      component: <DisbursementPlan />,
+      component: <DisbursementPlan data={projectBeneficiaries.data.data} />,
       // validation: {
       //   noMethodSelected: {
       //     condition: () => !stepData.treasurySource,

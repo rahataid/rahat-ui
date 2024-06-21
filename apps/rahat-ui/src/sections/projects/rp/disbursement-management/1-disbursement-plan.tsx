@@ -1,9 +1,12 @@
 import DataCard from 'apps/rahat-ui/src/components/dataCard';
 import { Users } from 'lucide-react';
-import React from 'react';
+import React, { FC } from 'react';
 import { DisburseTable } from './disburse-table';
 
-const DisbursementPlan = () => {
+interface DisbursementPlanProps {
+  data: any;
+}
+const DisbursementPlan: FC<DisbursementPlanProps> = ({ data }) => {
   return (
     <div className="grid grid-cols-12 p-4">
       <div className="col-span-4">
@@ -13,12 +16,12 @@ const DisbursementPlan = () => {
         <DataCard
           className=""
           title="Total beneficiaries"
-          number={'12'}
+          number={data?.length || 'N/A'}
           Icon={Users}
         />
       </div>
       <div className="col-span-12">
-        <DisburseTable />
+        <DisburseTable data={data} />
       </div>
     </div>
   );

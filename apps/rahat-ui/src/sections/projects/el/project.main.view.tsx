@@ -19,6 +19,8 @@ import { useCallback, useEffect, useState } from 'react';
 import { ProjectChart } from '..';
 import ProjectDataCard from './project.datacard';
 import ProjectInfo from './project.info';
+import ChartLine from '@rahat-ui/shadcn/src/components/charts/chart-components/chart-line';
+import { cn } from '@rahat-ui/shadcn/src';
 
 const ProjectMainView = () => {
   const { id } = useParams();
@@ -77,7 +79,53 @@ const ProjectMainView = () => {
       return name === 'BENEFICIARY_TYPE';
     }) || [];
 
- 
+  const referred = ELProjectStats?.filter((item) => {
+    return item?.name === 'REFERRAL';
+  })?.[0]?.data;
+
+  const referredCounts = referred
+    ? Object.values(referred).map((entry) => entry?.REFERRED)
+    : [];
+
+  const datesReferred = referred ? Object.keys(referred) : [];
+
+  const freeVoucher = ELProjectStats?.filter((item) => {
+    return item?.name === 'VOUCHERCLAIMS';
+  })?.[0]?.data;
+
+  const freeVoucherCounts = freeVoucher
+    ? Object.values(freeVoucher).map((entry) => entry?.FREE_VOUCHER || null)
+    : [];
+
+  const refferedVoucher = ELProjectStats?.filter((item) => {
+    return item?.name === 'VOUCHERCLAIMS';
+  })?.[0]?.data;
+
+  const referredVoucherCounts = refferedVoucher
+    ? Object.values(refferedVoucher).map((entry) => {
+        return entry?.DISCOUNT_VOUCHER || null;
+      })
+    : [];
+
+  const seriesDataVouchers = [
+    {
+      name: 'Free Voucher',
+      data: freeVoucherCounts,
+    },
+    {
+      name: 'Discount Voucher',
+      data: referredVoucherCounts,
+    },
+  ];
+
+  const seriesDataReferred = [
+    {
+      name: 'Referred',
+      data: referredCounts,
+    },
+  ];
+
+  const dates = freeVoucher ? Object.keys(freeVoucher) : [];
 
   const footfallEyeCheckUp = ELProjectStats?.filter((item) => {
     return item?.name === 'FOOTFALL';
@@ -86,10 +134,6 @@ const ProjectMainView = () => {
   const footfallEyeCheckUpNotDone = ELProjectStats?.filter((item) => {
     return item?.name === 'FOOTFALL';
   })?.[0]?.data?.find((i) => i.id === 'EYE_CHECK_UP_NOT_DONE');
-
-  const footfallUnknown = ELProjectStats?.filter((item) => {
-    return item?.name === 'FOOTFALL';
-  })?.[0]?.data?.find((i) => i.id === 'UNKNOWN');
 
   const enrolledEyeCheckupData = ELProjectStats?.filter((item) => {
     return item.name === 'EYE_CHECKUP';
@@ -222,6 +266,22 @@ const ProjectMainView = () => {
           projectVoucher={projectVoucher}
           voucherDetails={voucherDetails}
         />
+        <div
+          className={cn(
+            `grid ${
+              dates.length > 6 ? 'grid-cols-1' : 'grid-cols-2'
+            } mt-2 mb-2 gap-2`,
+          )}
+        >
+          <div className="bg-card h-96">
+            <p>Redemption</p>
+            <ChartLine series={seriesDataVouchers} categories={dates} />
+          </div>
+          <div className="bg-card h-96">
+            <p>Referrals</p>
+            <ChartLine series={seriesDataReferred} categories={datesReferred} />
+          </div>
+        </div>
         <ProjectChart
           chartData={[...footfallFilteredData, ...beneficiaryFilteredData]}
         />

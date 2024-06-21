@@ -6,11 +6,11 @@ import {
   ResizablePanelGroup,
 } from '@rahat-ui/shadcn/src/components/ui/resizable';
 import { FC } from 'react';
-import ProjectNavView from './project.nav.view';
-import { useProjectNavItems } from './useProjectNavItems';
 import { ProjectType } from './nav-items.types';
-import Image from 'next/image';
-import { useTheme } from 'next-themes';
+import { ProjectNav } from './project-header';
+import ProjectNavView from './project.nav.view';
+import { useProjectHeaderItems } from './useProjectHeaderItems';
+import { useProjectNavItems } from './useProjectNavItems';
 
 type ProjectLayoutProps = {
   children: React.ReactNode | React.ReactNode[];
@@ -24,7 +24,7 @@ const ProjectLayout: FC<ProjectLayoutProps> = ({
   navFooter,
 }) => {
   const { navItems: menuItems } = useProjectNavItems(projectType);
-  const theme = useTheme();
+  const { headerNav } = useProjectHeaderItems(projectType);
   const renderResizablePanel = (children: React.ReactNode, index?: number) => {
     return (
       <ResizablePanel minSize={40} key={index}>
@@ -54,6 +54,7 @@ const ProjectLayout: FC<ProjectLayoutProps> = ({
 
   return (
     <>
+      <ProjectNav component={headerNav} />
       <ResizablePanelGroup direction="horizontal">
         <ResizablePanel defaultSize={18} minSize={18} maxSize={18}>
           {menuItems.map((item) => (

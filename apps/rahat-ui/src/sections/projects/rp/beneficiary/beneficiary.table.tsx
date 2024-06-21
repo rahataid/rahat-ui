@@ -11,10 +11,7 @@ import {
 import { Button } from '@rahat-ui/shadcn/components/button';
 import {
   DropdownMenu,
-  DropdownMenuCheckboxItem,
   DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/components/dropdown-menu';
 import { Input } from '@rahat-ui/shadcn/components/input';
@@ -28,23 +25,30 @@ import {
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@rahat-ui/shadcn/src/components/ui/select';
+import {
   VisibilityState,
   flexRender,
   getCoreRowModel,
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { useSecondPanel } from 'apps/rahat-ui/src/providers/second-panel-provider';
+import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import { UUID } from 'crypto';
-import { ChevronDown, Settings2 } from 'lucide-react';
-import { useParams } from 'next/navigation';
+import { ChevronDown, Plus } from 'lucide-react';
+import Image from 'next/image';
+import { useParams, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import BulkAssignToken from './bulk-assign-token.modal';
 import { useCvaBeneficiaryTableColumns } from './use.table.column';
-import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 
 export default function BeneficiaryTable() {
-  const { setSecondPanelComponent, closeSecondPanel } = useSecondPanel();
   const bulkAssignTokens = useBulkAssignClaimsToBeneficiaries();
 
   const { id } = useParams() as { id: UUID };
@@ -69,6 +73,7 @@ export default function BeneficiaryTable() {
     resetSelectedListItems,
   } = usePagination();
   const columns = useCvaBeneficiaryTableColumns();
+  const router = useRouter();
 
   const beneficiaries = useProjectBeneficiaries({
     page: pagination.page,
@@ -109,21 +114,108 @@ export default function BeneficiaryTable() {
 
   return (
     <>
-      <div className="w-full p-2 bg-secondary">
-        <div className="flex items-center mb-2">
-          <Input
-            placeholder="Filter beneficiary..."
-            value={
-              (table.getColumn('walletAddress')?.getFilterValue() as string) ??
-              ''
-            }
-            onChange={(event) =>
-              table
-                .getColumn('walletAddress')
-                ?.setFilterValue(event.target.value)
-            }
-            className="rounded mr-2"
-          />
+      <div className="w-full p-6 bg-secondary">
+        <div className="flex items-center justify-between mb-3">
+          <p className="font-semibold	text-lg	text-neutral-800">
+            Beneficiaries List
+          </p>
+          {selectedRowAddresses.length > 0 && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  // disabled={assignVoucher.isPending}
+                  className="h-10 ml-2"
+                >
+                  {selectedRowAddresses.length} - Beneficiary Selected
+                  <ChevronDown strokeWidth={1.5} />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                align="center"
+                className="flex flex-col p-3 gap-2"
+              >
+                <BulkAssignToken
+                  loading={bulkAssignTokens.isPending}
+                  beneficiaries={selectedRowAddresses.length}
+                  handleSubmit={handleBulkAssignTokens}
+                />
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
+        </div>
+        <div className="grid grid-cols-6 gap-x-2 mb-3">
+          <Select>
+            <SelectTrigger className="rounded">
+              <SelectValue placeholder="Select gender" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectItem value="male">Male</SelectItem>
+                <SelectItem value="female">Female</SelectItem>
+                <SelectItem value="others">Others</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+          <Select>
+            <SelectTrigger className="rounded">
+              <SelectValue placeholder="Select Internet Access" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectItem value="apple">Apple</SelectItem>
+                <SelectItem value="banana">Banana</SelectItem>
+                <SelectItem value="blueberry">Blueberry</SelectItem>
+                <SelectItem value="grapes">Grapes</SelectItem>
+                <SelectItem value="pineapple">Pineapple</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+          <Select>
+            <SelectTrigger className="rounded">
+              <SelectValue placeholder="Select Phone Type" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectItem value="apple">Apple</SelectItem>
+                <SelectItem value="banana">Banana</SelectItem>
+                <SelectItem value="blueberry">Blueberry</SelectItem>
+                <SelectItem value="grapes">Grapes</SelectItem>
+                <SelectItem value="pineapple">Pineapple</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+          <Select>
+            <SelectTrigger className="rounded">
+              <SelectValue placeholder="Select Banking Status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectItem value="apple">Apple</SelectItem>
+                <SelectItem value="banana">Banana</SelectItem>
+                <SelectItem value="blueberry">Blueberry</SelectItem>
+                <SelectItem value="grapes">Grapes</SelectItem>
+                <SelectItem value="pineapple">Pineapple</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+          <div className="col-span-2">
+            <Input
+              placeholder="Search Beneficiaries..."
+              value={
+                (table
+                  .getColumn('walletAddress')
+                  ?.getFilterValue() as string) ?? ''
+              }
+              onChange={(event) =>
+                table
+                  .getColumn('walletAddress')
+                  ?.setFilterValue(event.target.value)
+              }
+              className="rounded mr-2"
+            />
+          </div>
+        </div>
+        {/* <div className="flex items-center mb-2">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="ml-auto">
@@ -153,28 +245,7 @@ export default function BeneficiaryTable() {
                 })}
             </DropdownMenuContent>
           </DropdownMenu>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                // disabled={assignVoucher.isPending}
-                className="h-10 ml-2"
-              >
-                {selectedRowAddresses.length} - Beneficiary Selected
-                <ChevronDown strokeWidth={1.5} />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-              align="center"
-              className="flex flex-col p-3 gap-2"
-            >
-              <BulkAssignToken
-                loading={bulkAssignTokens.isPending}
-                beneficiaries={selectedRowAddresses.length}
-                handleSubmit={handleBulkAssignTokens}
-              />
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
+        </div> */}
         <div className="rounded border bg-card">
           <TableComponent>
             <ScrollArea className="h-[calc(100vh-182px)]">
@@ -219,9 +290,31 @@ export default function BeneficiaryTable() {
                   <TableRow>
                     <TableCell
                       colSpan={table.getAllColumns().length}
-                      className="h-24 text-center"
+                      className="h-full"
                     >
-                      No results.
+                      <div className="flex flex-col items-center justify-center">
+                        <Image
+                          src="/noData.png"
+                          height={250}
+                          width={250}
+                          alt="no data"
+                        />
+                        <p className="text-medium text-base mb-1">
+                          No Data Available
+                        </p>
+                        <p className="text-sm mb-4 text-gray-500">
+                          There are no beneficiaries to display at the moment
+                        </p>
+                        <Button
+                          onClick={() =>
+                            router.push(`/projects/rp/${id}/beneficiary/add`)
+                          }
+                        >
+                          {' '}
+                          <Plus className="mr-2" size={20} strokeWidth={1.5} />
+                          Add Beneficiary Data
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 )}

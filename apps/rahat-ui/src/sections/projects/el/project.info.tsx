@@ -10,7 +10,6 @@ type ProjectInfoProps = {
   loading: any;
   className?: any;
   beneficiaryDetails: any;
-  totalBeneficiary: any;
   refetchBeneficiary: VoidFunction;
   projectVoucher: any;
   voucherDetails: any;
@@ -19,7 +18,6 @@ type ProjectInfoProps = {
 const ProjectInfo: FC<ProjectInfoProps> = ({
   project,
   beneficiaryDetails,
-  totalBeneficiary,
   refetchBeneficiary,
   loading,
   projectVoucher,
@@ -43,7 +41,6 @@ const ProjectInfo: FC<ProjectInfoProps> = ({
       );
     });
   };
-  console.log(renderExtras(project?.extras || {}));
   return (
     <>
       <div className="grid grid-cols-5 grid-flow-col gap-2">
@@ -52,8 +49,11 @@ const ProjectInfo: FC<ProjectInfoProps> = ({
             <div>
               <p className="font-medium text-primary text-2xl">
                 {project?.name}
-              </p>
+              </p>            
             </div>
+            <div className="flex items-center justify-between flex-wrap mt-4 gap-10 md:gap-32 mb-4">
+              {renderExtras(project?.extras || {})}                
+              </div>    
           </div>
           <div>
             <p className="font-light text-xs text-muted-foreground">Status</p>
@@ -75,14 +75,16 @@ const ProjectInfo: FC<ProjectInfoProps> = ({
             <DataCard
               className="h-full"
               title="Total Beneficiary"
-              number={totalBeneficiary || 'N/A'}
+              number={(Number(projectVoucher?.eyeVoucherAssigned)+Number(projectVoucher?.
+                referredVoucherAssigned)
+                ).toString() || 'N/A'}
               loading={loading}
             />
             <DataCard
               className=""
               title="Enrolled Beneficiaries"
               number={
-                beneficiaryDetails ? beneficiaryDetails[0].toString() : '-'
+                projectVoucher?.eyeVoucherAssigned.toLocaleString() || '-'
               }
               Icon={Users}
               refresh={refetchBeneficiary}
@@ -91,7 +93,8 @@ const ProjectInfo: FC<ProjectInfoProps> = ({
               className=""
               title="Referred Beneficiaries"
               number={
-                beneficiaryDetails ? beneficiaryDetails[1].toString() : '-'
+                Number(projectVoucher?.
+                  referredVoucherAssigned).toLocaleString()|| '-'
               }
               Icon={Users}
               refresh={refetchBeneficiary}
@@ -99,21 +102,21 @@ const ProjectInfo: FC<ProjectInfoProps> = ({
             <DataCard
               className=""
               title="Total Redemptions"
-              number={totalVoucherRedeemed || 'N/A'}
+              number={totalVoucherRedeemed.toLocaleString() || 'N/A'}
               Icon={Users}
               // refresh={refetchBeneficiary}
             />
             <DataCard
               className=""
-              title="Free Vouchers Redeemed"
-              number={projectVoucher?.eyeVoucherBudget?.toString() || '-'}
+              title="Successful Enrollment"
+              number={projectVoucher?.eyeVoucherClaimed?.toLocaleString() || '-'}
               Icon={Users}
               // refresh={refetchBeneficiary}
             />
             <DataCard
               className=""
-              title="Discount Vouchers Redeemed"
-              number={projectVoucher?.referredVoucherBudget?.toString() || '-'}
+              title="Successful Referrals"
+              number={projectVoucher?.referredVoucherClaimed?.toLocaleString() || '-'}
               Icon={Users}
               // refresh={refetchBeneficiary}
             />

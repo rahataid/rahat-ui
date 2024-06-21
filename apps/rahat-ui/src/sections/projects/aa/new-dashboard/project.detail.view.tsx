@@ -35,9 +35,9 @@ export default function ProjectDetails() {
   const onDelete = () => {};
 
   return (
-    <div className="h-[calc(100vh-65px)] p-4 pr-0 bg-secondary">
+    <div className="h-[calc(100vh-65px)] pl-2 pt-2 pr-0 pb-4 bg-secondary">
       <AddFundsModal fundsModal={fundsModal} />
-      <div className="flex gap-4 items-center justify-end pr-4">
+      <div className="flex gap-4 items-center justify-end p-2 pb-0 pr-4">
         <EditButton path="/" />
         <DeleteButton name="project" handleContinueClick={onDelete} />
         <Button type="button" variant="outline" className="shadow-md">
@@ -48,12 +48,12 @@ export default function ProjectDetails() {
           Add Budget
         </Button>
       </div>
-      <ScrollArea className="mt-4 h-[calc(100vh-150px)] pr-4">
+      <ScrollArea className="mt-2 h-[calc(100vh-142px)] pr-2">
         {isLoading ? (
           <Loader />
         ) : (
-          <div className="grid gap-4">
-            <div className="grid grid-cols-3 gap-4">
+          <>
+            <div className="grid grid-cols-3 gap-4 p-2">
               <ProjectInfoCard project={project} />
               <SimplePhaseCardContainer
                 phasesStats={phasesStats?.phaseActivities?.data}
@@ -69,7 +69,7 @@ export default function ProjectDetails() {
                 (data: any) => data.group === 'beneficiary',
               )}
             />
-          </div>
+          </>
         )}
       </ScrollArea>
     </div>

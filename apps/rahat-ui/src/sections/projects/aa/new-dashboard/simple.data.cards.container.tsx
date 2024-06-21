@@ -90,7 +90,7 @@ export default function SimpleDataCardsContainer({
     },
   ];
   return (
-    <div className="grid grid-cols-3 gap-4">
+    <div className="grid grid-cols-3 gap-4 p-2">
       {data.map((item, index) => (
         <DataCard
           key={index}

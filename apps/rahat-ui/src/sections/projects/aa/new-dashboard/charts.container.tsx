@@ -55,7 +55,7 @@ export default function ChartsContainer({ allStats = [] }: IProps) {
   ];
   return (
     <>
-      <div className="flex gap-4">
+      <div className="flex gap-4 p-2">
         {/* Donut Chart : Gender Start  */}
         <div className="rounded-sm bg-card p-4 shadow-md">
           <h1 className="text-md font-medium mb-4">
@@ -127,7 +127,7 @@ export default function ChartsContainer({ allStats = [] }: IProps) {
         </div>
         {/* Bar Chart : Beneficiary Associated Bank End  */}
       </div>
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-4 gap-4 p-2">
         {pieChartData.map((chart, index) => (
           <PieChartCard
             key={index}

@@ -27,6 +27,8 @@ import React from 'react';
 import { Redemption } from './redemption.table';
 import { useProjectVoucher } from 'apps/rahat-ui/src/hooks/el/subgraph/querycall';
 import TableLoader from 'apps/rahat-ui/src/components/table.loader';
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@rahat-ui/shadcn/src/components/ui/dialog';
+import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 
 export const useTableColumns = (handleAssignClick: any) => {
   const { id } = useParams();
@@ -39,6 +41,14 @@ export const useTableColumns = (handleAssignClick: any) => {
     contractSettings?.elproject?.address || '',
     contractSettings?.eyevoucher?.address || '',
   );
+
+
+  const projectModal = useBoolean();
+
+  const handleTokenAssignModal = () => {
+    projectModal.onTrue();
+  };
+
 
   const handleAssign = (row: any) => {
     handleAssignClick(row);
@@ -74,7 +84,7 @@ export const useTableColumns = (handleAssignClick: any) => {
             checked={isChecked}
             onCheckedChange={(value) => row.toggleSelected(!!value)}
             aria-label="Select row"
-            disabled={isDisabled}
+            // disabled={isDisabled}
           />
         );
       },
@@ -194,6 +204,7 @@ export const useTableColumns = (handleAssignClick: any) => {
         const rowData = row.original;
         if (rowData.status === 'APPROVED') return null;
         return (
+          <>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="h-8 w-8 p-0">
@@ -203,11 +214,43 @@ export const useTableColumns = (handleAssignClick: any) => {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuItem onClick={() => handleApprove(rowData)}>
+              <DropdownMenuItem onClick={() => handleTokenAssignModal()}>
                 Approve Redemption
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+
+          <Dialog open={projectModal.value} onOpenChange={projectModal.onToggle}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Approve Redemption</DialogTitle>
+            <DialogDescription>
+              <p className="text-orange-500">
+                Are you sure you want to approve the redemption?
+              </p>
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button type="button" variant="ghost">
+                Close
+              </Button>
+            </DialogClose>
+            <Button
+              onClick={handleApprove}
+              type="button"
+              variant="ghost"
+              className="text-primary"
+            >
+              Approve
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+          </>
+
+
+
         );
       },
     },

@@ -23,7 +23,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { truncateEthAddress } from '@rumsan/sdk/utils';
 import { useParams } from 'next/navigation';
-import React from 'react';
+import React, { useState } from 'react';
 import { Redemption } from './redemption.table';
 import { useProjectVoucher } from 'apps/rahat-ui/src/hooks/el/subgraph/querycall';
 import TableLoader from 'apps/rahat-ui/src/components/table.loader';
@@ -32,6 +32,7 @@ import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 
 export const useTableColumns = (handleAssignClick: any) => {
   const { id } = useParams();
+  const [selectedRow, setSelectedRow] = useState(null)
 
   const contractSettings = useProjectSettingsStore(
     (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT] || null,
@@ -45,14 +46,11 @@ export const useTableColumns = (handleAssignClick: any) => {
 
   const projectModal = useBoolean();
 
-  const handleTokenAssignModal = () => {
+  const handleConfirmationModal = (row:any) => {
+   setSelectedRow(row)
     projectModal.onTrue();
   };
 
-
-  const handleAssign = (row: any) => {
-    handleAssignClick(row);
-  };
   const [walletAddressCopied, setWalletAddressCopied] =
     React.useState<number>();
 
@@ -65,11 +63,17 @@ export const useTableColumns = (handleAssignClick: any) => {
 
   const updateRedemption = useUpdateElRedemption();
 
-  const handleApprove = async (row: any) => {
+  const handleApprove = async () => {
     await updateRedemption.mutateAsync({
       projectUUID: uuid,
-      redemptionUUID: [row.uuid],
-    });
+      redemptionUUID: [selectedRow?.uuid],
+    })
+    .finally(()=>
+      {
+      setSelectedRow(null);
+      projectModal.onFalse();}
+    );
+
   };
 
   const columns: ColumnDef<Redemption>[] = [
@@ -84,7 +88,7 @@ export const useTableColumns = (handleAssignClick: any) => {
             checked={isChecked}
             onCheckedChange={(value) => row.toggleSelected(!!value)}
             aria-label="Select row"
-            // disabled={isDisabled}
+            disabled={isDisabled}
           />
         );
       },
@@ -214,7 +218,7 @@ export const useTableColumns = (handleAssignClick: any) => {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuItem onClick={() => handleTokenAssignModal()}>
+              <DropdownMenuItem onClick={() => handleConfirmationModal(rowData)}>
                 Approve Redemption
               </DropdownMenuItem>
             </DropdownMenuContent>

@@ -33,7 +33,7 @@ const FundManagementFlow = () => {
     resetSelectedListItems,
   } = usePagination();
 
-  const { data } = useProjectBeneficiaries({
+  const projectBeneficiaries = useProjectBeneficiaries({
     page: pagination.page,
     perPage: pagination.perPage,
     order: 'desc',
@@ -42,13 +42,11 @@ const FundManagementFlow = () => {
     ...filters,
   });
 
-  console.log('data', data);
-
   const steps = [
     {
       id: 'step1',
       title: 'Disburse Method',
-      component: <DisbursementPlan />,
+      component: <DisbursementPlan data={projectBeneficiaries.data.data} />,
       // validation: {
       //   noMethodSelected: {
       //     condition: () => !stepData.treasurySource,

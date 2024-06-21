@@ -1,15 +1,7 @@
 'use client';
 
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { useBeneficiaryStore } from '@rahat-ui/query';
 import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import {
@@ -32,16 +24,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { ArrowUpDown, MoreHorizontal } from 'lucide-react';
 import * as React from 'react';
-
-const data: Payment[] = [
-  {
-    id: 'm5gr84i9',
-    name: 'Jon Doe',
-    amount: '400',
-  },
-];
 
 export type Payment = {
   id: string;
@@ -94,11 +77,16 @@ export const columns: ColumnDef<Payment>[] = [
   },
 ];
 
-export function DisburseTable() {
+interface DisburseTableProps {
+  data: any;
+}
+
+export function DisburseTable({ data = [] }: DisburseTableProps) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
   );
+  console.log('data', data);
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});

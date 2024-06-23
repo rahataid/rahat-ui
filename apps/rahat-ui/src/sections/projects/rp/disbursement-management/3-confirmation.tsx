@@ -29,18 +29,16 @@ const DisbursementConfirmation: FC<DisbursementConfirmationProps> = ({
               {stepData.bulkInputAmount ? (
                 <div className="flex flex-col gap-2">
                   <p>Send Amount among Beneficiaries:</p>
-                  <p>100 USDC</p>
+                  <p>{stepData?.bulkInputAmount} USDC</p>
                 </div>
               ) : null}
               <div className="flex flex-col gap-2">
                 <p>Total Amount to Send:</p>
                 <p>
-                  {stepData.bulkInputAmount
-                    ? stepData.bulkInputAmount
-                    : stepData.selectedBeneficiaries.reduce(
-                        (acc, curr) => acc + parseFloat(curr.amount),
-                        0,
-                      )}{' '}
+                  {stepData.selectedBeneficiaries.reduce(
+                    (acc, curr) => acc + parseFloat(curr.amount),
+                    0,
+                  )}{' '}
                   USDC
                 </p>
               </div>

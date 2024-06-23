@@ -3,16 +3,16 @@
 import { useState } from 'react';
 import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
 import { ColumnDef } from '@tanstack/react-table';
-import { Payment } from './disburse-table';
 import { Pencil, Check } from 'lucide-react'; // Importing Check icon from lucide-react
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
+import { Payment } from './1-disbursement-plan';
 
 export const useDibsursementList1Columns = (
   rowData: Payment[],
   setRowData: (data: Payment[]) => void,
 ) => {
   const [editRowId, setEditRowId] = useState<string | null>(null);
-  const [editAmount, setEditAmount] = useState<string>('');
+  const [editAmount, setEditAmount] = useState<string>('0');
 
   const columns: ColumnDef<Payment>[] = [
     {
@@ -74,7 +74,7 @@ export const useDibsursementList1Columns = (
                     const updatedRowData = rowData.map((r) =>
                       r.walletAddress === row.original.walletAddress
                         ? { ...r, amount: editAmount }
-                        : r,
+                        : r || 0,
                     );
                     setRowData(updatedRowData);
                     setEditRowId(null);

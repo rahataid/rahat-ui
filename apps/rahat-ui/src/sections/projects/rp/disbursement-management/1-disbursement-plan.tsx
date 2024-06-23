@@ -48,7 +48,7 @@ const DisbursementPlan: FC<DisbursementPlanProps> = ({
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
   );
-  const [rowData, setRowData] = React.useState<Payment[]>(
+  const [rowData, setRowData] = React.useState<any>(
     projectBeneficiaries?.data?.data,
   ); // Manage rowData state here
   const [columnVisibility, setColumnVisibility] =
@@ -75,7 +75,17 @@ const DisbursementPlan: FC<DisbursementPlanProps> = ({
       handleStepDataChange({
         target: {
           name: 'selectedBeneficiaries',
-          value: table.getSelectedRowModel().rows.map((row) => row.original),
+          value: table.getSelectedRowModel().rows.map((row) => {
+            const { walletAddress, amount, name } = row.original;
+            return {
+              walletAddress,
+              amount:
+                amount !== null && amount !== undefined && amount !== '0'
+                  ? amount
+                  : stepData.bulkInputAmount || '0',
+              name,
+            };
+          }),
         },
       });
     },
@@ -87,6 +97,12 @@ const DisbursementPlan: FC<DisbursementPlanProps> = ({
       rowSelection,
     },
   });
+
+  useEffect(() => {
+    if (projectBeneficiaries.isSuccess && projectBeneficiaries.data.data) {
+      setRowData(projectBeneficiaries.data.data);
+    }
+  }, [projectBeneficiaries]);
 
   // useEffect(() => {
   //   if (table.getSelectedRowModel().rows.length) {

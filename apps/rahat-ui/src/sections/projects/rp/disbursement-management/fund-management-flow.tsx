@@ -20,6 +20,7 @@ export const initialStepData = {
   bulkInputAmount: '',
   selectedBeneficiaries: [] as { walletAddress: string; amount: string }[],
   selectedConditions: [] as DisbursementConditionType[],
+  assignAllBeneficiaries: true,
 };
 
 const FundManagementFlow = () => {
@@ -127,16 +128,16 @@ const FundManagementFlow = () => {
   const handleConfirm = async () => {
     const res = await createDisbursementPlan.mutateAsync({
       beneficiaries: stepData.selectedBeneficiaries.map((beneficiary) => ({
-        amount: +beneficiary.amount,
+        amount: beneficiary.amount
+          ? +beneficiary.amount
+          : +stepData.bulkInputAmount,
         walletAddress: beneficiary.walletAddress,
       })),
       conditions: stepData.selectedConditions,
-      totalAmount:
-        +stepData.bulkInputAmount ||
-        +stepData.selectedBeneficiaries.reduce(
-          (acc, curr) => acc + Number(curr.amount),
-          0,
-        ),
+      totalAmount: +stepData.selectedBeneficiaries.reduce(
+        (acc, curr) => acc + Number(curr.amount),
+        0,
+      ),
     });
     console.log('res', res);
   };

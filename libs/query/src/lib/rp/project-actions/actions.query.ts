@@ -2,16 +2,6 @@ import { UUID } from 'crypto';
 import { useProjectAction } from '../../projects';
 import { useMutation, useQuery } from '@tanstack/react-query';
 
-//   "totalAmount": "100",
-//   "conditions":["BALANCE_CHECK"],
-//   "beneficiaries": [
-//     {
-//       "amount": "100",
-//       "beneficiaryWallet": "0x1234567890",
-//       "uuid":"5479ecbb-9d6d-4b86-94a4-7647e0d8ad3e"
-//     }
-//   ]
-
 export const useCreateDisbursementPlan = (projectUUID: UUID) => {
   const action = useProjectAction(['createDisbursementPlan-rpProject']);
 
@@ -20,6 +10,7 @@ export const useCreateDisbursementPlan = (projectUUID: UUID) => {
       totalAmount: number;
       conditions: string[];
       beneficiaries: { amount: number; walletAddress: string }[];
+      // assignAllBeneficiaries: boolean;
     }) => {
       const res = await action.mutateAsync({
         uuid: projectUUID,

@@ -2,7 +2,9 @@
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { useState } from 'react';
 import DisbursementPlan from './1-disbursement-plan';
-import DisbursementCondition from './2-disbursement-condition';
+import DisbursementCondition, {
+  DisbursementConditionType,
+} from './2-disbursement-condition';
 import DisbursementConfirmation from './3-confirmation';
 import { useCreateDisbursementPlan } from '@rahat-ui/query';
 import { useParams } from 'next/navigation';
@@ -16,8 +18,8 @@ import { UUID } from 'crypto';
 // };
 export const initialStepData = {
   bulkInputAmount: '',
-  selectedBeneficiaries: [],
-  selectedConditions: [] as string[],
+  selectedBeneficiaries: [] as { walletAddress: string; amount: string }[],
+  selectedConditions: [] as DisbursementConditionType[],
 };
 
 const FundManagementFlow = () => {
@@ -125,17 +127,18 @@ const FundManagementFlow = () => {
   const handleConfirm = async () => {
     const res = await createDisbursementPlan.mutateAsync({
       beneficiaries: stepData.selectedBeneficiaries.map((beneficiary) => ({
-        amount: beneficiary.amount,
-        beneficiaryWallet: beneficiary.walletAddress,
-        uuid: beneficiary.uuid,
+        amount: +beneficiary.amount,
+        walletAddress: beneficiary.walletAddress,
       })),
       conditions: stepData.selectedConditions,
       totalAmount:
-        stepData.bulkInputAmount ||
-        stepData.selectedBeneficiaries
-          .reduce((acc, curr) => acc + Number(curr.amount), 0)
-          .toString(),
+        +stepData.bulkInputAmount ||
+        +stepData.selectedBeneficiaries.reduce(
+          (acc, curr) => acc + Number(curr.amount),
+          0,
+        ),
     });
+    console.log('res', res);
   };
 
   return (

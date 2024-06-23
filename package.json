@@ -4,6 +4,7 @@
   "license": "MIT",
   "scripts": {
     "rahat-ui": "npx nx serve rahat-ui",
+    "start": "npx nx serve rahat-ui",
     "community-ui": "npx nx serve community-tool-ui",
     "nx:reset": "npx nx reset",
     "rahat:dev": "npx nx run rahat-ui:dev",
@@ -16,8 +17,7 @@
     "format": "nx format:write --uncommitted",
     "checkFileSize": "node ./tools/scripts/checkFileSize.js",
     "play": "ts-node play",
-    "wagmi": "npx wagmi generate",
-    "i": "pnpm i --frozen-lockfile"
+    "wagmi": "npx wagmi generate"
   },
   "private": true,
   "dependencies": {

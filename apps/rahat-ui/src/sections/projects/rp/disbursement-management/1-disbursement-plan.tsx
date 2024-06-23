@@ -24,18 +24,6 @@ export type Payment = {
   walletAddress: string;
 };
 
-const tempData: Payment[] = [
-  {
-    name: 'Jon Doe',
-    amount: '400',
-    walletAddress: '0x1234',
-  },
-  {
-    name: 'Jon Doe',
-    amount: '200',
-    walletAddress: '0x1264',
-  },
-];
 interface DisbursementPlanProps {
   handleStepDataChange: (e) => void;
   stepData: typeof initialStepData;
@@ -60,7 +48,9 @@ const DisbursementPlan: FC<DisbursementPlanProps> = ({
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
   );
-  const [rowData, setRowData] = React.useState<Payment[]>(tempData); // Manage rowData state here
+  const [rowData, setRowData] = React.useState<Payment[]>(
+    projectBeneficiaries?.data?.data,
+  ); // Manage rowData state here
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});

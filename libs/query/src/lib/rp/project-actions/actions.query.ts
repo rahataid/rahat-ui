@@ -13,22 +13,18 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 //   ]
 
 export const useCreateDisbursementPlan = (projectUUID: UUID) => {
-  const action = useProjectAction(['createDisbursementPlan-rp']);
+  const action = useProjectAction(['createDisbursementPlan-rpProject']);
 
   return useMutation({
     mutationFn: async (data: {
-      totalAmount: string;
+      totalAmount: number;
       conditions: string[];
-      beneficiaries: {
-        amount: string;
-        beneficiaryWallet: string;
-        uuid: UUID;
-      }[];
+      beneficiaries: { amount: number; walletAddress: string }[];
     }) => {
       const res = await action.mutateAsync({
         uuid: projectUUID,
         data: {
-          action: 'rp.disbursement.create',
+          action: 'rpProject.disbursement.create',
           payload: data,
         },
       });
@@ -46,7 +42,8 @@ export const useFindAllDisbursementPlans = (projectUUID: UUID) => {
       const res = await action.mutateAsync({
         uuid: projectUUID,
         data: {
-          action: 'rp.disbursement.list',
+          payload: {},
+          action: 'rpProject.disbursements.get',
         },
       });
       return res.data;
@@ -58,7 +55,7 @@ export const useFindOneDisbursementPlan = (
   projectUUID: UUID,
   planUUID: UUID,
 ) => {
-  const action = useProjectAction(['findOneDisbursementPlan-rp']);
+  const action = useProjectAction(['findOneDisbursementPlan-rpProject']);
 
   return useQuery({
     queryKey: ['disbursementPlan', projectUUID, planUUID],
@@ -66,7 +63,7 @@ export const useFindOneDisbursementPlan = (
       const res = await action.mutateAsync({
         uuid: projectUUID,
         data: {
-          action: 'rp.disbursement.listone',
+          action: 'rpProject.disbursement.listone',
           payload: { uuid: planUUID },
         },
       });
@@ -76,7 +73,7 @@ export const useFindOneDisbursementPlan = (
 };
 
 export const useUpdateDisbursementPlan = () => {
-  const action = useProjectAction(['updateDisbursementPlan-rp']);
+  const action = useProjectAction(['updateDisbursementPlan-rpProject']);
 
   return useMutation({
     mutationFn: async (data: {
@@ -94,7 +91,7 @@ export const useUpdateDisbursementPlan = () => {
       const res = await action.mutateAsync({
         uuid: projectUUID,
         data: {
-          action: 'rp.disbursement.update',
+          action: 'rpProject.disbursement.update',
           payload: { id, ...rest },
         },
       });

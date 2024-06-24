@@ -142,8 +142,8 @@ export default function ReferralTable({ name, projectId, vendorId }) {
       </div>
       <div className="rounded border h-[calc(100vh-180px)] bg-card">
         <Table>
-          <ScrollArea className="w-full h-withPage px-4 py-1">
-            <TableHeader>
+          <ScrollArea className="h-[calc(100vh-220px)]">
+            <TableHeader className=" sticky top-0 z-50">
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
                   {headerGroup.headers.map((header) => {

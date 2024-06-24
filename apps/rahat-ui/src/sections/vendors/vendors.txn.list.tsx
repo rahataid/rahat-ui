@@ -111,8 +111,8 @@ export default function VendorTxnList({ walletAddress }: VendorTxnListProps) {
       <div className="w-full h-full bg-secondary">
         <div className="rounded border h-[calc(100vh-180px)] bg-card">
           <Table>
-            <ScrollArea className="w-full h-withPage px-4 py-1">
-              <TableHeader>
+            <ScrollArea className="h-[calc(100vh-210px)]">
+              <TableHeader className=" sticky top-0 z-50">
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow key={headerGroup.id}>
                     {headerGroup.headers.map((header) => {

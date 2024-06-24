@@ -8,6 +8,7 @@ const ROOTS = {
   VENDOR: '/vendors',
   COMMUNICATION: '/communications',
   PROFILE: '/profile',
+  TREASURY: '/treasury',
   COMMUNITYBENEFICIARY: '/community-beneficiary',
 };
 
@@ -30,7 +31,7 @@ export const paths = {
       detail: (id: string) => `${ROOTS.BENEFICIARY}/${id}`,
     },
     transactions: ROOTS.TRANSACTIONS,
-    user: ROOTS.USER,
+    treasury: ROOTS.TREASURY,
     vendor: ROOTS.VENDOR,
     communication: {
       voice: `${ROOTS.COMMUNICATION}/voice`,

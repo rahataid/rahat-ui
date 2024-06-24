@@ -1,6 +1,16 @@
-import React from 'react';
+import React, { FC } from 'react';
+import { initialStepData } from './fund-management-flow';
 
-const DisbursementConfirmation = () => {
+interface DisbursementConfirmationProps {
+  handleStepDataChange: (e: any) => void;
+  stepData: typeof initialStepData;
+}
+
+const DisbursementConfirmation: FC<DisbursementConfirmationProps> = ({
+  handleStepDataChange,
+  stepData,
+}) => {
+  console.log('stepData', stepData);
   return (
     <div className="grid grid-cols-12 p-4">
       <div className="col-span-12 h-[calc(100vh-482px)] bg-card rounded-sm p-4">
@@ -10,19 +20,29 @@ const DisbursementConfirmation = () => {
             <div className="flex flex-col gap-8 p-3">
               <div className="flex flex-col gap-2">
                 <p>Beneficiaries Selected:</p>
-                <p>4</p>
+                <p>{stepData.selectedBeneficiaries.length}</p>
               </div>
               <div className="flex flex-col gap-2">
                 <p>Project Balance:</p>
                 <p>400 USDC</p>
               </div>
-              <div className="flex flex-col gap-2">
-                <p>Send Amount among Beneficiaries::</p>
-                <p>100 USDC</p>
-              </div>
+              {stepData.bulkInputAmount ? (
+                <div className="flex flex-col gap-2">
+                  <p>Send Amount among Beneficiaries:</p>
+                  <p>100 USDC</p>
+                </div>
+              ) : null}
               <div className="flex flex-col gap-2">
                 <p>Total Amount to Send:</p>
-                <p>400 USDC</p>
+                <p>
+                  {stepData.bulkInputAmount
+                    ? stepData.bulkInputAmount
+                    : stepData.selectedBeneficiaries.reduce(
+                        (acc, curr) => acc + parseFloat(curr.amount),
+                        0,
+                      )}{' '}
+                  USDC
+                </p>
               </div>
             </div>
           </div>

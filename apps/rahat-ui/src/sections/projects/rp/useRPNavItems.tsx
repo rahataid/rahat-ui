@@ -1,5 +1,6 @@
 import {
   Coins,
+  Gift,
   LayoutDashboard,
   Pencil,
   Plus,
@@ -51,6 +52,11 @@ export const useNavItems = () => {
           icon: <Coins size={18} strokeWidth={1.5} />,
         },
         {
+          title: 'Redemptions',
+          path: `/projects/rp/${id}/redemptions`,
+          icon: <Gift size={18} strokeWidth={1.5} />,
+        },
+        {
           title: 'Campaigns',
           subtitle: 20,
           icon: <Speech size={18} strokeWidth={1.5} />,
@@ -58,40 +64,40 @@ export const useNavItems = () => {
         },
       ],
     },
-    {
-      title: 'Actions',
-      children: [
-        {
-          component: (
-            <>
-              <CreateTokenModal />
-            </>
-          ),
-          title: 'Create Token',
-        },
+    // {
+    //   title: 'Actions',
+    //   children: [
+    //     {
+    //       component: (
+    //         <>
+    //           <CreateTokenModal />
+    //         </>
+    //       ),
+    //       title: 'Create Token',
+    //     },
 
-        {
-          title: 'Close Project',
-          path: '/edit',
-          icon: <XCircle size={18} strokeWidth={1.5} />,
-        },
-        {
-          title: 'Edit Project',
-          path: `/projects/rp/${id}/edit`,
-          icon: <Pencil size={18} strokeWidth={1.5} />,
-        },
-        {
-          title: 'Create Beneficiary',
-          path: `/projects/rp/${id}/beneficiary/add`,
-          icon: <PlusSquare size={18} strokeWidth={1.5} />,
-        },
-        {
-          title: 'Add Campaign',
-          path: `/projects/rp/${id}/campaigns/add`,
-          icon: <Plus size={18} strokeWidth={1.5} />,
-        },
-      ],
-    },
+    //     {
+    //       title: 'Close Project',
+    //       path: '/edit',
+    //       icon: <XCircle size={18} strokeWidth={1.5} />,
+    //     },
+    //     {
+    //       title: 'Edit Project',
+    //       path: `/projects/rp/${id}/edit`,
+    //       icon: <Pencil size={18} strokeWidth={1.5} />,
+    //     },
+    //     {
+    //       title: 'Create Beneficiary',
+    //       path: `/projects/rp/${id}/beneficiary/add`,
+    //       icon: <PlusSquare size={18} strokeWidth={1.5} />,
+    //     },
+    //     {
+    //       title: 'Add Campaign',
+    //       path: `/projects/rp/${id}/campaigns/add`,
+    //       icon: <Plus size={18} strokeWidth={1.5} />,
+    //     },
+    //   ],
+    // },
   ];
 
   return {

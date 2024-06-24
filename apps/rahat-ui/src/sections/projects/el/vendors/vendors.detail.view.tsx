@@ -62,7 +62,7 @@ export default function VendorsDetailPage() {
   const updateVendor = useAddVendors();
   const projectClient = useProjectAction();
 
-  const { data: vendorStatus } = useReadElProjectCheckVendorStatus({
+  const { data: vendorStatus,refetch } = useReadElProjectCheckVendorStatus({
     address: contractAddress,
     args: [walletAddress],
   });
@@ -90,7 +90,12 @@ export default function VendorsDetailPage() {
         address: contractAddress,
         args: [walletAddress, true],
       })
-      .finally(() => handleAssignVendorClose());
+      .finally(() =>
+       {
+      handleAssignVendorClose()
+      refetch();
+       }
+    );
     setTransactionHash(txnHash);
   };
 
@@ -158,7 +163,7 @@ export default function VendorsDetailPage() {
                     Approve Vendor
                   </Button>
                 </div>
-              )}
+              )} 
             </Card>
           </div>
           <TabsContent value="transactions">

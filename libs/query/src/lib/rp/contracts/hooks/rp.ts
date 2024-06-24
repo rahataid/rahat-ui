@@ -23,15 +23,15 @@ export const useTokenCreate = () => {
       onSuccess: () => {
         alert.fire({
           icon: 'success',
-          title: 'Token minted and approved successfully',
+          title: 'Token Created Successfully',
         });
       },
       onError: (error) => {
-        console.log('error', error);
+        console.log('error', error.message);
         alert.fire({
           icon: 'error',
           title: 'Error minting and approving token',
-          text: error.message,
+          text: 'Error Creating Token',
         });
       },
       mutationFn: async ({

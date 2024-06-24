@@ -3,7 +3,7 @@ import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
 import React from 'react';
 
-const CreateToken = () => {
+const CreateToken = ({ handleStepDataChange, stepData }) => {
   return (
     <div className="grid grid-cols-12 p-4 h-[calc(100vh-482px)] ">
       <div className="col-span-12 bg-card rounded-sm p-4">
@@ -17,8 +17,9 @@ const CreateToken = () => {
                 <Label htmlFor="tokenName">Token Name</Label>
                 <Input
                   type="tokenName"
-                  id="tokenName"
+                  name="tokenName"
                   placeholder="Enter your token name"
+                  onChange={handleStepDataChange}
                 />
               </div>
               <div className="flex flex-col gap-2">
@@ -26,7 +27,8 @@ const CreateToken = () => {
                   <Label htmlFor="symbol">Token Symbol</Label>
                   <Input
                     type="symbol"
-                    id="symbol"
+                    name="symbol"
+                    onChange={handleStepDataChange}
                     placeholder="Enter your token symbol"
                   />
                 </div>
@@ -36,7 +38,8 @@ const CreateToken = () => {
                   <Label htmlFor="count">Token Count</Label>
                   <Input
                     type="count"
-                    id="count"
+                    name="count"
+                    onChange={handleStepDataChange}
                     placeholder="Enter your token count"
                   />
                 </div>
@@ -44,7 +47,11 @@ const CreateToken = () => {
               <div className="flex flex-col gap-2">
                 <div className="grid w-1/2 items-center gap-1.5">
                   <Label htmlFor="email">Description</Label>
-                  <Textarea placeholder="Type your message here." />
+                  <Textarea
+                    placeholder="Type your message here."
+                    name="description"
+                    onChange={handleStepDataChange}
+                  />
                   {/* <Input
                     type="description"
                     id="description"

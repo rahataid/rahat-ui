@@ -10,18 +10,35 @@ import Confirmation from './2.confirmation';
 //     amount: string;
 //   }[];
 // };
-const initialStepData = {};
+export const initialStepData = {
+  tokenName: '',
+  symbol: '',
+  count: '',
+  description: '',
+};
 
 const CreateTokenFlow = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [stepData, setStepData] =
     useState<typeof initialStepData>(initialStepData);
 
+  const handleStepDataChange = (e) => {
+    const { name, value } = e.target;
+    setStepData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  console.log('stepData', stepData);
+
   const steps = [
     {
       id: 'step1',
       title: 'Disburse Method',
-      component: <CreateToken />,
+      component: (
+        <CreateToken
+          handleStepDataChange={handleStepDataChange}
+          stepData={stepData}
+        />
+      ),
       // validation: {
       //   noMethodSelected: {
       //     condition: () => !stepData.treasurySource,
@@ -33,15 +50,15 @@ const CreateTokenFlow = () => {
     {
       id: 'step2',
       title: 'Disburse Amount',
-      component: <Confirmation />,
+      component: (
+        <Confirmation
+          handleStepDataChange={handleStepDataChange}
+          stepData={stepData}
+        />
+      ),
       validation: {},
     },
   ];
-
-  const handleStepDataChange = (e) => {
-    const { name, value } = e.target;
-    setStepData((prev) => ({ ...prev, [name]: value }));
-  };
 
   const handleNext = () => {
     const currentStepValidations = steps[currentStep].validation;

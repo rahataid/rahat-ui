@@ -57,7 +57,7 @@ export const useVendorTable = ({ handleViewClick, voucherPrice }: VendorTablePro
 
     {
       accessorKey: 'redemptionNumber',
-      header: 'Redemption Value',
+      header: 'Claims Value',
       cell: ({ row }) => (
         <div>{Number(row.getValue('redemptionNumber'))*voucherPrice}</div>
       ),

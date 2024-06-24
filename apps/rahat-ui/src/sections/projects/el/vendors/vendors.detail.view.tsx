@@ -136,7 +136,7 @@ export default function VendorsDetailPage() {
         />
         <DataCard
           className="mt-2"
-          title="Referrals"
+          title="No. of Referrals"
           number={vendorVoucher?.beneficiaryReferred?.toString() || '0'}
           subTitle="Beneficiaries"
         />
@@ -150,7 +150,7 @@ export default function VendorsDetailPage() {
                   Transaction History
                 </TabsTrigger>
                 <TabsTrigger value="referrals">Referrals List</TabsTrigger>
-                <TabsTrigger value="redeem">Redemption List</TabsTrigger>
+                <TabsTrigger value="redeem">Claims List</TabsTrigger>
               </TabsList>
               {vendorStatus === false && (
                 <div>

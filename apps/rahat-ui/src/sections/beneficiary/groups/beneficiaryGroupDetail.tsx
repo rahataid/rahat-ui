@@ -53,8 +53,19 @@ export default function BeneficiaryGroupDetail({
 
   const columns = useDetailsBeneficiaryTableColumn();
 
+  const tableData = React.useMemo(() => {
+    if (beneficiaryGroupDetail) {
+      return beneficiaryGroupDetail?.groupedBeneficiaries?.map((d: any) => ({
+        name: d.Beneficiary.pii.name,
+        phone: d.Beneficiary.pii.phone,
+        email: d.Beneficiary.pii.email,
+        location: d.Beneficiary.location,
+      }));
+    } else return [];
+  }, [beneficiaryGroupDetail]);
+
   const table = useReactTable({
-    data: beneficiaryGroupDetail?.groupedBeneficiaries ?? [],
+    data: tableData ?? [],
     columns,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),

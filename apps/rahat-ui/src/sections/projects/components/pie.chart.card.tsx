@@ -8,16 +8,19 @@ type IProps = {
 
 export default function PieChartCard({ title, series, colors }: IProps) {
   return (
-    <div className="rounded-sm bg-card p-4">
+    <div className="rounded-sm bg-card p-4 shadow-md">
       <h1 className="text-md font-medium mb-4">{title}</h1>
-      <PieChart
-        chart={{
-          series: series,
-          colors: colors,
-        }}
-        width={300}
-        height={250}
-      />
+      <div className="flex justify-center">
+        <PieChart
+          chart={{
+            series: series,
+            colors: colors,
+          }}
+          width={300}
+          height={250}
+          custom={true}
+        />
+      </div>
     </div>
   );
 }

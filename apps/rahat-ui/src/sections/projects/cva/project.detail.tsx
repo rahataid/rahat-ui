@@ -11,6 +11,8 @@ import { CircleDollarSign, Users } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import { FC } from 'react';
 import { formatEther } from 'viem';
+import ProjectCharts from './project.charts';
+
 
 type ProjectInfoProps = {
   project: Project;
@@ -58,7 +60,7 @@ const ProjectInfo: FC<ProjectInfoProps> = ({ project }) => {
         <DataCard
           className="h-40"
           title="Beneficiaries"
-          number={'0'}
+          number={'8'}
           Icon={Users}
           subTitle="Total"
         />
@@ -73,11 +75,12 @@ const ProjectInfo: FC<ProjectInfoProps> = ({ project }) => {
         <DataCard
           className="h-40"
           title="Distributed"
-          number={'0'}
+          number={'2'}
           Icon={Users}
           subTitle="Total"
         />
       </div>
+      <ProjectCharts />
     </div>
   );
 };

@@ -37,41 +37,41 @@ jobs:
           version: 8.14.1
           run_install: false
 
-      - name: Get pnpm store directory
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+      # - name: Get pnpm store directory
+      #   shell: bash
+      #   run: |
+      #     echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
 
-      - uses: actions/cache@v4
-        name: Setup pnpm cache
-        with:
-          path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
+      # - uses: actions/cache@v4
+      #   name: Setup pnpm cache
+      #   with:
+      #     path: ${{ env.STORE_PATH }}
+      #     key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+      #     restore-keys: |
+      #       ${{ runner.os }}-pnpm-store-
 
       - name: Install dependencies
         run: pnpm install     
 
-      - uses: actions/cache@v4
-        name: Setup NX cache
-        with:
-          path: .nx/cache
-          key: ${{ runner.os }}-nx-cache-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-nx-cache-
+      # - uses: actions/cache@v4
+      #   name: Setup NX cache
+      #   with:
+      #     path: .nx/cache
+      #     key: ${{ runner.os }}-nx-cache-${{ hashFiles('**/pnpm-lock.yaml') }}
+      #     restore-keys: |
+      #       ${{ runner.os }}-nx-cache-
 
       - name: install dependencies and build apps
         run: |
           pnpm build:all
       
-      - uses: actions/upload-artifact@v4
-        with:
-          name: Build-Artifacts
-          path: |
-            dist/
-            .npmrc
-            Dockerfile.*
+      # - uses: actions/upload-artifact@v4
+      #   with:
+      #     name: Build-Artifacts
+      #     path: |
+      #       dist/
+      #       .npmrc
+      #       Dockerfile.*
    
   # docker-build:
   #   name: docker build && push

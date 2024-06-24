@@ -645,4 +645,4 @@ export const RahatTokenAbi = [
     stateMutability: 'nonpayable',
     type: 'function',
   },
-];
+] as const;

@@ -427,4 +427,4 @@ export const RahatPayrollProjectAbi = [
     stateMutability: 'nonpayable',
     type: 'function',
   },
-];
+] as const;

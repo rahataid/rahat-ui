@@ -4,4 +4,4 @@ export const TimeLockAbi = [
     stateMutability: 'nonpayable',
     type: 'constructor',
   },
-];
+] as const;

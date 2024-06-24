@@ -327,4 +327,4 @@ export const RahatClaimAbi = [
     stateMutability: 'nonpayable',
     type: 'function',
   },
-];
+] as const;

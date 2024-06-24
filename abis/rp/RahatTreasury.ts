@@ -437,4 +437,4 @@ export const RahatTreasuryAbi = [
     stateMutability: 'nonpayable',
     type: 'function',
   },
-];
+] as const;

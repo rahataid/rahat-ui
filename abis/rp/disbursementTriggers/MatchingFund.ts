@@ -4,4 +4,4 @@ export const MatchingFundAbi = [
     stateMutability: 'nonpayable',
     type: 'constructor',
   },
-];
+] as const;

@@ -4,4 +4,4 @@ export const MultiSigAbi = [
     stateMutability: 'nonpayable',
     type: 'constructor',
   },
-];
+] as const;

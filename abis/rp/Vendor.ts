@@ -167,4 +167,4 @@ export const VendorAbi = [
     stateMutability: 'view',
     type: 'function',
   },
-];
+] as const;

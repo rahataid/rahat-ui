@@ -18,9 +18,8 @@ import { UUID } from 'crypto';
 // };
 export const initialStepData = {
   bulkInputAmount: '',
-  selectedBeneficiaries: [] as { walletAddress: string; amount: string }[],
+  selectedBeneficiaries: [] as `0x${string}`[],
   selectedConditions: [] as DisbursementConditionType[],
-  assignAllBeneficiaries: true,
 };
 
 const FundManagementFlow = () => {
@@ -55,10 +54,10 @@ const FundManagementFlow = () => {
       //   },
       // },
       validation: {
-        noBeneficiariesSelected: {
-          condition: () => !stepData.selectedBeneficiaries.length,
-          message: 'Please select beneficiaries',
-        },
+        // noBeneficiariesSelected: {
+        //   condition: () => !stepData.selectedBeneficiaries.length,
+        //   message: 'Please select beneficiaries',
+        // },
         noInputAmount: {
           condition: () =>
             stepData.selectedBeneficiaries.length && !stepData.bulkInputAmount,
@@ -127,12 +126,7 @@ const FundManagementFlow = () => {
 
   const handleConfirm = async () => {
     const res = await createDisbursementPlan.mutateAsync({
-      beneficiaries: stepData.selectedBeneficiaries.map((beneficiary) => ({
-        amount: beneficiary.amount
-          ? +beneficiary.amount
-          : +stepData.bulkInputAmount,
-        walletAddress: beneficiary.walletAddress,
-      })),
+      beneficiaries: stepData.selectedBeneficiaries.map((b) => b.walletAddress),
       conditions: stepData.selectedConditions,
       totalAmount: +stepData.selectedBeneficiaries.reduce(
         (acc, curr) => acc + Number(curr.amount),

@@ -60,7 +60,7 @@ const FundManagementView = () => {
   const totalBeneficiaries = disbursementData?._count?.Disbursements;
   console.log('data', data);
   const filteredConditions = dibsursementConditions.filter((condition) =>
-    disbursementData?.conditions.includes(condition.type),
+    disbursementData?.conditions?.includes(condition.type),
   );
   return (
     <>

@@ -10,7 +10,6 @@ const DisbursementConfirmation: FC<DisbursementConfirmationProps> = ({
   handleStepDataChange,
   stepData,
 }) => {
-  console.log('stepData', stepData);
   return (
     <div className="grid grid-cols-12 p-4">
       <div className="col-span-12 h-[calc(100vh-482px)] bg-card rounded-sm p-4">

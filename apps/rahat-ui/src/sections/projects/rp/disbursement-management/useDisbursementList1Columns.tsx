@@ -1,11 +1,14 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
 import { ColumnDef } from '@tanstack/react-table';
 import { Pencil, Check } from 'lucide-react'; // Importing Check icon from lucide-react
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { Payment } from './1-disbursement-plan';
+import { useCreateDisbursement } from '@rahat-ui/query';
+import { useParams } from 'next/navigation';
+import { UUID } from 'crypto';
 
 export const useDibsursementList1Columns = (
   rowData: Payment[],
@@ -13,6 +16,22 @@ export const useDibsursementList1Columns = (
 ) => {
   const [editRowId, setEditRowId] = useState<string | null>(null);
   const [editAmount, setEditAmount] = useState<string>('0');
+  const { id } = useParams() as { id: UUID };
+  const createDisbursement = useCreateDisbursement(id);
+
+  const handleSave = async (row: any) => {
+    await createDisbursement.mutateAsync({
+      amount: +row.disbursementAmount,
+      walletAddress: row.walletAddress,
+    });
+  };
+
+  useEffect(() => {
+    if (createDisbursement.isSuccess) {
+      setRowData(rowData);
+      setEditRowId(null);
+    }
+  }, [createDisbursement.isSuccess, rowData, setRowData]);
 
   const columns: ColumnDef<Payment>[] = [
     {
@@ -49,7 +68,7 @@ export const useDibsursementList1Columns = (
       header: 'Amount',
       cell: ({ row }) => {
         const isEditing = editRowId === row.original.walletAddress;
-        const amount = parseFloat(row.getValue('amount'));
+        const amount = row.original.disbursementAmount || '0';
 
         // Format the amount as a dollar amount
         const formatted = new Intl.NumberFormat('en-US', {
@@ -76,10 +95,17 @@ export const useDibsursementList1Columns = (
                         ? { ...r, amount: editAmount }
                         : r || 0,
                     );
+                    handleSave({
+                      ...row.original,
+                      disbursementAmount: editAmount,
+                    });
                     setRowData(updatedRowData);
                     setEditRowId(null);
                   }}
                 />
+                {createDisbursement.isPending && (
+                  <div className="ml-2 text-sm text-gray-500">Saving...</div>
+                )}
               </div>
             ) : (
               <>
@@ -88,7 +114,7 @@ export const useDibsursementList1Columns = (
                   className="w-4 h-4 ml-2 cursor-pointer"
                   onClick={() => {
                     setEditRowId(row.original.walletAddress);
-                    setEditAmount(row.getValue('amount'));
+                    setEditAmount(row.original.disbursementAmount || '0');
                   }}
                 />
               </>

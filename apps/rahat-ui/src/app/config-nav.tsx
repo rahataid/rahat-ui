@@ -34,6 +34,10 @@ export function useNavData() {
         //   },
         // ],
       },
+      {
+        title: 'Treasury',
+        path: paths.dashboard.treasury,
+      },
     ],
     [],
   );

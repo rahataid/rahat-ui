@@ -12,13 +12,14 @@ interface IVendorsInfo {
     name: string | null;
     phone: string | null;
     vendorWallet: string | null;
-    vendorWalletAddressCopied:Boolean
+    vendorWalletAddressCopied:boolean;
+    vendorStatus: boolean
     clickToCopy:()=>void
   };
 }
 
 const VendorsInfo = ({ vendorData }: IVendorsInfo) => {
-  const { name, phone, vendorWallet } = vendorData;
+  const { name, phone, vendorWallet,vendorStatus } = vendorData;
   return (
     <>
   <Card className="mt-2 rounded shadow">
@@ -58,9 +59,15 @@ const VendorsInfo = ({ vendorData }: IVendorsInfo) => {
           </CardDescription>
         </div>
       </CardContent>
-      <CardContent>
-        <p className="text-primary">{phone || '-'}</p>
-        <CardDescription>Phone</CardDescription>
+      <CardContent className="flex items-center gap-5">
+        <div >
+          <p className="text-primary flex items-center ">{phone|| '-'}</p>
+          <CardDescription>Phone</CardDescription>
+        </div>
+        <div>
+          <p className="text-primary">{vendorStatus?'Approved':'Not Appproved'}</p>
+          <CardDescription>Status</CardDescription>
+        </div>
       </CardContent>
     </div>
   </Card>
@@ -70,3 +77,4 @@ const VendorsInfo = ({ vendorData }: IVendorsInfo) => {
 };
 
 export default VendorsInfo;
+

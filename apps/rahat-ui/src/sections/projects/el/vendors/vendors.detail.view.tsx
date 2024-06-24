@@ -121,7 +121,7 @@ export default function VendorsDetailPage() {
     <div className="bg-secondary">
       {/* Data Cards */}
       <div className="grid md:grid-cols-4 gap-2 mx-2">
-        <VendorsInfo vendorData={{ name, phone, vendorWallet,vendorWalletAddressCopied,clickToCopy }} />
+        <VendorsInfo vendorData={{ name, phone, vendorWallet,vendorWalletAddressCopied,vendorStatus,clickToCopy }} />
         <DataCard
           className="mt-2"
           title="Free Vouchers Redeemed"

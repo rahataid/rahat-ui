@@ -1,16 +1,6 @@
 'use client';
 
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/alert-dialog';
+import * as React from 'react';
 import {
   Tooltip,
   TooltipContent,
@@ -24,16 +14,22 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
-import { Archive, Minus, MoreVertical, Trash2 } from 'lucide-react';
+import { Archive, Minus, MoreVertical } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 import AssignToProjectModal from './assignToProjectModal';
 import { ListBeneficiaryGroup } from '@rahat-ui/types';
+import BeneficiaryTable from '../../projects/aa/groups/beneficiary/details/table/beneficiary.table';
 import {
-  Card,
-  CardContent,
-  CardHeader,
-} from '@rahat-ui/shadcn/src/components/ui/card';
+  ColumnFiltersState,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  useReactTable,
+} from '@tanstack/react-table';
+import useDetailsBeneficiaryTableColumn from '../../projects/aa/groups/beneficiary/details/table/useDetailsBeneficiaryTableColumn';
+import ClientSidePagination from '../../projects/components/client.side.pagination';
+import SearchInput from '../../projects/components/search.input';
 
 type IProps = {
   beneficiaryGroupDetail: ListBeneficiaryGroup;
@@ -50,6 +46,24 @@ export default function BeneficiaryGroupDetail({
   const handleAssignModalClick = () => {
     projectModal.onTrue();
   };
+
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    [],
+  );
+
+  const columns = useDetailsBeneficiaryTableColumn();
+
+  const table = useReactTable({
+    data: beneficiaryGroupDetail?.groupedBeneficiaries ?? [],
+    columns,
+    onColumnFiltersChange: setColumnFilters,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    state: {
+      columnFilters,
+    },
+  });
 
   return (
     <>
@@ -81,45 +95,6 @@ export default function BeneficiaryGroupDetail({
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
-          {/* NOT IMPLEMENTED  */}
-          {/* <TooltipProvider delayDuration={100}>
-            <Tooltip>
-              <TooltipTrigger>
-                <AlertDialog>
-                  <AlertDialogTrigger className="flex items-center">
-                    <Trash2
-                      className="cursor-pointer"
-                      color="red"
-                      size={20}
-                      strokeWidth={1.5}
-                    />
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>
-                        Are you absolutely sure?
-                      </AlertDialogTitle>
-                      <AlertDialogDescription>
-                        This action cannot be undone. This will permanently
-                        delete this beneficiary group.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction
-                      // onClick={() => removeBeneficiary(beneficiary?.uuid)}
-                      >
-                        Continue
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-              </TooltipTrigger>
-              <TooltipContent className="bg-secondary ">
-                <p className="text-xs font-medium">Delete</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider> */}
           <DropdownMenu>
             <DropdownMenuTrigger>
               <MoreVertical
@@ -136,41 +111,68 @@ export default function BeneficiaryGroupDetail({
           </DropdownMenu>
         </div>
       </div>
-      <Card className="shadow rounded">
-        <CardHeader>
-          <p className="font-mediun text-md">{beneficiaryGroupDetail.name}</p>
-        </CardHeader>
-        <CardHeader>
-          <p className="font-mediun text-md">Projects Involved</p>
-        </CardHeader>
-        <CardContent>
-          {beneficiaryGroupDetail?.beneficiaryGroupProject?.length ? (
-            beneficiaryGroupDetail?.beneficiaryGroupProject?.map(
-              (benProject: any) => {
-                return (
-                  <Badge
-                    key={benProject.id}
-                    variant="outline"
-                    color="primary"
-                    className="rounded cursor-pointer"
-                    onClick={() => {
-                      router.push(
-                        `/projects/${benProject.Project?.type}/${benProject.Project.uuid}`,
-                      );
-                    }}
-                  >
-                    {benProject.Project.name}
-                  </Badge>
-                );
-              },
-            )
-          ) : (
-            <p className="text-sm text-muted-foreground">
-              No projects involved
-            </p>
-          )}
-        </CardContent>
-      </Card>
+      <div className="p-2 bg-secondary">
+        <div className="flex justify-between items-center gap-4 mb-2">
+          <p className="font-semibold text-2xl">
+            {beneficiaryGroupDetail.name}
+          </p>
+          <div className="flex gap-3 items-center">
+            <p className="font-medium text-md">Projects Involved:</p>
+            {beneficiaryGroupDetail?.beneficiaryGroupProject?.length ? (
+              beneficiaryGroupDetail?.beneficiaryGroupProject?.map(
+                (benProject: any) => {
+                  return (
+                    <Badge
+                      key={benProject.id}
+                      variant="outline"
+                      color="primary"
+                      className="rounded cursor-pointer bg-card"
+                      onClick={() => {
+                        router.push(
+                          `/projects/${benProject.Project?.type}/${benProject.Project.uuid}`,
+                        );
+                      }}
+                    >
+                      {benProject.Project.name}
+                    </Badge>
+                  );
+                },
+              )
+            ) : (
+              <p className="text-sm text-muted-foreground">
+                No projects involved
+              </p>
+            )}
+          </div>
+        </div>
+        <div className="flex justify-between gap-2">
+          <SearchInput
+            name="Beneficiary"
+            className="mb-2 w-full"
+            value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
+            onSearch={(event: React.ChangeEvent<HTMLInputElement>) =>
+              table.getColumn('name')?.setFilterValue(event.target.value)
+            }
+          />
+          <SearchInput
+            name="Location"
+            className="mb-2 w-full"
+            value={
+              (table.getColumn('location')?.getFilterValue() as string) ?? ''
+            }
+            onSearch={(event: React.ChangeEvent<HTMLInputElement>) =>
+              table.getColumn('location')?.setFilterValue(event.target.value)
+            }
+          />
+        </div>
+        <div className="bg-card border rounded">
+          <BeneficiaryTable
+            table={table}
+            tableScrollAreaHeight="h-[calc(100vh-287px)]"
+          />
+          <ClientSidePagination table={table} />
+        </div>
+      </div>
     </>
   );
 }

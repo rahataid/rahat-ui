@@ -12,7 +12,7 @@ import { useEffect, useMemo } from 'react';
 import { api } from '../../utils/api';
 
 
-export const useVendorList = (payload: any): UseQueryResult<any, Error> => {
+export const useVendorList = (payload: any, refetch: boolean): UseQueryResult<any, Error> => {
   const { rumsanService, queryClient } = useRSQuery();
   const vendorClient = getVendorClient(rumsanService.client);
   const { setVendors, setMeta } = useVendorStore((state) => ({
@@ -21,8 +21,8 @@ export const useVendorList = (payload: any): UseQueryResult<any, Error> => {
   }));
 
   const memoizedKey = useMemo(
-    () => [TAGS.GET_VENDORS, payload.page, payload.perPage],
-    [payload.page, payload.perPage],
+    () => [TAGS.GET_VENDORS, payload.page, payload.perPage, refetch],
+    [payload.page, payload.perPage, refetch],
   );
 
   const vendor = useQuery(

@@ -123,6 +123,7 @@ export default function ChartsContainer({ allStats = [] }: IProps) {
                   horizontal={true}
                   colors={['#2563eb']}
                   xaxisLabels={false}
+                  yaxisLabels={countByBankStats?.length > 0 ? true : false}
                   barHeight={15}
                   width={450}
                   height={countByBankStats?.length > 10 ? 500 : 265}

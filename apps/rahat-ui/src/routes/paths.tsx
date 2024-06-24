@@ -13,6 +13,9 @@ const ROOTS = {
 };
 
 export const paths = {
+  user: {
+    root: ROOTS.USER,
+  },
   auth: {
     login: `${ROOTS.AUTH}/login`,
   },

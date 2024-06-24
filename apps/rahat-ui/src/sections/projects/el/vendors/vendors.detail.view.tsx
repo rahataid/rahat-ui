@@ -56,6 +56,8 @@ export default function VendorsDetailPage() {
   const [contractAddress, setContractAddress] = useState<any>('');
   const [isTransacting, setisTransacting] = useState<boolean>(false);
   const [transactionHash, setTransactionHash] = useState<`0x${string}`>();
+  const [vendorWalletAddressCopied, setVendorWalletAddressCopied] =
+  useState<boolean>(false);
 
   const updateVendor = useAddVendors();
   const projectClient = useProjectAction();
@@ -73,6 +75,13 @@ export default function VendorsDetailPage() {
     address: contractAddress,
     args: [walletAddress],
   });
+
+  const clickToCopy =() =>{
+    if(walletAddress) {
+      navigator.clipboard.writeText(walletAddress);
+      setVendorWalletAddressCopied(true)
+    }
+  }
 
   const assignVendorToProjet = async () => {
     setisTransacting(true);
@@ -112,7 +121,7 @@ export default function VendorsDetailPage() {
     <div className="bg-secondary">
       {/* Data Cards */}
       <div className="grid md:grid-cols-4 gap-2 mx-2">
-        <VendorsInfo vendorData={{ name, phone, vendorWallet }} />
+        <VendorsInfo vendorData={{ name, phone, vendorWallet,vendorWalletAddressCopied,clickToCopy }} />
         <DataCard
           className="mt-2"
           title="Free Vouchers Redeemed"

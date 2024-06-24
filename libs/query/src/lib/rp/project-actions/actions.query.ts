@@ -14,6 +14,7 @@ const CREATE_DISBURSEMENT_PLAN = 'rpProject.disbursementPlan.create';
 const GET_DISBURSEMENT_PLAN = 'rpProject.disbursementPlan.getOne';
 const GET_ALL_DISBURSEMENT_PLANS = 'rpProject.disbursementPlan.get';
 const UPDATE_DISBURSEMENT_PLAN = 'rpProject.disbursementPlan.update';
+const CREATE_BULK_DISBURSEMENT = 'rpProject.disbursement.bulkCreate';
 
 // Hooks for Disbursement Plan
 export const useCreateDisbursementPlan = (projectUUID: UUID) => {
@@ -57,18 +58,18 @@ export const useFindAllDisbursementPlans = (projectUUID: UUID) => {
 
 export const useFindOneDisbursementPlan = (
   projectUUID: UUID,
-  planUUID: UUID,
+  // planUUID: UUID,
 ) => {
   const action = useProjectAction(['findOneDisbursementPlan-rpProject']);
 
   return useQuery({
-    queryKey: ['disbursementPlan', projectUUID, planUUID],
+    queryKey: ['disbursementPlan', projectUUID],
     queryFn: async () => {
       const res = await action.mutateAsync({
         uuid: projectUUID,
         data: {
           action: GET_DISBURSEMENT_PLAN,
-          payload: { uuid: planUUID },
+          payload: {},
         },
       });
       return res.data;
@@ -199,6 +200,26 @@ export const useUpdateDisbursement = () => {
         data: {
           action: UPDATE_DISBURSEMENT,
           payload: { uuid: disbursementUUID, amount },
+        },
+      });
+      return res.data;
+    },
+  });
+};
+
+export const useBulkCreateDisbursement = (projectUUID: UUID) => {
+  const action = useProjectAction(['createBulkDisbursement-rpProject']);
+
+  return useMutation({
+    mutationFn: async (data: {
+      amount: number;
+      beneficiaries: `0x${string}`[];
+    }) => {
+      const res = await action.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: CREATE_BULK_DISBURSEMENT,
+          payload: data,
         },
       });
       return res.data;

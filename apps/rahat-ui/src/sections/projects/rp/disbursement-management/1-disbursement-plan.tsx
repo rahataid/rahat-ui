@@ -1,4 +1,5 @@
 import {
+  useBulkCreateDisbursement,
   useFindAllDisbursements,
   usePagination,
   useProjectBeneficiaries,
@@ -47,8 +48,8 @@ const DisbursementPlan: FC<DisbursementPlanProps> = ({
     projectUUID: id,
     ...filters,
   });
-
   const disbursements = useFindAllDisbursements(id);
+  const bulkAssignDisbursement = useBulkCreateDisbursement(id);
 
   const [rowData, setRowData] = React.useState<Payment[]>([]);
 
@@ -121,7 +122,7 @@ const DisbursementPlan: FC<DisbursementPlanProps> = ({
     }
   }, [
     disbursements?.data,
-    disbursements?.data.data,
+    disbursements?.data?.data,
     disbursements?.isSuccess,
     projectBeneficiaries.data?.data,
     projectBeneficiaries.isSuccess,
@@ -146,6 +147,7 @@ const DisbursementPlan: FC<DisbursementPlanProps> = ({
           table={table}
           handleStepDataChange={handleStepDataChange}
           stepData={stepData}
+          bulkAssignDisbursement={bulkAssignDisbursement}
         />
       </div>
     </div>

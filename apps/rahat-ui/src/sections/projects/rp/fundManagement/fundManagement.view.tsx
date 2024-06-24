@@ -14,6 +14,7 @@ import { UUID } from 'crypto';
 import { ArrowUp, Users } from 'lucide-react';
 import { useRouter, useParams } from 'next/navigation';
 import { DisbursementConditionType } from '../disbursement-management/2-disbursement-condition';
+import { isEmpty } from 'lodash';
 
 const sampleSeries = [
   {
@@ -55,10 +56,9 @@ const dibsursementConditions = [
 const FundManagementView = () => {
   const route = useRouter();
   const { id } = useParams() as { id: UUID };
-  const { data } = useFindAllDisbursementPlans(id);
-  const disbursementData = data?.[0];
+  const { data: disbursementData } = useFindAllDisbursementPlans(id);
   const totalBeneficiaries = disbursementData?._count?.Disbursements;
-  console.log('data', data);
+  console.log('data', disbursementData);
   const filteredConditions = dibsursementConditions.filter((condition) =>
     disbursementData?.conditions?.includes(condition.type),
   );
@@ -117,7 +117,7 @@ const FundManagementView = () => {
         </div>
 
         {/* Disbursement Plan */}
-        {data?.length ? (
+        {!isEmpty(disbursementData) ? (
           <div className="col-span-12 p-4 shadow rounded flex flex-col  bg-card h-72">
             <h2 className="text-lg font-semibold mb-4">Disbursement Plan</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

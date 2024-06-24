@@ -68,15 +68,19 @@ const DepositTokenModal: FC<DepositTokenModalType> = ({ handleModal }) => {
         connector: injected(),
       });
     }
-    const data = await writeContractAsync({
-      chainId: rahatChain.id,
-      address: contractSettings?.rahattoken?.address,
-      functionName: 'transfer',
-      abi: rahatTokenAbi,
-      args: [contractSettings?.c2cproject?.address, parseEther(tokenInputs)],
-    });
-    console.log(contractSettings?.c2cproject?.address);
-    console.log(address);
+    try {
+      await writeContractAsync({
+        chainId: rahatChain.id,
+        address: contractSettings?.rahattoken?.address,
+        functionName: 'transfer',
+        abi: rahatTokenAbi,
+        args: [contractSettings?.c2cproject?.address, parseEther(tokenInputs)],
+      });
+      console.log(contractSettings?.c2cproject?.address);
+      console.log(address);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (

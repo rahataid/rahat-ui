@@ -11,7 +11,7 @@ import {
   useProjectSubgraphSettings,
   CVASubgraphProvider,
 } from '@rahat-ui/query';
-import { Client, cacheExchange, fetchExchange } from '@urql/core';
+import { Client, cacheExchange, fetchExchange } from 'urql';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
 

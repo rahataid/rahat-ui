@@ -268,8 +268,8 @@ export default function BeneficiaryDetail({
                   <h1 className="font-semibold text-xl">
                     {beneficiaryDetails?.name}
                   </h1>
-                  <Badge>Active</Badge>
                 </div>
+                <Badge>Active</Badge>
                 <TooltipProvider delayDuration={100}>
                   <Tooltip>
                     <TooltipTrigger
@@ -302,8 +302,8 @@ export default function BeneficiaryDetail({
               <div>
                 <Button disabled={isTransacting} onClick={handleAssignVoucher}>
                   {isTransacting
-                    ? 'Confirming transaction...'
-                    : 'Assign Voucher'}
+                    ? 'Confirming transaction...a'
+                    : 'Assign Vouchersss'}
                 </Button>
               </div>
             )}

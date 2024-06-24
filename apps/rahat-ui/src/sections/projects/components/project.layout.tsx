@@ -11,6 +11,15 @@ import { useProjectNavItems } from './useProjectNavItems';
 import { ProjectType } from './nav-items.types';
 import Image from 'next/image';
 import { useTheme } from 'next-themes';
+import {
+  PROJECT_SETTINGS_KEYS,
+  useProjectSettingsStore,
+} from '@rahat-ui/query';
+import { useParams } from 'next/navigation';
+import { UUID } from 'crypto';
+import { useProjectDetails as useProjectSubgraphDetails } from '@rahat-ui/query';
+import { useQuery } from 'urql';
+import { ProjectDetails } from '@rahat-ui/query';
 
 type ProjectLayoutProps = {
   children: React.ReactNode | React.ReactNode[];
@@ -23,6 +32,20 @@ const ProjectLayout: FC<ProjectLayoutProps> = ({
   projectType,
   navFooter,
 }) => {
+  const uuid = useParams().id as UUID;
+
+  const contractSettings = useProjectSettingsStore(
+    (state) => state.settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.CONTRACT],
+  );
+
+  // const [result] = useQuery({
+  //   query: ProjectDetails,
+  //   variables: {
+  //     projectAddress: contractSettings?.rahattoken?.address,
+  //   },
+  // });
+  // console.log({ result });
+
   const { navItems: menuItems } = useProjectNavItems(projectType);
   const theme = useTheme();
   const renderResizablePanel = (children: React.ReactNode, index?: number) => {

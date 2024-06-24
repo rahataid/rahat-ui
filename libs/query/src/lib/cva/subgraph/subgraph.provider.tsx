@@ -1,5 +1,5 @@
 'use client';
-import { Client } from '@urql/core';
+import { Client } from 'urql';
 import React, { FC, createContext, useContext } from 'react';
 
 export type CVASubgraphContextType = {

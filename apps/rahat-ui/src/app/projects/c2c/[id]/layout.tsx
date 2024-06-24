@@ -5,15 +5,17 @@ import {
   useProjectContractSettings,
   useProjectSettingsStore,
   useProjectSubgraphSettings,
+  useTransactionDetails,
 } from '@rahat-ui/query';
-import { useProjectDetails as useProjectSubgraphDetails } from '@rahataid/c2c-query';
-import C2CSubgraphProvider from '@rahataid/c2c-query/src/subgraph/subgraph.provider';
-import { Client, cacheExchange, fetchExchange } from '@urql/core';
+// import { useProjectDetails as useProjectSubgraphDetails } from '@rahat-ui/query';
+import { C2CSubgraphProvider } from '@rahat-ui/query';
+import { Client, cacheExchange, fetchExchange, useQuery } from 'urql';
 import { useSecondPanel } from 'apps/rahat-ui/src/providers/second-panel-provider';
 import { ProjectLayout } from 'apps/rahat-ui/src/sections/projects/components';
 import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
 import * as React from 'react';
+import { ProjectTypes } from '@rahataid/sdk/enums';
 
 export default function ProjectLayoutRoot({
   children,
@@ -33,7 +35,9 @@ export default function ProjectLayoutRoot({
     (state) => state.settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.CONTRACT],
   );
 
-  useProjectSubgraphDetails(contractSettings?.rahattoken?.address);
+  // useProjectSubgraphDetails(contractSettings?.rahattoken?.address);
+
+  // useTransactionDetails();
 
   // useGetTreasurySourcesSettings(uuid);
 
@@ -46,15 +50,10 @@ export default function ProjectLayoutRoot({
   };
 
   return (
-    <C2CSubgraphProvider
-      subgraphClient={
-        new Client({
-          url: subgraphSettings || 'http://localhost:8000',
-          exchanges: [cacheExchange, fetchExchange],
-        })
-      }
-    >
-      <ProjectLayout projectType="C2C">{renderChildren()}</ProjectLayout>
+    <C2CSubgraphProvider>
+      <ProjectLayout projectType={ProjectTypes.C2C}>
+        {renderChildren()}
+      </ProjectLayout>
     </C2CSubgraphProvider>
   );
 }

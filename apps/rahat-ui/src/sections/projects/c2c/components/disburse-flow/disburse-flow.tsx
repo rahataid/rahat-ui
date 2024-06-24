@@ -48,6 +48,7 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
   // const { data: treasurySources } = useGetTreasurySourcesSettings(id);
   // TODO: DONOT Use this
   const { data: projectData } = useProject(id);
+  console.log({ projectData });
   const treasurySources =
     (projectData?.data?.extras?.treasury?.treasurySources as string[]) || [];
 
@@ -87,6 +88,7 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
       c2cProjectAddress: contractSettings?.c2cproject?.address,
     });
   };
+
   const steps = [
     {
       id: 'step1',
@@ -150,6 +152,12 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
   //     setStepData(initialStepData);
   //   };
   // }, []);
+
+  console.log(steps[currentStep].title);
+  console.log(steps[currentStep].component);
+  console.log({ currentStep });
+  console.log(steps.length);
+  console.log(steps[currentStep].id);
 
   return (
     <Dialog>

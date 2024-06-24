@@ -15,10 +15,18 @@ export default function Step1DisburseMethod({
   projectSubgraphDetails,
   treasurySources,
 }: Step1DisburseMethodProps) {
+  console.log({
+    value,
+    treasurySources,
+    onChange,
+    selectedBeneficiaries,
+    projectSubgraphDetails,
+    TREASURY_SOURCES,
+  });
   return (
     <div className="bg-card rounded px-4 pb-4 flex flex-col">
       <div className="mb-2">
-        <div className="flex flex-col">
+        <div className="fl  ex flex-col">
           {TREASURY_SOURCES.filter((t) =>
             treasurySources.includes(t.value),
           ).map((method) => (

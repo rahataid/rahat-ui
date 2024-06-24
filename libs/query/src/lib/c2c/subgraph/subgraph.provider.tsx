@@ -1,41 +1,20 @@
 'use client';
-import { Client } from '@urql/core';
+import { Provider, Client, fetchExchange, cacheExchange } from 'urql';
 import React, { FC, createContext, useContext } from 'react';
-
-export type C2CSubgraphContextType = {
-  subgraphClient: Client;
-};
-
-const C2CSubgraphContext = createContext({
-  subgraphClient: {} as Client,
-});
 
 type C2CSubgraphProviderProps = {
   children: React.ReactNode;
-  subgraphClient: Client;
 };
 
-const C2CSubgraphProvider: FC<C2CSubgraphProviderProps> = ({
+export const C2CSubgraphProvider: FC<C2CSubgraphProviderProps> = ({
   children,
-  subgraphClient,
 }) => {
-  return (
-    <C2CSubgraphContext.Provider
-      value={{
-        subgraphClient: subgraphClient as Client,
-      }}
-    >
-      {children}
-    </C2CSubgraphContext.Provider>
-  );
-};
+  const subgraphClient = new Client({
+    url: 'http://localhost:8000/subgraphs/name/rahat/c2c',
+    exchanges: [cacheExchange, fetchExchange],
+  });
 
-export default C2CSubgraphProvider;
+  console.log('here', subgraphClient);
 
-export const useC2CSubgraph = (): C2CSubgraphContextType => {
-  const context = useContext(C2CSubgraphContext);
-  if (context === undefined) {
-    throw new Error('useC2CSubgraph must be used within a C2CSubgraphProvider');
-  }
-  return context;
+  return <Provider value={subgraphClient}>{children}</Provider>;
 };

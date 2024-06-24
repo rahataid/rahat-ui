@@ -3,7 +3,6 @@ import ChartLine from '@rahat-ui/shadcn/src/components/charts/chart-components/c
 import DataCard from 'apps/rahat-ui/src/components/dataCard';
 import { Banknote, ReceiptText } from 'lucide-react';
 import RecentTransaction from './recent.transaction';
-import { useC2CProjectSubgraphStore } from '@rahat-ui/query';
 import { formatEther } from 'viem';
 import {
   PROJECT_SETTINGS_KEYS,
@@ -11,6 +10,7 @@ import {
 } from '@rahat-ui/query';
 import { useParams } from 'next/navigation';
 import { shortenAddress } from 'apps/rahat-ui/src/utils/getProjectAddress';
+import { useQuery } from 'urql';
 
 const FundManagementView = () => {
   const mySeries = [
@@ -19,9 +19,9 @@ const FundManagementView = () => {
       data: [10, 20, 30, 40, 50, 60, 70, 80, 90],
     },
   ];
-  const projectDetails = useC2CProjectSubgraphStore(
-    (state) => state.projectDetails,
-  );
+  // const projectDetails = useC2CProjectSubgraphStore(
+  //   (state) => state.projectDetails,
+  // );
 
   const { id } = useParams();
 
@@ -34,9 +34,7 @@ const FundManagementView = () => {
         <DataCard
           className=""
           title="Project Balance"
-          smallNumber={`${formatEther(
-            BigInt(projectDetails.tokenBalance.balance),
-          )} USDC`}
+          smallNumber={`${formatEther(BigInt(100000000000000000000000))} USDC`}
           subTitle="Total"
           Icon={Banknote}
         />

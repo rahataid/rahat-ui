@@ -16,6 +16,7 @@ export default function CommunicationLayoutRoot({
   const allowedPaths = ['/communications/add'];
   return (
     <DashboardLayout>
+      <title>Communications</title>
       {!allowedPaths.includes(pathName) ? (
         <>{children}</>
       ) : (

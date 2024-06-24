@@ -135,6 +135,7 @@ function BeneficiaryDetailTableView() {
     selectedListItems,
     setSelectedListItems,
     resetSelectedListItems,
+    setPagination,
     resetFilters,
   } = usePagination();
   const assignVoucher = useBulkAssignVoucher();
@@ -169,7 +170,7 @@ function BeneficiaryDetailTableView() {
     (state) => state.settings?.[uuid][PROJECT_SETTINGS_KEYS.CONTRACT] || null,
   );
 
-  const columns = useProjectBeneficiaryTableColumns(voucherType);
+  const columns = useProjectBeneficiaryTableColumns(voucherType, projectBeneficiaries);
 
   const handleBenType = React.useCallback(
     (type: string) => {
@@ -215,8 +216,12 @@ function BeneficiaryDetailTableView() {
   });
 
   useEffect(() => {
-    result?.data && setisTransacting(false);
-  }, [result]);
+    if(result?.data){
+      setisTransacting(false);
+      setVoucherType('FREE_VOUCHER');
+      projectBeneficiaries.refetch();
+    }
+  }, [result.isFetching]);
 
   const handleBulkAssign = async () => {
     setisTransacting(true);
@@ -301,8 +306,9 @@ function BeneficiaryDetailTableView() {
                 onClick={() => {
                   setVoucherType('NOT_ASSIGNED');
                   resetSelectedListItems();
+                  setPagination({page: 1, perPage: pagination.perPage})
                   closeSecondPanel();
-                  route.replace(`${pathname}?voucherType=NOT_ASSIGNED${hash}`);
+                  // route.replace(`${pathname}?voucherType=NOT_ASSIGNED${hash}`);
                 }}
                 value="NOT_ASSIGNED"
               >
@@ -311,9 +317,10 @@ function BeneficiaryDetailTableView() {
               <TabsTrigger
                 onClick={() => {
                   setVoucherType('FREE_VOUCHER');
+                  setPagination({page: 1, perPage: pagination.perPage})
                   resetSelectedListItems();
                   closeSecondPanel();
-                  route.replace(`${pathname}?voucherType=FREE_VOUCHER${hash}`);
+                  // route.replace(`${pathname}?voucherType=FREE_VOUCHER${hash}`);
                 }}
                 value="FREE_VOUCHER"
               >
@@ -322,11 +329,10 @@ function BeneficiaryDetailTableView() {
               <TabsTrigger
                 onClick={() => {
                   setVoucherType('DISCOUNT_VOUCHER');
+                  setPagination({page: 1, perPage: pagination.perPage})
                   resetSelectedListItems();
                   closeSecondPanel();
-                  route.replace(
-                    `${pathname}?voucherType=DISCOUNT_VOUCHER${hash}`,
-                  );
+                  // route.replace(`${pathname}?voucherType=DISCOUNT_VOUCHER${hash}`);
                 }}
                 value="DISCOUNT_VOUCHER"
               >

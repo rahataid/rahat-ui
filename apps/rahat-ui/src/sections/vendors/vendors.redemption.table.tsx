@@ -166,11 +166,11 @@ export default function RedemptionTable({ projectId, vendorId }) {
   }, []);
 
   return (
-    <div className="w-full h-full bg-secondary">
+    <>
       <div className="rounded border h-[calc(100vh-180px)] bg-card">
         <Table>
-        <ScrollArea className="h-[calc(100vh-210px)]">
-          <TableHeader className=" sticky top-0 z-50">
+          <ScrollArea className="h-[calc(100vh-210px)]">
+            <TableHeader className="bg-card sticky top-0 z-50">
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
                   {headerGroup.headers.map((header) => {
@@ -243,6 +243,6 @@ export default function RedemptionTable({ projectId, vendorId }) {
           </Button>
         </div>
       </div>
-    </div>
+    </>
   );
 }

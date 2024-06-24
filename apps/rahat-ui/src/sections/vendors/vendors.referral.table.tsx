@@ -143,7 +143,7 @@ export default function ReferralTable({ name, projectId, vendorId }) {
       <div className="rounded border h-[calc(100vh-180px)] bg-card">
         <Table>
           <ScrollArea className="h-[calc(100vh-220px)]">
-            <TableHeader className=" sticky top-0 z-50">
+            <TableHeader className="bg-card sticky top-0 z-50">
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
                   {headerGroup.headers.map((header) => {
@@ -197,7 +197,6 @@ export default function ReferralTable({ name, projectId, vendorId }) {
         </Table>
       </div>
       <div className="sticky bottom-0 flex items-center justify-end space-x-4 px-4 py-1 border-t-2 bg-card">
-        
         <div className="space-x-2">
           <Button
             variant="outline"

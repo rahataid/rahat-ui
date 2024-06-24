@@ -1,33 +1,31 @@
 'use client';
 
+import { useProjectAction } from '@rahat-ui/query';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { Card } from '@rahat-ui/shadcn/src/components/ui/card';
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tabs';
-import DataCard from '../../../../components/dataCard';
-import VendorTxnList from '../../../vendors/vendors.txn.list';
-import ReferralTable from '../../../vendors/vendors.referral.table';
-import VendorsInfo from '../../../vendors/vendors.info';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { useParams } from 'next/navigation';
-import Swal from 'sweetalert2';
-import { useAddVendors } from '../../../../hooks/el/contracts/el-contracts';
 import { MS_ACTIONS } from '@rahataid/sdk';
 import { PROJECT_SETTINGS } from 'apps/rahat-ui/src/constants/project.const';
-import { useProjectAction } from '@rahat-ui/query';
-import { useEffect, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
-import RedemptionTable from '../../../vendors/vendors.redemption.table';
 import {
   useReadElProjectCheckVendorStatus,
   useReadElProjectGetVendorVoucherDetail,
 } from 'apps/rahat-ui/src/hooks/el/contracts/elProject';
-import { Card } from '@rahat-ui/shadcn/src/components/ui/card';
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
-import AssignVoucherConfirm from './vendor.assign.confirm';
+import { useParams, useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import { useWaitForTransactionReceipt } from 'wagmi';
+import DataCard from '../../../../components/dataCard';
+import { useAddVendors } from '../../../../hooks/el/contracts/el-contracts';
+import VendorsInfo from '../../../vendors/vendors.info';
+import RedemptionTable from '../../../vendors/vendors.redemption.table';
+import ReferralTable from '../../../vendors/vendors.referral.table';
+import VendorTxnList from '../../../vendors/vendors.txn.list';
+import AssignVoucherConfirm from './vendor.assign.confirm';
 
 interface IParams {
   uuid: any;
@@ -57,12 +55,12 @@ export default function VendorsDetailPage() {
   const [isTransacting, setisTransacting] = useState<boolean>(false);
   const [transactionHash, setTransactionHash] = useState<`0x${string}`>();
   const [vendorWalletAddressCopied, setVendorWalletAddressCopied] =
-  useState<boolean>(false);
+    useState<boolean>(false);
 
   const updateVendor = useAddVendors();
   const projectClient = useProjectAction();
 
-  const { data: vendorStatus,refetch } = useReadElProjectCheckVendorStatus({
+  const { data: vendorStatus, refetch } = useReadElProjectCheckVendorStatus({
     address: contractAddress,
     args: [walletAddress],
   });
@@ -76,12 +74,12 @@ export default function VendorsDetailPage() {
     args: [walletAddress],
   });
 
-  const clickToCopy =() =>{
-    if(walletAddress) {
+  const clickToCopy = () => {
+    if (walletAddress) {
       navigator.clipboard.writeText(walletAddress);
-      setVendorWalletAddressCopied(true)
+      setVendorWalletAddressCopied(true);
     }
-  }
+  };
 
   const assignVendorToProjet = async () => {
     setisTransacting(true);
@@ -90,12 +88,10 @@ export default function VendorsDetailPage() {
         address: contractAddress,
         args: [walletAddress, true],
       })
-      .finally(() =>
-       {
-      handleAssignVendorClose()
-      refetch();
-       }
-    );
+      .finally(() => {
+        handleAssignVendorClose();
+        refetch();
+      });
     setTransactionHash(txnHash);
   };
 
@@ -126,7 +122,16 @@ export default function VendorsDetailPage() {
     <div className="bg-secondary">
       {/* Data Cards */}
       <div className="grid md:grid-cols-4 gap-2 mx-2">
-        <VendorsInfo vendorData={{ name, phone, vendorWallet,vendorWalletAddressCopied,vendorStatus,clickToCopy }} />
+        <VendorsInfo
+          vendorData={{
+            name,
+            phone,
+            vendorWallet,
+            vendorWalletAddressCopied,
+            vendorStatus,
+            clickToCopy,
+          }}
+        />
         <DataCard
           className="mt-2"
           title="Free Vouchers Redeemed"
@@ -163,7 +168,7 @@ export default function VendorsDetailPage() {
                     Approve Vendor
                   </Button>
                 </div>
-              )} 
+              )}
             </Card>
           </div>
           <TabsContent value="transactions">

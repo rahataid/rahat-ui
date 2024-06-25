@@ -70,7 +70,7 @@ const StackColumn = ({ data, stacked, width, height, title }: IProps) => {
   const categories = ['<5', '5-18', '19-49', '50-65', '>65'];
 
   return (
-    <div className="bg-card rounded shadow w-full mt-2 ">
+    <div className="bg-card mt-2  shadow-md rounded-lg overflow-hidden p-4">
       <p className="mt-6 font-medium mb-2 ml-4">{title}</p>
       <ChartColumnStacked
         series={ageGroups}
@@ -78,6 +78,7 @@ const StackColumn = ({ data, stacked, width, height, title }: IProps) => {
         height={height}
         width={width}
         categories={categories}
+        communityTool={true}
       />
     </div>
   );

@@ -89,35 +89,6 @@ export default function VendorsDetailSplitView({
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
-        <div className="flex gap-3">
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Trash2
-                  className="cursor-pointer"
-                  size={18}
-                  strokeWidth={1.6}
-                  color="#FF0000"
-                />
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Delete</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-          <DropdownMenu>
-            <DropdownMenuTrigger>
-              <MoreVertical
-                className="cursor-pointer"
-                size={20}
-                strokeWidth={1.5}
-              />
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuItem>Edit</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
       </div>
       <div className="p-2 flex justify-between items-center">
         <div className="flex items-center gap-2">

@@ -45,7 +45,7 @@ export function useNavData() {
       },
       {
         title: 'Users',
-        path: paths.user,
+        path: paths.user.root,
       },
       {
         title: 'Treasury',

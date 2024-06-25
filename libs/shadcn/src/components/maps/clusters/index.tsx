@@ -16,12 +16,9 @@ import {
   unclusteredPointLayer,
 } from './layers';
 
-import { useProjectAction } from '@rahat-ui/query';
-import { filterVendorsGeoJson, projectUUID } from '../getVendorLocations';
-
 // ----------------------------------------------------------------------
 
-function MapClusters({ ...other }: MapBoxProps) {
+function MapClusters({ dataForMap, ...other }: any) {
   const mapRef = useRef<MapRef>(null);
 
   const onClick = (event: MapLayerMouseEvent) => {
@@ -48,24 +45,8 @@ function MapClusters({ ...other }: MapBoxProps) {
     });
   };
 
-  const [dataForMap, setDataForMap] = useState<any>()
 
-  const getVendors = useProjectAction();
 
-  const fetchVendors = async () => {
-    const response = await getVendors.mutateAsync({
-      uuid: projectUUID,
-      data: {
-        action: "elProject.getVendorStats",
-        payload: {},
-      },
-    });
-    setDataForMap(filterVendorsGeoJson(response))
-  }
-
-  useEffect(() => {
-    fetchVendors()
-  }, [])
 
   return (
     <Map

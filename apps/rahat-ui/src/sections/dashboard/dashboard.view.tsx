@@ -5,6 +5,9 @@ import { ClusterMap, StyledMapContainer, THEMES } from '@rahat-ui/shadcn/maps';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { mapboxBasicConfig } from '../../constants/config';
 import { DynamicReports, tempReport } from '../chart-reports';
+import { useProjectAction } from '@rahat-ui/query';
+import { useEffect, useState } from 'react';
+import { filterVendorsGeoJson, projectUUID } from '../../utils/getVendorInfo';
 
 export default function DashboardView() {
   const reportData = [
@@ -18,6 +21,27 @@ export default function DashboardView() {
     },
   ];
 
+  const [dataForMap, setDataForMap] = useState<any>()
+
+  const getVendors = useProjectAction();
+
+  const fetchVendors = async () => {
+    const response = await getVendors.mutateAsync({
+      uuid: projectUUID,
+      data: {
+        action: "elProject.getVendorStats",
+        payload: {},
+      },
+    });
+    console.log("The response of map is", response)
+    setDataForMap(filterVendorsGeoJson(response))
+  }
+
+  useEffect(() => {
+    fetchVendors()
+  }, [])
+
+
   return (
     <div className="bg-secondary">
       <Tabs defaultValue="list">
@@ -29,7 +53,7 @@ export default function DashboardView() {
             <DashboardCharts charts={beneficiaryStats?.data?.data} />
           </TabsContent> */}
           <StyledMapContainer>
-            <ClusterMap {...mapboxBasicConfig} mapStyle={THEMES.light} />
+            <ClusterMap {...mapboxBasicConfig} mapStyle={THEMES.light} dataForMap={dataForMap}/>
           </StyledMapContainer>
         </ScrollArea>
       </Tabs>

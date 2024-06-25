@@ -45,7 +45,11 @@ export function useNavData() {
       },
       {
         title: 'Users',
-        path: paths.dashboard.user,
+        path: paths.user.root,
+      },
+      {
+        title: 'Treasury',
+        path: paths.dashboard.treasury,
       },
       {
         title: 'Community Beneficiaries',

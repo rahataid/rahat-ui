@@ -1,4 +1,9 @@
-import { usePagination, useProjectBeneficiaries } from '@rahat-ui/query';
+import {
+  useBulkCreateDisbursement,
+  useFindAllDisbursements,
+  usePagination,
+  useProjectBeneficiaries,
+} from '@rahat-ui/query';
 import {
   ColumnFiltersState,
   SortingState,
@@ -15,12 +20,12 @@ import { Users } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import React, { FC, useEffect } from 'react';
 import { DisburseTable } from './disburse-table';
-import { useDibsursementList1Columns } from './useDisbursementList1Columns';
 import { initialStepData } from './fund-management-flow';
+import { useDibsursementList1Columns } from './useDisbursementList1Columns';
 
 export type Payment = {
   name: string;
-  amount: string;
+  disbursementAmount: string;
   walletAddress: string;
 };
 
@@ -43,14 +48,16 @@ const DisbursementPlan: FC<DisbursementPlanProps> = ({
     projectUUID: id,
     ...filters,
   });
+  const disbursements = useFindAllDisbursements(id);
+  const bulkAssignDisbursement = useBulkCreateDisbursement(id);
+
+  const [rowData, setRowData] = React.useState<Payment[]>([]);
 
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
   );
-  const [rowData, setRowData] = React.useState<Payment[]>(
-    projectBeneficiaries?.data?.data,
-  ); // Manage rowData state here
+  // Manage rowData state here
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
@@ -75,7 +82,7 @@ const DisbursementPlan: FC<DisbursementPlanProps> = ({
       handleStepDataChange({
         target: {
           name: 'selectedBeneficiaries',
-          value: table.getSelectedRowModel().rows.map((row) => row.original),
+          value: Object.keys(e).map((key) => key),
         },
       });
     },
@@ -88,16 +95,39 @@ const DisbursementPlan: FC<DisbursementPlanProps> = ({
     },
   });
 
-  // useEffect(() => {
-  //   if (table.getSelectedRowModel().rows.length) {
-  //     handleStepDataChange({
-  //       target: {
-  //         name: 'selectedBeneficiaries',
-  //         value: table.getSelectedRowModel().rows.map((row) => row.original),
-  //       },
-  //     });
-  //   }
-  // }, [handleStepDataChange, rowSelection, table, table.getSelectedRowModel]);
+  useEffect(() => {
+    if (
+      projectBeneficiaries.isSuccess &&
+      projectBeneficiaries.data?.data &&
+      disbursements?.isSuccess
+    ) {
+      const projectBeneficiaryDisbursements =
+        projectBeneficiaries.data?.data.map((beneficiary) => {
+          const beneficiaryDisbursement = disbursements?.data?.find(
+            (disbursement: any) =>
+              disbursement.walletAddress === beneficiary.walletAddress,
+          );
+          return {
+            ...beneficiary,
+            disbursementAmount: beneficiaryDisbursement?.amount || '0',
+          };
+        });
+
+      if (
+        JSON.stringify(projectBeneficiaryDisbursements) !==
+        JSON.stringify(rowData)
+      ) {
+        setRowData(projectBeneficiaryDisbursements);
+      }
+    }
+  }, [
+    disbursements?.data,
+    disbursements?.data?.data,
+    disbursements?.isSuccess,
+    projectBeneficiaries.data?.data,
+    projectBeneficiaries.isSuccess,
+    rowData,
+  ]);
 
   return (
     <div className="grid grid-cols-12 p-4">
@@ -117,6 +147,7 @@ const DisbursementPlan: FC<DisbursementPlanProps> = ({
           table={table}
           handleStepDataChange={handleStepDataChange}
           stepData={stepData}
+          bulkAssignDisbursement={bulkAssignDisbursement}
         />
       </div>
     </div>

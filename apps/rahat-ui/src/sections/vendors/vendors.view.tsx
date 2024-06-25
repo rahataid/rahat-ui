@@ -32,8 +32,10 @@ function VendorsView() {
   } = usePagination();
 
   const projectModal = useBoolean();
+  const [refetch, setRefetch] = React.useState(false)
+
   const addVendor = useAssignVendorToProject();
-  const { data: vendorData } = useVendorList(pagination);
+  const { data: vendorData } = useVendorList(pagination, refetch);
   const [selectedProject, setSelectedProject] = React.useState<UUID>();
   const [selectedRow, setSelectedRow] = React.useState(null) as any;
 
@@ -41,14 +43,17 @@ function VendorsView() {
     setSelectedRow(row);
     projectModal.onTrue();
   };
+ 
+  console.log(refetch)
 
   const handleAssignProject = async () => {
     if (!selectedProject) return alert('Please select a project');
-    await addVendor.mutateAsync({
+    const res = await addVendor.mutateAsync({
       vendorUUID: selectedRow?.id,
       projectUUID: selectedProject,
     });
     projectModal.onFalse();
+    setRefetch(!refetch)
   };
   const columns = useTableColumns(handleAssignModalClick);
   const [sorting, setSorting] = React.useState<SortingState>([]);

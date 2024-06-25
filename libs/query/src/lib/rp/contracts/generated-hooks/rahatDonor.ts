@@ -12,7 +12,10 @@ import {
 export const rahatDonorAbi = [
   {
     type: 'constructor',
-    inputs: [{ name: '_admin', internalType: 'address', type: 'address' }],
+    inputs: [
+      { name: '_admin', internalType: 'address', type: 'address' },
+      { name: '_accessManager', internalType: 'address', type: 'address' },
+    ],
     stateMutability: 'nonpayable',
   },
   {
@@ -78,8 +81,33 @@ export const rahatDonorAbi = [
   {
     type: 'function',
     inputs: [],
+    name: 'AccessManager',
+    outputs: [
+      { name: '', internalType: 'contract IAccessManager', type: 'address' },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
     name: 'IID_RAHAT_DONOR',
     outputs: [{ name: '', internalType: 'bytes4', type: 'bytes4' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'RahatTreasury',
+    outputs: [
+      { name: '', internalType: 'contract IRahatTreasury', type: 'address' },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: '', internalType: 'address', type: 'address' }],
+    name: '_registeredProject',
+    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
     stateMutability: 'view',
   },
   {
@@ -124,17 +152,6 @@ export const rahatDonorAbi = [
   {
     type: 'function',
     inputs: [
-      { name: '_name', internalType: 'string', type: 'string' },
-      { name: '_symbol', internalType: 'string', type: 'string' },
-      { name: 'decimals', internalType: 'uint8', type: 'uint8' },
-    ],
-    name: 'createToken',
-    outputs: [{ name: '', internalType: 'address', type: 'address' }],
-    stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    inputs: [
       { name: '_token', internalType: 'address', type: 'address' },
       { name: '_from', internalType: 'address', type: 'address' },
     ],
@@ -172,9 +189,11 @@ export const rahatDonorAbi = [
   {
     type: 'function',
     inputs: [
-      { name: '_token', internalType: 'address', type: 'address' },
-      { name: '_approveAddress', internalType: 'address', type: 'address' },
-      { name: '_amount', internalType: 'uint256', type: 'uint256' },
+      { name: '_tokenFree', internalType: 'address', type: 'address' },
+      { name: '_tokenReferral', internalType: 'address', type: 'address' },
+      { name: '_projectAddress', internalType: 'address', type: 'address' },
+      { name: '_amountFree', internalType: 'uint256', type: 'uint256' },
+      { name: '_referralLimit', internalType: 'uint256', type: 'uint256' },
     ],
     name: 'mintTokenAndApprove',
     outputs: [],
@@ -183,11 +202,18 @@ export const rahatDonorAbi = [
   {
     type: 'function',
     inputs: [
-      { name: '_token', internalType: 'address', type: 'address' },
-      { name: '_receiver', internalType: 'address', type: 'address' },
-      { name: '_amount', internalType: 'uint256', type: 'uint256' },
+      { name: '_tokenFree', internalType: 'address', type: 'address' },
+      { name: '_tokenReferral', internalType: 'address', type: 'address' },
+      { name: '_projectAddress', internalType: 'address', type: 'address' },
+      { name: '_amountFree', internalType: 'uint256', type: 'uint256' },
+      { name: '_descriptionFree', internalType: 'string', type: 'string' },
+      { name: '_descriptionReferral', internalType: 'string', type: 'string' },
+      { name: '_priceFree', internalType: 'uint256', type: 'uint256' },
+      { name: '_priceReferral', internalType: 'uint256', type: 'uint256' },
+      { name: '_referralLimit', internalType: 'uint256', type: 'uint256' },
+      { name: '_currency', internalType: 'string', type: 'string' },
     ],
-    name: 'mintTokenAndSend',
+    name: 'mintTokenAndApproveDescription',
     outputs: [],
     stateMutability: 'nonpayable',
   },
@@ -207,6 +233,16 @@ export const rahatDonorAbi = [
   },
   {
     type: 'function',
+    inputs: [
+      { name: '_projectAddress', internalType: 'address', type: 'address' },
+      { name: 'status', internalType: 'bool', type: 'bool' },
+    ],
+    name: 'registerProject',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
     inputs: [{ name: '_address', internalType: 'address', type: 'address' }],
     name: 'removeOwner',
     outputs: [{ name: 'success', internalType: 'bool', type: 'bool' }],
@@ -217,6 +253,13 @@ export const rahatDonorAbi = [
     inputs: [{ name: 'interfaceId', internalType: 'bytes4', type: 'bytes4' }],
     name: 'supportsInterface',
     outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    name: 'tokenToDollarValue',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
     stateMutability: 'view',
   },
   {
@@ -256,12 +299,39 @@ export const useReadRahatDonor = /*#__PURE__*/ createUseReadContract({
 })
 
 /**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link rahatDonorAbi}__ and `functionName` set to `"AccessManager"`
+ */
+export const useReadRahatDonorAccessManager =
+  /*#__PURE__*/ createUseReadContract({
+    abi: rahatDonorAbi,
+    functionName: 'AccessManager',
+  })
+
+/**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link rahatDonorAbi}__ and `functionName` set to `"IID_RAHAT_DONOR"`
  */
 export const useReadRahatDonorIidRahatDonor =
   /*#__PURE__*/ createUseReadContract({
     abi: rahatDonorAbi,
     functionName: 'IID_RAHAT_DONOR',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link rahatDonorAbi}__ and `functionName` set to `"RahatTreasury"`
+ */
+export const useReadRahatDonorRahatTreasury =
+  /*#__PURE__*/ createUseReadContract({
+    abi: rahatDonorAbi,
+    functionName: 'RahatTreasury',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link rahatDonorAbi}__ and `functionName` set to `"_registeredProject"`
+ */
+export const useReadRahatDonorRegisteredProject =
+  /*#__PURE__*/ createUseReadContract({
+    abi: rahatDonorAbi,
+    functionName: '_registeredProject',
   })
 
 /**
@@ -307,6 +377,15 @@ export const useReadRahatDonorSupportsInterface =
   })
 
 /**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link rahatDonorAbi}__ and `functionName` set to `"tokenToDollarValue"`
+ */
+export const useReadRahatDonorTokenToDollarValue =
+  /*#__PURE__*/ createUseReadContract({
+    abi: rahatDonorAbi,
+    functionName: 'tokenToDollarValue',
+  })
+
+/**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link rahatDonorAbi}__
  */
 export const useWriteRahatDonor = /*#__PURE__*/ createUseWriteContract({
@@ -349,15 +428,6 @@ export const useWriteRahatDonorClaimToken =
   })
 
 /**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link rahatDonorAbi}__ and `functionName` set to `"createToken"`
- */
-export const useWriteRahatDonorCreateToken =
-  /*#__PURE__*/ createUseWriteContract({
-    abi: rahatDonorAbi,
-    functionName: 'createToken',
-  })
-
-/**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link rahatDonorAbi}__ and `functionName` set to `"mintToken"`
  */
 export const useWriteRahatDonorMintToken = /*#__PURE__*/ createUseWriteContract(
@@ -374,12 +444,12 @@ export const useWriteRahatDonorMintTokenAndApprove =
   })
 
 /**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link rahatDonorAbi}__ and `functionName` set to `"mintTokenAndSend"`
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link rahatDonorAbi}__ and `functionName` set to `"mintTokenAndApproveDescription"`
  */
-export const useWriteRahatDonorMintTokenAndSend =
+export const useWriteRahatDonorMintTokenAndApproveDescription =
   /*#__PURE__*/ createUseWriteContract({
     abi: rahatDonorAbi,
-    functionName: 'mintTokenAndSend',
+    functionName: 'mintTokenAndApproveDescription',
   })
 
 /**
@@ -388,6 +458,15 @@ export const useWriteRahatDonorMintTokenAndSend =
 export const useWriteRahatDonorMulticall = /*#__PURE__*/ createUseWriteContract(
   { abi: rahatDonorAbi, functionName: 'multicall' },
 )
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link rahatDonorAbi}__ and `functionName` set to `"registerProject"`
+ */
+export const useWriteRahatDonorRegisterProject =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: rahatDonorAbi,
+    functionName: 'registerProject',
+  })
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link rahatDonorAbi}__ and `functionName` set to `"removeOwner"`
@@ -460,15 +539,6 @@ export const useSimulateRahatDonorClaimToken =
   })
 
 /**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link rahatDonorAbi}__ and `functionName` set to `"createToken"`
- */
-export const useSimulateRahatDonorCreateToken =
-  /*#__PURE__*/ createUseSimulateContract({
-    abi: rahatDonorAbi,
-    functionName: 'createToken',
-  })
-
-/**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link rahatDonorAbi}__ and `functionName` set to `"mintToken"`
  */
 export const useSimulateRahatDonorMintToken =
@@ -487,12 +557,12 @@ export const useSimulateRahatDonorMintTokenAndApprove =
   })
 
 /**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link rahatDonorAbi}__ and `functionName` set to `"mintTokenAndSend"`
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link rahatDonorAbi}__ and `functionName` set to `"mintTokenAndApproveDescription"`
  */
-export const useSimulateRahatDonorMintTokenAndSend =
+export const useSimulateRahatDonorMintTokenAndApproveDescription =
   /*#__PURE__*/ createUseSimulateContract({
     abi: rahatDonorAbi,
-    functionName: 'mintTokenAndSend',
+    functionName: 'mintTokenAndApproveDescription',
   })
 
 /**
@@ -502,6 +572,15 @@ export const useSimulateRahatDonorMulticall =
   /*#__PURE__*/ createUseSimulateContract({
     abi: rahatDonorAbi,
     functionName: 'multicall',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link rahatDonorAbi}__ and `functionName` set to `"registerProject"`
+ */
+export const useSimulateRahatDonorRegisterProject =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: rahatDonorAbi,
+    functionName: 'registerProject',
   })
 
 /**

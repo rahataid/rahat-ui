@@ -42,18 +42,7 @@ export type Transaction = {
 export const columns: ColumnDef<Transaction>[] = [
   {
     accessorKey: 'referrerBen',
-    header: ({ column }) => {
-      return (
-        <Button
-          className="px-0"
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-        >
-          Beneficiary
-          <ArrowUpDown className="h-4 w-4" />
-        </Button>
-      );
-    },
+    header: 'Beneficiary',
     cell: ({ row }) => <div>{row.getValue('referrerBen')}</div>,
   },
 
@@ -77,18 +66,7 @@ export const columns: ColumnDef<Transaction>[] = [
   },
   {
     accessorKey: 'referredBy',
-    header: ({ column }) => {
-      return (
-        <Button
-          className="px-0"
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-        >
-          Referred By
-          <ArrowUpDown className="h-4 w-4" />
-        </Button>
-      );
-    },
+    header: () => 'Referred By',
     cell: ({ row }) => <div>{row.getValue('referredBy')}</div>,
   },
 ];
@@ -151,7 +129,7 @@ export default function ReferralTable({ name, projectId, vendorId }) {
   return (
     <div className="w-full h-full bg-secondary">
       <div className="flex items-center mb-2">
-        <Input
+        {/* <Input
           placeholder="Filter Referrals..."
           value={
             (table.getColumn('walletAddress')?.getFilterValue() as string) ?? ''
@@ -160,12 +138,12 @@ export default function ReferralTable({ name, projectId, vendorId }) {
             table.getColumn('walletAddress')?.setFilterValue(event.target.value)
           }
           className="w-full"
-        />
+        /> */}
       </div>
       <div className="rounded border h-[calc(100vh-180px)] bg-card">
         <Table>
-          <ScrollArea className="w-full h-withPage px-4 py-1">
-            <TableHeader>
+          <ScrollArea className="h-[calc(100vh-220px)]">
+            <TableHeader className="bg-card sticky top-0 z-50">
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
                   {headerGroup.headers.map((header) => {
@@ -219,10 +197,6 @@ export default function ReferralTable({ name, projectId, vendorId }) {
         </Table>
       </div>
       <div className="sticky bottom-0 flex items-center justify-end space-x-4 px-4 py-1 border-t-2 bg-card">
-        <div className="flex-1 text-sm text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length} of{' '}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
-        </div>
         <div className="space-x-2">
           <Button
             variant="outline"

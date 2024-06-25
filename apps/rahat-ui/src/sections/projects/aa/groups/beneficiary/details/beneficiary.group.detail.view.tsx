@@ -1,8 +1,6 @@
 import * as React from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import {
-  useSingleBeneficiaryGroup,
-} from '@rahat-ui/query';
+import { useSingleBeneficiaryGroup } from '@rahat-ui/query';
 import {
   ColumnFiltersState,
   getCoreRowModel,
@@ -31,7 +29,6 @@ export default function BeneficiaryGroupDetailView() {
     groupId,
   );
 
-
   // const deleteStakeholdersGroup = useDeleteStakeholdersGroups();
 
   const groupPath = `/projects/aa/${projectId}/groups`;
@@ -43,8 +40,19 @@ export default function BeneficiaryGroupDetailView() {
     [],
   );
 
+  const tableData = React.useMemo(() => {
+    if (groupDetails) {
+      return groupDetails?.groupedBeneficiaries?.map((d: any) => ({
+        name: d.Beneficiary.pii.name,
+        phone: d.Beneficiary.pii.phone,
+        email: d.Beneficiary.pii.email,
+        location: d.Beneficiary.location,
+      }));
+    } else return [];
+  }, [groupDetails]);
+
   const table = useReactTable({
-    data: groupDetails?.groupedBeneficiaries ?? [],
+    data: tableData ?? [],
     columns,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
@@ -101,13 +109,10 @@ export default function BeneficiaryGroupDetailView() {
               name="Location"
               className="mb-2 w-full"
               value={
-                (table.getColumn('location')?.getFilterValue() as string) ??
-                ''
+                (table.getColumn('location')?.getFilterValue() as string) ?? ''
               }
               onSearch={(event: React.ChangeEvent<HTMLInputElement>) =>
-                table
-                  .getColumn('location')
-                  ?.setFilterValue(event.target.value)
+                table.getColumn('location')?.setFilterValue(event.target.value)
               }
             />
           </div>

@@ -20,9 +20,9 @@ export default function CommunicationLogsView() {
 
   const findData = (name: string, type: string) => {
     return commsStats
-      .filter((item: any) => item.name === name)
-      .flatMap((item: any) => item.data)
-      .find((i: any) => i.type === type);
+      ?.filter((item: any) => item.name === name)
+      ?.flatMap((item: any) => item.data)
+      ?.find((i: any) => i.type === type);
   };
 
   const smsRecipients = findData('AUDIENCE', 'SMS');

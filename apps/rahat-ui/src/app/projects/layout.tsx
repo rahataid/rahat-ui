@@ -17,6 +17,7 @@ export default function ProjectLayoutRoot({
   //
   return (
     <DashboardLayout hasDefaultHeader={allowNavPaths.includes(pathName)}>
+      <title>Projects</title>
       {!allowedPaths.includes(pathName) ? (
         <>{children}</>
       ) : (

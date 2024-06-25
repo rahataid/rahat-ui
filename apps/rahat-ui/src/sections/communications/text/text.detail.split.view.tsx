@@ -20,11 +20,13 @@ import { toast } from 'react-toastify';
 type IProps = {
   details: ICampaignItemApiResponse;
   closeSecondPanel: VoidFunction;
+  refetch: any
 };
 
 export default function TextDetailSplitView({
   details,
   closeSecondPanel,
+  refetch
 }: IProps) {
   const deleteCampaign = useDeleteCampaign();
 
@@ -108,6 +110,7 @@ export default function TextDetailSplitView({
           status={details?.status}
           totalAudience={details?.totalAudiences ?? 0}
           type={details?.type}
+          refetch={refetch}
         />
         <Card className="shadow-md">
           <CardHeader>

@@ -1,4 +1,4 @@
-export const RahatTokenAbi = [
+export const rahatTokenAbi = [
   {
     inputs: [
       {

@@ -15,24 +15,17 @@ import { RahatTokenAbi as CVARahatTokenAbi } from './abis/cva/RahatToken';
 
 // Import ABI's for AA project
 import { AAProjectABI } from './abis/aa/AAProject';
-import { C2CProjectABI, RahatTokenABI } from './abis/c2c';
 import { AccessManagerAbi as AAAccessManagerAbi } from './abis/aa/AccessManager';
 import { RahatDonorABI as AARahatDonorABI } from './abis/aa/RahatDonor';
 import { RahatTokenABI as AARahatTokenABI } from './abis/aa/RahatToken';
 import { TriggerManagerABI as AATriggerManagerABI } from './abis/aa/TriggerManager';
+import { C2CProjectABI, RahatTokenABI } from './abis/c2c';
 
-// Import ABI's for RP project
-import {
-  MultiSigAbi,
-  TimeLockAbi,
-  MatchingFundAbi,
-  RahatAccessManagerAbi,
-  RahatClaimAbi as RPRahatClaimAbi,
-  RahatPayrollProjectAbi,
-  RahatTokenAbi as RPRahatTokenAbi,
-  RahatTreasuryAbi,
-  VendorAbi,
-} from './abis/rp';
+import { rahatAccessManagerAbi } from './abis/rp/RahatAccessManager';
+import { rahatPayrollProjectAbi } from './abis/rp/RahatPayrollProject';
+import { rahatTokenAbi } from './abis/rp/RahatToken';
+import { rahatTreasuryAbi } from './abis/rp/RahatTreasury';
+import { vendorAbi } from './abis/rp/Vendor';
 
 const ELConfig = [
   {
@@ -198,97 +191,56 @@ const C2CConfig = [
 
 const RPConfig = [
   {
-    out: 'libs/query/src/lib/rp/contracts/generated-hooks/disbursementTriggers/MatchingFund.ts',
-    contracts: [
-      {
-        name: 'MatchingFund',
-        abi: MatchingFundAbi,
-      },
-    ],
-    plugins: [react()],
-  },
-  {
-    out: 'libs/query/src/lib/rp/contracts/generated-hooks/disbursementTriggers/MultiSig.ts',
-    contracts: [
-      {
-        name: 'MultiSig',
-        abi: MultiSigAbi,
-      },
-    ],
-    plugins: [react()],
-  },
-  {
-    out: 'libs/query/src/lib/rp/contracts/generated-hooks/disbursementTriggers/TimeLock.ts',
-    contracts: [
-      {
-        name: 'TimeLock',
-        abi: TimeLockAbi,
-      },
-    ],
-    plugins: [react()],
-  },
-  {
-    out: 'libs/query/src/lib/rp/contracts/generated-hooks/RahatAccessManager.ts',
-    contracts: [
-      {
-        name: 'RahatAccessManager',
-        abi: RahatAccessManagerAbi,
-      },
-    ],
-    plugins: [react()],
-  },
-  {
-    out: 'libs/query/src/lib/rp/contracts/generated-hooks/RahatClaim.ts',
-    contracts: [
-      {
-        name: 'RahatClaim',
-        abi: RPRahatClaimAbi,
-      },
-    ],
-    plugins: [react()],
-  },
-  {
-    out: 'libs/query/src/lib/rp/contracts/generated-hooks/RahatPayrollProject.ts',
-    contracts: [
-      {
-        name: 'RahatPayrollProject',
-        abi: RahatPayrollProjectAbi,
-      },
-    ],
-    plugins: [react()],
-  },
-  {
-    out: 'libs/query/src/lib/rp/contracts/generated-hooks/RahatToken.ts',
+    out: 'libs/query/src/lib/rp/contracts/generated-hooks/rahatToken.ts',
     contracts: [
       {
         name: 'RahatToken',
-        abi: RPRahatTokenAbi,
+        abi: rahatTokenAbi,
       },
     ],
     plugins: [react()],
   },
   {
-    out: 'libs/query/src/lib/rp/contracts/generated-hooks/RahatTreasury.ts',
-    contracts: [
-      {
-        name: 'RahatTreasury',
-        abi: RahatTreasuryAbi,
-      },
-    ],
-    plugins: [react()],
-  },
-  {
-    out: 'libs/query/src/lib/rp/contracts/generated-hooks/Vendor.ts',
+    out: 'libs/query/src/lib/rp/contracts/generated-hooks/vendor.ts',
     contracts: [
       {
         name: 'Vendor',
-        abi: VendorAbi,
+        abi: vendorAbi,
+      },
+    ],
+    plugins: [react()],
+  },
+  {
+    out: 'libs/query/src/lib/rp/contracts/generated-hooks/rahatAccessManager.ts',
+    contracts: [
+      {
+        name: 'RahatAccessManager',
+        abi: rahatAccessManagerAbi,
+      },
+    ],
+    plugins: [react()],
+  },
+  {
+    out: 'libs/query/src/lib/rp/contracts/generated-hooks/rahatPayrollProject.ts',
+    contracts: [
+      {
+        name: 'RahatPayrollProject',
+        abi: rahatPayrollProjectAbi,
+      },
+    ],
+    plugins: [react()],
+  },
+  {
+    out: 'libs/query/src/lib/rp/contracts/generated-hooks/rahatTreasury.ts',
+    contracts: [
+      {
+        name: 'RahatTreasury',
+        abi: rahatTreasuryAbi,
       },
     ],
     plugins: [react()],
   },
 ];
-
 export default defineConfig([
   ...ELConfig,
   ...CVAConfig,

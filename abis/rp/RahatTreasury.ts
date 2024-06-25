@@ -1,4 +1,4 @@
-export const RahatTreasuryAbi = [
+export const rahatTreasuryAbi = [
   {
     inputs: [
       {

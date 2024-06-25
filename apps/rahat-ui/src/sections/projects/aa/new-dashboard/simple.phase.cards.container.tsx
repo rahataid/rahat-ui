@@ -4,6 +4,20 @@ type IProps = {
   phasesStats: any;
 };
 
+const renderProgressBgColor = (phase: string) => {
+  if (phase === 'PREPAREDNESS') return 'bg-yellow-100';
+  if (phase === 'ACTIVATION') return 'bg-red-100';
+  if (phase === 'READINESS') return 'bg-green-100';
+  return '';
+};
+
+const renderProgressBarColor = (phase: string) => {
+  if (phase === 'PREPAREDNESS') return 'bg-yellow-500';
+  if (phase === 'ACTIVATION') return 'bg-red-500';
+  if (phase === 'READINESS') return 'bg-green-500';
+  return '';
+};
+
 export default function SimplePhaseCardContainer({ phasesStats }: IProps) {
   return (
     <div className="p-4 bg-card rounded-sm shadow-md">
@@ -16,8 +30,8 @@ export default function SimplePhaseCardContainer({ phasesStats }: IProps) {
             </p>
             <Progress
               value={phase?.totalCompletedActivities}
-              className="bg-yellow-100 h-2"
-              indicatorColor="bg-yellow-500"
+              className={`h-2 ${renderProgressBgColor(phase?.phase?.name)}`}
+              indicatorColor={renderProgressBarColor(phase?.phase?.name)}
             />
           </div>
         ))}

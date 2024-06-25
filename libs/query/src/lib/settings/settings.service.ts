@@ -88,7 +88,7 @@ export const useAcessManagerSettings = () => {
 export const useAppContractSettings = () => {
   const { queryClient } = useRSQuery();
 
-  const appSettings = useAppSettingsMutate('CONTRACTs');
+  const appSettings = useAppSettingsMutate('CONTRACTS');
   const { setContractSettings } = useSettingsStore();
 
   const query = useQuery(
@@ -109,6 +109,34 @@ export const useAppContractSettings = () => {
       setContractSettings(query.data);
     }
   }, [query.isSuccess, query.data, setContractSettings]);
+
+  return query;
+};
+
+export const useAppNavSettings = () => {
+  const { queryClient } = useRSQuery();
+
+  const appSettings = useAppSettingsMutate('NAV_SETTINGS');
+  const { setNavSettings } = useSettingsStore();
+
+  const query = useQuery(
+    {
+      queryKey: ['NAV'],
+      queryFn: async () => {
+        const d = await appSettings.mutateAsync();
+        return d.data.data?.value;
+      },
+
+      enabled: !!queryClient,
+    },
+    queryClient,
+  );
+
+  useEffect(() => {
+    if (query.isSuccess) {
+      setNavSettings(query?.data);
+    }
+  }, [query.isSuccess, query.data, setNavSettings]);
 
   return query;
 };

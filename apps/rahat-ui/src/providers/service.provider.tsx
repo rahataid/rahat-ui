@@ -3,6 +3,7 @@
 import {
   useAcessManagerSettings,
   useAppContractSettings,
+  useAppNavSettings,
   useSettingsStore,
 } from '@rahat-ui/query';
 import { useCommunicationQuery } from '@rumsan/communication-query';
@@ -53,6 +54,7 @@ export function ServiceProvider({ children }: ServiceProviderProps) {
   );
   useAcessManagerSettings();
   useAppContractSettings();
+  useAppNavSettings();
 
   useEffect(() => {
     if (!queryClient) {

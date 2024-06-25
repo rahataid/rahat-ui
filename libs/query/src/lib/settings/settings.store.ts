@@ -6,7 +6,8 @@ export type AppSettingsState = {
   chainSettings: Chain<ChainFormatters>;
   subGraphUrl: string;
   accessManager: `0X${string}`;
-  contracts: Record<string, string>;
+  contracts: Record<string, any>;
+  navSettings: Record<string, any>;
 };
 
 export type AppSettingsAction = {
@@ -14,6 +15,7 @@ export type AppSettingsAction = {
   setSubGraphUrlSettings: (subGraphUrlSettings: string) => void;
   setAccessManagerSettings: (accessManager: `0X${string}`) => void;
   setContractSettings: (contracts: Record<string, string>) => void;
+  setNavSettings: (navSettings: Record<string, any>) => void;
 };
 
 export type AppSettings = AppSettingsState & AppSettingsAction;
@@ -40,6 +42,10 @@ export const initialAppSettings: AppSettingsState = {
     process.env['NEXT_PUBLIC_ACCESS_MANAGER'] ||
     '0x047435DE08F97c6446fcB0302140340559652F83',
   contracts: {},
+  navSettings: {
+    data: [],
+    subData: [],
+  },
 };
 
 export const useSettingsStore = zustandStore<AppSettings>(
@@ -52,6 +58,8 @@ export const useSettingsStore = zustandStore<AppSettings>(
     accessManager: initialAppSettings.accessManager,
     setAccessManagerSettings: (accessManager) => set({ accessManager }),
     setContractSettings: (contracts) => set({ contracts }),
+    navSettings: initialAppSettings.navSettings,
+    setNavSettings: (navSettings) => set({ navSettings }),
   }),
   {
     devtoolsEnabled: true,

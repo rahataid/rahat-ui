@@ -1,9 +1,7 @@
-import { UUID } from 'crypto';
-import { useProjectAction, useProjectBeneficiaries } from '../../projects';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Pagination } from '@rumsan/sdk/types';
-import { useEffect } from 'react';
 import { MS_ACTIONS } from '@rahataid/sdk';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { UUID } from 'crypto';
+import { useProjectAction } from '../../projects';
 
 // Constants for actions
 const CREATE_DISBURSEMENT = 'rpProject.disbursement.create';
@@ -77,7 +75,7 @@ export const useFindOneDisbursementPlan = (
   });
 };
 
-export const useUpdateDisbursementPlan = () => {
+export const useUpdateRPDisbursementPlan = () => {
   const action = useProjectAction(['updateDisbursementPlan-rpProject']);
 
   return useMutation({

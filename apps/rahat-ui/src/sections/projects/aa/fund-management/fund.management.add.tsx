@@ -86,7 +86,8 @@ export default function AddFundManagementView() {
     );
 
     if (selectedGroup && numberOfTokens) {
-      const groupMembers = selectedGroup?.members?.length;
+      const groupMembers = selectedGroup?._count?.groupedBeneficiaries;
+
       form.setValue('totalTokensReserved', numberOfTokens * groupMembers);
     } else {
       form.setValue('totalTokensReserved', 0);
@@ -199,54 +200,59 @@ export default function AddFundManagementView() {
                   );
                 }}
               />
-              {/* <small>
-                    {form.getValues('numberOfTokens')} tokens will be reserved
-                    for each member of the group. Total reserved tokens will be{' '}
-                    {form.getValues('totalTokensReserved')}
-                  </small> */}
+
+
+              <FormField
+                control={form.control}
+                name="numberOfTokens"
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <FormLabel>No. of Tokens</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          inputMode="decimal"
+                          placeholder="Enter number of tokens for each members"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
+
+              <small>
+                {form.getValues('numberOfTokens')} tokens each will be reserved
+                for members of the group. Total reserved tokens will be{' '}
+                {form.getValues('totalTokensReserved')}
+              </small>
             </div>
 
-            <FormField
-              control={form.control}
-              name="numberOfTokens"
-              render={({ field }) => {
-                return (
-                  <FormItem>
-                    <FormLabel>No. of Tokens</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        inputMode="decimal"
-                        placeholder="Enter number of tokens for each members"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            />
-            <FormField
-              control={form.control}
-              name="totalTokensReserved"
-              render={({ field }) => {
-                return (
-                  <FormItem>
-                    <FormLabel>Total tokens reserved</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        inputMode="decimal"
-                        placeholder="0"
-                        disabled
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            />
+            <div className='hidden'>
+              <FormField
+                control={form.control}
+                name="totalTokensReserved"
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <FormLabel>Total tokens reserved</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          inputMode="decimal"
+                          placeholder="0"
+                          disabled
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
+            </div>
             <div className="flex justify-end gap-2 my-4">
               <Button
                 onClick={() => router.back()}

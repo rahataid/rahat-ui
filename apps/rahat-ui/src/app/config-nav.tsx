@@ -34,10 +34,6 @@ export function useNavData() {
         //   },
         // ],
       },
-      {
-        title: 'Treasury',
-        path: paths.dashboard.treasury,
-      },
     ],
     [],
   );
@@ -49,7 +45,11 @@ export function useNavData() {
       },
       {
         title: 'Users',
-        path: paths.dashboard.user,
+        path: paths.user,
+      },
+      {
+        title: 'Treasury',
+        path: paths.dashboard.treasury,
       },
       {
         title: 'Community Beneficiaries',

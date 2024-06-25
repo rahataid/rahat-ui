@@ -1,13 +1,16 @@
 'use client';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import DisbursementPlan from './1-disbursement-plan';
 import DisbursementCondition, {
   DisbursementConditionType,
 } from './2-disbursement-condition';
 import DisbursementConfirmation from './3-confirmation';
-import { useCreateDisbursementPlan } from '@rahat-ui/query';
-import { useParams } from 'next/navigation';
+import {
+  useCreateDisbursementPlan,
+  useFindAllDisbursements,
+} from '@rahat-ui/query';
+import { useParams, useRouter } from 'next/navigation';
 import { UUID } from 'crypto';
 
 // type FundManagementFlowProps = {
@@ -18,7 +21,7 @@ import { UUID } from 'crypto';
 // };
 export const initialStepData = {
   bulkInputAmount: '',
-  selectedBeneficiaries: [] as { walletAddress: string; amount: string }[],
+  selectedBeneficiaries: [] as `0x${string}`[],
   selectedConditions: [] as DisbursementConditionType[],
 };
 
@@ -27,15 +30,15 @@ const FundManagementFlow = () => {
   const [stepData, setStepData] =
     useState<typeof initialStepData>(initialStepData);
   const { id } = useParams() as { id: UUID };
+  const router = useRouter();
 
   const createDisbursementPlan = useCreateDisbursementPlan(id);
+  const disbursements = useFindAllDisbursements(id);
 
   const handleStepDataChange = (e) => {
     const { name, value } = e.target;
     setStepData((prev) => ({ ...prev, [name]: value }));
   };
-
-  console.log('stepData', stepData);
 
   const steps = [
     {
@@ -54,10 +57,10 @@ const FundManagementFlow = () => {
       //   },
       // },
       validation: {
-        noBeneficiariesSelected: {
-          condition: () => !stepData.selectedBeneficiaries.length,
-          message: 'Please select beneficiaries',
-        },
+        // noBeneficiariesSelected: {
+        //   condition: () => !stepData.selectedBeneficiaries.length,
+        //   message: 'Please select beneficiaries',
+        // },
         noInputAmount: {
           condition: () =>
             stepData.selectedBeneficiaries.length && !stepData.bulkInputAmount,
@@ -126,20 +129,27 @@ const FundManagementFlow = () => {
 
   const handleConfirm = async () => {
     const res = await createDisbursementPlan.mutateAsync({
-      beneficiaries: stepData.selectedBeneficiaries.map((beneficiary) => ({
-        amount: +beneficiary.amount,
-        walletAddress: beneficiary.walletAddress,
-      })),
+      beneficiaries: disbursements.data?.map((b) => b.walletAddress),
+
+      // beneficiaries: stepData.selectedBeneficiaries.map((b) => b.walletAddress),
       conditions: stepData.selectedConditions,
-      totalAmount:
-        +stepData.bulkInputAmount ||
-        +stepData.selectedBeneficiaries.reduce(
-          (acc, curr) => acc + Number(curr.amount),
-          0,
-        ),
+      totalAmount: +disbursements.data?.reduce(
+        (acc: number, disbursement: any) => acc + disbursement.amount,
+        0,
+      ),
+      // totalAmount: +stepData.selectedBeneficiaries.reduce(
+      //   (acc, curr) => acc + Number(curr.amount),
+      //   0,
+      // ),
     });
     console.log('res', res);
   };
+
+  useEffect(() => {
+    if (createDisbursementPlan.isSuccess) {
+      router.push(`/projects/rp/${id}/fundManagement`);
+    }
+  }, [createDisbursementPlan.isSuccess, id, router]);
 
   return (
     <div>
@@ -155,6 +165,7 @@ const FundManagementFlow = () => {
           </Button>
           <Button
             className="w-48 "
+            disabled={createDisbursementPlan.isPending}
             onClick={
               steps[currentStep].id === 'confirm_send'
                 ? handleConfirm

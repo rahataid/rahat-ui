@@ -1,4 +1,4 @@
-export const VendorAbi = [
+export const vendorAbi = [
   {
     inputs: [
       {

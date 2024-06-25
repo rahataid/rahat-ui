@@ -1,4 +1,4 @@
-export const RahatAccessManagerAbi = [
+export const rahatAccessManagerAbi = [
   {
     inputs: [
       {

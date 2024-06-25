@@ -35,12 +35,13 @@ const CreateToken = ({ handleStepDataChange, stepData }) => {
               </div>
               <div className="flex flex-col gap-2">
                 <div className="grid w-1/2 items-center gap-1.5">
-                  <Label htmlFor="count">Token Count</Label>
+                  <Label htmlFor="initialSupply">Token Initial Supply</Label>
                   <Input
-                    type="count"
-                    name="count"
+                    inputMode="numeric"
+                    type="initialSupply"
+                    name="initialSupply"
                     onChange={handleStepDataChange}
-                    placeholder="Enter your token count"
+                    placeholder="Enter your token initial supply"
                   />
                 </div>
               </div>

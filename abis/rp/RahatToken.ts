@@ -17,14 +17,19 @@ export const rahatTokenAbi = [
         type: 'string',
       },
       {
-        internalType: 'address',
-        name: '_admin',
-        type: 'address',
-      },
-      {
         internalType: 'uint8',
         name: '_decimals',
         type: 'uint8',
+      },
+      {
+        internalType: 'uint256',
+        name: '_initialSupply',
+        type: 'uint256',
+      },
+      {
+        internalType: 'address',
+        name: '_to',
+        type: 'address',
       },
       {
         internalType: 'address',

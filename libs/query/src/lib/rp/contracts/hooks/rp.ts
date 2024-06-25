@@ -42,22 +42,32 @@ export const useTokenCreate = () => {
         });
       },
       mutationFn: async ({
-        _name,
-        _symbol,
-        _description,
+        name,
+        symbol,
+        description,
         decimals,
-        _manager,
+        manager,
         rahatTreasuryAddress,
+        initialSupply,
       }: {
-        _name: string;
-        _symbol: string;
-        _description: string;
+        name: string;
+        symbol: string;
+        description: string;
         decimals: number;
-        _manager: `0x${string}`;
+        manager: `0x${string}`;
         rahatTreasuryAddress: `0x${string}`;
+        initialSupply: string;
       }) => {
         return treasuryCreateToken.writeContractAsync({
-          args: [_name, _symbol, _description, decimals, _manager],
+          args: [
+            name,
+            symbol,
+            description,
+            decimals,
+            BigInt(initialSupply),
+            rahatTreasuryAddress,
+            manager,
+          ],
           address: rahatTreasuryAddress,
         });
       },

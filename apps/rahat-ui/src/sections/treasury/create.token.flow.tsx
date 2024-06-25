@@ -14,7 +14,7 @@ import { useTokenCreate } from '@rahat-ui/query';
 export const initialStepData = {
   tokenName: '',
   symbol: '',
-  count: '',
+  initialSupply: '',
   description: '',
 };
 
@@ -87,13 +87,14 @@ const CreateTokenFlow = () => {
 
   const handleConfirm = async () => {
     await createToken.mutateAsync({
-      _name: stepData.tokenName,
-      _symbol: stepData.symbol,
-      _description: stepData.description,
+      name: stepData.tokenName,
+      symbol: stepData.symbol,
+      description: stepData.description,
       decimals: 0,
-      _manager: '0x17e12d00982b6F0ec5d8801438D3C3CBbA0C7966' as `0x${string}`,
+      manager: '0x5467c1EC84Aca39482133BFd2f3992a27e5944cF' as `0x${string}`,
       rahatTreasuryAddress:
-        '0x94D92Dd6e5125b79A055E7AFB7397Eba24d37793' as `0x${string}`,
+        '0xe8880B72d6fbcABbF2e866E2f38d9060e58d9725' as `0x${string}`,
+      initialSupply: stepData.initialSupply,
     });
   };
   const renderComponent = () => {

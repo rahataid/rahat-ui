@@ -7,6 +7,7 @@ import {
   useReadRahatTokenDecimals,
   useWriteRahatPayrollProjectMulticall,
   useWriteRahatTreasuryCreateToken,
+  useWriteRahatTreasuryTransferToken,
 } from '../generated-hooks';
 import { encodeFunctionData, formatUnits } from 'viem';
 
@@ -231,4 +232,61 @@ export const useGetTokenAllocations = (
       },
     },
   });
+};
+
+export const useSendFundToProject = () => {
+  const sendFundProject = useWriteRahatTreasuryTransferToken();
+
+  const { queryClient } = useRSQuery();
+  // const decimals = useReadRahatTokenDecimals({
+  //   address: tokenAddress,
+  // });
+
+  const alert = Swal.mixin({
+    customClass: {
+      confirmButton: 'btn btn-primary',
+      cancelButton: 'btn btn-secondary',
+    },
+    buttonsStyling: false,
+  });
+
+  return useMutation(
+    {
+      onError: (error) => {
+        alert.fire({
+          icon: 'error',
+          title: 'Error sending funds',
+          text: error.message,
+        });
+      },
+      onSuccess: (d, { projectAddress }) => {
+        alert.fire({
+          icon: 'success',
+          title: 'Funds sent successfully',
+        });
+        // queryClient.invalidateQueries({
+        //   queryKey: ['ProjectDetails', projectAddress],
+        // });
+        // console.log('success', d);
+      },
+      mutationFn: async ({
+        amount,
+        projectAddress,
+        tokenAddress,
+        treasuryAddress,
+      }: {
+        projectAddress: `0x${string}`;
+        amount: string;
+        tokenAddress: `0x${string}`;
+        treasuryAddress: `0x${string}`;
+      }) => {
+        return sendFundProject.writeContractAsync({
+          // @ts-ignore
+          args: [tokenAddress, projectAddress, formatUnits(amount, 0)],
+          address: treasuryAddress,
+        });
+      },
+    },
+    queryClient,
+  );
 };

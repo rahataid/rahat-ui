@@ -148,6 +148,14 @@ export const useCvaBeneficiaryTableColumns = () => {
         return (
           <div className="flex items-center gap-2">
             <Eye
+              onClick={() => {
+                setSecondPanelComponent(
+                  <BeneficiaryDetail
+                    beneficiaryDetails={row.original}
+                    closeSecondPanel={closeSecondPanel}
+                  />,
+                );
+              }}
               className="hover:text-primary cursor-pointer"
               size={16}
               strokeWidth={1.5}

@@ -39,10 +39,6 @@ type IProps = {
   handleFilterProjectSelect: (selectedProject: string) => void;
   filters: Record<string, any>;
   handleCreateGroup: any;
-  startDate: any;
-  setStartDate: any;
-  endDate: any;
-  setEndDate: any;
   handleDateChange: any
 };
 

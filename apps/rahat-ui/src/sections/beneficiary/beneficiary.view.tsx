@@ -49,9 +49,6 @@ function BeneficiaryView() {
 
   useBeneficiaryGroupsList({ ...pagination });
 
-  const [startDate, setStartDate] = useState()
-  const [endDate, setEndDate] = useState()
-
   const { data } = useBeneficiaryList({
     ...pagination,
     ...filters
@@ -171,10 +168,6 @@ function BeneficiaryView() {
           projects={projectsList?.data?.data || []}
           handleFilterProjectSelect={handleFilterProjectSelect}
           filters={filters}
-          setStartDate={setStartDate}
-          setEndDate={setEndDate}
-          startDate={startDate}
-          endDate={endDate}
           handleDateChange={handleDateChange}
         />
       </TabsContent>

@@ -3,7 +3,7 @@ import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import React, { FC, useState } from 'react';
 import CreateToken from './1.create.token';
 import Confirmation from './2.confirmation';
-import { useTokenCreate } from '@rahat-ui/query';
+import { useSettingsStore, useTokenCreate } from '@rahat-ui/query';
 
 // type FundManagementFlowProps = {
 //   selectedBeneficiaries: {
@@ -28,7 +28,9 @@ const CreateTokenFlow = () => {
     setStepData((prev) => ({ ...prev, [name]: value }));
   };
 
-  console.log('stepData', stepData);
+  const contracts = useSettingsStore((state) => state.contracts);
+
+  console.log('stepData', contracts);
 
   const steps = [
     {
@@ -91,9 +93,9 @@ const CreateTokenFlow = () => {
       symbol: stepData.symbol,
       description: stepData.description,
       decimals: 0,
-      manager: '0x5467c1EC84Aca39482133BFd2f3992a27e5944cF' as `0x${string}`,
-      rahatTreasuryAddress:
-        '0xe8880B72d6fbcABbF2e866E2f38d9060e58d9725' as `0x${string}`,
+      // todo: rahat access manager address should be small case
+      manager: contracts?.RAHATACCESSMANAGER?.address as `0x${string}`,
+      rahatTreasuryAddress: contracts?.RAHATTREASURY?.address as `0x${string}`,
       initialSupply: stepData.initialSupply,
     });
   };

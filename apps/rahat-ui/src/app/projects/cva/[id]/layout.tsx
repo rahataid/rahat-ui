@@ -2,6 +2,7 @@
 
 import {
   CVASubgraphProvider,
+  GraphQuery,
   PROJECT_SETTINGS_KEYS,
   useProjectContractSettings,
   useProjectSettingsStore,
@@ -28,19 +29,9 @@ export default function ProjectLayoutRoot({
   const subgraphSettings = useProjectSettingsStore(
     (s) => s.settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.SUBGRAPH]?.url,
   );
-  // const contractSettings = useProjectSettingsStore(
-  //   (state) => state.settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.CONTRACT],
-  // );
 
   return (
-    <CVASubgraphProvider
-      subgraphClient={
-        new Client({
-          url: subgraphSettings || 'http://localhost:8000',
-          exchanges: [cacheExchange, fetchExchange],
-        })
-      }
-    >
+    <CVASubgraphProvider>
       <ProjectLayout projectType={ProjectTypes.CVA}>
         {secondPanel ? [children, secondPanel] : children}
       </ProjectLayout>

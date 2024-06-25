@@ -219,6 +219,16 @@ export const rahatTreasuryAbi = [
         type: 'uint8',
       },
       {
+        internalType: 'uint256',
+        name: '_initialSupply',
+        type: 'uint256',
+      },
+      {
+        internalType: 'address',
+        name: '_to',
+        type: 'address',
+      },
+      {
         internalType: 'address',
         name: '_manager',
         type: 'address',

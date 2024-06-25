@@ -43,6 +43,8 @@ export default function AddDailyMonitoring() {
   );
   const selectedRiverBasin = dataSourceSettings?.dhm?.location;
 
+  const { riverBasins } = useSelectItems();
+
   const createDailyMonitoring = useCreateDailyMonitoring();
 
   const anotherDataSourceSchema = {
@@ -51,6 +53,7 @@ export default function AddDailyMonitoring() {
 
   const FormSchema = z.object({
     dataEntryBy: z.string().min(2, { message: 'Please enter name.' }),
+    riverBasin: z.string().min(1, { message: 'Please select river basin.' }),
     dataSource: z.array(
       z.object({
         source: z.string().min(1, { message: 'Please select a source.' }),
@@ -99,6 +102,7 @@ export default function AddDailyMonitoring() {
     resolver: zodResolver(FormSchema),
     defaultValues: {
       dataEntryBy: '',
+      riverBasin: '',
       dataSource: [],
     },
   });
@@ -199,7 +203,8 @@ export default function AddDailyMonitoring() {
     }
     const payload = {
       dataEntryBy: data.dataEntryBy,
-      location: selectedRiverBasin,
+      // location: selectedRiverBasin,
+      location: data.riverBasin,
       data: dataPayload,
     };
     try {
@@ -236,26 +241,32 @@ export default function AddDailyMonitoring() {
                     label="Data Entry By"
                     placeholder="Enter Data Entry Personnel"
                   />
-                  <FormItem>
+                  {/* <FormItem>
                     <FormLabel>River Basin</FormLabel>
                     <Input
                       value={selectedRiverBasin}
                       placeholder="Select data source to display river basin"
                       disabled
                     />
-                  </FormItem>
+                  </FormItem> */}
+                  <SelectFormField
+                    form={form}
+                    name="riverBasin"
+                    label="River Basin"
+                    placeholder="Select river basin"
+                    selectItems={riverBasins}
+                  />
                 </div>
-                {anotherDataSourceFields
-                  .map((_, index) => (
-                    <AddAnotherDataSource
-                      key={index}
-                      form={form}
-                      index={index}
-                      onClose={() => {
-                        anotherDataSourceRemove(index);
-                      }}
-                    />
-                  ))}
+                {anotherDataSourceFields.map((_, index) => (
+                  <AddAnotherDataSource
+                    key={index}
+                    form={form}
+                    index={index}
+                    onClose={() => {
+                      anotherDataSourceRemove(index);
+                    }}
+                  />
+                ))}
 
                 <Button
                   type="button"

@@ -48,7 +48,7 @@ function BeneficiaryGroupsView() {
 
   const groupModal = useBoolean();
 
-  const createBeneficiaryGroup = useCreateBeneficiaryGroup();
+  // const createBeneficiaryGroup = useCreateBeneficiaryGroup();
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const columns = useBeneficiaryGroupsTableColumns();
 

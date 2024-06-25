@@ -33,7 +33,7 @@ export const useTokenMintAndSend = () => {
         });
       },
       onError: (error) => {
-        console.log('error', error);
+        console.log('error', error.name, error.message, error.stack);
         alert.fire({
           icon: 'error',
           title: 'Error minting and approving token',

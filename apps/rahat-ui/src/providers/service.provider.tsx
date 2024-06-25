@@ -1,6 +1,11 @@
 'use client';
 
-import { useAcessManagerSettings, useSettingsStore } from '@rahat-ui/query';
+import {
+  useAcessManagerSettings,
+  useAppContractSettings,
+  useAppNavSettings,
+  useSettingsStore,
+} from '@rahat-ui/query';
 import { useCommunicationQuery } from '@rumsan/communication-query';
 import { CommunicationService } from '@rumsan/communication/services/communication.client';
 import {
@@ -48,6 +53,8 @@ export function ServiceProvider({ children }: ServiceProviderProps) {
     [],
   );
   useAcessManagerSettings();
+  useAppContractSettings();
+  useAppNavSettings();
 
   useEffect(() => {
     if (!queryClient) {

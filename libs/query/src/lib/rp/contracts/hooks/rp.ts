@@ -1,13 +1,81 @@
 import { useRSQuery } from '@rumsan/react-query';
-import { useMutation } from '@tanstack/react-query';
 import Swal from 'sweetalert2';
-import { encodeFunctionData, formatEther, formatUnits, parseEther } from 'viem';
+import { useMutation } from '@tanstack/react-query';
 import {
   rahatPayrollProjectAbi,
   useReadRahatPayrollProjectTotalAllocated,
+  useReadRahatTokenDecimals,
   useWriteRahatPayrollProjectMulticall,
-} from '../generated-hooks/rahatPayrollProject';
-import { useReadRahatTokenDecimals } from '../generated-hooks';
+  useWriteRahatTreasuryCreateToken,
+  useWriteRahatTreasuryTransferToken,
+} from '../generated-hooks';
+import { encodeFunctionData, formatUnits } from 'viem';
+
+export const useTokenCreate = () => {
+  const { queryClient } = useRSQuery();
+  const treasuryCreateToken = useWriteRahatTreasuryCreateToken();
+  const alert = Swal.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+
+  return useMutation(
+    {
+      onSettled(data, error, variables, context) {
+        console.log('data', data);
+        console.log('error', error);
+        console.log('variables', variables, context);
+      },
+      onSuccess: () => {
+        alert.fire({
+          icon: 'success',
+          title: 'Token Created Successfully',
+        });
+      },
+      onError: (error) => {
+        console.log('error', error.message);
+        alert.fire({
+          icon: 'error',
+          title: 'Error minting and approving token',
+          text: 'Error Creating Token',
+        });
+      },
+      mutationFn: async ({
+        name,
+        symbol,
+        description,
+        decimals,
+        manager,
+        rahatTreasuryAddress,
+        initialSupply,
+      }: {
+        name: string;
+        symbol: string;
+        description: string;
+        decimals: number;
+        manager: `0x${string}`;
+        rahatTreasuryAddress: `0x${string}`;
+        initialSupply: string;
+      }) => {
+        return treasuryCreateToken.writeContractAsync({
+          args: [
+            name,
+            symbol,
+            description,
+            decimals,
+            BigInt(initialSupply),
+            rahatTreasuryAddress,
+            manager,
+          ],
+          address: rahatTreasuryAddress,
+        });
+      },
+    },
+    queryClient,
+  );
+};
 
 // export const useBulkAssignClaimsToBeneficiaries = () => {
 //   const multi = useWriteCvaProjectMulticall();
@@ -164,4 +232,61 @@ export const useGetTokenAllocations = (
       },
     },
   });
+};
+
+export const useSendFundToProject = () => {
+  const sendFundProject = useWriteRahatTreasuryTransferToken();
+
+  const { queryClient } = useRSQuery();
+  // const decimals = useReadRahatTokenDecimals({
+  //   address: tokenAddress,
+  // });
+
+  const alert = Swal.mixin({
+    customClass: {
+      confirmButton: 'btn btn-primary',
+      cancelButton: 'btn btn-secondary',
+    },
+    buttonsStyling: false,
+  });
+
+  return useMutation(
+    {
+      onError: (error) => {
+        alert.fire({
+          icon: 'error',
+          title: 'Error sending funds',
+          text: error.message,
+        });
+      },
+      onSuccess: (d, { projectAddress }) => {
+        alert.fire({
+          icon: 'success',
+          title: 'Funds sent successfully',
+        });
+        // queryClient.invalidateQueries({
+        //   queryKey: ['ProjectDetails', projectAddress],
+        // });
+        // console.log('success', d);
+      },
+      mutationFn: async ({
+        amount,
+        projectAddress,
+        tokenAddress,
+        treasuryAddress,
+      }: {
+        projectAddress: `0x${string}`;
+        amount: string;
+        tokenAddress: `0x${string}`;
+        treasuryAddress: `0x${string}`;
+      }) => {
+        return sendFundProject.writeContractAsync({
+          // @ts-ignore
+          args: [tokenAddress, projectAddress, formatUnits(amount, 0)],
+          address: treasuryAddress,
+        });
+      },
+    },
+    queryClient,
+  );
 };

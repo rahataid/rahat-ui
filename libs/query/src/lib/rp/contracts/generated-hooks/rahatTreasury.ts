@@ -152,6 +152,8 @@ export const rahatTreasuryAbi = [
       { name: '_symbol', internalType: 'string', type: 'string' },
       { name: '_description', internalType: 'string', type: 'string' },
       { name: 'decimals', internalType: 'uint8', type: 'uint8' },
+      { name: '_initialSupply', internalType: 'uint256', type: 'uint256' },
+      { name: '_to', internalType: 'address', type: 'address' },
       { name: '_manager', internalType: 'address', type: 'address' },
     ],
     name: 'createToken',

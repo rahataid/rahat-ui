@@ -1,3 +1,4 @@
+import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Progress } from '@rahat-ui/shadcn/src/components/ui/progress';
 
 type IProps = {
@@ -24,7 +25,7 @@ export default function SimplePhaseCardContainer({ phasesStats }: IProps) {
       <div className="grid gap-2">
         {phasesStats?.map((phase: any) => (
           <div key={phase?.id} className="p-4 border rounded-sm">
-            <h1 className="font-medium">{phase?.phase?.name}</h1>
+            <h1 className="font-medium">{phase?.phase?.name} <span><Badge>{phase?.phase?.isActive ? 'Active' : 'Inactive'}</Badge></span></h1>
             <p className="text-muted-foreground text-sm mb-4">
               {phase?.completedPercentage}% of preparations completed
             </p>

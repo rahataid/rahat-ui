@@ -15,17 +15,17 @@ import { RahatTokenAbi as CVARahatTokenAbi } from './abis/cva/RahatToken';
 
 // Import ABI's for AA project
 import { AAProjectABI } from './abis/aa/AAProject';
-import { C2CProjectABI, RahatTokenABI } from './abis/c2c';
 import { AccessManagerAbi as AAAccessManagerAbi } from './abis/aa/AccessManager';
 import { RahatDonorABI as AARahatDonorABI } from './abis/aa/RahatDonor';
 import { RahatTokenABI as AARahatTokenABI } from './abis/aa/RahatToken';
 import { TriggerManagerABI as AATriggerManagerABI } from './abis/aa/TriggerManager';
+import { C2CProjectABI, RahatTokenABI } from './abis/c2c';
 
 import { rahatAccessManagerAbi } from './abis/rp/RahatAccessManager';
 import { rahatPayrollProjectAbi } from './abis/rp/RahatPayrollProject';
-import { vendorAbi } from './abis/rp/Vendor';
 import { rahatTokenAbi } from './abis/rp/RahatToken';
 import { rahatTreasuryAbi } from './abis/rp/RahatTreasury';
+import { vendorAbi } from './abis/rp/Vendor';
 
 const ELConfig = [
   {
@@ -72,7 +72,7 @@ const ELConfig = [
 
 const CVAConfig = [
   {
-    out: 'libs/query/src/lib/cva/contracts/generated-hooks/rahatDonor.ts',
+    out: 'apps/rahat-ui/src/hooks/cva/contracts/rahatDonor.ts',
     contracts: [
       {
         name: 'RahatDonor',
@@ -82,7 +82,7 @@ const CVAConfig = [
     plugins: [react()],
   },
   {
-    out: 'libs/query/src/lib/cva/contracts/generated-hooks/rahatToken.ts',
+    out: 'apps/rahat-ui/src/hooks/cva/contracts/rahatToken.ts',
     contracts: [
       {
         name: 'RahatToken',
@@ -92,7 +92,7 @@ const CVAConfig = [
     plugins: [react()],
   },
   {
-    out: 'libs/query/src/lib/cva/contracts/generated-hooks/cvaProject.ts',
+    out: 'apps/rahat-ui/src/hooks/cva/contracts/cvaProject.ts',
     contracts: [
       {
         name: 'CVAProject',
@@ -102,7 +102,7 @@ const CVAConfig = [
     plugins: [react()],
   },
   {
-    out: 'libs/query/src/lib/cva/contracts/generated-hooks/rahatClaim.ts',
+    out: 'apps/rahat-ui/src/hooks/cva/contracts/rahatClaim.ts',
     contracts: [
       {
         name: 'RahatClaim',
@@ -191,21 +191,11 @@ const C2CConfig = [
 
 const RPConfig = [
   {
-    out: 'libs/query/src/lib/rp/contracts/generated-hooks/rahatDonor.ts',
-    contracts: [
-      {
-        name: 'RahatDonor',
-        abi: RahatDonorAbi,
-      },
-    ],
-    plugins: [react()],
-  },
-  {
     out: 'libs/query/src/lib/rp/contracts/generated-hooks/rahatToken.ts',
     contracts: [
       {
         name: 'RahatToken',
-        abi: RahatTokenAbi,
+        abi: rahatTokenAbi,
       },
     ],
     plugins: [react()],
@@ -240,7 +230,6 @@ const RPConfig = [
     ],
     plugins: [react()],
   },
-
   {
     out: 'libs/query/src/lib/rp/contracts/generated-hooks/rahatTreasury.ts',
     contracts: [

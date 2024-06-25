@@ -54,12 +54,15 @@ const SuccessModal = ({
               You are about to create{' '}
               <span className="text-primary">
                 {' '}
-                {voucherInputs.tokens} tokens
-              </span>{' '}
-              worth amount{' '}
+                {voucherInputs.tokens} vouchers
+              </span >{' '}
+              {' '} and {' '}
               <span className="text-primary">
-                {voucherInputs.currency} {voucherInputs.amountInDollar}
+                {+voucherInputs.tokens * 3} discount vouchers
               </span>
+              {/* <span className="text-primary">
+                {voucherInputs.currency} {voucherInputs.amountInDollar}
+              </span> */}
               .
               <br /> Are you sure you want to continue ?
             </div>

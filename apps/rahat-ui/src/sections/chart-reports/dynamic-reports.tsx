@@ -104,7 +104,6 @@ const DynamicReports: FC<DynamicReportProps> = ({ data, ui, className }) => {
             })),
           );
           const reportData = combinedData.find((d) => d.name === col.name);
-          console.log('reportData,combinedData', reportData, combinedData);
           const actualData =
             typeof reportData?.data === 'string' &&
             reportData?.data.startsWith('http')

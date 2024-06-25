@@ -103,6 +103,7 @@ export const useBeneficiaryList = (payload: any): any => {
     setMeta: state.setMeta,
   }));
 
+  console.log(payload)
   const ben = useQuery(
     {
       queryKey: [TAGS.GET_BENEFICIARIES, payload],

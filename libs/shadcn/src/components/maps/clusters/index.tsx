@@ -1,4 +1,4 @@
-import { memo, useRef } from 'react';
+import { memo, useEffect, useRef, useState } from 'react';
 import Map, {
   GeoJSONSource,
   Layer,
@@ -15,6 +15,9 @@ import {
   clusterLayer,
   unclusteredPointLayer,
 } from './layers';
+
+import { useProjectAction } from '@rahat-ui/query';
+import { filterVendorsGeoJson, projectUUID } from '../getVendorLocations';
 
 // ----------------------------------------------------------------------
 
@@ -45,6 +48,25 @@ function MapClusters({ ...other }: MapBoxProps) {
     });
   };
 
+  const [dataForMap, setDataForMap] = useState<any>()
+
+  const getVendors = useProjectAction();
+
+  const fetchVendors = async () => {
+    const response = await getVendors.mutateAsync({
+      uuid: projectUUID,
+      data: {
+        action: "elProject.getVendorStats",
+        payload: {},
+      },
+    });
+    setDataForMap(filterVendorsGeoJson(response))
+  }
+
+  useEffect(() => {
+    fetchVendors()
+  }, [])
+
   return (
     <Map
       initialViewState={{
@@ -60,7 +82,7 @@ function MapClusters({ ...other }: MapBoxProps) {
       <Source
         id="earthquakes"
         type="geojson"
-        data="https://docs.mapbox.com/mapbox-gl-js/assets/earthquakes.geojson"
+        data={dataForMap}
         cluster
         clusterMaxZoom={14}
         clusterRadius={50}
@@ -74,3 +96,4 @@ function MapClusters({ ...other }: MapBoxProps) {
 }
 
 export default memo(MapClusters);
+

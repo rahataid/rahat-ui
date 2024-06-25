@@ -79,7 +79,7 @@ const ELConfig = [
 
 const CVAConfig = [
   {
-    out: 'libs/query/src/lib/cva/contracts/generated-hooks/rahatDonor.ts',
+    out: 'apps/rahat-ui/src/hooks/cva/contracts/rahatDonor.ts',
     contracts: [
       {
         name: 'RahatDonor',
@@ -89,7 +89,7 @@ const CVAConfig = [
     plugins: [react()],
   },
   {
-    out: 'libs/query/src/lib/cva/contracts/generated-hooks/rahatToken.ts',
+    out: 'apps/rahat-ui/src/hooks/cva/contracts/rahatToken.ts',
     contracts: [
       {
         name: 'RahatToken',
@@ -99,7 +99,7 @@ const CVAConfig = [
     plugins: [react()],
   },
   {
-    out: 'libs/query/src/lib/cva/contracts/generated-hooks/cvaProject.ts',
+    out: 'apps/rahat-ui/src/hooks/cva/contracts/cvaProject.ts',
     contracts: [
       {
         name: 'CVAProject',
@@ -109,7 +109,7 @@ const CVAConfig = [
     plugins: [react()],
   },
   {
-    out: 'libs/query/src/lib/cva/contracts/generated-hooks/rahatClaim.ts',
+    out: 'apps/rahat-ui/src/hooks/cva/contracts/rahatClaim.ts',
     contracts: [
       {
         name: 'RahatClaim',

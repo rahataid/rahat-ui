@@ -13,12 +13,12 @@ export function useNavData() {
         path: paths.dashboard.beneficiary.root,
       },
       {
-        title: 'Users',
-        path: paths.dashboard.user,
-      },
-      {
         title: 'Targeting',
         path: paths.dashboard.targeting.root,
+      },
+      {
+        title: 'Users',
+        path: paths.dashboard.user,
       },
     ],
     [],

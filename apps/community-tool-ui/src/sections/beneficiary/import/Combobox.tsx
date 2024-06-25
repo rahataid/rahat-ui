@@ -3,12 +3,8 @@
 import { Check, ChevronsUpDown } from 'lucide-react';
 import * as React from 'react';
 
+import { cn } from '@rahat-ui/shadcn/src';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/popover';
 import {
   Command,
   CommandEmpty,
@@ -16,9 +12,15 @@ import {
   CommandInput,
   CommandItem,
 } from '@rahat-ui/shadcn/src/components/ui/command';
-import { CommandList } from 'cmdk';
-import { cn } from '@rahat-ui/shadcn/src';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/popover';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import { CommandList } from 'cmdk';
+
+export const EMPTY_SELECTION = 'No Selection';
 
 export function ComboBox({
   data,
@@ -28,6 +30,11 @@ export function ComboBox({
 }: any) {
   const [open, setOpen] = React.useState(false);
   const [value, setValue] = React.useState('');
+
+  const handleClearSelection = () => {
+    handleTargetFieldChange(EMPTY_SELECTION, value);
+    setValue('');
+  };
 
   React.useEffect(() => {
     if (selectedField) setValue(selectedField);
@@ -47,6 +54,12 @@ export function ComboBox({
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[400px] p-0">
+        {value && (
+          <button onClick={handleClearSelection}>
+            <span className="p-2 text-slate-400 text-xs">Clear Selection</span>
+          </button>
+        )}
+
         <Command>
           <CommandInput placeholder="--Select Field--" />
           <ScrollArea className="h-[200px]">

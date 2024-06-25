@@ -36,9 +36,10 @@ export default function InfoCards({ data }: { data: FieldDefinition }) {
                 </p>
               </div>
             </div>
-            {data?.fieldPopulate?.data?.length > 0 && (
-              <div className="col-span-3 overflow-hidden">
-                <div className="flex flex-col gap-2">
+
+            <div className="col-span-2 flex flex-col gap-4">
+              {data?.fieldPopulate?.data?.length > 0 && (
+                <div className="col-span-3 overflow-hidden">
                   <ul className="list-disc pl-4">
                     {data?.fieldPopulate?.data?.map(
                       (item: any, key: number) => (
@@ -50,8 +51,25 @@ export default function InfoCards({ data }: { data: FieldDefinition }) {
                     Field Populate
                   </p>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
+
+            <div className="flex flex-col gap-4">
+              {data?.variations && data.variations.length > 0 && (
+                <div>
+                  <p>
+                    <ul className="list-disc pl-4">
+                      {data?.variations?.map((d) => {
+                        return <li key={d}>{d}</li>;
+                      })}
+                    </ul>
+                  </p>
+                  <p className="text-sm font-normal text-muted-foreground">
+                    Field Variations
+                  </p>
+                </div>
+              )}
+            </div>
           </div>
         </CardContent>
       </Card>

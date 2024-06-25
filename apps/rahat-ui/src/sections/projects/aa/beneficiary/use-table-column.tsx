@@ -64,9 +64,9 @@ export const useProjectBeneficiaryTableColumns = () => {
           <Tooltip>
             <TooltipTrigger
               className="flex items-center gap-3 cursor-pointer"
-              onClick={() => clickToCopy(row.getValue('wallet'), row.index)}
+              onClick={() => clickToCopy(row?.original?.walletAddress, row.index)}
             >
-              <p>{truncateEthAddress(row.getValue('wallet'))}</p>
+              <p>{truncateEthAddress(row?.original?.walletAddress)}</p>
               {walletAddressCopied === row.index ? (
                 <CopyCheck size={15} strokeWidth={1.5} />
               ) : (
@@ -87,7 +87,7 @@ export const useProjectBeneficiaryTableColumns = () => {
       header: 'Name',
       cell: ({ row }) => (
         <div
-          className="cursor-pointer"
+          className=""
           // onClick={() => openSplitDetailView(row.original)}
         >
           {row.getValue('name')}
@@ -113,6 +113,7 @@ export const useProjectBeneficiaryTableColumns = () => {
       id: 'actions',
       enableHiding: false,
       cell: ({ row }) => {
+        console.log(row)
         return (
           <Eye
             size={20}

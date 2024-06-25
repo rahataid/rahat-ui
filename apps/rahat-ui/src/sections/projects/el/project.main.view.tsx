@@ -13,23 +13,25 @@ import {
   useReadElProjectGetProjectVoucherDetail,
   useReadElProjectGetTotalBeneficiaries,
 } from 'apps/rahat-ui/src/hooks/el/contracts/elProject';
-import { useProjectVoucher } from 'apps/rahat-ui/src/hooks/el/subgraph/querycall';
+import { useProjectVoucher, useAllVendorVoucher } from 'apps/rahat-ui/src/hooks/el/subgraph/querycall';
 import { useParams } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 import { ProjectChart } from '..';
 import ProjectDataCard from './project.datacard';
 import ProjectInfo from './project.info';
+import ChartLine from '@rahat-ui/shadcn/src/components/charts/chart-components/chart-line';
+import { cn } from '@rahat-ui/shadcn/src';
 
 const ProjectMainView = () => {
   const { id } = useParams();
-  const [projectStats, setProjectStats] = useState();
   const [ELProjectStats, setELProjectStats] = useState();
-  const projectClient = useProjectAction(['count_ben_vendor']);
   const statsClient = useProjectAction(['stats']);
   const project = useProjectStore((state) => state.singleProject);
   const contractSettings = useProjectSettingsStore(
     (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT] || null,
   );
+
+  const[vendorCount,setVendorCount] = useState(0)
 
   const { data: beneficiaryDetails, refetch: refetchBeneficiary } =
     useReadElProjectGetTotalBeneficiaries({
@@ -48,16 +50,7 @@ const ProjectMainView = () => {
     contractSettings?.eyevoucher?.address,
   );
 
-  const getProjectStats = useCallback(async () => {
-    const result = await projectClient.mutateAsync({
-      uuid: id,
-      data: {
-        action: 'elProject.count_ben_vendor',
-        payload: {},
-      },
-    });
-    setProjectStats(result.data);
-  }, [id]);
+  const {data:vendorDetails} = useAllVendorVoucher();  
 
   const getElProjectStats = useCallback(async () => {
     const result = await statsClient.mutateAsync({
@@ -71,9 +64,14 @@ const ProjectMainView = () => {
   }, [id]);
 
   useEffect(() => {
-    getProjectStats();
     getElProjectStats();
-  }, [getProjectStats, getElProjectStats]);
+  }, [getElProjectStats]);
+
+  useEffect(()=>{
+    if(!vendorDetails?.voucherArray) return;
+    const count = Object.keys(vendorDetails?.voucherArray).length;
+    setVendorCount(count);
+  },[vendorDetails])
 
   const filterdELChartData =
     ELProjectStats?.filter((item) => {
@@ -81,24 +79,61 @@ const ProjectMainView = () => {
       return name === 'BENEFICIARY_TYPE';
     }) || [];
 
-  const filteredFootfallData =
-    ELProjectStats?.filter((item) => {
-      const name = item?.name;
-      return name === 'FOOTFALL';
-    }) || [];
+  const referred = ELProjectStats?.filter((item) => {
+    return item?.name === 'REFERRAL';
+  })?.[0]?.data;
 
-    const footfallEyeCheckUp = ELProjectStats?.filter((item)=>{
-      return item?.name === 'FOOTFALL';
-    })?.[0]?.data?.find((i) =>i.id ==='EYE_CHECK_UP_DONE')
+  const referredCounts = referred
+    ? Object.values(referred).map((entry) => entry?.REFERRED)
+    : [];
 
-    const footfallEyeCheckUpNotDone = ELProjectStats?.filter((item)=>{
-      return item?.name === 'FOOTFALL';
-    })?.[0]?.data?.find((i) =>i.id ==='EYE_CHECK_UP_NOT_DONE')
+  const datesReferred = referred ? Object.keys(referred) : [];
 
-    const footfallUnknown = ELProjectStats?.filter((item)=>{
-      return item?.name === 'FOOTFALL';
-    })?.[0]?.data?.find((i) =>i.id ==='UNKNOWN')
+  const freeVoucher = ELProjectStats?.filter((item) => {
+    return item?.name === 'VOUCHERCLAIMS';
+  })?.[0]?.data;
 
+  const freeVoucherCounts = freeVoucher
+    ? Object.values(freeVoucher).map((entry) => entry?.FREE_VOUCHER || null)
+    : [];
+
+  const refferedVoucher = ELProjectStats?.filter((item) => {
+    return item?.name === 'VOUCHERCLAIMS';
+  })?.[0]?.data;
+
+  const referredVoucherCounts = refferedVoucher
+    ? Object.values(refferedVoucher).map((entry) => {
+        return entry?.DISCOUNT_VOUCHER || null;
+      })
+    : [];
+
+  const seriesDataVouchers = [
+    {
+      name: 'Free Voucher',
+      data: freeVoucherCounts,
+    },
+    {
+      name: 'Discount Voucher',
+      data: referredVoucherCounts,
+    },
+  ];
+
+  const seriesDataReferred = [
+    {
+      name: 'Referred',
+      data: referredCounts,
+    },
+  ];
+
+  const dates = freeVoucher ? Object.keys(freeVoucher) : [];
+
+  const footfallEyeCheckUp = ELProjectStats?.filter((item) => {
+    return item?.name === 'FOOTFALL';
+  })?.[0]?.data?.find((i) => i.id === 'EYE_CHECK_UP_DONE');
+
+  const footfallEyeCheckUpNotDone = ELProjectStats?.filter((item) => {
+    return item?.name === 'FOOTFALL';
+  })?.[0]?.data?.find((i) => i.id === 'EYE_CHECK_UP_NOT_DONE');
 
   const enrolledEyeCheckupData = ELProjectStats?.filter((item) => {
     return item.name === 'EYE_CHECKUP';
@@ -140,23 +175,39 @@ const ProjectMainView = () => {
     return item.name === 'EYE_CHECKUP';
   })?.[0]?.data?.find((i) => i.id === 'REFERRED_EYE_CHECK_UP_NOT_DONE');
 
+  const footfallFilteredData = [
+    {
+      name: 'FOOTFALL',
+      group: 'footfall',
+      data: [
+        {
+          id: 'Eye_Check_Up',
+          count: footfallEyeCheckUp?.count || 0,
+        },
+        {
+          id: 'No_Eye_Check_Up',
+          count: footfallEyeCheckUpNotDone?.count || 0,
+        },
+      ],
+    },
+  ];
 
-  const footfallFilteredData = [{
-    name:"FOOTFALL",
-    group:'footfall',
-    data:[
+  const beneficiaryFilteredData =[
     {
-      id:'Eye_Check_Up',
-      count:footfallEyeCheckUp?.count || 0
-    },
-    {
-      id:'No_Eye_Check_Up',
-      count:footfallEyeCheckUpNotDone?.count || 0 
-      
-    },
-    ]
-  }]
-  
+      name:'BENEFICIARY_TYPE',
+      grpup:'beneficiary_type',
+      data:[
+        {
+          id:'Enrolled',
+          count:Number(projectVoucher?.eyeVoucherAssigned) || 0
+        },
+        {
+          id:'Referred',
+          count:Number(projectVoucher?.referredVoucherAssigned) || 0
+        }
+      ]
+    }
+  ]
 
   const eyeCheckupData = [
     {
@@ -176,21 +227,21 @@ const ProjectMainView = () => {
   ];
   const glassData = [
     {
-      name: 'Reading Glass',
+      name: 'Reading Glasses',
       data: [
         enrolledReadingGlass?.count || 0,
         referredReadingGlass?.count || 0,
       ],
     },
     {
-      name: 'Glass Not Required',
+      name: 'Glasses Not Required',
       data: [enrolledNoGlass?.count || 0, referredNoGlass?.count || 0],
     },
     {
-      name: 'Sunglass',
+      name: 'Regular Sunglasses',
       data: [
-        referredRegularSunGlass?.count || 0,
         enrolledRegularSunGlass?.count || 0,
+        referredRegularSunGlass?.count || 0,
       ],
     },
   ];
@@ -200,8 +251,7 @@ const ProjectMainView = () => {
       <ScrollArea className="h-[calc(100vh-80px)]">
         <ProjectInfo
           project={project}
-          totalBeneficiary={projectStats?.benTotal}
-          totalVendor={projectStats?.vendorTotal}
+          totalVendor={vendorCount}
           loading={isLoading}
           refetchBeneficiary={refetchBeneficiary}
           beneficiaryDetails={beneficiaryDetails}
@@ -209,15 +259,31 @@ const ProjectMainView = () => {
           voucherDetails={voucherDetails}
         />
         <ProjectDataCard
-          totalVendor={projectStats?.vendorTotal}
+          totalVendor={vendorCount}
           refetchVoucher={refetchVoucher}
           loading={isLoading}
           ELProjectStats={ELProjectStats}
           projectVoucher={projectVoucher}
           voucherDetails={voucherDetails}
         />
+        <div
+          className={cn(
+            `grid ${
+              dates.length > 6 ? 'grid-cols-1' : 'grid-cols-2'
+            } mt-2 mb-2 gap-2`,
+          )}
+        >
+          <div className="bg-card h-96">
+            <p>Redemption</p>
+            <ChartLine series={seriesDataVouchers} categories={dates} />
+          </div>
+          <div className="bg-card h-96">
+            <p>Referrals</p>
+            <ChartLine series={seriesDataReferred} categories={datesReferred} />
+          </div>
+        </div>
         <ProjectChart
-          chartData={[...footfallFilteredData, ...filterdELChartData]}
+          chartData={[...footfallFilteredData, ...beneficiaryFilteredData]}
         />
         <div className="grid md:grid-cols-1 lg:grid-cols-2 gap-2 mt-2">
           <div className="bg-card rounded">

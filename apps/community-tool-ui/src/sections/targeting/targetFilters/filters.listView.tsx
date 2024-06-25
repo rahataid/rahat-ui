@@ -24,14 +24,14 @@ import { PinIcon } from 'lucide-react';
 import { useState } from 'react';
 
 type IProps = {
-  handleUpdateTargetLabel: (label: string) => void;
+  handleSaveTargetResults: (label: string) => void;
   table: Table<ListBeneficiary>;
   loading: boolean;
   targetUUID: string;
 };
 
 export default function ListView({
-  handleUpdateTargetLabel,
+  handleSaveTargetResults,
   table,
   loading,
   targetUUID,
@@ -45,7 +45,7 @@ export default function ListView({
             <Tooltip>
               <TooltipTrigger className="w-4/5 mr-10">
                 <Input
-                  placeholder="Enter suitable name to save found result..."
+                  placeholder="Enter group name to save the result..."
                   name="pinName"
                   className="rounded mr-2"
                   onChange={(e) => setLabel(e.target.value)}
@@ -53,7 +53,7 @@ export default function ListView({
                 />
               </TooltipTrigger>
               <TooltipContent>
-                {!targetUUID && <p>Please search target beneficiary first</p>}
+                {!targetUUID && <p>Please search beneficiary from the left panel</p>}
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
@@ -62,11 +62,11 @@ export default function ListView({
             className="rounded"
             name="location"
             type="button"
-            onClick={() => handleUpdateTargetLabel(label as string)}
+            onClick={() => handleSaveTargetResults(label as string)}
             disabled={!label}
           >
             <PinIcon className="h-6 w-6 mr-2" />
-            Save Result
+            Add to group
           </Button>
         </div>
         <div className="rounded border bg-card">

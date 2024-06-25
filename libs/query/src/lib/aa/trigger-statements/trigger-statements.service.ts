@@ -186,7 +186,7 @@ export const useDhmWaterLevels = (uuid: UUID) => {
           action: 'aaProject.waterLevels.getDhm',
           payload: {
             page: 1,
-            perPage: 10,
+            perPage: 15,
           },
         },
       });
@@ -217,20 +217,20 @@ export const useGlofasWaterLevels = (uuid: UUID) => {
   return query;
 };
 
-export const useAATriggerStatements = (uuid: UUID) => {
+export const useAATriggerStatements = (uuid: UUID, payload: any) => {
   const q = useProjectAction();
 
   const query = useQuery({
-    queryKey: ['triggerstatements', uuid],
+    queryKey: ['triggerstatements', uuid, payload],
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid,
         data: {
           action: 'aaProject.triggers.getAll',
-          payload: {},
+          payload: payload,
         },
       });
-      return mutate.data;
+      return mutate;
     },
   });
 

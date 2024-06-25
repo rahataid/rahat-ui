@@ -10,6 +10,7 @@ import {
 } from '@tanstack/react-table';
 
 import {
+  useCommunitySettingList,
   useDownloadPinnedListBeneficiary,
   useExportPinnedListBeneficiary,
   useTargetedBeneficiaryList,
@@ -47,7 +48,7 @@ export default function PinnedListDetailsView() {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const downloadPinnedListBeneficiary = useDownloadPinnedListBeneficiary();
   const exportPinnedListBeneficiary = useExportPinnedListBeneficiary();
-
+  const { data: settingsData } = useCommunitySettingList();
   const table = useReactTable({
     manualPagination: true,
     data: beneficiaryData?.data?.rows || [],
@@ -79,7 +80,21 @@ export default function PinnedListDetailsView() {
   };
 
   const handleExportPinnedBeneficiary = () => {
-    exportPinnedListBeneficiary.mutate({ targetUUID: uuid as string });
+    const filteredValue: any = settingsData?.data?.find(
+      (item: any) => item.name === 'EXTERNAL_APPS',
+    )?.value;
+
+    const obj = filteredValue
+      ? Object.entries(filteredValue).reduce((acc, [key, value]) => {
+          acc[value] = value;
+          return acc;
+        }, {} as { [key: string]: string })
+      : {};
+    const payload = {
+      targetUUID: uuid as string,
+      config: obj,
+    };
+    exportPinnedListBeneficiary.mutate(payload);
   };
 
   return (
@@ -97,7 +112,7 @@ export default function PinnedListDetailsView() {
                   className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
                 >
                   <Download size={20} className="mr-2" />
-                  Download 
+                  Download
                 </Button>
               </TooltipTrigger>
               <TooltipContent>

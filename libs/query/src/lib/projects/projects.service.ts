@@ -578,8 +578,6 @@ export const useProjectBeneficiaries = (payload: GetProjectBeneficiaries) => {
   return {
     ...query,
     data: useMemo(() => {
-      console.log(query.data);
-
       return {
         ...query.data,
         data: query.data?.data?.length

@@ -65,7 +65,9 @@ export default function AddTriggerStatementView({
 
   return (
     <>
-      <h1 className="text-lg font-semibold mb-6">Add {capitalizeFirstLetter(selectedPhase.name)} Trigger Statement</h1>
+      <h1 className="text-lg font-semibold mb-6">
+        Add {capitalizeFirstLetter(selectedPhase.name)} Trigger Statement
+      </h1>
       <Tabs defaultValue={activeTab} onValueChange={onTabChange}>
         <TabsList>
           <TabsTrigger value="automatedTrigger" className="border w-52">

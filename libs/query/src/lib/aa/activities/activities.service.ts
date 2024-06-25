@@ -136,7 +136,7 @@ export const useActivities = (uuid: UUID, payload: any) => {
     activityType: d.activityType,
     campaignId: d?.activityComm?.campaignId || null,
     activtiyComm: d?.activityComm || null,
-    isAutomated: d?.isAutomated
+    isAutomated: d?.isAutomated,
     // isApproved: d.isApproved,
     // isComplete: d.isComplete,
   }));
@@ -417,6 +417,7 @@ export const useUpdateActivityStatus = () => {
       activityStatusPayload: {
         uuid: string;
         status: string;
+        activityDocuments?: Array<{ fileName: string; mediaURL: string }>;
       };
     }) => {
       return q.mutateAsync({

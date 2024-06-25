@@ -94,16 +94,16 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       # Rahat-UI Image
-      - name: build && push rahat-ui
-        id: build-push-rahat-ui
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          # cache-from: type=gha,scope=${{ github.ref_name }}-rahat-ui
-          # cache-to: type=gha,mode=max,scope=${{ github.ref_name }}-rahat-ui
-          file: Dockerfile.rahat-ui
-          push: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
-          tags: esatya/rahat-ui:drc
+      # - name: build && push rahat-ui
+      #   id: build-push-rahat-ui
+      #   uses: docker/build-push-action@v5
+      #   with:
+      #     context: .
+      #     # cache-from: type=gha,scope=${{ github.ref_name }}-rahat-ui
+      #     # cache-to: type=gha,mode=max,scope=${{ github.ref_name }}-rahat-ui
+      #     file: Dockerfile.rahat-ui
+      #     push: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
+      #     tags: esatya/rahat-ui:drc
 
       # Community-Tool-UI Image
       - name: build && push community-tool-ui

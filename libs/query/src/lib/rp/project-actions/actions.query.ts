@@ -183,7 +183,7 @@ export const useFindOneDisbursement = (
   });
 };
 
-export const useUpdateDisbursement = () => {
+export const useUpdateRPDisbursement = () => {
   const action = useProjectAction(['updateDisbursement-rpProject']);
 
   return useMutation({

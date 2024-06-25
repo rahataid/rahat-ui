@@ -12,7 +12,7 @@ import {
 // import { useUserStore } from '@rumsan/react-query';
 import UsersTable from './user.list';
 import { usePagination } from '@rahat-ui/query';
-import CustomPagination from '../../components/customPagination';
+import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import { useUserTableColumns } from './useUsersColumns';
 import { useUserList } from '@rumsan/react-query';
 
@@ -54,7 +54,7 @@ export default function UserView() {
         currentPage={pagination.page}
         handleNextPage={setNextPage}
         handlePrevPage={setPrevPage}
-        // handlePageSizeChange={setPerPage}
+        handlePageSizeChange={setPerPage}
         meta={users?.response?.meta || { total: 0, currentPage: 0 }}
         perPage={pagination.perPage}
         total={users?.response?.meta?.lastPage || 0}

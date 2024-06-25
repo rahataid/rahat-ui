@@ -55,7 +55,7 @@ export type Text = {
   totalAudiences: number;
 };
 
-export default function TextTable() {
+const CampaignDetails = () => {
   const campaignStore = useCampaignStore();
   const columns = useTextTableColumn();
   const { id } = useParams();
@@ -101,19 +101,10 @@ export default function TextTable() {
       rowSelection,
     },
   });
-
   return (
     <div className="w-full h-full p-2 bg-secondary">
       <div className=" grid sm:grid-cols-1 md:grid-cols-4 gap-4 my-4 ">
         <DataCard className="" title="IVR" number={'0'} Icon={PhoneCall} />
-        <DataCard className="" title="Emails" number={'0'} Icon={Mail} />
-        <DataCard className="" title="SMS" number={'0'} Icon={MessageCircle} />
-        <DataCard
-          className=""
-          title="Whatsapp"
-          number={'0'}
-          Icon={MessageCircleMore}
-        />
       </div>
       <div className="flex items-center mb-2">
         <Input
@@ -242,4 +233,6 @@ export default function TextTable() {
       </div>
     </div>
   );
-}
+};
+
+export default CampaignDetails;

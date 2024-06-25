@@ -48,7 +48,6 @@ import TableLoader from '../../../components/table.loader';
 import CommunicationSummary from '../components/communication.summary';
 
 export default function TextTableView() {
-  const columns = useTextTableColumn();
   const campaignStore = useCampaignStore();
   const {
     pagination,
@@ -58,7 +57,8 @@ export default function TextTableView() {
     setPrevPage,
     setPerPage,
   } = usePagination();
-  const { data, isSuccess, isLoading } = useListCampaign(pagination);
+  const { data, isSuccess, isLoading, refetch } = useListCampaign(pagination);
+  const columns = useTextTableColumn(refetch);
 
   const { data: statsData, isLoading: statsLoading } = useGetStats();
 

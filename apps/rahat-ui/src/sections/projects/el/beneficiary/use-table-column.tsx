@@ -8,7 +8,7 @@ import { useSecondPanel } from '../../../../providers/second-panel-provider';
 import BeneficiaryDetail from '../../../../sections/projects/el/beneficiary/beneficiary.detail';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 
-export const useProjectBeneficiaryTableColumns = (voucherType: string) => {
+export const useProjectBeneficiaryTableColumns = (voucherType: string, projectBeneficiaries: any) => {
   const { setSecondPanelComponent, closeSecondPanel } = useSecondPanel();
   const [walletAddressCopied, setWalletAddressCopied] = useState<number>();
 
@@ -22,6 +22,7 @@ export const useProjectBeneficiaryTableColumns = (voucherType: string) => {
       <BeneficiaryDetail
         closeSecondPanel={closeSecondPanel}
         beneficiaryDetails={rowDetail}
+        projectBeneficiaries={projectBeneficiaries}
       />,
     );
   }, []);

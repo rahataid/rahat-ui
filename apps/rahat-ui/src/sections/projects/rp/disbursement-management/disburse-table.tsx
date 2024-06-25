@@ -19,12 +19,14 @@ interface DisburseTableProps {
   table: Table<Payment>;
   handleStepDataChange: (e: any) => void;
   stepData: typeof initialStepData;
+  bulkAssignDisbursement: any;
 }
 
 export function DisburseTable({
   table,
   handleStepDataChange,
   stepData,
+  bulkAssignDisbursement,
 }: DisburseTableProps) {
   return (
     <div className="mt-3 bg-secondary">
@@ -50,10 +52,20 @@ export function DisburseTable({
             onChange={(e) => handleStepDataChange(e)}
           />
           <Button
-            onClick={() => {
-              table.setPageSize(10);
+            onClick={async () => {
+              await bulkAssignDisbursement.mutateAsync({
+                amount: stepData.bulkInputAmount,
+                beneficiaries: table
+                  .getSelectedRowModel()
+                  .rows.map((row) => row.original.walletAddress),
+              });
             }}
             variant="outline"
+            disabled={
+              !stepData.bulkInputAmount ||
+              !table.getSelectedRowModel().rows.length ||
+              bulkAssignDisbursement.isPending
+            }
           >
             Bulk Assign
           </Button>

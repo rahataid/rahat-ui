@@ -93,9 +93,8 @@ const DynamicReports: FC<DynamicReportProps> = ({ data, ui, className }) => {
   }, [data]);
 
   const renderUIReport = (data: ReportData[], ui: UIComponent[][]) => {
-    console.log('data', data);
     return ui.map((row, rowIndex) => (
-      <div key={rowIndex} className={`grid grid-cols-${row.length} gap-4 m-4`}>
+      <div key={rowIndex} className={`grid grid-cols-${row.length} gap-2`}>
         {row.map((col, colIndex) => {
           const combinedData = data.concat(
             Object.keys(dynamicData).map((key) => ({
@@ -104,13 +103,11 @@ const DynamicReports: FC<DynamicReportProps> = ({ data, ui, className }) => {
             })),
           );
           const reportData = combinedData.find((d) => d.name === col.name);
-          console.log('reportData,combinedData', reportData, combinedData);
           const actualData =
             typeof reportData?.data === 'string' &&
             reportData?.data.startsWith('http')
               ? dynamicData[col.name]
               : (reportData?.data as any);
-          console.log('actualData', actualData);
 
           // TODO: consider for the nested api resposes as well
           let component: JSX.Element | null = null;

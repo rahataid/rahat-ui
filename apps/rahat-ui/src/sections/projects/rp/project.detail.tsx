@@ -106,7 +106,7 @@ const ProjectInfo: FC<ProjectInfoProps> = ({ project }) => {
   );
 
   return (
-    <div className="p-6 bg-slate-100">
+    <div className=" bg-slate-100">
       {/* DATACARD SECTION */}
       <DynamicReports data={reportsCardsData} ui={reportsCardsUI} />
 

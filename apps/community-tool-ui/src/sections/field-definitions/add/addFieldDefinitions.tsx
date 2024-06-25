@@ -19,23 +19,28 @@ import {
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { Switch } from '@rahat-ui/shadcn/src/components/ui/switch';
+import { Tag, TagInput } from 'emblor';
 import { useFieldArray, useForm } from 'react-hook-form';
-import { toast } from 'react-toastify';
 
 import { z } from 'zod';
 
 import React, { useEffect, useState } from 'react';
 
 import { useFieldDefinitionsCreate } from '@rahat-ui/community-query';
-import { Minus, Plus } from 'lucide-react';
 import { FieldType } from 'apps/community-tool-ui/src/constants/fieldDefinition.const';
+import { Minus, Plus } from 'lucide-react';
 
 type Iprops = {
   handleTabChange: (tab: 'add' | 'import') => void;
 };
+
 export default function AddFieldDefinitions({ handleTabChange }: Iprops) {
   const addFieldDefinitions = useFieldDefinitionsCreate();
   const [showLabelValue, setShowLabelValue] = useState(false);
+
+  const [variationTags, setVariationTags] = useState<Tag[]>([]);
+  const [activeTagIndex, setActiveTagIndex] = useState<number | null>(null);
+
   const {
     control,
     formState: { errors },
@@ -46,6 +51,12 @@ export default function AddFieldDefinitions({ handleTabChange }: Iprops) {
     fieldType: z.string().toUpperCase(),
     isActive: z.boolean(),
     isTargeting: z.boolean(),
+    variations: z.array(
+      z.object({
+        id: z.string(),
+        text: z.string(),
+      }),
+    ),
     field: z.array(
       z.object({
         value: z.object({
@@ -63,6 +74,7 @@ export default function AddFieldDefinitions({ handleTabChange }: Iprops) {
       fieldType: FieldType.TEXT,
       isActive: true,
       isTargeting: false,
+      variations: [],
       field: [],
     },
   });
@@ -71,6 +83,8 @@ export default function AddFieldDefinitions({ handleTabChange }: Iprops) {
     name: 'field',
     control: control,
   });
+
+  const { setValue } = form;
 
   const handleCreateFieldDefinitions = async (
     data: z.infer<typeof FormSchema>,
@@ -83,20 +97,21 @@ export default function AddFieldDefinitions({ handleTabChange }: Iprops) {
       }));
     }
 
-    try {
-      const payload = {
-        name: data.name,
-        fieldType: data.fieldType as FieldType,
-        isActive: true,
-        isTargeting: data.isTargeting,
-        fieldPopulate: { data: fieldPopulatePayload } || [],
-      };
+    const variationNames = data.variations.length
+      ? data.variations.map((d) => d.text)
+      : [];
 
-      await addFieldDefinitions.mutateAsync(payload);
-    } catch (error) {
-      toast.error('Error creating Field Definition');
-      console.error('Error creating Field Definition:', error);
-    }
+    const payload = {
+      name: data.name,
+      fieldType: data.fieldType as FieldType,
+      isActive: true,
+      isTargeting: data.isTargeting,
+      variations: variationNames,
+      fieldPopulate: { data: fieldPopulatePayload } || [],
+    };
+
+    console.log('Payload=>', payload);
+    return await addFieldDefinitions.mutateAsync(payload);
   };
 
   const addLabelAndValue = () => {
@@ -164,6 +179,32 @@ export default function AddFieldDefinitions({ handleTabChange }: Iprops) {
                     <FormItem>
                       <FormControl>
                         <Input type="text" placeholder="Name" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
+
+              <FormField
+                control={form.control}
+                name="variations"
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <FormControl>
+                        <TagInput
+                          {...field}
+                          activeTagIndex={activeTagIndex}
+                          setActiveTagIndex={setActiveTagIndex}
+                          placeholder="Enter value and press ENTER"
+                          tags={variationTags}
+                          className="min-h-[23px]"
+                          setTags={(newTags: Tag) => {
+                            setVariationTags(newTags);
+                            setValue('variations', newTags as [Tag, ...Tag[]]);
+                          }}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

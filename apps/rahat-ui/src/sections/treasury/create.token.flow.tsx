@@ -30,8 +30,6 @@ const CreateTokenFlow = () => {
 
   const contracts = useSettingsStore((state) => state.contracts);
 
-  console.log('stepData', contracts);
-
   const steps = [
     {
       id: 'step1',
@@ -94,8 +92,8 @@ const CreateTokenFlow = () => {
       description: stepData.description,
       decimals: 0,
       // todo: rahat access manager address should be small case
-      manager: contracts?.RAHATACCESSMANAGER?.address as `0x${string}`,
-      rahatTreasuryAddress: contracts?.RAHATTREASURY?.address as `0x${string}`,
+      manager: contracts?.rahataccessmanager?.address as `0x${string}`,
+      rahatTreasuryAddress: contracts?.rahattreasury?.address as `0x${string}`,
       initialSupply: stepData.initialSupply,
     });
   };

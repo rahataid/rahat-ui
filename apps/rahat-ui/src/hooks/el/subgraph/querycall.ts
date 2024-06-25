@@ -6,6 +6,7 @@ const formatTransaction = (trans: any) => ({
   beneficiary: trans.beneficiary || trans.referrerBeneficiaries || '-',
   vendor: trans.vendor || '',
   processedBy:
+    trans.assigner||
     trans.beneficiary ||
     trans.vendor ||
     trans.referrerVendor ||

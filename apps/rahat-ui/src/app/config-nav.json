@@ -1,0 +1,39 @@
+{
+    "data":[
+        {
+            "title": "Dashboard",
+            "path": "/dashboard"
+        },
+        {
+            "title":"Project",
+            "path":"/projects"
+        },
+        {
+            "title":"Beneficiaries",
+            "path":"/beneficiary"
+        },
+        {
+            "title":"Communications",
+            "path":"/communications/text"
+        }
+    ],
+
+    "subData":[
+        {
+         "title":"Vendors",
+         "path":"/vendors"
+        },
+        {
+            "title":"Users",
+            "path":"/users"
+        },
+        {
+            "title":"Treasury",
+            "path":"/treasury"
+        },
+        {
+            "title":"Community Beneficiaries",
+            "path":"/community-beneficiary"
+        }
+]
+}

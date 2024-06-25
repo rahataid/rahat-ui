@@ -25,10 +25,11 @@ import { useNavData } from '../app/config-nav';
 import { paths } from '../routes/paths';
 import ThemeSwitch from './themeToggleSwitch';
 import ConnectWallet from './wallet/connect-wallet';
+import configData from '../app/config-nav.json';
 
 export function Nav() {
   const currentPath = usePathname();
-  const { data, subData } = useNavData();
+  const { data, subData } = configData;
   const { user, clearUser } = useUserStore((state) => ({
     user: state.user,
     clearUser: state.clearUser,

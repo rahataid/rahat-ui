@@ -88,7 +88,7 @@ export default function BeneficiaryDetail({
       deleteBeneficiary.mutateAsync({
         uuid: id as UUID,
       });
-    } catch (e) {
+    } catch (e) { 
       console.error('Error::', e);
     }
   };
@@ -96,6 +96,8 @@ export default function BeneficiaryDetail({
   useEffect(() => {
     deleteBeneficiary.isSuccess && closeSecondPanel();
   }, [deleteBeneficiary]);
+
+  const benfAssignedToProject = beneficiaryDetail?.BeneficiaryProject?.length
 
   return (
     <>
@@ -115,34 +117,8 @@ export default function BeneficiaryDetail({
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
-          {/* <TooltipProvider delayDuration={100}>
-            <Tooltip>
-              <TooltipTrigger
-                onClick={() => {
-                  router.push(
-                    paths.dashboard.beneficiary.detail(walletAddress),
-                  );
-                }}
-              >
-                <Expand size={20} strokeWidth={1.5} />
-              </TooltipTrigger>
-              <TooltipContent className="bg-secondary ">
-                <p className="text-xs font-medium">Expand</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider> */}
         </div>
         <div className="flex gap-3">
-          <TooltipProvider delayDuration={100}>
-            <Tooltip>
-              <TooltipTrigger>
-                <Archive size={20} strokeWidth={1.5} />
-              </TooltipTrigger>
-              <TooltipContent className="bg-secondary ">
-                <p className="text-xs font-medium">Archive</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
           <TooltipProvider delayDuration={100}>
             <Tooltip>
               <TooltipTrigger>

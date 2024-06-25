@@ -193,7 +193,7 @@ export default function AssetsTable() {
     <div className="w-full p-2 bg-secondary">
       <div className="flex items-center mb-2">
         <Input
-          placeholder="Search Redemptions..."
+          placeholder="Search Name..."
           value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
           onChange={(event) =>
             table.getColumn('name')?.setFilterValue(event.target.value)

@@ -89,7 +89,8 @@ export default function VendorsDetailSplitView({
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
-        <div className="flex gap-3">
+        {vendorsDetail.projectName === 'N/A' &&
+          <div className="flex gap-3">
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -117,7 +118,7 @@ export default function VendorsDetailSplitView({
               <DropdownMenuItem>Edit</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-        </div>
+        </div>}
       </div>
       <div className="p-2 flex justify-between items-center">
         <div className="flex items-center gap-2">

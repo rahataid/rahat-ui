@@ -1,6 +1,6 @@
 'use client';
 
-import { useAssignBenToProject, useProjectList } from '@rahat-ui/query';
+import { useAssignBenToProject, useProjectList, useRemoveBeneficiary } from '@rahat-ui/query';
 import {
   Dialog,
   DialogClose,
@@ -30,84 +30,53 @@ type DeleteModalType = {
 type IProps = {
   beneficiaryDetail: any;
   deleteModal: DeleteModalType;
+  closeSecondPanel: VoidFunction;
 };
 
 export default function DeleteBeneficiaryModal({
   beneficiaryDetail,
   deleteModal,
+  closeSecondPanel
 }: IProps) {
-  console.log({ beneficiaryDetail, deleteModal });
-  const assignBeneficiary = useAssignBenToProject();
-  const projectsList = useProjectList({ page: 1, perPage: 10 });
-  console.log(projectsList.data);
+  const deleteBeneficiary = useRemoveBeneficiary();
 
-  const [selectedProject, setSelectedProject] = React.useState<UUID>();
-
-  const handleProjectChange = (d: UUID) => {
-    console.log({ d });
-    setSelectedProject(d);
-  };
-
-  const handleAssignProject = async () => {
-    if (!selectedProject) return alert('Please select a project');
-    await assignBeneficiary.mutateAsync({
-      beneficiaryUUID: beneficiaryDetail?.uuid,
-      projectUUID: selectedProject,
-    });
-    // await addBeneficiary.mutateAsync({
-    //   uuid: selectedProject,
-    //   data: {
-    //     action: MS_ACTIONS.BENEFICIARY.ASSGIN_TO_PROJECT,
-    //     payload: {
-    //       beneficiaryId: beneficiaryDetail?.uuid,
-    //     },
-    //   },
-    // });
+  const removeBeneficiary = async (id: string | undefined) => {
+    try {
+      await deleteBeneficiary.mutateAsync({
+        uuid: id as UUID,
+      });
+      closeSecondPanel()
+    } catch (e) {
+      console.error('Error::', e);
+    }
   };
 
   React.useEffect(() => {
-    assignBeneficiary.isSuccess && deleteModal.onFalse();
-  }, [assignBeneficiary]);
+    deleteBeneficiary.isSuccess && deleteModal.onFalse()
+  }, [deleteBeneficiary]);
 
   return (
     <Dialog open={deleteModal.value} onOpenChange={deleteModal.onToggle}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Assign Project</DialogTitle>
+          <DialogTitle>Delete Beneficiary</DialogTitle>
           <DialogDescription>
-            Select the project to be assigned to the beneficiary
+            This action cannot be undone. Are you sure?
           </DialogDescription>
         </DialogHeader>
-        <div>
-          <Select onValueChange={handleProjectChange}>
-            <SelectTrigger>
-              <SelectValue placeholder="Projects" />
-            </SelectTrigger>
-            <SelectContent>
-              {projectsList.data?.data.length &&
-                projectsList.data?.data.map((project) => {
-                  return (
-                    <SelectItem key={project.uuid} value={project.uuid}>
-                      {project.name}
-                    </SelectItem>
-                  );
-                })}
-            </SelectContent>
-          </Select>
-        </div>
         <DialogFooter className="sm:justify-end">
           <DialogClose asChild>
             <Button type="button" variant="ghost">
-              Close
+              Cancel
             </Button>
           </DialogClose>
           <Button
-            onClick={handleAssignProject}
+            onClick={() => removeBeneficiary(beneficiaryDetail?.uuid)}
             type="button"
             variant="ghost"
             className="text-primary"
           >
-            Assign
+            Confirm
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -62,7 +62,7 @@ export default function VendorsList() {
 
   const handleViewClick = (rowData: any) => {
     router.push(
-      `/projects/el/${uuid}/vendors/${rowData.walletaddress}?phone=${rowData.phone}&&name=${rowData.name}&&walletAddress=${rowData.walletaddress} &&vendorId=${rowData.vendorId}`,
+      `/projects/el/${uuid}/vendors/${rowData.walletaddress}?phone=${encodeURIComponent(rowData.phone)}&&name=${rowData.name}&&walletAddress=${rowData.walletaddress} &&vendorId=${rowData.vendorId}`,
     );
   };
 
@@ -73,8 +73,6 @@ export default function VendorsList() {
     contractSettings?.elproject?.address || '',
     contractSettings?.eyevoucher?.address || '',
   );
-
-  console.log(vendorList)
 
   const voucherPrice = Number(voucherDetail?.data?.freeVoucherPrice);
 

@@ -34,7 +34,7 @@ export default function AssignToken({
       <DialogTrigger asChild>
         <div className="w-full flex justify-between items-center">
           <div className="flex gap-3 items-center cursor-pointer">
-            <Button className="felx items-center gap-2">
+            <Button className="bg-sky-100 text-blue-600 felx w-96 items-center gap-2 hover:bg-sky-200">
               <BadgePlus size={18} strokeWidth={1.5} />
               <p>Assign Token</p>
             </Button>
@@ -55,15 +55,15 @@ export default function AssignToken({
             <Input value={token} onChange={handleInputChange} id="token" />
           </div>
         </div>
-        <Separator className="my-2" />
         {token ? (
           <>
+            <Separator className="my-2" />
             <div className="flex items-center justify-between text-muted-foreground text-base">
               You are assigning {token} tokens to {beneficiary?.piiData?.name}
             </div>
+            <Separator className="my-2" />
           </>
         ) : null}
-        <Separator className="my-2" />
         <DialogFooter>
           <Button disabled={loading} onClick={() => handleSubmit(token)}>
             Assign

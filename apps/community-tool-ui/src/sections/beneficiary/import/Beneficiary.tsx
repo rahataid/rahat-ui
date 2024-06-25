@@ -37,12 +37,13 @@ import {
 import { useRSQuery } from '@rumsan/react-query';
 import ColumnMappingTable from './ColumnMappingTable';
 import MyAlert from './MyAlert';
+import { EMPTY_SELECTION } from './Combobox';
 
 interface IProps {
-  extraFields: string[];
+  fieldDefinitions: [];
 }
 
-export default function BenImp({ extraFields }: IProps) {
+export default function BenImp({ fieldDefinitions }: IProps) {
   const form = useForm({});
   const { rumsanService } = useRSQuery();
   const { data: kbSettings } = useFetchKoboSettings();
@@ -148,7 +149,11 @@ export default function BenImp({ extraFields }: IProps) {
     sourceField: string,
     targetField: string,
   ) => {
-    if (targetField === 'None') return;
+    if (sourceField === EMPTY_SELECTION) {
+      const filtered = mappings.filter((f) => f.targetField !== targetField);
+      return setMappings(filtered);
+    }
+
     const index = mappings.findIndex(
       (item: any) => item.sourceField === sourceField,
     );
@@ -368,9 +373,7 @@ export default function BenImp({ extraFields }: IProps) {
     }
   };
 
-  if (extraFields.length) BENEF_DB_FIELDS.push(...extraFields);
-  const uniqueDBFields = [...new Set(BENEF_DB_FIELDS)];
-
+  console.log('Mappings=>', mappings);
 
   return (
     <div className="h-custom">
@@ -427,7 +430,7 @@ export default function BenImp({ extraFields }: IProps) {
             <div className="import-container overflow-x-auto">
               <ColumnMappingTable
                 rawData={rawData}
-                uniqueDBFields={uniqueDBFields}
+                fieldDefs={fieldDefinitions}
                 handleTargetFieldChange={handleTargetFieldChange}
                 mappings={mappings}
               />

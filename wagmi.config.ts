@@ -21,6 +21,12 @@ import { RahatDonorABI as AARahatDonorABI } from './abis/aa/RahatDonor';
 import { RahatTokenABI as AARahatTokenABI } from './abis/aa/RahatToken';
 import { TriggerManagerABI as AATriggerManagerABI } from './abis/aa/TriggerManager';
 
+import { rahatAccessManagerAbi } from './abis/rp/RahatAccessManager';
+import { rahatPayrollProjectAbi } from './abis/rp/RahatPayrollProject';
+import { vendorAbi } from './abis/rp/Vendor';
+import { rahatTokenAbi } from './abis/rp/RahatToken';
+import { rahatTreasuryAbi } from './abis/rp/RahatTreasury';
+
 const ELConfig = [
   {
     out: 'apps/rahat-ui/src/hooks/el/contracts/elProject.ts',
@@ -183,9 +189,73 @@ const C2CConfig = [
   },
 ];
 
+const RPConfig = [
+  {
+    out: 'libs/query/src/lib/rp/contracts/generated-hooks/rahatDonor.ts',
+    contracts: [
+      {
+        name: 'RahatDonor',
+        abi: RahatDonorAbi,
+      },
+    ],
+    plugins: [react()],
+  },
+  {
+    out: 'libs/query/src/lib/rp/contracts/generated-hooks/rahatToken.ts',
+    contracts: [
+      {
+        name: 'RahatToken',
+        abi: RahatTokenAbi,
+      },
+    ],
+    plugins: [react()],
+  },
+  {
+    out: 'libs/query/src/lib/rp/contracts/generated-hooks/vendor.ts',
+    contracts: [
+      {
+        name: 'Vendor',
+        abi: vendorAbi,
+      },
+    ],
+    plugins: [react()],
+  },
+  {
+    out: 'libs/query/src/lib/rp/contracts/generated-hooks/rahatAccessManager.ts',
+    contracts: [
+      {
+        name: 'RahatAccessManager',
+        abi: rahatAccessManagerAbi,
+      },
+    ],
+    plugins: [react()],
+  },
+  {
+    out: 'libs/query/src/lib/rp/contracts/generated-hooks/rahatPayrollProject.ts',
+    contracts: [
+      {
+        name: 'RahatPayrollProject',
+        abi: rahatPayrollProjectAbi,
+      },
+    ],
+    plugins: [react()],
+  },
+
+  {
+    out: 'libs/query/src/lib/rp/contracts/generated-hooks/rahatTreasury.ts',
+    contracts: [
+      {
+        name: 'RahatTreasury',
+        abi: rahatTreasuryAbi,
+      },
+    ],
+    plugins: [react()],
+  },
+];
 export default defineConfig([
   ...ELConfig,
   ...CVAConfig,
   ...AAConfig,
   ...C2CConfig,
+  ...RPConfig,
 ]);

@@ -13,6 +13,7 @@ export const rahatTokenAbi = [
   {
     type: 'constructor',
     inputs: [
+      { name: '_forwarder', internalType: 'address', type: 'address' },
       { name: '_name', internalType: 'string', type: 'string' },
       { name: '_symbol', internalType: 'string', type: 'string' },
       { name: '_admin', internalType: 'address', type: 'address' },
@@ -121,6 +122,44 @@ export const rahatTokenAbi = [
     name: 'Transfer',
   },
   {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'updatedBy',
+        internalType: 'address',
+        type: 'address',
+        indexed: false,
+      },
+      {
+        name: 'description',
+        internalType: 'string',
+        type: 'string',
+        indexed: false,
+      },
+    ],
+    name: 'UpdatedDescription',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'currency',
+        internalType: 'string',
+        type: 'string',
+        indexed: false,
+      },
+      {
+        name: 'price',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+    ],
+    name: 'UpdatedTokenParams',
+  },
+  {
     type: 'function',
     inputs: [{ name: '_address', internalType: 'address', type: 'address' }],
     name: 'addOwner',
@@ -164,12 +203,19 @@ export const rahatTokenAbi = [
   {
     type: 'function',
     inputs: [
-      { name: 'account', internalType: 'address', type: 'address' },
-      { name: 'value', internalType: 'uint256', type: 'uint256' },
+      { name: '_account', internalType: 'address', type: 'address' },
+      { name: '_value', internalType: 'uint256', type: 'uint256' },
     ],
     name: 'burnFrom',
     outputs: [],
     stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'currency',
+    outputs: [{ name: '', internalType: 'string', type: 'string' }],
+    stateMutability: 'view',
   },
   {
     type: 'function',
@@ -180,8 +226,22 @@ export const rahatTokenAbi = [
   },
   {
     type: 'function',
+    inputs: [],
+    name: 'description',
+    outputs: [{ name: '', internalType: 'string', type: 'string' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
     inputs: [{ name: '_address', internalType: 'address', type: 'address' }],
     name: 'isOwner',
+    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'forwarder', internalType: 'address', type: 'address' }],
+    name: 'isTrustedForwarder',
     outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
     stateMutability: 'view',
   },
@@ -220,6 +280,13 @@ export const rahatTokenAbi = [
     type: 'function',
     inputs: [],
     name: 'ownerCount',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'price',
     outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
     stateMutability: 'view',
   },
@@ -265,6 +332,31 @@ export const rahatTokenAbi = [
     outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
     stateMutability: 'nonpayable',
   },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'trustedForwarder',
+    outputs: [{ name: '', internalType: 'address', type: 'address' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: '_description', internalType: 'string', type: 'string' }],
+    name: 'updateDescription',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: '_currency', internalType: 'string', type: 'string' },
+      { name: '_price', internalType: 'uint256', type: 'uint256' },
+      { name: '_description', internalType: 'string', type: 'string' },
+    ],
+    name: 'updateTokenParams',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
 ] as const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -295,6 +387,14 @@ export const useReadRahatTokenBalanceOf = /*#__PURE__*/ createUseReadContract({
 })
 
 /**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link rahatTokenAbi}__ and `functionName` set to `"currency"`
+ */
+export const useReadRahatTokenCurrency = /*#__PURE__*/ createUseReadContract({
+  abi: rahatTokenAbi,
+  functionName: 'currency',
+})
+
+/**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link rahatTokenAbi}__ and `functionName` set to `"decimals"`
  */
 export const useReadRahatTokenDecimals = /*#__PURE__*/ createUseReadContract({
@@ -303,12 +403,28 @@ export const useReadRahatTokenDecimals = /*#__PURE__*/ createUseReadContract({
 })
 
 /**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link rahatTokenAbi}__ and `functionName` set to `"description"`
+ */
+export const useReadRahatTokenDescription = /*#__PURE__*/ createUseReadContract(
+  { abi: rahatTokenAbi, functionName: 'description' },
+)
+
+/**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link rahatTokenAbi}__ and `functionName` set to `"isOwner"`
  */
 export const useReadRahatTokenIsOwner = /*#__PURE__*/ createUseReadContract({
   abi: rahatTokenAbi,
   functionName: 'isOwner',
 })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link rahatTokenAbi}__ and `functionName` set to `"isTrustedForwarder"`
+ */
+export const useReadRahatTokenIsTrustedForwarder =
+  /*#__PURE__*/ createUseReadContract({
+    abi: rahatTokenAbi,
+    functionName: 'isTrustedForwarder',
+  })
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link rahatTokenAbi}__ and `functionName` set to `"listOwners"`
@@ -335,6 +451,14 @@ export const useReadRahatTokenOwnerCount = /*#__PURE__*/ createUseReadContract({
 })
 
 /**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link rahatTokenAbi}__ and `functionName` set to `"price"`
+ */
+export const useReadRahatTokenPrice = /*#__PURE__*/ createUseReadContract({
+  abi: rahatTokenAbi,
+  functionName: 'price',
+})
+
+/**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link rahatTokenAbi}__ and `functionName` set to `"symbol"`
  */
 export const useReadRahatTokenSymbol = /*#__PURE__*/ createUseReadContract({
@@ -348,6 +472,15 @@ export const useReadRahatTokenSymbol = /*#__PURE__*/ createUseReadContract({
 export const useReadRahatTokenTotalSupply = /*#__PURE__*/ createUseReadContract(
   { abi: rahatTokenAbi, functionName: 'totalSupply' },
 )
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link rahatTokenAbi}__ and `functionName` set to `"trustedForwarder"`
+ */
+export const useReadRahatTokenTrustedForwarder =
+  /*#__PURE__*/ createUseReadContract({
+    abi: rahatTokenAbi,
+    functionName: 'trustedForwarder',
+  })
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link rahatTokenAbi}__
@@ -427,6 +560,24 @@ export const useWriteRahatTokenTransferFrom =
   /*#__PURE__*/ createUseWriteContract({
     abi: rahatTokenAbi,
     functionName: 'transferFrom',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link rahatTokenAbi}__ and `functionName` set to `"updateDescription"`
+ */
+export const useWriteRahatTokenUpdateDescription =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: rahatTokenAbi,
+    functionName: 'updateDescription',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link rahatTokenAbi}__ and `functionName` set to `"updateTokenParams"`
+ */
+export const useWriteRahatTokenUpdateTokenParams =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: rahatTokenAbi,
+    functionName: 'updateTokenParams',
   })
 
 /**
@@ -518,6 +669,24 @@ export const useSimulateRahatTokenTransferFrom =
   })
 
 /**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link rahatTokenAbi}__ and `functionName` set to `"updateDescription"`
+ */
+export const useSimulateRahatTokenUpdateDescription =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: rahatTokenAbi,
+    functionName: 'updateDescription',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link rahatTokenAbi}__ and `functionName` set to `"updateTokenParams"`
+ */
+export const useSimulateRahatTokenUpdateTokenParams =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: rahatTokenAbi,
+    functionName: 'updateTokenParams',
+  })
+
+/**
  * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link rahatTokenAbi}__
  */
 export const useWatchRahatTokenEvent =
@@ -557,4 +726,22 @@ export const useWatchRahatTokenTransferEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
     abi: rahatTokenAbi,
     eventName: 'Transfer',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link rahatTokenAbi}__ and `eventName` set to `"UpdatedDescription"`
+ */
+export const useWatchRahatTokenUpdatedDescriptionEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: rahatTokenAbi,
+    eventName: 'UpdatedDescription',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link rahatTokenAbi}__ and `eventName` set to `"UpdatedTokenParams"`
+ */
+export const useWatchRahatTokenUpdatedTokenParamsEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: rahatTokenAbi,
+    eventName: 'UpdatedTokenParams',
   })

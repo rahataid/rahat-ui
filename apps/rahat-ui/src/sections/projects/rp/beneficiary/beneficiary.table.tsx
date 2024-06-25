@@ -112,11 +112,8 @@ export default function BeneficiaryTable() {
 
   return (
     <>
-      <div className="w-full p-6 bg-secondary">
-        <div className="flex items-center justify-between mb-3">
-          <p className="font-semibold	text-lg	text-neutral-800">
-            Beneficiaries List
-          </p>
+      <div className="w-full p-2 bg-secondary">
+        <div className="flex items-center justify-between">
           {selectedRowAddresses.length > 0 && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -143,7 +140,7 @@ export default function BeneficiaryTable() {
         </div>
         <div className="grid grid-cols-6 gap-x-2 mb-3">
           <Select>
-            <SelectTrigger className="rounded">
+            <SelectTrigger>
               <SelectValue placeholder="Select gender" />
             </SelectTrigger>
             <SelectContent>
@@ -155,7 +152,7 @@ export default function BeneficiaryTable() {
             </SelectContent>
           </Select>
           <Select>
-            <SelectTrigger className="rounded">
+            <SelectTrigger>
               <SelectValue placeholder="Select Internet Access" />
             </SelectTrigger>
             <SelectContent>
@@ -169,7 +166,7 @@ export default function BeneficiaryTable() {
             </SelectContent>
           </Select>
           <Select>
-            <SelectTrigger className="rounded">
+            <SelectTrigger>
               <SelectValue placeholder="Select Phone Type" />
             </SelectTrigger>
             <SelectContent>
@@ -213,9 +210,9 @@ export default function BeneficiaryTable() {
             />
           </div>
         </div>
-        <div className="rounded border bg-card">
+        <div className="rounded-md border bg-card">
           <TableComponent>
-            <ScrollArea className="h-[calc(100vh-230px)]">
+            <ScrollArea className="h-[calc(100vh-190px)]">
               <TableHeader className="bg-card sticky top-0">
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow key={headerGroup.id}>

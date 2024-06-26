@@ -68,6 +68,7 @@ export const useAcessManagerSettings = () => {
       queryKey: ['ACCESS_MANAGER'],
       queryFn: async () => {
         const d = await appSettings.mutateAsync();
+        console.log({ d });
         return d.data.data?.value;
       },
 
@@ -81,6 +82,34 @@ export const useAcessManagerSettings = () => {
       setAccessManagerSettings(query.data);
     }
   }, [query.isSuccess, query.data, setAccessManagerSettings]);
+
+  return query;
+};
+
+export const useRahatTreasurySettings = () => {
+  const { queryClient } = useRSQuery();
+  // TODO:NEW is a temp name, will be changed to CHAIN_SETTINGS
+  const appSettings = useAppSettingsMutate('RAHAT_TREASURY');
+  const { setRahatTreasurySettings } = useSettingsStore();
+
+  const query = useQuery(
+    {
+      queryKey: ['RAHAT_TREASURY'],
+      queryFn: async () => {
+        const d = await appSettings.mutateAsync();
+        return d.data.data?.value;
+      },
+
+      enabled: !!queryClient,
+    },
+    queryClient,
+  );
+
+  useEffect(() => {
+    if (query.isSuccess) {
+      setRahatTreasurySettings(query.data);
+    }
+  }, [query.isSuccess, query.data, setRahatTreasurySettings]);
 
   return query;
 };

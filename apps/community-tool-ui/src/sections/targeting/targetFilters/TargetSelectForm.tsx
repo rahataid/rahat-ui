@@ -84,9 +84,9 @@ export default function TargetSelectForm() {
 
   return (
     <Form {...form}>
-      <ScrollArea className="mx-2 h-[calc(100vh-250px)]">
-        <form onSubmit={handleSubmit(handleTargetFormSubmit)}>
-          <div>
+      <form onSubmit={handleSubmit(handleTargetFormSubmit)}>
+        <ScrollArea className="mx-2 h-[calc(100vh-250px)]">
+          <div className="grid place-items-center w-auto">
             <MultiSelect
               fieldName="gender"
               placeholder="Gender"
@@ -110,22 +110,22 @@ export default function TargetSelectForm() {
               placeholder="Banked Status"
               options={bankedStatusOptions}
             />
-
-            {definitions?.data?.rows.map((definition: any, index: number) => {
-              return (
-                <div key={index} className="mt-3">
-                  <TargetingFormBuilder formField={definition} />
-                </div>
-              );
-            })}
           </div>
-          <div className="mt-6 text-end mr-2">
+          {definitions?.data?.rows.map((definition: any, index: number) => {
+            return (
+              <div key={index} className="grid place-items-center w-auto">
+                <TargetingFormBuilder formField={definition} />
+              </div>
+            );
+          })}
+
+          <div className="mt-6 text-start mr-2">
             <Button type="submit" disabled={loading || isQueryEmpty()}>
               Submit
             </Button>
           </div>
-        </form>
-      </ScrollArea>
+        </ScrollArea>
+      </form>
     </Form>
   );
 }

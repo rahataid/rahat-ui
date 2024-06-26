@@ -3348,7 +3348,7 @@ packages:
     resolution: {integrity: sha512-YfwV2WjDN43lrZ4U0j1Qu6X1wfQdnJQsZZp8l1pT1YYXYbF89b7CVb/KwrIWl2Ffd+O3T+n/rowG55cZCYj/HQ==, tarball: https://npm.pkg.github.com/download/@rahataid/c2c-query/0.0.9/51f6bf7f9df92d71711a4005e8b2fb3b980bf98d}
 
   '@rahataid/community-tool-sdk@0.0.30':
-    resolution: {integrity: sha512-qPzZ+UuAw5dP780eIBf1K2E/yoK89+FKgf5VnhHxIMkc4MFxqyYR7czG9znAd6klht4RWowHQfpZyK8gOZOHIA==}
+    resolution: {integrity: sha512-qPzZ+UuAw5dP780eIBf1K2E/yoK89+FKgf5VnhHxIMkc4MFxqyYR7czG9znAd6klht4RWowHQfpZyK8gOZOHIA==, tarball: https://npm.pkg.github.com/download/@rahataid/community-tool-sdk/0.0.30/b8c845e3f356af9baa9c333e0ac8efc020205fe4}
 
   '@rahataid/el-subgraph@0.0.14':
     resolution: {integrity: sha512-tBsvFOXbMquudfQCMnxVGZwvLWixC3TvN/Tqc43PY2UMr4JNOxYuBozMtUafYxxxiZtxaxu+n7tccWs+g6KoNQ==}

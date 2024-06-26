@@ -30,7 +30,7 @@ export default function AccumulatedCard({ data }: IProps) {
               key={d.label}
               title={d.label}
               subTitle={d.subLabel}
-              source="NCMWRF Accumulated"
+              source="NCMRWF Accumulated"
               data={d.value}
             />
           )),
@@ -42,7 +42,7 @@ export default function AccumulatedCard({ data }: IProps) {
   return (
     <ScrollArea className="h-[calc(100vh-352px)] pr-4" type="always">
       <DataSourceCard
-        source="NCMWRF Accumulated"
+        source="NCMRWF Accumulated"
         component={renderFieldCardContainer()}
       />
     </ScrollArea>

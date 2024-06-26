@@ -82,7 +82,7 @@ export default function AddAnotherDataSource({ form, onClose, index }: IProps) {
           />
         );
         break;
-      case 'NCMWRF Accumulated':
+      case 'NCMRWF Accumulated':
         fields = (
           <>
             <SelectFormField
@@ -120,7 +120,7 @@ export default function AddAnotherDataSource({ form, onClose, index }: IProps) {
           </>
         );
         break;
-      case 'NCMWRF Deterministic & Probabilistic':
+      case 'NCMRWF Deterministic & Probabilistic':
         fields = (
           <>
             <InputFormField
@@ -157,7 +157,7 @@ export default function AddAnotherDataSource({ form, onClose, index }: IProps) {
     const selectedForecast = form.watch(fieldName('forecast'));
     let fields;
     switch (selectedForecast) {
-      case '3 Days Flood forecast Bulletin':
+      case '3 Days Flood Forecast Bulletin':
         fields = (
           <>
             <SelectFormField
@@ -184,7 +184,7 @@ export default function AddAnotherDataSource({ form, onClose, index }: IProps) {
           </>
         );
         break;
-      case '3 Days Rainfall forecast Bulletin':
+      case '3 Days Rainfall Forecast Bulletin':
         fields = (
           <>
             <SelectFormField
@@ -232,7 +232,7 @@ export default function AddAnotherDataSource({ form, onClose, index }: IProps) {
           </>
         );
         break;
-      case 'Real time Monitoring(River Watch)':
+      case 'Realtime Monitoring (River Watch)':
         fields = (
           <InputFormField
             form={form}

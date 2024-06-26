@@ -46,7 +46,7 @@ export default function DailyMonitoringDetailView() {
   const NCMRWF_Deterministic_Probabilistic_data = React.useMemo(() => {
     if (details) {
       return details?.monitoringData?.filter(
-        (d: any) => d.source === 'NCMWRF Deterministic & Probabilistic',
+        (d: any) => d.source === 'NCMRWF Deterministic & Probabilistic',
       );
     } else return [];
   }, [details]);
@@ -54,7 +54,7 @@ export default function DailyMonitoringDetailView() {
   const NCMRWF_Accumulated_data = React.useMemo(() => {
     if (details) {
       return details?.monitoringData?.filter(
-        (d: any) => d.source === 'NCMWRF Accumulated',
+        (d: any) => d.source === 'NCMRWF Accumulated',
       );
     } else return [];
   }, [details]);

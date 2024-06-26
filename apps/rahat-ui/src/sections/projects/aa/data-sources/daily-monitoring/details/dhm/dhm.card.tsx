@@ -11,7 +11,7 @@ export default function DHMCard({ data }: IProps) {
   const floodForecastData = React.useMemo(() => {
     if (data) {
       return data?.filter(
-        (d: any) => d.forecast === '3 Days Flood forecast Bulletin',
+        (d: any) => d.forecast === '3 Days Flood Forecast Bulletin',
       );
     } else return [];
   }, [data]);
@@ -19,7 +19,7 @@ export default function DHMCard({ data }: IProps) {
   const rainfallForecastData = React.useMemo(() => {
     if (data) {
       return data?.filter(
-        (d: any) => d.forecast === '3 Days Rainfall forecast Bulletin',
+        (d: any) => d.forecast === '3 Days Rainfall Forecast Bulletin',
       );
     } else return [];
   }, [data]);
@@ -27,7 +27,7 @@ export default function DHMCard({ data }: IProps) {
   const realtimeMonitoringData = React.useMemo(() => {
     if (data) {
       return data?.filter(
-        (d: any) => d.forecast === 'Real time Monitoring(River Watch)',
+        (d: any) => d.forecast === 'Realtime Monitoring (River Watch)',
       );
     } else return [];
   }, [data]);

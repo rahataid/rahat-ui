@@ -49,18 +49,18 @@ export default function EditDailyMonitoring() {
         source: z.string().min(1, { message: 'Please select a source.' }),
         //DHM
         forecast: z.string().optional(),
-        //DHM - 3 Days Flood forecast Bulletin
+        //DHM - 3 Days Flood Forecast Bulletin
         today: z.string().optional(),
         tomorrow: z.string().optional(),
         dayAfterTomorrow: z.string().optional(),
-        //DHM - 3 Days Rainfall forecast Bulletin
+        //DHM - 3 Days Rainfall Forecast Bulletin
         todayAfternoon: z.string().optional(),
         todayNight: z.string().optional(),
         tomorrowAfternoon: z.string().optional(),
         tomorrowNight: z.string().optional(),
         dayAfterTomorrowAfternoon: z.string().optional(),
         dayAfterTomorrowNight: z.string().optional(),
-        //DHM - Real time Monitoring(River Watch)
+        //DHM - Realtime Monitoring (River Watch)
         waterLevel: z.string().optional(),
         //DHM - NWP
         hours24NWP: z.string().optional(),
@@ -114,7 +114,7 @@ export default function EditDailyMonitoring() {
       switch (item.source) {
         case 'DHM':
           switch (item?.forecast) {
-            case '3 Days Flood forecast Bulletin':
+            case '3 Days Flood Forecast Bulletin':
               dataPayload.push({
                 source: item.source,
                 forecast: item?.forecast,
@@ -123,7 +123,7 @@ export default function EditDailyMonitoring() {
                 dayAfterTomorrow: item?.dayAfterTomorrow,
               });
               break;
-            case '3 Days Rainfall forecast Bulletin':
+            case '3 Days Rainfall Forecast Bulletin':
               dataPayload.push({
                 source: item.source,
                 forecast: item?.forecast,
@@ -135,7 +135,7 @@ export default function EditDailyMonitoring() {
                 dayAfterTomorrowNight: item?.dayAfterTomorrowNight,
               });
               break;
-            case 'Real time Monitoring(River Watch)':
+            case 'Realtime Monitoring (River Watch)':
               dataPayload.push({
                 source: item.source,
                 forecast: item?.forecast,

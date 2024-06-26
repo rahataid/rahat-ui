@@ -40,7 +40,7 @@ export default function DeterministicAndProbabilisticCard({ data }: IProps) {
               key={d.label}
               title={d.label}
               subTitle={d.subLabel}
-              source="NCMWRF Deterministic & Probabilistic"
+              source="NCMRWF Deterministic & Probabilistic"
               data={d.value}
             />
           )),
@@ -52,7 +52,7 @@ export default function DeterministicAndProbabilisticCard({ data }: IProps) {
   return (
     <ScrollArea className="h-[calc(100vh-352px)] pr-4" type="always">
       <DataSourceCard
-        source="NCMWRF Deterministic & Probabilistic"
+        source="NCMRWF Deterministic & Probabilistic"
         component={renderFieldCardContainer()}
       />
     </ScrollArea>

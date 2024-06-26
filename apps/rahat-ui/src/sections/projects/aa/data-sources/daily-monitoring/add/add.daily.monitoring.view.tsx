@@ -59,29 +59,29 @@ export default function AddDailyMonitoring() {
         source: z.string().min(1, { message: 'Please select a source.' }),
         //DHM
         forecast: z.string().optional(),
-        //DHM - 3 Days Flood forecast Bulletin
+        //DHM - 3 Days Flood Forecast Bulletin
         today: z.string().optional(),
         tomorrow: z.string().optional(),
         dayAfterTomorrow: z.string().optional(),
-        //DHM - 3 Days Rainfall forecast Bulletin
+        //DHM - 3 Days Rainfall Forecast Bulletin
         todayAfternoon: z.string().optional(),
         todayNight: z.string().optional(),
         tomorrowAfternoon: z.string().optional(),
         tomorrowNight: z.string().optional(),
         dayAfterTomorrowAfternoon: z.string().optional(),
         dayAfterTomorrowNight: z.string().optional(),
-        //DHM - Real time Monitoring(River Watch)
+        //DHM - Realtime Monitoring (River Watch)
         waterLevel: z.string().optional(),
         //DHM - NWP
         hours24NWP: z.string().optional(),
         hours48: z.string().optional(),
         hours72NWP: z.string().optional(),
-        // NCMWRF Accumulated
+        // NCMRWF Accumulated
         heavyRainfallForecastInKarnaliBasin: z.string().optional(),
         hours24: z.string().optional(),
         hours72: z.string().optional(),
         hours168: z.string().optional(),
-        // NCMWRF Deterministic & Probabilistic
+        // NCMRWF Deterministic & Probabilistic
         extremeWeatherOutlook: z.string().optional(),
         deterministicsPredictionSystem: z.string().optional(),
         probabilisticPredictionSystem: z.string().optional(),
@@ -122,7 +122,7 @@ export default function AddDailyMonitoring() {
       switch (item.source) {
         case 'DHM':
           switch (item?.forecast) {
-            case '3 Days Flood forecast Bulletin':
+            case '3 Days Flood Forecast Bulletin':
               dataPayload.push({
                 source: item.source,
                 forecast: item?.forecast,
@@ -131,7 +131,7 @@ export default function AddDailyMonitoring() {
                 dayAfterTomorrow: item?.dayAfterTomorrow,
               });
               break;
-            case '3 Days Rainfall forecast Bulletin':
+            case '3 Days Rainfall Forecast Bulletin':
               dataPayload.push({
                 source: item.source,
                 forecast: item?.forecast,
@@ -143,7 +143,7 @@ export default function AddDailyMonitoring() {
                 dayAfterTomorrowNight: item?.dayAfterTomorrowNight,
               });
               break;
-            case 'Real time Monitoring(River Watch)':
+            case 'Realtime Monitoring (River Watch)':
               dataPayload.push({
                 source: item.source,
                 forecast: item?.forecast,
@@ -163,7 +163,7 @@ export default function AddDailyMonitoring() {
               break;
           }
           break;
-        case 'NCMWRF Accumulated':
+        case 'NCMRWF Accumulated':
           dataPayload.push({
             source: item.source,
             heavyRainfallForecastInKarnaliBasin:
@@ -173,7 +173,7 @@ export default function AddDailyMonitoring() {
             hours168: item?.hours168,
           });
           break;
-        case 'NCMWRF Deterministic & Probabilistic':
+        case 'NCMRWF Deterministic & Probabilistic':
           dataPayload.push({
             source: item.source,
             extremeWeatherOutlook: item?.extremeWeatherOutlook,

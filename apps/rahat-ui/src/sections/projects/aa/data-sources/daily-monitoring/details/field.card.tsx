@@ -34,7 +34,7 @@ export default function FieldCard({ title, subTitle, data, source }: IProps) {
           {data?.map((d: any) => (
             <FieldSubCard day={d.label} status={d.value} />
           ))}
-          {title === 'Real time Monitoring(River Watch)' && (
+          {title === 'Realtime Monitoring (River Watch)' && (
             <p className="text-muted-foreground flex gap-1 items-center text-sm">
               <Info size={16} /> Danger Level 10.8m
             </p>
@@ -43,13 +43,13 @@ export default function FieldCard({ title, subTitle, data, source }: IProps) {
       )}
 
       {(source === 'GLOFAS' ||
-        source === 'NCMWRF Deterministic & Probabilistic') && (
+        source === 'NCMRWF Deterministic & Probabilistic') && (
         <div className="bg-[#f8f8f8] px-2 py-4 rounded-sm">
           <p>{data ?? 'N/A'}</p>
         </div>
       )}
 
-      {source === 'NCMWRF Accumulated' &&
+      {source === 'NCMRWF Accumulated' &&
         (title ===
         'Heavy Rainfall Forecast in Karnali Basin (upstream areas)' ? (
           <Badge className="px-6 py-2 text-sm bg-green-100 text-green-500">

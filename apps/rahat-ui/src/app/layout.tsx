@@ -6,7 +6,6 @@ import { GeistSans } from 'geist/font/sans';
 import { QueryProvider } from '../providers/query-provider';
 import { SecondPanelProvider } from '../providers/second-panel-provider';
 import { ServiceProvider } from '../providers/service.provider';
-import { GraphQueryProvider } from '../providers/subgraph-provider';
 import { ThemeProvider } from '../providers/theme-provider';
 import { Wagmi } from '../providers/wagmi.provider';
 import './globals.css';

@@ -58,12 +58,9 @@ import { useEffect, useState } from 'react';
 import { useWaitForTransactionReceipt } from 'wagmi';
 import TableLoader from '../../../../components/table.loader';
 import { useBoolean } from '../../../../hooks/use-boolean';
-import { useGraphService } from '../../../../providers/subgraph-provider';
 import TokenAssingnConfirm from './token.assign.confirm';
 import { useProjectBeneficiaryTableColumns } from './use-table-column';
 import { useSecondPanel } from '../../../../providers/second-panel-provider';
-
-// import { useBeneficiaryTransaction } from '../../hooks/el/subgraph/querycall';
 
 export type Transaction = {
   name: string;
@@ -73,20 +70,6 @@ export type Transaction = {
   amount: string;
 };
 
-export const benType = [
-  {
-    key: 'ALL',
-    value: 'ALL',
-  },
-  {
-    key: 'ENROLLED',
-    value: 'ENROLLED',
-  },
-  {
-    key: 'REFERRED',
-    value: 'REFERRED',
-  },
-];
 
 export const voucherType = [
   {
@@ -128,7 +111,6 @@ function BeneficiaryDetailTableView() {
   const {
     pagination,
     filters,
-    setFilters,
     setNextPage,
     setPrevPage,
     setPerPage,
@@ -136,13 +118,9 @@ function BeneficiaryDetailTableView() {
     setSelectedListItems,
     resetSelectedListItems,
     setPagination,
-    resetFilters,
   } = usePagination();
   const assignVoucher = useBulkAssignVoucher();
-  const { queryService } = useGraphService();
 
-  const pathname = usePathname();
-  const hash = window.location.hash;
   const params = useSearchParams().get('voucherType');
   const [voucherType, setVoucherType] = useState('NOT_ASSIGNED');
 
@@ -164,7 +142,6 @@ function BeneficiaryDetailTableView() {
 
   const [transactionHash, setTransactionHash] = useState<`0x${string}`>();
   const [isTransacting, setisTransacting] = useState<boolean>(false);
-  const [voucherFilter, setVoucherFilter] = useState<any>('NOT_ASSIGNED');
 
   const contractAddress = useProjectSettingsStore(
     (state) => state.settings?.[uuid][PROJECT_SETTINGS_KEYS.CONTRACT] || null,
@@ -172,22 +149,7 @@ function BeneficiaryDetailTableView() {
 
   const columns = useProjectBeneficiaryTableColumns(voucherType, projectBeneficiaries);
 
-  const handleBenType = React.useCallback(
-    (type: string) => {
-      resetFilters();
-      resetSelectedListItems();
-      if (type === 'ALL') {
-        setFilters({
-          ...filters,
-          status: undefined,
-          voucher: voucherFilter.voucher,
-        });
-        return;
-      }
-      setFilters({ ...filters, status: type, voucher: voucherFilter.voucher });
-    },
-    [filters, setFilters],
-  );
+ 
 
   const table = useReactTable({
     manualPagination: true,
@@ -261,25 +223,6 @@ function BeneficiaryDetailTableView() {
             }
             className="max-w-sm rounded mr-2"
           />
-          <div className="max-w-sm rounded mr-2">
-            <Select
-              onValueChange={handleBenType}
-              defaultValue={filters?.status || 'ALL'}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Beneficiary Type" />
-              </SelectTrigger>
-              <SelectContent>
-                {benType.map((item) => {
-                  return (
-                    <SelectItem key={item.key} value={item.value}>
-                      {item.key}
-                    </SelectItem>
-                  );
-                })}
-              </SelectContent>
-            </Select>
-          </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               {selectedRowAddresses.length ? (
@@ -308,7 +251,6 @@ function BeneficiaryDetailTableView() {
                   resetSelectedListItems();
                   setPagination({page: 1, perPage: pagination.perPage})
                   closeSecondPanel();
-                  // route.replace(`${pathname}?voucherType=NOT_ASSIGNED${hash}`);
                 }}
                 value="NOT_ASSIGNED"
               >
@@ -320,7 +262,6 @@ function BeneficiaryDetailTableView() {
                   setPagination({page: 1, perPage: pagination.perPage})
                   resetSelectedListItems();
                   closeSecondPanel();
-                  // route.replace(`${pathname}?voucherType=FREE_VOUCHER${hash}`);
                 }}
                 value="FREE_VOUCHER"
               >
@@ -332,7 +273,6 @@ function BeneficiaryDetailTableView() {
                   setPagination({page: 1, perPage: pagination.perPage})
                   resetSelectedListItems();
                   closeSecondPanel();
-                  // route.replace(`${pathname}?voucherType=DISCOUNT_VOUCHER${hash}`);
                 }}
                 value="DISCOUNT_VOUCHER"
               >

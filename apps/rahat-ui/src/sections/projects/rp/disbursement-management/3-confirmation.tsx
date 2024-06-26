@@ -1,5 +1,8 @@
 import React, { FC } from 'react';
 import { initialStepData } from './fund-management-flow';
+import { useFindAllDisbursements } from '@rahat-ui/query';
+import { useParams } from 'next/navigation';
+import { UUID } from 'crypto';
 
 interface DisbursementConfirmationProps {
   handleStepDataChange: (e: any) => void;
@@ -10,7 +13,8 @@ const DisbursementConfirmation: FC<DisbursementConfirmationProps> = ({
   handleStepDataChange,
   stepData,
 }) => {
-  console.log('stepData', stepData);
+  const { id } = useParams() as { id: UUID };
+  const disbursements = useFindAllDisbursements(id);
   return (
     <div className="grid grid-cols-12 p-4">
       <div className="col-span-12 h-[calc(100vh-482px)] bg-card rounded-sm p-4">
@@ -20,7 +24,8 @@ const DisbursementConfirmation: FC<DisbursementConfirmationProps> = ({
             <div className="flex flex-col gap-8 p-3">
               <div className="flex flex-col gap-2">
                 <p>Beneficiaries Selected:</p>
-                <p>{stepData.selectedBeneficiaries.length}</p>
+                <p>{disbursements.data?.length}</p>
+                {/* <p>{stepData.selectedBeneficiaries.length}</p> */}
               </div>
               <div className="flex flex-col gap-2">
                 <p>Project Balance:</p>
@@ -29,18 +34,17 @@ const DisbursementConfirmation: FC<DisbursementConfirmationProps> = ({
               {stepData.bulkInputAmount ? (
                 <div className="flex flex-col gap-2">
                   <p>Send Amount among Beneficiaries:</p>
-                  <p>100 USDC</p>
+                  <p>{stepData?.bulkInputAmount} USDC</p>
                 </div>
               ) : null}
               <div className="flex flex-col gap-2">
                 <p>Total Amount to Send:</p>
                 <p>
-                  {stepData.bulkInputAmount
-                    ? stepData.bulkInputAmount
-                    : stepData.selectedBeneficiaries.reduce(
-                        (acc, curr) => acc + parseFloat(curr.amount),
-                        0,
-                      )}{' '}
+                  {disbursements.data?.reduce(
+                    (acc: number, disbursement: any) =>
+                      acc + disbursement.amount,
+                    0,
+                  )}{' '}
                   USDC
                 </p>
               </div>

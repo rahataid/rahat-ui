@@ -4,14 +4,7 @@ import { ColumnDef } from '@tanstack/react-table';
 import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
 import { Eye, MoreVertical } from 'lucide-react';
 import { ListBeneficiaryGroup } from '@rahat-ui/types';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
-import AssignBeneficiaryToProjectModal from './assignToProjectModal';
-import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
+
 import { useSecondPanel } from 'apps/rahat-ui/src/providers/second-panel-provider';
 import BeneficiaryGroupDetail from './beneficiaryGroupDetail';
 
@@ -30,31 +23,31 @@ export const useBeneficiaryGroupsTableColumns = () => {
   };
 
   const columns: ColumnDef<ListBeneficiaryGroup>[] = [
-    {
-      id: 'select',
-      header: ({ table }) => (
-        <Checkbox
-          checked={
-            table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && 'indeterminate')
-          }
-          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-          aria-label="Select all"
-        />
-      ),
-      cell: ({ row }) => {
-        return (
-          <Checkbox
-            checked={row.getIsSelected()}
-            disabled={!row.getCanSelect()}
-            onCheckedChange={(value) => row.toggleSelected(!!value)}
-            aria-label="Select row"
-          />
-        );
-      },
-      enableSorting: false,
-      enableHiding: false,
-    },
+    // {
+    //   id: 'select',
+    //   header: ({ table }) => (
+    //     <Checkbox
+    //       checked={
+    //         table.getIsAllPageRowsSelected() ||
+    //         (table.getIsSomePageRowsSelected() && 'indeterminate')
+    //       }
+    //       onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+    //       aria-label="Select all"
+    //     />
+    //   ),
+    //   cell: ({ row }) => {
+    //     return (
+    //       <Checkbox
+    //         checked={row.getIsSelected()}
+    //         disabled={!row.getCanSelect()}
+    //         onCheckedChange={(value) => row.toggleSelected(!!value)}
+    //         aria-label="Select row"
+    //       />
+    //     );
+    //   },
+    //   enableSorting: false,
+    //   enableHiding: false,
+    // },
     {
       accessorKey: 'name',
       header: 'Name',

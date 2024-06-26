@@ -135,7 +135,6 @@ function BeneficiaryView() {
 
   const handleCreateGroup = async (data: any) => {
     try {
-      console.log(data);
       const payload = {
         name: data?.groupName,
         beneficiaries: data?.beneficiaries?.map((b: string) => ({

@@ -42,6 +42,7 @@ export function GraphQueryProvider({ children }: QueryProviderProps) {
     </GraphContext.Provider>
   );
 }
+
 export const useGraphService = (): GraphContextType => {
   return useContext(GraphContext) as GraphContextType;
 };

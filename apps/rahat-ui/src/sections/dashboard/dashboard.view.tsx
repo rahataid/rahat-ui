@@ -12,13 +12,9 @@ import { filterVendorsGeoJson, projectUUID } from '../../utils/getVendorInfo';
 export default function DashboardView() {
   const reportData = [
     {
-      name: 'TOTAL_VENDORS',
-      data: `${process.env.NEXT_PUBLIC_API_HOST_URL}/v1/vendors/stats`,
-    },
-    {
       name: 'BENEFICIARIES',
       data: `${process.env.NEXT_PUBLIC_API_HOST_URL}/v1/beneficiaries/stats`,
-    },
+    }
   ];
 
   const [dataForMap, setDataForMap] = useState<any>()

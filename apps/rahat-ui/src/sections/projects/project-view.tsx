@@ -64,7 +64,7 @@ export default function ProjectListView() {
           Add Project
         </Button>
       </div>
-      <ScrollArea className="px-2 pb-2 h-[calc(100vh-122px)]">
+      <ScrollArea className="pb-2 h-[calc(100vh-122px)]">
         <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-2">
           {filterValue?.map((project) => (
             <ProjectCard

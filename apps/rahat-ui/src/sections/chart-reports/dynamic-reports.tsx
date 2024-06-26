@@ -1,16 +1,17 @@
-import React, { FC, useEffect, useState } from 'react';
 import {
-  PieChart,
   BarChart,
   ChartColumnStacked,
+  PieChart,
 } from '@rahat-ui/shadcn/src/components/charts';
+import { FC, useEffect, useState } from 'react';
 import DataCard from '../../components/dataCard';
-import { formatUnderScoredString } from '../../utils/string';
 import ErrorBoundary from '../../utils/error-boundary';
 import getIcon from '../../utils/getIcon';
-import { cn } from '@rahat-ui/shadcn/src';
+import { formatUnderScoredString } from '../../utils/string';
 
-const fetchData = async (url: string): Promise<number[] | null> => {
+const fetchData = async (
+  url: string,
+): Promise<number[] | null | Record<string, any>[]> => {
   try {
     const response = await fetch(url);
     if (!response.ok) {
@@ -93,9 +94,8 @@ const DynamicReports: FC<DynamicReportProps> = ({ data, ui, className }) => {
   }, [data]);
 
   const renderUIReport = (data: ReportData[], ui: UIComponent[][]) => {
-    console.log('data', data);
     return ui.map((row, rowIndex) => (
-      <div key={rowIndex} className={`grid grid-cols-${row.length} gap-4 m-4`}>
+      <div key={rowIndex} className={`grid grid-cols-${row.length} gap-2 mt-2`}>
         {row.map((col, colIndex) => {
           const combinedData = data.concat(
             Object.keys(dynamicData).map((key) => ({
@@ -109,7 +109,6 @@ const DynamicReports: FC<DynamicReportProps> = ({ data, ui, className }) => {
             reportData?.data.startsWith('http')
               ? dynamicData[col.name]
               : (reportData?.data as any);
-          console.log('actualData', actualData);
 
           // TODO: consider for the nested api resposes as well
           let component: JSX.Element | null = null;

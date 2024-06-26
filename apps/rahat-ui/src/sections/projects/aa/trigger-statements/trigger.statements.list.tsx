@@ -47,9 +47,6 @@ export default function TriggerStatementsList() {
   const tableData = data?.httpReponse.data?.data;
   const tableMeta = data?.httpReponse.data?.meta;
 
-  console.log(tableData)
-  console.log(tableMeta)
-
   const table = useReactTable({
     manualPagination: true,
     data: tableData ?? [],
@@ -66,12 +63,6 @@ export default function TriggerStatementsList() {
     },
   });
 
-  const tatble = useReactTable({
-    data: tableData || [],
-    columns,
-    getPaginationRowModel: getPaginationRowModel(),
-    getCoreRowModel: getCoreRowModel(),
-  });
 
   if (isLoading) return <TableLoader />;
 

@@ -15,6 +15,10 @@ import {
   TabsTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tabs';
 import DHMCard from './dhm/dhm.card';
+import GLOFASCard from './glofas/glofas.card';
+import DeterministicAndProbabilisticCard from './ncmrwf/ncmrwf.deterministic.probabilistic.card';
+import AccumulatedCard from './ncmrwf/ncmrwf.accumulated.card';
+import FlashFloodRiskMonitoringCard from './flash-flood-risk-monitoring/flash.flood.risk.monitoring.card';
 
 export default function DailyMonitoringDetailView() {
   const router = useRouter();
@@ -30,6 +34,36 @@ export default function DailyMonitoringDetailView() {
   const DHM_data = React.useMemo(() => {
     if (details) {
       return details?.monitoringData?.filter((d: any) => d.source === 'DHM');
+    } else return [];
+  }, [details]);
+
+  const GLOFAS_data = React.useMemo(() => {
+    if (details) {
+      return details?.monitoringData?.filter((d: any) => d.source === 'GLOFAS');
+    } else return [];
+  }, [details]);
+
+  const NCMRWF_Deterministic_Probabilistic_data = React.useMemo(() => {
+    if (details) {
+      return details?.monitoringData?.filter(
+        (d: any) => d.source === 'NCMWRF Deterministic & Probabilistic',
+      );
+    } else return [];
+  }, [details]);
+
+  const NCMRWF_Accumulated_data = React.useMemo(() => {
+    if (details) {
+      return details?.monitoringData?.filter(
+        (d: any) => d.source === 'NCMWRF Accumulated',
+      );
+    } else return [];
+  }, [details]);
+
+  const Flash_Flood_Risk_Monitoring_data = React.useMemo(() => {
+    if (details) {
+      return details?.monitoringData?.filter(
+        (d: any) => d.source === 'Flash Flood Risk Monitoring',
+      );
     } else return [];
   }, [details]);
 
@@ -113,21 +147,43 @@ export default function DailyMonitoringDetailView() {
             </TabsTrigger>
           </TabsList>
           <TabsContent value="DHM">
-            {DHM_data.length ? <DHMCard data={DHM_data} /> : 'No Data'}
+            {DHM_data?.length ? <DHMCard data={DHM_data} /> : 'No Data'}
           </TabsContent>
 
-          <TabsContent value="GLOFAS">GLOFAS</TabsContent>
+          <TabsContent value="GLOFAS">
+            {GLOFAS_data?.length ? (
+              <GLOFASCard data={GLOFAS_data} />
+            ) : (
+              'No Data'
+            )}
+          </TabsContent>
 
           <TabsContent value="NCMRWF Deterministic & Probabilistic">
-            NCMRWF Deterministic & Probabilistic
+            {NCMRWF_Deterministic_Probabilistic_data.length ? (
+              <DeterministicAndProbabilisticCard
+                data={NCMRWF_Deterministic_Probabilistic_data}
+              />
+            ) : (
+              'No Data'
+            )}
           </TabsContent>
 
           <TabsContent value="NCMRWF Accumulated">
-            NCMRWF Accumulated
+            {NCMRWF_Accumulated_data?.length ? (
+              <AccumulatedCard data={NCMRWF_Accumulated_data} />
+            ) : (
+              'No Data'
+            )}
           </TabsContent>
 
           <TabsContent value="Flash Flood Risk Monitoring">
-            Flash Flood Risk Monitoring
+            {Flash_Flood_Risk_Monitoring_data?.length ? (
+              <FlashFloodRiskMonitoringCard
+                data={Flash_Flood_Risk_Monitoring_data}
+              />
+            ) : (
+              'No Data'
+            )}
           </TabsContent>
         </Tabs>
       </div>

@@ -59,21 +59,29 @@ export default function DHMFieldCardsContainer({
   return (
     <div className="flex gap-2">
       {floodForecastData && (
-        <FieldCard title={floodForecastData?.forecast} data={floodForecast} />
+        <FieldCard
+          source="DHM"
+          title={floodForecastData?.forecast}
+          data={floodForecast}
+        />
       )}
       {rainfallForecastData && (
         <FieldCard
+          source="DHM"
           title={rainfallForecastData?.forecast}
           data={rainfallForecast}
         />
       )}
       {realtimeMonitoringData && (
         <FieldCard
+          source="DHM"
           title={realtimeMonitoringData?.forecast}
           data={realtimeMonitoring}
         />
       )}
-      {nwpData && <FieldCard title={nwpData?.forecast} data={nwp} />}
+      {nwpData && (
+        <FieldCard source="DHM" title={nwpData?.forecast} data={nwp} />
+      )}
     </div>
   );
 }

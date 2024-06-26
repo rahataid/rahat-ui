@@ -1,8 +1,15 @@
 import { useMemo } from 'react';
 import { paths } from '../routes/paths';
+import { useSettingsStore } from '@rahat-ui/query';
+
+interface NavItem {
+  title: string;
+  path: string;
+}
 
 export function useNavData() {
-  const data = useMemo(
+  const navSettings = useSettingsStore((state) => state.navSettings);
+  const data: NavItem[] = useMemo(
     () => [
       {
         title: 'Dashboard',
@@ -34,10 +41,11 @@ export function useNavData() {
         //   },
         // ],
       },
+      ...(navSettings?.data || []),
     ],
-    [],
+    [navSettings?.data],
   );
-  const subData = useMemo(
+  const subData: NavItem[] = useMemo(
     () => [
       {
         title: 'Vendors',
@@ -45,18 +53,16 @@ export function useNavData() {
       },
       {
         title: 'Users',
-        path: paths.user,
+        path: paths.user.root,
       },
-      {
-        title: 'Treasury',
-        path: paths.dashboard.treasury,
-      },
+
       {
         title: 'Community Beneficiaries',
         path: paths.dashboard.communitybeneficiary,
       },
+      ...(navSettings?.subData || []),
     ],
-    [],
+    [navSettings?.subData],
   );
   return { data, subData };
 }

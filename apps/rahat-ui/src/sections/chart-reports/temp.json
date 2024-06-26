@@ -3,21 +3,31 @@
   "ui": [
     [
       {
-        "name": "TOTAL_VENDORS",
+        "name": "BENEFICIARIES.BENEFICIARY_TOTAL",
         "type": "datacard",
-        "title": "Total Vendors"
+        "title": "Total Beneficiaries"
       },
       {
         "name": "BENEFICIARIES.BENEFICIARY_TOTAL",
         "type": "datacard",
-        "title": "Total Beneficiaries"
+        "title": "Beneficiaries Households"
       }
     ],
     [
       {
         "name": "BENEFICIARIES.BENEFICIARY_GENDER",
         "type": "pie",
-        "title": "Banked Gender"
+        "title": "Beneficiaries Gender"
+      },
+      {
+        "name": "BENEFICIARIES.BENEFICIARY_INTERNETSTATUS",
+        "type": "pie",
+        "title": "Beneficiaries Internet Status"
+      },
+      {
+        "name": "BENEFICIARIES.BENEFICIARY_AGE_RANGE",
+        "type": "pie",
+        "title": "Beneficiaries Age Range"
       }
     ]
   ]

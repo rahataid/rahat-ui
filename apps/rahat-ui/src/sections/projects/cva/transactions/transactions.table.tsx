@@ -33,6 +33,7 @@ import {
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import { useTransactionList } from 'apps/rahat-ui/src/hooks/cva/subgraph/queryCall';
 
 const dummyData: Transaction[] = [
   {
@@ -192,14 +193,14 @@ export const columns: ColumnDef<Transaction>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: 'topic',
+    accessorKey: '__typename',
     header: 'Topic',
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue('topic')}</div>
+      <div className="capitalize">{row.getValue('__typename')}</div>
     ),
   },
   {
-    accessorKey: 'beneficiary',
+    accessorKey: 'to',
     header: ({ column }) => {
       return (
         <Button
@@ -212,13 +213,28 @@ export const columns: ColumnDef<Transaction>[] = [
       );
     },
     cell: ({ row }) => (
-      <div className="lowercase">
-        {row.getValue('beneficiary')}
-      </div>
+      <div className="lowercase">{truncateEthAddress(row.getValue('to'))}</div>
     ),
   },
   {
-    accessorKey: 'timestamp',
+    accessorKey: 'blockNumber',
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+        >
+          Block Number
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) => (
+      <div className="lowercase">{row.getValue('blockNumber')}</div>
+    ),
+  },
+  {
+    accessorKey: 'blockTimestamp',
     header: ({ column }) => {
       return (
         <Button
@@ -231,11 +247,11 @@ export const columns: ColumnDef<Transaction>[] = [
       );
     },
     cell: ({ row }) => (
-      <div className="lowercase">{row.getValue('timestamp')}</div>
+      <div className="lowercase">{row.getValue('blockTimestamp')}</div>
     ),
   },
   {
-    accessorKey: 'txHash',
+    accessorKey: 'transactionHash',
     header: ({ column }) => {
       return (
         <Button
@@ -249,35 +265,9 @@ export const columns: ColumnDef<Transaction>[] = [
     },
     cell: ({ row }) => (
       <div className="lowercase">
-        {row.getValue('txHash')}
+        {truncateEthAddress(row.getValue('transactionHash'))}
       </div>
     ),
-  },
-  {
-    id: 'actions',
-    enableHiding: false,
-    cell: ({ row }) => {
-      const payment = row.original;
-
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(payment.id)}
-            >
-              Copy payment Txhash
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
-    },
   },
 ];
 
@@ -290,6 +280,14 @@ export default function TransactionTable() {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
   const [data] = React.useState(dummyData);
+
+  const { data: transactionData, error: transactionError } =
+    useTransactionList();
+  React.useEffect(() => {
+    setData(transactionData);
+  }, [transactionData]);
+
+  console.log({ transactionData });
 
   const table = useReactTable({
     data,
@@ -336,9 +334,9 @@ export default function TransactionTable() {
                         {header.isPlaceholder
                           ? null
                           : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext(),
-                          )}
+                              header.column.columnDef.header,
+                              header.getContext(),
+                            )}
                       </TableHead>
                     );
                   })}
@@ -388,7 +386,7 @@ export default function TransactionTable() {
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
           >
-            Previous
+            Previous not good
           </Button>
           <Button
             variant="outline"

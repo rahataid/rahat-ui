@@ -1,17 +1,19 @@
-import Swal from 'sweetalert2';
-import { useWriteRahatDonorMintTokenAndSend } from '../generated-hooks/rahatDonor';
 import { useRSQuery } from '@rumsan/react-query';
+import Swal from 'sweetalert2';
 import { useMutation } from '@tanstack/react-query';
-import { encodeFunctionData, parseEther } from 'viem';
 import {
-  cvaProjectAbi,
-  useWriteCvaProjectAssignClaims,
-  useWriteCvaProjectMulticall,
-} from '../generated-hooks/cvaProject';
+  rahatPayrollProjectAbi,
+  useReadRahatPayrollProjectTotalAllocated,
+  useReadRahatTokenDecimals,
+  useWriteRahatPayrollProjectMulticall,
+  useWriteRahatTreasuryCreateToken,
+  useWriteRahatTreasuryTransferToken,
+} from '../generated-hooks';
+import { encodeFunctionData, formatUnits } from 'viem';
 
-export const useTokenMintAndSend = () => {
+export const useTokenCreate = () => {
   const { queryClient } = useRSQuery();
-  const donorMintTokenAndSend = useWriteRahatDonorMintTokenAndSend();
+  const treasuryCreateToken = useWriteRahatTreasuryCreateToken();
   const alert = Swal.mixin({
     toast: true,
     position: 'top-end',
@@ -29,31 +31,45 @@ export const useTokenMintAndSend = () => {
       onSuccess: () => {
         alert.fire({
           icon: 'success',
-          title: 'Token minted and approved successfully',
+          title: 'Token Created Successfully',
         });
       },
       onError: (error) => {
-        console.log('error', error);
+        console.log('error', error.message);
         alert.fire({
           icon: 'error',
           title: 'Error minting and approving token',
-          text: error.message,
+          text: 'Error Creating Token',
         });
       },
       mutationFn: async ({
-        amount,
-        tokenAddress,
-        projectAddress,
-        rahatDonorAddress,
+        name,
+        symbol,
+        description,
+        decimals,
+        manager,
+        rahatTreasuryAddress,
+        initialSupply,
       }: {
-        tokenAddress: `0x{string}`;
-        projectAddress: `0x{string}`;
-        amount: string;
-        rahatDonorAddress: `0x{string}`;
+        name: string;
+        symbol: string;
+        description: string;
+        decimals: number;
+        manager: `0x${string}`;
+        rahatTreasuryAddress: `0x${string}`;
+        initialSupply: string;
       }) => {
-        return donorMintTokenAndSend.writeContractAsync({
-          args: [tokenAddress, projectAddress, parseEther(amount)],
-          address: rahatDonorAddress,
+        return treasuryCreateToken.writeContractAsync({
+          args: [
+            name,
+            symbol,
+            description,
+            decimals,
+            BigInt(initialSupply),
+            rahatTreasuryAddress,
+            manager,
+          ],
+          address: rahatTreasuryAddress,
         });
       },
     },
@@ -61,9 +77,73 @@ export const useTokenMintAndSend = () => {
   );
 };
 
-export const useAssignClaimsToBeneficiary = () => {
+// export const useBulkAssignClaimsToBeneficiaries = () => {
+//   const multi = useWriteCvaProjectMulticall();
+//   const { queryClient } = useRSQuery();
+
+//   const alert = Swal.mixin({
+//     customClass: {
+//       confirmButton: 'btn btn-primary',
+//       cancelButton: 'btn btn-secondary',
+//     },
+//     buttonsStyling: false,
+//   });
+
+//   return useMutation(
+//     {
+//       onError: (error) => {
+//         alert.fire({
+//           icon: 'error',
+//           title: 'Error assigning claims',
+//           text: error.message,
+//         });
+//       },
+//       onSuccess: (d, { projectAddress }) => {
+//         alert.fire({
+//           icon: 'success',
+//           title: 'Claims assigned successfully',
+//         });
+//         // queryClient.invalidateQueries({
+//         //   queryKey: ['ProjectDetails', projectAddress],
+//         // });
+//         // console.log('success', d);
+//       },
+//       mutationFn: async ({
+//         beneficiaryAddresses,
+//         tokenAmount,
+//         projectAddress,
+//       }: {
+//         beneficiaryAddresses: `0x${string}`[];
+//         tokenAmount: string;
+//         projectAddress: `0x${string}`;
+//       }) => {
+//         const encodeAssignClaimsToBeneficiary = beneficiaryAddresses.map(
+//           (beneficiary) => {
+//             return encodeFunctionData({
+//               abi: cvaProjectAbi,
+//               functionName: 'assignClaims',
+//               args: [beneficiary, parseEther(tokenAmount)],
+//             });
+//           },
+//         );
+
+//         await multi.writeContractAsync({
+//           args: [encodeAssignClaimsToBeneficiary],
+//           address: projectAddress,
+//         });
+//       },
+//     },
+//     queryClient,
+//   );
+// };
+
+export const useBulkAllocateTokens = (tokenAddress: any) => {
+  const multi = useWriteRahatPayrollProjectMulticall();
   const { queryClient } = useRSQuery();
-  const assignClaims = useWriteCvaProjectAssignClaims();
+  const decimals = useReadRahatTokenDecimals({
+    address: tokenAddress,
+  });
+
   const alert = Swal.mixin({
     customClass: {
       confirmButton: 'btn btn-primary',
@@ -74,63 +154,17 @@ export const useAssignClaimsToBeneficiary = () => {
 
   return useMutation(
     {
-      onSuccess: () => {
-        alert.fire({
-          icon: 'success',
-          title: 'Claims assigned successfully',
-        });
-      },
       onError: (error) => {
         alert.fire({
           icon: 'error',
-          title: 'Error assigning claims',
-          text: error.message,
-        });
-      },
-      mutationFn: async ({
-        projectAddress,
-        beneficiary,
-        tokenAmount,
-      }: {
-        tokenAmount: string;
-        beneficiary: `0x{string}`;
-        projectAddress: `0x{string}`;
-      }) => {
-        return assignClaims.writeContractAsync({
-          args: [beneficiary, parseEther(tokenAmount)],
-          address: projectAddress,
-        });
-      },
-    },
-    queryClient,
-  );
-};
-
-export const useBulkAssignClaimsToBeneficiaries = () => {
-  const multi = useWriteCvaProjectMulticall();
-  const { queryClient } = useRSQuery();
-
-  const alert = Swal.mixin({
-    customClass: {
-      confirmButton: 'btn btn-primary',
-      cancelButton: 'btn btn-secondary',
-    },
-    buttonsStyling: false,
-  });
-
-  return useMutation(
-    {
-      onError: (error) => {
-        alert.fire({
-          icon: 'error',
-          title: 'Error assigning claims',
+          title: 'Error allocating tokens',
           text: error.message,
         });
       },
       onSuccess: (d, { projectAddress }) => {
         alert.fire({
           icon: 'success',
-          title: 'Claims assigned successfully',
+          title: 'Tokens allocated successfully',
         });
         // queryClient.invalidateQueries({
         //   queryKey: ['ProjectDetails', projectAddress],
@@ -139,26 +173,117 @@ export const useBulkAssignClaimsToBeneficiaries = () => {
       },
       mutationFn: async ({
         beneficiaryAddresses,
-        tokenAmount,
+        tokenAddress,
         projectAddress,
       }: {
-        beneficiaryAddresses: `0x${string}`[];
-        tokenAmount: string;
+        beneficiaryAddresses: {
+          walletAddress: `0x${string}`;
+          amount: number;
+        }[];
+        amount?: string;
+        tokenAddress: `0x${string}`;
         projectAddress: `0x${string}`;
       }) => {
-        const encodeAssignClaimsToBeneficiary = beneficiaryAddresses.map(
-          (beneficiary) => {
-            return encodeFunctionData({
-              abi: cvaProjectAbi,
-              functionName: 'assignClaims',
-              args: [beneficiary, parseEther(tokenAmount)],
-            });
-          },
-        );
+        const encodeAllocateTokens = beneficiaryAddresses.map((beneficiary) => {
+          return encodeFunctionData({
+            abi: rahatPayrollProjectAbi,
+            functionName: 'allocateToken',
+            args: [
+              tokenAddress,
+              beneficiary.walletAddress,
+              // @ts-ignore
+              formatUnits(
+                BigInt(beneficiary.amount), // Convert to bigint using BigInt function
+                decimals.data as number,
+              ),
+              // parseEther(beneficiary.amount.toString()),
+            ],
+          });
+        });
 
         await multi.writeContractAsync({
-          args: [encodeAssignClaimsToBeneficiary],
+          args: [encodeAllocateTokens],
           address: projectAddress,
+        });
+      },
+    },
+    queryClient,
+  );
+};
+
+export const useGetTokenAllocations = (
+  projectAddress: `0x${string}`,
+  tokenAddress: `0x${string}`,
+) => {
+  const decimals = useReadRahatTokenDecimals({
+    query: {
+      enabled: !!tokenAddress,
+    },
+    address: tokenAddress,
+  });
+  console.log('decimals.', decimals.data);
+  return useReadRahatPayrollProjectTotalAllocated({
+    address: projectAddress,
+    query: {
+      enabled: !!projectAddress,
+      select(data) {
+        console.log('data', data);
+        return data ? formatUnits(data, decimals.data as number) : 0;
+      },
+    },
+  });
+};
+
+export const useSendFundToProject = () => {
+  const sendFundProject = useWriteRahatTreasuryTransferToken();
+
+  const { queryClient } = useRSQuery();
+  // const decimals = useReadRahatTokenDecimals({
+  //   address: tokenAddress,
+  // });
+
+  const alert = Swal.mixin({
+    customClass: {
+      confirmButton: 'btn btn-primary',
+      cancelButton: 'btn btn-secondary',
+    },
+    buttonsStyling: false,
+  });
+
+  return useMutation(
+    {
+      onError: (error) => {
+        alert.fire({
+          icon: 'error',
+          title: 'Error sending funds',
+          text: error.message,
+        });
+      },
+      onSuccess: (d, { projectAddress }) => {
+        alert.fire({
+          icon: 'success',
+          title: 'Funds sent successfully',
+        });
+        // queryClient.invalidateQueries({
+        //   queryKey: ['ProjectDetails', projectAddress],
+        // });
+        // console.log('success', d);
+      },
+      mutationFn: async ({
+        amount,
+        projectAddress,
+        tokenAddress,
+        treasuryAddress,
+      }: {
+        projectAddress: `0x${string}`;
+        amount: string;
+        tokenAddress: `0x${string}`;
+        treasuryAddress: `0x${string}`;
+      }) => {
+        return sendFundProject.writeContractAsync({
+          // @ts-ignore
+          args: [tokenAddress, projectAddress, formatUnits(amount, 0)],
+          address: treasuryAddress,
         });
       },
     },

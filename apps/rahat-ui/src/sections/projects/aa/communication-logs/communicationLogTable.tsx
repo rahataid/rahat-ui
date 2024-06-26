@@ -108,8 +108,8 @@ export default function CommunicationLogTable({ data }: IProps) {
     }
 
     const filteredData = data
-      .filter((item) => {
-        if (item?.transport.name.toLowerCase() === id.toLowerCase()) {
+      ?.filter((item: any) => {
+        if (item?.transport?.name.toLowerCase() === id.toLowerCase()) {
           return item;
         }
       })
@@ -126,7 +126,7 @@ export default function CommunicationLogTable({ data }: IProps) {
   };
 
   const table = useReactTable({
-    data: tableData,
+    data: tableData || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,

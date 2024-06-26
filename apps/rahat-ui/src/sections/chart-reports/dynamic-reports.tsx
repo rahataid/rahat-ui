@@ -1,16 +1,17 @@
-import React, { FC, useEffect, useState } from 'react';
 import {
-  PieChart,
   BarChart,
   ChartColumnStacked,
+  PieChart,
 } from '@rahat-ui/shadcn/src/components/charts';
+import { FC, useEffect, useState } from 'react';
 import DataCard from '../../components/dataCard';
-import { formatUnderScoredString } from '../../utils/string';
 import ErrorBoundary from '../../utils/error-boundary';
 import getIcon from '../../utils/getIcon';
-import { cn } from '@rahat-ui/shadcn/src';
+import { formatUnderScoredString } from '../../utils/string';
 
-const fetchData = async (url: string): Promise<number[] | null> => {
+const fetchData = async (
+  url: string,
+): Promise<number[] | null | Record<string, any>[]> => {
   try {
     const response = await fetch(url);
     if (!response.ok) {

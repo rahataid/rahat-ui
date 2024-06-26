@@ -34,18 +34,18 @@ export default function useDailyMonitoringTableColumn() {
         return row.getValue('location');
       },
     },
-    {
-      accessorKey: 'source',
-      header: 'Source',
-      cell: ({ row }) => {
-        return row.getValue('source');
-      },
-    },
-    {
-      accessorKey: 'forecast',
-      header: 'Forecast',
-      cell: ({ row }) => <div>{row.original.data.forecast ?? 'N/A'}</div>,
-    },
+    // {
+    //   accessorKey: 'source',
+    //   header: 'Source',
+    //   cell: ({ row }) => {
+    //     return row.getValue('source');
+    //   },
+    // },
+    // {
+    //   accessorKey: 'forecast',
+    //   header: 'Forecast',
+    //   cell: ({ row }) => <div>{row.original.data.forecast ?? 'N/A'}</div>,
+    // },
     {
       id: 'actions',
       header: 'Actions',

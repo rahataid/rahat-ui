@@ -30,6 +30,7 @@ export interface ListBeneficiary {
   createdAt: Date;
   updatedAt: Date;
   piiData?: TPIIData;
+  BeneficiaryProject?: any;
 }
 
 export interface ListBeneficiaryGroup {
@@ -41,6 +42,7 @@ export interface ListBeneficiaryGroup {
   updatedAt: Date;
   deletedAt: Date | null;
   beneficiaryGroupProject?: any;
+  groupedBeneficiaries?: any;
 }
 
 export interface UpdateBeneficiaryPayload {

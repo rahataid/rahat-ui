@@ -70,7 +70,6 @@ const DisbursementConfirmation: FC<DisbursementConfirmationProps> = ({
     projectBeneficiaries.isSuccess,
     rowData,
   ]);
-  console.log('disbursements.data', rowData);
   return (
     <div className="grid grid-cols-12 gap-4 bg-card rounded-sm p-2">
       <div className="col-span-12 p-2">

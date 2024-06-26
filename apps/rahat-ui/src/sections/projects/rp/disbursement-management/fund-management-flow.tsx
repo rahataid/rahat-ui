@@ -168,11 +168,12 @@ const FundManagementFlow = () => {
 
       case 'open_confirm_modal':
         confirmModal.onTrue();
-        break;
+        handleNext();
+        return;
 
       default:
         handleNext();
-        break;
+        return;
     }
   };
 

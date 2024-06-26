@@ -1,6 +1,10 @@
-import React, { FC } from 'react';
+import React, { FC, useEffect } from 'react';
 import { initialStepData } from './fund-management-flow';
-import { useFindAllDisbursements } from '@rahat-ui/query';
+import {
+  useFindAllDisbursements,
+  usePagination,
+  useProjectBeneficiaries,
+} from '@rahat-ui/query';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
@@ -18,7 +22,55 @@ const DisbursementConfirmation: FC<DisbursementConfirmationProps> = ({
   stepData,
 }) => {
   const { id } = useParams() as { id: UUID };
+  const [rowData, setRowData] = React.useState<any[]>([]);
+
+  // This is a temporary solution for showing the name
+  const { pagination, filters } = usePagination();
+
+  const projectBeneficiaries = useProjectBeneficiaries({
+    page: pagination.page,
+    perPage: pagination.perPage,
+    order: 'desc',
+    sort: 'updatedAt',
+    projectUUID: id,
+    ...filters,
+  });
   const disbursements = useFindAllDisbursements(id);
+
+  useEffect(() => {
+    if (
+      projectBeneficiaries.isSuccess &&
+      projectBeneficiaries.data?.data &&
+      disbursements?.isSuccess
+    ) {
+      const projectBeneficiaryDisbursements =
+        projectBeneficiaries.data?.data.map((beneficiary) => {
+          const beneficiaryDisbursement = disbursements?.data?.find(
+            (disbursement: any) =>
+              disbursement.walletAddress === beneficiary.walletAddress,
+          );
+          return {
+            ...beneficiary,
+            disbursementAmount: beneficiaryDisbursement?.amount || '0',
+          };
+        });
+
+      if (
+        JSON.stringify(projectBeneficiaryDisbursements) !==
+        JSON.stringify(rowData)
+      ) {
+        setRowData(projectBeneficiaryDisbursements);
+      }
+    }
+  }, [
+    disbursements?.data,
+    disbursements?.data?.data,
+    disbursements?.isSuccess,
+    projectBeneficiaries.data?.data,
+    projectBeneficiaries.isSuccess,
+    rowData,
+  ]);
+  console.log('disbursements.data', rowData);
   return (
     <div className="grid grid-cols-12 gap-4 bg-card rounded-sm p-2">
       <div className="col-span-12 p-2">
@@ -57,158 +109,35 @@ const DisbursementConfirmation: FC<DisbursementConfirmationProps> = ({
       <div className="col-span-6 mb-8">
         <div className="bg-card border border-neutral-200 h-full p-3 rounded-sm">
           <p className="font-medium ml-3">Beneficiary List</p>
-          <p className="font-light text-sm text-gray-500 ml-3">
-            4 Beneficiaries Selected
-          </p>
+
           <div className="flex flex-col gap-8 p-1">
             <ScrollArea className="h-96">
-              <div className="grid gap-8 bg-neutral-100 m-2 p-4 rounded-sm">
-                <div className="flex items-center gap-4">
-                  <Avatar
-                    className={`h-9 w-9 sm:flex bg-gray-200 flex items-center justify-center`}
-                  >
-                    <User
-                      className="text-primary"
-                      size={20}
-                      strokeWidth={1.75}
-                    />
-                  </Avatar>
-                  <div className="grid gap-1">
-                    <p className="text-sm text-muted-foreground">
-                      Beneficiary name
-                    </p>
-                  </div>
-                  <div className="ml-auto font-medium text-green-500 font-medium">
-                    +$1
-                  </div>
-                </div>
-              </div>
-              <div className="grid gap-8 bg-neutral-100 m-2 p-4 rounded-sm">
-                <div className="flex items-center gap-4">
-                  <Avatar
-                    className={`h-9 w-9 sm:flex bg-gray-200 flex items-center justify-center`}
-                  >
-                    <User
-                      className="text-primary"
-                      size={20}
-                      strokeWidth={1.75}
-                    />
-                  </Avatar>
-                  <div className="grid gap-1">
-                    <p className="text-sm text-muted-foreground">
-                      Beneficiary name
-                    </p>
-                  </div>
-                  <div className="ml-auto font-medium text-green-500 font-medium">
-                    +$190
+              {rowData?.map((row: any) => (
+                <div
+                  key={row?.walletAddress}
+                  className="grid gap-8 bg-neutral-100 m-2 p-4 rounded-sm"
+                >
+                  <div className="flex items-center gap-4">
+                    <Avatar
+                      className={`h-9 w-9 sm:flex bg-gray-200 flex items-center justify-center`}
+                    >
+                      <User
+                        className="text-primary"
+                        size={20}
+                        strokeWidth={1.75}
+                      />
+                    </Avatar>
+                    <div className="grid gap-1">
+                      <p className="text-sm text-muted-foreground">
+                        {row?.name}
+                      </p>
+                    </div>
+                    <div className="ml-auto font-medium text-green-500 ">
+                      ${row?.disbursementAmount}
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div className="grid gap-8 bg-neutral-100 m-2 p-4 rounded-sm">
-                <div className="flex items-center gap-4">
-                  <Avatar
-                    className={`h-9 w-9 sm:flex bg-gray-200 flex items-center justify-center`}
-                  >
-                    <User
-                      className="text-primary"
-                      size={20}
-                      strokeWidth={1.75}
-                    />
-                  </Avatar>
-                  <div className="grid gap-1">
-                    <p className="text-sm text-muted-foreground">
-                      Beneficiary name
-                    </p>
-                  </div>
-                  <div className="ml-auto font-medium text-green-500 font-medium">
-                    +$1,999.00
-                  </div>
-                </div>
-              </div>
-              <div className="grid gap-8 bg-neutral-100 m-2 p-4 rounded-sm">
-                <div className="flex items-center gap-4">
-                  <Avatar
-                    className={`h-9 w-9 sm:flex bg-gray-200 flex items-center justify-center`}
-                  >
-                    <User
-                      className="text-primary"
-                      size={20}
-                      strokeWidth={1.75}
-                    />
-                  </Avatar>
-                  <div className="grid gap-1">
-                    <p className="text-sm text-muted-foreground">
-                      Beneficiary name
-                    </p>
-                  </div>
-                  <div className="ml-auto font-medium text-green-500 font-medium">
-                    +$187
-                  </div>
-                </div>
-              </div>
-              <div className="grid gap-8 bg-neutral-100 m-2 p-4 rounded-sm">
-                <div className="flex items-center gap-4">
-                  <Avatar
-                    className={`h-9 w-9 sm:flex bg-gray-200 flex items-center justify-center`}
-                  >
-                    <User
-                      className="text-primary"
-                      size={20}
-                      strokeWidth={1.75}
-                    />
-                  </Avatar>
-                  <div className="grid gap-1">
-                    <p className="text-sm text-muted-foreground">
-                      Beneficiary name
-                    </p>
-                  </div>
-                  <div className="ml-auto font-medium text-green-500 font-medium">
-                    +$1,999.00
-                  </div>
-                </div>
-              </div>
-              <div className="grid gap-8 bg-neutral-100 m-2 p-4 rounded-sm">
-                <div className="flex items-center gap-4">
-                  <Avatar
-                    className={`h-9 w-9 sm:flex bg-gray-200 flex items-center justify-center`}
-                  >
-                    <User
-                      className="text-primary"
-                      size={20}
-                      strokeWidth={1.75}
-                    />
-                  </Avatar>
-                  <div className="grid gap-1">
-                    <p className="text-sm text-muted-foreground">
-                      Beneficiary name
-                    </p>
-                  </div>
-                  <div className="ml-auto font-medium text-green-500 font-medium">
-                    +$1,999.00
-                  </div>
-                </div>
-              </div>
-              <div className="grid gap-8 bg-neutral-100 m-2 p-4 rounded-sm">
-                <div className="flex items-center gap-4">
-                  <Avatar
-                    className={`h-9 w-9 sm:flex bg-gray-200 flex items-center justify-center`}
-                  >
-                    <User
-                      className="text-primary"
-                      size={20}
-                      strokeWidth={1.75}
-                    />
-                  </Avatar>
-                  <div className="grid gap-1">
-                    <p className="text-sm text-muted-foreground">
-                      Beneficiary name
-                    </p>
-                  </div>
-                  <div className="ml-auto font-medium text-green-500 font-medium">
-                    +$1,999.00
-                  </div>
-                </div>
-              </div>
+              ))}
             </ScrollArea>
           </div>
         </div>

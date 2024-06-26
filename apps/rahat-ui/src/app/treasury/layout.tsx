@@ -10,6 +10,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const { secondPanel } = useSecondPanel();
   return (
     <DashboardLayout>
+      <title>Treasury</title>
       <TreasuryLayout menuItems={menuItems}>
         {secondPanel ? [children, secondPanel] : children}
       </TreasuryLayout>

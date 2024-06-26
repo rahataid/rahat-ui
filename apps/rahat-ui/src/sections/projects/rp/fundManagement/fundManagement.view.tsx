@@ -2,7 +2,10 @@ import {
   PROJECT_SETTINGS_KEYS,
   useBulkAllocateTokens,
   useFindAllDisbursementPlans,
+  useFindAllDisbursements,
   useGetTokenAllocations,
+  usePagination,
+  useProjectBeneficiaries,
   useProjectSettingsStore,
 } from '@rahat-ui/query';
 import ChartLine from '@rahat-ui/shadcn/src/components/charts/chart-components/chart-line';
@@ -21,6 +24,8 @@ import { isEmpty } from 'lodash';
 import { Banknote, SendHorizontal, User, Users } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { DisbursementConditionType } from '../disbursement-management/2-disbursement-condition';
+import { useEffect, useState } from 'react';
+import { truncateEthAddress } from '@rumsan/sdk/utils';
 
 const sampleSeries = [
   {
@@ -63,10 +68,26 @@ const FundManagementView = () => {
   const route = useRouter();
   const { id } = useParams() as { id: UUID };
   const { data: disbursementData } = useFindAllDisbursementPlans(id);
+  const [rowData, setRowData] = useState<any[]>([]);
+
   const totalBeneficiaries = disbursementData?._count?.Disbursements;
   const filteredConditions = dibsursementConditions.filter((condition) =>
     disbursementData?.conditions?.includes(condition.type),
   );
+  // This is a temporary solution for showing the name
+  const { pagination, filters } = usePagination();
+
+  const projectBeneficiaries = useProjectBeneficiaries({
+    page: pagination.page,
+    perPage: pagination.perPage,
+    order: 'desc',
+    sort: 'updatedAt',
+    projectUUID: id,
+    ...filters,
+  });
+
+  const disbursements = useFindAllDisbursements(id);
+
   const contractSettings = useProjectSettingsStore(
     (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT],
   );
@@ -80,7 +101,39 @@ const FundManagementView = () => {
     contractSettings?.rahattoken?.address as `0x${string}`,
   );
 
-  console.log('chainTokenAllocations.data', chainTokenAllocations.data);
+  useEffect(() => {
+    if (
+      projectBeneficiaries.isSuccess &&
+      projectBeneficiaries.data?.data &&
+      disbursements?.isSuccess
+    ) {
+      const projectBeneficiaryDisbursements =
+        projectBeneficiaries.data?.data.map((beneficiary) => {
+          const beneficiaryDisbursement = disbursements?.data?.find(
+            (disbursement: any) =>
+              disbursement.walletAddress === beneficiary.walletAddress,
+          );
+          return {
+            ...beneficiary,
+            disbursementAmount: beneficiaryDisbursement?.amount || '0',
+          };
+        });
+
+      if (
+        JSON.stringify(projectBeneficiaryDisbursements) !==
+        JSON.stringify(rowData)
+      ) {
+        setRowData(projectBeneficiaryDisbursements);
+      }
+    }
+  }, [
+    disbursements?.data,
+    disbursements?.data?.data,
+    disbursements?.isSuccess,
+    projectBeneficiaries.data?.data,
+    projectBeneficiaries.isSuccess,
+    rowData,
+  ]);
 
   const handleAllocationSync = async () => {
     await syncDisbursementAllocation.mutateAsync({
@@ -89,6 +142,8 @@ const FundManagementView = () => {
       tokenAddress: contractSettings?.rahattoken?.address,
     });
   };
+
+  console.log('rowData', rowData);
   return (
     <>
       <div className="grid grid-cols-12 gap-2 p-4 bg-secondary h-[calc(100vh-75px)]">
@@ -116,28 +171,35 @@ const FundManagementView = () => {
               <CardTitle>Recent Deposits</CardTitle>
             </CardHeader>
             <ScrollArea className="min-h-96">
-              <CardContent className="grid gap-8 bg-neutral-100 m-2 p-4 rounded-sm">
-                <div className="flex items-center gap-4">
-                  <Avatar
-                    className={`h-9 w-9 sm:flex bg-gray-200 flex items-center justify-center`}
-                  >
-                    <User
-                      className="text-primary"
-                      size={20}
-                      strokeWidth={1.75}
-                    />
-                  </Avatar>
-                  <div className="grid gap-1">
-                    <p className="text-sm font-medium leading-none">
-                      Olivia Martin
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      olivia.martin@email.com
-                    </p>
+              {rowData?.map((row) => (
+                <CardContent
+                  key={row?.walletAddress}
+                  className="grid gap-8 bg-neutral-100 m-2 p-4 rounded-sm"
+                >
+                  <div className="flex items-center gap-4">
+                    <Avatar
+                      className={`h-9 w-9 sm:flex bg-gray-200 flex items-center justify-center`}
+                    >
+                      <User
+                        className="text-primary"
+                        size={20}
+                        strokeWidth={1.75}
+                      />
+                    </Avatar>
+                    <div className="grid gap-1">
+                      <p className="text-sm font-medium leading-none">
+                        {row?.name}
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        {truncateEthAddress(row?.walletAddress, 4)}
+                      </p>
+                    </div>
+                    <div className="ml-auto font-medium">
+                      ${row?.disbursementAmount}
+                    </div>
                   </div>
-                  <div className="ml-auto font-medium">+$1,999.00</div>
-                </div>
-              </CardContent>
+                </CardContent>
+              ))}
             </ScrollArea>
           </Card>
         </div>

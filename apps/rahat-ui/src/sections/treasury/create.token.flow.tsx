@@ -3,6 +3,7 @@ import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import React, { FC, useState } from 'react';
 import CreateToken from './1.create.token';
 import Confirmation from './2.confirmation';
+import { useSettingsStore, useTokenCreate } from '@rahat-ui/query';
 
 // type FundManagementFlowProps = {
 //   selectedBeneficiaries: {
@@ -10,18 +11,35 @@ import Confirmation from './2.confirmation';
 //     amount: string;
 //   }[];
 // };
-const initialStepData = {};
+export const initialStepData = {
+  tokenName: '',
+  symbol: '',
+  initialSupply: '',
+  description: '',
+};
 
 const CreateTokenFlow = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [stepData, setStepData] =
     useState<typeof initialStepData>(initialStepData);
 
+  const handleStepDataChange = (e) => {
+    const { name, value } = e.target;
+    setStepData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const contracts = useSettingsStore((state) => state.contracts);
+
   const steps = [
     {
       id: 'step1',
       title: 'Disburse Method',
-      component: <CreateToken />,
+      component: (
+        <CreateToken
+          handleStepDataChange={handleStepDataChange}
+          stepData={stepData}
+        />
+      ),
       // validation: {
       //   noMethodSelected: {
       //     condition: () => !stepData.treasurySource,
@@ -33,15 +51,15 @@ const CreateTokenFlow = () => {
     {
       id: 'step2',
       title: 'Disburse Amount',
-      component: <Confirmation />,
+      component: (
+        <Confirmation
+          handleStepDataChange={handleStepDataChange}
+          stepData={stepData}
+        />
+      ),
       validation: {},
     },
   ];
-
-  const handleStepDataChange = (e) => {
-    const { name, value } = e.target;
-    setStepData((prev) => ({ ...prev, [name]: value }));
-  };
 
   const handleNext = () => {
     const currentStepValidations = steps[currentStep].validation;
@@ -65,6 +83,20 @@ const CreateTokenFlow = () => {
       setCurrentStep(currentStep - 1);
     }
   };
+  const createToken = useTokenCreate();
+
+  const handleConfirm = async () => {
+    await createToken.mutateAsync({
+      name: stepData.tokenName,
+      symbol: stepData.symbol,
+      description: stepData.description,
+      decimals: 0,
+      // todo: rahat access manager address should be small case
+      manager: contracts?.rahataccessmanager?.address as `0x${string}`,
+      rahatTreasuryAddress: contracts?.rahattreasury?.address as `0x${string}`,
+      initialSupply: stepData.initialSupply,
+    });
+  };
   const renderComponent = () => {
     // if (!!stepData.treasurySource && disburseMultiSig.isSuccess) {
     //   return <div>Disbursement Successful</div>;
@@ -87,7 +119,7 @@ const CreateTokenFlow = () => {
           <Button
             className="w-48 "
             onClick={
-              steps[currentStep].id === 'confirm_send' ? () => {} : handleNext
+              steps[currentStep].id === 'step2' ? handleConfirm : handleNext
             }
           >
             {currentStep === steps.length - 1 ? 'Confirm' : 'Proceed'}

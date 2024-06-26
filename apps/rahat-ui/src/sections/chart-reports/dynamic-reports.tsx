@@ -95,7 +95,7 @@ const DynamicReports: FC<DynamicReportProps> = ({ data, ui, className }) => {
 
   const renderUIReport = (data: ReportData[], ui: UIComponent[][]) => {
     return ui.map((row, rowIndex) => (
-      <div key={rowIndex} className={`grid grid-cols-${row.length} gap-4 m-4`}>
+      <div key={rowIndex} className={`grid grid-cols-${row.length} gap-2 mt-2`}>
         {row.map((col, colIndex) => {
           const combinedData = data.concat(
             Object.keys(dynamicData).map((key) => ({

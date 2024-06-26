@@ -1,3 +1,4 @@
+'use client';
 import { useQuery, useRSQuery } from '@rumsan/react-query';
 import { Pagination } from '@rumsan/sdk/types';
 import { useEffect, useState } from 'react';

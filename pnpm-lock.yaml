@@ -84,8 +84,8 @@ importers:
         specifier: ^0.0.30
         version: 0.0.30
       '@rahataid/el-subgraph':
-        specifier: 0.0.13
-        version: 0.0.13
+        specifier: 0.0.14
+        version: 0.0.14
       '@rahataid/sdk':
         specifier: 0.0.32
         version: 0.0.32(bufferutil@4.0.8)(typescript@5.4.5)(zod@3.23.8)
@@ -3350,8 +3350,8 @@ packages:
   '@rahataid/community-tool-sdk@0.0.30':
     resolution: {integrity: sha512-qPzZ+UuAw5dP780eIBf1K2E/yoK89+FKgf5VnhHxIMkc4MFxqyYR7czG9znAd6klht4RWowHQfpZyK8gOZOHIA==, tarball: https://npm.pkg.github.com/download/@rahataid/community-tool-sdk/0.0.30/b8c845e3f356af9baa9c333e0ac8efc020205fe4}
 
-  '@rahataid/el-subgraph@0.0.13':
-    resolution: {integrity: sha512-dBG1shH1k+mUtKjSv9nGybRfwEunVxmGSNNUcWdUi/chaNXKM8JDtUPgmQUU3+/Px83WDnaAMoYqCMhFqczCRQ==, tarball: https://npm.pkg.github.com/download/@rahataid/el-subgraph/0.0.13/7208692d795b8f294b836e417f194fe41392142c}
+  '@rahataid/el-subgraph@0.0.14':
+    resolution: {integrity: sha512-tBsvFOXbMquudfQCMnxVGZwvLWixC3TvN/Tqc43PY2UMr4JNOxYuBozMtUafYxxxiZtxaxu+n7tccWs+g6KoNQ==}
 
   '@rahataid/sdk@0.0.32':
     resolution: {integrity: sha512-ywErHAq5J57ep9tmICHeTISkTFwQOXmgl9qEOn3kSu9dpUkbJllF3InWt5sz3pZV7Jnwe6hXIaImBoWI34r40w==, tarball: https://npm.pkg.github.com/download/@rahataid/sdk/0.0.32/54ce33e228eafc830231a6b056a4127a1555c296}
@@ -15730,7 +15730,7 @@ snapshots:
     dependencies:
       tslib: 2.6.3
 
-  '@rahataid/el-subgraph@0.0.13':
+  '@rahataid/el-subgraph@0.0.14':
     dependencies:
       '@types/react': 18.3.3
       '@urql/core': 4.3.0

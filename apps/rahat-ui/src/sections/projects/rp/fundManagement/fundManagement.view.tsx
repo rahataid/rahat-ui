@@ -4,8 +4,6 @@ import {
   useFindAllDisbursementPlans,
   useGetTokenAllocations,
   useProjectSettingsStore,
-  useReadRahatToken,
-  useSettingsStore,
 } from '@rahat-ui/query';
 import ChartLine from '@rahat-ui/shadcn/src/components/charts/chart-components/chart-line';
 import { Avatar } from '@rahat-ui/shadcn/src/components/ui/avatar';
@@ -19,10 +17,10 @@ import {
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import DataCard from 'apps/rahat-ui/src/components/dataCard';
 import { UUID } from 'crypto';
-import { ArrowUp, Users } from 'lucide-react';
-import { useRouter, useParams } from 'next/navigation';
-import { DisbursementConditionType } from '../disbursement-management/2-disbursement-condition';
 import { isEmpty } from 'lodash';
+import { Banknote, SendHorizontal, User, Users } from 'lucide-react';
+import { useParams, useRouter } from 'next/navigation';
+import { DisbursementConditionType } from '../disbursement-management/2-disbursement-condition';
 
 const sampleSeries = [
   {
@@ -97,17 +95,17 @@ const FundManagementView = () => {
         <div className="col-span-12 md:col-span-4">
           <DataCard
             className="rounded-sm"
-            title="Beneficiaries"
+            title="Project Balance"
             number={'0'}
-            Icon={Users}
+            Icon={Banknote}
           />
         </div>
         <div className="col-span-12 md:col-span-4">
           <DataCard
             className="rounded-sm"
-            title="Beneficiaries"
+            title="Project Contract Address"
             number={'0'}
-            Icon={Users}
+            Icon={SendHorizontal}
           />
         </div>
 
@@ -115,15 +113,19 @@ const FundManagementView = () => {
         <div className="col-span-12 md:col-span-4 md:row-span-3 rounded-sm">
           <Card className="h-full">
             <CardHeader>
-              <CardTitle>Recent Sales</CardTitle>
+              <CardTitle>Recent Deposits</CardTitle>
             </CardHeader>
             <ScrollArea className="min-h-96">
-              <CardContent className="grid gap-8">
+              <CardContent className="grid gap-8 bg-neutral-100 m-2 p-4 rounded-sm">
                 <div className="flex items-center gap-4">
                   <Avatar
-                    className={`h-9 w-9 sm:flex bg-green-200 flex items-center justify-center`}
+                    className={`h-9 w-9 sm:flex bg-gray-200 flex items-center justify-center`}
                   >
-                    <ArrowUp size={20} strokeWidth={1.25} />
+                    <User
+                      className="text-primary"
+                      size={20}
+                      strokeWidth={1.75}
+                    />
                   </Avatar>
                   <div className="grid gap-1">
                     <p className="text-sm font-medium leading-none">

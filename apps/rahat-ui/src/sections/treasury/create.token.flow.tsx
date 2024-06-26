@@ -3,7 +3,7 @@ import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import React, { FC, useState } from 'react';
 import CreateToken from './1.create.token';
 import Confirmation from './2.confirmation';
-import { useTokenCreate } from '@rahat-ui/query';
+import { useSettingsStore, useTokenCreate } from '@rahat-ui/query';
 
 // type FundManagementFlowProps = {
 //   selectedBeneficiaries: {
@@ -14,7 +14,7 @@ import { useTokenCreate } from '@rahat-ui/query';
 export const initialStepData = {
   tokenName: '',
   symbol: '',
-  count: '',
+  initialSupply: '',
   description: '',
 };
 
@@ -28,7 +28,7 @@ const CreateTokenFlow = () => {
     setStepData((prev) => ({ ...prev, [name]: value }));
   };
 
-  console.log('stepData', stepData);
+  const contracts = useSettingsStore((state) => state.contracts);
 
   const steps = [
     {
@@ -87,13 +87,14 @@ const CreateTokenFlow = () => {
 
   const handleConfirm = async () => {
     await createToken.mutateAsync({
-      _name: stepData.tokenName,
-      _symbol: stepData.symbol,
-      _description: stepData.description,
+      name: stepData.tokenName,
+      symbol: stepData.symbol,
+      description: stepData.description,
       decimals: 0,
-      _manager: '0x17e12d00982b6F0ec5d8801438D3C3CBbA0C7966' as `0x${string}`,
-      rahatTreasuryAddress:
-        '0x94D92Dd6e5125b79A055E7AFB7397Eba24d37793' as `0x${string}`,
+      // todo: rahat access manager address should be small case
+      manager: contracts?.rahataccessmanager?.address as `0x${string}`,
+      rahatTreasuryAddress: contracts?.rahattreasury?.address as `0x${string}`,
+      initialSupply: stepData.initialSupply,
     });
   };
   const renderComponent = () => {

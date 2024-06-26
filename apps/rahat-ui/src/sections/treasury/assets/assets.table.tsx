@@ -1,6 +1,6 @@
 'use client';
-
 import {
+  ColumnDef,
   ColumnFiltersState,
   SortingState,
   VisibilityState,
@@ -11,24 +11,16 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import {
-  Mail,
-  MessageCircle,
-  MessageCircleMore,
-  PhoneCall,
-  Settings2,
-} from 'lucide-react';
-import { useParams } from 'next/navigation';
+import { ArrowUpDown, Eye, MoreHorizontal } from 'lucide-react';
 import * as React from 'react';
 
-import { useCampaignStore } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/components/button';
+import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
 import {
   DropdownMenu,
-  DropdownMenuCheckboxItem,
   DropdownMenuContent,
+  DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/components/dropdown-menu';
 import { Input } from '@rahat-ui/shadcn/components/input';
@@ -41,25 +33,134 @@ import {
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import { CAMPAIGN_TYPES } from '@rahat-ui/types';
-import { useListCampaign } from '@rumsan/communication-query';
-import DataCard from 'apps/rahat-ui/src/components/dataCard';
-import useTextTableColumn from './useTextTableColumn';
+import { truncateEthAddress } from '@rumsan/sdk/utils';
+import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 
-export type Text = {
-  id: number;
-  campaign: string;
-  startTime: string;
+const initialData: Redeptions[] = [
+  {
+    id: '1',
+    name: 'Aadarsha Lamichhane',
+    amount: 9000,
+    status: 'Paid',
+    action: 'view',
+  },
+  {
+    id: '2',
+    name: 'Aadarsha Lamichhane',
+    amount: 9000,
+    status: 'Pending',
+    action: 'view',
+  },
+  {
+    id: '3',
+    name: 'Aadarsha Lamichhane',
+    amount: 9000,
+    status: 'Paid',
+    action: 'view',
+  },
+  {
+    id: '4',
+    name: 'Aadarsha Lamichhane',
+    amount: 9000,
+    status: 'Paid',
+    action: 'view',
+  },
+  {
+    id: '5',
+    name: 'Aadarsha Lamichhane',
+    amount: 9000,
+    status: 'Paid',
+    action: 'view',
+  },
+  {
+    id: '6',
+    name: 'Aadarsha Lamichhane',
+    amount: 9000,
+    status: 'Paid',
+    action: 'view',
+  },
+  {
+    id: '7',
+    name: 'Aadarsha Lamichhane',
+    amount: 9000,
+    status: 'Paid',
+    action: 'view',
+  },
+  {
+    id: '8',
+    name: 'Aadarsha Lamichhane',
+    amount: 9000,
+    status: 'Paid',
+    action: 'view',
+  },
+];
+
+export type Redeptions = {
+  id: string;
+  name: string;
+  amount: number;
   status: string;
-  transport: string;
-  totalAudiences: number;
+  action: string;
 };
 
-export default function TextTable() {
-  const campaignStore = useCampaignStore();
-  const columns = useTextTableColumn();
-  const { id } = useParams();
+export const columns: ColumnDef<Redeptions>[] = [
+  {
+    id: 'select',
+    header: ({ table }) => (
+      <Checkbox
+        checked={
+          table.getIsAllPageRowsSelected() ||
+          (table.getIsSomePageRowsSelected() && 'indeterminate')
+        }
+        onCheckedChange={(value: any) =>
+          table.toggleAllPageRowsSelected(!!value)
+        }
+        aria-label="Select all"
+      />
+    ),
+    cell: ({ row }) => (
+      <Checkbox
+        checked={row.getIsSelected()}
+        onCheckedChange={(value: any) => row.toggleSelected(!!value)}
+        aria-label="Select row"
+      />
+    ),
+    enableSorting: false,
+    enableHiding: false,
+  },
+  {
+    accessorKey: 'name',
+    header: 'Name',
+    cell: ({ row }) => <div className="capitalize">{row.getValue('name')}</div>,
+  },
+  {
+    accessorKey: 'amount',
+    header: 'Amount',
+    cell: ({ row }) => <div>{row.getValue('amount')}</div>,
+  },
+  {
+    accessorKey: 'status',
+    header: ({ column }) => 'Status',
+    cell: ({ row }) => {
+      const status = row.getValue('status');
+      return status === 'Paid' ? (
+        <Badge className="bg-green-200 text-green-600">Paid</Badge>
+      ) : (
+        <Badge className="bg-red-200 text-red-600">Pending</Badge>
+      );
+    },
+  },
 
+  {
+    id: 'actions',
+    enableHiding: true,
+    cell: () => {
+      return <Eye className="cursor-pointer" size={18} strokeWidth={1.5} />;
+    },
+  },
+];
+
+export default function AssetsTable() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
@@ -67,24 +168,10 @@ export default function TextTable() {
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
-
-  const { data, isLoading, isError, isSuccess, isFetching } = useListCampaign({
-    projectId: id,
-  });
-
-  const tableData = React.useMemo(() => {
-    const result = Array.isArray(data?.response.data.rows)
-      ? data?.response?.data?.rows?.filter(
-          (campaign: any) => campaign.type !== CAMPAIGN_TYPES.PHONE,
-        )
-      : [];
-
-    campaignStore.setTotalTextCampaign(data?.response?.meta?.total || 0);
-    return result;
-  }, [isSuccess, data]);
+  const [data, setData] = React.useState(initialData);
 
   const table = useReactTable({
-    data: tableData,
+    data,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -103,62 +190,20 @@ export default function TextTable() {
   });
 
   return (
-    <div className="w-full h-full p-2 bg-secondary">
-      <div className=" grid sm:grid-cols-1 md:grid-cols-4 gap-2 mb-2">
-        <DataCard className="" title="IVR" number={'0'} Icon={PhoneCall} />
-        <DataCard className="" title="Emails" number={'0'} Icon={Mail} />
-        <DataCard className="" title="SMS" number={'0'} Icon={MessageCircle} />
-        <DataCard
-          className=""
-          title="Whatsapp"
-          number={'0'}
-          Icon={MessageCircleMore}
-        />
-      </div>
-      <div className="flex items-center mt-4 mb-2">
+    <div className="w-full p-2 bg-secondary">
+      <div className="flex items-center mb-2">
         <Input
-          placeholder="Filter campaigns..."
-          value={
-            (table.getColumn('campaign')?.getFilterValue() as string) ?? ''
-          }
+          placeholder="Search Name..."
+          value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
           onChange={(event) =>
-            table.getColumn('campaign')?.setFilterValue(event.target.value)
+            table.getColumn('name')?.setFilterValue(event.target.value)
           }
-          className="max-w-mx mr-3"
+          className="w-full"
         />
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto">
-              <Settings2 className="mr-2 h-4 w-5" />
-              View
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Toggle Columns</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            {table
-              .getAllColumns()
-              .filter((column) => column.getCanHide())
-              .map((column) => {
-                return (
-                  <DropdownMenuCheckboxItem
-                    key={column.id}
-                    className="capitalize"
-                    checked={column.getIsVisible()}
-                    onCheckedChange={(value) =>
-                      column.toggleVisibility(!!value)
-                    }
-                  >
-                    {column.id}
-                  </DropdownMenuCheckboxItem>
-                );
-              })}
-          </DropdownMenuContent>
-        </DropdownMenu>
       </div>
-      <div className="rounded border bg-card">
+      <div className="rounded border bg-white">
         <Table>
-          <ScrollArea className="w-full h-[calc(100vh-320px)]">
+          <ScrollArea className="h-[calc(100vh-184px)]">
             <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
@@ -200,15 +245,7 @@ export default function TextTable() {
                     colSpan={columns.length}
                     className="h-24 text-center"
                   >
-                    {isFetching ? (
-                      <div className="flex items-center justify-center space-x-2 h-full">
-                        <div className="h-2 w-2 animate-bounce rounded-full bg-primary [animation-delay:-0.3s]"></div>
-                        <div className="h-2 w-2 animate-bounce rounded-full bg-primary [animation-delay:-0.13s]"></div>
-                        <div className="h-2 w-2 animate-bounce rounded-full bg-primary"></div>
-                      </div>
-                    ) : (
-                      'No data available.'
-                    )}
+                    No results.
                   </TableCell>
                 </TableRow>
               )}
@@ -216,7 +253,7 @@ export default function TextTable() {
           </ScrollArea>
         </Table>
       </div>
-      <div className="flex items-center justify-end space-x-2 p-2 border-t bg-card">
+      <div className="flex items-center justify-end space-x-2 py-2">
         <div className="flex-1 text-sm text-muted-foreground">
           {table.getFilteredSelectedRowModel().rows.length} of{' '}
           {table.getFilteredRowModel().rows.length} row(s) selected.

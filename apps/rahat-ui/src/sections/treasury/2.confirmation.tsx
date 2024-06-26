@@ -23,8 +23,8 @@ const Confirmation = ({
                 <p>Symbol</p>
               </div>
               <div className="flex flex-col gap-2">
-                <p>{stepData.count}</p>
-                <p>Count</p>
+                <p>{stepData.initialSupply}</p>
+                <p>Initial Supply</p>
               </div>
               <div className="flex flex-col gap-2">
                 <p>Description</p>

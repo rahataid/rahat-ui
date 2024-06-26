@@ -1,4 +1,12 @@
-import { useFindAllDisbursementPlans } from '@rahat-ui/query';
+import {
+  PROJECT_SETTINGS_KEYS,
+  useBulkAllocateTokens,
+  useFindAllDisbursementPlans,
+  useGetTokenAllocations,
+  useProjectSettingsStore,
+  useReadRahatToken,
+  useSettingsStore,
+} from '@rahat-ui/query';
 import ChartLine from '@rahat-ui/shadcn/src/components/charts/chart-components/chart-line';
 import { Avatar } from '@rahat-ui/shadcn/src/components/ui/avatar';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
@@ -14,6 +22,7 @@ import { UUID } from 'crypto';
 import { ArrowUp, Users } from 'lucide-react';
 import { useRouter, useParams } from 'next/navigation';
 import { DisbursementConditionType } from '../disbursement-management/2-disbursement-condition';
+import { isEmpty } from 'lodash';
 
 const sampleSeries = [
   {
@@ -55,13 +64,33 @@ const dibsursementConditions = [
 const FundManagementView = () => {
   const route = useRouter();
   const { id } = useParams() as { id: UUID };
-  const { data } = useFindAllDisbursementPlans(id);
-  const disbursementData = data?.[0];
+  const { data: disbursementData } = useFindAllDisbursementPlans(id);
   const totalBeneficiaries = disbursementData?._count?.Disbursements;
-  console.log('data', data);
   const filteredConditions = dibsursementConditions.filter((condition) =>
-    disbursementData?.conditions.includes(condition.type),
+    disbursementData?.conditions?.includes(condition.type),
   );
+  const contractSettings = useProjectSettingsStore(
+    (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT],
+  );
+  const syncDisbursementAllocation = useBulkAllocateTokens(
+    contractSettings?.rahattoken?.address,
+  );
+
+  // console.log('rpTokenDecimals', rpTokenDecimals.data);
+  const chainTokenAllocations = useGetTokenAllocations(
+    contractSettings?.rahatpayrollproject?.address as `0x${string}`,
+    contractSettings?.rahattoken?.address as `0x${string}`,
+  );
+
+  console.log('chainTokenAllocations.data', chainTokenAllocations.data);
+
+  const handleAllocationSync = async () => {
+    await syncDisbursementAllocation.mutateAsync({
+      beneficiaryAddresses: disbursementData.Disbursements,
+      projectAddress: contractSettings?.rahatpayrollproject?.address,
+      tokenAddress: contractSettings?.rahattoken?.address,
+    });
+  };
   return (
     <>
       <div className="grid grid-cols-12 gap-2 p-4 bg-secondary h-[calc(100vh-75px)]">
@@ -117,9 +146,18 @@ const FundManagementView = () => {
         </div>
 
         {/* Disbursement Plan */}
-        {data?.length ? (
+        {!isEmpty(disbursementData) ? (
           <div className="col-span-12 p-4 shadow rounded flex flex-col  bg-card h-72">
-            <h2 className="text-lg font-semibold mb-4">Disbursement Plan</h2>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold">Disbursement Plan</h2>
+              <Button
+                variant={'secondary'}
+                onClick={handleAllocationSync}
+                disabled={syncDisbursementAllocation.isPending}
+              >
+                Sync to chain
+              </Button>
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <DataCard
                 className="rounded-lg"

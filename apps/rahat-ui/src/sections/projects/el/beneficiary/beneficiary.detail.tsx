@@ -65,12 +65,14 @@ import { useWaitForTransactionReceipt } from 'wagmi';
 
 type IProps = {
   beneficiaryDetails: any;
-  closeSecondPanel: VoidFunction;
+  closeSecondPanel: VoidFunction
+  projectBeneficiaries?: any
 };
 
 export default function BeneficiaryDetail({
   beneficiaryDetails,
   closeSecondPanel,
+  projectBeneficiaries
 }: IProps) {
   const assignClaims = useAssignClaims();
   const { id } = useParams();
@@ -158,7 +160,7 @@ export default function BeneficiaryDetail({
 
   useEffect(() => {
     result?.data && setisTransacting(false);
-    refetch();
+    projectBeneficiaries.refetch();
   }, [result]);
 
   const handleAssignVoucher = () => {

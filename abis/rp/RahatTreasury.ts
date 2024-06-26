@@ -1,4 +1,4 @@
-export const RahatTreasuryAbi = [
+export const rahatTreasuryAbi = [
   {
     inputs: [
       {
@@ -217,6 +217,16 @@ export const RahatTreasuryAbi = [
         internalType: 'uint8',
         name: 'decimals',
         type: 'uint8',
+      },
+      {
+        internalType: 'uint256',
+        name: '_initialSupply',
+        type: 'uint256',
+      },
+      {
+        internalType: 'address',
+        name: '_to',
+        type: 'address',
       },
       {
         internalType: 'address',

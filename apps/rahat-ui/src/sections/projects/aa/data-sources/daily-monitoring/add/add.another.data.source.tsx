@@ -2,6 +2,7 @@ import { X } from 'lucide-react';
 import SelectFormField from '../../../../../../components/select.form.field';
 import InputFormField from '../../../../../../components/input.form.field';
 import { useSelectItems } from '../useSelectItems';
+import React from 'react';
 
 type IProps = {
   form: any;
@@ -21,6 +22,28 @@ export default function AddAnotherDataSource({ form, onClose, index }: IProps) {
     floodForecastSelectItems,
   } = useSelectItems();
 
+  const selectedDataSourceObjArray = form.watch('dataSource');
+
+  const selectedSourceStringArray = selectedDataSourceObjArray?.map(
+    (obj: any) => obj.source,
+  );
+  const newSourceSelectItemsArray = dataSourceSelectItems.map((obj) => {
+    if (selectedSourceStringArray.includes(obj.value) && obj.value !== 'DHM') {
+      return { ...obj, isDisabled: true };
+    }
+    return obj;
+  });
+
+  const selectedDHMForecastStringArray = selectedDataSourceObjArray?.map(
+    (obj: any) => (obj.source === 'DHM' ? obj.forecast : ''),
+  );
+  const newDHMForecastSelectItemsArray = dhmForecastSelectItems.map((obj) => {
+    if (selectedDHMForecastStringArray.includes(obj.value)) {
+      return { ...obj, isDisabled: true };
+    }
+    return obj;
+  });
+
   const renderFieldsBasedOnSource = () => {
     const selectedSource = form.watch(fieldName('source'));
     let fields;
@@ -33,7 +56,7 @@ export default function AddAnotherDataSource({ form, onClose, index }: IProps) {
               name={fieldName('forecast')}
               label="Forecast"
               placeholder="Select forecast"
-              selectItems={dhmForecastSelectItems}
+              selectItems={newDHMForecastSelectItemsArray}
             />
             {renderFieldsBasedOnDHMForecast()}
           </>
@@ -290,7 +313,7 @@ export default function AddAnotherDataSource({ form, onClose, index }: IProps) {
           name={fieldName('source')}
           label="Source"
           placeholder="Select Data Source"
-          selectItems={dataSourceSelectItems}
+          selectItems={newSourceSelectItemsArray}
         />
         {renderFieldsBasedOnSource()}
       </div>

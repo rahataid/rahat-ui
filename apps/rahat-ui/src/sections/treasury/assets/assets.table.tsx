@@ -11,18 +11,11 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { ArrowUpDown, Eye, MoreHorizontal } from 'lucide-react';
+import { Eye } from 'lucide-react';
 import * as React from 'react';
 
 import { Button } from '@rahat-ui/shadcn/components/button';
 import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuTrigger,
-} from '@rahat-ui/shadcn/components/dropdown-menu';
 import { Input } from '@rahat-ui/shadcn/components/input';
 import {
   Table,
@@ -32,68 +25,10 @@ import {
   TableHeader,
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
-import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import { truncateEthAddress } from '@rumsan/sdk/utils';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
-
-const initialData: Redeptions[] = [
-  {
-    id: '1',
-    name: 'Aadarsha Lamichhane',
-    amount: 9000,
-    status: 'Paid',
-    action: 'view',
-  },
-  {
-    id: '2',
-    name: 'Aadarsha Lamichhane',
-    amount: 9000,
-    status: 'Pending',
-    action: 'view',
-  },
-  {
-    id: '3',
-    name: 'Aadarsha Lamichhane',
-    amount: 9000,
-    status: 'Paid',
-    action: 'view',
-  },
-  {
-    id: '4',
-    name: 'Aadarsha Lamichhane',
-    amount: 9000,
-    status: 'Paid',
-    action: 'view',
-  },
-  {
-    id: '5',
-    name: 'Aadarsha Lamichhane',
-    amount: 9000,
-    status: 'Paid',
-    action: 'view',
-  },
-  {
-    id: '6',
-    name: 'Aadarsha Lamichhane',
-    amount: 9000,
-    status: 'Paid',
-    action: 'view',
-  },
-  {
-    id: '7',
-    name: 'Aadarsha Lamichhane',
-    amount: 9000,
-    status: 'Paid',
-    action: 'view',
-  },
-  {
-    id: '8',
-    name: 'Aadarsha Lamichhane',
-    amount: 9000,
-    status: 'Paid',
-    action: 'view',
-  },
-];
+import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import { useSettingsStore } from '@rahat-ui/query';
+import { redirect, useRouter } from 'next/navigation';
 
 export type Redeptions = {
   id: string;
@@ -101,74 +36,99 @@ export type Redeptions = {
   amount: number;
   status: string;
   action: string;
+  contractAddress: string;
 };
-
-export const columns: ColumnDef<Redeptions>[] = [
-  {
-    id: 'select',
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && 'indeterminate')
-        }
-        onCheckedChange={(value: any) =>
-          table.toggleAllPageRowsSelected(!!value)
-        }
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value: any) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
-    accessorKey: 'name',
-    header: 'Name',
-    cell: ({ row }) => <div className="capitalize">{row.getValue('name')}</div>,
-  },
-  {
-    accessorKey: 'amount',
-    header: 'Amount',
-    cell: ({ row }) => <div>{row.getValue('amount')}</div>,
-  },
-  {
-    accessorKey: 'status',
-    header: ({ column }) => 'Status',
-    cell: ({ row }) => {
-      const status = row.getValue('status');
-      return status === 'Paid' ? (
-        <Badge className="bg-green-200 text-green-600">Paid</Badge>
-      ) : (
-        <Badge className="bg-red-200 text-red-600">Pending</Badge>
-      );
-    },
-  },
-
-  {
-    id: 'actions',
-    enableHiding: true,
-    cell: () => {
-      return <Eye className="cursor-pointer" size={18} strokeWidth={1.5} />;
-    },
-  },
-];
 
 export default function AssetsTable() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
   );
+  const appContractSettings = useSettingsStore((state) => state.contracts);
+
+  const initialData: Redeptions[] = [
+    {
+      id: '1',
+      name: 'Rahat Token',
+      amount: 9000,
+      status: 'Paid',
+      action: 'view',
+      contractAddress: appContractSettings?.rahattoken?.address,
+    },
+  ];
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
   const [data, setData] = React.useState(initialData);
+  const router = useRouter();
+
+  const columns: ColumnDef<Redeptions>[] = [
+    {
+      id: 'select',
+      header: ({ table }) => (
+        <Checkbox
+          checked={
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && 'indeterminate')
+          }
+          onCheckedChange={(value: any) =>
+            table.toggleAllPageRowsSelected(!!value)
+          }
+          aria-label="Select all"
+        />
+      ),
+      cell: ({ row }) => (
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value: any) => row.toggleSelected(!!value)}
+          aria-label="Select row"
+        />
+      ),
+      enableSorting: false,
+      enableHiding: false,
+    },
+    {
+      accessorKey: 'name',
+      header: 'Name',
+      cell: ({ row }) => (
+        <div className="capitalize">{row.getValue('name')}</div>
+      ),
+    },
+    {
+      accessorKey: 'amount',
+      header: 'Amount',
+      cell: ({ row }) => <div>{row.getValue('amount')}</div>,
+    },
+    {
+      accessorKey: 'status',
+      header: ({ column }) => 'Status',
+      cell: ({ row }) => {
+        const status = row.getValue('status');
+        return status === 'Paid' ? (
+          <Badge className="bg-green-200 text-green-600">Paid</Badge>
+        ) : (
+          <Badge className="bg-red-200 text-red-600">Pending</Badge>
+        );
+      },
+    },
+
+    {
+      id: 'actions',
+      enableHiding: true,
+      cell: ({ row }) => {
+        return (
+          <Eye
+            onClick={() =>
+              router.push('/treasury/assets/' + row.original.contractAddress)
+            }
+            className="cursor-pointer"
+            size={18}
+            strokeWidth={1.5}
+          />
+        );
+      },
+    },
+  ];
 
   const table = useReactTable({
     data,

@@ -36,15 +36,16 @@ export default function AssignToProjectModal({
   beneficiaryDetail,
   projectModal,
 }: IProps) {
-  console.log({ beneficiaryDetail, projectModal });
+
+
+  // console.log("beneficiary detail", beneficiaryDetail)
+
   const assignBeneficiary = useAssignBenToProject();
-  const projectsList = useProjectList({ page: 1, perPage: 10 });
-  console.log(projectsList.data);
+  const projectsList = useProjectList({ page: 1, perPage: 100 });
 
   const [selectedProject, setSelectedProject] = React.useState<UUID>();
 
   const handleProjectChange = (d: UUID) => {
-    console.log({ d });
     setSelectedProject(d);
   };
 
@@ -64,6 +65,11 @@ export default function AssignToProjectModal({
     //   },
     // });
   };
+
+  const checkProjectAlreadyAssigned = (projectUUID: string): boolean => {
+    const isAssigned = beneficiaryDetail?.BeneficiaryProject?.some((p: any) => p?.projectId === projectUUID);
+    return isAssigned ?? false
+  }
 
   React.useEffect(() => {
     assignBeneficiary.isSuccess && projectModal.onFalse();
@@ -87,7 +93,7 @@ export default function AssignToProjectModal({
               {projectsList.data?.data.length &&
                 projectsList.data?.data.map((project) => {
                   return (
-                    <SelectItem key={project.uuid} value={project.uuid}>
+                    <SelectItem key={project.uuid} value={project.uuid as string} disabled={checkProjectAlreadyAssigned(project?.uuid as string)}>
                       {project.name}
                     </SelectItem>
                   );

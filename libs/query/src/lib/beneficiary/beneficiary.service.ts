@@ -35,6 +35,12 @@ const listBeneficiaryGroups = async (payload: Pagination) => {
   return response?.data;
 };
 
+const removeBeneficiaryGroup = async (uuid: UUID) => {
+  const response = await api.delete(`/beneficiaries/groups/${uuid}`);
+  return response?.data;
+};
+
+
 export const useBeneficiaryGroupsList = (payload: any): any => {
   const { queryClient } = useRSQuery();
 
@@ -103,6 +109,7 @@ export const useBeneficiaryList = (payload: any): any => {
     setMeta: state.setMeta,
   }));
 
+  console.log(payload)
   const ben = useQuery(
     {
       queryKey: [TAGS.GET_BENEFICIARIES, payload],
@@ -219,6 +226,35 @@ export const useRemoveBeneficiary = () => {
       const errorMessage = error?.response?.data?.message || 'Error';
       toast.fire({
         title: 'Error while removing beneficiary.',
+        icon: 'error',
+        text: errorMessage,
+      });
+    },
+  });
+};
+
+export const useRemoveBeneficiaryGroup = () => {
+  const qc = useQueryClient();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+  return useMutation({
+    mutationFn: (uuid: UUID) => removeBeneficiaryGroup(uuid),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: [TAGS.GET_BENEFICIARIES_GROUPS] });
+      toast.fire({
+        title: 'Beneficiary group removed successfully',
+        icon: 'success',
+      });
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || 'Error';
+      toast.fire({
+        title: 'Error while removing beneficiary group.',
         icon: 'error',
         text: errorMessage,
       });

@@ -150,13 +150,19 @@ const FundManagementView = () => {
           <div className="col-span-12 p-4 shadow rounded flex flex-col  bg-card h-72">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold">Disbursement Plan</h2>
+              {/* {+chainTokenAllocations.data !==
+              +disbursementData?.totalAmount ? ( */}
               <Button
                 variant={'secondary'}
                 onClick={handleAllocationSync}
-                disabled={syncDisbursementAllocation.isPending}
+                disabled={
+                  syncDisbursementAllocation.isPending ||
+                  +chainTokenAllocations.data === +disbursementData?.totalAmount
+                }
               >
                 Sync to chain
               </Button>
+              {/* ) : null} */}
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <DataCard

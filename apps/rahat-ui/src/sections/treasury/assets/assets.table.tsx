@@ -13,6 +13,7 @@ import {
 import { Eye } from 'lucide-react';
 import * as React from 'react';
 
+import { useSettingsStore } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/components/button';
 import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
 import { Input } from '@rahat-ui/shadcn/components/input';
@@ -26,8 +27,7 @@ import {
 } from '@rahat-ui/shadcn/components/table';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import { useSettingsStore } from '@rahat-ui/query';
-import { redirect, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 
 export type Redeptions = {
   id: string;

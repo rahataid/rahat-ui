@@ -152,10 +152,10 @@ const FundManagementFlow = () => {
   }, [createDisbursementPlan.isSuccess, id, router]);
 
   return (
-    <div>
+    <div className="p-2">
       <div>{renderComponent()}</div>
       {
-        <div className="flex items-center justify-end gap-4 mx-4">
+        <div className="flex items-center justify-end gap-4 mx-4 mt-4">
           <Button
             className="w-48 text-red-600 bg-pink-200 hover:bg-pink-300"
             onClick={handlePrevious}

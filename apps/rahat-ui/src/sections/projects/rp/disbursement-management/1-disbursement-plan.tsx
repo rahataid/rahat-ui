@@ -130,7 +130,7 @@ const DisbursementPlan: FC<DisbursementPlanProps> = ({
   ]);
 
   return (
-    <div className="grid grid-cols-12 p-4">
+    <div className="grid grid-cols-12">
       <div className="col-span-4">
         <h1 className="mb-4 text-gray-700 text-xl font-medium">
           Create Disbursement Plan

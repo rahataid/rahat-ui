@@ -15,8 +15,12 @@ import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { Plus } from 'lucide-react';
 import React from 'react';
 import VoiceCampaignAddDrawer from './campaign.voice.add';
+import { useParams, useRouter } from 'next/navigation';
 
 const VoiceCampaignDetails = () => {
+  const { id } = useParams();
+  const router = useRouter();
+
   return (
     <div className="h-[calc(100vh-80px)] p-2">
       <ResizablePanelGroup
@@ -29,7 +33,12 @@ const VoiceCampaignDetails = () => {
               {/* /Add Campaign Card */}
               <VoiceCampaignAddDrawer />
               {/* Campaign Card */}
-              <Card className="flex flex-col rounded justify-center border-none shadow bg-card">
+              <Card
+                onClick={() =>
+                  router.push(`/projects/rp/${id}/campaigns/text/manage/${id}`)
+                }
+                className="flex rounded justify-center border-dashed border-2 border-primary shadow bg-card cursor-pointer hover:shadow-md ease-in duration-300"
+              >
                 <CardHeader className="pb-2 p-4">
                   <div className="flex items-start justify-between ">
                     <div className="flex items-center gap-3">

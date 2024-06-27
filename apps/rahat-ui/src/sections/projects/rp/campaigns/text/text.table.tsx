@@ -140,7 +140,7 @@ export default function TextTable() {
         />
         <DataCard
           className=""
-          title="Successful Calls"
+          title="Successful Message Delivered"
           number={'09'}
           Icon={MessageCircle}
         />

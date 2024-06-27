@@ -29,7 +29,7 @@ const CarouselSection: FC<CarouselSectionProps> = ({ description }) => (
         {Array.from({ length: 5 }).map((_, index) => (
           <CarouselItem key={index}>
             <Image
-              className="rounded-sm object-cover min-h-96 min-w-full"
+              className="rounded-sm object-cover min-w-full"
               src={'/carousel.png'}
               alt="carousel image"
               width={500} // Add the width property with an appropriate value
@@ -39,7 +39,7 @@ const CarouselSection: FC<CarouselSectionProps> = ({ description }) => (
         ))}
       </CarouselContent>
     </Carousel>
-    <p className="font-normal text-gray-600 mt-2">{description}</p>
+    <p className="font-normal text-gray-600 mt-4">{description}</p>
   </div>
 );
 
@@ -111,7 +111,7 @@ const ProjectInfo: FC<ProjectInfoProps> = ({ project }) => {
       <DynamicReports data={reportsCardsData} ui={reportsCardsUI} />
 
       {/* CAROUSEL AND PROJECT INFO SECTION */}
-      <div className="grid grid-cols-3 mt-2 bg-card p-3 rounded-sm h-[calc(100vh-282px)]">
+      <div className="grid grid-cols-3 mt-2 bg-card p-3 rounded-sm">
         {/* CAROUSEL SECTION */}
         <CarouselSection description={project?.description as string} />
         {/* PROJECT INFO SECTION */}

@@ -143,8 +143,8 @@ export default function PieChart({
           </div>
         </div>
       ) : (
-        <div className="bg-white shadow-md rounded-lg overflow-hidden p-4">
-          <div className="flex flex-col items-center justify-center">
+        <div className="rounded-lg overflow-hidden p-4">
+          <div className="flex flex-col items-center justify-center gap-4">
             <h2 className={`font-medium p-0 text-left`}>{title}</h2>
             <Chart
               dir="ltr"

@@ -1,6 +1,5 @@
 'use client';
 import {
-  ColumnDef,
   ColumnFiltersState,
   SortingState,
   VisibilityState,
@@ -14,6 +13,7 @@ import {
 import { Eye } from 'lucide-react';
 import * as React from 'react';
 
+import { useSettingsStore } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/components/button';
 import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
 import { Input } from '@rahat-ui/shadcn/components/input';
@@ -27,8 +27,7 @@ import {
 } from '@rahat-ui/shadcn/components/table';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import { useSettingsStore } from '@rahat-ui/query';
-import { redirect, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 
 export type Redeptions = {
   id: string;
@@ -154,14 +153,14 @@ export default function AssetsTable() {
       <div className="flex items-center mb-2">
         <Input
           placeholder="Search Name..."
-          value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
+          value={(table?.getColumn('name')?.getFilterValue() as string) ?? ''}
           onChange={(event) =>
             table.getColumn('name')?.setFilterValue(event.target.value)
           }
           className="w-full"
         />
       </div>
-      <div className="rounded border bg-white">
+      <div className="rounded border bg-card">
         <Table>
           <ScrollArea className="h-[calc(100vh-184px)]">
             <TableHeader>

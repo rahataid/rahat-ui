@@ -27,6 +27,7 @@ import { ListBeneficiary } from '@rahat-ui/types';
 import { useEffect, useState } from 'react';
 import BulkAssignToProjectModal from './components/bulkAssignToProjectModal';
 import CreateGroupModal from './components/createGroupModal';
+import { DatePicker } from '../../components/datePicker';
 
 type IProps = {
   table: Table<ListBeneficiary>;
@@ -38,6 +39,7 @@ type IProps = {
   handleFilterProjectSelect: (selectedProject: string) => void;
   filters: Record<string, any>;
   handleCreateGroup: any;
+  handleDateChange: any
 };
 
 export default function ListView({
@@ -50,6 +52,7 @@ export default function ListView({
   filters,
   handleCreateGroup,
   groupModal,
+  handleDateChange
 }: IProps) {
   const [selectedProject, setSelectedProject] = useState<null | Record<
     string,
@@ -60,6 +63,7 @@ export default function ListView({
     setSelectedProject(project);
     handleFilterProjectSelect(project.value);
   };
+
 
   const selectFilterProjectItems = [
     {
@@ -111,6 +115,9 @@ export default function ListView({
             }
             className="rounded"
           />
+
+          <DatePicker placeholder="Pick Start Date" handleDateChange={handleDateChange} type="start"/>
+          <DatePicker placeholder="Pick End Date"  handleDateChange={handleDateChange} type="end"/>
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

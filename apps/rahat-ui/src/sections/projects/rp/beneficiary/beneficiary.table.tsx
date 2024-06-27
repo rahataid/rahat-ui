@@ -93,7 +93,6 @@ export default function BeneficiaryTable() {
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setSelectedListItems,
     getRowId(originalRow, index, parent) {
-      console.log('originalRow', originalRow);
       return originalRow.walletAddress;
     },
     state: {
@@ -101,7 +100,6 @@ export default function BeneficiaryTable() {
       rowSelection: selectedListItems,
     },
   });
-
   const selectedRowAddresses = Object.keys(selectedListItems);
 
   const handleBulkAssignTokens = async (numberOfTokens: string) => {
@@ -114,11 +112,8 @@ export default function BeneficiaryTable() {
 
   return (
     <>
-      <div className="w-full p-6 bg-secondary">
-        <div className="flex items-center justify-between mb-3">
-          <p className="font-semibold	text-lg	text-neutral-800">
-            Beneficiaries List
-          </p>
+      <div className="w-full p-2 bg-secondary">
+        <div className="flex items-center justify-between">
           {selectedRowAddresses.length > 0 && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -145,7 +140,7 @@ export default function BeneficiaryTable() {
         </div>
         <div className="grid grid-cols-6 gap-x-2 mb-3">
           <Select>
-            <SelectTrigger className="rounded">
+            <SelectTrigger>
               <SelectValue placeholder="Select gender" />
             </SelectTrigger>
             <SelectContent>
@@ -157,7 +152,7 @@ export default function BeneficiaryTable() {
             </SelectContent>
           </Select>
           <Select>
-            <SelectTrigger className="rounded">
+            <SelectTrigger>
               <SelectValue placeholder="Select Internet Access" />
             </SelectTrigger>
             <SelectContent>
@@ -171,7 +166,7 @@ export default function BeneficiaryTable() {
             </SelectContent>
           </Select>
           <Select>
-            <SelectTrigger className="rounded">
+            <SelectTrigger>
               <SelectValue placeholder="Select Phone Type" />
             </SelectTrigger>
             <SelectContent>
@@ -215,40 +210,9 @@ export default function BeneficiaryTable() {
             />
           </div>
         </div>
-        {/* <div className="flex items-center mb-2">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="ml-auto">
-                <Settings2 className="mr-2 h-4 w-5" />
-                View
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Toggle Columns</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              {table
-                .getAllColumns()
-                .filter((column) => column.getCanHide())
-                .map((column) => {
-                  return (
-                    <DropdownMenuCheckboxItem
-                      key={column.id}
-                      className="capitalize"
-                      checked={column.getIsVisible()}
-                      onCheckedChange={(value) =>
-                        column.toggleVisibility(!!value)
-                      }
-                    >
-                      {column.id}
-                    </DropdownMenuCheckboxItem>
-                  );
-                })}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div> */}
-        <div className="rounded border bg-card">
+        <div className="rounded-md border bg-card">
           <TableComponent>
-            <ScrollArea className="h-[calc(100vh-182px)]">
+            <ScrollArea className="h-[calc(100vh-190px)]">
               <TableHeader className="bg-card sticky top-0">
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow key={headerGroup.id}>

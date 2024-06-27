@@ -61,7 +61,7 @@ export default function SimpleDataCardsContainer({
     {
       title: 'Total Beneficiaries',
       Icon: UsersRound,
-      number: totalBeneficiaries,
+      number: totalBeneficiaries ?? 0,
     },
     {
       title: 'Household Receiving Cash Support',

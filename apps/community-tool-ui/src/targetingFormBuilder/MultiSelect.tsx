@@ -11,6 +11,12 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/command';
 import { Command, Command as CommandPrimitive } from 'cmdk';
 import useTargetingFormStore from './form.store';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/popover';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 
 type ISelectOption = Record<'value' | 'label', string>;
 
@@ -77,71 +83,70 @@ export function MultiSelect({
   const selectables = options.filter((item) => !selected.includes(item));
 
   return (
-    <div className="mt-4 pr-2">
-      <Command
-        onKeyDown={handleKeyDown}
-        className="overflow-visible bg-transparent"
-      >
-        <CommandList>
-          <div className="group border border-input px-3 py-2 text-sm ring-offset-background rounded-md focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
-            <div className="flex gap-1 flex-wrap">
-              {selected.map((item) => {
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <div className="w-full h-auto m-2 p-3 group border border-input  text-sm ring-offset-background rounded-md focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 shadow-md cursor-pointer bg-white">
+          <div className="flex gap-1 flex-wrap">
+            {selected.map((item) => {
+              return (
+                <Badge key={item.value} variant="secondary">
+                  {item.label}
+                  <button
+                    className="ml-1 ring-offset-background rounded-full outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        handleUnselect(item);
+                      }
+                    }}
+                    onMouseDown={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                    }}
+                    onClick={() => handleUnselect(item)}
+                  >
+                    <X className="h-3 w-3 text-muted-foreground hover:text-foreground" />
+                  </button>
+                </Badge>
+              );
+            })}
+          </div>
+          <p className="text-muted-foreground flex-1">{placeholder}</p>
+        </div>
+      </PopoverTrigger>
+      <PopoverContent className="mt-4 pr-2" side="bottom" align="center">
+        <Command
+          onKeyDown={handleKeyDown}
+          className="overflow-visible bg-transparent"
+        >
+          <CommandList>
+            <CommandPrimitive.Input
+              ref={inputRef}
+              onBlur={() => setOpen(false)}
+              onFocus={() => setOpen(true)}
+              placeholder={placeholder}
+              className="ml-2 bg-transparent outline-none placeholder:text-muted-foreground flex-1"
+            />
+
+            <CommandGroup>
+              {selectables.map((item) => {
                 return (
-                  <Badge key={item.value} variant="secondary">
+                  <CommandItem
+                    key={item.value}
+                    onMouseDown={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                    }}
+                    onSelect={() => handleSelectChange(item)}
+                    className={'cursor-pointer'}
+                  >
                     {item.label}
-                    <button
-                      className="ml-1 ring-offset-background rounded-full outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
-                          handleUnselect(item);
-                        }
-                      }}
-                      onMouseDown={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                      }}
-                      onClick={() => handleUnselect(item)}
-                    >
-                      <X className="h-3 w-3 text-muted-foreground hover:text-foreground" />
-                    </button>
-                  </Badge>
+                  </CommandItem>
                 );
               })}
-              {/* Avoid having the "Search" Icon */}
-              <CommandPrimitive.Input
-                ref={inputRef}
-                onBlur={() => setOpen(false)}
-                onFocus={() => setOpen(true)}
-                placeholder={placeholder}
-                className="ml-2 bg-transparent outline-none placeholder:text-muted-foreground flex-1"
-              />
-            </div>
-          </div>
-          <div className="absolute w-[200px] lg:w-[240px] xl:w-[258px] 2xl:w-[300px] mt-2">
-            {open && selectables.length > 0 ? (
-              <div className="absolute w-full top-0 z-10 rounded-md border bg-popover text-popover-foreground shadow-md outline-none animate-in">
-                <CommandGroup className="h-full z-50 overflow-auto">
-                  {selectables.map((item) => {
-                    return (
-                      <CommandItem
-                        key={item.value}
-                        onMouseDown={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                        }}
-                        onSelect={() => handleSelectChange(item)}
-                        className={'cursor-pointer'}
-                      >
-                        {item.label}
-                      </CommandItem>
-                    );
-                  })}
-                </CommandGroup>
-              </div>
-            ) : null}
-          </div>
-        </CommandList>
-      </Command>
-    </div>
+            </CommandGroup>
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
   );
 }

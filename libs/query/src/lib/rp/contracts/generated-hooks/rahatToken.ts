@@ -15,10 +15,31 @@ export const rahatTokenAbi = [
     inputs: [
       { name: '_name', internalType: 'string', type: 'string' },
       { name: '_symbol', internalType: 'string', type: 'string' },
-      { name: '_admin', internalType: 'address', type: 'address' },
+      { name: '_description', internalType: 'string', type: 'string' },
       { name: '_decimals', internalType: 'uint8', type: 'uint8' },
+      { name: '_initialSupply', internalType: 'uint256', type: 'uint256' },
+      { name: '_to', internalType: 'address', type: 'address' },
+      { name: '_manager', internalType: 'address', type: 'address' },
     ],
     stateMutability: 'nonpayable',
+  },
+  {
+    type: 'error',
+    inputs: [{ name: 'authority', internalType: 'address', type: 'address' }],
+    name: 'AccessManagedInvalidAuthority',
+  },
+  {
+    type: 'error',
+    inputs: [
+      { name: 'caller', internalType: 'address', type: 'address' },
+      { name: 'delay', internalType: 'uint32', type: 'uint32' },
+    ],
+    name: 'AccessManagedRequiredDelay',
+  },
+  {
+    type: 'error',
+    inputs: [{ name: 'caller', internalType: 'address', type: 'address' }],
+    name: 'AccessManagedUnauthorized',
   },
   {
     type: 'error',
@@ -93,6 +114,19 @@ export const rahatTokenAbi = [
     type: 'event',
     anonymous: false,
     inputs: [
+      {
+        name: 'authority',
+        internalType: 'address',
+        type: 'address',
+        indexed: false,
+      },
+    ],
+    name: 'AuthorityUpdated',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
       { name: '', internalType: 'address', type: 'address', indexed: true },
     ],
     name: 'OwnerAdded',
@@ -149,6 +183,13 @@ export const rahatTokenAbi = [
   },
   {
     type: 'function',
+    inputs: [],
+    name: 'authority',
+    outputs: [{ name: '', internalType: 'address', type: 'address' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
     inputs: [{ name: 'account', internalType: 'address', type: 'address' }],
     name: 'balanceOf',
     outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
@@ -176,6 +217,20 @@ export const rahatTokenAbi = [
     inputs: [],
     name: 'decimals',
     outputs: [{ name: '', internalType: 'uint8', type: 'uint8' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'description',
+    outputs: [{ name: '', internalType: 'string', type: 'string' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'isConsumingScheduledOp',
+    outputs: [{ name: '', internalType: 'bytes4', type: 'bytes4' }],
     stateMutability: 'view',
   },
   {
@@ -228,6 +283,15 @@ export const rahatTokenAbi = [
     inputs: [{ name: '_address', internalType: 'address', type: 'address' }],
     name: 'removeOwner',
     outputs: [{ name: 'success', internalType: 'bool', type: 'bool' }],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'newAuthority', internalType: 'address', type: 'address' },
+    ],
+    name: 'setAuthority',
+    outputs: [],
     stateMutability: 'nonpayable',
   },
   {
@@ -287,6 +351,14 @@ export const useReadRahatTokenAllowance = /*#__PURE__*/ createUseReadContract({
 })
 
 /**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link rahatTokenAbi}__ and `functionName` set to `"authority"`
+ */
+export const useReadRahatTokenAuthority = /*#__PURE__*/ createUseReadContract({
+  abi: rahatTokenAbi,
+  functionName: 'authority',
+})
+
+/**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link rahatTokenAbi}__ and `functionName` set to `"balanceOf"`
  */
 export const useReadRahatTokenBalanceOf = /*#__PURE__*/ createUseReadContract({
@@ -301,6 +373,22 @@ export const useReadRahatTokenDecimals = /*#__PURE__*/ createUseReadContract({
   abi: rahatTokenAbi,
   functionName: 'decimals',
 })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link rahatTokenAbi}__ and `functionName` set to `"description"`
+ */
+export const useReadRahatTokenDescription = /*#__PURE__*/ createUseReadContract(
+  { abi: rahatTokenAbi, functionName: 'description' },
+)
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link rahatTokenAbi}__ and `functionName` set to `"isConsumingScheduledOp"`
+ */
+export const useReadRahatTokenIsConsumingScheduledOp =
+  /*#__PURE__*/ createUseReadContract({
+    abi: rahatTokenAbi,
+    functionName: 'isConsumingScheduledOp',
+  })
 
 /**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link rahatTokenAbi}__ and `functionName` set to `"isOwner"`
@@ -413,6 +501,15 @@ export const useWriteRahatTokenRemoveOwner =
   })
 
 /**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link rahatTokenAbi}__ and `functionName` set to `"setAuthority"`
+ */
+export const useWriteRahatTokenSetAuthority =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: rahatTokenAbi,
+    functionName: 'setAuthority',
+  })
+
+/**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link rahatTokenAbi}__ and `functionName` set to `"transfer"`
  */
 export const useWriteRahatTokenTransfer = /*#__PURE__*/ createUseWriteContract({
@@ -500,6 +597,15 @@ export const useSimulateRahatTokenRemoveOwner =
   })
 
 /**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link rahatTokenAbi}__ and `functionName` set to `"setAuthority"`
+ */
+export const useSimulateRahatTokenSetAuthority =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: rahatTokenAbi,
+    functionName: 'setAuthority',
+  })
+
+/**
  * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link rahatTokenAbi}__ and `functionName` set to `"transfer"`
  */
 export const useSimulateRahatTokenTransfer =
@@ -530,6 +636,15 @@ export const useWatchRahatTokenApprovalEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
     abi: rahatTokenAbi,
     eventName: 'Approval',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link rahatTokenAbi}__ and `eventName` set to `"AuthorityUpdated"`
+ */
+export const useWatchRahatTokenAuthorityUpdatedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: rahatTokenAbi,
+    eventName: 'AuthorityUpdated',
   })
 
 /**

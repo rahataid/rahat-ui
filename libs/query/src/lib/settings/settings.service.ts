@@ -84,32 +84,59 @@ export const useAcessManagerSettings = () => {
 
   return query;
 };
-// export const useSubGraphUrlSettings = () => {
-//   const { queryClient } = useRSQuery();
-//   const appSettings = useAppSettingsMutate('SUBGRAPH_URL');
-//   const { setSubGraphUrlSettings, subGraphUrl } = useSettingsStore();
 
-//   const query = useQuery(
-//     {
-//       queryKey: ['SUBGRAPH_URL'],
-//       queryFn: async () => {
-//         const d = await appSettings.mutateAsync();
-//         return d.data.data?.value;
-//       },
-//       enabled: !!queryClient,
-//     },
-//     queryClient,
-//   );
+export const useAppContractSettings = () => {
+  const { queryClient } = useRSQuery();
 
-//   useEffect(() => {
-//     if (
-//       query.isSuccess &&
-//       query.data.length > 0 &&
-//       query.data !== subGraphUrl
-//     ) {
-//       setSubGraphUrlSettings(query.data);
-//     }
-//   }, [query.isSuccess, query.data, setSubGraphUrlSettings]);
+  const appSettings = useAppSettingsMutate('CONTRACTS');
+  const { setContractSettings } = useSettingsStore();
 
-//   return query;
-// };
+  const query = useQuery(
+    {
+      queryKey: ['CONTRACTS'],
+      queryFn: async () => {
+        const d = await appSettings.mutateAsync();
+        return d.data.data?.value;
+      },
+
+      enabled: !!queryClient,
+    },
+    queryClient,
+  );
+
+  useEffect(() => {
+    if (query.isSuccess) {
+      setContractSettings(query.data);
+    }
+  }, [query.isSuccess, query.data, setContractSettings]);
+
+  return query;
+};
+
+export const useAppNavSettings = () => {
+  const { queryClient } = useRSQuery();
+
+  const appSettings = useAppSettingsMutate('NAV_SETTINGS');
+  const { setNavSettings } = useSettingsStore();
+
+  const query = useQuery(
+    {
+      queryKey: ['NAV'],
+      queryFn: async () => {
+        const d = await appSettings.mutateAsync();
+        return d.data.data?.value;
+      },
+
+      enabled: !!queryClient,
+    },
+    queryClient,
+  );
+
+  useEffect(() => {
+    if (query.isSuccess) {
+      setNavSettings(query?.data);
+    }
+  }, [query.isSuccess, query.data, setNavSettings]);
+
+  return query;
+};

@@ -39,6 +39,7 @@ import { z } from 'zod';
 import { benType } from '../../projects/el/beneficiary/beneficiary.table';
 import { useAudienceColumns } from './use-audience-columns';
 import { useAudienceTable } from './use-audience-table';
+import { DatePicker } from 'apps/rahat-ui/src/components/datePicker';
 
 type AddAudienceProps = {
   form: UseFormReturn<z.infer<any>>;
@@ -84,6 +85,22 @@ const AddAudience: FC<AddAudienceProps> = ({
     },
     [filters, setFilters],
   );
+
+  const handleDateChange = (date: Date, type: string) => {
+    if(type === 'start') {
+      setFilters({
+        ...filters,
+        startDate: date
+      })
+    }
+    else {
+      setFilters ({
+        ...filters,
+        endDate: date
+      })
+    }
+  }
+
 
   const filterBenByBenTypes = React.useCallback(
     (type: string) => {
@@ -150,6 +167,13 @@ const AddAudience: FC<AddAudienceProps> = ({
           }}
           className="max-w-sm"
         />
+        {
+        filters.projectId && 
+        <>
+        <DatePicker placeholder="Pick Start Date" handleDateChange={handleDateChange} type="start"/>
+        <DatePicker placeholder="Pick End Date"  handleDateChange={handleDateChange} type="end"/>
+        </>
+        }
         <Select onValueChange={filterBenByProjectId}>
           <SelectTrigger className="max-w-32">
             <SelectValue placeholder="Projects" />

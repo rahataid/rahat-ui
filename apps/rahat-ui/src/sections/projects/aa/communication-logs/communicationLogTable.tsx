@@ -173,7 +173,7 @@ export default function CommunicationLogTable({ data }: IProps) {
     setColumnVisibilityByType(id);
   };
   const table = useReactTable({
-    data: tableData,
+    data: tableData || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,

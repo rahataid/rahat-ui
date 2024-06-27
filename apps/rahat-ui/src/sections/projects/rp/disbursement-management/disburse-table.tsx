@@ -1,115 +1,33 @@
 'use client';
 
-import { useBeneficiaryStore } from '@rahat-ui/query';
-import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import {
-  Table,
   TableBody,
   TableCell,
+  Table as TableComponent,
   TableHead,
   TableHeader,
   TableRow,
 } from '@rahat-ui/shadcn/src/components/ui/table';
-import {
-  ColumnDef,
-  ColumnFiltersState,
-  SortingState,
-  VisibilityState,
-  flexRender,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useReactTable,
-} from '@tanstack/react-table';
-import * as React from 'react';
-
-export type Payment = {
-  id: string;
-  name: string;
-  amount: string;
-};
-
-export const columns: ColumnDef<Payment>[] = [
-  {
-    id: 'select',
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && 'indeterminate')
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
-    accessorKey: 'name',
-    header: 'Name',
-    cell: ({ row }) => <div className="capitalize">{row.getValue('name')}</div>,
-  },
-  {
-    accessorKey: 'amount',
-    header: 'Amount',
-    cell: ({ row }) => {
-      const amount = parseFloat(row.getValue('amount'));
-
-      // Format the amount as a dollar amount
-      const formatted = new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-      }).format(amount);
-
-      return <div>{formatted}</div>;
-    },
-  },
-];
+import { Table, flexRender } from '@tanstack/react-table';
+import { Payment } from './1-disbursement-plan';
+import { initialStepData } from './fund-management-flow';
 
 interface DisburseTableProps {
-  data: any;
+  table: Table<Payment>;
+  handleStepDataChange: (e: any) => void;
+  stepData: typeof initialStepData;
+  bulkAssignDisbursement: any;
 }
 
-export function DisburseTable({ data = [] }: DisburseTableProps) {
-  const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    [],
-  );
-  console.log('data', data);
-  const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = React.useState({});
-
-  const table = useReactTable({
-    data,
-    columns,
-    onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setRowSelection,
-    state: {
-      sorting,
-      columnFilters,
-      columnVisibility,
-      rowSelection,
-    },
-  });
-
+export function DisburseTable({
+  table,
+  handleStepDataChange,
+  stepData,
+  bulkAssignDisbursement,
+}: DisburseTableProps) {
   return (
     <div className="mt-3 bg-secondary">
       <div className="flex justify-between items-center mb-2">
@@ -122,24 +40,53 @@ export function DisburseTable({ data = [] }: DisburseTableProps) {
           className="max-w-full"
         />
       </div>
+      {table.getSelectedRowModel().rows.length ? (
+        <div
+          className="flex items-end justify-end mb-2"
+          style={{ maxWidth: '300px' }}
+        >
+          <Input
+            name="bulkInputAmount"
+            placeholder="Enter disbursement amount."
+            value={stepData?.bulkInputAmount ?? ''}
+            onChange={(e) => handleStepDataChange(e)}
+          />
+          <Button
+            onClick={async () => {
+              await bulkAssignDisbursement.mutateAsync({
+                amount: stepData.bulkInputAmount,
+                beneficiaries: table
+                  .getSelectedRowModel()
+                  .rows.map((row) => row.original.walletAddress),
+              });
+            }}
+            variant="outline"
+            disabled={
+              !stepData.bulkInputAmount ||
+              !table.getSelectedRowModel().rows.length ||
+              bulkAssignDisbursement.isPending
+            }
+          >
+            Bulk Assign
+          </Button>
+        </div>
+      ) : null}
       <div className="rounded border bg-card">
-        <Table>
+        <TableComponent>
           <ScrollArea className="h-[calc(100vh-482px)]">
             <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => {
-                    return (
-                      <TableHead key={header.id}>
-                        {header.isPlaceholder
-                          ? null
-                          : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext(),
-                            )}
-                      </TableHead>
-                    );
-                  })}
+                  {headerGroup.headers.map((header) => (
+                    <TableHead key={header.id}>
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext(),
+                          )}
+                    </TableHead>
+                  ))}
                 </TableRow>
               ))}
             </TableHeader>
@@ -163,7 +110,7 @@ export function DisburseTable({ data = [] }: DisburseTableProps) {
               ) : (
                 <TableRow>
                   <TableCell
-                    colSpan={columns.length}
+                    colSpan={table.getAllColumns().length}
                     className="h-24 text-center"
                   >
                     No results.
@@ -172,7 +119,7 @@ export function DisburseTable({ data = [] }: DisburseTableProps) {
               )}
             </TableBody>
           </ScrollArea>
-        </Table>
+        </TableComponent>
       </div>
     </div>
   );

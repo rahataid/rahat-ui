@@ -1,4 +1,10 @@
 export const useSelectItems = () => {
+  const riverBasins = [
+    { value: 'Karnali', label: 'Karnali' },
+    { value: 'Mahakali', label: 'Mahakali' },
+    { value: 'Bheri', label: 'Bheri' },
+  ];
+
   const dataSourceSelectItems = [
     { value: 'DHM', label: 'DHM' },
     { value: 'GLOFAS', label: 'GLOFAS' },
@@ -62,6 +68,7 @@ export const useSelectItems = () => {
   ];
 
   return {
+    riverBasins,
     dataSourceSelectItems,
     dhmForecastSelectItems,
     flashFloodRiskSelectItems,

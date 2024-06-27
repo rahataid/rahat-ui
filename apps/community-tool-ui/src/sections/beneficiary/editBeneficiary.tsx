@@ -28,7 +28,6 @@ import { z } from 'zod';
 
 import {
   useActiveFieldDefList,
-  useCommunityBeneficiaryListByID,
   useCommunityBeneficiaryUpdate,
 } from '@rahat-ui/community-query';
 import { usePagination } from '@rahat-ui/query';
@@ -39,18 +38,18 @@ import { Gender } from '@rumsan/sdk/enums';
 import { CalendarIcon, Wallet } from 'lucide-react';
 import FormBuilder from '../../formBuilder';
 
-import useFormStore from '../../formBuilder/form.store';
-import { UUID } from 'crypto';
-import { format } from 'date-fns';
+import { Calendar } from '@rahat-ui/shadcn/src/components/ui/calendar';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/popover';
-import { Calendar } from '@rahat-ui/shadcn/src/components/ui/calendar';
-import { formatDate, selectNonEmptyFields } from '../../utils';
+import { UUID } from 'crypto';
+import { format } from 'date-fns';
 import { useEffect } from 'react';
 import { FIELD_DEF_FETCH_LIMIT } from '../../constants/app.const';
+import useFormStore from '../../formBuilder/form.store';
+import { formatDate, selectNonEmptyFields } from '../../utils';
 
 export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
   const { extras }: any = useFormStore();
@@ -152,6 +151,12 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
       birthDate: data?.birthDate ? new Date(data?.birthDate) : undefined,
     });
   }, [data, form]);
+
+  const filteredDefinitions =
+    definitions && definitions.data.length
+      ? definitions.data.filter((d: any) => d.isSystem === false)
+      : '';
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleEditBeneficiary)}>
@@ -556,9 +561,11 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
               <b>Extra Fields:</b>
             </h3>
             <br />
-            {definitions?.data?.map((definition: any) => {
-              return <FormBuilder formField={definition} />;
-            }) || 'No field definitions found!'}
+            {filteredDefinitions.length > 0
+              ? filteredDefinitions.map((definition: any) => {
+                  return <FormBuilder formField={definition} />;
+                })
+              : 'No field definitions found!'}
           </div>
 
           <div className="flex justify-end mt-5">

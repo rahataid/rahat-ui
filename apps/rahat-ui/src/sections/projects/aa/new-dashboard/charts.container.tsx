@@ -55,24 +55,28 @@ export default function ChartsContainer({ allStats = [] }: IProps) {
   ];
   return (
     <>
-      <div className="flex gap-4 p-2">
+      <div className="grid grid-cols-3 gap-4 p-2">
         {/* Donut Chart : Gender Start  */}
-        <div className="rounded-sm bg-card p-4 shadow-md">
-          <h1 className="text-md font-medium mb-4">
-            Cash Supported Households by Gender
-          </h1>
-          <ChartDonut
-            labels={genderStats?.map((gender: any) => gender.id)}
-            series={genderStats?.map((gender: any) => gender.count)}
-            donutSize="70%"
-            width={360}
-            height={290}
-          />
-        </div>
+        {genderStats && (
+          <div className="rounded-sm bg-card p-4 shadow-md">
+            <h1 className="text-md font-medium mb-4">
+              Cash Supported Households by Gender
+            </h1>
+            <div className="flex justify-center">
+              <ChartDonut
+                labels={genderStats?.map((gender: any) => gender.id)}
+                series={genderStats?.map((gender: any) => gender.count)}
+                donutSize="70%"
+                width={360}
+                height={290}
+              />
+            </div>
+          </div>
+        )}
         {/* Donut Chart : Gender End  */}
 
         {/* Bar Chart : Vulnerability Status Start  */}
-        <div className="rounded-sm bg-card flex-auto shadow-md">
+        <div className="rounded-sm bg-card shadow-md">
           <div className="p-4">
             <h1 className="text-md font-medium mb-1">Vulnerability Status</h1>
             <p className="text-primary font-semibold text-2xl">1,500</p>
@@ -100,42 +104,48 @@ export default function ChartsContainer({ allStats = [] }: IProps) {
         {/* Bar Chart : Vulnerability Status End  */}
 
         {/* Bar Chart : Beneficiary Associated Bank Start  */}
-        <div className="rounded-sm bg-card flex-auto shadow-md">
-          <div className="p-4">
-            <h1 className="text-md font-medium mb-1">
-              Beneficiary Associated Bank
-            </h1>
-            <p className="text-primary font-semibold text-2xl">
-              {countByBankStats?.length}
-            </p>
-          </div>
-          <Separator />
-          <ScrollArea className="h-[280px]">
-            <div className="flex justify-center">
-              <BarChart
-                series={countByBankStats?.map((item: any) => item.count)}
-                categories={countByBankStats?.map((item: any) => item.id)}
-                horizontal={true}
-                colors={['#2563eb']}
-                xaxisLabels={false}
-                barHeight={15}
-                width={450}
-                height={countByBankStats?.length > 10 ? 500 : 265}
-              />
+        {countByBankStats && (
+          <div className="rounded-sm bg-card shadow-md">
+            <div className="p-4">
+              <h1 className="text-md font-medium mb-1">
+                Beneficiary Associated Bank
+              </h1>
+              <p className="text-primary font-semibold text-2xl">
+                {countByBankStats?.length}
+              </p>
             </div>
-          </ScrollArea>
-        </div>
+            <Separator />
+            <ScrollArea className="h-[280px]">
+              <div className="flex justify-center">
+                <BarChart
+                  series={countByBankStats?.map((item: any) => item.count)}
+                  categories={countByBankStats?.map((item: any) => item.id)}
+                  horizontal={true}
+                  colors={['#2563eb']}
+                  xaxisLabels={false}
+                  yaxisLabels={countByBankStats?.length > 0 ? true : false}
+                  barHeight={15}
+                  width={450}
+                  height={countByBankStats?.length > 10 ? 500 : 265}
+                />
+              </div>
+            </ScrollArea>
+          </div>
+        )}
         {/* Bar Chart : Beneficiary Associated Bank End  */}
       </div>
       <div className="grid grid-cols-4 gap-4 p-2">
-        {pieChartData.map((chart, index) => (
-          <PieChartCard
-            key={index}
-            title={chart.title}
-            series={chart.series}
-            colors={chart.colors}
-          />
-        ))}
+        {pieChartData.map(
+          (chart, index) =>
+            chart?.series && (
+              <PieChartCard
+                key={index}
+                title={chart.title}
+                series={chart.series}
+                colors={chart.colors}
+              />
+            ),
+        )}
       </div>
     </>
   );

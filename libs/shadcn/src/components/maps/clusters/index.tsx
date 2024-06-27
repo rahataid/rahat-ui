@@ -1,4 +1,4 @@
-import { memo, useRef } from 'react';
+import { memo, useEffect, useRef, useState } from 'react';
 import Map, {
   GeoJSONSource,
   Layer,
@@ -18,7 +18,7 @@ import {
 
 // ----------------------------------------------------------------------
 
-function MapClusters({ ...other }: MapBoxProps) {
+function MapClusters({ dataForMap, ...other }: any) {
   const mapRef = useRef<MapRef>(null);
 
   const onClick = (event: MapLayerMouseEvent) => {
@@ -45,6 +45,9 @@ function MapClusters({ ...other }: MapBoxProps) {
     });
   };
 
+
+
+
   return (
     <Map
       initialViewState={{
@@ -60,7 +63,7 @@ function MapClusters({ ...other }: MapBoxProps) {
       <Source
         id="earthquakes"
         type="geojson"
-        data="https://docs.mapbox.com/mapbox-gl-js/assets/earthquakes.geojson"
+        data={dataForMap}
         cluster
         clusterMaxZoom={14}
         clusterRadius={50}
@@ -74,3 +77,4 @@ function MapClusters({ ...other }: MapBoxProps) {
 }
 
 export default memo(MapClusters);
+

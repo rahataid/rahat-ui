@@ -1,11 +1,9 @@
 'use client';
 
-import { useParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import Image from 'next/image';
 import {
   PROJECT_SETTINGS_KEYS,
   useAssignClaimsToBeneficiary,
+  useFindOneDisbursement,
   useProjectSettingsStore,
   useReadCvaProjectBeneficiaryClaims,
 } from '@rahat-ui/query';
@@ -41,10 +39,22 @@ import {
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { truncateEthAddress } from '@rumsan/sdk/utils';
-import { Copy, CopyCheck, Minus, MoreVertical, Trash2 } from 'lucide-react';
-import AssignToken from './assign-token.modal';
+import DataCard from 'apps/rahat-ui/src/components/dataCard';
 import { UUID } from 'crypto';
-import { formatEther, parseEther, parseGwei } from 'viem';
+import {
+  Copy,
+  CopyCheck,
+  Home,
+  Minus,
+  MoreVertical,
+  Trash2,
+} from 'lucide-react';
+import Image from 'next/image';
+import { useParams } from 'next/navigation';
+import { useState } from 'react';
+import { formatEther } from 'viem';
+import AssignToken from './assign-token.modal';
+import { TransactionTable } from './transaction.table';
 
 type IProps = {
   beneficiaryDetails: any;
@@ -61,24 +71,25 @@ export default function BeneficiaryDetail({
   );
 
   const assignToken = useAssignClaimsToBeneficiary();
-
-  const assignedTokens = useReadCvaProjectBeneficiaryClaims({
-    args: [beneficiaryDetails?.walletAddress],
-    address: contractSettings?.rpproject?.address,
-    query: {
-      select(data) {
-        return formatEther(data) || 'N/a';
-      },
-    },
+  const allocatedTokens = useFindOneDisbursement(id, {
+    walletAddress: beneficiaryDetails?.walletAddress,
   });
 
-  console.log(
-    'assignedTokens',
-    assignedTokens.data,
-    beneficiaryDetails?.walletAddress,
-  );
+  console.log('allocatedTokens', allocatedTokens?.data);
 
-  const [activeTab, setActiveTab] = useState<'details' | 'edit'>('details');
+  // const assignedTokens = useReadCvaProjectBeneficiaryClaims({
+  //   args: [beneficiaryDetails?.walletAddress],
+  //   address: contractSettings?.rpproject?.address,
+  //   query: {
+  //     select(data) {
+  //       return formatEther(data) || 'N/a';
+  //     },
+  //   },
+  // });
+
+  const [activeTab, setActiveTab] = useState<'details' | 'transaction'>(
+    'details',
+  );
   const [walletAddressCopied, setWalletAddressCopied] = useState(false);
 
   const clickToCopy = () => {
@@ -88,7 +99,7 @@ export default function BeneficiaryDetail({
     }
   };
 
-  const handleTabChange = (tab: 'details' | 'edit') => {
+  const handleTabChange = (tab: 'details' | 'transaction') => {
     setActiveTab(tab);
   };
 
@@ -105,6 +116,32 @@ export default function BeneficiaryDetail({
     // Implement the removeBeneficiary logic
   };
 
+  type ITabsNavigationProps = {
+    handleTabChange: (tab: 'details' | 'transaction') => void;
+  };
+
+  function TabsNavigation({ handleTabChange }: ITabsNavigationProps) {
+    return (
+      <div className="p-2">
+        <TabsList className="w-full grid grid-cols-2 border h-auto rounded-md">
+          <TabsTrigger
+            className="m-0"
+            value="details"
+            onClick={() => handleTabChange('details')}
+          >
+            Details
+          </TabsTrigger>
+          <TabsTrigger
+            value="transaction"
+            onClick={() => handleTabChange('transaction')}
+          >
+            Transaction
+          </TabsTrigger>
+        </TabsList>
+      </div>
+    );
+  }
+
   return (
     <>
       <Header
@@ -113,19 +150,19 @@ export default function BeneficiaryDetail({
         beneficiaryDetails={beneficiaryDetails}
         handleTabChange={handleTabChange}
       />
-      <DetailsSection
-        beneficiaryDetails={beneficiaryDetails}
-        clickToCopy={clickToCopy}
-        walletAddressCopied={walletAddressCopied}
-        handleAssignSubmit={handleAssignSubmit}
-        assignLoading={assignToken.isPending}
-      />
-      <Tabs defaultValue="details" value={activeTab}>
+      <Tabs value={activeTab}>
         <TabsNavigation handleTabChange={handleTabChange} />
         <TabsContent value="details">
+          <DetailsSection
+            beneficiaryDetails={beneficiaryDetails}
+            clickToCopy={clickToCopy}
+            walletAddressCopied={walletAddressCopied}
+            handleAssignSubmit={handleAssignSubmit}
+            assignLoading={assignToken.isPending}
+          />
           <BeneficiaryInfo
             beneficiaryDetails={beneficiaryDetails}
-            assignedTokensCount={assignedTokens.data as string}
+            assignedTokensCount={allocatedTokens?.data?.amount as string}
             tokensClaimedCount={'N/a'}
           />
         </TabsContent>
@@ -141,7 +178,7 @@ type IHeaderProps = {
   closeSecondPanel: VoidFunction;
   removeBeneficiary: (uuid: string) => void;
   beneficiaryDetails: any;
-  handleTabChange: (tab: 'details' | 'edit') => void;
+  handleTabChange: (tab: 'details' | 'transaction') => void;
 };
 
 function Header({
@@ -151,7 +188,7 @@ function Header({
   handleTabChange,
 }: IHeaderProps) {
   return (
-    <div className="flex justify-between p-4 pt-5 bg-card border-b">
+    <div className="flex justify-between p-4 pt-5 bg-card">
       <TooltipProvider delayDuration={100}>
         <Tooltip>
           <TooltipTrigger onClick={closeSecondPanel}>
@@ -212,8 +249,8 @@ function Header({
             />
           </DropdownMenuTrigger>
           <DropdownMenuContent>
-            <DropdownMenuItem onClick={() => handleTabChange('edit')}>
-              Edit
+            <DropdownMenuItem onClick={() => handleTabChange('transaction')}>
+              Transaction
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => handleTabChange('details')}>
               Details
@@ -241,8 +278,8 @@ function DetailsSection({
   assignLoading,
 }: IDetailsSectionProps) {
   return (
-    <div className="p-4 bg-card flex gap-2 justify-between items-center flex-wrap">
-      <div className="flex items-center gap-2">
+    <div className="p-4 bg-card flex flex-col gap-2 justify-between items-center flex-wrap">
+      <div className="flex flex-col items-center gap-2">
         <Image
           className="rounded-full"
           src="/profile.png"
@@ -255,7 +292,7 @@ function DetailsSection({
             <h1 className="font-semibold text-xl">
               {beneficiaryDetails?.piiData?.name}
             </h1>
-            <Badge>Active</Badge>
+            {/* <Badge>Active</Badge> */}
           </div>
           <TooltipProvider delayDuration={100}>
             <Tooltip>
@@ -296,21 +333,6 @@ function DetailsSection({
   );
 }
 
-type ITabsNavigationProps = {
-  handleTabChange: (tab: 'details' | 'edit') => void;
-};
-
-function TabsNavigation({ handleTabChange }: ITabsNavigationProps) {
-  return (
-    <div className="p-2">
-      <TabsList className="w-full grid grid-cols-2 border h-auto">
-        <TabsTrigger value="details">Details</TabsTrigger>
-        <TabsTrigger value="transaction">Transaction</TabsTrigger>
-      </TabsList>
-    </div>
-  );
-}
-
 type IBeneficiaryInfoProps = {
   beneficiaryDetails: any;
   assignedTokensCount: string;
@@ -325,54 +347,62 @@ function BeneficiaryInfo({
   return (
     <>
       <div className="flex flex-col gap-2 p-2">
-        <Card className="shadow rounded">
+        <Card className="shadow rounded-md bg-neutral-100">
           <CardContent className="pt-6">
-            <div className="grid grid-cols-3 gap-3">
+            <div className="flex justify-between items-center">
               <div>
-                <p className="font-light text-base">
-                  {beneficiaryDetails?.gender}
-                </p>
                 <p className="text-sm font-normal text-muted-foreground">
                   Gender
                 </p>
-              </div>
-              <div>
-                <p className="font-light text-base">
-                  {beneficiaryDetails?.email || 'N/A'}
+                <p className="font-light text-base text-gray-700">
+                  {beneficiaryDetails?.gender}
                 </p>
+              </div>
+              <div className="flex flex-col items-center justify-center">
                 <p className="text-sm font-normal text-muted-foreground">
-                  Email
+                  Status
+                </p>
+                <p className="font-light text-base">
+                  <Badge className="bg-green-200 text-green-800">Active</Badge>
                 </p>
               </div>
-              <div className="text-right">
-                <p className="font-light text-base">
-                  {beneficiaryDetails?.phone || 'N/A'}
-                </p>
+            </div>
+            <div className="flex justify-between items-center mt-4">
+              <div className="text-left">
                 <p className="text-sm font-normal text-muted-foreground">
                   Phone
                 </p>
+                <p className="font-light text-base text-gray-700">
+                  {beneficiaryDetails?.phone || 'N/A'}
+                </p>
+              </div>
+              <div className="text-right">
+                <p className="text-sm font-normal text-muted-foreground">
+                  Email
+                </p>
+                <p className="font-light text-base text-gray-700">
+                  {beneficiaryDetails?.email || 'N/A'}
+                </p>
               </div>
             </div>
+            <div className="flex justify-between items-center"></div>
           </CardContent>
         </Card>
       </div>
-      <Card className="shadow rounded m-2">
-        <CardContent className="pt-6">
-          <div className="text-base font-500">Token Details</div>
-          <div className="mt-2">
-            <div className="flex items-center justify-between text-sm">
-              <p className="font-light">Token Assigned</p>
-              <p className="text-primary">{assignedTokensCount}</p>
-            </div>
-          </div>
-          <div className="mt-2">
-            <div className="flex items-center justify-between text-sm">
-              <p className="font-light">Token Claimed</p>
-              <p className="text-primary">{tokensClaimedCount}</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      <div className="flex items-center justify-between gap-3 mx-2">
+        <DataCard
+          className="w-screen"
+          title="Tokens Assigned"
+          number={assignedTokensCount}
+          Icon={Home}
+        />
+        <DataCard
+          className="w-screen"
+          title="Tokens Claimed"
+          number={tokensClaimedCount}
+          Icon={Home}
+        />
+      </div>
     </>
   );
 }
@@ -380,7 +410,7 @@ function BeneficiaryInfo({
 function TransactionTab() {
   return (
     <div className="p-2 pb-0">
-      {/* <TransactionTable walletAddress={walletAddress} /> */}
+      <TransactionTable />
     </div>
   );
 }

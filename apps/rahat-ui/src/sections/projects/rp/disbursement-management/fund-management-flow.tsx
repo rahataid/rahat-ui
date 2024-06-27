@@ -1,79 +1,60 @@
 'use client';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import React, { FC, useState } from 'react';
+import { useEffect, useState } from 'react';
 import DisbursementPlan from './1-disbursement-plan';
-import DisbursementCondition from './2-disbursement-condition';
+import DisbursementCondition, {
+  DisbursementConditionType,
+} from './2-disbursement-condition';
 import DisbursementConfirmation from './3-confirmation';
-import { usePagination, useProjectBeneficiaries } from '@rahat-ui/query';
-import { useParams } from 'next/navigation';
+import {
+  useCreateDisbursementPlan,
+  useFindAllDisbursements,
+} from '@rahat-ui/query';
+import { useParams, useRouter } from 'next/navigation';
 import { UUID } from 'crypto';
+import { WarningDialog } from './warning.modal';
+import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 
-// type FundManagementFlowProps = {
-//   selectedBeneficiaries: {
-//     walletAddress: `0x${string}`;
-//     amount: string;
-//   }[];
-// };
-const initialStepData = {};
+export const initialStepData = {
+  bulkInputAmount: '',
+  selectedBeneficiaries: [] as `0x${string}`[],
+  selectedConditions: [] as DisbursementConditionType[],
+};
 
 const FundManagementFlow = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [stepData, setStepData] =
     useState<typeof initialStepData>(initialStepData);
   const { id } = useParams() as { id: UUID };
-  const {
-    pagination,
-    filters,
-    setFilters,
-    setNextPage,
-    setPrevPage,
-    setPerPage,
-    selectedListItems,
-    setSelectedListItems,
-    resetSelectedListItems,
-  } = usePagination();
+  const router = useRouter();
 
-  const projectBeneficiaries = useProjectBeneficiaries({
-    page: pagination.page,
-    perPage: pagination.perPage,
-    order: 'desc',
-    sort: 'updatedAt',
-    projectUUID: id,
-    ...filters,
-  });
+  const createDisbursementPlan = useCreateDisbursementPlan(id);
+  const disbursements = useFindAllDisbursements(id);
 
-  const steps = [
-    {
-      id: 'step1',
-      title: 'Disburse Method',
-      component: <DisbursementPlan data={projectBeneficiaries.data.data} />,
-      // validation: {
-      //   noMethodSelected: {
-      //     condition: () => !stepData.treasurySource,
-      //     message: 'Please select a disburse method',
-      //   },
-      // },
-      validation: {},
-    },
-    {
-      id: 'step2',
-      title: 'Disburse Amount',
-      component: <DisbursementCondition />,
-      validation: {},
-    },
-    {
-      id: 'confirm_send',
-      title: 'Review & Confirm',
-      component: <DisbursementConfirmation />,
-      validation: {},
-    },
-  ];
+  const confirmModal = useBoolean(false);
 
   const handleStepDataChange = (e) => {
     const { name, value } = e.target;
     setStepData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleConfirm = async () => {
+    const res = await createDisbursementPlan.mutateAsync({
+      beneficiaries: disbursements.data?.map((b) => b.walletAddress),
+
+      // beneficiaries: stepData.selectedBeneficiaries.map((b) => b.walletAddress),
+      conditions: stepData.selectedConditions,
+      totalAmount: +disbursements.data?.reduce(
+        (acc: number, disbursement: any) => acc + disbursement.amount,
+        0,
+      ),
+      // totalAmount: +stepData.selectedBeneficiaries.reduce(
+      //   (acc, curr) => acc + Number(curr.amount),
+      //   0,
+      // ),
+    });
+    console.log('res', res);
+  };
   const handleNext = () => {
     const currentStepValidations = steps[currentStep].validation;
     const validationErrors = Object.entries(currentStepValidations)
@@ -96,6 +77,75 @@ const FundManagementFlow = () => {
       setCurrentStep(currentStep - 1);
     }
   };
+
+  const steps = [
+    {
+      id: 'step1',
+      title: 'Disburse Method',
+      component: (
+        <DisbursementPlan
+          handleStepDataChange={handleStepDataChange}
+          stepData={stepData}
+        />
+      ),
+      // validation: {
+      //   noMethodSelected: {
+      //     condition: () => !stepData.treasurySource,
+      //     message: 'Please select a disburse method',
+      //   },
+      // },
+      validation: {
+        // noBeneficiariesSelected: {
+        //   condition: () => !stepData.selectedBeneficiaries.length,
+        //   message: 'Please select beneficiaries',
+        // },
+        noInputAmount: {
+          condition: () =>
+            stepData.selectedBeneficiaries.length && !stepData.bulkInputAmount,
+          message: 'Please send an amount to the selected beneficiaries.',
+        },
+      },
+    },
+    {
+      id: 'step2',
+      title: 'Disburse Amount',
+      component: (
+        <DisbursementCondition
+          handleStepDataChange={handleStepDataChange}
+          stepData={stepData}
+        />
+      ),
+      validation: {
+        noConditionsSelected: {
+          condition: () => !stepData.selectedConditions.length,
+          message: 'Please select at least one condition',
+        },
+      },
+    },
+    {
+      id: 'open_confirm_modal',
+      title: 'Review & Confirm',
+      component: (
+        <DisbursementConfirmation
+          handleStepDataChange={handleStepDataChange}
+          stepData={stepData}
+        />
+      ),
+      validation: {},
+    },
+    {
+      id: 'confirm_send',
+      title: '',
+      component: (
+        <WarningDialog
+          onCancel={handlePrevious}
+          onConfirm={handleConfirm}
+          open={confirmModal.value}
+        />
+      ),
+    },
+  ];
+
   const renderComponent = () => {
     // if (!!stepData.treasurySource && disburseMultiSig.isSuccess) {
     //   return <div>Disbursement Successful</div>;
@@ -103,13 +153,37 @@ const FundManagementFlow = () => {
 
     return steps[currentStep].component;
   };
+
+  useEffect(() => {
+    if (createDisbursementPlan.isSuccess) {
+      router.push(`/projects/rp/${id}/fundManagement`);
+    }
+  }, [createDisbursementPlan.isSuccess, id, router]);
+
+  const handleNextStep = (stepId: string) => {
+    //  steps[currentStep].id === 'confirm_send' ? handleConfirm : handleNext;
+    switch (stepId) {
+      case 'confirm_send':
+        return;
+
+      case 'open_confirm_modal':
+        confirmModal.onTrue();
+        handleNext();
+        return;
+
+      default:
+        handleNext();
+        return;
+    }
+  };
+
   return (
-    <div>
+    <div className="p-2">
       <div>{renderComponent()}</div>
       {
-        <div className="flex items-center justify-end gap-4 mx-4">
+        <div className="flex items-center justify-end gap-4 mx-4 mt-4">
           <Button
-            className="w-48 text-red-600 bg-pink-200"
+            className="w-48 text-red-600 bg-pink-200 hover:bg-pink-300"
             onClick={handlePrevious}
             disabled={currentStep === 0}
           >
@@ -117,11 +191,10 @@ const FundManagementFlow = () => {
           </Button>
           <Button
             className="w-48 "
-            onClick={
-              steps[currentStep].id === 'confirm_send' ? () => {} : handleNext
-            }
+            disabled={createDisbursementPlan.isPending}
+            onClick={() => handleNextStep(steps[currentStep].id)}
           >
-            {currentStep === steps.length - 1 ? 'Confirm' : 'Proceed'}
+            {currentStep === steps.length - 1 ? 'Submit' : 'Proceed'}
           </Button>
         </div>
       }

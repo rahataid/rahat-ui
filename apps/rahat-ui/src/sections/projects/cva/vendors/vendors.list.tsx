@@ -84,14 +84,6 @@ const VendorList = () => {
       },
     });
     console.log({ result });
-    // const filteredData = result?.data.map((row: any) => {
-    //   return {
-    //     name: row.User.name,
-    //     walletaddress: row.User.wallet,
-    //     phone: row.User.phone,
-    //     vendorId: row.User.uuid,
-    //   };
-    // });
     const filteredData = result?.data;
 
     console.log({ filteredData });

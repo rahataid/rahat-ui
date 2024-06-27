@@ -46,6 +46,7 @@ import SplitViewDetailCards from './components/split.view.detail.cards';
 import EditBeneficiary from './editBeneficiary';
 import { ListBeneficiary } from '@rahat-ui/types';
 import { useRemoveBeneficiary } from '@rahat-ui/query';
+import DeleteBeneficiaryModal from './components/deleteBenfModal';
 
 type IProps = {
   beneficiaryDetail: ListBeneficiary;
@@ -59,8 +60,8 @@ export default function BeneficiaryDetail({
   const router = useRouter();
   useSingleBeneficiary(beneficiaryDetail.uuid as UUID);
   const beneficiary = useBeneficiaryStore((state) => state.singleBeneficiary);
-  const deleteBeneficiary = useRemoveBeneficiary();
   const projectModal = useBoolean();
+  const deleteModal = useBoolean();
   const [activeTab, setActiveTab] = useState<'details' | 'edit' | null>(
     'details',
   );
@@ -83,25 +84,24 @@ export default function BeneficiaryDetail({
     projectModal.onTrue();
   };
 
-  const removeBeneficiary = (id: string | undefined) => {
-    try {
-      deleteBeneficiary.mutateAsync({
-        uuid: id as UUID,
-      });
-    } catch (e) {
-      console.error('Error::', e);
-    }
+  const handleDeleteClick = () => {
+    deleteModal.onTrue();
   };
 
-  useEffect(() => {
-    deleteBeneficiary.isSuccess && closeSecondPanel();
-  }, [deleteBeneficiary]);
+  
+  const benfAssignedToProject = beneficiaryDetail?.BeneficiaryProject?.length
 
   return (
     <>
       <AssignToProjectModal
         beneficiaryDetail={beneficiaryDetail}
         projectModal={projectModal}
+      />
+
+      <DeleteBeneficiaryModal
+        beneficiaryDetail={beneficiaryDetail}
+        deleteModal={deleteModal}
+        closeSecondPanel={closeSecondPanel}
       />
       <div className="flex justify-between p-4 pt-5 bg-card border-b">
         <div className="flex gap-3">
@@ -115,69 +115,20 @@ export default function BeneficiaryDetail({
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
-          {/* <TooltipProvider delayDuration={100}>
-            <Tooltip>
-              <TooltipTrigger
-                onClick={() => {
-                  router.push(
-                    paths.dashboard.beneficiary.detail(walletAddress),
-                  );
-                }}
-              >
-                <Expand size={20} strokeWidth={1.5} />
-              </TooltipTrigger>
-              <TooltipContent className="bg-secondary ">
-                <p className="text-xs font-medium">Expand</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider> */}
         </div>
         <div className="flex gap-3">
           <TooltipProvider delayDuration={100}>
             <Tooltip>
-              <TooltipTrigger>
-                <Archive size={20} strokeWidth={1.5} />
+              <TooltipTrigger disabled={benfAssignedToProject} onClick={handleDeleteClick}>
+                <Trash2
+                  className="cursor-pointer"
+                  color="red"
+                  size={20}
+                  strokeWidth={1.5}
+                />
               </TooltipTrigger>
               <TooltipContent className="bg-secondary ">
-                <p className="text-xs font-medium">Archive</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-          <TooltipProvider delayDuration={100}>
-            <Tooltip>
-              <TooltipTrigger>
-                <AlertDialog>
-                  <AlertDialogTrigger className="flex items-center">
-                    <Trash2
-                      className="cursor-pointer"
-                      color="red"
-                      size={20}
-                      strokeWidth={1.5}
-                    />
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>
-                        Are you absolutely sure?
-                      </AlertDialogTitle>
-                      <AlertDialogDescription>
-                        This action cannot be undone. This will permanently
-                        delete this beneficiary.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction
-                        onClick={() => removeBeneficiary(beneficiary?.uuid)}
-                      >
-                        Continue
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-              </TooltipTrigger>
-              <TooltipContent className="bg-secondary ">
-                <p className="text-xs font-medium">Delete</p>
+                <p className="text-xs font-medium">{benfAssignedToProject ? 'Cannot delete a beneficiary assigned to project.' : 'Delete'}</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
@@ -206,7 +157,7 @@ export default function BeneficiaryDetail({
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-      </div>
+      </div >
       <div className="p-2 flex items-center gap-2">
         <Image
           className="rounded-full"
@@ -251,12 +202,16 @@ export default function BeneficiaryDetail({
         </div>
       </div>
 
-      {activeTab === 'details' && (
-        <SplitViewDetailCards beneficiaryDetail={beneficiaryDetail} />
-      )}
-      {activeTab === 'edit' && (beneficiaryDetail || beneficiary) && (
-        <EditBeneficiary beneficiary={beneficiaryDetail || beneficiary} />
-      )}
+      {
+        activeTab === 'details' && (
+          <SplitViewDetailCards beneficiaryDetail={beneficiaryDetail} />
+        )
+      }
+      {
+        activeTab === 'edit' && (beneficiaryDetail || beneficiary) && (
+          <EditBeneficiary beneficiary={beneficiaryDetail || beneficiary} />
+        )
+      }
     </>
   );
 }

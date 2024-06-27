@@ -1,9 +1,6 @@
 'use client';
 
-import * as React from 'react';
-import { useParams, useRouter } from 'next/navigation';
 import {
-  ColumnDef,
   ColumnFiltersState,
   SortingState,
   VisibilityState,
@@ -14,28 +11,26 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { Eye, MoreHorizontal, Settings2 } from 'lucide-react';
+import {
+  Mail,
+  MessageCircle,
+  MessageCircleMore,
+  PhoneCall,
+  Settings2,
+} from 'lucide-react';
+import { useParams } from 'next/navigation';
+import * as React from 'react';
 
+import { useCampaignStore } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/components/button';
-import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
-import { Badge } from '@rahat-ui/shadcn/components/badge';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/components/dropdown-menu';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  SelectGroup,
-} from '@rahat-ui/shadcn/components/select';
 import { Input } from '@rahat-ui/shadcn/components/input';
 import {
   Table,
@@ -45,13 +40,10 @@ import {
   TableHeader,
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
-import { paths } from 'apps/rahat-ui/src/routes/paths';
-import { useCampaignStore, useListCampaignQuery } from '@rahat-ui/query';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import { CAMPAIGN_TYPES, ICampaignItemApiResponse } from '@rahat-ui/types';
+import { CAMPAIGN_TYPES } from '@rahat-ui/types';
 import { useListCampaign } from '@rumsan/communication-query';
-import { useSecondPanel } from 'apps/rahat-ui/src/providers/second-panel-provider';
-import TextDetailSplitView from 'apps/rahat-ui/src/sections/communications/text/text.detail.split.view';
+import DataCard from 'apps/rahat-ui/src/components/dataCard';
 import useTextTableColumn from './useTextTableColumn';
 
 export type Text = {
@@ -112,7 +104,18 @@ export default function TextTable() {
 
   return (
     <div className="w-full h-full p-2 bg-secondary">
-      <div className="flex items-center mb-2">
+      <div className=" grid sm:grid-cols-1 md:grid-cols-4 gap-2 mb-2">
+        <DataCard className="" title="IVR" number={'0'} Icon={PhoneCall} />
+        <DataCard className="" title="Emails" number={'0'} Icon={Mail} />
+        <DataCard className="" title="SMS" number={'0'} Icon={MessageCircle} />
+        <DataCard
+          className=""
+          title="Whatsapp"
+          number={'0'}
+          Icon={MessageCircleMore}
+        />
+      </div>
+      <div className="flex items-center mt-4 mb-2">
         <Input
           placeholder="Filter campaigns..."
           value={
@@ -121,7 +124,7 @@ export default function TextTable() {
           onChange={(event) =>
             table.getColumn('campaign')?.setFilterValue(event.target.value)
           }
-          className="max-w-sm mr-3"
+          className="max-w-mx mr-3"
         />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -153,9 +156,9 @@ export default function TextTable() {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <div className="rounded border h-[calc(100vh-180px)]  bg-card">
+      <div className="rounded border bg-card">
         <Table>
-          <ScrollArea className="w-full h-[calc(100vh-184px)]">
+          <ScrollArea className="w-full h-[calc(100vh-320px)]">
             <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>

@@ -22,9 +22,12 @@ const PopulationInsights = ({ data }: Props) => {
 
   const filteredCoords =
     benefMapStats && benefMapStats.data
-      ? benefMapStats.data.filter((b: any) => {
-          return b.latitude && b.longitude;
-        })
+      ? benefMapStats.data
+          .filter((b: any) => b.latitude && b.longitude)
+          .map((d: any) => ({
+            ...d,
+            type: 'Beneficiary',
+          }))
       : [];
 
   const combinedCoords = [

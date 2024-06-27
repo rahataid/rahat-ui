@@ -6,7 +6,6 @@ import { GeistSans } from 'geist/font/sans';
 import { QueryProvider } from '../providers/query-provider';
 import { SecondPanelProvider } from '../providers/second-panel-provider';
 import { ServiceProvider } from '../providers/service.provider';
-import { GraphQueryProvider } from '../providers/subgraph-provider';
 import { ThemeProvider } from '../providers/theme-provider';
 import { Wagmi } from '../providers/wagmi.provider';
 import './globals.css';
@@ -14,7 +13,6 @@ import { RSQueryProvider } from '@rumsan/react-query/providers/rs-query-provider
 import { CommunicationQueryProvider } from '@rumsan/communication-query/providers/communication-query-provider';
 
 export const metadata = {
-  title: 'Welcome to Rahat',
   icons: {
     icon: '/svg/rahat-logo.png',
   },
@@ -28,6 +26,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
+        <title>Welcome to Rahat</title>
         <Wagmi>
           <QueryProvider>
             <RSQueryProvider>

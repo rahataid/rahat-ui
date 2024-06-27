@@ -130,7 +130,7 @@ export default function BeneficiaryDetail({
           />
         </TabsContent>
         <TabsContent value="transaction">
-          <TransactionTab />
+          <TransactionTab beneficiaryDetails={beneficiaryDetails} />
         </TabsContent>
       </Tabs>
     </>

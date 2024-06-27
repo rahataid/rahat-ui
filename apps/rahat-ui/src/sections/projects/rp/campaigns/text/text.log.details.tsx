@@ -52,7 +52,7 @@ export type Text = {
   status: string;
 };
 
-export default function TextTable() {
+export default function TextLogDetails() {
   const campaignStore = useCampaignStore();
   const columns = useTextTableColumn();
   const { id } = useParams();

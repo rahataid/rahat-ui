@@ -14,9 +14,9 @@ import {
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { Plus } from 'lucide-react';
 import React from 'react';
-import TextCampaignAddDrawer from './campaign.text.add';
+import VoiceCampaignAddDrawer from './campaign.voice.add';
 
-const TextCampaignDetails = () => {
+const VoiceCampaignDetails = () => {
   return (
     <div className="h-[calc(100vh-80px)] p-2">
       <ResizablePanelGroup
@@ -27,7 +27,7 @@ const TextCampaignDetails = () => {
           <ScrollArea className="h-full">
             <div className="grid grid-cols-4 gap-2">
               {/* /Add Campaign Card */}
-              <TextCampaignAddDrawer />
+              <VoiceCampaignAddDrawer />
               {/* Campaign Card */}
               <Card className="flex flex-col rounded justify-center border-none shadow bg-card">
                 <CardHeader className="pb-2 p-4">
@@ -64,4 +64,4 @@ const TextCampaignDetails = () => {
   );
 };
 
-export default TextCampaignDetails;
+export default VoiceCampaignDetails;

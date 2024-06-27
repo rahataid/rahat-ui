@@ -191,7 +191,13 @@ export default function VoiceTable() {
           </DropdownMenuContent>
         </DropdownMenu>
         {table.getRowModel().rows?.length > 0 ? (
-          <Button className="flex items-center gap-2">
+          <Button
+            className="flex items-center gap-2"
+            onClick={() => {
+              router.push(`/projects/rp/${id}/campaigns/voice/manage`);
+              console.log('first');
+            }}
+          >
             <Settings size={18} strokeWidth={1.5} />
             Manage
           </Button>

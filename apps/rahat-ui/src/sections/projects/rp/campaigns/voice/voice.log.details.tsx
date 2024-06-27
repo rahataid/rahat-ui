@@ -2,14 +2,6 @@
 
 import { useCampaignStore } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/components/button';
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@rahat-ui/shadcn/components/dropdown-menu';
 import { Input } from '@rahat-ui/shadcn/components/input';
 import {
   Table,
@@ -20,7 +12,6 @@ import {
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import { CAMPAIGN_TYPES } from '@rahat-ui/types';
 import { useListCampaign } from '@rumsan/communication-query';
 import {
   ColumnFiltersState,
@@ -34,18 +25,12 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import DataCard from 'apps/rahat-ui/src/components/dataCard';
-import {
-  Mail,
-  MessageCircle,
-  PhoneCall,
-  Settings,
-  Settings2,
-} from 'lucide-react';
+import { Mail, MessageCircle, PhoneCall, Settings } from 'lucide-react';
 import Image from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
 import * as React from 'react';
-import useVoiceTableColumn from './useVoiceTableColumn';
 import { TriggerConfirmModal } from './confirm.moda';
+import useVoiceTableColumn from './useVoiceTableColumn';
 
 export type Voice = {
   id: number;
@@ -138,7 +123,11 @@ export default function VoiceLogDetails() {
 
   return (
     <div className="w-full h-full p-2 bg-secondary">
-      <div className=" grid sm:grid-cols-1 md:grid-cols-3 gap-2 mb-2">
+      <div className="flex items-center justify-between mb-4">
+        <p className="font-medium	text-neutral-800 text-lg">Campaign Name</p>
+        {table.getRowModel().rows?.length > 0 ? <TriggerConfirmModal /> : null}
+      </div>
+      <div className=" grid sm:grid-cols-1 md:grid-cols-3 gap-2">
         <DataCard className="" title="Voice" number={'10'} Icon={PhoneCall} />
         <DataCard
           className=""
@@ -162,36 +151,6 @@ export default function VoiceLogDetails() {
           }
           className="max-w-mx"
         />
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto">
-              <Settings2 className="mr-2 h-4 w-5" />
-              View
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Toggle Columns</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            {table
-              .getAllColumns()
-              .filter((column) => column.getCanHide())
-              .map((column) => {
-                return (
-                  <DropdownMenuCheckboxItem
-                    key={column.id}
-                    className="capitalize"
-                    checked={column.getIsVisible()}
-                    onCheckedChange={(value) =>
-                      column.toggleVisibility(!!value)
-                    }
-                  >
-                    {column.id}
-                  </DropdownMenuCheckboxItem>
-                );
-              })}
-          </DropdownMenuContent>
-        </DropdownMenu>
-        {table.getRowModel().rows?.length > 0 ? <TriggerConfirmModal /> : null}
       </div>
       <div className="rounded border bg-card">
         {table.getRowModel().rows?.length ? (

@@ -23,7 +23,7 @@ const VoiceCampaignDetails = () => {
           {/* Campaign Card */}
           <Card
             onClick={() =>
-              router.push(`/projects/rp/${id}/campaigns/text/manage/${id}`)
+              router.push(`/projects/rp/${id}/campaigns/voice/manage/${id}`)
             }
             className="flex flex-col rounded justify-center shadow bg-card cursor-pointer hover:shadow-md hover:border-1 hover:border-blue-500 ease-in duration-100"
           >

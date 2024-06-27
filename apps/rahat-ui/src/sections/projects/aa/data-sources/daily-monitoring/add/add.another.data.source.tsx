@@ -266,6 +266,36 @@ export default function AddAnotherDataSource({ form, onClose, index }: IProps) {
           />
         );
         break;
+      case 'Realtime Rainfall':
+        fields = (
+          <>
+            <InputFormField
+              form={form}
+              name={fieldName('chisapaniKarnali')}
+              label="Chisapani Karnali"
+              placeholder="Enter status"
+            />
+            <InputFormField
+              form={form}
+              name={fieldName('daulatpurStation')}
+              label="Daulatpur Station"
+              placeholder="Enter status"
+            />
+            <InputFormField
+              form={form}
+              name={fieldName('bachilaStation')}
+              label="Bachila Station"
+              placeholder="Enter status"
+            />
+            <InputFormField
+              form={form}
+              name={fieldName('gurbaDurbar')}
+              label="Gurba Durbar"
+              placeholder="Enter status"
+            />
+          </>
+        );
+        break;
       case 'NWP':
         fields = (
           <>

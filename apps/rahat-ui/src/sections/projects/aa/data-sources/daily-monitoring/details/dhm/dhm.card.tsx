@@ -72,6 +72,22 @@ export default function DHMCard({ data }: IProps) {
       } else return [];
     }, [data]);
 
+    const realtimeRainfallData = React.useMemo(() => {
+      if (data) {
+        const result = data.filter(
+          (d: any) => d.forecast === 'Realtime Rainfall',
+        );
+        if (result?.length) {
+          return [
+            { label: 'Chisapani Karnali', value: result[0]?.chisapaniKarnali },
+            { label: 'Daulatpur Station', value: result[0]?.daulatpurStation },
+            { label: 'Bachila Station', value: result[0]?.bachilaStation },
+            { label: 'Gurba Durbar', value: result[0]?.gurbaDurbar },
+          ];
+        } else return [];
+      } else return [];
+    }, [data]);
+
     const nwpData = React.useMemo(() => {
       if (data) {
         const result = data.filter((d: any) => d.forecast === 'NWP');
@@ -107,6 +123,14 @@ export default function DHMCard({ data }: IProps) {
             source="DHM"
             title="Realtime Monitoring (River Watch)"
             data={realtimeMonitoringData}
+          />
+        )}
+
+        {realtimeRainfallData?.length > 0 && (
+          <FieldCard
+            source="DHM"
+            title="Realtime Rainfall"
+            data={realtimeRainfallData}
           />
         )}
 

@@ -32,6 +32,7 @@ export const useSelectItems = () => {
       value: 'Realtime Monitoring (River Watch)',
       label: 'Realtime Monitoring (River Watch)',
     },
+    { value: 'Realtime Rainfall', label: 'Realtime Rainfall' },
     { value: 'NWP', label: 'NWP' },
   ];
 

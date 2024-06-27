@@ -72,6 +72,11 @@ export default function AddDailyMonitoring() {
         dayAfterTomorrowNight: z.string().optional(),
         //DHM - Realtime Monitoring (River Watch)
         waterLevel: z.string().optional(),
+        //DHM - Realtime Rainfall
+        chisapaniKarnali: z.string().optional(),
+        daulatpurStation: z.string().optional(),
+        bachilaStation: z.string().optional(),
+        gurbaDurbar: z.string().optional(),
         //DHM - NWP
         hours24NWP: z.string().optional(),
         hours48: z.string().optional(),
@@ -148,6 +153,14 @@ export default function AddDailyMonitoring() {
                 source: item.source,
                 forecast: item?.forecast,
                 waterLevel: item?.waterLevel,
+              });
+              break;
+            case 'Realtime Rainfall':
+              dataPayload.push({
+                chisapaniKarnali: item.chisapaniKarnali,
+                daulatpurStation: item.daulatpurStation,
+                bachilaStation: item.bachilaStation,
+                gurbaDurbar: item.gurbaDurbar,
               });
               break;
             case 'NWP':

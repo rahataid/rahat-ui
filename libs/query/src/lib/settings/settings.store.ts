@@ -9,6 +9,7 @@ export type AppSettingsState = {
   rahatTreasury: string;
   contracts: Record<string, any>;
   navSettings: Record<string, any>;
+  tokenSettings: Record<string, any>;
 };
 
 export type AppSettingsAction = {
@@ -18,6 +19,7 @@ export type AppSettingsAction = {
   setRahatTreasurySettings: (rahatTreasury: `0X${string}`) => void;
   setContractSettings: (contracts: Record<string, string>) => void;
   setNavSettings: (navSettings: Record<string, any>) => void;
+  setTokenSettings: (tokenSettings: Record<string, any>) => void;
 };
 
 export type AppSettings = AppSettingsState & AppSettingsAction;
@@ -50,6 +52,9 @@ export const initialAppSettings: AppSettingsState = {
     data: [],
     subData: [],
   },
+  tokenSettings: {
+    data: [],
+  },
 };
 
 export const useSettingsStore = zustandStore<AppSettings>(
@@ -66,6 +71,8 @@ export const useSettingsStore = zustandStore<AppSettings>(
     setContractSettings: (contracts) => set({ contracts }),
     navSettings: initialAppSettings.navSettings,
     setNavSettings: (navSettings) => set({ navSettings }),
+    tokenSettings: initialAppSettings.tokenSettings,
+    setTokenSettings: (tokenSettings) => set({ tokenSettings }),
   }),
   {
     devtoolsEnabled: true,

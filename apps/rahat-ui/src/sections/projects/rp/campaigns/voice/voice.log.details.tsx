@@ -45,6 +45,7 @@ import Image from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
 import * as React from 'react';
 import useVoiceTableColumn from './useVoiceTableColumn';
+import { TriggerConfirmModal } from './confirm.moda';
 
 export type Voice = {
   id: number;
@@ -190,18 +191,7 @@ export default function VoiceLogDetails() {
               })}
           </DropdownMenuContent>
         </DropdownMenu>
-        {table.getRowModel().rows?.length > 0 ? (
-          <Button
-            className="flex items-center gap-2"
-            onClick={() => {
-              router.push(`/projects/rp/${id}/campaigns/voice/manage`);
-              console.log('first');
-            }}
-          >
-            <Settings size={18} strokeWidth={1.5} />
-            Manage
-          </Button>
-        ) : null}
+        {table.getRowModel().rows?.length > 0 ? <TriggerConfirmModal /> : null}
       </div>
       <div className="rounded border bg-card">
         {table.getRowModel().rows?.length ? (

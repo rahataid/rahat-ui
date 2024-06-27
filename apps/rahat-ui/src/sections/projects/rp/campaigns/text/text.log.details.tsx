@@ -44,7 +44,7 @@ import Image from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
 import * as React from 'react';
 import useTextTableColumn from './useTextTableColumn';
-
+import { TriggerConfirmModal } from './confirm.modal';
 export type Text = {
   id: number;
   to: string;
@@ -183,18 +183,7 @@ export default function TextLogDetails() {
               })}
           </DropdownMenuContent>
         </DropdownMenu>
-        {table.getRowModel().rows?.length > 0 ? (
-          <Button
-            onClick={() => {
-              router.push(`/projects/rp/${id}/campaigns/text/manage`);
-              console.log('first');
-            }}
-            className="flex items-center gap-2"
-          >
-            <Settings size={18} strokeWidth={1.5} />
-            Manage
-          </Button>
-        ) : null}
+        {table.getRowModel().rows?.length > 0 ? <TriggerConfirmModal /> : null}
       </div>
       <div className="rounded border bg-card">
         {table.getRowModel().rows?.length ? (

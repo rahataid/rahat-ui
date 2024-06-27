@@ -1,3 +1,4 @@
+'use client';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   Card,
@@ -37,7 +38,7 @@ const VoiceCampaignDetails = () => {
                 onClick={() =>
                   router.push(`/projects/rp/${id}/campaigns/text/manage/${id}`)
                 }
-                className="flex rounded justify-center border-dashed border-2 border-primary shadow bg-card cursor-pointer hover:shadow-md ease-in duration-300"
+                className="flex flex-col rounded justify-center shadow bg-card cursor-pointer hover:shadow-md hover:border-1 hover:border-blue-500 ease-in duration-100"
               >
                 <CardHeader className="pb-2 p-4">
                   <div className="flex items-start justify-between ">

@@ -2,10 +2,11 @@ import {
   PROJECT_SETTINGS_KEYS,
   useBulkAllocateTokens,
   useFindAllDisbursementPlans,
+  useFindAllDisbursements,
   useGetTokenAllocations,
+  usePagination,
+  useProjectBeneficiaries,
   useProjectSettingsStore,
-  useReadRahatToken,
-  useSettingsStore,
 } from '@rahat-ui/query';
 import ChartLine from '@rahat-ui/shadcn/src/components/charts/chart-components/chart-line';
 import { Avatar } from '@rahat-ui/shadcn/src/components/ui/avatar';
@@ -19,10 +20,12 @@ import {
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import DataCard from 'apps/rahat-ui/src/components/dataCard';
 import { UUID } from 'crypto';
-import { ArrowUp, Users } from 'lucide-react';
-import { useRouter, useParams } from 'next/navigation';
-import { DisbursementConditionType } from '../disbursement-management/2-disbursement-condition';
 import { isEmpty } from 'lodash';
+import { Banknote, SendHorizontal, User, Users } from 'lucide-react';
+import { useParams, useRouter } from 'next/navigation';
+import { DisbursementConditionType } from '../disbursement-management/2-disbursement-condition';
+import { useEffect, useState } from 'react';
+import { truncateEthAddress } from '@rumsan/sdk/utils';
 
 const sampleSeries = [
   {
@@ -65,10 +68,26 @@ const FundManagementView = () => {
   const route = useRouter();
   const { id } = useParams() as { id: UUID };
   const { data: disbursementData } = useFindAllDisbursementPlans(id);
+  const [rowData, setRowData] = useState<any[]>([]);
+
   const totalBeneficiaries = disbursementData?._count?.Disbursements;
   const filteredConditions = dibsursementConditions.filter((condition) =>
     disbursementData?.conditions?.includes(condition.type),
   );
+  // This is a temporary solution for showing the name
+  const { pagination, filters } = usePagination();
+
+  const projectBeneficiaries = useProjectBeneficiaries({
+    page: pagination.page,
+    perPage: pagination.perPage,
+    order: 'desc',
+    sort: 'updatedAt',
+    projectUUID: id,
+    ...filters,
+  });
+
+  const disbursements = useFindAllDisbursements(id);
+
   const contractSettings = useProjectSettingsStore(
     (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT],
   );
@@ -82,7 +101,39 @@ const FundManagementView = () => {
     contractSettings?.rahattoken?.address as `0x${string}`,
   );
 
-  console.log('chainTokenAllocations.data', chainTokenAllocations.data);
+  useEffect(() => {
+    if (
+      projectBeneficiaries.isSuccess &&
+      projectBeneficiaries.data?.data &&
+      disbursements?.isSuccess
+    ) {
+      const projectBeneficiaryDisbursements =
+        projectBeneficiaries.data?.data.map((beneficiary) => {
+          const beneficiaryDisbursement = disbursements?.data?.find(
+            (disbursement: any) =>
+              disbursement.walletAddress === beneficiary.walletAddress,
+          );
+          return {
+            ...beneficiary,
+            disbursementAmount: beneficiaryDisbursement?.amount || '0',
+          };
+        });
+
+      if (
+        JSON.stringify(projectBeneficiaryDisbursements) !==
+        JSON.stringify(rowData)
+      ) {
+        setRowData(projectBeneficiaryDisbursements);
+      }
+    }
+  }, [
+    disbursements?.data,
+    disbursements?.data?.data,
+    disbursements?.isSuccess,
+    projectBeneficiaries.data?.data,
+    projectBeneficiaries.isSuccess,
+    rowData,
+  ]);
 
   const handleAllocationSync = async () => {
     await syncDisbursementAllocation.mutateAsync({
@@ -91,23 +142,25 @@ const FundManagementView = () => {
       tokenAddress: contractSettings?.rahattoken?.address,
     });
   };
+
+  console.log('rowData', rowData);
   return (
     <>
       <div className="grid grid-cols-12 gap-2 p-4 bg-secondary h-[calc(100vh-75px)]">
         <div className="col-span-12 md:col-span-4">
           <DataCard
             className="rounded-sm"
-            title="Beneficiaries"
+            title="Project Balance"
             number={'0'}
-            Icon={Users}
+            Icon={Banknote}
           />
         </div>
         <div className="col-span-12 md:col-span-4">
           <DataCard
             className="rounded-sm"
-            title="Beneficiaries"
+            title="Project Contract Address"
             number={'0'}
-            Icon={Users}
+            Icon={SendHorizontal}
           />
         </div>
 
@@ -115,27 +168,38 @@ const FundManagementView = () => {
         <div className="col-span-12 md:col-span-4 md:row-span-3 rounded-sm">
           <Card className="h-full">
             <CardHeader>
-              <CardTitle>Recent Sales</CardTitle>
+              <CardTitle>Recent Deposits</CardTitle>
             </CardHeader>
             <ScrollArea className="min-h-96">
-              <CardContent className="grid gap-8">
-                <div className="flex items-center gap-4">
-                  <Avatar
-                    className={`h-9 w-9 sm:flex bg-green-200 flex items-center justify-center`}
-                  >
-                    <ArrowUp size={20} strokeWidth={1.25} />
-                  </Avatar>
-                  <div className="grid gap-1">
-                    <p className="text-sm font-medium leading-none">
-                      Olivia Martin
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      olivia.martin@email.com
-                    </p>
+              {rowData?.map((row) => (
+                <CardContent
+                  key={row?.walletAddress}
+                  className="grid gap-8 bg-neutral-100 m-2 p-4 rounded-sm"
+                >
+                  <div className="flex items-center gap-4">
+                    <Avatar
+                      className={`h-9 w-9 sm:flex bg-gray-200 flex items-center justify-center`}
+                    >
+                      <User
+                        className="text-primary"
+                        size={20}
+                        strokeWidth={1.75}
+                      />
+                    </Avatar>
+                    <div className="grid gap-1">
+                      <p className="text-sm font-medium leading-none">
+                        {row?.name}
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        {truncateEthAddress(row?.walletAddress, 4)}
+                      </p>
+                    </div>
+                    <div className="ml-auto font-medium">
+                      ${row?.disbursementAmount}
+                    </div>
                   </div>
-                  <div className="ml-auto font-medium">+$1,999.00</div>
-                </div>
-              </CardContent>
+                </CardContent>
+              ))}
             </ScrollArea>
           </Card>
         </div>
@@ -150,13 +214,19 @@ const FundManagementView = () => {
           <div className="col-span-12 p-4 shadow rounded flex flex-col  bg-card h-72">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold">Disbursement Plan</h2>
+              {/* {+chainTokenAllocations.data !==
+              +disbursementData?.totalAmount ? ( */}
               <Button
                 variant={'secondary'}
                 onClick={handleAllocationSync}
-                disabled={syncDisbursementAllocation.isPending}
+                disabled={
+                  syncDisbursementAllocation.isPending ||
+                  +chainTokenAllocations.data === +disbursementData?.totalAmount
+                }
               >
                 Sync to chain
               </Button>
+              {/* ) : null} */}
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <DataCard

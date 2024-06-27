@@ -127,7 +127,7 @@ export default function PieChart({
       width={width}
     />
   ) : (
-    <div className="bg-card shadow rounded p-4 flex items-center justify-center">
+    <div className="bg-card shadow-md rounded-lg p-4 flex items-center justify-center">
       {communityTool ? (
         <div>
           <h2 className={`font-medium p-0 text-left`}>{title}</h2>
@@ -143,8 +143,8 @@ export default function PieChart({
           </div>
         </div>
       ) : (
-        <div className="bg-white shadow-md rounded-lg overflow-hidden p-4">
-          <div className="flex flex-col items-center justify-center">
+        <div className="rounded-lg overflow-hidden p-4">
+          <div className="flex flex-col items-center justify-center gap-4">
             <h2 className={`font-medium p-0 text-left`}>{title}</h2>
             <Chart
               dir="ltr"

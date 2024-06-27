@@ -152,7 +152,7 @@ export const useTableColumns = (handleAssignClick: any) => {
     },
     {
       accessorKey: 'claimValue',
-      header: 'Claim',
+      header: 'Claims Value',
       cell: ({ row }) => {
         return (
           <>

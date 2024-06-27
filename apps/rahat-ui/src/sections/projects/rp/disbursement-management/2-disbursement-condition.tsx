@@ -39,7 +39,7 @@ const DisbursementCondition = ({
   };
 
   return (
-    <div className="grid grid-cols-12 p-4">
+    <div className="grid grid-cols-12">
       <div className="col-span-12 h-[calc(100vh-482px)] bg-card rounded-sm p-4">
         <div className="col-span-12">
           <h1 className="text-gray-700 text-xl font-medium">
@@ -49,9 +49,14 @@ const DisbursementCondition = ({
             <div className="col-span-6 flex items-center gap-2">
               <Checkbox
                 id="balance_check"
-                checked={selectedConditions.includes(
-                  DisbursementConditionType.BALANCE_CHECK,
-                )}
+                checked={
+                  selectedConditions.includes(
+                    DisbursementConditionType.BALANCE_CHECK,
+                  ) ||
+                  stepData.selectedConditions.includes(
+                    DisbursementConditionType.BALANCE_CHECK,
+                  )
+                }
                 onCheckedChange={() =>
                   handleCheckboxChange(DisbursementConditionType.BALANCE_CHECK)
                 }
@@ -67,9 +72,14 @@ const DisbursementCondition = ({
             <div className="col-span-6 flex items-center gap-2">
               <Checkbox
                 id="approver_signature"
-                checked={selectedConditions.includes(
-                  DisbursementConditionType.APPROVER_SIGNATURE,
-                )}
+                checked={
+                  selectedConditions.includes(
+                    DisbursementConditionType.APPROVER_SIGNATURE,
+                  ) ||
+                  stepData.selectedConditions.includes(
+                    DisbursementConditionType.APPROVER_SIGNATURE,
+                  )
+                }
                 onCheckedChange={() =>
                   handleCheckboxChange(
                     DisbursementConditionType.APPROVER_SIGNATURE,

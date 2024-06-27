@@ -127,3 +127,9 @@ export const PERMISSIONS = [
 export const MAX_EXPORT_COUNT = 1000;
 
 export const FIELD_DEF_FETCH_LIMIT = 300;
+
+export const MARKER_TYPE = {
+  BANK: 'Bank',
+  EVACUATION: 'Evacuation',
+  BENEFICIARY: 'Beneficiary',
+};

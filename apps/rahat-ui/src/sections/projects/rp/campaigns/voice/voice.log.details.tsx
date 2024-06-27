@@ -20,6 +20,7 @@ import {
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import { CAMPAIGN_TYPES } from '@rahat-ui/types';
 import { useListCampaign } from '@rumsan/communication-query';
 import {
   ColumnFiltersState,
@@ -43,18 +44,19 @@ import {
 import Image from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
 import * as React from 'react';
-import useTextTableColumn from './useTextTableColumn';
+import useVoiceTableColumn from './useVoiceTableColumn';
 
-export type Text = {
+export type Voice = {
   id: number;
   to: string;
   date: string;
+  duration: string;
   status: string;
 };
 
-export default function TextTable() {
+export default function VoiceLogDetails() {
   const campaignStore = useCampaignStore();
-  const columns = useTextTableColumn();
+  const columns = useVoiceTableColumn();
   const { id } = useParams();
   const router = useRouter();
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -73,26 +75,31 @@ export default function TextTable() {
     {
       to: 'Alice',
       date: '2023-06-01',
+      duration: '9 sec',
       status: 'Pending',
     },
     {
       to: 'Bob',
       date: '2023-06-02',
+      duration: '9 sec',
       status: 'Approved',
     },
     {
       to: 'Charlie',
       date: '2023-06-03',
+      duration: '9 sec',
       status: 'Rejected',
     },
     {
       to: 'David',
       date: '2023-06-04',
+      duration: '9 sec',
       status: 'Pending',
     },
     {
       to: 'Eve',
       date: '2023-06-05',
+      duration: '9 sec',
       status: 'Approved',
     },
   ];
@@ -131,7 +138,7 @@ export default function TextTable() {
   return (
     <div className="w-full h-full p-2 bg-secondary">
       <div className=" grid sm:grid-cols-1 md:grid-cols-3 gap-2 mb-2">
-        <DataCard className="" title="Text" number={'10'} Icon={PhoneCall} />
+        <DataCard className="" title="Voice" number={'10'} Icon={PhoneCall} />
         <DataCard
           className=""
           title="Beneficiaries"
@@ -140,7 +147,7 @@ export default function TextTable() {
         />
         <DataCard
           className=""
-          title="Successful Message Delivered"
+          title="Successful Calls"
           number={'09'}
           Icon={MessageCircle}
         />
@@ -185,11 +192,11 @@ export default function TextTable() {
         </DropdownMenu>
         {table.getRowModel().rows?.length > 0 ? (
           <Button
+            className="flex items-center gap-2"
             onClick={() => {
-              router.push(`/projects/rp/${id}/campaigns/text/manage`);
+              router.push(`/projects/rp/${id}/campaigns/voice/manage`);
               console.log('first');
             }}
-            className="flex items-center gap-2"
           >
             <Settings size={18} strokeWidth={1.5} />
             Manage

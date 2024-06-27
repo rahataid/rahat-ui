@@ -32,7 +32,7 @@ export default function EditDailyMonitoring() {
   const { riverBasins } = useSelectItems();
   const { data, isLoading } = useSingleMonitoring(projectId, monitoringId);
   const details = React.useMemo(() => {
-    return data?.data;
+    return data?.data?.singleData;
   }, [data]);
 
   const updateDailyMonitoring = useUpdateMonitoring();

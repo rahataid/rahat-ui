@@ -18,11 +18,15 @@ export default function FieldSubCard({ day, status }: IProps) {
     [status],
   );
   return (
-    <div className="bg-[#f8f8f8] px-2 py-4 flex gap-3 rounded-sm">
+    <div
+      className={`bg-[#f8f8f8] px-2 py-4 flex gap-3 rounded-sm ${
+        !status ? 'opacity-50' : ''
+      }`}
+    >
       <BarChart2 size={20} className={`text-${renderIconColor(status)}-500`} />
       <div>
-        <h1 className="text-muted-foreground text-sm">{day}</h1>
-        <p className="w-[200px]">{status}</p>
+        <h1 className="text-muted-foreground text-sm">{day || 'N/A'}</h1>
+        <p className="w-[200px]">{status || 'N/A'}</p>
       </div>
     </div>
   );

@@ -44,7 +44,11 @@ export default function FieldCard({ title, subTitle, data, source }: IProps) {
 
       {(source === 'GLOFAS' ||
         source === 'NCMRWF Deterministic & Probabilistic') && (
-        <div className="bg-[#f8f8f8] px-2 py-4 rounded-sm">
+        <div
+          className={`bg-[#f8f8f8] px-2 py-4 rounded-sm ${
+            !data ? 'opacity-50' : ''
+          }`}
+        >
           <p>{data ?? 'N/A'}</p>
         </div>
       )}
@@ -56,7 +60,11 @@ export default function FieldCard({ title, subTitle, data, source }: IProps) {
             {data ?? 'N/A'}
           </Badge>
         ) : (
-          <div className="bg-[#f8f8f8] px-2 py-4 rounded-sm">
+          <div
+            className={`bg-[#f8f8f8] px-2 py-4 rounded-sm ${
+              !data ? 'opacity-50' : ''
+            }`}
+          >
             <p>{data ?? 'N/A'}</p>
           </div>
         ))}

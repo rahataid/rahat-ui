@@ -27,45 +27,80 @@ export default function DailyMonitoringDetailView() {
   const monitoringId = params.monitoringId as UUID;
 
   const { data, isLoading } = useSingleMonitoring(projectId, monitoringId);
-  const details = React.useMemo(() => {
-    return data?.data;
+
+  const latestDataDetails = React.useMemo(() => {
+    return data?.data?.singleData;
+  }, [data]);
+
+  const multipleDataDetails = React.useMemo(() => {
+    return data?.data?.multipleData?.sort(
+      (a: any, b: any) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+    );
   }, [data]);
 
   const DHM_data = React.useMemo(() => {
-    if (details) {
-      return details?.monitoringData?.filter((d: any) => d.source === 'DHM');
+    if (multipleDataDetails) {
+      return multipleDataDetails
+        .map((item: any) => {
+          const filteredData = item.data.filter((d: any) => d.source === 'DHM');
+          return { ...item, data: filteredData };
+        })
+        .filter((item: any) => item.data.length > 0);
     } else return [];
-  }, [details]);
+  }, [multipleDataDetails]);
 
   const GLOFAS_data = React.useMemo(() => {
-    if (details) {
-      return details?.monitoringData?.filter((d: any) => d.source === 'GLOFAS');
+    if (multipleDataDetails) {
+      return multipleDataDetails
+        .map((item: any) => {
+          const filteredData = item.data.filter(
+            (d: any) => d.source === 'GLOFAS',
+          );
+          return { ...item, data: filteredData[0] };
+        })
+        .filter((item: any) => item.data);
     } else return [];
-  }, [details]);
+  }, [multipleDataDetails]);
 
   const NCMRWF_Deterministic_Probabilistic_data = React.useMemo(() => {
-    if (details) {
-      return details?.monitoringData?.filter(
-        (d: any) => d.source === 'NCMRWF Deterministic & Probabilistic',
-      );
+    if (multipleDataDetails) {
+      return multipleDataDetails
+        .map((item: any) => {
+          const filteredData = item.data.filter(
+            (d: any) => d.source === 'NCMRWF Deterministic & Probabilistic',
+          );
+          return { ...item, data: filteredData[0] };
+        })
+        .filter((item: any) => item.data);
     } else return [];
-  }, [details]);
+  }, [multipleDataDetails]);
 
   const NCMRWF_Accumulated_data = React.useMemo(() => {
-    if (details) {
-      return details?.monitoringData?.filter(
-        (d: any) => d.source === 'NCMRWF Accumulated',
-      );
+    if (multipleDataDetails) {
+      return multipleDataDetails
+        .map((item: any) => {
+          const filteredData = item.data.filter(
+            (d: any) => d.source === 'NCMRWF Accumulated',
+          );
+          return { ...item, data: filteredData[0] };
+        })
+        .filter((item: any) => item.data);
     } else return [];
-  }, [details]);
+  }, [multipleDataDetails]);
 
   const Flash_Flood_Risk_Monitoring_data = React.useMemo(() => {
-    if (details) {
-      return details?.monitoringData?.filter(
-        (d: any) => d.source === 'Flash Flood Risk Monitoring',
-      );
+    if (multipleDataDetails) {
+      return multipleDataDetails
+        .map((item: any) => {
+          const filteredData = item.data.filter(
+            (d: any) => d.source === 'Flash Flood Risk Monitoring',
+          );
+          return { ...item, data: filteredData[0] };
+        })
+        .filter((item: any) => item.data);
     } else return [];
-  }, [details]);
+  }, [multipleDataDetails]);
 
   const dailyMonitoringListPath = `/projects/aa/${projectId}/data-sources/#monitoring`;
   const dailyMonitoringEditPath = `/projects/aa/${projectId}/data-sources/daily-monitoring/${monitoringId}/edit`;
@@ -100,12 +135,12 @@ export default function DailyMonitoringDetailView() {
         <DetailsHeadCard
           title="Data Entry By"
           icon={<User size={20} />}
-          content={details?.dataEntryBy || '-'}
+          content={latestDataDetails?.dataEntryBy || '-'}
         />
         <DetailsHeadCard
           title="River Basin"
           icon={<Waves size={20} />}
-          content={details?.location || '-'}
+          content={latestDataDetails?.location || '-'}
         />
       </div>
       <div className="p-4 bg-card rounded">
@@ -159,7 +194,7 @@ export default function DailyMonitoringDetailView() {
           </TabsContent>
 
           <TabsContent value="NCMRWF Deterministic & Probabilistic">
-            {NCMRWF_Deterministic_Probabilistic_data.length ? (
+            {NCMRWF_Deterministic_Probabilistic_data?.length ? (
               <DeterministicAndProbabilisticCard
                 data={NCMRWF_Deterministic_Probabilistic_data}
               />

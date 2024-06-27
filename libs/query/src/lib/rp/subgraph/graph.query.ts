@@ -1,11 +1,4 @@
-export const ProjectDetails = `
-  query ProjectDetails {
-    tokenBalances {
-      id,
-      balance
-    }
-  }
-`;
+
 
 export const ProjectTransactions = `
 query ProjectTransactions{

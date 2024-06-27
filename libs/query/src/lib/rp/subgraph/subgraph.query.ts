@@ -2,39 +2,10 @@
 import { useRPSubgraph } from './subgraph.provider';
 import { useQuery } from '@tanstack/react-query';
 import { useRSQuery } from '@rumsan/react-query';
-import { ProjectDetails,ProjectTransactions,VendorTransactions,BeneficiaryTransactions } from './graph.query';
+import { ProjectTransactions,VendorTransactions,BeneficiaryTransactions } from './graph.query';
 import { useEffect } from 'react';
 import { useRPProjectSubgraphStore } from './stores/rp-project.store';
 
-export const useCVAProjectDetails = (projectAddress: string) => {
-  const { subgraphClient } = useRPSubgraph();
-  const { queryClient } = useRSQuery();
-  const setProjectDetails = useRPProjectSubgraphStore(
-    (state) => state.setProjectDetails,
-  );
-
-  const query = useQuery(
-    {
-      queryKey: ['ProjectDetails', projectAddress],
-      queryFn: async () => {
-        console.log(`here`);
-        const { data } = await subgraphClient.query(ProjectDetails, {
-          projectAddress,
-        });
-        return data;
-      },
-    },
-    queryClient,
-  );
-
-  useEffect(() => {
-    if (query.isSuccess) {
-      setProjectDetails(query.data);
-    }
-  }, [query, projectAddress, queryClient]);
-
-  return query;
-};
 
 
 export const useRPProjectTransactions = () => {
@@ -67,7 +38,7 @@ export const useRPProjectTransactions = () => {
   return query;
 };
 
-export const useBeneficiaryTransactions = (beneficiaryAddress: string) => {
+export const useRPBeneficiaryTransactions = (beneficiaryAddress: string) => {
   const { subgraphClient } = useRPSubgraph();
   const { queryClient } = useRSQuery();
   const setProjectDetails = useRPProjectSubgraphStore(
@@ -98,7 +69,7 @@ export const useBeneficiaryTransactions = (beneficiaryAddress: string) => {
 };
 
 
-export const useVendorTransactions = (vendorAddress: string) => {
+export const useRPVendorTransactions = (vendorAddress: string) => {
   const { subgraphClient } = useRPSubgraph();
   const { queryClient } = useRSQuery();
   const setProjectDetails = useRPProjectSubgraphStore(

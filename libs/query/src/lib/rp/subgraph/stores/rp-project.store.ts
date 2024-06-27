@@ -1,7 +1,7 @@
 import { localStore, zustandStore } from '@rumsan/react-query';
 import { StoreApi, UseBoundStore } from 'zustand';
 
-export type CVAProjectState = {
+export type RPProjectState = {
   projectDetails: {
     tokenBalance: {
       balance: string;
@@ -10,15 +10,15 @@ export type CVAProjectState = {
   };
 };
 
-export type CVAProjectActions = {
+export type RPProjectActions = {
   setProjectDetails: (
-    projectDetails: CVAProjectState['projectDetails'],
+    projectDetails: RPProjectState['projectDetails'],
   ) => void;
 };
 
-export type CVAProjectStore = CVAProjectState & CVAProjectActions;
+export type RPProjectStore = RPProjectState & RPProjectActions;
 
-const initialState: CVAProjectState = {
+const initialState: RPProjectState = {
   projectDetails: {
     tokenBalance: {
       balance: '10000000000000000000',
@@ -27,9 +27,9 @@ const initialState: CVAProjectState = {
   },
 };
 
-export const useCVAProjectSubgraphStore: UseBoundStore<
-  StoreApi<CVAProjectStore>
-> = zustandStore<CVAProjectStore>(
+export const useRPProjectSubgraphStore: UseBoundStore<
+  StoreApi<RPProjectStore>
+> = zustandStore<RPProjectStore>(
   (set, get) => ({
     ...initialState,
     setProjectDetails: (projectDetails) => {

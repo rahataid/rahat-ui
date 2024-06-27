@@ -392,13 +392,13 @@ function BeneficiaryInfo({
       <div className="flex items-center justify-between gap-3 mx-2">
         <DataCard
           className="w-screen"
-          title="Tickets Assigned"
+          title="Tokens Assigned"
           number={assignedTokensCount}
           Icon={Home}
         />
         <DataCard
           className="w-screen"
-          title="Tickets Claimed"
+          title="Tokens Claimed"
           number={tokensClaimedCount}
           Icon={Home}
         />

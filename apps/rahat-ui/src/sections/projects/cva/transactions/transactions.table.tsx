@@ -12,17 +12,15 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from 'lucide-react';
+import { ArrowUpDown, MoreHorizontal } from 'lucide-react';
 
 import { Button } from '@rahat-ui/shadcn/components/button';
 import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
 import {
   DropdownMenu,
-  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/components/dropdown-menu';
 import { Input } from '@rahat-ui/shadcn/components/input';
@@ -34,12 +32,10 @@ import {
   TableHeader,
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
-import { useGraphService } from '../../../../providers/subgraph-provider';
-import { truncateEthAddress } from '@rumsan/sdk/utils';
-import { formatDate } from '../../../../utils';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import { useTransactionList } from 'apps/rahat-ui/src/hooks/cva/subgraph/queryCall';
 
-const data: Transaction[] = [
+const dummyData: Transaction[] = [
   {
     id: 'm5gr84i9',
     topic: 'Claim Processed',
@@ -197,14 +193,14 @@ export const columns: ColumnDef<Transaction>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: 'topic',
+    accessorKey: '__typename',
     header: 'Topic',
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue('topic')}</div>
+      <div className="capitalize">{row.getValue('__typename')}</div>
     ),
   },
   {
-    accessorKey: 'beneficiary',
+    accessorKey: 'to',
     header: ({ column }) => {
       return (
         <Button
@@ -217,32 +213,28 @@ export const columns: ColumnDef<Transaction>[] = [
       );
     },
     cell: ({ row }) => (
-      <div className="lowercase">
-        {truncateEthAddress(row.getValue('beneficiary'))}
-      </div>
+      <div className="lowercase">{truncateEthAddress(row.getValue('to'))}</div>
     ),
   },
   {
-    accessorKey: 'voucherId',
+    accessorKey: 'blockNumber',
     header: ({ column }) => {
       return (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
-          VoucherId
+          Block Number
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
     },
     cell: ({ row }) => (
-      <div className="lowercase">
-        {truncateEthAddress(row.getValue('voucherId'))}
-      </div>
+      <div className="lowercase">{row.getValue('blockNumber')}</div>
     ),
   },
   {
-    accessorKey: 'timestamp',
+    accessorKey: 'blockTimestamp',
     header: ({ column }) => {
       return (
         <Button
@@ -255,11 +247,11 @@ export const columns: ColumnDef<Transaction>[] = [
       );
     },
     cell: ({ row }) => (
-      <div className="lowercase">{row.getValue('timestamp')}</div>
+      <div className="lowercase">{row.getValue('blockTimestamp')}</div>
     ),
   },
   {
-    accessorKey: 'txHash',
+    accessorKey: 'transactionHash',
     header: ({ column }) => {
       return (
         <Button
@@ -273,35 +265,9 @@ export const columns: ColumnDef<Transaction>[] = [
     },
     cell: ({ row }) => (
       <div className="lowercase">
-        {truncateEthAddress(row.getValue('txHash'))}
+        {truncateEthAddress(row.getValue('transactionHash'))}
       </div>
     ),
-  },
-  {
-    id: 'actions',
-    enableHiding: false,
-    cell: ({ row }) => {
-      const payment = row.original;
-
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(payment.id)}
-            >
-              Copy payment Txhash
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
-    },
   },
 ];
 
@@ -313,7 +279,15 @@ export default function TransactionTable() {
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
-  const [data, setData] = React.useState([]);
+  const [data] = React.useState(dummyData);
+
+  const { data: transactionData, error: transactionError } =
+    useTransactionList();
+  React.useEffect(() => {
+    setData(transactionData);
+  }, [transactionData]);
+
+  console.log({ transactionData });
 
   const table = useReactTable({
     data,
@@ -389,7 +363,7 @@ export default function TransactionTable() {
               ) : (
                 <TableRow>
                   <TableCell
-                    colSpan={columns.length}
+                    colSpan={columns.length || 10}
                     className="h-24 text-center"
                   >
                     No results.
@@ -412,7 +386,7 @@ export default function TransactionTable() {
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
           >
-            Previous
+            Previous not good
           </Button>
           <Button
             variant="outline"

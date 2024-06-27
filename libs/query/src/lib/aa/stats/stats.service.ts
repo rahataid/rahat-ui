@@ -33,7 +33,6 @@ export const usePhasesStats = (uuid: UUID) => {
   return query;
 };
 
-
 export const useCommunicationStats = (uuid: UUID) => {
   const q = useProjectAction();
 
@@ -50,6 +49,44 @@ export const useCommunicationStats = (uuid: UUID) => {
       return mutate.data;
     },
   });
- 
+  return query;
+};
+export const useGetCommunicationLogs = (uuid: UUID) => {
+  const q = useProjectAction();
+
+  const query = useQuery({
+    queryKey: ['communicationlogs', uuid],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'aa.jobs.communication.getCommunicationLogs',
+          payload: {},
+        },
+      });
+      return mutate.data;
+    },
+  });
+
+  return query;
+};
+
+export const useAllStats = (uuid: UUID) => {
+  const q = useProjectAction();
+
+  const query = useQuery({
+    queryKey: ['allStats', uuid],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'aaProject.stats.getAll',
+          payload: {},
+        },
+      });
+      return mutate.data;
+    },
+  });
+
   return query;
 };

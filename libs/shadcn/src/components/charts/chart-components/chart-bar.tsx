@@ -13,6 +13,7 @@ type Props = {
   horizontal?: boolean;
   colors?: string[];
   xaxisLabels?: boolean;
+  yaxisLabels?: boolean;
   barHeight?: number;
 };
 
@@ -24,6 +25,7 @@ export default function ChartBar({
   horizontal = false,
   colors = ['#007BFF'],
   xaxisLabels = true,
+  yaxisLabels = true,
   barHeight = 20,
 }: Props) {
   const chartOptions = useChart({
@@ -67,6 +69,9 @@ export default function ChartBar({
           },
         },
       },
+    },
+    yaxis: {
+      labels: { show: yaxisLabels },
     },
   });
 

@@ -17,6 +17,7 @@ export default function DashboardLayout({
 }) {
   return (
     <AuthGuard>
+      <title>Dashboard</title>
       {hasDefaultHeader && <Nav />}
       <div className="mx-2">
         <ResizablePanelGroup direction="horizontal" className="border">

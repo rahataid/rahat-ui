@@ -120,7 +120,7 @@ export const useProjectHeaderItems = (projectType: string) => {
 
   return {
     headerNav:
-      projectType === ProjectTypes.CVA || projectType === ProjectTypes.RP
+      projectType === ProjectTypes.CVA || projectType === ProjectTypes.RP || projectType === ProjectTypes.ANTICIPATORY_ACTION
         ? projectHeader
         : defaultHeader,
   };

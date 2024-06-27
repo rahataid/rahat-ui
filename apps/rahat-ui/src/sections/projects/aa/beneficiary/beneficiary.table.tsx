@@ -177,7 +177,7 @@ function BeneficiaryDetailTableView() {
                 })}
             </DropdownMenuContent>
           </DropdownMenu>
-          <DropdownMenu>
+          {/* <DropdownMenu>
             <DropdownMenuTrigger asChild>
               {selectedRowAddresses.length ? (
                 <Button
@@ -194,7 +194,7 @@ function BeneficiaryDetailTableView() {
                 Assign Tokens To All
               </DropdownMenuItem>
             </DropdownMenuContent>
-          </DropdownMenu>
+          </DropdownMenu> */}
         </div>
         <div className="rounded border bg-card">
           <Table>

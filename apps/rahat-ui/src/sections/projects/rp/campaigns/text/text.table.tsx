@@ -48,11 +48,9 @@ import useTextTableColumn from './useTextTableColumn';
 
 export type Text = {
   id: number;
-  campaign: string;
-  startTime: string;
+  to: string;
+  date: string;
   status: string;
-  transport: string;
-  totalAudiences: number;
 };
 
 export default function TextTable() {
@@ -68,9 +66,37 @@ export default function TextTable() {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
-  const { data, isLoading, isError, isSuccess, isFetching } = useListCampaign({
+  const { data, isSuccess, isFetching } = useListCampaign({
     projectId: id,
   });
+
+  const dataArray = [
+    {
+      to: 'Alice',
+      date: '2023-06-01',
+      status: 'Pending',
+    },
+    {
+      to: 'Bob',
+      date: '2023-06-02',
+      status: 'Approved',
+    },
+    {
+      to: 'Charlie',
+      date: '2023-06-03',
+      status: 'Rejected',
+    },
+    {
+      to: 'David',
+      date: '2023-06-04',
+      status: 'Pending',
+    },
+    {
+      to: 'Eve',
+      date: '2023-06-05',
+      status: 'Approved',
+    },
+  ];
 
   const tableData = React.useMemo(() => {
     const result = Array.isArray(data?.response.data.rows)
@@ -84,7 +110,8 @@ export default function TextTable() {
   }, [isSuccess, data]);
 
   const table = useReactTable({
-    data: tableData,
+    data: dataArray,
+    // tableData,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -159,10 +186,12 @@ export default function TextTable() {
               })}
           </DropdownMenuContent>
         </DropdownMenu>
-        <Button className="flex items-center gap-2">
-          <Settings size={18} strokeWidth={1.5} />
-          Manage
-        </Button>
+        {table.getRowModel().rows?.length > 0 ? (
+          <Button className="flex items-center gap-2">
+            <Settings size={18} strokeWidth={1.5} />
+            Manage
+          </Button>
+        ) : null}
       </div>
       <div className="rounded border bg-card">
         {table.getRowModel().rows?.length ? (

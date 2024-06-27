@@ -3,8 +3,9 @@
 import { Badge } from '@rahat-ui/shadcn/components/badge';
 import { ICampaignItemApiResponse } from '@rahat-ui/types';
 import { ColumnDef } from '@tanstack/react-table';
+import { useSecondPanel } from 'apps/rahat-ui/src/providers/second-panel-provider';
 
-export default function useTextTableColumn() {
+export default function useVoiceTableColumn() {
   const columns: ColumnDef<ICampaignItemApiResponse>[] = [
     {
       accessorKey: 'to',
@@ -27,6 +28,13 @@ export default function useTextTableColumn() {
       header: 'Date',
       cell: ({ row }) => (
         <div className="capitalize">{row.getValue('date')}</div>
+      ),
+    },
+    {
+      accessorKey: 'duration',
+      header: 'Duration',
+      cell: ({ row }) => (
+        <div className="capitalize">{row.getValue('duration')}</div>
       ),
     },
     {

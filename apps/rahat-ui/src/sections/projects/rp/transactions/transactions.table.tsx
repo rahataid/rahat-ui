@@ -38,6 +38,7 @@ import { useGraphService } from '../../../../providers/subgraph-provider';
 import { truncateEthAddress } from '@rumsan/sdk/utils';
 import { formatDate } from '../../../../utils';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import {useRPProjectSubgraphStore} from '@rahat-ui/query';
 
 const data: Transaction[] = [
   {
@@ -314,6 +315,11 @@ export default function TransactionTable() {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
   const [data, setData] = React.useState([]);
+
+  const {projectTransactions} = useRPProjectSubgraphStore();
+  console.log(projectTransactions)
+
+
 
   const table = useReactTable({
     data,

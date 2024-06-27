@@ -60,6 +60,8 @@ import { UUID } from 'crypto';
 import { formatEther } from 'viem';
 import DataCard from 'apps/rahat-ui/src/components/dataCard';
 import { TransactionTable } from './transaction.table';
+import { useRPBeneficiaryTransaction } from '@rahat-ui/query';
+
 
 type IProps = {
   beneficiaryDetails: any;
@@ -74,6 +76,9 @@ export default function BeneficiaryDetail({
   const contractSettings = useProjectSettingsStore(
     (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT] || null,
   );
+
+  // function to get beneficiary txn
+  const {data:beneficiaryTxn} = useBeneficiaryTransaction(beneficiaryDetails.walletAddress)
 
   const assignToken = useAssignClaimsToBeneficiary();
 

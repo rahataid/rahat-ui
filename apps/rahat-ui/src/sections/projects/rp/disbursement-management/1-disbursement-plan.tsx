@@ -130,9 +130,9 @@ const DisbursementPlan: FC<DisbursementPlanProps> = ({
   ]);
 
   return (
-    <div className="grid grid-cols-12">
+    <div className="grid grid-cols-12 gap-4 bg-card rounded-sm p-2 min-h-fit">
       <div className="col-span-4">
-        <h1 className="mb-4 text-gray-700 text-xl font-medium">
+        <h1 className="my-4 text-gray-700 text-xl font-medium">
           Create Disbursement Plan
         </h1>
         <DataCard

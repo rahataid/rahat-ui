@@ -39,8 +39,8 @@ const DisbursementCondition = ({
   };
 
   return (
-    <div className="grid grid-cols-12">
-      <div className="col-span-12 h-[calc(100vh-482px)] bg-card rounded-sm p-4">
+    <div className="grid grid-cols-12 gap-4 bg-card rounded-sm p-2 h-80">
+      <div className="col-span-12 p-4">
         <div className="col-span-12">
           <h1 className="text-gray-700 text-xl font-medium">
             Select Disbursement Condition

@@ -13,6 +13,7 @@ query ProjectTransactions{
     otpServer
     token
     transactionHash
+    eventType
    }
   claimProcesseds {
     amount
@@ -23,6 +24,7 @@ query ProjectTransactions{
     id
     token
     transactionHash
+    eventType
   }
 
   tokensAllocateds {
@@ -33,6 +35,7 @@ query ProjectTransactions{
     id
     token
     transactionHash
+    eventType
   }
 }
 `
@@ -50,6 +53,7 @@ query VendorTransactions($vendor:String!) {
     otpServer
     token
     transactionHash
+    eventType
    }
   claimProcesseds(where:{claimer:$vendor}) {
     amount
@@ -60,6 +64,7 @@ query VendorTransactions($vendor:String!) {
     id
     token
     transactionHash
+    eventType
   }
 }
 `
@@ -75,6 +80,7 @@ tokensAllocateds(where:{beneficiary: $beneficiaryAddress} ) {
     id
     token
     transactionHash
+    eventType
   }
 }
 

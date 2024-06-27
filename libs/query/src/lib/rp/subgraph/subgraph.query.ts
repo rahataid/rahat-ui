@@ -11,8 +11,8 @@ import { useRPProjectSubgraphStore } from './stores/rp-project.store';
 export const useRPProjectTransactions = () => {
   const { subgraphClient } = useRPSubgraph();
   const { queryClient } = useRSQuery();
-  const setProjectDetails = useRPProjectSubgraphStore(
-    (state) => state.setProjectDetails,
+  const setProjectTransactions = useRPProjectSubgraphStore(
+    (state) => state.setProjectTransactions,
   );
 
   const query = useQuery(
@@ -31,7 +31,7 @@ export const useRPProjectTransactions = () => {
 
   useEffect(() => {
     if (query.isSuccess) {
-      setProjectDetails(query.data);
+      setProjectTransactions(query.data);
     }
   }, [query, queryClient]);
 

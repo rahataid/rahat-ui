@@ -11,6 +11,7 @@ import { MapPin, Landmark, Home } from 'lucide-react';
 import MarkerDetails from './MarkerDetails';
 import * as turf from '@turf/turf';
 import MapIndicators from './MapIndicators';
+import { MARKER_TYPE } from '../../constants/app.const';
 
 const DEFAULT_LAT = 27.712021;
 const DEFAULT_LNG = 85.31295;
@@ -79,7 +80,7 @@ export default function CommunityMap({ coordinates }: any) {
         {coordinates.map((item: any, index: number) => {
           return (
             <Marker
-              key={index}
+              key={item.type}
               longitude={Number(item.longitude)}
               latitude={Number(item.latitude)}
             >
@@ -88,13 +89,19 @@ export default function CommunityMap({ coordinates }: any) {
                 className="cursor-pointer"
                 onClick={(e) => zoomToSelectedLoc(e, item)}
               >
-                {item.type === 'Bank' && <Landmark color="#0C609B" size={16} />}
-                {item.type === 'Evacuation' && <Home color="green" size={16} />}
-                <MapPin
-                  fill={renderMarkerColor(item)}
-                  size={20}
-                  color={renderMarkerColor(item)}
-                />
+                {item.type === MARKER_TYPE.BANK && (
+                  <Landmark color="#0C609B" size={16} />
+                )}
+                {item.type === MARKER_TYPE.EVACUATION && (
+                  <Home color="green" size={16} />
+                )}
+                {item.type === MARKER_TYPE.BENEFICIARY && (
+                  <MapPin
+                    fill={renderMarkerColor(item)}
+                    size={20}
+                    color={renderMarkerColor(item)}
+                  />
+                )}
               </button>
             </Marker>
           );

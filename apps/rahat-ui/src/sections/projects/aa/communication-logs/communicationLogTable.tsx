@@ -34,7 +34,7 @@ import {
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { CAMPAIGN_TYPES } from '@rahat-ui/types';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
-
+import { useListTransport } from '@rumsan/communication-query';
 export type TextDetail = {
   _id: string;
   to: string;
@@ -49,10 +49,15 @@ export const columns: ColumnDef<TextDetail>[] = [
     filterFn: 'includesString',
   },
   {
-    accessorKey: 'createdAt',
-    header: 'Date',
+    accessorKey: 'ward',
+    header: 'Ward',
+    cell: ({ row }) => <div>{row.getValue('ward')}</div>,
+  },
+  {
+    accessorKey: 'duration',
+    header: 'Duration',
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue('createdAt')}</div>
+      <div className="capitalize">{row.getValue('duration')}</div>
     ),
   },
   {
@@ -62,57 +67,42 @@ export const columns: ColumnDef<TextDetail>[] = [
       <div className="capitalize">{row.getValue('status')}</div>
     ),
   },
+  {
+    accessorKey: 'attempts',
+    header: 'Attempts',
+    cell: ({ row }) => (
+      <div className="capitalize">{row.getValue('attempts')}</div>
+    ),
+  },
+  {
+    accessorKey: 'createdAt',
+    header: 'Date',
+    cell: ({ row }) => (
+      <div className="capitalize">{row.getValue('createdAt')}</div>
+    ),
+  },
 ];
 
 type IProps = {
   data: any;
 };
 export default function CommunicationLogTable({ data }: IProps) {
+  const { data: transportData } = useListTransport();
+
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
   );
   const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({});
+    React.useState<VisibilityState>({
+      ward: false,
+      duration: false,
+    });
   const [rowSelection, setRowSelection] = React.useState({});
   const [tableData, setTableData] = React.useState([]);
   const tData = React.useMemo(() => {
-    return data?.map((item: any) => ({
-      createdAt: new Date(item.createdAt).toLocaleString(),
-      status: item?.status,
-      to:
-        item?.transport.name.toLowerCase() ===
-        CAMPAIGN_TYPES.EMAIL.toLowerCase()
-          ? item?.details?.envelope?.to
-          : item?.details?.to,
-    }));
-  }, [data]);
-
-  React.useEffect(() => {
-    setTableData(tData);
-  }, [tData]);
-
-  const filterBenByProjectId = (id: string) => {
-    if (id === 'ALL') {
-      const allData = data?.map((item: any) => ({
-        createdAt: new Date(item.createdAt).toLocaleString(),
-        status: item?.status,
-        to:
-          item?.transport.name.toLowerCase() ===
-          CAMPAIGN_TYPES.EMAIL.toLowerCase()
-            ? item?.details?.envelope?.to
-            : item?.details?.to,
-      }));
-      setTableData(allData);
-      return;
-    }
-
-    const filteredData = data
-      .filter((item) => {
-        if (item?.transport.name.toLowerCase() === id.toLowerCase()) {
-          return item;
-        }
-      })
+    return data
+      ?.filter((data) => data?.transport?.name.toLowerCase() === 'email')
       ?.map((item: any) => ({
         createdAt: new Date(item.createdAt).toLocaleString(),
         status: item?.status,
@@ -120,11 +110,68 @@ export default function CommunicationLogTable({ data }: IProps) {
           item?.transport.name.toLowerCase() ===
           CAMPAIGN_TYPES.EMAIL.toLowerCase()
             ? item?.details?.envelope?.to
+            : item?.transport.name.toLowerCase() ===
+              CAMPAIGN_TYPES.IVR.toLowerCase()
+            ? item?.audience?.details?.phone
             : item?.details?.to,
       }));
-    setTableData(filteredData);
+  }, [data]);
+
+  React.useEffect(() => {
+    setTableData(tData);
+  }, [tData]);
+
+  const filterDataByType = (data, id) => {
+    return data
+      ?.filter(
+        (item) => item?.transport.name.toLowerCase() === id.toLowerCase(),
+      )
+      ?.map((item) => {
+        const baseData = {
+          createdAt: new Date(item.createdAt).toLocaleString(),
+          status: item?.status,
+          to: item?.audience?.details?.phone,
+        };
+
+        if (id.toLowerCase() === 'ivr') {
+          return {
+            ...baseData,
+            ward: item?.details?.lineId,
+            duration: item?.details?.duration || 0 + ' seconds',
+            attempts: 1,
+          };
+        } else {
+          return {
+            ...baseData,
+            to:
+              item?.transport.name.toLowerCase() ===
+              CAMPAIGN_TYPES.EMAIL.toLowerCase()
+                ? item?.details?.envelope?.to
+                : item?.details?.to,
+          };
+        }
+      });
   };
 
+  const setColumnVisibilityByType = (id) => {
+    if (id.toLowerCase() === 'ivr') {
+      setColumnVisibility({
+        ward: true,
+        duration: true,
+      });
+    } else {
+      setColumnVisibility({
+        ward: false,
+        duration: false,
+      });
+    }
+  };
+
+  const filterByType = (id: string) => {
+    const filteredData = filterDataByType(data, id);
+    setTableData(filteredData);
+    setColumnVisibilityByType(id);
+  };
   const table = useReactTable({
     data: tableData,
     columns,
@@ -136,6 +183,7 @@ export default function CommunicationLogTable({ data }: IProps) {
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
+
     state: {
       sorting,
       columnFilters,
@@ -156,16 +204,15 @@ export default function CommunicationLogTable({ data }: IProps) {
             }
             className="max-w-sm"
           />
-          <Select onValueChange={(e) => filterBenByProjectId(e)}>
+          <Select defaultValue="Email" onValueChange={(e) => filterByType(e)}>
             <SelectTrigger className="max-w-32">
               <SelectValue placeholder="Type" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value={'ALL'}>ALL</SelectItem>
-              {Object.keys(CAMPAIGN_TYPES).map((key) => {
+              {transportData?.data?.map((data) => {
                 return (
-                  <SelectItem key={key} value={key}>
-                    {key}
+                  <SelectItem key={data.id} value={data.name}>
+                    {data.name}
                   </SelectItem>
                 );
               })}

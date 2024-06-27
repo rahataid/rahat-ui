@@ -1,22 +1,14 @@
 'use client';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
 } from '@rahat-ui/shadcn/src/components/ui/card';
-import {
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
-} from '@rahat-ui/shadcn/src/components/ui/resizable';
 
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import { Plus } from 'lucide-react';
-import React from 'react';
-import VoiceCampaignAddDrawer from './campaign.voice.add';
 import { useParams, useRouter } from 'next/navigation';
+import VoiceCampaignAddDrawer from './campaign.voice.add';
 
 const VoiceCampaignDetails = () => {
   const { id } = useParams();

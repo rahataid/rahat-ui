@@ -5,13 +5,8 @@ import {
   CardHeader,
   CardTitle,
 } from '@rahat-ui/shadcn/src/components/ui/card';
-import {
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
-} from '@rahat-ui/shadcn/src/components/ui/resizable';
-import { useRouter, useParams } from 'next/navigation';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import { useParams, useRouter } from 'next/navigation';
 import TextCampaignAddDrawer from './campaign.text.add';
 
 const TextCampaignDetails = () => {

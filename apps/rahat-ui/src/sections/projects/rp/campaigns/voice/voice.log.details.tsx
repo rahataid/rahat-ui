@@ -154,7 +154,7 @@ export default function VoiceLogDetails() {
       </div>
       <div className="flex items-center mt-4 mb-2 gap-2">
         <Input
-          placeholder="Filter campaigns..."
+          placeholder="Filter communication..."
           value={(table.getColumn('to')?.getFilterValue() as string) ?? ''}
           onChange={(event) =>
             table.getColumn('to')?.setFilterValue(event.target.value)

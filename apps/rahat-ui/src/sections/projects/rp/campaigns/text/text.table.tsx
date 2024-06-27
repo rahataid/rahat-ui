@@ -98,16 +98,16 @@ export default function TextTable() {
     },
   ];
 
-  const tableData = React.useMemo(() => {
-    const result = Array.isArray(data?.response.data.rows)
-      ? data?.response?.data?.rows?.filter(
-          (campaign: any) => campaign.type !== CAMPAIGN_TYPES.PHONE,
-        )
-      : [];
+  // const tableData = React.useMemo(() => {
+  //   const result = Array.isArray(data?.response.data.rows)
+  //     ? data?.response?.data?.rows?.filter(
+  //         (campaign: any) => campaign.type !== CAMPAIGN_TYPES.PHONE,
+  //       )
+  //     : [];
 
-    campaignStore.setTotalTextCampaign(data?.response?.meta?.total || 0);
-    return result;
-  }, [isSuccess, data]);
+  //   campaignStore.setTotalTextCampaign(data?.response?.meta?.total || 0);
+  //   return result;
+  // }, [isSuccess, data]);
 
   const table = useReactTable({
     data: dataArray,
@@ -149,11 +149,9 @@ export default function TextTable() {
       <div className="flex items-center mt-4 mb-2 gap-2">
         <Input
           placeholder="Filter campaigns..."
-          value={
-            (table.getColumn('campaign')?.getFilterValue() as string) ?? ''
-          }
+          value={(table.getColumn('to')?.getFilterValue() as string) ?? ''}
           onChange={(event) =>
-            table.getColumn('campaign')?.setFilterValue(event.target.value)
+            table.getColumn('to')?.setFilterValue(event.target.value)
           }
           className="max-w-mx"
         />
@@ -187,7 +185,13 @@ export default function TextTable() {
           </DropdownMenuContent>
         </DropdownMenu>
         {table.getRowModel().rows?.length > 0 ? (
-          <Button className="flex items-center gap-2">
+          <Button
+            onClick={() => {
+              router.push(`/projects/rp/${id}/campaigns/text/manage`);
+              console.log('first');
+            }}
+            className="flex items-center gap-2"
+          >
             <Settings size={18} strokeWidth={1.5} />
             Manage
           </Button>

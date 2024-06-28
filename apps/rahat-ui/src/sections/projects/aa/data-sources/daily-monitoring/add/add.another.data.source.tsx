@@ -2,6 +2,7 @@ import { X } from 'lucide-react';
 import SelectFormField from '../../../../../../components/select.form.field';
 import InputFormField from '../../../../../../components/input.form.field';
 import { useSelectItems } from '../useSelectItems';
+import React from 'react';
 
 type IProps = {
   form: any;
@@ -21,6 +22,28 @@ export default function AddAnotherDataSource({ form, onClose, index }: IProps) {
     floodForecastSelectItems,
   } = useSelectItems();
 
+  const selectedDataSourceObjArray = form.watch('dataSource');
+
+  const selectedSourceStringArray = selectedDataSourceObjArray?.map(
+    (obj: any) => obj.source,
+  );
+  const newSourceSelectItemsArray = dataSourceSelectItems.map((obj) => {
+    if (selectedSourceStringArray.includes(obj.value) && obj.value !== 'DHM') {
+      return { ...obj, isDisabled: true };
+    }
+    return obj;
+  });
+
+  const selectedDHMForecastStringArray = selectedDataSourceObjArray?.map(
+    (obj: any) => (obj.source === 'DHM' ? obj.forecast : ''),
+  );
+  const newDHMForecastSelectItemsArray = dhmForecastSelectItems.map((obj) => {
+    if (selectedDHMForecastStringArray.includes(obj.value)) {
+      return { ...obj, isDisabled: true };
+    }
+    return obj;
+  });
+
   const renderFieldsBasedOnSource = () => {
     const selectedSource = form.watch(fieldName('source'));
     let fields;
@@ -33,7 +56,7 @@ export default function AddAnotherDataSource({ form, onClose, index }: IProps) {
               name={fieldName('forecast')}
               label="Forecast"
               placeholder="Select forecast"
-              selectItems={dhmForecastSelectItems}
+              selectItems={newDHMForecastSelectItemsArray}
             />
             {renderFieldsBasedOnDHMForecast()}
           </>
@@ -82,7 +105,7 @@ export default function AddAnotherDataSource({ form, onClose, index }: IProps) {
           />
         );
         break;
-      case 'NCMWRF Accumulated':
+      case 'NCMRWF Accumulated':
         fields = (
           <>
             <SelectFormField
@@ -120,7 +143,7 @@ export default function AddAnotherDataSource({ form, onClose, index }: IProps) {
           </>
         );
         break;
-      case 'NCMWRF Deterministic & Probabilistic':
+      case 'NCMRWF Deterministic & Probabilistic':
         fields = (
           <>
             <InputFormField
@@ -157,7 +180,7 @@ export default function AddAnotherDataSource({ form, onClose, index }: IProps) {
     const selectedForecast = form.watch(fieldName('forecast'));
     let fields;
     switch (selectedForecast) {
-      case '3 Days Flood forecast Bulletin':
+      case '3 Days Flood Forecast Bulletin':
         fields = (
           <>
             <SelectFormField
@@ -184,7 +207,7 @@ export default function AddAnotherDataSource({ form, onClose, index }: IProps) {
           </>
         );
         break;
-      case '3 Days Rainfall forecast Bulletin':
+      case '3 Days Rainfall Forecast Bulletin':
         fields = (
           <>
             <SelectFormField
@@ -232,7 +255,7 @@ export default function AddAnotherDataSource({ form, onClose, index }: IProps) {
           </>
         );
         break;
-      case 'Real time Monitoring(River Watch)':
+      case 'Realtime Monitoring (River Watch)':
         fields = (
           <InputFormField
             form={form}
@@ -241,6 +264,36 @@ export default function AddAnotherDataSource({ form, onClose, index }: IProps) {
             subLabel="Danger Level 10.8m"
             placeholder="Enter Water Level"
           />
+        );
+        break;
+      case 'Realtime Rainfall':
+        fields = (
+          <>
+            <InputFormField
+              form={form}
+              name={fieldName('chisapaniKarnali')}
+              label="Chisapani Karnali"
+              placeholder="Enter status"
+            />
+            <InputFormField
+              form={form}
+              name={fieldName('daulatpurStation')}
+              label="Daulatpur Station"
+              placeholder="Enter status"
+            />
+            <InputFormField
+              form={form}
+              name={fieldName('bachilaStation')}
+              label="Bachila Station"
+              placeholder="Enter status"
+            />
+            <InputFormField
+              form={form}
+              name={fieldName('gurbaDurbar')}
+              label="Gurba Durbar"
+              placeholder="Enter status"
+            />
+          </>
         );
         break;
       case 'NWP':
@@ -290,7 +343,7 @@ export default function AddAnotherDataSource({ form, onClose, index }: IProps) {
           name={fieldName('source')}
           label="Source"
           placeholder="Select Data Source"
-          selectItems={dataSourceSelectItems}
+          selectItems={newSourceSelectItemsArray}
         />
         {renderFieldsBasedOnSource()}
       </div>

@@ -25,6 +25,26 @@ export function formatdbDate(date: string) {
   return updated;
 }
 
+export function getDayOfWeek(dbDate: string) {
+  const date = new Date(dbDate);
+  const today = new Date();
+  const daysOfWeek = [
+    'Sunday',
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
+  ];
+  if (date.toDateString() === today.toDateString()) {
+    return 'Today';
+  } else {
+    const dayOfWeek = date.getDay();
+    return daysOfWeek[dayOfWeek];
+  }
+}
+
 export const humanizeString = (inputString: string) => {
   // Replace underscore with space
   inputString = inputString?.replace(/_/g, ' ');

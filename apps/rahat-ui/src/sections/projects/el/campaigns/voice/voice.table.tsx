@@ -203,7 +203,7 @@ export default function VoiceTable() {
     <div className="p-2 bg-secondary">
       <div className="flex items-center mb-2">
         <Input
-          placeholder="Filter campaigns..."
+          placeholder="Filter communication..."
           value={
             (table.getColumn('campaign')?.getFilterValue() as string) ?? ''
           }

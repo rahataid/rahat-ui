@@ -26,6 +26,8 @@ import { useParams, useRouter } from 'next/navigation';
 import { DisbursementConditionType } from '../disbursement-management/2-disbursement-condition';
 import { useEffect, useState } from 'react';
 import { truncateEthAddress } from '@rumsan/sdk/utils';
+import { formatEther } from 'viem';
+import { useReadRahatTokenBalanceOf } from 'libs/query/src/lib/rp/contracts/generated-hooks';
 
 const sampleSeries = [
   {
@@ -94,6 +96,19 @@ const FundManagementView = () => {
   const syncDisbursementAllocation = useBulkAllocateTokens(
     contractSettings?.rahattoken?.address,
   );
+  console.log(contractSettings);
+
+  const tokenBalance = useReadRahatTokenBalanceOf({
+    address: contractSettings?.rahattoken?.address as `0x${string}`,
+    args: [contractSettings?.rahatpayrollproject?.address as `0x${string}`],
+    query: {
+      select(data) {
+        console.log('data', data);
+        return data ? formatEther(data) : 'N/A';
+      },
+    },
+  });
+  console.log('tokenBalance', tokenBalance.data);
 
   // console.log('rpTokenDecimals', rpTokenDecimals.data);
   const chainTokenAllocations = useGetTokenAllocations(
@@ -143,7 +158,6 @@ const FundManagementView = () => {
     });
   };
 
-  console.log('rowData', rowData);
   return (
     <>
       <div className="grid grid-cols-12 gap-2 p-4 bg-secondary h-[calc(100vh-75px)]">
@@ -151,7 +165,7 @@ const FundManagementView = () => {
           <DataCard
             className="rounded-sm"
             title="Project Balance"
-            number={'0'}
+            number={tokenBalance?.data || 'N/A'}
             Icon={Banknote}
           />
         </div>
@@ -159,7 +173,11 @@ const FundManagementView = () => {
           <DataCard
             className="rounded-sm"
             title="Project Contract Address"
-            number={'0'}
+            number={
+              truncateEthAddress(
+                contractSettings?.rahatpayrollproject?.address,
+              ) || 'N/A'
+            }
             Icon={SendHorizontal}
           />
         </div>

@@ -2,14 +2,6 @@
 
 import { useCampaignStore } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/components/button';
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@rahat-ui/shadcn/components/dropdown-menu';
 import { Input } from '@rahat-ui/shadcn/components/input';
 import {
   Table,
@@ -33,28 +25,24 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import DataCard from 'apps/rahat-ui/src/components/dataCard';
-import {
-  Mail,
-  MessageCircle,
-  PhoneCall,
-  Settings,
-  Settings2,
-} from 'lucide-react';
+import { Mail, MessageCircle, PhoneCall, Settings } from 'lucide-react';
 import Image from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
 import * as React from 'react';
-import useTextTableColumn from './useTextTableColumn';
+import { TriggerConfirmModal } from './confirm.moda';
+import useVoiceTableColumn from './useVoiceTableColumn';
 
-export type Text = {
+export type Voice = {
   id: number;
   to: string;
   date: string;
+  duration: string;
   status: string;
 };
 
-export default function TextTable() {
+export default function VoiceLogDetails() {
   const campaignStore = useCampaignStore();
-  const columns = useTextTableColumn();
+  const columns = useVoiceTableColumn();
   const { id } = useParams();
   const router = useRouter();
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -73,26 +61,31 @@ export default function TextTable() {
     {
       to: 'Alice',
       date: '2023-06-01',
+      duration: '9 sec',
       status: 'Pending',
     },
     {
       to: 'Bob',
       date: '2023-06-02',
+      duration: '9 sec',
       status: 'Approved',
     },
     {
       to: 'Charlie',
       date: '2023-06-03',
+      duration: '9 sec',
       status: 'Rejected',
     },
     {
       to: 'David',
       date: '2023-06-04',
+      duration: '9 sec',
       status: 'Pending',
     },
     {
       to: 'Eve',
       date: '2023-06-05',
+      duration: '9 sec',
       status: 'Approved',
     },
   ];
@@ -130,8 +123,12 @@ export default function TextTable() {
 
   return (
     <div className="w-full h-full p-2 bg-secondary">
-      <div className=" grid sm:grid-cols-1 md:grid-cols-3 gap-2 mb-2">
-        <DataCard className="" title="Text" number={'10'} Icon={PhoneCall} />
+      <div className="flex items-center justify-between mb-4">
+        <p className="font-medium	text-neutral-800 text-lg">Campaign Name</p>
+        {table.getRowModel().rows?.length > 0 ? <TriggerConfirmModal /> : null}
+      </div>
+      <div className=" grid sm:grid-cols-1 md:grid-cols-3 gap-2">
+        <DataCard className="" title="Voice" number={'10'} Icon={PhoneCall} />
         <DataCard
           className=""
           title="Beneficiaries"
@@ -140,61 +137,20 @@ export default function TextTable() {
         />
         <DataCard
           className=""
-          title="Successful Message Delivered"
+          title="Successful Calls"
           number={'09'}
           Icon={MessageCircle}
         />
       </div>
-      <div className="flex items-center mt-4 mb-2 gap-2">
+      <div className="flex items-center mt-2 mb-2 gap-2">
         <Input
-          placeholder="Filter communications..."
+          placeholder="Filter communication..."
           value={(table.getColumn('to')?.getFilterValue() as string) ?? ''}
           onChange={(event) =>
             table.getColumn('to')?.setFilterValue(event.target.value)
           }
           className="max-w-mx"
         />
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto">
-              <Settings2 className="mr-2 h-4 w-5" />
-              View
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Toggle Columns</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            {table
-              .getAllColumns()
-              .filter((column) => column.getCanHide())
-              .map((column) => {
-                return (
-                  <DropdownMenuCheckboxItem
-                    key={column.id}
-                    className="capitalize"
-                    checked={column.getIsVisible()}
-                    onCheckedChange={(value) =>
-                      column.toggleVisibility(!!value)
-                    }
-                  >
-                    {column.id}
-                  </DropdownMenuCheckboxItem>
-                );
-              })}
-          </DropdownMenuContent>
-        </DropdownMenu>
-        {table.getRowModel().rows?.length > 0 ? (
-          <Button
-            onClick={() => {
-              router.push(`/projects/rp/${id}/campaigns/text/manage`);
-              console.log('first');
-            }}
-            className="flex items-center gap-2"
-          >
-            <Settings size={18} strokeWidth={1.5} />
-            Manage
-          </Button>
-        ) : null}
       </div>
       <div className="rounded border bg-card">
         {table.getRowModel().rows?.length ? (

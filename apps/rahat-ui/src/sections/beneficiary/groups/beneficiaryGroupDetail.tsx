@@ -14,7 +14,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
-import { Archive, Minus, MoreVertical } from 'lucide-react';
+import { Archive, Minus, MoreVertical, Pencil } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 import AssignToProjectModal from './assignToProjectModal';
@@ -30,9 +30,13 @@ import {
 import useDetailsBeneficiaryTableColumn from '../../projects/aa/groups/beneficiary/details/table/useDetailsBeneficiaryTableColumn';
 import ClientSidePagination from '../../projects/components/client.side.pagination';
 import SearchInput from '../../projects/components/search.input';
-import { Card, CardContent, CardHeader } from '@rahat-ui/shadcn/src/components/ui/card';
-import AssignBeneficiaryToProjectModal from './assignToProjectModal';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+} from '@rahat-ui/shadcn/src/components/ui/card';
 import RemoveBenfGroupModal from './removeGroupModal';
+import EditBeneficiaryGroups from './edit.beneficiary.groups';
 
 type IProps = {
   beneficiaryGroupDetail: ListBeneficiaryGroup;
@@ -45,7 +49,9 @@ export default function BeneficiaryGroupDetail({
 }: IProps) {
   const router = useRouter();
   const projectModal = useBoolean();
-  const removeModal = useBoolean()
+  const removeModal = useBoolean();
+  const [showEditInterface, setShowEditInterface] =
+    React.useState<boolean>(false);
 
   const handleAssignModalClick = () => {
     projectModal.onTrue();
@@ -64,6 +70,7 @@ export default function BeneficiaryGroupDetail({
   const tableData = React.useMemo(() => {
     if (beneficiaryGroupDetail) {
       return beneficiaryGroupDetail?.groupedBeneficiaries?.map((d: any) => ({
+        uuid: d.Beneficiary.uuid,
         name: d.Beneficiary.pii.name,
         phone: d.Beneficiary.pii.phone,
         email: d.Beneficiary.pii.email,
@@ -83,7 +90,12 @@ export default function BeneficiaryGroupDetail({
       columnFilters,
     },
   });
-  const isAssignedToProject = beneficiaryGroupDetail?.beneficiaryGroupProject?.length;
+  const isAssignedToProject =
+    beneficiaryGroupDetail?.beneficiaryGroupProject?.length;
+
+  React.useEffect(() => {
+    setShowEditInterface(false);
+  }, [beneficiaryGroupDetail]);
 
   return (
     <>
@@ -92,7 +104,7 @@ export default function BeneficiaryGroupDetail({
         projectModal={projectModal}
       />
 
-      <RemoveBenfGroupModal 
+      <RemoveBenfGroupModal
         beneficiaryGroupDetail={beneficiaryGroupDetail}
         removeModal={removeModal}
         closeSecondPanel={closeSecondPanel}
@@ -114,18 +126,45 @@ export default function BeneficiaryGroupDetail({
         <div className="flex gap-3">
           <TooltipProvider delayDuration={100}>
             <Tooltip>
-              <TooltipTrigger disabled={isAssignedToProject} onClick={handleRemoveClick}>
-                <Archive size={20} strokeWidth={1.5} />
+              <TooltipTrigger
+                onClick={() => setShowEditInterface(!showEditInterface)}
+              >
+                <Pencil
+                  className="hover:text-yellow-500 "
+                  size={20}
+                  strokeWidth={1.5}
+                />
               </TooltipTrigger>
               <TooltipContent className="bg-secondary ">
-                <p className="text-xs font-medium">{isAssignedToProject ? 'Cannot archive a group assigned to project.' : 'Archive'}</p>
+                <p className="text-xs font-medium">Edit</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+          <TooltipProvider delayDuration={100}>
+            <Tooltip>
+              <TooltipTrigger
+                disabled={isAssignedToProject}
+                onClick={handleRemoveClick}
+              >
+                <Archive
+                  className={!isAssignedToProject ? 'hover:text-red-500' : ''}
+                  size={20}
+                  strokeWidth={1.5}
+                />
+              </TooltipTrigger>
+              <TooltipContent className="bg-secondary ">
+                <p className="text-xs font-medium">
+                  {isAssignedToProject
+                    ? 'Cannot archive a group assigned to project.'
+                    : 'Archive'}
+                </p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
           <DropdownMenu>
             <DropdownMenuTrigger>
               <MoreVertical
-                className="cursor-pointer"
+                className="hover:text-primary"
                 size={20}
                 strokeWidth={1.5}
               />
@@ -176,33 +215,48 @@ export default function BeneficiaryGroupDetail({
             </CardContent>
           </Card>
         </div>
-        <div className="flex justify-between gap-2">
-          <SearchInput
-            name="Beneficiary"
-            className="mb-2 w-full"
-            value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
-            onSearch={(event: React.ChangeEvent<HTMLInputElement>) =>
-              table.getColumn('name')?.setFilterValue(event.target.value)
-            }
+        {!showEditInterface ? (
+          <>
+            <div className="flex justify-between gap-2">
+              <SearchInput
+                name="Beneficiary"
+                className="mb-2 w-full"
+                value={
+                  (table.getColumn('name')?.getFilterValue() as string) ?? ''
+                }
+                onSearch={(event: React.ChangeEvent<HTMLInputElement>) =>
+                  table.getColumn('name')?.setFilterValue(event.target.value)
+                }
+              />
+              <SearchInput
+                name="Location"
+                className="mb-2 w-full"
+                value={
+                  (table.getColumn('location')?.getFilterValue() as string) ??
+                  ''
+                }
+                onSearch={(event: React.ChangeEvent<HTMLInputElement>) =>
+                  table
+                    .getColumn('location')
+                    ?.setFilterValue(event.target.value)
+                }
+              />
+            </div>
+            <div className="bg-card border rounded">
+              <BeneficiaryTable
+                table={table}
+                tableScrollAreaHeight="h-[calc(100vh-413px)]"
+              />
+              <ClientSidePagination table={table} />
+            </div>
+          </>
+        ) : (
+          <EditBeneficiaryGroups
+            groupName={beneficiaryGroupDetail?.name}
+            groupedBeneficiaries={tableData}
+            isGroupAssignedToProject={isAssignedToProject}
           />
-          <SearchInput
-            name="Location"
-            className="mb-2 w-full"
-            value={
-              (table.getColumn('location')?.getFilterValue() as string) ?? ''
-            }
-            onSearch={(event: React.ChangeEvent<HTMLInputElement>) =>
-              table.getColumn('location')?.setFilterValue(event.target.value)
-            }
-          />
-        </div>
-        <div className="bg-card border rounded">
-          <BeneficiaryTable
-            table={table}
-            tableScrollAreaHeight="h-[calc(100vh-420px)]"
-          />
-          <ClientSidePagination table={table} />
-        </div>
+        )}
       </div>
     </>
   );

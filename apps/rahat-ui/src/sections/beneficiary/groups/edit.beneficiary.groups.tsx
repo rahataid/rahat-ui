@@ -162,7 +162,9 @@ export default function EditBeneficiaryGroups({
                   >
                     {showMembers ? 'Hide Members' : 'Show Members'}
                   </Button>
-                  <Button type="submit">Update Beneficiary Group</Button>
+                  <Button type="submit" disabled>
+                    Update Beneficiary Group
+                  </Button>
                 </div>
               </div>
             </div>

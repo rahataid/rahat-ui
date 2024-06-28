@@ -4,18 +4,15 @@ import {
   Gift,
   HandCoins,
   LayoutDashboard,
+  MessageSquareText,
   Pencil,
-  Plus,
   PlusSquare,
-  Receipt,
   Speech,
-  Store,
   UsersRound,
-  XCircle,
+  Voicemail,
 } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import { NavItem } from '../components';
-import CreateTokenModal from './create.token.modal';
 
 export const useNavItems = () => {
   const { id } = useParams();
@@ -53,10 +50,22 @@ export const useNavItems = () => {
           icon: <Gift size={18} strokeWidth={1.5} />,
         },
         {
-          title: 'Campaigns',
+          title: 'Communications',
           subtitle: 20,
           icon: <Speech size={18} strokeWidth={1.5} />,
           path: `/projects/rp/${id}/campaigns/text`,
+          children: [
+            {
+              title: 'Text',
+              path: `/projects/rp/${id}/campaigns/text`,
+              icon: <MessageSquareText size={18} strokeWidth={1.5} />,
+            },
+            {
+              title: 'Voice',
+              path: `/projects/rp/${id}/campaigns/voice`,
+              icon: <Voicemail size={18} strokeWidth={1.5} />,
+            },
+          ],
         },
         {
           title: 'Vendors',

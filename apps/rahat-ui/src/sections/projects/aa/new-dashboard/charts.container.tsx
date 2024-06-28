@@ -83,7 +83,7 @@ export default function ChartsContainer({ allStats = [] }: IProps) {
         <div className="rounded-sm bg-card shadow-md">
           <div className="p-4">
             <h1 className="text-md font-medium mb-1">Vulnerability Status</h1>
-            <p className="text-primary font-semibold text-2xl">{vulnerableStatusStats.length ?? '0'}</p>
+            <p className="text-primary font-semibold text-2xl">{vulnerableStatusStats?.length ?? '0'}</p>
           </div>
           <Separator />
           <div className="flex justify-center">

@@ -11,7 +11,7 @@ import { useParams, useRouter } from 'next/navigation';
 import VoiceCampaignAddDrawer from './campaign.voice.add';
 
 const VoiceCampaignDetails = () => {
-  const { id } = useParams();
+  const { campaignId, id } = useParams();
   const router = useRouter();
 
   return (
@@ -23,7 +23,9 @@ const VoiceCampaignDetails = () => {
           {/* Campaign Card */}
           <Card
             onClick={() =>
-              router.push(`/projects/rp/${id}/campaigns/voice/manage/${id}`)
+              router.push(
+                `/projects/rp/${id}/campaigns/voice/manage/${campaignId}`,
+              )
             }
             className="flex flex-col rounded justify-center shadow bg-card cursor-pointer hover:shadow-md hover:border-1 hover:border-blue-500 ease-in duration-100"
           >

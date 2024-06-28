@@ -45,15 +45,12 @@ function MapClusters({ dataForMap, ...other }: any) {
     });
   };
 
-
-
-
   return (
     <Map
       initialViewState={{
-        latitude: 40.67,
-        longitude: -103.59,
-        zoom: 3,
+        latitude: 60,
+        longitude: 80.59,
+        zoom: 2,
       }}
       interactiveLayerIds={[clusterLayer.id || '']}
       onClick={onClick}
@@ -77,4 +74,3 @@ function MapClusters({ dataForMap, ...other }: any) {
 }
 
 export default memo(MapClusters);
-

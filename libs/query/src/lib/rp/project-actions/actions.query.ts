@@ -164,18 +164,28 @@ export const useFindAllDisbursements = (projectUUID: UUID) => {
 
 export const useFindOneDisbursement = (
   projectUUID: UUID,
-  disbursementUUID: UUID,
+  params: {
+    walletAddress?: string;
+    id?: number;
+    uuid?: UUID;
+  },
 ) => {
   const action = useProjectAction(['findOneDisbursement-rpProject']);
 
   return useQuery({
-    queryKey: ['disbursement', projectUUID, disbursementUUID],
+    queryKey: [
+      'disbursement',
+      projectUUID,
+      params.walletAddress,
+      params.id,
+      params.uuid,
+    ],
     queryFn: async () => {
       const res = await action.mutateAsync({
         uuid: projectUUID,
         data: {
           action: GET_DISBURSEMENT,
-          payload: { uuid: disbursementUUID },
+          payload: params,
         },
       });
       return res.data;

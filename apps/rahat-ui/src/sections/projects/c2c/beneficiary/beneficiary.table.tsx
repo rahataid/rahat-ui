@@ -117,25 +117,6 @@ const BeneficiaryDetailTableView = () => {
               }}
               className="max-w-sm rounded mr-2"
             />
-            <div className="max-w-sm rounded mr-2">
-              <Select
-                onValueChange={handleBenType}
-                defaultValue={filters?.status || 'ALL'}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Beneficiary Type" />
-                </SelectTrigger>
-                <SelectContent>
-                  {benType.map((item) => {
-                    return (
-                      <SelectItem key={item.value} value={item.value}>
-                        {item.key}
-                      </SelectItem>
-                    );
-                  })}
-                </SelectContent>
-              </Select>
-            </div>
           </div>
           {selectedRowAddresses.length ? (
             <DropdownMenu>

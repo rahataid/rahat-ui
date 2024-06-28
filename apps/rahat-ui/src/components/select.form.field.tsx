@@ -20,7 +20,7 @@ type IProps = {
   label: string;
   subLabel?: string;
   placeholder: string;
-  selectItems: Array<{ value: string; label: string }>;
+  selectItems: Array<{ value: string; label: string; isDisabled?: boolean }>;
 };
 
 export default function SelectFormField({
@@ -59,7 +59,11 @@ export default function SelectFormField({
               </FormControl>
               <SelectContent>
                 {selectItems?.map((item, index) => (
-                  <SelectItem key={index} value={item.value}>
+                  <SelectItem
+                    key={index}
+                    value={item.value}
+                    disabled={item.isDisabled || false}
+                  >
                     {item.label}
                   </SelectItem>
                 ))}
@@ -67,7 +71,7 @@ export default function SelectFormField({
             </Select>
             <FormMessage />
           </FormItem>
-        )
+        );
       }}
     />
   );

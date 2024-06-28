@@ -196,7 +196,7 @@ const AddAudience: FC<AddAudienceProps> = ({
               <SelectValue placeholder="Types" />
             </SelectTrigger>
             <SelectContent>
-              {benType.map((item) => {
+              {benType?.map((item) => {
                 return (
                   <SelectItem key={item.key} value={item.value}>
                     {item.key}

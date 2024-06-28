@@ -213,7 +213,7 @@ export function DiscountTransactionTable() {
       </div>
       <div className="rounded border">
         <Table>
-          <ScrollArea className="h-full">
+          <ScrollArea className="h-[50vh]">
             <TableHeader className="top-0 sticky bg-card">
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>

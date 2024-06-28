@@ -7,6 +7,7 @@ import {
   usePagination,
   useProjectBeneficiaries,
   useProjectSettingsStore,
+  useReadRahatTokenBalanceOf,
 } from '@rahat-ui/query';
 import ChartLine from '@rahat-ui/shadcn/src/components/charts/chart-components/chart-line';
 import { Avatar } from '@rahat-ui/shadcn/src/components/ui/avatar';
@@ -26,6 +27,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { DisbursementConditionType } from '../disbursement-management/2-disbursement-condition';
 import { useEffect, useState } from 'react';
 import { truncateEthAddress } from '@rumsan/sdk/utils';
+import { formatEther } from 'viem';
 
 const sampleSeries = [
   {
@@ -95,6 +97,16 @@ const FundManagementView = () => {
     contractSettings?.rahattoken?.address,
   );
 
+  const tokenBalance = useReadRahatTokenBalanceOf({
+    address: contractSettings?.rahattoken?.address as `0x${string}`,
+    args: [contractSettings?.rpproject?.address as `0x${string}`],
+    query: {
+      select(data) {
+        return data ? formatEther(data) : 'N/A';
+      },
+    },
+  });
+
   // console.log('rpTokenDecimals', rpTokenDecimals.data);
   const chainTokenAllocations = useGetTokenAllocations(
     contractSettings?.rahatpayrollproject?.address as `0x${string}`,
@@ -143,7 +155,6 @@ const FundManagementView = () => {
     });
   };
 
-  console.log('rowData', rowData);
   return (
     <>
       <div className="grid grid-cols-12 gap-2 p-4 bg-secondary h-[calc(100vh-75px)]">
@@ -151,7 +162,7 @@ const FundManagementView = () => {
           <DataCard
             className="rounded-sm"
             title="Project Balance"
-            number={'0'}
+            number={tokenBalance?.data || 'N/A'}
             Icon={Banknote}
           />
         </div>
@@ -159,7 +170,11 @@ const FundManagementView = () => {
           <DataCard
             className="rounded-sm"
             title="Project Contract Address"
-            number={'0'}
+            number={
+              truncateEthAddress(
+                contractSettings?.rahatpayrollproject?.address,
+              ) || 'N/A'
+            }
             Icon={SendHorizontal}
           />
         </div>

@@ -11,8 +11,11 @@ import { Banknote, Plus } from 'lucide-react';
 import { useState } from 'react';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
+import { useParams } from 'next/navigation';
 
 const AssetsDetails = () => {
+  const contractAddress = useParams()?.contractAddress;
+  console.log({ contractAddress });
   const projects = useProjectList();
   const [selectedProject, setSelectedProject] = useState<`0x${string}`>('');
   const [amount, setAmount] = useState<string>('');

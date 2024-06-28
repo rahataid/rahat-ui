@@ -32,3 +32,10 @@ export const useTreasuryTokenList = () => {
     queryClient,
   );
 };
+
+export const useTreasuryTokenDetail = (contractAddress: string) => {
+  const { queryClient, rumsanService } = useRSQuery();
+  const getTokenDetail = async (contractAddress: string) => {
+    return rumsanService.client.get('/token/:id');
+  };
+};

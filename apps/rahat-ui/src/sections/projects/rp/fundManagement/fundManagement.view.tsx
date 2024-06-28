@@ -7,7 +7,6 @@ import {
   usePagination,
   useProjectBeneficiaries,
   useProjectSettingsStore,
-  useReadRahatTokenBalanceOf,
 } from '@rahat-ui/query';
 import ChartLine from '@rahat-ui/shadcn/src/components/charts/chart-components/chart-line';
 import { Avatar } from '@rahat-ui/shadcn/src/components/ui/avatar';
@@ -28,6 +27,7 @@ import { DisbursementConditionType } from '../disbursement-management/2-disburse
 import { useEffect, useState } from 'react';
 import { truncateEthAddress } from '@rumsan/sdk/utils';
 import { formatEther } from 'viem';
+import { useReadRahatTokenBalanceOf } from 'libs/query/src/lib/rp/contracts/generated-hooks';
 
 const sampleSeries = [
   {
@@ -96,16 +96,19 @@ const FundManagementView = () => {
   const syncDisbursementAllocation = useBulkAllocateTokens(
     contractSettings?.rahattoken?.address,
   );
+  console.log(contractSettings);
 
   const tokenBalance = useReadRahatTokenBalanceOf({
     address: contractSettings?.rahattoken?.address as `0x${string}`,
-    args: [contractSettings?.rpproject?.address as `0x${string}`],
+    args: [contractSettings?.rahatpayrollproject?.address as `0x${string}`],
     query: {
       select(data) {
+        console.log('data', data);
         return data ? formatEther(data) : 'N/A';
       },
     },
   });
+  console.log('tokenBalance', tokenBalance.data);
 
   // console.log('rpTokenDecimals', rpTokenDecimals.data);
   const chainTokenAllocations = useGetTokenAllocations(

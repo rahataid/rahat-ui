@@ -1,4 +1,5 @@
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+'use client';
+
 import {
   Card,
   CardContent,
@@ -12,13 +13,11 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/resizable';
 
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import { Plus } from 'lucide-react';
-import React from 'react';
-import VoiceCampaignAddDrawer from './campaign.voice.add';
 import { useParams, useRouter } from 'next/navigation';
+import VoiceCampaignAddDrawer from './campaign.voice.add';
 
 const VoiceCampaignDetails = () => {
-  const { id } = useParams();
+  const { campaignId, id } = useParams();
   const router = useRouter();
 
   return (
@@ -35,7 +34,9 @@ const VoiceCampaignDetails = () => {
               {/* Campaign Card */}
               <Card
                 onClick={() =>
-                  router.push(`/projects/rp/${id}/campaigns/text/manage/${id}`)
+                  router.push(
+                    `/projects/rp/${id}/campaigns/text/manage/${campaignId}`,
+                  )
                 }
                 className="flex rounded justify-center border-dashed border-2 border-primary shadow bg-card cursor-pointer hover:shadow-md ease-in duration-300"
               >

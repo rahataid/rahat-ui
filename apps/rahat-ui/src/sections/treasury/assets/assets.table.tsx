@@ -1,6 +1,5 @@
 'use client';
 import {
-  ColumnDef,
   ColumnFiltersState,
   SortingState,
   VisibilityState,
@@ -27,8 +26,6 @@ import {
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import { shortenAddress } from 'apps/rahat-ui/src/utils/getProjectAddress';
-import { useTreasuryTokenList } from 'libs/query/src/lib/treasury/treasury.service';
 import { useRouter } from 'next/navigation';
 
 export type Redeptions = {
@@ -170,14 +167,14 @@ export default function AssetsTable() {
       <div className="flex items-center mb-2">
         <Input
           placeholder="Search Name..."
-          value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
+          value={(table?.getColumn('name')?.getFilterValue() as string) ?? ''}
           onChange={(event) =>
             table.getColumn('name')?.setFilterValue(event.target.value)
           }
           className="w-full"
         />
       </div>
-      <div className="rounded border bg-white">
+      <div className="rounded border bg-card">
         <Table>
           <ScrollArea className="h-[calc(100vh-184px)]">
             <TableHeader>

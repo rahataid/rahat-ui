@@ -30,6 +30,16 @@ export default function CommunicationLogsView() {
   const ivrSent = findData('CAMPAIGN', 'IVR');
   const emailSent = findData('CAMPAIGN', 'EMAIL');
   const smsSent = findData('CAMPAIGN', 'SMS');
+  const ivrSuccessRate = commsStats?.find(
+    (stats) => stats.name === 'IVRSUCCESSRATE',
+  )?.data;
+  const averageIvrAttempts = commsStats?.find(
+    (stats) => stats.name === 'AVERAGEIVRATTEMPT',
+  )?.data;
+
+  const averageIvrDuration = commsStats?.find(
+    (stats) => stats.name === 'IVRDURATION',
+  )?.data;
 
   const commStats = [
     {
@@ -65,19 +75,19 @@ export default function CommunicationLogsView() {
     {
       componentType: 'DATACARD',
       title: 'IVR Success Rate',
-      value: '0',
+      value: ivrSuccessRate || 0,
       icon: 'Home',
     },
     {
       componentType: 'DATACARD',
       title: 'Average IVR Attempts',
-      value: '0',
+      value: averageIvrAttempts || 0,
       icon: 'Users',
     },
     {
       componentType: 'DATACARD',
       title: 'Average Duration of IVR',
-      value: '0',
+      value: averageIvrDuration || 0,
       icon: 'Home',
     },
   ];

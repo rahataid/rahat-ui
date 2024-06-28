@@ -98,6 +98,41 @@ export default function SplitViewDetailCards({ beneficiaryDetail }: any) {
           )}
         </CardContent>
       </Card>
+      {
+        extrasDisplay(beneficiaryDetail?.extras)
+      }
     </div>
   );
 }
+
+function extrasDisplay(data: any) {
+  if (!data || typeof data !== 'object') {
+    return <></>
+    // return <div>No data available</div>;
+  }
+
+  return (
+    <Card className="shadow rounded">
+      <CardContent className="pt-6">
+        <div className="grid grid-cols-3 gap-3">
+          {
+            Object?.entries(data)?.map(([key]) => {
+              return (
+                <div>
+                  <p>{data[key] ?? '-'}</p>
+                  <p className="text-sm font-normal text-muted-foreground">
+                    {formatKey(key)}
+                  </p>
+                </div>
+              )
+            })
+          }
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+function formatKey(key: string) {
+  return key.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase());
+};

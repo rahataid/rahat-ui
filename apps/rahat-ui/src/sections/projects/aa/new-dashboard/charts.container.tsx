@@ -12,6 +12,10 @@ export default function ChartsContainer({ allStats = [] }: IProps) {
     (data: any) => data.name === 'BENEFICIARY_GENDER',
   )[0]?.data;
 
+  const vulnerableStatusStats = allStats
+    ?.filter((data: any) => data.name === "BENEFICIARY_COUNTBYVULNERABILITY")[0]
+    ?.data?.map((item: any) => ({ label: item.id, value: item.count }));
+ 
   const bankStatusStats = allStats
     ?.filter((data: any) => data.name === 'BENEFICIARY_BANKSTATUS')[0]
     ?.data?.map((item: any) => ({ label: item.id, value: item.count }));
@@ -79,20 +83,13 @@ export default function ChartsContainer({ allStats = [] }: IProps) {
         <div className="rounded-sm bg-card shadow-md">
           <div className="p-4">
             <h1 className="text-md font-medium mb-1">Vulnerability Status</h1>
-            <p className="text-primary font-semibold text-2xl">1,500</p>
+            <p className="text-primary font-semibold text-2xl">{vulnerableStatusStats.length ?? '0'}</p>
           </div>
           <Separator />
           <div className="flex justify-center">
             <BarChart
-              series={[400, 430, 448, 300, 200, 250]}
-              categories={[
-                'Pregnant',
-                'Lactation',
-                'Widow',
-                'Senior Citizen',
-                'Person with disability',
-                'Dalit child below 5',
-              ]}
+              series={vulnerableStatusStats?.map((item: any) => item.value)}
+              categories={vulnerableStatusStats?.map((item: any) => item.label)}
               horizontal={true}
               colors={['#eab308']}
               xaxisLabels={false}

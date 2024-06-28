@@ -20,7 +20,6 @@ import {
   }
 
 const SelectSection = ({filters, setFilters, options, placeholder, keys}: SelectType) => {
-    console.log("The key is", keys)
     const handleDropdownChange = (value: string) => {
         setFilters(
           {...filters,

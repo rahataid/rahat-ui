@@ -41,6 +41,7 @@ import BulkAssignToken from './bulk-assign-token.modal';
 import { useCvaBeneficiaryTableColumns } from './use.table.column';
 import SelectSection from 'apps/rahat-ui/src/utils/select';
 import { bankedOptions, genderOptions, internetOptions, phoneOptions } from 'apps/rahat-ui/src/constants/selectOptionsRpBeneficiary';
+import FiltersTags from '../../components/filtersTags';
 
 export default function BeneficiaryTable() {
   const bulkAssignTokens = useBulkAssignClaimsToBeneficiaries();
@@ -154,6 +155,7 @@ export default function BeneficiaryTable() {
             />
           </div>
         </div>
+        <FiltersTags filters={filters} setFilters={setFilters} total={beneficiaries.data.data.length}/>
         <div className="rounded-md border bg-card">
           <TableComponent>
             <ScrollArea className="h-[calc(100vh-190px)]">

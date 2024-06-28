@@ -25,14 +25,6 @@ import {
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@rahat-ui/shadcn/src/components/ui/select';
-import {
   VisibilityState,
   flexRender,
   getCoreRowModel,
@@ -47,6 +39,8 @@ import { useParams, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import BulkAssignToken from './bulk-assign-token.modal';
 import { useCvaBeneficiaryTableColumns } from './use.table.column';
+import SelectSection from 'apps/rahat-ui/src/utils/select';
+import { bankedOptions, genderOptions, internetOptions, phoneOptions } from 'apps/rahat-ui/src/constants/selectOptionsRpBeneficiary';
 
 export default function BeneficiaryTable() {
   const bulkAssignTokens = useBulkAssignClaimsToBeneficiaries();
@@ -139,60 +133,10 @@ export default function BeneficiaryTable() {
           )}
         </div>
         <div className="grid grid-cols-6 gap-x-2 mb-3">
-          <Select>
-            <SelectTrigger>
-              <SelectValue placeholder="Select gender" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectItem value="male">Male</SelectItem>
-                <SelectItem value="female">Female</SelectItem>
-                <SelectItem value="others">Others</SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-          <Select>
-            <SelectTrigger>
-              <SelectValue placeholder="Select Internet Access" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectItem value="apple">Apple</SelectItem>
-                <SelectItem value="banana">Banana</SelectItem>
-                <SelectItem value="blueberry">Blueberry</SelectItem>
-                <SelectItem value="grapes">Grapes</SelectItem>
-                <SelectItem value="pineapple">Pineapple</SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-          <Select>
-            <SelectTrigger>
-              <SelectValue placeholder="Select Phone Type" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectItem value="apple">Apple</SelectItem>
-                <SelectItem value="banana">Banana</SelectItem>
-                <SelectItem value="blueberry">Blueberry</SelectItem>
-                <SelectItem value="grapes">Grapes</SelectItem>
-                <SelectItem value="pineapple">Pineapple</SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-          <Select>
-            <SelectTrigger className="rounded">
-              <SelectValue placeholder="Select Banking Status" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectItem value="apple">Apple</SelectItem>
-                <SelectItem value="banana">Banana</SelectItem>
-                <SelectItem value="blueberry">Blueberry</SelectItem>
-                <SelectItem value="grapes">Grapes</SelectItem>
-                <SelectItem value="pineapple">Pineapple</SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
+          <SelectSection filters={filters} setFilters={setFilters} options={genderOptions} placeholder={'Gender'} keys='gender'/>
+          <SelectSection filters={filters} setFilters={setFilters} options={internetOptions} placeholder={'Internet Status'} keys='internetStatus'/>
+          <SelectSection filters={filters} setFilters={setFilters} options={phoneOptions} placeholder={'Phone Status'} keys='phoneStatus'/>
+          <SelectSection filters={filters} setFilters={setFilters} options={bankedOptions} placeholder={'Banked Status'} keys='bankedStatus'/>
           <div className="col-span-2">
             <Input
               placeholder="Search Beneficiaries..."

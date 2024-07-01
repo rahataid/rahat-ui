@@ -23,6 +23,9 @@ export const useRPProjectTransactions = () => {
         const { data } = await subgraphClient.query(ProjectTransactions, {
           
         });
+        const transactionsType =[
+          
+        ]
         return data;
       },
     },
@@ -98,3 +101,5 @@ export const useRPVendorTransactions = (vendorAddress: string) => {
 
   return query;
 };
+
+

@@ -309,7 +309,7 @@ export default function VoiceTable() {
               <Button
                 className="flex items-center gap-3"
                 onClick={() =>
-                  router.push(`/projects/rp/${id}/beneficiary/add`)
+                  router.push(`/projects/rp/${id}/campaigns/voice/manage`)
                 }
               >
                 <Settings size={18} strokeWidth={1.5} />

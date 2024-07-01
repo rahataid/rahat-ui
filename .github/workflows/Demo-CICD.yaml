@@ -1,4 +1,4 @@
-name: RP Demo CI/CD
+name: Demo CI/CD
 on:
   push:
     branches:
@@ -10,7 +10,7 @@ on:
 
 env:
   CI: false
-  env_stage: ${{ secrets.ENV_RP_DEMO }}
+  env_stage: ${{ secrets.ENV_DEMO }}
   env_npmrc: ${{ secrets.ENV_NPMRC }}
 
 jobs:
@@ -38,7 +38,7 @@ jobs:
       - name: Install dependencies
         run: pnpm install     
 
-      - name: install dependencies and build apps
+      - name: Build apps
         run: |
           pnpm build:all
 
@@ -59,7 +59,7 @@ jobs:
           context: .
           file: Dockerfile.rahat-ui
           push: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
-          tags: esatya/rahat-ui:demo-rp
+          tags: esatya/rahat-ui:demo
 
 
   community-tool-ui:
@@ -86,7 +86,7 @@ jobs:
       - name: Install dependencies
         run: pnpm install     
 
-      - name: install dependencies and build apps
+      - name: Build apps
         run: |
           pnpm build:all
 
@@ -107,4 +107,4 @@ jobs:
           context: .
           file: Dockerfile.community-tool-ui
           push: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
-          tags: esatya/community-tool-ui:demo-rp
+          tags: esatya/community-tool-ui:demo

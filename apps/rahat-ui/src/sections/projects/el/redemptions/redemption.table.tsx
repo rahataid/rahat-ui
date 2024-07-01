@@ -105,8 +105,11 @@ export default function RedemptionTable({}) {
     setSelectedListItems,
     resetSelectedListItems,
   } = usePagination();
+  const handleTokenAssignModal = () => {
+    projectModal.onTrue();
+  };
 
-  const columns = useTableColumns(handleAssignModalClick);
+  const columns = useTableColumns(handleAssignModalClick,handleTokenAssignModal);
 
   // const [perPage, setPerPage] = React.useState<number>(10);
   const [currentPage, setCurrentPage] = React.useState<number>(1);
@@ -158,9 +161,7 @@ export default function RedemptionTable({}) {
   const updateRedemption = useUpdateElRedemption();
 
   const selectedRowAddresses = Object.keys(selectedListItems);
-  const handleTokenAssignModal = () => {
-    projectModal.onTrue();
-  };
+  
 
   const getRedemptionList = async () => {
     const result = await getRedemption.mutateAsync({
@@ -376,7 +377,7 @@ export default function RedemptionTable({}) {
               variant="ghost"
               className="text-primary"
             >
-              Assign
+              Approve
             </Button>
           </DialogFooter>
         </DialogContent>

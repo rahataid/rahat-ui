@@ -21,7 +21,10 @@ import {
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { CAMPAIGN_TYPES } from '@rahat-ui/types';
-import { useListCampaign } from '@rumsan/communication-query';
+import {
+  useGetCommunicationLogs,
+  useListCampaign,
+} from '@rumsan/communication-query';
 import {
   ColumnFiltersState,
   SortingState,
@@ -67,57 +70,36 @@ export default function VoiceTable() {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
-  const { data, isSuccess, isFetching } = useListCampaign({
-    projectId: id,
-  });
+  const { data: communicationLogs, isSuccess } = useGetCommunicationLogs();
 
-  const dataArray = [
-    {
-      to: 'Alice',
-      date: '2023-06-01',
-      duration: '9 sec',
-      status: 'Pending',
-    },
-    {
-      to: 'Bob',
-      date: '2023-06-02',
-      duration: '9 sec',
-      status: 'Approved',
-    },
-    {
-      to: 'Charlie',
-      date: '2023-06-03',
-      duration: '9 sec',
-      status: 'Rejected',
-    },
-    {
-      to: 'David',
-      date: '2023-06-04',
-      duration: '9 sec',
-      status: 'Pending',
-    },
-    {
-      to: 'Eve',
-      date: '2023-06-05',
-      duration: '9 sec',
-      status: 'Approved',
-    },
-  ];
-
-  // const tableData = React.useMemo(() => {
-  //   const result = Array.isArray(data?.response.data.rows)
-  //     ? data?.response?.data?.rows?.filter(
-  //         (campaign: any) => campaign.type !== CAMPAIGN_TYPES.PHONE,
-  //       )
-  //     : [];
-
-  //   campaignStore.setTotalTextCampaign(data?.response?.meta?.total || 0);
-  //   return result;
-  // }, [isSuccess, data]);
+  const tableData = React.useMemo(() => {
+    if (isSuccess && communicationLogs?.data) {
+      return communicationLogs?.data
+        ?.filter(
+          (logs) =>
+            logs?.transport?.name.toLowerCase() ===
+            CAMPAIGN_TYPES.IVR.toLowerCase(),
+        )
+        .map((item: any) => ({
+          date: new Date(item.createdAt).toLocaleString(),
+          status: item?.status,
+          duration: item?.duration,
+          to:
+            item?.transport?.name.toLowerCase() ===
+            CAMPAIGN_TYPES.EMAIL.toLowerCase()
+              ? item?.details?.envelope?.to
+              : item?.transport?.name.toLowerCase() ===
+                CAMPAIGN_TYPES.IVR.toLowerCase()
+              ? item?.audience?.details?.phone
+              : item?.details?.to,
+        }));
+    } else {
+      return [];
+    }
+  }, [communicationLogs, isSuccess]);
 
   const table = useReactTable({
-    data: dataArray,
-    // tableData,
+    data: tableData,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -138,7 +120,12 @@ export default function VoiceTable() {
   return (
     <div className="w-full h-full p-2 bg-secondary">
       <div className=" grid sm:grid-cols-1 md:grid-cols-3 gap-2 mb-2">
-        <DataCard className="" title="Voice" number={'10'} Icon={PhoneCall} />
+        <DataCard
+          className=""
+          title="Voice"
+          number={campaignStore.totalVoiceCampaign.toString()}
+          Icon={PhoneCall}
+        />
         <DataCard
           className=""
           title="Beneficiaries"

@@ -12,6 +12,7 @@ export default function useTextTableColumn() {
       cell: ({ row }) => (
         <div className="cursor-pointer">{row.getValue('to')}</div>
       ),
+      filterFn: 'includesString',
     },
     // {
     //   accessorKey: 'startTime',

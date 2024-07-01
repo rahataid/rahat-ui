@@ -61,10 +61,9 @@ export default function TextLogDetails() {
       return data?.data?.communicationLogs?.map((item: any) => ({
         date: new Date(item.createdAt).toLocaleString(),
         status: item?.status,
-        to:
-          item?.type === CAMPAIGN_TYPES.EMAIL
-            ? item?.details?.envelope?.to
-            : item?.details?.to,
+        to: item?.details?.envelope?.to
+          ? item?.details?.envelope?.to
+          : item?.details?.to,
       }));
     } else {
       return [];

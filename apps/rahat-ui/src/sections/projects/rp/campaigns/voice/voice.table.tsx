@@ -23,6 +23,7 @@ import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { CAMPAIGN_TYPES } from '@rahat-ui/types';
 import {
   useGetCommunicationLogs,
+  useGetCommunicationStats,
   useListCampaign,
 } from '@rumsan/communication-query';
 import {
@@ -71,6 +72,7 @@ export default function VoiceTable() {
   const [rowSelection, setRowSelection] = React.useState({});
 
   const { data: communicationLogs, isSuccess } = useGetCommunicationLogs();
+  const { data: commsStats } = useGetCommunicationStats();
 
   const tableData = React.useMemo(() => {
     if (isSuccess && communicationLogs?.data) {
@@ -116,6 +118,28 @@ export default function VoiceTable() {
       rowSelection,
     },
   });
+  let deliveredVoiceMessage = 0;
+  let totalBeneficiary = 0;
+  let totalVoiceMessage = 0;
+  commsStats?.data
+    ?.find((stats) => stats.name === 'COMPLETED_CAMPAIGN')
+    ?.data.forEach((item) => {
+      if (item.type === 'IVR') {
+        deliveredVoiceMessage += item.count;
+      }
+    });
+  commsStats?.data
+    ?.find((stats) => stats.name === 'AUDIENCE')
+    ?.data.forEach((item) => {
+      totalBeneficiary += item.count;
+    });
+  commsStats?.data
+    ?.find((stats) => stats.name === 'TOTAL_CAMPAIGN')
+    ?.data.forEach((item) => {
+      if (item.type === 'IVR') {
+        totalVoiceMessage += item.count;
+      }
+    });
 
   return (
     <div className="w-full h-full p-2 bg-secondary">
@@ -123,19 +147,19 @@ export default function VoiceTable() {
         <DataCard
           className=""
           title="Voice"
-          number={campaignStore.totalVoiceCampaign.toString()}
+          number={totalVoiceMessage.toString()}
           Icon={PhoneCall}
         />
         <DataCard
           className=""
           title="Beneficiaries"
-          number={'20'}
+          number={totalBeneficiary.toString()}
           Icon={Mail}
         />
         <DataCard
           className=""
           title="Successful Calls"
-          number={'09'}
+          number={deliveredVoiceMessage.toString()}
           Icon={MessageCircle}
         />
       </div>

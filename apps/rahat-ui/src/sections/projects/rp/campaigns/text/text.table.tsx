@@ -71,7 +71,7 @@ export default function TextTable() {
   const [rowSelection, setRowSelection] = React.useState({});
 
   const { data: communicationLogs, isSuccess } = useGetCommunicationLogs();
-  const { data: stats } = useGetCommunicationStats();
+  const { data: commsStats } = useGetCommunicationStats();
   const tableData = React.useMemo(() => {
     if (isSuccess && communicationLogs.data) {
       return communicationLogs?.data
@@ -115,21 +115,49 @@ export default function TextTable() {
       rowSelection,
     },
   });
-  console.log(stats, communicationLogs);
+  let deliveredTextMessage = 0;
+  let totalBeneficiary = 0;
+  let totalTextMessage = 0;
+  commsStats?.data
+    ?.find((stats) => stats.name === 'COMPLETED_CAMPAIGN')
+    ?.data.forEach((item) => {
+      if (item.type !== 'IVR') {
+        deliveredTextMessage += item.count;
+      }
+    });
+  commsStats?.data
+    ?.find((stats) => stats.name === 'AUDIENCE')
+    ?.data.forEach((item) => {
+      totalBeneficiary += item.count;
+    });
+  commsStats?.data
+    ?.find((stats) => stats.name === 'TOTAL_CAMPAIGN')
+    ?.data.forEach((item) => {
+      if (item.type !== 'IVR') {
+        totalTextMessage += item.count;
+      }
+    });
+  console.log(commsStats);
+
   return (
     <div className="w-full h-full p-2 bg-secondary">
       <div className=" grid sm:grid-cols-1 md:grid-cols-3 gap-2 mb-2">
-        <DataCard className="" title="Text" number={'10'} Icon={PhoneCall} />
+        <DataCard
+          className=""
+          title="Text"
+          number={totalTextMessage.toString()}
+          Icon={PhoneCall}
+        />
         <DataCard
           className=""
           title="Beneficiaries"
-          number={'20'}
+          number={totalBeneficiary.toString()}
           Icon={Mail}
         />
         <DataCard
           className=""
           title="Successful Message Delivered"
-          number={'09'}
+          number={deliveredTextMessage.toString()}
           Icon={MessageCircle}
         />
       </div>

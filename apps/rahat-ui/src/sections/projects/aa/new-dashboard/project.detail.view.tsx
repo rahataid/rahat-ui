@@ -42,7 +42,7 @@ export default function ProjectDetails() {
         <DeleteButton name="project" handleContinueClick={onDelete} />
         <Button type="button" variant="outline" className="shadow-md">
           <CloudDownload size={18} className="mr-1" />
-          Download receipt
+          Download Report
         </Button>
         <Button onClick={fundsModal.onTrue} className="shadow-md">
           Add Budget

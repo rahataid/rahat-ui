@@ -87,11 +87,11 @@ dependencies:
     specifier: 0.0.32
     version: 0.0.32
   '@rumsan/communication':
-    specifier: ^0.0.17
-    version: 0.0.17
+    specifier: ^0.0.21
+    version: 0.0.21
   '@rumsan/communication-query':
-    specifier: ^0.0.10
-    version: 0.0.10
+    specifier: ^0.0.11
+    version: 0.0.11
   '@rumsan/core':
     specifier: ^3.0.133
     version: 3.0.140
@@ -102,8 +102,8 @@ dependencies:
     specifier: ^1.0.125
     version: 1.0.130(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1)
   '@rumsan/react-query':
-    specifier: 0.0.41
-    version: 0.0.41(@types/react@18.3.3)(typescript@5.4.5)(zod@3.23.8)
+    specifier: 0.0.43
+    version: 0.0.43(@types/react@18.3.3)(typescript@5.4.5)(zod@3.23.8)
   '@rumsan/sdk':
     specifier: ^0.0.45
     version: 0.0.45
@@ -170,6 +170,9 @@ dependencies:
   emblor:
     specifier: ^1.3.5
     version: 1.4.0(@swc/core@1.4.17)(@types/react-dom@18.3.0)(@types/react@18.3.3)(postcss@8.4.38)(react-dom@18.2.0)(react@18.2.0)(ts-node@10.9.2)(typescript@5.4.5)
+  ethers:
+    specifier: ^6.13.1
+    version: 6.13.1
   file-saver:
     specifier: ^2.0.5
     version: 2.0.5
@@ -468,6 +471,10 @@ packages:
 
   /@adraffy/ens-normalize@1.10.0:
     resolution: {integrity: sha512-nA9XHtlAkYfJxY7bce8DcN7eKxWWCWkU+1GR9d+U6MbNpfwQp8TI7vqOsBsMcHoT4mBu2kypKoSKnghEzOOq5Q==}
+
+  /@adraffy/ens-normalize@1.10.1:
+    resolution: {integrity: sha512-96Z2IP3mYmF1Xg2cDm8f1gWGf/HUVedQ3FMifV4kG/PQ4yEP51xDtRAEfhVNt5f/uzpNkZHwWQuUcu6D6K+Ekw==}
+    dev: false
 
   /@alloc/quick-lru@5.2.0:
     resolution: {integrity: sha512-UrcABB+4bUrFABwbluTIBErXwvbsU/V7TZWfmbgJfbkwiBuziS9gxdODUyuiecfdGQ85jglMW6juS3+z5TsKLw==}
@@ -3790,14 +3797,6 @@ packages:
       - verdaccio
     dev: true
 
-  /@nrwl/devkit@18.0.0(nx@18.0.0):
-    resolution: {integrity: sha512-fcp6aDbr9Myoen6y0xLIH3evsViXxwNgymWjj9fl/8bMH7M5fIqvWZrt3KHGHfUwmJTlW1XbsnMJB4ZUOtsYvw==}
-    dependencies:
-      '@nx/devkit': 18.0.0(nx@18.0.0)
-    transitivePeerDependencies:
-      - nx
-    dev: true
-
   /@nrwl/devkit@18.0.0(nx@18.0.4):
     resolution: {integrity: sha512-fcp6aDbr9Myoen6y0xLIH3evsViXxwNgymWjj9fl/8bMH7M5fIqvWZrt3KHGHfUwmJTlW1XbsnMJB4ZUOtsYvw==}
     dependencies:
@@ -4039,7 +4038,7 @@ packages:
     peerDependencies:
       nx: '>= 16 <= 18'
     dependencies:
-      '@nrwl/devkit': 18.0.0(nx@18.0.0)
+      '@nrwl/devkit': 18.0.0(nx@18.0.4)
       ejs: 3.1.10
       enquirer: 2.3.6
       ignore: 5.3.1
@@ -6878,15 +6877,15 @@ packages:
       picomatch: 2.3.1
       rollup: 2.79.1
 
-  /@rumsan/communication-query@0.0.10:
-    resolution: {integrity: sha512-DAOvgAnEWpFT/WNUcDewDBGtzoifN30LwUq/Tk3QpkNjjHF5njs4TOY/Eufe5zacNtuMlFVwDKbU3K+EZy/59w==, tarball: https://npm.pkg.github.com/download/@rumsan/communication-query/0.0.10/c87da5ef40878b9ae316d75f9230be18ed06e7af}
+  /@rumsan/communication-query@0.0.11:
+    resolution: {integrity: sha512-cTCi7ZwYiTG4kSWiz5GQ2KboioRUlL2bHTNSXN8HakDVFZDj3luthzb9bV5EK6b2tOhIorM/6ax4p9g1aIQjUA==, tarball: https://npm.pkg.github.com/download/@rumsan/communication-query/0.0.11/47c8fc55a6fb0111ce8ba4bb9eeaf7afe594b396}
     dependencies:
-      '@rumsan/communication': 0.0.17
+      '@rumsan/communication': 0.0.21
       tslib: 2.6.3
     dev: false
 
-  /@rumsan/communication@0.0.17:
-    resolution: {integrity: sha512-bqkJVzonn78LAaZlSwQ/WVuLEkS4DuPJRVA+z35LzWKImDS8jA1RzJMA6r7nP8LXsg+r0nJms6bj0L9L1Lm/jQ==, tarball: https://npm.pkg.github.com/download/@rumsan/communication/0.0.17/7ae8bd62a30349860de4ec5d38647add940e6cff}
+  /@rumsan/communication@0.0.21:
+    resolution: {integrity: sha512-2cwLHyDIzpUbP/00HO8BB/GfYGgpGh9R657cV9nwof7AX03p+OP2osDtQHEe8anR/aF1t4Gi/deyXDpfsLeNkg==, tarball: https://npm.pkg.github.com/download/@rumsan/communication/0.0.21/c51dd973684676324eb7b6f71c6ccae7d6b0e1b9}
     dev: false
 
   /@rumsan/communication@0.0.8:
@@ -6986,8 +6985,8 @@ packages:
       - rxjs
     dev: false
 
-  /@rumsan/react-query@0.0.41(@types/react@18.3.3)(typescript@5.4.5)(zod@3.23.8):
-    resolution: {integrity: sha512-zAKqWTaUhDv1c+GOlHB6MFxNdIHzpwxwXEfiy4ylBBwsPyGK2NFPHuOpLqu0v1HnQ25F8l7iAWf//JdjaDQ5Hw==, tarball: https://npm.pkg.github.com/download/@rumsan/react-query/0.0.41/8731ccbd3528d0b1c4182e646a6848348609f6bc}
+  /@rumsan/react-query@0.0.43(@types/react@18.3.3)(typescript@5.4.5)(zod@3.23.8):
+    resolution: {integrity: sha512-q2YpTo1fg5rCKzW+8tFk+4cIDVwxIzUHXEOVf02uBRAO8P+UsL7fGQ8LFCKU2WbwotK/FcAWNRARDVo+bru4CA==, tarball: https://npm.pkg.github.com/download/@rumsan/react-query/0.0.43/258b14d1ca072f065d117519612fe233565bd482}
     dependencies:
       '@rumsan/communication': 0.0.8
       '@rumsan/sdk': 0.0.44
@@ -9197,6 +9196,10 @@ packages:
       '@types/node': 20.14.9
     dev: false
 
+  /@types/node@18.15.13:
+    resolution: {integrity: sha512-N+0kuo9KgrUQ1Sn/ifDXsvg0TTleP7rIy4zOBGECxAljqvqfqpTfzx0Q1NUedOixRMBfe2Whhb056a42cWs26Q==}
+    dev: false
+
   /@types/node@18.19.39:
     resolution: {integrity: sha512-nPwTRDKUctxw3di5b4TfT3I0sWDiWoPQCZjXhvdkINntwr8lcoVCKsTgnXeRubKIlfnV+eN/HYk6Jb40tbcEAQ==}
     dependencies:
@@ -10491,6 +10494,10 @@ packages:
   /adler-32@1.3.1:
     resolution: {integrity: sha512-ynZ4w/nUUv5rrsR8UUGoe1VC9hZj6V5hU9Qw1HlMDJGEJw5S7TfTErWTjMys6M7vr0YWcPqs3qAr4ss0nDfP+A==}
     engines: {node: '>=0.8'}
+    dev: false
+
+  /aes-js@4.0.0-beta.5:
+    resolution: {integrity: sha512-G965FqalsNyrPqgEGON7nIx1e/OVENSgiEIzyC63haUMuvNnwIgIjMs52hlTCKhkBny7A2ORNlfY9Zu+jmGk1Q==}
     dev: false
 
   /agent-base@6.0.2:
@@ -14172,6 +14179,22 @@ packages:
       '@noble/hashes': 1.4.0
       '@scure/bip32': 1.4.0
       '@scure/bip39': 1.3.0
+    dev: false
+
+  /ethers@6.13.1:
+    resolution: {integrity: sha512-hdJ2HOxg/xx97Lm9HdCWk949BfYqYWpyw4//78SiwOLgASyfrNszfMUNB2joKjvGUdwhHfaiMMFFwacVVoLR9A==}
+    engines: {node: '>=14.0.0'}
+    dependencies:
+      '@adraffy/ens-normalize': 1.10.1
+      '@noble/curves': 1.2.0
+      '@noble/hashes': 1.3.2
+      '@types/node': 18.15.13
+      aes-js: 4.0.0-beta.5
+      tslib: 2.4.0
+      ws: 8.17.1
+    transitivePeerDependencies:
+      - bufferutil
+      - utf-8-validate
     dev: false
 
   /event-target-shim@5.0.1:
@@ -22701,6 +22724,10 @@ packages:
 
   /tslib@2.0.1:
     resolution: {integrity: sha512-SgIkNheinmEBgx1IUNirK0TUD4X9yjjBRTqqjggWCU3pUEqIk3/Uwl3yRixYKT6WjQuGiwDv4NomL3wqRCj+CQ==}
+    dev: false
+
+  /tslib@2.4.0:
+    resolution: {integrity: sha512-d6xOpEDfsi2CZVlPQzGeux8XMwLT9hssAsaPYExaQMuYskwb+x1x7J371tWlbBdWHroy99KnVB6qIkUbs5X3UQ==}
     dev: false
 
   /tslib@2.6.2:

@@ -17,6 +17,7 @@ import {
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { useForm } from 'react-hook-form';
+import { ethers } from 'ethers';
 
 import {
   useActiveFieldDefList,
@@ -64,8 +65,28 @@ export default function AddBeneficiary() {
     lastName: z
       .string()
       .min(2, { message: 'LastName must be at least 2 character' }),
-    walletAddress: z.string(),
-    phone: z.string().min(10, { message: 'Phone number must be 10 digits' }),
+    walletAddress: z
+      .string()
+      .optional()
+      .refine(
+        (value) => {
+          if (!value) return true;
+          if (!ethers.isAddress(value)) return false;
+          return true;
+        },
+        {
+          message: 'Invalid wallet address',
+        },
+      ),
+    phone: z
+      .string()
+      .min(10, { message: 'Phone number must be 10 digits' })
+      .refine((value) => !/\s/.test(value), {
+        message: 'Phone must not contain whitespace',
+      })
+      .refine((value) => /^[0-9]*$/.test(value), {
+        message: 'Phone must only numbers',
+      }),
     email: z.string().optional(),
     birthDate: z.date().optional(),
     location: z.string().optional().or(z.literal('')),

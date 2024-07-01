@@ -25,6 +25,7 @@ import {
   PhoneStatus,
 } from '@rahataid/community-tool-sdk/enums/';
 import { z } from 'zod';
+import { ethers } from 'ethers';
 
 import {
   useActiveFieldDefList,
@@ -73,11 +74,31 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
     lastName: z
       .string()
       .min(2, { message: 'LastName must be at least 2 character' }),
-    walletAddress: z.string().optional(),
+    walletAddress: z
+      .string()
+      .optional()
+      .refine(
+        (value) => {
+          if (!value) return true;
+          if (!ethers.isAddress(value)) return false;
+          return true;
+        },
+        {
+          message: 'Invalid wallet address',
+        },
+      ),
     gender: z.string().toUpperCase().optional(),
     email: z.string().optional(),
     birthDate: z.date().optional(),
-    phone: z.string(),
+    phone: z
+      .string()
+      .min(10, { message: 'Phone number must be 10 digits' })
+      .refine((value) => !/\s/.test(value), {
+        message: 'Phone must not contain whitespace',
+      })
+      .refine((value) => /^[0-9]*$/.test(value), {
+        message: 'Phone must only numbers',
+      }),
     location: z.string().optional(),
     latitude: z.number().optional(),
     longitude: z.number().optional(),

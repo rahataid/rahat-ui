@@ -9,7 +9,7 @@ import { useTreasuryTokenCreate } from 'libs/query/src/lib/treasury/treasury.ser
 import { symbol } from 'zod';
 import { init } from 'next/dist/compiled/webpack/webpack';
 import { initial } from 'lodash';
-import { getBlock } from 'viem/actions';
+import { stringToBytes, keccak256 } from 'viem';
 
 // type FundManagementFlowProps = {
 //   selectedBeneficiaries: {
@@ -31,6 +31,8 @@ const CreateTokenFlow = () => {
   const [transactionHash, setTransactionHash] = useState<`0x${string}`>();
   const [isTransacting, setIsTransacting] = useState<boolean>(false);
   const [blockNumber, setBlockNumber] = useState<number>();
+
+  const [standardAddress, setStandardAddress] = useState('');
 
   const createToken = useTokenCreate();
   const treasuryToken = useTreasuryTokenCreate();
@@ -55,23 +57,40 @@ const CreateTokenFlow = () => {
 
   useEffect(() => {
     if (blockNumber) {
+      (async () => {
+        const logs = result?.data?.logs || [];
+        const TokenCreatedSignature = 'TokenCreated(address)';
+        for (const log of logs) {
+          if (
+            log.topics &&
+            log.topics[0] === keccak256(stringToBytes(TokenCreatedSignature))
+          ) {
+            const paddedAddress = log.topics[1];
+            const address = '0x' + paddedAddress?.slice(-40);
+            setStandardAddress(address);
+          }
+        }
+      })();
+    }
+  }, [blockNumber, result.data]);
+
+  useEffect(() => {
+    if (blockNumber && standardAddress) {
       const update = async () => {
-        const contractAddress: any = result?.data?.logs[2]?.topics[1];
-        console.log({ contractAddress });
         await treasuryToken.mutateAsync({
           name: stepData.tokenName,
           symbol: stepData.symbol,
           description: stepData.description,
           decimals: 18,
           initialSupply: stepData.initialSupply,
-          contractAddress: `0x${contractAddress.slice(-40)}`,
+          contractAddress: standardAddress,
           fromBlock: blockNumber,
           transactionHash: result?.data?.transactionHash as `0x${string}`,
         });
       };
       update();
     }
-  }, [blockNumber]);
+  }, [blockNumber, standardAddress, result.data]);
 
   useEffect(() => {
     if (result?.data) {
@@ -142,7 +161,6 @@ const CreateTokenFlow = () => {
       symbol: stepData.symbol,
       description: stepData.description,
       decimals: 18,
-      // todo: rahat access manager address shoudld be small case
       manager: accessManagerContract as `0x${string}`,
       rahatTreasuryAddress: rahatTreasuryContract as `0x${string}`,
       initialSupply: stepData.initialSupply,

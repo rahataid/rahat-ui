@@ -15,16 +15,8 @@ import {
 import { useEffect, useState } from 'react';
 
 export const useTokenCreate = () => {
-  const [hash, setHash] = useState<`0x${string}`>();
-
   const { queryClient } = useRSQuery();
   const treasuryCreateToken = useWriteRahatTreasuryCreateToken();
-  // const createToken = useTreasuryTokenCreate();
-  // const waitForTransaction = useWaitForTransactionReceipt({
-  //   hash,
-  // });
-
-  // console.log('first', treasuryCreateToken.data);
 
   const alert = Swal.mixin({
     toast: true,
@@ -35,13 +27,7 @@ export const useTokenCreate = () => {
 
   return useMutation(
     {
-      onSettled(data, error, variables, context) {
-        console.log('data', data);
-        console.log('error', error);
-        console.log('variables', variables, context);
-      },
-
-      onSuccess: async (data, variables) => {
+      onSuccess: async () => {
         alert.fire({
           icon: 'success',
           title: 'Token Created Successfully',
@@ -74,6 +60,15 @@ export const useTokenCreate = () => {
         rahatTreasuryAddress: `0x${string}`;
         initialSupply: string;
       }) => {
+        console.log({
+          name,
+          symbol,
+          description,
+          decimals,
+          manager,
+          rahatTreasuryAddress,
+          initialSupply,
+        });
         const value = await treasuryCreateToken.writeContractAsync({
           args: [
             name,

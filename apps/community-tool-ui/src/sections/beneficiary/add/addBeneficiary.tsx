@@ -69,8 +69,18 @@ export default function AddBeneficiary() {
     email: z.string().optional(),
     birthDate: z.date().optional(),
     location: z.string().optional().or(z.literal('')),
-    latitude: z.number().optional(),
-    longitude: z.number().optional(),
+    latitude: z
+      .number()
+      .refine((val) => val >= -90 && val <= 90, {
+        message: 'Longitude must be between -90 and 90',
+      })
+      .optional(),
+    longitude: z
+      .number()
+      .refine((val) => val >= -180 && val <= 180, {
+        message: 'Longitude must be between -180 and 180',
+      })
+      .optional(),
     notes: z.string().optional(),
     gender: z.string().toUpperCase().optional(),
     bankedStatus: z.string().toUpperCase().optional(),
@@ -364,7 +374,9 @@ export default function AddBeneficiary() {
                           }}
                         />
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage>
+                        {form.formState.errors.longitude?.message}
+                      </FormMessage>
                     </FormItem>
                   );
                 }}
@@ -428,6 +440,17 @@ export default function AddBeneficiary() {
                           selected={field.value}
                           onSelect={field.onChange}
                           initialFocus
+                          captionLayout="dropdown"
+                          fromYear={new Date().getFullYear() - 150}
+                          toYear={new Date().getFullYear()}
+                          classNames={{
+                            caption_dropdowns: 'grid grid-cols-2',
+                            dropdown_month: 'cols-span-1',
+                            dropdown_year: 'cols-span-1',
+                            vhidden: 'hidden',
+                            dropdown_icon: 'hidden',
+                            caption_label: 'hidden',
+                          }}
                         />
                       </PopoverContent>
                     </Popover>
@@ -436,6 +459,7 @@ export default function AddBeneficiary() {
                   </FormItem>
                 )}
               />
+
               <FormField
                 control={form.control}
                 name="govtIDNumber"

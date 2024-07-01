@@ -152,7 +152,7 @@ const VoiceCampaignAddDrawer = () => {
 
     const formData = new FormData();
     formData.append('file', file);
-    const { data: afterUpload } = await uploadFile?.mutateAsync(formData);
+    const { data: afterUpload } = await uploadFile.mutateAsync(formData);
 
     form.setValue('file', afterUpload);
   };

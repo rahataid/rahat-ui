@@ -50,9 +50,11 @@ import { useEffect } from 'react';
 import { FIELD_DEF_FETCH_LIMIT } from '../../constants/app.const';
 import useFormStore from '../../formBuilder/form.store';
 import { formatDate, selectNonEmptyFields } from '../../utils';
+import { useSecondPanel } from '../../providers/second-panel-provider';
 
 export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
   const { extras }: any = useFormStore();
+  const { closeSecondPanel } = useSecondPanel();
 
   const updateBeneficiaryClient = useCommunityBeneficiaryUpdate();
   // const { data } = useCommunityBeneficiaryListByID({
@@ -140,6 +142,7 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
         extras,
       },
     });
+    closeSecondPanel();
   };
 
   useEffect(() => {

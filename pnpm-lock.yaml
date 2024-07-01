@@ -90,11 +90,11 @@ importers:
         specifier: 0.0.32
         version: 0.0.32
       '@rumsan/communication':
-        specifier: ^0.0.17
-        version: 0.0.17
+        specifier: ^0.0.21
+        version: 0.0.21
       '@rumsan/communication-query':
-        specifier: ^0.0.10
-        version: 0.0.10
+        specifier: ^0.0.11
+        version: 0.0.11
       '@rumsan/core':
         specifier: ^3.0.133
         version: 3.0.140
@@ -3520,11 +3520,11 @@ packages:
       rollup:
         optional: true
 
-  '@rumsan/communication-query@0.0.10':
-    resolution: {integrity: sha512-DAOvgAnEWpFT/WNUcDewDBGtzoifN30LwUq/Tk3QpkNjjHF5njs4TOY/Eufe5zacNtuMlFVwDKbU3K+EZy/59w==, tarball: https://npm.pkg.github.com/download/@rumsan/communication-query/0.0.10/c87da5ef40878b9ae316d75f9230be18ed06e7af}
+  '@rumsan/communication-query@0.0.11':
+    resolution: {integrity: sha512-cTCi7ZwYiTG4kSWiz5GQ2KboioRUlL2bHTNSXN8HakDVFZDj3luthzb9bV5EK6b2tOhIorM/6ax4p9g1aIQjUA==, tarball: https://npm.pkg.github.com/download/@rumsan/communication-query/0.0.11/47c8fc55a6fb0111ce8ba4bb9eeaf7afe594b396}
 
-  '@rumsan/communication@0.0.17':
-    resolution: {integrity: sha512-bqkJVzonn78LAaZlSwQ/WVuLEkS4DuPJRVA+z35LzWKImDS8jA1RzJMA6r7nP8LXsg+r0nJms6bj0L9L1Lm/jQ==, tarball: https://npm.pkg.github.com/download/@rumsan/communication/0.0.17/7ae8bd62a30349860de4ec5d38647add940e6cff}
+  '@rumsan/communication@0.0.21':
+    resolution: {integrity: sha512-2cwLHyDIzpUbP/00HO8BB/GfYGgpGh9R657cV9nwof7AX03p+OP2osDtQHEe8anR/aF1t4Gi/deyXDpfsLeNkg==, tarball: https://npm.pkg.github.com/download/@rumsan/communication/0.0.21/c51dd973684676324eb7b6f71c6ccae7d6b0e1b9}
 
   '@rumsan/communication@0.0.8':
     resolution: {integrity: sha512-Ht+vIdZVabacljbIO54QDm2FXYSH5CAKyDQ68/NcvQdqQz39x3wZLt4DWuliTGY6ZpaniddVyql57NTdcmae6Q==, tarball: https://npm.pkg.github.com/download/@rumsan/communication/0.0.8/b11e20c168799814e0d5058533ec77ed35f2d505}
@@ -16098,12 +16098,12 @@ snapshots:
     optionalDependencies:
       rollup: 2.79.1
 
-  '@rumsan/communication-query@0.0.10':
+  '@rumsan/communication-query@0.0.11':
     dependencies:
-      '@rumsan/communication': 0.0.17
+      '@rumsan/communication': 0.0.21
       tslib: 2.6.3
 
-  '@rumsan/communication@0.0.17': {}
+  '@rumsan/communication@0.0.21': {}
 
   '@rumsan/communication@0.0.8':
     dependencies:

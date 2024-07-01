@@ -35,7 +35,18 @@ export const useTreasuryTokenList = () => {
 
 export const useTreasuryTokenDetail = (contractAddress: string) => {
   const { queryClient, rumsanService } = useRSQuery();
-  const getTokenDetail = async (contractAddress: string) => {
-    return rumsanService.client.get('/token/:id');
+  const getToken = async (contractAddress: string) => {
+    const response = await rumsanService.client.get(
+      `/token/${contractAddress}`,
+    );
+    return response.data;
   };
+
+  return useQuery(
+    {
+      queryKey: ['GET_TOKEN_DETAIL'],
+      queryFn: () => getToken(contractAddress),
+    },
+    queryClient,
+  );
 };

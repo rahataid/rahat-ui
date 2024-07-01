@@ -75,16 +75,13 @@ const AddAudience: FC<AddAudienceProps> = ({
   });
   const createAudience = useCreateAudience();
 
-  const filterBenByProjectId = React.useCallback(
-    (id: string) => {
-      if (id !== 'ALL') {
-        setFilters({ ...filters, projectId: id });
-        return;
-      }
-      setFilters({ ...filters, projectId: undefined });
-    },
-    [filters, setFilters],
-  );
+  const filterBenByProjectId = (id:any) => {
+    if (id !== 'ALL') {
+      setFilters({ ...filters, projectId: id });
+      return;
+    }
+    setFilters({ ...filters, projectId: undefined });
+  } 
 
   const handleDateChange = (date: Date, type: string) => {
     if(type === 'start') {
@@ -114,6 +111,8 @@ const AddAudience: FC<AddAudienceProps> = ({
     },
     [filters, setFilters],
   );
+
+  console.log(filters)
 
   const columns = useAudienceColumns(
     beneficiaryData,
@@ -152,6 +151,7 @@ const AddAudience: FC<AddAudienceProps> = ({
   if (selectedRows.length > 0) {
     setAudienceRequiredError(false);
   }
+
   return (
     <>
       {audienceRequiredError && (

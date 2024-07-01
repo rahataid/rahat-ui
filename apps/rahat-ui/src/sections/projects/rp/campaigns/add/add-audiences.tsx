@@ -118,7 +118,7 @@ const AddAudience: FC<AddAudienceProps> = ({
           }}
           className="max-w-sm"
         />
-        
+
         <div
           className={`border rounded px-3 py-2 h-10 text-sm ${
             selectedRows.length

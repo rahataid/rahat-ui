@@ -12,7 +12,8 @@ import {
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import { useListCampaign } from '@rumsan/communication-query';
+import { CAMPAIGN_TYPES } from '@rahat-ui/types';
+import { useGetCampaign } from '@rumsan/communication-query';
 import {
   ColumnFiltersState,
   SortingState,
@@ -41,7 +42,7 @@ export type Text = {
 export default function TextLogDetails() {
   const campaignStore = useCampaignStore();
   const columns = useTextTableColumn();
-  const { id } = useParams();
+  const { campaignId } = useParams();
   const router = useRouter();
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -51,52 +52,26 @@ export default function TextLogDetails() {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
-  const { data, isSuccess, isFetching } = useListCampaign({
-    projectId: id,
+  const { data, isSuccess, isFetching } = useGetCampaign({
+    id: Number(campaignId),
   });
 
-  const dataArray = [
-    {
-      to: 'Alice',
-      date: '2023-06-01',
-      status: 'Pending',
-    },
-    {
-      to: 'Bob',
-      date: '2023-06-02',
-      status: 'Approved',
-    },
-    {
-      to: 'Charlie',
-      date: '2023-06-03',
-      status: 'Rejected',
-    },
-    {
-      to: 'David',
-      date: '2023-06-04',
-      status: 'Pending',
-    },
-    {
-      to: 'Eve',
-      date: '2023-06-05',
-      status: 'Approved',
-    },
-  ];
-
-  // const tableData = React.useMemo(() => {
-  //   const result = Array.isArray(data?.response.data.rows)
-  //     ? data?.response?.data?.rows?.filter(
-  //         (campaign: any) => campaign.type !== CAMPAIGN_TYPES.PHONE,
-  //       )
-  //     : [];
-
-  //   campaignStore.setTotalTextCampaign(data?.response?.meta?.total || 0);
-  //   return result;
-  // }, [isSuccess, data]);
+  const tableData = React.useMemo(() => {
+    if (isSuccess && data?.data) {
+      return data?.data?.communicationLogs?.map((item: any) => ({
+        date: new Date(item.createdAt).toLocaleString(),
+        status: item?.status,
+        to: item?.details?.envelope?.to
+          ? item?.details?.envelope?.to
+          : item?.details?.to,
+      }));
+    } else {
+      return [];
+    }
+  }, [data, isSuccess]);
 
   const table = useReactTable({
-    data: dataArray,
-    // tableData,
+    data: tableData,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -117,12 +92,20 @@ export default function TextLogDetails() {
   return (
     <div className="w-full h-full p-2 bg-secondary">
       <div className="flex items-center justify-between mb-4">
-        <p className="font-medium	text-neutral-800 text-lg">Campaign Name</p>
-        {table.getRowModel().rows?.length > 0 ? <TriggerConfirmModal /> : null}
+        <p className="font-medium	text-neutral-800 text-lg">
+          {data?.data?.name}
+        </p>
+        {data?.data?.status !== 'COMPLETED' ? (
+          <TriggerConfirmModal id={Number(campaignId)} />
+        ) : null}
       </div>
       <div className=" grid sm:grid-cols-1 md:grid-cols-3 gap-2 mb-2">
         <DataCard className="" title="Text" number={'10'} Icon={PhoneCall} />
-        <DataCard title="Beneficiaries" number={'20'} Icon={Mail} />
+        <DataCard
+          title="Beneficiaries"
+          number={data?.data?.audiences.length?.toString() || '0'}
+          Icon={Mail}
+        />
         <DataCard
           title="Successful Message Delivered"
           number={'09'}

@@ -9,7 +9,7 @@ export type AppSettingsState = {
   rahatTreasury: string;
   contracts: Record<string, any>;
   navSettings: Record<string, any>;
-  tokenSettings: Record<string, any>;
+  roleOnChainSync: any;
 };
 
 export type AppSettingsAction = {
@@ -19,7 +19,7 @@ export type AppSettingsAction = {
   setRahatTreasurySettings: (rahatTreasury: `0X${string}`) => void;
   setContractSettings: (contracts: Record<string, string>) => void;
   setNavSettings: (navSettings: Record<string, any>) => void;
-  setTokenSettings: (tokenSettings: Record<string, any>) => void;
+  setRoleSync: (roleOnChainSync: any) => void;
 };
 
 export type AppSettings = AppSettingsState & AppSettingsAction;
@@ -52,9 +52,7 @@ export const initialAppSettings: AppSettingsState = {
     data: [],
     subData: [],
   },
-  tokenSettings: {
-    data: [],
-  },
+  roleOnChainSync: process.env['NEXT_PUBLIC_ADD_ROLE_ON_CHAIN'] || true,
 };
 
 export const useSettingsStore = zustandStore<AppSettings>(
@@ -71,8 +69,8 @@ export const useSettingsStore = zustandStore<AppSettings>(
     setContractSettings: (contracts) => set({ contracts }),
     navSettings: initialAppSettings.navSettings,
     setNavSettings: (navSettings) => set({ navSettings }),
-    tokenSettings: initialAppSettings.tokenSettings,
-    setTokenSettings: (tokenSettings) => set({ tokenSettings }),
+    roleOnChainSync: initialAppSettings.roleOnChainSync,
+    setRoleSync: (roleOnChainSync) => set({ roleOnChainSync }),
   }),
   {
     devtoolsEnabled: true,

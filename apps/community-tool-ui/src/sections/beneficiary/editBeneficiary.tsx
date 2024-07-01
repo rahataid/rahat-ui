@@ -100,8 +100,18 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
         message: 'Phone must only numbers',
       }),
     location: z.string().optional(),
-    latitude: z.number().optional(),
-    longitude: z.number().optional(),
+    latitude: z
+      .number()
+      .refine((val) => val >= -90 && val <= 90, {
+        message: 'Longitude must be between -90 and 90',
+      })
+      .optional(),
+    longitude: z
+      .number()
+      .refine((val) => val >= -180 && val <= 180, {
+        message: 'Longitude must be between -180 and 180',
+      })
+      .optional(),
     notes: z.string().optional(),
 
     bankedStatus: z.string().toUpperCase().optional(),
@@ -529,6 +539,17 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
                         selected={field.value}
                         onSelect={field.onChange}
                         initialFocus
+                        captionLayout="dropdown"
+                        fromYear={new Date().getFullYear() - 150}
+                        toYear={new Date().getFullYear()}
+                        classNames={{
+                          caption_dropdowns: 'grid grid-cols-2',
+                          dropdown_month: 'cols-span-1',
+                          dropdown_year: 'cols-span-1',
+                          vhidden: 'hidden',
+                          dropdown_icon: 'hidden',
+                          caption_label: 'hidden',
+                        }}
                       />
                     </PopoverContent>
                   </Popover>

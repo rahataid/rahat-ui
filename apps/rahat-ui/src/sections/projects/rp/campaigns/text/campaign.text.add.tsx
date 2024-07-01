@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Drawer,
   DrawerClose,
@@ -54,6 +54,7 @@ const FormSchema = z.object({
   }),
 
   message: z.string().optional(),
+  subject: z.string().optional(),
   audiences: z.array(
     z.object({
       name: z.string(),
@@ -74,6 +75,8 @@ const TextCampaignAddDrawer = () => {
   const createCampaign = useCreateCampaign();
   const createAudience = useCreateAudience();
 
+  const [isEmail, setisEmail] = useState(false);
+
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -83,6 +86,7 @@ const TextCampaignAddDrawer = () => {
     },
     mode: 'onChange',
   });
+
   const handleCreateAudience = async (item: TPIIData) => {
     // Check if the audience already exists
     const existingAudience = audienceData?.data.find(
@@ -127,6 +131,7 @@ const TextCampaignAddDrawer = () => {
       type AdditionalData = {
         audio?: any;
         message?: string;
+        subject?: string;
         body?: string;
         messageSid?: string;
       };
@@ -134,6 +139,8 @@ const TextCampaignAddDrawer = () => {
       if (data?.campaignType === CAMPAIGN_TYPES.WHATSAPP) {
         additionalData.body = data?.message;
       } else {
+        additionalData.subject = data?.subject;
+
         additionalData.message = data?.message;
       }
       createCampaign
@@ -177,15 +184,39 @@ const TextCampaignAddDrawer = () => {
             <DrawerDescription>
               <FormField
                 control={form.control}
+                name="campaignName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Input
+                        className="rounded mt-2"
+                        placeholder="Campaign Name"
+                        {...field}
+                      />
+                    </FormControl>
+
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
                 name="campaignType"
                 render={({ field, fieldState }) => (
                   <FormItem>
                     <Select
-                      onValueChange={field.onChange}
+                      onValueChange={(value) => {
+                        if (value.toLowerCase() === 'email') {
+                          setisEmail(true);
+                        } else {
+                          setisEmail(false);
+                        }
+                        field.onChange(value);
+                      }}
                       defaultValue={field.value}
                     >
                       <FormControl>
-                        <SelectTrigger className="rounded">
+                        <SelectTrigger className="rounded mt-2">
                           <SelectValue placeholder="Select campaign type" />
                         </SelectTrigger>
                       </FormControl>
@@ -204,24 +235,25 @@ const TextCampaignAddDrawer = () => {
                   </FormItem>
                 )}
               />
-              <FormField
-                control={form.control}
-                name="campaignName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Input
-                        className="rounded mt-2"
-                        placeholder="Campaign Name"
-                        {...field}
-                      />
-                    </FormControl>
+              {isEmail && (
+                <FormField
+                  control={form.control}
+                  name="subject"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <Input
+                          className="rounded mt-2"
+                          placeholder="Subject"
+                          {...field}
+                        />
+                      </FormControl>
 
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
               <FormField
                 control={form.control}
                 name="message"

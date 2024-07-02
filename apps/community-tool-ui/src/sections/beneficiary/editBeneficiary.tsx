@@ -25,7 +25,7 @@ import {
   PhoneStatus,
 } from '@rahataid/community-tool-sdk/enums/';
 import { z } from 'zod';
-import { ethers } from 'ethers';
+import { isAddress } from 'viem';
 
 import {
   useActiveFieldDefList,
@@ -80,7 +80,7 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
       .refine(
         (value) => {
           if (!value) return true;
-          if (!ethers.isAddress(value)) return false;
+          if (!isAddress(value)) return false;
           return true;
         },
         {

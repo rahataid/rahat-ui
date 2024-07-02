@@ -31,10 +31,12 @@ const BarCharts = ({
 
   const sumSeries = series.reduce((a: number, b: number) => a + b, 0);
   return (
-    <div className={`bg-card shadow p-4 rounded  mt-2 ${className} `}>
+    <div className={`bg-card shadow-md p-4 rounded-lg  mt-2 ${className} `}>
       <h1 className=" text-lg font-medium mt-2 mb-1 ml-4 ">{title}</h1>
       {overFlowProps && (
-        <h1 className=" text-2xl font-semibold mt-2 mb-1 ml-4 ">{sumSeries}</h1>
+        <h1 className=" text-2xl text-blue-500 font-semibold mt-2 mb-1 ml-4 ">
+          {sumSeries}
+        </h1>
       )}
       <Separator />
       <div

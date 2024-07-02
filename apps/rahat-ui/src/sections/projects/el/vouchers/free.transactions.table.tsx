@@ -209,8 +209,8 @@ export function FreeTransactionTable() {
         <h1 className="text-primary">Transactions</h1>
       </div>
       <div className="rounded border">
+      <ScrollArea className="h-[50vh]">
         <Table>
-          <ScrollArea className="h-full">
             <TableHeader className="top-0 sticky bg-card">
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
@@ -257,8 +257,9 @@ export function FreeTransactionTable() {
                 </TableRow>
               )}
             </TableBody>
-          </ScrollArea>
+          
         </Table>
+        </ScrollArea>
       </div>
     </div>
   );

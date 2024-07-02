@@ -1,5 +1,3 @@
-
-
 export const ProjectTransactions = `
 query ProjectTransactions{
    claimCreateds {
@@ -38,7 +36,7 @@ query ProjectTransactions{
     eventType
   }
 }
-`
+`;
 
 export const VendorTransactions = `
 query VendorTransactions($vendor:String!) {
@@ -67,7 +65,7 @@ query VendorTransactions($vendor:String!) {
     eventType
   }
 }
-`
+`;
 
 export const BeneficiaryTransactions = `
 query beneficiaryTransactions($beneficiaryAddress:String!){
@@ -96,6 +94,18 @@ tokensAllocateds(where:{beneficiary: $beneficiaryAddress} ) {
     eventType
    }
 }
+`;
 
-
-`
+export const TreasuryTokenTransactions = `
+query MyQuery {
+  transfers {
+    transactionHash
+    value
+    to
+    id
+    from
+    blockNumber
+    blockTimestamp
+  }
+}
+`;

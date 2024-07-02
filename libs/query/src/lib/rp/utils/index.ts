@@ -1,3 +1,4 @@
+
 export const formatTransaction = (trans: any) => ({
     beneficiary: trans.beneficiary || trans.referrerBeneficiaries || '-',
     vendor: trans.vendor || '',
@@ -7,12 +8,12 @@ export const formatTransaction = (trans: any) => ({
       trans.claimer ||
       trans.beneficiaryAddress,
     topic: trans.eventType,
-    date: new Date(
+    timeStamp: new Date(
         parseInt(trans.blockTimestamp) * 1000,
       ).toLocaleDateString('en-US', {
         timeZone: 'UTC',
       }),
-    transactionHash: trans.transactionHash,
+    txHash: trans.transactionHash,
     amount: '',
     voucherId: trans.tokenAddress || trans.token || '-',
     id: trans.transactionHash,

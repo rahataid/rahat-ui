@@ -137,7 +137,6 @@ export default function TextTable() {
         totalTextMessage += item.count;
       }
     });
-  console.log(commsStats);
 
   return (
     <div className="w-full h-full p-2 bg-secondary">
@@ -307,7 +306,7 @@ export default function TextTable() {
               <Button
                 className="flex items-center gap-3"
                 onClick={() =>
-                  router.push(`/projects/rp/${id}/beneficiary/add`)
+                  router.push(`/projects/rp/${id}/campaigns/text/manage`)
                 }
               >
                 <Settings size={18} strokeWidth={1.5} />

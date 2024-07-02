@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
 import {
   Drawer,
   DrawerClose,
@@ -9,10 +10,9 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/drawer';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
-import { Plus } from 'lucide-react';
 import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
+import { Plus } from 'lucide-react';
+import { useState } from 'react';
 
 import {
   useListTransport,
@@ -35,13 +35,12 @@ import {
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { FormProvider, useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { CAMPAIGN_TYPES } from '@rahat-ui/types';
-import { useParams } from 'next/navigation';
 import { useBeneficiaryPii, useCreateCampaign } from '@rahat-ui/query';
-import { Audience } from '@rahat-ui/types';
+import { Audience, CAMPAIGN_TYPES } from '@rahat-ui/types';
 import { TPIIData } from '@rahataid/sdk';
+import { useParams } from 'next/navigation';
+import { FormProvider, useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { UUID } from 'crypto';
@@ -109,14 +108,17 @@ const TextCampaignAddDrawer = () => {
     }
   };
   const handleCreateCampaign = async (data: z.infer<typeof FormSchema>) => {
+    const transportId = transportData?.data?.find(
+      (t) => t?.name?.toLowerCase() === data?.campaignType?.toLowerCase(),
+    )?.id;
     console.log(data);
-    let transportId;
+    // let transportId;
     const audienceIds = [];
-    await transportData?.data.map((tdata) => {
-      if (tdata.name.toLowerCase() === data?.campaignType.toLowerCase()) {
-        transportId = tdata.id;
-      }
-    });
+    // await transportData?.data.map((tdata) => {
+    //   if (tdata.name.toLowerCase() === data?.campaignType.toLowerCase()) {
+    //     transportId = tdata.id;
+    //   }
+    // });
 
     // Create audience
     if (beneficiaryData?.data) {

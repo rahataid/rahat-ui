@@ -81,7 +81,7 @@ const BeneficiaryDetailTableView = () => {
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
-    getRowId: (row) => row.wallet,
+    getRowId: (row) => row.walletAddress,
     onRowSelectionChange: setSelectedListItems,
     state: {
       sorting,
@@ -91,17 +91,6 @@ const BeneficiaryDetailTableView = () => {
     },
   });
 
-  const handleBenType = React.useCallback(
-    (type: string) => {
-      resetSelectedListItems();
-      if (type === 'ALL') {
-        setFilters({ ...filters, status: undefined });
-        return;
-        setFilters({ ...filters, status: type });
-      }
-    },
-    [filters, setFilters],
-  );
   return (
     <>
       <div className="p-2 bg-secondary">

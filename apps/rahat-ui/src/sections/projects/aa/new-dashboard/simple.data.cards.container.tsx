@@ -66,7 +66,7 @@ export default function SimpleDataCardsContainer({
     {
       title: 'Household Receiving Cash Support',
       Icon: Home,
-      number: '244',
+      number: 'N/A',
     },
     {
       title: 'Budget',
@@ -76,17 +76,17 @@ export default function SimpleDataCardsContainer({
     {
       title: 'Balance',
       Icon: Coins,
-      number: '2,94,334',
+      number: 'N/A',
     },
     {
       title: 'Fund Distributed',
       Icon: HandCoins,
-      number: '2,94,334',
+      number: 'N/A',
     },
     {
       title: 'Number of Communication Project',
       Icon: SmartphoneNfc,
-      number: '244',
+      number: 'N/A',
     },
   ];
   return (

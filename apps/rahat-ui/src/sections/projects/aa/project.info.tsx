@@ -1,22 +1,19 @@
-import { FC } from 'react';
-import { Project } from '@rahataid/sdk/project/project.types';
-import EditButton from '../components/edit.btn';
-import DeleteButton from '../components/delete.btn';
-import Back from '../components/back';
-import { CarouselDemo } from '../components/carousel.demo';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
-import AddFundsModal from './addFundsModal';
-import {
-  useReadAaProject,
-  useReadAaProjectTokenBudget,
-} from 'apps/rahat-ui/src/hooks/aa/contracts/aaProject';
 import {
   PROJECT_SETTINGS_KEYS,
   useProjectSettingsStore,
 } from '@rahat-ui/query';
-import { useParams } from 'next/navigation';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { Project } from '@rahataid/sdk/project/project.types';
+import { useReadAaProjectTokenBudget } from 'apps/rahat-ui/src/hooks/aa/contracts/aaProject';
+import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 import { UUID } from 'crypto';
+import { useParams } from 'next/navigation';
+import { FC } from 'react';
+import Back from '../components/back';
+import { CarouselDemo } from '../components/carousel.demo';
+import DeleteButton from '../components/delete.btn';
+import EditButton from '../components/edit.btn';
+import AddFundsModal from './addFundsModal';
 
 type ProjectInfoProps = {
   project: Project;
@@ -27,7 +24,7 @@ const ProjectInfoCard = ({
   type,
   description,
   budget,
-  hazardType
+  hazardType,
 }: {
   status: string;
   type: string;
@@ -64,14 +61,14 @@ const ProjectInfoCard = ({
 
 const ProjectInfo: FC<ProjectInfoProps> = ({ project }) => {
   const { id } = useParams();
-  const projectID = id as UUID
+  const projectID = id as UUID;
 
   const contractSettings = useProjectSettingsStore(
     (s) => s.settings?.[projectID]?.[PROJECT_SETTINGS_KEYS.CONTRACT] || null,
   );
 
   const hazardType = useProjectSettingsStore(
-    (s) => s.settings?.[projectID]?.[PROJECT_SETTINGS_KEYS.HAZARD_TYPE]
+    (s) => s.settings?.[projectID]?.[PROJECT_SETTINGS_KEYS.HAZARD_TYPE],
   );
 
   const onDelete = () => {};

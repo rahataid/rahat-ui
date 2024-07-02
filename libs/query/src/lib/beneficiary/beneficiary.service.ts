@@ -40,7 +40,6 @@ const removeBeneficiaryGroup = async (uuid: UUID) => {
   return response?.data;
 };
 
-
 export const useBeneficiaryGroupsList = (payload: any): any => {
   const { queryClient } = useRSQuery();
 
@@ -62,7 +61,6 @@ export const useBeneficiaryGroupsList = (payload: any): any => {
 
   useEffect(() => {
     if (benGroups.data) {
-      console.log('ben groups', benGroups);
       setBeneficiaryGroups(benGroups?.data?.data as any[]);
       setMeta(benGroups?.data?.meta);
     }
@@ -100,6 +98,43 @@ export const useCreateBeneficiaryGroup = () => {
   });
 };
 
+const updateBeneficiaryGroup = async (payload: any) => {
+  const response = await api.patch(
+    `/beneficiaries/groups/${payload.uuid}`,
+    payload,
+  );
+  return response?.data;
+};
+
+export const useUpdateBeneficiaryGroup = () => {
+  const qc = useQueryClient();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+  return useMutation({
+    mutationFn: (payload: any) => updateBeneficiaryGroup(payload),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: [TAGS.GET_BENEFICIARIES_GROUPS] });
+      toast.fire({
+        title: 'Beneficiary Group updated successfully.',
+        icon: 'success',
+      });
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || 'Error';
+      toast.fire({
+        title: 'Error while updating beneficiary group.',
+        icon: 'error',
+        text: errorMessage,
+      });
+    },
+  });
+};
+
 // Todo: Change type of return
 export const useBeneficiaryList = (payload: any): any => {
   const { rumsanService, queryClient } = useRSQuery();
@@ -109,7 +144,6 @@ export const useBeneficiaryList = (payload: any): any => {
     setMeta: state.setMeta,
   }));
 
-  console.log(payload)
   const ben = useQuery(
     {
       queryKey: [TAGS.GET_BENEFICIARIES, payload],

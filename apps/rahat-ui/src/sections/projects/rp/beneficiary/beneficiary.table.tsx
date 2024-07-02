@@ -40,7 +40,12 @@ import { useState } from 'react';
 import BulkAssignToken from './bulk-assign-token.modal';
 import { useCvaBeneficiaryTableColumns } from './use.table.column';
 import SelectSection from 'apps/rahat-ui/src/utils/select';
-import { bankedOptions, genderOptions, internetOptions, phoneOptions } from 'apps/rahat-ui/src/constants/selectOptionsRpBeneficiary';
+import {
+  bankedOptions,
+  genderOptions,
+  internetOptions,
+  phoneOptions,
+} from 'apps/rahat-ui/src/constants/selectOptionsRpBeneficiary';
 import FiltersTags from '../../components/filtersTags';
 
 export default function BeneficiaryTable() {
@@ -105,6 +110,8 @@ export default function BeneficiaryTable() {
     });
   };
 
+  console.log(filters, 'filters');
+
   return (
     <>
       <div className="w-full p-2 bg-secondary">
@@ -134,10 +141,34 @@ export default function BeneficiaryTable() {
           )}
         </div>
         <div className="grid grid-cols-6 gap-x-2 mb-3">
-          <SelectSection filters={filters} setFilters={setFilters} options={genderOptions} placeholder={'Gender'} keys='gender'/>
-          <SelectSection filters={filters} setFilters={setFilters} options={internetOptions} placeholder={'Internet Status'} keys='internetStatus'/>
-          <SelectSection filters={filters} setFilters={setFilters} options={phoneOptions} placeholder={'Phone Status'} keys='phoneStatus'/>
-          <SelectSection filters={filters} setFilters={setFilters} options={bankedOptions} placeholder={'Banked Status'} keys='bankedStatus'/>
+          <SelectSection
+            filters={filters}
+            setFilters={setFilters}
+            options={genderOptions}
+            placeholder={'Gender'}
+            keys="gender"
+          />
+          <SelectSection
+            filters={filters}
+            setFilters={setFilters}
+            options={internetOptions}
+            placeholder={'Internet Status'}
+            keys="internetStatus"
+          />
+          <SelectSection
+            filters={filters}
+            setFilters={setFilters}
+            options={phoneOptions}
+            placeholder={'Phone Status'}
+            keys="phoneStatus"
+          />
+          <SelectSection
+            filters={filters}
+            setFilters={setFilters}
+            options={bankedOptions}
+            placeholder={'Banked Status'}
+            keys="bankedStatus"
+          />
           <div className="col-span-2">
             <Input
               placeholder="Search Beneficiaries..."
@@ -155,7 +186,13 @@ export default function BeneficiaryTable() {
             />
           </div>
         </div>
-        <FiltersTags filters={filters} setFilters={setFilters} total={beneficiaries.data.data.length}/>
+        {Object.keys(filters).length != 0 && (
+          <FiltersTags
+            filters={filters}
+            setFilters={setFilters}
+            total={beneficiaries.data.data.length}
+          />
+        )}
         <div className="rounded-md border bg-card">
           <TableComponent>
             <ScrollArea className="h-[calc(100vh-190px)]">

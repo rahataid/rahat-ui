@@ -3,6 +3,7 @@ import { useRSQuery } from '@rumsan/react-query';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { useSettingsStore } from './settings.store';
+import { SettingDataType } from '@rumsan/sdk/enums';
 
 // const convertKeysToCamelCase = (obj:Record<string,any>):Record<string ,any>=> {
 //   return mapKeys(obj, (value, key) => camelCase(key));
@@ -59,7 +60,6 @@ export const useChainSettings = () => {
 
 export const useAcessManagerSettings = () => {
   const { queryClient } = useRSQuery();
-  // TODO:NEW is a temp name, will be changed to CHAIN_SETTINGS
   const appSettings = useAppSettingsMutate('ACCESS_MANAGER');
   const { setAccessManagerSettings } = useSettingsStore();
 
@@ -68,6 +68,7 @@ export const useAcessManagerSettings = () => {
       queryKey: ['ACCESS_MANAGER'],
       queryFn: async () => {
         const d = await appSettings.mutateAsync();
+        console.log({ d });
         return d.data.data?.value;
       },
 
@@ -81,6 +82,61 @@ export const useAcessManagerSettings = () => {
       setAccessManagerSettings(query.data);
     }
   }, [query.isSuccess, query.data, setAccessManagerSettings]);
+
+  return query;
+};
+
+export const useRahatTreasurySettings = () => {
+  const { queryClient } = useRSQuery();
+  const appSettings = useAppSettingsMutate('RAHAT_TREASURY');
+  const { setRahatTreasurySettings } = useSettingsStore();
+
+  const query = useQuery(
+    {
+      queryKey: ['RAHAT_TREASURY'],
+      queryFn: async () => {
+        const d = await appSettings.mutateAsync();
+        return d.data.data?.value;
+      },
+
+      enabled: !!queryClient,
+    },
+    queryClient,
+  );
+
+  useEffect(() => {
+    if (query.isSuccess) {
+      setRahatTreasurySettings(query.data);
+    }
+  }, [query.isSuccess, query.data, setRahatTreasurySettings]);
+
+  return query;
+};
+
+export const useRahatTokenSettings = () => {
+  const { queryClient } = useRSQuery();
+  const appSettings = useAppSettingsMutate('RAHAT_TOKEN');
+  const { setTokenSettings } = useSettingsStore();
+
+  const query = useQuery(
+    {
+      queryKey: ['RAHAT_TOKEN'],
+      queryFn: async () => {
+        const d = await appSettings.mutateAsync();
+        console.log('d1', d?.data?.data?.value);
+        return d.data.data?.value;
+      },
+
+      enabled: !!queryClient,
+    },
+    queryClient,
+  );
+
+  useEffect(() => {
+    if (query.isSuccess) {
+      setTokenSettings(query.data);
+    }
+  }, [query.isSuccess, query.data, setTokenSettings]);
 
   return query;
 };
@@ -139,4 +195,52 @@ export const useAppNavSettings = () => {
   }, [query.isSuccess, query.data, setNavSettings]);
 
   return query;
+};
+
+export const useAppSettingsCreate = (name: string) => {
+  const { queryClient, rumsanService } = useRSQuery();
+
+  const createSettings = async (data: {
+    value: Record<any, any>;
+    requiredFields: string[];
+    isReadOnly: boolean;
+    isPrivate: boolean;
+    dataType: SettingDataType;
+  }) => {
+    const url = `/app/settings`;
+    return rumsanService.client.post(url, {
+      name,
+      ...data,
+    });
+  };
+
+  return useMutation(
+    {
+      mutationKey: ['CREATE_SETTINGS', name],
+      mutationFn: createSettings,
+    },
+    queryClient,
+  );
+};
+
+export const useCreateTokenSettings = () => {
+  const { queryClient } = useRSQuery();
+
+  const createTokenSettings = useAppSettingsCreate('RAHAT_TOKEN');
+  const rahatTokens = useRahatTokenSettings();
+  console.log('rahatTokens.data', rahatTokens.data);
+
+  return useMutation(
+    {
+      mutationFn: createTokenSettings.mutateAsync,
+      onSuccess(data, variables, context) {
+        console.log('data', data);
+        console.log('variables', variables);
+      },
+      onError(error) {
+        console.log('error', error);
+      },
+    },
+    queryClient,
+  );
 };

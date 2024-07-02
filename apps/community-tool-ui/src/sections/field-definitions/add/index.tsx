@@ -1,14 +1,7 @@
 'use client';
-import {
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
-} from '@rahat-ui/shadcn/src/components/ui/resizable';
-import { Tabs } from '@rahat-ui/shadcn/src/components/ui/tabs';
-import React, { useState } from 'react';
-import BeneficiaryNav from '../../../sections/beneficiary/nav';
-import FieldDefAdd from './addFieldDefinitions';
+import { useState } from 'react';
 import ExcelUploader from '../import/ExcelUploader';
+import FieldDefAdd from './addFieldDefinitions';
 
 export default function AddFieldDefinitions() {
   const [activeTab, setActiveTab] = useState<'add' | 'import' | null>('add');

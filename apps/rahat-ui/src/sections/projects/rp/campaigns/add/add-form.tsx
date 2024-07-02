@@ -105,24 +105,6 @@ const CampaignForm: FC<CampaignFormProps> = ({
         </h2>
         <div className="shadow-md p-4 rounded-sm bg-card">
           <div className="mb-4 w-full grid grid-cols-3 gap-4 ">
-            <FormField
-              control={form.control}
-              name="campaignName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <Input
-                      className="rounded"
-                      placeholder="Campaign Name"
-                      {...field}
-                    />
-                  </FormControl>
-
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
             {/* <FormField
               control={form.control}
               name="startTime"

@@ -1,3 +1,4 @@
+'use client';
 import { Avatar } from '@rahat-ui/shadcn/src/components/ui/avatar';
 import {
   Card,
@@ -9,8 +10,10 @@ import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { ArrowUp } from 'lucide-react';
 import TreasuryCard from './treasury.card';
+import { useProjectList } from '@rahat-ui/query';
 
 const TreasuryDetails = () => {
+  const projects = useProjectList();
   return (
     <div className="grid grid-cols-12 gap-2">
       <div className="col-span-8">
@@ -24,26 +27,29 @@ const TreasuryDetails = () => {
             />
           </div>
           <div className="mt-4">
-            <div className="flex items-center justify-between mb-4">
-              <TreasuryCard
-                projectName={'Jaleshwor Project'}
-                projectBudget={'100'}
-              />
-              <TreasuryCard
-                projectName={'Jaleshwor Project'}
-                projectBudget={'100'}
-              />
+            <div className="flex items-center justify-around mb-4">
+              {projects?.data?.data.map((project, index) => (
+                <TreasuryCard
+                  key={index}
+                  projectName={project?.name}
+                  projectAddress={
+                    project?.contractAddress
+                      ? (project?.contractAddress as `0x${string}`)
+                      : '0xa'
+                  }
+                />
+              ))}
             </div>
-            <div className="flex items-center justify-between">
+            {/* <div className="flex items-center justify-around">
               <TreasuryCard
                 projectName={'Jaleshwor Project'}
                 projectBudget={'100'}
               />
               <TreasuryCard
                 projectName={'Jaleshwor Project'}
-                projectBudget={'100'}
+                projectBudget={'50'}
               />
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

@@ -73,6 +73,19 @@ export default function ChartBar({
     yaxis: {
       labels: { show: yaxisLabels },
     },
+    tooltip: {
+      x: {
+        show: true,
+      },
+      y: {
+        title: {
+          formatter(seriesName) {
+            return ``;
+          },
+        },
+        formatter: (value: number) => ` ${value}`,
+      },
+    },
   });
 
   return (

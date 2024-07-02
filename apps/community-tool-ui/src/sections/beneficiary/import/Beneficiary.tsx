@@ -3,7 +3,6 @@
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import Loader from 'apps/community-tool-ui/src/components/Loader';
 import {
-  BENEF_DB_FIELDS,
   BENEF_IMPORT_SCREENS,
   IMPORT_ACTION,
   IMPORT_SOURCE,
@@ -36,8 +35,8 @@ import {
 } from '@rahat-ui/community-query';
 import { useRSQuery } from '@rumsan/react-query';
 import ColumnMappingTable from './ColumnMappingTable';
-import MyAlert from './MyAlert';
 import { EMPTY_SELECTION } from './Combobox';
+import MyAlert from './MyAlert';
 
 interface IProps {
   fieldDefinitions: [];

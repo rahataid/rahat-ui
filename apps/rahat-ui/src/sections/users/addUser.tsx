@@ -65,6 +65,7 @@ export default function AddUser() {
 
   const { data: roleData } = useRoleList();
   const contractSettings = useSettingsStore((state) => state.accessManager);
+  const roleSync = useSettingsStore((state)=>state.roleOnChainSync)
   const route = useRouter();
 
   const userCreate = useUserCreate();
@@ -72,21 +73,27 @@ export default function AddUser() {
   const addAdmin = useAddAdmin();
 
   const handleAddUser = async (data: any) => {
-    if (data.roles.includes('Manager')) {
-      await addManager.mutateAsync({
-        data: data,
-        walletAddress: data?.wallet,
-        contractAddress: contractSettings as `0x${string}`,
-      });
-    } else if (data.roles.includes('Admin')) {
-      await addAdmin.mutateAsync({
-        data: data,
-        walletAddress: data?.wallet,
-        contractAddress: contractSettings as `0x${string}`,
-      });
-    } else {
-      await userCreate.mutateAsync(data);
+    if(roleSync === true)
+    {   
+      if (data.roles.includes('Manager')) {
+        await addManager.mutateAsync({
+          data: data,
+          walletAddress: data?.wallet,
+          contractAddress: contractSettings as `0x${string}`,
+        });
+      } 
+      else if (data.roles.includes('Admin')) {
+        await addAdmin.mutateAsync({
+          data: data,
+          walletAddress: data?.wallet,
+          contractAddress: contractSettings as `0x${string}`,
+        });
+      }
+      else {
+        await userCreate.mutateAsync(data);
+      }
     }
+    else { await userCreate.mutateAsync(data);}
   };
 
   useEffect(() => {

@@ -10,6 +10,7 @@ import {
 import { useQueryClient } from '@tanstack/react-query';
 import { createContext, useEffect, useMemo, useState } from 'react';
 import { useError } from '../utils/useErrors';
+import Image from 'next/image';
 
 export const ServiceContext = createContext<RSQueryContextType | null>(null);
 
@@ -60,7 +61,18 @@ export function ServiceProvider({ children }: ServiceProviderProps) {
     }
   }, [rumsanService]);
 
-  if (!rumsanService || !queryClient) return 'Setting up services...';
+  if (!rumsanService || !queryClient)
+    return (
+      <div className="h-screen flex items-center justify-center">
+        <Image
+          className="animate-pulse"
+          alt="rahat logo"
+          src={'/rahat_logo_standard.png'}
+          height={250}
+          width={550}
+        />
+      </div>
+    );
 
   return children;
 }

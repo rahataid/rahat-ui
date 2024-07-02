@@ -21,13 +21,13 @@ interface VendorTableProps {
 
 export const useVendorTable = ({ handleViewClick }: VendorTableProps) => {
   const columns: ColumnDef<VendorType>[] = [
-    // {
-    //   accessorKey: 'name',
-    //   header: 'Name',
-    //   cell: ({ row }) => (
-    //     <div className="capitalize">{row.getValue('name')}</div>
-    //   ),
-    // },
+    {
+      accessorKey: 'name',
+      header: 'Name',
+      cell: ({ row }) => (
+        <div className="capitalize">{row.getValue('name')}</div>
+      ),
+    },
     {
       accessorKey: 'walletAddress',
       header: 'Wallet Address',

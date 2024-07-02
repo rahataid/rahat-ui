@@ -135,6 +135,7 @@ const AddAudience: FC<AddAudienceProps> = ({
   if (selectedRows.length > 0) {
     setAudienceRequiredError(false);
   }
+
   return (
     <>
       {audienceRequiredError && (
@@ -166,7 +167,7 @@ const AddAudience: FC<AddAudienceProps> = ({
               })}
           </SelectContent>
         </Select>
-        {filters?.projectId && (
+        {filters?.projectId === process.env.NEXT_PUBLIC_PROJECT_UUID && (
           <Select onValueChange={filterBenByBenTypes}>
             <SelectTrigger className="max-w-32">
               <SelectValue placeholder="Types" />

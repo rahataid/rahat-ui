@@ -14,7 +14,7 @@ export const formatTransaction = (trans: any) => ({
         timeZone: 'UTC',
       }),
     txHash: trans.transactionHash,
-    amount: '',
+    amount: trans?.amount ||'',
     voucherId: trans.tokenAddress || trans.token || '-',
     id: trans.transactionHash,
   });

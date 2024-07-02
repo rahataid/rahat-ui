@@ -65,17 +65,21 @@ export const useRPBeneficiaryTransactions = (beneficiaryAddress: string) => {
         const { data } = await subgraphClient.query(BeneficiaryTransactions, {
           beneficiaryAddress,
         });
-        return data;
+        const transactionsType =[
+          'tokensAllocateds',
+          'claimCreateds'
+          
+        ]
+        const newData = transactionsType.reduce((acc,type)=>{
+          const transactions = data[type] || [];
+           return acc.concat(transactions.map(formatTransaction));
+          
+        },[])
+        return newData;
       },
     },
     queryClient,
   );
-
-  useEffect(() => {
-    if (query.isSuccess) {
-      setProjectDetails(query.data);
-    }
-  }, [query, beneficiaryAddress, queryClient]);
 
   return query;
 };

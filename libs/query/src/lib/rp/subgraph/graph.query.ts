@@ -82,6 +82,20 @@ tokensAllocateds(where:{beneficiary: $beneficiaryAddress} ) {
     transactionHash
     eventType
   }
+  claimCreateds (where:{claimee:$beneficiaryAddress}){
+    amount
+    blockNumber
+    blockTimestamp
+    claimId
+    claimee
+    claimer
+    id
+    otpServer
+    token
+    transactionHash
+    eventType
+   }
 }
+
 
 `

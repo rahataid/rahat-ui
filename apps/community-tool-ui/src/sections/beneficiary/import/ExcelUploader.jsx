@@ -9,7 +9,7 @@ export default function ExcelUploader({ handleFileSelect }) {
           Select file to upload (Excel or CSV file)
         </div>
         <Input
-          accept=".xlsx"
+          accept=".xlsx, .csv"
           onChange={handleFileSelect}
           id="file"
           type="file"

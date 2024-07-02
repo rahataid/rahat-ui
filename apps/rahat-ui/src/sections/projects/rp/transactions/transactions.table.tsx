@@ -38,129 +38,9 @@ import { useGraphService } from '../../../../providers/subgraph-provider';
 import { truncateEthAddress } from '@rumsan/sdk/utils';
 import { formatDate } from '../../../../utils';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import {useRPProjectSubgraphStore} from '@rahat-ui/query';
 
-const data: Transaction[] = [
-  {
-    id: 'm5gr84i9',
-    topic: 'Claim Processed',
-    beneficiary: 1234567890,
-    voucherId: 'ABC123',
-    timestamp: '2024-02-27T08:00:00Z',
-    txHash: '0x123456789abcdef',
-  },
-  {
-    id: '3u1reuv4',
-    topic: 'Claim Approved',
-    beneficiary: 5678234324,
-    voucherId: 'DEF456',
-    timestamp: '2024-02-27T09:00:00Z',
-    txHash: '0x987654321abcdef',
-  },
-  {
-    id: 'derv1ws0',
-    topic: 'Claim Rejected',
-    beneficiary: 90124353534,
-    voucherId: 'GHI789',
-    timestamp: '2024-02-27T10:00:00Z',
-    txHash: '0xfedcba9876543210',
-  },
-  {
-    id: '5kma53ae',
-    topic: 'Payment Processed',
-    beneficiary: 34563453534,
-    voucherId: 'JKL012',
-    timestamp: '2024-02-27T11:00:00Z',
-    txHash: '0xabcdef1234567890',
-  },
-  {
-    id: 'bhqecj4p',
-    topic: 'Payment Failed',
-    beneficiary: 7890345345,
-    voucherId: 'MNO345',
-    timestamp: '2024-02-27T12:00:00Z',
-    txHash: '0x0123456789abcdef',
-  },
-  {
-    id: 'p9o8i7u6',
-    topic: 'Claim Approved',
-    beneficiary: 1234567567,
-    voucherId: 'PQR678',
-    timestamp: '2024-02-27T13:00:00Z',
-    txHash: '0xfedcba9876543210',
-  },
-  {
-    id: '3v4b5n6m',
-    topic: 'Payment Processed',
-    beneficiary: 5678456456,
-    voucherId: 'STU901',
-    timestamp: '2024-02-27T14:00:00Z',
-    txHash: '0xabcdef0123456789',
-  },
-  {
-    id: 'a1s2d3f4',
-    topic: 'Claim Processed',
-    beneficiary: 9012456456,
-    voucherId: 'VWX234',
-    timestamp: '2024-02-27T15:00:00Z',
-    txHash: '0x0123456789abcdef',
-  },
-  {
-    id: 'q2w3e4r5',
-    topic: 'Claim Rejected',
-    beneficiary: 3456456456,
-    voucherId: 'YZA567',
-    timestamp: '2024-02-27T16:00:00Z',
-    txHash: '0xabcdef0123456789',
-  },
-  {
-    id: 'zxcvbnml',
-    topic: 'Payment Failed',
-    beneficiary: 7890345345,
-    voucherId: 'BCD890',
-    timestamp: '2024-02-27T17:00:00Z',
-    txHash: '0x0123456789abcdef',
-  },
-  {
-    id: 'qwertyui',
-    topic: 'Payment Processed',
-    beneficiary: 1234345456,
-    voucherId: 'EFG901',
-    timestamp: '2024-02-27T18:00:00Z',
-    txHash: '0xfedcba9876543210',
-  },
-  {
-    id: 'asdfghjk',
-    topic: 'Claim Approved',
-    beneficiary: 5678456345,
-    voucherId: 'HIJ234',
-    timestamp: '2024-02-27T19:00:00Z',
-    txHash: '0xabcdef0123456789',
-  },
-  {
-    id: 'poiuytre',
-    topic: 'Claim Processed',
-    beneficiary: 9012345345,
-    voucherId: 'KLM567',
-    timestamp: '2028-02-27T20:00:00Z',
-    txHash: '0x0123456789abcdef',
-  },
-  {
-    id: 'lkjhgfds',
-    topic: 'Payment Failed',
-    beneficiary: 3456345345,
-    voucherId: 'NOP890',
-    timestamp: '2024-02-27T21:00:00Z',
-    txHash: '0xabcdef0123456789',
-  },
-  {
-    id: 'mnbvcxz1',
-    topic: 'Payment Processed',
-    beneficiary: 78902343456,
-    voucherId: 'QRS234',
-    timestamp: '2024-02-27T22:00:00Z',
-    txHash: '0x0123456789abcdef',
-  },
-];
+
 
 export type Transaction = {
   id: string;
@@ -172,30 +52,6 @@ export type Transaction = {
 };
 
 export const columns: ColumnDef<Transaction>[] = [
-  {
-    id: 'select',
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && 'indeterminate')
-        }
-        onCheckedChange={(value: any) =>
-          table.toggleAllPageRowsSelected(!!value)
-        }
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value: any) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
   {
     accessorKey: 'topic',
     header: 'Topic',
@@ -242,7 +98,7 @@ export const columns: ColumnDef<Transaction>[] = [
     ),
   },
   {
-    accessorKey: 'timestamp',
+    accessorKey: 'timeStamp',
     header: ({ column }) => {
       return (
         <Button
@@ -255,7 +111,7 @@ export const columns: ColumnDef<Transaction>[] = [
       );
     },
     cell: ({ row }) => (
-      <div className="lowercase">{row.getValue('timestamp')}</div>
+      <div className="lowercase">{row.getValue('timeStamp')}</div>
     ),
   },
   {
@@ -315,8 +171,12 @@ export default function TransactionTable() {
   const [rowSelection, setRowSelection] = React.useState({});
   const [data, setData] = React.useState([]);
 
+  const {projectTransactions} = useRPProjectSubgraphStore();
+
+
+
   const table = useReactTable({
-    data,
+    data:projectTransactions || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -338,12 +198,12 @@ export default function TransactionTable() {
     <div className="w-full p-2 bg-secondary">
       <div className="flex items-center mb-2">
         <Input
-          placeholder="Filter Beneficiary..."
+          placeholder="Filter Transactions..."
           value={
-            (table.getColumn('beneficiary')?.getFilterValue() as string) ?? ''
+            (table.getColumn('topic')?.getFilterValue() as string) ?? ''
           }
           onChange={(event) =>
-            table.getColumn('beneficiary')?.setFilterValue(event.target.value)
+            table.getColumn('topic')?.setFilterValue(event.target.value)
           }
           className="w-full"
         />

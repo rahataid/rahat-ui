@@ -49,7 +49,7 @@ export default function ExcelUploader({ handleTabChange }: IProps) {
             Select file to upload (Excel or CSV file)
           </div>
           <Input
-            accept=".xlsx"
+            accept=".xlsx, .csv"
             ref={fileInputRef}
             onChange={handleFileSelect}
             id="file"

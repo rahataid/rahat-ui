@@ -18,7 +18,6 @@ import {
   useListTransport,
   useListAudience,
   useGetAudio,
-  useCreateCampaign,
   useCreateAudience,
   useGetApprovedTemplate,
 } from '@rumsan/communication-query';
@@ -40,11 +39,12 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { CAMPAIGN_TYPES } from '@rahat-ui/types';
 import { useParams } from 'next/navigation';
-import { useBeneficiaryPii } from '@rahat-ui/query';
+import { useBeneficiaryPii, useCreateCampaign } from '@rahat-ui/query';
 import { Audience } from '@rahat-ui/types';
 import { TPIIData } from '@rahataid/sdk';
 import { toast } from 'react-toastify';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
+import { UUID } from 'crypto';
 const FormSchema = z.object({
   campaignType: z.string({
     required_error: 'Camapign Type is required.',
@@ -72,7 +72,7 @@ const TextCampaignAddDrawer = () => {
     projectId: id,
   });
 
-  const createCampaign = useCreateCampaign();
+  const createCampaign = useCreateCampaign(id as UUID);
   const createAudience = useCreateAudience();
 
   const [isEmail, setisEmail] = useState(false);

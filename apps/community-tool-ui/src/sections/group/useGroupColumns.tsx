@@ -43,6 +43,16 @@ export const useCommunityGroupTableColumns = () => {
       },
     },
     {
+      header: 'Total Beneficiaries',
+      cell: ({ row }) => {
+        return (
+          <div className="ml-5">
+            {row.original.beneficiariesGroup.length || '-'}
+          </div>
+        );
+      },
+    },
+    {
       id: 'actions',
       enableHiding: false,
       header: 'View Detail',

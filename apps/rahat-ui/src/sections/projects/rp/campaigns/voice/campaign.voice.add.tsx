@@ -27,10 +27,13 @@ import {
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { AudioRecorder } from '@rahat-ui/shadcn/src/components/ui/audioRecorder';
-import { useBeneficiaryPii, useUploadFile } from '@rahat-ui/query';
+import {
+  useBeneficiaryPii,
+  useCreateCampaign,
+  useUploadFile,
+} from '@rahat-ui/query';
 import {
   useCreateAudience,
-  useCreateCampaign,
   useListAudience,
   useListTransport,
 } from '@rumsan/communication-query';
@@ -47,6 +50,7 @@ import {
   FormItem,
   FormMessage,
 } from '@rahat-ui/shadcn/src/components/ui/form';
+import { UUID } from 'crypto';
 
 const FormSchema = z.object({
   campaignName: z.string({
@@ -67,12 +71,12 @@ const VoiceCampaignAddDrawer = () => {
   const uploadFile = useUploadFile();
   const { data: transportData } = useListTransport();
   const { data: audienceData } = useListAudience();
-  const { id } = useParams();
+  const { id } = useParams() as { id: UUID };
   const { data: beneficiaryData } = useBeneficiaryPii({
     projectId: id,
-  });
+  }) as any;
 
-  const createCampaign = useCreateCampaign();
+  const createCampaign = useCreateCampaign(id as UUID);
   const createAudience = useCreateAudience();
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -84,66 +88,80 @@ const VoiceCampaignAddDrawer = () => {
     mode: 'onChange',
   });
   const handleCreateAudience = async (item: TPIIData) => {
-    // Check if the audience already exists
-    const existingAudience = audienceData?.data.find(
-      (audience: Audience) => audience?.details?.phone === item.phone,
-    );
-
-    if (existingAudience) {
-      // If the audience already exists, return its ID
-      return existingAudience.id;
-    } else {
-      // If the audience does not exist, create a new one
-      const newAudience = await createAudience?.mutateAsync({
-        details: {
-          name: item.name,
-          phone: item.phone,
-          email: item.email,
-        },
-      });
-      return newAudience.data.id;
-    }
-  };
-  const handleCreateCampaign = async (data: z.infer<typeof FormSchema>) => {
-    console.log(data);
-    let transportId;
-    const audienceIds = [];
-    await transportData?.data.map((tdata) => {
-      if (tdata.name.toLowerCase() === CAMPAIGN_TYPES.IVR.toLowerCase()) {
-        transportId = tdata.id;
-      }
-    });
-
-    // Create audience
-    if (beneficiaryData?.data) {
-      const audiencePromises = beneficiaryData.data.map((item) =>
-        handleCreateAudience(item.piiData),
+    try {
+      // Check if the audience already exists
+      const existingAudience = audienceData?.data.find(
+        (audience: Audience) => audience?.details?.phone === item.phone,
       );
 
-      // Wait for all audience creations to complete
-      const results = await Promise.all(audiencePromises);
-      audienceIds.push(...results);
-
-      createCampaign
-        .mutateAsync({
-          audienceIds: audienceIds || [],
-          name: data.campaignName,
-          startTime: null,
-          transportId: Number(transportId),
-          type: CAMPAIGN_TYPES.IVR,
-          details: {},
-          status: 'ONGOING',
-          projectId: id,
-          file: data?.file,
-        })
-        .then((data) => {
-          if (data) {
-            toast.success('Campaign Created Success.');
-          }
-        })
-        .catch((e) => {
-          toast.error(e);
+      if (existingAudience) {
+        // If the audience already exists, return its ID
+        return existingAudience.id;
+      } else {
+        // If the audience does not exist, create a new one
+        const newAudience = await createAudience?.mutateAsync({
+          details: {
+            name: item.name,
+            phone: item.phone,
+            email: item.email,
+          },
         });
+        return newAudience.data.id;
+      }
+    } catch (error) {
+      console.log('error', error);
+    }
+  };
+  console.log('createCampaign', createCampaign.error);
+  console.log('beneficiaryData', beneficiaryData);
+
+  const handleCreateCampaign = async (data: z.infer<typeof FormSchema>) => {
+    console.log(data);
+    try {
+      let transportId;
+      const audienceIds = [];
+      transportData?.data.map((tdata) => {
+        if (tdata.name.toLowerCase() === CAMPAIGN_TYPES.IVR.toLowerCase()) {
+          transportId = tdata.id;
+        }
+      });
+
+      console.log(transportId);
+
+      // Create audience
+      if (beneficiaryData?.data) {
+        const audiencePromises = beneficiaryData.data.map((item) =>
+          handleCreateAudience(item.piiData),
+        );
+
+        // Wait for all audience creations to complete
+        const results = await Promise.all(audiencePromises);
+        console.log('results', results);
+        audienceIds.push(...results);
+
+        await createCampaign
+          .mutateAsync({
+            audienceIds: audienceIds || [],
+            name: data.campaignName,
+            startTime: null,
+            transportId: Number(transportId),
+            type: CAMPAIGN_TYPES.IVR,
+            details: {},
+            status: 'ONGOING',
+            projectId: id,
+            file: data?.file,
+          })
+          .then((data) => {
+            if (data) {
+              toast.success('Campaign Created Success.');
+            }
+          })
+          .catch((e) => {
+            toast.error(e);
+          });
+      }
+    } catch (error) {
+      console.log('error', error);
     }
   };
   const handleFileChange = async (event) => {

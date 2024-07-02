@@ -57,6 +57,10 @@ export default function SimpleDataCardsContainer({
     (data: any) => data.name === 'BENEFICIARY_TOTAL',
   )[0]?.data?.count;
 
+  const totalHouseholdReceivingCashSupport = allStats?.filter(
+    (data: any) => data.name === 'BENEFICIARY_HOUSEHOLDCASHSUPPORT',
+  )[0]?.data?.householdCashSupport;
+
   const data = [
     {
       title: 'Total Beneficiaries',
@@ -66,7 +70,7 @@ export default function SimpleDataCardsContainer({
     {
       title: 'Household Receiving Cash Support',
       Icon: Home,
-      number: 'N/A',
+      number: totalHouseholdReceivingCashSupport ?? 0,
     },
     {
       title: 'Budget',

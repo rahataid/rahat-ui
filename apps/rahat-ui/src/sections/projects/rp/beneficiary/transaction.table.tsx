@@ -24,6 +24,9 @@ import {
 } from '@tanstack/react-table';
 import { ArrowUpDown } from 'lucide-react';
 import * as React from 'react';
+import { useRPBeneficiaryTransactions } from '@rahat-ui/query';
+import { truncateEthAddress } from '@rumsan/sdk/utils';
+
 
 const data = [
   {
@@ -177,7 +180,7 @@ export const columns: ColumnDef<Payment>[] = [
     ),
   },
   {
-    accessorKey: 'timestamp',
+    accessorKey: 'timeStamp',
     header: ({ column }) => {
       return (
         <Button
@@ -190,29 +193,32 @@ export const columns: ColumnDef<Payment>[] = [
       );
     },
     cell: ({ row }) => (
-      <div className="lowercase">{row.getValue('timestamp')}</div>
+      <div className="lowercase">{row.getValue('timeStamp')}</div>
     ),
   },
   {
     accessorKey: 'txHash',
     header: 'TxHash',
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue('txHash')}</div>
+      <div className="capitalize">{truncateEthAddress(row.getValue('txHash'))}</div>
     ),
   },
 ];
 
-export function TransactionTable() {
+export function TransactionTable({beneficiaryDetails}:any) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
   );
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = React.useState({});
+  const{beneficiary} = beneficiaryDetails
 
+  const [rowSelection, setRowSelection] = React.useState({});
+  const {data:beneficiaryTxn} = useRPBeneficiaryTransactions(beneficiary.walletAddress||'')
+ 
   const table = useReactTable({
-    data,
+    data:beneficiaryTxn ||[],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,

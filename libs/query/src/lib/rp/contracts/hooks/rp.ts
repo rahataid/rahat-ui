@@ -1,6 +1,7 @@
 import { useRSQuery } from '@rumsan/react-query';
-import Swal from 'sweetalert2';
 import { useMutation } from '@tanstack/react-query';
+import Swal from 'sweetalert2';
+import { encodeFunctionData, formatUnits } from 'viem';
 import {
   rahatPayrollProjectAbi,
   useReadRahatPayrollProjectTotalAllocated,
@@ -9,11 +10,11 @@ import {
   useWriteRahatTreasuryCreateToken,
   useWriteRahatTreasuryTransferToken,
 } from '../generated-hooks';
-import { encodeFunctionData, formatUnits } from 'viem';
 
 export const useTokenCreate = () => {
   const { queryClient } = useRSQuery();
   const treasuryCreateToken = useWriteRahatTreasuryCreateToken();
+
   const alert = Swal.mixin({
     toast: true,
     position: 'top-end',
@@ -23,17 +24,13 @@ export const useTokenCreate = () => {
 
   return useMutation(
     {
-      onSettled(data, error, variables, context) {
-        console.log('data', data);
-        console.log('error', error);
-        console.log('variables', variables, context);
-      },
-      onSuccess: () => {
+      onSuccess: async () => {
         alert.fire({
           icon: 'success',
           title: 'Token Created Successfully',
         });
       },
+
       onError: (error) => {
         console.log('error', error.message);
         alert.fire({
@@ -42,6 +39,7 @@ export const useTokenCreate = () => {
           text: 'Error Creating Token',
         });
       },
+
       mutationFn: async ({
         name,
         symbol,
@@ -59,7 +57,7 @@ export const useTokenCreate = () => {
         rahatTreasuryAddress: `0x${string}`;
         initialSupply: string;
       }) => {
-        return treasuryCreateToken.writeContractAsync({
+        const value = await treasuryCreateToken.writeContractAsync({
           args: [
             name,
             symbol,
@@ -71,6 +69,8 @@ export const useTokenCreate = () => {
           ],
           address: rahatTreasuryAddress,
         });
+
+        return value;
       },
     },
     queryClient,

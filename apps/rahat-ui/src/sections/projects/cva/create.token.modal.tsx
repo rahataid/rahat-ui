@@ -30,12 +30,13 @@ export default function CreateTokenModal() {
   );
 
   const handleSubmit = async () => {
-    await createToken.mutateAsync({
+    const transactionHash = await createToken.mutateAsync({
       amount: token,
       projectAddress: contractSettings?.cvaproject.address,
       rahatDonorAddress: contractSettings?.rahatdonor.address,
       tokenAddress: contractSettings?.rahattoken.address,
     });
+    console.log(`first transaction hash: ${transactionHash}`);
   };
 
   return (

@@ -17,7 +17,7 @@ import {
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { useForm } from 'react-hook-form';
-import { ethers } from 'ethers';
+import { isAddress } from 'viem';
 
 import {
   useActiveFieldDefList,
@@ -71,7 +71,7 @@ export default function AddBeneficiary() {
       .refine(
         (value) => {
           if (!value) return true;
-          if (!ethers.isAddress(value)) return false;
+          if (!isAddress(value)) return false;
           return true;
         },
         {

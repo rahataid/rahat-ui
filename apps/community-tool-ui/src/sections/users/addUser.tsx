@@ -28,7 +28,9 @@ import { useEffect } from 'react';
 
 const FormSchema = z.object({
   name: z.string().min(2, { message: 'Name must be at least 4 character' }),
-  email: z.string().email(),
+  email: z.string().email({
+    message: 'Please enter valid email address',
+  }),
   gender: z.string(),
   role: z.string(),
   phone: z.string(),

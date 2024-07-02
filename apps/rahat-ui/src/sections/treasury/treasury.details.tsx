@@ -12,7 +12,7 @@ import TreasuryCard from './treasury.card';
 
 const TreasuryDetails = () => {
   return (
-    <div className="grid grid-cols-12 gap-3">
+    <div className="grid grid-cols-12 gap-2">
       <div className="col-span-8">
         <div className="bg-card h-[calc(100vh-175px)] rounded-md p-4">
           <div className="flex items-center justify-between">
@@ -24,7 +24,7 @@ const TreasuryDetails = () => {
             />
           </div>
           <div className="mt-4">
-            <div className="flex items-center justify-around mb-4">
+            <div className="flex items-center justify-between mb-4">
               <TreasuryCard
                 projectName={'Jaleshwor Project'}
                 projectBudget={'100'}
@@ -34,7 +34,7 @@ const TreasuryDetails = () => {
                 projectBudget={'100'}
               />
             </div>
-            <div className="flex items-center justify-around">
+            <div className="flex items-center justify-between">
               <TreasuryCard
                 projectName={'Jaleshwor Project'}
                 projectBudget={'100'}

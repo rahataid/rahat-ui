@@ -13,7 +13,6 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/tabs';
 import { TabsContent } from '@radix-ui/react-tabs';
 import VendorTransactionList from 'apps/rahat-ui/src/sections/vendors/vendors.txn.list';
-import { useRPVendorTransactions } from '@rahat-ui/query';
 
 const VendorDetail = () => {
   const searchParams = useSearchParams();
@@ -28,11 +27,6 @@ const VendorDetail = () => {
   const vendorId = searchParams.get('vendorId');
 
   //get the vendor txn
-  const {data:vendorTransaction} = useRPVendorTransactions('0x49adfc33f9566bac04686701a91a70cf723447ad')
-
-
-
-  console.log({ phone, name, vendorWallet, vendorId });
   return (
     <div className="bg-secondary">
       <VendorHeader />

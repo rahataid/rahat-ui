@@ -1,4 +1,4 @@
-const formatTransaction = (trans: any) => ({
+export const formatTransaction = (trans: any) => ({
     beneficiary: trans.beneficiary || trans.referrerBeneficiaries || '-',
     vendor: trans.vendor || '',
     processedBy:

@@ -9,9 +9,7 @@ export type RPProjectState = {
     };
   };
   projectTransactions:{
-    claimCreateds:[],
-    claimProcesseds:[],
-    tokensAllocateds:[]
+    
   }
 };
 

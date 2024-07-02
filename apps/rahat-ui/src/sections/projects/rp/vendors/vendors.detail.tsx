@@ -28,7 +28,7 @@ const VendorDetail = () => {
   const vendorId = searchParams.get('vendorId');
 
   //get the vendor txn
-  const {data:vendorTransaction} = useVendorTransactions(vendorWallet||'')
+  const {data:vendorTransaction} = useRPVendorTransactions('0x49adfc33f9566bac04686701a91a70cf723447ad')
 
 
 

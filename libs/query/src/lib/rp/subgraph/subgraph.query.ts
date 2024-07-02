@@ -5,6 +5,7 @@ import { useRSQuery } from '@rumsan/react-query';
 import { ProjectTransactions,VendorTransactions,BeneficiaryTransactions } from './graph.query';
 import { useEffect } from 'react';
 import { useRPProjectSubgraphStore } from './stores/rp-project.store';
+import { formatTransaction } from '../utils';
 
 
 
@@ -19,14 +20,22 @@ export const useRPProjectTransactions = () => {
     {
       queryKey: ['ProjectTransactions'],
       queryFn: async () => {
-        console.log(`here`);
         const { data } = await subgraphClient.query(ProjectTransactions, {
           
         });
         const transactionsType =[
+          'claimCreateds',
+          'claimProcesseds',
+          'tokensAllocateds'
           
         ]
-        return data;
+        const newData = transactionsType.reduce((acc,type)=>{
+          const transactions = data[type] || [];
+           return acc.concat(transactions.map(formatTransaction));
+          
+        },[])
+        return newData;
+
       },
     },
     queryClient,
@@ -34,6 +43,7 @@ export const useRPProjectTransactions = () => {
 
   useEffect(() => {
     if (query.isSuccess) {
+      console.log(query)
       setProjectTransactions(query.data);
     }
   }, [query, queryClient]);
@@ -52,7 +62,6 @@ export const useRPBeneficiaryTransactions = (beneficiaryAddress: string) => {
     {
       queryKey: ['beneficiaryTxn', beneficiaryAddress],
       queryFn: async () => {
-        console.log(`here`);
         const { data } = await subgraphClient.query(BeneficiaryTransactions, {
           beneficiaryAddress,
         });
@@ -73,6 +82,7 @@ export const useRPBeneficiaryTransactions = (beneficiaryAddress: string) => {
 
 
 export const useRPVendorTransactions = (vendorAddress: string) => {
+  console.log(vendorAddress)
   const { subgraphClient } = useRPSubgraph();
   const { queryClient } = useRSQuery();
   const setProjectDetails = useRPProjectSubgraphStore(
@@ -83,11 +93,21 @@ export const useRPVendorTransactions = (vendorAddress: string) => {
     {
       queryKey: ['VendorTxn', vendorAddress],
       queryFn: async () => {
-        console.log(`here`);
         const { data } = await subgraphClient.query(VendorTransactions, {
-          vendorAddress,
+          vendor:vendorAddress,
         });
-        return data;
+        const transactionType =[
+          "claimCreateds",
+          "claimProcesseds"
+        ]
+        
+        const formattedData = transactionType.reduce((acc,type)=>{
+          const transactions = data[type] || [];
+           return acc.concat(transactions.map(formatTransaction));
+
+        },[])
+
+        return formattedData;
       },
     },
     queryClient,
@@ -95,7 +115,7 @@ export const useRPVendorTransactions = (vendorAddress: string) => {
 
   useEffect(() => {
     if (query.isSuccess) {
-      setProjectDetails(query.data);
+      // setProjectDetails(query.data);
     }
   }, [query, vendorAddress, queryClient]);
 

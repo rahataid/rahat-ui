@@ -174,7 +174,7 @@ export default function AddSetting() {
           <div className="grid grid-cols-5 gap-5 mb-4">
             {fields.map((fieldName, index) => {
               return (
-                <React.Fragment key={index}>
+                <React.Fragment key={fieldName.id}>
                   <FormField
                     control={control}
                     name={`field.${index}.value.key`}
@@ -212,7 +212,9 @@ export default function AddSetting() {
                   <div className="flex justify-center">
                     <Button
                       type="button"
-                      onClick={() => remove(index)}
+                      onClick={() => {
+                        remove(index);
+                      }}
                       className="p-1 text-xs  w-10"
                     >
                       <Minus size={18} strokeWidth={1.5} />

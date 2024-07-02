@@ -24,6 +24,7 @@ const Chart: FC<Props> = styled(ApexChart)(() => ({
       color: customColors.text,
       boxShadow: customColors.boxShadow,
       borderRadius: customColors.borderRadius,
+      marginTop: 30,
       '&.apexcharts-theme-light': {
         borderColor: 'transparent',
       },

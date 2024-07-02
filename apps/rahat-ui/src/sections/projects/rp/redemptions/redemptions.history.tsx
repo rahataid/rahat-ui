@@ -23,7 +23,7 @@ import {
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { useRedemptionTableColumn } from './useRedemptionTableColumn';
-import { History } from 'lucide-react';
+import { useRedemptionTableHistoryColumn } from './useRedemptionsHistoryTable';
 
 export type Redeptions = {
   id: string;
@@ -83,7 +83,7 @@ const initialData: Redeptions[] = [
   },
 ];
 
-export default function RedemptionsTable() {
+export default function RedemptionHistoryTable() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
@@ -92,7 +92,7 @@ export default function RedemptionsTable() {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
   const [data, setData] = React.useState(initialData);
-  const columns = useRedemptionTableColumn();
+  const columns = useRedemptionTableHistoryColumn();
   const table = useReactTable({
     data,
     columns,
@@ -123,10 +123,6 @@ export default function RedemptionsTable() {
           }
           className="w-full"
         />
-        <Button className="flex items-center gap-2">
-          <History strokeWidth={1.25} size={18} />
-          History
-        </Button>
       </div>
       <div className="rounded border bg-card">
         <Table>

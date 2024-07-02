@@ -66,8 +66,8 @@ const TextCampaignAddDrawer = () => {
   const { data: transportData } = useListTransport();
   const { data: audienceData } = useListAudience();
   const { id } = useParams();
-  // @ts-ignore
   const { data: beneficiaryData } = useBeneficiaryPii({
+    // @ts-ignore
     projectId: id,
   });
 

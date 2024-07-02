@@ -1,7 +1,9 @@
 import { useRSQuery } from '@rumsan/react-query';
 import { useQuery, useMutation } from '@tanstack/react-query';
+import { useRouter } from 'next/navigation';
 
 export const useTreasuryTokenCreate = () => {
+  const router = useRouter();
   const { queryClient, rumsanService } = useRSQuery();
 
   const createToken = async (data: any) => {
@@ -10,6 +12,9 @@ export const useTreasuryTokenCreate = () => {
 
   return useMutation(
     {
+      onSuccess: () => {
+        router.push('/treasury/assets');
+      },
       mutationKey: ['CREATE_TOKEN'],
       mutationFn: createToken,
     },

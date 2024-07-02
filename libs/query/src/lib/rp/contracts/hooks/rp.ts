@@ -2,8 +2,6 @@ import { useRSQuery } from '@rumsan/react-query';
 import { useMutation } from '@tanstack/react-query';
 import Swal from 'sweetalert2';
 import { encodeFunctionData, formatUnits } from 'viem';
-import { useWaitForTransactionReceipt } from 'wagmi';
-import { useTreasuryTokenCreate } from '../../../treasury/treasury.service';
 import {
   rahatPayrollProjectAbi,
   useReadRahatPayrollProjectTotalAllocated,
@@ -12,7 +10,6 @@ import {
   useWriteRahatTreasuryCreateToken,
   useWriteRahatTreasuryTransferToken,
 } from '../generated-hooks';
-import { useEffect, useState } from 'react';
 
 export const useTokenCreate = () => {
   const { queryClient } = useRSQuery();
@@ -60,15 +57,6 @@ export const useTokenCreate = () => {
         rahatTreasuryAddress: `0x${string}`;
         initialSupply: string;
       }) => {
-        console.log({
-          name,
-          symbol,
-          description,
-          decimals,
-          manager,
-          rahatTreasuryAddress,
-          initialSupply,
-        });
         const value = await treasuryCreateToken.writeContractAsync({
           args: [
             name,

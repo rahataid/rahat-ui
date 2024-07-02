@@ -1,22 +1,13 @@
 'use client';
+import { useSettingsStore, useTokenCreate } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import React, { FC, use, useCallback, useEffect, useState } from 'react';
+import { useTreasuryTokenCreate } from 'libs/query/src/lib/treasury/treasury.service';
+import { useCallback, useEffect, useState } from 'react';
+import { keccak256, stringToBytes } from 'viem';
+import { useWaitForTransactionReceipt } from 'wagmi';
 import CreateToken from './1.create.token';
 import Confirmation from './2.confirmation';
-import { useSettingsStore, useTokenCreate } from '@rahat-ui/query';
-import { useBlock, useWaitForTransactionReceipt } from 'wagmi';
-import { useTreasuryTokenCreate } from 'libs/query/src/lib/treasury/treasury.service';
-import { symbol } from 'zod';
-import { init } from 'next/dist/compiled/webpack/webpack';
-import { initial } from 'lodash';
-import { stringToBytes, keccak256 } from 'viem';
 
-// type FundManagementFlowProps = {
-//   selectedBeneficiaries: {
-//     walletAddress: `0x${string}`;
-//     amount: string;
-//   }[];
-// };
 export const initialStepData = {
   tokenName: '',
   symbol: '',

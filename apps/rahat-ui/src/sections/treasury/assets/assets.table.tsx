@@ -1,6 +1,5 @@
 'use client';
 import {
-  ColumnDef,
   ColumnFiltersState,
   SortingState,
   VisibilityState,
@@ -14,6 +13,7 @@ import {
 import { Eye } from 'lucide-react';
 import * as React from 'react';
 
+import { useSettingsStore } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/components/button';
 import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
 import { Input } from '@rahat-ui/shadcn/components/input';
@@ -25,10 +25,10 @@ import {
   TableHeader,
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
-import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import { useSettingsStore } from '@rahat-ui/query';
-import { redirect, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
+import { useTreasuryTokenList } from 'libs/query/src/lib/treasury/treasury.service';
+import { shortenAddress } from 'apps/rahat-ui/src/utils/getProjectAddress';
 
 export type Redeptions = {
   id: string;
@@ -56,6 +56,8 @@ export default function AssetsTable() {
       contractAddress: appContractSettings?.rahattoken?.address,
     },
   ];
+
+  const newData = useTreasuryTokenList();
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
@@ -94,22 +96,35 @@ export default function AssetsTable() {
         <div className="capitalize">{row.getValue('name')}</div>
       ),
     },
+
     {
-      accessorKey: 'amount',
-      header: 'Amount',
-      cell: ({ row }) => <div>{row.getValue('amount')}</div>,
+      accessorKey: 'symbol',
+      header: 'Symbol',
+      cell: ({ row }) => <div>{row.getValue('symbol')}</div>,
     },
     {
-      accessorKey: 'status',
-      header: ({ column }) => 'Status',
-      cell: ({ row }) => {
-        const status = row.getValue('status');
-        return status === 'Paid' ? (
-          <Badge className="bg-green-200 text-green-600">Paid</Badge>
-        ) : (
-          <Badge className="bg-red-200 text-red-600">Pending</Badge>
-        );
-      },
+      accessorKey: 'fromBlock',
+      header: 'BlockNumber',
+      cell: ({ row }) => <div>{row.getValue('fromBlock')}</div>,
+    },
+
+    {
+      accessorKey: 'decimals',
+      header: 'Decimals',
+      cell: ({ row }) => <div>{row.getValue('decimals')}</div>,
+    },
+    {
+      accessorKey: 'initialSupply',
+      header: 'Initial Supply',
+      cell: ({ row }) => <div>{row.getValue('initialSupply')}</div>,
+    },
+
+    {
+      accessorKey: 'contractAddress',
+      header: 'Contract Address',
+      cell: ({ row }) => (
+        <div>{shortenAddress(row.getValue('contractAddress'))}</div>
+      ),
     },
 
     {
@@ -129,9 +144,9 @@ export default function AssetsTable() {
       },
     },
   ];
-
+  console.log('newData', newData?.data?.data);
   const table = useReactTable({
-    data,
+    data: newData?.data?.data?.data ?? [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -154,14 +169,14 @@ export default function AssetsTable() {
       <div className="flex items-center mb-2">
         <Input
           placeholder="Search Name..."
-          value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
+          value={(table?.getColumn('name')?.getFilterValue() as string) ?? ''}
           onChange={(event) =>
             table.getColumn('name')?.setFilterValue(event.target.value)
           }
           className="w-full"
         />
       </div>
-      <div className="rounded border bg-white">
+      <div className="rounded border bg-card">
         <Table>
           <ScrollArea className="h-[calc(100vh-184px)]">
             <TableHeader>

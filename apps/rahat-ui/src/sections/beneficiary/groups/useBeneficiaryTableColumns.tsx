@@ -21,6 +21,7 @@ export default function useBeneficiaryTableColumn(
             onCheckedChange={(value) =>
               table.toggleAllPageRowsSelected(!!value)
             }
+            disabled={isAssignedToProject}
             aria-label="Select all"
           />
         );
@@ -37,21 +38,20 @@ export default function useBeneficiaryTableColumn(
         }
         return (
           <Checkbox
-            className={
-              isAssignedMember && isAssignedToProject ? 'cursor-auto' : ''
-            }
             checked={row.getIsSelected() || isMember}
+            disabled={isAssignedMember && isAssignedToProject}
             onCheckedChange={(value) => {
               if (isAssignedMember && isAssignedToProject) {
                 return;
-              }
-              row.toggleSelected(!!value);
-              if (prevData) {
-                setPrevData((prevData: any) => {
-                  return prevData?.beneficiaries?.filter(
-                    (b: any) => b.uuid !== row.original.uuid,
-                  );
-                });
+              } else {
+                row.toggleSelected(!!value);
+                if (prevData) {
+                  setPrevData((prevData: any) => {
+                    return prevData?.beneficiaries?.filter(
+                      (b: any) => b.uuid !== row.original.uuid,
+                    );
+                  });
+                }
               }
             }}
             aria-label="Select row"

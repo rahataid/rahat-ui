@@ -37,6 +37,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/card';
 import RemoveBenfGroupModal from './removeGroupModal';
 import EditBeneficiaryGroups from './edit.beneficiary.groups';
+import { UUID } from 'crypto';
 
 type IProps = {
   beneficiaryGroupDetail: ListBeneficiaryGroup;
@@ -100,6 +101,7 @@ export default function BeneficiaryGroupDetail({
   return (
     <>
       <AssignToProjectModal
+        closeSecondPanel={closeSecondPanel}
         beneficiaryGroupDetail={beneficiaryGroupDetail}
         projectModal={projectModal}
       />
@@ -252,6 +254,7 @@ export default function BeneficiaryGroupDetail({
           </>
         ) : (
           <EditBeneficiaryGroups
+            groupUUID={beneficiaryGroupDetail?.uuid as UUID}
             groupName={beneficiaryGroupDetail?.name}
             groupedBeneficiaries={tableData}
             isGroupAssignedToProject={isAssignedToProject}

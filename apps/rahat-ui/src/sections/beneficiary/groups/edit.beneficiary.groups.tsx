@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
-import { useParams } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
@@ -15,7 +14,11 @@ import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { UUID } from 'crypto';
-import { useBeneficiaryList, usePagination } from '@rahat-ui/query';
+import {
+  useBeneficiaryList,
+  usePagination,
+  useUpdateBeneficiaryGroup,
+} from '@rahat-ui/query';
 import MembersTable from '../../projects/aa/groups/members.table';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
@@ -23,19 +26,19 @@ import { useSecondPanel } from 'apps/rahat-ui/src/providers/second-panel-provide
 import useBeneficiaryTableColumn from './useBeneficiaryTableColumns';
 
 type IProps = {
+  groupUUID: UUID;
   groupName: string;
   groupedBeneficiaries: any;
   isGroupAssignedToProject: boolean;
 };
 
 export default function EditBeneficiaryGroups({
+  groupUUID,
   groupName,
   groupedBeneficiaries,
   isGroupAssignedToProject,
 }: IProps) {
   const { closeSecondPanel } = useSecondPanel();
-  const { id } = useParams();
-  const [showMembers, setShowMembers] = React.useState(false);
 
   const { pagination, setNextPage, setPrevPage, setPerPage, setPagination } =
     usePagination();
@@ -87,39 +90,25 @@ export default function EditBeneficiaryGroups({
     },
   });
 
+  const updateBeneficiaryGroup = useUpdateBeneficiaryGroup();
+
   const handleUpdateBeneficiaryGroup = async (
     data: z.infer<typeof FormSchema>,
   ) => {
-    // const prevMembers = stakeholdersGroupDetail?.stakeholders?.map(
-    //     (member: any) => ({ uuid: member?.uuid }),
-    // );
-    // const stakeHolders = table
-    //     .getSelectedRowModel()
-    //     .rows?.map((stakeholder: any) => ({ uuid: stakeholder?.original?.uuid }));
-    // const finalMembers = table.getSelectedRowModel().rows?.length
-    //     ? stakeHolders
-    //     : prevMembers;
-    // try {
-    //     await updateStakeholdersGroup.mutateAsync({
-    //         projectUUID: id as UUID,
-    //         stakeholdersGroupPayload: {
-    //             uuid: stakeholdersGroupDetail?.uuid,
-    //             ...data,
-    //             // stakeholders: [...stakeholdersGroupDetail?.stakeholders?.map((member: any) => ({ uuid: member?.uuid })), ...stakeHolders]
-    //             stakeholders: finalMembers,
-    //         },
-    //     });
-    // } catch (e) {
-    //     console.error('Updating Stakeholders Group Error::', e);
-    // } finally {
-    //     form.reset();
-    //     table.resetRowSelection();
-    // }
+    const members = table
+      .getSelectedRowModel()
+      .rows?.map((data) => ({ uuid: data?.original?.uuid }));
+    const payload = { uuid: groupUUID, ...data, beneficiaries: members };
+    try {
+      await updateBeneficiaryGroup.mutateAsync(payload);
+    } catch (e) {
+      console.error('Error while creating beneficiary group::', e);
+    }
   };
 
-  // React.useEffect(() => {
-  //     updateStakeholdersGroup.isSuccess && closeSecondPanel();
-  // }, [updateStakeholdersGroup]);
+  React.useEffect(() => {
+    updateBeneficiaryGroup.isSuccess && closeSecondPanel();
+  }, [updateBeneficiaryGroup]);
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleUpdateBeneficiaryGroup)}>
@@ -156,36 +145,26 @@ export default function EditBeneficiaryGroups({
                       selected
                     </Badge>
                   ) : null}
-                  <Button
-                    type="button"
-                    onClick={() => setShowMembers(!showMembers)}
-                  >
-                    {showMembers ? 'Hide Members' : 'Show Members'}
-                  </Button>
-                  <Button type="submit" disabled>
-                    Update Beneficiary Group
-                  </Button>
+                  <Button type="submit">Update Beneficiary Group</Button>
                 </div>
               </div>
             </div>
           </div>
-          {showMembers && (
-            <div className="mt-4 border rounded-sm shadow-md bg-card">
-              <MembersTable
-                table={table}
-                scrollAreaHeight="h-[calc(100vh-590px)]"
-              />
-              <CustomPagination
-                meta={data?.response?.meta || { total: 0, currentPage: 0 }}
-                handleNextPage={setNextPage}
-                handlePrevPage={setPrevPage}
-                handlePageSizeChange={setPerPage}
-                currentPage={pagination.page}
-                perPage={pagination.perPage}
-                total={data?.response?.meta.lastPage || 0}
-              />
-            </div>
-          )}
+          <div className="mt-4 border rounded-sm shadow-md bg-card">
+            <MembersTable
+              table={table}
+              scrollAreaHeight="h-[calc(100vh-590px)]"
+            />
+            <CustomPagination
+              meta={data?.response?.meta || { total: 0, currentPage: 0 }}
+              handleNextPage={setNextPage}
+              handlePrevPage={setPrevPage}
+              handlePageSizeChange={setPerPage}
+              currentPage={pagination.page}
+              perPage={pagination.perPage}
+              total={data?.response?.meta.lastPage || 0}
+            />
+          </div>
         </div>
       </form>
     </Form>

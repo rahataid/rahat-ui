@@ -37,7 +37,6 @@ export type ICampaignFilterOptions = string[];
 export enum CAMPAIGN_TYPES {
   EMAIL = 'EMAIL',
   SMS = 'SMS',
-  PHONE = 'PHONE',
   WHATSAPP = 'WHATSAPP',
   IVR = 'IVR',
 }

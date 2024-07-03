@@ -110,8 +110,6 @@ export default function BeneficiaryTable() {
     });
   };
 
-  console.log(filters, 'filters');
-
   return (
     <>
       <div className="w-full p-2 bg-secondary">

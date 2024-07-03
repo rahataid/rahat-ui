@@ -150,6 +150,9 @@ const AddAudience: FC<AddAudienceProps> = ({
     setAudienceRequiredError(false);
   }
 
+  const project = projectsList?.data?.data.find((item) => item.type === 'el');
+  const elUuid = project ? project.uuid : null;
+
   return (
     <>
       {audienceRequiredError && (
@@ -195,7 +198,7 @@ const AddAudience: FC<AddAudienceProps> = ({
               })}
           </SelectContent>
         </Select>
-        {filters?.projectId === process.env.NEXT_PUBLIC_PROJECT_UUID && (
+        {filters?.projectId === elUuid && (
           <Select onValueChange={filterBenByBenTypes}>
             <SelectTrigger className="max-w-32">
               <SelectValue placeholder="Types" />

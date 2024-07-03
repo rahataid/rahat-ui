@@ -74,6 +74,7 @@ const TextCampaignAddDrawer = () => {
   const createAudience = useCreateAudience();
 
   const [isEmail, setisEmail] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -121,7 +122,6 @@ const TextCampaignAddDrawer = () => {
       // Wait for all audience creations to complete
       const results = await Promise.all(audiencePromises);
       audienceIds.push(...results);
-      console.log(audienceIds);
       type AdditionalData = {
         audio?: any;
         message?: string;
@@ -137,7 +137,7 @@ const TextCampaignAddDrawer = () => {
 
         additionalData.message = data?.message;
       }
-      createCampaign.mutateAsync({
+      await createCampaign.mutateAsync({
         audienceIds: audienceIds || [],
         name: data.campaignName,
         startTime: null,
@@ -147,13 +147,17 @@ const TextCampaignAddDrawer = () => {
         status: 'ONGOING',
         projectId: id,
       });
+      setIsOpen(false);
     }
   };
   return (
     <FormProvider {...form}>
-      <Drawer>
+      <Drawer open={isOpen} onOpenChange={setIsOpen}>
         <DrawerTrigger asChild>
-          <Card className="flex rounded justify-center border-dashed border-2 border-primary shadow bg-card cursor-pointer hover:shadow-md ease-in duration-300">
+          <Card
+            onClick={() => setIsOpen(true)}
+            className="flex rounded justify-center border-dashed border-2 border-primary shadow bg-card cursor-pointer hover:shadow-md ease-in duration-300"
+          >
             <CardContent className="flex items-center justify-center">
               <div className="h-16 w-16 bg-blue-200 rounded-full flex items-center justify-center mt-2">
                 <Plus className="text-primary" size={20} strokeWidth={1.5} />
@@ -207,11 +211,12 @@ const TextCampaignAddDrawer = () => {
                       </FormControl>
                       <SelectContent>
                         {Object.keys(CAMPAIGN_TYPES).map((key) => {
-                          return (
-                            <SelectItem key={key} value={key}>
-                              {key}
-                            </SelectItem>
-                          );
+                          if (key.toLowerCase() !== 'ivr')
+                            return (
+                              <SelectItem key={key} value={key}>
+                                {key}
+                              </SelectItem>
+                            );
                         })}
                       </SelectContent>
                     </Select>

@@ -51,7 +51,7 @@ function BeneficiaryView() {
 
   const { data } = useBeneficiaryList({
     ...pagination,
-    ...filters
+    ...filters,
   });
   const createBeneficiaryGroup = useCreateBeneficiaryGroup();
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
@@ -83,19 +83,18 @@ function BeneficiaryView() {
   });
 
   const handleDateChange = (date: Date, type: string) => {
-    if(type === 'start') {
+    if (type === 'start') {
       setFilters({
         ...filters,
-        startDate: date
-      })
-    }
-    else {
-      setFilters ({
+        startDate: date,
+      });
+    } else {
+      setFilters({
         ...filters,
-        endDate: date
-      })
+        endDate: date,
+      });
     }
-  }
+  };
 
   const handleFilterProjectSelect = (project: string | UUID) => {
     setFilters({
@@ -167,6 +166,7 @@ function BeneficiaryView() {
           projects={projectsList?.data?.data || []}
           handleFilterProjectSelect={handleFilterProjectSelect}
           filters={filters}
+          setFilters={setFilters}
           handleDateChange={handleDateChange}
         />
       </TabsContent>

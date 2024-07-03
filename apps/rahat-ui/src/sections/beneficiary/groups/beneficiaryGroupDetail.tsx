@@ -71,11 +71,11 @@ export default function BeneficiaryGroupDetail({
   const tableData = React.useMemo(() => {
     if (beneficiaryGroupDetail) {
       return beneficiaryGroupDetail?.groupedBeneficiaries?.map((d: any) => ({
-        uuid: d.Beneficiary.uuid,
-        name: d.Beneficiary.pii.name,
-        phone: d.Beneficiary.pii.phone,
-        email: d.Beneficiary.pii.email,
-        location: d.Beneficiary.location,
+        uuid: d?.Beneficiary?.uuid,
+        name: d?.Beneficiary?.pii?.name,
+        phone: d?.Beneficiary?.pii?.phone,
+        email: d?.Beneficiary?.pii?.email,
+        location: d?.Beneficiary?.location,
       }));
     } else return [];
   }, [beneficiaryGroupDetail]);

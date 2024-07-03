@@ -1,6 +1,7 @@
 import { MS_ACTIONS } from '@rahataid/sdk';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { UUID } from 'crypto';
+import { useSwal } from 'libs/query/src/swal';
 import { useProjectAction } from '../../projects';
 
 // Constants for actions
@@ -17,7 +18,14 @@ const GET_ALL_COMMUNICATION_STATS = 'rpProject.campaign.communication_stats';
 // Hooks for create campaign
 export const useCreateCampaign = (projectUUID: UUID) => {
   const action = useProjectAction();
-
+  const queryClient = useQueryClient();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
   return useMutation({
     mutationFn: async (data: any) => {
       const res = await action.mutateAsync({
@@ -29,12 +37,34 @@ export const useCreateCampaign = (projectUUID: UUID) => {
       });
       return res.data;
     },
+    onSuccess: () => {
+      toast.fire({
+        title: 'Campaign added successfully',
+        icon: 'success',
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['rpCampaignList'],
+      });
+    },
+    onError: () => {
+      toast.fire({
+        title: 'Error while creating campaign.',
+        icon: 'error',
+      });
+    },
   });
 };
 
 export const useTriggerRpCampaign = (projectUUID: UUID) => {
   const action = useProjectAction();
-
+  const queryClient = useQueryClient();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
   return useMutation({
     mutationFn: async (data: any) => {
       const res = await action.mutateAsync({
@@ -45,6 +75,21 @@ export const useTriggerRpCampaign = (projectUUID: UUID) => {
         },
       });
       return res.data;
+    },
+    onSuccess: () => {
+      toast.fire({
+        title: 'Campaign trigger successfully',
+        icon: 'success',
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['rpCampaign'],
+      });
+    },
+    onError: () => {
+      toast.fire({
+        title: 'Failed to trigger campaign.',
+        icon: 'error',
+      });
     },
   });
 };
@@ -103,17 +148,17 @@ export const useListRpCommunicationLogs = (projectUUID: UUID) => {
   });
 };
 
-export const useGetRpCampaign = (projectUUID: UUID) => {
+export const useGetRpCampaign = (projectUUID: UUID, id: number) => {
   const action = useProjectAction();
 
   return useQuery({
-    queryKey: ['rpCampaign', projectUUID],
+    queryKey: ['rpCampaign'],
     queryFn: async () => {
       const res = await action.mutateAsync({
         uuid: projectUUID,
         data: {
           action: GET_CAMPAIGN,
-          payload: {},
+          payload: { id },
         },
       });
       return res.data;

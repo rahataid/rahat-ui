@@ -184,7 +184,7 @@ const AddAudience: FC<AddAudienceProps> = ({
               projectsList.data.data.map((project) => {
                 return (
                   <SelectItem key={project.uuid} value={project.uuid || ''}>
-                    {project.name}
+                    {project?.name}
                   </SelectItem>
                 );
               })}

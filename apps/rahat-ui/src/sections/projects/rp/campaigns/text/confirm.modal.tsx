@@ -1,3 +1,4 @@
+import { useTriggerRpCampaign } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   Dialog,
@@ -9,22 +10,26 @@ import {
   DialogTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dialog';
 import { useTriggerCampaign } from '@rumsan/communication-query';
+import { UUID } from 'crypto';
+import { useParams } from 'next/navigation';
 import { useState } from 'react';
 import { toast } from 'react-toastify';
 
-export function TriggerConfirmModal({ id }) {
+type IProps = {
+  campaignId: number;
+};
+export function TriggerConfirmModal({ campaignId }: IProps) {
   const [open, setOpen] = useState(false);
-  const triggerCampaign = useTriggerCampaign();
+  const { id } = useParams();
+  const triggerCampaign = useTriggerRpCampaign(id as UUID);
   const handleTriggerCampaign = () => {
     triggerCampaign
-      .mutateAsync(id)
+      .mutateAsync({ id: campaignId })
       .then(() => {
-        toast.success('Campaign Trigger Success');
         setOpen(false);
       })
       .catch(() => {
         {
-          toast.success('Campaign Trigger Failed');
           setOpen(false);
         }
       });

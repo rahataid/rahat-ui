@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Drawer,
   DrawerClose,
@@ -42,7 +42,6 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { TPIIData } from '@rahataid/sdk';
 import { Audience, CAMPAIGN_TYPES } from '@rahat-ui/types';
-import { toast } from 'react-toastify';
 import { z } from 'zod';
 import {
   FormControl,
@@ -78,6 +77,7 @@ const VoiceCampaignAddDrawer = () => {
 
   const createCampaign = useCreateCampaign(id as UUID);
   const createAudience = useCreateAudience();
+  const [isOpen, setIsOpen] = useState(false);
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -141,6 +141,7 @@ const VoiceCampaignAddDrawer = () => {
         projectId: id,
         file: data?.file,
       });
+      setIsOpen(false);
     }
   };
   const handleFileChange = async (event) => {
@@ -154,9 +155,12 @@ const VoiceCampaignAddDrawer = () => {
   };
   return (
     <FormProvider {...form}>
-      <Drawer>
+      <Drawer open={isOpen} onOpenChange={setIsOpen}>
         <DrawerTrigger asChild>
-          <Card className="flex rounded justify-center border-dashed border-2 border-primary shadow bg-card cursor-pointer hover:shadow-md ease-in duration-300">
+          <Card
+            onClick={() => setIsOpen(true)}
+            className="flex rounded justify-center border-dashed border-2 border-primary shadow bg-card cursor-pointer hover:shadow-md ease-in duration-300"
+          >
             <CardContent className="flex items-center justify-center">
               <div className="h-16 w-16 bg-blue-200 rounded-full flex items-center justify-center mt-2">
                 <Plus className="text-primary" size={20} strokeWidth={1.5} />

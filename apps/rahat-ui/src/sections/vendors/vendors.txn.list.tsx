@@ -48,11 +48,7 @@ const columns: ColumnDef<any>[] = [
     accessorKey: 'txHash',
     header: 'Txn Hash',
     cell: ({ row }) => (
-      <a
-        href={`https://sepolia.basescan.org/tx/${row.getValue(
-          'txHash',
-        )}`}
-      >
+      <a href={`https://sepolia.basescan.org/tx/${row.getValue('txHash')}`}>
         {' '}
         {truncateEthAddress(row.getValue('txHash'))}
       </a>
@@ -77,9 +73,9 @@ interface VendorTxnListProps {
 }
 
 export default function VendorTxnList({ walletAddress }: VendorTxnListProps) {
-  const { data: txns, isFetching } = useRPVendorTransactions('0x37dA9a168799B4F153c00f1f47dD7E248D7D3f5E');
-
-
+  const { data: txns, isFetching } = useRPVendorTransactions(
+    '0x37dA9a168799B4F153c00f1f47dD7E248D7D3f5E',
+  );
 
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(

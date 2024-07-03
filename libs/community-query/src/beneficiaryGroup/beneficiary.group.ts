@@ -21,6 +21,7 @@ export const useCommunityBeneficiaryGroupCreate = () => {
         input: 'select',
         inputOptions: payload.inputOptions,
         inputPlaceholder: 'Select a Group',
+        allowOutsideClick: false,
         preConfirm: (selectedValue) => {
           if (!selectedValue) {
             Swal.showValidationMessage('Please select a group to proceed!');

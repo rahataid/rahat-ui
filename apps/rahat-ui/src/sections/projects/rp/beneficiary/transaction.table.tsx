@@ -27,7 +27,6 @@ import * as React from 'react';
 import { useRPBeneficiaryTransactions } from '@rahat-ui/query';
 import { truncateEthAddress } from '@rumsan/sdk/utils';
 
-
 const data = [
   {
     id: '1',
@@ -200,25 +199,29 @@ export const columns: ColumnDef<Payment>[] = [
     accessorKey: 'txHash',
     header: 'TxHash',
     cell: ({ row }) => (
-      <div className="capitalize">{truncateEthAddress(row.getValue('txHash'))}</div>
+      <div className="capitalize">
+        {truncateEthAddress(row.getValue('txHash'))}
+      </div>
     ),
   },
 ];
 
-export function TransactionTable({beneficiaryDetails}:any) {
+export function TransactionTable({ beneficiaryDetails }: any) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
   );
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
-  const{beneficiary} = beneficiaryDetails
+  const { beneficiary } = beneficiaryDetails;
 
   const [rowSelection, setRowSelection] = React.useState({});
-  const {data:beneficiaryTxn} = useRPBeneficiaryTransactions(beneficiary.walletAddress||'')
- 
+  const { data: beneficiaryTxn } = useRPBeneficiaryTransactions(
+    beneficiary.walletAddress || '',
+  );
+
   const table = useReactTable({
-    data:beneficiaryTxn ||[],
+    data: beneficiaryTxn || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,

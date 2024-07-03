@@ -53,7 +53,7 @@ export default function AssetsTable() {
       amount: 9000,
       status: 'Paid',
       action: 'view',
-      contractAddress: appContractSettings?.rahattoken?.address,
+      contractAddress: appContractSettings?.RAHATTOKEN?.ADDRESS,
     },
   ];
 

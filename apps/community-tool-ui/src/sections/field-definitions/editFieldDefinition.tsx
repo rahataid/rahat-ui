@@ -68,8 +68,6 @@ export default function EditFieldDefinition({
       })
     : [];
 
-  console.log('Formated==>', formattedVariations);
-
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -155,11 +153,9 @@ export default function EditFieldDefinition({
 
   useEffect(() => {
     if (showLabelValue) {
-      if (fields.length === 0) {
-        append({ label: '', value: '' });
-      }
+      append({ label: '', value: '' });
     }
-  }, [showLabelValue, fields, append, form]);
+  }, [showLabelValue, append, form]);
 
   const { setValue } = form;
 
@@ -232,11 +228,11 @@ export default function EditFieldDefinition({
                       <Label className="text-xs font-medium">Field Type</Label>
                       <Select
                         onValueChange={field.onChange}
-                        defaultValue={field.value}
+                        value={field.value}
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select Field Type" />
+                            <SelectValue placeholder={field.value} />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>

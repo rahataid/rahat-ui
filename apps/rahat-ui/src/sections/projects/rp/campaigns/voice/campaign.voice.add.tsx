@@ -112,60 +112,38 @@ const VoiceCampaignAddDrawer = () => {
       console.log('error', error);
     }
   };
-  console.log('createCampaign', createCampaign.error);
-  console.log('beneficiaryData', beneficiaryData);
 
   const handleCreateCampaign = async (data: z.infer<typeof FormSchema>) => {
-    console.log(data);
-    try {
-      let transportId;
-      const audienceIds = [];
-      transportData?.data.map((tdata) => {
-        if (tdata.name.toLowerCase() === CAMPAIGN_TYPES.IVR.toLowerCase()) {
-          transportId = tdata.id;
-        }
+    const audienceIds = [];
+    const transportId = transportData?.data?.find(
+      (t) => t?.name?.toLowerCase() === 'ivr',
+    )?.id;
+
+    // Create audience
+    if (beneficiaryData?.data) {
+      const audiencePromises = beneficiaryData.data.map((item) =>
+        handleCreateAudience(item.piiData),
+      );
+
+      // Wait for all audience creations to complete
+      const results = await Promise.all(audiencePromises);
+      console.log('results', results);
+      audienceIds.push(...results);
+
+      await createCampaign.mutateAsync({
+        audienceIds: audienceIds || [],
+        name: data.campaignName,
+        startTime: null,
+        transportId: Number(transportId),
+        type: CAMPAIGN_TYPES.IVR,
+        details: {},
+        status: 'ONGOING',
+        projectId: id,
+        file: data?.file,
       });
-
-      console.log(transportId);
-
-      // Create audience
-      if (beneficiaryData?.data) {
-        const audiencePromises = beneficiaryData.data.map((item) =>
-          handleCreateAudience(item.piiData),
-        );
-
-        // Wait for all audience creations to complete
-        const results = await Promise.all(audiencePromises);
-        console.log('results', results);
-        audienceIds.push(...results);
-
-        await createCampaign
-          .mutateAsync({
-            audienceIds: audienceIds || [],
-            name: data.campaignName,
-            startTime: null,
-            transportId: Number(transportId),
-            type: CAMPAIGN_TYPES.IVR,
-            details: {},
-            status: 'ONGOING',
-            projectId: id,
-            file: data?.file,
-          })
-          .then((data) => {
-            if (data) {
-              toast.success('Campaign Created Success.');
-            }
-          })
-          .catch((e) => {
-            toast.error(e);
-          });
-      }
-    } catch (error) {
-      console.log('error', error);
     }
   };
   const handleFileChange = async (event) => {
-    console.log(event.target.files[0]);
     const file = event.target.files[0];
 
     const formData = new FormData();

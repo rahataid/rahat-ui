@@ -22,7 +22,6 @@ import {
   FormItem,
   FormMessage,
 } from '@rahat-ui/shadcn/src/components/ui/form';
-import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import {
   Select,
   SelectContent,
@@ -40,8 +39,8 @@ import {
 import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
 import { FormProvider, useForm } from 'react-hook-form';
-import { toast } from 'react-toastify';
 import { z } from 'zod';
+import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 
 const FormSchema = z.object({
   campaignType: z.string({
@@ -111,14 +110,7 @@ const TextCampaignAddDrawer = () => {
     const transportId = transportData?.data?.find(
       (t) => t?.name?.toLowerCase() === data?.campaignType?.toLowerCase(),
     )?.id;
-    console.log(data);
-    // let transportId;
     const audienceIds = [];
-    // await transportData?.data.map((tdata) => {
-    //   if (tdata.name.toLowerCase() === data?.campaignType.toLowerCase()) {
-    //     transportId = tdata.id;
-    //   }
-    // });
 
     // Create audience
     if (beneficiaryData?.data) {
@@ -145,25 +137,16 @@ const TextCampaignAddDrawer = () => {
 
         additionalData.message = data?.message;
       }
-      createCampaign
-        .mutateAsync({
-          audienceIds: audienceIds || [],
-          name: data.campaignName,
-          startTime: null,
-          transportId: Number(transportId),
-          type: data.campaignType,
-          details: additionalData,
-          status: 'ONGOING',
-          projectId: id,
-        })
-        .then((data) => {
-          if (data) {
-            toast.success('Campaign Created Success.');
-          }
-        })
-        .catch((e) => {
-          toast.error(e);
-        });
+      createCampaign.mutateAsync({
+        audienceIds: audienceIds || [],
+        name: data.campaignName,
+        startTime: null,
+        transportId: Number(transportId),
+        type: data.campaignType,
+        details: additionalData,
+        status: 'ONGOING',
+        projectId: id,
+      });
     }
   };
   return (

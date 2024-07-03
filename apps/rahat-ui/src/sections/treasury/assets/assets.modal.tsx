@@ -1,3 +1,9 @@
+import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
+import {
+  useProjectList,
+  useSendFundToProject,
+  useSettingsStore,
+} from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   Dialog,
@@ -10,42 +16,27 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/dialog';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
-import { Check, ChevronsUpDown, Plus } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { useState } from 'react';
-import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
-import {
-  useProjectList,
-  useSendFundToProject,
-  useSettingsStore,
-} from '@rahat-ui/query';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/popover';
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from '@rahat-ui/shadcn/src/components/ui/command';
-import { cn } from '@rahat-ui/shadcn/src';
 
 export function AssetsModal() {
   const [amount, setAmount] = useState<string>('');
   const [selectedProject, setSelectedProject] = useState<`0x${string}`>('');
-  const [open, setOpen] = useState(false);
-  const [value, setValue] = useState('');
   const sendFundToProject = useSendFundToProject();
   const appContracts = useSettingsStore((state) => state.contracts);
   const projects = useProjectList();
 
+  console.log('selectedProject', selectedProject);
+
   const handleSendFunds = async () => {
     if (selectedProject) {
       // Replace this with the actual function to send funds
-      console.log('Sending funds to project with address:', selectedProject);
+      // console.log('Sending funds to project with address:', {
+      //   amount,
+      //   projectAddress: selectedProject,
+      //   tokenAddress: appContracts?.RAHATTOKEN?.ADDRESS,
+      //   treasuryAddress: appContracts?.RAHATTREASURY?.ADDRESS,
+      // });
       await sendFundToProject.mutateAsync({
         amount,
         projectAddress: selectedProject,
@@ -136,7 +127,10 @@ export function AssetsModal() {
                   <DropdownMenu.Item
                     key={project.id}
                     onSelect={() =>
-                      handleSelectProject(project.contractAddress)
+                      // handleSelectProject(project.contractAddress)
+                      handleSelectProject(
+                        '0xA802D5b2988EF81465F157609c8BC5BEE779f623',
+                      )
                     }
                     className="p-2 hover:bg-gray-100 cursor-pointer"
                   >

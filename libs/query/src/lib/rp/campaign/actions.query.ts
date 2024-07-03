@@ -90,6 +90,9 @@ export const useTriggerRpCampaign = (projectUUID: UUID) => {
         title: 'Failed to trigger campaign.',
         icon: 'error',
       });
+      queryClient.invalidateQueries({
+        queryKey: ['rpCampaign'],
+      });
     },
   });
 };

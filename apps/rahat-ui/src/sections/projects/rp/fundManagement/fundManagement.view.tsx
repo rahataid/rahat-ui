@@ -237,10 +237,10 @@ const FundManagementView = () => {
               <Button
                 variant={'secondary'}
                 onClick={handleAllocationSync}
-                disabled={
-                  syncDisbursementAllocation.isPending ||
-                  +chainTokenAllocations.data === +disbursementData?.totalAmount
-                }
+                // disabled={
+                //   syncDisbursementAllocation.isPending ||
+                //   +chainTokenAllocations.data === +disbursementData?.totalAmount
+                // }
               >
                 Sync to chain
               </Button>

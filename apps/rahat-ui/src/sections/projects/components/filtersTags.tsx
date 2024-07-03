@@ -1,6 +1,7 @@
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { RxCrossCircled } from 'react-icons/rx';
+import { format } from 'date-fns';
 
 const FiltersTags = ({ filters, setFilters, total }: any) => {
   const filterArray = Object.entries(filters).map(([key, value]) => {
@@ -23,7 +24,12 @@ const FiltersTags = ({ filters, setFilters, total }: any) => {
               onClick={() => handleFilterArrayChange(filter.key, filter.value)}
               className="cursor-pointer bg-primary py-1 px-2 text-white rounded text-xs flex items-center gap-2"
             >
-              {filter.value} <RxCrossCircled />
+              {typeof filter.value === 'object' ? (
+                <>{format(filter.value, 'MMM dd yyyy')}</>
+              ) : (
+                <>{filter.value}</>
+              )}
+              <RxCrossCircled />
             </span>
           </div>
         ))}

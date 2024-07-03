@@ -14,5 +14,3 @@ export const filterVendorsGeoJson = (response:any) => {
       features
     }
   }
-
-export const projectUUID = process.env.NEXT_PUBLIC_PROJECT_UUID;

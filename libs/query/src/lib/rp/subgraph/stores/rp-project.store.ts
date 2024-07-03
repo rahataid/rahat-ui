@@ -8,16 +8,14 @@ export type RPProjectState = {
       id: string;
     };
   };
-  projectTransactions:{
-    
-  }
+  projectTransactions: {};
 };
 
 export type RPProjectActions = {
-  setProjectDetails: (
-    projectDetails: RPProjectState['projectDetails'],
+  setProjectDetails: (projectDetails: RPProjectState['projectDetails']) => void;
+  setProjectTransactions: (
+    transactions: RPProjectState['projectTransactions'],
   ) => void;
-  setProjectTransactions:(transactions:RPProjectState['projectTransactions']) =>void
 };
 
 export type RPProjectStore = RPProjectState & RPProjectActions;
@@ -29,11 +27,11 @@ const initialState: RPProjectState = {
       id: '',
     },
   },
-  projectTransactions:{
-    claimCreateds:[],
-    claimProcesseds:[],
-    tokensAllocateds:[]
-  }
+  projectTransactions: {
+    claimCreateds: [],
+    claimProcesseds: [],
+    tokensAllocateds: [],
+  },
 };
 
 export const useRPProjectSubgraphStore: UseBoundStore<
@@ -44,10 +42,9 @@ export const useRPProjectSubgraphStore: UseBoundStore<
     setProjectDetails: (projectDetails) => {
       set({ projectDetails });
     },
-    setProjectTransactions:(projectTransactions) =>{
-      set({projectTransactions})
-    }
-
+    setProjectTransactions: (projectTransactions) => {
+      set({ projectTransactions });
+    },
   }),
   {
     devtoolsEnabled: true,

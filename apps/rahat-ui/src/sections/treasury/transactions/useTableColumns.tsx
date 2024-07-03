@@ -1,15 +1,6 @@
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
 import { ColumnDef } from '@tanstack/react-table';
-import { MoreHorizontal } from 'lucide-react';
+import { truncateEthAddress } from '@rumsan/sdk/utils';
 
 export type Transaction = {
   topic: string;
@@ -24,50 +15,34 @@ export type Transaction = {
 export const useTableColumns = () => {
   const columns: ColumnDef<Transaction>[] = [
     {
-      id: 'select',
-      header: ({ table }) => (
-        <Checkbox
-          checked={
-            table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && 'indeterminate')
-          }
-          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-          aria-label="Select all"
-        />
-      ),
-      cell: ({ row }) => (
-        <Checkbox
-          checked={row.getIsSelected()}
-          onCheckedChange={(value) => row.toggleSelected(!!value)}
-          aria-label="Select row"
-        />
-      ),
-      enableSorting: false,
-      enableHiding: false,
-    },
-    {
-      accessorKey: 'topic',
+      accessorKey: '__typename',
       header: 'Topic',
       cell: ({ row }) => (
-        <div className="capitalize">{row.getValue('topic')}</div>
+        <div className="capitalize">{row.getValue('__typename')}</div>
       ),
     },
     {
       accessorKey: 'from',
       header: 'From',
       cell: ({ row }) => (
-        <div className="lowercase">{row.getValue('from')}</div>
+        <div className="lowercase">
+          {truncateEthAddress(row.getValue('from'))}
+        </div>
       ),
     },
     {
       accessorKey: 'to',
       header: 'To',
-      cell: ({ row }) => <div className="lowercase">{row.getValue('to')}</div>,
+      cell: ({ row }) => (
+        <div className="lowercase">
+          {truncateEthAddress(row.getValue('to'))}
+        </div>
+      ),
     },
     {
-      accessorKey: 'timestamp',
+      accessorKey: 'blockTimestamp',
       header: 'Timestamp',
-      cell: ({ row }) => <div>{row.getValue('timestamp')}</div>,
+      cell: ({ row }) => <div>{row.getValue('blockTimestamp')}</div>,
     },
     {
       accessorKey: 'blockNumber',
@@ -77,21 +52,17 @@ export const useTableColumns = () => {
     {
       accessorKey: 'transactionHash',
       header: 'Transaction Hash',
-      cell: ({ row }) => <div>{row.getValue('transactionHash')}</div>,
+      cell: ({ row }) => (
+        <div>{truncateEthAddress(row.getValue('transactionHash'))}</div>
+      ),
     },
     {
-      accessorKey: 'amount',
+      accessorKey: 'value',
       header: () => <div className="text-right">Amount</div>,
       cell: ({ row }) => {
-        const amount = parseFloat(row.getValue('amount'));
+        const amount = parseFloat(row.getValue('value'));
 
-        // Format the amount as a dollar amount
-        const formatted = new Intl.NumberFormat('en-US', {
-          style: 'currency',
-          currency: 'USD',
-        }).format(amount);
-
-        return <div className="text-right font-medium">{formatted}</div>;
+        return <div className="text-right font-medium">{amount} RHT</div>;
       },
     },
   ];

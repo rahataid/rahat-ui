@@ -367,14 +367,16 @@ type OptionalPagination = Partial<Pagination>;
 
 export const useBeneficiaryPii = (
   // TODO: UPDATE WITH OPTIONALPAGINATION
-  pagination: Pagination,
+  payload: {
+    projectId: UUID;
+  } & Pagination,
 ): UseQueryResult<any, Error> => {
   const { rumsanService, queryClient } = useRSQuery();
   const benClient = getBeneficiaryClient(rumsanService.client);
   return useQuery(
     {
-      queryKey: [TAGS.GET_BENEFICIARIES, pagination],
-      queryFn: () => benClient.listPiiData(pagination as Pagination),
+      queryKey: [TAGS.GET_BENEFICIARIES, payload],
+      queryFn: () => benClient.listPiiData(payload),
     },
     queryClient,
   );

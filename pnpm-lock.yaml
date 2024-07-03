@@ -21691,7 +21691,7 @@ snapshots:
 
   extension-port-stream@3.0.0:
     dependencies:
-      readable-stream: 4.5.2
+      readable-stream: 3.6.2
       webextension-polyfill: 0.10.0
 
   extract-zip@2.0.1(supports-color@8.1.1):

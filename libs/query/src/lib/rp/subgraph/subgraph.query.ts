@@ -2,12 +2,15 @@
 import { useRPSubgraph } from './subgraph.provider';
 import { useQuery } from '@tanstack/react-query';
 import { useRSQuery } from '@rumsan/react-query';
-import { ProjectTransactions,VendorTransactions,BeneficiaryTransactions } from './graph.query';
+import {
+  ProjectTransactions,
+  VendorTransactions,
+  BeneficiaryTransactions,
+  TreasuryTokenTransactions,
+} from './graph.query';
 import { useEffect } from 'react';
 import { useRPProjectSubgraphStore } from './stores/rp-project.store';
 import { formatTransaction } from '../utils';
-
-
 
 export const useRPProjectTransactions = () => {
   const { subgraphClient } = useRPSubgraph();
@@ -20,22 +23,17 @@ export const useRPProjectTransactions = () => {
     {
       queryKey: ['ProjectTransactions'],
       queryFn: async () => {
-        const { data } = await subgraphClient.query(ProjectTransactions, {
-          
-        });
-        const transactionsType =[
+        const { data } = await subgraphClient.query(ProjectTransactions, {});
+        const transactionsType = [
           'claimCreateds',
           'claimProcesseds',
-          'tokensAllocateds'
-          
-        ]
-        const newData = transactionsType.reduce((acc,type)=>{
+          'tokensAllocateds',
+        ];
+        const newData = transactionsType.reduce((acc, type) => {
           const transactions = data[type] || [];
-           return acc.concat(transactions.map(formatTransaction));
-          
-        },[])
+          return acc.concat(transactions.map(formatTransaction));
+        }, []);
         return newData;
-
       },
     },
     queryClient,
@@ -43,7 +41,7 @@ export const useRPProjectTransactions = () => {
 
   useEffect(() => {
     if (query.isSuccess) {
-      console.log(query)
+      console.log(query);
       setProjectTransactions(query.data);
     }
   }, [query, queryClient]);
@@ -65,16 +63,11 @@ export const useRPBeneficiaryTransactions = (beneficiaryAddress: string) => {
         const { data } = await subgraphClient.query(BeneficiaryTransactions, {
           beneficiaryAddress,
         });
-        const transactionsType =[
-          'tokensAllocateds',
-          'claimCreateds'
-          
-        ]
-        const newData = transactionsType.reduce((acc,type)=>{
+        const transactionsType = ['tokensAllocateds', 'claimCreateds'];
+        const newData = transactionsType.reduce((acc, type) => {
           const transactions = data[type] || [];
-           return acc.concat(transactions.map(formatTransaction));
-          
-        },[])
+          return acc.concat(transactions.map(formatTransaction));
+        }, []);
         return newData;
       },
     },
@@ -84,9 +77,8 @@ export const useRPBeneficiaryTransactions = (beneficiaryAddress: string) => {
   return query;
 };
 
-
 export const useRPVendorTransactions = (vendorAddress: string) => {
-  console.log(vendorAddress)
+  console.log(vendorAddress);
   const { subgraphClient } = useRPSubgraph();
   const { queryClient } = useRSQuery();
   const setProjectDetails = useRPProjectSubgraphStore(
@@ -98,18 +90,14 @@ export const useRPVendorTransactions = (vendorAddress: string) => {
       queryKey: ['VendorTxn', vendorAddress],
       queryFn: async () => {
         const { data } = await subgraphClient.query(VendorTransactions, {
-          vendor:vendorAddress,
+          vendor: vendorAddress,
         });
-        const transactionType =[
-          "claimCreateds",
-          "claimProcesseds"
-        ]
-        
-        const formattedData = transactionType.reduce((acc,type)=>{
-          const transactions = data[type] || [];
-           return acc.concat(transactions.map(formatTransaction));
+        const transactionType = ['claimCreateds', 'claimProcesseds'];
 
-        },[])
+        const formattedData = transactionType.reduce((acc, type) => {
+          const transactions = data[type] || [];
+          return acc.concat(transactions.map(formatTransaction));
+        }, []);
 
         return formattedData;
       },
@@ -126,4 +114,23 @@ export const useRPVendorTransactions = (vendorAddress: string) => {
   return query;
 };
 
+export const useTreasuryTokenTransaction = () => {
+  const { subgraphClient } = useRPSubgraph();
+  const { queryClient } = useRSQuery();
 
+  const query = useQuery(
+    {
+      queryKey: ['TreasuryTokenTransaction'],
+      queryFn: async () => {
+        const { data } = await subgraphClient.query(
+          TreasuryTokenTransactions,
+          {},
+        );
+        return data;
+      },
+    },
+    queryClient,
+  );
+
+  return query;
+};

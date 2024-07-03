@@ -148,6 +148,8 @@ export default function BenImp({ fieldDefinitions }: IProps) {
     sourceField: string,
     targetField: string,
   ) => {
+    // Source field as it is
+    // Target field sanitized
     if (sourceField === EMPTY_SELECTION) {
       const filtered = mappings.filter((f) => f.targetField !== targetField);
       return setMappings(filtered);

@@ -19,6 +19,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/popover';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { CommandList } from 'cmdk';
+import { humanizeString } from 'apps/community-tool-ui/src/utils';
 
 export const EMPTY_SELECTION = 'No Selection';
 
@@ -39,6 +40,8 @@ export function ComboBox({
   React.useEffect(() => {
     if (selectedField) setValue(selectedField);
   }, []);
+
+  console.log({ value });
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -69,9 +72,13 @@ export function ComboBox({
                 {data.map((d: string) => (
                   <CommandItem
                     key={d}
-                    value={d}
+                    value={humanizeString(d)}
                     onSelect={(currentValue) => {
-                      setValue(currentValue === value ? '' : currentValue);
+                      console.log({ currentValue });
+                      const fomatted = currentValue
+                        .toLowerCase()
+                        .replace(/ /g, '_');
+                      setValue(fomatted === value ? '' : fomatted);
                       setOpen(false);
                       handleTargetFieldChange(column, d);
                     }}
@@ -82,7 +89,7 @@ export function ComboBox({
                         value === d ? 'opacity-100' : 'opacity-0',
                       )}
                     />
-                    {d}
+                    {humanizeString(d)}
                   </CommandItem>
                 ))}
               </CommandGroup>

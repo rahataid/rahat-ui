@@ -1,7 +1,7 @@
 'use client';
 
 import { getDefaultConfig } from 'connectkit';
-import { createConfig, http } from 'wagmi';
+import { type Config, createConfig, http } from 'wagmi';
 import {
   arbitrumSepolia,
   baseSepolia,
@@ -18,7 +18,7 @@ declare module 'wagmi' {
   }
 }
 
-export const config = createConfig(
+export const config: Config = createConfig(
   getDefaultConfig({
     syncConnectedChain: true,
     chains: [
@@ -28,7 +28,6 @@ export const config = createConfig(
       // polygon,
       rahatChain,
       baseSepolia,
-
       // polygonMumbai,
       arbitrumSepolia,
     ],

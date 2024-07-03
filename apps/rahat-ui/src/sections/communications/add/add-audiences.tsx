@@ -75,29 +75,27 @@ const AddAudience: FC<AddAudienceProps> = ({
   });
   const createAudience = useCreateAudience();
 
-  const filterBenByProjectId = (id:any) => {
+  const filterBenByProjectId = (id: any) => {
     if (id !== 'ALL') {
       setFilters({ ...filters, projectId: id });
       return;
     }
     setFilters({ ...filters, projectId: undefined });
-  } 
+  };
 
   const handleDateChange = (date: Date, type: string) => {
-    if(type === 'start') {
+    if (type === 'start') {
       setFilters({
         ...filters,
-        startDate: date
-      })
-    }
-    else {
-      setFilters ({
+        startDate: date,
+      });
+    } else {
+      setFilters({
         ...filters,
-        endDate: date
-      })
+        endDate: date,
+      });
     }
-  }
-
+  };
 
   const filterBenByBenTypes = React.useCallback(
     (type: string) => {
@@ -112,7 +110,7 @@ const AddAudience: FC<AddAudienceProps> = ({
     [filters, setFilters],
   );
 
-  console.log(filters)
+  console.log(filters);
 
   const columns = useAudienceColumns(
     beneficiaryData,
@@ -167,13 +165,20 @@ const AddAudience: FC<AddAudienceProps> = ({
           }}
           className="max-w-sm"
         />
-        {
-        filters.projectId && 
-        <>
-        <DatePicker placeholder="Pick Start Date" handleDateChange={handleDateChange} type="start"/>
-        <DatePicker placeholder="Pick End Date"  handleDateChange={handleDateChange} type="end"/>
-        </>
-        }
+        {filters.projectId && (
+          <>
+            <DatePicker
+              placeholder="Pick Start Date"
+              handleDateChange={handleDateChange}
+              type="start"
+            />
+            <DatePicker
+              placeholder="Pick End Date"
+              handleDateChange={handleDateChange}
+              type="end"
+            />
+          </>
+        )}
         <Select onValueChange={filterBenByProjectId}>
           <SelectTrigger className="max-w-32">
             <SelectValue placeholder="Projects" />
@@ -184,7 +189,7 @@ const AddAudience: FC<AddAudienceProps> = ({
               projectsList.data.data.map((project) => {
                 return (
                   <SelectItem key={project.uuid} value={project.uuid || ''}>
-                    {project.name}
+                    {project?.name}
                   </SelectItem>
                 );
               })}

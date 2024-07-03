@@ -38,9 +38,7 @@ import { useGraphService } from '../../../../providers/subgraph-provider';
 import { truncateEthAddress } from '@rumsan/sdk/utils';
 import { formatDate } from '../../../../utils';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import {useRPProjectSubgraphStore} from '@rahat-ui/query';
-
-
+import { useRPProjectSubgraphStore } from '@rahat-ui/query';
 
 export type Transaction = {
   id: string;
@@ -171,12 +169,10 @@ export default function TransactionTable() {
   const [rowSelection, setRowSelection] = React.useState({});
   const [data, setData] = React.useState([]);
 
-  const {projectTransactions} = useRPProjectSubgraphStore();
-
-
+  const { projectTransactions } = useRPProjectSubgraphStore();
 
   const table = useReactTable({
-    data:projectTransactions || [],
+    data: projectTransactions || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -199,9 +195,7 @@ export default function TransactionTable() {
       <div className="flex items-center mb-2">
         <Input
           placeholder="Filter Transactions..."
-          value={
-            (table.getColumn('topic')?.getFilterValue() as string) ?? ''
-          }
+          value={(table.getColumn('topic')?.getFilterValue() as string) ?? ''}
           onChange={(event) =>
             table.getColumn('topic')?.setFilterValue(event.target.value)
           }

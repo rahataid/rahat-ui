@@ -1,16 +1,13 @@
 'use client';
+import { useSettingsStore, useTokenCreate } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import React, { FC, useState } from 'react';
+import { useTreasuryTokenCreate } from 'libs/query/src/lib/treasury/treasury.service';
+import { useCallback, useEffect, useState } from 'react';
+import { keccak256, stringToBytes } from 'viem';
+import { useWaitForTransactionReceipt } from 'wagmi';
 import CreateToken from './1.create.token';
 import Confirmation from './2.confirmation';
-import { useSettingsStore, useTokenCreate } from '@rahat-ui/query';
 
-// type FundManagementFlowProps = {
-//   selectedBeneficiaries: {
-//     walletAddress: `0x${string}`;
-//     amount: string;
-//   }[];
-// };
 export const initialStepData = {
   tokenName: '',
   symbol: '',
@@ -22,13 +19,73 @@ const CreateTokenFlow = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [stepData, setStepData] =
     useState<typeof initialStepData>(initialStepData);
+  const [transactionHash, setTransactionHash] = useState<`0x${string}`>();
+  const [isTransacting, setIsTransacting] = useState<boolean>(false);
+  const [blockNumber, setBlockNumber] = useState<number>();
+
+  const [standardAddress, setStandardAddress] = useState('');
+
+  const createToken = useTokenCreate();
+  const treasuryToken = useTreasuryTokenCreate();
 
   const handleStepDataChange = (e) => {
     const { name, value } = e.target;
     setStepData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const contracts = useSettingsStore((state) => state.contracts);
+  const [tokenAddress, setTokenAddress] = useState<`0x${string}`>();
+
+  const appContracts = useSettingsStore((state) => state.contracts);
+
+  const result = useWaitForTransactionReceipt({
+    hash: transactionHash,
+  });
+
+  useEffect(() => {
+    if (blockNumber) {
+      (async () => {
+        const logs = result?.data?.logs || [];
+        const TokenCreatedSignature = 'TokenCreated(address)';
+        for (const log of logs) {
+          if (
+            log.topics &&
+            log.topics[0] === keccak256(stringToBytes(TokenCreatedSignature))
+          ) {
+            const paddedAddress = log.topics[1];
+            const address = '0x' + paddedAddress?.slice(-40);
+            setStandardAddress(address);
+          }
+        }
+      })();
+    }
+  }, [blockNumber, result.data]);
+
+  useEffect(() => {
+    if (blockNumber && standardAddress) {
+      const update = async () => {
+        await treasuryToken.mutateAsync({
+          name: stepData.tokenName,
+          symbol: stepData.symbol,
+          description: stepData.description,
+          decimals: 18,
+          initialSupply: stepData.initialSupply,
+          contractAddress: standardAddress,
+          fromBlock: blockNumber,
+          transactionHash: result?.data?.transactionHash as `0x${string}`,
+        });
+      };
+      update();
+    }
+  }, [blockNumber, standardAddress, result.data]);
+
+  useEffect(() => {
+    if (result?.data) {
+      setBlockNumber(Number(result.data.blockNumber));
+      console.log(result.data);
+      console.log(Number(result.data.blockNumber));
+      setIsTransacting(false);
+    }
+  }, [result.isFetching]);
 
   const steps = [
     {
@@ -83,19 +140,19 @@ const CreateTokenFlow = () => {
       setCurrentStep(currentStep - 1);
     }
   };
-  const createToken = useTokenCreate();
 
   const handleConfirm = async () => {
-    await createToken.mutateAsync({
+    const result: any = await createToken.mutateAsync({
       name: stepData.tokenName,
       symbol: stepData.symbol,
       description: stepData.description,
-      decimals: 0,
-      // todo: rahat access manager address should be small case
-      manager: contracts?.rahataccessmanager?.address as `0x${string}`,
-      rahatTreasuryAddress: contracts?.rahattreasury?.address as `0x${string}`,
+      decimals: 18,
+      manager: appContracts?.rahataccessmanager?.address as `0x${string}`,
+      rahatTreasuryAddress: appContracts?.rahattreasury
+        ?.address as `0x${string}`,
       initialSupply: stepData.initialSupply,
     });
+    setTransactionHash(result as `0x${string}`);
   };
   const renderComponent = () => {
     // if (!!stepData.treasurySource && disburseMultiSig.isSuccess) {
@@ -104,6 +161,12 @@ const CreateTokenFlow = () => {
 
     return steps[currentStep].component;
   };
+
+  useCallback(() => {
+    if (tokenAddress) {
+      useSettingsStore.setState({ tokenSettings: { data: tokenAddress } });
+    }
+  }, [tokenAddress]);
   return (
     <div>
       <div>{renderComponent()}</div>

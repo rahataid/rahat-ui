@@ -41,7 +41,7 @@ type IProps = {
   filters: Record<string, any>;
   handleCreateGroup: any;
   handleDateChange: any;
-  setFilters: any;
+  setFilters?: any;
 };
 
 export default function ListView({

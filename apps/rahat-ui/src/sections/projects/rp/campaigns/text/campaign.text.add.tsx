@@ -15,14 +15,13 @@ import { Plus } from 'lucide-react';
 import { useState } from 'react';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useBeneficiaryPii } from '@rahat-ui/query';
+import { useBeneficiaryPii, useCreateCampaign } from '@rahat-ui/query';
 import {
   FormControl,
   FormField,
   FormItem,
   FormMessage,
 } from '@rahat-ui/shadcn/src/components/ui/form';
-import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import {
   Select,
   SelectContent,
@@ -34,14 +33,15 @@ import { Audience, CAMPAIGN_TYPES } from '@rahat-ui/types';
 import { TPIIData } from '@rahataid/sdk';
 import {
   useCreateAudience,
-  useCreateCampaign,
   useListAudience,
   useListTransport,
 } from '@rumsan/communication-query';
+import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
 import { FormProvider, useForm } from 'react-hook-form';
-import { toast } from 'react-toastify';
 import { z } from 'zod';
+import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
+
 const FormSchema = z.object({
   campaignType: z.string({
     required_error: 'Camapign Type is required.',
@@ -66,12 +66,11 @@ const TextCampaignAddDrawer = () => {
   const { data: audienceData } = useListAudience();
   const { id } = useParams();
   const { data: beneficiaryData } = useBeneficiaryPii({
+    // @ts-ignore
     projectId: id,
   });
 
-  console.log('transportData', transportData);
-
-  const createCampaign = useCreateCampaign();
+  const createCampaign = useCreateCampaign(id as UUID);
   const createAudience = useCreateAudience();
 
   const [isEmail, setisEmail] = useState(false);
@@ -111,14 +110,7 @@ const TextCampaignAddDrawer = () => {
     const transportId = transportData?.data?.find(
       (t) => t?.name?.toLowerCase() === data?.campaignType?.toLowerCase(),
     )?.id;
-    console.log(data);
-    // let transportId;
     const audienceIds = [];
-    // await transportData?.data.map((tdata) => {
-    //   if (tdata.name.toLowerCase() === data?.campaignType.toLowerCase()) {
-    //     transportId = tdata.id;
-    //   }
-    // });
 
     // Create audience
     if (beneficiaryData?.data) {
@@ -145,25 +137,16 @@ const TextCampaignAddDrawer = () => {
 
         additionalData.message = data?.message;
       }
-      createCampaign
-        .mutateAsync({
-          audienceIds: audienceIds || [],
-          name: data.campaignName,
-          startTime: null,
-          transportId: Number(transportId),
-          type: data.campaignType,
-          details: additionalData,
-          status: 'ONGOING',
-          projectId: id,
-        })
-        .then((data) => {
-          if (data) {
-            toast.success('Campaign Created Success.');
-          }
-        })
-        .catch((e) => {
-          toast.error(e);
-        });
+      createCampaign.mutateAsync({
+        audienceIds: audienceIds || [],
+        name: data.campaignName,
+        startTime: null,
+        transportId: Number(transportId),
+        type: data.campaignType,
+        details: additionalData,
+        status: 'ONGOING',
+        projectId: id,
+      });
     }
   };
   return (

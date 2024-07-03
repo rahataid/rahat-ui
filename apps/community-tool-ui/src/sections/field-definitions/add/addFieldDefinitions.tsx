@@ -254,21 +254,23 @@ export default function AddFieldDefinitions({ handleTabChange }: Iprops) {
                 }}
               />
 
-              <FormField
-                control={form.control}
-                name="isTargeting"
-                render={({ field }) => (
-                  <div className="flex flex-row items-center gap-4 m-1">
-                    <Label> Select as targeting criteria</Label>
-                    <Switch
-                      {...field}
-                      value={field.value ? 'false' : 'true'}
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </div>
-                )}
-              />
+              {showLabelValue && (
+                <FormField
+                  control={form.control}
+                  name="isTargeting"
+                  render={({ field }) => (
+                    <div className="flex flex-row items-center gap-4 m-1">
+                      <Label> Select as targeting criteria</Label>
+                      <Switch
+                        {...field}
+                        value={field.value ? 'false' : 'true'}
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </div>
+                  )}
+                />
+              )}
             </div>
             {showLabelValue && (
               <>

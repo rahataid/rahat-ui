@@ -59,7 +59,7 @@ export default function EditFieldDefinition({
     ),
   });
 
-  const formattedVariations = data.variations?.length
+  const formattedVariations = data?.variations?.length
     ? data.variations.map((d) => {
         return {
           id: d,
@@ -67,6 +67,8 @@ export default function EditFieldDefinition({
         };
       })
     : [];
+
+  console.log('Formated==>', formattedVariations);
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -81,7 +83,7 @@ export default function EditFieldDefinition({
   });
 
   useEffect(() => {
-    if (formattedVariations.length) setVariationTags(formattedVariations);
+    setVariationTags(formattedVariations);
 
     form.reset({
       name: data?.name || '',

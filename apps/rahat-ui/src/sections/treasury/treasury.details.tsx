@@ -15,7 +15,7 @@ import { useProjectList } from '@rahat-ui/query';
 const TreasuryDetails = () => {
   const projects = useProjectList();
   return (
-    <div className="grid grid-cols-12 gap-3">
+    <div className="grid grid-cols-12 gap-2">
       <div className="col-span-8">
         <div className="bg-card h-[calc(100vh-175px)] rounded-md p-4">
           <div className="flex items-center justify-between">

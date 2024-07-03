@@ -199,7 +199,6 @@ export default function AddCampaign() {
                     },
                   });
                 }
-                console.log(selectedRows, item);
 
                 setSelectedRows((prevSelectedRows) => [
                   ...prevSelectedRows,

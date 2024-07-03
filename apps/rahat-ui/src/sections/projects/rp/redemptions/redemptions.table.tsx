@@ -1,6 +1,5 @@
 'use client';
 import {
-  ColumnDef,
   ColumnFiltersState,
   SortingState,
   VisibilityState,
@@ -11,18 +10,8 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { ArrowUpDown, Eye, MoreHorizontal } from 'lucide-react';
 import * as React from 'react';
-
 import { Button } from '@rahat-ui/shadcn/components/button';
-import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuTrigger,
-} from '@rahat-ui/shadcn/components/dropdown-menu';
 import { Input } from '@rahat-ui/shadcn/components/input';
 import {
   Table,
@@ -33,8 +22,15 @@ import {
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import { truncateEthAddress } from '@rumsan/sdk/utils';
-import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+import { useRedemptionTableColumn } from './useRedemptionTableColumn';
+import { History } from 'lucide-react';
+
+export type Redeptions = {
+  id: string;
+  name: string;
+  amount: number;
+  status: string;
+};
 
 const initialData: Redeptions[] = [
   {
@@ -42,121 +38,48 @@ const initialData: Redeptions[] = [
     name: 'Aadarsha Lamichhane',
     amount: 9000,
     status: 'Paid',
-    action: 'view',
   },
   {
     id: '2',
     name: 'Aadarsha Lamichhane',
     amount: 9000,
     status: 'Pending',
-    action: 'view',
   },
   {
     id: '3',
     name: 'Aadarsha Lamichhane',
     amount: 9000,
     status: 'Paid',
-    action: 'view',
   },
   {
     id: '4',
     name: 'Aadarsha Lamichhane',
     amount: 9000,
     status: 'Paid',
-    action: 'view',
   },
   {
     id: '5',
     name: 'Aadarsha Lamichhane',
     amount: 9000,
     status: 'Paid',
-    action: 'view',
   },
   {
     id: '6',
     name: 'Aadarsha Lamichhane',
     amount: 9000,
     status: 'Paid',
-    action: 'view',
   },
   {
     id: '7',
     name: 'Aadarsha Lamichhane',
     amount: 9000,
     status: 'Paid',
-    action: 'view',
   },
   {
     id: '8',
     name: 'Aadarsha Lamichhane',
     amount: 9000,
     status: 'Paid',
-    action: 'view',
-  },
-];
-
-export type Redeptions = {
-  id: string;
-  name: string;
-  amount: number;
-  status: string;
-  action: string;
-};
-
-export const columns: ColumnDef<Redeptions>[] = [
-  {
-    id: 'select',
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && 'indeterminate')
-        }
-        onCheckedChange={(value: any) =>
-          table.toggleAllPageRowsSelected(!!value)
-        }
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value: any) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
-    accessorKey: 'name',
-    header: 'Name',
-    cell: ({ row }) => <div className="capitalize">{row.getValue('name')}</div>,
-  },
-  {
-    accessorKey: 'amount',
-    header: 'Amount',
-    cell: ({ row }) => <div>{row.getValue('amount')}</div>,
-  },
-  {
-    accessorKey: 'status',
-    header: ({ column }) => 'Status',
-    cell: ({ row }) => {
-      const status = row.getValue('status');
-      return status === 'Paid' ? (
-        <Badge className="bg-green-200 text-green-600">Paid</Badge>
-      ) : (
-        <Badge className="bg-red-200 text-red-600">Pending</Badge>
-      );
-    },
-  },
-
-  {
-    id: 'actions',
-    enableHiding: true,
-    cell: () => {
-      return <Eye className="cursor-pointer" size={18} strokeWidth={1.5} />;
-    },
   },
 ];
 
@@ -169,7 +92,7 @@ export default function RedemptionsTable() {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
   const [data, setData] = React.useState(initialData);
-
+  const columns = useRedemptionTableColumn();
   const table = useReactTable({
     data,
     columns,
@@ -191,7 +114,7 @@ export default function RedemptionsTable() {
 
   return (
     <div className="w-full p-2 bg-secondary">
-      <div className="flex items-center mb-2">
+      <div className="flex items-center gap-2 mb-2">
         <Input
           placeholder="Search Redemptions..."
           value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
@@ -200,8 +123,12 @@ export default function RedemptionsTable() {
           }
           className="w-full"
         />
+        <Button className="flex items-center gap-2">
+          <History strokeWidth={1.25} size={18} />
+          History
+        </Button>
       </div>
-      <div className="rounded border bg-white">
+      <div className="rounded border bg-card">
         <Table>
           <ScrollArea className="h-[calc(100vh-184px)]">
             <TableHeader>

@@ -70,7 +70,6 @@ export type Transaction = {
   amount: string;
 };
 
-
 export const voucherType = [
   {
     key: 'NOT_ASSIGNED',
@@ -84,6 +83,11 @@ export const voucherType = [
     key: 'REFERRED',
     value: 'REFERRED',
   },
+];
+
+export const benType = [
+  { key: 'ENROLLED', value: 'ENROLLED' },
+  { key: 'REFERRED', value: 'REFERRED' },
 ];
 
 function BeneficiaryDetailTableView() {
@@ -147,9 +151,10 @@ function BeneficiaryDetailTableView() {
     (state) => state.settings?.[uuid][PROJECT_SETTINGS_KEYS.CONTRACT] || null,
   );
 
-  const columns = useProjectBeneficiaryTableColumns(voucherType, projectBeneficiaries);
-
- 
+  const columns = useProjectBeneficiaryTableColumns(
+    voucherType,
+    projectBeneficiaries,
+  );
 
   const table = useReactTable({
     manualPagination: true,
@@ -178,7 +183,7 @@ function BeneficiaryDetailTableView() {
   });
 
   useEffect(() => {
-    if(result?.data){
+    if (result?.data) {
       setisTransacting(false);
       setVoucherType('FREE_VOUCHER');
       projectBeneficiaries.refetch();
@@ -249,7 +254,7 @@ function BeneficiaryDetailTableView() {
                 onClick={() => {
                   setVoucherType('NOT_ASSIGNED');
                   resetSelectedListItems();
-                  setPagination({page: 1, perPage: pagination.perPage})
+                  setPagination({ page: 1, perPage: pagination.perPage });
                   closeSecondPanel();
                 }}
                 value="NOT_ASSIGNED"
@@ -259,7 +264,7 @@ function BeneficiaryDetailTableView() {
               <TabsTrigger
                 onClick={() => {
                   setVoucherType('FREE_VOUCHER');
-                  setPagination({page: 1, perPage: pagination.perPage})
+                  setPagination({ page: 1, perPage: pagination.perPage });
                   resetSelectedListItems();
                   closeSecondPanel();
                 }}
@@ -270,7 +275,7 @@ function BeneficiaryDetailTableView() {
               <TabsTrigger
                 onClick={() => {
                   setVoucherType('DISCOUNT_VOUCHER');
-                  setPagination({page: 1, perPage: pagination.perPage})
+                  setPagination({ page: 1, perPage: pagination.perPage });
                   resetSelectedListItems();
                   closeSecondPanel();
                 }}

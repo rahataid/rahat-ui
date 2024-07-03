@@ -11,6 +11,8 @@ import TextCampaignAddDrawer from './campaign.text.add';
 import { CAMPAIGN_TYPES } from '@rahat-ui/types';
 
 import { useListCampaign } from '@rumsan/communication-query';
+import { useListRpCampaign } from '@rahat-ui/query';
+import { UUID } from 'crypto';
 
 const TextCampaignDetails = () => {
   const { id } = useParams();
@@ -22,10 +24,8 @@ const TextCampaignDetails = () => {
     isError,
     isSuccess,
     isFetching,
-  } = useListCampaign({
-    projectId: id,
-  });
-  const textCampaign = campaignData?.data?.rows?.filter(
+  } = useListRpCampaign(id as UUID);
+  const textCampaign = campaignData?.rows?.filter(
     (campaign) =>
       campaign.type.toLowerCase() !== CAMPAIGN_TYPES.IVR.toLowerCase(),
   );

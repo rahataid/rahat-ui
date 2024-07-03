@@ -184,13 +184,13 @@ const AddAudience: FC<AddAudienceProps> = ({
               projectsList.data.data.map((project) => {
                 return (
                   <SelectItem key={project.uuid} value={project.uuid || ''}>
-                    {project.name}
+                    {project?.name}
                   </SelectItem>
                 );
               })}
           </SelectContent>
         </Select>
-        {filters?.projectId && (
+        {filters?.projectId === process.env.NEXT_PUBLIC_PROJECT_UUID && (
           <Select onValueChange={filterBenByBenTypes}>
             <SelectTrigger className="max-w-32">
               <SelectValue placeholder="Types" />

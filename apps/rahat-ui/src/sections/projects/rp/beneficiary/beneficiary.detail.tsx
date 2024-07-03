@@ -56,6 +56,7 @@ import { formatEther } from 'viem';
 import AssignToken from './assign-token.modal';
 import { TransactionTable } from './transaction.table';
 
+
 type IProps = {
   beneficiaryDetails: any;
   closeSecondPanel: VoidFunction;
@@ -70,12 +71,12 @@ export default function BeneficiaryDetail({
     (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT] || null,
   );
 
+
   const assignToken = useAssignClaimsToBeneficiary();
   const allocatedTokens = useFindOneDisbursement(id, {
     walletAddress: beneficiaryDetails?.walletAddress,
   });
 
-  console.log('allocatedTokens', allocatedTokens?.data);
 
   // const assignedTokens = useReadCvaProjectBeneficiaryClaims({
   //   args: [beneficiaryDetails?.walletAddress],
@@ -109,7 +110,6 @@ export default function BeneficiaryDetail({
       projectAddress: contractSettings?.rpproject?.address,
       tokenAmount: numberOfTokens,
     });
-    console.log('ass', ass);
   };
 
   const removeBeneficiary = (uuid: string) => {
@@ -167,7 +167,7 @@ export default function BeneficiaryDetail({
           />
         </TabsContent>
         <TabsContent value="transaction">
-          <TransactionTab />
+          <TransactionTab beneficiary={beneficiaryDetails}/>
         </TabsContent>
       </Tabs>
     </>
@@ -407,10 +407,10 @@ function BeneficiaryInfo({
   );
 }
 
-function TransactionTab() {
+function TransactionTab(beneficiaryDetails:any) {
   return (
     <div className="p-2 pb-0">
-      <TransactionTable />
+      <TransactionTable beneficiaryDetails= {beneficiaryDetails} />
     </div>
   );
 }

@@ -8,6 +8,7 @@ const ROOTS = {
   GROUPS: '/group',
   FIELD_DEFINITIONS: '/field-definitions',
   TARGETING: '/targeting',
+  TREASURY: '/treasury',
 };
 
 export const paths = {
@@ -24,6 +25,13 @@ export const paths = {
       import: `${ROOTS.BENEFICIARY}/import`,
       root: ROOTS.BENEFICIARY,
       detail: (uuid: string) => `${ROOTS.BENEFICIARY}/${uuid}`,
+    },
+    treasury: {
+      root: ROOTS.TREASURY,
+      portfolio: `${ROOTS.TREASURY}/portfolio`,
+      transactions: `${ROOTS.TREASURY}/transactions`,
+      assets: `${ROOTS.TREASURY}/assets`,
+      createToken: `${ROOTS.TREASURY}/createToken`,
     },
     user: ROOTS.USER,
     group: {

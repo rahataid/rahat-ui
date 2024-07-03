@@ -75,8 +75,6 @@ export default function BeneficiaryDetail({
     walletAddress: beneficiaryDetails?.walletAddress,
   });
 
-  console.log('allocatedTokens', allocatedTokens?.data);
-
   // const assignedTokens = useReadCvaProjectBeneficiaryClaims({
   //   args: [beneficiaryDetails?.walletAddress],
   //   address: contractSettings?.rpproject?.address,
@@ -109,7 +107,6 @@ export default function BeneficiaryDetail({
       projectAddress: contractSettings?.rpproject?.address,
       tokenAmount: numberOfTokens,
     });
-    console.log('ass', ass);
   };
 
   const removeBeneficiary = (uuid: string) => {
@@ -167,7 +164,7 @@ export default function BeneficiaryDetail({
           />
         </TabsContent>
         <TabsContent value="transaction">
-          <TransactionTab />
+          <TransactionTab beneficiary={beneficiaryDetails} />
         </TabsContent>
       </Tabs>
     </>
@@ -407,10 +404,10 @@ function BeneficiaryInfo({
   );
 }
 
-function TransactionTab() {
+function TransactionTab(beneficiaryDetails: any) {
   return (
     <div className="p-2 pb-0">
-      <TransactionTable />
+      <TransactionTable beneficiaryDetails={beneficiaryDetails} />
     </div>
   );
 }

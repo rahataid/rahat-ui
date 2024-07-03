@@ -11,16 +11,19 @@ import {
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import { IStakeholdersItem } from 'apps/rahat-ui/src/types/stakeholders';
 
 type IProps = {
-  table: Table<IStakeholdersItem>;
+  table: Table<any>;
+  scrollAreaHeight?: string;
 };
 
-export default function MembersTable({ table }: IProps) {
+export default function MembersTable({
+  table,
+  scrollAreaHeight = 'h-[calc(100vh-420px)]', //default height is for stakeholder's group table
+}: IProps) {
   return (
     <TableComponent>
-      <ScrollArea className="h-[calc(100vh-420px)]">
+      <ScrollArea className={scrollAreaHeight}>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>

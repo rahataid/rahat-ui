@@ -10,6 +10,7 @@ import {
   useWriteRahatTreasuryCreateToken,
   useWriteRahatTreasuryTransferToken,
 } from '../generated-hooks';
+import { useRouter } from 'next/navigation';
 
 export const useTokenCreate = () => {
   const { queryClient } = useRSQuery();
@@ -241,6 +242,7 @@ export const useSendFundToProject = () => {
   // const decimals = useReadRahatTokenDecimals({
   //   address: tokenAddress,
   // });
+  const router = useRouter();
 
   const alert = Swal.mixin({
     customClass: {
@@ -264,6 +266,8 @@ export const useSendFundToProject = () => {
           icon: 'success',
           title: 'Funds sent successfully',
         });
+        router.push('/treasury');
+
         // queryClient.invalidateQueries({
         //   queryKey: ['ProjectDetails', projectAddress],
         // });

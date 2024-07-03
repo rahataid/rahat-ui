@@ -40,7 +40,7 @@ export const initialAppSettings: AppSettingsState = {
   },
   subGraphUrl:
     process.env['NEXT_PUBLIC_SUBGRAPH_URL'] ||
-    'http://localhost:8000/subgraphs/name/rahat/el',
+    'http://localhost:8000/subgraphs/name/rahat/rp',
   accessManager:
     process.env['NEXT_PUBLIC_ACCESS_MANAGER'] ||
     '0x047435DE08F97c6446fcB0302140340559652F83',

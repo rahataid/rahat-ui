@@ -6,13 +6,13 @@ import {
   useSendFundToProject,
   useSettingsStore,
 } from '@rahat-ui/query';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import DataCard from 'apps/rahat-ui/src/components/dataCard';
 import { useTreasuryTokenDetail } from 'libs/query/src/lib/treasury/treasury.service';
 import { Banknote, Plus } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { AssetsModal } from './assets.modal';
 
 const AssetsDetails = () => {
   const contractAddress = useParams()?.contractAddress;
@@ -32,6 +32,25 @@ const AssetsDetails = () => {
       setTokenDetail(data?.data);
     }
   }, [data]);
+
+  const handleSendFunds = async () => {
+    if (selectedProject) {
+      // Replace this with the actual function to send funds
+      console.log('Sending funds to project with address:', selectedProject);
+      await sendFundToProject.mutateAsync({
+        amount,
+        projectAddress: selectedProject,
+        tokenAddress: appContracts?.rahattoken?.address,
+        treasuryAddress: appContracts?.rahattreasury?.address,
+      });
+    } else {
+      console.log('No project selected');
+    }
+  };
+
+  const handleSelectProject = (contractAddress: `0x${string}`) => {
+    setSelectedProject(contractAddress);
+  };
 
   return (
     <div className="p-2 bg-secondary h-[calc(100vh-80px)]">

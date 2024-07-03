@@ -36,7 +36,7 @@ type IProps = {
   startTime?: string;
   status?: string;
   totalAudience?: number;
-  refetch?: any
+  refetch?: any;
 };
 
 const InfoCard: React.FC<IProps> = ({
@@ -46,7 +46,7 @@ const InfoCard: React.FC<IProps> = ({
   startTime,
   status,
   totalAudience,
-  refetch
+  refetch,
 }) => {
   const queryClient = useQueryClient();
   const [open, setOpen] = React.useState(false);
@@ -71,7 +71,7 @@ const InfoCard: React.FC<IProps> = ({
     <Card className="shadow-md">
       <CardHeader className="flex flex-row justify-between">
         <CardTitle>{name}</CardTitle>
-        {/* {status !== 'COMPLETED' && ( */}
+        {status === 'ONGOING' && (
           <Select value={''} onValueChange={() => setOpen(true)}>
             <SelectTrigger className="w-24">
               <SelectValue placeholder="Action" />
@@ -104,7 +104,7 @@ const InfoCard: React.FC<IProps> = ({
               </DialogContent>
             </Dialog>
           </Select>
-        {/* )} */}
+        )}
       </CardHeader>
       <CardContent>
         <div className="flex justify-between gap-4 flex-wrap">

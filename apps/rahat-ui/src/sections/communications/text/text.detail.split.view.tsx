@@ -20,13 +20,13 @@ import { toast } from 'react-toastify';
 type IProps = {
   details: ICampaignItemApiResponse;
   closeSecondPanel: VoidFunction;
-  refetch: any
+  refetch: any;
 };
 
 export default function TextDetailSplitView({
   details,
   closeSecondPanel,
-  refetch
+  refetch,
 }: IProps) {
   const deleteCampaign = useDeleteCampaign();
 
@@ -62,43 +62,49 @@ export default function TextDetailSplitView({
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
-        <TooltipProvider delayDuration={100}>
-          <Tooltip>
-            <TooltipTrigger>
-              <FilePenLine
-                size={20}
-                strokeWidth={1.5}
-                onClick={() =>
-                  router.push(
-                    paths.dashboard.communication.editTextCampaign(details.id),
-                  )
-                }
-              />
-            </TooltipTrigger>
-            <TooltipContent className="bg-secondary ">
-              <p className="text-xs font-medium">Edit</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-        <TooltipProvider delayDuration={100}>
-          <Tooltip>
-            <TooltipTrigger>
-              <Trash2
-                size={20}
-                strokeWidth={1.5}
-                onClick={() => {
-                  deleteCampaign.mutateAsync(details.id).then(() => {
-                    toast.success('Successfully Deleted Campaign');
-                    closeSecondPanel();
-                  });
-                }}
-              />
-            </TooltipTrigger>
-            <TooltipContent className="bg-secondary ">
-              <p className="text-xs font-medium">Delete</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+        {details.status === 'ONGOING' && (
+          <>
+            <TooltipProvider delayDuration={100}>
+              <Tooltip>
+                <TooltipTrigger>
+                  <FilePenLine
+                    size={20}
+                    strokeWidth={1.5}
+                    onClick={() =>
+                      router.push(
+                        paths.dashboard.communication.editTextCampaign(
+                          details.id,
+                        ),
+                      )
+                    }
+                  />
+                </TooltipTrigger>
+                <TooltipContent className="bg-secondary ">
+                  <p className="text-xs font-medium">Edit</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+            <TooltipProvider delayDuration={100}>
+              <Tooltip>
+                <TooltipTrigger>
+                  <Trash2
+                    size={20}
+                    strokeWidth={1.5}
+                    onClick={() => {
+                      deleteCampaign.mutateAsync(details.id).then(() => {
+                        toast.success('Successfully Deleted Campaign');
+                        closeSecondPanel();
+                      });
+                    }}
+                  />
+                </TooltipTrigger>
+                <TooltipContent className="bg-secondary ">
+                  <p className="text-xs font-medium">Delete</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </>
+        )}
       </div>
       <div className="mt-5 flex flex-col gap-5">
         <InfoCard

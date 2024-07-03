@@ -1,6 +1,6 @@
 'use client';
 
-import { useCampaignStore } from '@rahat-ui/query';
+import { useCampaignStore, useGetRpCampaign } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/components/button';
 import { Input } from '@rahat-ui/shadcn/components/input';
 import {
@@ -26,6 +26,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import DataCard from 'apps/rahat-ui/src/components/dataCard';
+import { UUID } from 'crypto';
 import { Mail, MessageCircle, PhoneCall, Settings } from 'lucide-react';
 import Image from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
@@ -42,7 +43,7 @@ export type Text = {
 export default function TextLogDetails() {
   const campaignStore = useCampaignStore();
   const columns = useTextTableColumn();
-  const { campaignId } = useParams();
+  const { id, campaignId } = useParams();
   const router = useRouter();
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -52,13 +53,14 @@ export default function TextLogDetails() {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
-  const { data, isSuccess, isFetching } = useGetCampaign({
-    id: Number(campaignId),
-  });
+  const { data, isSuccess, isFetching } = useGetRpCampaign(
+    id as UUID,
+    Number(campaignId),
+  );
 
   const tableData = React.useMemo(() => {
-    if (isSuccess && data?.data) {
-      return data?.data?.communicationLogs?.map((item: any) => ({
+    if (isSuccess && data) {
+      return data?.communicationLogs?.map((item: any) => ({
         date: new Date(item.createdAt).toLocaleString(),
         status: item?.status,
         to: item?.details?.envelope?.to
@@ -92,18 +94,16 @@ export default function TextLogDetails() {
   return (
     <div className="w-full h-full p-2 bg-secondary">
       <div className="flex items-center justify-between mb-4">
-        <p className="font-medium	text-neutral-800 text-lg">
-          {data?.data?.name}
-        </p>
-        {data?.data?.status !== 'COMPLETED' ? (
-          <TriggerConfirmModal id={Number(campaignId)} />
+        <p className="font-medium	text-neutral-800 text-lg">{data?.name}</p>
+        {data?.status !== 'COMPLETED' ? (
+          <TriggerConfirmModal campaignId={Number(campaignId)} />
         ) : null}
       </div>
       <div className=" grid sm:grid-cols-1 md:grid-cols-3 gap-2 mb-2">
         <DataCard className="" title="Text" number={'10'} Icon={PhoneCall} />
         <DataCard
           title="Beneficiaries"
-          number={data?.data?.audiences.length?.toString() || '0'}
+          number={data?.audiences.length?.toString() || '0'}
           Icon={Mail}
         />
         <DataCard

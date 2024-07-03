@@ -167,6 +167,7 @@ export const useCommunityGroupDelete = () => {
           confirmButtonText: 'Delete',
           cancelButtonText: 'Cancel',
           confirmButtonColor: '#dc3545',
+          allowOutsideClick: false,
         });
         if (!isConfirmed) return null;
         return groupClient.deleteGroup(data?.uuid as string);

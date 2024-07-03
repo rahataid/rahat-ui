@@ -26,7 +26,7 @@ const VendorDetail = () => {
   const vendorWallet = searchParams.get('walletAddress');
   const vendorId = searchParams.get('vendorId');
 
-  console.log({ phone, name, vendorWallet, vendorId });
+  //get the vendor txn
   return (
     <div className="bg-secondary">
       <VendorHeader />

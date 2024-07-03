@@ -15,4 +15,4 @@ export const filterVendorsGeoJson = (response:any) => {
     }
   }
 
-export const projectUUID = "87e30795-d3c7-4d2a-a40a-7c9164f8d471";
+export const projectUUID = process.env.NEXT_PUBLIC_PROJECT_UUID;

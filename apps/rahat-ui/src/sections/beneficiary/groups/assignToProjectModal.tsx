@@ -31,11 +31,13 @@ type ProjectModalType = {
 type IProps = {
   beneficiaryGroupDetail: ListBeneficiaryGroup;
   projectModal: ProjectModalType;
+  closeSecondPanel: VoidFunction;
 };
 
 export default function AssignBeneficiaryToProjectModal({
   projectModal,
   beneficiaryGroupDetail,
+  closeSecondPanel,
 }: IProps) {
   const assignBeneficiaryGroup = useAssignBenGroupToProject();
   const projectsList = useProjectList({ page: 1, perPage: 10 });
@@ -53,8 +55,11 @@ export default function AssignBeneficiaryToProjectModal({
   };
 
   React.useEffect(() => {
-    assignBeneficiaryGroup.isSuccess && projectModal.onFalse();
-  }, [assignBeneficiaryGroup]);
+    if (assignBeneficiaryGroup.isSuccess) {
+      projectModal.onFalse();
+      closeSecondPanel();
+    }
+  }, [assignBeneficiaryGroup.isSuccess]);
 
   return (
     <Dialog open={projectModal.value} onOpenChange={projectModal.onToggle}>

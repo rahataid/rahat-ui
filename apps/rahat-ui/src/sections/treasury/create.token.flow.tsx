@@ -35,12 +35,7 @@ const CreateTokenFlow = () => {
 
   const [tokenAddress, setTokenAddress] = useState<`0x${string}`>();
 
-  const accessManagerContract = useSettingsStore(
-    (state) => state.accessManager,
-  );
-  const rahatTreasuryContract = useSettingsStore(
-    (state) => state.rahatTreasury,
-  );
+  const appContracts = useSettingsStore((state) => state.contracts);
 
   const result = useWaitForTransactionReceipt({
     hash: transactionHash,
@@ -152,8 +147,9 @@ const CreateTokenFlow = () => {
       symbol: stepData.symbol,
       description: stepData.description,
       decimals: 18,
-      manager: accessManagerContract as `0x${string}`,
-      rahatTreasuryAddress: rahatTreasuryContract as `0x${string}`,
+      manager: appContracts?.rahataccessmanager?.address as `0x${string}`,
+      rahatTreasuryAddress: appContracts?.rahattreasury
+        ?.address as `0x${string}`,
       initialSupply: stepData.initialSupply,
     });
     setTransactionHash(result as `0x${string}`);

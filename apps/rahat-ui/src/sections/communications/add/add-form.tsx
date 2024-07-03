@@ -83,16 +83,16 @@ const CampaignForm: FC<CampaignFormProps> = ({
     form.getValues().campaignType?.toLowerCase(),
   );
   const isWhatsappMessage =
-    form.getValues().campaignType?.toLowerCase() === 'whatsapp';
-  const isIvrMessage = form.getValues().campaignType?.toLowerCase() === 'ivr';
+    form.watch().campaignType?.toLowerCase() === 'whatsapp';
+  const isIvrMessage = form.watch().campaignType?.toLowerCase() === 'ivr';
   const includeAudio = ['phone'].includes(
-    form.getValues().campaignType?.toLowerCase(),
+    form.watch().campaignType?.toLowerCase(),
   );
   const [open, setOpen] = React.useState(false);
   const [checkTemplate, setCheckTemplate] = React.useState(false);
   const [templatemessage, setTemplatemessage] = React.useState('');
 
-  const uploadFile = useUploadFile()
+  const uploadFile = useUploadFile();
 
   //   const includeFile = includeMessage ? 'message' : 'file';
   //   const excludeFile = includeMessage ? 'file' : 'message';
@@ -194,7 +194,9 @@ const CampaignForm: FC<CampaignFormProps> = ({
                 </FormItem>
               )}
             />
-            {isIvrMessage && <AudioRecorder uploadFile={uploadFile} form={form} />}
+            {isIvrMessage && (
+              <AudioRecorder uploadFile={uploadFile} form={form} />
+            )}
             {isWhatsappMessage && (
               <FormField
                 control={form.control}

@@ -194,6 +194,8 @@ export default function GroupDetail({ uuid }: IProps) {
       resetSelectedListItems();
     }
   }, [deleteSelectedBeneficiariesFromImport.length, resetSelectedListItems]);
+
+  console.log(responseByUUID?.data?.beneficiariesGroup.length);
   return (
     <>
       <Tabs defaultValue="detail">
@@ -212,12 +214,21 @@ export default function GroupDetail({ uuid }: IProps) {
 
             <TooltipProvider>
               <Tooltip>
-                <TooltipTrigger asChild onClick={handleClick}>
+                <TooltipTrigger
+                  onClick={handleClick}
+                  disabled={
+                    responseByUUID?.data?.beneficiariesGroup.length === 0
+                  }
+                >
                   <Download
                     className="cursor-pointer"
                     size={18}
                     strokeWidth={1.6}
-                    color="#007bb6"
+                    color={`${
+                      responseByUUID?.data?.beneficiariesGroup.length === 0
+                        ? 'grey'
+                        : '#007bb6'
+                    }`}
                   />
                 </TooltipTrigger>
                 <TooltipContent>
@@ -230,12 +241,21 @@ export default function GroupDetail({ uuid }: IProps) {
           <div className="flex gap-3">
             <TooltipProvider>
               <Tooltip>
-                <TooltipTrigger asChild onClick={removeBeneficiaryFromGroup}>
+                <TooltipTrigger
+                  onClick={removeBeneficiaryFromGroup}
+                  disabled={
+                    responseByUUID?.data?.beneficiariesGroup.length === 0
+                  }
+                >
                   <Trash2
                     className="cursor-pointer mr-3"
                     size={20}
                     strokeWidth={1.6}
-                    color="#FF0000"
+                    color={`${
+                      responseByUUID?.data?.beneficiariesGroup.length === 0
+                        ? 'grey'
+                        : '#007bb6'
+                    }`}
                   />
                 </TooltipTrigger>
                 <TooltipContent>
@@ -253,10 +273,20 @@ export default function GroupDetail({ uuid }: IProps) {
                 />
               </DropdownMenuTrigger>
               <DropdownMenuContent>
-                <DropdownMenuItem onClick={handleExportPinnedBeneficiary}>
+                <DropdownMenuItem
+                  onClick={handleExportPinnedBeneficiary}
+                  disabled={
+                    responseByUUID?.data?.beneficiariesGroup.length === 0
+                  }
+                >
                   Export Beneficiaries
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={handlePurge}>
+                <DropdownMenuItem
+                  onClick={handlePurge}
+                  disabled={
+                    responseByUUID?.data?.beneficiariesGroup.length === 0
+                  }
+                >
                   Delete Beneficiary
                 </DropdownMenuItem>
               </DropdownMenuContent>

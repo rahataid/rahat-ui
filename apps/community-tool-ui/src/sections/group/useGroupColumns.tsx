@@ -37,9 +37,19 @@ export const useCommunityGroupTableColumns = () => {
       cell: ({ row }) => <div>{row.getValue('name')}</div>,
     },
     {
-      header: 'Created By',
+      header: `${pathName === '/group' ? 'Created By' : 'Imported By'}`,
       cell: ({ row }) => {
         return <div>{row.original.user?.name || '-'}</div>;
+      },
+    },
+    {
+      header: 'Total Beneficiaries',
+      cell: ({ row }) => {
+        return (
+          <div className="ml-5">
+            {row.original.beneficiariesGroup.length || '-'}
+          </div>
+        );
       },
     },
     {

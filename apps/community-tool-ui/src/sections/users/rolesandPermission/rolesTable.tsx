@@ -64,7 +64,7 @@ export default function ListView({ roleData }: IProps) {
       <div className="w-full h-full mt-1 p-1 bg-secondary">
         <div className="flex items-center mb-2">
           <Input
-            placeholder="Search User by name..."
+            placeholder="Search Role by name..."
             value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
             onChange={(event) =>
               table.getColumn('name')?.setFilterValue(event.target.value)

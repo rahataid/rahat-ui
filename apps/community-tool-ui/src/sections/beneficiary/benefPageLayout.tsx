@@ -26,7 +26,7 @@ const BenefPageLayout: FC<BenefPageLayoutProps> = ({ children, menuItems }) => {
 
   const renderResizablePanel = (children: React.ReactNode, index?: number) => {
     return (
-      <ResizablePanel key={index}>
+      <ResizablePanel key={index} defaultSize={6}>
         <ScrollArea className="h-[calc(100vh-66px)]">{children}</ScrollArea>
       </ResizablePanel>
     );

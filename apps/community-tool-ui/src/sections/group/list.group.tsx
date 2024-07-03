@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Table, flexRender } from '@tanstack/react-table';
 
 import {
@@ -16,6 +16,7 @@ import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { ListGroup } from '@rahataid/community-tool-sdk/groups';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { Pagination } from '@rumsan/sdk/types';
+import { usePathname } from 'next/navigation';
 
 type IProps = {
   table: Table<ListGroup>;
@@ -32,6 +33,7 @@ export default function GroupList({
   setPagination,
   pagination,
 }: IProps) {
+  const pathName = usePathname();
   const handleFilterChange = (event: any) => {
     if (event && event.target) {
       const { name, value } = event.target;
@@ -46,6 +48,13 @@ export default function GroupList({
       page: 1,
     });
   };
+
+  useEffect(() => {
+    setFilters({
+      name: '',
+    });
+  }, [pathName, setFilters]);
+
   return (
     <div className="w-full -mt-2 p-2 bg-secondary">
       <div className="flex items-center mb-2">

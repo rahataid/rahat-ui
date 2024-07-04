@@ -36,6 +36,15 @@ const PopulationInsights = ({ data }: Props) => {
     ...EVACUATION_COORDS,
   ];
 
+  const sanitizedCoordinates = combinedCoords.filter((item) => {
+    return (
+      item.latitude >= -90 &&
+      item.latitude <= 90 &&
+      item.longitude >= -180 &&
+      item.longitude <= 180
+    );
+  });
+
   return (
     <div>
       <div className="grid sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-5 gap-2 mb-2 ">
@@ -47,7 +56,7 @@ const PopulationInsights = ({ data }: Props) => {
           width={'100%'}
         />
 
-        <CommunityMap coordinates={combinedCoords} />
+        <CommunityMap coordinates={sanitizedCoordinates} />
       </div>
 
       <div className="grid  sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-2 mt-4">

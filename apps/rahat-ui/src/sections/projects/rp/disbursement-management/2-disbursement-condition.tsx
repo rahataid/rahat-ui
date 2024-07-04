@@ -1,6 +1,9 @@
+import { useFindAllDisbursementPlans } from '@rahat-ui/query';
 import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
 import { Separator } from '@rahat-ui/shadcn/src/components/ui/separator';
-import React, { useState } from 'react';
+import { UUID } from 'crypto';
+import { useParams } from 'next/navigation';
+import React, { useEffect, useState } from 'react';
 
 export enum DisbursementConditionType {
   BALANCE_CHECK = 'BALANCE_CHECK',
@@ -20,6 +23,8 @@ const DisbursementCondition = ({
   const [selectedConditions, setSelectedConditions] = useState<
     DisbursementConditionType[]
   >([]);
+
+  const { id } = useParams() as { id: UUID };
 
   const handleCheckboxChange = (condition: DisbursementConditionType) => {
     setSelectedConditions((prevSelectedConditions) => {

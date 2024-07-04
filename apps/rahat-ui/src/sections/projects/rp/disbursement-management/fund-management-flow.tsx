@@ -8,6 +8,7 @@ import DisbursementCondition, {
 import DisbursementConfirmation from './3-confirmation';
 import {
   useCreateDisbursementPlan,
+  useFindAllDisbursementPlans,
   useFindAllDisbursements,
 } from '@rahat-ui/query';
 import { useParams, useRouter } from 'next/navigation';
@@ -30,6 +31,20 @@ const FundManagementFlow = () => {
 
   const createDisbursementPlan = useCreateDisbursementPlan(id);
   const disbursements = useFindAllDisbursements(id);
+  const { data: disbursementData } = useFindAllDisbursementPlans(id);
+
+  useEffect(() => {
+    const newSelectedConditions = [];
+    disbursementData?.conditions.includes(
+      DisbursementConditionType.BALANCE_CHECK,
+    ) && newSelectedConditions.push(DisbursementConditionType.BALANCE_CHECK);
+    disbursementData?.conditions.includes(
+      DisbursementConditionType.APPROVER_SIGNATURE,
+    ) &&
+      newSelectedConditions.push(DisbursementConditionType.APPROVER_SIGNATURE);
+
+    setStepData({ ...stepData, selectedConditions: newSelectedConditions });
+  }, [disbursementData]);
 
   const confirmModal = useBoolean(false);
 

@@ -31,12 +31,11 @@ import {
   useBeneficiaryPii,
   useCreateCampaign,
   useUploadFile,
+  useCreateRpAudience,
+  useListRpAudience,
+  useListRpTransport,
 } from '@rahat-ui/query';
-import {
-  useCreateAudience,
-  useListAudience,
-  useListTransport,
-} from '@rumsan/communication-query';
+
 import { useParams } from 'next/navigation';
 import { FormProvider, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -67,16 +66,17 @@ const FormSchema = z.object({
 });
 
 const VoiceCampaignAddDrawer = () => {
-  const uploadFile = useUploadFile();
-  const { data: transportData } = useListTransport();
-  const { data: audienceData } = useListAudience();
   const { id } = useParams() as { id: UUID };
+
+  const uploadFile = useUploadFile();
+  const { data: transportData } = useListRpTransport(id);
+  const { data: audienceData } = useListRpAudience(id);
   const { data: beneficiaryData } = useBeneficiaryPii({
     projectId: id,
   }) as any;
 
   const createCampaign = useCreateCampaign(id as UUID);
-  const createAudience = useCreateAudience();
+  const createAudience = useCreateRpAudience(id);
   const [isOpen, setIsOpen] = useState(false);
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -90,7 +90,7 @@ const VoiceCampaignAddDrawer = () => {
   const handleCreateAudience = async (item: TPIIData) => {
     try {
       // Check if the audience already exists
-      const existingAudience = audienceData?.data.find(
+      const existingAudience = audienceData?.find(
         (audience: Audience) => audience?.details?.phone === item.phone,
       );
 
@@ -106,7 +106,7 @@ const VoiceCampaignAddDrawer = () => {
             email: item.email,
           },
         });
-        return newAudience.data.id;
+        return newAudience.id;
       }
     } catch (error) {
       console.log('error', error);
@@ -115,7 +115,7 @@ const VoiceCampaignAddDrawer = () => {
 
   const handleCreateCampaign = async (data: z.infer<typeof FormSchema>) => {
     const audienceIds = [];
-    const transportId = transportData?.data?.find(
+    const transportId = transportData?.find(
       (t) => t?.name?.toLowerCase() === 'ivr',
     )?.id;
 

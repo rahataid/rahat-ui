@@ -1,6 +1,7 @@
 import React, { FC, useEffect } from 'react';
 import { initialStepData } from './fund-management-flow';
 import {
+  useFindAllDisbursementPlans,
   useFindAllDisbursements,
   usePagination,
   useProjectBeneficiaries,
@@ -26,6 +27,8 @@ const DisbursementConfirmation: FC<DisbursementConfirmationProps> = ({
 
   // This is a temporary solution for showing the name
   const { pagination, filters } = usePagination();
+
+  const { data: disbursementData } = useFindAllDisbursementPlans(id);
 
   const projectBeneficiaries = useProjectBeneficiaries({
     page: pagination.page,

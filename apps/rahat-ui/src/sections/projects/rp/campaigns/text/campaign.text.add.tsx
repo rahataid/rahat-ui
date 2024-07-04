@@ -15,7 +15,13 @@ import { Plus } from 'lucide-react';
 import { useState } from 'react';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useBeneficiaryPii, useCreateCampaign } from '@rahat-ui/query';
+import {
+  useBeneficiaryPii,
+  useCreateCampaign,
+  useCreateRpAudience,
+  useListRpAudience,
+  useListRpTransport,
+} from '@rahat-ui/query';
 import {
   FormControl,
   FormField,
@@ -31,11 +37,6 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { Audience, CAMPAIGN_TYPES } from '@rahat-ui/types';
 import { TPIIData } from '@rahataid/sdk';
-import {
-  useCreateAudience,
-  useListAudience,
-  useListTransport,
-} from '@rumsan/communication-query';
 import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
 import { FormProvider, useForm } from 'react-hook-form';
@@ -62,16 +63,17 @@ const FormSchema = z.object({
 });
 
 const TextCampaignAddDrawer = () => {
-  const { data: transportData } = useListTransport();
-  const { data: audienceData } = useListAudience();
   const { id } = useParams();
+
+  const { data: transportData } = useListRpTransport(id as UUID);
+  const { data: audienceData } = useListRpAudience(id as UUID);
   const { data: beneficiaryData } = useBeneficiaryPii({
     // @ts-ignore
     projectId: id,
   });
 
   const createCampaign = useCreateCampaign(id as UUID);
-  const createAudience = useCreateAudience();
+  const createAudience = useCreateRpAudience(id as UUID);
 
   const [isEmail, setisEmail] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
@@ -88,7 +90,7 @@ const TextCampaignAddDrawer = () => {
 
   const handleCreateAudience = async (item: TPIIData) => {
     // Check if the audience already exists
-    const existingAudience = audienceData?.data.find(
+    const existingAudience = audienceData?.find(
       (audience: Audience) => audience?.details?.phone === item.phone,
     );
 
@@ -104,11 +106,11 @@ const TextCampaignAddDrawer = () => {
           email: item.email,
         },
       });
-      return newAudience.data.id;
+      return newAudience.id;
     }
   };
   const handleCreateCampaign = async (data: z.infer<typeof FormSchema>) => {
-    const transportId = transportData?.data?.find(
+    const transportId = transportData?.find(
       (t) => t?.name?.toLowerCase() === data?.campaignType?.toLowerCase(),
     )?.id;
     const audienceIds = [];

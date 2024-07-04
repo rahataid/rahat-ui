@@ -102,6 +102,7 @@ export default function GroupDetail({ uuid }: IProps) {
   };
 
   const removeBeneficiaryFromGroup = () => {
+    console.log(deleteSelectedBeneficiariesFromImport);
     Swal.fire({
       title: 'Are you sure?',
       text: `Disconnect beneficiary from ${responseByUUID?.data?.name} `,
@@ -116,10 +117,12 @@ export default function GroupDetail({ uuid }: IProps) {
       },
     }).then(async (result) => {
       if (result.isConfirmed) {
-        await removeCommunityGroup.mutateAsync({
+        const data = {
           uuid: uuid,
           deleteBeneficiaryFlag: false,
-        });
+          beneficiaryUuid: deleteSelectedBeneficiariesFromImport,
+        };
+        await removeCommunityGroup.mutateAsync(data);
         router.push('/group');
       }
     });

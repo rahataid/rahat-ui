@@ -10,7 +10,6 @@ import { useParams, useRouter } from 'next/navigation';
 import TextCampaignAddDrawer from './campaign.text.add';
 import { CAMPAIGN_TYPES } from '@rahat-ui/types';
 
-import { useListCampaign } from '@rumsan/communication-query';
 import { useListRpCampaign } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 
@@ -18,13 +17,7 @@ const TextCampaignDetails = () => {
   const { id } = useParams();
   const router = useRouter();
 
-  const {
-    data: campaignData,
-    isLoading,
-    isError,
-    isSuccess,
-    isFetching,
-  } = useListRpCampaign(id as UUID);
+  const { data: campaignData } = useListRpCampaign(id as UUID);
   const textCampaign = campaignData?.rows?.filter(
     (campaign) =>
       campaign.type.toLowerCase() !== CAMPAIGN_TYPES.IVR.toLowerCase(),

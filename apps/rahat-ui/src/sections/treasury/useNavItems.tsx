@@ -1,19 +1,22 @@
 import {
   ArrowRightLeft,
+  BriefcaseBusiness,
   Coins,
   LayoutDashboard,
   PlusSquare,
 } from 'lucide-react';
 import { NavItem } from './nav-items.types';
+import { useParams } from 'next/navigation';
 
 export const useTreasuryNavItems = () => {
+  const { id } = useParams();
   const menuItems: NavItem[] = [
     {
       title: 'General',
       children: [
         {
-          title: 'Portfolio',
-          path: '/treasury/portfolio',
+          title: 'Projects',
+          path: `/projects/rp/${id}`,
           icon: <LayoutDashboard size={18} strokeWidth={1.5} />,
         },
         {
@@ -24,7 +27,7 @@ export const useTreasuryNavItems = () => {
         {
           title: 'Portfolio',
           path: '/treasury/portfolio',
-          icon: <LayoutDashboard size={18} strokeWidth={1.5} />,
+          icon: <BriefcaseBusiness size={18} strokeWidth={1.5} />,
         },
         {
           title: 'Assets',

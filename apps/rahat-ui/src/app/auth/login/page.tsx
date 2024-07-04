@@ -47,7 +47,6 @@ export default function AuthPage() {
 
   const onVerifyOtp = async (e: React.SyntheticEvent) => {
     e.preventDefault();
-
     await verifyOtp({ otp, challenge, service });
     router.push(paths.dashboard.root);
   };
@@ -135,7 +134,9 @@ export default function AuthPage() {
                     }}
                   />
                 </div>
-                <Button type="submit">Verify</Button>
+                <Button type="submit" disabled={isPending}>
+                  Verify
+                </Button>
               </div>
             </form>
           )}

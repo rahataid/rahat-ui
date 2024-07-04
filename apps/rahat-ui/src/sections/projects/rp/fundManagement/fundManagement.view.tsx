@@ -188,7 +188,7 @@ const FundManagementView = () => {
             <CardHeader>
               <CardTitle>Recent Deposits</CardTitle>
             </CardHeader>
-            <ScrollArea className="min-h-96">
+            <ScrollArea className="h-[400px]">
               {rowData?.map((row) => (
                 <CardContent
                   key={row?.walletAddress}
@@ -242,7 +242,7 @@ const FundManagementView = () => {
                   +chainTokenAllocations.data === +disbursementData?.totalAmount
                 }
               >
-                Sync to chain
+                Sync To Chain
               </Button>
               {/* ) : null} */}
             </div>

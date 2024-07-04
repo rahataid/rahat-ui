@@ -24,7 +24,7 @@ const TreasuryCard = ({ projectAddress, projectName }: projectIProps) => {
   });
 
   return (
-    <div className="w-96 bg-card border border-neutral-200 rounded-lg p-6 flex flex-col space-x-4">
+    <div className="bg-card border border-neutral-200 rounded-lg p-6 flex flex-col space-x-4">
       <div className="flex items-center">
         <div className="h-12 w-12 flex items-center justify-center rounded-md bg-secondary mr-4">
           <Folder className="text-primary" />

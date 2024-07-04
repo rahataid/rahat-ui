@@ -66,41 +66,15 @@ export function TransactionsTable() {
 
   return (
     <div className="w-full p-2 bg-secondary">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between mb-2">
         <Input
           placeholder="Filter transactions..."
           value={(table.getColumn('from')?.getFilterValue() as string) ?? ''}
           onChange={(event) =>
             table.getColumn('from')?.setFilterValue(event.target.value)
           }
-          className="max-w-sm"
+          className="w-full"
         />
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto">
-              Columns <ChevronDown className="ml-2 h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {table
-              .getAllColumns()
-              .filter((column) => column.getCanHide())
-              .map((column) => {
-                return (
-                  <DropdownMenuCheckboxItem
-                    key={column.id}
-                    className="capitalize"
-                    checked={column.getIsVisible()}
-                    onCheckedChange={(value) =>
-                      column.toggleVisibility(!!value)
-                    }
-                  >
-                    {column.id}
-                  </DropdownMenuCheckboxItem>
-                );
-              })}
-          </DropdownMenuContent>
-        </DropdownMenu>
       </div>
       <div className="rounded-md border bg-card">
         <Table>

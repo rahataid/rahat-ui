@@ -73,12 +73,12 @@ export function TransactionsTable() {
           onChange={(event) =>
             table.getColumn('from')?.setFilterValue(event.target.value)
           }
-          className="w-full"
+          className="w-full rounded-sm"
         />
       </div>
       <div className="rounded-md border bg-card">
         <Table>
-          <ScrollArea className="h-[calc(100vh-190px)]">
+          <ScrollArea className="h-[calc(100vh-198px)]">
             <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
@@ -128,7 +128,7 @@ export function TransactionsTable() {
           </ScrollArea>
         </Table>
       </div>
-      <div className="flex items-center justify-end space-x-2 py-4">
+      <div className="flex items-center justify-end space-x-2 py-4 bg-card rounded-sm p-2 mt-2">
         <div className="flex-1 text-sm text-muted-foreground">
           {table.getFilteredSelectedRowModel().rows.length} of{' '}
           {table.getFilteredRowModel().rows.length} row(s) selected.

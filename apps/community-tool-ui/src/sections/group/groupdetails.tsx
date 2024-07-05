@@ -5,7 +5,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/components/tooltip';
-import { Download, MoreVertical, Trash2 } from 'lucide-react';
+import { MoreVertical, Trash2 } from 'lucide-react';
 
 import {
   VisibilityState,
@@ -17,12 +17,12 @@ import { useEffect, useState } from 'react';
 
 import {
   useCommunityGroupListByID,
-  usePurgeGroupedBeneficiary,
   useCommunityGroupRemove,
   useCommunityGroupStore,
   useCommunityGroupedBeneficiariesDownload,
   useCommunitySettingList,
   useExportPinnedListBeneficiary,
+  usePurgeGroupedBeneficiary,
 } from '@rahat-ui/community-query';
 import { usePagination } from '@rahat-ui/query';
 import {
@@ -33,13 +33,13 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { GroupPurge } from '@rahataid/community-tool-sdk';
-import { usePathname, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import Swal from 'sweetalert2';
 import * as XLSX from 'xlsx';
 import CustomPagination from '../../components/customPagination';
+import { SETTINGS_NAME } from '../../constants/settings.const';
 import GroupDetailTable from './group.table';
 import { useCommunityGroupDeailsColumns } from './useGroupColumns';
-import { SETTINGS_NAME } from '../../constants/settings.const';
 
 type IProps = {
   uuid: string;
@@ -56,7 +56,6 @@ export default function GroupDetail({ uuid }: IProps) {
     setPerPage,
     resetSelectedListItems,
   } = usePagination();
-  const pathName = usePathname();
   const { data: responseByUUID } = useCommunityGroupListByID(uuid, pagination);
   const columns = useCommunityGroupDeailsColumns();
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
@@ -102,30 +101,34 @@ export default function GroupDetail({ uuid }: IProps) {
   };
 
   const removeBeneficiaryFromGroup = () => {
-    console.log(deleteSelectedBeneficiariesFromImport);
-    Swal.fire({
-      title: 'Are you sure?',
-      text: `Disconnect beneficiary from ${responseByUUID?.data?.name} `,
-      icon: 'question',
-      showDenyButton: true,
-      confirmButtonText: 'Yes, I am sure!',
-      denyButtonText: 'No, cancel it!',
-      customClass: {
-        actions: 'my-actions',
-        confirmButton: 'order-1',
-        denyButton: 'order-2',
-      },
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        const data = {
-          uuid: uuid,
-          deleteBeneficiaryFlag: false,
-          beneficiaryUuid: deleteSelectedBeneficiariesFromImport,
-        };
-        await removeCommunityGroup.mutateAsync(data);
-        router.push('/group');
-      }
-    });
+    if (deleteSelectedBeneficiariesFromImport.length > 0) {
+      Swal.fire({
+        title: 'Are you sure?',
+        text: `Disconnect beneficiary from ${responseByUUID?.data?.name} `,
+        icon: 'question',
+        showDenyButton: true,
+        confirmButtonText: 'Yes, I am sure!',
+        denyButtonText: 'No, cancel it!',
+        customClass: {
+          actions: 'my-actions',
+          confirmButton: 'order-1',
+          denyButton: 'order-2',
+        },
+        allowOutsideClick: false,
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          const data = {
+            uuid: uuid,
+            deleteBeneficiaryFlag: false,
+            beneficiaryUuid: deleteSelectedBeneficiariesFromImport,
+          };
+          await removeCommunityGroup.mutateAsync(data);
+          router.push('/group');
+        }
+      });
+    } else {
+      Swal.fire('Please select beneficiary to  disconnect', '', 'warning');
+    }
   };
 
   // const handleDelete = () => {
@@ -198,7 +201,6 @@ export default function GroupDetail({ uuid }: IProps) {
     }
   }, [deleteSelectedBeneficiariesFromImport.length, resetSelectedListItems]);
 
-  console.log(responseByUUID?.data?.beneficiariesGroup.length);
   return (
     <>
       <Tabs defaultValue="detail">
@@ -211,31 +213,6 @@ export default function GroupDetail({ uuid }: IProps) {
                 </TooltipTrigger>
                 <TooltipContent className="bg-secondary ">
                   <p className="text-xs font-medium">Group Name</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger
-                  onClick={handleClick}
-                  disabled={
-                    responseByUUID?.data?.beneficiariesGroup.length === 0
-                  }
-                >
-                  <Download
-                    className="cursor-pointer"
-                    size={18}
-                    strokeWidth={1.6}
-                    color={`${
-                      responseByUUID?.data?.beneficiariesGroup.length === 0
-                        ? 'grey'
-                        : '#007bb6'
-                    }`}
-                  />
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Download</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
@@ -257,7 +234,7 @@ export default function GroupDetail({ uuid }: IProps) {
                     color={`${
                       responseByUUID?.data?.beneficiariesGroup.length === 0
                         ? 'grey'
-                        : '#007bb6'
+                        : 'red'
                     }`}
                   />
                 </TooltipTrigger>
@@ -291,6 +268,15 @@ export default function GroupDetail({ uuid }: IProps) {
                   }
                 >
                   Delete Beneficiary
+                </DropdownMenuItem>
+
+                <DropdownMenuItem
+                  onClick={handleClick}
+                  disabled={
+                    responseByUUID?.data?.beneficiariesGroup.length === 0
+                  }
+                >
+                  Download Beneficiary
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

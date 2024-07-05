@@ -1,6 +1,10 @@
 'use client';
 
-import { useCampaignStore } from '@rahat-ui/query';
+import {
+  useCampaignStore,
+  useListRpCommunicationStats,
+  useListRpCommunicationLogs,
+} from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/components/button';
 import {
   DropdownMenu,
@@ -21,11 +25,7 @@ import {
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { CAMPAIGN_TYPES } from '@rahat-ui/types';
-import {
-  useListCampaign,
-  useGetCommunicationLogs,
-  useGetCommunicationStats,
-} from '@rumsan/communication-query';
+
 import {
   ColumnFiltersState,
   SortingState,
@@ -38,6 +38,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import DataCard from 'apps/rahat-ui/src/components/dataCard';
+import { UUID } from 'crypto';
 import {
   Mail,
   MessageCircle,
@@ -70,11 +71,13 @@ export default function TextTable() {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
-  const { data: communicationLogs, isSuccess } = useGetCommunicationLogs();
-  const { data: commsStats } = useGetCommunicationStats();
+  const { data: communicationLogs, isSuccess } = useListRpCommunicationLogs(
+    id as UUID,
+  );
+  const { data: commsStats } = useListRpCommunicationStats(id as UUID);
   const tableData = React.useMemo(() => {
-    if (isSuccess && communicationLogs.data) {
-      return communicationLogs?.data
+    if (isSuccess && communicationLogs) {
+      return communicationLogs
         ?.filter(
           (logs) =>
             logs?.transport?.name.toLowerCase() !==
@@ -118,19 +121,19 @@ export default function TextTable() {
   let deliveredTextMessage = 0;
   let totalBeneficiary = 0;
   let totalTextMessage = 0;
-  commsStats?.data
+  commsStats
     ?.find((stats) => stats.name === 'COMPLETED_CAMPAIGN')
     ?.data.forEach((item) => {
       if (item.type !== 'IVR') {
         deliveredTextMessage += item.count;
       }
     });
-  commsStats?.data
+  commsStats
     ?.find((stats) => stats.name === 'AUDIENCE')
     ?.data.forEach((item) => {
-      totalBeneficiary += item.count;
+      if (item?.type !== 'IVR') totalBeneficiary += item.count;
     });
-  commsStats?.data
+  commsStats
     ?.find((stats) => stats.name === 'TOTAL_CAMPAIGN')
     ?.data.forEach((item) => {
       if (item.type !== 'IVR') {

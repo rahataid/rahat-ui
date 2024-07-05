@@ -73,12 +73,15 @@ const ProjectInfo: FC<ProjectInfoProps> = ({ project }) => {
     (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT],
   );
 
+  console.log({ contractSettings });
+
   const tokenBalance = useReadRahatTokenBalanceOf({
     address: contractSettings?.rahattoken?.address as `0x${string}`,
-    args: [contractSettings?.rpproject?.address as `0x${string}`],
+    args: [contractSettings?.rahatpayrollproject?.address as `0x${string}`],
     query: {
       select(data) {
-        return data ? formatEther(data) : 'N/A';
+        console.log('data', data);
+        return data ? data : 'N/A';
       },
     },
   });
@@ -98,7 +101,7 @@ const ProjectInfo: FC<ProjectInfoProps> = ({ project }) => {
   const reportsCardsData = useMemo(
     () => [
       { name: 'BENEFICIARIES', data: 0 },
-      { name: 'BALANCE', data: tokenBalance.data || 'N/A' },
+      { name: 'BALANCE', data: Number(tokenBalance?.data) || 'N/A' },
       { name: 'DISTRIBUTED', data: 0 },
       { name: 'CAMPAIGNS', data: 0 },
     ],

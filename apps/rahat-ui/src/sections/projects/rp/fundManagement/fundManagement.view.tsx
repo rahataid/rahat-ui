@@ -21,13 +21,25 @@ import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import DataCard from 'apps/rahat-ui/src/components/dataCard';
 import { UUID } from 'crypto';
 import { isEmpty } from 'lodash';
-import { Banknote, SendHorizontal, User, Users } from 'lucide-react';
+import {
+  Banknote,
+  MoreVertical,
+  SendHorizontal,
+  User,
+  Users,
+} from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { DisbursementConditionType } from '../disbursement-management/2-disbursement-condition';
 import { useEffect, useState } from 'react';
 import { truncateEthAddress } from '@rumsan/sdk/utils';
 import { formatEther } from 'viem';
 import { useReadRahatTokenBalanceOf } from 'libs/query/src/lib/rp/contracts/generated-hooks';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
 
 const sampleSeries = [
   {
@@ -108,7 +120,6 @@ const FundManagementView = () => {
       },
     },
   });
-  console.log('tokenBalance', tokenBalance.data);
 
   // console.log('rpTokenDecimals', rpTokenDecimals.data);
   const chainTokenAllocations = useGetTokenAllocations(
@@ -156,6 +167,10 @@ const FundManagementView = () => {
       projectAddress: contractSettings?.rahatpayrollproject?.address,
       tokenAddress: contractSettings?.rahattoken?.address,
     });
+  };
+
+  const handleAddDisburse = () => {
+    route.push(`/projects/rp/${id}/fundManagement/disburse`);
   };
 
   return (
@@ -234,17 +249,35 @@ const FundManagementView = () => {
               <h2 className="text-lg font-semibold">Disbursement Plan</h2>
               {/* {+chainTokenAllocations.data !==
               +disbursementData?.totalAmount ? ( */}
-              <Button
-                variant={'secondary'}
-                onClick={handleAllocationSync}
-                disabled={
-                  syncDisbursementAllocation.isPending ||
-                  +chainTokenAllocations.data === +disbursementData?.totalAmount
-                }
-              >
-                Sync to chain
-              </Button>
-              {/* ) : null} */}
+              <div className="flex gap-6">
+                <Button
+                  variant={'secondary'}
+                  onClick={handleAllocationSync}
+                  disabled={
+                    syncDisbursementAllocation.isPending ||
+                    +chainTokenAllocations.data ===
+                      +disbursementData?.totalAmount
+                  }
+                >
+                  Sync chain
+                </Button>
+                {/* ) : null} */}
+
+                <DropdownMenu>
+                  <DropdownMenuTrigger>
+                    <MoreVertical
+                      className="cursor-pointer"
+                      size={20}
+                      strokeWidth={1.5}
+                    />
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    <DropdownMenuItem onClick={handleAddDisburse}>
+                      Edit
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <DataCard
@@ -285,9 +318,7 @@ const FundManagementView = () => {
                 add data.
               </p>
               <Button
-                onClick={() =>
-                  route.push(`/projects/rp/${id}/fundManagement/disburse`)
-                }
+                onClick={handleAddDisburse}
                 className="mt-4 bg-blue-500 text-white px-4 py-2 rounded"
               >
                 Create Disbursement Plan

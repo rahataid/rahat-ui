@@ -1,4 +1,5 @@
 'use client';
+import { useListRpCampaign } from '@rahat-ui/query';
 import {
   Card,
   CardContent,
@@ -8,17 +9,17 @@ import {
 
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { CAMPAIGN_TYPES } from '@rahat-ui/types';
-import { useListCampaign } from '@rumsan/communication-query';
+import { UUID } from 'crypto';
 import { useParams, useRouter } from 'next/navigation';
 import VoiceCampaignAddDrawer from './campaign.voice.add';
 
 const VoiceCampaignDetails = () => {
   const { campaignId, id } = useParams();
   const router = useRouter();
-  const { data: campaignData } = useListCampaign({
-    projectId: id,
-  });
-  const ivrCampaign = campaignData?.data?.rows?.filter(
+
+  const { data: campaignData } = useListRpCampaign(id as UUID);
+
+  const ivrCampaign = campaignData?.rows?.filter(
     (campaign) =>
       campaign.type.toLowerCase() === CAMPAIGN_TYPES.IVR.toLowerCase(),
   );

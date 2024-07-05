@@ -18,7 +18,7 @@ export default function ExtraInfoCard({ data }: any) {
   }
 
   return (
-    <Card className="shadow-md rounded-sm">
+    <Card className="shadow-md rounded-sm mb-2">
       <CardHeader>
         <div className="flex justify-between">
           <p>Extra Details</p>

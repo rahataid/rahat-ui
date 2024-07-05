@@ -15,14 +15,19 @@ import { Plus } from 'lucide-react';
 import { useState } from 'react';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useBeneficiaryPii, useCreateCampaign } from '@rahat-ui/query';
+import {
+  useBeneficiaryPii,
+  useCreateCampaign,
+  useCreateRpAudience,
+  useListRpAudience,
+  useListRpTransport,
+} from '@rahat-ui/query';
 import {
   FormControl,
   FormField,
   FormItem,
   FormMessage,
 } from '@rahat-ui/shadcn/src/components/ui/form';
-import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import {
   Select,
   SelectContent,
@@ -32,16 +37,11 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { Audience, CAMPAIGN_TYPES } from '@rahat-ui/types';
 import { TPIIData } from '@rahataid/sdk';
-import {
-  useCreateAudience,
-  useListAudience,
-  useListTransport,
-} from '@rumsan/communication-query';
 import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
 import { FormProvider, useForm } from 'react-hook-form';
-import { toast } from 'react-toastify';
 import { z } from 'zod';
+import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 
 const FormSchema = z.object({
   campaignType: z.string({
@@ -63,18 +63,20 @@ const FormSchema = z.object({
 });
 
 const TextCampaignAddDrawer = () => {
-  const { data: transportData } = useListTransport();
-  const { data: audienceData } = useListAudience();
   const { id } = useParams();
+
+  const { data: transportData } = useListRpTransport(id as UUID);
+  const { data: audienceData } = useListRpAudience(id as UUID);
   const { data: beneficiaryData } = useBeneficiaryPii({
     // @ts-ignore
     projectId: id,
   });
 
   const createCampaign = useCreateCampaign(id as UUID);
-  const createAudience = useCreateAudience();
+  const createAudience = useCreateRpAudience(id as UUID);
 
   const [isEmail, setisEmail] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -88,7 +90,7 @@ const TextCampaignAddDrawer = () => {
 
   const handleCreateAudience = async (item: TPIIData) => {
     // Check if the audience already exists
-    const existingAudience = audienceData?.data.find(
+    const existingAudience = audienceData?.find(
       (audience: Audience) => audience?.details?.phone === item.phone,
     );
 
@@ -104,21 +106,14 @@ const TextCampaignAddDrawer = () => {
           email: item.email,
         },
       });
-      return newAudience.data.id;
+      return newAudience.id;
     }
   };
   const handleCreateCampaign = async (data: z.infer<typeof FormSchema>) => {
-    const transportId = transportData?.data?.find(
+    const transportId = transportData?.find(
       (t) => t?.name?.toLowerCase() === data?.campaignType?.toLowerCase(),
     )?.id;
-    console.log(data);
-    // let transportId;
     const audienceIds = [];
-    // await transportData?.data.map((tdata) => {
-    //   if (tdata.name.toLowerCase() === data?.campaignType.toLowerCase()) {
-    //     transportId = tdata.id;
-    //   }
-    // });
 
     // Create audience
     if (beneficiaryData?.data) {
@@ -129,7 +124,6 @@ const TextCampaignAddDrawer = () => {
       // Wait for all audience creations to complete
       const results = await Promise.all(audiencePromises);
       audienceIds.push(...results);
-      console.log(audienceIds);
       type AdditionalData = {
         audio?: any;
         message?: string;
@@ -145,32 +139,27 @@ const TextCampaignAddDrawer = () => {
 
         additionalData.message = data?.message;
       }
-      createCampaign
-        .mutateAsync({
-          audienceIds: audienceIds || [],
-          name: data.campaignName,
-          startTime: null,
-          transportId: Number(transportId),
-          type: data.campaignType,
-          details: additionalData,
-          status: 'ONGOING',
-          projectId: id,
-        })
-        .then((data) => {
-          if (data) {
-            toast.success('Campaign Created Success.');
-          }
-        })
-        .catch((e) => {
-          toast.error(e);
-        });
+      await createCampaign.mutateAsync({
+        audienceIds: audienceIds || [],
+        name: data.campaignName,
+        startTime: null,
+        transportId: Number(transportId),
+        type: data.campaignType,
+        details: additionalData,
+        status: 'ONGOING',
+        projectId: id,
+      });
+      setIsOpen(false);
     }
   };
   return (
     <FormProvider {...form}>
-      <Drawer>
+      <Drawer open={isOpen} onOpenChange={setIsOpen}>
         <DrawerTrigger asChild>
-          <Card className="flex rounded justify-center border-dashed border-2 border-primary shadow bg-card cursor-pointer hover:shadow-md ease-in duration-300">
+          <Card
+            onClick={() => setIsOpen(true)}
+            className="flex rounded justify-center border-dashed border-2 border-primary shadow bg-card cursor-pointer hover:shadow-md ease-in duration-300"
+          >
             <CardContent className="flex items-center justify-center">
               <div className="h-16 w-16 bg-blue-200 rounded-full flex items-center justify-center mt-2">
                 <Plus className="text-primary" size={20} strokeWidth={1.5} />
@@ -224,11 +213,12 @@ const TextCampaignAddDrawer = () => {
                       </FormControl>
                       <SelectContent>
                         {Object.keys(CAMPAIGN_TYPES).map((key) => {
-                          return (
-                            <SelectItem key={key} value={key}>
-                              {key}
-                            </SelectItem>
-                          );
+                          if (key.toLowerCase() !== 'ivr')
+                            return (
+                              <SelectItem key={key} value={key}>
+                                {key}
+                              </SelectItem>
+                            );
                         })}
                       </SelectContent>
                     </Select>

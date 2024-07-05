@@ -23,19 +23,16 @@ export const useTreasuryTokenCreate = () => {
 };
 
 export const useTreasuryTokenList = () => {
-  const { queryClient, rumsanService } = useRSQuery();
+  const { rumsanService } = useRSQuery();
 
   const getTokens = async () => {
     return rumsanService.client.get('/token');
   };
 
-  return useQuery(
-    {
-      queryKey: ['GET_TOKENS'],
-      queryFn: getTokens,
-    },
-    queryClient,
-  );
+  return useQuery({
+    queryKey: ['GET_TOKENS'],
+    queryFn: getTokens,
+  });
 };
 
 export const useTreasuryTokenDetail = (contractAddress: string) => {

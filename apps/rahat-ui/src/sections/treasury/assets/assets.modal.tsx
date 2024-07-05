@@ -1,3 +1,9 @@
+import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
+import {
+  useProjectList,
+  useSendFundToProject,
+  useSettingsStore,
+} from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   Dialog,
@@ -10,28 +16,8 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/dialog';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
-import { Check, ChevronsUpDown, Plus } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { useState } from 'react';
-import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
-import {
-  useProjectList,
-  useSendFundToProject,
-  useSettingsStore,
-} from '@rahat-ui/query';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/popover';
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from '@rahat-ui/shadcn/src/components/ui/command';
-import { cn } from '@rahat-ui/shadcn/src';
 
 export function AssetsModal() {
   const [amount, setAmount] = useState<string>('');
@@ -134,9 +120,9 @@ export function AssetsModal() {
               <DropdownMenu.Content className="bg-white border border-gray-300 rounded shadow-lg">
                 {projects?.data?.data?.map((project) => (
                   <DropdownMenu.Item
-                    key={project.id}
+                    key={project?.id}
                     onSelect={() =>
-                      handleSelectProject(project.contractAddress)
+                      handleSelectProject(project?.contractAddress)
                     }
                     className="p-2 hover:bg-gray-100 cursor-pointer"
                   >

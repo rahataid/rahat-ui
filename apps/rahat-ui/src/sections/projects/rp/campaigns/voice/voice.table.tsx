@@ -76,9 +76,11 @@ export default function VoiceTable() {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
-  const { data: communicationLogs, isSuccess } = useListRpCommunicationLogs(
-    id as UUID,
-  );
+  const {
+    data: communicationLogs,
+    isSuccess,
+    isFetching,
+  } = useListRpCommunicationLogs(id as UUID);
   const { data: commsStats } = useListRpCommunicationStats(id as UUID);
 
   const tableData = React.useMemo(() => {

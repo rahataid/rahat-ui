@@ -20,7 +20,10 @@ import { Wallet } from 'lucide-react';
 import { toast } from 'react-toastify';
 
 export default function EditUserProfile() {
-  const user = useUserStore((state) => state.user);
+  const { user, setUser } = useUserStore((state) => ({
+    user: state.user,
+    setUser: state.setUser,
+  }));
   const userInfo = React.useMemo(() => user.data, [user]);
 
   const router = useRouter();
@@ -52,7 +55,8 @@ export default function EditUserProfile() {
   const handleEditUserProfile = async (data: z.infer<typeof FormSchema>) => {
     const payload = { uuid: userInfo?.uuid, data: data };
     try {
-      await editUser.mutateAsync(payload);
+      const response = await editUser.mutateAsync(payload);
+      setUser(response);
     } catch (e) {
       console.error('Error updating user profile:', e);
       toast.error('Error updating user profile');

@@ -65,19 +65,25 @@ export default function ProjectListView() {
         </Button>
       </div>
       <ScrollArea className="pb-2 h-[calc(100vh-122px)]">
-        <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-2">
-          {filterValue?.map((project) => (
-            <ProjectCard
-              address={project?.uuid}
-              key={project.uuid}
-              title={project.name}
-              image={getImageForProjectType(project.type)}
-              subTitle={project.description as string}
-              badge={project.type}
-              status={project.status}
-            />
-          ))}
-        </div>
+        {filterValue && filterValue?.length > 0 ? (
+          <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-2">
+            {filterValue?.map((project) => (
+              <ProjectCard
+                address={project?.uuid}
+                key={project.uuid}
+                title={project.name}
+                image={getImageForProjectType(project.type)}
+                subTitle={project.description as string}
+                badge={project.type}
+                status={project.status}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="h-[calc(100vh-190px)] grid place-items-center">
+            <p className="text-muted-foreground text-xl">No projects.</p>
+          </div>
+        )}
       </ScrollArea>
       {/* TODO:fix project list meta */}
       {/* <CustomPagination

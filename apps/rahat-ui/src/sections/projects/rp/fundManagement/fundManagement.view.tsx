@@ -116,7 +116,7 @@ const FundManagementView = () => {
     query: {
       select(data) {
         console.log('data', data);
-        return data ? formatEther(data) : 'N/A';
+        return data?.toString() || 'N/A';
       },
     },
   });
@@ -253,11 +253,11 @@ const FundManagementView = () => {
                 <Button
                   variant={'secondary'}
                   onClick={handleAllocationSync}
-                  disabled={
-                    syncDisbursementAllocation.isPending ||
-                    +chainTokenAllocations.data ===
-                      +disbursementData?.totalAmount
-                  }
+                  // disabled={
+                  //   syncDisbursementAllocation.isPending ||
+                  //   +chainTokenAllocations.data ===
+                  //     +disbursementData?.totalAmount
+                  // }
                 >
                   Sync chain
                 </Button>

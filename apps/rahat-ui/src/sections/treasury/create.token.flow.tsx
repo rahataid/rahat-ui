@@ -147,9 +147,10 @@ const CreateTokenFlow = () => {
       symbol: stepData.symbol,
       description: stepData.description,
       decimals: 18,
-      manager: appContracts?.rahataccessmanager?.address as `0x${string}`,
-      rahatTreasuryAddress: appContracts?.rahattreasury
-        ?.address as `0x${string}`,
+      // TODO
+      manager: appContracts?.RAHATACCESSMANAGER?.ADDRESS as `0x${string}`,
+      rahatTreasuryAddress: appContracts?.RAHATTREASURY
+        ?.ADDRESS as `0x${string}`,
       initialSupply: stepData.initialSupply,
     });
     setTransactionHash(result as `0x${string}`);

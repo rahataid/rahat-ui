@@ -156,16 +156,16 @@ export default function EditActivity() {
     }
   };
 
-  const selectedPhaseId = form.watch("phaseId")
-  const selectedPhase = phases.find((d) => d.uuid === selectedPhaseId)
+  const selectedPhaseId = form.watch('phaseId');
+  const selectedPhase = phases.find((d) => d.uuid === selectedPhaseId);
 
   React.useEffect(() => {
     form.setValue('activityDocuments', allFiles);
   }, [allFiles, setAllFiles]);
 
   React.useEffect(() => {
-    if (selectedPhase?.name === "PREPAREDNESS") {
-      form.setValue("isAutomated", false)
+    if (selectedPhase?.name === 'PREPAREDNESS') {
+      form.setValue('isAutomated', false);
     }
   }, [selectedPhase]);
 
@@ -355,33 +355,30 @@ export default function EditActivity() {
                   )}
                 />
 
-
-                {
-                  selectedPhase && selectedPhase?.name !== "PREPAREDNESS" && (
-                    <FormField
-                      control={form.control}
-                      name="isAutomated"
-                      render={({ field }) => {
-                        return (
-                          <FormItem className="col-span-2">
-                            <FormControl>
-                              <Checkbox
-                                checked={field.value}
-                                onCheckedChange={(checked) =>
-                                  field.onChange(checked)
-                                }
-                              />
-                            </FormControl>
-                            <FormLabel className="text-sm font-normal ml-2">
-                              Is Automated Activity?
-                            </FormLabel>
-                            <FormMessage />
-                          </FormItem>
-                        );
-                      }}
-                    />
-                  )
-                }
+                {selectedPhase && selectedPhase?.name !== 'PREPAREDNESS' && (
+                  <FormField
+                    control={form.control}
+                    name="isAutomated"
+                    render={({ field }) => {
+                      return (
+                        <FormItem className="col-span-2">
+                          <FormControl>
+                            <Checkbox
+                              checked={field.value}
+                              onCheckedChange={(checked) =>
+                                field.onChange(checked)
+                              }
+                            />
+                          </FormControl>
+                          <FormLabel className="text-sm font-normal ml-2">
+                            Is Automated Activity?
+                          </FormLabel>
+                          <FormMessage />
+                        </FormItem>
+                      );
+                    }}
+                  />
+                )}
                 {/* <FormField
                   control={form.control}
                   name="hazardTypeId"
@@ -428,7 +425,7 @@ export default function EditActivity() {
                     );
                   }}
                 />
-                
+
                 <FormField
                   control={form.control}
                   name="description"
@@ -464,13 +461,11 @@ export default function EditActivity() {
                             />
                             <p className="text-sm font-medium">
                               Drop files to upload, or{' '}
-                              <span className="text-primary cursor-pointer">
-                                browse
-                              </span>
+                              <span className="text-primary">browse</span>
                             </p>
                           </div>
                           <Input
-                            className="opacity-0"
+                            className="opacity-0 cursor-pointer"
                             type="file"
                             onChange={handleFileChange}
                           />
@@ -484,7 +479,7 @@ export default function EditActivity() {
                         >
                           <p className="text-sm flex gap-2 items-center">
                             {uploadFile.isPending &&
-                              documents?.[documents?.length - 1].name ===
+                            documents?.[documents?.length - 1].name ===
                               file.name ? (
                               <LoaderCircle
                                 size={16}

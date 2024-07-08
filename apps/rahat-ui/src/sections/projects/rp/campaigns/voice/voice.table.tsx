@@ -1,6 +1,10 @@
 'use client';
 
-import { useCampaignStore } from '@rahat-ui/query';
+import {
+  useCampaignStore,
+  useListRpCommunicationLogs,
+  useListRpCommunicationStats,
+} from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/components/button';
 import {
   DropdownMenu,
@@ -38,6 +42,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import DataCard from 'apps/rahat-ui/src/components/dataCard';
+import { UUID } from 'crypto';
 import {
   Mail,
   MessageCircle,
@@ -71,12 +76,16 @@ export default function VoiceTable() {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
-  const { data: communicationLogs, isSuccess } = useGetCommunicationLogs();
-  const { data: commsStats } = useGetCommunicationStats();
+  const {
+    data: communicationLogs,
+    isSuccess,
+    isFetching,
+  } = useListRpCommunicationLogs(id as UUID);
+  const { data: commsStats } = useListRpCommunicationStats(id as UUID);
 
   const tableData = React.useMemo(() => {
-    if (isSuccess && communicationLogs?.data) {
-      return communicationLogs?.data
+    if (isSuccess && communicationLogs) {
+      return communicationLogs
         ?.filter(
           (logs) =>
             logs?.transport?.name.toLowerCase() ===
@@ -121,19 +130,19 @@ export default function VoiceTable() {
   let deliveredVoiceMessage = 0;
   let totalBeneficiary = 0;
   let totalVoiceMessage = 0;
-  commsStats?.data
+  commsStats
     ?.find((stats) => stats.name === 'COMPLETED_CAMPAIGN')
     ?.data.forEach((item) => {
       if (item.type === 'IVR') {
         deliveredVoiceMessage += item.count;
       }
     });
-  commsStats?.data
+  commsStats
     ?.find((stats) => stats.name === 'AUDIENCE')
     ?.data.forEach((item) => {
-      totalBeneficiary += item.count;
+      if (item?.type === 'IVR') totalBeneficiary += item.count;
     });
-  commsStats?.data
+  commsStats
     ?.find((stats) => stats.name === 'TOTAL_CAMPAIGN')
     ?.data.forEach((item) => {
       if (item.type === 'IVR') {

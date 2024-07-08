@@ -53,7 +53,7 @@ export default function AssetsTable() {
       amount: 9000,
       status: 'Paid',
       action: 'view',
-      contractAddress: appContractSettings?.rahattoken?.address,
+      contractAddress: appContractSettings?.RAHATTOKEN?.ADDRESS,
     },
   ];
 
@@ -144,7 +144,6 @@ export default function AssetsTable() {
       },
     },
   ];
-  console.log('newData', newData?.data?.data);
   const table = useReactTable({
     data: newData?.data?.data?.data ?? [],
     columns,

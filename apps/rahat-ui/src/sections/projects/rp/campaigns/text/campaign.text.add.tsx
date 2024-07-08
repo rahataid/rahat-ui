@@ -11,11 +11,17 @@ import {
   DrawerTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/drawer';
 import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
-import { Plus } from 'lucide-react';
+import { CheckIcon, Plus } from 'lucide-react';
 import { useState } from 'react';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useBeneficiaryPii, useCreateCampaign } from '@rahat-ui/query';
+import {
+  useBeneficiaryPii,
+  useCreateCampaign,
+  useCreateRpAudience,
+  useListRpAudience,
+  useListRpTransport,
+} from '@rahat-ui/query';
 import {
   FormControl,
   FormField,
@@ -31,16 +37,25 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { Audience, CAMPAIGN_TYPES } from '@rahat-ui/types';
 import { TPIIData } from '@rahataid/sdk';
-import {
-  useCreateAudience,
-  useListAudience,
-  useListTransport,
-} from '@rumsan/communication-query';
 import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
 import { FormProvider, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/popover';
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '@rahat-ui/shadcn/src/components/ui/command';
+import { useGetApprovedTemplate } from '@rumsan/communication-query';
 
 const FormSchema = z.object({
   campaignType: z.string({
@@ -51,6 +66,7 @@ const FormSchema = z.object({
   }),
 
   message: z.string().optional(),
+  messageSid: z.string().optional(),
   subject: z.string().optional(),
   audiences: z.array(
     z.object({
@@ -62,19 +78,23 @@ const FormSchema = z.object({
 });
 
 const TextCampaignAddDrawer = () => {
-  const { data: transportData } = useListTransport();
-  const { data: audienceData } = useListAudience();
   const { id } = useParams();
+
+  const { data: transportData } = useListRpTransport(id as UUID);
+  const { data: audienceData } = useListRpAudience(id as UUID);
   const { data: beneficiaryData } = useBeneficiaryPii({
     // @ts-ignore
     projectId: id,
   });
+  const { data: messageTemplate } = useGetApprovedTemplate();
 
   const createCampaign = useCreateCampaign(id as UUID);
-  const createAudience = useCreateAudience();
+  const createAudience = useCreateRpAudience(id as UUID);
 
   const [isEmail, setisEmail] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [checkTemplate, setCheckTemplate] = useState(false);
+  const [templatemessage, setTemplatemessage] = useState('');
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -85,10 +105,12 @@ const TextCampaignAddDrawer = () => {
     },
     mode: 'onChange',
   });
+  const isWhatsappMessage =
+    form.getValues().campaignType?.toLowerCase() === 'whatsapp';
 
   const handleCreateAudience = async (item: TPIIData) => {
     // Check if the audience already exists
-    const existingAudience = audienceData?.data.find(
+    const existingAudience = audienceData?.find(
       (audience: Audience) => audience?.details?.phone === item.phone,
     );
 
@@ -104,11 +126,11 @@ const TextCampaignAddDrawer = () => {
           email: item.email,
         },
       });
-      return newAudience.data.id;
+      return newAudience.id;
     }
   };
   const handleCreateCampaign = async (data: z.infer<typeof FormSchema>) => {
-    const transportId = transportData?.data?.find(
+    const transportId = transportData?.find(
       (t) => t?.name?.toLowerCase() === data?.campaignType?.toLowerCase(),
     )?.id;
     const audienceIds = [];
@@ -132,6 +154,7 @@ const TextCampaignAddDrawer = () => {
       const additionalData: AdditionalData = {};
       if (data?.campaignType === CAMPAIGN_TYPES.WHATSAPP) {
         additionalData.body = data?.message;
+        additionalData.messageSid = data?.messageSid;
       } else {
         additionalData.subject = data?.subject;
 
@@ -240,6 +263,100 @@ const TextCampaignAddDrawer = () => {
                       </FormControl>
 
                       <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+              {/* whatsapp template */}
+              {isWhatsappMessage && (
+                <FormField
+                  control={form.control}
+                  name="messageSid"
+                  render={({ field, fieldState }) => (
+                    <FormItem>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
+                              variant="outline"
+                              role="combobox"
+                              aria-expanded={open}
+                              className="justify-between mt-2"
+                            >
+                              {field.value
+                                ? templatemessage.length > 50
+                                  ? templatemessage.slice(0, 25) + '...'
+                                  : templatemessage
+                                : 'Select from template'}
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-100 p-0">
+                          <Command>
+                            <CommandList>
+                              <CommandInput placeholder="Search template..." />
+                              <CommandEmpty>Not found.</CommandEmpty>
+                              <CommandGroup>
+                                {messageTemplate?.data?.map((option) => {
+                                  if (option)
+                                    return (
+                                      <>
+                                        <CommandItem
+                                          className="gap-4"
+                                          key={option?.sid}
+                                          onSelect={() => {
+                                            if (
+                                              (!checkTemplate &&
+                                                !form.getValues().messageSid) ||
+                                              form.getValues().messageSid !==
+                                                option?.sid
+                                            ) {
+                                              form.setValue(
+                                                'messageSid',
+                                                option?.sid,
+                                              );
+                                              const message =
+                                                option?.types['twilio/text']
+                                                  ?.body ||
+                                                option?.types['twilio/media']
+                                                  ?.body;
+                                              form.setValue('message', message);
+                                              setTemplatemessage(message);
+                                            } else {
+                                              form.setValue('messageSid', '');
+                                              form.setValue('message', '');
+                                              setTemplatemessage('');
+                                            }
+                                            setCheckTemplate(
+                                              (preValue) => !preValue,
+                                            );
+                                          }}
+                                        >
+                                          {option?.sid ===
+                                            form.getValues().messageSid && (
+                                            <CheckIcon
+                                              className={' h-4 w-4 opacity-100'}
+                                            />
+                                          )}
+                                          <strong>
+                                            {option?.friendly_name}
+                                          </strong>{' '}
+                                          {option?.types['twilio/text']?.body
+                                            .length > 100
+                                            ? option?.types[
+                                                'twilio/text'
+                                              ]?.body.slice(0, 50) + '...'
+                                            : option?.types['twilio/text']
+                                                ?.body}
+                                        </CommandItem>
+                                      </>
+                                    );
+                                })}
+                              </CommandGroup>
+                            </CommandList>
+                          </Command>
+                        </PopoverContent>
+                      </Popover>
                     </FormItem>
                   )}
                 />

@@ -135,6 +135,7 @@ export default function EditUserProfile() {
                       <div className="relative w-full">
                         <Wallet className="absolute right-2 top-2.5 h-4 w-4 text-muted-foreground" />
                         <Input
+                          disabled={userInfo?.wallet ? true : false}
                           type="text"
                           placeholder="Wallet Address"
                           {...field}

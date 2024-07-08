@@ -1,3 +1,4 @@
+import React from 'react';
 import { useParams } from 'next/navigation';
 import {
   Tabs,
@@ -11,9 +12,11 @@ import AddButton from '../../components/add.btn';
 
 export default function GroupsView() {
   const { id: projectId } = useParams();
+  const [activeTab, setActiveTab] =
+    React.useState<string>('stakeholdersGroups');
   return (
     <div className="p-2 bg-secondary h-[calc(100vh-65px)]">
-      <Tabs defaultValue="stakeholdersGroups">
+      <Tabs defaultValue="stakeholdersGroups" onValueChange={setActiveTab}>
         <div className="flex justify-between items-center">
           <TabsList className="bg-secondary gap-4">
             <TabsTrigger
@@ -30,10 +33,12 @@ export default function GroupsView() {
             </TabsTrigger>
           </TabsList>
           {/* Add Groups Btn  */}
-          <AddButton
-            path={`/projects/aa/${projectId}/groups/add`}
-            name="Stakeholders Groups"
-          />
+          {activeTab === 'stakeholdersGroups' && (
+            <AddButton
+              path={`/projects/aa/${projectId}/groups/add`}
+              name="Stakeholders Groups"
+            />
+          )}
         </div>
         <TabsContent value="stakeholdersGroups">
           <StakeholdersGroupsListView />

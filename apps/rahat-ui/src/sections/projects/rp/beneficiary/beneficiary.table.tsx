@@ -86,7 +86,7 @@ export default function BeneficiaryTable() {
 
   const table = useReactTable({
     manualPagination: true,
-    data: [],
+    data: beneficiaries.data?.data || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),

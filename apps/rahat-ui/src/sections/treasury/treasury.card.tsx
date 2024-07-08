@@ -15,12 +15,12 @@ type projectIProps = {
 const TreasuryCard = ({ projectAddress, projectName }: projectIProps) => {
   const appContracts = useSettingsStore((state) => state.contracts);
   const { data: projectBalance } = useReadRahatTokenBalanceOf({
-    address: appContracts?.rahattoken?.address,
+    address: appContracts?.RAHATTOKEN?.ADDRESS,
     args: [projectAddress],
   });
 
   const { data: decimals } = useReadRahatTokenDecimals({
-    address: appContracts?.rahattoken?.address,
+    address: appContracts?.RAHATTOKEN?.ADDRESS,
   });
 
   return (

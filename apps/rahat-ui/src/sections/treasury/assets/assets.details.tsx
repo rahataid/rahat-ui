@@ -40,8 +40,8 @@ const AssetsDetails = () => {
       await sendFundToProject.mutateAsync({
         amount,
         projectAddress: selectedProject,
-        tokenAddress: appContracts?.rahattoken?.address,
-        treasuryAddress: appContracts?.rahattreasury?.address,
+        tokenAddress: appContracts?.RAHATTOKEN?.ADDRESS,
+        treasuryAddress: appContracts?.RAHATTREASURY?.ADDRESS,
       });
     } else {
       console.log('No project selected');

@@ -64,6 +64,8 @@ export default function EditActivity() {
   useStakeholdersGroups(projectID as UUID, {});
   useBeneficiariesGroups(projectID as UUID, {});
 
+  const activitiesListPath = `/projects/aa/${projectID}/activities`;
+
   const newCommunicationSchema = {
     groupType: '',
     groupId: '',
@@ -554,7 +556,7 @@ export default function EditActivity() {
                     variant="secondary"
                     className="bg-red-100 text-red-600 w-36"
                     onClick={() => {
-                      form.reset();
+                      router.push(activitiesListPath);
                     }}
                   >
                     Cancel

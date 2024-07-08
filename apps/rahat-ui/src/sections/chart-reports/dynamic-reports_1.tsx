@@ -1,10 +1,12 @@
-import { BarChart } from '@rahat-ui/shadcn/src/components/charts';
+import { BarChart, PieChart } from '@rahat-ui/shadcn/src/components/charts';
 import { FC, useEffect, useState } from 'react';
-import DataCard from '../../components/dataCard';
+import DataCard from './datacard';
 import ErrorBoundary from '../../utils/error-boundary';
-import { getValueFromPath } from '../../utils/extractObjetInfo';
+import {
+  getValueFromPath,
+  mapObjectKeyValue,
+} from '../../utils/extractObjetInfo';
 import getIcon from '../../utils/getIcon';
-import PieChartWrapper from './pie-chart-wrapper';
 
 type DataSource = {
   type: 'stats' | 'url' | 'blockchain';
@@ -27,15 +29,6 @@ type DynamicReportsProps = {
   ui: UIComponent[][];
   className?: string;
 };
-
-const statsSourceKeys = [
-  'BENEFICIARY_INTERNETSTATUS',
-  'BENEFICIARY_TOTAL',
-  'BENEFICIARY_GENDER',
-  'BENEFICIARY_PHONESTATUS',
-  'BENEFICIARY_BANKEDSTATUS',
-  'BENEFICIARY_AGE_RANGE',
-];
 
 const DynamicReports: FC<DynamicReportsProps> = ({
   dataSources,
@@ -63,7 +56,6 @@ const DynamicReports: FC<DynamicReportsProps> = ({
                 );
               }
               const res = await response.json();
-
               fetchedData = res?.data;
             } catch (error) {
               console.error(error);
@@ -105,30 +97,38 @@ const DynamicReports: FC<DynamicReportsProps> = ({
     const actualData = dynamicData[dataSrc];
     const source = dataSources?.[dataSrc];
 
-    // console.log(title, {
-    //   type,
-    //   title,
-    //   props,
-    //   dataSrc,
-    //   colSpan,
-    //   source,
-    //   dataMap,
-    //   actualData,
-    // });
+    console.log(title, {
+      type,
+      title,
+      props,
+      dataSrc,
+      colSpan,
+      source,
+      dataMap,
+      actualData,
+    });
     const cardDataValue =
       type === 'dataCard' && dataMap && actualData
         ? getValueFromPath(actualData, dataMap)
         : null;
 
+    const piechartDataValue =
+      type === 'pie' && dataMap
+        ? (mapObjectKeyValue(actualData?.[dataMap], ['label', 'value']) as {
+            label: string;
+            value: number;
+          }[])
+        : [];
+
     switch (type) {
       case 'dataCard':
+        console.log('data', cardDataValue);
         return (
           <ErrorBoundary>
             <DataCard
-              title={title}
               Icon={getIcon(props?.icon) || null}
               number={cardDataValue}
-              {...(props as any)}
+              {...(props as { title: string })}
             />
           </ErrorBoundary>
         );
@@ -136,20 +136,14 @@ const DynamicReports: FC<DynamicReportsProps> = ({
       case 'pie':
         return (
           <ErrorBoundary>
-            {actualData && (
-              <PieChartWrapper
-                component={component}
-                source={source}
-                actualData={actualData}
-                availableStatsKeys={statsSourceKeys}
+            {piechartDataValue && (
+              <PieChart
+                title={title}
+                chart={{
+                  series: piechartDataValue,
+                }}
+                {...props}
               />
-              // <PieChart
-              //   title={title}
-              //   chart={{
-              //     series: piechartDataValue,
-              //   }}
-              //   {...props}
-              // />
             )}
           </ErrorBoundary>
         );

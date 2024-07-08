@@ -17,6 +17,7 @@ import {
 import { renderRowBasedProjectDetailsExtras } from 'apps/rahat-ui/src/utils/render-extras';
 import { Project } from '@rahataid/sdk/project/project.types';
 import Image from 'next/image';
+import reportData from './report_new.json';
 
 type CarouselSectionProps = {
   description: string;
@@ -108,7 +109,8 @@ const ProjectInfo: FC<ProjectInfoProps> = ({ project }) => {
   return (
     <div className=" bg-slate-100">
       {/* DATACARD SECTION */}
-      <DynamicReports data={reportsCardsData} ui={reportsCardsUI} />
+      <DynamicReports dataSources={reportData.dataSources} ui={reportData.ui} />
+      {/* <DynamicReports data={reportsCardsData} ui={reportsCardsUI} /> */}
 
       {/* CAROUSEL AND PROJECT INFO SECTION */}
       <div className="grid grid-cols-3 mt-2 bg-card p-3 rounded-sm">
@@ -119,7 +121,7 @@ const ProjectInfo: FC<ProjectInfoProps> = ({ project }) => {
       </div>
 
       {/* CHARTS SECTION */}
-      <DynamicReports data={reportsChartsData} ui={reportsChartsUI} />
+      {/* <DynamicReports data={reportsChartsData} ui={reportsChartsUI} /> */}
     </div>
   );
 };

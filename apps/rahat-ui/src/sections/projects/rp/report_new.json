@@ -1,0 +1,86 @@
+{
+  "dataSources": {
+    "source1": {
+      "type": "stats",
+      "args": {
+        "name": ["gender,age"]
+      },
+      "data": {
+        "gender": {
+          "M": 20,
+          "F": 50
+        },
+        "age": {
+          "0-10": 10,
+          "10-21": 40
+        }
+      }
+    },
+    "source2": {
+      "type": "url",
+      "args": { "url": "https://api.demo.rahat.io/v1/beneficiaries/stats" },
+      "data": []
+    },
+    "source5": {
+      "type": "url",
+      "args": { "url": "https://api.demo.rahat.io/v1/beneficiaries/stats" },
+      "data": []
+    },
+    "source3": {
+      "type": "blockchain",
+      "args": {
+        "ref": "tokenBalance"
+      },
+      "data": []
+    },
+    "source4": {
+      "type": "blockchain",
+      "args": {
+        "ref": "allowance"
+      },
+      "data": []
+    }
+  },
+  "ui": [
+    [
+      {
+        "title": "Total Male",
+        "type": "dataCard",
+        "props": {},
+        "dataSrc": "source1",
+        "dataMap": "gender.M",
+        "colSpan": 2,
+        "rowSpan": 1
+      },
+      {
+        "title": "Gender",
+        "type": "pie",
+        "props": {},
+        "dataSrc": "source2",
+        "dataMap": "BENEFICIARY_GENDER",
+        "colSpan": 1,
+        "rowSpan": 2
+      },
+      {
+        "title": "Genders",
+        "type": "bar",
+        "props": {},
+        "dataSrc": "source1",
+        "dataMap": "gender",
+        "colSpan": 1,
+        "rowSpan": 1
+      }
+    ],
+    [
+      {
+        "title": "Beneficiary Internet Status",
+        "type": "pie",
+        "props": {},
+        "dataSrc": "source2",
+        "dataMap": "BENEFICIARY_INTERNETSTATUS",
+        "colSpan": 1,
+        "rowSpan": 1
+      }
+    ]
+  ]
+}

@@ -233,15 +233,13 @@ const CampaignForm: FC<CampaignFormProps> = ({
                                               'messageSid',
                                               option?.sid,
                                             );
-                                            form.setValue(
-                                              'message',
+                                            const message =
                                               option?.types['twilio/text']
-                                                ?.body,
-                                            );
-                                            setTemplatemessage(
-                                              option?.types['twilio/text']
-                                                ?.body,
-                                            );
+                                                ?.body ||
+                                              option?.types['twilio/media']
+                                                ?.body;
+                                            form.setValue('message', message);
+                                            setTemplatemessage(message);
                                           } else {
                                             form.setValue('messageSid', '');
                                             form.setValue('message', '');

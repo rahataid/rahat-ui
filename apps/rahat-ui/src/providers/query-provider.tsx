@@ -2,6 +2,7 @@
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ConnectKitProvider } from 'connectkit';
+import Image from 'next/image';
 
 interface QueryProviderProps {
   children: React.ReactNode;
@@ -26,10 +27,12 @@ export const QueryProvider = ({ children }: QueryProviderProps) => {
         theme="soft"
         options={{
           customAvatar: ({ radius }) => (
-            <img
+            <Image
               src={`/svg/rahat-logo.png`}
               alt="avatar"
               style={{ borderRadius: radius }}
+              width={radius * 2}
+              height={radius * 2}
             />
           ),
         }}

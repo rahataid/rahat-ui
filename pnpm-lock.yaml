@@ -78,8 +78,8 @@ dependencies:
     specifier: 0.0.9
     version: 0.0.9
   '@rahataid/community-tool-sdk':
-    specifier: ^0.0.30
-    version: 0.0.30
+    specifier: ^0.0.31
+    version: 0.0.31
   '@rahataid/el-subgraph':
     specifier: 0.0.14
     version: 0.0.14
@@ -3809,14 +3809,6 @@ packages:
       - verdaccio
     dev: true
 
-  /@nrwl/devkit@18.0.0(nx@18.0.0):
-    resolution: {integrity: sha512-fcp6aDbr9Myoen6y0xLIH3evsViXxwNgymWjj9fl/8bMH7M5fIqvWZrt3KHGHfUwmJTlW1XbsnMJB4ZUOtsYvw==}
-    dependencies:
-      '@nx/devkit': 18.0.0(nx@18.0.0)
-    transitivePeerDependencies:
-      - nx
-    dev: true
-
   /@nrwl/devkit@18.0.0(nx@18.0.4):
     resolution: {integrity: sha512-fcp6aDbr9Myoen6y0xLIH3evsViXxwNgymWjj9fl/8bMH7M5fIqvWZrt3KHGHfUwmJTlW1XbsnMJB4ZUOtsYvw==}
     dependencies:
@@ -4058,7 +4050,7 @@ packages:
     peerDependencies:
       nx: '>= 16 <= 18'
     dependencies:
-      '@nrwl/devkit': 18.0.0(nx@18.0.0)
+      '@nrwl/devkit': 18.0.0(nx@18.0.4)
       ejs: 3.1.10
       enquirer: 2.3.6
       ignore: 5.3.1
@@ -6380,8 +6372,8 @@ packages:
       '@swc/helpers': 0.5.11
     dev: false
 
-  /@rahataid/community-tool-sdk@0.0.30:
-    resolution: {integrity: sha512-qPzZ+UuAw5dP780eIBf1K2E/yoK89+FKgf5VnhHxIMkc4MFxqyYR7czG9znAd6klht4RWowHQfpZyK8gOZOHIA==}
+  /@rahataid/community-tool-sdk@0.0.31:
+    resolution: {integrity: sha512-ki8V69ALp5dPE2hTV77DLUF6cQDOnDZ2BdQj0/QwEn5F2FQbdJYnEAB5DWUCwlthNY0Vwxd+E8fF0ao4Wwy4hg==}
     dependencies:
       tslib: 2.6.3
     dev: false

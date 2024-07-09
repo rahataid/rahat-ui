@@ -1,6 +1,6 @@
 'use client';
 
-import { useProjectAction } from '@rahat-ui/query';
+import { PROJECT_SETTINGS_KEYS, useProjectAction, useProjectSettingsStore } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Card } from '@rahat-ui/shadcn/src/components/ui/card';
 import {
@@ -35,10 +35,10 @@ interface IParams {
 export default function VendorsDetailPage() {
   const searchParams = useSearchParams();
 
-  const assignVendor = useBoolean();
+  const assignVendor = useBoolean(false);
 
   const handleAssignVendor = () => {
-    assignVendor.onTrue();
+   assignVendor.onTrue();
   };
 
   const handleAssignVendorClose = () => {
@@ -57,11 +57,16 @@ export default function VendorsDetailPage() {
   const [vendorWalletAddressCopied, setVendorWalletAddressCopied] =
     useState<boolean>(false);
 
+
   const updateVendor = useAddVendors();
   const projectClient = useProjectAction();
 
+  const contractSettings = useProjectSettingsStore(
+    (state) =>state.settings?.[projectId]?.[PROJECT_SETTINGS_KEYS.CONTRACT] || null
+  )
+
   const { data: vendorStatus, refetch } = useReadElProjectCheckVendorStatus({
-    address: contractAddress,
+    address: contractSettings?.elproject?.address,
     args: [walletAddress],
   });
 
@@ -70,7 +75,7 @@ export default function VendorsDetailPage() {
   });
 
   const { data: vendorVoucher } = useReadElProjectGetVendorVoucherDetail({
-    address: contractAddress,
+    address: contractSettings?.elproject?.address,
     args: [walletAddress],
   });
 
@@ -82,10 +87,9 @@ export default function VendorsDetailPage() {
   };
 
   const assignVendorToProjet = async () => {
-    setisTransacting(true);
     const txnHash = await updateVendor
       .writeContractAsync({
-        address: contractAddress,
+        address: contractSettings?.elproject?.address,
         args: [walletAddress, true],
       })
       .finally(() => {
@@ -94,29 +98,6 @@ export default function VendorsDetailPage() {
       });
     setTransactionHash(txnHash);
   };
-
-  useEffect(() => {
-    try {
-      async function fetchData() {
-        const res = await projectClient.mutateAsync({
-          uuid: projectId,
-          data: {
-            action: MS_ACTIONS.SETTINGS.GET,
-            payload: {
-              name: PROJECT_SETTINGS.CONTRACTS,
-            },
-          },
-        });
-        if (res.data) {
-          const { value } = res.data;
-          setContractAddress(value?.elproject?.address || '');
-        }
-      }
-      fetchData();
-    } catch (error) {
-      console.log(error);
-    }
-  }, []);
 
   return (
     <div className="bg-secondary">
@@ -128,7 +109,7 @@ export default function VendorsDetailPage() {
             phone,
             vendorWallet,
             vendorWalletAddressCopied,
-            vendorStatus,
+            vendorStatus: vendorStatus || false,
             clickToCopy,
           }}
         />
@@ -187,7 +168,7 @@ export default function VendorsDetailPage() {
           </TabsContent>
         </Tabs>
         <AssignVoucherConfirm
-          name={name}
+          name={name || ''}
           open={assignVendor.value}
           handleClose={handleAssignVendorClose}
           handleSubmit={assignVendorToProjet}

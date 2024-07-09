@@ -24,7 +24,7 @@ import { useAddVendors } from '../../../../hooks/el/contracts/el-contracts';
 import VendorsInfo from '../../../vendors/vendors.info';
 import RedemptionTable from '../../../vendors/vendors.redemption.table';
 import ReferralTable from '../../../vendors/vendors.referral.table';
-import VendorTxnList from '../../../vendors/vendors.txn.list';
+import VendorTxnList from './vendors.txn.list';
 import AssignVoucherConfirm from './vendor.assign.confirm';
 
 interface IParams {
@@ -38,12 +38,14 @@ export default function VendorsDetailPage() {
   const assignVendor = useBoolean(false);
 
   const handleAssignVendor = () => {
-   assignVendor.onTrue();
+     assignVendor.onTrue()
   };
 
   const handleAssignVendorClose = () => {
     assignVendor.onFalse();
   };
+
+ 
 
   const phone = searchParams.get('phone');
   const name = searchParams.get('name');
@@ -51,15 +53,12 @@ export default function VendorsDetailPage() {
   const vendorId = searchParams.get('vendorId');
 
   const { uuid: walletAddress, id: projectId } = useParams<IParams>();
-  const [contractAddress, setContractAddress] = useState<any>('');
-  const [isTransacting, setisTransacting] = useState<boolean>(false);
   const [transactionHash, setTransactionHash] = useState<`0x${string}`>();
   const [vendorWalletAddressCopied, setVendorWalletAddressCopied] =
     useState<boolean>(false);
 
 
   const updateVendor = useAddVendors();
-  const projectClient = useProjectAction();
 
   const contractSettings = useProjectSettingsStore(
     (state) =>state.settings?.[projectId]?.[PROJECT_SETTINGS_KEYS.CONTRACT] || null
@@ -70,9 +69,7 @@ export default function VendorsDetailPage() {
     args: [walletAddress],
   });
 
-  const result = useWaitForTransactionReceipt({
-    hash: transactionHash,
-  });
+
 
   const { data: vendorVoucher } = useReadElProjectGetVendorVoucherDetail({
     address: contractSettings?.elproject?.address,
@@ -117,19 +114,16 @@ export default function VendorsDetailPage() {
           className="mt-2"
           title="Free Vouchers Redeemed"
           number={vendorVoucher?.freeVoucherRedeemed?.toString() || '0'}
-          subTitle="Free Vouchers"
         />
         <DataCard
           className="mt-2"
           title="Discount Voucher Redeemed"
           number={vendorVoucher?.referredVoucherRedeemed?.toString() || '0'}
-          subTitle="Discount Vouchers"
         />
         <DataCard
           className="mt-2"
           title="No. of Referrals"
           number={vendorVoucher?.beneficiaryReferred?.toString() || '0'}
-          subTitle="Beneficiaries"
         />
       </div>
       <div className="mt-2 mx-2 w-full">
@@ -160,7 +154,6 @@ export default function VendorsDetailPage() {
               name={name}
               projectId={projectId}
               vendorId={vendorId}
-              walletAddress={walletAddress}
             />
           </TabsContent>
           <TabsContent value="redeem">

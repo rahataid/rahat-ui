@@ -48,7 +48,7 @@ export default function ProjectListView() {
         open={AddProjectModal.value}
         handleClose={closeAddProjectModal}
       />
-      <div className="flex items-center mb-2">
+      <div className="flex items-center space-x-2 mb-2">
         <Input
           placeholder="Filter projects..."
           className="rounded mt-2"
@@ -57,8 +57,7 @@ export default function ProjectListView() {
         />
         <Button
           onClick={() => openAddProjectModal()}
-          variant={'outline'}
-          className="mt-2 flex items-center justify-center gap-1 bg-white hover:bg-primary hover:text-white "
+          className="mt-2 flex items-center justify-center gap-1"
         >
           <CirclePlus size={16} strokeWidth={1.5} />
           Add Project

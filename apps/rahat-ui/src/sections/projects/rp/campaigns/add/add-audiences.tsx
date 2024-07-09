@@ -60,8 +60,6 @@ const AddAudience: FC<AddAudienceProps> = ({
   const [columnVisibility, setColumnVisibility] = React.useState({});
   const [rowSelection, setRowSelection] = React.useState({});
 
-  const projectsList = useProjectList({});
-
   const {
     pagination,
     filters,

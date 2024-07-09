@@ -1,10 +1,6 @@
 'use client';
 
-import {
-  useBeneficiaryPii,
-  usePagination,
-  useProjectList,
-} from '@rahat-ui/query';
+import { useBeneficiaryPii, usePagination } from '@rahat-ui/query';
 import {
   FormField,
   FormItem,
@@ -29,7 +25,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
-import { useCreateAudience } from '@rumsan/communication-query';
+import { useCreateCvaAudience } from '@rahat-ui/query';
 
 import { flexRender } from '@tanstack/react-table';
 import React, { FC } from 'react';
@@ -38,6 +34,7 @@ import { z } from 'zod';
 import { useAudienceColumns } from './use-audience-columns';
 import { useAudienceTable } from './use-audience-table';
 import { UUID } from 'crypto';
+import { useParams } from 'next/navigation';
 
 type AddAudienceProps = {
   form: UseFormReturn<z.infer<any>>;
@@ -60,8 +57,7 @@ const AddAudience: FC<AddAudienceProps> = ({
   const [columnVisibility, setColumnVisibility] = React.useState({});
   const [rowSelection, setRowSelection] = React.useState({});
 
-  const projectsList = useProjectList({});
-
+  const { id } = useParams() as { id: UUID };
   const {
     pagination,
     filters,
@@ -70,8 +66,10 @@ const AddAudience: FC<AddAudienceProps> = ({
     setPrevPage,
     setPerPage,
   } = usePagination();
-  const { data: beneficiaryData } = useBeneficiaryPii({});
-  const createAudience = useCreateAudience();
+  const { data: beneficiaryData } = useBeneficiaryPii({
+    projectId: id,
+  });
+  const createAudience = useCreateCvaAudience(id);
 
   const columns = useAudienceColumns(
     beneficiaryData,
@@ -82,6 +80,8 @@ const AddAudience: FC<AddAudienceProps> = ({
   );
 
   const tableData = React.useMemo(() => {
+    console.log(beneficiaryData);
+
     if (beneficiaryData)
       return (
         beneficiaryData &&
@@ -118,7 +118,7 @@ const AddAudience: FC<AddAudienceProps> = ({
           }}
           className="max-w-sm"
         />
-        
+
         <div
           className={`border rounded px-3 py-2 h-10 text-sm ${
             selectedRows.length

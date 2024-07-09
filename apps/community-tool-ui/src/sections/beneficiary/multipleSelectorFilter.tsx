@@ -33,7 +33,6 @@ export default function Filter() {
     inputOptions[row.uuid] = row.name;
   });
 
-  console.log(inputOptions);
   const totalSelected = selectedBeneficiaries && selectedBeneficiaries.length;
 
   const handleAssignBeneficiariesGroup = async () => {

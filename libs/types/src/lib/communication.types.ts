@@ -39,6 +39,7 @@ export enum CAMPAIGN_TYPES {
   SMS = 'SMS',
   WHATSAPP = 'WHATSAPP',
   IVR = 'IVR',
+  PHONE = 'PHONE',
 }
 
 export enum CAMPAIGN_STATUS {

@@ -1,3 +1,4 @@
+import React from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
@@ -79,10 +80,14 @@ export default function AddStakeholders() {
       } else router.push(`/projects/aa/${id}/stakeholders`);
     } catch (e) {
       console.error('Create Stakeholder Error::', e);
-    } finally {
-      form.reset();
     }
   };
+
+  React.useEffect(() => {
+    if (createStakeholder.isSuccess) {
+      form.reset();
+    }
+  }, [createStakeholder.isSuccess]);
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleCreateStakeholders)}>

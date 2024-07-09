@@ -170,70 +170,63 @@ export default function AddFundManagementView() {
                 );
               }}
             />
-
-            <div>
-              <FormField
-                control={form.control}
-                name="beneficiaryGroup"
-                render={({ field }) => {
-                  return (
-                    <FormItem>
-                      <FormLabel>Beneficiary Group</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                        value={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select beneficiary group" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {beneficiariesGroups?.map((g: any) => {
-                            return (
-                              <>
-                                <SelectItem value={g?.uuid}>
-                                  {g?.name}
-                                </SelectItem>
-                              </>
-                            );
-                          })}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  );
-                }}
-              />
-
-              <FormField
-                control={form.control}
-                name="numberOfTokens"
-                render={({ field }) => {
-                  return (
-                    <FormItem>
-                      <FormLabel>No. of Tokens</FormLabel>
+            <FormField
+              control={form.control}
+              name="beneficiaryGroup"
+              render={({ field }) => {
+                return (
+                  <FormItem>
+                    <FormLabel>Beneficiary Group</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                      value={field.value}
+                    >
                       <FormControl>
-                        <Input
-                          type="number"
-                          inputMode="decimal"
-                          placeholder="Enter number of tokens for each members"
-                          {...field}
-                        />
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select beneficiary group" />
+                        </SelectTrigger>
                       </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  );
-                }}
-              />
-
-              <small>
-                {form.getValues('numberOfTokens')} tokens each will be reserved
-                for members of the group. Total reserved tokens will be{' '}
-                {form.getValues('totalTokensReserved')}
-              </small>
-            </div>
+                      <SelectContent>
+                        {beneficiariesGroups?.map((g: any) => {
+                          return (
+                            <>
+                              <SelectItem value={g?.uuid}>{g?.name}</SelectItem>
+                            </>
+                          );
+                        })}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+            <FormField
+              control={form.control}
+              name="numberOfTokens"
+              render={({ field }) => {
+                return (
+                  <FormItem>
+                    <FormLabel>No. of Tokens</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        inputMode="decimal"
+                        placeholder="Enter number of tokens for each members"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+            <small className="mt-0.5">
+              {form.getValues('numberOfTokens')} tokens each will be reserved
+              for members of the group. Total reserved tokens will be{' '}
+              {form.getValues('totalTokensReserved')}
+            </small>
 
             <div className="hidden">
               <FormField

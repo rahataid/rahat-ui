@@ -23,6 +23,8 @@ export default function AddStakeholders() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
+  const stakeholdersListPath = `/projects/aa/${id}/stakeholders`;
+
   const addedFromGroup = searchParams.get('fromGroup');
   const createStakeholder = useCreateStakeholders();
 
@@ -77,7 +79,7 @@ export default function AddStakeholders() {
       });
       if (addedFromGroup == 'true') {
         router.push(`/projects/aa/${id}/groups/add`);
-      } else router.push(`/projects/aa/${id}/stakeholders`);
+      } else router.push(stakeholdersListPath);
     } catch (e) {
       console.error('Create Stakeholder Error::', e);
     }
@@ -210,7 +212,15 @@ export default function AddStakeholders() {
                 }}
               />
             </div>
-            <div className="flex justify-end">
+            <div className="flex justify-end space-x-2">
+              <Button
+                type="button"
+                variant="secondary"
+                className="bg-red-100 text-red-600 px-8 hover:bg-red-200"
+                onClick={() => router.push(stakeholdersListPath)}
+              >
+                Cancel
+              </Button>
               <Button>Create Stakeholders</Button>
             </div>
           </div>

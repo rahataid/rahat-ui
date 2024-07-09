@@ -23,14 +23,14 @@ const FundManagementDetails = () => {
           <ArrowLeft size={20} strokeWidth={1.25} />
           <h1 className="text-xl font-medium text-gray-800">{data?.title}</h1>
         </div>
-        <div className="flex items-center gap-1">
+        {/* <div className="flex items-center gap-1">
           <div className="flex items-center justify-center rounded-full h-10 w-10 bg-card border border-primary cursor-pointer">
             <Pencil className="text-primary" size={20} strokeWidth={1.5} />
           </div>
           <div className="flex items-center justify-center rounded-full h-10 w-10 bg-card border border-red-500 cursor-pointer">
             <Trash2 className="text-red-500" size={20} strokeWidth={1.5} />
           </div>
-        </div>
+        </div> */}
       </div>
       {/* DATACARD */}
       <div className="grid grid-cols-4 gap-3">

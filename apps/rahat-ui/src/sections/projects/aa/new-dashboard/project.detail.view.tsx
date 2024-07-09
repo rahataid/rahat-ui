@@ -40,7 +40,7 @@ export default function ProjectDetails() {
       <div className="flex gap-4 items-center justify-end p-2 pb-0 pr-4">
         <EditButton path="/" />
         <DeleteButton name="project" handleContinueClick={onDelete} />
-        <Button type="button" variant="outline" className="shadow-md">
+        <Button type="button" variant="outline" className="shadow-md" disabled>
           <CloudDownload size={18} className="mr-1" />
           Download Report
         </Button>

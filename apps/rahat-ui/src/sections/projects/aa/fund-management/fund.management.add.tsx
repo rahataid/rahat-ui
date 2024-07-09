@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   PROJECT_SETTINGS_KEYS,
@@ -31,16 +32,16 @@ import Loader from 'apps/community-tool-ui/src/components/Loader';
 import { useReadAaProjectTokenBudget } from 'apps/rahat-ui/src/hooks/aa/contracts/aaProject';
 import { UUID } from 'crypto';
 import { useParams, useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 export default function AddFundManagementView() {
   const router = useRouter();
-  const { id: projectId } = useParams();
+  const params = useParams();
+  const projectId = params.id as UUID;
 
   const { data: reservationStats, isLoading: isLoadingReservationStats } =
-    useReservationStats(projectId as UUID);
+    useReservationStats(projectId);
 
   const contractSettings = useProjectSettingsStore(
     (s) => s.settings?.[projectId]?.[PROJECT_SETTINGS_KEYS.CONTRACT] || null,
@@ -79,7 +80,7 @@ export default function AddFundManagementView() {
   const watchBeneficiaryGroup = form.watch('beneficiaryGroup');
   const watchTotalTokensReserved = form.watch('totalTokensReserved');
 
-  useEffect(() => {
+  React.useEffect(() => {
     const numberOfTokens = Number(watchTokens);
     const selectedGroup = beneficiariesGroups?.find(
       (g: any) => g?.uuid === watchBeneficiaryGroup,
@@ -94,7 +95,7 @@ export default function AddFundManagementView() {
     }
   }, [watchTokens, watchBeneficiaryGroup]);
 
-  useBeneficiariesGroups(projectId as UUID, {
+  useBeneficiariesGroups(projectId, {
     page: 1,
     perPage: 100,
   });
@@ -116,15 +117,20 @@ export default function AddFundManagementView() {
     };
     try {
       await reserveTokenForGroups.mutateAsync({
-        projectUUID: projectId as UUID,
+        projectUUID: projectId,
         reserveTokenPayload,
       });
     } catch (e) {
       console.error('Creating reserve token::', e);
-    } finally {
-      form.reset();
     }
   };
+
+  React.useEffect(() => {
+    if (reserveTokenForGroups.isSuccess) {
+      form.reset();
+      router.push(`/projects/aa/${projectId}/fund-management`);
+    }
+  }, [reserveTokenForGroups.isSuccess]);
 
   return (
     <div className="p-4 h-[calc(100vh-65px)] bg-secondary">
@@ -201,7 +207,6 @@ export default function AddFundManagementView() {
                 }}
               />
 
-
               <FormField
                 control={form.control}
                 name="numberOfTokens"
@@ -230,7 +235,7 @@ export default function AddFundManagementView() {
               </small>
             </div>
 
-            <div className='hidden'>
+            <div className="hidden">
               <FormField
                 control={form.control}
                 name="totalTokensReserved"

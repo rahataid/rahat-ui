@@ -34,7 +34,7 @@ export default function AddStakeholders() {
   const FormSchema = z.object({
     name: z
       .string()
-      .regex(/^[A-Za-z\s]*$/, 'Only only alphabetic characters are allowed.')
+      .regex(/^[A-Za-z\s]*$/, 'Only alphabetic characters are allowed.')
       .min(2, { message: 'Please enter name.' }),
     phone: z.string().optional().refine(isValidPhoneNumberRefinement, {
       message: 'Invalid phone number',
@@ -42,16 +42,16 @@ export default function AddStakeholders() {
     email: z.string().optional(),
     designation: z
       .string()
-      .regex(/^[A-Za-z\s]*$/, 'Only only alphabetic characters are allowed.')
+      .regex(/^[A-Za-z\s]*$/, 'Only alphabetic characters are allowed.')
       .min(2, { message: 'Please enter designation.' }),
     organization: z
       .string()
-      .regex(/^[A-Za-z\s]*$/, 'Only only alphabetic characters are allowed.')
+      .regex(/^[A-Za-z\s]*$/, 'Only alphabetic characters are allowed.')
       .min(2, { message: 'Please enter organization.' }),
     district: z.string().min(2, { message: 'Please enter district.' }),
     municipality: z
       .string()
-      .regex(/^[A-Za-z\s]*$/, 'Only only alphabetic characters are allowed.')
+      .regex(/^[A-Za-z\s]*$/, 'Only alphabetic characters are allowed.')
 
       .min(2, { message: 'Please enter municipality' }),
   });

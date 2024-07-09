@@ -26,6 +26,7 @@ export const QueryProvider = ({ children }: QueryProviderProps) => {
       <ConnectKitProvider
         theme="soft"
         options={{
+          hideBalance:true,
           customAvatar: ({ radius }) => (
             <Image
               src={`/svg/rahat-logo.png`}

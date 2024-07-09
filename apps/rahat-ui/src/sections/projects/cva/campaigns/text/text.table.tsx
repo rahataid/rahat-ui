@@ -28,14 +28,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/components/dropdown-menu';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  SelectGroup,
-} from '@rahat-ui/shadcn/components/select';
+
 import { Input } from '@rahat-ui/shadcn/components/input';
 import {
   Table,
@@ -46,13 +39,16 @@ import {
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
 import { paths } from 'apps/rahat-ui/src/routes/paths';
-import { useCampaignStore, useListCampaignQuery } from '@rahat-ui/query';
+import {
+  useCampaignStore,
+  useListCampaignQuery,
+  useListCvaCampaign,
+} from '@rahat-ui/query';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { CAMPAIGN_TYPES, ICampaignItemApiResponse } from '@rahat-ui/types';
-import { useListCampaign } from '@rumsan/communication-query';
-import { useSecondPanel } from 'apps/rahat-ui/src/providers/second-panel-provider';
 import TextDetailSplitView from 'apps/rahat-ui/src/sections/communications/text/text.detail.split.view';
 import useTextTableColumn from './useTextTableColumn';
+import { UUID } from 'crypto';
 
 export type Text = {
   id: number;
@@ -76,18 +72,17 @@ export default function TextTable() {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
-  const { data, isLoading, isError, isSuccess, isFetching } = useListCampaign({
-    projectId: id,
-  });
+  const { data, isLoading, isError, isSuccess, isFetching } =
+    useListCvaCampaign(id as UUID);
 
   const tableData = React.useMemo(() => {
-    const result = Array.isArray(data?.response.data.rows)
-      ? data?.response?.data?.rows?.filter(
+    const result = Array.isArray(data?.rows)
+      ? data?.rows?.filter(
           (campaign: any) => campaign.type !== CAMPAIGN_TYPES.PHONE,
         )
       : [];
 
-    campaignStore.setTotalTextCampaign(data?.response?.meta?.total || 0);
+    campaignStore.setTotalTextCampaign(data?.meta?.total || 0);
     return result;
   }, [isSuccess, data]);
 

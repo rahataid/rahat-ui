@@ -10,18 +10,16 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import AddAudience from './add-audiences';
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 import { Audience, CAMPAIGN_TYPES } from '@rahat-ui/types';
-import { toast } from 'react-toastify';
+import { useGetAudio } from '@rumsan/communication-query';
 import {
-  useListTransport,
-  useListAudience,
-  useGetAudio,
-  useCreateCampaign,
-  useGetApprovedTemplate,
-} from '@rumsan/communication-query';
+  useListCvaTransport,
+  useListCvaAudience,
+  useCreateCvaCampaign,
+} from '@rahat-ui/query';
 
 import { useParams, useRouter } from 'next/navigation';
-import { paths } from 'apps/rahat-ui/src/routes/paths';
 import { debounce } from 'lodash';
+import { UUID } from 'crypto';
 
 const FormSchema = z.object({
   campaignName: z.string().min(2, {
@@ -54,12 +52,13 @@ export type SelectedRowType = {
 };
 
 const AddCampaignView = () => {
-  const { data: transportData } = useListTransport();
-  const { data: audienceData } = useListAudience();
-  const { id } = useParams();
+  const { id } = useParams() as { id: UUID };
+
+  const { data: transportData } = useListCvaTransport(id);
+  const { data: audienceData } = useListCvaAudience(id);
 
   const { data: audioData } = useGetAudio();
-  const createCampaign = useCreateCampaign();
+  const createCampaign = useCreateCvaCampaign(id);
   const [selectedRows, setSelectedRows] = React.useState<SelectedRowType[]>([]);
   const [globalFilter, setGlobalFilter] = React.useState('');
   const [isSubmitting, setIsSubmitting] = React.useState(false);
@@ -76,15 +75,12 @@ const AddCampaignView = () => {
     mode: 'onChange',
   });
 
-  const debouncedHandleSubmit = debounce((data) => {
-    let transportId;
-    transportData?.data.map((tdata) => {
-      if (tdata.name.toLowerCase() === data?.campaignType.toLowerCase()) {
-        transportId = tdata.id;
-      }
-    });
+  const debouncedHandleSubmit = debounce(async (data) => {
+    const transportId = transportData?.find(
+      (t) => t?.name?.toLowerCase() === data?.campaignType?.toLowerCase(),
+    )?.id;
     const uniquePhoneNumbers = new Set();
-    const uniqueAudienceData: any = audienceData?.data.filter((data) => {
+    const uniqueAudienceData: any = audienceData?.filter((data) => {
       if (!uniquePhoneNumbers.has(data.details?.phone)) {
         uniquePhoneNumbers.add(data.details?.phone);
         return true;
@@ -121,30 +117,19 @@ const AddCampaignView = () => {
     } else {
       additionalData.message = data?.message;
     }
-    createCampaign
-      .mutateAsync({
-        audienceIds: audiences || [],
-        name: data.campaignName,
-        startTime: null,
-        transportId: Number(transportId),
-        type: data.campaignType,
-        details: additionalData,
-        status: 'ONGOING',
-        projectId: id,
-      })
-      .then((data) => {
-        if (data) {
-          setIsSubmitting(false);
+    await createCampaign.mutateAsync({
+      audienceIds: audiences || [],
+      name: data.campaignName,
+      startTime: null,
+      transportId: Number(transportId),
+      type: data.campaignType,
+      details: additionalData,
+      status: 'ONGOING',
+      projectId: id,
+    });
 
-          toast.success('Campaign Created Success.');
-          router.push(`text`);
-        }
-      })
-      .catch((e) => {
-        setIsSubmitting(false);
-
-        toast.error(e);
-      });
+    setIsSubmitting(false);
+    router.push(`text`);
   }, 1000);
 
   const handleCreateCampaign = async (

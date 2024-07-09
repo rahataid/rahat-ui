@@ -217,6 +217,11 @@ export default function GroupDetail({ uuid }: IProps) {
   };
 
   const handleSelectChange = (item) => {
+    if (item === 'Select All') {
+      const rdata = listFieldDef?.data?.map((item: any) => item.name);
+      setLabels(rdata);
+      return;
+    }
     const merged = [...labels, item];
     setLabels(merged);
   };
@@ -225,20 +230,18 @@ export default function GroupDetail({ uuid }: IProps) {
     listFieldDef?.data?.filter((item: any) => !labels.includes(item.name)) ||
     [];
 
-  const sortedSelectables = labels.includes('Select All')
-    ? []
-    : [
-        { uuid: 'select-all', name: 'Select All' }, // Add "Select All" at the beginning
-        ...selectables.sort((a, b) => {
-          const isANumber = /^\d/.test(a.name);
-          const isBNumber = /^\d/.test(b.name);
+  const sortedSelectables = [
+    { uuid: 'select-all', name: 'Select All' },
+    ...selectables.sort((a, b) => {
+      const isANumber = /^\d/.test(a.name);
+      const isBNumber = /^\d/.test(b.name);
 
-          if (isANumber && !isBNumber) return -1;
-          if (!isANumber && isBNumber) return 1;
+      if (isANumber && !isBNumber) return -1;
+      if (!isANumber && isBNumber) return 1;
 
-          return a.name.localeCompare(b.name);
-        }),
-      ];
+      return a.name.localeCompare(b.name);
+    }),
+  ];
   const handleDownload = async () => {
     const response = await download.mutateAsync({
       uuid: uuid,
@@ -257,9 +260,8 @@ export default function GroupDetail({ uuid }: IProps) {
       return filteredItem;
     });
 
-    const rdata = labels.includes('Select All') ? rawData : filteredData;
     const wb = XLSX.utils.book_new();
-    const ws = XLSX.utils.json_to_sheet(rdata);
+    const ws = XLSX.utils.json_to_sheet(filteredData);
 
     XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
 
@@ -371,7 +373,7 @@ export default function GroupDetail({ uuid }: IProps) {
                         <Tooltip>
                           <TooltipTrigger>
                             <Label className="text-lg font-medium">
-                              Select the fields to download if needed?
+                              Select the fields to download
                             </Label>
                           </TooltipTrigger>
                         </Tooltip>
@@ -386,7 +388,7 @@ export default function GroupDetail({ uuid }: IProps) {
                             />
                           </TooltipTrigger>
                           <TooltipContent>
-                            <p>Close Modal</p>
+                            <p>Close</p>
                           </TooltipContent>
                         </Tooltip>
                       </TooltipProvider>
@@ -394,7 +396,9 @@ export default function GroupDetail({ uuid }: IProps) {
                   </AlertDialogTitle>
                   <AlertDialogDescription>
                     <ScrollArea
-                      className="h-20 w-[95%] border m-2 pt-1 pb-1 text-sm rounded-md shadow-lg cursor-pointer bg-white"
+                      className={`${
+                        labels.length < 10 ? 'h-32' : 'h-52'
+                      } w-[95%] border m-2 pt-1 pb-1 text-sm rounded-md shadow-lg cursor-pointer bg-white`}
                       hidden={labels.length === 0}
                     >
                       {labels.map((item) => {

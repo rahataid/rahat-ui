@@ -1,15 +1,26 @@
 'use client';
 
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { ColumnDef } from '@tanstack/react-table';
-
+import { Edit } from 'lucide-react';
+import { useSecondPanel } from '../../providers/second-panel-provider';
+import EditSettings from './edit.settings';
 interface SettingData {
   name: string;
   dataType: string;
   isPrivate: boolean;
   isReadOnly: boolean;
   requiredFields: [];
+  value: any;
 }
-export const usesettingTableColumns = () => {
+export const useSettingTableColumns = () => {
+  const { closeSecondPanel, setSecondPanelComponent } = useSecondPanel();
+
   const columns: ColumnDef<SettingData>[] = [
     {
       header: 'Name',
@@ -41,6 +52,40 @@ export const usesettingTableColumns = () => {
               <li key={index}>{field}</li>
             ))}
           </div>
+        );
+      },
+    },
+
+    {
+      id: 'actions',
+      enableHiding: false,
+      header: 'Actions',
+
+      cell: ({ row }) => {
+        return (
+          <TooltipProvider delayDuration={100}>
+            <Tooltip>
+              <TooltipTrigger>
+                <Edit
+                  size={20}
+                  strokeWidth={1.5}
+                  className="cursor-pointer hover:text-primary"
+                  onClick={() =>
+                    setSecondPanelComponent(
+                      <>
+                        <EditSettings
+                          closeSecondPanel={closeSecondPanel}
+                          settingData={row?.original && row?.original}
+                        />
+                      </>,
+                    )
+                  }
+                />
+              </TooltipTrigger>
+
+              <TooltipContent>Edit</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         );
       },
     },

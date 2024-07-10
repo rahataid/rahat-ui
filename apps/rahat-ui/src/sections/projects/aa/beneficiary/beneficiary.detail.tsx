@@ -428,20 +428,9 @@ export default function BeneficiaryDetail({
                           </div>
                           <div className="flex justify-between items-center">
                             <p>Wallet Address</p>
-                            <TooltipProvider delayDuration={100}>
-                              <Tooltip>
-                                <TooltipTrigger>
-                                  <p className="text-sm">
-                                    {truncateEthAddress(walletAddress)}
-                                  </p>
-                                </TooltipTrigger>
-                                <TooltipContent className="bg-secondary ">
-                                  <p className="text-xs font-medium">
-                                    click to copy
-                                  </p>
-                                </TooltipContent>
-                              </Tooltip>
-                            </TooltipProvider>
+                            <p className="text-sm">
+                              {truncateEthAddress(walletAddress)}
+                            </p>
                           </div>
                         </div>
                       </CardContent>

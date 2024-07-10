@@ -152,7 +152,7 @@ export default function RedemptionTable({ projectId, vendorId }) {
           },
         },
       });
-      const filteredData = res?.data.map((item) => {
+      const filteredData = res?.data?.map((item) => {
         return {
           voucherNumber: item?.voucherNumber,
           voucherType: item?.voucherType,

@@ -18,10 +18,10 @@ export default function DashboardView() {
   ];
 
   const [dataForMap, setDataForMap] = useState<any>();
- 
+
   const getVendors = useProjectAction();
-  
-  const projectsList = useProjectList({});
+
+  const projectsList = useProjectList();
 
   const project = projectsList?.data?.data.find((item) => item.type === 'el');
   const elUuid = project ? project.uuid : null;
@@ -38,8 +38,9 @@ export default function DashboardView() {
   };
 
   useEffect(() => {
+    if (!elUuid) return;
     fetchVendors();
-  }, []);
+  }, [elUuid]);
 
   return (
     <div className="bg-secondary">

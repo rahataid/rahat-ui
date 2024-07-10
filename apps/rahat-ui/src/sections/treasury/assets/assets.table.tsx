@@ -144,7 +144,6 @@ export default function AssetsTable() {
       },
     },
   ];
-  console.log('newData', newData?.data?.data);
   const table = useReactTable({
     data: newData?.data?.data?.data ?? [],
     columns,

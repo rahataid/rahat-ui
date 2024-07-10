@@ -125,12 +125,10 @@ export function AssetsModal() {
               <DropdownMenu.Content className="bg-white border border-gray-300 rounded shadow-lg">
                 {projects?.data?.data?.map((project) => (
                   <DropdownMenu.Item
-                    key={project.id}
+                    key={project?.id}
                     onSelect={() =>
-                      // handleSelectProject(project.contractAddress)
-                      handleSelectProject(
-                        '0xA802D5b2988EF81465F157609c8BC5BEE779f623',
-                      )
+
+                      handleSelectProject(project?.contractAddress)
                     }
                     className="p-2 hover:bg-gray-100 cursor-pointer"
                   >

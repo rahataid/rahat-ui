@@ -10,7 +10,10 @@ interface NavItem {
 export function useNavData() {
   const navSettings = useSettingsStore((state) => state.navSettings);
   const data: NavItem[] = useMemo(
-    () => [
+    () => 
+        navSettings?.data?.length > 0 ?
+        [...navSettings?.data] :
+      [
       {
         title: 'Dashboard',
         path: paths.dashboard.root,
@@ -41,12 +44,13 @@ export function useNavData() {
         //   },
         // ],
       },
-      ...(navSettings?.data || []),
     ],
     [navSettings?.data],
   );
   const subData: NavItem[] = useMemo(
-    () => [
+    () => 
+      navSettings?.subData?.length > 0 ?
+      [...navSettings?.subData] :[
       {
         title: 'Vendors',
         path: paths.dashboard.vendor,
@@ -60,7 +64,6 @@ export function useNavData() {
         title: 'Community Beneficiaries',
         path: paths.dashboard.communitybeneficiary,
       },
-      ...(navSettings?.subData || []),
     ],
     [navSettings?.subData],
   );

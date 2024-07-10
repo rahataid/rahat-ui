@@ -158,32 +158,6 @@ export default function GroupDetail({ uuid }: IProps) {
     }
   };
 
-  // const handleDelete = () => {
-  //   Swal.fire({
-  //     title: 'Are you sure?',
-  //     text: 'Beneficiary will be removed from group and archived!',
-  //     icon: 'question',
-  //     showDenyButton: true,
-  //     confirmButtonText: 'Yes, I am sure!',
-  //     denyButtonText: 'No, cancel it!',
-  //     customClass: {
-  //       actions: 'my-actions',
-  //       confirmButton: 'order-1',
-  //       denyButton: 'order-2',
-  //     },
-  //   }).then(async (result) => {
-  //     if (result.isConfirmed) {
-  //       await removeCommunityGroup.mutateAsync({
-  //         uuid: uuid,
-  //         deleteBeneficiaryFlag: true,
-  //       });
-  //       router.push('/group');
-
-  //       // closeSecondPanel();
-  //     }
-  //   });
-  // };
-
   const handlePurge = async () => {
     const data = {
       groupUuid: uuid,
@@ -373,7 +347,7 @@ export default function GroupDetail({ uuid }: IProps) {
                         <Tooltip>
                           <TooltipTrigger>
                             <Label className="text-lg font-medium">
-                              Select the fields to download
+                              Select fields to download
                             </Label>
                           </TooltipTrigger>
                         </Tooltip>
@@ -431,7 +405,7 @@ export default function GroupDetail({ uuid }: IProps) {
 
                     <Command className="h-52">
                       <CommandInput
-                        placeholder={'Filter field...'}
+                        placeholder={'Search field...'}
                         autoFocus={true}
                       />
                       <CommandList className="no-scrollbar">
@@ -453,6 +427,7 @@ export default function GroupDetail({ uuid }: IProps) {
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                   <Button
+                    variant="outline"
                     onClick={() => setLabels([])}
                     disabled={labels.length === 0}
                   >
@@ -462,7 +437,7 @@ export default function GroupDetail({ uuid }: IProps) {
                     onClick={handleDownload}
                     disabled={labels.length === 0}
                   >
-                    Continue
+                    Download
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>

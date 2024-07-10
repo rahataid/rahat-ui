@@ -387,7 +387,7 @@ export default function BeneficiaryDetail({
                         <div className="flex flex-col gap-4">
                           <div className="flex justify-between items-center">
                             <p>Token Reserved</p>
-                            <p className="text-sm font-light">
+                            <p className="text-sm">
                               {beneficiaryDetails?.benTokens}
                             </p>
 
@@ -407,9 +407,11 @@ export default function BeneficiaryDetail({
                           </div>
                           <div className="flex justify-between items-center">
                             <p>Assigned Status</p>
-                            {!result?.data?.benTokensAssigneds?.length
-                              ? 'None'
-                              : 'Complete'}
+                            <p className="text-sm">
+                              {!result?.data?.benTokensAssigneds?.length
+                                ? 'None'
+                                : 'Complete'}
+                            </p>
                             {/* <p className="text-sm font-light">
                               {beneficiaryVoucherDetails?.freeVoucherAddress !==
                                 undefined &&
@@ -429,7 +431,7 @@ export default function BeneficiaryDetail({
                             <TooltipProvider delayDuration={100}>
                               <Tooltip>
                                 <TooltipTrigger>
-                                  <p className="text-sm font-medium">
+                                  <p className="text-sm">
                                     {truncateEthAddress(walletAddress)}
                                   </p>
                                 </TooltipTrigger>

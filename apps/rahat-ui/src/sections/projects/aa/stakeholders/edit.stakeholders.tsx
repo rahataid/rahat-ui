@@ -65,8 +65,8 @@ export default function EditStakeholders({ stakeholdersDetail }: IProps) {
     resolver: zodResolver(FormSchema),
     defaultValues: {
       name: stakeholdersDetail?.name,
-      phone: stakeholdersDetail?.phone,
-      email: stakeholdersDetail?.email,
+      phone: stakeholdersDetail?.phone || '',
+      email: stakeholdersDetail?.email || '',
       designation: stakeholdersDetail?.designation,
       organization: stakeholdersDetail?.organization,
       district: stakeholdersDetail?.district,

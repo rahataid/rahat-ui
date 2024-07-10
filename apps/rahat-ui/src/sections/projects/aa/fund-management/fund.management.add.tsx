@@ -40,6 +40,8 @@ export default function AddFundManagementView() {
   const params = useParams();
   const projectId = params.id as UUID;
 
+  const fundManagementListPath = `/projects/aa/${projectId}/fund-management`;
+
   const { data: reservationStats, isLoading: isLoadingReservationStats } =
     useReservationStats(projectId);
 
@@ -120,17 +122,11 @@ export default function AddFundManagementView() {
         projectUUID: projectId,
         reserveTokenPayload,
       });
+      router.push(fundManagementListPath);
     } catch (e) {
       console.error('Creating reserve token::', e);
     }
   };
-
-  React.useEffect(() => {
-    if (reserveTokenForGroups.isSuccess) {
-      form.reset();
-      router.push(`/projects/aa/${projectId}/fund-management`);
-    }
-  }, [reserveTokenForGroups.isSuccess]);
 
   return (
     <div className="p-4 h-[calc(100vh-65px)] bg-secondary">
@@ -253,8 +249,9 @@ export default function AddFundManagementView() {
             </div>
             <div className="flex justify-end gap-2 my-4">
               <Button
-                onClick={() => router.back()}
-                className="text-red-600 bg-red-100 hover:bg-card hover:border border-red-600"
+                type="button"
+                onClick={() => router.push(fundManagementListPath)}
+                className="text-red-600 bg-red-100 hover:bg-card hover:bg-red-200"
               >
                 Cancel
               </Button>

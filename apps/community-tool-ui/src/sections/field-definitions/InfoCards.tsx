@@ -55,7 +55,7 @@ export default function InfoCards({ data }: { data: FieldDefinition }) {
             </div>
 
             <div className="flex flex-col gap-4">
-              {data?.variations && data.variations.length > 0 && (
+              {data && data.variations && data.variations.length > 0 && (
                 <div>
                   <p>
                     <ul className="list-disc pl-4">

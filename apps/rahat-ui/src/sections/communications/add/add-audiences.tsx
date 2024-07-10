@@ -39,6 +39,7 @@ import { z } from 'zod';
 import { benType } from '../../projects/el/beneficiary/beneficiary.table';
 import { useAudienceColumns } from './use-audience-columns';
 import { useAudienceTable } from './use-audience-table';
+import { DatePicker } from 'apps/rahat-ui/src/components/datePicker';
 
 type AddAudienceProps = {
   form: UseFormReturn<z.infer<any>>;
@@ -74,16 +75,27 @@ const AddAudience: FC<AddAudienceProps> = ({
   });
   const createAudience = useCreateAudience();
 
-  const filterBenByProjectId = React.useCallback(
-    (id: string) => {
-      if (id !== 'ALL') {
-        setFilters({ ...filters, projectId: id });
-        return;
-      }
-      setFilters({ ...filters, projectId: undefined });
-    },
-    [filters, setFilters],
-  );
+  const filterBenByProjectId = (id: any) => {
+    if (id !== 'ALL') {
+      setFilters({ ...filters, projectId: id });
+      return;
+    }
+    setFilters({ ...filters, projectId: undefined });
+  };
+
+  const handleDateChange = (date: Date, type: string) => {
+    if (type === 'start') {
+      setFilters({
+        ...filters,
+        startDate: date,
+      });
+    } else {
+      setFilters({
+        ...filters,
+        endDate: date,
+      });
+    }
+  };
 
   const filterBenByBenTypes = React.useCallback(
     (type: string) => {
@@ -97,6 +109,8 @@ const AddAudience: FC<AddAudienceProps> = ({
     },
     [filters, setFilters],
   );
+
+  console.log(filters);
 
   const columns = useAudienceColumns(
     beneficiaryData,
@@ -135,6 +149,10 @@ const AddAudience: FC<AddAudienceProps> = ({
   if (selectedRows.length > 0) {
     setAudienceRequiredError(false);
   }
+
+  const project = projectsList?.data?.data.find((item) => item.type === 'el');
+  const elUuid = project ? project.uuid : null;
+
   return (
     <>
       {audienceRequiredError && (
@@ -150,6 +168,20 @@ const AddAudience: FC<AddAudienceProps> = ({
           }}
           className="max-w-sm"
         />
+        {filters.projectId && (
+          <>
+            <DatePicker
+              placeholder="Pick Start Date"
+              handleDateChange={handleDateChange}
+              type="start"
+            />
+            <DatePicker
+              placeholder="Pick End Date"
+              handleDateChange={handleDateChange}
+              type="end"
+            />
+          </>
+        )}
         <Select onValueChange={filterBenByProjectId}>
           <SelectTrigger className="max-w-32">
             <SelectValue placeholder="Projects" />
@@ -160,13 +192,13 @@ const AddAudience: FC<AddAudienceProps> = ({
               projectsList.data.data.map((project) => {
                 return (
                   <SelectItem key={project.uuid} value={project.uuid || ''}>
-                    {project.name}
+                    {project?.name}
                   </SelectItem>
                 );
               })}
           </SelectContent>
         </Select>
-        {filters?.projectId && (
+        {filters?.projectId === elUuid && (
           <Select onValueChange={filterBenByBenTypes}>
             <SelectTrigger className="max-w-32">
               <SelectValue placeholder="Types" />

@@ -29,7 +29,7 @@ const CampaignModal = ({
             <DialogHeader>
               <DialogTitle>Confirm Project</DialogTitle>
             </DialogHeader>
-            <DialogContent>Are you sure ?</DialogContent>
+            {/* <DialogContent>Are you sure ?</DialogContent> */}
             <DialogFooter className="sm:justify-end">
               <DialogClose asChild>
                 <Button onClick={handleClose} type="button" variant="ghost">

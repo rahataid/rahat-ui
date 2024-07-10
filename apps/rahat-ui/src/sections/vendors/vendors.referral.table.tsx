@@ -113,7 +113,7 @@ export default function ReferralTable({ name, projectId, vendorId }) {
           },
         },
       });
-      const filteredData = res?.data?.result.map((item) => {
+      const filteredData = res?.data?.result?.map((item) => {
         return {
           referrerBen: item?.piiData?.name,
           referredBy: name,

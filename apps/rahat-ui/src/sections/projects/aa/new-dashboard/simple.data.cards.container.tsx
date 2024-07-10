@@ -57,6 +57,10 @@ export default function SimpleDataCardsContainer({
     (data: any) => data.name === 'BENEFICIARY_TOTAL',
   )[0]?.data?.count;
 
+  const totalHouseholdReceivingCashSupport = allStats?.filter(
+    (data: any) => data.name === 'BENEFICIARY_HOUSEHOLDCASHSUPPORT',
+  )[0]?.data?.householdCashSupport;
+
   const data = [
     {
       title: 'Total Beneficiaries',
@@ -66,7 +70,7 @@ export default function SimpleDataCardsContainer({
     {
       title: 'Household Receiving Cash Support',
       Icon: Home,
-      number: '244',
+      number: totalHouseholdReceivingCashSupport ?? 0,
     },
     {
       title: 'Budget',
@@ -76,17 +80,17 @@ export default function SimpleDataCardsContainer({
     {
       title: 'Balance',
       Icon: Coins,
-      number: '2,94,334',
+      number: 'N/A',
     },
     {
       title: 'Fund Distributed',
       Icon: HandCoins,
-      number: '2,94,334',
+      number: 'N/A',
     },
     {
       title: 'Number of Communication Project',
       Icon: SmartphoneNfc,
-      number: '244',
+      number: 'N/A',
     },
   ];
   return (

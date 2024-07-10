@@ -25,6 +25,7 @@ import { useNavData } from '../app/config-nav';
 import ConnectWallet from '../components/wallet/connect-wallet';
 import { paths } from '../routes/paths';
 import ThemeSwitch from './themeToggleSwitch';
+import { toast } from 'react-toastify';
 
 export function Nav() {
   const currentPath = usePathname();
@@ -38,6 +39,7 @@ export function Nav() {
   const handleLogout = () => {
     clearUser();
     clearAuth();
+    toast.success('Logged out successfully');
     window.location.reload();
   };
   const { data: currentUser } = useUserCurrentUser();

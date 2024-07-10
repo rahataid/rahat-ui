@@ -34,6 +34,15 @@ type Iprops = {
   handleTabChange: (tab: 'add' | 'import') => void;
 };
 
+const DEFAULT_VALUES = {
+  name: '',
+  fieldType: FieldType.TEXT,
+  isActive: true,
+  isTargeting: false,
+  variations: [],
+  field: [],
+};
+
 export default function AddFieldDefinitions({ handleTabChange }: Iprops) {
   const addFieldDefinitions = useFieldDefinitionsCreate();
   const [showLabelValue, setShowLabelValue] = useState(false);
@@ -44,6 +53,7 @@ export default function AddFieldDefinitions({ handleTabChange }: Iprops) {
   const {
     control,
     formState: { errors },
+    reset,
   } = useForm();
 
   const FormSchema = z.object({
@@ -60,8 +70,8 @@ export default function AddFieldDefinitions({ handleTabChange }: Iprops) {
     field: z.array(
       z.object({
         value: z.object({
-          label: z.string().min(1, { message: 'Label is required' }),
-          value: z.string().min(1, { message: 'Value is required' }),
+          label: z.string().min(1, { message: 'Label is required' }).optional(),
+          value: z.string().min(1, { message: 'Value is required' }).optional(),
         }),
       }),
     ),
@@ -69,14 +79,7 @@ export default function AddFieldDefinitions({ handleTabChange }: Iprops) {
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
-    defaultValues: {
-      name: '',
-      fieldType: FieldType.TEXT,
-      isActive: true,
-      isTargeting: false,
-      variations: [],
-      field: [],
-    },
+    defaultValues: DEFAULT_VALUES,
   });
 
   const { fields, append, remove } = useFieldArray({
@@ -110,8 +113,8 @@ export default function AddFieldDefinitions({ handleTabChange }: Iprops) {
       fieldPopulate: { data: fieldPopulatePayload } || [],
     };
 
-    console.log('Payload=>', payload);
-    return await addFieldDefinitions.mutateAsync(payload);
+    await addFieldDefinitions.mutateAsync(payload);
+    form.reset();
   };
 
   const addLabelAndValue = () => {
@@ -138,15 +141,13 @@ export default function AddFieldDefinitions({ handleTabChange }: Iprops) {
 
   useEffect(() => {
     if (showLabelValue) {
-      if (fields.length === 0) {
-        append({
-          value: { label: '', value: '' },
-        });
-      }
+      append({
+        value: { label: '', value: '' },
+      });
     } else {
       form.setValue('field', []);
     }
-  }, [showLabelValue, fields, append, form]);
+  }, [showLabelValue, append, form]);
 
   return (
     <Form {...form}>
@@ -220,11 +221,11 @@ export default function AddFieldDefinitions({ handleTabChange }: Iprops) {
                     <FormItem>
                       <Select
                         onValueChange={field.onChange}
-                        defaultValue={FieldType.TEXT}
+                        value={field.value}
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Field Type" />
+                            <SelectValue placeholder={FieldType.TEXT} />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -254,21 +255,23 @@ export default function AddFieldDefinitions({ handleTabChange }: Iprops) {
                 }}
               />
 
-              <FormField
-                control={form.control}
-                name="isTargeting"
-                render={({ field }) => (
-                  <div className="flex flex-row items-center gap-4 m-1">
-                    <Label> Select as targeting criteria</Label>
-                    <Switch
-                      {...field}
-                      value={field.value ? 'false' : 'true'}
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </div>
-                )}
-              />
+              {showLabelValue && (
+                <FormField
+                  control={form.control}
+                  name="isTargeting"
+                  render={({ field }) => (
+                    <div className="flex flex-row items-center gap-4 m-1">
+                      <Label> Select as targeting criteria</Label>
+                      <Switch
+                        {...field}
+                        value={field.value ? 'false' : 'true'}
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </div>
+                  )}
+                />
+              )}
             </div>
             {showLabelValue && (
               <>
@@ -279,10 +282,10 @@ export default function AddFieldDefinitions({ handleTabChange }: Iprops) {
                 <div className="grid grid-cols-5 gap-5 mb-4">
                   {fields.map((fieldName, index) => {
                     return (
-                      <React.Fragment key={index}>
+                      <React.Fragment key={fieldName.id}>
                         <FormField
                           control={form.control}
-                          name={`field.${index}.value.label` as const}
+                          name={`field.${index}.value.label`}
                           render={({ field }) => (
                             <div className="col-span-2">
                               <Input
@@ -296,7 +299,7 @@ export default function AddFieldDefinitions({ handleTabChange }: Iprops) {
 
                         <FormField
                           control={form.control}
-                          name={`field.${index}.value.value` as const}
+                          name={`field.${index}.value.value`}
                           render={({ field }) => (
                             <div className="col-span-2">
                               <Input
@@ -318,7 +321,7 @@ export default function AddFieldDefinitions({ handleTabChange }: Iprops) {
                             type="button"
                             onClick={() => remove(index)}
                             className="p-1 text-xs  w-10"
-                            disabled={fields.length === 1}
+                            // disabled={fields.length === 0}
                           >
                             <Minus size={18} strokeWidth={1.5} />
                           </Button>

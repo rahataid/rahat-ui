@@ -22,9 +22,12 @@ const PopulationInsights = ({ data }: Props) => {
 
   const filteredCoords =
     benefMapStats && benefMapStats.data
-      ? benefMapStats.data.filter((b: any) => {
-          return b.latitude && b.longitude;
-        })
+      ? benefMapStats.data
+          .filter((b: any) => b.latitude && b.longitude)
+          .map((d: any) => ({
+            ...d,
+            type: 'Beneficiary',
+          }))
       : [];
 
   const combinedCoords = [
@@ -32,6 +35,15 @@ const PopulationInsights = ({ data }: Props) => {
     ...BANK_COORDS,
     ...EVACUATION_COORDS,
   ];
+
+  const sanitizedCoordinates = combinedCoords.filter((item) => {
+    return (
+      item.latitude >= -90 &&
+      item.latitude <= 90 &&
+      item.longitude >= -180 &&
+      item.longitude <= 180
+    );
+  });
 
   return (
     <div>
@@ -44,7 +56,7 @@ const PopulationInsights = ({ data }: Props) => {
           width={'100%'}
         />
 
-        <CommunityMap coordinates={combinedCoords} />
+        <CommunityMap coordinates={sanitizedCoordinates} />
       </div>
 
       <div className="grid  sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-2 mt-4">

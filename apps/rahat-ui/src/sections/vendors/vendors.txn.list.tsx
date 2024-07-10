@@ -26,6 +26,7 @@ import * as React from 'react';
 import { useVendorTransaction } from '../../hooks/el/subgraph/querycall';
 import { truncateEthAddress } from '@rumsan/sdk/utils';
 import TableLoader from '../../components/table.loader';
+import { useRPVendorTransactions } from '@rahat-ui/query';
 
 // export type Payment = {
 //   id: string;
@@ -44,16 +45,12 @@ const columns: ColumnDef<any>[] = [
     ),
   },
   {
-    accessorKey: 'transactionHash',
+    accessorKey: 'txHash',
     header: 'Txn Hash',
     cell: ({ row }) => (
-      <a
-        href={`https://sepolia.arbiscan.io/tx/${row.getValue(
-          'transactionHash',
-        )}`}
-      >
+      <a href={`https://sepolia.basescan.org/tx/${row.getValue('txHash')}`}>
         {' '}
-        {truncateEthAddress(row.getValue('transactionHash'))}
+        {truncateEthAddress(row.getValue('txHash'))}
       </a>
       // <div>{`https://sepolia.arbiscan.io/tx/${truncateEthAddress(row.getValue('transactionHash'))}`}</div>
     ),
@@ -76,7 +73,9 @@ interface VendorTxnListProps {
 }
 
 export default function VendorTxnList({ walletAddress }: VendorTxnListProps) {
-  const { data: txns, isFetching } = useVendorTransaction(walletAddress);
+  const { data: txns, isFetching } = useRPVendorTransactions(
+    walletAddress,
+  );
 
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -88,7 +87,7 @@ export default function VendorTxnList({ walletAddress }: VendorTxnListProps) {
   const [rowSelection, setRowSelection] = React.useState({});
 
   const table = useReactTable({
-    data: txns?.newData || [],
+    data: txns || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,

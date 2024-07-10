@@ -145,7 +145,6 @@ const DynamicReports: FC<DynamicReportProps> = ({ data, ui, className }) => {
                       key={colIndex}
                       title={col.title}
                       Icon={getIcon(col.icon as string) || null}
-                      className="min-h-20 min-w-32 rounded-sm"
                       number={
                         typeof actualData === 'string' ||
                         typeof actualData === 'number'

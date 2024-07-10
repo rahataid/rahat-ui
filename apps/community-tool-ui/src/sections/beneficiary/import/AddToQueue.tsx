@@ -76,7 +76,7 @@ export default function AddToQueue({
             className="w-40 bg-primary hover:ring-2 ring-primary py-2 px-4"
           >
             <CloudDownloadIcon size={18} strokeWidth={2} />
-            &nbsp; Import Now
+            &nbsp; Import Valid
           </Button>
         </div>
       </div>

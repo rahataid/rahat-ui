@@ -25,6 +25,7 @@ import {
   PhoneStatus,
 } from '@rahataid/community-tool-sdk/enums/';
 import { z } from 'zod';
+import { isAddress } from 'viem';
 
 import {
   useActiveFieldDefList,
@@ -50,9 +51,11 @@ import { useEffect } from 'react';
 import { FIELD_DEF_FETCH_LIMIT } from '../../constants/app.const';
 import useFormStore from '../../formBuilder/form.store';
 import { formatDate, selectNonEmptyFields } from '../../utils';
+import { useSecondPanel } from '../../providers/second-panel-provider';
 
 export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
   const { extras }: any = useFormStore();
+  const { closeSecondPanel } = useSecondPanel();
 
   const updateBeneficiaryClient = useCommunityBeneficiaryUpdate();
   // const { data } = useCommunityBeneficiaryListByID({
@@ -71,14 +74,44 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
     lastName: z
       .string()
       .min(2, { message: 'LastName must be at least 2 character' }),
-    walletAddress: z.string().optional(),
+    walletAddress: z
+      .string()
+      .optional()
+      .refine(
+        (value) => {
+          if (!value) return true;
+          if (!isAddress(value)) return false;
+          return true;
+        },
+        {
+          message: 'Invalid wallet address',
+        },
+      ),
     gender: z.string().toUpperCase().optional(),
     email: z.string().optional(),
     birthDate: z.date().optional(),
-    phone: z.string(),
+    phone: z
+      .string()
+      .min(10, { message: 'Phone number must be 10 digits' })
+      .refine((value) => !/\s/.test(value), {
+        message: 'Phone must not contain whitespace',
+      })
+      .refine((value) => /^[0-9]*$/.test(value), {
+        message: 'Phone must only numbers',
+      }),
     location: z.string().optional(),
-    latitude: z.number().optional(),
-    longitude: z.number().optional(),
+    latitude: z
+      .number()
+      .refine((val) => val >= -90 && val <= 90, {
+        message: 'Latitude must be between -90 and 90',
+      })
+      .optional(),
+    longitude: z
+      .number()
+      .refine((val) => val >= -180 && val <= 180, {
+        message: 'Longitude must be between -180 and 180',
+      })
+      .optional(),
     notes: z.string().optional(),
 
     bankedStatus: z.string().toUpperCase().optional(),
@@ -130,6 +163,7 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
         extras,
       },
     });
+    closeSecondPanel();
   };
 
   useEffect(() => {
@@ -505,6 +539,17 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
                         selected={field.value}
                         onSelect={field.onChange}
                         initialFocus
+                        captionLayout="dropdown"
+                        fromYear={new Date().getFullYear() - 150}
+                        toYear={new Date().getFullYear()}
+                        classNames={{
+                          caption_dropdowns: 'grid grid-cols-2',
+                          dropdown_month: 'cols-span-1',
+                          dropdown_year: 'cols-span-1',
+                          vhidden: 'hidden',
+                          dropdown_icon: 'hidden',
+                          caption_label: 'hidden',
+                        }}
                       />
                     </PopoverContent>
                   </Popover>

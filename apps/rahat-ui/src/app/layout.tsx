@@ -13,7 +13,6 @@ import { RSQueryProvider } from '@rumsan/react-query/providers/rs-query-provider
 import { CommunicationQueryProvider } from '@rumsan/communication-query/providers/communication-query-provider';
 
 export const metadata = {
-  title: 'Welcome to Rahat',
   icons: {
     icon: '/svg/rahat-logo.png',
   },
@@ -27,6 +26,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
+        <title>Welcome to Rahat</title>
         <Wagmi>
           <QueryProvider>
             <RSQueryProvider>

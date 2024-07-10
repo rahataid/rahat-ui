@@ -27,6 +27,8 @@ import { ListBeneficiary } from '@rahat-ui/types';
 import { useEffect, useState } from 'react';
 import BulkAssignToProjectModal from './components/bulkAssignToProjectModal';
 import CreateGroupModal from './components/createGroupModal';
+import { DatePicker } from '../../components/datePicker';
+import FiltersTags from '../projects/components/filtersTags';
 
 type IProps = {
   table: Table<ListBeneficiary>;
@@ -38,6 +40,8 @@ type IProps = {
   handleFilterProjectSelect: (selectedProject: string) => void;
   filters: Record<string, any>;
   handleCreateGroup: any;
+  handleDateChange: any;
+  setFilters?: any;
 };
 
 export default function ListView({
@@ -50,6 +54,8 @@ export default function ListView({
   filters,
   handleCreateGroup,
   groupModal,
+  handleDateChange,
+  setFilters,
 }: IProps) {
   const [selectedProject, setSelectedProject] = useState<null | Record<
     string,
@@ -112,6 +118,17 @@ export default function ListView({
             className="rounded"
           />
 
+          <DatePicker
+            placeholder="Pick Start Date"
+            handleDateChange={handleDateChange}
+            type="start"
+          />
+          <DatePicker
+            placeholder="Pick End Date"
+            handleDateChange={handleDateChange}
+            type="end"
+          />
+
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="ml-auto">
@@ -161,6 +178,7 @@ export default function ListView({
                 })}
             </DropdownMenuContent>
           </DropdownMenu>
+
           {table.getSelectedRowModel().rows.length ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -187,6 +205,14 @@ export default function ListView({
             </DropdownMenu>
           ) : null}
         </div>
+
+        {Object.keys(filters).length != 0 && (
+          <FiltersTags
+            filters={filters}
+            setFilters={setFilters}
+            total={table.getRowModel().rows?.length}
+          />
+        )}
         <div className="rounded border bg-card h-[calc(100vh-180px)]">
           <TableComponent>
             <ScrollArea className="h-table1">

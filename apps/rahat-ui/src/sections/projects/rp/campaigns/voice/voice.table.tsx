@@ -1,9 +1,36 @@
 'use client';
 
-import * as React from 'react';
-import { useRouter } from 'next/navigation';
 import {
-  ColumnDef,
+  useCampaignStore,
+  useListRpCommunicationLogs,
+  useListRpCommunicationStats,
+} from '@rahat-ui/query';
+import { Button } from '@rahat-ui/shadcn/components/button';
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@rahat-ui/shadcn/components/dropdown-menu';
+import { Input } from '@rahat-ui/shadcn/components/input';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@rahat-ui/shadcn/components/table';
+import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import { CAMPAIGN_TYPES } from '@rahat-ui/types';
+import {
+  useGetCommunicationLogs,
+  useGetCommunicationStats,
+  useListCampaign,
+} from '@rumsan/communication-query';
+import {
   ColumnFiltersState,
   SortingState,
   VisibilityState,
@@ -14,150 +41,33 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { MoreHorizontal, Settings2 } from 'lucide-react';
-
-import { Button } from '@rahat-ui/shadcn/components/button';
-import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
-import { Badge } from '@rahat-ui/shadcn/components/badge';
+import DataCard from 'apps/rahat-ui/src/components/dataCard';
+import { UUID } from 'crypto';
 import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@rahat-ui/shadcn/components/dropdown-menu';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  SelectGroup,
-} from '@rahat-ui/shadcn/components/select';
-import { Input } from '@rahat-ui/shadcn/components/input';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@rahat-ui/shadcn/components/table';
-import VoiceTableData from '../../../../../app/communications/voice/voiceData.json';
-import { paths } from '../../../../../routes/paths';
-import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import { useCampaignStore, useListCampaignQuery } from '@rahat-ui/query';
-import { CAMPAIGN_TYPES } from '@rahat-ui/types';
-import TableLoader from 'apps/rahat-ui/src/components/table.loader';
-
-const data: Voice[] = VoiceTableData;
+  Mail,
+  MessageCircle,
+  PhoneCall,
+  Settings,
+  Settings2,
+} from 'lucide-react';
+import Image from 'next/image';
+import { useParams, useRouter } from 'next/navigation';
+import * as React from 'react';
+import useVoiceTableColumn from './useVoiceTableColumn';
 
 export type Voice = {
   id: number;
-  campaign: string;
-  startTime: string;
+  to: string;
+  date: string;
+  duration: string;
   status: string;
-  transport: string;
-  totalAudiences: number;
 };
-
-export const columns: ColumnDef<Voice>[] = [
-  {
-    id: 'select',
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && 'indeterminate')
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
-    accessorKey: 'name',
-    header: 'Voice Campaigns',
-    cell: ({ row }) => <div>{row.getValue('name')}</div>,
-  },
-  {
-    accessorKey: 'startTime',
-    header: 'Start Time',
-    cell: ({ row }) => (
-      <div className="capitalize">
-        {new Date(row.getValue('startTime')).toLocaleString()}
-      </div>
-    ),
-  },
-  {
-    accessorKey: 'status',
-    header: 'Status',
-    cell: ({ row }) => (
-      <Badge variant="secondary" className="rounded-md capitalize">
-        {row.getValue('status')}
-      </Badge>
-    ),
-  },
-  {
-    accessorKey: 'transport',
-    header: 'Transport',
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue('transport')}</div>
-    ),
-  },
-  {
-    accessorKey: 'totalAudiences',
-    header: 'Total Audiences',
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue('totalAudiences')}</div>
-    ),
-  },
-  {
-    id: 'actions',
-    enableHiding: false,
-    cell: ({ row }) => {
-      const router = useRouter();
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem
-              onClick={() =>
-                router.push(
-                  paths.dashboard.communication.voiceDetail(row.original.id),
-                )
-              }
-            >
-              View Details
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>Edit</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
-    },
-  },
-];
 
 export default function VoiceTable() {
   const campaignStore = useCampaignStore();
-
+  const columns = useVoiceTableColumn();
+  const { id } = useParams();
+  const router = useRouter();
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
@@ -166,19 +76,38 @@ export default function VoiceTable() {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
-  const { data, isLoading, isError, isSuccess, isFetching } =
-    useListCampaignQuery({});
+  const {
+    data: communicationLogs,
+    isSuccess,
+    isFetching,
+  } = useListRpCommunicationLogs(id as UUID);
+  const { data: commsStats } = useListRpCommunicationStats(id as UUID);
 
   const tableData = React.useMemo(() => {
-    const result = Array.isArray(data?.rows)
-      ? data?.rows.filter(
-          (campaign: any) => campaign.type === CAMPAIGN_TYPES.PHONE,
+    if (isSuccess && communicationLogs) {
+      return communicationLogs
+        ?.filter(
+          (logs) =>
+            logs?.transport?.name.toLowerCase() ===
+            CAMPAIGN_TYPES.IVR.toLowerCase(),
         )
-      : [];
-    campaignStore.setTotalVoiceCampaign(result?.length);
-
-    return result;
-  }, [isSuccess]);
+        .map((item: any) => ({
+          date: new Date(item.createdAt).toLocaleString(),
+          status: item?.status,
+          duration: item?.duration,
+          to:
+            item?.transport?.name.toLowerCase() ===
+            CAMPAIGN_TYPES.EMAIL.toLowerCase()
+              ? item?.details?.envelope?.to
+              : item?.transport?.name.toLowerCase() ===
+                CAMPAIGN_TYPES.IVR.toLowerCase()
+              ? item?.audience?.details?.phone
+              : item?.details?.to,
+        }));
+    } else {
+      return [];
+    }
+  }, [communicationLogs, isSuccess]);
 
   const table = useReactTable({
     data: tableData,
@@ -198,19 +127,59 @@ export default function VoiceTable() {
       rowSelection,
     },
   });
+  let deliveredVoiceMessage = 0;
+  let totalBeneficiary = 0;
+  let totalVoiceMessage = 0;
+  commsStats
+    ?.find((stats) => stats.name === 'COMPLETED_CAMPAIGN')
+    ?.data.forEach((item) => {
+      if (item.type === 'IVR') {
+        deliveredVoiceMessage += item.count;
+      }
+    });
+  commsStats
+    ?.find((stats) => stats.name === 'AUDIENCE')
+    ?.data.forEach((item) => {
+      if (item?.type === 'IVR') totalBeneficiary += item.count;
+    });
+  commsStats
+    ?.find((stats) => stats.name === 'TOTAL_CAMPAIGN')
+    ?.data.forEach((item) => {
+      if (item.type === 'IVR') {
+        totalVoiceMessage += item.count;
+      }
+    });
 
   return (
-    <div className="p-2 bg-secondary">
-      <div className="flex items-center mb-2">
+    <div className="w-full h-full p-2 bg-secondary">
+      <div className=" grid sm:grid-cols-1 md:grid-cols-3 gap-2 mb-2">
+        <DataCard
+          className=""
+          title="Voice"
+          number={totalVoiceMessage.toString()}
+          Icon={PhoneCall}
+        />
+        <DataCard
+          className=""
+          title="Beneficiaries"
+          number={totalBeneficiary.toString()}
+          Icon={Mail}
+        />
+        <DataCard
+          className=""
+          title="Successful Calls"
+          number={deliveredVoiceMessage.toString()}
+          Icon={MessageCircle}
+        />
+      </div>
+      <div className="flex items-center mt-4 mb-2 gap-2">
         <Input
-          placeholder="Filter campaigns..."
-          value={
-            (table.getColumn('campaign')?.getFilterValue() as string) ?? ''
-          }
+          placeholder="Filter communication..."
+          value={(table.getColumn('to')?.getFilterValue() as string) ?? ''}
           onChange={(event) =>
-            table.getColumn('campaign')?.setFilterValue(event.target.value)
+            table.getColumn('to')?.setFilterValue(event.target.value)
           }
-          className="max-w-sm mr-3"
+          className="max-w-mx"
         />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -241,82 +210,123 @@ export default function VoiceTable() {
               })}
           </DropdownMenuContent>
         </DropdownMenu>
+        {table.getRowModel().rows?.length > 0 ? (
+          <Button
+            className="flex items-center gap-2"
+            onClick={() => {
+              router.push(`/projects/rp/${id}/campaigns/voice/manage`);
+              console.log('first');
+            }}
+          >
+            <Settings size={18} strokeWidth={1.5} />
+            Manage
+          </Button>
+        ) : null}
       </div>
-      <div className="rounded border h-[calc(100vh-180px)] bg-card">
-        <Table>
-          <ScrollArea className="h-table1">
-            <TableHeader className="bg-card sticky top-0">
-              {table.getHeaderGroups().map((headerGroup) => (
-                <TableRow key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => {
-                    return (
-                      <TableHead key={header.id}>
-                        {header.isPlaceholder
-                          ? null
-                          : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext(),
+      <div className="rounded border bg-card">
+        {table.getRowModel().rows?.length ? (
+          <>
+            <Table>
+              <ScrollArea className="w-full h-[calc(100vh-320px)]">
+                <TableHeader>
+                  {table.getHeaderGroups().map((headerGroup) => (
+                    <TableRow key={headerGroup.id}>
+                      {headerGroup.headers.map((header) => {
+                        return (
+                          <TableHead key={header.id}>
+                            {header.isPlaceholder
+                              ? null
+                              : flexRender(
+                                  header.column.columnDef.header,
+                                  header.getContext(),
+                                )}
+                          </TableHead>
+                        );
+                      })}
+                    </TableRow>
+                  ))}
+                </TableHeader>
+                <TableBody>
+                  {table.getRowModel().rows?.length ? (
+                    table.getRowModel().rows.map((row) => (
+                      <TableRow
+                        key={row.id}
+                        data-state={row.getIsSelected() && 'selected'}
+                      >
+                        {row.getVisibleCells().map((cell) => (
+                          <TableCell key={cell.id}>
+                            {flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext(),
                             )}
-                      </TableHead>
-                    );
-                  })}
-                </TableRow>
-              ))}
-            </TableHeader>
-            <TableBody>
-              {table.getRowModel().rows?.length ? (
-                table.getRowModel().rows.map((row) => (
-                  <TableRow
-                    key={row.id}
-                    data-state={row.getIsSelected() && 'selected'}
-                  >
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext(),
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell
+                        colSpan={columns.length}
+                        className="h-24 text-center"
+                      >
+                        {isFetching && (
+                          <div className="flex items-center justify-center space-x-2 h-full">
+                            <div className="h-2 w-2 animate-bounce rounded-full bg-primary [animation-delay:-0.3s]"></div>
+                            <div className="h-2 w-2 animate-bounce rounded-full bg-primary [animation-delay:-0.13s]"></div>
+                            <div className="h-2 w-2 animate-bounce rounded-full bg-primary"></div>
+                          </div>
                         )}
                       </TableCell>
-                    ))}
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell
-                    colSpan={columns.length}
-                    className="h-24 text-center"
-                  >
-                    {isFetching ? <TableLoader /> : 'No data available.'}
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </ScrollArea>
-        </Table>
-      </div>
-      <div className="sticky bottom-0 flex items-center justify-end space-x-4 px-4 py-1 bg-card">
-        <div className="flex-1 text-sm text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length} of{' '}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
-        </div>
-        <div className="space-x-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            Previous
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            Next
-          </Button>
-        </div>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </ScrollArea>
+            </Table>
+            <div className="flex items-center justify-end space-x-2 p-2 border-t bg-card">
+              <div className="flex-1 text-sm text-muted-foreground">
+                {table.getFilteredSelectedRowModel().rows.length} of{' '}
+                {table.getFilteredRowModel().rows.length} row(s) selected.
+              </div>
+              <div className="space-x-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => table.previousPage()}
+                  disabled={!table.getCanPreviousPage()}
+                >
+                  Previous
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => table.nextPage()}
+                  disabled={!table.getCanNextPage()}
+                >
+                  Next
+                </Button>
+              </div>
+            </div>
+          </>
+        ) : (
+          <div className="w-full h-[calc(100vh-310px)]">
+            <div className="flex flex-col items-center justify-center">
+              <Image src="/noData.png" height={250} width={250} alt="no data" />
+              <p className="text-medium text-base mb-1">No Data Available</p>
+              <p className="text-sm mb-4 text-gray-500">
+                There are no logs at the moment.
+              </p>
+              <Button
+                className="flex items-center gap-3"
+                onClick={() =>
+                  router.push(`/projects/rp/${id}/campaigns/voice/manage`)
+                }
+              >
+                <Settings size={18} strokeWidth={1.5} />
+                Manage
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

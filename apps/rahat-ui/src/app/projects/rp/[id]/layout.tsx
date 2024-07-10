@@ -36,7 +36,9 @@ export default function ProjectLayoutRoot({
     <RPSubgraphProvider
       subgraphClient={
         new Client({
-          url: subgraphSettings || 'http://localhost:8000',
+          url:
+            subgraphSettings ||
+            'http://localhost:8000/subgraphs/name/rahat/rp/',
           exchanges: [cacheExchange, fetchExchange],
         })
       }

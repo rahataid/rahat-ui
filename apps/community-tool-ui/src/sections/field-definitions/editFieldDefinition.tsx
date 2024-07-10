@@ -59,7 +59,7 @@ export default function EditFieldDefinition({
     ),
   });
 
-  const formattedVariations = data.variations?.length
+  const formattedVariations = data?.variations?.length
     ? data.variations.map((d) => {
         return {
           id: d,
@@ -81,7 +81,7 @@ export default function EditFieldDefinition({
   });
 
   useEffect(() => {
-    if (formattedVariations.length) setVariationTags(formattedVariations);
+    setVariationTags(formattedVariations);
 
     form.reset({
       name: data?.name || '',
@@ -153,11 +153,9 @@ export default function EditFieldDefinition({
 
   useEffect(() => {
     if (showLabelValue) {
-      if (fields.length === 0) {
-        append({ label: '', value: '' });
-      }
+      append({ label: '', value: '' });
     }
-  }, [showLabelValue, fields, append, form]);
+  }, [showLabelValue, append, form]);
 
   const { setValue } = form;
 
@@ -179,7 +177,7 @@ export default function EditFieldDefinition({
                       <Label className="text-xs font-medium">Name</Label>
                       <FormControl>
                         <Input
-                          disabled={true}
+                          disabled={false}
                           type="text"
                           placeholder="Name"
                           {...field}
@@ -230,11 +228,11 @@ export default function EditFieldDefinition({
                       <Label className="text-xs font-medium">Field Type</Label>
                       <Select
                         onValueChange={field.onChange}
-                        defaultValue={field.value}
+                        value={field.value}
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select Field Type" />
+                            <SelectValue placeholder={field.value} />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -279,23 +277,25 @@ export default function EditFieldDefinition({
                   </div>
                 )}
               />
-              <FormField
-                control={form.control}
-                name="isTargeting"
-                render={({ field }) => (
-                  <div className="flex flex-col items-right">
-                    <Label className="text-xs font-medium mb-1">
-                      Select as targeting criteria
-                    </Label>
-                    <Switch
-                      {...field}
-                      value={field.value ? 'false' : 'true'}
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </div>
-                )}
-              />
+              {showLabelValue && (
+                <FormField
+                  control={form.control}
+                  name="isTargeting"
+                  render={({ field }) => (
+                    <div className="flex flex-col items-right">
+                      <Label className="text-xs font-medium mb-1">
+                        Select as targeting criteria
+                      </Label>
+                      <Switch
+                        {...field}
+                        value={field.value ? 'false' : 'true'}
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </div>
+                  )}
+                />
+              )}
             </div>
 
             {showLabelValue && form.getValues('fieldPopulate')?.length > 0 && (

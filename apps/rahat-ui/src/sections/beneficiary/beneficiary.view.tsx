@@ -51,7 +51,6 @@ function BeneficiaryView() {
 
   const { data } = useBeneficiaryList({
     ...pagination,
-
     ...filters,
   });
   const createBeneficiaryGroup = useCreateBeneficiaryGroup();
@@ -83,8 +82,23 @@ function BeneficiaryView() {
     },
   });
 
+  const handleDateChange = (date: Date, type: string) => {
+    if (type === 'start') {
+      setFilters({
+        ...filters,
+        startDate: date,
+      });
+    } else {
+      setFilters({
+        ...filters,
+        endDate: date,
+      });
+    }
+  };
+
   const handleFilterProjectSelect = (project: string | UUID) => {
     setFilters({
+      ...filters,
       projectId: project,
     });
   };
@@ -152,6 +166,8 @@ function BeneficiaryView() {
           projects={projectsList?.data?.data || []}
           handleFilterProjectSelect={handleFilterProjectSelect}
           filters={filters}
+          setFilters={setFilters}
+          handleDateChange={handleDateChange}
         />
       </TabsContent>
       <CustomPagination

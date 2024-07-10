@@ -1,6 +1,9 @@
+import { useFindAllDisbursementPlans } from '@rahat-ui/query';
 import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
 import { Separator } from '@rahat-ui/shadcn/src/components/ui/separator';
-import React, { useState } from 'react';
+import { UUID } from 'crypto';
+import { useParams } from 'next/navigation';
+import React, { useEffect, useState } from 'react';
 
 export enum DisbursementConditionType {
   BALANCE_CHECK = 'BALANCE_CHECK',
@@ -21,6 +24,8 @@ const DisbursementCondition = ({
     DisbursementConditionType[]
   >([]);
 
+  const { id } = useParams() as { id: UUID };
+
   const handleCheckboxChange = (condition: DisbursementConditionType) => {
     setSelectedConditions((prevSelectedConditions) => {
       const isSelected = prevSelectedConditions.includes(condition);
@@ -39,7 +44,7 @@ const DisbursementCondition = ({
   };
 
   return (
-    <div className="grid grid-cols-12 p-4">
+    <div className="grid grid-cols-12">
       <div className="col-span-12 h-[calc(100vh-482px)] bg-card rounded-sm p-4">
         <div className="col-span-12">
           <h1 className="text-gray-700 text-xl font-medium">
@@ -49,9 +54,14 @@ const DisbursementCondition = ({
             <div className="col-span-6 flex items-center gap-2">
               <Checkbox
                 id="balance_check"
-                checked={selectedConditions.includes(
-                  DisbursementConditionType.BALANCE_CHECK,
-                )}
+                checked={
+                  selectedConditions.includes(
+                    DisbursementConditionType.BALANCE_CHECK,
+                  ) ||
+                  stepData.selectedConditions.includes(
+                    DisbursementConditionType.BALANCE_CHECK,
+                  )
+                }
                 onCheckedChange={() =>
                   handleCheckboxChange(DisbursementConditionType.BALANCE_CHECK)
                 }
@@ -67,9 +77,14 @@ const DisbursementCondition = ({
             <div className="col-span-6 flex items-center gap-2">
               <Checkbox
                 id="approver_signature"
-                checked={selectedConditions.includes(
-                  DisbursementConditionType.APPROVER_SIGNATURE,
-                )}
+                checked={
+                  selectedConditions.includes(
+                    DisbursementConditionType.APPROVER_SIGNATURE,
+                  ) ||
+                  stepData.selectedConditions.includes(
+                    DisbursementConditionType.APPROVER_SIGNATURE,
+                  )
+                }
                 onCheckedChange={() =>
                   handleCheckboxChange(
                     DisbursementConditionType.APPROVER_SIGNATURE,

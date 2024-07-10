@@ -105,24 +105,6 @@ const CampaignForm: FC<CampaignFormProps> = ({
         </h2>
         <div className="shadow-md p-4 rounded-sm bg-card">
           <div className="mb-4 w-full grid grid-cols-3 gap-4 ">
-            <FormField
-              control={form.control}
-              name="campaignName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <Input
-                      className="rounded"
-                      placeholder="Campaign Name"
-                      {...field}
-                    />
-                  </FormControl>
-
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
             {/* <FormField
               control={form.control}
               name="startTime"
@@ -233,15 +215,13 @@ const CampaignForm: FC<CampaignFormProps> = ({
                                               'messageSid',
                                               option?.sid,
                                             );
-                                            form.setValue(
-                                              'message',
+                                            const message =
                                               option?.types['twilio/text']
-                                                ?.body,
-                                            );
-                                            setTemplatemessage(
-                                              option?.types['twilio/text']
-                                                ?.body,
-                                            );
+                                                ?.body ||
+                                              option?.types['twilio/media']
+                                                ?.body;
+                                            form.setValue('message', message);
+                                            setTemplatemessage(message);
                                           } else {
                                             form.setValue('messageSid', '');
                                             form.setValue('message', '');

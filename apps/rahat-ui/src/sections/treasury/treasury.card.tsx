@@ -1,12 +1,28 @@
+import {
+  useReadRahatTokenBalanceOf,
+  useReadRahatTokenDecimals,
+  useSettingsStore,
+} from '@rahat-ui/query';
+
 import { CircleDollarSign, Folder } from 'lucide-react';
-import React from 'react';
+import { formatUnits } from 'viem';
 
 type projectIProps = {
-  projectBudget: string;
-  projectName: string;
+  projectAddress: `0x${string}`;
+  projectName: string | undefined;
 };
 
-const TreasuryCard = ({ projectBudget, projectName }: projectIProps) => {
+const TreasuryCard = ({ projectAddress, projectName }: projectIProps) => {
+  const appContracts = useSettingsStore((state) => state.contracts);
+  const { data: projectBalance } = useReadRahatTokenBalanceOf({
+    address: appContracts?.RAHATTOKEN?.ADDRESS,
+    args: [projectAddress],
+  });
+
+  const { data: decimals } = useReadRahatTokenDecimals({
+    address: appContracts?.RAHATTOKEN?.ADDRESS,
+  });
+
   return (
     <div className="w-96 bg-card border border-neutral-200 rounded-lg p-6 flex flex-col space-x-4">
       <div className="flex items-center">
@@ -22,7 +38,9 @@ const TreasuryCard = ({ projectBudget, projectName }: projectIProps) => {
           </div>
           <div className="flex flex-col ml-2">
             <p className="font-light text-gray-500 text-sm">Budget</p>
-            <p className="text-primary font-medium">{projectBudget} RTH</p>
+            <p className="text-primary font-medium">
+              {formatUnits(projectBalance ?? BigInt(0), decimals ?? 18)} RTH
+            </p>
           </div>
         </div>
       </div>

@@ -60,8 +60,6 @@ const AddAudience: FC<AddAudienceProps> = ({
   const [columnVisibility, setColumnVisibility] = React.useState({});
   const [rowSelection, setRowSelection] = React.useState({});
 
-  const projectsList = useProjectList({});
-
   const {
     pagination,
     filters,
@@ -118,7 +116,7 @@ const AddAudience: FC<AddAudienceProps> = ({
           }}
           className="max-w-sm"
         />
-        
+
         <div
           className={`border rounded px-3 py-2 h-10 text-sm ${
             selectedRows.length

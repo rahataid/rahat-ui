@@ -12,26 +12,27 @@ export const useSelectItems = () => {
       value: 'Flash Flood Risk Monitoring',
       label: 'Flash Flood Risk Monitoring',
     },
-    { value: 'NCMWRF Accumulated', label: 'NCMWRF Accumulated' },
+    { value: 'NCMRWF Accumulated', label: 'NCMRWF Accumulated' },
     {
-      value: 'NCMWRF Deterministic & Probabilistic',
-      label: 'NCMWRF Deterministic & Probabilistic',
+      value: 'NCMRWF Deterministic & Probabilistic',
+      label: 'NCMRWF Deterministic & Probabilistic',
     },
   ];
 
   const dhmForecastSelectItems = [
     {
-      value: '3 Days Flood forecast Bulletin',
-      label: '3 Days Flood forecast Bulletin',
+      value: '3 Days Flood Forecast Bulletin',
+      label: '3 Days Flood Forecast Bulletin',
     },
     {
-      value: '3 Days Rainfall forecast Bulletin',
-      label: '3 Days Rainfall forecast Bulletin',
+      value: '3 Days Rainfall Forecast Bulletin',
+      label: '3 Days Rainfall Forecast Bulletin',
     },
     {
-      value: 'Real time Monitoring(River Watch)',
-      label: 'Real time Monitoring(River Watch)',
+      value: 'Realtime Monitoring (River Watch)',
+      label: 'Realtime Monitoring (River Watch)',
     },
+    { value: 'Realtime Rainfall', label: 'Realtime Rainfall' },
     { value: 'NWP', label: 'NWP' },
   ];
 

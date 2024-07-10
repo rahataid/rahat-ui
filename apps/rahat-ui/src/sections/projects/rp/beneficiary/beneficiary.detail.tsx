@@ -1,11 +1,9 @@
 'use client';
 
-import { useParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import Image from 'next/image';
 import {
   PROJECT_SETTINGS_KEYS,
   useAssignClaimsToBeneficiary,
+  useFindOneDisbursement,
   useProjectSettingsStore,
   useReadCvaProjectBeneficiaryClaims,
 } from '@rahat-ui/query';
@@ -27,12 +25,7 @@ import {
   AlertDialogTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/alert-dialog';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '@rahat-ui/shadcn/src/components/ui/card';
+import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -46,6 +39,8 @@ import {
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { truncateEthAddress } from '@rumsan/sdk/utils';
+import DataCard from 'apps/rahat-ui/src/components/dataCard';
+import { UUID } from 'crypto';
 import {
   Copy,
   CopyCheck,
@@ -53,12 +48,12 @@ import {
   Minus,
   MoreVertical,
   Trash2,
-  Users,
 } from 'lucide-react';
-import AssignToken from './assign-token.modal';
-import { UUID } from 'crypto';
+import Image from 'next/image';
+import { useParams } from 'next/navigation';
+import { useState } from 'react';
 import { formatEther } from 'viem';
-import DataCard from 'apps/rahat-ui/src/components/dataCard';
+import AssignToken from './assign-token.modal';
 import { TransactionTable } from './transaction.table';
 
 type IProps = {
@@ -76,16 +71,19 @@ export default function BeneficiaryDetail({
   );
 
   const assignToken = useAssignClaimsToBeneficiary();
-
-  const assignedTokens = useReadCvaProjectBeneficiaryClaims({
-    args: [beneficiaryDetails?.walletAddress],
-    address: contractSettings?.rpproject?.address,
-    query: {
-      select(data) {
-        return formatEther(data) || 'N/a';
-      },
-    },
+  const allocatedTokens = useFindOneDisbursement(id, {
+    walletAddress: beneficiaryDetails?.walletAddress,
   });
+
+  // const assignedTokens = useReadCvaProjectBeneficiaryClaims({
+  //   args: [beneficiaryDetails?.walletAddress],
+  //   address: contractSettings?.rpproject?.address,
+  //   query: {
+  //     select(data) {
+  //       return formatEther(data) || 'N/a';
+  //     },
+  //   },
+  // });
 
   const [activeTab, setActiveTab] = useState<'details' | 'transaction'>(
     'details',
@@ -109,7 +107,6 @@ export default function BeneficiaryDetail({
       projectAddress: contractSettings?.rpproject?.address,
       tokenAmount: numberOfTokens,
     });
-    console.log('ass', ass);
   };
 
   const removeBeneficiary = (uuid: string) => {
@@ -162,12 +159,12 @@ export default function BeneficiaryDetail({
           />
           <BeneficiaryInfo
             beneficiaryDetails={beneficiaryDetails}
-            assignedTokensCount={assignedTokens.data as string}
+            assignedTokensCount={allocatedTokens?.data?.amount as string}
             tokensClaimedCount={'N/a'}
           />
         </TabsContent>
         <TabsContent value="transaction">
-          <TransactionTab />
+          <TransactionTab beneficiary={beneficiaryDetails} />
         </TabsContent>
       </Tabs>
     </>
@@ -392,14 +389,14 @@ function BeneficiaryInfo({
       <div className="flex items-center justify-between gap-3 mx-2">
         <DataCard
           className="w-screen"
-          title="Tickets Assigned"
-          number={'0'}
+          title="Tokens Assigned"
+          number={assignedTokensCount}
           Icon={Home}
         />
         <DataCard
           className="w-screen"
-          title="Tickets Claimed"
-          number={'0'}
+          title="Tokens Claimed"
+          number={tokensClaimedCount}
           Icon={Home}
         />
       </div>
@@ -407,10 +404,10 @@ function BeneficiaryInfo({
   );
 }
 
-function TransactionTab() {
+function TransactionTab(beneficiaryDetails: any) {
   return (
     <div className="p-2 pb-0">
-      <TransactionTable />
+      <TransactionTable beneficiaryDetails={beneficiaryDetails} />
     </div>
   );
 }

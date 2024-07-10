@@ -176,6 +176,7 @@ const AddCampaignView = () => {
           form={form}
           isSubmitting={isSubmitting}
           handleSubmit={form.handleSubmit(handleCreateCampaign)}
+          selectedRows={selectedRows}
         />
 
         {showAddAudienceView.value ? (

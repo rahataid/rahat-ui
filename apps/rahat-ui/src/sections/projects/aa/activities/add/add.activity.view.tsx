@@ -40,6 +40,8 @@ export default function AddActivities() {
   const { id: projectID } = useParams();
   const router = useRouter();
 
+  const activitiesListPath = `/projects/aa/${projectID}/activities`;
+
   const { categories, phases, hazardTypes } = useActivitiesStore((state) => ({
     categories: state.categories,
     phases: state.phases,
@@ -203,7 +205,7 @@ export default function AddActivities() {
         projectUUID: projectID as UUID,
         activityPayload: payload,
       });
-      router.push(`/projects/aa/${projectID}/activities`);
+      router.push(activitiesListPath);
     } catch (e) {
       console.error('Error::', e);
     } finally {
@@ -537,7 +539,7 @@ export default function AddActivities() {
                     variant="secondary"
                     className="bg-red-100 text-red-600 w-36"
                     onClick={() => {
-                      form.reset();
+                      router.push(activitiesListPath);
                     }}
                   >
                     Cancel

@@ -64,7 +64,7 @@ export default function EditActivity() {
   useStakeholdersGroups(projectID as UUID, {});
   useBeneficiariesGroups(projectID as UUID, {});
 
-  const activitiesListPath = `/projects/aa/${projectID}/activities`;
+  const activityDetailPath = `/projects/aa/${projectID}/activities/${activityID}`;
 
   const newCommunicationSchema = {
     groupType: '',
@@ -226,16 +226,11 @@ export default function EditActivity() {
         projectUUID: projectID as UUID,
         activityUpdatePayload: payload,
       });
+      router.push(activityDetailPath);
     } catch (e) {
       console.error('Error::', e);
     }
   };
-
-  React.useEffect(() => {
-    if (updateActivity.isSuccess) {
-      router.back();
-    }
-  }, [updateActivity.isSuccess]);
 
   return (
     <Form {...form}>
@@ -556,7 +551,7 @@ export default function EditActivity() {
                     variant="secondary"
                     className="bg-red-100 text-red-600 w-36"
                     onClick={() => {
-                      router.push(activitiesListPath);
+                      router.push(activityDetailPath);
                     }}
                   >
                     Cancel

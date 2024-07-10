@@ -30,7 +30,7 @@ import TableLoader from 'apps/rahat-ui/src/components/table.loader';
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@rahat-ui/shadcn/src/components/ui/dialog';
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 
-export const useTableColumns = (handleAssignClick: any) => {
+export const useTableColumns = (handleAssignClick: any,getRedemptions:any) => {
   const { id } = useParams();
   const [selectedRow, setSelectedRow] = useState(null)
 
@@ -71,7 +71,10 @@ export const useTableColumns = (handleAssignClick: any) => {
     .finally(()=>
       {
       setSelectedRow(null);
-      projectModal.onFalse();}
+      projectModal.onFalse();
+      getRedemptions();
+    
+    }
     );
 
   };

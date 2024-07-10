@@ -234,7 +234,10 @@ const TextCampaignAddDrawer = () => {
                       </FormControl>
                       <SelectContent>
                         {Object.keys(CAMPAIGN_TYPES).map((key) => {
-                          if (key.toLowerCase() !== 'ivr')
+                          if (
+                            key.toLowerCase() !== 'ivr' &&
+                            key.toLowerCase() !== 'phone'
+                          )
                             return (
                               <SelectItem key={key} value={key}>
                                 {key}

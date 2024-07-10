@@ -26,9 +26,10 @@ import React from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { TAGS } from '@rumsan/react-query/utils/tags';
 import { toast } from 'react-toastify';
-import { useTriggerCampaign } from '@rumsan/communication-query';
+import { useTriggerCvaCampaign } from '@rahat-ui/query';
 import { useCommunicationQuery } from '@rumsan/communication-query/providers';
 import { useParams } from 'next/navigation';
+import { UUID } from 'crypto';
 
 type IProps = {
   campaignId?: number;
@@ -54,28 +55,16 @@ const InfoCard: React.FC<IProps> = ({
   const [open, setOpen] = React.useState(false);
   const [trigger, setTrigger] = React.useState(false);
 
-  const triggerCampaign = useTriggerCampaign();
-  const handleChange = (e: string) => {
+  const triggerCampaign = useTriggerCvaCampaign(id as UUID);
+  const handleChange = async (e: string) => {
     setTrigger(true);
     if (e === 'trigger') {
-      triggerCampaign
-        .mutateAsync(Number(campaignId))
-        .then(() => {
-          toast.success('Campaign Trigger Success.');
-          queryClient.invalidateQueries({
-            queryKey: [TAGS.GET_ALL_CAMPAIGNS, { projectId: id }],
-          });
-          setOpen(false);
-          setTrigger(false);
+      await triggerCampaign.mutateAsync({ id: Number(campaignId) });
 
-          closeSecondPanel();
-        })
+      setOpen(false);
+      setTrigger(false);
 
-        .catch((e) => {
-          toast.error('Failed to Trigger Campaign.');
-          setOpen(false);
-          setTrigger(false);
-        });
+      closeSecondPanel();
     }
   };
   return (

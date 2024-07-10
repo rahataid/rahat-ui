@@ -38,7 +38,7 @@ function MapClusters({ dataForMap, ...other }: any) {
       if (feature?.geometry.type === 'Point') {
         mapRef.current?.easeTo({
           center: feature?.geometry.coordinates as LngLatLike | undefined,
-          zoom: Number.isNaN(zoom) ? 3 : zoom,
+          zoom: zoom && Number.isNaN(zoom) ? zoom : undefined,
           duration: 500,
         });
       }

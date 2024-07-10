@@ -23,18 +23,10 @@ import {
 } from '@tanstack/react-table';
 import * as React from 'react';
 
-import { useVendorTransaction } from '../../hooks/el/subgraph/querycall';
+import { useVendorTransaction } from '../../../../hooks/el/subgraph/querycall';
 import { truncateEthAddress } from '@rumsan/sdk/utils';
-import TableLoader from '../../components/table.loader';
-import { useRPVendorTransactions } from '@rahat-ui/query';
+import TableLoader from '../../../../components/table.loader';
 
-// export type Payment = {
-//   id: string;
-//   amount: number;
-//   status: 'pending' | 'processing' | 'success' | 'failed';
-//   email: string;
-//   walletAddress: `0x${string}`;
-// };
 
 const columns: ColumnDef<any>[] = [
   {
@@ -45,14 +37,13 @@ const columns: ColumnDef<any>[] = [
     ),
   },
   {
-    accessorKey: 'txHash',
+    accessorKey: 'transactionHash',
     header: 'Txn Hash',
     cell: ({ row }) => (
-      <a href={`https://sepolia.basescan.org/tx/${row.getValue('txHash')}`}>
+      <a href={`https://sepolia.arbiscan.io/tx/${row.getValue('transactionHash')}`}>
         {' '}
-        {truncateEthAddress(row.getValue('txHash'))}
+        {truncateEthAddress(row.getValue('transactionHash'))}
       </a>
-      // <div>{`https://sepolia.arbiscan.io/tx/${truncateEthAddress(row.getValue('transactionHash'))}`}</div>
     ),
   },
   {
@@ -73,7 +64,7 @@ interface VendorTxnListProps {
 }
 
 export default function VendorTxnList({ walletAddress }: VendorTxnListProps) {
-  const { data: txns, isFetching } = useRPVendorTransactions(
+  const { data: txns, isFetching } = useVendorTransaction(
     walletAddress,
   );
 
@@ -87,7 +78,7 @@ export default function VendorTxnList({ walletAddress }: VendorTxnListProps) {
   const [rowSelection, setRowSelection] = React.useState({});
 
   const table = useReactTable({
-    data: txns || [],
+    data: txns?.newData || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,

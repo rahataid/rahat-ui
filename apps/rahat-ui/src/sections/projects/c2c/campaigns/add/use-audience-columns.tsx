@@ -7,12 +7,12 @@ import { SelectedRowType } from './add-campaign-view';
 export const useAudienceColumns = (
   beneficiaryData: { data: { piiData: TPIIData }[] },
   selectedRows: SelectedRowType[],
-  audienceData: { data: Audience[] },
+  audienceData: Audience[],
   createAudience: any,
   setSelectedRows: any,
 ) => {
   const handleCreateAudience = (item: TPIIData) => {
-    const checkAudienceExist = audienceData?.data.some(
+    const checkAudienceExist = audienceData?.some(
       (audience: Audience) => audience?.details?.phone === item.phone,
     );
 

@@ -44,9 +44,10 @@ import { usePagination } from '@rahat-ui/query';
 import useFormStore from '../../../formBuilder/form.store';
 import FormBuilder from '../../../formBuilder';
 import {
+  filterFieldDefs,
   formatDate,
   selectNonEmptyFields,
-} from 'apps/community-tool-ui/src/utils';
+} from '../../../utils';
 import { FIELD_DEF_FETCH_LIMIT } from 'apps/community-tool-ui/src/constants/app.const';
 
 export default function AddBeneficiary() {
@@ -151,6 +152,8 @@ export default function AddBeneficiary() {
       form.reset();
     }
   }, [addCommunityBeneficiary.isSuccess, form]);
+
+  const filteredDefinitions = filterFieldDefs(definitions);
 
   return (
     <Form {...form}>
@@ -515,19 +518,24 @@ export default function AddBeneficiary() {
                   </FormItem>
                 )}
               />
-              {definitions?.data.length > 0 && (
+              {filteredDefinitions && filteredDefinitions.length > 0 && (
                 <h3>
                   <b>Extra Fields:</b>
                 </h3>
               )}
               <br />
-              {definitions?.data?.map((definition: any) => {
-                return (
-                  <>
-                    <FormBuilder key={definition.id} formField={definition} />
-                  </>
-                );
-              }) || 'No field definitions found!'}
+              {filteredDefinitions && filteredDefinitions.length > 0
+                ? filteredDefinitions.map((definition: any) => {
+                    return (
+                      <>
+                        <FormBuilder
+                          key={definition.id}
+                          formField={definition}
+                        />
+                      </>
+                    );
+                  })
+                : 'No field definitions found!'}
             </div>
             <div className="flex justify-end">
               <Button>Create Beneficiary</Button>

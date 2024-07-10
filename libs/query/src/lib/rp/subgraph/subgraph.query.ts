@@ -78,12 +78,9 @@ export const useRPBeneficiaryTransactions = (beneficiaryAddress: string) => {
 };
 
 export const useRPVendorTransactions = (vendorAddress: string) => {
-  console.log(vendorAddress);
   const { subgraphClient } = useRPSubgraph();
   const { queryClient } = useRSQuery();
-  const setProjectDetails = useRPProjectSubgraphStore(
-    (state) => state.setProjectDetails,
-  );
+  
 
   const query = useQuery(
     {
@@ -104,12 +101,6 @@ export const useRPVendorTransactions = (vendorAddress: string) => {
     },
     queryClient,
   );
-
-  useEffect(() => {
-    if (query.isSuccess) {
-      // setProjectDetails(query.data);
-    }
-  }, [query, vendorAddress, queryClient]);
 
   return query;
 };

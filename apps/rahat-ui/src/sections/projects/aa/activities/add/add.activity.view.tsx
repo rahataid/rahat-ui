@@ -58,6 +58,8 @@ export default function AddActivities() {
 
   const nextId = React.useRef(0);
 
+  const [audioUploading, setAudioUploading] = React.useState<boolean>(false);
+
   useStakeholdersGroups(projectID as UUID, {});
   useBeneficiariesGroups(projectID as UUID, {});
 
@@ -510,6 +512,7 @@ export default function AddActivities() {
                   }}
                   form={form}
                   index={index}
+                  setLoading={setAudioUploading}
                 />
               ))}
 
@@ -547,7 +550,9 @@ export default function AddActivities() {
                   <Button
                     type="submit"
                     disabled={
-                      createActivity?.isPending || uploadFile?.isPending
+                      createActivity?.isPending ||
+                      uploadFile?.isPending ||
+                      audioUploading
                     }
                   >
                     Create Activity

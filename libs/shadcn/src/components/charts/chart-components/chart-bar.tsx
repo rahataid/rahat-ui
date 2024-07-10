@@ -30,10 +30,10 @@ export default function ChartBar({
   actualData,
   component,
 }: Props) {
-  const barData = actualData?.find((d) => d.name === component?.dataMap);
+  const barData = actualData?.find((d: any) => d.name === component?.dataMap);
 
-  const categories = barData?.data.map((b) => b.id);
-  const series = barData?.data.map((b) => b.count);
+  const categories = barData?.data.map((b: any) => b.id);
+  const series = barData?.data.map((b: any) => b.count);
 
   const chartOptions = useChart({
     colors,

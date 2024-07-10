@@ -18,9 +18,9 @@ export default function DashboardView() {
   ];
 
   const [dataForMap, setDataForMap] = useState<any>();
-
+ 
   const getVendors = useProjectAction();
-
+  
   const projectsList = useProjectList({});
 
   const project = projectsList?.data?.data.find((item) => item.type === 'el');

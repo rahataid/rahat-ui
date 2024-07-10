@@ -1,7 +1,8 @@
-import { FC, useMemo } from 'react';
+import { FC, useEffect, useMemo, useState } from 'react';
 import { DynamicReports } from '../../chart-reports';
 import {
   PROJECT_SETTINGS_KEYS,
+  useProjectList,
   useProjectSettingsStore,
   useReadRahatTokenBalanceOf,
 } from '@rahat-ui/query';
@@ -84,32 +85,28 @@ const ProjectInfo: FC<ProjectInfoProps> = ({ project }) => {
     },
   });
 
-  const reportsChartsUI = useMemo(() => tempReport?.charts, []);
-  const reportsChartsData = useMemo(
-    () => [
-      {
-        name: 'BENEFICIARIES',
-        data: `${process.env.NEXT_PUBLIC_API_HOST_URL}/v1/beneficiaries/stats`,
-      },
-    ],
-    [],
-  );
+  const [reportDatas, setReportDatas] = useState<any>();
+  const reportDataFromApi = async () => {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_HOST_URL}/v1/projects/${id}/statsSources`,
+    );
+    const res = await response.json();
+    setReportDatas(res.data);
+  };
 
-  const reportsCardsUI = useMemo(() => tempReport?.datacards, []);
-  const reportsCardsData = useMemo(
-    () => [
-      { name: 'BENEFICIARIES', data: 0 },
-      { name: 'BALANCE', data: tokenBalance.data || 'N/A' },
-      { name: 'DISTRIBUTED', data: 0 },
-      { name: 'CAMPAIGNS', data: 0 },
-    ],
-    [tokenBalance.data],
-  );
+  useEffect(() => {
+    reportDataFromApi();
+  }, []);
 
   return (
     <div className=" bg-slate-100">
       {/* DATACARD SECTION */}
-      <DynamicReports dataSources={reportData.dataSources} ui={reportData.ui} />
+      {reportDatas && (
+        <DynamicReports
+          dataSources={reportDatas.dataSources}
+          ui={reportDatas.ui}
+        />
+      )}
       {/* <DynamicReports data={reportsCardsData} ui={reportsCardsUI} /> */}
 
       {/* CAROUSEL AND PROJECT INFO SECTION */}

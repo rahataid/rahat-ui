@@ -4,20 +4,10 @@ type PiechartData = {
   component: any;
   source: any;
   actualData: any;
-  availableStatsKeys: string[];
 };
 
-const PieChartWrapper = ({
-  actualData,
-  component,
-  source,
-  availableStatsKeys,
-}: PiechartData) => {
-  console.log('actualData,component,source', { actualData, component, source });
-
-  const chartStatsData = availableStatsKeys?.includes(component?.dataMap)
-    ? actualData?.find((d) => d.name === component?.dataMap)
-    : null;
+const PieChartWrapper = ({ actualData, component, source }: PiechartData) => {
+  const chartStatsData = actualData?.find((d) => d.name === component?.dataMap);
 
   const statsPiechartData = chartStatsData?.data?.map((d) => ({
     ...d,

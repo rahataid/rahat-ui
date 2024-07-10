@@ -28,15 +28,6 @@ type DynamicReportsProps = {
   className?: string;
 };
 
-const statsSourceKeys = [
-  'BENEFICIARY_INTERNETSTATUS',
-  'BENEFICIARY_TOTAL',
-  'BENEFICIARY_GENDER',
-  'BENEFICIARY_PHONESTATUS',
-  'BENEFICIARY_BANKEDSTATUS',
-  'BENEFICIARY_AGE_RANGE',
-];
-
 const DynamicReports: FC<DynamicReportsProps> = ({
   dataSources,
   ui,
@@ -105,16 +96,6 @@ const DynamicReports: FC<DynamicReportsProps> = ({
     const actualData = dynamicData[dataSrc];
     const source = dataSources?.[dataSrc];
 
-    // console.log(title, {
-    //   type,
-    //   title,
-    //   props,
-    //   dataSrc,
-    //   colSpan,
-    //   source,
-    //   dataMap,
-    //   actualData,
-    // });
     const cardDataValue =
       type === 'dataCard' && dataMap && actualData
         ? getValueFromPath(actualData, dataMap)
@@ -141,15 +122,7 @@ const DynamicReports: FC<DynamicReportsProps> = ({
                 component={component}
                 source={source}
                 actualData={actualData}
-                availableStatsKeys={statsSourceKeys}
               />
-              // <PieChart
-              //   title={title}
-              //   chart={{
-              //     series: piechartDataValue,
-              //   }}
-              //   {...props}
-              // />
             )}
           </ErrorBoundary>
         );
@@ -157,11 +130,8 @@ const DynamicReports: FC<DynamicReportsProps> = ({
       case 'bar':
         return (
           <ErrorBoundary>
-            {actualData?.[dataMap] && (
-              <BarChart
-                categories={Object.keys(actualData?.[dataMap])}
-                series={Object.values(actualData?.[dataMap])}
-              />
+            {actualData && (
+              <BarChart actualData={actualData} component={component} />
             )}
           </ErrorBoundary>
         );

@@ -6,8 +6,8 @@ import useChart from '../use-chart';
 // ----------------------------------------------------------------------
 
 type Props = {
-  series: number[];
-  categories: string[];
+  series?: number[];
+  categories?: string[];
   width?: number | string;
   height?: number | string;
   horizontal?: boolean;
@@ -15,11 +15,11 @@ type Props = {
   xaxisLabels?: boolean;
   yaxisLabels?: boolean;
   barHeight?: number;
+  actualData?: any;
+  component?: any;
 };
 
 export default function ChartBar({
-  series,
-  categories,
   width = 400,
   height = 400,
   horizontal = false,
@@ -27,7 +27,14 @@ export default function ChartBar({
   xaxisLabels = true,
   yaxisLabels = true,
   barHeight = 20,
+  actualData,
+  component,
 }: Props) {
+  const barData = actualData?.find((d) => d.name === component?.dataMap);
+
+  const categories = barData?.data.map((b) => b.id);
+  const series = barData?.data.map((b) => b.count);
+
   const chartOptions = useChart({
     colors,
     stroke: { show: false },
@@ -46,7 +53,7 @@ export default function ChartBar({
       },
     },
     xaxis: {
-      categories,
+      categories: categories,
       labels: {
         show: xaxisLabels,
         formatter: (value: string) => value,

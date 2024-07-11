@@ -101,6 +101,20 @@ export const SUBJECTS = [
   { label: 'Group', value: 'group' },
 ];
 
+const ACTION_ITEMS = ['manage', 'create', 'read', 'update', 'delete'];
+
+export const SUBJECT_ACTIONS = {
+  all: ACTION_ITEMS,
+  beneficiary: ACTION_ITEMS,
+  group: ACTION_ITEMS,
+  fieldDefinition: ACTION_ITEMS,
+  role: ACTION_ITEMS,
+  settings: ACTION_ITEMS,
+  source: ACTION_ITEMS,
+  target: ACTION_ITEMS,
+  user: ACTION_ITEMS,
+};
+
 export const PERMISSIONS = [
   {
     id: 'manage',

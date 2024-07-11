@@ -112,7 +112,7 @@ export default function UsersTable({ table }: IProps) {
                 ) : (
                   <TableRow>
                     <TableCell
-                      colSpan={table.getAllColumns.length}
+                      colSpan={table.getAllColumns().length}
                       className="h-24 text-center"
                     >
                       No results.

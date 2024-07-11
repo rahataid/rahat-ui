@@ -16,9 +16,12 @@ import { paths } from '../../../routes/paths';
 export default function AuthPage() {
   const router = useRouter();
   // const { authQuery } = useRumsanService();
+  const [isEmailValid, setIsEmailValid] = React.useState<boolean>(false);
   const [otp, setOtp] = useState('');
   const [otpinputError, setOtpinputError] = useState(false);
   const [optSent, setOtpSent] = useState(false);
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
   const { address, challenge, service, setAddress, setChallenge, error } =
     useAuthStore((state) => ({
@@ -51,6 +54,12 @@ export default function AuthPage() {
     await verifyOtp({ otp, challenge, service });
     router.push(paths.dashboard.root);
   };
+
+  React.useEffect(() => {
+    if (address) {
+      setIsEmailValid(emailRegex.test(address));
+    }
+  }, [address]);
   return (
     <div className="h-full grid place-items-center relative">
       {/* <Link
@@ -98,7 +107,7 @@ export default function AuthPage() {
                     {error?.response?.data?.message}
                   </p>
                 )}
-                <Button type="submit" disabled={isPending}>
+                <Button type="submit" disabled={isPending || !isEmailValid}>
                   Send OTP
                 </Button>
               </div>
@@ -135,7 +144,9 @@ export default function AuthPage() {
                     }}
                   />
                 </div>
-                <Button type="submit">Verify</Button>
+                <Button type="submit" disabled={otp?.length !== 6}>
+                  Verify
+                </Button>
               </div>
             </form>
           )}
@@ -172,8 +183,7 @@ export default function AuthPage() {
           {!optSent && (
             <p className="text-muted-foreground text-sm">
               By clicking continue, you agree to our{' '}
-              <span className="underline font-medium">Terms of Service</span>{' '}
-              and{' '}
+              <span className="font-medium">Terms of Service</span> and{' '}
               <Link
                 target="_blank"
                 href={

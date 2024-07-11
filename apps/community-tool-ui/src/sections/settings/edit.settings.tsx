@@ -1,28 +1,54 @@
 'use client';
-import React from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useCommunitySettingUpdate } from '@rahat-ui/community-query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { FormField } from '@rahat-ui/shadcn/src/components/ui/form';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
-import { Form, useFieldArray, useForm } from 'react-hook-form';
-import { z } from 'zod';
-import { Minus, Plus } from 'lucide-react';
-import { Switch } from '@rahat-ui/shadcn/src/components/ui/switch';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useCommunitySettingCreate } from '@rahat-ui/community-query';
+import { Switch } from '@rahat-ui/shadcn/src/components/ui/switch';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/tooltip';
+import { Minus, Plus } from 'lucide-react';
+import React, { useEffect } from 'react';
+import { useFieldArray, useForm } from 'react-hook-form';
+import { z } from 'zod';
 
-export default function AddSetting() {
-  const communitySetting = useCommunitySettingCreate();
+type SettingsData = {
+  name: string;
+  requiredFields: [];
+  value: any;
+  isReadOnly: boolean;
+  isPrivate: boolean;
+};
+
+type IProps = {
+  closeSecondPanel: () => void;
+  settingData: SettingsData;
+};
+
+export default function EditSettings({
+  closeSecondPanel,
+  settingData,
+}: IProps) {
+  const updateCommunitySettings = useCommunitySettingUpdate();
   const FormSchema = z.object({
     name: z.string().min(1, { message: 'Name is required' }),
-    field: z.array(
-      z.object({
-        value: z.object({
-          key: z.string().min(1, { message: 'Key is required' }),
-          value: z.string().min(1, { message: 'Value is required' }),
-        }),
-      }),
-    ),
+    field: z
+      .array(
+        z
+          .object({
+            value: z.object({
+              key: z.string().min(1, { message: 'Key is required' }),
+              value: z.string().min(1, { message: 'Value is required' }),
+            }),
+          })
+          .optional(),
+      )
+      .optional(),
     requiredFields: z.array(
       z.string().min(1, { message: 'Required Fields is required' }),
     ),
@@ -38,11 +64,17 @@ export default function AddSetting() {
   } = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      name: '',
-      requiredFields: [''],
-      field: [{ value: { key: '', value: '' } }],
-      isPrivate: false,
-      isReadOnly: false,
+      name: (settingData && settingData?.name) || '',
+      requiredFields: settingData?.requiredFields || [],
+
+      field: Object.keys(settingData?.value).map((key) => ({
+        value: {
+          key: key,
+          value: settingData?.value[key],
+        },
+      })),
+      isPrivate: settingData.isPrivate || false,
+      isReadOnly: settingData.isReadOnly || false,
     },
   });
   const { fields, append, remove } = useFieldArray({
@@ -58,8 +90,8 @@ export default function AddSetting() {
       value: { key: '', value: '' },
     });
   };
-  const handleAddSetting = async (data: z.infer<typeof FormSchema>) => {
-    const result = data.field.reduce(
+  const handleEditSetting = async (data: z.infer<typeof FormSchema>) => {
+    const result = data?.field?.reduce(
       (acc: any, item: any) => {
         acc.value[item.value.key] = item.value.value;
         return acc;
@@ -74,15 +106,51 @@ export default function AddSetting() {
       isReadOnly: data.isReadOnly,
       isPrivate: data.isPrivate,
     };
-    await communitySetting.mutateAsync(finalSettingData);
-    reset();
+    await updateCommunitySettings.mutateAsync(finalSettingData);
+    closeSecondPanel();
   };
 
+  useEffect(() => {
+    reset({
+      name: settingData.name,
+      requiredFields: settingData.requiredFields,
+      field: Object.keys(settingData?.value).map((key) => ({
+        value: {
+          key: key,
+          value: settingData?.value[key],
+        },
+      })),
+      isPrivate: settingData.isPrivate,
+      isReadOnly: settingData.isReadOnly,
+    });
+  }, [settingData, reset]);
+
   return (
-    <form onSubmit={handleSubmit(handleAddSetting)}>
-      <div className="p-4 h-add rounded border bg-white">
-        <h1 className="text-lg font-semibold mb-6">Add Settings</h1>
-        <div className="shadow-md p-4 rounded-sm">
+    <div className="p-4 h-add rounded border bg-white">
+      <div className="flex justify-between items-center p-4 pb-1">
+        <TooltipProvider delayDuration={100}>
+          <Tooltip>
+            <TooltipTrigger>
+              <Label className="text-base">Edit</Label>
+            </TooltipTrigger>
+          </Tooltip>
+        </TooltipProvider>
+
+        <TooltipProvider delayDuration={100}>
+          <Tooltip>
+            <TooltipTrigger onClick={closeSecondPanel}>
+              <Minus size={20} strokeWidth={1.5} />
+            </TooltipTrigger>
+            <TooltipContent className="bg-secondary ">
+              <p className="text-xs font-medium">Close</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      </div>
+
+      <form onSubmit={handleSubmit(handleEditSetting)}>
+        {/* <div className="p-4 h-add rounded border bg-white"> */}
+        <div className="shadow-md p-4 rounded-sm border mt-5">
           <div className="grid grid-cols-5 gap-4 mb-4">
             <Label className="col-span-2">Name</Label>
             <Label className="col-span-2">Required Fields</Label>
@@ -93,7 +161,7 @@ export default function AddSetting() {
               name="name"
               render={({ field }) => (
                 <div className="col-span-2">
-                  <Input type="text" placeholder="Name" {...field} />
+                  <Input type="text" placeholder="Name" {...field} disabled />
 
                   {errors.name && (
                     <Label className="text-red-500">
@@ -241,7 +309,8 @@ export default function AddSetting() {
             <Button type="submit">Save</Button>
           </div>
         </div>
-      </div>
-    </form>
+        {/* </div> */}
+      </form>
+    </div>
   );
 }

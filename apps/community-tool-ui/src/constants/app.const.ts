@@ -108,7 +108,6 @@ export const SUBJECT_ACTIONS = {
   beneficiary: ACTION_ITEMS,
   group: ACTION_ITEMS,
   fieldDefinition: ACTION_ITEMS,
-  public: ACTION_ITEMS,
   role: ACTION_ITEMS,
   settings: ACTION_ITEMS,
   source: ACTION_ITEMS,

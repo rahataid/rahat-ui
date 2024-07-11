@@ -95,7 +95,10 @@ export default function GroupDetail({ uuid }: IProps) {
   const download = useCommunityGroupedBeneficiariesDownload();
   const removeCommunityGroup = useCommunityGroupRemove();
   const purgeCommunityGroup = usePurgeGroupedBeneficiary();
-  const { data: settingsData } = useCommunitySettingList();
+  const { data: settingsData } = useCommunitySettingList({
+    page: 1,
+    perPage: 300,
+  });
   const exportPinnedListBeneficiary = useExportPinnedListBeneficiary();
 
   const {
@@ -173,9 +176,11 @@ export default function GroupDetail({ uuid }: IProps) {
   };
 
   const handleExportPinnedBeneficiary = () => {
-    const filteredValue: any = settingsData?.data?.find(
-      (item: any) => item.name === SETTINGS_NAME.EXTERNAL_APPS,
-    )?.value;
+    const filteredValue: any =
+      settingsData &&
+      settingsData?.data?.rows?.find(
+        (item: any) => item.name === SETTINGS_NAME.EXTERNAL_APPS,
+      )?.value;
 
     const obj = filteredValue
       ? Object.entries(filteredValue).reduce((acc, [key, value]) => {

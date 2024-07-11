@@ -70,6 +70,14 @@ export default function TransactionTable({}) {
     setWalletAddressCopied(index);
   };
 
+  const [tranactionCopied, setTransactionCopied] =
+    React.useState<number>();
+
+  const clickToCopyTxn = (transactions: string, index: number) => {
+    navigator.clipboard.writeText(transactions);
+    setTransactionCopied(index);
+  };
+
   const columns: ColumnDef<Transaction>[] = [
     {
       accessorKey: 'topic',
@@ -166,36 +174,29 @@ export default function TransactionTable({}) {
         );
       },
       cell: ({ row }) => (
-        <div className="lowercase">
-          {truncateEthAddress(row.getValue('transactionHash'))}
-        </div>
-      ),
-    },
-    {
-      id: 'actions',
-      enableHiding: false,
-      cell: ({ row }) => {
-        const payment = row.original;
-
-        return (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0">
-                <span className="sr-only">Open menu</span>
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuItem
-                onClick={() => navigator.clipboard.writeText(payment.id)}
-              >
-                Copy payment Txhash
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        );
-      },
+        <TooltipProvider delayDuration={100}>
+          <Tooltip>
+            <TooltipTrigger
+              className="flex items-center gap-3 cursor-pointer"
+              onClick={() =>
+                clickToCopyTxn(row.getValue('transactionHash'), row.index)
+              }
+            >
+              <p>{truncateEthAddress(row.getValue('transactionHash'))}</p>
+              {tranactionCopied === row.index ? (
+                <CopyCheck size={15} strokeWidth={1.5} />
+              ) : (
+                <Copy className="text-slate-500" size={15} strokeWidth={1.5} />
+              )}
+            </TooltipTrigger>
+            <TooltipContent className="bg-secondary" side="bottom">
+              <p className="text-xs font-medium">
+                {walletAddressCopied === row.index ? 'copied' : 'click to copy'}
+              </p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      )
     },
   ];
 

@@ -7,23 +7,10 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
 
 const FreeVoucherInfo = ({ data }) => {
-  console.log("Eye voucher details", data)
   return (
     <div>
       <div className="mx-2 mt-2 rounded bg-card p-4 shadow">
         <div className="flex items-center justify-end">
-          <DropdownMenu>
-            <DropdownMenuTrigger>
-              {' '}
-              <Ellipsis />
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuLabel className="flex items-center justify-between">
-                <CirclePlus size={16} strokeWidth={0.95} />
-                Create Voucher
-              </DropdownMenuLabel>
-            </DropdownMenuContent>
-          </DropdownMenu>
         </div>
         <div className="flex items-center justify-between mt-2">
           <div>

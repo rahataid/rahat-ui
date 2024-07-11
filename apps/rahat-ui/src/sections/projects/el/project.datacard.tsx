@@ -1,6 +1,6 @@
 'use client';
 import DataCard from 'apps/rahat-ui/src/components/dataCard';
-import { Users } from 'lucide-react';
+import { Users ,DollarSign} from 'lucide-react';
 import { FC } from 'react';
 import Activities from './projects.activity';
 
@@ -52,6 +52,7 @@ const ProjectDataCard: FC<ProjectDataCardProps> = ({
               title="Total Vendors"
               number={totalVendor?.toLocaleString() || 'N/A'}
               loading={loading}
+              Icon={Users}
             />
             <DataCard
               title="Claims Pending"
@@ -70,6 +71,7 @@ const ProjectDataCard: FC<ProjectDataCardProps> = ({
               number={estimatedBudget?.toLocaleString() || 'N/A'}
               subtitle="Vouchers Assigned (Rp)"
               currency={data?.referredVoucherCurrency}
+              Icon={DollarSign}
               loading={loading}
             />
             <DataCard
@@ -77,7 +79,7 @@ const ProjectDataCard: FC<ProjectDataCardProps> = ({
               title="Actual Budget"
               number={actualBudget?.toLocaleString() || 'N/A'}
               subtitle="Vouchers Redeemed Value (Rp)"
-              Icon={Users}
+              Icon={DollarSign}
               refresh={refetchBeneficiary}
             />
           </div>

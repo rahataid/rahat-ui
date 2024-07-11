@@ -290,3 +290,11 @@ const exportReportToExcel = (exportData: []) => {
 
   XLSX.writeFile(workbook, 'community-dashboard-report.xlsx');
 };
+
+export const filterFieldDefs = (fieldDefs: any) => {
+  const filtered =
+    fieldDefs && fieldDefs.data.length
+      ? fieldDefs.data.filter((d: any) => d.isSystem === false)
+      : [];
+  return filtered;
+};

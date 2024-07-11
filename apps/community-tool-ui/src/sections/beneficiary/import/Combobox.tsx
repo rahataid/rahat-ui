@@ -41,8 +41,6 @@ export function ComboBox({
     if (selectedField) setValue(selectedField);
   }, []);
 
-  console.log({ value });
-
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
@@ -52,7 +50,9 @@ export function ComboBox({
           aria-expanded={open}
           className="w-[400px] justify-between"
         >
-          {value ? data.find((d: string) => d === value) : '--Select Field--'}
+          {value
+            ? data.find((d: string) => d.toLowerCase() === value.toLowerCase())
+            : '--Select Field--'}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
@@ -74,11 +74,10 @@ export function ComboBox({
                     key={d}
                     value={humanizeString(d)}
                     onSelect={(currentValue) => {
-                      console.log({ currentValue });
-                      const fomatted = currentValue
+                      const formatted = currentValue
                         .toLowerCase()
                         .replace(/ /g, '_');
-                      setValue(fomatted === value ? '' : fomatted);
+                      setValue(formatted === value ? '' : formatted);
                       setOpen(false);
                       handleTargetFieldChange(column, d);
                     }}

@@ -18,6 +18,7 @@ import { Role } from '@rumsan/sdk/types';
 import { ROLE_TYPE } from 'apps/community-tool-ui/src/constants/user.const';
 import { Minus } from 'lucide-react';
 import EditRole from './editRole';
+import ViewPermissions from './ViewPermissions';
 
 type IProps = {
   roleData: Role;
@@ -131,6 +132,24 @@ export default function RoleDetail({ roleData, closeSecondPanel }: IProps) {
                   </p>
                 </div>
               </div>
+            </CardContent>
+          </Card>
+
+          <Card className="shadow rounded m-2">
+            <CardHeader className="mb-0 pb-0">Assigned Permissions</CardHeader>
+            <CardContent className="pt-1">
+              {permissions &&
+                Object.keys(permissions).map((subject) => (
+                  <ViewPermissions
+                    key={subject}
+                    subject={subject}
+                    existingActions={
+                      permissions && permissions[subject]
+                        ? permissions[subject]
+                        : []
+                    }
+                  />
+                ))}
             </CardContent>
           </Card>
         </>

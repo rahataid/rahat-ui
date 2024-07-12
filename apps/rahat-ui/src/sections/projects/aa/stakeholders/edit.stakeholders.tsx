@@ -63,16 +63,18 @@ export default function EditStakeholders({ stakeholdersDetail }: IProps) {
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
-    defaultValues: {
-      name: stakeholdersDetail?.name,
-      phone: stakeholdersDetail?.phone || '',
-      email: stakeholdersDetail?.email || '',
-      designation: stakeholdersDetail?.designation,
-      organization: stakeholdersDetail?.organization,
-      district: stakeholdersDetail?.district,
-      municipality: stakeholdersDetail?.municipality,
-    },
+    defaultValues: {},
   });
+
+  React.useEffect(() => {
+    form.setValue('name', stakeholdersDetail?.name);
+    form.setValue('phone', stakeholdersDetail?.phone || '');
+    form.setValue('email', stakeholdersDetail?.email || '');
+    form.setValue('designation', stakeholdersDetail?.designation);
+    form.setValue('organization', stakeholdersDetail?.organization);
+    form.setValue('district', stakeholdersDetail?.district);
+    form.setValue('municipality', stakeholdersDetail?.municipality);
+  }, [stakeholdersDetail]);
 
   const handleEditStakeholders = async (data: z.infer<typeof FormSchema>) => {
     try {

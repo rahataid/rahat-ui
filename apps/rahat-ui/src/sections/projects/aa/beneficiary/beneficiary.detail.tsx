@@ -344,14 +344,14 @@ export default function BeneficiaryDetail({
                     <Card className="shadow rounded">
                       <CardContent className="pt-6">
                         <div className="grid grid-cols-2 gap-3">
-                          <div>
+                          {/* <div>
                             <p className="font-light text-base">
                               {beneficiaryDetails?.type}
                             </p>
                             <p className="text-sm font-normal text-muted-foreground">
                               Beneficiary Type
                             </p>
-                          </div>
+                          </div> */}
                           <div className="text-right">
                             <p className="font-light text-base">
                               {beneficiaryDetails?.gender}

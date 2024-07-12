@@ -5,23 +5,23 @@ import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Eye } from 'lucide-react';
 import { IActivitiesItem } from '../../../../types/activities';
 
-function getPhaseBg(phase: string){
-  if(phase === 'PREPAREDNESS'){
-    return 'bg-yellow-200'
+function getPhaseBg(phase: string) {
+  if (phase === 'PREPAREDNESS') {
+    return 'bg-yellow-200';
   }
 
-  if(phase === 'READINESS'){
-    return 'bg-green-200'
+  if (phase === 'READINESS') {
+    return 'bg-green-200';
   }
 
-  if(phase === 'ACTIVATION'){
-    return 'bg-red-200'
+  if (phase === 'ACTIVATION') {
+    return 'bg-red-200';
   }
 
-  return ''
+  return '';
 }
 
-function getStatusBg(status: string){
+function getStatusBg(status: string) {
   if (status === 'NOT_STARTED') {
     return 'bg-gray-200';
   }
@@ -46,28 +46,28 @@ export default function useActivitiesTableColumn() {
   const router = useRouter();
 
   const columns: ColumnDef<IActivitiesItem>[] = [
-    {
-      id: 'select',
-      header: ({ table }) => (
-        <Checkbox
-          checked={
-            table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && 'indeterminate')
-          }
-          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-          aria-label="Select all"
-        />
-      ),
-      cell: ({ row }) => (
-        <Checkbox
-          checked={row.getIsSelected()}
-          onCheckedChange={(value) => row.toggleSelected(!!value)}
-          aria-label="Select row"
-        />
-      ),
-      enableSorting: false,
-      enableHiding: false,
-    },
+    // {
+    //   id: 'select',
+    //   header: ({ table }) => (
+    //     <Checkbox
+    //       checked={
+    //         table.getIsAllPageRowsSelected() ||
+    //         (table.getIsSomePageRowsSelected() && 'indeterminate')
+    //       }
+    //       onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+    //       aria-label="Select all"
+    //     />
+    //   ),
+    //   cell: ({ row }) => (
+    //     <Checkbox
+    //       checked={row.getIsSelected()}
+    //       onCheckedChange={(value) => row.toggleSelected(!!value)}
+    //       aria-label="Select row"
+    //     />
+    //   ),
+    //   enableSorting: false,
+    //   enableHiding: false,
+    // },
     {
       accessorKey: 'title',
       header: 'Title',
@@ -86,13 +86,11 @@ export default function useActivitiesTableColumn() {
       accessorKey: 'phase',
       header: 'Phase',
       cell: ({ row }) => {
-        const phase = row.getValue('phase') as string
-        const bgColor = getPhaseBg(phase)
+        const phase = row.getValue('phase') as string;
+        const bgColor = getPhaseBg(phase);
         return (
-          <Badge className={`rounded-md capitalize ${bgColor}`}>
-            {phase}
-          </Badge>
-        )
+          <Badge className={`rounded-md capitalize ${bgColor}`}>{phase}</Badge>
+        );
       },
     },
     {
@@ -123,18 +121,16 @@ export default function useActivitiesTableColumn() {
       accessorKey: 'status',
       header: 'Status',
       cell: ({ row }) => {
-        const status = row.getValue('status') as string
-        const bgColor = getStatusBg(status)
+        const status = row.getValue('status') as string;
+        const bgColor = getStatusBg(status);
         return (
           <div className="flex gap-1">
-            <Badge
-              className={`rounded-md capitalize ${bgColor}`}
-            >
+            <Badge className={`rounded-md capitalize ${bgColor}`}>
               {status}
             </Badge>
           </div>
-        )
-      } ,
+        );
+      },
     },
     {
       id: 'actions',

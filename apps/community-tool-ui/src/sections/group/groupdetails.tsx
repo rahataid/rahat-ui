@@ -71,6 +71,7 @@ import CustomPagination from '../../components/customPagination';
 import { SETTINGS_NAME } from '../../constants/settings.const';
 import GroupDetailTable from './group.table';
 import { useCommunityGroupDeailsColumns } from './useGroupColumns';
+import { deHumanizeString, simpleString } from '../../utils';
 
 type IProps = {
   uuid: string;
@@ -175,6 +176,7 @@ export default function GroupDetail({ uuid }: IProps) {
     Swal.fire('Please select beneficiary to delete', '', 'warning');
   };
 
+  console.log('fieldDef', listFieldDef);
   const handleExportPinnedBeneficiary = () => {
     const filteredValue: any =
       settingsData &&
@@ -197,17 +199,20 @@ export default function GroupDetail({ uuid }: IProps) {
 
   const handleSelectChange = (item) => {
     if (item === 'Select All') {
-      const rdata = listFieldDef?.data?.map((item: any) => item.name);
+      const rdata = listFieldDef?.data?.map((item: any) =>
+        simpleString(item.name),
+      );
       setLabels(rdata);
       return;
     }
-    const merged = [...labels, item];
+    const merged = [...labels, simpleString(item)];
     setLabels(merged);
   };
 
   const selectables =
-    listFieldDef?.data?.filter((item: any) => !labels.includes(item.name)) ||
-    [];
+    listFieldDef?.data?.filter(
+      (item: any) => !labels.includes(simpleString(item.name)),
+    ) || [];
 
   const sortedSelectables = [
     { uuid: 'select-all', name: 'Select All' },
@@ -229,11 +234,14 @@ export default function GroupDetail({ uuid }: IProps) {
 
     const rawData = response?.data?.data;
 
+    console.log(rawData);
     const filteredData = rawData.map((item: Record<string, any>) => {
       const filteredItem: Record<string, any> = {};
       labels.forEach((key) => {
-        if (item.hasOwnProperty(key)) {
-          filteredItem[key] = item[key];
+        const dehumanizedString = deHumanizeString(key as string);
+
+        if (item.hasOwnProperty(dehumanizedString)) {
+          filteredItem[dehumanizedString] = item[dehumanizedString];
         }
       });
       return filteredItem;
@@ -422,7 +430,7 @@ export default function GroupDetail({ uuid }: IProps) {
                               value={item.name}
                               onSelect={() => handleSelectChange(item.name)}
                             >
-                              {item.name}
+                              {simpleString(item.name)}
                             </CommandItem>
                           ))}
                         </CommandGroup>

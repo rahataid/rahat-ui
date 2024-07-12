@@ -229,6 +229,16 @@ function truncateString(inputStr: string, length: number) {
   return inputStr;
 }
 
+export const simpleString = (inputString: string) => {
+  inputString = inputString?.replace(/_/g, ' ');
+  return truncateString(inputString, 50);
+};
+export const deHumanizeString = (inputString: string) => {
+  inputString = inputString.replace(/ /g, '_');
+
+  return inputString;
+};
+
 export function formatDate(date: Date) {
   const changedDate = new Date(date);
   const year = changedDate.getFullYear();

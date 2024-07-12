@@ -1,3 +1,4 @@
+import React from 'react';
 import { useParams } from 'next/navigation';
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { useDailyMonitoring, usePagination } from '@rahat-ui/query';
@@ -11,10 +12,14 @@ import { UUID } from 'crypto';
 export default function DailyMonitoringListView() {
   const params = useParams();
   const projectId = params.id as UUID;
-  const { pagination, setNextPage, setPrevPage, setPerPage } = usePagination();
+  const { pagination, setNextPage, setPrevPage, setPerPage, setPagination } =
+    usePagination();
+  React.useEffect(() => {
+    setPagination({ page: 1, perPage: 10 });
+  }, []);
   const columns = useDailyMonitoringTableColumn();
 
-  const { data: MonitoringData } = useDailyMonitoring(projectId, {});
+  const { data: MonitoringData } = useDailyMonitoring(projectId, pagination);
 
   const table = useReactTable({
     manualPagination: true,
@@ -40,20 +45,22 @@ export default function DailyMonitoringListView() {
       <div className="border bg-card rounded">
         <DailyMonitoringTable table={table} />
         <CustomPagination
-          meta={{
-            total: 0,
-            currentPage: 0,
-            lastPage: 0,
-            perPage: 0,
-            next: null,
-            prev: null,
-          }}
+          meta={
+            MonitoringData?.meta || {
+              total: 0,
+              currentPage: 0,
+              lastPage: 0,
+              perPage: 0,
+              next: null,
+              prev: null,
+            }
+          }
           handleNextPage={setNextPage}
           handlePrevPage={setPrevPage}
           handlePageSizeChange={setPerPage}
           currentPage={pagination.page}
           perPage={pagination.perPage}
-          total={0}
+          total={MonitoringData?.meta?.lastPage || 0}
         />
       </div>
     </div>

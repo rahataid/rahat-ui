@@ -12,6 +12,7 @@ import { Label } from '@rahat-ui/shadcn/components/label';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import { paths } from '../../../routes/paths';
+import { toast } from 'react-toastify';
 
 export default function AuthPage() {
   const router = useRouter();
@@ -36,13 +37,16 @@ export default function AuthPage() {
   const { mutateAsync: requestOtp, isSuccess, isPending } = useRequestOtp();
   const { mutateAsync: verifyOtp } = useVerifyOtp();
 
-  const onRequestOtp = async (e: React.SyntheticEvent) => {
+  const onRequestOtp = async (e: React.SyntheticEvent, resendOtp?: boolean) => {
     e.preventDefault();
     await requestOtp({
       address,
       service,
     }).then((data) => {
       if (data.data.challenge) {
+        if (resendOtp) {
+          return toast.success('Otp successfully re-sent');
+        }
         setOtpSent(true);
       }
     });
@@ -161,9 +165,9 @@ export default function AuthPage() {
             </Button> */}
             <span
               className="underline font-medium ml-2 cursor-pointer"
-              onClick={() => {
+              onClick={(e) => {
                 setOtp('');
-                optSent && setOtpSent(false);
+                onRequestOtp(e, true);
               }}
             >
               {!optSent ? 'Get Started' : 'Resend'}

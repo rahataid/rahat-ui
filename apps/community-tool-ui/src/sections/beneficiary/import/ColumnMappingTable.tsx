@@ -1,13 +1,18 @@
+import { useBeneficiaryImportStore } from '@rahat-ui/community-query';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
-import { isURL, truncatedText } from 'apps/community-tool-ui/src/utils';
+import {
+  CAMEL_CASE_PRIMARY_FIELDS,
+  isURL,
+  PRIMARY_FILED_MAP,
+  truncatedText,
+} from 'apps/community-tool-ui/src/utils';
 import React, { useState } from 'react';
 import { ComboBox } from './Combobox';
-import { useBeneficiaryImportStore } from '@rahat-ui/community-query';
 
 interface ColumnMappingTableProps {
   rawData: any[];
@@ -16,7 +21,16 @@ interface ColumnMappingTableProps {
   mappings: any[];
 }
 
-const myMappings = [] as any;
+interface IMapping {
+  sourceField: string;
+  targetField: string;
+}
+
+let myMappings: IMapping[] = [];
+
+export const resetMyMappings = () => {
+  myMappings = [];
+};
 
 export default function ColumnMappingTable({
   rawData,
@@ -66,22 +80,25 @@ export default function ColumnMappingTable({
       if (!found) return '';
       return found.targetField;
     } else {
-      // Search for match
+      // Search for variation match
       const found = findFieldName(sourceField);
       if (!found) return '';
-      myMappings.push({
-        sourceField: found.sourceField,
-        targetField: found.targetField,
-      });
+      if (found) {
+        myMappings.push({
+          sourceField: found.sourceField,
+          targetField: found.targetField,
+        });
+      }
+
       const filtered = filterUniqueTargetsOnly(myMappings, 'targetField');
       setMappings(filtered);
       return found.targetField;
     }
   }
 
-  function filterUniqueTargetsOnly(arr: [], key: string) {
+  function filterUniqueTargetsOnly(arr: IMapping[], key: string) {
     const seen = new Set();
-    return arr.filter((item) => {
+    return arr.filter((item: any) => {
       const keyValue = item[key];
       if (seen.has(keyValue)) {
         return false;
@@ -91,16 +108,19 @@ export default function ColumnMappingTable({
     });
   }
 
-  function findFieldName(inputField: string) {
-    const normalizedInput = inputField.toLowerCase().trim();
-
-    const field = fieldDefs.find((field: any) =>
-      field.variations.some(
-        (v: any) => v.toLowerCase().trim() === normalizedInput,
-      ),
+  function findFieldName(sourceField: string) {
+    const found = fieldDefs.find((f: any) =>
+      f.variations.includes(sourceField),
     ) as any;
 
-    return field ? { sourceField: inputField, targetField: field.name } : null;
+    if (!found) return null;
+    let targetF = found.name;
+    const fieldName = found.name.toLowerCase();
+    if (CAMEL_CASE_PRIMARY_FIELDS.includes(fieldName)) {
+      targetF = PRIMARY_FILED_MAP[fieldName];
+    }
+
+    return { sourceField: sourceField, targetField: targetF };
   }
 
   return (

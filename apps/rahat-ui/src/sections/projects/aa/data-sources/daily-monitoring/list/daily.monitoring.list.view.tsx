@@ -12,14 +12,29 @@ import { UUID } from 'crypto';
 export default function DailyMonitoringListView() {
   const params = useParams();
   const projectId = params.id as UUID;
-  const { pagination, setNextPage, setPrevPage, setPerPage, setPagination } =
-    usePagination();
+  const [userSearchText, setUserSearchText] = React.useState<string>('');
+  const [locationFilterItem, setLocationFilterItem] =
+    React.useState<string>('');
+  const [dateFilterItem, setDateFilterItem] = React.useState<string>('');
+
+  const {
+    pagination,
+    filters,
+    setNextPage,
+    setPrevPage,
+    setPerPage,
+    setPagination,
+    setFilters,
+  } = usePagination();
   React.useEffect(() => {
     setPagination({ page: 1, perPage: 10 });
   }, []);
   const columns = useDailyMonitoringTableColumn();
 
-  const { data: MonitoringData } = useDailyMonitoring(projectId, pagination);
+  const { data: MonitoringData } = useDailyMonitoring(projectId, {
+    ...pagination,
+    ...filters,
+  });
 
   const table = useReactTable({
     manualPagination: true,
@@ -28,12 +43,36 @@ export default function DailyMonitoringListView() {
     getCoreRowModel: getCoreRowModel(),
   });
 
-  const handleSearch = () => {};
-  const handleFilter = () => {};
+  const handleFilter = React.useCallback(
+    (key: string, value: any) => {
+      if (value === 'all') {
+        setFilters({ ...filters, [key]: null });
+        return;
+      }
+      setFilters({ ...filters, [key]: value });
+    },
+    [filters],
+  );
+
+  const handleSearch = React.useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      setFilters({ ...filters, dataEntryBy: event.target.value });
+    },
+    [filters],
+  );
+
+  React.useEffect(() => {
+    setLocationFilterItem(filters?.location ?? '');
+    setUserSearchText(filters?.dataEntryBy ?? '');
+    setDateFilterItem(filters?.createdAt ?? '');
+  }, [filters]);
   return (
     <div className="p-1 bg-secondary">
       <div className="flex gap-2 items-center mb-2">
         <DailyMonitoringTableFilters
+          user={userSearchText}
+          location={locationFilterItem}
+          date={dateFilterItem}
           handleSearch={handleSearch}
           handleFilter={handleFilter}
         />

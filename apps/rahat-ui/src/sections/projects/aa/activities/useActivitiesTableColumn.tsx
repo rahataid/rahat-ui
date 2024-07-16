@@ -145,6 +145,20 @@ export default function useActivitiesTableColumn() {
       } ,
     },
     {
+      accessorKey: 'completedAt',
+      header: 'Completed At',
+      cell: ({ row }) => {
+        const completedAt = row.getValue('completedAt') as string;
+        if(completedAt){
+          const d =  new Date(completedAt)
+          const localeDate = d.toLocaleDateString()
+          const localeTime = d.toLocaleTimeString()
+          return `${localeDate} ${localeTime}`
+        }
+        return 'N/A'
+      },
+    },
+    {
       id: 'actions',
       enableHiding: false,
       cell: ({ row }) => {

@@ -3,6 +3,7 @@
 import {
   PROJECT_SETTINGS_KEYS,
   useAssignClaimsToBeneficiary,
+  useBulkAllocateTokens,
   useFindOneDisbursement,
   useProjectSettingsStore,
   useReadCvaProjectBeneficiaryClaims,
@@ -70,7 +71,9 @@ export default function BeneficiaryDetail({
     (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT] || null,
   );
 
-  const assignToken = useAssignClaimsToBeneficiary();
+  const assignToken = useBulkAllocateTokens(
+    contractSettings?.rahattoken?.address,
+  );
   const allocatedTokens = useFindOneDisbursement(id, {
     walletAddress: beneficiaryDetails?.walletAddress,
   });
@@ -102,10 +105,11 @@ export default function BeneficiaryDetail({
   };
 
   const handleAssignSubmit = async (numberOfTokens: string) => {
-    const ass = await assignToken.mutateAsync({
-      beneficiary: beneficiaryDetails.walletAddress,
-      projectAddress: contractSettings?.rpproject?.address,
-      tokenAmount: numberOfTokens,
+    await assignToken.mutateAsync({
+      beneficiary: (beneficiaryDetails.walletAddress as `0x${string}`) ?? '0x0',
+      tokenAddress: contractSettings?.rahattoken?.address,
+      projectAddress: contractSettings?.rahatpayrollproject?.address,
+      tokenAmount: numberOfTokens ?? '0',
     });
   };
 

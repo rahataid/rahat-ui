@@ -81,8 +81,6 @@ const CreateTokenFlow = () => {
   useEffect(() => {
     if (result?.data) {
       setBlockNumber(Number(result.data.blockNumber));
-      console.log(result.data);
-      console.log(Number(result.data.blockNumber));
       setIsTransacting(false);
     }
   }, [result.isFetching]);
@@ -125,7 +123,6 @@ const CreateTokenFlow = () => {
       .map(([_, validation]) => validation.message);
 
     if (validationErrors.length > 0) {
-      console.log(validationErrors);
       alert(validationErrors.join('\n'));
       return;
     }
@@ -148,11 +145,14 @@ const CreateTokenFlow = () => {
       description: stepData.description,
       decimals: 18,
       // TODO
-      manager: appContracts?.RAHATACCESSMANAGER?.ADDRESS as `0x${string}`,
-      rahatTreasuryAddress: appContracts?.RAHATTREASURY
-        ?.ADDRESS as `0x${string}`,
+      manager: appContracts?.rahataccessmanager?.address as `0x${string}`,
+      rahatTreasuryAddress: appContracts?.rahattreasury
+        ?.address as `0x${string}`,
       initialSupply: stepData.initialSupply,
+      rahatForwarderAddress: appContracts?.rahatforwarder
+        ?.address as `0x${string}`,
     });
+
     setTransactionHash(result as `0x${string}`);
   };
   const renderComponent = () => {

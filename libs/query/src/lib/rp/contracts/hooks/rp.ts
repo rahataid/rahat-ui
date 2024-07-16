@@ -1,19 +1,18 @@
 import { useRSQuery } from '@rumsan/react-query';
 import { useMutation } from '@tanstack/react-query';
+import { useRouter } from 'next/navigation';
 import Swal from 'sweetalert2';
-import { encodeFunctionData, formatUnits } from 'viem';
+import { formatUnits } from 'viem';
 import {
-  rahatPayrollProjectAbi,
   useReadRahatPayrollProjectTotalAllocated,
   useReadRahatTokenDecimals,
+  useWriteRahatPayrollProjectAllocateToken,
   useWriteRahatPayrollProjectMulticall,
   useWriteRahatTreasuryCreateToken,
   useWriteRahatTreasuryTransferToken,
 } from '../generated-hooks';
-import { useRouter } from 'next/navigation';
 
 export const useTokenCreate = () => {
-  const { queryClient } = useRSQuery();
   const treasuryCreateToken = useWriteRahatTreasuryCreateToken();
 
   const alert = Swal.mixin({
@@ -23,59 +22,58 @@ export const useTokenCreate = () => {
     timer: 3000,
   });
 
-  return useMutation(
-    {
-      onSuccess: async () => {
-        alert.fire({
-          icon: 'success',
-          title: 'Token Created Successfully',
-        });
-      },
-
-      onError: (error) => {
-        console.log('error', error.message);
-        alert.fire({
-          icon: 'error',
-          title: 'Error minting and approving token',
-          text: 'Error Creating Token',
-        });
-      },
-
-      mutationFn: async ({
-        name,
-        symbol,
-        description,
-        decimals,
-        manager,
-        rahatTreasuryAddress,
-        initialSupply,
-      }: {
-        name: string;
-        symbol: string;
-        description: string;
-        decimals: number;
-        manager: `0x${string}`;
-        rahatTreasuryAddress: `0x${string}`;
-        initialSupply: string;
-      }) => {
-        const value = await treasuryCreateToken.writeContractAsync({
-          args: [
-            name,
-            symbol,
-            description,
-            decimals,
-            BigInt(initialSupply),
-            rahatTreasuryAddress,
-            manager,
-          ],
-          address: rahatTreasuryAddress,
-        });
-
-        return value;
-      },
+  return useMutation({
+    onSuccess: async () => {
+      alert.fire({
+        icon: 'success',
+        title: 'Token Created Successfully',
+      });
     },
-    queryClient,
-  );
+
+    onError: (error) => {
+      console.log('errwagor', error.message);
+      alert.fire({
+        icon: 'error',
+        title: 'Error minting and approving token',
+        text: 'Error Creating Token',
+      });
+    },
+
+    mutationFn: async ({
+      name,
+      symbol,
+      description,
+      decimals,
+      manager,
+      rahatTreasuryAddress,
+      initialSupply,
+      rahatForwarderAddress,
+    }: {
+      name: string;
+      symbol: string;
+      description: string;
+      decimals: number;
+      manager: `0x${string}`;
+      rahatTreasuryAddress: `0x${string}`;
+      initialSupply: string;
+      rahatForwarderAddress: `0x${string}`;
+    }) => {
+      const value = await treasuryCreateToken.writeContractAsync({
+        args: [
+          name,
+          symbol,
+          description,
+          decimals,
+          BigInt(initialSupply),
+          rahatTreasuryAddress,
+          manager,
+          rahatForwarderAddress,
+        ],
+        address: rahatTreasuryAddress,
+      });
+      return value;
+    },
+  });
 };
 
 // export const useBulkAssignClaimsToBeneficiaries = () => {
@@ -138,9 +136,11 @@ export const useTokenCreate = () => {
 //   );
 // };
 
+//TODO: Bulk Allocate
 export const useBulkAllocateTokens = (tokenAddress: any) => {
-  const multi = useWriteRahatPayrollProjectMulticall();
   const { queryClient } = useRSQuery();
+  const allocateToken = useWriteRahatPayrollProjectAllocateToken();
+
   const decimals = useReadRahatTokenDecimals({
     address: tokenAddress,
   });
@@ -167,45 +167,45 @@ export const useBulkAllocateTokens = (tokenAddress: any) => {
           icon: 'success',
           title: 'Tokens allocated successfully',
         });
-        // queryClient.invalidateQueries({
-        //   queryKey: ['ProjectDetails', projectAddress],
-        // });
-        // console.log('success', d);
       },
       mutationFn: async ({
-        beneficiaryAddresses,
+        beneficiary,
         tokenAddress,
         projectAddress,
+        tokenAmount = '0',
       }: {
-        beneficiaryAddresses: {
-          walletAddress: `0x${string}`;
-          amount: number;
-        }[];
-        amount?: string;
+        beneficiary: `0x${string}`;
         tokenAddress: `0x${string}`;
         projectAddress: `0x${string}`;
+        tokenAmount?: string;
       }) => {
-        const encodeAllocateTokens = beneficiaryAddresses.map((beneficiary) => {
-          return encodeFunctionData({
-            abi: rahatPayrollProjectAbi,
-            functionName: 'allocateToken',
-            args: [
-              tokenAddress,
-              beneficiary.walletAddress,
-              // @ts-ignore
-              formatUnits(
-                BigInt(beneficiary.amount), // Convert to bigint using BigInt function
-                decimals.data as number,
-              ),
-              // parseEther(beneficiary.amount.toString()),
-            ],
-          });
-        });
-
-        await multi.writeContractAsync({
-          args: [encodeAllocateTokens],
+        return allocateToken.writeContractAsync({
+          args: [tokenAddress, beneficiary, BigInt(tokenAmount)],
           address: projectAddress,
         });
+        // const encodeAllocateTokens = beneficiary.map((beneficiary) => {
+        //   return encodeFunctionData({
+        //     abi: rahatPayrollProjectAbi,
+        //     functionName: 'allocateToken',
+        //     args: [
+        //       tokenAddress,
+        //       beneficiary.walletAddress,
+        //       // @ts-ignore
+        //       formatUnits(
+        //         BigInt(beneficiary.amount), // Convert to bigint using BigInt function
+        //         (decimals.data as number) ?? 18,
+        //       ),
+        //       // parseEther(beneficiary.amount.toString()),
+        //     ],
+        //   });
+        // });
+
+        // console.log({ encodeAllocateTokens });
+
+        // await multi.writeContractAsync({
+        //   args: [encodeAllocateTokens],
+        //   address: projectAddress,
+        // });
       },
     },
     queryClient,

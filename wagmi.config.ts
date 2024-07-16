@@ -23,8 +23,8 @@ import { C2CProjectABI, RahatTokenABI } from './abis/c2c';
 
 import { rahatAccessManagerAbi } from './abis/rp/RahatAccessManager';
 import { rahatPayrollProjectAbi } from './abis/rp/RahatPayrollProject';
-import { rahatTokenAbi } from './abis/rp/RahatToken';
-import { rahatTreasuryAbi } from './abis/rp/RahatTreasury';
+import { rahatTokenAbi as RPRahatTokenAbi } from './abis/rp/RahatToken';
+import { rahatTreasuryAbi as RPRahatTreasuryAbi } from './abis/rp/RahatTreasury';
 import { vendorAbi } from './abis/rp/Vendor';
 
 const ELConfig = [
@@ -195,7 +195,7 @@ const RPConfig = [
     contracts: [
       {
         name: 'RahatToken',
-        abi: rahatTokenAbi,
+        abi: RPRahatTokenAbi,
       },
     ],
     plugins: [react()],
@@ -235,7 +235,7 @@ const RPConfig = [
     contracts: [
       {
         name: 'RahatTreasury',
-        abi: rahatTreasuryAbi,
+        abi: RPRahatTreasuryAbi,
       },
     ],
     plugins: [react()],

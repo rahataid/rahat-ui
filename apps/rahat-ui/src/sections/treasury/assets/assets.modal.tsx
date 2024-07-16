@@ -30,18 +30,11 @@ export function AssetsModal() {
 
   const handleSendFunds = async () => {
     if (selectedProject) {
-      // Replace this with the actual function to send funds
-      // console.log('Sending funds to project with address:', {
-      //   amount,
-      //   projectAddress: selectedProject,
-      //   tokenAddress: appContracts?.RAHATTOKEN?.ADDRESS,
-      //   treasuryAddress: appContracts?.RAHATTREASURY?.ADDRESS,
-      // });
       await sendFundToProject.mutateAsync({
         amount,
         projectAddress: selectedProject,
-        tokenAddress: appContracts?.RAHATTOKEN?.ADDRESS,
-        treasuryAddress: appContracts?.RAHATTREASURY?.ADDRESS,
+        tokenAddress: appContracts?.rahattoken?.address,
+        treasuryAddress: appContracts?.rahattreasury?.address,
       });
     } else {
       console.log('No project selected');
@@ -127,7 +120,6 @@ export function AssetsModal() {
                   <DropdownMenu.Item
                     key={project?.id}
                     onSelect={() =>
-
                       handleSelectProject(project?.contractAddress)
                     }
                     className="p-2 hover:bg-gray-100 cursor-pointer"

@@ -233,6 +233,11 @@ export const rahatTreasuryAbi = [
         name: '_manager',
         type: 'address',
       },
+      {
+        internalType: 'address',
+        name: '_forwarder',
+        type: 'address',
+      },
     ],
     name: 'createToken',
     outputs: [

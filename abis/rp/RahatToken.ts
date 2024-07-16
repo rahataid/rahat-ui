@@ -36,6 +36,11 @@ export const rahatTokenAbi = [
         name: '_manager',
         type: 'address',
       },
+      {
+        internalType: 'address',
+        name: '_forwarder',
+        type: 'address',
+      },
     ],
     stateMutability: 'nonpayable',
     type: 'constructor',
@@ -458,6 +463,25 @@ export const rahatTokenAbi = [
     type: 'function',
   },
   {
+    inputs: [
+      {
+        internalType: 'address',
+        name: 'forwarder',
+        type: 'address',
+      },
+    ],
+    name: 'isTrustedForwarder',
+    outputs: [
+      {
+        internalType: 'bool',
+        name: '',
+        type: 'bool',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
     inputs: [],
     name: 'listOwners',
     outputs: [
@@ -648,6 +672,19 @@ export const rahatTokenAbi = [
       },
     ],
     stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'trustedForwarder',
+    outputs: [
+      {
+        internalType: 'address',
+        name: '',
+        type: 'address',
+      },
+    ],
+    stateMutability: 'view',
     type: 'function',
   },
 ] as const;

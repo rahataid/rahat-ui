@@ -155,6 +155,7 @@ export const rahatTreasuryAbi = [
       { name: '_initialSupply', internalType: 'uint256', type: 'uint256' },
       { name: '_to', internalType: 'address', type: 'address' },
       { name: '_manager', internalType: 'address', type: 'address' },
+      { name: '_forwarder', internalType: 'address', type: 'address' },
     ],
     name: 'createToken',
     outputs: [{ name: '', internalType: 'address', type: 'address' }],

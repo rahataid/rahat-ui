@@ -101,7 +101,7 @@ const ProjectInfo: FC<ProjectInfoProps> = ({ project }) => {
   const reportsCardsUI = useMemo(() => tempReport?.datacards, []);
   const reportsCardsData = useMemo(
     () => [
-      { name: 'BENEFICIARIES', data: data?.count },
+      { name: 'BENEFICIARIES', data: data?.count ?? '0' },
       { name: 'BALANCE', data: Number(tokenBalance?.data) || 'N/A' },
       { name: 'DISTRIBUTED', data: 0 },
       { name: 'CAMPAIGNS', data: 0 },

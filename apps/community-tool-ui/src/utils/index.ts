@@ -173,7 +173,7 @@ export const splitValidAndInvalid = (payload: any[], errors: []) => {
   return { invalidData: swapped, validData };
 };
 
-export const exportDataToExcel = (data: []) => {
+export const exportDataToExcel = (data: any[]) => {
   const currentDate = new Date().getTime();
   const fileName = `Invalid_Beneficiary_${currentDate}.xlsx`;
   const worksheet = XLSX.utils.json_to_sheet(data);
@@ -228,6 +228,16 @@ function truncateString(inputStr: string, length: number) {
   }
   return inputStr;
 }
+
+export const simpleString = (inputString: string) => {
+  inputString = inputString?.replace(/_/g, ' ');
+  return truncateString(inputString, 50);
+};
+export const deHumanizeString = (inputString: string) => {
+  inputString = inputString.replace(/ /g, '_');
+
+  return inputString;
+};
 
 export function formatDate(date: Date) {
   const changedDate = new Date(date);
@@ -287,4 +297,50 @@ export const filterFieldDefs = (fieldDefs: any) => {
       ? fieldDefs.data.filter((d: any) => d.isSystem === false)
       : [];
   return filtered;
+};
+
+export const capitalizeFirstLetter = (str: string) => {
+  if (!str) return '-';
+  return str.charAt(0).toUpperCase() + str.slice(1);
+};
+
+export const PRIMARY_FILED_MAP: any = {
+  firstname: 'firstName',
+  lastname: 'lastName',
+  birthdate: 'birthDate',
+  govtidnumber: 'govtIDNumber',
+  walletaddress: 'walletAddres',
+  bankedstatus: 'bankedStatus',
+  internetstatus: 'internetStatus',
+  phonestatus: 'phonestatus',
+};
+
+export const CAMEL_CASE_PRIMARY_FIELDS = [
+  'firstname',
+  'lastname',
+  'birthdate',
+  'govtidnumber',
+  'walletaddress',
+  'bankedstatus',
+  'internetstatus',
+  'phonestatus',
+];
+
+export const transformExportKeys = (array: []) => {
+  if (!array.length) return [];
+  return array.map((obj: any) => {
+    const transformedObj = {} as any;
+    for (let key in obj) {
+      if (key === 'govtIDNumber') {
+        transformedObj[key] = obj[key];
+      } else {
+        let newKey = key
+          .toLowerCase()
+          .replace(/_/g, ' ')
+          .replace(/\b\w/g, (char) => char.toUpperCase());
+        transformedObj[newKey] = obj[key];
+      }
+    }
+    return transformedObj;
+  });
 };

@@ -212,7 +212,9 @@ export default function ConfigurePhase({
                     <div className="flex gap-2 items-center">
                       <div
                         className={`p-2 rounded border ${
-                          minusBtnDisabled ? 'pointer-events-none' : ''
+                          minusBtnDisabled
+                            ? 'pointer-events-none'
+                            : 'cursor-pointer'
                         }`}
                         onClick={handleSliderMinus}
                       >
@@ -223,7 +225,9 @@ export default function ConfigurePhase({
                       </div>
                       <div
                         className={`p-2 rounded border ${
-                          plusBtnDisabled ? 'pointer-events-none' : ''
+                          plusBtnDisabled
+                            ? 'pointer-events-none'
+                            : 'cursor-pointer'
                         }`}
                         onClick={handleSliderPlus}
                       >

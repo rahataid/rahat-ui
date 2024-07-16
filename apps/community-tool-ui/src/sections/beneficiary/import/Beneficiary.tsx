@@ -16,6 +16,7 @@ import {
   removeFieldsWithUnderscore,
   splitFullName,
   splitValidAndInvalid,
+  transformExportKeys,
 } from 'apps/community-tool-ui/src/utils';
 import { ArrowBigLeft, ArrowBigRight } from 'lucide-react';
 import React from 'react';
@@ -34,7 +35,7 @@ import {
   useFetchKoboSettings,
 } from '@rahat-ui/community-query';
 import { useRSQuery } from '@rumsan/react-query';
-import ColumnMappingTable from './ColumnMappingTable';
+import ColumnMappingTable, { resetMyMappings } from './ColumnMappingTable';
 import { EMPTY_SELECTION } from './Combobox';
 import MyAlert from './MyAlert';
 
@@ -80,8 +81,7 @@ export default function BenImp({ fieldDefinitions }: IProps) {
   const fetchExistingMapping = async (importId: string) => {
     setMappings([]);
     const res = await existingMapQuery.mutateAsync(importId);
-    if (!res) return;
-    if (res?.data) {
+    if (res && res?.data) {
       setHasExistingMapping(true);
       const { fieldMapping } = res.data;
       return setMappings(fieldMapping?.sourceTargetMappings);
@@ -351,11 +351,12 @@ export default function BenImp({ fieldDefinitions }: IProps) {
   };
 
   const handleBackClick = () => {
+    resetMyMappings();
     setHasExistingMapping(false);
     setMappings([]);
     setValidBenef([]);
-    setCurrentScreen(BENEF_IMPORT_SCREENS.SELECTION);
     setRawData([]);
+    setCurrentScreen(BENEF_IMPORT_SCREENS.SELECTION);
   };
 
   const handleExportInvalidClick = async () => {
@@ -367,14 +368,13 @@ export default function BenImp({ fieldDefinitions }: IProps) {
     setValidBenef(validData);
     setProcessedData(validData);
     setInvalidFields([]);
-    exportDataToExcel(invalidData);
+    const transformed = transformExportKeys(invalidData);
+    if (transformed.length) exportDataToExcel(transformed);
     if (!validData.length) {
       setHasExistingMapping(false);
       setCurrentScreen(BENEF_IMPORT_SCREENS.SELECTION);
     }
   };
-
-  console.log('Mappings=>', mappings);
 
   return (
     <div className="h-custom">

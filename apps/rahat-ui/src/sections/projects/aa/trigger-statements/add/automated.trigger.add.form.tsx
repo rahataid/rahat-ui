@@ -175,7 +175,7 @@ export default function AddAutomatedTriggerForm({ form }: IProps) {
                       <FormLabel>Minimum Lead Time Days</FormLabel>
                       <FormControl>
                         <Input
-                          type="text"
+                          type="number"
                           inputMode="decimal"
                           // pattern="[0-9]*[.,]?[0-9]*"
                           // title="Please enter positive number"
@@ -198,7 +198,7 @@ export default function AddAutomatedTriggerForm({ form }: IProps) {
                       <FormLabel>Maximum Lead Time Days</FormLabel>
                       <FormControl>
                         <Input
-                          type="text"
+                          type="number"
                           inputMode="decimal"
                           // pattern="[0-9]*[.,]?[0-9]*"
                           // title="Please enter positive number"
@@ -222,7 +222,7 @@ export default function AddAutomatedTriggerForm({ form }: IProps) {
                     <FormLabel>Forecast Probability</FormLabel>
                     <FormControl>
                       <Input
-                        type="text"
+                        type="number"
                         inputMode="decimal"
                         // pattern="[0-9]*[.,]?[0-9]*"
                         // title="Please enter positive number"

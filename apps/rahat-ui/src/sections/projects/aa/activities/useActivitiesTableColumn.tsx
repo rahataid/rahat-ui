@@ -109,7 +109,7 @@ export default function useActivitiesTableColumn() {
     },
     {
       accessorKey: 'source',
-      header: 'Source',
+      header: 'Responsible Station',
       cell: ({ row }) => <div>{row.getValue('source')}</div>,
     },
     // {

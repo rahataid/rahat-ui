@@ -25,6 +25,11 @@ export const useFundManagementColumns = () => {
       cell: ({ row }) => <div>{row.getValue('numberOfTokens')}</div>,
     },
     {
+      accessorKey: 'createdBy',
+      header: 'Created By',
+      cell: ({ row }) => <div>{row.getValue('createdBy')}</div>,
+    },
+    {
       id: 'actions',
       enableHiding: false,
       cell: ({ row }) => {

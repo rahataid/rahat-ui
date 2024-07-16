@@ -76,7 +76,7 @@ export default function AddActivities() {
     responsibility: z
       .string()
       .min(2, { message: 'Please enter responsibility' }),
-    source: z.string().min(2, { message: 'Please enter source' }),
+    source: z.string().min(2, { message: 'Please enter responsible station' }),
     phaseId: z.string().min(1, { message: 'Please select phase' }),
     categoryId: z.string().min(1, { message: 'Please select category' }),
     // hazardTypeId: z.string().min(1, { message: 'Please select hazard type' }),
@@ -269,11 +269,11 @@ export default function AddActivities() {
                   render={({ field }) => {
                     return (
                       <FormItem>
-                        <FormLabel>Source</FormLabel>
+                        <FormLabel>Responsible Station</FormLabel>
                         <FormControl>
                           <Input
                             type="text"
-                            placeholder="Enter source"
+                            placeholder="Enter responsible station"
                             {...field}
                           />
                         </FormControl>

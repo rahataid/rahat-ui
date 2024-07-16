@@ -56,7 +56,7 @@ export default function ActivityDetailCards({
           <Text size={25} />
         </div>
         <div>
-          <h1 className="font-medium">Source</h1>
+          <h1 className="font-medium">Responsible Station</h1>
           <p className="text-xl text-primary font-semibold">
             {activityDetail?.source}
           </p>

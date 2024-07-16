@@ -18,6 +18,7 @@ import { Role } from '@rumsan/sdk/types';
 import { ROLE_TYPE } from 'apps/community-tool-ui/src/constants/user.const';
 import { Minus } from 'lucide-react';
 import EditRole from './editRole';
+import ViewPermissions from './ViewPermissions';
 
 type IProps = {
   roleData: Role;
@@ -56,6 +57,8 @@ export default function RoleDetail({ roleData, closeSecondPanel }: IProps) {
     }
   }, [closeSecondPanel, deleteRole.data?.response.success]);
 
+  const permissions = roleDetail?.data?.permissions || null;
+
   return (
     <>
       <div className="flex justify-between items-center p-4 pt-5">
@@ -71,46 +74,6 @@ export default function RoleDetail({ roleData, closeSecondPanel }: IProps) {
           </Tooltip>
         </TooltipProvider>
         <div className="flex gap-3">
-          {/* Delete Role */}
-          {/* <Dialog>
-            <DialogTrigger>
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Trash2
-                      className="cursor-pointer"
-                      size={18}
-                      strokeWidth={1.6}
-                      color="#FF0000"
-                    />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Delete Role</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Are you absolutely sure?</DialogTitle>
-                <DialogDescription>
-                  This action cannot be undone. This will permanently delete
-                  your user.
-                </DialogDescription>
-              </DialogHeader>
-              <DialogFooter>
-                <div className="flex items-center justify-center mt-2 gap-4">
-                  <Button variant="outline" onClick={() => handleDeleteRole()}>
-                    Yes
-                  </Button>
-                  <DialogClose asChild>
-                    <Button variant="outline">No</Button>
-                  </DialogClose>
-                </div>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog> */}
-
           <TabsList className="w-full grid grid-cols-2 bg-transparent">
             <TabsTrigger
               onClick={() => handleTabChange('details')}
@@ -171,52 +134,32 @@ export default function RoleDetail({ roleData, closeSecondPanel }: IProps) {
               </div>
             </CardContent>
           </Card>
-          {/* Permission Details */}
-          <Card className="shadow rounded m-2">
-            <CardHeader className="mb-0 pb-0">Permission Details</CardHeader>
-            <CardContent className="pt-6">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <h3 className="font-medium text-base">Subject</h3>
-                </div>
-                <div className="text-right">
-                  <h3 className="font-medium text-base">Actions</h3>
-                </div>
-              </div>
 
-              {roleDetail?.data?.permissions &&
-                Object.keys(roleDetail?.data?.permissions).map((key) => (
-                  <div
-                    key={key}
-                    className="grid grid-cols-2 gap-4 mt-2 text-sm"
-                  >
-                    <div>
-                      <p className="font-light text-base">
-                        {key.toUpperCase().charAt(0) + key.slice(1)}
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <p key={key} className="font-light text-base">
-                        {roleDetail?.data?.permissions[key]
-                          .map(
-                            (value) =>
-                              value.charAt(0).toUpperCase() + value.slice(1),
-                          )
-                          .join(', ')}
-                      </p>
-                    </div>
-                  </div>
+          <Card className="shadow rounded m-2">
+            <CardHeader className="mb-0 pb-0">Assigned Permissions</CardHeader>
+            <CardContent className="pt-1">
+              {permissions &&
+                Object.keys(permissions).map((subject) => (
+                  <ViewPermissions
+                    key={subject}
+                    subject={subject}
+                    existingActions={
+                      permissions && permissions[subject]
+                        ? permissions[subject]
+                        : []
+                    }
+                  />
                 ))}
             </CardContent>
           </Card>
         </>
       )}
       {/* Edit View */}
-      {activeTab === 'edit' && (
+      {activeTab === 'edit' && permissions && (
         <>
           <div className="flex flex-col justify-between ">
             <div className="p-4 border-t">
-              <EditRole roleDetail={roleDetail} />
+              <EditRole currentPerms={permissions} roleDetail={roleDetail} />
             </div>
           </div>
         </>

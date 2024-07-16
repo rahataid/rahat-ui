@@ -29,6 +29,7 @@ export default function CustomPagination({
   perPage,
   total,
 }: IProps) {
+  const lastPage = meta?.lastPage || 1;
   return (
     <div className="flex items-center justify-end space-x-4 p-1 pl-2 pr-2 border-t bg-card">
       {/* <div className="flex-1 text-sm text-muted-foreground">
@@ -57,7 +58,7 @@ export default function CustomPagination({
         </div>
       )}
       <div>
-        Page {currentPage} of {meta?.lastPage}
+        Page {currentPage} of {lastPage}
       </div>
       <div className="space-x-2">
         <Button
@@ -75,9 +76,7 @@ export default function CustomPagination({
           onClick={handleNextPage}
           type="button"
           // disabled={!table.getCanNextPage()}
-          disabled={
-            meta && meta?.next === null && currentPage === meta?.lastPage
-          }
+          disabled={meta && meta?.next === null && currentPage === lastPage}
         >
           Next
         </Button>

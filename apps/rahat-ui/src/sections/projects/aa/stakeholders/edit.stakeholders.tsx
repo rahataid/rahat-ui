@@ -37,32 +37,44 @@ export default function EditStakeholders({ stakeholdersDetail }: IProps) {
   };
 
   const FormSchema = z.object({
-    name: z.string().min(2, { message: 'Please enter name.' }),
-    phone: z
+    name: z
       .string()
-      .optional()
-      .refine(isValidPhoneNumberRefinement, {
-        message: 'Invalid phone number',
-      }),
+      .regex(/^[A-Za-z\s]*$/, 'Only alphabetic characters are allowed.')
+      .min(2, { message: 'Please enter name.' }),
+    phone: z.string().optional().refine(isValidPhoneNumberRefinement, {
+      message: 'Invalid phone number',
+    }),
     email: z.string().optional(),
-    designation: z.string().min(2, { message: 'Please enter designation.' }),
-    organization: z.string().min(2, { message: 'Please enter organization.' }),
+    designation: z
+      .string()
+      .regex(/^[A-Za-z\s]*$/, 'Only alphabetic characters are allowed.')
+      .min(2, { message: 'Please enter designation.' }),
+    organization: z
+      .string()
+      .regex(/^[A-Za-z\s]*$/, 'Only alphabetic characters are allowed.')
+      .min(2, { message: 'Please enter organization.' }),
     district: z.string().min(2, { message: 'Please enter district.' }),
-    municipality: z.string().min(2, { message: 'Please enter municipality' }),
+    municipality: z
+      .string()
+      .regex(/^[A-Za-z\s]*$/, 'Only alphabetic characters are allowed.')
+
+      .min(2, { message: 'Please enter municipality' }),
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
-    defaultValues: {
-      name: stakeholdersDetail?.name,
-      phone: stakeholdersDetail?.phone,
-      email: stakeholdersDetail?.email,
-      designation: stakeholdersDetail?.designation,
-      organization: stakeholdersDetail?.organization,
-      district: stakeholdersDetail?.district,
-      municipality: stakeholdersDetail?.municipality,
-    },
+    defaultValues: {},
   });
+
+  React.useEffect(() => {
+    form.setValue('name', stakeholdersDetail?.name);
+    form.setValue('phone', stakeholdersDetail?.phone || '');
+    form.setValue('email', stakeholdersDetail?.email || '');
+    form.setValue('designation', stakeholdersDetail?.designation);
+    form.setValue('organization', stakeholdersDetail?.organization);
+    form.setValue('district', stakeholdersDetail?.district);
+    form.setValue('municipality', stakeholdersDetail?.municipality);
+  }, [stakeholdersDetail]);
 
   const handleEditStakeholders = async (data: z.infer<typeof FormSchema>) => {
     try {

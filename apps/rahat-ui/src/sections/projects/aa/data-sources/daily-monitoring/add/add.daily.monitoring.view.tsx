@@ -38,6 +38,8 @@ export default function AddDailyMonitoring() {
   const projectId = params.id as UUID;
   const router = useRouter();
 
+  const dailyMonitoringListPath = `/projects/aa/${projectId}/data-sources/#monitoring`;
+
   const dataSourceSettings = useProjectSettingsStore(
     (s) => s.settings?.[projectId]?.[PROJECT_SETTINGS_KEYS.DATASOURCE],
   );
@@ -233,7 +235,7 @@ export default function AddDailyMonitoring() {
   React.useEffect(() => {
     if (createDailyMonitoring.isSuccess) {
       form.reset();
-      router.push(`/projects/aa/${projectId}/data-sources/#monitoring`);
+      router.push(dailyMonitoringListPath);
     }
   }, [createDailyMonitoring.isSuccess]);
 
@@ -303,6 +305,7 @@ export default function AddDailyMonitoring() {
                   className="bg-red-100 text-red-600 w-36"
                   onClick={() => {
                     form.reset();
+                    router.push(dailyMonitoringListPath);
                   }}
                 >
                   Cancel

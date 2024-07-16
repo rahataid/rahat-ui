@@ -75,7 +75,7 @@ export default function UpdateActivityStatusDialog({
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      status: '',
+      status: activityDetail?.status || '',
       activityDocuments: activityDetail?.activityDocuments || [],
     },
   });

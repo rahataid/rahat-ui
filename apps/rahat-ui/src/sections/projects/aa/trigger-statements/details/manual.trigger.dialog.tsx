@@ -24,6 +24,7 @@ import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
 import { X, CloudUpload, Check, LoaderCircle } from 'lucide-react';
 import { useUploadFile, useActivateTrigger } from '@rahat-ui/query';
 import { UUID } from 'crypto';
+import { toast } from 'react-toastify';
 
 export default function ManualTriggerDialog() {
   const { id: projectID, triggerID } = useParams();
@@ -69,6 +70,21 @@ export default function ManualTriggerDialog() {
   ) => {
     const file = event.target.files?.[0];
     if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        return toast.error('File size exceeds 5 MB');
+      }
+
+      const validMimeTypes = [
+        'image/jpeg',
+        'image/png',
+        'image/bmp',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', //.xlsx
+        'text/csv', //.csv
+      ];
+      if (!validMimeTypes.includes(file.type)) {
+        return toast.error('Invalid file type');
+      }
+
       const newId = nextId.current++;
       setDocuments((prev) => [...prev, { id: newId, name: file.name }]);
       const formData = new FormData();
@@ -154,13 +170,17 @@ export default function ManualTriggerDialog() {
                             </p>
                           </div>
                           <Input
-                            className="opacity-0"
+                            className="opacity-0 cursor-pointer"
                             type="file"
                             onChange={handleFileChange}
                           />
                         </div>
                       </FormControl>
                       <FormMessage />
+                      <p className="text-xs text-orange-500">
+                        *Files must be under 5 MB and of type JPEG, PNG, BMP,
+                        XLSX, or CSV.
+                      </p>
                       {documents?.map((file) => (
                         <div
                           key={file.name}

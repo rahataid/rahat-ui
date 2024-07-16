@@ -344,14 +344,14 @@ export default function BeneficiaryDetail({
                     <Card className="shadow rounded">
                       <CardContent className="pt-6">
                         <div className="grid grid-cols-2 gap-3">
-                          <div>
+                          {/* <div>
                             <p className="font-light text-base">
                               {beneficiaryDetails?.type}
                             </p>
                             <p className="text-sm font-normal text-muted-foreground">
                               Beneficiary Type
                             </p>
-                          </div>
+                          </div> */}
                           <div className="text-right">
                             <p className="font-light text-base">
                               {beneficiaryDetails?.gender}
@@ -387,7 +387,7 @@ export default function BeneficiaryDetail({
                         <div className="flex flex-col gap-4">
                           <div className="flex justify-between items-center">
                             <p>Token Reserved</p>
-                            <p className="text-sm font-light">
+                            <p className="text-sm">
                               {beneficiaryDetails?.benTokens}
                             </p>
 
@@ -407,9 +407,11 @@ export default function BeneficiaryDetail({
                           </div>
                           <div className="flex justify-between items-center">
                             <p>Assigned Status</p>
-                            {!result?.data?.benTokensAssigneds?.length
-                              ? 'None'
-                              : 'Complete'}
+                            <p className="text-sm">
+                              {!result?.data?.benTokensAssigneds?.length
+                                ? 'None'
+                                : 'Complete'}
+                            </p>
                             {/* <p className="text-sm font-light">
                               {beneficiaryVoucherDetails?.freeVoucherAddress !==
                                 undefined &&
@@ -426,20 +428,9 @@ export default function BeneficiaryDetail({
                           </div>
                           <div className="flex justify-between items-center">
                             <p>Wallet Address</p>
-                            <TooltipProvider delayDuration={100}>
-                              <Tooltip>
-                                <TooltipTrigger>
-                                  <p className="text-sm font-medium">
-                                    {truncateEthAddress(walletAddress)}
-                                  </p>
-                                </TooltipTrigger>
-                                <TooltipContent className="bg-secondary ">
-                                  <p className="text-xs font-medium">
-                                    click to copy
-                                  </p>
-                                </TooltipContent>
-                              </Tooltip>
-                            </TooltipProvider>
+                            <p className="text-sm">
+                              {truncateEthAddress(walletAddress)}
+                            </p>
                           </div>
                         </div>
                       </CardContent>

@@ -107,6 +107,17 @@ export const useTriggerStatementTableColumns = () => {
       },
     },
     {
+      accessorKey: 'triggeredBy',
+      header: 'Triggered By',
+      cell: ({ row }) => {
+        const triggeredBy = row.getValue('triggeredBy') as string;
+        if(triggeredBy){
+          return triggeredBy
+        }
+        return 'N/A'
+      },
+    },
+    {
       id: 'actions',
       header: 'Actions',
       enableHiding: false,

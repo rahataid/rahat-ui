@@ -1,20 +1,24 @@
 import DocumentCard from '../../../components/document.card';
 
 export default function ActivityDetailCard({ activityDetail }: any) {
-    const detailData = [
-        {
-            title: 'Category',
-            content: <p>{activityDetail?.category?.name}</p>
-        },
-        {
-            title: 'Responsibility',
-            content: <p>{activityDetail?.responsibility}</p>
-        },
-        {
-            title: 'Description',
-            content: <p>{activityDetail?.description}</p>
-        }
-    ]
+  const detailData = [
+    {
+      title: 'Category',
+      content: <p>{activityDetail?.category?.name}</p>
+    },
+    {
+      title: 'Responsibility',
+      content: <p>{activityDetail?.responsibility}</p>
+    },
+    {
+      title: 'Description',
+      content: <p>{activityDetail?.description}</p>
+    },
+    {
+      title: 'Completed By',
+      content: <p>{activityDetail?.completedBy || 'N/A'}</p>
+    }
+  ]
 
   return (
     <div className="bg-card p-4 rounded">

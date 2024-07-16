@@ -119,6 +119,7 @@ export default function TriggerStatementsDetailView() {
           <ManualTriggerDetailCard
             status={triggerDetail?.isTriggered}
             triggeredAt={triggerDetail?.triggeredAt}
+            triggeredBy={triggerDetail?.triggeredBy}
             notes={triggerDetail?.notes}
             phase={triggerDetail?.phase?.name}
           />

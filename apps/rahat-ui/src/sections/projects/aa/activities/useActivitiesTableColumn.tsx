@@ -133,6 +133,18 @@ export default function useActivitiesTableColumn() {
       },
     },
     {
+      accessorKey: 'completedBy',
+      header: 'Completed By',
+      cell: ({ row }) => {
+        const completedBy = row.getValue('completedBy') as string
+        return (
+          <div className="flex gap-1">
+            {completedBy || 'N/A'}
+          </div>
+        )
+      } ,
+    },
+    {
       id: 'actions',
       enableHiding: false,
       cell: ({ row }) => {

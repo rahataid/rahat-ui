@@ -15,6 +15,10 @@ export default function ActivityDetailCard({ activityDetail }: any) {
       title: 'Description',
       content: <p>{activityDetail?.description}</p>,
     },
+    {
+      title: 'Completed By',
+      content: <p>{activityDetail?.completedBy || 'N/A'}</p>
+    }
   ];
 
   return (

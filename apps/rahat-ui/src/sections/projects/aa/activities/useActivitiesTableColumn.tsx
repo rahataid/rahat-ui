@@ -4,6 +4,7 @@ import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Eye } from 'lucide-react';
 import { IActivitiesItem } from '../../../../types/activities';
+import UpdateActivityStatusDialog from './details/update.activity.status.dialog';
 
 function getPhaseBg(phase: string) {
   if (phase === 'PREPAREDNESS') {
@@ -128,6 +129,10 @@ export default function useActivitiesTableColumn() {
             <Badge className={`rounded-md capitalize ${bgColor}`}>
               {status}
             </Badge>
+            <UpdateActivityStatusDialog
+              activityDetail={row.original}
+              loading={false}
+            />
           </div>
         );
       },
@@ -136,13 +141,9 @@ export default function useActivitiesTableColumn() {
       accessorKey: 'completedBy',
       header: 'Completed By',
       cell: ({ row }) => {
-        const completedBy = row.getValue('completedBy') as string
-        return (
-          <div className="flex gap-1">
-            {completedBy || 'N/A'}
-          </div>
-        )
-      } ,
+        const completedBy = row.getValue('completedBy') as string;
+        return <div className="flex gap-1">{completedBy || 'N/A'}</div>;
+      },
     },
     {
       id: 'actions',

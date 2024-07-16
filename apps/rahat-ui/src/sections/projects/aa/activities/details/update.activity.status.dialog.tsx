@@ -114,7 +114,7 @@ export default function UpdateActivityStatusDialog({
 
   const handleDialogSubmit = async (data: z.infer<typeof FormSchema>) => {
     const payload = {
-      uuid: activityId,
+      uuid: activityId || activityDetail?.id,
       ...data,
     };
     try {
@@ -167,7 +167,10 @@ export default function UpdateActivityStatusDialog({
                         className="flex flex-col space-y-1"
                       >
                         {statusList.map((status) => (
-                          <FormItem className="flex items-center space-x-3 space-y-0">
+                          <FormItem
+                            className="flex items-center space-x-3 space-y-0"
+                            key={status}
+                          >
                             <FormControl>
                               <RadioGroupItem value={status} />
                             </FormControl>

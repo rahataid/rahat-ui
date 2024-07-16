@@ -1,16 +1,13 @@
 import * as React from 'react';
 import { useParams } from 'next/navigation';
+import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import {
-  ColumnFiltersState,
-  SortingState,
-  VisibilityState,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useReactTable,
-} from '@tanstack/react-table';
-import { useActivities, useActivitiesCategories, useActivitiesHazardTypes, useActivitiesPhase, usePagination } from '@rahat-ui/query';
+  useActivities,
+  useActivitiesCategories,
+  useActivitiesHazardTypes,
+  useActivitiesPhase,
+  usePagination,
+} from '@rahat-ui/query';
 import useActivitiesTableColumn from './useActivitiesTableColumn';
 import ActivitiesTable from './activities.table';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
@@ -20,15 +17,16 @@ import ActivitiesTableFilters from './activities.table.filters';
 
 export default function ActivitiesList() {
   const { id: projectID } = useParams();
-  const [searchText, setSearchText] = React.useState<string>('');
+  const [activitySearchText, setActivitySearchText] =
+    React.useState<string>('');
+  const [responsibilitySearchText, setResponsibilitySearchText] =
+    React.useState<string>('');
   const [phaseFilterItem, setPhaseFilterItem] = React.useState<string>('');
-  const [categoryFilterItem, setCategoryFilterItem] = React.useState<string>('');
-  const [hazardTypeFilterItem, setHazardTypeFilterItem] = React.useState<string>('');
+  const [categoryFilterItem, setCategoryFilterItem] =
+    React.useState<string>('');
 
   const {
     pagination,
-    // selectedListItems,
-    // setSelectedListItems,
     setNextPage,
     setPrevPage,
     setPerPage,
@@ -41,8 +39,10 @@ export default function ActivitiesList() {
     setPagination({ page: 1, perPage: 10 });
   }, []);
 
-
-  const { activitiesData, activitiesMeta, isLoading } = useActivities(projectID as UUID, { ...pagination, ...filters, title: searchText });
+  const { activitiesData, activitiesMeta, isLoading } = useActivities(
+    projectID as UUID,
+    { ...pagination, ...filters },
+  );
 
   useActivitiesCategories(projectID as UUID);
   useActivitiesHazardTypes(projectID as UUID);
@@ -50,57 +50,40 @@ export default function ActivitiesList() {
 
   const columns = useActivitiesTableColumn();
 
-  const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    [],
-  );
-  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = React.useState({});
-
   const table = useReactTable({
     manualPagination: true,
     data: activitiesData ?? [],
     columns,
-    onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setRowSelection,
-    state: {
-      sorting,
-      columnFilters,
-      columnVisibility,
-      rowSelection,
-    },
   });
 
   const handleFilter = React.useCallback(
     (key: string, value: any) => {
       if (value === 'all') {
-        setFilters({ ...filters, [key]: null })
-        return
+        setFilters({ ...filters, [key]: null });
+        return;
       }
-      setFilters({ ...filters, [key]: value })
+      setFilters({ ...filters, [key]: value });
     },
-    [filters]
-  )
+    [filters],
+  );
 
-  const handleSearch = React.useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    setFilters({ ...filters, title: event.target.value })
-  }, [filters])
+  const handleSearch = React.useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>, key: string) => {
+      setFilters({ ...filters, [key]: event.target.value });
+    },
+    [filters],
+  );
 
   React.useEffect(() => {
-    setSearchText(filters?.title ?? '');
+    setActivitySearchText(filters?.title ?? '');
+    setResponsibilitySearchText(filters?.responsibility ?? '');
     setPhaseFilterItem(filters?.phase ?? '');
     setCategoryFilterItem(filters?.category ?? '');
-    setHazardTypeFilterItem(filters?.hazardType ?? '')
-  }, [filters])
+  }, [filters]);
 
   if (isLoading) {
-    return <TableLoader />
+    return <TableLoader />;
   }
   return (
     <div className="p-2 bg-secondary h-[calc(100vh-65px)]">
@@ -108,15 +91,24 @@ export default function ActivitiesList() {
         projectID={projectID as UUID}
         handleFilter={handleFilter}
         handleSearch={handleSearch}
-        activity={searchText}
+        activity={activitySearchText}
+        responsibility={responsibilitySearchText}
         phase={phaseFilterItem}
         category={categoryFilterItem}
-        hazardType={hazardTypeFilterItem}
       />
-      <div className='border bg-card rounded'>
+      <div className="border bg-card rounded">
         <ActivitiesTable table={table} />
         <CustomPagination
-          meta={activitiesMeta || { total: 0, currentPage: 0, lastPage: 0, perPage: 0, next: null, prev: null }}
+          meta={
+            activitiesMeta || {
+              total: 0,
+              currentPage: 0,
+              lastPage: 0,
+              perPage: 0,
+              next: null,
+              prev: null,
+            }
+          }
           handleNextPage={setNextPage}
           handlePrevPage={setPrevPage}
           handlePageSizeChange={setPerPage}
@@ -126,5 +118,5 @@ export default function ActivitiesList() {
         />
       </div>
     </div>
-  )
+  );
 }

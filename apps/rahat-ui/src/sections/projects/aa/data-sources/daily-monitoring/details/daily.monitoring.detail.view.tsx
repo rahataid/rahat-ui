@@ -133,7 +133,7 @@ export default function DailyMonitoringDetailView() {
       </div>
       <div className="grid grid-cols-2 gap-4 mb-4">
         <DetailsHeadCard
-          title="Data Entry By"
+          title="Created By"
           icon={<User size={20} />}
           content={latestDataDetails?.dataEntryBy || '-'}
         />

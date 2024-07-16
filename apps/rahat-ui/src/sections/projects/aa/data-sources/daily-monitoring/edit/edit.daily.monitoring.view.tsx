@@ -245,7 +245,7 @@ export default function EditDailyMonitoring() {
                   <InputFormField
                     form={form}
                     name="dataEntryBy"
-                    label="Data Entry By"
+                    label="Created By"
                     placeholder="Enter Data Entry Personnel"
                   />
                   <SelectFormField

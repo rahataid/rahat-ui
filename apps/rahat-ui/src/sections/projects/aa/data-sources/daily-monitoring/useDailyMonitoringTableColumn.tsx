@@ -9,20 +9,22 @@ export default function useDailyMonitoringTableColumn() {
 
   const columns: ColumnDef<any>[] = [
     {
-      accessorKey: 'date',
-      header: 'Date',
-      cell: ({ row }) => <div>{formatdbDate(row.original.createdAt)}</div>,
-    },
-    {
-      accessorKey: 'time',
-      header: 'Time',
-      cell: ({ row }) => (
-        <div>{new Date(row.original.createdAt).toLocaleTimeString()}</div>
-      ),
+      accessorKey: 'createdAt',
+      header: 'Created At',
+      cell: ({ row }) => {
+        const createdAt = row.getValue('createdAt') as string;
+        if(createdAt){
+          const d =  new Date(createdAt)
+          const localeDate = d.toLocaleDateString()
+          const localeTime = d.toLocaleTimeString()
+          return `${localeDate} ${localeTime}`
+        }
+        return 'N/A'
+      },
     },
     {
       accessorKey: 'dataEntryBy',
-      header: 'Data Entry By',
+      header: 'Created By',
       cell: ({ row }) => {
         return row.getValue('dataEntryBy');
       },

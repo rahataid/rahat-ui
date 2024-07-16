@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -27,6 +27,7 @@ import { UUID } from 'crypto';
 
 export default function ManualTriggerDialog() {
   const { id: projectID, triggerID } = useParams();
+  const router = useRouter();
   const uploadFile = useUploadFile();
   const activateTrigger = useActivateTrigger();
   const [showModal, setShowModal] = React.useState<boolean>(false);
@@ -39,7 +40,12 @@ export default function ManualTriggerDialog() {
   >([]);
 
   const FormSchema = z.object({
-    notes: z.string().min(5, { message: 'Must be at least 5 characters' }),
+    notes: z
+      .string()
+      .optional()
+      .refine((val) => !val || val?.length > 4, {
+        message: 'Must be at least 5 characters',
+      }),
     triggerDocuments: z
       .array(
         z.object({
@@ -47,7 +53,7 @@ export default function ManualTriggerDialog() {
           fileName: z.string(),
         }),
       )
-      .min(1, { message: 'Please upload document' }),
+      .optional(),
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -82,6 +88,7 @@ export default function ManualTriggerDialog() {
         projectUUID: projectID as UUID,
         activatePayload: { repeatKey: triggerID, ...data },
       });
+      router.push(`/projects/aa/${projectID}/trigger-statements`);
     } catch (e) {
       console.error('Activate Trigger Error::', e);
     } finally {

@@ -234,3 +234,30 @@ export const useBulkCreateDisbursement = (projectUUID: UUID) => {
     },
   });
 };
+
+export const useListRedemptions = (projectUUID: UUID) => {
+    const action = useProjectAction(['listRedemptions-rpProject']);
+   return useQuery({
+      queryKey: ['redemptions', projectUUID],
+      queryFn: async () => {
+        const res = await action.mutateAsync({
+          uuid: projectUUID,
+          data: {
+            action: 'rpProject.listRedemption',
+            payload: {},
+          },
+        });
+        const data = res.data;
+        const formattedData = data.map((item: any) => {
+          return {
+            id: item.id,
+            name: item.Vendor?.name,
+            amount: item.tokenAmount,
+            status: item.status,
+          };
+        } 
+        );
+        return formattedData;
+      },
+    });
+}

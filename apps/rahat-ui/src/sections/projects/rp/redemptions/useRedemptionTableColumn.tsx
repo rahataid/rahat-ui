@@ -30,7 +30,7 @@ export const useRedemptionTableColumn = () => {
       header: 'Status',
       cell: ({ row }) => {
         const status = row.getValue('status');
-        return status === 'Paid' ? (
+        return status === 'APPROVED' ? (
           <Badge className="bg-green-200 text-green-600">Paid</Badge>
         ) : (
           <Badge className="bg-red-200 text-red-600">Pending</Badge>

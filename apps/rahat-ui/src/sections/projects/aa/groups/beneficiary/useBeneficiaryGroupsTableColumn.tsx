@@ -7,7 +7,7 @@ import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 export default function useBeneficiaryGroupsTableColumn() {
-  const router = useRouter()
+  const router = useRouter();
   const { setSecondPanelComponent, closeSecondPanel } = useSecondPanel();
 
   const { id: projectId } = useParams();
@@ -15,28 +15,28 @@ export default function useBeneficiaryGroupsTableColumn() {
     `/projects/aa/${projectId}/groups/beneficiary/${groupId}`;
 
   const columns: ColumnDef<any>[] = [
-    {
-      id: 'select',
-      header: ({ table }) => (
-        <Checkbox
-          checked={
-            table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && 'indeterminate')
-          }
-          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-          aria-label="Select all"
-        />
-      ),
-      cell: ({ row }) => (
-        <Checkbox
-          checked={row.getIsSelected()}
-          onCheckedChange={(value) => row.toggleSelected(!!value)}
-          aria-label="Select row"
-        />
-      ),
-      enableSorting: false,
-      enableHiding: false,
-    },
+    // {
+    //   id: 'select',
+    //   header: ({ table }) => (
+    //     <Checkbox
+    //       checked={
+    //         table.getIsAllPageRowsSelected() ||
+    //         (table.getIsSomePageRowsSelected() && 'indeterminate')
+    //       }
+    //       onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+    //       aria-label="Select all"
+    //     />
+    //   ),
+    //   cell: ({ row }) => (
+    //     <Checkbox
+    //       checked={row.getIsSelected()}
+    //       onCheckedChange={(value) => row.toggleSelected(!!value)}
+    //       aria-label="Select row"
+    //     />
+    //   ),
+    //   enableSorting: false,
+    //   enableHiding: false,
+    // },
     {
       accessorKey: 'name',
       header: 'Group Name',
@@ -47,11 +47,7 @@ export default function useBeneficiaryGroupsTableColumn() {
       header: 'Member Count',
       cell: ({ row }) => {
         console.log(row);
-        return (
-          <div>
-            {row.original?._count?.groupedBeneficiaries}
-          </div>
-        );
+        return <div>{row.original?._count?.groupedBeneficiaries}</div>;
       },
     },
     // {

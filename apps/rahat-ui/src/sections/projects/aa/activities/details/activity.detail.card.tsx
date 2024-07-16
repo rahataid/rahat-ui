@@ -1,48 +1,57 @@
+import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import DocumentCard from '../../../components/document.card';
 
 export default function ActivityDetailCard({ activityDetail }: any) {
   const detailData = [
     {
       title: 'Category',
-      content: <p>{activityDetail?.category?.name}</p>
+      content: <p>{activityDetail?.category?.name}</p>,
     },
     {
       title: 'Responsibility',
-      content: <p>{activityDetail?.responsibility}</p>
+      content: <p>{activityDetail?.responsibility}</p>,
     },
     {
       title: 'Description',
-      content: <p>{activityDetail?.description}</p>
+      content: <p>{activityDetail?.description}</p>,
     },
     {
       title: 'Completed By',
       content: <p>{activityDetail?.completedBy || 'N/A'}</p>
     }
-  ]
+  ];
 
   return (
     <div className="bg-card p-4 rounded">
       <h1 className="font-semibold text-lg">Activity Details</h1>
-      <div>
-        {detailData.map((item) => (
-          <div key={item.title} className="mt-4">
-            <h1 className="text-muted-foreground text-sm">{item.title}</h1>
-            {item.content}
-          </div>
-        ))}
-      </div>
-      <div className="mt-4">
-        <h1 className="text-muted-foreground text-sm">Documents</h1>
-        {activityDetail?.activityDocuments?.length ? (
-          <div className="grid gap-2 mt-2">
-            {activityDetail?.activityDocuments?.map((d: any, index: number) => (
-              <DocumentCard key={index} name={d.fileName} path={d.mediaURL} />
-            ))}
-          </div>
-        ) : (
-          '-'
-        )}
-      </div>
+      <ScrollArea className="h-[calc(100vh-310px)]">
+        <div>
+          {detailData.map((item) => (
+            <div key={item.title} className="mt-4">
+              <h1 className="text-muted-foreground text-sm">{item.title}</h1>
+              {item.content}
+            </div>
+          ))}
+        </div>
+        <div className="mt-4">
+          <h1 className="text-muted-foreground text-sm">Documents</h1>
+          {activityDetail?.activityDocuments?.length ? (
+            <div className="grid gap-2 mt-2">
+              {activityDetail?.activityDocuments?.map(
+                (d: any, index: number) => (
+                  <DocumentCard
+                    key={index}
+                    name={d.fileName}
+                    path={d.mediaURL}
+                  />
+                ),
+              )}
+            </div>
+          ) : (
+            '-'
+          )}
+        </div>
+      </ScrollArea>
     </div>
   );
 }

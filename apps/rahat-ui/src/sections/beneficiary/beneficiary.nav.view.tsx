@@ -40,7 +40,7 @@ const BeneficiaryNavView: FC<BeneficiaryNavViewProps> = ({
           {items?.map((item) => (
             <div key={item.title}>
               <div
-                className={`flex justify-between p-2 mb-1 items-center rounded-md cursor-pointer ${
+                className={`flex justify-between space-x-2 p-2 mb-1 items-center rounded-md cursor-pointer ${
                   pathName === item.path
                     ? 'bg-primary text-white'
                     : 'hover:bg-secondary'

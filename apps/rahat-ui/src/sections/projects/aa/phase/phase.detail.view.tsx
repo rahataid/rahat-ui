@@ -19,19 +19,18 @@ export default function PhaseDetailView() {
   const projectId = params.id as UUID;
   const phaseId = params.phaseId as UUID;
   const { data: phaseDetail, isLoading } = useSinglePhase(projectId, phaseId);
-  const revertPhase = useRevertPhase()
+  const revertPhase = useRevertPhase();
 
   const handleRevert = () => {
     revertPhase.mutateAsync({
       projectUUID: projectId,
       payload: {
-        phaseId
-      }
-    })
-  }
+        phaseId,
+      },
+    });
+  };
 
-
-  const handleSearch = () => { };
+  const handleSearch = () => {};
   return (
     <div className="p-2 h-[calc(100vh-65px)] bg-secondary">
       <div className="mb-4">
@@ -108,27 +107,24 @@ export default function PhaseDetailView() {
               <h1 className="font-semibold text-lg">Triggers List</h1>
               <div className="flex gap-2 items-center">
                 {/* Search */}
-                <SearchInput
+                {/* <SearchInput
                   onSearch={handleSearch}
                   isDisabled={true}
                   name="Trigger Statement"
-                />
+                /> */}
                 {/* Add Trigger Statements Btn */}
                 <AddButton
                   path={`/projects/aa/${projectId}/trigger-statements/add`}
                   name="Trigger Statement"
                 />
-                {
-                  phaseDetail?.canRevert && (
-                    <Button
-                      onClick={handleRevert}
-                      disabled={!phaseDetail?.isActive}
-
-                    >
-                      Revert Phase
-                    </Button>
-                  )
-                }
+                {phaseDetail?.canRevert && (
+                  <Button
+                    onClick={handleRevert}
+                    disabled={!phaseDetail?.isActive}
+                  >
+                    Revert Phase
+                  </Button>
+                )}
               </div>
             </div>
             <PhaseTriggerStatementsList phaseId={phaseId} />

@@ -8,7 +8,7 @@ import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import DailyMonitoringTableFilters from './daily.monitoring.table.filters';
 import AddButton from '../../../../components/add.btn';
 import { UUID } from 'crypto';
-import { getPaginationFromLocalStorage } from '../../../usePrevPagination';
+import { getPaginationFromLocalStorage } from '../../../prev.pagination.storage';
 
 export default function DailyMonitoringListView() {
   const params = useParams();

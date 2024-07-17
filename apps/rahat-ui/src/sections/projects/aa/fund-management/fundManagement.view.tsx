@@ -17,7 +17,7 @@ import {
 } from '@tanstack/react-table';
 import { useFundManagementColumns } from './useFundManagementColumns';
 import TableFilter from './fm.table.filter';
-import { getPaginationFromLocalStorage } from '../usePrevPagination';
+import { getPaginationFromLocalStorage } from '../prev.pagination.storage';
 
 const FundManagementView = () => {
   const params = useParams();

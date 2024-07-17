@@ -19,7 +19,7 @@ import BeneficiaryGroupsTable from '../groups.table';
 import useBeneficiaryGroupsTableColumn from './useBeneficiaryGroupsTableColumn';
 import CustomPagination from '../../../../../components/customPagination';
 import { UUID } from 'crypto';
-import { getPaginationFromLocalStorage } from '../../usePrevPagination';
+import { getPaginationFromLocalStorage } from '../../prev.pagination.storage';
 
 export default function BeneficiariesGroupsListView() {
   const { id } = useParams();

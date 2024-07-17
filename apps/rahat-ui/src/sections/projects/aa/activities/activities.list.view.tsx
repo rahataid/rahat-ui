@@ -14,7 +14,7 @@ import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import TableLoader from 'apps/rahat-ui/src/components/table.loader';
 import { UUID } from 'crypto';
 import ActivitiesTableFilters from './activities.table.filters';
-import { getPaginationFromLocalStorage } from '../usePrevPagination';
+import { getPaginationFromLocalStorage } from '../prev.pagination.storage';
 
 export default function ActivitiesList() {
   const { id: projectID } = useParams();

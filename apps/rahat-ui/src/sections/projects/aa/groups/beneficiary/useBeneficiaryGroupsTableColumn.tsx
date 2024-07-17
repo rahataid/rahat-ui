@@ -2,7 +2,7 @@ import { ColumnDef } from '@tanstack/react-table';
 import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
 import { Eye } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
-import { setPaginationToLocalStorage } from '../../usePrevPagination';
+import { setPaginationToLocalStorage } from '../../prev.pagination.storage';
 
 export default function useBeneficiaryGroupsTableColumn() {
   const router = useRouter();

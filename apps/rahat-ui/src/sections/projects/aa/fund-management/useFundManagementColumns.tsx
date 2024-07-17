@@ -1,7 +1,7 @@
 import { ColumnDef } from '@tanstack/react-table';
 import { Eye, Pencil, Trash2 } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
-import { setPaginationToLocalStorage } from '../usePrevPagination';
+import { setPaginationToLocalStorage } from '../prev.pagination.storage';
 
 export const useFundManagementColumns = () => {
   const router = useRouter();

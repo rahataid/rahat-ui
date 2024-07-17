@@ -2,7 +2,7 @@ import { useRouter, useParams } from 'next/navigation';
 import { ColumnDef } from '@tanstack/react-table';
 import { Eye, Pencil, Trash2 } from 'lucide-react';
 import { formatdbDate } from 'apps/rahat-ui/src/utils';
-import { setPaginationToLocalStorage } from '../../usePrevPagination';
+import { setPaginationToLocalStorage } from '../../prev.pagination.storage';
 
 export default function useDailyMonitoringTableColumn() {
   const { id: projectId } = useParams();

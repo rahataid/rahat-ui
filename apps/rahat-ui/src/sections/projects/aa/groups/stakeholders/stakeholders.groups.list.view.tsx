@@ -19,7 +19,7 @@ import StakeholdersGroupsTable from '../groups.table';
 import useStakeholdersGroupsTableColumn from './useStakeholdersGroupsTableColumn';
 import CustomPagination from '../../../../../components/customPagination';
 import { UUID } from 'crypto';
-import { getPaginationFromLocalStorage } from '../../usePrevPagination';
+import { getPaginationFromLocalStorage } from '../../prev.pagination.storage';
 
 export default function StakeholdersGroupsListView() {
   const { id } = useParams();

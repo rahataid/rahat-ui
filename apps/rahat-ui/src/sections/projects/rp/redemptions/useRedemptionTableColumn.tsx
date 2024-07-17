@@ -9,9 +9,16 @@ export type Redeptions = {
   amount: number;
   status: string;
   action: string;
+  uuid:string;
+  tokenAddress:string;
+  walletAddress:string;
 };
 
-export const useRedemptionTableColumn = () => {
+type IProps = {
+  handleApprove: (data:any) => void;
+};
+
+export const useRedemptionTableColumn = ({handleApprove}:IProps) => { 
   const columns: ColumnDef<Redeptions>[] = [
     {
       accessorKey: 'name',
@@ -30,7 +37,7 @@ export const useRedemptionTableColumn = () => {
       header: 'Status',
       cell: ({ row }) => {
         const status = row.getValue('status');
-        return status === 'Paid' ? (
+        return status === 'APPROVED' ? (
           <Badge className="bg-green-200 text-green-600">Paid</Badge>
         ) : (
           <Badge className="bg-red-200 text-red-600">Pending</Badge>
@@ -41,8 +48,23 @@ export const useRedemptionTableColumn = () => {
     {
       id: 'actions',
       enableHiding: true,
-      cell: () => {
-        return <RedemptionApprovalModal />;
+      cell: ({row}) => {
+        const rowData = row.original;
+        const handleSubmit =()=>{     
+          const data={
+            uuid:rowData.uuid,
+            amount:rowData.amount,
+            tokenAddress:rowData.tokenAddress,
+            walletAddress:rowData.walletAddress
+
+          }
+          handleApprove(data)
+      
+        }
+        return rowData.status === 'REQUESTED' ? (
+        <RedemptionApprovalModal handleSubmit ={handleSubmit} />):
+        <Button className="h-6 w-14 text-xs p-2" disabled>Approved</Button>
+        ;
       },
     },
   ];

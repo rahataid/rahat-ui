@@ -235,6 +235,27 @@ export const useBulkCreateDisbursement = (projectUUID: UUID) => {
   });
 };
 
+
+export const useRedeemToken = (projectUUID: UUID) => {
+  const action = useProjectAction(['redeemToken-rpProject']);
+
+  return useMutation({
+    mutationFn: async (data: {
+      vendorId:string
+    }) => {
+      const res = await action.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'rpProject.redeemToken',
+          payload: data,
+        },
+      });
+      return res.data;
+    },
+  });
+
+}
+
 export const useListRedemptions = (projectUUID: UUID) => {
     const action = useProjectAction(['listRedemptions-rpProject']);
    return useQuery({

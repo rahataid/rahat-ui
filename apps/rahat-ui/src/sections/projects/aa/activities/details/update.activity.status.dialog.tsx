@@ -27,7 +27,7 @@ import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { X, CloudUpload, Check, LoaderCircle, Pencil } from 'lucide-react';
 import { useUploadFile, useUpdateActivityStatus } from '@rahat-ui/query';
 import { UUID } from 'crypto';
-import { toast } from 'react-toastify';
+import { validateFile } from '../../file.validation';
 
 type IProps = {
   activityDetail: any;
@@ -91,19 +91,8 @@ export default function UpdateActivityStatusDialog({
     const file = event.target.files?.[0];
 
     if (file) {
-      if (file.size > 5 * 1024 * 1024) {
-        return toast.error('File size exceeds 5 MB');
-      }
-
-      const validMimeTypes = [
-        'image/jpeg',
-        'image/png',
-        'image/bmp',
-        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', //.xlsx
-        'text/csv', //.csv
-      ];
-      if (!validMimeTypes.includes(file.type)) {
-        return toast.error('Invalid file type');
+      if (!validateFile(file)) {
+        return;
       }
 
       const newId = nextId.current++;

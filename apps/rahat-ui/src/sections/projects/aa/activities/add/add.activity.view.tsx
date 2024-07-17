@@ -33,7 +33,7 @@ import {
 } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import AddCommunicationForm from './add.communication.form';
-import { toast } from 'react-toastify';
+import { validateFile } from '../../file.validation';
 
 export default function AddActivities() {
   const createActivity = useCreateActivities();
@@ -143,19 +143,8 @@ export default function AddActivities() {
   ) => {
     const file = event.target.files?.[0];
     if (file) {
-      if (file.size > 5 * 1024 * 1024) {
-        return toast.error('File size exceeds 5 MB');
-      }
-
-      const validMimeTypes = [
-        'image/jpeg',
-        'image/png',
-        'image/bmp',
-        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', //.xlsx
-        'text/csv', //.csv
-      ];
-      if (!validMimeTypes.includes(file.type)) {
-        return toast.error('Invalid file type');
+      if (!validateFile(file)) {
+        return;
       }
 
       const newFileName = `${Date.now()}-${file.name}`;

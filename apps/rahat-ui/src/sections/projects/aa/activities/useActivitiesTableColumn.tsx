@@ -131,15 +131,7 @@ export default function useActivitiesTableColumn() {
         const status = row.getValue('status') as string;
         const bgColor = getStatusBg(status);
         return (
-          <div className="flex gap-1">
-            <Badge className={`rounded-md capitalize ${bgColor}`}>
-              {status}
-            </Badge>
-            <UpdateActivityStatusDialog
-              activityDetail={row.original}
-              loading={false}
-            />
-          </div>
+          <Badge className={`rounded-md capitalize ${bgColor}`}>{status}</Badge>
         );
       },
     },
@@ -156,12 +148,19 @@ export default function useActivitiesTableColumn() {
       enableHiding: false,
       cell: ({ row }) => {
         return (
-          <Eye
-            className="hover:text-primary cursor-pointer"
-            size={20}
-            strokeWidth={1.5}
-            onClick={() => handleEyeClick(row.original.id)}
-          />
+          <div className="flex items-center space-x-2">
+            <UpdateActivityStatusDialog
+              activityDetail={row.original}
+              loading={false}
+              iconStyle="w-4 h-4"
+            />
+            <Eye
+              className="hover:text-primary cursor-pointer"
+              size={20}
+              strokeWidth={1.5}
+              onClick={() => handleEyeClick(row.original.id)}
+            />
+          </div>
         );
       },
     },

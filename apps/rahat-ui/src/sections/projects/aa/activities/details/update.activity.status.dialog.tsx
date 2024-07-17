@@ -32,6 +32,8 @@ import { toast } from 'react-toastify';
 type IProps = {
   activityDetail: any;
   loading: boolean;
+  triggerTitle?: string;
+  iconStyle: string;
 };
 
 const statusList = ['NOT_STARTED', 'WORK_IN_PROGRESS', 'COMPLETED', 'DELAYED'];
@@ -39,6 +41,8 @@ const statusList = ['NOT_STARTED', 'WORK_IN_PROGRESS', 'COMPLETED', 'DELAYED'];
 export default function UpdateActivityStatusDialog({
   activityDetail,
   loading,
+  triggerTitle = '',
+  iconStyle,
 }: IProps) {
   const router = useRouter();
   const params = useParams();
@@ -158,10 +162,10 @@ export default function UpdateActivityStatusDialog({
       <DialogTrigger asChild>
         <Button
           variant={'link'}
-          className="h-6"
+          className="h-4 px-1"
           onClick={() => setShowModal(true)}
         >
-          <Pencil className="w-3 h-3 mr-1" /> update
+          <Pencil className={iconStyle} /> {triggerTitle}
         </Button>
       </DialogTrigger>
       <DialogContent>

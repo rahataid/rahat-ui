@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import {
   ColumnFiltersState,
   SortingState,
@@ -19,15 +19,19 @@ import StakeholdersGroupsTable from '../groups.table';
 import useStakeholdersGroupsTableColumn from './useStakeholdersGroupsTableColumn';
 import CustomPagination from '../../../../../components/customPagination';
 import { UUID } from 'crypto';
+import { getPaginationFromLocalStorage } from '../../usePrevPagination';
 
 export default function StakeholdersGroupsListView() {
   const { id } = useParams();
+  const searchParams = useSearchParams();
 
   const { pagination, setNextPage, setPrevPage, setPerPage, setPagination } =
     usePagination();
 
   React.useEffect(() => {
-    setPagination({ page: 1, perPage: 10 });
+    const isBackFromDetail = searchParams.get('backFromDetail') === 'true';
+    const prevPagination = getPaginationFromLocalStorage(isBackFromDetail);
+    setPagination(prevPagination);
   }, []);
 
   useStakeholdersGroups(id as UUID, { ...pagination });

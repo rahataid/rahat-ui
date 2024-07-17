@@ -1,10 +1,16 @@
 import { ColumnDef } from '@tanstack/react-table';
 import { Eye, Pencil, Trash2 } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
+import { setPaginationToLocalStorage } from '../usePrevPagination';
 
 export const useFundManagementColumns = () => {
   const router = useRouter();
   const { id: projectID } = useParams();
+
+  const handleEyeClick = (id: any) => {
+    setPaginationToLocalStorage();
+    router.push(`/projects/aa/${projectID}/fund-management/${id}`);
+  };
 
   const columns: ColumnDef<any>[] = [
     {
@@ -34,11 +40,7 @@ export const useFundManagementColumns = () => {
           <div className="flex items-center justify-evenly">
             <Eye
               className="cursor-pointer"
-              onClick={() =>
-                router.push(
-                  `/projects/aa/${projectID}/fund-management/${row?.original?.uuid}`,
-                )
-              }
+              onClick={() => handleEyeClick(row.original.uuid)}
               size={20}
               strokeWidth={1.25}
             />

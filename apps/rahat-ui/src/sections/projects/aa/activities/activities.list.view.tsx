@@ -36,7 +36,18 @@ export default function ActivitiesList() {
   } = usePagination();
 
   React.useEffect(() => {
-    setPagination({ page: 1, perPage: 10 });
+    const storedData = localStorage.getItem('prevPagination');
+    const prevPagination = storedData
+      ? JSON.parse(storedData)
+      : { page: 1, perPage: 10 };
+    setPagination(prevPagination);
+
+    // Remove local storage in the background after setting pagination
+    const timeOut = setTimeout(() => {
+      localStorage.removeItem('prevPagination');
+    }, 2000);
+
+    return () => clearTimeout(timeOut);
   }, []);
 
   const { activitiesData, activitiesMeta, isLoading } = useActivities(

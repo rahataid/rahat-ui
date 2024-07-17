@@ -5,6 +5,7 @@ import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Eye } from 'lucide-react';
 import { IActivitiesItem } from '../../../../types/activities';
 import UpdateActivityStatusDialog from './details/update.activity.status.dialog';
+import { hashStorage } from '@rahat-ui/query';
 
 function getPhaseBg(phase: string) {
   if (phase === 'PREPAREDNESS') {
@@ -45,6 +46,15 @@ function getStatusBg(status: string) {
 export default function useActivitiesTableColumn() {
   const { id: projectID } = useParams();
   const router = useRouter();
+
+  const handleEyeClick = (activityId: any) => {
+    const storedPagination = hashStorage.getItem('pagination');
+    if (storedPagination) {
+      const pagination = JSON.stringify(storedPagination);
+      localStorage.setItem('prevPagination', pagination);
+    }
+    router.push(`/projects/aa/${projectID}/activities/${activityId}`);
+  };
 
   const columns: ColumnDef<IActivitiesItem>[] = [
     // {
@@ -149,17 +159,12 @@ export default function useActivitiesTableColumn() {
       id: 'actions',
       enableHiding: false,
       cell: ({ row }) => {
-        console.log(row);
         return (
           <Eye
             className="hover:text-primary cursor-pointer"
             size={20}
             strokeWidth={1.5}
-            onClick={() =>
-              router.push(
-                `/projects/aa/${projectID}/activities/${row.original.id}`,
-              )
-            }
+            onClick={() => handleEyeClick(row.original.id)}
           />
         );
       },

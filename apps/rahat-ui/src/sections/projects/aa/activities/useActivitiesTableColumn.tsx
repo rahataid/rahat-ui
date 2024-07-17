@@ -5,7 +5,7 @@ import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Eye } from 'lucide-react';
 import { IActivitiesItem } from '../../../../types/activities';
 import UpdateActivityStatusDialog from './details/update.activity.status.dialog';
-import { hashStorage } from '@rahat-ui/query';
+import { setPaginationToLocalStorage } from '../usePrevPagination';
 
 function getPhaseBg(phase: string) {
   if (phase === 'PREPAREDNESS') {
@@ -48,11 +48,7 @@ export default function useActivitiesTableColumn() {
   const router = useRouter();
 
   const handleEyeClick = (activityId: any) => {
-    const storedPagination = hashStorage.getItem('pagination');
-    if (storedPagination) {
-      const pagination = JSON.stringify(storedPagination);
-      localStorage.setItem('prevPagination', pagination);
-    }
+    setPaginationToLocalStorage();
     router.push(`/projects/aa/${projectID}/activities/${activityId}`);
   };
 

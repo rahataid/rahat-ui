@@ -46,7 +46,7 @@ export default function ActivitiesDetailView() {
     <div className="h-[calc(100vh-65px)] bg-secondary p-4">
       <div className="flex justify-between">
         <div className="flex gap-4 items-center">
-          <Back path={activitiesListPath} />
+          <Back path={activitiesListPath.concat('?backFromDetail=true')} />
           <h1 className="text-xl font-semibold">{activityDetail?.title}</h1>
         </div>
         <div className="flex gap-4 items-center">

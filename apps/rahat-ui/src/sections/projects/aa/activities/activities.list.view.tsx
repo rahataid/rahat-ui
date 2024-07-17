@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import {
   useActivities,
@@ -14,9 +14,11 @@ import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import TableLoader from 'apps/rahat-ui/src/components/table.loader';
 import { UUID } from 'crypto';
 import ActivitiesTableFilters from './activities.table.filters';
+import { getPaginationFromLocalStorage } from '../usePrevPagination';
 
 export default function ActivitiesList() {
   const { id: projectID } = useParams();
+  const searchParams = useSearchParams();
   const [activitySearchText, setActivitySearchText] =
     React.useState<string>('');
   const [responsibilitySearchText, setResponsibilitySearchText] =
@@ -36,18 +38,9 @@ export default function ActivitiesList() {
   } = usePagination();
 
   React.useEffect(() => {
-    const storedData = localStorage.getItem('prevPagination');
-    const prevPagination = storedData
-      ? JSON.parse(storedData)
-      : { page: 1, perPage: 10 };
+    const isBackFromDetail = searchParams.get('backFromDetail') === 'true';
+    const prevPagination = getPaginationFromLocalStorage(isBackFromDetail);
     setPagination(prevPagination);
-
-    // Remove local storage in the background after setting pagination
-    const timeOut = setTimeout(() => {
-      localStorage.removeItem('prevPagination');
-    }, 2000);
-
-    return () => clearTimeout(timeOut);
   }, []);
 
   const { activitiesData, activitiesMeta, isLoading } = useActivities(

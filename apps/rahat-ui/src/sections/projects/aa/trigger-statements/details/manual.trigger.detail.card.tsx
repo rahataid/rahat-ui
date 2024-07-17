@@ -5,6 +5,7 @@ type IProps = {
   notes: string;
   phase: string;
   triggeredAt: string;
+  triggeredBy: string;
 };
 
 function renderTimestamp (timestamp: string) {
@@ -19,7 +20,8 @@ export default function ManualTriggerDetailCard({
   status,
   notes,
   phase,
-  triggeredAt
+  triggeredAt,
+  triggeredBy
 }: IProps) {
 
 
@@ -49,6 +51,20 @@ export default function ManualTriggerDetailCard({
               <p>
                 {
                   renderTimestamp(triggeredAt)
+                }
+              </p>
+            ) : (
+              <p>{'N/A'}</p>
+            )
+          }
+        </div>
+        <div className="col-span-2 mt-1">
+          <p className="text-sm text-muted-foreground">Triggered By</p>
+          {
+            status ? (
+              <p>
+                {
+                 triggeredBy
                 }
               </p>
             ) : (

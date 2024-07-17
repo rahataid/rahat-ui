@@ -4,14 +4,17 @@ import { UseQueryResult, useMutation, useQuery } from '@tanstack/react-query';
 import { TAGS } from '../config';
 import { SettingInput } from '@rahataid/community-tool-sdk/settings/settings.types';
 import Swal from 'sweetalert2';
+import { Pagination } from '@rumsan/sdk/types';
 
-export const useCommunitySettingList = (): UseQueryResult<any, Error> => {
+export const useCommunitySettingList = (
+  payload: Pagination & { any?: string },
+): UseQueryResult<any, Error> => {
   const { queryClient, rumsanService } = useRSQuery();
   const settingClient = getSettingsClient(rumsanService.client);
   return useQuery(
     {
-      queryKey: [TAGS.LIST_COMMUNITY_SETTINGS],
-      queryFn: () => settingClient.list(),
+      queryKey: [TAGS.LIST_COMMUNITY_SETTINGS, payload],
+      queryFn: () => settingClient.list(payload),
     },
     queryClient,
   );
@@ -34,6 +37,36 @@ export const useCommunitySettingCreate = () => {
           ],
         });
         Swal.fire('Settings Created Successfully', '', 'success');
+      },
+      onError: (error: any) => {
+        Swal.fire(
+          'Error',
+          error.response.data.message || 'Encounter error on Creating Data',
+          'error',
+        );
+      },
+    },
+    queryClient,
+  );
+};
+
+export const useCommunitySettingUpdate = () => {
+  const { queryClient, rumsanService } = useRSQuery();
+  const settingClient = getSettingsClient(rumsanService.client);
+  return useMutation(
+    {
+      mutationKey: [TAGS.CREATE_COMMUNITY_SETTINGS],
+      mutationFn: settingClient.update,
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: [
+            TAGS.UPDATE_COMMUNITY_SETTINGS,
+            {
+              exact: true,
+            },
+          ],
+        });
+        Swal.fire('Settings Updated Successfully', '', 'success');
       },
       onError: (error: any) => {
         Swal.fire(

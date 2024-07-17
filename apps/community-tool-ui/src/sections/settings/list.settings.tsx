@@ -1,17 +1,16 @@
 'use client';
 
-import React, { useMemo, useState } from 'react';
-import { useRumsanService } from '../../providers/service.provider';
 import {
-  ColumnDef,
   VisibilityState,
   flexRender,
   getCoreRowModel,
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { SettingList } from '@rahataid/community-tool-sdk/settings/settings.types';
+import { useState } from 'react';
 
+import { useCommunitySettingList } from '@rahat-ui/community-query';
+import { usePagination } from '@rahat-ui/query';
 import {
   TableBody,
   TableCell,
@@ -22,81 +21,23 @@ import {
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import CustomPagination from '../../components/customPagination';
-import { useCommunitySettingList } from '@rahat-ui/community-query';
-import { usesettingTableColumns } from './useSettingColumns';
-
-// interface BeneficiaryData {
-//   name: string;
-//   dataType: string;
-//   isPrivate: boolean;
-//   isReadOnly: boolean;
-//   requiredFields: [];
-// }
-
-// const columns: ColumnDef<BeneficiaryData>[] = [
-//   {
-//     header: 'Name',
-//     accessorKey: 'name',
-//     cell: ({ row }) => <div>{row.getValue('name')}</div>,
-//   },
-//   {
-//     header: 'DataType',
-//     accessorKey: 'dataType',
-//     cell: ({ row }) => <div>{row.getValue('dataType')}</div>,
-//   },
-//   {
-//     header: 'IsPrivate',
-//     accessorKey: 'isPrivate',
-//     cell: ({ row }) => <div>{row.original.isPrivate ? 'Yes' : 'No'}</div>,
-//   },
-//   {
-//     header: 'IsReadOnly',
-//     accessorKey: 'isReadOnly',
-//     cell: ({ row }) => <div>{row.original.isReadOnly ? 'Yes' : 'No'}</div>,
-//   },
-//   {
-//     header: 'RequiredFields',
-//     accessorKey: 'requiredFields',
-//     cell: ({ row }) => {
-//       return (
-//         <div>
-//           {row.original.requiredFields.map((field, index) => (
-//             <li key={index}>{field}</li>
-//           ))}
-//         </div>
-//       );
-//     },
-//   },
-// ];
+import { useSettingTableColumns } from './useSettingColumns';
 
 export default function ListSetting() {
-  const [perPage, setPerPage] = useState<number>(5);
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const columns = usesettingTableColumns();
+  const columns = useSettingTableColumns();
 
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
 
-  const startIndex = (currentPage - 1) * perPage;
-  const endIndex = currentPage * perPage;
-  const handleNextPage = () => setCurrentPage(currentPage + 1);
-  const handlePrevPage = () => setCurrentPage(currentPage - 1);
+  const { pagination, setNextPage, setPrevPage, setPerPage } = usePagination();
 
-  const { data } = useCommunitySettingList();
-
-  const pagedData = useMemo(() => {
-    return data?.data?.slice(startIndex, endIndex) || [];
-  }, [data?.data, startIndex, endIndex]);
-
-  const meta = {
-    total: data?.data?.length,
-    currentPage,
-    lastPage: Math.ceil(data?.data?.length / perPage),
-  };
+  const { data } = useCommunitySettingList({
+    ...pagination,
+  });
 
   const table = useReactTable({
     manualPagination: true,
-    data: pagedData || [],
+    data: data?.data?.rows || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -161,13 +102,13 @@ export default function ListSetting() {
             </TableBody>
           </ScrollArea>
           <CustomPagination
-            meta={data?.response?.meta || meta}
-            handleNextPage={handleNextPage}
-            handlePrevPage={handlePrevPage}
-            handlePageSizeChange={(value) => setPerPage(Number(value))}
-            currentPage={currentPage}
-            perPage={perPage}
-            total={data?.response?.meta?.total || 0}
+            meta={data?.response?.meta || { total: 0, currentPage: 0 }}
+            handleNextPage={setNextPage}
+            handlePrevPage={setPrevPage}
+            handlePageSizeChange={setPerPage}
+            currentPage={pagination.page}
+            perPage={pagination.perPage}
+            total={data?.response?.meta.total || 0}
           />
         </TableComponent>
       </div>

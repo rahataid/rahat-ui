@@ -46,7 +46,7 @@ const ProjectLayout: FC<ProjectLayoutProps> = ({
     }
     return (
       <>
-        <ResizableHandle />
+        {/* <ResizableHandle /> */}
         {renderResizablePanel(children)}
       </>
     );

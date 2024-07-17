@@ -1,7 +1,7 @@
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Project } from '@rahataid/sdk/project/project.types';
 import DataCard from 'apps/rahat-ui/src/components/dataCard';
-import { Users } from 'lucide-react';
+import { UserCheck, UserPlus, Users } from 'lucide-react';
 import { FC } from 'react';
 
 type ProjectInfoProps = {
@@ -75,6 +75,7 @@ const ProjectInfo: FC<ProjectInfoProps> = ({
             <DataCard
               className="h-full"
               title="Total Beneficiary"
+              Icon={Users}
               number={(Number(projectVoucher?.eyeVoucherAssigned)+Number(projectVoucher?.
                 referredVoucherAssigned)
                 ).toString() || 'N/A'}
@@ -103,21 +104,21 @@ const ProjectInfo: FC<ProjectInfoProps> = ({
               className=""
               title="Total Redemptions"
               number={totalVoucherRedeemed.toLocaleString() || 'N/A'}
-              Icon={Users}
+              Icon={UserCheck}
               // refresh={refetchBeneficiary}
             />
             <DataCard
               className=""
               title="Successful Enrollment"
               number={projectVoucher?.eyeVoucherClaimed?.toLocaleString() || '-'}
-              Icon={Users}
+              Icon={UserCheck}
               // refresh={refetchBeneficiary}
             />
             <DataCard
               className=""
               title="Successful Referrals"
               number={projectVoucher?.referredVoucherClaimed?.toLocaleString() || '-'}
-              Icon={Users}
+              Icon={UserPlus}
               // refresh={refetchBeneficiary}
             />
           </div>

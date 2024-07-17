@@ -298,7 +298,7 @@ export const useSendFundToProject = () => {
   );
 };
 
-export const useRedemToken = (projectUUID:UUID) =>{
+export const useContractRedeem = (projectUUID:UUID) =>{
   const redemptionContract = useWriteRedemptionsRedeemToken();
 
   const updateRedemption = useRedeemToken(projectUUID);
@@ -320,7 +320,7 @@ export const useRedemToken = (projectUUID:UUID) =>{
         });
       },
       onSuccess: async(d,variables) => {
-        await updateRedemption.mutateAsync({vendorId:variables?.vendorId});
+        await updateRedemption.mutateAsync({uuid:variables?.uuid});
         alert.fire({
           icon: 'success',
           title: 'Token redeemed successfully',
@@ -332,14 +332,14 @@ export const useRedemToken = (projectUUID:UUID) =>{
         tokenAddress,
         redemptionAddress,
         senderAddress,
-        vendorId,
+        uuid,
 
       }:{
         amount: number;
         tokenAddress: `0x${string}`;
         redemptionAddress: `0x${string}`;
         senderAddress: `0x${string}`; 
-        vendorId: string;
+        uuid: string;
 
       }) => {
         return redemptionContract.writeContractAsync({

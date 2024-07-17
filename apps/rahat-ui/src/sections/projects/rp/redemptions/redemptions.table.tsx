@@ -24,7 +24,7 @@ import {
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { useRedemptionTableColumn } from './useRedemptionTableColumn';
 import { History } from 'lucide-react';
-import { useListRedemptions } from '@rahat-ui/query';
+import { PROJECT_SETTINGS_KEYS, useContractRedeem, useListRedemptions, useProjectSettingsStore, useRedeemToken, useSettingsStore } from '@rahat-ui/query';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
 
@@ -41,15 +41,32 @@ export default function RedemptionsTable() {
 
   const { id } = useParams() as {id:UUID};
 
+  const contractSettings = useProjectSettingsStore((state)=>state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT]||null)
+
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
   );
+
+  const redeemToken = useContractRedeem(id);
+
+
+  const handleApprove =(row:any)=>{
+    redeemToken.mutateAsync({
+      amount:row?.amount,
+      tokenAddress:row?.tokenAddress,
+      redemptionAddress:contractSettings?.redemptions?.address,
+      senderAddress:row?.walletAddress,
+      uuid:row?.uuid,
+
+    })
+  }
   const {data:redemptions} = useListRedemptions(id);
+
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
-  const columns = useRedemptionTableColumn();
+  const columns = useRedemptionTableColumn({handleApprove});
   const table = useReactTable({
     data:redemptions ||[],
     columns,

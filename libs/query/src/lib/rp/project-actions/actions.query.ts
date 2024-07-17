@@ -241,7 +241,7 @@ export const useRedeemToken = (projectUUID: UUID) => {
 
   return useMutation({
     mutationFn: async (data: {
-      vendorId:string
+      uuid:string
     }) => {
       const res = await action.mutateAsync({
         uuid: projectUUID,
@@ -271,10 +271,12 @@ export const useListRedemptions = (projectUUID: UUID) => {
         const data = res.data;
         const formattedData = data.map((item: any) => {
           return {
-            id: item.id,
-            name: item.Vendor?.name,
-            amount: item.tokenAmount,
-            status: item.status,
+            uuid: item?.uuid,
+            name: item?.Vendor?.name,
+            amount: item?.tokenAmount,
+            status: item?.status,
+            tokenAddress: item?.tokenAddress,
+            walletAddress: item?.Vendor?.walletAddress,
           };
         } 
         );

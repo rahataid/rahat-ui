@@ -9,9 +9,16 @@ export type Redeptions = {
   amount: number;
   status: string;
   action: string;
+  uuid:string;
+  tokenAddress:string;
+  walletAddress:string;
 };
 
-export const useRedemptionTableColumn = () => {
+type IProps = {
+  handleApprove: (data:any) => void;
+};
+
+export const useRedemptionTableColumn = ({handleApprove}:IProps) => { 
   const columns: ColumnDef<Redeptions>[] = [
     {
       accessorKey: 'name',
@@ -41,8 +48,20 @@ export const useRedemptionTableColumn = () => {
     {
       id: 'actions',
       enableHiding: true,
-      cell: () => {
-        return <RedemptionApprovalModal />;
+      cell: ({row}) => {
+        const rowData = row.original;
+        const handleSubmit =()=>{     
+          const data={
+            uuid:rowData.uuid,
+            amount:rowData.amount,
+            tokenAddress:rowData.tokenAddress,
+            walletAddress:rowData.walletAddress
+
+          }
+          handleApprove(data)
+      
+        }
+        return <RedemptionApprovalModal handleSubmit ={handleSubmit} />;
       },
     },
   ];

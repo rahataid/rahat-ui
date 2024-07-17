@@ -26,6 +26,7 @@ import { rahatPayrollProjectAbi } from './abis/rp/RahatPayrollProject';
 import { rahatTokenAbi as RPRahatTokenAbi } from './abis/rp/RahatToken';
 import { rahatTreasuryAbi as RPRahatTreasuryAbi } from './abis/rp/RahatTreasury';
 import { vendorAbi } from './abis/rp/Vendor';
+import { redemptionsAbi } from './abis/rp/Redemptions';
 
 const ELConfig = [
   {
@@ -240,6 +241,17 @@ const RPConfig = [
     ],
     plugins: [react()],
   },
+  {
+    out: 'libs/query/src/lib/rp/contracts/generated-hooks/redemptions.ts',
+    contracts: [
+      {
+        name: 'Redemptions',
+        abi: redemptionsAbi,
+      },
+    ],
+    plugins: [react()],
+  },
+  
 ];
 export default defineConfig([
   ...ELConfig,

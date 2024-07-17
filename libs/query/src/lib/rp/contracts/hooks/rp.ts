@@ -11,6 +11,10 @@ import {
   useWriteRahatTreasuryCreateToken,
   useWriteRahatTreasuryTransferToken,
 } from '../generated-hooks';
+import { useRouter } from 'next/navigation';
+import { useWriteRedemptionsRedeemToken } from '../generated-hooks/redemptions';
+import { UUID } from 'crypto';
+import { useRedeemToken } from '../../project-actions';
 
 export const useTokenCreate = () => {
   const treasuryCreateToken = useWriteRahatTreasuryCreateToken();
@@ -294,3 +298,60 @@ export const useSendFundToProject = () => {
     queryClient,
   );
 };
+
+export const useContractRedeem = (projectUUID:UUID) =>{
+  const redemptionContract = useWriteRedemptionsRedeemToken();
+
+  const updateRedemption = useRedeemToken(projectUUID);
+  const alert = Swal.mixin({
+    customClass: {
+      confirmButton: 'btn btn-primary',
+      cancelButton: 'btn btn-secondary',
+    },
+    buttonsStyling: false,
+  });
+
+  return useMutation(
+    {
+      onError: (error) => {
+        alert.fire({
+          icon: 'error',
+          title: 'Error redeeming token',
+          text: error.message,
+        });
+      },
+      onSuccess: async(d,variables) => {
+        await updateRedemption.mutateAsync({uuid:variables?.uuid});
+        alert.fire({
+          icon: 'success',
+          title: 'Token redeemed successfully',
+        });
+    
+      },
+      mutationFn: async ({
+        amount,
+        tokenAddress,
+        redemptionAddress,
+        senderAddress,
+        uuid,
+
+      }:{
+        amount: number;
+        tokenAddress: `0x${string}`;
+        redemptionAddress: `0x${string}`;
+        senderAddress: `0x${string}`; 
+        uuid: string;
+
+      }) => {
+        return redemptionContract.writeContractAsync({
+          args: [tokenAddress, senderAddress, BigInt(amount)],
+          address: redemptionAddress,
+          
+        });
+        
+    }
+  
+}
+)
+}
+ 

@@ -49,6 +49,7 @@ export default function RedemptionsTable() {
   );
 
   const redeemToken = useContractRedeem(id);
+  const {data:redemptions,refetch} = useListRedemptions(id);
 
 
   const handleApprove =(row:any)=>{
@@ -59,9 +60,11 @@ export default function RedemptionsTable() {
       senderAddress:row?.walletAddress,
       uuid:row?.uuid,
 
+    }).finally(()=>{
+      refetch()
     })
   }
-  const {data:redemptions} = useListRedemptions(id);
+ 
 
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});

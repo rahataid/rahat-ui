@@ -246,7 +246,7 @@ export const useRedeemToken = (projectUUID: UUID) => {
       const res = await action.mutateAsync({
         uuid: projectUUID,
         data: {
-          action: 'rpProject.redeemToken',
+          action: 'rpProject.updateRedemption',
           payload: data,
         },
       });

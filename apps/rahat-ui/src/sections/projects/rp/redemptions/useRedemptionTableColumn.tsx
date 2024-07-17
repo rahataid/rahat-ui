@@ -61,7 +61,10 @@ export const useRedemptionTableColumn = ({handleApprove}:IProps) => {
           handleApprove(data)
       
         }
-        return <RedemptionApprovalModal handleSubmit ={handleSubmit} />;
+        return rowData.status === 'REQUESTED' ? (
+        <RedemptionApprovalModal handleSubmit ={handleSubmit} />):
+        <Button className="h-6 w-14 text-xs p-2" disabled>Approved</Button>
+        ;
       },
     },
   ];

@@ -49,11 +49,6 @@ export const columns: ColumnDef<TextDetail>[] = [
     filterFn: 'includesString',
   },
   {
-    accessorKey: 'ward',
-    header: 'Ward',
-    cell: ({ row }) => <div>{row.getValue('ward')}</div>,
-  },
-  {
     accessorKey: 'duration',
     header: 'Duration',
     cell: ({ row }) => (
@@ -95,7 +90,6 @@ export default function CommunicationLogTable({ data }: IProps) {
   );
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({
-      ward: false,
       duration: false,
     });
   const [rowSelection, setRowSelection] = React.useState({});
@@ -121,11 +115,17 @@ export default function CommunicationLogTable({ data }: IProps) {
     setTableData(tData);
   }, [tData]);
 
-  const filterDataByType = (data, id) => {
+  const filterData = (data: any, id: string, key?: string) => {
     return data
-      ?.filter(
-        (item) => item?.transport.name.toLowerCase() === id.toLowerCase(),
-      )
+      ?.filter((item) => {
+        if (key === 'type') {
+          if (item?.transport.name.toLowerCase() === id.toLowerCase())
+            return item;
+        } else {
+          if (item?.campaign.name.toLowerCase() === id.toLowerCase())
+            return item;
+        }
+      })
       ?.map((item) => {
         const baseData = {
           createdAt: new Date(item.createdAt).toLocaleString(),
@@ -133,10 +133,9 @@ export default function CommunicationLogTable({ data }: IProps) {
           to: item?.audience?.details?.phone,
         };
 
-        if (id.toLowerCase() === 'ivr') {
+        if (item?.campaign?.type.toLowerCase() === 'ivr') {
           return {
             ...baseData,
-            ward: item?.details?.lineId,
             duration: item?.details?.duration || 0 + ' seconds',
             attempts: 1,
           };
@@ -153,24 +152,28 @@ export default function CommunicationLogTable({ data }: IProps) {
       });
   };
 
-  const setColumnVisibilityByType = (id) => {
+  const setColumnVisibilityByType = (id: string) => {
     if (id.toLowerCase() === 'ivr') {
       setColumnVisibility({
-        ward: true,
         duration: true,
       });
     } else {
       setColumnVisibility({
-        ward: false,
         duration: false,
       });
     }
   };
 
-  const filterByType = (id: string) => {
-    const filteredData = filterDataByType(data, id);
+  const handleFilter = (id: string, key?: string) => {
+    let filteredData;
+    if (key === 'type') {
+      filteredData = filterData(data, id, key);
+      setColumnVisibilityByType(id);
+    } else {
+      filteredData = filterData(data, id);
+      setColumnVisibilityByType('ivr');
+    }
     setTableData(filteredData);
-    setColumnVisibilityByType(id);
   };
   const table = useReactTable({
     data: tableData || [],
@@ -204,20 +207,41 @@ export default function CommunicationLogTable({ data }: IProps) {
             }
             className="max-w-sm"
           />
-          <Select defaultValue="Email" onValueChange={(e) => filterByType(e)}>
-            <SelectTrigger className="max-w-32">
-              <SelectValue placeholder="Type" />
-            </SelectTrigger>
-            <SelectContent>
-              {transportData?.data?.map((data) => {
-                return (
-                  <SelectItem key={data.id} value={data.name}>
-                    {data.name}
-                  </SelectItem>
-                );
-              })}
-            </SelectContent>
-          </Select>
+          <div className="flex  gap-2">
+            {/* filter by campaign  */}
+            <Select onValueChange={(e) => handleFilter(e)}>
+              <SelectTrigger className="max-w-32">
+                <SelectValue placeholder="Campaign" />
+              </SelectTrigger>
+              <SelectContent>
+                {data?.map((data) => {
+                  return (
+                    <SelectItem key={data.id} value={data.campaign.name}>
+                      {data.campaign.name}
+                    </SelectItem>
+                  );
+                })}
+              </SelectContent>
+            </Select>
+            {/* filter by type  */}
+            <Select
+              defaultValue="Email"
+              onValueChange={(e) => handleFilter(e, 'type')}
+            >
+              <SelectTrigger className="max-w-32">
+                <SelectValue placeholder="Type" />
+              </SelectTrigger>
+              <SelectContent>
+                {transportData?.data?.map((data) => {
+                  return (
+                    <SelectItem key={data.id} value={data.name}>
+                      {data.name}
+                    </SelectItem>
+                  );
+                })}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
         <div className="rounded-md  border mt-1 bg-card">
           <Table>

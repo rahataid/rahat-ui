@@ -123,7 +123,7 @@ export default function DailyMonitoringDetailView() {
     <div className="h-[calc(100vh-65px)] bg-secondary p-4">
       <div className="mb-4 flex justify-between items-center">
         <div className="flex gap-4 items-center">
-          <Back path={dailyMonitoringListPath} />
+          <Back path={dailyMonitoringListPath.concat('?backFromDetail=true')} />
           <h1 className="font-semibold text-xl">Bulletin Details</h1>
         </div>
         <div className="flex gap-4 items-center">
@@ -133,7 +133,7 @@ export default function DailyMonitoringDetailView() {
       </div>
       <div className="grid grid-cols-2 gap-4 mb-4">
         <DetailsHeadCard
-          title="Data Entry By"
+          title="Created By"
           icon={<User size={20} />}
           content={latestDataDetails?.dataEntryBy || '-'}
         />

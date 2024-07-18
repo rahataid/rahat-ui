@@ -54,7 +54,7 @@ export default function AddDailyMonitoring() {
   };
 
   const FormSchema = z.object({
-    dataEntryBy: z.string().min(2, { message: 'Please enter name.' }),
+    // dataEntryBy: z.string().min(2, { message: 'Please enter name.' }),
     riverBasin: z.string().min(1, { message: 'Please select river basin.' }),
     dataSource: z.array(
       z.object({
@@ -108,7 +108,7 @@ export default function AddDailyMonitoring() {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      dataEntryBy: '',
+      // dataEntryBy: '',
       riverBasin: '',
       dataSource: [],
     },
@@ -217,7 +217,7 @@ export default function AddDailyMonitoring() {
       }
     }
     const payload = {
-      dataEntryBy: data.dataEntryBy,
+      // dataEntryBy: data.dataEntryBy,
       // location: selectedRiverBasin,
       location: data.riverBasin,
       data: dataPayload,
@@ -250,12 +250,12 @@ export default function AddDailyMonitoring() {
             <ScrollArea className="h-[calc(100vh-238px)]">
               <CardContent>
                 <div className="grid grid-cols-2 gap-4">
-                  <InputFormField
+                  {/* <InputFormField
                     form={form}
                     name="dataEntryBy"
-                    label="Data Entry By"
+                    label="Created By"
                     placeholder="Enter Data Entry Personnel"
-                  />
+                  /> */}
                   {/* <FormItem>
                     <FormLabel>River Basin</FormLabel>
                     <Input

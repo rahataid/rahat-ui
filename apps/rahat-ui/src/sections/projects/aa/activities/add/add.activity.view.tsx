@@ -33,6 +33,7 @@ import {
 } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import AddCommunicationForm from './add.communication.form';
+import { validateFile } from '../../file.validation';
 
 export default function AddActivities() {
   const createActivity = useCreateActivities();
@@ -76,7 +77,7 @@ export default function AddActivities() {
     responsibility: z
       .string()
       .min(2, { message: 'Please enter responsibility' }),
-    source: z.string().min(2, { message: 'Please enter source' }),
+    source: z.string().min(2, { message: 'Please enter responsible station' }),
     phaseId: z.string().min(1, { message: 'Please select phase' }),
     categoryId: z.string().min(1, { message: 'Please select category' }),
     // hazardTypeId: z.string().min(1, { message: 'Please select hazard type' }),
@@ -142,6 +143,10 @@ export default function AddActivities() {
   ) => {
     const file = event.target.files?.[0];
     if (file) {
+      if (!validateFile(file)) {
+        return;
+      }
+
       const newFileName = `${Date.now()}-${file.name}`;
       const modifiedFile = new File([file], newFileName, { type: file.type });
 
@@ -269,11 +274,11 @@ export default function AddActivities() {
                   render={({ field }) => {
                     return (
                       <FormItem>
-                        <FormLabel>Source</FormLabel>
+                        <FormLabel>Responsible Station</FormLabel>
                         <FormControl>
                           <Input
                             type="text"
-                            placeholder="Enter source"
+                            placeholder="Enter responsible station"
                             {...field}
                           />
                         </FormControl>
@@ -458,6 +463,10 @@ export default function AddActivities() {
                         </div>
                       </FormControl>
                       <FormMessage />
+                      <p className="text-xs text-orange-500">
+                        *Files must be under 5 MB and of type JPEG, PNG, BMP,
+                        XLSX, or CSV.
+                      </p>
                       {documents?.map((file) => (
                         <div
                           key={file.name}

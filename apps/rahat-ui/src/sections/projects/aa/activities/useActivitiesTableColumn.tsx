@@ -4,6 +4,8 @@ import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Eye } from 'lucide-react';
 import { IActivitiesItem } from '../../../../types/activities';
+import UpdateActivityStatusDialog from './details/update.activity.status.dialog';
+import { setPaginationToLocalStorage } from '../prev.pagination.storage';
 
 function getPhaseBg(phase: string) {
   if (phase === 'PREPAREDNESS') {
@@ -44,6 +46,11 @@ function getStatusBg(status: string) {
 export default function useActivitiesTableColumn() {
   const { id: projectID } = useParams();
   const router = useRouter();
+
+  const handleEyeClick = (activityId: any) => {
+    setPaginationToLocalStorage();
+    router.push(`/projects/aa/${projectID}/activities/${activityId}`);
+  };
 
   const columns: ColumnDef<IActivitiesItem>[] = [
     // {
@@ -124,11 +131,7 @@ export default function useActivitiesTableColumn() {
         const status = row.getValue('status') as string;
         const bgColor = getStatusBg(status);
         return (
-          <div className="flex gap-1">
-            <Badge className={`rounded-md capitalize ${bgColor}`}>
-              {status}
-            </Badge>
-          </div>
+          <Badge className={`rounded-md capitalize ${bgColor}`}>{status}</Badge>
         );
       },
     },
@@ -136,13 +139,9 @@ export default function useActivitiesTableColumn() {
       accessorKey: 'completedBy',
       header: 'Completed By',
       cell: ({ row }) => {
-        const completedBy = row.getValue('completedBy') as string
-        return (
-          <div className="flex gap-1">
-            {completedBy || 'N/A'}
-          </div>
-        )
-      } ,
+        const completedBy = row.getValue('completedBy') as string;
+        return <div className="flex gap-1">{completedBy || 'N/A'}</div>;
+      },
     },
     {
       accessorKey: 'completedAt',
@@ -162,18 +161,20 @@ export default function useActivitiesTableColumn() {
       id: 'actions',
       enableHiding: false,
       cell: ({ row }) => {
-        console.log(row);
         return (
-          <Eye
-            className="hover:text-primary cursor-pointer"
-            size={20}
-            strokeWidth={1.5}
-            onClick={() =>
-              router.push(
-                `/projects/aa/${projectID}/activities/${row.original.id}`,
-              )
-            }
-          />
+          <div className="flex items-center space-x-2">
+            <UpdateActivityStatusDialog
+              activityDetail={row.original}
+              loading={false}
+              iconStyle="w-4 h-4"
+            />
+            <Eye
+              className="hover:text-primary cursor-pointer"
+              size={20}
+              strokeWidth={1.5}
+              onClick={() => handleEyeClick(row.original.id)}
+            />
+          </div>
         );
       },
     },

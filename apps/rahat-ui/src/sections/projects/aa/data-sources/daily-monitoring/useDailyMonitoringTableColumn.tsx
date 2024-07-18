@@ -2,10 +2,18 @@ import { useRouter, useParams } from 'next/navigation';
 import { ColumnDef } from '@tanstack/react-table';
 import { Eye, Pencil, Trash2 } from 'lucide-react';
 import { formatdbDate } from 'apps/rahat-ui/src/utils';
+import { setPaginationToLocalStorage } from '../../prev.pagination.storage';
 
 export default function useDailyMonitoringTableColumn() {
   const { id: projectId } = useParams();
   const router = useRouter();
+
+  const handleEyeClick = (id: any) => {
+    setPaginationToLocalStorage();
+    router.push(
+      `/projects/aa/${projectId}/data-sources/daily-monitoring/${id}`,
+    );
+  };
 
   const columns: ColumnDef<any>[] = [
     {
@@ -59,11 +67,7 @@ export default function useDailyMonitoringTableColumn() {
               className="cursor-pointer hover:text-primary"
               size={20}
               strokeWidth={1.5}
-              onClick={() =>
-                router.push(
-                  `/projects/aa/${projectId}/data-sources/daily-monitoring/${row.original.uuid}`,
-                )
-              }
+              onClick={() => handleEyeClick(row.original.uuid)}
             />
             {/* <Pencil className="text-primary" size={20} strokeWidth={1.5} />
             <Trash2 className="text-red-500" size={20} strokeWidth={1.5} /> */}

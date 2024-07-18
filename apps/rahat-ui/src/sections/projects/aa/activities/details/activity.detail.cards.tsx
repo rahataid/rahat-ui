@@ -44,6 +44,8 @@ export default function ActivityDetailCards({
             <UpdateActivityStatusDialog
               activityDetail={activityDetail}
               loading={loading}
+              triggerTitle="update"
+              iconStyle="mr-1 h-3 w-3"
             />
           </div>
           <Badge className={`${getStatusBg(activityDetail?.status)}`}>

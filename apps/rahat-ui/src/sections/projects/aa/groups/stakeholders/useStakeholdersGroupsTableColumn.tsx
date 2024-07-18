@@ -1,15 +1,18 @@
-import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { ColumnDef } from '@tanstack/react-table';
 import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
 import { Eye } from 'lucide-react';
+import { setPaginationToLocalStorage } from '../../prev.pagination.storage';
 
 export default function useStakeholdersGroupsTableColumn() {
   const router = useRouter();
 
   const { id: projectId } = useParams();
-  const groupDetailPath = (groupId: string) =>
-    `/projects/aa/${projectId}/groups/stakeholders/${groupId}`;
+
+  const handleEyeClick = (id: any) => {
+    setPaginationToLocalStorage();
+    router.push(`/projects/aa/${projectId}/groups/stakeholders/${id}`);
+  };
 
   const columns: ColumnDef<any>[] = [
     // {
@@ -66,14 +69,12 @@ export default function useStakeholdersGroupsTableColumn() {
       enableHiding: false,
       cell: ({ row }) => {
         return (
-          // <Link href={groupDetailPath(row?.original?.uuid)}>
           <Eye
-            onClick={() => router.push(groupDetailPath(row?.original?.uuid))}
+            onClick={() => handleEyeClick(row.original.uuid)}
             className="hover:text-primary cursor-pointer"
             size={20}
             strokeWidth={1.5}
           />
-          // </Link>
         );
       },
     },

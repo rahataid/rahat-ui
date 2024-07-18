@@ -138,6 +138,8 @@ export const useActivities = (uuid: UUID, payload: any) => {
     activtiyComm: d?.activityComm || null,
     isAutomated: d?.isAutomated,
     completedBy: d?.completedBy,
+    completedAt: d?.completedAt,
+    activityDocuments: d?.activityDocuments || null,
     // isApproved: d.isApproved,
     // isComplete: d.isComplete,
   }));

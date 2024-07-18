@@ -4,6 +4,7 @@ import { LineChart } from '@rahat-ui/shadcn/src/components/charts';
 import DHMMap from './map';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import DHMBulletinDialog from './dhm.bulletin.edit.dialog';
+import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 
 const renderStatus = ({ readinessLevel, activationLevel, waterLevel }: any) => {
   let status;
@@ -34,7 +35,7 @@ const renderStatus = ({ readinessLevel, activationLevel, waterLevel }: any) => {
   );
 };
 
-const LINE_CHART_CATEGORIES=[
+const LINE_CHART_CATEGORIES = [
   'Jan',
   'Feb',
   'Mar',
@@ -44,7 +45,7 @@ const LINE_CHART_CATEGORIES=[
   'Jul',
   'Aug',
   'Sep',
-]
+];
 
 export default function DHMContent({ data }: any) {
   if (!data?.length) {
@@ -139,60 +140,61 @@ export default function DHMContent({ data }: any) {
   ];
 
   return (
-    <div className="grid grid-cols-5 gap-4 h-[calc(100vh-215px)]">
-      <div className="overflow-hidden rounded-md col-span-3">
-        <StyledMapContainer>
-          <DHMMap
-            coordinates={[longitude, latitude]}
-            {...mapboxBasicConfig}
-            mapStyle={THEMES.outdoors}
-          />
-        </StyledMapContainer>
-      </div>
+    <ScrollArea className="h-[calc(100vh-215px)]">
+      <div className="grid grid-cols-5 gap-4">
+        <div className="overflow-hidden rounded-md col-span-3 h-80 xl:h-96 2xl:h-[440px]">
+          <StyledMapContainer>
+            <DHMMap
+              coordinates={[longitude, latitude]}
+              {...mapboxBasicConfig}
+              mapStyle={THEMES.outdoors}
+            />
+          </StyledMapContainer>
+        </div>
 
-      <div className="bg-card p-4 rounded col-span-2">
-        <h1 className="font-semibold text-lg mb-4">Real Time Status</h1>
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <h1 className="text-muted-foreground text-sm">Station</h1>
-            <p>{latestData.data.title}</p>
-          </div>
-          <div className="text-right">
-            <h1 className="text-muted-foreground text-sm">Basin</h1>
-            <p>{latestData.data.basin}</p>
-          </div>
-          <div>
-            <h1 className="text-muted-foreground text-sm">Water Level</h1>
-            <p>{parseFloat(latestData.data.waterLevel).toFixed(2)}</p>
-          </div>
-          <div className="text-right">
-            <h1 className="text-muted-foreground text-sm">Water Level On</h1>
-            <p>{new Date(latestData.data.waterLevelOn).toLocaleString()}</p>
-          </div>
-          <div>
-            <h1 className="text-muted-foreground text-sm">Longitude</h1>
-            <p>{parseFloat(longitude).toFixed(2)}</p>
-          </div>
-          <div className="text-right">
-            <h1 className="text-muted-foreground text-sm">Latitude</h1>
-            <p>{parseFloat(latitude).toFixed(2)}</p>
-          </div>
-          <div>
-            <h1 className="text-muted-foreground text-sm">Description</h1>
-            <p>{latestData.data.description}</p>
-          </div>
-          {/* do not remove */}
-          {/* <div className="text-right">
+        <div className="bg-card p-4 rounded col-span-2">
+          <h1 className="font-semibold text-lg mb-4">Real Time Status</h1>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <h1 className="text-muted-foreground text-sm">Station</h1>
+              <p>{latestData.data.title}</p>
+            </div>
+            <div className="text-right">
+              <h1 className="text-muted-foreground text-sm">Basin</h1>
+              <p>{latestData.data.basin}</p>
+            </div>
+            <div>
+              <h1 className="text-muted-foreground text-sm">Water Level</h1>
+              <p>{parseFloat(latestData.data.waterLevel).toFixed(2)}</p>
+            </div>
+            <div className="text-right">
+              <h1 className="text-muted-foreground text-sm">Water Level On</h1>
+              <p>{new Date(latestData.data.waterLevelOn).toLocaleString()}</p>
+            </div>
+            <div>
+              <h1 className="text-muted-foreground text-sm">Longitude</h1>
+              <p>{parseFloat(longitude).toFixed(2)}</p>
+            </div>
+            <div className="text-right">
+              <h1 className="text-muted-foreground text-sm">Latitude</h1>
+              <p>{parseFloat(latitude).toFixed(2)}</p>
+            </div>
+            <div className="col-span-2">
+              <h1 className="text-muted-foreground text-sm">Description</h1>
+              <p>{latestData.data.description}</p>
+            </div>
+            {/* do not remove */}
+            {/* <div className="text-right">
             {renderStatus({
               readinessLevel: readinessLevel,
               activationLevel: activationLevel,
               waterLevel: latestData.data.waterLevel,
             })}
           </div> */}
+          </div>
         </div>
-      </div>
 
-      {/* <div className="bg-card p-4 rounded col-span-2">
+        {/* <div className="bg-card p-4 rounded col-span-2">
         <div className="flex justify-between items-center mb-4">
           <h1 className="font-semibold text-lg">Bulletin Today</h1>
           <DHMBulletinDialog />
@@ -225,10 +227,15 @@ export default function DHMContent({ data }: any) {
         </div>
       </div> */}
 
-      <div className="bg-card rounded-md col-span-5">
-        <h1 className="p-4 pb-2 font-semibold text-lg">Water Level Stats</h1>
-        <LineChart categories={LINE_CHART_CATEGORIES} series={seriesData} lineChartOptions={chartOptions} />
+        <div className="bg-card rounded-md col-span-5">
+          <h1 className="p-4 pb-2 font-semibold text-lg">Water Level Stats</h1>
+          <LineChart
+            categories={LINE_CHART_CATEGORIES}
+            series={seriesData}
+            lineChartOptions={chartOptions}
+          />
+        </div>
       </div>
-    </div>
+    </ScrollArea>
   );
 }

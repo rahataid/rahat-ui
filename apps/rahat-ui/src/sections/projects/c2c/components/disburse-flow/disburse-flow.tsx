@@ -86,7 +86,7 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
   const handleDisburseToken = async () => {
     if (stepData.treasurySource === 'MULTISIG') {
       await disburseMultiSig.mutateAsync({
-        amount: stepData.disburseAmount,
+        amount: String(+stepData.disburseAmount * selectedBeneficiaries.length),
         projectUUID: id,
         beneficiaryAddresses: selectedBeneficiaries as `0x${string}`[],
         disburseMethod: stepData.treasurySource,

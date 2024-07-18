@@ -139,7 +139,7 @@ const DynamicReports: FC<DynamicReportProps> = ({ data, ui, className }) => {
               break;
             case 'datacard':
               component =
-                actualData !== undefined && actualData !== null ? (
+             (actualData !== undefined && actualData !== null) || Object.keys(dynamicData).length ===0 ? (
                   <ErrorBoundary>
                     <DataCard
                       key={colIndex}
@@ -153,7 +153,7 @@ const DynamicReports: FC<DynamicReportProps> = ({ data, ui, className }) => {
                       }
                     />
                   </ErrorBoundary>
-                ) : (
+                ) : ( 
                   <ErrorBoundary>
                     <div key={colIndex}>Loading...</div>
                   </ErrorBoundary>

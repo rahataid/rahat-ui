@@ -58,7 +58,7 @@ export default function Step3DisburseSummary({
       <div className="flex items-center justify-between border-t mb-4">
         <h1 className="mt-2">Total Amount</h1>
         <h1 className="mt-2">
-          {value} {token}
+          {+value * selectedBeneficiaries.length} {token}
         </h1>
       </div>
     </div>

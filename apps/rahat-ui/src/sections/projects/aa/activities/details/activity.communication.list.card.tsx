@@ -47,8 +47,10 @@ export default function ActivityCommunicationListCard({
                 >
                   {loadingButtons.includes(comm?.campaignId) ? (
                     <SpinnerLoader />
+                  ) : comm?.campaignData?.status === 'COMPLETED' ? (
+                    'Sent'
                   ) : (
-                    'Trigger'
+                    'Send'
                   )}
                 </Button>
               </div>

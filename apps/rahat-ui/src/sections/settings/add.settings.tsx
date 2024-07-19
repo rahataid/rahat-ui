@@ -12,7 +12,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useAppSettingsCreate } from '@rahat-ui/query';
 
 export default function AddSetting() {
-  const communitySetting = useAppSettingsCreate();
+  const createRahatSetting = useAppSettingsCreate();
   const FormSchema = z.object({
     name: z.string().min(1, { message: 'Name is required' }),
     field: z.array(
@@ -74,7 +74,7 @@ export default function AddSetting() {
       isReadOnly: data.isReadOnly,
       isPrivate: data.isPrivate,
     };
-    await communitySetting.mutateAsync(finalSettingData);
+    await createRahatSetting.mutateAsync(finalSettingData);
     reset();
   };
 

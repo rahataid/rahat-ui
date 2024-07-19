@@ -238,7 +238,7 @@ export const useRahatSettingList = (
   return useQuery(
     {
       queryKey: ['LIST_SETTINGS', payload],
-      queryFn: () => settingClient.list(payload),
+      queryFn: () => settingClient.listSettings(payload),
     },
     queryClient,
   );
@@ -269,6 +269,20 @@ export const useRahatSettingUpdate = () => {
           'error',
         );
       },
+    },
+    queryClient,
+  );
+};
+
+export const useGetRahatSettingByName = (
+  name: string,
+): UseQueryResult<any, Error> => {
+  const { queryClient, rumsanService } = useRSQuery();
+  const settingClient = getSettingsClient(rumsanService.client);
+  return useQuery(
+    {
+      queryKey: ['GET_COMMUNITY_SETTINGS_NAME', name],
+      queryFn: () => settingClient.getByName(name),
     },
     queryClient,
   );

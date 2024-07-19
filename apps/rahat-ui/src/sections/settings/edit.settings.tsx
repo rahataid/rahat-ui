@@ -1,6 +1,9 @@
 'use client';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useRahatSettingUpdate } from '@rahat-ui/query';
+import {
+  useGetRahatSettingByName,
+  useRahatSettingUpdate,
+} from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { FormField } from '@rahat-ui/shadcn/src/components/ui/form';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
@@ -34,7 +37,8 @@ export default function EditSettings({
   closeSecondPanel,
   settingData,
 }: IProps) {
-  const updateCommunitySettings = useRahatSettingUpdate();
+  const updateRahatSettings = useRahatSettingUpdate();
+  const { data } = useGetRahatSettingByName(settingData?.name);
   const FormSchema = z.object({
     name: z.string().min(1, { message: 'Name is required' }),
     field: z
@@ -64,17 +68,22 @@ export default function EditSettings({
   } = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      name: (settingData && settingData?.name) || '',
-      requiredFields: settingData?.requiredFields || [],
+      name: (data && data?.data?.name) || '',
+      requiredFields:
+        data && data?.data?.isPrivate ? [''] : data?.data?.requiredFields,
 
-      field: Object.keys(settingData?.value).map((key) => ({
-        value: {
-          key: key,
-          value: settingData?.value[key],
-        },
-      })),
-      isPrivate: settingData.isPrivate || false,
-      isReadOnly: settingData.isReadOnly || false,
+      field:
+        data &&
+        (data?.data?.isPrivate
+          ? [{ value: { key: '', value: '' } }]
+          : Object.keys(data?.data?.value).map((key) => ({
+              value: {
+                key: key,
+                value: data?.data?.value[key],
+              },
+            }))),
+      isPrivate: (data?.data?.isPrivate && data?.data?.isPrivate) || false,
+      isReadOnly: data?.data?.isReadOnly || false,
     },
   });
   const { fields, append, remove } = useFieldArray({
@@ -106,24 +115,30 @@ export default function EditSettings({
       isReadOnly: data.isReadOnly,
       isPrivate: data.isPrivate,
     };
-    await updateCommunitySettings.mutateAsync(finalSettingData);
+    await updateRahatSettings.mutateAsync(finalSettingData);
     closeSecondPanel();
   };
 
   useEffect(() => {
     reset({
-      name: settingData.name,
-      requiredFields: settingData.requiredFields,
-      field: Object.keys(settingData?.value).map((key) => ({
-        value: {
-          key: key,
-          value: settingData?.value[key],
-        },
-      })),
-      isPrivate: settingData.isPrivate,
-      isReadOnly: settingData.isReadOnly,
+      name: (data && data?.data?.name) || '',
+      requiredFields:
+        data && data?.data?.isPrivate ? [''] : data?.data?.requiredFields,
+
+      field:
+        data &&
+        (data?.data?.isPrivate
+          ? [{ value: { key: '', value: '' } }]
+          : Object.keys(data?.data?.value).map((key) => ({
+              value: {
+                key: key,
+                value: data?.data?.value[key],
+              },
+            }))),
+      isPrivate: (data?.data?.isPrivate && data?.data?.isPrivate) || false,
+      isReadOnly: data?.data?.isReadOnly || false,
     });
-  }, [settingData, reset]);
+  }, [data, reset]);
 
   return (
     <div className="p-4 h-add rounded border bg-white">

@@ -11,21 +11,21 @@ export const useTreasuryNavItems = () => {
     {
       title: 'General',
       children: [
-        {
-          title: 'Portfolio',
-          path: '/treasury/portfolio',
-          icon: <LayoutDashboard size={18} strokeWidth={1.5} />,
-        },
+        // {
+        //   title: 'Portfolio',
+        //   path: '/treasury/portfolio',
+        //   icon: <LayoutDashboard size={18} strokeWidth={1.5} />,
+        // },
         {
           title: 'Transactions',
           path: '/treasury/transactions',
           icon: <ArrowRightLeft size={18} strokeWidth={1.5} />,
         },
-        {
-          title: 'Portfolio',
-          path: '/treasury/portfolio',
-          icon: <LayoutDashboard size={18} strokeWidth={1.5} />,
-        },
+        // {
+        //   title: 'Portfolio',
+        //   path: '/treasury/portfolio',
+        //   icon: <LayoutDashboard size={18} strokeWidth={1.5} />,
+        // },
         {
           title: 'Assets',
           path: '/treasury/assets',

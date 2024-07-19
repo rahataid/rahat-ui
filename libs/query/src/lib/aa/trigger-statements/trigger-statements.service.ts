@@ -279,8 +279,8 @@ export const useActivateTrigger = () => {
       projectUUID: UUID;
       activatePayload: {
         repeatKey: string | string[];
-        notes: string;
-        triggerDocuments: Array<{ mediaURL: string; fileName: string }>;
+        notes?: string;
+        triggerDocuments?: Array<{ mediaURL: string; fileName: string }>;
       };
     }) => {
       return q.mutateAsync({

@@ -18,6 +18,16 @@ export default function ActivityDetailCard({ activityDetail }: any) {
     {
       title: 'Completed By',
       content: <p>{activityDetail?.completedBy || 'N/A'}</p>
+    },
+    {
+      title: 'Completed At',
+      content: <p>  {(() => {
+        if(!activityDetail?.completedAt) return 'N/A'
+        const d = new Date(activityDetail?.completedAt);
+        const localeDate = d.toLocaleDateString();
+        const localeTime = d.toLocaleTimeString();
+        return `${localeDate} ${localeTime}`;
+      })()}</p>
     }
   ];
 

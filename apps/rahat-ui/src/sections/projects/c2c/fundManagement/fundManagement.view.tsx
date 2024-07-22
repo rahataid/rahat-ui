@@ -56,32 +56,34 @@ const FundManagementView = () => {
   // );
 
   return (
-    <>
-      <div className="grid grid-cols-2 gap-4 m-2">
+    <div className="bg-secondary">
+      <div className="grid grid-cols-2 gap-4">
         <DataCard
+          className="my-2 mx-2"
           title="Project Balance"
           smallNumber={isLoading ? 'Loading...' : `${projectBalance} USDC`}
           Icon={Banknote}
         />
         <DataCard
+          className="my-2 mx-2"
           title="Project Contract Address"
           smallNumber={shortenAddress(c2cProjectAddress)}
           Icon={ReceiptText}
         />
       </div>
       {isFetchingTransactionList ? (
-        <div className="flex justify-center items-center h-[calc(100vh-420px)]">
+        <div className="flex justify-center items-center h-[calc(100vh-220px)]">
           <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-gray-900"></div>
         </div>
       ) : (
-        <div className="grid grid-cols-3 gap-4 h-[calc(100vh-420px)]">
-          <div className="col-span-2">
+        <div className="grid grid-cols-3 gap-4 h-[calc(100vh-220px)]">
+          <div className="col-span-2 bg-card ml-2 rounded shadow mb-2">
             <ChartLine series={mySeries} categories={chartCategories} />
           </div>
           <RecentTransaction transactions={transactionList} />
         </div>
       )}
-    </>
+    </div>
   );
 };
 

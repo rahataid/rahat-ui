@@ -89,17 +89,17 @@ export default function ListSetting() {
     const newFilters = { ...filters };
 
     if (value === 'private') {
-      newFilters.privateFlag = 'true';
-      newFilters.readOnlyFlag = '';
+      newFilters.private = 'true';
+      newFilters.readOnly = '';
     } else if (value === 'public') {
-      newFilters.privateFlag = 'false';
-      newFilters.readOnlyFlag = '';
+      newFilters.private = 'false';
+      newFilters.readOnly = '';
     } else if (value === 'all') {
-      newFilters.privateFlag = '';
-      newFilters.readOnlyFlag = '';
+      newFilters.private = '';
+      newFilters.readOnly = '';
     } else if (value === 'read') {
-      newFilters.readOnlyFlag = 'true';
-      newFilters.privateFlag = '';
+      newFilters.readOnly = 'true';
+      newFilters.private = '';
     }
 
     setFilters(newFilters);

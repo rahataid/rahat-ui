@@ -4,21 +4,20 @@ import {
   PROJECT_SETTINGS_KEYS,
   useProjectList,
   useProjectSettingsStore,
+  useRPBeneficiaryCount,
   useReadRahatTokenBalanceOf,
 } from '@rahat-ui/query';
-import { UUID } from 'crypto';
-import { useParams } from 'next/navigation';
-import { formatEther } from 'viem';
-import tempReport from './temp_report.json';
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
 } from '@rahat-ui/shadcn/src/components/ui/carousel';
-import { renderRowBasedProjectDetailsExtras } from 'apps/rahat-ui/src/utils/render-extras';
 import { Project } from '@rahataid/sdk/project/project.types';
+import { renderRowBasedProjectDetailsExtras } from 'apps/rahat-ui/src/utils/render-extras';
+import { UUID } from 'crypto';
 import Image from 'next/image';
 import reportData from './report_new.json';
+import { useParams } from 'next/navigation';
 
 type CarouselSectionProps = {
   description: string;
@@ -75,12 +74,14 @@ const ProjectInfo: FC<ProjectInfoProps> = ({ project }) => {
     (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT],
   );
 
+  const { data } = useRPBeneficiaryCount(id);
+
   const tokenBalance = useReadRahatTokenBalanceOf({
     address: contractSettings?.rahattoken?.address as `0x${string}`,
-    args: [contractSettings?.rpproject?.address as `0x${string}`],
+    args: [contractSettings?.rahatpayrollproject?.address as `0x${string}`],
     query: {
       select(data) {
-        return data ? formatEther(data) : 'N/A';
+        return data ? data : 'N/A';
       },
     },
   });
@@ -91,6 +92,7 @@ const ProjectInfo: FC<ProjectInfoProps> = ({ project }) => {
       `${process.env.NEXT_PUBLIC_API_HOST_URL}/v1/projects/${id}/statsSources`,
     );
     const res = await response.json();
+    console.log('Datasource is', res.data);
     setReportDatas(res.data);
   };
 

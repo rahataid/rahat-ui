@@ -94,7 +94,7 @@ export default function EditBeneficiary({ beneficiary }: any) {
     form.setValue('email', beneficiary?.email);
     form.setValue('phone', beneficiary?.phone);
     form.setValue('gender', beneficiary?.gender);
-    form.setValue('walletAddress', beneficiary?.wallet);
+    form.setValue('walletAddress', beneficiary?.walletAddress);
     form.setValue('bankedStatus', beneficiary?.bankedStatus);
     form.setValue('internetStatus', beneficiary?.internetStatus);
     form.setValue('phoneStatus', beneficiary?.phoneStatus);

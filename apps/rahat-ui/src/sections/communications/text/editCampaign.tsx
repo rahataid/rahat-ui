@@ -5,7 +5,7 @@ import { z } from 'zod';
 import { format } from 'date-fns';
 import { toast } from 'react-toastify';
 import { useForm } from 'react-hook-form';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { Audience, CAMPAIGN_TYPES } from '@rahat-ui/types';
@@ -21,9 +21,11 @@ import AddForm from '../add/add-form';
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
 import AddAudience from '../add/add-audiences';
 import { Form } from '@rahat-ui/shadcn/src/components/ui/form';
+import { paths } from 'apps/rahat-ui/src/routes/paths';
 
 export default function EditCampaign() {
   const params = useParams<{ tag: string; id: string }>();
+  const router = useRouter();
 
   const [selectedRows, setSelectedRows] = useState<
     Array<{ id: number; phone: string; name: string }>
@@ -151,6 +153,7 @@ export default function EditCampaign() {
         setIsSubmitting(false);
 
         if (data) {
+          router.push(paths.dashboard.communication.text);
           toast.success('Campaign Edit Success.');
         }
       })

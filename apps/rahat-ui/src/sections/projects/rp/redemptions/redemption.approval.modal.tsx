@@ -11,7 +11,12 @@ import {
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 
-export function RedemptionApprovalModal() {
+type IProps = {
+  handleSubmit: () => void;
+};
+
+export function RedemptionApprovalModal({handleSubmit}: IProps
+) {
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -23,8 +28,9 @@ export function RedemptionApprovalModal() {
           <DialogDescription>Approve redemptions.</DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="name" className="text-right">
+              Are you sure you want to approve this redemption?
+          {/* <div className="grid grid-cols-4 items-center gap-4"> */}
+            {/* <Label htmlFor="name" className="text-right">
               Name
             </Label>
             <Input
@@ -42,10 +48,10 @@ export function RedemptionApprovalModal() {
               defaultValue="@peduarte"
               className="col-span-3"
             />
-          </div>
+          </div> */}
         </div>
         <DialogFooter>
-          <Button type="submit">Approve</Button>
+          <Button  onClick={handleSubmit}>Approve</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

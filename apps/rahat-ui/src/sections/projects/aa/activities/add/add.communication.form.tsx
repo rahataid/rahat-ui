@@ -28,9 +28,15 @@ type IProps = {
   form: any;
   onClose: VoidFunction;
   index: number;
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-export default function AddCommunicationForm({ form, onClose, index }: IProps) {
+export default function AddCommunicationForm({
+  form,
+  onClose,
+  index,
+  setLoading,
+}: IProps) {
   const [audioFile, setAudioFile] = React.useState({});
 
   const stakeholdersGroups = useStakeholdersGroupsStore(
@@ -86,6 +92,10 @@ export default function AddCommunicationForm({ form, onClose, index }: IProps) {
   React.useEffect(() => {
     form.setValue(fieldName('audioURL'), audioFile);
   }, [audioFile, setAudioFile]);
+
+  React.useEffect(() => {
+    setLoading(fileUpload.isPending);
+  }, [fileUpload.isPending, !fileUpload.isPending]);
 
   return (
     <div className="border border-dashed rounded p-4 my-8">
@@ -168,16 +178,20 @@ export default function AddCommunicationForm({ form, onClose, index }: IProps) {
                 <FormItem>
                   <FormLabel>Upload audio</FormLabel>
                   <FormControl>
-                    <Input type="file" accept="audio/*" onChange={handleAudioFileChange} />
+                    <Input
+                      type="file"
+                      accept="audio/*"
+                      onChange={handleAudioFileChange}
+                    />
                   </FormControl>
                   <div className="flex justify-end">
                     {fileUpload.isPending && (
                       <p className="text-green-600 text-xs">uploading...</p>
                     )}
-                     {fileUpload.isSuccess && (
+                    {fileUpload.isSuccess && (
                       <p className="text-green-600 text-xs">upload complete</p>
                     )}
-                      {fileUpload.isError && (
+                    {fileUpload.isError && (
                       <p className="text-red-600 text-xs">upload error</p>
                     )}
                   </div>

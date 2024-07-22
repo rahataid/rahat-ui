@@ -9,7 +9,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
@@ -41,7 +41,10 @@ import StakeholdersTable from '../stakeholders/stakeholders.table';
 export default function AddStakeholdersGroups() {
   const params = useParams();
   const projectId = params.id as UUID;
+  const router = useRouter();
   const [showMembers, setShowMembers] = React.useState(false);
+
+  const groupsListPath = `/projects/aa/${projectId}/groups`;
 
   const {
     pagination,
@@ -134,6 +137,12 @@ export default function AddStakeholdersGroups() {
       }
     }
   };
+
+  React.useEffect(() => {
+    if (createStakeholdersGroup.isSuccess) {
+      router.push(groupsListPath);
+    }
+  }, [createStakeholdersGroup.isSuccess]);
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleCreateStakeholdersGroups)}>

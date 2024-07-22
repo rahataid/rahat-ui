@@ -1,4 +1,4 @@
-import { BarChart } from '@rahat-ui/shadcn/src/components/charts';
+import { BarChart, ChartDonut } from '@rahat-ui/shadcn/src/components/charts';
 import { FC, useEffect, useState } from 'react';
 import DataCard from '../../components/dataCard';
 import ErrorBoundary from '../../utils/error-boundary';
@@ -14,7 +14,7 @@ type DataSource = {
 
 type UIComponent = {
   title: string;
-  type: 'dataCard' | 'pie' | 'bar' | 'stacked_bar';
+  type: 'dataCard' | 'pie' | 'bar' | 'stacked_bar' | 'donut';
   props: { [key: string]: any };
   dataSrc: string | any;
   dataMap: string | null;
@@ -133,6 +133,13 @@ const DynamicReports: FC<DynamicReportsProps> = ({
             {actualData && (
               <BarChart actualData={actualData} component={component} />
             )}
+          </ErrorBoundary>
+        );
+
+      case 'donut':
+        return (
+          <ErrorBoundary>
+            <ChartDonut labels={['asfd']} series={[123]} />
           </ErrorBoundary>
         );
 

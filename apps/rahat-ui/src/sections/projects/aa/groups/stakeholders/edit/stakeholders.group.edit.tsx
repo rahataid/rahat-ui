@@ -9,7 +9,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
@@ -36,16 +36,16 @@ import {
 import StakeholdersTable from '../../../stakeholders/stakeholders.table';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
-import { useSecondPanel } from 'apps/rahat-ui/src/providers/second-panel-provider';
 import StakeholdersTableFilters from '../../../stakeholders/stakeholders.table.filters';
 import Back from '../../../../components/back';
 
 export default function StakeholdersGroupEdit() {
-  const { closeSecondPanel } = useSecondPanel();
   const params = useParams();
   const projectId = params.id as UUID;
   const groupId = params.groupId as UUID;
+  const router = useRouter();
   const groupDetailPath = `/projects/aa/${projectId}/groups/stakeholders/${groupId}`;
+  const groupListPath = `/projects/aa/${projectId}/groups`;
   const { data: stakeholdersGroupDetail } = useSingleStakeholdersGroup(
     projectId,
     groupId,
@@ -147,8 +147,10 @@ export default function StakeholdersGroupEdit() {
   };
 
   React.useEffect(() => {
-    updateStakeholdersGroup.isSuccess && closeSecondPanel();
-  }, [updateStakeholdersGroup]);
+    if (updateStakeholdersGroup.isSuccess) {
+      router.push(groupListPath);
+    }
+  }, [updateStakeholdersGroup.isSuccess]);
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleUpdateStakeholdersGroups)}>

@@ -65,6 +65,11 @@ export const columns: ColumnDef<TextDetail>[] = [
   //   enableHiding: false,
   // },
   {
+    accessorKey: 'name',
+    header: 'Beneficiary Name',
+    cell: ({ row }) => <div>{row.getValue('name')}</div>,
+  },
+  {
     accessorKey: 'to',
     header: 'To',
     cell: ({ row }) => <div>{row.getValue('to')}</div>,
@@ -100,12 +105,13 @@ export default function TextDetailTableView({ data, type }: IProps) {
 
   const tableData = React.useMemo(() => {
     return data?.map((item: any) => ({
+      name: item?.audience?.details?.name,
       createdAt: new Date(item.createdAt).toLocaleString(),
       status: item?.status,
       to:
         type === CAMPAIGN_TYPES.EMAIL
-          ? item?.details?.envelope?.to
-          : item?.details?.to,
+          ? item?.audience?.details?.email
+          : item?.audience?.details?.phone,
     }));
   }, [data, type]);
 

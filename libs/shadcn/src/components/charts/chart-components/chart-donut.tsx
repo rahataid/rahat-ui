@@ -52,10 +52,15 @@ export default function ChartDonut({
     <Chart
       dir="ltr"
       type="donut"
-      series={series}
+      series={[
+        {
+          data: [1],
+        },
+      ]}
       options={chartOptions}
       width={width}
       height={height}
+      labels={['123']}
     />
   );
 }

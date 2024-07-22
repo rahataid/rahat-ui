@@ -24,7 +24,16 @@ import {
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { useRedemptionTableColumn } from './useRedemptionTableColumn';
 import { History } from 'lucide-react';
-import Image from 'next/image';
+import {
+  PROJECT_SETTINGS_KEYS,
+  useContractRedeem,
+  useListRedemptions,
+  useProjectSettingsStore,
+  useRedeemToken,
+  useSettingsStore,
+} from '@rahat-ui/query';
+import { useParams } from 'next/navigation';
+import { UUID } from 'crypto';
 
 export type Redeptions = {
   id: string;
@@ -33,69 +42,41 @@ export type Redeptions = {
   status: string;
 };
 
-const initialData: Redeptions[] = [
-  {
-    id: '1',
-    name: 'Aadarsha Lamichhane',
-    amount: 9000,
-    status: 'Paid',
-  },
-  {
-    id: '2',
-    name: 'Aadarsha Lamichhane',
-    amount: 9000,
-    status: 'Pending',
-  },
-  {
-    id: '3',
-    name: 'Aadarsha Lamichhane',
-    amount: 9000,
-    status: 'Paid',
-  },
-  {
-    id: '4',
-    name: 'Aadarsha Lamichhane',
-    amount: 9000,
-    status: 'Paid',
-  },
-  {
-    id: '5',
-    name: 'Aadarsha Lamichhane',
-    amount: 9000,
-    status: 'Paid',
-  },
-  {
-    id: '6',
-    name: 'Aadarsha Lamichhane',
-    amount: 9000,
-    status: 'Paid',
-  },
-  {
-    id: '7',
-    name: 'Aadarsha Lamichhane',
-    amount: 9000,
-    status: 'Paid',
-  },
-  {
-    id: '8',
-    name: 'Aadarsha Lamichhane',
-    amount: 9000,
-    status: 'Paid',
-  },
-];
-
 export default function RedemptionsTable() {
+  const { id } = useParams() as { id: UUID };
+
+  const contractSettings = useProjectSettingsStore(
+    (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT] || null,
+  );
+
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
   );
+
+  const redeemToken = useContractRedeem(id);
+  const { data: redemptions, refetch } = useListRedemptions(id);
+
+  const handleApprove = (row: any) => {
+    redeemToken
+      .mutateAsync({
+        amount: row?.amount,
+        tokenAddress: row?.tokenAddress,
+        redemptionAddress: contractSettings?.redemptions?.address,
+        senderAddress: row?.walletAddress,
+        uuid: row?.uuid,
+      })
+      .finally(() => {
+        refetch();
+      });
+  };
+
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
-  const [data, setData] = React.useState(initialData);
-  const columns = useRedemptionTableColumn();
+  const columns = useRedemptionTableColumn({ handleApprove });
   const table = useReactTable({
-    data,
+    data: redemptions || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,

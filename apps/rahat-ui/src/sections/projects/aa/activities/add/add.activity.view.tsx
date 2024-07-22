@@ -33,6 +33,7 @@ import {
 } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import AddCommunicationForm from './add.communication.form';
+import { validateFile } from '../../file.validation';
 
 export default function AddActivities() {
   const createActivity = useCreateActivities();
@@ -40,13 +41,13 @@ export default function AddActivities() {
   const { id: projectID } = useParams();
   const router = useRouter();
 
+  const activitiesListPath = `/projects/aa/${projectID}/activities`;
+
   const { categories, phases, hazardTypes } = useActivitiesStore((state) => ({
     categories: state.categories,
     phases: state.phases,
     hazardTypes: state.hazardTypes,
   }));
-
-  console.log("phases", phases)
 
   const [documents, setDocuments] = React.useState<
     { id: number; name: string }[]
@@ -57,6 +58,8 @@ export default function AddActivities() {
   >([]);
 
   const nextId = React.useRef(0);
+
+  const [audioUploading, setAudioUploading] = React.useState<boolean>(false);
 
   useStakeholdersGroups(projectID as UUID, {});
   useBeneficiariesGroups(projectID as UUID, {});
@@ -74,7 +77,7 @@ export default function AddActivities() {
     responsibility: z
       .string()
       .min(2, { message: 'Please enter responsibility' }),
-    source: z.string().min(2, { message: 'Please enter source' }),
+    source: z.string().min(2, { message: 'Please enter responsible station' }),
     phaseId: z.string().min(1, { message: 'Please select phase' }),
     categoryId: z.string().min(1, { message: 'Please select category' }),
     // hazardTypeId: z.string().min(1, { message: 'Please select hazard type' }),
@@ -140,6 +143,10 @@ export default function AddActivities() {
   ) => {
     const file = event.target.files?.[0];
     if (file) {
+      if (!validateFile(file)) {
+        return;
+      }
+
       const newFileName = `${Date.now()}-${file.name}`;
       const modifiedFile = new File([file], newFileName, { type: file.type });
 
@@ -152,16 +159,16 @@ export default function AddActivities() {
     }
   };
 
-  const selectedPhaseId = form.watch("phaseId")
-  const selectedPhase = phases.find((d) => d.uuid === selectedPhaseId)
+  const selectedPhaseId = form.watch('phaseId');
+  const selectedPhase = phases.find((d) => d.uuid === selectedPhaseId);
 
   React.useEffect(() => {
     form.setValue('activityDocuments', allFiles);
   }, [allFiles, setAllFiles]);
 
   React.useEffect(() => {
-    if(selectedPhase?.name === "PREPAREDNESS"){
-      form.setValue("isAutomated", false)
+    if (selectedPhase?.name === 'PREPAREDNESS') {
+      form.setValue('isAutomated', false);
     }
   }, [selectedPhase]);
 
@@ -205,7 +212,7 @@ export default function AddActivities() {
         projectUUID: projectID as UUID,
         activityPayload: payload,
       });
-      router.push(`/projects/aa/${projectID}/activities`);
+      router.push(activitiesListPath);
     } catch (e) {
       console.error('Error::', e);
     } finally {
@@ -214,7 +221,6 @@ export default function AddActivities() {
       setDocuments([]);
     }
   };
-
 
   return (
     <Form {...form}>
@@ -268,11 +274,11 @@ export default function AddActivities() {
                   render={({ field }) => {
                     return (
                       <FormItem>
-                        <FormLabel>Source</FormLabel>
+                        <FormLabel>Responsible Station</FormLabel>
                         <FormControl>
                           <Input
                             type="text"
-                            placeholder="Enter source"
+                            placeholder="Enter responsible station"
                             {...field}
                           />
                         </FormControl>
@@ -338,33 +344,30 @@ export default function AddActivities() {
                   )}
                 />
 
-                {
-                  selectedPhase && selectedPhase?.name !== "PREPAREDNESS" && (
-                    <FormField
-                      control={form.control}
-                      name="isAutomated"
-                      render={({ field }) => {
-                        return (
-                          <FormItem className="col-span-2">
-                            <FormControl>
-                              <Checkbox
-                                checked={field.value}
-                                onCheckedChange={(checked) =>
-                                  field.onChange(checked)
-                                }
-                              />
-                            </FormControl>
-                            <FormLabel className="text-sm font-normal ml-2">
-                              Is Automated Activity?
-                            </FormLabel>
-                            <FormMessage />
-                          </FormItem>
-                        );
-                      }}
-                    />
-                  )
-                }
-
+                {selectedPhase && selectedPhase?.name !== 'PREPAREDNESS' && (
+                  <FormField
+                    control={form.control}
+                    name="isAutomated"
+                    render={({ field }) => {
+                      return (
+                        <FormItem className="col-span-2">
+                          <FormControl>
+                            <Checkbox
+                              checked={field.value}
+                              onCheckedChange={(checked) =>
+                                field.onChange(checked)
+                              }
+                            />
+                          </FormControl>
+                          <FormLabel className="text-sm font-normal ml-2">
+                            Is Automated Activity?
+                          </FormLabel>
+                          <FormMessage />
+                        </FormItem>
+                      );
+                    }}
+                  />
+                )}
 
                 {/* <FormField
                   control={form.control}
@@ -449,19 +452,21 @@ export default function AddActivities() {
                             />
                             <p className="text-sm font-medium">
                               Drop files to upload, or{' '}
-                              <span className="text-primary cursor-pointer">
-                                browse
-                              </span>
+                              <span className="text-primary">browse</span>
                             </p>
                           </div>
                           <Input
-                            className="opacity-0"
+                            className="opacity-0 cursor-pointer"
                             type="file"
                             onChange={handleFileChange}
                           />
                         </div>
                       </FormControl>
                       <FormMessage />
+                      <p className="text-xs text-orange-500">
+                        *Files must be under 5 MB and of type JPEG, PNG, BMP,
+                        XLSX, or CSV.
+                      </p>
                       {documents?.map((file) => (
                         <div
                           key={file.name}
@@ -469,7 +474,7 @@ export default function AddActivities() {
                         >
                           <p className="text-sm flex gap-2 items-center">
                             {uploadFile.isPending &&
-                              documents?.[documents?.length - 1].name ===
+                            documents?.[documents?.length - 1].name ===
                               file.name ? (
                               <LoaderCircle
                                 size={16}
@@ -516,6 +521,7 @@ export default function AddActivities() {
                   }}
                   form={form}
                   index={index}
+                  setLoading={setAudioUploading}
                 />
               ))}
 
@@ -545,7 +551,7 @@ export default function AddActivities() {
                     variant="secondary"
                     className="bg-red-100 text-red-600 w-36"
                     onClick={() => {
-                      form.reset();
+                      router.push(activitiesListPath);
                     }}
                   >
                     Cancel
@@ -553,7 +559,9 @@ export default function AddActivities() {
                   <Button
                     type="submit"
                     disabled={
-                      createActivity?.isPending || uploadFile?.isPending
+                      createActivity?.isPending ||
+                      uploadFile?.isPending ||
+                      audioUploading
                     }
                   >
                     Create Activity

@@ -117,6 +117,7 @@ export const useTreasuryTokenTransaction = () => {
           TreasuryTokenTransactions,
           {},
         );
+        console.log({ data });
         return data;
       },
     },

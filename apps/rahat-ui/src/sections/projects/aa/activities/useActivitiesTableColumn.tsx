@@ -4,24 +4,26 @@ import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Eye } from 'lucide-react';
 import { IActivitiesItem } from '../../../../types/activities';
+import UpdateActivityStatusDialog from './details/update.activity.status.dialog';
+import { setPaginationToLocalStorage } from '../prev.pagination.storage';
 
-function getPhaseBg(phase: string){
-  if(phase === 'PREPAREDNESS'){
-    return 'bg-yellow-200'
+function getPhaseBg(phase: string) {
+  if (phase === 'PREPAREDNESS') {
+    return 'bg-yellow-200';
   }
 
-  if(phase === 'READINESS'){
-    return 'bg-green-200'
+  if (phase === 'READINESS') {
+    return 'bg-green-200';
   }
 
-  if(phase === 'ACTIVATION'){
-    return 'bg-red-200'
+  if (phase === 'ACTIVATION') {
+    return 'bg-red-200';
   }
 
-  return ''
+  return '';
 }
 
-function getStatusBg(status: string){
+function getStatusBg(status: string) {
   if (status === 'NOT_STARTED') {
     return 'bg-gray-200';
   }
@@ -45,29 +47,34 @@ export default function useActivitiesTableColumn() {
   const { id: projectID } = useParams();
   const router = useRouter();
 
+  const handleEyeClick = (activityId: any) => {
+    setPaginationToLocalStorage();
+    router.push(`/projects/aa/${projectID}/activities/${activityId}`);
+  };
+
   const columns: ColumnDef<IActivitiesItem>[] = [
-    {
-      id: 'select',
-      header: ({ table }) => (
-        <Checkbox
-          checked={
-            table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && 'indeterminate')
-          }
-          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-          aria-label="Select all"
-        />
-      ),
-      cell: ({ row }) => (
-        <Checkbox
-          checked={row.getIsSelected()}
-          onCheckedChange={(value) => row.toggleSelected(!!value)}
-          aria-label="Select row"
-        />
-      ),
-      enableSorting: false,
-      enableHiding: false,
-    },
+    // {
+    //   id: 'select',
+    //   header: ({ table }) => (
+    //     <Checkbox
+    //       checked={
+    //         table.getIsAllPageRowsSelected() ||
+    //         (table.getIsSomePageRowsSelected() && 'indeterminate')
+    //       }
+    //       onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+    //       aria-label="Select all"
+    //     />
+    //   ),
+    //   cell: ({ row }) => (
+    //     <Checkbox
+    //       checked={row.getIsSelected()}
+    //       onCheckedChange={(value) => row.toggleSelected(!!value)}
+    //       aria-label="Select row"
+    //     />
+    //   ),
+    //   enableSorting: false,
+    //   enableHiding: false,
+    // },
     {
       accessorKey: 'title',
       header: 'Title',
@@ -86,13 +93,11 @@ export default function useActivitiesTableColumn() {
       accessorKey: 'phase',
       header: 'Phase',
       cell: ({ row }) => {
-        const phase = row.getValue('phase') as string
-        const bgColor = getPhaseBg(phase)
+        const phase = row.getValue('phase') as string;
+        const bgColor = getPhaseBg(phase);
         return (
-          <Badge className={`rounded-md capitalize ${bgColor}`}>
-            {phase}
-          </Badge>
-        )
+          <Badge className={`rounded-md capitalize ${bgColor}`}>{phase}</Badge>
+        );
       },
     },
     {
@@ -111,7 +116,7 @@ export default function useActivitiesTableColumn() {
     },
     {
       accessorKey: 'source',
-      header: 'Source',
+      header: 'Responsible Station',
       cell: ({ row }) => <div>{row.getValue('source')}</div>,
     },
     // {
@@ -123,35 +128,53 @@ export default function useActivitiesTableColumn() {
       accessorKey: 'status',
       header: 'Status',
       cell: ({ row }) => {
-        const status = row.getValue('status') as string
-        const bgColor = getStatusBg(status)
+        const status = row.getValue('status') as string;
+        const bgColor = getStatusBg(status);
         return (
-          <div className="flex gap-1">
-            <Badge
-              className={`rounded-md capitalize ${bgColor}`}
-            >
-              {status}
-            </Badge>
-          </div>
-        )
-      } ,
+          <Badge className={`rounded-md capitalize ${bgColor}`}>{status}</Badge>
+        );
+      },
+    },
+    {
+      accessorKey: 'completedBy',
+      header: 'Completed By',
+      cell: ({ row }) => {
+        const completedBy = row.getValue('completedBy') as string;
+        return <div className="flex gap-1">{completedBy || 'N/A'}</div>;
+      },
+    },
+    {
+      accessorKey: 'completedAt',
+      header: 'Completed At',
+      cell: ({ row }) => {
+        const completedAt = row.getValue('completedAt') as string;
+        if(completedAt){
+          const d =  new Date(completedAt)
+          const localeDate = d.toLocaleDateString()
+          const localeTime = d.toLocaleTimeString()
+          return `${localeDate} ${localeTime}`
+        }
+        return 'N/A'
+      },
     },
     {
       id: 'actions',
       enableHiding: false,
       cell: ({ row }) => {
-        console.log(row);
         return (
-          <Eye
-            className="hover:text-primary cursor-pointer"
-            size={20}
-            strokeWidth={1.5}
-            onClick={() =>
-              router.push(
-                `/projects/aa/${projectID}/activities/${row.original.id}`,
-              )
-            }
-          />
+          <div className="flex items-center space-x-2">
+            <UpdateActivityStatusDialog
+              activityDetail={row.original}
+              loading={false}
+              iconStyle="w-4 h-4"
+            />
+            <Eye
+              className="hover:text-primary cursor-pointer"
+              size={20}
+              strokeWidth={1.5}
+              onClick={() => handleEyeClick(row.original.id)}
+            />
+          </div>
         );
       },
     },

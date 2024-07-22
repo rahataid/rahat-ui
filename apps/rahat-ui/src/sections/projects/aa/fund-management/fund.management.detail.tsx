@@ -4,6 +4,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { useSingleGroupReservedFunds } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import Loader from 'apps/community-tool-ui/src/components/Loader';
+import Back from '../../components/back';
 
 const FundManagementDetails = () => {
   const { id: projectID, fundId } = useParams();
@@ -20,17 +21,19 @@ const FundManagementDetails = () => {
       {/* BREADCRUMB */}
       <div className="flex items-center justify-between mt-4 mb-4 ml-2">
         <div className="flex items-center gap-2">
-          <ArrowLeft size={20} strokeWidth={1.25} />
+          <Back
+            path={`/projects/aa/${projectID}/fund-management?backFromDetail=true`}
+          />
           <h1 className="text-xl font-medium text-gray-800">{data?.title}</h1>
         </div>
-        <div className="flex items-center gap-1">
+        {/* <div className="flex items-center gap-1">
           <div className="flex items-center justify-center rounded-full h-10 w-10 bg-card border border-primary cursor-pointer">
             <Pencil className="text-primary" size={20} strokeWidth={1.5} />
           </div>
           <div className="flex items-center justify-center rounded-full h-10 w-10 bg-card border border-red-500 cursor-pointer">
             <Trash2 className="text-red-500" size={20} strokeWidth={1.5} />
           </div>
-        </div>
+        </div> */}
       </div>
       {/* DATACARD */}
       <div className="grid grid-cols-4 gap-3">

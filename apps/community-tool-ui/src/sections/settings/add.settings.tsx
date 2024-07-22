@@ -168,8 +168,12 @@ export default function AddSetting() {
             </div>
           </div>
           <div className="grid grid-cols-5 gap-4 mb-4">
-            <Label className="col-span-2">KEY</Label>
-            <Label className="col-span-2">VALUE</Label>
+            {fields.length > 0 && (
+              <>
+                <Label className="col-span-2">KEY</Label>
+                <Label className="col-span-2">VALUE</Label>
+              </>
+            )}
           </div>
           <div className="grid grid-cols-5 gap-5 mb-4">
             {fields.map((fieldName, index) => {

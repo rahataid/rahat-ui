@@ -1,3 +1,4 @@
+import React from 'react';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
@@ -14,13 +15,20 @@ export default function ActivityCommunicationListCard({
   activityDetail,
   projectId,
 }: IProps) {
+  const [loadingButtons, setLoadingButtons] = React.useState<number[]>([]);
+
   const trigger = useTriggerCommunication();
 
-  const triggerCommunication = (campaignId: number) => {
-    trigger.mutateAsync({
-      projectUUID: projectId as UUID,
-      activityCommunicationPayload: { campaignId: campaignId },
-    });
+  const triggerCommunication = async (campaignId: number) => {
+    setLoadingButtons((prev) => [...prev, campaignId]);
+    try {
+      await trigger.mutateAsync({
+        projectUUID: projectId as UUID,
+        activityCommunicationPayload: { campaignId: campaignId },
+      });
+    } finally {
+      setLoadingButtons((prev) => prev.filter((id) => id !== campaignId));
+    }
   };
   return (
     <div className="bg-card p-4 rounded">
@@ -37,7 +45,13 @@ export default function ActivityCommunicationListCard({
                   className="h-7 w-24"
                   onClick={() => triggerCommunication(comm?.campaignId)}
                 >
-                  {trigger.isPending ? <SpinnerLoader /> : 'Trigger'}
+                  {loadingButtons.includes(comm?.campaignId) ? (
+                    <SpinnerLoader />
+                  ) : comm?.campaignData?.status === 'COMPLETED' ? (
+                    'Sent'
+                  ) : (
+                    'Send'
+                  )}
                 </Button>
               </div>
               <div className="grid grid-cols-2 gap-4 mt-4">

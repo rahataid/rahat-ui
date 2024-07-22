@@ -2,6 +2,7 @@ export * from './project-actions';
 export * from './subgraph';
 export * from './contracts/hooks';
 export * from './campaign';
+export * from './services';
 
 // export * from './contracts/generated-hooks';
 

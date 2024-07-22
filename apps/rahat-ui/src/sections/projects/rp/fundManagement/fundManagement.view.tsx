@@ -126,7 +126,7 @@ const FundManagementView = () => {
     query: {
       select(data) {
         console.log('data', data);
-        return data?.toString() || 'N/A';
+        return data ? Number(data) : 'N/A';
       },
     },
   });

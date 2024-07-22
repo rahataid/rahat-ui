@@ -59,7 +59,7 @@ export default function AssignToken({
           <>
             <Separator className="my-2" />
             <div className="flex items-center justify-between text-muted-foreground text-base">
-              You are assigning {token} tokens to {beneficiary?.piiData?.name}
+              You are assigning {token} tokens to {beneficiary?.name}
             </div>
             <Separator className="my-2" />
           </>

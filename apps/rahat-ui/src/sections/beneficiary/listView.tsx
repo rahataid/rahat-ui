@@ -89,6 +89,7 @@ export default function ListView({
       });
       setSelectedProject(project);
     }
+    setFilters([]);
   }, [filters?.projectId, projects]);
 
   return (

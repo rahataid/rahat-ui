@@ -10,6 +10,7 @@ import {
   Plus,
   Speech,
   UserRound,
+  UsersRound,
 } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import {
@@ -36,12 +37,7 @@ export const useNavItems = (): ProjectNavItemsReturnType => {
         {
           title: 'Beneficiaries',
           path: `/projects/c2c/${id}/beneficiary`,
-          icon: <UserRound size={18} strokeWidth={1.5} />,
-        },
-        {
-          title: 'Fund Management',
-          path: `/projects/c2c/${id}/fundManagement`,
-          icon: <Coins size={18} strokeWidth={1.5} />,
+          icon: <UsersRound size={18} strokeWidth={1.5} />,
         },
         {
           title: 'Transactions',
@@ -49,7 +45,12 @@ export const useNavItems = (): ProjectNavItemsReturnType => {
           icon: <ArrowLeftRight size={18} strokeWidth={1.5} />,
         },
         {
-          title: 'Campaigns',
+          title: 'Fund Management',
+          path: `/projects/c2c/${id}/fundManagement`,
+          icon: <Coins size={18} strokeWidth={1.5} />,
+        },
+        {
+          title: 'Communications',
           icon: <Speech size={18} strokeWidth={1.5} />,
           path: `/projects/c2c/${id}/campaigns/text`,
         },

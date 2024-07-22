@@ -1,20 +1,11 @@
 'use client';
 
 import {
+  PROJECT_SETTINGS_KEYS,
   TransactionDetails,
   useProjectSettingsStore,
-  PROJECT_SETTINGS_KEYS,
 } from '@rahat-ui/query';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import {
@@ -37,14 +28,13 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { ArrowUpDown, MoreHorizontal } from 'lucide-react';
-import * as React from 'react';
-import { useQuery } from 'urql';
-import { Transaction, TransactionsObject } from './types';
-import { mergeTransactions } from './utils';
-import { formatEther } from 'viem';
 import { shortenTxHash } from 'apps/rahat-ui/src/utils/getProjectAddress';
 import { useParams } from 'next/navigation';
+import * as React from 'react';
+import { useQuery } from 'urql';
+import { formatEther } from 'viem';
+import { Transaction, TransactionsObject } from './types';
+import { mergeTransactions } from './utils';
 
 // export type Transaction = {
 //   id: string;
@@ -212,7 +202,7 @@ export default function TransactionView() {
       </div>
       <div className="rounded border bg-card">
         <Table>
-          <ScrollArea className="h-[cal(100vh-182px)]">
+          <ScrollArea className="h-[calc(100vh-120px)]">
             <TableHeader className="bg-card sticky top-0">
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>

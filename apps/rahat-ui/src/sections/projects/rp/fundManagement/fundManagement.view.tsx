@@ -40,6 +40,16 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
+import StepProgress from '../../components/step.progress';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/dialog';
 
 const sampleSeries = [
   {
@@ -262,7 +272,23 @@ const FundManagementView = () => {
                   Sync chain
                 </Button>
                 {/* ) : null} */}
+                {/* MODAL EXAMPLE START */}
 
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button variant="outline">Edit Profile</Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-[800px]">
+                    <DialogHeader>
+                      <DialogTitle>Transactions</DialogTitle>
+                    </DialogHeader>
+                    <div className="grid gap-4 p-4">
+                      <StepProgress />
+                    </div>
+                  </DialogContent>
+                </Dialog>
+
+                {/* MODAL EXAMPLE END */}
                 <DropdownMenu>
                   <DropdownMenuTrigger>
                     <MoreVertical

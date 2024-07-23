@@ -5,7 +5,7 @@ import {
   TransactionDetails,
   useProjectSettingsStore,
 } from '@rahat-ui/query';
-import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
+import { usePagination, useProjectBeneficiaries } from '@rahat-ui/query';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import {
@@ -35,6 +35,7 @@ import { useQuery } from 'urql';
 import { formatEther } from 'viem';
 import { Transaction, TransactionsObject } from './types';
 import { mergeTransactions } from './utils';
+import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 
 // export type Transaction = {
 //   id: string;
@@ -49,28 +50,6 @@ import { mergeTransactions } from './utils';
 // };
 
 export const columns: ColumnDef<Transaction>[] = [
-  {
-    id: 'select',
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && 'indeterminate')
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
   {
     accessorKey: 'topic',
     header: 'Topic',
@@ -142,6 +121,17 @@ export default function TransactionView() {
   );
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
+  const {
+    pagination,
+    filters,
+    setFilters,
+    setNextPage,
+    setPrevPage,
+    setPerPage,
+    selectedListItems,
+    setSelectedListItems,
+    resetSelectedListItems,
+  } = usePagination();
   const [rowSelection, setRowSelection] = React.useState({});
 
   const table = useReactTable({
@@ -189,69 +179,79 @@ export default function TransactionView() {
   console.log({ transactionList });
 
   return (
-    <div className="p-2 bg-secondary">
-      <div className="flex justify-between items-center mb-2">
-        <Input
-          placeholder="Filter topics..."
-          value={(table.getColumn('topic')?.getFilterValue() as string) ?? ''}
-          onChange={(event) =>
-            table.getColumn('topic')?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm"
-        />
-      </div>
-      <div className="rounded border bg-card">
-        <Table>
-          <ScrollArea className="h-[calc(100vh-120px)]">
-            <TableHeader className="bg-card sticky top-0">
-              {table.getHeaderGroups().map((headerGroup) => (
-                <TableRow key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => {
-                    return (
-                      <TableHead key={header.id}>
-                        {header.isPlaceholder
-                          ? null
-                          : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext(),
-                            )}
-                      </TableHead>
-                    );
-                  })}
-                </TableRow>
-              ))}
-            </TableHeader>
-            <TableBody>
-              {table.getRowModel().rows?.length ? (
-                table.getRowModel().rows.map((row) => (
-                  <TableRow
-                    key={row.id}
-                    data-state={row.getIsSelected() && 'selected'}
-                  >
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext(),
-                        )}
-                      </TableCell>
-                    ))}
+    <>
+      <div className="p-2 bg-secondary">
+        <div className="flex justify-between items-center mb-2">
+          <Input
+            placeholder="Filter topics..."
+            value={(table.getColumn('topic')?.getFilterValue() as string) ?? ''}
+            onChange={(event) =>
+              table.getColumn('topic')?.setFilterValue(event.target.value)
+            }
+            className="max-w-sm"
+          />
+        </div>
+        <div className="rounded border bg-card">
+          <Table>
+            <ScrollArea className="h-[calc(100vh-180px)]">
+              <TableHeader className="bg-card sticky top-0">
+                {table.getHeaderGroups().map((headerGroup) => (
+                  <TableRow key={headerGroup.id}>
+                    {headerGroup.headers.map((header) => {
+                      return (
+                        <TableHead key={header.id}>
+                          {header.isPlaceholder
+                            ? null
+                            : flexRender(
+                                header.column.columnDef.header,
+                                header.getContext(),
+                              )}
+                        </TableHead>
+                      );
+                    })}
                   </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell
-                    colSpan={columns.length}
-                    className="h-24 text-center"
-                  >
-                    No results.
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </ScrollArea>
-        </Table>
+                ))}
+              </TableHeader>
+              <TableBody>
+                {table.getRowModel().rows?.length ? (
+                  table.getRowModel().rows.map((row) => (
+                    <TableRow
+                      key={row.id}
+                      data-state={row.getIsSelected() && 'selected'}
+                    >
+                      {row.getVisibleCells().map((cell) => (
+                        <TableCell key={cell.id}>
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext(),
+                          )}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell
+                      colSpan={columns.length}
+                      className="h-24 text-center"
+                    >
+                      No results.
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </ScrollArea>
+          </Table>
+        </div>
       </div>
-    </div>
+      <CustomPagination
+        currentPage={pagination.page}
+        handleNextPage={setNextPage}
+        handlePageSizeChange={setPerPage}
+        handlePrevPage={setPrevPage}
+        // meta={{}}
+        perPage={pagination.perPage}
+      />
+    </>
   );
 }

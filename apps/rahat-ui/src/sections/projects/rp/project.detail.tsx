@@ -93,7 +93,7 @@ const ProjectInfo: FC<ProjectInfoProps> = ({ project }) => {
     );
     const res = await response.json();
     console.log('Datasource is', res.data);
-    setReportDatas(res.data);
+    setReportDatas(res.data[0]?.data);
   };
 
   console.log('reportDatas', reportDatas);

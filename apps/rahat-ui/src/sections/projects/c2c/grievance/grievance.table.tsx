@@ -79,7 +79,7 @@ const GrievanceTable = () => {
         <div className="flex justify-between items-center mb-2">
           <div className="flex">
             <Input
-              placeholder="Filter grievnace..."
+              placeholder="Filter grievance..."
               value={
                 (table.getColumn('reporter')?.getFilterValue() as string) ?? ''
               }

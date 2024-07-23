@@ -79,15 +79,6 @@ export const useNavItems = (): ProjectNavItemsReturnType => {
           title: 'Deposit Token',
         },
         {
-          component: (
-            <>
-              <RequestTokenModal />
-            </>
-          ),
-
-          title: 'Request Token',
-        },
-        {
           icon: <PencilRuler size={18} strokeWidth={1.5} />,
           title: 'Edit Project',
           path: `/projects/c2c/${id}/edit`,

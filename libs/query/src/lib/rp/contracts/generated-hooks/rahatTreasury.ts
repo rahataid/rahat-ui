@@ -12,7 +12,10 @@ import {
 export const rahatTreasuryAbi = [
   {
     type: 'constructor',
-    inputs: [{ name: '_manager', internalType: 'address', type: 'address' }],
+    inputs: [
+      { name: '_manager', internalType: 'address', type: 'address' },
+      { name: '_forwarder', internalType: 'address', type: 'address' },
+    ],
     stateMutability: 'nonpayable',
   },
   {
@@ -162,6 +165,13 @@ export const rahatTreasuryAbi = [
   },
   {
     type: 'function',
+    inputs: [],
+    name: 'forwarderAddress',
+    outputs: [{ name: '', internalType: 'address', type: 'address' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
     inputs: [
       { name: '_token', internalType: 'address', type: 'address' },
       { name: '_from', internalType: 'address', type: 'address' },
@@ -185,6 +195,13 @@ export const rahatTreasuryAbi = [
     inputs: [],
     name: 'isConsumingScheduledOp',
     outputs: [{ name: '', internalType: 'bytes4', type: 'bytes4' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'forwarder', internalType: 'address', type: 'address' }],
+    name: 'isTrustedForwarder',
+    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
     stateMutability: 'view',
   },
   {
@@ -258,6 +275,13 @@ export const rahatTreasuryAbi = [
     outputs: [],
     stateMutability: 'nonpayable',
   },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'trustedForwarder',
+    outputs: [{ name: '', internalType: 'address', type: 'address' }],
+    stateMutability: 'view',
+  },
 ] as const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -290,6 +314,15 @@ export const useReadRahatTreasuryAuthority =
   })
 
 /**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link rahatTreasuryAbi}__ and `functionName` set to `"forwarderAddress"`
+ */
+export const useReadRahatTreasuryForwarderAddress =
+  /*#__PURE__*/ createUseReadContract({
+    abi: rahatTreasuryAbi,
+    functionName: 'forwarderAddress',
+  })
+
+/**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link rahatTreasuryAbi}__ and `functionName` set to `"getAllowanceAndBalance"`
  */
 export const useReadRahatTreasuryGetAllowanceAndBalance =
@@ -317,12 +350,30 @@ export const useReadRahatTreasuryIsConsumingScheduledOp =
   })
 
 /**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link rahatTreasuryAbi}__ and `functionName` set to `"isTrustedForwarder"`
+ */
+export const useReadRahatTreasuryIsTrustedForwarder =
+  /*#__PURE__*/ createUseReadContract({
+    abi: rahatTreasuryAbi,
+    functionName: 'isTrustedForwarder',
+  })
+
+/**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link rahatTreasuryAbi}__ and `functionName` set to `"supportsInterface"`
  */
 export const useReadRahatTreasurySupportsInterface =
   /*#__PURE__*/ createUseReadContract({
     abi: rahatTreasuryAbi,
     functionName: 'supportsInterface',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link rahatTreasuryAbi}__ and `functionName` set to `"trustedForwarder"`
+ */
+export const useReadRahatTreasuryTrustedForwarder =
+  /*#__PURE__*/ createUseReadContract({
+    abi: rahatTreasuryAbi,
+    functionName: 'trustedForwarder',
   })
 
 /**

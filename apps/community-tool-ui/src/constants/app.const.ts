@@ -88,19 +88,6 @@ export const IMPORT_ACTION = {
   IMPORT: 'IMPORT',
 };
 
-export const SUBJECTS = [
-  { label: 'All', value: 'all' },
-  { label: 'Role', value: 'role' },
-  { label: 'User', value: 'user' },
-  { label: 'Public', value: 'public' },
-  { label: 'Beneficiary', value: 'beneficiary' },
-  { label: 'Target', value: 'target' },
-  { label: 'Field Definition', value: 'fieldDefinition' },
-  { label: 'Settings', value: 'settings' },
-  { label: 'Source', value: 'source' },
-  { label: 'Group', value: 'group' },
-];
-
 const ACTION_ITEMS = ['manage', 'create', 'read', 'update', 'delete'];
 
 export const SUBJECT_ACTIONS = {

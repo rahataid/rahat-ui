@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { Table, flexRender } from '@tanstack/react-table';
-import { Settings2 } from 'lucide-react';
+import { Plus, Settings2 } from 'lucide-react';
 import { Button } from '@rahat-ui/shadcn/components/button';
 import {
   DropdownMenu,
@@ -23,12 +23,16 @@ import {
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { User } from '@rumsan/sdk/types';
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
 type IProps = {
   table: Table<User>;
 };
 
 export default function UsersTable({ table }: IProps) {
+  const router = useRouter();
+
   return (
     <>
       <div className="p-2 bg-secondary">

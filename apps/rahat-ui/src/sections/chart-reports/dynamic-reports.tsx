@@ -73,6 +73,7 @@ const DynamicReports: FC<DynamicReportsProps> = ({
       };
 
       const fetchAllData = async () => {
+        console.log('dataSources', dataSources);
         const promises = Object.keys(dataSources).map(fetchDataForSource);
         const results = await Promise.all(promises);
         const dataMap: { [key: string]: any } = {};

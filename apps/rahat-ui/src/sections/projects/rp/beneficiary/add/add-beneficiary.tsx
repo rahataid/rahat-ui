@@ -24,7 +24,7 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import { isValidPhoneNumber } from 'react-phone-number-input';
 import { z } from 'zod';
-import { Wallet } from 'lucide-react';
+import { Loader2, Wallet } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
@@ -348,7 +348,14 @@ export default function AddBeneficiaryForm() {
               }}
             />
             <div className="flex justify-end">
-              <Button>Create Beneficiary</Button>
+              {addBeneficiary.isPending ? (
+                <Button disabled>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Please wait
+                </Button>
+              ) : (
+                <Button>Create Beneficiary</Button>
+              )}
             </div>
           </div>
         </form>

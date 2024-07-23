@@ -82,7 +82,9 @@ const MultiStepForm = () => {
     maxLeadTimeDays: z
       .string()
       .min(1, { message: 'Please enter maximum lead time days' }),
-    probability: z.string().min(1, { message: 'Please forecast probability' }),
+    probability: z
+      .string()
+      .min(1, { message: 'Please enter forecast probability' }),
     // waterLevel: z.string().min(1, { message: 'Please enter water level' }),
     // .regex(/^(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)$/, 'Must be a positive number')
     // activationLevel: z

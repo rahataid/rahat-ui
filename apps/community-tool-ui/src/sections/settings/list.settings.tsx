@@ -19,8 +19,20 @@ import {
   TableHeader,
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
+import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import { Settings2 } from 'lucide-react';
 import CustomPagination from '../../components/customPagination';
+import { useDebounce } from '../../utils/debounceHooks';
 import { useSettingTableColumns } from './useSettingColumns';
 
 export default function ListSetting() {
@@ -28,16 +40,25 @@ export default function ListSetting() {
 
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
-
-  const { pagination, setNextPage, setPrevPage, setPerPage } = usePagination();
-
+  const [flag, setFlag] = useState('all');
+  const {
+    pagination,
+    setNextPage,
+    setPrevPage,
+    setPerPage,
+    filters,
+    setFilters,
+    setPagination,
+  } = usePagination();
+  const debouncedFilters = useDebounce(filters, 500) as any;
   const { data } = useCommunitySettingList({
     ...pagination,
+    ...(debouncedFilters as any),
   });
 
   const table = useReactTable({
     manualPagination: true,
-    data: data?.data?.rows || [],
+    data: data?.data || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -49,11 +70,89 @@ export default function ListSetting() {
     },
   });
 
+  const handleFilterChange = (event: any) => {
+    if (event && event.target) {
+      const { name, value } = event.target;
+      table.getColumn(name)?.setFilterValue(value);
+      setFilters({
+        ...filters,
+        [name]: value,
+      });
+    }
+    setPagination({
+      ...pagination,
+      page: 1,
+    });
+  };
+
+  const handleSwitchChange = (value: string) => {
+    const newFilters = { ...filters };
+
+    if (value === 'private') {
+      newFilters.private = 'true';
+      newFilters.readOnly = '';
+    } else if (value === 'public') {
+      newFilters.private = 'false';
+      newFilters.readOnly = '';
+    } else if (value === 'all') {
+      newFilters.private = '';
+      newFilters.readOnly = '';
+    } else if (value === 'read') {
+      newFilters.readOnly = 'true';
+      newFilters.private = '';
+    }
+
+    setFilters(newFilters);
+    setPagination({
+      ...pagination,
+      page: 1,
+    });
+    setFlag(value);
+  };
+
   return (
     <div className="w-full mt-1 p-1 bg-secondary">
+      <div className="flex items-center mb-2">
+        <Input
+          placeholder="Search by name..."
+          name="name"
+          value={
+            (table.getColumn('name')?.getFilterValue() as string) ??
+            filters?.name
+          }
+          onChange={(event) => handleFilterChange(event)}
+          className="rounded mr-2"
+        />
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" className="ml-auto">
+              <Settings2 className="mr-2 h-4 w-5" />
+              Filters
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuSeparator />
+            <DropdownMenuRadioGroup
+              value={flag}
+              onValueChange={handleSwitchChange}
+            >
+              <DropdownMenuRadioItem value="all">All</DropdownMenuRadioItem>
+              <DropdownMenuRadioItem value="private">
+                Private
+              </DropdownMenuRadioItem>
+              <DropdownMenuRadioItem value="public">
+                Public
+              </DropdownMenuRadioItem>
+              <DropdownMenuRadioItem value="read">
+                ReadOnly
+              </DropdownMenuRadioItem>
+            </DropdownMenuRadioGroup>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
       <div className="rounded border bg-white">
         <TableComponent>
-          <ScrollArea className="h-[calc(100vh-135px)]">
+          <ScrollArea className="h-[calc(100vh-190px)]">
             <TableHeader className="bg-card sticky top-0">
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>

@@ -22,7 +22,7 @@ export default function DataSourceCard({
         <div className="flex gap-4 items-center">
           <h1 className="text-primary font-semibold">Data Source : {source}</h1>
           <h1 className="text-muted-foreground text-xs font-medium">
-            Data Entry By : {dataEntryBy}
+            Created By : {dataEntryBy}
           </h1>
         </div>
         <div className="flex gap-2 items-center">

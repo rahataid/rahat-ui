@@ -20,6 +20,7 @@ export const rahatTokenAbi = [
       { name: '_initialSupply', internalType: 'uint256', type: 'uint256' },
       { name: '_to', internalType: 'address', type: 'address' },
       { name: '_manager', internalType: 'address', type: 'address' },
+      { name: '_forwarder', internalType: 'address', type: 'address' },
     ],
     stateMutability: 'nonpayable',
   },
@@ -242,6 +243,13 @@ export const rahatTokenAbi = [
   },
   {
     type: 'function',
+    inputs: [{ name: 'forwarder', internalType: 'address', type: 'address' }],
+    name: 'isTrustedForwarder',
+    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
     inputs: [],
     name: 'listOwners',
     outputs: [{ name: '', internalType: 'address[]', type: 'address[]' }],
@@ -329,6 +337,13 @@ export const rahatTokenAbi = [
     outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
     stateMutability: 'nonpayable',
   },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'trustedForwarder',
+    outputs: [{ name: '', internalType: 'address', type: 'address' }],
+    stateMutability: 'view',
+  },
 ] as const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -399,6 +414,15 @@ export const useReadRahatTokenIsOwner = /*#__PURE__*/ createUseReadContract({
 })
 
 /**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link rahatTokenAbi}__ and `functionName` set to `"isTrustedForwarder"`
+ */
+export const useReadRahatTokenIsTrustedForwarder =
+  /*#__PURE__*/ createUseReadContract({
+    abi: rahatTokenAbi,
+    functionName: 'isTrustedForwarder',
+  })
+
+/**
  * Wraps __{@link useReadContract}__ with `abi` set to __{@link rahatTokenAbi}__ and `functionName` set to `"listOwners"`
  */
 export const useReadRahatTokenListOwners = /*#__PURE__*/ createUseReadContract({
@@ -436,6 +460,15 @@ export const useReadRahatTokenSymbol = /*#__PURE__*/ createUseReadContract({
 export const useReadRahatTokenTotalSupply = /*#__PURE__*/ createUseReadContract(
   { abi: rahatTokenAbi, functionName: 'totalSupply' },
 )
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link rahatTokenAbi}__ and `functionName` set to `"trustedForwarder"`
+ */
+export const useReadRahatTokenTrustedForwarder =
+  /*#__PURE__*/ createUseReadContract({
+    abi: rahatTokenAbi,
+    functionName: 'trustedForwarder',
+  })
 
 /**
  * Wraps __{@link useWriteContract}__ with `abi` set to __{@link rahatTokenAbi}__

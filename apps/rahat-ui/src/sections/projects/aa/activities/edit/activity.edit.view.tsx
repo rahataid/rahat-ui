@@ -34,6 +34,7 @@ import {
 } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import EditCommunicationForm from './edit.communication.form';
+import { validateFile } from '../../file.validation';
 
 export default function EditActivity() {
   const router = useRouter();
@@ -146,6 +147,10 @@ export default function EditActivity() {
   ) => {
     const file = event.target.files?.[0];
     if (file) {
+      if (!validateFile(file)) {
+        return;
+      }
+
       const newFileName = `${Date.now()}-${file.name}`;
       const modifiedFile = new File([file], newFileName, { type: file.type });
 
@@ -469,6 +474,10 @@ export default function EditActivity() {
                         </div>
                       </FormControl>
                       <FormMessage />
+                      <p className="text-xs text-orange-500">
+                        *Files must be under 5 MB and of type JPEG, PNG, BMP,
+                        XLSX, or CSV.
+                      </p>
                       {documents?.map((file) => (
                         <div
                           key={file.name}

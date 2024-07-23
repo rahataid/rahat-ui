@@ -147,34 +147,6 @@ export const useCvaBeneficiaryTableColumns = () => {
               size={16}
               strokeWidth={1.5}
             />
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  className="h-8 w-8 p-0 hover:text-primary"
-                >
-                  <span className="sr-only">Open menu</span>
-                  <EllipsisVertical className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem
-                  className="cursor-pointer"
-                  onClick={() => {
-                    setSecondPanelComponent(
-                      <BeneficiaryDetail
-                        beneficiaryDetails={row.original}
-                        closeSecondPanel={closeSecondPanel}
-                      />,
-                    );
-                  }}
-                >
-                  View Details
-                </DropdownMenuItem>
-                {/* <DropdownMenuSeparator /> */}
-                {/* <DropdownMenuItem>Edit</DropdownMenuItem> */}
-              </DropdownMenuContent>
-            </DropdownMenu>
           </div>
         );
       },

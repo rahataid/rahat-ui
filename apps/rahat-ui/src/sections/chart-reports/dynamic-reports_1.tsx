@@ -1,10 +1,12 @@
-import { BarChart, ChartDonut } from '@rahat-ui/shadcn/src/components/charts';
+import { BarChart, PieChart } from '@rahat-ui/shadcn/src/components/charts';
 import { FC, useEffect, useState } from 'react';
-import DataCard from '../../components/dataCard';
+import DataCard from './datacard';
 import ErrorBoundary from '../../utils/error-boundary';
-import { getValueFromPath } from '../../utils/extractObjetInfo';
+import {
+  getValueFromPath,
+  mapObjectKeyValue,
+} from '../../utils/extractObjetInfo';
 import getIcon from '../../utils/getIcon';
-import PieChartWrapper from './pie-chart-wrapper';
 
 type DataSource = {
   type: 'stats' | 'url' | 'blockchain';
@@ -14,7 +16,7 @@ type DataSource = {
 
 type UIComponent = {
   title: string;
-  type: 'dataCard' | 'pie' | 'bar' | 'stacked_bar' | 'donut';
+  type: 'dataCard' | 'pie' | 'bar' | 'stacked_bar';
   props: { [key: string]: any };
   dataSrc: string | any;
   dataMap: string | null;
@@ -54,7 +56,6 @@ const DynamicReports: FC<DynamicReportsProps> = ({
                 );
               }
               const res = await response.json();
-
               fetchedData = res?.data;
             } catch (error) {
               console.error(error);
@@ -73,7 +74,6 @@ const DynamicReports: FC<DynamicReportsProps> = ({
       };
 
       const fetchAllData = async () => {
-        console.log('dataSources', dataSources);
         const promises = Object.keys(dataSources).map(fetchDataForSource);
         const results = await Promise.all(promises);
         const dataMap: { [key: string]: any } = {};
@@ -97,20 +97,38 @@ const DynamicReports: FC<DynamicReportsProps> = ({
     const actualData = dynamicData[dataSrc];
     const source = dataSources?.[dataSrc];
 
+    console.log(title, {
+      type,
+      title,
+      props,
+      dataSrc,
+      colSpan,
+      source,
+      dataMap,
+      actualData,
+    });
     const cardDataValue =
       type === 'dataCard' && dataMap && actualData
         ? getValueFromPath(actualData, dataMap)
         : null;
 
+    const piechartDataValue =
+      type === 'pie' && dataMap
+        ? (mapObjectKeyValue(actualData?.[dataMap], ['label', 'value']) as {
+            label: string;
+            value: number;
+          }[])
+        : [];
+
     switch (type) {
       case 'dataCard':
+        console.log('data', cardDataValue);
         return (
           <ErrorBoundary>
             <DataCard
-              title={title}
               Icon={getIcon(props?.icon) || null}
               number={cardDataValue}
-              {...(props as any)}
+              {...(props as { title: string })}
             />
           </ErrorBoundary>
         );
@@ -118,11 +136,13 @@ const DynamicReports: FC<DynamicReportsProps> = ({
       case 'pie':
         return (
           <ErrorBoundary>
-            {actualData && (
-              <PieChartWrapper
-                component={component}
-                source={source}
-                actualData={actualData}
+            {piechartDataValue && (
+              <PieChart
+                title={title}
+                chart={{
+                  series: piechartDataValue,
+                }}
+                {...props}
               />
             )}
           </ErrorBoundary>
@@ -131,16 +151,12 @@ const DynamicReports: FC<DynamicReportsProps> = ({
       case 'bar':
         return (
           <ErrorBoundary>
-            {actualData && (
-              <BarChart actualData={actualData} component={component} />
+            {actualData?.[dataMap] && (
+              <BarChart
+                categories={Object.keys(actualData?.[dataMap])}
+                series={Object.values(actualData?.[dataMap])}
+              />
             )}
-          </ErrorBoundary>
-        );
-
-      case 'donut':
-        return (
-          <ErrorBoundary>
-            <ChartDonut labels={['a', 'b']} series={[1, 5]} />
           </ErrorBoundary>
         );
 
@@ -166,7 +182,7 @@ const DynamicReports: FC<DynamicReportsProps> = ({
 
   return (
     <div className={className}>
-      {ui?.map((row, index) => renderUIRow(row, index))}
+      {ui.map((row, index) => renderUIRow(row, index))}
     </div>
   );
 };

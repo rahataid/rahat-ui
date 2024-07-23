@@ -11,6 +11,7 @@ export * from './lib/users/users.query';
 export * from './lib/settings';
 export * from './lib/aa';
 export * from './lib/upload';
+export * from './lib/reports';
 // export * from './lib/aa/trigger-statements';
 // export * from './lib/aa/activities';
 

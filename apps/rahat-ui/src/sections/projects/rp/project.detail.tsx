@@ -96,6 +96,8 @@ const ProjectInfo: FC<ProjectInfoProps> = ({ project }) => {
     setReportDatas(res.data);
   };
 
+  console.log('reportDatas', reportDatas);
+
   useEffect(() => {
     reportDataFromApi();
   }, []);

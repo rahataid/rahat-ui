@@ -1,8 +1,6 @@
-import { FC, useEffect, useMemo, useState } from 'react';
-import { DynamicReports } from '../../chart-reports';
 import {
   PROJECT_SETTINGS_KEYS,
-  useProjectList,
+  useGetProjectDatasource,
   useProjectSettingsStore,
   useRPBeneficiaryCount,
   useReadRahatTokenBalanceOf,
@@ -16,12 +14,9 @@ import { Project } from '@rahataid/sdk/project/project.types';
 import { renderRowBasedProjectDetailsExtras } from 'apps/rahat-ui/src/utils/render-extras';
 import { UUID } from 'crypto';
 import Image from 'next/image';
-import reportData from './report_new.json';
 import { useParams } from 'next/navigation';
-import {
-  useGetDataSource,
-  useGetProjectDatasource,
-} from 'apps/rahat-ui/src/hooks/el/getDataSource';
+import { FC } from 'react';
+import { DynamicReports } from '../../chart-reports';
 
 type CarouselSectionProps = {
   description: string;

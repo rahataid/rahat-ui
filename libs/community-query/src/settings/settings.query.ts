@@ -14,7 +14,7 @@ export const useCommunitySettingList = (
   return useQuery(
     {
       queryKey: [TAGS.LIST_COMMUNITY_SETTINGS, payload],
-      queryFn: () => settingClient.list(payload),
+      queryFn: () => settingClient.listSettings(payload),
     },
     queryClient,
   );
@@ -75,6 +75,20 @@ export const useCommunitySettingUpdate = () => {
           'error',
         );
       },
+    },
+    queryClient,
+  );
+};
+
+export const useGetCommunitySettingByName = (
+  name: string,
+): UseQueryResult<any, Error> => {
+  const { queryClient, rumsanService } = useRSQuery();
+  const settingClient = getSettingsClient(rumsanService.client);
+  return useQuery(
+    {
+      queryKey: [TAGS.LIST_COMMUNITY_SETTINGS_NAME, name],
+      queryFn: () => settingClient.getByName(name),
     },
     queryClient,
   );

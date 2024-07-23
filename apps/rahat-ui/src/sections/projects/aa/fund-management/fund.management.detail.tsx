@@ -21,7 +21,9 @@ const FundManagementDetails = () => {
       {/* BREADCRUMB */}
       <div className="flex items-center justify-between mt-4 mb-4 ml-2">
         <div className="flex items-center gap-2">
-          <Back path={`/projects/aa/${projectID}/fund-management`} />
+          <Back
+            path={`/projects/aa/${projectID}/fund-management?backFromDetail=true`}
+          />
           <h1 className="text-xl font-medium text-gray-800">{data?.title}</h1>
         </div>
         {/* <div className="flex items-center gap-1">

@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import { ArrowLeft } from 'lucide-react';
 import ActivityDetailCard from './activity.detail.card';
 import ActivityDetailCards from './activity.detail.cards';
 import ActivityCommunicationListCard from './activity.communication.list.card';
@@ -10,6 +9,7 @@ import { UUID } from 'crypto';
 import Loader from 'apps/rahat-ui/src/components/table.loader';
 import EditButton from '../../../components/edit.btn';
 import DeleteButton from '../../../components/delete.btn';
+import Back from '../../../components/back';
 
 export default function ActivitiesDetailView() {
   const router = useRouter();
@@ -46,12 +46,7 @@ export default function ActivitiesDetailView() {
     <div className="h-[calc(100vh-65px)] bg-secondary p-4">
       <div className="flex justify-between">
         <div className="flex gap-4 items-center">
-          <ArrowLeft
-            size={25}
-            strokeWidth={1.5}
-            className="cursor-pointer"
-            onClick={() => router.back()}
-          />
+          <Back path={activitiesListPath.concat('?backFromDetail=true')} />
           <h1 className="text-xl font-semibold">{activityDetail?.title}</h1>
         </div>
         <div className="flex gap-4 items-center">

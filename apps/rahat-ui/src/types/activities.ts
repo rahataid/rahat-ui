@@ -11,4 +11,5 @@ export interface IActivitiesItem {
   status: string;
   activityType: string;
   activtiyComm: Record<string, any>;
+  activityDocuments: any;
 }

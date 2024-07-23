@@ -92,8 +92,8 @@ const ProjectInfo: FC<ProjectInfoProps> = ({ project }) => {
       `${process.env.NEXT_PUBLIC_API_HOST_URL}/v1/projects/${id}/statsSources`,
     );
     const res = await response.json();
-    console.log('Datasource is', res.data);
-    setReportDatas(res.data);
+    console.log('Datasource is', res.data[0].data);
+    setReportDatas(res.data[0].data);
   };
 
   useEffect(() => {

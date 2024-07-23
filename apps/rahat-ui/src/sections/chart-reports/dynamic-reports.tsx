@@ -165,7 +165,7 @@ const DynamicReports: FC<DynamicReportsProps> = ({
 
   return (
     <div className={className}>
-      {ui.map((row, index) => renderUIRow(row, index))}
+      {ui?.map((row, index) => renderUIRow(row, index))}
     </div>
   );
 };

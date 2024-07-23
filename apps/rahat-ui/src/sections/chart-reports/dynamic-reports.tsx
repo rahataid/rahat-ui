@@ -139,7 +139,7 @@ const DynamicReports: FC<DynamicReportsProps> = ({
       case 'donut':
         return (
           <ErrorBoundary>
-            <ChartDonut labels={['asfd']} series={[123]} />
+            <ChartDonut labels={['a', 'b']} series={[1, 5]} />
           </ErrorBoundary>
         );
 

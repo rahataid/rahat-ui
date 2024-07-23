@@ -18,6 +18,10 @@ import { UUID } from 'crypto';
 import Image from 'next/image';
 import reportData from './report_new.json';
 import { useParams } from 'next/navigation';
+import {
+  useGetDataSource,
+  useGetProjectDatasource,
+} from 'apps/rahat-ui/src/hooks/el/getDataSource';
 
 type CarouselSectionProps = {
   description: string;
@@ -86,27 +90,15 @@ const ProjectInfo: FC<ProjectInfoProps> = ({ project }) => {
     },
   });
 
-  const [reportDatas, setReportDatas] = useState<any>();
-  const reportDataFromApi = async () => {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_HOST_URL}/v1/projects/${id}/statsSources`,
-    );
-    const res = await response.json();
-    console.log('Datasource is', res.data[0].data);
-    setReportDatas(res.data[0].data);
-  };
-
-  useEffect(() => {
-    reportDataFromApi();
-  }, []);
+  const newDatasource = useGetProjectDatasource(id);
 
   return (
     <div className=" bg-slate-100">
       {/* DATACARD SECTION */}
-      {reportDatas && (
+      {newDatasource?.data && (
         <DynamicReports
-          dataSources={reportDatas.dataSources}
-          ui={reportDatas.ui}
+          dataSources={newDatasource?.data[0].data.dataSources}
+          ui={newDatasource?.data[0].data.ui}
         />
       )}
       {/* <DynamicReports data={reportsCardsData} ui={reportsCardsUI} /> */}

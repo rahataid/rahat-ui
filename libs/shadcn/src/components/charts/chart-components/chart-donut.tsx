@@ -54,8 +54,8 @@ export default function ChartDonut({
       type="donut"
       series={[
         {
-          data: [1],
-        },
+          data: [1, 5, 10],
+        }
       ]}
       options={chartOptions}
       width={width}

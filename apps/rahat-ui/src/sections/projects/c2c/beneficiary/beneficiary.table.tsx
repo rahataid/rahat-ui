@@ -3,13 +3,6 @@ import * as React from 'react';
 
 import { usePagination, useProjectBeneficiaries } from '@rahat-ui/query';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@rahat-ui/shadcn/components/select';
-import {
   Table,
   TableBody,
   TableCell,
@@ -31,7 +24,6 @@ import {
 } from '@tanstack/react-table';
 import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
-import { benType } from '../../el/beneficiary/beneficiary.table';
 import { useProjectBeneficiaryTableColumns } from './useBeneficiaryColumns';
 
 import {
@@ -97,7 +89,7 @@ const BeneficiaryDetailTableView = () => {
         <div className="flex justify-between items-center mb-2">
           <div className="flex">
             <Input
-              placeholder="Filter name..."
+              placeholder="Filter beneficiary..."
               value={
                 (table.getColumn('name')?.getFilterValue() as string) ?? ''
               }

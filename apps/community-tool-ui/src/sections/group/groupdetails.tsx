@@ -170,15 +170,15 @@ export default function GroupDetail({ uuid }: IProps) {
   const handleExportPinnedBeneficiary = () => {
     const filteredValue: any =
       settingsData &&
-      settingsData?.data?.rows?.find(
+      settingsData?.data?.find(
         (item: any) => item.name === SETTINGS_NAME.EXTERNAL_APPS,
       )?.value;
 
     const obj = filteredValue
       ? Object.entries(filteredValue).reduce((acc, [key, value]) => {
-          acc[value] = key;
-          return acc;
-        }, {} as { [key: string]: string })
+        acc[value] = key;
+        return acc;
+      }, {} as { [key: string]: string })
       : {};
     const payload = {
       groupUUID: uuid as string,
@@ -359,9 +359,8 @@ export default function GroupDetail({ uuid }: IProps) {
                   </AlertDialogTitle>
                   <AlertDialogDescription>
                     <ScrollArea
-                      className={`${
-                        labels.length < 10 ? 'h-32' : 'h-52'
-                      } w-[95%] border m-2 pt-1 pb-1 text-sm rounded-md shadow-lg cursor-pointer bg-white`}
+                      className={`${labels.length < 10 ? 'h-32' : 'h-52'
+                        } w-[95%] border m-2 pt-1 pb-1 text-sm rounded-md shadow-lg cursor-pointer bg-white`}
                       hidden={labels.length === 0}
                     >
                       {labels.map((item) => {

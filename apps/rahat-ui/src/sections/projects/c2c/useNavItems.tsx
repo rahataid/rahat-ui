@@ -87,7 +87,7 @@ export const useNavItems = (): ProjectNavItemsReturnType => {
         pathname.includes('/campaigns')
           ? [
               {
-                title: 'Add Campaign',
+                title: 'Add Communication',
                 path: `/projects/c2c/${id}/campaigns/add`,
                 icon: <Plus size={18} strokeWidth={1.5} />,
               },

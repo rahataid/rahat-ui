@@ -1,16 +1,10 @@
 'use client';
 import {
-  ColumnFiltersState,
-  SortingState,
-  VisibilityState,
-  flexRender,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useReactTable,
-} from '@tanstack/react-table';
-import * as React from 'react';
+  PROJECT_SETTINGS_KEYS,
+  useContractRedeem,
+  useListRedemptions,
+  useProjectSettingsStore,
+} from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/components/button';
 import { Input } from '@rahat-ui/shadcn/components/input';
 import {
@@ -22,18 +16,23 @@ import {
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import { useRedemptionTableColumn } from './useRedemptionTableColumn';
-import { History } from 'lucide-react';
 import {
-  PROJECT_SETTINGS_KEYS,
-  useContractRedeem,
-  useListRedemptions,
-  useProjectSettingsStore,
-  useRedeemToken,
-  useSettingsStore,
-} from '@rahat-ui/query';
-import { useParams } from 'next/navigation';
+  ColumnFiltersState,
+  SortingState,
+  VisibilityState,
+  flexRender,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  useReactTable,
+} from '@tanstack/react-table';
 import { UUID } from 'crypto';
+import { History } from 'lucide-react';
+import Image from 'next/image';
+import { useParams } from 'next/navigation';
+import * as React from 'react';
+import { useRedemptionTableColumn } from './useRedemptionTableColumn';
 
 export type Redeptions = {
   id: string;

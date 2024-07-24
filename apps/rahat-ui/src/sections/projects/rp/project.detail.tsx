@@ -85,10 +85,7 @@ const ProjectInfo: FC<ProjectInfoProps> = ({ project }) => {
     },
   });
 
-  const newDatasource = useGetProjectDatasource(
-    '05dbeec3-3550-4a37-b47a-28db6fe63eaa',
-  );
-  console.log('newSource', newDatasource);
+  const newDatasource = useGetProjectDatasource(id);
 
   return (
     <div className=" bg-slate-100">

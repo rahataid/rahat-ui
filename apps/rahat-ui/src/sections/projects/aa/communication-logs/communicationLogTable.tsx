@@ -35,6 +35,10 @@ import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { CAMPAIGN_TYPES } from '@rahat-ui/types';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { useListTransport } from '@rumsan/communication-query';
+import { useProjectBeneficiaries } from '@rahat-ui/query';
+import { useParams } from 'next/navigation';
+import { UUID } from 'crypto';
+import { exportDataToExcel } from 'apps/rahat-ui/src/utils';
 export type TextDetail = {
   _id: string;
   to: string;
@@ -82,7 +86,12 @@ type IProps = {
   data: any;
 };
 export default function CommunicationLogTable({ data }: IProps) {
+  const { id: projectID } = useParams();
+
   const { data: transportData } = useListTransport();
+  const projectBeneficiaries = useProjectBeneficiaries({
+    projectUUID: projectID as UUID,
+  });
 
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -121,6 +130,8 @@ export default function CommunicationLogTable({ data }: IProps) {
         if (key === 'type') {
           if (item?.transport.name.toLowerCase() === id.toLowerCase())
             return item;
+        } else if (key === 'status') {
+          if (item?.status.toLowerCase() === id.toLowerCase()) return item;
         } else {
           if (item?.campaign.name.toLowerCase() === id.toLowerCase())
             return item;
@@ -166,14 +177,30 @@ export default function CommunicationLogTable({ data }: IProps) {
 
   const handleFilter = (id: string, key?: string) => {
     let filteredData;
-    if (key === 'type') {
-      filteredData = filterData(data, id, key);
-      setColumnVisibilityByType(id);
-    } else {
+    if (!key) {
       filteredData = filterData(data, id);
       setColumnVisibilityByType('ivr');
+    } else {
+      filteredData = filterData(data, id, key);
+      setColumnVisibilityByType(id);
     }
     setTableData(filteredData);
+  };
+  const handleExport = () => {
+    // filter failed data
+    const failedData = data?.filter((data) => {
+      if (data?.status.toLowerCase() === 'failed') {
+        return data?.audience?.details?.phone;
+      }
+    });
+
+    const mappedData = projectBeneficiaries.data.data.filter((data) => {
+      if (failedData.includes(data.phone)) {
+        return data;
+      }
+    });
+
+    exportDataToExcel(mappedData);
   };
   const table = useReactTable({
     data: tableData || [],
@@ -208,6 +235,9 @@ export default function CommunicationLogTable({ data }: IProps) {
             className="max-w-sm"
           />
           <div className="flex  gap-2">
+            {/* export failed ivr and sms  */}
+            <Button onClick={handleExport}>Export failed</Button>
+
             {/* filter by campaign  */}
             <Select onValueChange={(e) => handleFilter(e)}>
               <SelectTrigger className="max-w-32">
@@ -223,6 +253,18 @@ export default function CommunicationLogTable({ data }: IProps) {
                 })}
               </SelectContent>
             </Select>
+
+            {/* filter by campaign  */}
+            <Select onValueChange={(e) => handleFilter(e, 'status')}>
+              <SelectTrigger className="max-w-32">
+                <SelectValue placeholder="Status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="COMPLETED">COMPLETED</SelectItem>
+                <SelectItem value="FAILED">FAILED</SelectItem>
+              </SelectContent>
+            </Select>
+
             {/* filter by type  */}
             <Select
               defaultValue="Email"

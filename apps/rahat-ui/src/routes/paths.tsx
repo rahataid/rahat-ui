@@ -10,7 +10,6 @@ const ROOTS = {
   PROFILE: '/profile',
   TREASURY: '/treasury',
   COMMUNITYBENEFICIARY: '/community-beneficiary',
-  SETTINGS: '/settings',
 };
 
 export const paths = {
@@ -46,8 +45,5 @@ export const paths = {
         `${ROOTS.COMMUNICATION}/text/${id}/edit`,
     },
     communitybeneficiary: ROOTS.COMMUNITYBENEFICIARY,
-  },
-  settings: {
-    root: ROOTS.SETTINGS,
   },
 };

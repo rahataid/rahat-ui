@@ -38,7 +38,7 @@ export function Nav() {
     clearUser();
     clearAuth();
     // localStorage.clear()
-
+    
     window.location.reload();
   };
 
@@ -158,13 +158,6 @@ export function Nav() {
                 href={paths.dashboard.root}
               >
                 Home
-              </Link>
-
-              <Link
-                className="p-1 hover:bg-secondary rounded"
-                href={paths.settings.root}
-              >
-                Settings
               </Link>
               <ThemeSwitch />
               <Badge

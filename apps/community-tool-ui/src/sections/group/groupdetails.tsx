@@ -5,15 +5,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/components/tooltip';
-import {
-  Delete,
-  Download,
-  MoreVertical,
-  Share,
-  Tags,
-  Trash2,
-  X,
-} from 'lucide-react';
+import { Delete, Download, MoreVertical, Share, Trash2, X } from 'lucide-react';
 
 import {
   VisibilityState,
@@ -57,8 +49,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSub,
-  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
@@ -69,9 +59,9 @@ import Swal from 'sweetalert2';
 import * as XLSX from 'xlsx';
 import CustomPagination from '../../components/customPagination';
 import { SETTINGS_NAME } from '../../constants/settings.const';
+import { deHumanizeString, simpleString } from '../../utils';
 import GroupDetailTable from './group.table';
 import { useCommunityGroupDeailsColumns } from './useGroupColumns';
-import { deHumanizeString, simpleString } from '../../utils';
 
 type IProps = {
   uuid: string;
@@ -286,31 +276,6 @@ export default function GroupDetail({ uuid }: IProps) {
           </div>
 
           <div className="flex gap-3">
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger
-                  onClick={removeBeneficiaryFromGroup}
-                  disabled={
-                    responseByUUID?.data?.beneficiariesGroup.length === 0
-                  }
-                >
-                  <Trash2
-                    className="cursor-pointer mr-3"
-                    size={20}
-                    strokeWidth={1.6}
-                    color={`${
-                      responseByUUID?.data?.beneficiariesGroup.length === 0
-                        ? 'grey'
-                        : 'red'
-                    }`}
-                  />
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Disconnect beneficiaries from Group</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-
             <DropdownMenu>
               <DropdownMenuTrigger>
                 <MoreVertical
@@ -327,16 +292,7 @@ export default function GroupDetail({ uuid }: IProps) {
                   }
                 >
                   <Share className="mr-2 h-4 w-4" />
-                  Export Beneficiaries
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={handlePurge}
-                  disabled={
-                    responseByUUID?.data?.beneficiariesGroup.length === 0
-                  }
-                >
-                  <Delete className="mr-2 h-4 w-4" />
-                  Delete Beneficiary
+                  Export
                 </DropdownMenuItem>
 
                 <DropdownMenuItem
@@ -346,7 +302,27 @@ export default function GroupDetail({ uuid }: IProps) {
                   }
                 >
                   <Download className="mr-2 h-4 w-4" />
-                  Download Beneficiary
+                  Download
+                </DropdownMenuItem>
+
+                <DropdownMenuItem
+                  onClick={removeBeneficiaryFromGroup}
+                  disabled={
+                    responseByUUID?.data?.beneficiariesGroup.length === 0
+                  }
+                >
+                  <Delete className="mr-2 h-4 w-4" />
+                  Disconnect
+                </DropdownMenuItem>
+
+                <DropdownMenuItem
+                  onClick={handlePurge}
+                  disabled={
+                    responseByUUID?.data?.beneficiariesGroup.length === 0
+                  }
+                >
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  Delete
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

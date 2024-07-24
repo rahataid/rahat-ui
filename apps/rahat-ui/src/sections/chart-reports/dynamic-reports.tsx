@@ -5,6 +5,8 @@ import ErrorBoundary from '../../utils/error-boundary';
 import { getValueFromPath } from '../../utils/extractObjetInfo';
 import getIcon from '../../utils/getIcon';
 import PieChartWrapper from './pie-chart-wrapper';
+import DonutWrapper from './donut-wrapper';
+import DataCardWrapper from './datacard-wrapper';
 
 type DataSource = {
   type: 'stats' | 'url' | 'blockchain';
@@ -96,21 +98,16 @@ const DynamicReports: FC<DynamicReportsProps> = ({
     const { title, type, props, dataSrc, dataMap, colSpan } = component;
     const actualData = dynamicData[dataSrc];
     const source = dataSources?.[dataSrc];
-
-    const cardDataValue =
-      type === 'dataCard' && dataMap && actualData
-        ? getValueFromPath(actualData, dataMap)
-        : null;
+    console.log('actualData', actualData);
 
     switch (type) {
       case 'dataCard':
         return (
           <ErrorBoundary>
-            <DataCard
-              title={title}
-              Icon={getIcon(props?.icon) || null}
-              number={cardDataValue}
-              {...(props as any)}
+            <DataCardWrapper
+              component={component}
+              source={source}
+              actualData={actualData}
             />
           </ErrorBoundary>
         );
@@ -140,7 +137,11 @@ const DynamicReports: FC<DynamicReportsProps> = ({
       case 'donut':
         return (
           <ErrorBoundary>
-            <ChartDonut labels={['a', 'b']} series={[1, 5]} />
+            <DonutWrapper
+              component={component}
+              source={source}
+              actualData={actualData}
+            />
           </ErrorBoundary>
         );
 

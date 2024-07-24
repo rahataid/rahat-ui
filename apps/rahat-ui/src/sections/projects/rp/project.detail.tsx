@@ -85,15 +85,18 @@ const ProjectInfo: FC<ProjectInfoProps> = ({ project }) => {
     },
   });
 
-  const newDatasource = useGetProjectDatasource(id);
+  const newDatasource = useGetProjectDatasource(
+    '05dbeec3-3550-4a37-b47a-28db6fe63eaa',
+  );
+  console.log('newSource', newDatasource);
 
   return (
     <div className=" bg-slate-100">
       {/* DATACARD SECTION */}
-      {newDatasource?.data && (
+      {newDatasource?.data && newDatasource?.data[0]?.data?.ui.length && (
         <DynamicReports
-          dataSources={newDatasource?.data[0].data.dataSources}
-          ui={newDatasource?.data[0].data.ui}
+          dataSources={newDatasource?.data[0]?.data?.dataSources}
+          ui={newDatasource?.data[0]?.data?.ui}
         />
       )}
       {/* <DynamicReports data={reportsCardsData} ui={reportsCardsUI} /> */}

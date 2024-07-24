@@ -1,28 +1,30 @@
 'use client';
 
+import { Separator } from '@rahat-ui/shadcn/components/separator';
 import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
 } from '@rahat-ui/shadcn/src/components/ui/resizable';
-// import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import { Tabs } from '@rahat-ui/shadcn/src/components/ui/tabs';
 import { FC } from 'react';
 import { NavItem } from './nav-items.types';
-import UserNavView from './user.nav.view';
-import { Tabs } from '@rahat-ui/shadcn/src/components/ui/tabs';
-import { Separator } from '@rahat-ui/shadcn/src/components/ui/separator';
+import SettingFieldDefinitionNavView from './settingfieldDefinition.nav.view';
 
-type UserLayoutProps = {
+type SettingFieldDefinitionLayoutProps = {
   children: React.ReactNode | React.ReactNode[];
   menuItems: NavItem[];
 };
 
-const UserLayout: FC<UserLayoutProps> = ({ children, menuItems }) => {
+const SettingFieldDefinitionLayout: FC<SettingFieldDefinitionLayoutProps> = ({
+  children,
+  menuItems,
+}) => {
   const renderResizablePanel = (children: React.ReactNode, index?: number) => {
     return (
-      <ResizablePanel minSize={30} key={index}>
-        {children}
-        {/* <ScrollArea className="h-[calc(100vh-66px)]">{children}</ScrollArea> */}
+      <ResizablePanel key={index}>
+        <ScrollArea className="h-[calc(100vh-66px)]">{children}</ScrollArea>
       </ResizablePanel>
     );
   };
@@ -59,7 +61,7 @@ const UserLayout: FC<UserLayoutProps> = ({ children, menuItems }) => {
             className="h-full"
           >
             {menuItems.map((item) => (
-              <UserNavView
+              <SettingFieldDefinitionNavView
                 key={item.title}
                 title={item.title}
                 items={item.children}
@@ -74,4 +76,4 @@ const UserLayout: FC<UserLayoutProps> = ({ children, menuItems }) => {
   );
 };
 
-export default UserLayout;
+export default SettingFieldDefinitionLayout;

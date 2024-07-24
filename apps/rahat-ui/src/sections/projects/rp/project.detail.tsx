@@ -1,5 +1,6 @@
 import {
   PROJECT_SETTINGS_KEYS,
+  useGetProjectDatasource,
   useProjectSettingsStore,
   useRPBeneficiaryCount,
   useReadRahatTokenBalanceOf,
@@ -14,9 +15,8 @@ import { renderRowBasedProjectDetailsExtras } from 'apps/rahat-ui/src/utils/rend
 import { UUID } from 'crypto';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
-import { FC, useMemo } from 'react';
+import { FC } from 'react';
 import { DynamicReports } from '../../chart-reports';
-import tempReport from './temp_report.json';
 
 type CarouselSectionProps = {
   description: string;
@@ -73,8 +73,6 @@ const ProjectInfo: FC<ProjectInfoProps> = ({ project }) => {
     (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT],
   );
 
-  console.log({ contractSettings });
-
   const { data } = useRPBeneficiaryCount(id);
 
   const tokenBalance = useReadRahatTokenBalanceOf({
@@ -87,32 +85,18 @@ const ProjectInfo: FC<ProjectInfoProps> = ({ project }) => {
     },
   });
 
-  const reportsChartsUI = useMemo(() => tempReport?.charts, []);
-  const reportsChartsData = useMemo(
-    () => [
-      {
-        name: 'BENEFICIARIES',
-        data: `${process.env.NEXT_PUBLIC_API_HOST_URL}/v1/beneficiaries/stats`,
-      },
-    ],
-    [],
-  );
-
-  const reportsCardsUI = useMemo(() => tempReport?.datacards, []);
-  const reportsCardsData = useMemo(
-    () => [
-      { name: 'BENEFICIARIES', data: data?.count },
-      { name: 'BALANCE', data: Number(tokenBalance?.data) || 'N/A' },
-      { name: 'DISTRIBUTED', data: 0 },
-      { name: 'CAMPAIGNS', data: 0 },
-    ],
-    [tokenBalance.data],
-  );
+  const newDatasource = useGetProjectDatasource(id);
 
   return (
     <div className=" bg-slate-100">
       {/* DATACARD SECTION */}
-      <DynamicReports data={reportsCardsData} ui={reportsCardsUI} />
+      {newDatasource?.data && newDatasource?.data[0]?.data?.ui.length && (
+        <DynamicReports
+          dataSources={newDatasource?.data[0]?.data?.dataSources}
+          ui={newDatasource?.data[0]?.data?.ui}
+        />
+      )}
+      {/* <DynamicReports data={reportsCardsData} ui={reportsCardsUI} /> */}
 
       {/* CAROUSEL AND PROJECT INFO SECTION */}
       <div className="grid grid-cols-3 mt-2 bg-card p-3 rounded-sm">
@@ -123,7 +107,7 @@ const ProjectInfo: FC<ProjectInfoProps> = ({ project }) => {
       </div>
 
       {/* CHARTS SECTION */}
-      <DynamicReports data={reportsChartsData} ui={reportsChartsUI} />
+      {/* <DynamicReports data={reportsChartsData} ui={reportsChartsUI} /> */}
     </div>
   );
 };

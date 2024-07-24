@@ -27,7 +27,7 @@ const TreasuryDetails = () => {
             />
           </div>
           <div className="mt-4">
-            <div className="flex items-center justify-around mb-4">
+            <div className="grid grid-cols-2 gap-2 mb-4">
               {projects?.data?.data.map((project, index) => (
                 <TreasuryCard
                   key={index}
@@ -60,7 +60,799 @@ const TreasuryDetails = () => {
               Recent Deposits
             </CardTitle>
           </CardHeader>
-          <ScrollArea className="min-h-96">
+          <ScrollArea className="h-[700px]">
+            <CardContent className="grid gap-8">
+              <div className="flex items-center gap-4">
+                <Avatar
+                  className={`h-9 w-9 sm:flex bg-green-200 flex items-center justify-center`}
+                >
+                  <ArrowUp size={20} strokeWidth={1.25} />
+                </Avatar>
+                <div className="grid gap-1">
+                  <p className="text-sm font-medium leading-none">
+                    Olivia Martin
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    olivia.martin@email.com
+                  </p>
+                </div>
+                <div className="ml-auto font-medium">+$1,999.00</div>
+              </div>
+            </CardContent>
+            <CardContent className="grid gap-8">
+              <div className="flex items-center gap-4">
+                <Avatar
+                  className={`h-9 w-9 sm:flex bg-green-200 flex items-center justify-center`}
+                >
+                  <ArrowUp size={20} strokeWidth={1.25} />
+                </Avatar>
+                <div className="grid gap-1">
+                  <p className="text-sm font-medium leading-none">
+                    Olivia Martin
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    olivia.martin@email.com
+                  </p>
+                </div>
+                <div className="ml-auto font-medium">+$1,999.00</div>
+              </div>
+            </CardContent>
+            <CardContent className="grid gap-8">
+              <div className="flex items-center gap-4">
+                <Avatar
+                  className={`h-9 w-9 sm:flex bg-green-200 flex items-center justify-center`}
+                >
+                  <ArrowUp size={20} strokeWidth={1.25} />
+                </Avatar>
+                <div className="grid gap-1">
+                  <p className="text-sm font-medium leading-none">
+                    Olivia Martin
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    olivia.martin@email.com
+                  </p>
+                </div>
+                <div className="ml-auto font-medium">+$1,999.00</div>
+              </div>
+            </CardContent>
+            <CardContent className="grid gap-8">
+              <div className="flex items-center gap-4">
+                <Avatar
+                  className={`h-9 w-9 sm:flex bg-green-200 flex items-center justify-center`}
+                >
+                  <ArrowUp size={20} strokeWidth={1.25} />
+                </Avatar>
+                <div className="grid gap-1">
+                  <p className="text-sm font-medium leading-none">
+                    Olivia Martin
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    olivia.martin@email.com
+                  </p>
+                </div>
+                <div className="ml-auto font-medium">+$1,999.00</div>
+              </div>
+            </CardContent>
+            <CardContent className="grid gap-8">
+              <div className="flex items-center gap-4">
+                <Avatar
+                  className={`h-9 w-9 sm:flex bg-green-200 flex items-center justify-center`}
+                >
+                  <ArrowUp size={20} strokeWidth={1.25} />
+                </Avatar>
+                <div className="grid gap-1">
+                  <p className="text-sm font-medium leading-none">
+                    Olivia Martin
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    olivia.martin@email.com
+                  </p>
+                </div>
+                <div className="ml-auto font-medium">+$1,999.00</div>
+              </div>
+            </CardContent>
+            <CardContent className="grid gap-8">
+              <div className="flex items-center gap-4">
+                <Avatar
+                  className={`h-9 w-9 sm:flex bg-green-200 flex items-center justify-center`}
+                >
+                  <ArrowUp size={20} strokeWidth={1.25} />
+                </Avatar>
+                <div className="grid gap-1">
+                  <p className="text-sm font-medium leading-none">
+                    Olivia Martin
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    olivia.martin@email.com
+                  </p>
+                </div>
+                <div className="ml-auto font-medium">+$1,999.00</div>
+              </div>
+            </CardContent>
+            <CardContent className="grid gap-8">
+              <div className="flex items-center gap-4">
+                <Avatar
+                  className={`h-9 w-9 sm:flex bg-green-200 flex items-center justify-center`}
+                >
+                  <ArrowUp size={20} strokeWidth={1.25} />
+                </Avatar>
+                <div className="grid gap-1">
+                  <p className="text-sm font-medium leading-none">
+                    Olivia Martin
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    olivia.martin@email.com
+                  </p>
+                </div>
+                <div className="ml-auto font-medium">+$1,999.00</div>
+              </div>
+            </CardContent>
+            <CardContent className="grid gap-8">
+              <div className="flex items-center gap-4">
+                <Avatar
+                  className={`h-9 w-9 sm:flex bg-green-200 flex items-center justify-center`}
+                >
+                  <ArrowUp size={20} strokeWidth={1.25} />
+                </Avatar>
+                <div className="grid gap-1">
+                  <p className="text-sm font-medium leading-none">
+                    Olivia Martin
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    olivia.martin@email.com
+                  </p>
+                </div>
+                <div className="ml-auto font-medium">+$1,999.00</div>
+              </div>
+            </CardContent>
+            <CardContent className="grid gap-8">
+              <div className="flex items-center gap-4">
+                <Avatar
+                  className={`h-9 w-9 sm:flex bg-green-200 flex items-center justify-center`}
+                >
+                  <ArrowUp size={20} strokeWidth={1.25} />
+                </Avatar>
+                <div className="grid gap-1">
+                  <p className="text-sm font-medium leading-none">
+                    Olivia Martin
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    olivia.martin@email.com
+                  </p>
+                </div>
+                <div className="ml-auto font-medium">+$1,999.00</div>
+              </div>
+            </CardContent>
+            <CardContent className="grid gap-8">
+              <div className="flex items-center gap-4">
+                <Avatar
+                  className={`h-9 w-9 sm:flex bg-green-200 flex items-center justify-center`}
+                >
+                  <ArrowUp size={20} strokeWidth={1.25} />
+                </Avatar>
+                <div className="grid gap-1">
+                  <p className="text-sm font-medium leading-none">
+                    Olivia Martin
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    olivia.martin@email.com
+                  </p>
+                </div>
+                <div className="ml-auto font-medium">+$1,999.00</div>
+              </div>
+            </CardContent>
+            <CardContent className="grid gap-8">
+              <div className="flex items-center gap-4">
+                <Avatar
+                  className={`h-9 w-9 sm:flex bg-green-200 flex items-center justify-center`}
+                >
+                  <ArrowUp size={20} strokeWidth={1.25} />
+                </Avatar>
+                <div className="grid gap-1">
+                  <p className="text-sm font-medium leading-none">
+                    Olivia Martin
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    olivia.martin@email.com
+                  </p>
+                </div>
+                <div className="ml-auto font-medium">+$1,999.00</div>
+              </div>
+            </CardContent>
+            <CardContent className="grid gap-8">
+              <div className="flex items-center gap-4">
+                <Avatar
+                  className={`h-9 w-9 sm:flex bg-green-200 flex items-center justify-center`}
+                >
+                  <ArrowUp size={20} strokeWidth={1.25} />
+                </Avatar>
+                <div className="grid gap-1">
+                  <p className="text-sm font-medium leading-none">
+                    Olivia Martin
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    olivia.martin@email.com
+                  </p>
+                </div>
+                <div className="ml-auto font-medium">+$1,999.00</div>
+              </div>
+            </CardContent>
+            <CardContent className="grid gap-8">
+              <div className="flex items-center gap-4">
+                <Avatar
+                  className={`h-9 w-9 sm:flex bg-green-200 flex items-center justify-center`}
+                >
+                  <ArrowUp size={20} strokeWidth={1.25} />
+                </Avatar>
+                <div className="grid gap-1">
+                  <p className="text-sm font-medium leading-none">
+                    Olivia Martin
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    olivia.martin@email.com
+                  </p>
+                </div>
+                <div className="ml-auto font-medium">+$1,999.00</div>
+              </div>
+            </CardContent>
+            <CardContent className="grid gap-8">
+              <div className="flex items-center gap-4">
+                <Avatar
+                  className={`h-9 w-9 sm:flex bg-green-200 flex items-center justify-center`}
+                >
+                  <ArrowUp size={20} strokeWidth={1.25} />
+                </Avatar>
+                <div className="grid gap-1">
+                  <p className="text-sm font-medium leading-none">
+                    Olivia Martin
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    olivia.martin@email.com
+                  </p>
+                </div>
+                <div className="ml-auto font-medium">+$1,999.00</div>
+              </div>
+            </CardContent>
+            <CardContent className="grid gap-8">
+              <div className="flex items-center gap-4">
+                <Avatar
+                  className={`h-9 w-9 sm:flex bg-green-200 flex items-center justify-center`}
+                >
+                  <ArrowUp size={20} strokeWidth={1.25} />
+                </Avatar>
+                <div className="grid gap-1">
+                  <p className="text-sm font-medium leading-none">
+                    Olivia Martin
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    olivia.martin@email.com
+                  </p>
+                </div>
+                <div className="ml-auto font-medium">+$1,999.00</div>
+              </div>
+            </CardContent>
+            <CardContent className="grid gap-8">
+              <div className="flex items-center gap-4">
+                <Avatar
+                  className={`h-9 w-9 sm:flex bg-green-200 flex items-center justify-center`}
+                >
+                  <ArrowUp size={20} strokeWidth={1.25} />
+                </Avatar>
+                <div className="grid gap-1">
+                  <p className="text-sm font-medium leading-none">
+                    Olivia Martin
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    olivia.martin@email.com
+                  </p>
+                </div>
+                <div className="ml-auto font-medium">+$1,999.00</div>
+              </div>
+            </CardContent>
+            <CardContent className="grid gap-8">
+              <div className="flex items-center gap-4">
+                <Avatar
+                  className={`h-9 w-9 sm:flex bg-green-200 flex items-center justify-center`}
+                >
+                  <ArrowUp size={20} strokeWidth={1.25} />
+                </Avatar>
+                <div className="grid gap-1">
+                  <p className="text-sm font-medium leading-none">
+                    Olivia Martin
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    olivia.martin@email.com
+                  </p>
+                </div>
+                <div className="ml-auto font-medium">+$1,999.00</div>
+              </div>
+            </CardContent>
+            <CardContent className="grid gap-8">
+              <div className="flex items-center gap-4">
+                <Avatar
+                  className={`h-9 w-9 sm:flex bg-green-200 flex items-center justify-center`}
+                >
+                  <ArrowUp size={20} strokeWidth={1.25} />
+                </Avatar>
+                <div className="grid gap-1">
+                  <p className="text-sm font-medium leading-none">
+                    Olivia Martin
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    olivia.martin@email.com
+                  </p>
+                </div>
+                <div className="ml-auto font-medium">+$1,999.00</div>
+              </div>
+            </CardContent>
+            <CardContent className="grid gap-8">
+              <div className="flex items-center gap-4">
+                <Avatar
+                  className={`h-9 w-9 sm:flex bg-green-200 flex items-center justify-center`}
+                >
+                  <ArrowUp size={20} strokeWidth={1.25} />
+                </Avatar>
+                <div className="grid gap-1">
+                  <p className="text-sm font-medium leading-none">
+                    Olivia Martin
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    olivia.martin@email.com
+                  </p>
+                </div>
+                <div className="ml-auto font-medium">+$1,999.00</div>
+              </div>
+            </CardContent>
+            <CardContent className="grid gap-8">
+              <div className="flex items-center gap-4">
+                <Avatar
+                  className={`h-9 w-9 sm:flex bg-green-200 flex items-center justify-center`}
+                >
+                  <ArrowUp size={20} strokeWidth={1.25} />
+                </Avatar>
+                <div className="grid gap-1">
+                  <p className="text-sm font-medium leading-none">
+                    Olivia Martin
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    olivia.martin@email.com
+                  </p>
+                </div>
+                <div className="ml-auto font-medium">+$1,999.00</div>
+              </div>
+            </CardContent>
+            <CardContent className="grid gap-8">
+              <div className="flex items-center gap-4">
+                <Avatar
+                  className={`h-9 w-9 sm:flex bg-green-200 flex items-center justify-center`}
+                >
+                  <ArrowUp size={20} strokeWidth={1.25} />
+                </Avatar>
+                <div className="grid gap-1">
+                  <p className="text-sm font-medium leading-none">
+                    Olivia Martin
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    olivia.martin@email.com
+                  </p>
+                </div>
+                <div className="ml-auto font-medium">+$1,999.00</div>
+              </div>
+            </CardContent>
+            <CardContent className="grid gap-8">
+              <div className="flex items-center gap-4">
+                <Avatar
+                  className={`h-9 w-9 sm:flex bg-green-200 flex items-center justify-center`}
+                >
+                  <ArrowUp size={20} strokeWidth={1.25} />
+                </Avatar>
+                <div className="grid gap-1">
+                  <p className="text-sm font-medium leading-none">
+                    Olivia Martin
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    olivia.martin@email.com
+                  </p>
+                </div>
+                <div className="ml-auto font-medium">+$1,999.00</div>
+              </div>
+            </CardContent>
+            <CardContent className="grid gap-8">
+              <div className="flex items-center gap-4">
+                <Avatar
+                  className={`h-9 w-9 sm:flex bg-green-200 flex items-center justify-center`}
+                >
+                  <ArrowUp size={20} strokeWidth={1.25} />
+                </Avatar>
+                <div className="grid gap-1">
+                  <p className="text-sm font-medium leading-none">
+                    Olivia Martin
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    olivia.martin@email.com
+                  </p>
+                </div>
+                <div className="ml-auto font-medium">+$1,999.00</div>
+              </div>
+            </CardContent>
+            <CardContent className="grid gap-8">
+              <div className="flex items-center gap-4">
+                <Avatar
+                  className={`h-9 w-9 sm:flex bg-green-200 flex items-center justify-center`}
+                >
+                  <ArrowUp size={20} strokeWidth={1.25} />
+                </Avatar>
+                <div className="grid gap-1">
+                  <p className="text-sm font-medium leading-none">
+                    Olivia Martin
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    olivia.martin@email.com
+                  </p>
+                </div>
+                <div className="ml-auto font-medium">+$1,999.00</div>
+              </div>
+            </CardContent>
+            <CardContent className="grid gap-8">
+              <div className="flex items-center gap-4">
+                <Avatar
+                  className={`h-9 w-9 sm:flex bg-green-200 flex items-center justify-center`}
+                >
+                  <ArrowUp size={20} strokeWidth={1.25} />
+                </Avatar>
+                <div className="grid gap-1">
+                  <p className="text-sm font-medium leading-none">
+                    Olivia Martin
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    olivia.martin@email.com
+                  </p>
+                </div>
+                <div className="ml-auto font-medium">+$1,999.00</div>
+              </div>
+            </CardContent>
+            <CardContent className="grid gap-8">
+              <div className="flex items-center gap-4">
+                <Avatar
+                  className={`h-9 w-9 sm:flex bg-green-200 flex items-center justify-center`}
+                >
+                  <ArrowUp size={20} strokeWidth={1.25} />
+                </Avatar>
+                <div className="grid gap-1">
+                  <p className="text-sm font-medium leading-none">
+                    Olivia Martin
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    olivia.martin@email.com
+                  </p>
+                </div>
+                <div className="ml-auto font-medium">+$1,999.00</div>
+              </div>
+            </CardContent>
+            <CardContent className="grid gap-8">
+              <div className="flex items-center gap-4">
+                <Avatar
+                  className={`h-9 w-9 sm:flex bg-green-200 flex items-center justify-center`}
+                >
+                  <ArrowUp size={20} strokeWidth={1.25} />
+                </Avatar>
+                <div className="grid gap-1">
+                  <p className="text-sm font-medium leading-none">
+                    Olivia Martin
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    olivia.martin@email.com
+                  </p>
+                </div>
+                <div className="ml-auto font-medium">+$1,999.00</div>
+              </div>
+            </CardContent>
+            <CardContent className="grid gap-8">
+              <div className="flex items-center gap-4">
+                <Avatar
+                  className={`h-9 w-9 sm:flex bg-green-200 flex items-center justify-center`}
+                >
+                  <ArrowUp size={20} strokeWidth={1.25} />
+                </Avatar>
+                <div className="grid gap-1">
+                  <p className="text-sm font-medium leading-none">
+                    Olivia Martin
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    olivia.martin@email.com
+                  </p>
+                </div>
+                <div className="ml-auto font-medium">+$1,999.00</div>
+              </div>
+            </CardContent>
+            <CardContent className="grid gap-8">
+              <div className="flex items-center gap-4">
+                <Avatar
+                  className={`h-9 w-9 sm:flex bg-green-200 flex items-center justify-center`}
+                >
+                  <ArrowUp size={20} strokeWidth={1.25} />
+                </Avatar>
+                <div className="grid gap-1">
+                  <p className="text-sm font-medium leading-none">
+                    Olivia Martin
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    olivia.martin@email.com
+                  </p>
+                </div>
+                <div className="ml-auto font-medium">+$1,999.00</div>
+              </div>
+            </CardContent>
+            <CardContent className="grid gap-8">
+              <div className="flex items-center gap-4">
+                <Avatar
+                  className={`h-9 w-9 sm:flex bg-green-200 flex items-center justify-center`}
+                >
+                  <ArrowUp size={20} strokeWidth={1.25} />
+                </Avatar>
+                <div className="grid gap-1">
+                  <p className="text-sm font-medium leading-none">
+                    Olivia Martin
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    olivia.martin@email.com
+                  </p>
+                </div>
+                <div className="ml-auto font-medium">+$1,999.00</div>
+              </div>
+            </CardContent>
+            <CardContent className="grid gap-8">
+              <div className="flex items-center gap-4">
+                <Avatar
+                  className={`h-9 w-9 sm:flex bg-green-200 flex items-center justify-center`}
+                >
+                  <ArrowUp size={20} strokeWidth={1.25} />
+                </Avatar>
+                <div className="grid gap-1">
+                  <p className="text-sm font-medium leading-none">
+                    Olivia Martin
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    olivia.martin@email.com
+                  </p>
+                </div>
+                <div className="ml-auto font-medium">+$1,999.00</div>
+              </div>
+            </CardContent>
+            <CardContent className="grid gap-8">
+              <div className="flex items-center gap-4">
+                <Avatar
+                  className={`h-9 w-9 sm:flex bg-green-200 flex items-center justify-center`}
+                >
+                  <ArrowUp size={20} strokeWidth={1.25} />
+                </Avatar>
+                <div className="grid gap-1">
+                  <p className="text-sm font-medium leading-none">
+                    Olivia Martin
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    olivia.martin@email.com
+                  </p>
+                </div>
+                <div className="ml-auto font-medium">+$1,999.00</div>
+              </div>
+            </CardContent>
+            <CardContent className="grid gap-8">
+              <div className="flex items-center gap-4">
+                <Avatar
+                  className={`h-9 w-9 sm:flex bg-green-200 flex items-center justify-center`}
+                >
+                  <ArrowUp size={20} strokeWidth={1.25} />
+                </Avatar>
+                <div className="grid gap-1">
+                  <p className="text-sm font-medium leading-none">
+                    Olivia Martin
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    olivia.martin@email.com
+                  </p>
+                </div>
+                <div className="ml-auto font-medium">+$1,999.00</div>
+              </div>
+            </CardContent>
+            <CardContent className="grid gap-8">
+              <div className="flex items-center gap-4">
+                <Avatar
+                  className={`h-9 w-9 sm:flex bg-green-200 flex items-center justify-center`}
+                >
+                  <ArrowUp size={20} strokeWidth={1.25} />
+                </Avatar>
+                <div className="grid gap-1">
+                  <p className="text-sm font-medium leading-none">
+                    Olivia Martin
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    olivia.martin@email.com
+                  </p>
+                </div>
+                <div className="ml-auto font-medium">+$1,999.00</div>
+              </div>
+            </CardContent>
+            <CardContent className="grid gap-8">
+              <div className="flex items-center gap-4">
+                <Avatar
+                  className={`h-9 w-9 sm:flex bg-green-200 flex items-center justify-center`}
+                >
+                  <ArrowUp size={20} strokeWidth={1.25} />
+                </Avatar>
+                <div className="grid gap-1">
+                  <p className="text-sm font-medium leading-none">
+                    Olivia Martin
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    olivia.martin@email.com
+                  </p>
+                </div>
+                <div className="ml-auto font-medium">+$1,999.00</div>
+              </div>
+            </CardContent>
+            <CardContent className="grid gap-8">
+              <div className="flex items-center gap-4">
+                <Avatar
+                  className={`h-9 w-9 sm:flex bg-green-200 flex items-center justify-center`}
+                >
+                  <ArrowUp size={20} strokeWidth={1.25} />
+                </Avatar>
+                <div className="grid gap-1">
+                  <p className="text-sm font-medium leading-none">
+                    Olivia Martin
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    olivia.martin@email.com
+                  </p>
+                </div>
+                <div className="ml-auto font-medium">+$1,999.00</div>
+              </div>
+            </CardContent>
+            <CardContent className="grid gap-8">
+              <div className="flex items-center gap-4">
+                <Avatar
+                  className={`h-9 w-9 sm:flex bg-green-200 flex items-center justify-center`}
+                >
+                  <ArrowUp size={20} strokeWidth={1.25} />
+                </Avatar>
+                <div className="grid gap-1">
+                  <p className="text-sm font-medium leading-none">
+                    Olivia Martin
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    olivia.martin@email.com
+                  </p>
+                </div>
+                <div className="ml-auto font-medium">+$1,999.00</div>
+              </div>
+            </CardContent>
+            <CardContent className="grid gap-8">
+              <div className="flex items-center gap-4">
+                <Avatar
+                  className={`h-9 w-9 sm:flex bg-green-200 flex items-center justify-center`}
+                >
+                  <ArrowUp size={20} strokeWidth={1.25} />
+                </Avatar>
+                <div className="grid gap-1">
+                  <p className="text-sm font-medium leading-none">
+                    Olivia Martin
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    olivia.martin@email.com
+                  </p>
+                </div>
+                <div className="ml-auto font-medium">+$1,999.00</div>
+              </div>
+            </CardContent>
+            <CardContent className="grid gap-8">
+              <div className="flex items-center gap-4">
+                <Avatar
+                  className={`h-9 w-9 sm:flex bg-green-200 flex items-center justify-center`}
+                >
+                  <ArrowUp size={20} strokeWidth={1.25} />
+                </Avatar>
+                <div className="grid gap-1">
+                  <p className="text-sm font-medium leading-none">
+                    Olivia Martin
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    olivia.martin@email.com
+                  </p>
+                </div>
+                <div className="ml-auto font-medium">+$1,999.00</div>
+              </div>
+            </CardContent>
+            <CardContent className="grid gap-8">
+              <div className="flex items-center gap-4">
+                <Avatar
+                  className={`h-9 w-9 sm:flex bg-green-200 flex items-center justify-center`}
+                >
+                  <ArrowUp size={20} strokeWidth={1.25} />
+                </Avatar>
+                <div className="grid gap-1">
+                  <p className="text-sm font-medium leading-none">
+                    Olivia Martin
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    olivia.martin@email.com
+                  </p>
+                </div>
+                <div className="ml-auto font-medium">+$1,999.00</div>
+              </div>
+            </CardContent>
+            <CardContent className="grid gap-8">
+              <div className="flex items-center gap-4">
+                <Avatar
+                  className={`h-9 w-9 sm:flex bg-green-200 flex items-center justify-center`}
+                >
+                  <ArrowUp size={20} strokeWidth={1.25} />
+                </Avatar>
+                <div className="grid gap-1">
+                  <p className="text-sm font-medium leading-none">
+                    Olivia Martin
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    olivia.martin@email.com
+                  </p>
+                </div>
+                <div className="ml-auto font-medium">+$1,999.00</div>
+              </div>
+            </CardContent>
+            <CardContent className="grid gap-8">
+              <div className="flex items-center gap-4">
+                <Avatar
+                  className={`h-9 w-9 sm:flex bg-green-200 flex items-center justify-center`}
+                >
+                  <ArrowUp size={20} strokeWidth={1.25} />
+                </Avatar>
+                <div className="grid gap-1">
+                  <p className="text-sm font-medium leading-none">
+                    Olivia Martin
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    olivia.martin@email.com
+                  </p>
+                </div>
+                <div className="ml-auto font-medium">+$1,999.00</div>
+              </div>
+            </CardContent>
+            <CardContent className="grid gap-8">
+              <div className="flex items-center gap-4">
+                <Avatar
+                  className={`h-9 w-9 sm:flex bg-green-200 flex items-center justify-center`}
+                >
+                  <ArrowUp size={20} strokeWidth={1.25} />
+                </Avatar>
+                <div className="grid gap-1">
+                  <p className="text-sm font-medium leading-none">
+                    Olivia Martin
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    olivia.martin@email.com
+                  </p>
+                </div>
+                <div className="ml-auto font-medium">+$1,999.00</div>
+              </div>
+            </CardContent>
+            <CardContent className="grid gap-8">
+              <div className="flex items-center gap-4">
+                <Avatar
+                  className={`h-9 w-9 sm:flex bg-green-200 flex items-center justify-center`}
+                >
+                  <ArrowUp size={20} strokeWidth={1.25} />
+                </Avatar>
+                <div className="grid gap-1">
+                  <p className="text-sm font-medium leading-none">
+                    Olivia Martin
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    olivia.martin@email.com
+                  </p>
+                </div>
+                <div className="ml-auto font-medium">+$1,999.00</div>
+              </div>
+            </CardContent>
             <CardContent className="grid gap-8">
               <div className="flex items-center gap-4">
                 <Avatar

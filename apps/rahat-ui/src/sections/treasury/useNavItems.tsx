@@ -1,12 +1,9 @@
-import {
-  ArrowRightLeft,
-  Coins,
-  LayoutDashboard,
-  PlusSquare,
-} from 'lucide-react';
+import { ArrowRightLeft, Coins, PlusSquare } from 'lucide-react';
+import { useParams } from 'next/navigation';
 import { NavItem } from './nav-items.types';
 
 export const useTreasuryNavItems = () => {
+  const { id } = useParams();
   const menuItems: NavItem[] = [
     {
       title: 'General',

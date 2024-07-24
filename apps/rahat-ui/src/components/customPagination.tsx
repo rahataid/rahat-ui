@@ -65,7 +65,8 @@ export default function CustomPagination({
           variant="outline"
           size="sm"
           onClick={handlePrevPage}
-          disabled={meta && meta?.prev === null && currentPage === 1}
+          // disabled={meta && meta?.prev === null && currentPage === 1}
+          disabled={currentPage === 1}
           type="button"
         >
           Previous
@@ -76,7 +77,10 @@ export default function CustomPagination({
           onClick={handleNextPage}
           type="button"
           // disabled={!table.getCanNextPage()}
-          disabled={meta && meta?.next === null && currentPage === lastPage}
+          // disabled={
+          //   meta && meta?.next === null && currentPage === meta?.lastPage
+          // }
+          disabled={meta?.lastPage == 0 || currentPage === meta?.lastPage}
         >
           Next
         </Button>

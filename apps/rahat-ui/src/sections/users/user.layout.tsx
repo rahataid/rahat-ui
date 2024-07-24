@@ -9,6 +9,8 @@ import {
 import { FC } from 'react';
 import { NavItem } from './nav-items.types';
 import UserNavView from './user.nav.view';
+import { Tabs } from '@rahat-ui/shadcn/src/components/ui/tabs';
+import { Separator } from '@rahat-ui/shadcn/src/components/ui/separator';
 
 type UserLayoutProps = {
   children: React.ReactNode | React.ReactNode[];
@@ -44,26 +46,31 @@ const UserLayout: FC<UserLayoutProps> = ({ children, menuItems }) => {
   };
 
   return (
-    <>
-      <ResizablePanelGroup
-        direction="horizontal"
-      >
-        <ResizablePanel
-          defaultSize={20}
-          minSize={20}
-          maxSize={20}
+    <div>
+      <Tabs defaultValue="grid">
+        <ResizablePanelGroup
+          direction="horizontal"
+          className="min-h-max border"
         >
-          {menuItems.map((item) => (
-            <UserNavView
-              key={item.title}
-              title={item.title}
-              items={item.children}
-            />
-          ))}
-        </ResizablePanel>
-        {renderChildren()}
-      </ResizablePanelGroup>
-    </>
+          <ResizablePanel
+            defaultSize={20}
+            minSize={20}
+            maxSize={20}
+            className="h-full"
+          >
+            {menuItems.map((item) => (
+              <UserNavView
+                key={item.title}
+                title={item.title}
+                items={item.children}
+              />
+            ))}
+            <Separator />
+          </ResizablePanel>
+          {renderChildren()}
+        </ResizablePanelGroup>
+      </Tabs>
+    </div>
   );
 };
 

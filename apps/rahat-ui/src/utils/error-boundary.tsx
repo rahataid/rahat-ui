@@ -1,4 +1,5 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react';
+import DataCard from '../components/dataCard';
 
 interface ErrorBoundaryProps {
   children: ReactNode;
@@ -25,7 +26,7 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
 
   render() {
     if (this.state.hasError) {
-      return <h2>Something went wrong. Please try again later.</h2>;
+      return <DataCard title="Something Went Wrong" number="Error" />;
     }
 
     return this.props.children;

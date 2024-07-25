@@ -2,17 +2,21 @@ import { useRSQuery } from '@rumsan/react-query';
 import { useQuery } from '@tanstack/react-query';
 import { UUID } from 'crypto';
 
-// export const useGetDataSource = async (id: string) => {
-//   const { rumsanService } = useRSQuery();
+export const useGetDataSource = () => {
+  const { rumsanService } = useRSQuery();
 
-//   const response = await fetch(
-//     `${process.env.NEXT_PUBLIC_API_HOST_URL}/v1/projects/${id}/statsSources`,
-//   );
-//   const res = await response.json();
-//   return res.data[0].data;
-// };
+  return useQuery({
+    queryKey: ['datasource'],
+    queryFn: async () => {
+      const res = await rumsanService.client.get(
+        `/beneficiaries/statsSource`,
+      );
+      return res.data.data;
+    },
+  });
+};
 
-export const useGetProjectDatasource = (projectUUID: UUID) => {
+export const useGetProjectDatasource = (projectUUID?: UUID) => {
   const { rumsanService } = useRSQuery();
 
   return useQuery({

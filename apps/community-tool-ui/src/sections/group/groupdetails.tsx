@@ -166,7 +166,6 @@ export default function GroupDetail({ uuid }: IProps) {
     Swal.fire('Please select beneficiary to delete', '', 'warning');
   };
 
-  console.log('fieldDef', listFieldDef);
   const handleExportPinnedBeneficiary = () => {
     const filteredValue: any =
       settingsData &&
@@ -176,9 +175,9 @@ export default function GroupDetail({ uuid }: IProps) {
 
     const obj = filteredValue
       ? Object.entries(filteredValue).reduce((acc, [key, value]) => {
-        acc[value] = key;
-        return acc;
-      }, {} as { [key: string]: string })
+          acc[value] = key;
+          return acc;
+        }, {} as { [key: string]: string })
       : {};
     const payload = {
       groupUUID: uuid as string,
@@ -296,23 +295,13 @@ export default function GroupDetail({ uuid }: IProps) {
                 </DropdownMenuItem>
 
                 <DropdownMenuItem
-                  onClick={() => setOpen(true)}
-                  disabled={
-                    responseByUUID?.data?.beneficiariesGroup.length === 0
-                  }
-                >
-                  <Download className="mr-2 h-4 w-4" />
-                  Download
-                </DropdownMenuItem>
-
-                <DropdownMenuItem
                   onClick={removeBeneficiaryFromGroup}
                   disabled={
                     responseByUUID?.data?.beneficiariesGroup.length === 0
                   }
                 >
                   <Delete className="mr-2 h-4 w-4" />
-                  Disconnect
+                  Delete
                 </DropdownMenuItem>
 
                 <DropdownMenuItem
@@ -321,8 +310,8 @@ export default function GroupDetail({ uuid }: IProps) {
                     responseByUUID?.data?.beneficiariesGroup.length === 0
                   }
                 >
-                  <Trash2 className="mr-2 h-4 w-4" />
-                  Delete
+                  <Download className="mr-2 h-4 w-4" />
+                  Download
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -359,8 +348,9 @@ export default function GroupDetail({ uuid }: IProps) {
                   </AlertDialogTitle>
                   <AlertDialogDescription>
                     <ScrollArea
-                      className={`${labels.length < 10 ? 'h-32' : 'h-52'
-                        } w-[95%] border m-2 pt-1 pb-1 text-sm rounded-md shadow-lg cursor-pointer bg-white`}
+                      className={`${
+                        labels.length < 10 ? 'h-32' : 'h-52'
+                      } w-[95%] border m-2 pt-1 pb-1 text-sm rounded-md shadow-lg cursor-pointer bg-white`}
                       hidden={labels.length === 0}
                     >
                       {labels.map((item) => {

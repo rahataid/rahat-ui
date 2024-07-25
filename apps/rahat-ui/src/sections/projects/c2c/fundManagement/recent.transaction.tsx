@@ -18,8 +18,8 @@ export default function RecentTransaction({
   transactions: Transaction[];
 }) {
   return (
-    <div className="mb-2">
-      <Card className="rounded mr-2 h-full">
+    <div className="mb-2 mr-2">
+      <Card className="rounded h-full">
         <CardHeader>
           <CardTitle>Recent Deposits</CardTitle>
         </CardHeader>

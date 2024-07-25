@@ -269,7 +269,7 @@ export default function BeneficiaryDetail({
                             </p>
                           </div>
                         </div>
-                        <div className="grid grid-cols-2 gap-3 mt-3">
+                        <div className="grid grid-cols-3 gap-3 mt-3">
                           <div>
                             <p className="font-light text-base">
                               {
@@ -281,7 +281,7 @@ export default function BeneficiaryDetail({
                               Balance
                             </p>
                           </div>
-                          <div className="text-right">
+                          <div>
                             <p className="font-light text-base">
                               {
                                 // beneficiaryDetails?.phone ||

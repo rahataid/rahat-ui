@@ -87,8 +87,8 @@ importers:
         specifier: 0.0.14
         version: 0.0.14
       '@rahataid/sdk':
-        specifier: 0.0.32
-        version: 0.0.32
+        specifier: 0.0.33
+        version: 0.0.33
       '@rumsan/communication':
         specifier: ^0.0.23
         version: 0.0.23
@@ -99,8 +99,8 @@ importers:
         specifier: ^3.0.133
         version: 3.0.140
       '@rumsan/extensions':
-        specifier: ^0.0.25
-        version: 0.0.25(@nestjs/core@10.3.10(@nestjs/common@10.3.10(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/microservices@10.3.10)(reflect-metadata@0.2.2)(rxjs@7.8.1))(amqplib@0.5.2)(reflect-metadata@0.2.2)
+        specifier: ^0.0.28
+        version: 0.0.28(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1)
       '@rumsan/prisma':
         specifier: ^1.0.125
         version: 1.0.130(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1)
@@ -1957,9 +1957,6 @@ packages:
     resolution: {integrity: sha512-g2REf+xSt0OZfMoNNdC4+/Yy8eP3KUqvIArel54XRFKPoXbHI6+YjFfrLtfykWBjffOp7DTfIc3Kvk5TLfuiyg==}
     engines: {node: '>=16.0.0'}
 
-  '@microsoft/tsdoc@0.15.0':
-    resolution: {integrity: sha512-HZpPoABogPvjeJOdzCOSJsXeL/SMCBgBZMVC3X3d7YYp2gf31MfxhUoYUNwf1ERPJOnQc0wkFn9trqI6ZEdZuA==}
-
   '@mole-inc/bin-wrapper@8.0.1':
     resolution: {integrity: sha512-sTGoeZnjI8N4KS+sW2AN95gDBErhAguvkw/tWdCjeM8bvxpz5lqrnd0vOJABA1A+Ic3zED7PYoLP/RANLgVotA==}
     engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
@@ -2000,89 +1997,6 @@ packages:
       reflect-metadata: ^0.1.12 || ^0.2.0
       rxjs: ^7.1.0
     peerDependenciesMeta:
-      class-transformer:
-        optional: true
-      class-validator:
-        optional: true
-
-  '@nestjs/core@10.3.10':
-    resolution: {integrity: sha512-ZbQ4jovQyzHtCGCrzK5NdtW1SYO2fHSsgSY1+/9WdruYCUra+JDkWEXgZ4M3Hv480Dl3OXehAmY1wCOojeMyMQ==}
-    peerDependencies:
-      '@nestjs/common': ^10.0.0
-      '@nestjs/microservices': ^10.0.0
-      '@nestjs/platform-express': ^10.0.0
-      '@nestjs/websockets': ^10.0.0
-      reflect-metadata: ^0.1.12 || ^0.2.0
-      rxjs: ^7.1.0
-    peerDependenciesMeta:
-      '@nestjs/microservices':
-        optional: true
-      '@nestjs/platform-express':
-        optional: true
-      '@nestjs/websockets':
-        optional: true
-
-  '@nestjs/mapped-types@2.0.5':
-    resolution: {integrity: sha512-bSJv4pd6EY99NX9CjBIyn4TVDoSit82DUZlL4I3bqNfy5Gt+gXTa86i3I/i0iIV9P4hntcGM5GyO+FhZAhxtyg==}
-    peerDependencies:
-      '@nestjs/common': ^8.0.0 || ^9.0.0 || ^10.0.0
-      class-transformer: ^0.4.0 || ^0.5.0
-      class-validator: ^0.13.0 || ^0.14.0
-      reflect-metadata: ^0.1.12 || ^0.2.0
-    peerDependenciesMeta:
-      class-transformer:
-        optional: true
-      class-validator:
-        optional: true
-
-  '@nestjs/microservices@10.3.10':
-    resolution: {integrity: sha512-zZrilhZmXU2Ik5Usrcy4qEX262Uhvz0/9XlIdX6SRn8I39ns1EE9tAhEBmmkMwh7lsEikRFa4aaa05loi8Gsow==}
-    peerDependencies:
-      '@grpc/grpc-js': '*'
-      '@nestjs/common': ^10.0.0
-      '@nestjs/core': ^10.0.0
-      '@nestjs/websockets': ^10.0.0
-      amqp-connection-manager: '*'
-      amqplib: '*'
-      cache-manager: '*'
-      ioredis: '*'
-      kafkajs: '*'
-      mqtt: '*'
-      nats: '*'
-      reflect-metadata: ^0.1.12 || ^0.2.0
-      rxjs: ^7.1.0
-    peerDependenciesMeta:
-      '@grpc/grpc-js':
-        optional: true
-      '@nestjs/websockets':
-        optional: true
-      amqp-connection-manager:
-        optional: true
-      amqplib:
-        optional: true
-      cache-manager:
-        optional: true
-      ioredis:
-        optional: true
-      kafkajs:
-        optional: true
-      mqtt:
-        optional: true
-      nats:
-        optional: true
-
-  '@nestjs/swagger@7.4.0':
-    resolution: {integrity: sha512-dCiwKkRxcR7dZs5jtrGspBAe/nqJd1AYzOBTzw9iCdbq3BGrLpwokelk6lFZPe4twpTsPQqzNKBwKzVbI6AR/g==}
-    peerDependencies:
-      '@fastify/static': ^6.0.0 || ^7.0.0
-      '@nestjs/common': ^9.0.0 || ^10.0.0
-      '@nestjs/core': ^9.0.0 || ^10.0.0
-      class-transformer: '*'
-      class-validator: '*'
-      reflect-metadata: ^0.1.12 || ^0.2.0
-    peerDependenciesMeta:
-      '@fastify/static':
-        optional: true
       class-transformer:
         optional: true
       class-validator:
@@ -2207,11 +2121,6 @@ packages:
 
   '@nrwl/workspace@18.0.0':
     resolution: {integrity: sha512-JUnM9CKLi2A3fYh239MatttGiFqIkf/UlTrAJrUjzxzqzRwZOFgcrLlAI4Nz7ZnUaTSQrnTuSQXMfWUIfU7vXw==}
-
-  '@nuxtjs/opencollective@0.3.2':
-    resolution: {integrity: sha512-um0xL3fO7Mf4fDxcqx9KryrB7zgRM5JSlvGN5AGkP6JLM5XEKyjeAiPbNxdXVXQ16isuAhYpvP88NgL2BGd6aA==}
-    engines: {node: '>=8.0.0', npm: '>=5.0.0'}
-    hasBin: true
 
   '@nx/cypress@18.0.0':
     resolution: {integrity: sha512-9t6+K1/bLy6WXzXqgo5+daHcYl4GK3aXd0bldgVOmEw1jlJ0Xr3RNt+LXYLdEFqsSQ96SE1bxNUS1VmuamZfyw==}
@@ -3330,8 +3239,8 @@ packages:
   '@rahataid/el-subgraph@0.0.14':
     resolution: {integrity: sha512-tBsvFOXbMquudfQCMnxVGZwvLWixC3TvN/Tqc43PY2UMr4JNOxYuBozMtUafYxxxiZtxaxu+n7tccWs+g6KoNQ==}
 
-  '@rahataid/sdk@0.0.32':
-    resolution: {integrity: sha512-uafKE5KlsXFq6GaFGfIrYzd04KLibWbsywfC8N9O0VI2g/hptoL24C39xikmReMcbIapWTRg0H+C+kfN7Ugb+g==}
+  '@rahataid/sdk@0.0.33':
+    resolution: {integrity: sha512-QD/MW2QRKcjH0G/pcKMXKx6CHR4dQaWCGHNsrGHTNn1FD8+YMPTRTCs22cTxFjtvXGv7+UbKxkrtl/XTnu/f9g==}
 
   '@react-native-community/cli-clean@13.6.9':
     resolution: {integrity: sha512-7Dj5+4p9JggxuVNOjPbduZBAP1SUgNhLKVw5noBUzT/3ZpUZkDM+RCSwyoyg8xKWoE4OrdUAXwAFlMcFDPKykA==}
@@ -3512,11 +3421,11 @@ packages:
   '@rumsan/core@3.0.140':
     resolution: {integrity: sha512-c+7YC8WXPvYTsNWcTYt1JaNOYM8K2Z7RQEf88W4N1k7ABFS+2DQrNuTCI+57GhfHE+eX+JKwTN8NsZUIVqrxCg==, tarball: https://npm.pkg.github.com/download/@rumsan/core/3.0.140/a6f2299c8356d2823da36fcaddd9b4b083997b61}
 
-  '@rumsan/extensions@0.0.25':
-    resolution: {integrity: sha512-zm6LQiNwQ2uZwgjG3BbwNKJOeJzoaoIRRTNSxWWyCsYS5WeoUhYtwfP05jbLampe5bf0QPtJ++Jlif1RDiGz4A==, tarball: https://npm.pkg.github.com/download/@rumsan/extensions/0.0.25/c5f37634be0f103f29b1cf9d52d78c48bf1bfa6a}
-
   '@rumsan/extensions@0.0.27':
     resolution: {integrity: sha512-1wq/iuxqiGSEcosRzVtSkzhLw/W4dxtGO/hmt+spWVOekO9uwQjgsDeDF0xag/TkITPo0z9aRYWjrXhcc4qzuQ==, tarball: https://npm.pkg.github.com/download/@rumsan/extensions/0.0.27/3d2fdd067cc06f5f9c79c4371374e6f242029e04}
+
+  '@rumsan/extensions@0.0.28':
+    resolution: {integrity: sha512-mDh3JJAGuLlmVZoc8LGsSlaMweOjzVlIOsMCZJuuu6XuZRZowW507tIEjjllS12lyjWRNvFYITTqPbPBXzSaxw==, tarball: https://npm.pkg.github.com/download/@rumsan/extensions/0.0.28/a5a9464ae419e0a2bc03ab18d75f22477595ab85}
 
   '@rumsan/prisma@1.0.130':
     resolution: {integrity: sha512-tIWGpPr+vL1gBaAC3xxEAtzpRApmHaAFQ2k+RBLxOJBTCu/iVv/poJSiqPFT4Ez9Knn4+BiTisGfPpjYrcvPrQ==, tarball: https://npm.pkg.github.com/download/@rumsan/prisma/1.0.130/dfca28563b229e9ea50bfb28f21af3da5469a352}
@@ -5813,9 +5722,6 @@ packages:
       react-dom: 17.x || 18.x
       viem: 2.x
       wagmi: 2.x
-
-  consola@2.15.3:
-    resolution: {integrity: sha512-9vAdYbHj6x2fLKC4+oPH0kFzY/orMZyG2Aj+kNylHxKGJ/Ed4dpNyAQYwJOdqO4zdM7XpVHmyejQDcQHrnuXbw==}
 
   consola@3.2.3:
     resolution: {integrity: sha512-I5qxpzLv+sJhTVEoLYNcTW+bThDCPsit0vLNKShZx6rLtpilNpmmeTPaeqJb9ZE9dV3DGaeby6Vuhrw38WjeyQ==}
@@ -9256,9 +9162,6 @@ packages:
   path-to-regexp@0.1.7:
     resolution: {integrity: sha512-5DFkuoqlv1uYQKxy8omFBeJPQcdoE07Kv2sferDCrAq1ohOU+MSDswDIbnx3YAM60qIOnYa53wBhXW0EbMonrQ==}
 
-  path-to-regexp@3.2.0:
-    resolution: {integrity: sha512-jczvQbCUS7XmS7o+y1aEO9OBVFeZBQ1MDSEqmO7xSoPgOPoowY/SxLpZ6Vh97/8qHZOteiCKb7gkG9gA2ZUxJA==}
-
   path-type@4.0.0:
     resolution: {integrity: sha512-gDKb8aZMDeD/tZWs9P6+q0J9Mwkdl6xMV8TjnGP3qJVJ06bdMgkbBlLU8IdfOsIsFz2BW1rNVT3XuNEl8zPAvw==}
     engines: {node: '>=8'}
@@ -10935,9 +10838,6 @@ packages:
     resolution: {integrity: sha512-OoohrmuUlBs8B8o6MB2Aevn+pRIH9zDALSR+6hhqVfa6fRwG/Qw9VUMSMW9VNg2CFc/MTIfabtdOVl9ODIJjpw==}
     engines: {node: '>=14.0.0'}
     hasBin: true
-
-  swagger-ui-dist@5.17.14:
-    resolution: {integrity: sha512-CVbSfaLpstV65OnSjbXfVd6Sta3q3F7Cj/yYuvHMp1P90LztOLs6PfUnKEVAeiIVQt9u2SaPwv0LiH/OyMjHRw==}
 
   swc-loader@0.1.15:
     resolution: {integrity: sha512-cn1WPIeQJvXM4bbo3OwdEIapsQ4uUGOfyFj0h2+2+brT0k76DCGnZXDE2KmcqTd2JSQ+b61z2NPMib7eEwMYYw==}
@@ -13836,8 +13736,6 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@microsoft/tsdoc@0.15.0': {}
-
   '@mole-inc/bin-wrapper@8.0.1':
     dependencies:
       bin-check: 4.1.0
@@ -13910,56 +13808,6 @@ snapshots:
       rxjs: 7.8.1
       tslib: 2.6.3
       uid: 2.0.2
-    optionalDependencies:
-      class-transformer: 0.5.1
-      class-validator: 0.14.1
-
-  '@nestjs/core@10.3.10(@nestjs/common@10.3.10(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/microservices@10.3.10)(reflect-metadata@0.2.2)(rxjs@7.8.1)':
-    dependencies:
-      '@nestjs/common': 10.3.10(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1)
-      '@nuxtjs/opencollective': 0.3.2
-      fast-safe-stringify: 2.1.1
-      iterare: 1.2.1
-      path-to-regexp: 3.2.0
-      reflect-metadata: 0.2.2
-      rxjs: 7.8.1
-      tslib: 2.6.3
-      uid: 2.0.2
-    optionalDependencies:
-      '@nestjs/microservices': 10.3.10(@nestjs/common@10.3.10(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@10.3.10)(amqplib@0.5.2)(reflect-metadata@0.2.2)(rxjs@7.8.1)
-    transitivePeerDependencies:
-      - encoding
-
-  '@nestjs/mapped-types@2.0.5(@nestjs/common@10.3.10(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)':
-    dependencies:
-      '@nestjs/common': 10.3.10(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1)
-      reflect-metadata: 0.2.2
-    optionalDependencies:
-      class-transformer: 0.5.1
-      class-validator: 0.14.1
-
-  '@nestjs/microservices@10.3.10(@nestjs/common@10.3.10(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@10.3.10)(amqplib@0.5.2)(reflect-metadata@0.2.2)(rxjs@7.8.1)':
-    dependencies:
-      '@nestjs/common': 10.3.10(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1)
-      '@nestjs/core': 10.3.10(@nestjs/common@10.3.10(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/microservices@10.3.10)(reflect-metadata@0.2.2)(rxjs@7.8.1)
-      iterare: 1.2.1
-      reflect-metadata: 0.2.2
-      rxjs: 7.8.1
-      tslib: 2.6.3
-    optionalDependencies:
-      amqplib: 0.5.2
-
-  '@nestjs/swagger@7.4.0(@nestjs/common@10.3.10(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@10.3.10(@nestjs/common@10.3.10(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/microservices@10.3.10)(reflect-metadata@0.2.2)(rxjs@7.8.1))(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)':
-    dependencies:
-      '@microsoft/tsdoc': 0.15.0
-      '@nestjs/common': 10.3.10(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1)
-      '@nestjs/core': 10.3.10(@nestjs/common@10.3.10(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/microservices@10.3.10)(reflect-metadata@0.2.2)(rxjs@7.8.1)
-      '@nestjs/mapped-types': 2.0.5(@nestjs/common@10.3.10(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)
-      js-yaml: 4.1.0
-      lodash: 4.17.21
-      path-to-regexp: 3.2.0
-      reflect-metadata: 0.2.2
-      swagger-ui-dist: 5.17.14
     optionalDependencies:
       class-transformer: 0.5.1
       class-validator: 0.14.1
@@ -14208,14 +14056,6 @@ snapshots:
       - '@swc-node/register'
       - '@swc/core'
       - debug
-
-  '@nuxtjs/opencollective@0.3.2':
-    dependencies:
-      chalk: 4.1.2
-      consola: 2.15.3
-      node-fetch: 2.7.0
-    transitivePeerDependencies:
-      - encoding
 
   '@nx/cypress@18.0.0(@babel/traverse@7.24.8)(@swc-node/register@1.9.2(@swc/core@1.4.17(@swc/helpers@0.5.12))(@swc/types@0.1.12)(typescript@5.4.5))(@swc/core@1.4.17(@swc/helpers@0.5.12))(@types/node@20.14.11)(cypress@13.13.1)(js-yaml@4.1.0)(nx@18.0.4(@swc-node/register@1.9.2(@swc/core@1.4.17(@swc/helpers@0.5.12))(@swc/types@0.1.12)(typescript@5.4.5))(@swc/core@1.4.17(@swc/helpers@0.5.12)))(typescript@5.4.5)(verdaccio@5.31.1(typanion@3.14.0))':
     dependencies:
@@ -15633,7 +15473,7 @@ snapshots:
     transitivePeerDependencies:
       - graphql
 
-  '@rahataid/sdk@0.0.32': {}
+  '@rahataid/sdk@0.0.33': {}
 
   '@react-native-community/cli-clean@13.6.9':
     dependencies:
@@ -16024,38 +15864,20 @@ snapshots:
     dependencies:
       tslib: 2.6.2
 
-  '@rumsan/extensions@0.0.25(@nestjs/core@10.3.10(@nestjs/common@10.3.10(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/microservices@10.3.10)(reflect-metadata@0.2.2)(rxjs@7.8.1))(amqplib@0.5.2)(reflect-metadata@0.2.2)':
+  '@rumsan/extensions@0.0.27(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1)':
     dependencies:
-      '@nestjs/common': 10.3.10(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1)
-      '@nestjs/microservices': 10.3.10(@nestjs/common@10.3.10(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@10.3.10)(amqplib@0.5.2)(reflect-metadata@0.2.2)(rxjs@7.8.1)
-      '@nestjs/swagger': 7.4.0(@nestjs/common@10.3.10(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@10.3.10(@nestjs/common@10.3.10(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/microservices@10.3.10)(reflect-metadata@0.2.2)(rxjs@7.8.1))(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)
-      '@prisma/client': 5.17.0
       '@rumsan/core': 3.0.140
       '@rumsan/prisma': 1.0.130(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1)
       '@rumsan/sdk': 0.0.45
-      axios: 1.7.2
-      class-transformer: 0.5.1
-      class-validator: 0.14.1
-      http-status-codes: 2.3.0
-      rxjs: 7.8.1
-      tslib: 2.6.2
     transitivePeerDependencies:
-      - '@fastify/static'
-      - '@grpc/grpc-js'
-      - '@nestjs/core'
-      - '@nestjs/websockets'
-      - amqp-connection-manager
-      - amqplib
-      - cache-manager
+      - class-transformer
+      - class-validator
       - debug
-      - ioredis
-      - kafkajs
-      - mqtt
-      - nats
       - prisma
       - reflect-metadata
+      - rxjs
 
-  '@rumsan/extensions@0.0.27(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1)':
+  '@rumsan/extensions@0.0.28(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1)':
     dependencies:
       '@rumsan/core': 3.0.140
       '@rumsan/prisma': 1.0.130(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1)
@@ -17734,7 +17556,8 @@ snapshots:
 
   '@types/trusted-types@2.0.7': {}
 
-  '@types/validator@13.12.0': {}
+  '@types/validator@13.12.0':
+    optional: true
 
   '@types/yargs-parser@21.0.3': {}
 
@@ -19502,13 +19325,15 @@ snapshots:
 
   cjs-module-lexer@1.3.1: {}
 
-  class-transformer@0.5.1: {}
+  class-transformer@0.5.1:
+    optional: true
 
   class-validator@0.14.1:
     dependencies:
       '@types/validator': 13.12.0
       libphonenumber-js: 1.11.4
       validator: 13.12.0
+    optional: true
 
   class-variance-authority@0.7.0:
     dependencies:
@@ -19750,8 +19575,6 @@ snapshots:
     transitivePeerDependencies:
       - '@babel/core'
       - react-is
-
-  consola@2.15.3: {}
 
   consola@3.2.3: {}
 
@@ -24214,8 +24037,6 @@ snapshots:
 
   path-to-regexp@0.1.7: {}
 
-  path-to-regexp@3.2.0: {}
-
   path-type@4.0.0: {}
 
   pathe@1.1.2: {}
@@ -26054,8 +25875,6 @@ snapshots:
       css-what: 6.1.0
       csso: 5.0.5
       picocolors: 1.0.1
-
-  swagger-ui-dist@5.17.14: {}
 
   swc-loader@0.1.15(@swc/core@1.4.17(@swc/helpers@0.5.12))(webpack@5.93.0(@swc/core@1.4.17(@swc/helpers@0.5.12))(esbuild@0.17.19)):
     dependencies:

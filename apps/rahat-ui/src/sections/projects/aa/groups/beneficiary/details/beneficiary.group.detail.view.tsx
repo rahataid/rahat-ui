@@ -43,10 +43,10 @@ export default function BeneficiaryGroupDetailView() {
   const tableData = React.useMemo(() => {
     if (groupDetails) {
       return groupDetails?.groupedBeneficiaries?.map((d: any) => ({
-        name: d.Beneficiary.pii.name,
-        phone: d.Beneficiary.pii.phone,
-        email: d.Beneficiary.pii.email,
-        location: d.Beneficiary.location,
+        name: d?.Beneficiary?.pii?.name,
+        phone: d?.Beneficiary?.pii?.phone,
+        email: d?.Beneficiary?.pii?.email,
+        location: d?.Beneficiary?.location,
       }));
     } else return [];
   }, [groupDetails]);

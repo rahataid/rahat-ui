@@ -90,10 +90,10 @@ const ProjectInfo: FC<ProjectInfoProps> = ({ project }) => {
   return (
     <div className=" bg-slate-100">
       {/* DATACARD SECTION */}
-      {newDatasource?.data && (
+      {newDatasource?.data && newDatasource?.data[0]?.data?.ui.length && (
         <DynamicReports
-          dataSources={newDatasource?.data[0].data.dataSources}
-          ui={newDatasource?.data[0].data.ui}
+          dataSources={newDatasource?.data[0]?.data?.dataSources}
+          ui={newDatasource?.data[0]?.data?.ui}
         />
       )}
       {/* <DynamicReports data={reportsCardsData} ui={reportsCardsUI} /> */}

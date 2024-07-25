@@ -2,14 +2,24 @@ interface Data {
   [key: string]: any;
 }
 
-export function getValueFromPath(data: Data, path: string | null): any {
-  const keys = path.split('.');
-  let result = data;
-
+export function getValueFromPath(data: Data | Data[], path: string): any {
   if (!data || !path) return null;
 
+  const keys = path.split('.');
+  let result: any = data;
+
   for (const key of keys) {
-    if (result && typeof result === 'object' && key in result) {
+    if (Array.isArray(result)) {
+      const index = parseInt(key, 10);
+      if (isNaN(index)) {
+        // Find object in array with a specific key value
+        result = result.find((item) => item.id === key);
+      } else if (index >= 0 && index < result.length) {
+        result = result[index];
+      } else {
+        return undefined; // Handle cases where the array index is invalid
+      }
+    } else if (result && typeof result === 'object' && key in result) {
       result = result[key];
     } else {
       return undefined; // Handle cases where the path doesn't exist in data

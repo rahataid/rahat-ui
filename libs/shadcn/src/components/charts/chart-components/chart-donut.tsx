@@ -8,7 +8,7 @@ import useChart from '../use-chart';
 
 type Props = {
   labels: string[];
-  series: number[];
+  series: ApexAxisChartSeries | ApexNonAxisChartSeries | undefined;
   donutSize?: string;
   width?: number | string;
   height?: number | string;
@@ -56,6 +56,7 @@ export default function ChartDonut({
       options={chartOptions}
       width={width}
       height={height}
+      labels={['123']}
     />
   );
 }

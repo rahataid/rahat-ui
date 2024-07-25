@@ -13,7 +13,7 @@ export default function ViewPermissions({ subject, existingActions }: any) {
           <div key={d.id} className="flex items-center mt-2">
             {existingActions.includes(d.id) && (
               <>
-                <ShieldCheck className="ml-2" color="green" size={18} />
+                <ShieldCheck className="ml-3" color="green" size={18} />
                 <label>{d.label}</label>
               </>
             )}

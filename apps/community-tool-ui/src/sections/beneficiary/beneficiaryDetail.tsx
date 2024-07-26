@@ -74,7 +74,7 @@ export default function BeneficiaryDetail({ data, closeSecondPanel }: IProps) {
   const handleVerificationLink = async () => {
     Swal.fire({
       title: 'Are you sure?',
-      text: ' Generate Verification Link',
+      text: ' Send Verification Link',
       icon: 'question',
       showDenyButton: true,
       confirmButtonText: 'Yes, I am sure!',

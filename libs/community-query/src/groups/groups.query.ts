@@ -194,3 +194,38 @@ export const useCommunityGroupDelete = () => {
     queryClient,
   );
 };
+
+export const useBulkGenerateVerificationLink = () => {
+  const { queryClient, rumsanService } = useRSQuery();
+  const grpClient = getGroupClient(rumsanService.client);
+  return useMutation(
+    {
+      mutationKey: [TAGS.BULK_GENERATE_LINK],
+      mutationFn: grpClient.bulkGenerateLink,
+      onSuccess: (data: any) => {
+        Swal.fire({
+          title: 'Bulk Link Generated Successfully',
+          text: data?.data,
+
+          icon: 'success',
+        });
+        queryClient.invalidateQueries({
+          queryKey: [
+            TAGS.LIST_COMMUNITY_GROUP,
+            {
+              exact: true,
+            },
+          ],
+        });
+      },
+      onError: (error: any) => {
+        Swal.fire(
+          'Error',
+          error.response.data.message || 'Encounter error on Creating Data',
+          'error',
+        );
+      },
+    },
+    queryClient,
+  );
+};

@@ -63,7 +63,7 @@ export function useNavData() {
             },
 
             {
-              title: 'Community Beneficiaries',
+              title: 'Import Beneficiary from CT',
               path: paths.dashboard.communitybeneficiary,
             },
           ],

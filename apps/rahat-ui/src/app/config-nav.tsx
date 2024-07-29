@@ -63,12 +63,12 @@ export function useNavData() {
           title: 'Users',
           path: paths.user.root,
         },
+            {
+              title: 'Import Beneficiary from CT',
+              path: paths.dashboard.communitybeneficiary,
+            },
+          ],
 
-        {
-          title: 'Community Beneficiaries',
-          path: paths.dashboard.communitybeneficiary,
-        },
-      ],
     [navSettings?.subData],
   );
   return { data, subData };

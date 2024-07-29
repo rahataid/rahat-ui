@@ -26,6 +26,7 @@ export default function ActivitiesList() {
   const [phaseFilterItem, setPhaseFilterItem] = React.useState<string>('');
   const [categoryFilterItem, setCategoryFilterItem] =
     React.useState<string>('');
+  const [statusFilterItem, setStatusFilterItem] = React.useState<string>('');
 
   const {
     pagination,
@@ -84,6 +85,7 @@ export default function ActivitiesList() {
     setResponsibilitySearchText(filters?.responsibility ?? '');
     setPhaseFilterItem(filters?.phase ?? '');
     setCategoryFilterItem(filters?.category ?? '');
+    setStatusFilterItem(filters?.status ?? '');
   }, [filters]);
 
   if (isLoading) {
@@ -99,6 +101,7 @@ export default function ActivitiesList() {
         responsibility={responsibilitySearchText}
         phase={phaseFilterItem}
         category={categoryFilterItem}
+        status={statusFilterItem}
       />
       <div className="border bg-card rounded">
         <ActivitiesTable table={table} />

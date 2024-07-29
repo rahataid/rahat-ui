@@ -106,7 +106,11 @@ export default function EditCommunicationForm({
           render={({ field }) => (
             <FormItem>
               <FormLabel>Group Type</FormLabel>
-              <Select disabled={true} onValueChange={field.onChange} defaultValue={field.value}>
+              <Select
+                disabled={false}
+                onValueChange={field.onChange}
+                defaultValue={field.value}
+              >
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder="Select group type" />
@@ -127,7 +131,11 @@ export default function EditCommunicationForm({
           render={({ field }) => (
             <FormItem>
               <FormLabel>Group</FormLabel>
-              <Select disabled={true} onValueChange={field.onChange} defaultValue={field.value}>
+              <Select
+                disabled={false}
+                onValueChange={field.onChange}
+                defaultValue={field.value}
+              >
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder="Select group" />
@@ -147,7 +155,11 @@ export default function EditCommunicationForm({
           render={({ field }) => (
             <FormItem>
               <FormLabel>Communication Type</FormLabel>
-              <Select disabled={true} onValueChange={field.onChange} defaultValue={field.value}>
+              <Select
+                disabled={false}
+                onValueChange={field.onChange}
+                defaultValue={field.value}
+              >
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder="Select communication type" />
@@ -172,7 +184,11 @@ export default function EditCommunicationForm({
                 <FormItem>
                   <FormLabel>Upload an audio</FormLabel>
                   <FormControl>
-                    <Input disabled={true} type="file" onChange={handleAudioFileChange} />
+                    <Input
+                      disabled={false}
+                      type="file"
+                      onChange={handleAudioFileChange}
+                    />
                   </FormControl>
                   <div className="flex justify-end">
                     {fileUpload.isPending && (

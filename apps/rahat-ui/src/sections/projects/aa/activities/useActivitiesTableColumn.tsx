@@ -78,7 +78,7 @@ export default function useActivitiesTableColumn() {
     {
       accessorKey: 'title',
       header: 'Title',
-      cell: ({ row }) => <div>{row.getValue('title')}</div>,
+      cell: ({ row }) => <div className="w-80">{row.getValue('title')}</div>,
     },
     {
       accessorKey: 'category',
@@ -148,13 +148,13 @@ export default function useActivitiesTableColumn() {
       header: 'Completed At',
       cell: ({ row }) => {
         const completedAt = row.getValue('completedAt') as string;
-        if(completedAt){
-          const d =  new Date(completedAt)
-          const localeDate = d.toLocaleDateString()
-          const localeTime = d.toLocaleTimeString()
-          return `${localeDate} ${localeTime}`
+        if (completedAt) {
+          const d = new Date(completedAt);
+          const localeDate = d.toLocaleDateString();
+          const localeTime = d.toLocaleTimeString();
+          return `${localeDate} ${localeTime}`;
         }
-        return 'N/A'
+        return 'N/A';
       },
     },
     {

@@ -28,6 +28,7 @@ import { X, CloudUpload, Check, LoaderCircle, Pencil } from 'lucide-react';
 import { useUploadFile, useUpdateActivityStatus } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import { validateFile } from '../../file.validation';
+import { ACTIVITY_STATUS } from '../../aa.constants';
 
 type IProps = {
   activityDetail: any;
@@ -36,7 +37,8 @@ type IProps = {
   iconStyle: string;
 };
 
-const statusList = ['NOT_STARTED', 'WORK_IN_PROGRESS', 'COMPLETED', 'DELAYED'];
+const { NOT_STARTED, WORK_IN_PROGRESS, COMPLETED, DELAYED } = ACTIVITY_STATUS;
+const statusList = [NOT_STARTED, WORK_IN_PROGRESS, COMPLETED, DELAYED];
 
 export default function UpdateActivityStatusDialog({
   activityDetail,

@@ -232,7 +232,6 @@ export default function GroupDetail({ uuid }: IProps) {
 
     const rawData = response?.data?.data;
 
-    console.log(rawData);
     const filteredData = rawData.map((item: Record<string, any>) => {
       const filteredItem: Record<string, any> = {};
       labels.forEach((key) => {
@@ -328,7 +327,15 @@ export default function GroupDetail({ uuid }: IProps) {
                   <Share className="mr-2 h-4 w-4" />
                   Export
                 </DropdownMenuItem>
-
+                <DropdownMenuItem
+                  onClick={() => setOpen(true)}
+                  disabled={
+                    responseByUUID?.data?.beneficiariesGroup.length === 0
+                  }
+                >
+                  <Download className="mr-2 h-4 w-4" />
+                  Download
+                </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={removeBeneficiaryFromGroup}
                   disabled={
@@ -336,7 +343,7 @@ export default function GroupDetail({ uuid }: IProps) {
                   }
                 >
                   <Delete className="mr-2 h-4 w-4" />
-                  Delete
+                  Disconnect
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={handleVerificationLink}>
                   <Send className="mr-2 h-4 w-4" />
@@ -349,7 +356,7 @@ export default function GroupDetail({ uuid }: IProps) {
                   }
                 >
                   <Download className="mr-2 h-4 w-4" />
-                  Download
+                  Delete
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

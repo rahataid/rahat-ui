@@ -11,6 +11,10 @@ import { useActivitiesStore } from '@rahat-ui/query';
 import AddButton from '../../components/add.btn';
 import { UUID } from 'crypto';
 import SearchInput from '../../components/search.input';
+import { ACTIVITY_STATUS } from '../aa.constants';
+
+const { NOT_STARTED, WORK_IN_PROGRESS, COMPLETED, DELAYED } = ACTIVITY_STATUS;
+const statusList = [NOT_STARTED, WORK_IN_PROGRESS, COMPLETED, DELAYED];
 
 type IProps = {
   handleFilter: (key: string, value: string) => void;
@@ -23,6 +27,7 @@ type IProps = {
   responsibility: string;
   phase: string;
   category: string;
+  status: string;
 };
 
 export default function ActivitiesTableFilters({
@@ -33,6 +38,7 @@ export default function ActivitiesTableFilters({
   responsibility,
   phase,
   category,
+  status,
 }: IProps) {
   const { categories, phases } = useActivitiesStore((state) => ({
     categories: state.categories,
@@ -82,6 +88,25 @@ export default function ActivitiesTableFilters({
             {categories.map((item) => (
               <SelectItem key={item.id} value={item.uuid}>
                 {item.name}
+              </SelectItem>
+            ))}
+          </SelectGroup>
+        </SelectContent>
+      </Select>
+      {/* Filter Status  */}
+      <Select
+        value={status}
+        onValueChange={(value) => handleFilter('status', value)}
+      >
+        <SelectTrigger className={status ? '' : 'text-muted-foreground'}>
+          <SelectValue placeholder="Select a status" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectGroup>
+            <SelectItem value="all">All Status</SelectItem>
+            {statusList.map((status) => (
+              <SelectItem key={status} value={status}>
+                {status}
               </SelectItem>
             ))}
           </SelectGroup>

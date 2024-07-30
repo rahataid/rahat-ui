@@ -84,7 +84,10 @@ export default function AddActivities() {
     leadTime: z.string().min(2, { message: 'Please enter lead time' }),
     description: z
       .string()
-      .min(5, { message: 'Must be at least 5 characters' }),
+      .optional()
+      .refine((val) => !val || val.length > 4, {
+        message: 'Must be at least 5 characters',
+      }),
     isAutomated: z.boolean().optional(),
     activityDocuments: z
       .array(

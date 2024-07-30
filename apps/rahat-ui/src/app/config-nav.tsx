@@ -50,23 +50,25 @@ export function useNavData() {
   );
   const subData: NavItem[] = useMemo(
     () =>
-      navSettings?.subData?.length > 0
-        ? [...navSettings?.subData]
-        : [
+      // Temporarily disabled
+      // navSettings?.subData?.length > 0
+      //   ? [...navSettings?.subData]
+      //   :
+      [
+        {
+          title: 'Vendors',
+          path: paths.dashboard.vendor,
+        },
+        {
+          title: 'Users',
+          path: paths.user.root,
+        },
             {
-              title: 'Vendors',
-              path: paths.dashboard.vendor,
-            },
-            {
-              title: 'Users',
-              path: paths.user.root,
-            },
-
-            {
-              title: 'Community Beneficiaries',
+              title: 'Import Beneficiary from CT',
               path: paths.dashboard.communitybeneficiary,
             },
           ],
+
     [navSettings?.subData],
   );
   return { data, subData };

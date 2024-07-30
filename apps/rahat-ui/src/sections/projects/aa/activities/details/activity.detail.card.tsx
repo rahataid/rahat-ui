@@ -13,22 +13,26 @@ export default function ActivityDetailCard({ activityDetail }: any) {
     },
     {
       title: 'Description',
-      content: <p>{activityDetail?.description}</p>,
+      content: <p>{activityDetail?.description || 'N/A'} </p>,
     },
     {
       title: 'Completed By',
-      content: <p>{activityDetail?.completedBy || 'N/A'}</p>
+      content: <p>{activityDetail?.completedBy || 'N/A'}</p>,
     },
     {
       title: 'Completed At',
-      content: <p>  {(() => {
-        if(!activityDetail?.completedAt) return 'N/A'
-        const d = new Date(activityDetail?.completedAt);
-        const localeDate = d.toLocaleDateString();
-        const localeTime = d.toLocaleTimeString();
-        return `${localeDate} ${localeTime}`;
-      })()}</p>
-    }
+      content: (
+        <p>
+          {(() => {
+            if (!activityDetail?.completedAt) return 'N/A';
+            const d = new Date(activityDetail?.completedAt);
+            const localeDate = d.toLocaleDateString();
+            const localeTime = d.toLocaleTimeString();
+            return `${localeDate} ${localeTime}`;
+          })()}
+        </p>
+      ),
+    },
   ];
 
   return (

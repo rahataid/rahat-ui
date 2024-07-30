@@ -72,7 +72,7 @@ jobs:
 
       - name: import env file
         run: |
-          touch ./.env && echo "$env_stage" >> ./.env && \
+          touch ./.env && echo "$env_main" >> ./.env && \
           touch ./.npmrc && echo "$env_npmrc" >> ./.npmrc
 
       - uses: actions/setup-node@v3

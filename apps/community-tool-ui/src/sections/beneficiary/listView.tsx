@@ -61,7 +61,7 @@ export default function ListView({
       <div className="w-full -mt-2 p-2 bg-secondary">
         <div className="flex items-center mb-2">
           <Input
-            placeholder="Search by firstName..."
+            placeholder="Search by house hold head name..."
             name="firstName"
             value={
               (table.getColumn('firstName')?.getFilterValue() as string) ??

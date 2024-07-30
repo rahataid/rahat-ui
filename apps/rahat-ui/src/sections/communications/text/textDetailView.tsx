@@ -30,6 +30,7 @@ export default function TextDetailView() {
           <div className="mt-2 grid grid-cols-3 gap-5">
             <div className="col-span-2">
               <InfoCard
+                id={data?.data?.id}
                 name={data?.data?.name}
                 startTime={
                   data?.data?.startTime &&

@@ -1,19 +1,18 @@
-import {
-  Beneficiary,
-  GroupResponseById,
-  ListGroup,
-} from '@rahataid/community-tool-sdk';
+import { GroupResponseById, ListGroup } from '@rahataid/community-tool-sdk';
 import { ColumnDef } from '@tanstack/react-table';
-import { Eye, Trash, Trash2 } from 'lucide-react';
+import { Edit, Eye, Trash2 } from 'lucide-react';
 import { useSecondPanel } from '../../providers/second-panel-provider';
 
-import Link from 'next/link';
-import EditGroupedBeneficiaries from './edit/editGroupedBeneficiaries';
-import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
 import { useCommunityGroupDelete } from '@rahat-ui/community-query';
+import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
+import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import EditGroupedBeneficiaries from './edit/editGroupedBeneficiaries';
+import EditGroup from './edit.group';
 
 export const useCommunityGroupTableColumns = () => {
+  const { closeSecondPanel, setSecondPanelComponent } = useSecondPanel();
+
   const deletegroup = useCommunityGroupDelete();
   const pathName = usePathname();
 
@@ -55,7 +54,7 @@ export const useCommunityGroupTableColumns = () => {
     {
       id: 'actions',
       enableHiding: false,
-      header: 'View Detail',
+      header: 'Actions',
       cell: ({ row }) => {
         return (
           <div className="flex gap-4">
@@ -66,6 +65,23 @@ export const useCommunityGroupTableColumns = () => {
                 className="cursor-pointer hover:text-primary"
               />
             </Link>
+
+            <Edit
+              size={20}
+              strokeWidth={1.5}
+              className="cursor-pointer hover:text-primary"
+              onClick={() =>
+                setSecondPanelComponent(
+                  <>
+                    <EditGroup
+                      key={row.original.uuid}
+                      data={row.original}
+                      closeSecondPanel={closeSecondPanel}
+                    />
+                  </>,
+                )
+              }
+            />
 
             <Trash2
               size={20}

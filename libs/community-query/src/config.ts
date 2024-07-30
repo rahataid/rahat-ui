@@ -1,4 +1,5 @@
 export const TAGS = {
+  UPDATE_GROUP: 'update_group',
   GET_BENEFICIARY: 'get_one_beneficiary',
   GET_ALL_USER: 'get_all_user',
   GET_USER: 'get_user',

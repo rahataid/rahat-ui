@@ -166,7 +166,6 @@ export default function GroupDetail({ uuid }: IProps) {
     Swal.fire('Please select beneficiary to delete', '', 'warning');
   };
 
-  console.log('fieldDef', listFieldDef);
   const handleExportPinnedBeneficiary = () => {
     const filteredValue: any =
       settingsData &&

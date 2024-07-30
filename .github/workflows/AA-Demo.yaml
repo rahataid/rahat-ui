@@ -2,15 +2,15 @@ name: AA Demo CI/CD
 on:
   push:
     branches:
-      - 'stage'
+      - 'main'
   pull_request:
     branches:
-      - 'stage'
+      - 'main'
   workflow_dispatch:
 
 env:
   CI: false
-  env_stage: ${{ secrets.ENV_AA_DEMO }}
+  env_main: ${{ secrets.ENV_AA_DEMO }}
   env_npmrc: ${{ secrets.ENV_NPMRC }}
 
 jobs:
@@ -24,7 +24,7 @@ jobs:
 
       - name: import env file
         run: |
-          touch ./.env && echo "$env_stage" >> ./.env && \
+          touch ./.env && echo "$env_main" >> ./.env && \
           touch ./.npmrc && echo "$env_npmrc" >> ./.npmrc
 
       - uses: actions/setup-node@v3

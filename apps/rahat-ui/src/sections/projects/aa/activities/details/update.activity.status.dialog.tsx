@@ -29,6 +29,7 @@ import { useUploadFile, useUpdateActivityStatus } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import { validateFile } from '../../file.validation';
 import { ACTIVITY_STATUS } from '../../aa.constants';
+import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
 
 type IProps = {
   activityDetail: any;
@@ -69,6 +70,12 @@ export default function UpdateActivityStatusDialog({
 
   const FormSchema = z.object({
     status: z.string().min(1, { message: 'Please select status' }),
+    notes: z
+      .string()
+      .optional()
+      .refine((val) => !val || val?.length > 4, {
+        message: 'Must be at least 5 characters',
+      }),
     activityDocuments: z
       .array(
         z.object({
@@ -83,6 +90,7 @@ export default function UpdateActivityStatusDialog({
     resolver: zodResolver(FormSchema),
     defaultValues: {
       status: activityDetail?.status || '',
+      notes: activityDetail?.notes || '',
       activityDocuments: activityDetail?.activityDocuments || [],
     },
   });
@@ -196,6 +204,21 @@ export default function UpdateActivityStatusDialog({
                     <FormMessage />
                   </FormItem>
                 )}
+              />
+              <FormField
+                control={form.control}
+                name="notes"
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <FormLabel>Add note</FormLabel>
+                      <FormControl>
+                        <Textarea placeholder="Write note" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
               />
               <FormField
                 control={form.control}

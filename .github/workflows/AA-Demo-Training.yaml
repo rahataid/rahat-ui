@@ -2,15 +2,15 @@ name: AA Demo Training CI/CD
 on:
   push:
     branches:
-      - 'stage'
+      - 'main'
   pull_request:
     branches:
-      - 'stage'
+      - 'main'
   workflow_dispatch:
 
 env:
   CI: false
-  env_stage: ${{ secrets.ENV_AA_DEMO_TRAINING }}
+  env_main: ${{ secrets.ENV_AA_DEMO_TRAINING }}
   env_npmrc: ${{ secrets.ENV_NPMRC }}
 
 jobs:

@@ -14,6 +14,7 @@ import {
 } from '@tanstack/react-table';
 import { Eye } from 'lucide-react';
 import * as React from 'react';
+import { io } from 'socket.io-client';
 
 import { Button } from '@rahat-ui/shadcn/components/button';
 import {
@@ -34,6 +35,8 @@ import {
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { CAMPAIGN_TYPES } from '@rahat-ui/types';
+import { useCommunicationQuery } from '@rumsan/communication-query/providers';
+import { TAGS } from '@rumsan/react-query/utils/tags';
 
 export type TextDetail = {
   _id: string;
@@ -93,8 +96,11 @@ export const columns: ColumnDef<TextDetail>[] = [
 type IProps = {
   data: any;
   type: string;
+  id: string;
 };
-export default function TextDetailTableView({ data, type }: IProps) {
+export default function TextDetailTableView({ data, type, id }: IProps) {
+  const { queryClient } = useCommunicationQuery();
+
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
@@ -132,6 +138,46 @@ export default function TextDetailTableView({ data, type }: IProps) {
       columnVisibility,
       rowSelection,
     },
+  });
+  const socketEnvironment = {
+    // path: '/websocket/socket.io',
+    reconnection: true,
+    reconnectionDelay: 500,
+    reconnectionDelayMax: 500,
+    randomizationFactor: 0.5,
+    auth: {},
+    secure: true,
+    transports: ['websocket'],
+  };
+  const socket = io(
+    `${process.env.NEXT_PUBLIC_API_SOCKET_URL}/status` as string,
+    socketEnvironment,
+  );
+  // client-side
+  socket.on('connect', () => {
+    console.log(socket.id);
+  });
+  //
+
+  socket.on(
+    `${process.env.NEXT_PUBLIC_API_APPLICATION_ID}/${id}/status`,
+    (data) => {
+      queryClient.invalidateQueries({ queryKey: [TAGS.GET_CAMPAIGNS] });
+    },
+  );
+  socket.on('connect_error', (err) => {
+    // the reason of the error, for example "xhr poll error"
+    console.log(err.message);
+
+    // some additional description, for example the status code of the initial HTTP response
+    console.log(err.description);
+
+    // some additional context, for example the XMLHttpRequest object
+    console.log(err.context);
+  });
+
+  socket.on(`beforeunload`, (data) => {
+    socket.close();
   });
 
   return (

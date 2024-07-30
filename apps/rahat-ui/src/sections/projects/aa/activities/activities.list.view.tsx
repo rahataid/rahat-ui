@@ -15,6 +15,7 @@ import TableLoader from 'apps/rahat-ui/src/components/table.loader';
 import { UUID } from 'crypto';
 import ActivitiesTableFilters from './activities.table.filters';
 import { getPaginationFromLocalStorage } from '../prev.pagination.storage';
+import * as XLSX from 'xlsx';
 
 export default function ActivitiesList() {
   const { id: projectID } = useParams();
@@ -48,6 +49,8 @@ export default function ActivitiesList() {
     projectID as UUID,
     { ...pagination, ...filters },
   );
+
+  const { activitiesData: allData } = useActivities(projectID as UUID, {});
 
   useActivitiesCategories(projectID as UUID);
   useActivitiesHazardTypes(projectID as UUID);
@@ -88,6 +91,42 @@ export default function ActivitiesList() {
     setStatusFilterItem(filters?.status ?? '');
   }, [filters]);
 
+  const generateExcel = (data: any, title: string) => {
+    const wb = XLSX.utils.book_new();
+
+    const ws = XLSX.utils.json_to_sheet(data);
+
+    const columnWidths = 20;
+    const numberOfColumns = 10;
+    ws['!cols'] = Array(numberOfColumns).fill({ wch: columnWidths });
+
+    XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+
+    XLSX.writeFile(wb, `${title}.xlsx`);
+  };
+
+  const handleDownloadReport = () => {
+    const mappedData = allData?.map((item: Record<string, any>) => {
+      const d = new Date(item.createdAt);
+      const timeStamp = d.toLocaleTimeString();
+      return {
+        Title: item.title || 'N/A',
+        'Early Action': item.category || 'N/A',
+        Phase: item.phase || 'N/A',
+        Type: item.isAutomated ? 'Automated' : 'Manual' || 'N/A',
+        Responsibility: item.responsibility,
+        'Responsible Station': item.source || 'N/A',
+        Status: item.status || 'N/A',
+        Timestamp: timeStamp || 'N/A',
+        'Completed by': item.completedBy || 'N/A',
+        'Difference in trigger and activity completion':
+          item.timeDifference || 'N/A',
+      };
+    });
+
+    generateExcel(mappedData, 'Activities_Report');
+  };
+
   if (isLoading) {
     return <TableLoader />;
   }
@@ -97,6 +136,7 @@ export default function ActivitiesList() {
         projectID={projectID as UUID}
         handleFilter={handleFilter}
         handleSearch={handleSearch}
+        handleDownload={handleDownloadReport}
         activity={activitySearchText}
         responsibility={responsibilitySearchText}
         phase={phaseFilterItem}

@@ -81,7 +81,11 @@ export default function InfoCards({ data }: IProps) {
                   </p>
                 </div>
                 <div>
-                  <p>{format(data?.createdAt, 'MMMM do, yyyy') || 'N/A'}</p>
+                  <p>
+                    {data && data.createdAt
+                      ? format(data.createdAt, 'MMMM do, yyyy')
+                      : 'N/A'}
+                  </p>
                   <p className="text-sm font-normal text-muted-foreground">
                     Created At
                   </p>

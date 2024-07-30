@@ -5,7 +5,15 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/components/tooltip';
-import { Delete, Download, MoreVertical, Share, Trash2, X } from 'lucide-react';
+import {
+  Delete,
+  Download,
+  MoreVertical,
+  Send,
+  Share,
+  Trash2,
+  X,
+} from 'lucide-react';
 
 import {
   VisibilityState,
@@ -17,6 +25,7 @@ import React, { useEffect, useState } from 'react';
 
 import {
   useActiveFieldDefList,
+  useBulkGenerateVerificationLink,
   useCommunityGroupListByID,
   useCommunityGroupRemove,
   useCommunityGroupStore,
@@ -91,7 +100,7 @@ export default function GroupDetail({ uuid }: IProps) {
     perPage: 300,
   });
   const exportPinnedListBeneficiary = useExportPinnedListBeneficiary();
-
+  const bulkGenereateLink = useBulkGenerateVerificationLink();
   const {
     deleteSelectedBeneficiariesFromImport,
     setDeleteSelectedBeneficiariesFromImport,
@@ -175,9 +184,9 @@ export default function GroupDetail({ uuid }: IProps) {
 
     const obj = filteredValue
       ? Object.entries(filteredValue).reduce((acc, [key, value]) => {
-        acc[value] = key;
-        return acc;
-      }, {} as { [key: string]: string })
+          acc[value] = key;
+          return acc;
+        }, {} as { [key: string]: string })
       : {};
     const payload = {
       groupUUID: uuid as string,
@@ -223,7 +232,6 @@ export default function GroupDetail({ uuid }: IProps) {
 
     const rawData = response?.data?.data;
 
-    console.log(rawData);
     const filteredData = rawData.map((item: Record<string, any>) => {
       const filteredItem: Record<string, any> = {};
       labels.forEach((key) => {
@@ -245,6 +253,32 @@ export default function GroupDetail({ uuid }: IProps) {
     setLabels([]);
   };
 
+  const handleVerificationLink = async () => {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: ' Send Verification Link',
+      icon: 'question',
+      showDenyButton: true,
+      confirmButtonText: 'Yes, I am sure!',
+      denyButtonText: 'No, cancel it!',
+      customClass: {
+        actions: 'my-actions',
+        cancelButton: 'order-1',
+        confirmButton: 'order-2',
+        denyButton: 'order-3',
+      },
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        await bulkGenereateLink.mutateAsync(uuid as string);
+      } else if (result.isDenied) {
+        Swal.fire(
+          'Cancelled',
+          `Generating Verification Link Canceled`,
+          'error',
+        );
+      }
+    });
+  };
   useEffect(() => {
     setDeleteSelectedBeneficiariesFromImport(
       Object.keys(selectedListItems).filter((key) => selectedListItems[key]),
@@ -293,7 +327,6 @@ export default function GroupDetail({ uuid }: IProps) {
                   <Share className="mr-2 h-4 w-4" />
                   Export
                 </DropdownMenuItem>
-
                 <DropdownMenuItem
                   onClick={() => setOpen(true)}
                   disabled={
@@ -303,7 +336,6 @@ export default function GroupDetail({ uuid }: IProps) {
                   <Download className="mr-2 h-4 w-4" />
                   Download
                 </DropdownMenuItem>
-
                 <DropdownMenuItem
                   onClick={removeBeneficiaryFromGroup}
                   disabled={
@@ -313,14 +345,17 @@ export default function GroupDetail({ uuid }: IProps) {
                   <Delete className="mr-2 h-4 w-4" />
                   Disconnect
                 </DropdownMenuItem>
-
+                <DropdownMenuItem onClick={handleVerificationLink}>
+                  <Send className="mr-2 h-4 w-4" />
+                  Send Link
+                </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={handlePurge}
                   disabled={
                     responseByUUID?.data?.beneficiariesGroup.length === 0
                   }
                 >
-                  <Trash2 className="mr-2 h-4 w-4" />
+                  <Download className="mr-2 h-4 w-4" />
                   Delete
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -358,8 +393,9 @@ export default function GroupDetail({ uuid }: IProps) {
                   </AlertDialogTitle>
                   <AlertDialogDescription>
                     <ScrollArea
-                      className={`${labels.length < 10 ? 'h-32' : 'h-52'
-                        } w-[95%] border m-2 pt-1 pb-1 text-sm rounded-md shadow-lg cursor-pointer bg-white`}
+                      className={`${
+                        labels.length < 10 ? 'h-32' : 'h-52'
+                      } w-[95%] border m-2 pt-1 pb-1 text-sm rounded-md shadow-lg cursor-pointer bg-white`}
                       hidden={labels.length === 0}
                     >
                       {labels.map((item) => {

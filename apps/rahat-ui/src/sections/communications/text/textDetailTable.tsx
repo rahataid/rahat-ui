@@ -153,11 +153,9 @@ export default function TextDetailTableView({ data, type, id }: IProps) {
     `${process.env.NEXT_PUBLIC_API_SOCKET_URL}/status` as string,
     socketEnvironment,
   );
-  // client-side
   socket.on('connect', () => {
-    console.log(socket.id);
+    console.log('socket connected', socket.id);
   });
-  //
 
   socket.on(
     `${process.env.NEXT_PUBLIC_API_APPLICATION_ID}/${id}/status`,
@@ -166,13 +164,13 @@ export default function TextDetailTableView({ data, type, id }: IProps) {
     },
   );
   socket.on('connect_error', (err) => {
-    // the reason of the error, for example "xhr poll error"
+    // the reason of the error
     console.log(err.message);
 
-    // some additional description, for example the status code of the initial HTTP response
+    // some additional description,
     console.log(err.description);
 
-    // some additional context, for example the XMLHttpRequest object
+    // some additional context
     console.log(err.context);
   });
 

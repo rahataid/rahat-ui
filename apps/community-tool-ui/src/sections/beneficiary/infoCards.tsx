@@ -8,12 +8,14 @@ import { humanizeString } from '../../utils';
 import ExtraInfoCard from './ExtraInfo';
 import { ListBeneficiary } from '@rahataid/community-tool-sdk';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import { format } from 'date-fns';
 
 type IProps = {
   data: any;
 };
 
 export default function InfoCards({ data }: IProps) {
+  console.log('D==>', data);
   return (
     // <div
     //   style={{ maxHeight: '100vh' }}
@@ -76,6 +78,12 @@ export default function InfoCards({ data }: IProps) {
                   <p>{data?.location || 'N/A'}</p>
                   <p className="text-sm font-normal text-muted-foreground">
                     Location
+                  </p>
+                </div>
+                <div>
+                  <p>{format(data?.createdAt, 'MMMM do, yyyy') || 'N/A'}</p>
+                  <p className="text-sm font-normal text-muted-foreground">
+                    Created At
                   </p>
                 </div>
               </div>

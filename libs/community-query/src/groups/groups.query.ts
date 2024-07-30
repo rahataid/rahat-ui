@@ -37,6 +37,28 @@ export const useCommunityGroupCreate = () => {
   });
 };
 
+export const useCommunityGroupUpdate = () => {
+  const { queryClient, rumsanService } = useRSQuery();
+  const groupClient = getGroupClient(rumsanService.client);
+  return useMutation({
+    mutationKey: [TAGS.UPDATE_GROUP],
+    mutationFn: groupClient.update,
+    onSuccess: () => {
+      Swal.fire('Group updated Successfully', '', 'success');
+      queryClient.invalidateQueries({
+        queryKey: [TAGS.LIST_COMMUNITY_GROUP],
+      });
+    },
+    onError: (error: any) => {
+      Swal.fire(
+        'Error',
+        error.response.data.message || 'Something went wrong!',
+        'error',
+      );
+    },
+  });
+};
+
 export const useCommunityGroupList = (
   payload: Pagination & { any?: string },
 ): UseQueryResult<any, Error> => {

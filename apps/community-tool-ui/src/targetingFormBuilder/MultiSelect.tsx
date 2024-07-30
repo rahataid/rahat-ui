@@ -9,14 +9,13 @@ import {
   CommandItem,
   CommandList,
 } from '@rahat-ui/shadcn/src/components/ui/command';
-import { Command, Command as CommandPrimitive } from 'cmdk';
-import useTargetingFormStore from './form.store';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/popover';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { Command, Command as CommandPrimitive } from 'cmdk';
+import useTargetingFormStore from './form.store';
 
 type ISelectOption = Record<'value' | 'label', string>;
 

@@ -141,8 +141,7 @@ export const useActivities = (uuid: UUID, payload: any) => {
     completedAt: d?.completedAt,
     activityDocuments: d?.activityDocuments || null,
     createdAt: d?.createdAt,
-    // isApproved: d.isApproved,
-    // isComplete: d.isComplete,
+    notes: d?.notes,
     timeDifference: d?.differenceInTriggerAndActivityCompletion,
   }));
 

@@ -226,7 +226,7 @@ export const useBulkGenerateVerificationLink = () => {
       mutationFn: grpClient.bulkGenerateLink,
       onSuccess: (data: any) => {
         Swal.fire({
-          title: 'Bulk Link Generated Successfully',
+          title: 'Success!',
           text: data?.data,
 
           icon: 'success',

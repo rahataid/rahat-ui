@@ -140,8 +140,9 @@ export const useActivities = (uuid: UUID, payload: any) => {
     completedBy: d?.completedBy,
     completedAt: d?.completedAt,
     activityDocuments: d?.activityDocuments || null,
-    // isApproved: d.isApproved,
-    // isComplete: d.isComplete,
+    createdAt: d?.createdAt,
+    notes: d?.notes,
+    timeDifference: d?.differenceInTriggerAndActivityCompletion,
   }));
 
   return { ...query, activitiesData, activitiesMeta: query?.data?.meta };

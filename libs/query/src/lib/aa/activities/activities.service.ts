@@ -140,6 +140,7 @@ export const useActivities = (uuid: UUID, payload: any) => {
     completedBy: d?.completedBy,
     completedAt: d?.completedAt,
     activityDocuments: d?.activityDocuments || null,
+    notes: d?.notes,
     // isApproved: d.isApproved,
     // isComplete: d.isComplete,
   }));

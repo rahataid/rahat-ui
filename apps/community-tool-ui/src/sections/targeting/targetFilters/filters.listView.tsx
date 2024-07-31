@@ -128,9 +128,6 @@ export default function ListView({
                     onInput={(e) => setLabel(e.currentTarget.value)}
                   />
                   <CommandList className="no-scrollbar">
-                    <CommandEmpty>
-                      <p>Add new Group to save the result</p>
-                    </CommandEmpty>
                     <CommandGroup>
                       {communityGroup?.map((item) => (
                         <CommandItem
@@ -151,10 +148,7 @@ export default function ListView({
                 onClick={() => handleSaveTargetResults(label as string)}
                 disabled={label === ''}
               >
-                {communityGroup?.filter((item) => item.name.includes(label))
-                  .length > 0
-                  ? `Update`
-                  : `Save`}
+                Submit
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>

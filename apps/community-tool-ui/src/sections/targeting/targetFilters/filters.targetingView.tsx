@@ -88,10 +88,24 @@ export default function FiltersTargetingView() {
       return Swal.fire({ title: 'No beneficiaries to save!', icon: 'error' });
     const uuid = targetUUID as string;
     const payload = { label };
-    await targetQuery.mutateAsync({ uuid, payload });
-    setTargetingQueries([]);
-    setTargetUUID('');
-    router.push(paths.dashboard.group.root);
+    await Swal.fire({
+      title: 'Are you sure?',
+      text: `${beneficiaryData?.data?.rows.length} beneficiaries are selected.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes',
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        await targetQuery.mutateAsync({ uuid, payload });
+        setTargetingQueries([]);
+        setTargetUUID('');
+        router.push(paths.dashboard.group.root);
+      } else {
+        return Swal.fire({ title: 'Action Cancelled', icon: 'error' });
+      }
+    });
   };
 
   return (

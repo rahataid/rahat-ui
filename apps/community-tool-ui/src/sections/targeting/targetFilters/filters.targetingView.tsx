@@ -12,6 +12,7 @@ import {
 } from '@tanstack/react-table';
 
 import {
+  useCommunityGroupList,
   useCommunityTargetingStore,
   useTargetedBeneficiaryList,
   useTargetingLabelUpdate,
@@ -40,6 +41,7 @@ export default function FiltersTargetingView() {
     setNextPage,
     setPrevPage,
     setPerPage,
+    filters,
   } = usePagination();
   const { loading, setTargetUUID } = useCommunityTargetingStore();
 
@@ -50,6 +52,15 @@ export default function FiltersTargetingView() {
     },
   );
 
+  const communityGroupFilters = {
+    ...filters,
+    autoCreated: false,
+  };
+  const { data: communityGroup } = useCommunityGroupList({
+    ...pagination,
+    perPage: 500,
+    ...communityGroupFilters,
+  });
   const targetQuery = useTargetingLabelUpdate();
 
   const columns = useTargetingColumns();
@@ -90,11 +101,12 @@ export default function FiltersTargetingView() {
         table={table}
         handleSaveTargetResults={handleSaveTargetResults}
         targetUUID={targetUUID as string}
+        communityGroup={communityGroup?.data?.rows || []}
       />
 
       <CustomPagination
         meta={
-          beneficiaryData?.response?.meta || {
+          (beneficiaryData?.response?.meta as any) || {
             total: 0,
             currentPage: 0,
           }

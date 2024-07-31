@@ -5,7 +5,15 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/components/tooltip';
-import { Delete, Download, MoreVertical, Share, Wallet, X } from 'lucide-react';
+import {
+  Delete,
+  Download,
+  MoreVertical,
+  Share,
+  Trash,
+  Wallet,
+  X,
+} from 'lucide-react';
 
 import {
   VisibilityState,
@@ -347,7 +355,7 @@ export default function GroupDetail({ uuid }: IProps) {
                     responseByUUID?.data?.beneficiariesGroup.length === 0
                   }
                 >
-                  <Download className="mr-2 h-4 w-4" />
+                  <Trash className="mr-2 h-4 w-4" />
                   Delete
                 </DropdownMenuItem>
               </DropdownMenuContent>

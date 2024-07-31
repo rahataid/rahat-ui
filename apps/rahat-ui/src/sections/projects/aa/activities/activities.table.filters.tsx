@@ -12,6 +12,8 @@ import AddButton from '../../components/add.btn';
 import { UUID } from 'crypto';
 import SearchInput from '../../components/search.input';
 import { ACTIVITY_STATUS } from '../aa.constants';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { CloudDownload } from 'lucide-react';
 
 const { NOT_STARTED, WORK_IN_PROGRESS, COMPLETED, DELAYED } = ACTIVITY_STATUS;
 const statusList = [NOT_STARTED, WORK_IN_PROGRESS, COMPLETED, DELAYED];
@@ -23,6 +25,7 @@ type IProps = {
     event: React.ChangeEvent<HTMLInputElement>,
     key: string,
   ) => void;
+  handleDownload: VoidFunction;
   activity: string;
   responsibility: string;
   phase: string;
@@ -34,6 +37,7 @@ export default function ActivitiesTableFilters({
   handleFilter,
   projectID,
   handleSearch,
+  handleDownload,
   activity,
   responsibility,
   phase,
@@ -119,6 +123,16 @@ export default function ActivitiesTableFilters({
         name="Responsiblity"
         onSearch={(e) => handleSearch(e, 'responsibility')}
       />
+      {/* Download report btn  */}
+      <Button
+        type="button"
+        variant="outline"
+        className="shadow-md"
+        onClick={handleDownload}
+      >
+        <CloudDownload size={18} className="mr-1" />
+        Download Report
+      </Button>
       {/* Add Activities Btn */}
       <AddButton
         path={`/projects/aa/${projectID}/activities/add`}

@@ -10,14 +10,12 @@ import { ListBeneficiary } from '@rahataid/community-tool-sdk';
 export const useTargetingColumns = () => {
   const columns: ColumnDef<ListBeneficiary>[] = [
     {
-      accessorKey: 'firstName',
-      header: 'First Name',
-      cell: ({ row }) => <div>{row.getValue('firstName')}</div>,
-    },
-    {
-      accessorKey: 'lastName',
-      header: 'Last Name',
-      cell: ({ row }) => <div>{row.getValue('lastName')}</div>,
+      header: 'Household Head Name',
+      cell: ({ row }) => (
+        <div>
+          {row.original.firstName} {row.original.lastName}
+        </div>
+      ),
     },
     {
       accessorKey: 'walletAddress',

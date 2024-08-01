@@ -23,19 +23,20 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import { UUID } from 'crypto';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { useProjectBeneficiaryTableColumns } from './useBeneficiaryColumns';
 
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import TableLoader from 'apps/rahat-ui/src/components/table.loader';
-import DisburseFlow from '../components/disburse-flow/disburse-flow';
 
 const BeneficiaryDetailTableView = () => {
   const uuid = useParams().id as UUID;
+  const route = useRouter();
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
@@ -54,6 +55,7 @@ const BeneficiaryDetailTableView = () => {
     resetSelectedListItems,
   } = usePagination();
   const selectedRowAddresses = Object.keys(selectedListItems);
+  const queryString = selectedRowAddresses.join(',');
   const columns = useProjectBeneficiaryTableColumns();
   const projectBeneficiaries = useProjectBeneficiaries({
     page: pagination.page,
@@ -102,7 +104,18 @@ const BeneficiaryDetailTableView = () => {
           {selectedRowAddresses.length ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <DisburseFlow selectedBeneficiaries={selectedRowAddresses} />
+                {/* <DisburseFlow selectedBeneficiaries={selectedRowAddresses} /> */}
+                <Button
+                  onClick={() =>
+                    route.push(
+                      `/projects/c2c/${uuid}/beneficiary/disburse-flow?selectedBeneficiaries=${encodeURIComponent(
+                        queryString,
+                      )}`,
+                    )
+                  }
+                >
+                  Disburse Tokens
+                </Button>
               </DropdownMenuTrigger>
               {/* <DropdownMenuContent align="end">
                 <DropdownMenuItem

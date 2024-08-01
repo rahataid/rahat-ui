@@ -1,7 +1,6 @@
 import { TREASURY_SOURCES } from '@rahat-ui/query';
 
 type Step1DisburseMethodProps = {
-  selectedBeneficiaries: string[];
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   projectSubgraphDetails: any;
@@ -10,7 +9,6 @@ type Step1DisburseMethodProps = {
 
 export default function Step1DisburseMethod({
   onChange,
-  selectedBeneficiaries,
   value,
   projectSubgraphDetails,
   treasurySources,
@@ -19,7 +17,7 @@ export default function Step1DisburseMethod({
   return (
     <div className="bg-card rounded px-4 pb-4 flex flex-col">
       <div className="mb-2">
-        <div className="flex flex-col">
+        <div className="flex flex-col gap-5">
           {TREASURY_SOURCES.map((method) => (
             <label key={method.value} className="inline-flex items-center mt-3">
               <input

@@ -127,8 +127,8 @@ export default function TargetSelectForm() {
           })}
         </ScrollArea>
         <div
-          style={{ position: 'fixed', left: 190, bottom: 30 }}
-          className="mt-6 text-start mr-2"
+          style={{ position: 'fixed', left: '14%', bottom: 30 }}
+          className="mt-6 text-start"
         >
           <Button type="submit" disabled={loading || isQueryEmpty()}>
             Submit

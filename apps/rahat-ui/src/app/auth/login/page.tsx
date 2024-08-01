@@ -122,9 +122,6 @@ export default function AuthPage() {
                   <Label className="sr-only" htmlFor="otp">
                     OTP
                   </Label>
-                  {otpinputError && (
-                    <div className="text-red-700">Please enter valid OTP</div>
-                  )}
                   <Input
                     id="otp"
                     placeholder="Enter OTP"
@@ -146,6 +143,11 @@ export default function AuthPage() {
                       }
                     }}
                   />
+                  {otpinputError && (
+                    <div className="text-red-700 text-sm">
+                      Please enter valid OTP
+                    </div>
+                  )}
                 </div>
                 <Button type="submit" disabled={otp?.length !== 6}>
                   Verify

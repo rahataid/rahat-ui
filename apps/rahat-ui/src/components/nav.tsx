@@ -25,6 +25,7 @@ import { useNavData } from '../app/config-nav';
 import { paths } from '../routes/paths';
 import ThemeSwitch from './themeToggleSwitch';
 import ConnectWallet from './wallet/connect-wallet';
+import { toast } from 'react-toastify';
 
 export function Nav() {
   const currentPath = usePathname();
@@ -39,7 +40,8 @@ export function Nav() {
     clearAuth();
     // localStorage.clear()
 
-    window.location.reload();
+    toast.success('Logged out successfully.');
+    setTimeout(() => window.location.reload(), 1000);
   };
 
   return (

@@ -15,7 +15,8 @@ import TableLoader from 'apps/rahat-ui/src/components/table.loader';
 import { UUID } from 'crypto';
 import ActivitiesTableFilters from './activities.table.filters';
 import { getPaginationFromLocalStorage } from '../prev.pagination.storage';
-import * as XLSX from 'xlsx';
+import { generateExcel } from '../generate.excel';
+import { toast } from 'react-toastify';
 
 export default function ActivitiesList() {
   const { id: projectID } = useParams();
@@ -91,21 +92,8 @@ export default function ActivitiesList() {
     setStatusFilterItem(filters?.status ?? '');
   }, [filters]);
 
-  const generateExcel = (data: any, title: string) => {
-    const wb = XLSX.utils.book_new();
-
-    const ws = XLSX.utils.json_to_sheet(data);
-
-    const columnWidths = 20;
-    const numberOfColumns = 10;
-    ws['!cols'] = Array(numberOfColumns).fill({ wch: columnWidths });
-
-    XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
-
-    XLSX.writeFile(wb, `${title}.xlsx`);
-  };
-
   const handleDownloadReport = () => {
+    if (allData.length < 1) return toast.error('No data to download.');
     const mappedData = allData?.map((item: Record<string, any>) => {
       const d = new Date(item.createdAt);
       const timeStamp = d.toLocaleTimeString();
@@ -124,7 +112,7 @@ export default function ActivitiesList() {
       };
     });
 
-    generateExcel(mappedData, 'Activities_Report');
+    generateExcel(mappedData, 'Activities_Report', 10);
   };
 
   if (isLoading) {

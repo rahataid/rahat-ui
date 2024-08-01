@@ -12,8 +12,7 @@ import AddButton from '../../components/add.btn';
 import { UUID } from 'crypto';
 import SearchInput from '../../components/search.input';
 import { ACTIVITY_STATUS } from '../aa.constants';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { CloudDownload } from 'lucide-react';
+import DownloadReportBtn from 'apps/rahat-ui/src/components/download.report.btn';
 
 const { NOT_STARTED, WORK_IN_PROGRESS, COMPLETED, DELAYED } = ACTIVITY_STATUS;
 const statusList = [NOT_STARTED, WORK_IN_PROGRESS, COMPLETED, DELAYED];
@@ -124,15 +123,7 @@ export default function ActivitiesTableFilters({
         onSearch={(e) => handleSearch(e, 'responsibility')}
       />
       {/* Download report btn  */}
-      <Button
-        type="button"
-        variant="outline"
-        className="shadow-md"
-        onClick={handleDownload}
-      >
-        <CloudDownload size={18} className="mr-1" />
-        Download Report
-      </Button>
+      <DownloadReportBtn handleDownload={handleDownload} />
       {/* Add Activities Btn */}
       <AddButton
         path={`/projects/aa/${projectID}/activities/add`}

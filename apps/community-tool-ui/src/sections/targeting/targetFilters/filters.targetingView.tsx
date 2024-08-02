@@ -90,7 +90,7 @@ export default function FiltersTargetingView() {
     const payload = { label };
     await Swal.fire({
       title: 'Are you sure?',
-      text: `${beneficiaryData?.data?.rows.length} beneficiaries are selected.`,
+      text: `${beneficiaryData?.response?.meta?.total} beneficiaries are selected.`,
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',

@@ -211,7 +211,7 @@ export default function ListView({
                     <TableRow>
                       <TableCell
                         colSpan={table.getAllColumns().length}
-                        className="h-24 text-center text-lg "
+                        className="h-24 text-center text-md"
                       >
                         No results found. Select filter options to list
                         targeting beneficiaries.

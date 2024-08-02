@@ -37,9 +37,14 @@ export const useUserCreate = () => {
         });
       },
       onError: (error: any) => {
+        const errorMessage = error.response.data.message.includes(
+          'Unique constraint failed on the fields: (`service`,`serviceId`)',
+        )
+          ? 'Duplicate Entry'
+          : error.response.data.message;
         Swal.fire(
           'Error',
-          error.response.data.message || 'Encounter error on Creating Data',
+          errorMessage || 'Encounter error on Creating Data',
           'error',
         );
       },

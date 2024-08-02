@@ -22,14 +22,15 @@ const BarCharts = ({
   className,
   colors,
 }: IProps) => {
-  const [categories, series] = charts?.data
+  const [ctCategories, ctSeries] = charts?.data
     ? [
         charts.data.map((item: any) => item.id),
         charts.data.map((item: any) => item.count),
       ]
     : [[], []];
 
-  const sumSeries = series.reduce((a: number, b: number) => a + b, 0);
+  const sumSeries = ctSeries.reduce((a: number, b: number) => a + b, 0);
+
   return (
     <div className={`bg-card shadow-md p-4 rounded-lg  mt-2 ${className} `}>
       <h1 className=" text-lg font-medium mt-2 mb-1 ml-4 ">{title}</h1>
@@ -48,12 +49,13 @@ const BarCharts = ({
       >
         <BarChart
           key={charts.name}
-          series={series}
-          categories={categories}
+          ctSeries={ctSeries}
+          ctCategories={ctCategories}
           height={height}
           width={width}
           horizontal={horizontal}
           colors={colors}
+          communityTool={true}
         />
       </div>
     </div>

@@ -81,14 +81,14 @@ importers:
         specifier: 0.0.9
         version: 0.0.9
       '@rahataid/community-tool-sdk':
-        specifier: ^0.0.32
-        version: 0.0.32
+        specifier: ^0.0.34
+        version: 0.0.34
       '@rahataid/el-subgraph':
         specifier: 0.0.14
         version: 0.0.14
       '@rahataid/sdk':
-        specifier: 0.0.32
-        version: 0.0.32
+        specifier: 0.0.33
+        version: 0.0.33
       '@rumsan/communication':
         specifier: ^0.0.23
         version: 0.0.23
@@ -99,8 +99,8 @@ importers:
         specifier: ^3.0.133
         version: 3.0.140
       '@rumsan/extensions':
-        specifier: ^0.0.25
-        version: 0.0.25(@nestjs/core@10.3.9(@nestjs/common@10.3.9(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/microservices@10.3.9)(reflect-metadata@0.2.2)(rxjs@7.8.1))(amqplib@0.5.2)(reflect-metadata@0.2.2)
+        specifier: ^0.0.28
+        version: 0.0.28(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1)
       '@rumsan/prisma':
         specifier: ^1.0.125
         version: 1.0.130(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1)
@@ -3347,14 +3347,14 @@ packages:
   '@rahataid/c2c-query@0.0.9':
     resolution: {integrity: sha512-ci7/VCXpea5aYeg0BSrnsBRetED0/l5RHk1/ANhTKbS1Z4VcogmZo2b28roMGe5cIKJXnX9F8pwgcyMaPC5dBg==}
 
-  '@rahataid/community-tool-sdk@0.0.32':
-    resolution: {integrity: sha512-ldHjy0amxbE7Omy8XqDomuljCpU52LhnvubSSNSb6PwYM20RQtZEciS1fhs5YxTvZmPnC2r2NUdXYVDc41vjqQ==}
+  '@rahataid/community-tool-sdk@0.0.34':
+    resolution: {integrity: sha512-5UihORLSMXnCmIe1Z0VlgAQlNdTmf3CCGYNIE6+WQOGN0rHl2B4y4gOX4U5wNITGxgjG9lAoDICkOi28nhXhdA==}
 
   '@rahataid/el-subgraph@0.0.14':
     resolution: {integrity: sha512-tBsvFOXbMquudfQCMnxVGZwvLWixC3TvN/Tqc43PY2UMr4JNOxYuBozMtUafYxxxiZtxaxu+n7tccWs+g6KoNQ==}
 
-  '@rahataid/sdk@0.0.32':
-    resolution: {integrity: sha512-uafKE5KlsXFq6GaFGfIrYzd04KLibWbsywfC8N9O0VI2g/hptoL24C39xikmReMcbIapWTRg0H+C+kfN7Ugb+g==}
+  '@rahataid/sdk@0.0.33':
+    resolution: {integrity: sha512-QD/MW2QRKcjH0G/pcKMXKx6CHR4dQaWCGHNsrGHTNn1FD8+YMPTRTCs22cTxFjtvXGv7+UbKxkrtl/XTnu/f9g==}
 
   '@react-native-community/cli-clean@13.6.8':
     resolution: {integrity: sha512-B1uxlm1N4BQuWFvBL3yRl3LVvydjswsdbTi7tMrHMtSxfRio1p9HjcmDzlzKco09Y+8qBGgakm3jcMZGLbhXQQ==}
@@ -3537,6 +3537,9 @@ packages:
 
   '@rumsan/extensions@0.0.25':
     resolution: {integrity: sha512-zm6LQiNwQ2uZwgjG3BbwNKJOeJzoaoIRRTNSxWWyCsYS5WeoUhYtwfP05jbLampe5bf0QPtJ++Jlif1RDiGz4A==, tarball: https://npm.pkg.github.com/download/@rumsan/extensions/0.0.25/c5f37634be0f103f29b1cf9d52d78c48bf1bfa6a}
+
+  '@rumsan/extensions@0.0.28':
+    resolution: {integrity: sha512-mDh3JJAGuLlmVZoc8LGsSlaMweOjzVlIOsMCZJuuu6XuZRZowW507tIEjjllS12lyjWRNvFYITTqPbPBXzSaxw==, tarball: https://npm.pkg.github.com/download/@rumsan/extensions/0.0.28/a5a9464ae419e0a2bc03ab18d75f22477595ab85}
 
   '@rumsan/prisma@1.0.130':
     resolution: {integrity: sha512-tIWGpPr+vL1gBaAC3xxEAtzpRApmHaAFQ2k+RBLxOJBTCu/iVv/poJSiqPFT4Ez9Knn4+BiTisGfPpjYrcvPrQ==, tarball: https://npm.pkg.github.com/download/@rumsan/prisma/1.0.130/dfca28563b229e9ea50bfb28f21af3da5469a352}
@@ -15711,7 +15714,7 @@ snapshots:
     dependencies:
       '@swc/helpers': 0.5.11
 
-  '@rahataid/community-tool-sdk@0.0.32':
+  '@rahataid/community-tool-sdk@0.0.34':
     dependencies:
       tslib: 2.6.3
 
@@ -15726,7 +15729,7 @@ snapshots:
     transitivePeerDependencies:
       - graphql
 
-  '@rahataid/sdk@0.0.32': {}
+  '@rahataid/sdk@0.0.33': {}
 
   '@react-native-community/cli-clean@13.6.8':
     dependencies:
@@ -16147,6 +16150,19 @@ snapshots:
       - nats
       - prisma
       - reflect-metadata
+
+  '@rumsan/extensions@0.0.28(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1)':
+    dependencies:
+      '@rumsan/core': 3.0.140
+      '@rumsan/prisma': 1.0.130(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1)
+      '@rumsan/sdk': 0.0.45
+    transitivePeerDependencies:
+      - class-transformer
+      - class-validator
+      - debug
+      - prisma
+      - reflect-metadata
+      - rxjs
 
   '@rumsan/prisma@1.0.130(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1)':
     dependencies:

@@ -37,6 +37,28 @@ export const useCommunityGroupCreate = () => {
   });
 };
 
+export const useCommunityGroupUpdate = () => {
+  const { queryClient, rumsanService } = useRSQuery();
+  const groupClient = getGroupClient(rumsanService.client);
+  return useMutation({
+    mutationKey: [TAGS.UPDATE_GROUP],
+    mutationFn: groupClient.update,
+    onSuccess: () => {
+      Swal.fire('Group updated Successfully', '', 'success');
+      queryClient.invalidateQueries({
+        queryKey: [TAGS.LIST_COMMUNITY_GROUP],
+      });
+    },
+    onError: (error: any) => {
+      Swal.fire(
+        'Error',
+        error.response.data.message || 'Something went wrong!',
+        'error',
+      );
+    },
+  });
+};
+
 export const useCommunityGroupList = (
   payload: Pagination & { any?: string },
 ): UseQueryResult<any, Error> => {
@@ -189,6 +211,41 @@ export const useCommunityGroupDelete = () => {
             error?.response?.data?.message ||
             'Encounter error on Removing Data',
         });
+      },
+    },
+    queryClient,
+  );
+};
+
+export const useBulkGenerateVerificationLink = () => {
+  const { queryClient, rumsanService } = useRSQuery();
+  const grpClient = getGroupClient(rumsanService.client);
+  return useMutation(
+    {
+      mutationKey: [TAGS.BULK_GENERATE_LINK],
+      mutationFn: grpClient.bulkGenerateLink,
+      onSuccess: (data: any) => {
+        Swal.fire({
+          title: 'Success!',
+          text: data?.data,
+
+          icon: 'success',
+        });
+        queryClient.invalidateQueries({
+          queryKey: [
+            TAGS.LIST_COMMUNITY_GROUP,
+            {
+              exact: true,
+            },
+          ],
+        });
+      },
+      onError: (error: any) => {
+        Swal.fire(
+          'Error',
+          error.response.data.message || 'Encounter error on Creating Data',
+          'error',
+        );
       },
     },
     queryClient,

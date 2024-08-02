@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import {
   ColumnFiltersState,
   SortingState,
@@ -19,15 +19,19 @@ import BeneficiaryGroupsTable from '../groups.table';
 import useBeneficiaryGroupsTableColumn from './useBeneficiaryGroupsTableColumn';
 import CustomPagination from '../../../../../components/customPagination';
 import { UUID } from 'crypto';
+import { getPaginationFromLocalStorage } from '../../prev.pagination.storage';
 
 export default function BeneficiariesGroupsListView() {
   const { id } = useParams();
+  const searchParams = useSearchParams();
 
   const { pagination, setNextPage, setPrevPage, setPerPage, setPagination } =
     usePagination();
 
   React.useEffect(() => {
-    setPagination({ page: 1, perPage: 10 });
+    const isBackFromDetail = searchParams.get('backFromDetail') === 'true';
+    const prevPagination = getPaginationFromLocalStorage(isBackFromDetail);
+    setPagination(prevPagination);
   }, []);
 
   useBeneficiariesGroups(id as UUID, { ...pagination });

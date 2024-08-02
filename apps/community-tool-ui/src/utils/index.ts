@@ -1,6 +1,6 @@
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
-import { MAX_EXPORT_COUNT } from '../constants/app.const';
+import { MAX_IMPORT_COUNT } from '../constants/app.const';
 
 export const includeOnlySelectedTarget = (array: [], selectedTargets: []) => {
   return array.map((item: any) => {
@@ -59,8 +59,8 @@ function removeKeyFromArrayObjects(arr: any, keyToRemove: string) {
 export function removeFieldsWithUnderscore(dataArray: []) {
   let splittedData = [] as any;
   splittedData =
-    dataArray.length > MAX_EXPORT_COUNT
-      ? dataArray.splice(0, MAX_EXPORT_COUNT)
+    dataArray.length > MAX_IMPORT_COUNT
+      ? dataArray.splice(0, MAX_IMPORT_COUNT)
       : dataArray;
   splittedData.map((item: any) => {
     const newObj = {} as any;

@@ -39,7 +39,7 @@ export const useCommunityBeneficiaryTableColumns = () => {
       enableHiding: false,
     },
     {
-      header: 'Beneficiary',
+      header: 'Household Head Name',
       cell: ({ row }) => {
         return (
           <div>

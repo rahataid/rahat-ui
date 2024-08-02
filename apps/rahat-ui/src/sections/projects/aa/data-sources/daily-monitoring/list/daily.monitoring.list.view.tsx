@@ -1,5 +1,5 @@
 import React from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { useDailyMonitoring, usePagination } from '@rahat-ui/query';
 import DailyMonitoringTable from './daily.monitoring.table';
@@ -8,10 +8,12 @@ import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import DailyMonitoringTableFilters from './daily.monitoring.table.filters';
 import AddButton from '../../../../components/add.btn';
 import { UUID } from 'crypto';
+import { getPaginationFromLocalStorage } from '../../../prev.pagination.storage';
 
 export default function DailyMonitoringListView() {
   const params = useParams();
   const projectId = params.id as UUID;
+  const searchParams = useSearchParams();
   const [userSearchText, setUserSearchText] = React.useState<string>('');
   const [locationFilterItem, setLocationFilterItem] =
     React.useState<string>('');
@@ -26,8 +28,11 @@ export default function DailyMonitoringListView() {
     setPagination,
     setFilters,
   } = usePagination();
+
   React.useEffect(() => {
-    setPagination({ page: 1, perPage: 10 });
+    const isBackFromDetail = searchParams.get('backFromDetail') === 'true';
+    const prevPagination = getPaginationFromLocalStorage(isBackFromDetail);
+    setPagination(prevPagination);
   }, []);
   const columns = useDailyMonitoringTableColumn();
 

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -24,9 +24,11 @@ import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
 import { X, CloudUpload, Check, LoaderCircle } from 'lucide-react';
 import { useUploadFile, useActivateTrigger } from '@rahat-ui/query';
 import { UUID } from 'crypto';
+import { validateFile } from '../../file.validation';
 
 export default function ManualTriggerDialog() {
   const { id: projectID, triggerID } = useParams();
+  const router = useRouter();
   const uploadFile = useUploadFile();
   const activateTrigger = useActivateTrigger();
   const [showModal, setShowModal] = React.useState<boolean>(false);
@@ -39,7 +41,12 @@ export default function ManualTriggerDialog() {
   >([]);
 
   const FormSchema = z.object({
-    notes: z.string().min(5, { message: 'Must be at least 5 characters' }),
+    notes: z
+      .string()
+      .optional()
+      .refine((val) => !val || val?.length > 4, {
+        message: 'Must be at least 5 characters',
+      }),
     triggerDocuments: z
       .array(
         z.object({
@@ -47,7 +54,7 @@ export default function ManualTriggerDialog() {
           fileName: z.string(),
         }),
       )
-      .min(1, { message: 'Please upload document' }),
+      .optional(),
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -63,6 +70,10 @@ export default function ManualTriggerDialog() {
   ) => {
     const file = event.target.files?.[0];
     if (file) {
+      if (!validateFile(file)) {
+        return;
+      }
+
       const newId = nextId.current++;
       setDocuments((prev) => [...prev, { id: newId, name: file.name }]);
       const formData = new FormData();
@@ -82,6 +93,7 @@ export default function ManualTriggerDialog() {
         projectUUID: projectID as UUID,
         activatePayload: { repeatKey: triggerID, ...data },
       });
+      router.push(`/projects/aa/${projectID}/trigger-statements`);
     } catch (e) {
       console.error('Activate Trigger Error::', e);
     } finally {
@@ -147,13 +159,17 @@ export default function ManualTriggerDialog() {
                             </p>
                           </div>
                           <Input
-                            className="opacity-0"
+                            className="opacity-0 cursor-pointer"
                             type="file"
                             onChange={handleFileChange}
                           />
                         </div>
                       </FormControl>
                       <FormMessage />
+                      <p className="text-xs text-orange-500">
+                        *Files must be under 5 MB and of type JPEG, PNG, BMP,
+                        XLSX, or CSV.
+                      </p>
                       {documents?.map((file) => (
                         <div
                           key={file.name}

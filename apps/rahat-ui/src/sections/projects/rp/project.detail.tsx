@@ -1,22 +1,22 @@
-import { FC, useMemo } from 'react';
-import { DynamicReports } from '../../chart-reports';
 import {
   PROJECT_SETTINGS_KEYS,
+  useGetProjectDatasource,
   useProjectSettingsStore,
+  useRPBeneficiaryCount,
   useReadRahatTokenBalanceOf,
 } from '@rahat-ui/query';
-import { UUID } from 'crypto';
-import { useParams } from 'next/navigation';
-import { formatEther } from 'viem';
-import tempReport from './temp_report.json';
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
 } from '@rahat-ui/shadcn/src/components/ui/carousel';
-import { renderRowBasedProjectDetailsExtras } from 'apps/rahat-ui/src/utils/render-extras';
 import { Project } from '@rahataid/sdk/project/project.types';
+import { renderRowBasedProjectDetailsExtras } from 'apps/rahat-ui/src/utils/render-extras';
+import { UUID } from 'crypto';
 import Image from 'next/image';
+import { useParams } from 'next/navigation';
+import { FC } from 'react';
+import { DynamicReports } from '../../chart-reports';
 
 type CarouselSectionProps = {
   description: string;
@@ -73,42 +73,30 @@ const ProjectInfo: FC<ProjectInfoProps> = ({ project }) => {
     (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT],
   );
 
+  const { data } = useRPBeneficiaryCount(id);
+
   const tokenBalance = useReadRahatTokenBalanceOf({
     address: contractSettings?.rahattoken?.address as `0x${string}`,
-    args: [contractSettings?.rpproject?.address as `0x${string}`],
+    args: [contractSettings?.rahatpayrollproject?.address as `0x${string}`],
     query: {
       select(data) {
-        return data ? formatEther(data) : 'N/A';
+        return data ? data : 'N/A';
       },
     },
   });
 
-  const reportsChartsUI = useMemo(() => tempReport?.charts, []);
-  const reportsChartsData = useMemo(
-    () => [
-      {
-        name: 'BENEFICIARIES',
-        data: `${process.env.NEXT_PUBLIC_API_HOST_URL}/v1/beneficiaries/stats`,
-      },
-    ],
-    [],
-  );
-
-  const reportsCardsUI = useMemo(() => tempReport?.datacards, []);
-  const reportsCardsData = useMemo(
-    () => [
-      { name: 'BENEFICIARIES', data: 0 },
-      { name: 'BALANCE', data: tokenBalance.data || 'N/A' },
-      { name: 'DISTRIBUTED', data: 0 },
-      { name: 'CAMPAIGNS', data: 0 },
-    ],
-    [tokenBalance.data],
-  );
+  const newDatasource = useGetProjectDatasource(id);
 
   return (
     <div className=" bg-slate-100">
       {/* DATACARD SECTION */}
-      <DynamicReports data={reportsCardsData} ui={reportsCardsUI} />
+      {newDatasource?.data && newDatasource?.data[0]?.data?.ui.length && (
+        <DynamicReports
+          dataSources={newDatasource?.data[0]?.data?.dataSources}
+          ui={newDatasource?.data[0]?.data?.ui}
+        />
+      )}
+      {/* <DynamicReports data={reportsCardsData} ui={reportsCardsUI} /> */}
 
       {/* CAROUSEL AND PROJECT INFO SECTION */}
       <div className="grid grid-cols-3 mt-2 bg-card p-3 rounded-sm">
@@ -119,7 +107,7 @@ const ProjectInfo: FC<ProjectInfoProps> = ({ project }) => {
       </div>
 
       {/* CHARTS SECTION */}
-      <DynamicReports data={reportsChartsData} ui={reportsChartsUI} />
+      {/* <DynamicReports data={reportsChartsData} ui={reportsChartsUI} /> */}
     </div>
   );
 };

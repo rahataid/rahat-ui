@@ -10,9 +10,9 @@ import {
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/components/dropdown-menu';
 import {
-  Table as TableComponent,
   TableBody,
   TableCell,
+  Table as TableComponent,
   TableHead,
   TableHeader,
   TableRow,
@@ -21,6 +21,7 @@ import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { Table, flexRender } from '@tanstack/react-table';
 import { Settings2 } from 'lucide-react';
 
+import { useProjectList } from '@rahat-ui/query';
 import {
   Dialog,
   DialogClose,
@@ -38,10 +39,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
-import { usePagination, useProjectList } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import TableLoader from '../../components/table.loader';
-import CustomPagination from '../../components/customPagination';
+import Image from 'next/image';
 
 export type IVendor = {
   id: string;
@@ -61,7 +61,7 @@ type IProps = {
   selectedProject: UUID | undefined;
   setSelectedProject: (id: UUID) => void;
   handleAssignProject: VoidFunction;
-  projectModal: ProjectModalType
+  projectModal: ProjectModalType;
 };
 
 export default function VendorsTable({
@@ -69,7 +69,7 @@ export default function VendorsTable({
   selectedProject,
   setSelectedProject,
   handleAssignProject,
-  projectModal
+  projectModal,
 }: IProps) {
   const projectList = useProjectList({});
   const handleProjectChange = (d: UUID) => setSelectedProject(d);
@@ -117,63 +117,67 @@ export default function VendorsTable({
           </DropdownMenu>
         </div>
         <div className="rounded border h-[calc(100vh-180px)] bg-card">
-          <TableComponent>
-            <ScrollArea className="h-table1">
-              <TableHeader>
-                {table.getHeaderGroups().map((headerGroup) => (
-                  <TableRow key={headerGroup.id}>
-                    {headerGroup.headers.map((header) => {
-                      return (
-                        <TableHead key={header.id}>
-                          {header.isPlaceholder
-                            ? null
-                            : flexRender(
-                                header.column.columnDef.header,
-                                header.getContext(),
-                              )}
-                        </TableHead>
-                      );
-                    })}
-                  </TableRow>
-                ))}
-              </TableHeader>
-              <TableBody>
-                {table.getRowModel().rows?.length ? (
-                  table.getRowModel().rows.map((row) => (
-                    <TableRow
-                      key={row.id}
-                      data-state={row.getIsSelected() && 'selected'}
-                    >
-                      {row.getVisibleCells().map((cell) => (
-                        <TableCell key={cell.id}>
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext(),
-                          )}
-                        </TableCell>
-                      ))}
-                    </TableRow>
-                  ))
-                ) : (
-                  <TableRow>
-                    <TableCell
-                      colSpan={table.getAllColumns.length}
-                      className="h-24 text-center"
-                    >
-                      {projectList.isFetching ? (
-                        <TableLoader />
-                      ) : (
-                        'No data available.'
-                      )}
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </ScrollArea>
-          </TableComponent>
+          {table.getRowModel().rows?.length ? (
+            <>
+              <TableComponent>
+                <ScrollArea className="h-table1">
+                  <TableHeader>
+                    {table.getHeaderGroups().map((headerGroup) => (
+                      <TableRow key={headerGroup.id}>
+                        {headerGroup.headers.map((header) => {
+                          return (
+                            <TableHead key={header.id}>
+                              {header.isPlaceholder
+                                ? null
+                                : flexRender(
+                                    header.column.columnDef.header,
+                                    header.getContext(),
+                                  )}
+                            </TableHead>
+                          );
+                        })}
+                      </TableRow>
+                    ))}
+                  </TableHeader>
+                  <TableBody>
+                    {table.getRowModel().rows.map((row) => (
+                      <TableRow
+                        key={row.id}
+                        data-state={row.getIsSelected() && 'selected'}
+                      >
+                        {row.getVisibleCells().map((cell) => (
+                          <TableCell key={cell.id}>
+                            {flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext(),
+                            )}
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </ScrollArea>
+              </TableComponent>
+            </>
+          ) : (
+            <div className="w-full h-[calc(100vh-140px)]">
+              <div className="flex flex-col items-center justify-center">
+                <Image
+                  src="/noData.png"
+                  height={250}
+                  width={250}
+                  alt="no data"
+                />
+                <p className="text-medium text-base mb-1">No Data Available</p>
+                <p className="text-sm mb-4 text-gray-500">
+                  There are no vendors to display at the moment
+                </p>
+              </div>
+            </div>
+          )}
         </div>
       </div>
-      
+
       <Dialog open={projectModal.value} onOpenChange={projectModal.onToggle}>
         <DialogContent>
           <DialogHeader>

@@ -18,7 +18,7 @@ export const useTriggerStatementTableColumns = () => {
       accessorKey: 'title',
       header: 'Title',
       cell: ({ row }) => {
-        return row.getValue('title');
+        return <div className="w-80">{row.getValue('title')}</div>;
       },
     },
     {
@@ -67,11 +67,7 @@ export const useTriggerStatementTableColumns = () => {
       header: 'Type',
       cell: ({ row }) => {
         const isMandatory = row.getValue('isMandatory');
-        return (
-          <Badge>
-            {isMandatory ? 'Required' : 'Optional'}
-          </Badge>
-        );
+        return <Badge>{isMandatory ? 'Required' : 'Optional'}</Badge>;
       },
     },
     {
@@ -97,13 +93,13 @@ export const useTriggerStatementTableColumns = () => {
       header: 'Triggered At',
       cell: ({ row }) => {
         const triggeredAt = row.getValue('triggeredAt') as string;
-        if(triggeredAt){
-          const d =  new Date(triggeredAt)
-          const localeDate = d.toLocaleDateString()
-          const localeTime = d.toLocaleTimeString()
-          return `${localeDate} ${localeTime}`
+        if (triggeredAt) {
+          const d = new Date(triggeredAt);
+          const localeDate = d.toLocaleDateString();
+          const localeTime = d.toLocaleTimeString();
+          return `${localeDate} ${localeTime}`;
         }
-        return 'N/A'
+        return 'N/A';
       },
     },
     {
@@ -111,10 +107,10 @@ export const useTriggerStatementTableColumns = () => {
       header: 'Triggered By',
       cell: ({ row }) => {
         const triggeredBy = row.getValue('triggeredBy') as string;
-        if(triggeredBy){
-          return triggeredBy
+        if (triggeredBy) {
+          return triggeredBy;
         }
-        return 'N/A'
+        return 'N/A';
       },
     },
     {

@@ -43,10 +43,10 @@ export default function BeneficiaryGroupDetailView() {
   const tableData = React.useMemo(() => {
     if (groupDetails) {
       return groupDetails?.groupedBeneficiaries?.map((d: any) => ({
-        name: d.Beneficiary.pii.name,
-        phone: d.Beneficiary.pii.phone,
-        email: d.Beneficiary.pii.email,
-        location: d.Beneficiary.location,
+        name: d?.Beneficiary?.pii?.name,
+        phone: d?.Beneficiary?.pii?.phone,
+        email: d?.Beneficiary?.pii?.email,
+        location: d?.Beneficiary?.location,
       }));
     } else return [];
   }, [groupDetails]);
@@ -82,7 +82,7 @@ export default function BeneficiaryGroupDetailView() {
         <>
           <div className="flex justify-between mb-2">
             <div className=" flex gap-4 items-center">
-              <Back path={groupPath} />
+              <Back path={groupPath.concat('?backFromDetail=true')} />
               <h1 className="text-2xl font-semibold">{groupDetails?.name}</h1>
             </div>
             <div className="flex gap-4 items-center">

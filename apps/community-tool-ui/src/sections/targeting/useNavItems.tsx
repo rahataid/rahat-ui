@@ -6,13 +6,13 @@ export const useTargetingNavItems = () => {
   const menuItems: NavItem[] = [
     {
       title: 'Targeting',
-      children: [
-        {
-          title: 'Filters options',
-          path: `${paths.dashboard.targeting.root}`,
-          icon: <ListFilter size={18} strokeWidth={1.5} />,
-        },
-      ],
+      // children: [
+      //   {
+      //     title: 'Filters options',
+      //     path: `${paths.dashboard.targeting.root}`,
+      //     icon: <ListFilter size={18} strokeWidth={1.5} />,
+      //   },
+      // ],
     },
   ];
   return menuItems;

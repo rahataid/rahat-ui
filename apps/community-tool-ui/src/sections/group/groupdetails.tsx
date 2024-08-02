@@ -10,8 +10,8 @@ import {
   Download,
   MoreVertical,
   Share,
-  Tags,
-  Trash2,
+  Trash,
+  Wallet,
   X,
 } from 'lucide-react';
 
@@ -25,6 +25,7 @@ import React, { useEffect, useState } from 'react';
 
 import {
   useActiveFieldDefList,
+  useBulkGenerateVerificationLink,
   useCommunityGroupListByID,
   useCommunityGroupRemove,
   useCommunityGroupStore,
@@ -57,8 +58,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSub,
-  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
@@ -69,9 +68,9 @@ import Swal from 'sweetalert2';
 import * as XLSX from 'xlsx';
 import CustomPagination from '../../components/customPagination';
 import { SETTINGS_NAME } from '../../constants/settings.const';
+import { deHumanizeString, simpleString } from '../../utils';
 import GroupDetailTable from './group.table';
 import { useCommunityGroupDeailsColumns } from './useGroupColumns';
-import { deHumanizeString, simpleString } from '../../utils';
 
 type IProps = {
   uuid: string;
@@ -101,7 +100,7 @@ export default function GroupDetail({ uuid }: IProps) {
     perPage: 300,
   });
   const exportPinnedListBeneficiary = useExportPinnedListBeneficiary();
-
+  const bulkGenereateLink = useBulkGenerateVerificationLink();
   const {
     deleteSelectedBeneficiariesFromImport,
     setDeleteSelectedBeneficiariesFromImport,
@@ -176,11 +175,10 @@ export default function GroupDetail({ uuid }: IProps) {
     Swal.fire('Please select beneficiary to delete', '', 'warning');
   };
 
-  console.log('fieldDef', listFieldDef);
   const handleExportPinnedBeneficiary = () => {
     const filteredValue: any =
       settingsData &&
-      settingsData?.data?.rows?.find(
+      settingsData?.data?.find(
         (item: any) => item.name === SETTINGS_NAME.EXTERNAL_APPS,
       )?.value;
 
@@ -234,7 +232,6 @@ export default function GroupDetail({ uuid }: IProps) {
 
     const rawData = response?.data?.data;
 
-    console.log(rawData);
     const filteredData = rawData.map((item: Record<string, any>) => {
       const filteredItem: Record<string, any> = {};
       labels.forEach((key) => {
@@ -256,6 +253,32 @@ export default function GroupDetail({ uuid }: IProps) {
     setLabels([]);
   };
 
+  const handleVerificationLink = async () => {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: ' Send Verification Link',
+      icon: 'question',
+      showDenyButton: true,
+      confirmButtonText: 'Yes, I am sure!',
+      denyButtonText: 'No, cancel it!',
+      customClass: {
+        actions: 'my-actions',
+        cancelButton: 'order-1',
+        confirmButton: 'order-2',
+        denyButton: 'order-3',
+      },
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        await bulkGenereateLink.mutateAsync(uuid as string);
+      } else if (result.isDenied) {
+        Swal.fire(
+          'Cancelled',
+          `Generating Verification Link Canceled`,
+          'error',
+        );
+      }
+    });
+  };
   useEffect(() => {
     setDeleteSelectedBeneficiariesFromImport(
       Object.keys(selectedListItems).filter((key) => selectedListItems[key]),
@@ -286,31 +309,6 @@ export default function GroupDetail({ uuid }: IProps) {
           </div>
 
           <div className="flex gap-3">
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger
-                  onClick={removeBeneficiaryFromGroup}
-                  disabled={
-                    responseByUUID?.data?.beneficiariesGroup.length === 0
-                  }
-                >
-                  <Trash2
-                    className="cursor-pointer mr-3"
-                    size={20}
-                    strokeWidth={1.6}
-                    color={`${
-                      responseByUUID?.data?.beneficiariesGroup.length === 0
-                        ? 'grey'
-                        : 'red'
-                    }`}
-                  />
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Disconnect beneficiaries from Group</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-
             <DropdownMenu>
               <DropdownMenuTrigger>
                 <MoreVertical
@@ -327,18 +325,8 @@ export default function GroupDetail({ uuid }: IProps) {
                   }
                 >
                   <Share className="mr-2 h-4 w-4" />
-                  Export Beneficiaries
+                  Export
                 </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={handlePurge}
-                  disabled={
-                    responseByUUID?.data?.beneficiariesGroup.length === 0
-                  }
-                >
-                  <Delete className="mr-2 h-4 w-4" />
-                  Delete Beneficiary
-                </DropdownMenuItem>
-
                 <DropdownMenuItem
                   onClick={() => setOpen(true)}
                   disabled={
@@ -346,7 +334,29 @@ export default function GroupDetail({ uuid }: IProps) {
                   }
                 >
                   <Download className="mr-2 h-4 w-4" />
-                  Download Beneficiary
+                  Download
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={removeBeneficiaryFromGroup}
+                  disabled={
+                    responseByUUID?.data?.beneficiariesGroup.length === 0
+                  }
+                >
+                  <Delete className="mr-2 h-4 w-4" />
+                  Disconnect
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handleVerificationLink}>
+                  <Wallet className="mr-2 h-4 w-4" />
+                  Verify Wallet
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={handlePurge}
+                  disabled={
+                    responseByUUID?.data?.beneficiariesGroup.length === 0
+                  }
+                >
+                  <Trash className="mr-2 h-4 w-4" />
+                  Delete
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

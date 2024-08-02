@@ -2,10 +2,10 @@ name: Main EL CI/CD
 on:
   push:
     branches:
-      - 'main'
+      - 'main-el'
   pull_request:
     branches:
-      - 'main'
+      - 'main-el'
   workflow_dispatch:
 
 env:

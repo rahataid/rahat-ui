@@ -22,6 +22,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/card';
 import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
+import { parseEther } from 'viem';
 
 type DisburseFlowProps = {
   selectedBeneficiaries?: string[];
@@ -81,27 +82,29 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
     }
   };
 
-  // const handleDisburseToken = async () => {
-  //   if (stepData.treasurySource === 'MULTISIG') {
-  //     await disburseMultiSig.mutateAsync({
-  //       amount: String(+stepData.disburseAmount * selectedBeneficiaries.length),
-  //       projectUUID: id,
-  //       beneficiaryAddresses: selectedBeneficiaries as `0x${string}`[],
-  //       disburseMethod: stepData.treasurySource,
-  //       rahatTokenAddress: contractSettings?.rahattoken?.address,
-  //       c2cProjectAddress: contractSettings?.c2cproject?.address,
-  //     });
-  //     return;
-  //   }
-  //   await disburseToken.mutateAsync({
-  //     amount: parseEther(stepData.disburseAmount),
-  //     beneficiaryAddresses: selectedBeneficiaries as `0x${string}`[],
-  //     rahatTokenAddress: contractSettings?.rahattoken?.address,
-  //     c2cProjectAddress: contractSettings?.c2cproject?.address,
-  //     disburseMethod: stepData.treasurySource,
-  //     projectUUID: id,
-  //   });
-  // };
+  const handleDisburseToken = async () => {
+    if (stepData.treasurySource === 'MULTISIG') {
+      await disburseMultiSig.mutateAsync({
+        amount: String(
+          +stepData.disburseAmount * selectedBeneficiaries?.length ?? 0,
+        ),
+        projectUUID: id,
+        beneficiaryAddresses: selectedBeneficiaries as `0x${string}`[],
+        disburseMethod: stepData.treasurySource,
+        rahatTokenAddress: contractSettings?.rahattoken?.address,
+        c2cProjectAddress: contractSettings?.c2cproject?.address,
+      });
+      return;
+    }
+    await disburseToken.mutateAsync({
+      amount: parseEther(stepData.disburseAmount),
+      beneficiaryAddresses: selectedBeneficiaries as `0x${string}`[],
+      rahatTokenAddress: contractSettings?.rahattoken?.address,
+      c2cProjectAddress: contractSettings?.c2cproject?.address,
+      disburseMethod: stepData.treasurySource,
+      projectUUID: id,
+    });
+  };
   const steps = [
     {
       id: 'step1',
@@ -127,6 +130,7 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
       title: 'Disburse Amount',
       component: (
         <Step2DisburseAmount
+          selectedBeneficiaries={selectedBeneficiaries}
           value={stepData.disburseAmount}
           onChange={handleStepDataChange}
           projectSubgraphDetails={projectSubgraphDetails}
@@ -248,11 +252,11 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
                 Back
               </Button>
               <Button
-                // onClick={
-                //   steps[currentStep].id === 'confirm_send'
-                //     ? handleDisburseToken
-                //     : handleNext
-                // }
+                onClick={
+                  steps[currentStep].id === 'confirm_send'
+                    ? handleDisburseToken
+                    : handleNext
+                }
                 disabled={disburseMultiSig.isPending || disburseToken.isPending}
               >
                 {currentStep === steps.length - 1 ? 'Confirm' : 'Proceed'}

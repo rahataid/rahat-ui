@@ -11,12 +11,14 @@ type Step2DisburseAmountProps = {
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   projectSubgraphDetails: any;
+  selectedBeneficiaries: string[];
   tokenName?: string;
 };
 
 export default function Step2DisburseAmount({
   onChange,
   value,
+  selectedBeneficiaries,
   projectSubgraphDetails,
   tokenName = 'USDC',
 }: Step2DisburseAmountProps) {

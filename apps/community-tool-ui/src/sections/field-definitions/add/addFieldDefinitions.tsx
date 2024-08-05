@@ -196,6 +196,7 @@ export default function AddFieldDefinitions({ handleTabChange }: Iprops) {
                       <FormControl>
                         <TagInput
                           {...field}
+                          truncate={25}
                           activeTagIndex={activeTagIndex}
                           setActiveTagIndex={setActiveTagIndex}
                           placeholder="Enter value and press ENTER"

@@ -61,11 +61,13 @@ export default function EditProfile({ userDetail }: Iprops) {
     });
   }, [form, userDetail]);
   const handleEditUser = async (data: any) => {
+    console.log(data);
     await updateUser.mutateAsync({
       payload: {
         ...data,
         wallet: data?.walletAddress,
         phone: data?.phone,
+        email: data?.email,
       },
     });
   };

@@ -34,64 +34,103 @@ import {
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { CAMPAIGN_TYPES } from '@rahat-ui/types';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
-import { useListTransport } from '@rumsan/communication-query';
-import { useProjectBeneficiaries } from '@rahat-ui/query';
-import { useParams } from 'next/navigation';
-import { UUID } from 'crypto';
-import { exportDataToExcel } from 'apps/rahat-ui/src/utils';
+import { useListCampaign, useListTransport } from '@rumsan/communication-query';
+import { Eye, Upload } from 'lucide-react';
+import { useSecondPanel } from 'apps/rahat-ui/src/providers/second-panel-provider';
+import CampaignDetailSplitView from './campaign.detail.split.view';
+
 export type TextDetail = {
   _id: string;
   to: string;
   date: string;
 };
 
-export const columns: ColumnDef<TextDetail>[] = [
-  {
-    accessorKey: 'to',
-    header: 'To',
-    cell: ({ row }) => <div>{row.getValue('to')}</div>,
-    filterFn: 'includesString',
-  },
-  {
-    accessorKey: 'duration',
-    header: 'Duration',
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue('duration')}</div>
-    ),
-  },
-  {
-    accessorKey: 'status',
-    header: 'Status',
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue('status')}</div>
-    ),
-  },
-  {
-    accessorKey: 'attempts',
-    header: 'Attempts',
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue('attempts')}</div>
-    ),
-  },
-  {
-    accessorKey: 'createdAt',
-    header: 'Date',
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue('createdAt')}</div>
-    ),
-  },
-];
+export default function CommunicationLogTable() {
+  const { setSecondPanelComponent, closeSecondPanel } = useSecondPanel();
 
-type IProps = {
-  data: any;
-};
-export default function CommunicationLogTable({ data }: IProps) {
-  const { id: projectID } = useParams();
+  const openSplitDetailView = (rowDetail: any) => {
+    setSecondPanelComponent(
+      <>
+        <CampaignDetailSplitView
+          details={rowDetail}
+          closeSecondPanel={closeSecondPanel}
+        />
+      </>,
+    );
+  };
+  const columns: ColumnDef<TextDetail>[] = [
+    {
+      accessorKey: 'createdAt',
+      header: 'Date',
+      cell: ({ row }) => (
+        <div className="capitalize">
+          {new Date(row.getValue('createdAt')).toLocaleString()}
+        </div>
+      ),
+    },
+    {
+      accessorKey: 'name',
+      header: 'Title',
+      cell: ({ row }) => (
+        <div className="capitalize">{row.getValue('name')}</div>
+      ),
+    },
+    {
+      accessorKey: 'upload',
+      header: 'Upload',
+      cell: ({ row }) => (
+        <div className="capitalize">
+          {row.getValue('upload')?.length < 10
+            ? row.getValue('upload')
+            : row.getValue('upload').substring(0, 10) + '...'}
+        </div>
+      ),
+    },
+    {
+      accessorKey: 'type',
+      header: 'Type',
+      cell: ({ row }) => (
+        <div className="capitalize">{row.getValue('type')}</div>
+      ),
+    },
+    {
+      accessorKey: 'totalAudiences',
+      header: 'Audiences',
+      cell: ({ row }) => (
+        <div className="capitalize">{row.getValue('totalAudiences')}</div>
+      ),
+    },
+    {
+      accessorKey: 'status',
+      header: 'Status',
+      cell: ({ row }) => (
+        <div className="capitalize">{row.getValue('status')}</div>
+      ),
+    },
+    {
+      id: 'actions',
+      enableHiding: false,
+      cell: ({ row }) => {
+        return (
+          <Eye
+            className="hover:text-primary cursor-pointer"
+            size={20}
+            strokeWidth={1.5}
+            onClick={() => openSplitDetailView(row.original)}
+          />
+        );
+      },
+    },
+  ];
+
+  const {
+    data: campaignData,
+    isSuccess,
+    isLoading,
+    refetch,
+  } = useListCampaign();
 
   const { data: transportData } = useListTransport();
-  const projectBeneficiaries = useProjectBeneficiaries({
-    projectUUID: projectID as UUID,
-  });
 
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -103,105 +142,64 @@ export default function CommunicationLogTable({ data }: IProps) {
     });
   const [rowSelection, setRowSelection] = React.useState({});
   const [tableData, setTableData] = React.useState([]);
-  const tData = React.useMemo(() => {
-    return data
-      ?.filter((data) => data?.transport?.name.toLowerCase() === 'email')
-      ?.map((item: any) => ({
-        createdAt: new Date(item.createdAt).toLocaleString(),
-        status: item?.status,
-        to:
-          item?.transport.name.toLowerCase() ===
-          CAMPAIGN_TYPES.EMAIL.toLowerCase()
-            ? item?.details?.envelope?.to
-            : item?.transport.name.toLowerCase() ===
-              CAMPAIGN_TYPES.IVR.toLowerCase()
-            ? item?.audience?.details?.phone
-            : item?.details?.to,
-      }));
-  }, [data]);
+  const campaignTableData: any = React.useMemo(() => {
+    const result = Array.isArray(campaignData?.data?.rows)
+      ? campaignData?.data?.rows.map((campaign: any) => {
+          if (campaign.type === CAMPAIGN_TYPES.IVR) {
+            return {
+              ...campaign,
+              upload: campaign?.details?.ivrFileName,
+            };
+          } else {
+            return {
+              ...campaign,
+              upload: campaign?.details?.message || campaign?.details?.body,
+            };
+          }
+        })
+      : [];
+
+    return result;
+  }, [isSuccess, campaignData?.data]);
 
   React.useEffect(() => {
-    setTableData(tData);
-  }, [tData]);
+    setTableData(campaignTableData);
+  }, [campaignTableData]);
 
-  const filterData = (data: any, id: string, key?: string) => {
-    return data
-      ?.filter((item) => {
-        if (key === 'type') {
-          if (item?.transport.name.toLowerCase() === id.toLowerCase())
-            return item;
-        } else if (key === 'status') {
-          if (item?.status.toLowerCase() === id.toLowerCase()) return item;
-        } else {
-          if (item?.campaign.name.toLowerCase() === id.toLowerCase())
-            return item;
+  const filterData: any = (id: string, key?: string) => {
+    const lowerCaseId = id.toLowerCase();
+
+    return campaignData?.data.rows
+      ?.filter((item: any) => {
+        if (key === 'type' && item?.transport.toLowerCase() === lowerCaseId) {
+          return true;
         }
+        if (key === 'status' && item?.status.toLowerCase() === lowerCaseId) {
+          return true;
+        }
+        return false;
       })
-      ?.map((item) => {
-        const baseData = {
-          createdAt: new Date(item.createdAt).toLocaleString(),
-          status: item?.status,
-          to: item?.audience?.details?.phone,
+      ?.map((item: any) => {
+        return {
+          ...item,
+          upload:
+            item?.transport.toLowerCase() === CAMPAIGN_TYPES.IVR.toLowerCase()
+              ? item?.details?.ivrFileName
+              : item?.details?.message || item?.details?.body,
         };
-
-        if (item?.campaign?.type.toLowerCase() === 'ivr') {
-          return {
-            ...baseData,
-            duration: item?.details?.duration || 0 + ' seconds',
-            attempts: 1,
-          };
-        } else {
-          return {
-            ...baseData,
-            to:
-              item?.transport.name.toLowerCase() ===
-              CAMPAIGN_TYPES.EMAIL.toLowerCase()
-                ? item?.details?.envelope?.to
-                : item?.details?.to,
-          };
-        }
       });
-  };
-
-  const setColumnVisibilityByType = (id: string) => {
-    if (id.toLowerCase() === 'ivr') {
-      setColumnVisibility({
-        duration: true,
-      });
-    } else {
-      setColumnVisibility({
-        duration: false,
-      });
-    }
   };
 
   const handleFilter = (id: string, key?: string) => {
     let filteredData;
     if (!key) {
-      filteredData = filterData(data, id);
-      setColumnVisibilityByType('ivr');
+      filteredData = filterData(id);
     } else {
-      filteredData = filterData(data, id, key);
-      setColumnVisibilityByType(id);
+      filteredData = filterData(id, key);
     }
     setTableData(filteredData);
   };
-  const handleExport = () => {
-    // filter failed data
-    const failedData = data?.filter((data) => {
-      if (data?.status.toLowerCase() === 'failed') {
-        return data?.audience?.details?.phone;
-      }
-    });
 
-    const mappedData = projectBeneficiaries.data.data.filter((data) => {
-      if (failedData.includes(data.phone)) {
-        return data;
-      }
-    });
-
-    exportDataToExcel(mappedData);
-  };
   const table = useReactTable({
     data: tableData || [],
     columns,
@@ -227,33 +225,14 @@ export default function CommunicationLogTable({ data }: IProps) {
       <>
         <div className="flex justify-between gap-2">
           <Input
-            placeholder="Search Phone Number"
-            value={(table.getColumn('to')?.getFilterValue() as string) ?? ''}
+            placeholder="Search Campaign Name"
+            value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
             onChange={(event) =>
-              table.getColumn('to')?.setFilterValue(event.target.value)
+              table.getColumn('name')?.setFilterValue(event.target.value)
             }
             className="max-w-sm"
           />
           <div className="flex  gap-2">
-            {/* export failed ivr and sms  */}
-            <Button onClick={handleExport}>Export failed</Button>
-
-            {/* filter by campaign  */}
-            <Select onValueChange={(e) => handleFilter(e)}>
-              <SelectTrigger className="max-w-32">
-                <SelectValue placeholder="Campaign" />
-              </SelectTrigger>
-              <SelectContent>
-                {data?.map((data) => {
-                  return (
-                    <SelectItem key={data.id} value={data.campaign.name}>
-                      {data.campaign.name}
-                    </SelectItem>
-                  );
-                })}
-              </SelectContent>
-            </Select>
-
             {/* filter by campaign  */}
             <Select onValueChange={(e) => handleFilter(e, 'status')}>
               <SelectTrigger className="max-w-32">

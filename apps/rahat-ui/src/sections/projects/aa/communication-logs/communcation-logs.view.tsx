@@ -12,11 +12,6 @@ import CommunicationLogTable from './communicationLogTable';
 export default function CommunicationLogsView() {
   const { id: projectID } = useParams();
   const { data: commsStats } = useCommunicationStats(projectID as UUID);
-  const { data: commsLogs, isLoading } = useGetCommunicationLogs(
-    projectID as UUID,
-  );
-
-  if (isLoading) return <TableLoader />;
 
   const findData = (name: string, type: string) => {
     return commsStats
@@ -31,14 +26,14 @@ export default function CommunicationLogsView() {
   const emailSent = findData('CAMPAIGN', 'EMAIL');
   const smsSent = findData('CAMPAIGN', 'SMS');
   const ivrSuccessRate = commsStats?.find(
-    (stats) => stats.name === 'IVRSUCCESSRATE',
+    (stats: any) => stats.name === 'IVRSUCCESSRATE',
   )?.data;
   const averageIvrAttempts = commsStats?.find(
-    (stats) => stats.name === 'AVERAGEIVRATTEMPT',
+    (stats: any) => stats.name === 'AVERAGEIVRATTEMPT',
   )?.data;
 
   const averageIvrDuration = commsStats?.find(
-    (stats) => stats.name === 'IVRDURATION',
+    (stats: any) => stats.name === 'IVRDURATION',
   )?.data;
 
   const commStats = [
@@ -110,7 +105,7 @@ export default function CommunicationLogsView() {
         })}
       </div>
       <div className=" mt-4">
-        <CommunicationLogTable data={commsLogs} />
+        <CommunicationLogTable />
       </div>
     </div>
   );

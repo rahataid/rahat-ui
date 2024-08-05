@@ -84,7 +84,7 @@ export default function TargetSelectForm() {
     setTimeout(() => {
       router.push(`/targeting/filters?targetUUID=${uuid}`);
       setLoading(false);
-    }, 5000);
+    }, 7000);
   };
 
   return (

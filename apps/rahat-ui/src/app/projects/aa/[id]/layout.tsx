@@ -12,6 +12,7 @@ import {
   useAAProjectSettingsHazardType,
   useProjectContractSettings,
   useProjectSettingsStore,
+  useProjectSubgraphSettings,
 } from '@rahat-ui/query';
 import GarphQlProvider from 'libs/query/src/lib/aa/graph/graphql-query-client';
 
@@ -25,7 +26,8 @@ export default function ProjectLayoutRoot({
   const uuid = useParams().id as UUID;
   useAAProjectSettingsDatasource(uuid);
   useProjectContractSettings(uuid);
-  useAAProjectSettingsHazardType(uuid)
+  useAAProjectSettingsHazardType(uuid);
+  useProjectSubgraphSettings(uuid);
 
   // const dataSources = useProjectSettingsStore(
   //   (s) => s.settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.DATASOURCE]);

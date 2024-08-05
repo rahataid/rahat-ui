@@ -24,6 +24,7 @@ import { useAuthStore } from '@rumsan/react-query/auth';
 import ThemeSwitch from 'apps/rahat-ui/src/components/themeToggleSwitch';
 import ConnectWallet from 'apps/rahat-ui/src/components/wallet/connect-wallet';
 import { paths } from 'apps/rahat-ui/src/routes/paths';
+import { toast } from 'react-toastify';
 
 export function ProjectNav({
   //   data = [],
@@ -47,7 +48,8 @@ export function ProjectNav({
   const handleLogout = () => {
     clearUser();
     clearAuth();
-    window.location.reload();
+    toast.success('Logged out successfully.');
+    setTimeout(() => window.location.reload(), 1000);
   };
 
   return (

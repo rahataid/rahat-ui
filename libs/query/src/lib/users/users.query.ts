@@ -38,9 +38,9 @@ export const useUserCreate = () => {
       },
       onError: (error: any) => {
         const errorMessage = error.response.data.message.includes(
-          'Unique constraint failed on the fields: (`service`,`serviceId`)',
+          'Unique constraint failed',
         )
-          ? 'Duplicate Entry'
+          ? 'User already exist'
           : error.response.data.message;
         Swal.fire(
           'Error',

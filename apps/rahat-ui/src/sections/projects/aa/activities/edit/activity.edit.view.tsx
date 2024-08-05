@@ -479,7 +479,7 @@ export default function EditActivity() {
                       <FormMessage />
                       <p className="text-xs text-orange-500">
                         *Files must be under 5 MB and of type JPEG, PNG, BMP,
-                        XLSX, or CSV.
+                        PDF, XLSX, or CSV.
                       </p>
                       {documents?.map((file) => (
                         <div

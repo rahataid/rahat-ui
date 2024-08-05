@@ -110,7 +110,10 @@ export default function AuthPage() {
                     {error?.response?.data?.message}
                   </p>
                 )}
-                <Button type="submit" disabled={isPending || !isEmailValid}>
+                <Button
+                  type="submit"
+                  disabled={isPending || !isEmailValid || !address}
+                >
                   Send OTP
                 </Button>
               </div>
@@ -122,9 +125,6 @@ export default function AuthPage() {
                   <Label className="sr-only" htmlFor="otp">
                     OTP
                   </Label>
-                  {otpinputError && (
-                    <div className="text-red-700">Please enter valid OTP</div>
-                  )}
                   <Input
                     id="otp"
                     placeholder="Enter OTP"
@@ -146,6 +146,11 @@ export default function AuthPage() {
                       }
                     }}
                   />
+                  {otpinputError && (
+                    <div className="text-red-700 text-sm">
+                      Please enter valid OTP
+                    </div>
+                  )}
                 </div>
                 <Button type="submit" disabled={otp?.length !== 6}>
                   Verify
@@ -153,36 +158,22 @@ export default function AuthPage() {
               </div>
             </form>
           )}
-          <p className="px-8 text-center text-sm text-muted-foreground">
-            {!optSent ? "Don't have an account" : "Didn't get one"}?
-            {/* <Button
-              disabled={sendOtpMutation.isPending}
-              onClick={onSendOtpFormSubmit}
-              className="font-medium ml-2"
-            >
-              {!challenge.length ? 'Get Started' : 'Resend'}
-            </Button> */}
-            <span
-              className="underline font-medium ml-2 cursor-pointer"
-              onClick={(e) => {
-                setOtp('');
-                onRequestOtp(e, true);
-              }}
-            >
-              {!optSent ? 'Get Started' : 'Resend'}
-            </span>
-            {/* {optSent ? (
-              <Button
-                className="ml-2"
-                onClick={() => {
-                  setAddress('');
-                  setChallenge('');
+
+          {optSent && (
+            <p className="px-8 text-center text-sm text-muted-foreground">
+              Didn't get one?
+              <span
+                className="underline font-medium ml-2 cursor-pointer"
+                onClick={(e) => {
+                  setOtp('');
+                  onRequestOtp(e, true);
                 }}
               >
-                Go Back
-              </Button>
-            ) : null} */}
-          </p>
+                Resend
+              </span>
+            </p>
+          )}
+
           {!optSent && (
             <p className="text-muted-foreground text-sm">
               By clicking continue, you agree to our{' '}

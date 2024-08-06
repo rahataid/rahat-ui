@@ -11,6 +11,12 @@ import { CalendarIcon } from 'lucide-react';
 import { formatDate, humanizeString } from '../utils';
 import useFormStore from './form.store';
 import { format } from 'date-fns';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/tooltip';
 
 export default function DateInput({ formField }: any) {
   const { extras, setExtras }: any = useFormStore();
@@ -27,7 +33,16 @@ export default function DateInput({ formField }: any) {
 
   return (
     <div>
-      <Label>{humanizeString(formField.name)}</Label>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger>
+            <Label>{humanizeString(formField.name)}</Label>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>{formField.name}</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
       <FormItem className="flex flex-col">
         <Popover>
           <PopoverTrigger asChild>

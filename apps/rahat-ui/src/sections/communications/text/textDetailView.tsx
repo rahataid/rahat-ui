@@ -14,7 +14,7 @@ import TextDetailTable from './textDetailTable';
 import { useGetCampaign } from '@rumsan/communication-query';
 export default function TextDetailView() {
   const params = useParams<{ tag: string; id: string }>();
-  const { data, isLoading} = useGetCampaign({
+  const { data, isLoading } = useGetCampaign({
     id: Number(params.id),
   });
 
@@ -30,6 +30,7 @@ export default function TextDetailView() {
           <div className="mt-2 grid grid-cols-3 gap-5">
             <div className="col-span-2">
               <InfoCard
+                id={data?.data?.id}
                 name={data?.data?.name}
                 startTime={
                   data?.data?.startTime &&
@@ -65,6 +66,7 @@ export default function TextDetailView() {
           <TextDetailTable
             data={data?.data?.communicationLogs}
             type={data?.data?.type || ''}
+            id={params.id}
           />
           {/* </CardContent>
             </Card>

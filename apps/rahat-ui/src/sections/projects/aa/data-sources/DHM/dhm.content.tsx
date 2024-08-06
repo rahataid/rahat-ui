@@ -3,7 +3,7 @@ import DHMMap from './map';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import DHMBulletinDialog from './dhm.bulletin.edit.dialog';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import { MapWrapper } from '@rahat-ui/shadcn/src/components/maps';
+import { StyledMapWrapper } from '@rahat-ui/shadcn/src/components/maps';
 
 const renderStatus = ({ readinessLevel, activationLevel, waterLevel }: any) => {
   let status;
@@ -141,14 +141,14 @@ export default function DHMContent({ data }: any) {
   return (
     <ScrollArea className="h-[calc(100vh-215px)]">
       <div className="grid grid-cols-5 gap-4">
-        <MapWrapper className="relative col-span-3 rounded-md 2xl:h-[400px] overflow-hidden">
+        <StyledMapWrapper className="relative col-span-3 rounded-md 2xl:h-[400px] overflow-hidden">
           <DHMMap
             basin={latestData?.data?.basin}
             lat={latestData?.data?.point?.coordinates[1]}
             lng={latestData?.data?.point?.coordinates[0]}
             status={latestData?.data?.status}
           />
-        </MapWrapper>
+        </StyledMapWrapper>
         <div className="bg-card p-4 rounded col-span-2">
           <h1 className="font-semibold text-lg mb-4">Real Time Status</h1>
           <div className="grid grid-cols-2 gap-4">

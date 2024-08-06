@@ -2,10 +2,10 @@ name: Stage EL CI/CD
 on:
   push:
     branches:
-      - 'stage'
+      - 'stage-el'
   pull_request:
     branches:
-      - 'stage'
+      - 'stage-el'
   workflow_dispatch:
 
 env:

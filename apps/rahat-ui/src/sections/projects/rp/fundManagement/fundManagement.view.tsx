@@ -347,7 +347,7 @@ const FundManagementView = () => {
                 onClick={handleAddDisburse}
                 className="mt-4 bg-blue-500 text-white px-4 py-2 rounded"
               >
-                Create Disbursement Plan
+                Edit Disbursement Plan
               </Button>
             </div>
           </div>

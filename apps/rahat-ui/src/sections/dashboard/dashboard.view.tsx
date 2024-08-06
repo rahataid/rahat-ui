@@ -49,8 +49,6 @@ export default function DashboardView() {
 
   const newDatasource = useGetDataSource();
 
-  console.log(newDatasource);
-
   return (
     <div className="bg-secondary">
       <Tabs defaultValue="list">

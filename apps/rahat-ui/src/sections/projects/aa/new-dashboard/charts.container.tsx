@@ -13,9 +13,9 @@ export default function ChartsContainer({ allStats = [] }: IProps) {
   )[0]?.data;
 
   const vulnerableStatusStats = allStats
-    ?.filter((data: any) => data.name === "BENEFICIARY_COUNTBYVULNERABILITY")[0]
+    ?.filter((data: any) => data.name === 'BENEFICIARY_COUNTBYVULNERABILITY')[0]
     ?.data?.map((item: any) => ({ label: item.id, value: item.count }));
- 
+
   const bankStatusStats = allStats
     ?.filter((data: any) => data.name === 'BENEFICIARY_BANKSTATUS')[0]
     ?.data?.map((item: any) => ({ label: item.id, value: item.count }));
@@ -33,14 +33,14 @@ export default function ChartsContainer({ allStats = [] }: IProps) {
   )[0]?.data;
 
   const pieChartData = [
-    {
-      title: 'Cash Transfer Method',
-      series: [
-        { label: 'Mobile Wallet', value: 1384 },
-        { label: 'Bank', value: 555 },
-      ],
-      colors: ['#4CAF50', '#E0CA52'],
-    },
+    // {
+    //   title: 'Cash Transfer Method',
+    //   series: [
+    //     { label: 'Mobile Wallet', value: 1384 },
+    //     { label: 'Bank', value: 555 },
+    //   ],
+    //   colors: ['#4CAF50', '#E0CA52'],
+    // },
     {
       title: 'Household Phone Availability',
       series: phoneStatusStats,
@@ -83,7 +83,9 @@ export default function ChartsContainer({ allStats = [] }: IProps) {
         <div className="rounded-sm bg-card shadow-md">
           <div className="p-4">
             <h1 className="text-md font-medium mb-1">Vulnerability Status</h1>
-            <p className="text-primary font-semibold text-2xl">{vulnerableStatusStats?.length ?? '0'}</p>
+            <p className="text-primary font-semibold text-2xl">
+              {vulnerableStatusStats?.length ?? '0'}
+            </p>
           </div>
           <Separator />
           <div className="flex justify-center">

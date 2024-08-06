@@ -62,10 +62,10 @@ export default function ListView({
         <div className="flex items-center mb-2">
           <Input
             placeholder="Search by house hold head name..."
-            name="firstName"
+            name="name"
             value={
               (table.getColumn('firstName')?.getFilterValue() as string) ??
-              filters?.firstName
+              filters?.name
             }
             onChange={(event) => handleFilterChange(event)}
             className="rounded mr-2"

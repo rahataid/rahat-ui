@@ -7,6 +7,7 @@ import getIcon from '../../utils/getIcon';
 import PieChartWrapper from './pie-chart-wrapper';
 import DonutWrapper from './donut-wrapper';
 import DataCardWrapper from './datacard-wrapper';
+import MapWrapper from './map-wrapper';
 
 type DataSource = {
   type: 'stats' | 'url' | 'blockchain';
@@ -16,7 +17,7 @@ type DataSource = {
 
 type UIComponent = {
   title: string;
-  type: 'dataCard' | 'pie' | 'bar' | 'stacked_bar' | 'donut';
+  type: 'dataCard' | 'pie' | 'bar' | 'stacked_bar' | 'donut' | 'map';
   props: { [key: string]: any };
   dataSrc: string | any;
   dataMap: string | null;
@@ -142,6 +143,13 @@ const DynamicReports: FC<DynamicReportsProps> = ({
               source={source}
               actualData={actualData}
             />
+          </ErrorBoundary>
+        );
+
+      case 'map':
+        return (
+          <ErrorBoundary>
+            <MapWrapper component={component} actualData={actualData} />
           </ErrorBoundary>
         );
 

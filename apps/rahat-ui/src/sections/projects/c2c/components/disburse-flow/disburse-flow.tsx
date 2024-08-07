@@ -9,7 +9,6 @@ import {
   useC2CProjectSubgraphStore,
   useDisburseTokenToBeneficiaries,
   useDisburseTokenUsingMultisig,
-  // useGetTreasurySourcesSettings,
   useProject,
   useProjectSettingsStore,
 } from '@rahat-ui/query';
@@ -47,9 +46,6 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
   );
   const disburseToken = useDisburseTokenToBeneficiaries();
   const disburseMultiSig = useDisburseTokenUsingMultisig();
-  // TODO: use this
-  // const { data: treasurySources } = useGetTreasurySourcesSettings(id);
-  // TODO: DONOT Use this
   const { data: projectData } = useProject(id);
   const treasurySources =
     (projectData?.data?.extras?.treasury?.treasurySources as string[]) || [];
@@ -114,7 +110,6 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
           value={stepData.treasurySource}
           onChange={handleStepDataChange}
           projectSubgraphDetails={projectSubgraphDetails}
-          // treasurySources={treasurySources?.treasurysources}
           treasurySources={treasurySources}
         />
       ),
@@ -138,9 +133,7 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
       ),
       validation: {
         noAmountEntered: {
-          condition: () => {
-            return !stepData.disburseAmount;
-          },
+          condition: () => !stepData.disburseAmount,
           message: 'Please enter an amount',
         },
       },
@@ -168,9 +161,6 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
   }, [disburseMultiSig.isSuccess, disburseToken.isSuccess]);
 
   const renderComponent = () => {
-    // if (!!stepData.treasurySource && disburseMultiSig.isSuccess) {
-    //   return <div>Disbursement Successful</div>;
-    // }
     if (disburseMultiSig.isPending) {
       return (
         <div className="flex items-center justify-center h-64">
@@ -202,29 +192,62 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
     }
     return steps[currentStep].component;
   };
+
   return (
     <Card className="p-2 mx-2 flex flex-col justify-evenly h-[calc(100vh-500px)]">
       <div className="ml-32 my-4">
         <ol className="flex items-center w-full text-sm text-gray-500 font-medium sm:text-base">
-          <li className="flex md:w-full items-center text-primary  sm:after:content-[''] after:w-full after:h-1 after:border-b after:border-gray-200 after:border-1 after:hidden sm:after:inline-block after:mx-4 xl:after:mx-8 ">
+          <li
+            className={`flex md:w-full items-center ${
+              currentStep >= 0 ? 'text-primary' : 'text-gray-600'
+            } sm:after:content-[''] after:w-full after:h-1 after:border-b after:border-gray-200 after:border-1 after:hidden sm:after:inline-block after:mx-4 xl:after:mx-8 `}
+          >
             <div className="flex items-center whitespace-nowrap after:content-['/'] sm:after:hidden after:mx-2 ">
-              <span className="w-6 h-6 bg-primary border border-white rounded-full flex justify-center items-center mr-3 text-sm text-white lg:w-10 lg:h-10">
+              <span
+                className={`w-6 h-6 ${
+                  currentStep >= 0 ? 'bg-primary' : 'bg-gray-100'
+                } border ${
+                  currentStep >= 0 ? 'border-white' : 'border-gray-200'
+                } rounded-full flex justify-center items-center mr-3 text-sm ${
+                  currentStep >= 0 ? 'text-white' : 'text-gray-600'
+                } lg:w-10 lg:h-10`}
+              >
                 1
               </span>{' '}
               Step 1
             </div>
           </li>
-          <li className="flex md:w-full items-center text-gray-600 sm:after:content-[''] after:w-full after:h-1 after:border-b after:border-gray-200 after:border-1 after:hidden sm:after:inline-block after:mx-4 xl:after:mx-8 ">
+          <li
+            className={`flex md:w-full items-center ${
+              currentStep >= 1 ? 'text-primary' : 'text-gray-600'
+            } sm:after:content-[''] after:w-full after:h-1 after:border-b after:border-gray-200 after:border-1 after:hidden sm:after:inline-block after:mx-4 xl:after:mx-8 `}
+          >
             <div className="flex items-center whitespace-nowrap after:content-['/'] sm:after:hidden after:mx-2 ">
-              <span className="w-6 h-6 bg-gray-100 border border-gray-200 rounded-full flex justify-center items-center mr-3 lg:w-10 lg:h-10">
+              <span
+                className={`w-6 h-6 ${
+                  currentStep >= 1 ? 'bg-primary text-white' : 'bg-gray-100'
+                } border ${
+                  currentStep >= 1 ? 'border-white' : 'border-gray-200'
+                } rounded-full flex justify-center items-center mr-3 lg:w-10 lg:h-10`}
+              >
                 2
               </span>{' '}
               Step 2
             </div>
           </li>
-          <li className="flex md:w-full items-center text-gray-600 ">
+          <li
+            className={`flex md:w-full items-center ${
+              currentStep >= 2 ? 'text-primary' : 'text-gray-600'
+            }`}
+          >
             <div className="flex items-center  ">
-              <span className="w-6 h-6 bg-gray-100 border border-gray-200 rounded-full flex justify-center items-center mr-3 lg:w-10 lg:h-10">
+              <span
+                className={`w-6 h-6 ${
+                  currentStep >= 2 ? 'bg-primary text-white' : 'bg-gray-100'
+                } border ${
+                  currentStep >= 2 ? 'border-white' : 'border-gray-200'
+                } rounded-full flex justify-center items-center mr-3 lg:w-10 lg:h-10`}
+              >
                 3
               </span>{' '}
               Step 3
@@ -239,31 +262,27 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
         <div>{renderComponent()}</div>
       </CardContent>
       <CardFooter className="flex justify-end">
-        {
-          // !disburseToken.isSuccess &&
-          // !disburseMultiSig.isSuccess &&
-          !disburseMultiSig.isPending && (
-            <div>
-              <Button
-                className="mr-3"
-                onClick={handlePrevious}
-                disabled={currentStep === 0}
-              >
-                Back
-              </Button>
-              <Button
-                onClick={
-                  steps[currentStep].id === 'confirm_send'
-                    ? handleDisburseToken
-                    : handleNext
-                }
-                disabled={disburseMultiSig.isPending || disburseToken.isPending}
-              >
-                {currentStep === steps.length - 1 ? 'Confirm' : 'Proceed'}
-              </Button>
-            </div>
-          )
-        }
+        {!disburseMultiSig.isPending && (
+          <div>
+            <Button
+              className="mr-3"
+              onClick={handlePrevious}
+              disabled={currentStep === 0}
+            >
+              Back
+            </Button>
+            <Button
+              onClick={
+                steps[currentStep].id === 'confirm_send'
+                  ? handleDisburseToken
+                  : handleNext
+              }
+              disabled={disburseMultiSig.isPending || disburseToken.isPending}
+            >
+              {currentStep === steps.length - 1 ? 'Confirm' : 'Proceed'}
+            </Button>
+          </div>
+        )}
       </CardFooter>
     </Card>
   );

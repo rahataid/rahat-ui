@@ -258,10 +258,10 @@ export const BANK_COORDS = [
     longitude: 80.405875,
   },
   {
-    name: 'Rastriya Bajijya Bank',
+    name: 'Rastriya Banijya Bank',
     type: 'Bank',
-    latitude: 28.6373462,
-    longitude: 80.1841262,
+    latitude: 28.62823,
+    longitude: 81.152647,
   },
   {
     name: 'Machhapuchhe bank Limited',
@@ -272,8 +272,8 @@ export const BANK_COORDS = [
   {
     name: 'Kumari Bank Limited',
     type: 'Bank',
-    latitude: 28.6072624,
-    longitude: 79.9706954,
+    latitude: 28.5,
+    longitude: 81.1333333,
   },
   {
     name: 'Kanchan Development Bank',

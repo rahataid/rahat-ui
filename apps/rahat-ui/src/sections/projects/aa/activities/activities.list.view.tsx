@@ -15,6 +15,8 @@ import TableLoader from 'apps/rahat-ui/src/components/table.loader';
 import { UUID } from 'crypto';
 import ActivitiesTableFilters from './activities.table.filters';
 import { getPaginationFromLocalStorage } from '../prev.pagination.storage';
+import { generateExcel } from '../generate.excel';
+import { toast } from 'react-toastify';
 
 export default function ActivitiesList() {
   const { id: projectID } = useParams();
@@ -48,6 +50,10 @@ export default function ActivitiesList() {
     projectID as UUID,
     { ...pagination, ...filters },
   );
+
+  const { activitiesData: allData } = useActivities(projectID as UUID, {
+    perPage: 9999,
+  });
 
   useActivitiesCategories(projectID as UUID);
   useActivitiesHazardTypes(projectID as UUID);
@@ -88,6 +94,34 @@ export default function ActivitiesList() {
     setStatusFilterItem(filters?.status ?? '');
   }, [filters]);
 
+  const handleDownloadReport = () => {
+    if (allData.length < 1) return toast.error('No data to download.');
+    const mappedData = allData?.map((item: Record<string, any>) => {
+      let timeStamp;
+      if (item?.completedAt) {
+        const d = new Date(item.completedAt);
+        const localeDate = d.toLocaleDateString();
+        const localeTime = d.toLocaleTimeString();
+        timeStamp = `${localeDate} ${localeTime}`;
+      }
+      return {
+        Title: item.title || 'N/A',
+        'Early Action': item.category || 'N/A',
+        Phase: item.phase || 'N/A',
+        Type: item.isAutomated ? 'Automated' : 'Manual' || 'N/A',
+        Responsibility: item.responsibility,
+        'Responsible Station': item.source || 'N/A',
+        Status: item.status || 'N/A',
+        Timestamp: timeStamp || 'N/A',
+        'Completed by': item.completedBy || 'N/A',
+        'Difference in trigger and activity completion':
+          item.timeDifference || 'N/A',
+      };
+    });
+
+    generateExcel(mappedData, 'Activities_Report', 10);
+  };
+
   if (isLoading) {
     return <TableLoader />;
   }
@@ -97,6 +131,7 @@ export default function ActivitiesList() {
         projectID={projectID as UUID}
         handleFilter={handleFilter}
         handleSearch={handleSearch}
+        handleDownload={handleDownloadReport}
         activity={activitySearchText}
         responsibility={responsibilitySearchText}
         phase={phaseFilterItem}

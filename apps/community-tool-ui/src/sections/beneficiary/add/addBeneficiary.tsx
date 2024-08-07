@@ -526,6 +526,7 @@ export default function AddBeneficiary() {
               <br />
               {filteredDefinitions && filteredDefinitions.length > 0
                 ? filteredDefinitions.map((definition: any) => {
+                    console.log(definition);
                     return (
                       <>
                         <FormBuilder

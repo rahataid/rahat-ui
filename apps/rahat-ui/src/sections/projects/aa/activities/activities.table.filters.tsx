@@ -12,6 +12,7 @@ import AddButton from '../../components/add.btn';
 import { UUID } from 'crypto';
 import SearchInput from '../../components/search.input';
 import { ACTIVITY_STATUS } from '../aa.constants';
+import DownloadReportBtn from 'apps/rahat-ui/src/components/download.report.btn';
 
 const { NOT_STARTED, WORK_IN_PROGRESS, COMPLETED, DELAYED } = ACTIVITY_STATUS;
 const statusList = [NOT_STARTED, WORK_IN_PROGRESS, COMPLETED, DELAYED];
@@ -23,6 +24,7 @@ type IProps = {
     event: React.ChangeEvent<HTMLInputElement>,
     key: string,
   ) => void;
+  handleDownload: VoidFunction;
   activity: string;
   responsibility: string;
   phase: string;
@@ -34,6 +36,7 @@ export default function ActivitiesTableFilters({
   handleFilter,
   projectID,
   handleSearch,
+  handleDownload,
   activity,
   responsibility,
   phase,
@@ -119,6 +122,8 @@ export default function ActivitiesTableFilters({
         name="Responsiblity"
         onSearch={(e) => handleSearch(e, 'responsibility')}
       />
+      {/* Download report btn  */}
+      <DownloadReportBtn handleDownload={handleDownload} />
       {/* Add Activities Btn */}
       <AddButton
         path={`/projects/aa/${projectID}/activities/add`}

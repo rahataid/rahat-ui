@@ -8,6 +8,12 @@ import {
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { humanizeString } from '../utils';
 import useFormStore from './form.store';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/tooltip';
 
 export default function CheckboxInput({ formField }: any) {
   const { extras, setExtras }: any = useFormStore();
@@ -35,7 +41,17 @@ export default function CheckboxInput({ formField }: any) {
 
   return (
     <div>
-      <Label>{humanizeString(formField.name)}</Label> <br />
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger>
+            <Label>{humanizeString(formField.name)}</Label>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>{formField.name}</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>{' '}
+      <br />
       <FormItem>
         {options.length > 0
           ? options.map((item: any) => (

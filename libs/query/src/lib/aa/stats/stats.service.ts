@@ -90,3 +90,23 @@ export const useAllStats = (uuid: UUID) => {
 
   return query;
 };
+
+export const useSingleStat = (uuid: UUID, name: string) => {
+  const q = useProjectAction();
+
+  const query = useQuery({
+    queryKey: ['singleStat', uuid, name],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'aaProject.stats.getOne',
+          payload: { name },
+        },
+      });
+      return mutate.data;
+    },
+  });
+
+  return query;
+};

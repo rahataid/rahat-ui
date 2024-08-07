@@ -1,5 +1,5 @@
 import { useParams } from 'next/navigation';
-import { useRevertPhase, useSinglePhase } from '@rahat-ui/query';
+import { useRevertPhase, useSinglePhase, useSingleStat } from '@rahat-ui/query';
 import {
   Tabs,
   TabsList,
@@ -13,6 +13,9 @@ import ActivitiesListCard from '../../components/activities.list.card';
 import { UUID } from 'crypto';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import PhaseTriggerStatementsList from './phase-triggers-table/trigger.statements.list';
+import DownloadReportBtn from 'apps/rahat-ui/src/components/download.report.btn';
+import { generateExcel } from '../generate.excel';
+import { toast } from 'react-toastify';
 
 export default function PhaseDetailView() {
   const params = useParams();
@@ -20,6 +23,10 @@ export default function PhaseDetailView() {
   const phaseId = params.phaseId as UUID;
   const { data: phaseDetail, isLoading } = useSinglePhase(projectId, phaseId);
   const revertPhase = useRevertPhase();
+  const { data: revertedPhases } = useSingleStat(
+    projectId,
+    'READINESS_PHASE_REVERTED',
+  );
 
   const handleRevert = () => {
     revertPhase.mutateAsync({
@@ -28,6 +35,20 @@ export default function PhaseDetailView() {
         phaseId,
       },
     });
+  };
+
+  const handleDownloadReport = () => {
+    if (!revertedPhases) return toast.error('No data to download');
+    const mappedData = revertedPhases?.revertHistory?.map(
+      (item: Record<string, any>) => {
+        return {
+          Phase: item.phase,
+          'Reverted At': item.revertedAt,
+        };
+      },
+    );
+
+    generateExcel(mappedData, 'Reverted_Phase_Report', 2);
   };
 
   const handleSearch = () => {};
@@ -125,6 +146,11 @@ export default function PhaseDetailView() {
                     Revert Phase
                   </Button>
                 )}
+                {
+                  phaseDetail?.name === 'READINESS' && (
+                    <DownloadReportBtn handleDownload={handleDownloadReport} />
+                  ) //Download report btn
+                }
               </div>
             </div>
             <PhaseTriggerStatementsList phaseId={phaseId} />

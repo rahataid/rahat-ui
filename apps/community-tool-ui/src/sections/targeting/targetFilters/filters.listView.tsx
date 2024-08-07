@@ -1,6 +1,6 @@
 'use client';
 import { Table, flexRender } from '@tanstack/react-table';
-import { CircleEllipsisIcon } from 'lucide-react';
+import { CircleEllipsisIcon, X } from 'lucide-react';
 
 import {
   TableBody,
@@ -22,12 +22,35 @@ import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { PinIcon } from 'lucide-react';
 import { useState } from 'react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@rahat-ui/shadcn/src/components/ui/alert-dialog';
+import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '@rahat-ui/shadcn/src/components/ui/command';
 
+type CommunityGroup = {
+  name: string;
+  uuid: string;
+};
 type IProps = {
   handleSaveTargetResults: (label: string) => void;
   table: Table<ListBeneficiary>;
   loading: boolean;
   targetUUID: string;
+  communityGroup: CommunityGroup[];
 };
 
 export default function ListView({
@@ -35,40 +58,102 @@ export default function ListView({
   table,
   loading,
   targetUUID,
+  communityGroup,
 }: IProps) {
-  const [label, setLabel] = useState<string>();
+  const [label, setLabel] = useState<string>('');
+  const [open, setOpen] = useState(false);
+
   return (
     <>
       <div className="w-full mt-1 p-2 bg-secondary">
         <div className="flex items-center mb-2">
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger className="w-4/5 mr-10">
-                <Input
-                  placeholder="Enter group name to save the result..."
-                  name="pinName"
-                  className="rounded mr-2"
-                  onChange={(e) => setLabel(e.target.value)}
-                  disabled={!targetUUID}
-                />
-              </TooltipTrigger>
-              <TooltipContent>
-                {!targetUUID && <p>Please search beneficiary from the left panel</p>}
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-
           <Button
-            className="rounded"
+            className="rounded ml-auto"
             name="location"
             type="button"
-            onClick={() => handleSaveTargetResults(label as string)}
-            disabled={!label}
+            onClick={() => setOpen(true)}
+            disabled={!targetUUID}
           >
             <PinIcon className="h-6 w-6 mr-2" />
             Add to group
           </Button>
         </div>
+
+        <AlertDialog open={open} onOpenChange={setOpen}>
+          <AlertDialogContent className="w-full">
+            <AlertDialogHeader>
+              <AlertDialogTitle>
+                <div className="flex justify-between items-center pb-1 gap-4">
+                  <TooltipProvider delayDuration={100}>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <Label className="text-lg font-medium">
+                          {communityGroup?.filter((item) =>
+                            item.name.includes(label),
+                          ).length > 0
+                            ? 'Select Group to save the result'
+                            : 'Add new Group to save the result'}
+                        </Label>
+                      </TooltipTrigger>
+                    </Tooltip>
+                  </TooltipProvider>
+                  <TooltipProvider delayDuration={100}>
+                    <Tooltip>
+                      <TooltipTrigger
+                        onClick={() => {
+                          setOpen(false);
+                          setLabel('');
+                        }}
+                      >
+                        <X
+                          className="text-muted-foreground hover:text-foreground text-red-700"
+                          size={23}
+                          strokeWidth={1.9}
+                        />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Close</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
+              </AlertDialogTitle>
+
+              <AlertDialogDescription>
+                <Command className="h-52">
+                  <CommandInput
+                    placeholder={'Search Group...'}
+                    autoFocus={true}
+                    value={label}
+                    onInput={(e) => setLabel(e.currentTarget.value)}
+                  />
+                  <CommandList className="no-scrollbar">
+                    <CommandGroup>
+                      {communityGroup?.map((item) => (
+                        <CommandItem
+                          key={item.uuid}
+                          value={item.name}
+                          onSelect={() => setLabel(item.name)}
+                        >
+                          {item.name}
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </CommandList>
+                </Command>
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogAction
+                onClick={() => handleSaveTargetResults(label as string)}
+                disabled={label === ''}
+              >
+                Submit
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
         <div className="rounded border bg-card">
           <TableComponent>
             <ScrollArea className="h-[calc(100vh-190px)]">
@@ -126,9 +211,10 @@ export default function ListView({
                     <TableRow>
                       <TableCell
                         colSpan={table.getAllColumns().length}
-                        className="h-24 text-center"
+                        className="h-24 text-center text-md"
                       >
-                        No results found.
+                        No results found. Select filter options to list
+                        targeting beneficiaries.
                       </TableCell>
                     </TableRow>
                   )}

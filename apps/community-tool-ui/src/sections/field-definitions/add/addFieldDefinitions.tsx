@@ -57,7 +57,7 @@ export default function AddFieldDefinitions({ handleTabChange }: Iprops) {
   } = useForm();
 
   const FormSchema = z.object({
-    name: z.string().min(1),
+    name: z.string().min(1, { message: 'Name is required' }),
     fieldType: z.string().toUpperCase(),
     isActive: z.boolean(),
     isTargeting: z.boolean(),
@@ -196,6 +196,7 @@ export default function AddFieldDefinitions({ handleTabChange }: Iprops) {
                       <FormControl>
                         <TagInput
                           {...field}
+                          truncate={25}
                           activeTagIndex={activeTagIndex}
                           setActiveTagIndex={setActiveTagIndex}
                           placeholder="Enter value and press ENTER"

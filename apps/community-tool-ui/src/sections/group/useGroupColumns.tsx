@@ -131,7 +131,7 @@ export const useCommunityGroupDeailsColumns = () => {
     {
       id: 'fullName',
       accessorKey: 'beneficiary',
-      header: 'Full Name',
+      header: 'Household Head Name',
       cell: ({ row }) => {
         return (
           row.original.beneficiary.firstName +

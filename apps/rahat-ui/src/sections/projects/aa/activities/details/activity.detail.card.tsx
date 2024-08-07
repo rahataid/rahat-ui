@@ -16,6 +16,10 @@ export default function ActivityDetailCard({ activityDetail }: any) {
       content: <p>{activityDetail?.description || 'N/A'} </p>,
     },
     {
+      title: 'Lead Time',
+      content: <p>{activityDetail?.leadTime || 'N/A'} </p>,
+    },
+    {
       title: 'Completed By',
       content: <p>{activityDetail?.completedBy || 'N/A'}</p>,
     },

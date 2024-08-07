@@ -22,6 +22,7 @@ import {
 import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
 import { parseEther } from 'viem';
+import Stepper from 'apps/rahat-ui/src/components/stepper';
 
 type DisburseFlowProps = {
   selectedBeneficiaries?: string[];
@@ -195,66 +196,7 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
 
   return (
     <Card className="p-2 mx-2 flex flex-col justify-evenly h-[calc(100vh-500px)]">
-      <div className="ml-32 my-4">
-        <ol className="flex items-center w-full text-sm text-gray-500 font-medium sm:text-base">
-          <li
-            className={`flex md:w-full items-center ${
-              currentStep >= 0 ? 'text-primary' : 'text-gray-600'
-            } sm:after:content-[''] after:w-full after:h-1 after:border-b after:border-gray-200 after:border-1 after:hidden sm:after:inline-block after:mx-4 xl:after:mx-8 `}
-          >
-            <div className="flex items-center whitespace-nowrap after:content-['/'] sm:after:hidden after:mx-2 ">
-              <span
-                className={`w-6 h-6 ${
-                  currentStep >= 0 ? 'bg-primary' : 'bg-gray-100'
-                } border ${
-                  currentStep >= 0 ? 'border-white' : 'border-gray-200'
-                } rounded-full flex justify-center items-center mr-3 text-sm ${
-                  currentStep >= 0 ? 'text-white' : 'text-gray-600'
-                } lg:w-10 lg:h-10`}
-              >
-                1
-              </span>{' '}
-              Step 1
-            </div>
-          </li>
-          <li
-            className={`flex md:w-full items-center ${
-              currentStep >= 1 ? 'text-primary' : 'text-gray-600'
-            } sm:after:content-[''] after:w-full after:h-1 after:border-b after:border-gray-200 after:border-1 after:hidden sm:after:inline-block after:mx-4 xl:after:mx-8 `}
-          >
-            <div className="flex items-center whitespace-nowrap after:content-['/'] sm:after:hidden after:mx-2 ">
-              <span
-                className={`w-6 h-6 ${
-                  currentStep >= 1 ? 'bg-primary text-white' : 'bg-gray-100'
-                } border ${
-                  currentStep >= 1 ? 'border-white' : 'border-gray-200'
-                } rounded-full flex justify-center items-center mr-3 lg:w-10 lg:h-10`}
-              >
-                2
-              </span>{' '}
-              Step 2
-            </div>
-          </li>
-          <li
-            className={`flex md:w-full items-center ${
-              currentStep >= 2 ? 'text-primary' : 'text-gray-600'
-            }`}
-          >
-            <div className="flex items-center  ">
-              <span
-                className={`w-6 h-6 ${
-                  currentStep >= 2 ? 'bg-primary text-white' : 'bg-gray-100'
-                } border ${
-                  currentStep >= 2 ? 'border-white' : 'border-gray-200'
-                } rounded-full flex justify-center items-center mr-3 lg:w-10 lg:h-10`}
-              >
-                3
-              </span>{' '}
-              Step 3
-            </div>
-          </li>
-        </ol>
-      </div>
+      <Stepper currentStep={currentStep} steps={steps} />
       <CardHeader>
         <CardTitle>{steps[currentStep].title}</CardTitle>
       </CardHeader>

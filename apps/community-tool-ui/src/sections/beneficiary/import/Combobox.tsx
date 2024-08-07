@@ -38,8 +38,10 @@ export function ComboBox({
   };
 
   React.useEffect(() => {
-    if (selectedField) setValue(selectedField);
-  }, []);
+    if (selectedField) {
+      setValue(selectedField);
+    }
+  }, [selectedField]);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>

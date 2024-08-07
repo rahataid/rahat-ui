@@ -94,9 +94,9 @@ const VendorHeader = () => {
               <DropdownMenuItem onClick={() => handleTabChange('edit')}>
                 Edit
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleTabChange('details')}>
+              {/* <DropdownMenuItem onClick={() => handleTabChange('details')}>
                 Details
-              </DropdownMenuItem>
+              </DropdownMenuItem> */}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>

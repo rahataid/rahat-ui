@@ -3,8 +3,8 @@
 import * as React from 'react';
 
 import { useSecondPanel } from '../../providers/second-panel-provider';
-import { useAppAuthenticationNavItems } from '../../sections/app-authentication';
-import AppAuthenticationLayout from '../../sections/app-authentication/appAuthenticationLayout';
+import { useAppAuthenticationNavItems } from '../../sections/auth-apps';
+import AppAuthenticationLayout from '../../sections/auth-apps/appAuthenticationLayout';
 import DashboardLayout from '../dashboard/layout';
 
 export default function AuthenticationAppLayout({

@@ -8,12 +8,12 @@ export const useAppAuthenticationNavItems = () => {
       children: [
         {
           title: 'List',
-          path: '/app-authentication',
+          path: '/auth-apps',
           icon: <List size={18} strokeWidth={1.5} />,
         },
         {
           title: 'Add',
-          path: '/app-authentication/add',
+          path: '/auth-apps/add',
           icon: <Plus size={18} strokeWidth={1.5} />,
         },
       ],

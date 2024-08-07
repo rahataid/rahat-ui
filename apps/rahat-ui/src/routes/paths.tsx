@@ -11,7 +11,7 @@ const ROOTS = {
   TREASURY: '/treasury',
   COMMUNITYBENEFICIARY: '/community-beneficiary',
   SETTINGS: '/settings',
-  APPAUTHENTICATION: '/app-authentication',
+  APPAUTHENTICATION: '/auth-apps',
 };
 
 export const paths = {

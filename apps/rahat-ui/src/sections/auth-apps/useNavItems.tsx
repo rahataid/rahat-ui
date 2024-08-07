@@ -4,7 +4,7 @@ import { NavItem } from './nav-items.types';
 export const useAppAuthenticationNavItems = () => {
   const menuItems: NavItem[] = [
     {
-      title: 'App Authentication',
+      title: 'Auth Apps',
       children: [
         {
           title: 'List',

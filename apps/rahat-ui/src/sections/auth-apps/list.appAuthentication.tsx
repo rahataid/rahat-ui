@@ -9,7 +9,11 @@ import {
 } from '@tanstack/react-table';
 import { useState } from 'react';
 
-import { usePagination, useRahatSettingList } from '@rahat-ui/query';
+import {
+  useListAuthApps,
+  usePagination,
+  useRahatSettingList,
+} from '@rahat-ui/query';
 import {
   TableBody,
   TableCell,
@@ -40,12 +44,16 @@ export default function ListAppAuthentication() {
     setFilters,
     setPagination,
   } = usePagination();
-
   const debouncedFilters = useDebounce(filters, 500) as any;
+  const { data: listAuthApps } = useListAuthApps({
+    ...pagination,
+    ...(debouncedFilters as any),
+  });
 
+  console.log(listAuthApps);
   const table = useReactTable({
     manualPagination: true,
-    data: [],
+    data: listAuthApps?.data || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -137,15 +145,15 @@ export default function ListAppAuthentication() {
               )}
             </TableBody>
           </ScrollArea>
-          {/* <CustomPagination
-            meta={data?.response?.meta || { total: 0, currentPage: 0 }}
+          <CustomPagination
+            meta={listAuthApps?.response?.meta || { total: 0, currentPage: 0 }}
             handleNextPage={setNextPage}
             handlePrevPage={setPrevPage}
             handlePageSizeChange={setPerPage}
             currentPage={pagination.page}
             perPage={pagination.perPage}
-            total={data?.response?.meta.total || 0}
-          /> */}
+            total={listAuthApps?.response?.meta.total || 0}
+          />
         </TableComponent>
       </div>
     </div>

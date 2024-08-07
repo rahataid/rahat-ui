@@ -24,7 +24,12 @@ export const useAppAuthenticationColumns = () => {
     },
     {
       header: 'Public Key',
-      accessorKey: 'name',
+      accessorKey: 'publicKey',
+      cell: ({ row }) => <div>{row.getValue('publicKey')}</div>,
+    },
+    {
+      header: 'Description',
+      accessorKey: 'description',
       cell: ({ row }) => <div>{row.getValue('publicKey')}</div>,
     },
   ];

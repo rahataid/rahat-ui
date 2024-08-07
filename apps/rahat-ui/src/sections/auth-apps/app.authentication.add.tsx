@@ -1,5 +1,6 @@
 'use client';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useCreateAuthApp } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { FormField } from '@rahat-ui/shadcn/src/components/ui/form';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
@@ -8,9 +9,12 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 export default function AddAppAuthentication() {
+  const createAuthApp = useCreateAuthApp();
+
   const FormSchema = z.object({
-    appName: z.string().min(1, { message: 'Name is required' }),
+    name: z.string().min(1, { message: 'Name is required' }),
     publicKey: z.string(),
+    description: z.string(),
   });
 
   const {
@@ -21,39 +25,41 @@ export default function AddAppAuthentication() {
   } = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      appName: '',
+      name: '',
       publicKey: '',
+      description: '',
     },
   });
 
   const handleAddAppAuthentication = async (
     data: z.infer<typeof FormSchema>,
   ) => {
-    console.log(data);
+    await createAuthApp.mutateAsync(data);
+    reset();
   };
 
   return (
     <form onSubmit={handleSubmit(handleAddAppAuthentication)}>
       <div className="p-4 h-add rounded border bg-white">
-        <h1 className="text-lg font-semibold mb-6">Add App Authentication</h1>
+        <h1 className="text-lg font-semibold mb-6">Add Auth Apps</h1>
         <div className="shadow-md p-4 rounded-sm">
-          <div className="grid grid-cols-1 gap-5 mb-4">
+          <div className="grid grid-cols-2 gap-5 mb-4">
             <FormField
               control={control}
-              name="appName"
+              name="name"
               render={({ field }) => (
                 <div className="col-span-1">
                   <Label>App Name</Label>
                   <Input
                     type="text"
                     placeholder="App Name"
-                    className="w-fit mt-4 "
+                    className=" mt-4 "
                     {...field}
                   />
 
-                  {errors.appName && (
+                  {errors.name && (
                     <Label className="text-red-500">
-                      {errors.appName.message}
+                      {errors.name.message}
                     </Label>
                   )}
                 </div>
@@ -69,13 +75,35 @@ export default function AddAppAuthentication() {
                   <Input
                     type="text"
                     placeholder="Public Key"
-                    className="w-min mt-4 "
+                    className=" mt-4 "
                     {...field}
                   />
 
-                  {errors.appName && (
+                  {errors.name && (
                     <Label className="text-red-500">
-                      {errors.appName.message}
+                      {errors.name.message}
+                    </Label>
+                  )}
+                </div>
+              )}
+            />
+
+            <FormField
+              control={control}
+              name="description"
+              render={({ field }) => (
+                <div className="col-span-1">
+                  <Label>Description</Label>
+                  <Input
+                    type="text"
+                    placeholder="Description"
+                    className=" mt-4 "
+                    {...field}
+                  />
+
+                  {errors.description && (
+                    <Label className="text-red-500">
+                      {errors.description.message}
                     </Label>
                   )}
                 </div>

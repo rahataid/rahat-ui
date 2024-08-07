@@ -51,7 +51,9 @@ export default function ActivitiesList() {
     { ...pagination, ...filters },
   );
 
-  const { activitiesData: allData } = useActivities(projectID as UUID, {});
+  const { activitiesData: allData } = useActivities(projectID as UUID, {
+    perPage: 9999,
+  });
 
   useActivitiesCategories(projectID as UUID);
   useActivitiesHazardTypes(projectID as UUID);
@@ -95,8 +97,13 @@ export default function ActivitiesList() {
   const handleDownloadReport = () => {
     if (allData.length < 1) return toast.error('No data to download.');
     const mappedData = allData?.map((item: Record<string, any>) => {
-      const d = new Date(item.createdAt);
-      const timeStamp = d.toLocaleTimeString();
+      let timeStamp;
+      if (item?.completedAt) {
+        const d = new Date(item.completedAt);
+        const localeDate = d.toLocaleDateString();
+        const localeTime = d.toLocaleTimeString();
+        timeStamp = `${localeDate} ${localeTime}`;
+      }
       return {
         Title: item.title || 'N/A',
         'Early Action': item.category || 'N/A',

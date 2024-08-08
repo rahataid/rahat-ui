@@ -47,7 +47,7 @@ export const useNavItems = () => {
         },
         {
           title: 'Offline Management',
-          path: `/projects/rp/${id}/fundManagement`,
+          path: `/projects/rp/${id}/offlineManagement`,
           icon: <CloudOff size={18} strokeWidth={1.5} />,
         },
         {

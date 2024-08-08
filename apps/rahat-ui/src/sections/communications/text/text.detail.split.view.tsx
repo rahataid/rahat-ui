@@ -29,7 +29,6 @@ export default function TextDetailSplitView({
   refetch,
 }: IProps) {
   const deleteCampaign = useDeleteCampaign();
-
   const router = useRouter();
   return (
     <div className="px-2 py-4">

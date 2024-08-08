@@ -24,8 +24,13 @@ import {
 import * as React from 'react';
 
 import { useTableColumn } from './useTableColumn';
+import { Router } from 'next/router';
+import { useParams, useRouter } from 'next/navigation';
 
 export function OfflineTable() {
+  const route = useRouter();
+  const { id } = useParams();
+
   const data = [
     {
       id: 'm5gr84i9',
@@ -158,7 +163,14 @@ export function OfflineTable() {
           }
           className="rounded-md"
         />
-        <Button className="rounded-md">Setup Offline Beneficiary</Button>
+        <Button
+          onClick={() =>
+            route.push(`/projects/rp/${id}/offlineManagement/setupBeneficiary`)
+          }
+          className="rounded-md"
+        >
+          Setup Offline Beneficiary
+        </Button>
       </div>
       <div className="rounded-md border">
         <Table>

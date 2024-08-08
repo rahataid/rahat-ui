@@ -1,11 +1,11 @@
-name: Stage EL CI/CD
+name: Stage CT CI/CD
 on:
   push:
     branches:
-      - 'stage-el'
+      - 'stage'
   pull_request:
     branches:
-      - 'stage-el'
+      - 'stage'
   workflow_dispatch:
 
 env:
@@ -14,8 +14,8 @@ env:
   env_npmrc: ${{ secrets.ENV_NPMRC }}
 
 jobs:
-  rahat-ui:
-    name: rahat-ui
+  community-tool-ui:
+    name: community-tool-ui
     runs-on: ubuntu-latest
     if: contains(github.event.head_commit.message, 'action') || contains(github.event.pull_request.title, 'action') || github.event_name == 'workflow_dispatch'
 
@@ -31,9 +31,11 @@ jobs:
         with:
           node-version: 20.10.0
     
-      - name: Install pnpm
-        run: |
-          npm install -g pnpm@8.14.1 
+      - uses: pnpm/action-setup@v4
+        name: Install pnpm
+        with:
+          version: 8.14.1
+          run_install: false
 
       - name: Install dependencies
         run: pnpm install     
@@ -51,16 +53,12 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      # Rahat-UI Image
-      - name: build && push rahat-ui
-        id: build-push-rahat-ui
+      # Community-Tool-UI Image
+      - name: build && push community-tool-ui
+        id: build-push-community-tool-ui
         uses: docker/build-push-action@v5
         with:
           context: .
-          file: Dockerfile.rahat-ui
+          file: Dockerfile.community-tool-ui
           push: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
-          tags: esatya/rahat-ui:stage-el
-
-
-  
-  
+          tags: esatya/community-tool-ui:stage

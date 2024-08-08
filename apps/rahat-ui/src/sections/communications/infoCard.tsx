@@ -24,8 +24,6 @@ import {
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 
 import React from 'react';
-import { useQueryClient } from '@tanstack/react-query';
-import { TAGS } from '@rumsan/react-query/utils/tags';
 import { toast } from 'react-toastify';
 import { useTriggerCampaign } from '@rumsan/communication-query';
 
@@ -48,7 +46,6 @@ const InfoCard: React.FC<IProps> = ({
   totalAudience,
   refetch,
 }) => {
-  const queryClient = useQueryClient();
   const [open, setOpen] = React.useState(false);
   const triggerCampaign = useTriggerCampaign();
   const handleChange = (e: string) => {
@@ -58,7 +55,6 @@ const InfoCard: React.FC<IProps> = ({
         .then(() => {
           refetch();
           toast.success('Campaign Trigger Success.');
-          queryClient.invalidateQueries([TAGS.GET_CAMPAIGNS]);
           setOpen(false);
         })
         .catch((e) => {

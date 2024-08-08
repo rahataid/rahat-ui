@@ -11,7 +11,7 @@ import { Wagmi } from '../providers/wagmi.provider';
 import './globals.css';
 import { RSQueryProvider } from '@rumsan/react-query/providers/rs-query-provider';
 import { CommunicationQueryProvider } from '@rumsan/communication-query/providers/communication-query-provider';
-import { NewCommunicationQueryProvider } from '../providers/new-comms-provider';
+import { NewCommunicationQueryProvider } from '@rahat-ui/query';
 
 export const metadata = {
   icons: {

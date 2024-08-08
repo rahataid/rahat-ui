@@ -20,7 +20,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import Image from 'next/image';
 import { createContext, useContext, useEffect, useMemo } from 'react';
 import { useError } from '../utils/useErrors';
-import { useNewCommunicationQuery } from './new-comms-provider';
+import { useNewCommunicationQuery } from '@rahat-ui/query';
 import { getClient } from '@rumsan/connect/src/clients';
 
 export const ServiceContext = createContext<RSQueryContextType | null>(null);

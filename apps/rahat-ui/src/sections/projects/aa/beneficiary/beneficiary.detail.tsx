@@ -100,17 +100,6 @@ export default function BeneficiaryDetail({
     },
   });
 
-  console.log('rerrrrrr', result);
-
-  // const {
-  //   data: beneficiaryVoucherDetails,
-  //   isLoading,
-  //   refetch,
-  // } = useReadElProjectGetBeneficiaryVoucherDetail({
-  //   address: contractSettings?.elproject?.address,
-  //   args: [walletAddress],
-  // });
-
   const [activeTab, setActiveTab] = useState<'details' | 'edit' | null>(
     'details',
   );
@@ -211,7 +200,7 @@ export default function BeneficiaryDetail({
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
-            <div className="flex gap-3">
+            {/* <div className="flex gap-3">
               <TooltipProvider delayDuration={100}>
                 <Tooltip>
                   <TooltipTrigger>
@@ -266,7 +255,7 @@ export default function BeneficiaryDetail({
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-            </div>
+            </div> */}
           </div>
           <div className="p-4 bg-card flex gap-2 justify-between items-center flex-wrap">
             <div className="flex items-center gap-2">

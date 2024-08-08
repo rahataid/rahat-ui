@@ -66,13 +66,16 @@ export default function DashboardView() {
             <DashboardSummary data={data} />
             <DashboardCharts charts={beneficiaryStats?.data?.data} />
           </TabsContent> */}
-          <StyledMapContainer>
-            <ClusterMap
-              {...mapboxBasicConfig}
-              mapStyle={THEMES.light}
-              dataForMap={dataForMap}
-            />
-          </StyledMapContainer>
+
+          {dataForMap && (
+            <StyledMapContainer>
+              <ClusterMap
+                {...mapboxBasicConfig}
+                mapStyle={THEMES.light}
+                dataForMap={dataForMap}
+              />
+            </StyledMapContainer>
+          )}
         </ScrollArea>
       </Tabs>
     </div>

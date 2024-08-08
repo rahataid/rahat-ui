@@ -171,6 +171,7 @@ export default function BeneficiaryDetail({
         args: [walletAddress],
       });
       setTransactionHash(txnHash);
+      refetch();
     });
   };
 

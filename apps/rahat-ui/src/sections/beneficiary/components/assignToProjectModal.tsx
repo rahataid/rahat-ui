@@ -30,11 +30,13 @@ type ProjectModalType = {
 type IProps = {
   beneficiaryDetail: any;
   projectModal: ProjectModalType;
+  refetch: any;
 };
 
 export default function AssignToProjectModal({
   beneficiaryDetail,
   projectModal,
+  refetch
 }: IProps) {
 
 
@@ -55,6 +57,7 @@ export default function AssignToProjectModal({
       beneficiaryUUID: beneficiaryDetail?.uuid,
       projectUUID: selectedProject,
     });
+    refetch();
     // await addBeneficiary.mutateAsync({
     //   uuid: selectedProject,
     //   data: {

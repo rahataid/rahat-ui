@@ -58,7 +58,7 @@ export default function BeneficiaryDetail({
   closeSecondPanel,
 }: IProps) {
   const router = useRouter();
-  useSingleBeneficiary(beneficiaryDetail.uuid as UUID);
+ const {refetch} = useSingleBeneficiary(beneficiaryDetail.uuid as UUID);
   const beneficiary = useBeneficiaryStore((state) => state.singleBeneficiary);
   const projectModal = useBoolean();
   const deleteModal = useBoolean();
@@ -98,6 +98,7 @@ export default function BeneficiaryDetail({
       <AssignToProjectModal
         beneficiaryDetail={beneficiaryDetail}
         projectModal={projectModal}
+        refetch={refetch}
       />
 
       <DeleteBeneficiaryModal
@@ -206,7 +207,7 @@ export default function BeneficiaryDetail({
 
       {
         activeTab === 'details' && (
-          <SplitViewDetailCards beneficiaryDetail={beneficiaryDetail} />
+          <SplitViewDetailCards beneficiaryDetail={beneficiary} />
         )
       }
       {

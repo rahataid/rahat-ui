@@ -1,5 +1,6 @@
 'use client';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import {
@@ -11,6 +12,7 @@ import {
   TableRow,
 } from '@rahat-ui/shadcn/src/components/ui/table';
 import {
+  ColumnDef,
   ColumnFiltersState,
   flexRender,
   getCoreRowModel,
@@ -21,104 +23,170 @@ import {
   useReactTable,
   VisibilityState,
 } from '@tanstack/react-table';
+import { Trash2 } from 'lucide-react';
+import { useParams, useRouter } from 'next/navigation';
 import * as React from 'react';
 
-import { useTableColumn } from './useTableColumn';
+const data: Payment[] = [
+  {
+    id: 'm5gr84i9',
+    name: 'vendor1',
+    tokenAssigned: 180,
+  },
+  {
+    id: 'm5gr84i9',
+    name: 'vendor1',
+    tokenAssigned: 180,
+  },
+  {
+    id: 'm5gr84i9',
+    name: 'vendor1',
+    tokenAssigned: 180,
+  },
+  {
+    id: 'm5gr84i9',
+    name: 'vendor1',
+    tokenAssigned: 180,
+  },
+  {
+    id: 'm5gr84i9',
+    name: 'vendor1',
+    tokenAssigned: 180,
+  },
+  {
+    id: 'm5gr84i9',
+    name: 'vendor1',
+    tokenAssigned: 180,
+  },
+  {
+    id: 'm5gr84i9',
+    name: 'vendor1',
+    tokenAssigned: 180,
+  },
+  {
+    id: 'm5gr84i9',
+    name: 'vendor1',
+    tokenAssigned: 180,
+  },
+  {
+    id: 'm5gr84i9',
+    name: 'vendor1',
+    tokenAssigned: 180,
+  },
+  {
+    id: 'm5gr84i9',
+    name: 'vendor1',
+    tokenAssigned: 180,
+  },
+  {
+    id: 'm5gr84i9',
+    name: 'vendor1',
+    tokenAssigned: 180,
+  },
+  {
+    id: 'm5gr84i9',
+    name: 'vendor1',
+    tokenAssigned: 180,
+  },
+  {
+    id: 'm5gr84i9',
+    name: 'vendor1',
+    tokenAssigned: 180,
+  },
+  {
+    id: 'm5gr84i9',
+    name: 'vendor1',
+    tokenAssigned: 180,
+  },
+  {
+    id: 'm5gr84i9',
+    name: 'vendor1',
+    tokenAssigned: 180,
+  },
+  {
+    id: 'm5gr84i9',
+    name: 'vendor1',
+    tokenAssigned: 180,
+  },
+  {
+    id: 'm5gr84i9',
+    name: 'vendor1',
+    tokenAssigned: 180,
+  },
+  {
+    id: 'm5gr84i9',
+    name: 'vendor1',
+    tokenAssigned: 180,
+  },
+  {
+    id: 'm5gr84i9',
+    name: 'vendor1',
+    tokenAssigned: 180,
+  },
+];
 
-export function OfflineTable() {
-  const data = [
-    {
-      id: 'm5gr84i9',
-      vendor: 'vendor1',
-      beneficiary: 45,
-      tokenAssigned: 180,
-    },
-    {
-      id: '3u1reuv4',
-      vendor: 'vendor2',
-      beneficiary: 45,
-      tokenAssigned: 400,
-    },
-    {
-      id: 'derv1ws0',
-      vendor: 'vendor3',
-      beneficiary: 55,
-      tokenAssigned: 300,
-    },
-    {
-      id: '5kma53ae',
-      vendor: 'vendor4',
-      beneficiary: 45,
-      tokenAssigned: 200,
-    },
-    {
-      id: 'bhqecj4p',
-      vendor: 'vendor5',
-      beneficiary: 22,
-      tokenAssigned: 100,
-    },
-    {
-      id: 'm5gr84i9',
-      vendor: 'vendor1',
-      beneficiary: 45,
-      tokenAssigned: 180,
-    },
-    {
-      id: '3u1reuv4',
-      vendor: 'vendor2',
-      beneficiary: 45,
-      tokenAssigned: 400,
-    },
-    {
-      id: 'derv1ws0',
-      vendor: 'vendor3',
-      beneficiary: 55,
-      tokenAssigned: 300,
-    },
-    {
-      id: '5kma53ae',
-      vendor: 'vendor4',
-      beneficiary: 45,
-      tokenAssigned: 200,
-    },
-    {
-      id: 'bhqecj4p',
-      vendor: 'vendor5',
-      beneficiary: 22,
-      tokenAssigned: 100,
-    },
-    {
-      id: 'm5gr84i9',
-      vendor: 'vendor1',
-      beneficiary: 45,
-      tokenAssigned: 180,
-    },
-    {
-      id: '3u1reuv4',
-      vendor: 'vendor2',
-      beneficiary: 45,
-      tokenAssigned: 400,
-    },
-    {
-      id: 'derv1ws0',
-      vendor: 'vendor3',
-      beneficiary: 55,
-      tokenAssigned: 300,
-    },
-    {
-      id: '5kma53ae',
-      vendor: 'vendor4',
-      beneficiary: 45,
-      tokenAssigned: 200,
-    },
-    {
-      id: 'bhqecj4p',
-      vendor: 'vendor5',
-      beneficiary: 22,
-      tokenAssigned: 100,
-    },
-  ];
+export type Payment = {
+  id: string;
+  name: string;
+  tokenAssigned: number;
+};
 
+export const columns: ColumnDef<Payment>[] = [
+  {
+    id: 'select',
+    header: ({ table }) => (
+      <Checkbox
+        checked={
+          table.getIsAllPageRowsSelected() ||
+          (table.getIsSomePageRowsSelected() && 'indeterminate')
+        }
+        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        aria-label="Select all"
+      />
+    ),
+    cell: ({ row }) => (
+      <Checkbox
+        checked={row.getIsSelected()}
+        onCheckedChange={(value) => row.toggleSelected(!!value)}
+        aria-label="Select row"
+      />
+    ),
+    enableSorting: false,
+    enableHiding: false,
+  },
+  {
+    accessorKey: 'name',
+    header: 'Name',
+    cell: ({ row }) => <div className="capitalize">{row.getValue('name')}</div>,
+  },
+  {
+    accessorKey: 'tokenAssigned',
+    header: 'Token Assigned',
+    cell: ({ row }) => (
+      <div className="capitalize">{row.getValue('tokenAssigned')}</div>
+    ),
+  },
+
+  {
+    id: 'actions',
+    enableHiding: false,
+    cell: ({ row }) => {
+      const payment = row.original;
+
+      return (
+        <div className="flex items-center gap-4">
+          <Trash2
+            className="cursor-pointer text-red-500"
+            size={20}
+            strokeWidth={1.5}
+          />
+        </div>
+      );
+    },
+  },
+];
+
+export function DetailsTable() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
@@ -126,7 +194,8 @@ export function OfflineTable() {
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
-  const columns = useTableColumn();
+  const { id, bid } = useParams();
+  const route = useRouter();
 
   const table = useReactTable({
     data,
@@ -158,11 +227,10 @@ export function OfflineTable() {
           }
           className="rounded-md"
         />
-        <Button className="rounded-md">Setup Offline Beneficiary</Button>
       </div>
       <div className="rounded-md border">
         <Table>
-          <ScrollArea className="h-[calc(100vh-365px)]">
+          <ScrollArea className="h-[calc(100vh-570px)]">
             <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>

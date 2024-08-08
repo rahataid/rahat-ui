@@ -1,14 +1,7 @@
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
 import { truncateEthAddress } from '@rumsan/sdk/utils';
 import { ColumnDef } from '@tanstack/react-table';
 import { useSecondPanel } from 'apps/rahat-ui/src/providers/second-panel-provider';
-import { EllipsisVertical, Eye } from 'lucide-react';
+import { Eye } from 'lucide-react';
 import { useState } from 'react';
 import BeneficiaryDetail from './beneficiary.detail';
 

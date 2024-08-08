@@ -6,6 +6,7 @@ import {
   useAppContractSettings,
   useAppNavSettings,
   useSettingsStore,
+  useAppCommunicationSettings,
 } from '@rahat-ui/query';
 import { useCommunicationQuery } from '@rumsan/communication-query';
 import { CommunicationService } from '@rumsan/communication/services/communication.client';
@@ -19,6 +20,8 @@ import { useQueryClient } from '@tanstack/react-query';
 import Image from 'next/image';
 import { createContext, useContext, useEffect, useMemo } from 'react';
 import { useError } from '../utils/useErrors';
+import { useNewCommunicationQuery } from './new-comms-provider';
+import { getClient } from '@rumsan/connect/src/clients';
 
 export const ServiceContext = createContext<RSQueryContextType | null>(null);
 
@@ -37,7 +40,16 @@ export function ServiceProvider({ children }: ServiceProviderProps) {
     setQueryClient: setCommsQueryClient,
   } = useCommunicationQuery();
 
+  const {
+    newCommunicationService,
+    newQueryClient: newCommsQueryClient,
+    setNewCommunicationService,
+    setNewQueryClient: setNewCommsQueryClient
+  } = useNewCommunicationQuery()
+
   const chainSettings = useSettingsStore((s) => s.chainSettings);
+  const commsSettings = useSettingsStore((s) => s.commsSettings);
+
   const rsService = useMemo(
     () =>
       new RumsanService({
@@ -57,6 +69,23 @@ export function ServiceProvider({ children }: ServiceProviderProps) {
   useRahatTreasurySettings();
   useAppContractSettings();
   useAppNavSettings();
+  useAppCommunicationSettings()
+
+  useEffect(() => {
+    if (!newCommunicationService) {
+      const commsService = getClient({
+        baseURL: commsSettings['URL']
+      })
+      commsService.setAppId(commsSettings['APP_ID'])
+      setNewCommunicationService(commsService);
+    }
+  }, [commsSettings, newCommunicationService, setNewCommunicationService]);
+
+  useEffect(() => {
+    if (!newCommsQueryClient) {
+      setNewCommsQueryClient(qc);
+    }
+  }, [qc, newCommsQueryClient, setNewCommsQueryClient]);
 
   useEffect(() => {
     if (!queryClient) {
@@ -125,7 +154,9 @@ export function ServiceProvider({ children }: ServiceProviderProps) {
     !queryClient ||
     !communicationService ||
     !commsQueryClient ||
-    !chainSettings.id
+    !chainSettings.id ||
+    !newCommsQueryClient ||
+    !newCommunicationService
   )
     return (
       <div className="h-screen flex items-center justify-center">

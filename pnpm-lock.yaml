@@ -95,6 +95,9 @@ importers:
       '@rumsan/communication-query':
         specifier: ^0.0.11
         version: 0.0.11
+      '@rumsan/connect':
+        specifier: ^0.0.1
+        version: 0.0.1
       '@rumsan/core':
         specifier: ^3.0.133
         version: 3.0.140
@@ -3534,6 +3537,9 @@ packages:
 
   '@rumsan/communication@0.0.8':
     resolution: {integrity: sha512-Ht+vIdZVabacljbIO54QDm2FXYSH5CAKyDQ68/NcvQdqQz39x3wZLt4DWuliTGY6ZpaniddVyql57NTdcmae6Q==, tarball: https://npm.pkg.github.com/download/@rumsan/communication/0.0.8/b11e20c168799814e0d5058533ec77ed35f2d505}
+
+  '@rumsan/connect@0.0.1':
+    resolution: {integrity: sha512-Jsr/9/Wq3VIUli171VjSqgpO62bYAREPxG+P3tmvy+zuW7UVoUG4G6vrHW3khgiz7KbtFAtfz3C47I+3lWIV4A==, tarball: https://npm.pkg.github.com/download/@rumsan/connect/0.0.1/4aef124c5248eedf2d0420fe018e4e9451626ecb}
 
   '@rumsan/core@3.0.140':
     resolution: {integrity: sha512-c+7YC8WXPvYTsNWcTYt1JaNOYM8K2Z7RQEf88W4N1k7ABFS+2DQrNuTCI+57GhfHE+eX+JKwTN8NsZUIVqrxCg==, tarball: https://npm.pkg.github.com/download/@rumsan/core/3.0.140/a6f2299c8356d2823da36fcaddd9b4b083997b61}
@@ -16068,6 +16074,10 @@ snapshots:
       axios: 1.7.2
     transitivePeerDependencies:
       - debug
+
+  '@rumsan/connect@0.0.1':
+    dependencies:
+      tslib: 2.6.3
 
   '@rumsan/core@3.0.140':
     dependencies:

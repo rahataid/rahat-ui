@@ -31,9 +31,15 @@ export function ConfirmModal() {
             </h2>
             <div className="flex items-center justify-between">
               <div className="flex flex-col gap-2">
-                <span>Vendor Name:</span>
-                <span>Beneficiaries:</span>
-                <span>No of tokens:</span>
+                <span className="text-sm font-medium text-gray-500">
+                  Vendor Name:
+                </span>
+                <span className="text-sm font-medium text-gray-500">
+                  Beneficiaries:
+                </span>
+                <span className="text-sm font-medium text-gray-500">
+                  No of tokens:
+                </span>
               </div>
               <div className="flex flex-col gap-2 text-left">
                 <span className="text-gray-800">Aadarsha Lamichhane</span>

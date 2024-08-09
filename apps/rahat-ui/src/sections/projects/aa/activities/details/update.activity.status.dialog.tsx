@@ -152,9 +152,9 @@ export default function UpdateActivityStatusDialog({
     }
   };
 
-  React.useEffect(() => {
-    updateStatus.isSuccess && router.push(activitiesListPath);
-  }, [updateStatus.isSuccess]);
+  // React.useEffect(() => {
+  //   updateStatus.isSuccess && router.push(activitiesListPath);
+  // }, [updateStatus.isSuccess]);
 
   return (
     <Dialog open={showModal} onOpenChange={() => setShowModal(!showModal)}>

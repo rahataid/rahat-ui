@@ -7,6 +7,7 @@ import { UUID } from 'crypto';
 import { useParams, useRouter } from 'next/navigation';
 import Step1SelectVendor from './1-select-vendor';
 import Step3AssignAmount from './3-assign-amount';
+import Stepper from 'apps/rahat-ui/src/components/stepper';
 
 const initialStepData = {
   treasurySource: '',
@@ -78,6 +79,12 @@ const SetupBeneficiaryPage = () => {
 
   return (
     <div>
+      <div className="mb-10">
+        <Stepper
+          currentStep={currentStep}
+          steps={steps.map((step) => ({ id: step.id, title: step.title }))}
+        />
+      </div>
       <div>{renderComponent()}</div>
       {
         // !disburseToken.isSuccess &&

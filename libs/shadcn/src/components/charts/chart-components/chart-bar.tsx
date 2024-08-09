@@ -51,7 +51,7 @@ export default function ChartBar({
       bar: {
         horizontal: horizontal,
         barHeight: barHeight,
-        columnWidth: '12%',
+        columnWidth: '50px',
         borderRadius: 4,
         borderRadiusApplication: 'end',
       },

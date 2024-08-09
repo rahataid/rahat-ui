@@ -18,7 +18,7 @@ type IProps = {
   currentPage: number;
 };
 
-const pageSizes = ['5', '10', '20', '30', '40', '50', '100', '150'];
+const pageSizes = ['10', '20', '30', '40', '50', '100', '300', '500'];
 
 export default function CustomPagination({
   handleNextPage,

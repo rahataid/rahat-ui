@@ -70,7 +70,7 @@ const PopulationInsights = ({ data }: Props) => {
         <BarCharts
           overFlowProps={true}
           charts={vulnerabilityStatus}
-          height={240}
+          height={vulnerabilityStatus?.data?.length > 7 ? 900 : 300}
           width={'100%'}
           title="Vulnerability Status"
           horizontal={true}

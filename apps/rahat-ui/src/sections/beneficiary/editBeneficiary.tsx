@@ -67,6 +67,7 @@ export default function EditBeneficiary({ beneficiary }: any) {
   const handleEditBeneficiary = async (data: z.infer<typeof FormSchema>) => {
     try {
       await updateBeneficiary.mutateAsync({
+        id: beneficiary.id,
         uuid: beneficiary.uuid,
         gender: data.gender,
         bankedStatus: data.bankedStatus,

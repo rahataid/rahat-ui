@@ -212,7 +212,7 @@ export function SelectBeneficiaryTable() {
       </div>
       <div className="rounded-md border">
         <Table>
-          <ScrollArea className="h-[calc(100vh-520px)]">
+          <ScrollArea className="h-[calc(100vh-638px)]">
             <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>

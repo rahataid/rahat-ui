@@ -63,7 +63,7 @@ export default function Step2SelectBeneficiary({}: Step2SelectBeneficiaryProps) 
             </div>
           </TabsContent>
           <TabsContent value="card">
-            <ScrollArea className="h-[calc(100vh-420px)]">
+            <ScrollArea className="h-[calc(100vh-498px)]">
               <div className="grid grid-cols-4 gap-4 m-4">
                 <BeneficiaryCard />
                 <BeneficiaryCard />

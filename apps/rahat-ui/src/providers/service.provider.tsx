@@ -22,6 +22,7 @@ import { createContext, useContext, useEffect, useMemo } from 'react';
 import { useError } from '../utils/useErrors';
 import { useNewCommunicationQuery } from '@rahat-ui/query';
 import { getClient } from '@rumsan/connect/src/clients';
+import { isEmpty } from 'lodash';
 
 export const ServiceContext = createContext<RSQueryContextType | null>(null);
 
@@ -48,7 +49,6 @@ export function ServiceProvider({ children }: ServiceProviderProps) {
   } = useNewCommunicationQuery()
 
   const chainSettings = useSettingsStore((s) => s.chainSettings);
-  const commsSettings = useSettingsStore((s) => s.commsSettings);
 
   const rsService = useMemo(
     () =>
@@ -71,15 +71,17 @@ export function ServiceProvider({ children }: ServiceProviderProps) {
   useAppNavSettings();
   useAppCommunicationSettings()
 
+  const commsSettings = useSettingsStore((s) => s.commsSettings);
+
   useEffect(() => {
-    if (!newCommunicationService) {
-      const commsService = getClient({
+    if (!newCommunicationService && !isEmpty(commsSettings)) {
+      const c = getClient({
         baseURL: commsSettings['URL']
       })
-      commsService.setAppId(commsSettings['APP_ID'])
-      setNewCommunicationService(commsService);
+      c.setAppId(commsSettings['APP_ID'])
+      setNewCommunicationService(c);
     }
-  }, [commsSettings, newCommunicationService, setNewCommunicationService]);
+  }, [commsSettings,setNewCommunicationService,newCommunicationService,getClient]);
 
   useEffect(() => {
     if (!newCommsQueryClient) {

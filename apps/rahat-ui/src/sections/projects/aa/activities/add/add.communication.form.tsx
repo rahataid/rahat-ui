@@ -20,6 +20,7 @@ import {
   useStakeholdersGroupsStore,
   useBeneficiariesGroupStore,
   useUploadFile,
+  useListAllTransports,
 } from '@rahat-ui/query';
 import { X } from 'lucide-react';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
@@ -52,6 +53,9 @@ export default function AddCommunicationForm({
   const selectedCommunicationType = form.watch(fieldName('communicationType'));
 
   const fileUpload = useUploadFile();
+
+
+  const appTransports = useListAllTransports()
 
   const renderGroups = () => {
     const selectedGroupType = form.watch(fieldName('groupType'));
@@ -149,7 +153,7 @@ export default function AddCommunicationForm({
         />
         <FormField
           control={form.control}
-          name={fieldName('communicationType')}
+          name={fieldName('transportId')}
           render={({ field }) => (
             <FormItem>
               <FormLabel>Communication Type</FormLabel>
@@ -160,9 +164,15 @@ export default function AddCommunicationForm({
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="EMAIL">Email</SelectItem>
-                  <SelectItem value="SMS">SMS</SelectItem>
-                  <SelectItem value="IVR">IVR</SelectItem>
+                  {
+                    appTransports?.map((transport) => {
+                      return (
+                        <>
+                          <SelectItem value={transport?.cuid as string}>{transport?.name}</SelectItem>
+                        </>
+                      )
+                    })
+                  }
                 </SelectContent>
               </Select>
               <FormMessage />

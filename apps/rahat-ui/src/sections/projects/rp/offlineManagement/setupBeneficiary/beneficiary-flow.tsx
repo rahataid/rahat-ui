@@ -1,16 +1,8 @@
 'use client';
-import { AlertDialogHeader } from '@rahat-ui/shadcn/src/components/ui/alert-dialog';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  DialogTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/dialog';
 import { useState } from 'react';
 import Step2DisburseAmount from './2-select-beneficiary';
 
-import { useC2CProjectSubgraphStore } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
 import Step1SelectVendor from './1-select-vendor';
@@ -87,7 +79,7 @@ const SetupBeneficiaryPage = () => {
         // !disburseToken.isSuccess &&
         // !disburseMultiSig.isSuccess &&
 
-        <div className="flex justify-between">
+        <div className="flex items-center justify-end gap-4">
           <Button onClick={handlePrevious} disabled={currentStep === 0}>
             Back
           </Button>

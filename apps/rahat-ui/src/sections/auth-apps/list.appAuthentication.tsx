@@ -34,7 +34,6 @@ export default function ListAppAuthentication() {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
 
-  const [flag, setFlag] = useState('all');
   const {
     pagination,
     setNextPage,

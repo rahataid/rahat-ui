@@ -13,7 +13,7 @@ export default function AddAppAuthentication() {
 
   const FormSchema = z.object({
     name: z.string().min(1, { message: 'Name is required' }),
-    publicKey: z.string(),
+    address: z.string(),
     description: z.string(),
   });
 
@@ -26,7 +26,7 @@ export default function AddAppAuthentication() {
     resolver: zodResolver(FormSchema),
     defaultValues: {
       name: '',
-      publicKey: '',
+      address: '',
       description: '',
     },
   });
@@ -68,20 +68,20 @@ export default function AddAppAuthentication() {
 
             <FormField
               control={control}
-              name="publicKey"
+              name="address"
               render={({ field }) => (
                 <div className="col-span-1">
-                  <Label>Public Key</Label>
+                  <Label>Address</Label>
                   <Input
                     type="text"
-                    placeholder="Public Key"
+                    placeholder="Address"
                     className=" mt-4 "
                     {...field}
                   />
 
-                  {errors.name && (
+                  {errors.address && (
                     <Label className="text-red-500">
-                      {errors.name.message}
+                      {errors.address.message}
                     </Label>
                   )}
                 </div>

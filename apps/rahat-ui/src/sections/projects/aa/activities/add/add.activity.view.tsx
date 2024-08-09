@@ -34,6 +34,7 @@ import {
 import { UUID } from 'crypto';
 import AddCommunicationForm from './add.communication.form';
 import { validateFile } from '../../file.validation';
+import { toast } from 'react-toastify';
 
 export default function AddActivities() {
   const createActivity = useCreateActivities();
@@ -146,6 +147,10 @@ export default function AddActivities() {
   ) => {
     const file = event.target.files?.[0];
     if (file) {
+      const isDuplicateFile = documents?.some((d) => d?.name === file?.name);
+      if (isDuplicateFile) {
+        return toast.error('Cannot upload duplicate files.');
+      }
       if (!validateFile(file)) {
         return;
       }

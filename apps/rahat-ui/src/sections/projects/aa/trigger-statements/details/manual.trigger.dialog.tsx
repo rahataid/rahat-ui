@@ -25,6 +25,7 @@ import { X, CloudUpload, Check, LoaderCircle } from 'lucide-react';
 import { useUploadFile, useActivateTrigger } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import { validateFile } from '../../file.validation';
+import { toast } from 'react-toastify';
 
 export default function ManualTriggerDialog() {
   const { id: projectID, triggerID } = useParams();
@@ -70,6 +71,10 @@ export default function ManualTriggerDialog() {
   ) => {
     const file = event.target.files?.[0];
     if (file) {
+      const isDuplicateFile = documents?.some((d) => d?.name === file?.name);
+      if (isDuplicateFile) {
+        return toast.error('Cannot upload duplicate files.');
+      }
       if (!validateFile(file)) {
         return;
       }

@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Step2DisburseAmount from './2-select-beneficiary';
 
 import { UUID } from 'crypto';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import Step1SelectVendor from './1-select-vendor';
 import Step3AssignAmount from './3-assign-amount';
 
@@ -17,7 +17,7 @@ const SetupBeneficiaryPage = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [stepData, setStepData] =
     useState<typeof initialStepData>(initialStepData);
-
+  const route = useRouter();
   const { id } = useParams() as { id: UUID };
 
   const handleStepDataChange = (e) => {
@@ -28,6 +28,10 @@ const SetupBeneficiaryPage = () => {
   const handleNext = () => {
     if (currentStep < steps.length - 1) {
       setCurrentStep(currentStep + 1);
+    } else {
+      route.push(
+        `/projects/rp/${id}/offlineManagement/setupBeneficiary/confirm`,
+      );
     }
   };
 

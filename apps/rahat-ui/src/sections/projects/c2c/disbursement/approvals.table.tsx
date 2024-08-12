@@ -29,8 +29,8 @@ import {
 import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
 import * as React from 'react';
+import { parseEther } from 'viem';
 import { useApprovalTable } from './useApprovalTable';
-import { formatEther, parseEther } from 'viem';
 
 export function ApprovalTable({ disbursement }: { disbursement: any }) {
   const { id } = useParams();

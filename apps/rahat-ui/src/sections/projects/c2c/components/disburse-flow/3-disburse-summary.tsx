@@ -7,7 +7,7 @@ import { formatEther } from 'viem';
 import { useReadContract } from 'wagmi';
 
 type Step3DisburseSummaryProps = {
-  selectedBeneficiaries: string[];
+  selectedBeneficiaries?: string[];
   value: string;
   token: string;
   projectSubgraphDetails: any;
@@ -50,15 +50,20 @@ export default function Step3DisburseSummary({
         <div>
           Send Amount{' '}
           <span className="text-primary">
-            ({selectedBeneficiaries.length} Beneficiar
-            {selectedBeneficiaries.length > 1 ? 'ies' : 'y'})
+            ({selectedBeneficiaries?.length ?? 0}
+            Beneficiar
+            {selectedBeneficiaries?.length && selectedBeneficiaries.length > 1
+              ? 'ies'
+              : 'y'}
+            )
           </span>
         </div>
       </div>
       <div className="flex items-center justify-between border-t mb-4">
         <h1 className="mt-2">Total Amount</h1>
         <h1 className="mt-2">
-          {+value * selectedBeneficiaries.length} {token}
+          {+value * (selectedBeneficiaries?.length ?? 0)}
+          {token}
         </h1>
       </div>
     </div>

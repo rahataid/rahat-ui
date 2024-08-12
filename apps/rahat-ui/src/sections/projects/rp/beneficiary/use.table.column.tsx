@@ -22,66 +22,7 @@ export const useCvaBeneficiaryTableColumns = () => {
     setWalletAddressCopied(index);
   };
 
-  // const openSplitDetailView = useCallback((rowDetail: any) => {
-  //   setSecondPanelComponent(
-  //     <BeneficiaryDetail
-  //       closeSecondPanel={closeSecondPanel}
-  //       data={rowDetail}
-  //     />,
-  //   );
-  // }, []);
-
   const columns: ColumnDef<any>[] = [
-    // {
-    //   id: 'select',
-    //   header: ({ table }) => (
-    //     <Checkbox
-    //       checked={
-    //         table.getIsAllPageRowsSelected() ||
-    //         (table.getIsSomePageRowsSelected() && 'indeterminate')
-    //       }
-    //       onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-    //       aria-label="Select all"
-    //     />
-    //   ),
-    //   cell: ({ row }) => (
-    //     <Checkbox
-    //       checked={row.getIsSelected()}
-    //       onCheckedChange={(value) => row.toggleSelected(!!value)}
-    //       aria-label="Select row"
-    //     />
-    //   ),
-    //   enableSorting: false,
-    //   enableHiding: false,
-    // },
-    // {
-    //   accessorKey: 'walletAddress',
-    //   header: 'Wallet Address',
-    //   cell: ({ row }) => (
-    //     <TooltipProvider delayDuration={100}>
-    //       <Tooltip>
-    //         <TooltipTrigger
-    //           className="flex items-center gap-3 cursor-pointer"
-    //           onClick={() =>
-    //             clickToCopy(row.getValue('walletAddress'), row.index)
-    //           }
-    //         >
-    //           <p>{truncateEthAddress(row.getValue('walletAddress'))}</p>
-    //           {walletAddressCopied === row.index ? (
-    //             <CopyCheck size={15} strokeWidth={1.5} />
-    //           ) : (
-    //             <Copy className="text-slate-500" size={15} strokeWidth={1.5} />
-    //           )}
-    //         </TooltipTrigger>
-    //         <TooltipContent className="bg-secondary" side="bottom">
-    //           <p className="text-xs font-medium">
-    //             {walletAddressCopied === row.index ? 'copied' : 'click to copy'}
-    //           </p>
-    //         </TooltipContent>
-    //       </Tooltip>
-    //     </TooltipProvider>
-    //   ),
-    // },
     {
       accessorKey: 'walletAddress',
       header: 'WalletAddress',

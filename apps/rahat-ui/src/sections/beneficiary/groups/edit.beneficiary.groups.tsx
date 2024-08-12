@@ -59,11 +59,11 @@ export default function EditBeneficiaryGroups({
   const tableData = React.useMemo(() => {
     if (data?.data) {
       return data?.data?.map((d: any) => ({
-        uuid: d.uuid,
-        name: d.piiData.name,
-        phone: d.piiData.phone,
-        email: d.piiData.email,
-        location: d.location,
+        uuid: d?.uuid,
+        name: d?.piiData?.name,
+        phone: d?.piiData?.phone,
+        email: d?.piiData?.email,
+        location: d?.location,
       }));
     } else return [];
   }, [data?.data]);

@@ -7,7 +7,7 @@ type StepperProps = {
 
 const Stepper: FC<StepperProps> = ({ currentStep, steps }) => {
   return (
-    <div className="my-4">
+    <div className="ml-32 my-4">
       <ol className="flex items-center w-full text-sm text-gray-500 font-medium sm:text-base">
         {steps.map((step, index) => (
           <li

@@ -10,12 +10,28 @@ import {
   DialogTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dialog';
 import { CheckCircleIcon } from 'lucide-react';
+import { useParams, useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 export function ConfirmModal() {
+  const [isOpen, setIsOpen] = useState(false);
+  const route = useRouter();
+  const id = useParams();
+  const handleRoute = () => {
+    route.push(`/projects/rp/${id}/offlineManagement`);
+  };
+  const handleClose = (open: boolean) => {
+    if (!open) {
+      handleRoute();
+    }
+  };
   return (
-    <Dialog>
+    <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogTrigger asChild>
-        <Button className="bg-blue-500 text-white px-4 py-2 rounded-md w-36">
+        <Button
+          onClick={() => setIsOpen(true)}
+          className="bg-blue-500 text-white px-4 py-2 rounded-md w-36"
+        >
           Finish
         </Button>
       </DialogTrigger>
@@ -51,7 +67,9 @@ export function ConfirmModal() {
         </DialogHeader>
         <DialogFooter>
           <DialogClose asChild>
-            <Button type="submit">Close</Button>
+            <Button onClick={handleRoute} type="submit">
+              Close
+            </Button>
           </DialogClose>
         </DialogFooter>
       </DialogContent>

@@ -1,7 +1,20 @@
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@radix-ui/react-tooltip';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
 import { truncateEthAddress } from '@rumsan/sdk/utils';
 import { ColumnDef } from '@tanstack/react-table';
 import { useSecondPanel } from 'apps/rahat-ui/src/providers/second-panel-provider';
-import { Eye } from 'lucide-react';
+import { Copy, CopyCheck, EllipsisVertical, Eye } from 'lucide-react';
 import { useState } from 'react';
 import BeneficiaryDetail from './beneficiary.detail';
 
@@ -29,16 +42,44 @@ export const useCvaBeneficiaryTableColumns = () => {
       cell: ({ row }) => (
         <div
           className="cursor-pointer"
-          onClick={() => {
-            setSecondPanelComponent(
-              <BeneficiaryDetail
-                beneficiaryDetails={row.original}
-                closeSecondPanel={closeSecondPanel}
-              />,
-            );
-          }}
+          // onClick={() => {
+          //   setSecondPanelComponent(
+          //     <BeneficiaryDetail
+          //       beneficiaryDetails={row.original}
+          //       closeSecondPanel={closeSecondPanel}
+          //     />,
+          //   );
+          // }}
         >
-          {truncateEthAddress(row.getValue('walletAddress'))}
+          {/* {truncateEthAddress(row.getValue('walletAddress'))} */}
+          <TooltipProvider delayDuration={100}>
+            <Tooltip>
+              <TooltipTrigger
+                className="flex items-center gap-3 cursor-pointer"
+                onClick={() =>
+                  clickToCopy(row.getValue('walletAddress'), row.index)
+                }
+              >
+                <p>{truncateEthAddress(row.getValue('walletAddress'))}</p>
+                {walletAddressCopied === row.index ? (
+                  <CopyCheck size={15} strokeWidth={1.5} />
+                ) : (
+                  <Copy
+                    className="text-slate-500"
+                    size={15}
+                    strokeWidth={1.5}
+                  />
+                )}
+              </TooltipTrigger>
+              <TooltipContent className="bg-secondary" side="bottom">
+                <p className="text-xs font-medium">
+                  {walletAddressCopied === row.index
+                    ? 'copied'
+                    : 'click to copy'}
+                </p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
       ),
     },

@@ -63,8 +63,8 @@ const DisbursementPlan: FC<DisbursementPlanProps> = ({
   const [rowSelection, setRowSelection] = React.useState({});
 
   const columns = useDibsursementList1Columns(rowData, setRowData);
-
   const table = useReactTable({
+    manualPagination: true,
     data: rowData,
     columns,
     onSortingChange: setSorting,

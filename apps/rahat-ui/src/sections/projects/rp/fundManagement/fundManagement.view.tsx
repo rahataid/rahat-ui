@@ -93,6 +93,7 @@ const FundManagementView = () => {
   const { id } = useParams() as { id: UUID };
   const { data: disbursementData } = useFindAllDisbursementPlans(id);
   const [rowData, setRowData] = useState<any[]>([]);
+  const [isSyncing, setIsSyncing] = useState(false);
 
   const totalBeneficiaries = disbursementData?._count?.Disbursements;
   const filteredConditions = dibsursementConditions.filter((condition) =>
@@ -180,11 +181,13 @@ const FundManagementView = () => {
   ]);
 
   const handleAllocationSync = async () => {
+    setIsSyncing(true);
     await syncDisbursementAllocation.mutateAsync({
       beneficiaryAddresses: disbursementData.Disbursements,
       projectAddress: contractSettings?.rahatpayrollproject?.address,
       tokenAddress: contractSettings?.rahattoken?.address,
     });
+    setIsSyncing(false);
   };
 
   const handleAddDisburse = () => {
@@ -271,6 +274,7 @@ const FundManagementView = () => {
                 <Button
                   variant={'secondary'}
                   onClick={handleAllocationSync}
+                  disabled={isSyncing}
                   // disabled={
                   //   syncDisbursementAllocation.isPending ||
                   //   +chainTokenAllocations.data ===
@@ -282,7 +286,7 @@ const FundManagementView = () => {
                 {/* ) : null} */}
                 {/* MODAL EXAMPLE START */}
 
-                <Dialog>
+                {/* <Dialog>
                   <DialogTrigger asChild>
                     <Button variant="outline">Edit Profile</Button>
                   </DialogTrigger>
@@ -294,7 +298,7 @@ const FundManagementView = () => {
                       <StepProgress />
                     </div>
                   </DialogContent>
-                </Dialog>
+                </Dialog> */}
 
                 {/* MODAL EXAMPLE END */}
                 <DropdownMenu>

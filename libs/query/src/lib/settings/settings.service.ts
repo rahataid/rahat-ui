@@ -70,7 +70,6 @@ export const useAcessManagerSettings = () => {
       queryKey: ['ACCESS_MANAGER'],
       queryFn: async () => {
         const d = await appSettings.mutateAsync();
-        console.log({ d });
         return d.data.data?.value;
       },
 

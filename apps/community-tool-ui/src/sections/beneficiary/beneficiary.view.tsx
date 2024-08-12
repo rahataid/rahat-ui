@@ -47,7 +47,14 @@ function BeneficiaryView() {
   });
 
   const columns = useCommunityBeneficiaryTableColumns();
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
+    location: false,
+    gender: false,
+    ward: false,
+    totalFamilyMembers: false,
+    female: false,
+    male: false,
+  });
   const table = useReactTable({
     manualPagination: true,
     data: data?.data?.rows || [],

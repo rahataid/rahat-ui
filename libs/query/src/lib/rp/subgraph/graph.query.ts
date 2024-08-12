@@ -35,16 +35,17 @@ query ProjectTransactions{
     transactionHash
     eventType
   }
-
-  OfflineOtpAdded{
-    id
+  otpAddeds {
+    amount
     beneficiary
-    transactionHash
     blockNumber
     blockTimestamp
     eventType
+    id
+    otpHash
+    tokenAddress
   }
-  OfflineClaimProcessed{
+  offlineClaimProcesseds{
    id
    beneficiary
    vendor
@@ -55,6 +56,18 @@ query ProjectTransactions{
    transactionHash
     eventType
   }
+  otpVerifieds
+    {
+    id
+    beneficiary
+    vendor
+    tokenAddress
+    amount
+    blockNumber
+    blockTimestamp
+    transactionHash
+    eventType
+    }
 }
 `;
 
@@ -84,7 +97,7 @@ query VendorTransactions($vendor:String!) {
     transactionHash
     eventType
   }
-  OfflineClaimProcessed(where:{vendor:$vendor}){
+  offlineClaimProcessed(where:{vendor:$vendor}){
    id
    beneficiary
    vendor
@@ -95,6 +108,19 @@ query VendorTransactions($vendor:String!) {
    transactionHash
     eventType
   }
+  otpVerifieds(where:{
+    vendor:$vendor})
+    {
+    id
+    beneficiary
+    vendor
+    tokenAddress
+    amount
+    blockNumber
+    blockTimestamp
+    transactionHash
+    eventType
+    }
 }
 `;
 
@@ -124,14 +150,40 @@ tokensAllocateds(where:{beneficiary: $beneficiaryAddress} ) {
     transactionHash
     eventType
    }
-  OfflineOtpAdded(where:{beneficiary:$beneficiaryAddress}){
-    id
+  otpAddeds(where:{beneficiary:$beneficiaryAddress}){
+    amount
     beneficiary
-    transactionHash
     blockNumber
     blockTimestamp
     eventType
+    id
+    otpHash
+    tokenAddress
   }
+   offlineClaimProcesseds(where:{beneficiary:$beneficiaryAddress}){
+   id
+   beneficiary
+   vendor
+   tokenAddress
+   amount
+   blockNumber
+   blockTimestamp
+   transactionHash
+    eventType
+  }
+  otpVerifieds(where:{
+    beneficiary:$beneficiaryAddress})
+    {
+    id
+    beneficiary
+    vendor
+    tokenAddress
+    amount
+    blockNumber
+    blockTimestamp
+    transactionHash
+    eventType
+    }
 }
 `;
 

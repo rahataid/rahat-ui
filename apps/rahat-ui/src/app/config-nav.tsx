@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { paths } from '../routes/paths';
 import { useSettingsStore } from '@rahat-ui/query';
+import { title } from 'process';
 
 interface NavItem {
   title: string;
@@ -63,11 +64,16 @@ export function useNavData() {
           title: 'Users',
           path: paths.user.root,
         },
-            {
-              title: 'Import Beneficiary from CT',
-              path: paths.dashboard.communitybeneficiary,
-            },
-          ],
+        {
+          title: 'Import Beneficiary from CT',
+          path: paths.dashboard.communitybeneficiary,
+        },
+
+        {
+          title: 'Apps',
+          path: paths.dashboard.appAuthentication,
+        },
+      ],
 
     [navSettings?.subData],
   );

@@ -30,7 +30,7 @@ function ViewGroup() {
 
   const debouncedFilters = useDebounce(filters, 500) as any;
   debouncedFilters.autoCreated = true;
-  const { data } = useCommunityGroupList({
+  const { isLoading, data } = useCommunityGroupList({
     ...pagination,
     ...(debouncedFilters as any),
   });
@@ -61,6 +61,7 @@ function ViewGroup() {
             filters={filters}
             pagination={pagination}
             setPagination={setPagination}
+            loading={isLoading}
           />
           <CustomPagination
             meta={data?.response?.meta || { total: 0, currentPage: 0 }}

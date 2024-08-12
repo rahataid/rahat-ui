@@ -41,7 +41,7 @@ function BeneficiaryView() {
   const { setSelectedBeneficiaries, selectedBeneficiaries } =
     useCommunityBeneficiaryStore();
 
-  const { data } = useCommunityBeneficaryList({
+  const { isLoading, data } = useCommunityBeneficaryList({
     ...pagination,
     ...(debouncedFilters as any),
   });
@@ -93,6 +93,7 @@ function BeneficiaryView() {
             filters={filters}
             pagination={pagination}
             setPagination={setPagination}
+            loading={isLoading}
           />
         </TabsContent>
         {/* <TabsContent value="grid">

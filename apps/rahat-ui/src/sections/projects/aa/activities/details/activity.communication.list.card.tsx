@@ -6,6 +6,7 @@ import { useTriggerCommunication } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import { SessionStatus } from "@rumsan/connect/src/types/index"
 import SpinnerLoader from '../../../components/spinner.loader';
+import { Download } from 'lucide-react';
 
 type IProps = {
   activityDetail: any;
@@ -20,8 +21,6 @@ export default function ActivityCommunicationListCard({
 
   const activityId = activityDetail.uuid;
 
-  console.log("activityDetail", activityDetail)
-
   const trigger = useTriggerCommunication();
 
   const triggerCommunication = async (activityId: string, communicationId: string) => {
@@ -35,6 +34,7 @@ export default function ActivityCommunicationListCard({
       setLoadingButtons((prev) => prev.filter((id) => id !== communicationId));
     }
   };
+
   return (
     <div className="bg-card p-4 rounded">
       <h1 className="font-semibold text-lg">Communication List</h1>
@@ -72,7 +72,7 @@ export default function ActivityCommunicationListCard({
                 </div>
                 <div>
                   <h1 className="text-muted-foreground text-sm">Message</h1>
-                  <p>{comm?.message}</p>
+                  <p>{renderMessage(comm?.message)}</p>
                 </div>
                 <div className="text-right">
                   <h1 className="text-muted-foreground text-sm">Status</h1>
@@ -89,4 +89,21 @@ export default function ActivityCommunicationListCard({
       )}
     </div>
   );
+}
+
+
+function renderMessage(message: any) {
+  // console.log(typeof(message))
+  if (typeof (message) === "string") {
+    return message;
+  }
+  return (
+    <a className='cursor-pointer underline inline-flex' href={message?.mediaURL} target='_blank'>
+      <span>
+        {message?.fileName}
+      </span>
+      <Download size={20} strokeWidth={1.5} className='ml-2' />
+    </a>
+  )
+
 }

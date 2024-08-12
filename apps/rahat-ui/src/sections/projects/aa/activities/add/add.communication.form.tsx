@@ -20,16 +20,17 @@ import {
   useStakeholdersGroupsStore,
   useBeneficiariesGroupStore,
   useUploadFile,
-  useListAllTransports,
 } from '@rahat-ui/query';
 import { X } from 'lucide-react';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
+import { Transport, ValidationContent } from "@rumsan/connect/src/types"
 
 type IProps = {
   form: any;
   onClose: VoidFunction;
   index: number;
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  appTransports: Transport[] | undefined
 };
 
 export default function AddCommunicationForm({
@@ -37,8 +38,10 @@ export default function AddCommunicationForm({
   onClose,
   index,
   setLoading,
+  appTransports
 }: IProps) {
   const [audioFile, setAudioFile] = React.useState({});
+  const [contentType, setContentType] = React.useState<ValidationContent | "">("");
 
   const stakeholdersGroups = useStakeholdersGroupsStore(
     (state) => state.stakeholdersGroups,
@@ -50,12 +53,14 @@ export default function AddCommunicationForm({
 
   const fieldName = (name: string) => `activityCommunication.${index}.${name}`; // Dynamic field name generator
 
-  const selectedCommunicationType = form.watch(fieldName('communicationType'));
+  const selectedTransport = form.watch(fieldName('transportId'));
+
+  React.useEffect(() => {
+    const transportData = appTransports?.find((t) => t.cuid === selectedTransport)
+    setContentType(transportData?.validationContent as ValidationContent)
+  }, [selectedTransport])
 
   const fileUpload = useUploadFile();
-
-
-  const appTransports = useListAllTransports()
 
   const renderGroups = () => {
     const selectedGroupType = form.watch(fieldName('groupType'));
@@ -179,7 +184,7 @@ export default function AddCommunicationForm({
             </FormItem>
           )}
         />
-        {selectedCommunicationType === 'IVR' ? (
+        {contentType === ValidationContent.URL && (
           <FormField
             control={form.control}
             name={fieldName('audioURL')}
@@ -210,23 +215,26 @@ export default function AddCommunicationForm({
               );
             }}
           />
-        ) : (
-          <FormField
-            control={form.control}
-            name={fieldName('message')}
-            render={({ field }) => {
-              return (
-                <FormItem className="col-span-2">
-                  <FormLabel>Message</FormLabel>
-                  <FormControl>
-                    <Textarea placeholder="Write message" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              );
-            }}
-          />
         )}
+        {
+          contentType === ValidationContent.TEXT && (
+            <FormField
+              control={form.control}
+              name={fieldName('message')}
+              render={({ field }) => {
+                return (
+                  <FormItem className="col-span-2">
+                    <FormLabel>Message</FormLabel>
+                    <FormControl>
+                      <Textarea placeholder="Write message" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+          )
+        }
       </div>
     </div>
   );

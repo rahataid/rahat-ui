@@ -1,10 +1,8 @@
-import { Landmark, MapPin } from 'lucide-react';
+import { MapPin } from 'lucide-react';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import * as React from 'react';
 import Map, { MapRef, Marker } from 'react-map-gl';
-// import { communityMapboxBasicConfig } from '../../utils/mapconfigs';
 import MarkerDetails from './markerDetails';
-import { communityMapboxBasicConfig } from '../../utils/mapconfigs';
 
 const DEFAULT_LAT = 0.7893;
 const DEFAULT_LNG = 113.9213;
@@ -45,7 +43,7 @@ export default function ElMap({ dataForMap }: any) {
           pitch: 0,
         }}
         mapStyle="mapbox://styles/mapbox/streets-v11"
-        mapboxAccessToken={communityMapboxBasicConfig.mapboxAccessToken}
+        mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_TOKEN}
       >
         {selectedMarker ? (
           <MarkerDetails

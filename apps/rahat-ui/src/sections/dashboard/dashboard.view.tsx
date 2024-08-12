@@ -35,7 +35,6 @@ export default function DashboardView() {
     });
     setDataForMap(filterVendorsGeoJson(response));
   };
-  console.log('dataForMapDashboard', dataForMap);
 
   useEffect(() => {
     if (!elUuid) return;

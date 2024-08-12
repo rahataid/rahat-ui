@@ -155,11 +155,20 @@ const FundManagementView = () => {
           };
         });
 
+      console.log(
+        projectBeneficiaryDisbursements,
+        'is project beneficiary disbursement',
+      );
+
       if (
         JSON.stringify(projectBeneficiaryDisbursements) !==
         JSON.stringify(rowData)
       ) {
-        setRowData(projectBeneficiaryDisbursements);
+        setRowData(
+          projectBeneficiaryDisbursements.filter(
+            (disbursement) => disbursement.disbursementAmount !== '0',
+          ),
+        );
       }
     }
   }, [
@@ -168,7 +177,6 @@ const FundManagementView = () => {
     disbursements?.isSuccess,
     projectBeneficiaries.data?.data,
     projectBeneficiaries.isSuccess,
-    rowData,
   ]);
 
   const handleAllocationSync = async () => {
@@ -347,7 +355,7 @@ const FundManagementView = () => {
                 onClick={handleAddDisburse}
                 className="mt-4 bg-blue-500 text-white px-4 py-2 rounded"
               >
-                Create Disbursement Plan
+                Edit Disbursement Plan
               </Button>
             </div>
           </div>

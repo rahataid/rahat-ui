@@ -8,17 +8,17 @@ import { formatEther } from 'viem';
 import { useReadContract } from 'wagmi';
 
 type Step2DisburseAmountProps = {
-  selectedBeneficiaries: string[];
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   projectSubgraphDetails: any;
+  selectedBeneficiaries: string[];
   tokenName?: string;
 };
 
 export default function Step2DisburseAmount({
-  selectedBeneficiaries,
   onChange,
   value,
+  selectedBeneficiaries,
   projectSubgraphDetails,
   tokenName = 'USDC',
 }: Step2DisburseAmountProps) {

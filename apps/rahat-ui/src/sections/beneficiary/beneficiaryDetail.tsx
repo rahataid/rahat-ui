@@ -91,8 +91,6 @@ export default function BeneficiaryDetail({
   
   const benfAssignedToProject = beneficiaryDetail?.BeneficiaryProject?.length
 
-  console.log(beneficiaryDetail)
-
   return (
     <>
       <AssignToProjectModal

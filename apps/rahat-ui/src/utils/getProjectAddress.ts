@@ -44,6 +44,6 @@ export const shortenAddress = (address: Address) => {
 export const shortenTxHash = (txHash: string) => {
   if (!txHash) return '';
   const start = txHash.slice(0, 15);
-  const end = txHash.slice(txHash.length - 15);
+  const end = txHash.slice(txHash.length - 10);
   return `${start}...${end}`;
 };

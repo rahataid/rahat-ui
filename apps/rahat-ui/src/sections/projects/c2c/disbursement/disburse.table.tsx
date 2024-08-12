@@ -72,7 +72,7 @@ export function DisburseTable() {
 
   return (
     <div className="w-full">
-      <div className="flex items-center py-4">
+      <div className="flex items-center pb-2">
         <Input
           placeholder="Filter date..."
           value={(table.getColumn('date')?.getFilterValue() as string) ?? ''}

@@ -52,13 +52,15 @@ export default function DashboardView() {
             <DashboardSummary data={data} />
             <DashboardCharts charts={beneficiaryStats?.data?.data} />
           </TabsContent> */}
-          <StyledMapContainer>
-            <ClusterMap
-              {...mapboxBasicConfig}
-              mapStyle={THEMES.light}
-              dataForMap={dataForMap}
-            />
-          </StyledMapContainer>
+          <div className="my-4">
+            <StyledMapContainer>
+              <ClusterMap
+                {...mapboxBasicConfig}
+                mapStyle={THEMES.light}
+                dataForMap={dataForMap}
+              />
+            </StyledMapContainer>
+          </div>
         </ScrollArea>
       </Tabs>
     </div>

@@ -143,6 +143,7 @@ export const useActivities = (uuid: UUID, payload: any) => {
     createdAt: d?.createdAt,
     notes: d?.notes,
     timeDifference: d?.differenceInTriggerAndActivityCompletion,
+    leadTime: d?.leadTime,
   }));
 
   return { ...query, activitiesData, activitiesMeta: query?.data?.meta };

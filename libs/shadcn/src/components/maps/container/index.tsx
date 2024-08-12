@@ -21,3 +21,11 @@ export const StyledMapContainer: FC = styled('div')(() => ({
     display: 'none',
   },
 }));
+
+// @ts-ignore
+export const StyledMapWrapper: FC = styled.div`
+  & .mapboxgl-ctrl-logo,
+  .mapboxgl-ctrl-bottom-right {
+    display: none;
+  }
+`;

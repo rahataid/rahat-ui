@@ -93,6 +93,7 @@ const FundManagementView = () => {
   const { id } = useParams() as { id: UUID };
   const { data: disbursementData } = useFindAllDisbursementPlans(id);
   const [rowData, setRowData] = useState<any[]>([]);
+  const [isSyncing, setIsSyncing] = useState(false);
 
   const totalBeneficiaries = disbursementData?._count?.Disbursements;
   const filteredConditions = dibsursementConditions.filter((condition) =>
@@ -155,11 +156,20 @@ const FundManagementView = () => {
           };
         });
 
+      console.log(
+        projectBeneficiaryDisbursements,
+        'is project beneficiary disbursement',
+      );
+
       if (
         JSON.stringify(projectBeneficiaryDisbursements) !==
         JSON.stringify(rowData)
       ) {
-        setRowData(projectBeneficiaryDisbursements);
+        setRowData(
+          projectBeneficiaryDisbursements.filter(
+            (disbursement) => disbursement.disbursementAmount !== '0',
+          ),
+        );
       }
     }
   }, [
@@ -168,15 +178,16 @@ const FundManagementView = () => {
     disbursements?.isSuccess,
     projectBeneficiaries.data?.data,
     projectBeneficiaries.isSuccess,
-    rowData,
   ]);
 
   const handleAllocationSync = async () => {
+    setIsSyncing(true);
     await syncDisbursementAllocation.mutateAsync({
       beneficiaryAddresses: disbursementData.Disbursements,
       projectAddress: contractSettings?.rahatpayrollproject?.address,
       tokenAddress: contractSettings?.rahattoken?.address,
     });
+    setIsSyncing(false);
   };
 
   const handleAddDisburse = () => {
@@ -263,6 +274,7 @@ const FundManagementView = () => {
                 <Button
                   variant={'secondary'}
                   onClick={handleAllocationSync}
+                  disabled={isSyncing}
                   // disabled={
                   //   syncDisbursementAllocation.isPending ||
                   //   +chainTokenAllocations.data ===
@@ -274,7 +286,7 @@ const FundManagementView = () => {
                 {/* ) : null} */}
                 {/* MODAL EXAMPLE START */}
 
-                <Dialog>
+                {/* <Dialog>
                   <DialogTrigger asChild>
                     <Button variant="outline">Edit Profile</Button>
                   </DialogTrigger>
@@ -286,7 +298,7 @@ const FundManagementView = () => {
                       <StepProgress />
                     </div>
                   </DialogContent>
-                </Dialog>
+                </Dialog> */}
 
                 {/* MODAL EXAMPLE END */}
                 <DropdownMenu>
@@ -347,7 +359,7 @@ const FundManagementView = () => {
                 onClick={handleAddDisburse}
                 className="mt-4 bg-blue-500 text-white px-4 py-2 rounded"
               >
-                Create Disbursement Plan
+                Edit Disbursement Plan
               </Button>
             </div>
           </div>

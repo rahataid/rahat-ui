@@ -47,6 +47,7 @@ import {
   phoneOptions,
 } from 'apps/rahat-ui/src/constants/selectOptionsRpBeneficiary';
 import FiltersTags from '../../components/filtersTags';
+import TableLoader from 'apps/rahat-ui/src/components/table.loader';
 
 export default function BeneficiaryTable() {
   const bulkAssignTokens = useBulkAssignClaimsToBeneficiaries();
@@ -83,7 +84,6 @@ export default function BeneficiaryTable() {
     projectUUID: id,
     ...filters,
   });
-
   const table = useReactTable({
     manualPagination: true,
     data: beneficiaries.data?.data || [],
@@ -192,83 +192,101 @@ export default function BeneficiaryTable() {
           />
         )}
         <div className="rounded-md border bg-card">
-          {table.getRowModel().rows?.length ? (
-            <>
-              <TableComponent>
-                <ScrollArea className="h-[calc(100vh-190px)]">
-                  <TableHeader className="bg-card sticky top-0">
-                    {table.getHeaderGroups().map((headerGroup) => (
-                      <TableRow key={headerGroup.id}>
-                        {headerGroup.headers.map((header) => {
-                          return (
-                            <TableHead key={header.id}>
-                              {header.isPlaceholder
-                                ? null
-                                : flexRender(
-                                    header.column.columnDef.header,
-                                    header.getContext(),
-                                  )}
-                            </TableHead>
-                          );
-                        })}
+          <>
+            <TableComponent>
+              <ScrollArea className="h-[calc(100vh-190px)]">
+                <TableHeader className="bg-card sticky top-0">
+                  {table.getHeaderGroups().map((headerGroup) => (
+                    <TableRow key={headerGroup.id}>
+                      {headerGroup.headers.map((header) => {
+                        return (
+                          <TableHead key={header.id}>
+                            {header.isPlaceholder
+                              ? null
+                              : flexRender(
+                                  header.column.columnDef.header,
+                                  header.getContext(),
+                                )}
+                          </TableHead>
+                        );
+                      })}
+                    </TableRow>
+                  ))}
+                </TableHeader>
+                <TableBody>
+                  {table.getRowModel().rows?.length ? (
+                    table.getRowModel().rows.map((row) => (
+                      <TableRow
+                        key={row.id}
+                        data-state={row.getIsSelected() && 'selected'}
+                      >
+                        {row.getVisibleCells().map((cell) => (
+                          <TableCell key={cell.id}>
+                            {flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext(),
+                            )}
+                          </TableCell>
+                        ))}
                       </TableRow>
-                    ))}
-                  </TableHeader>
-                  <TableBody>
-                    {table.getRowModel().rows.map((row) => {
-                      return (
-                        <TableRow
-                          key={row.id}
-                          data-state={row.getIsSelected() && 'selected'}
-                        >
-                          {row.getVisibleCells().map((cell) => (
-                            <TableCell key={cell.id}>
-                              {flexRender(
-                                cell.column.columnDef.cell,
-                                cell.getContext(),
-                              )}
-                            </TableCell>
-                          ))}
-                        </TableRow>
-                      );
-                    })}
-                  </TableBody>
-                </ScrollArea>
-              </TableComponent>
-              <CustomPagination
-                currentPage={pagination.page}
-                handleNextPage={setNextPage}
-                handlePageSizeChange={setPerPage}
-                handlePrevPage={setPrevPage}
-                perPage={pagination.perPage}
-                meta={meta || { total: 0, currentPage: 0 }}
-              />
-            </>
-          ) : (
-            <div className="w-full h-[calc(100vh-140px)]">
-              <div className="flex flex-col items-center justify-center">
-                <Image
-                  src="/noData.png"
-                  height={250}
-                  width={250}
-                  alt="no data"
-                />
-                <p className="text-medium text-base mb-1">No Data Available</p>
-                <p className="text-sm mb-4 text-gray-500">
-                  There are no beneficiaries to display at the moment
-                </p>
-                <Button
-                  onClick={() =>
-                    router.push(`/projects/rp/${id}/beneficiary/add`)
-                  }
-                >
-                  {' '}
-                  <Plus className="mr-2" size={20} strokeWidth={1.5} />
-                  Add Beneficiary Data
-                </Button>
-              </div>
-            </div>
-          )}
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell
+                        colSpan={columns.length}
+                        className="h-24 text-center"
+                      >
+                        {beneficiaries.isFetching ? (
+                          <TableLoader />
+                        ) : (
+                          <div className="w-full h-[calc(100vh-140px)]">
+                            <div className="flex flex-col items-center justify-center">
+                              <Image
+                                src="/noData.png"
+                                height={250}
+                                width={250}
+                                alt="no data"
+                              />
+                              <p className="text-medium text-base mb-1">
+                                No Data Available
+                              </p>
+                              <p className="text-sm mb-4 text-gray-500">
+                                There are no beneficiaries to display at the
+                                moment
+                              </p>
+                              <Button
+                                onClick={() =>
+                                  router.push(
+                                    `/projects/rp/${id}/beneficiary/add`,
+                                  )
+                                }
+                              >
+                                {' '}
+                                <Plus
+                                  className="mr-2"
+                                  size={20}
+                                  strokeWidth={1.5}
+                                />
+                                Add Beneficiary Data
+                              </Button>
+                            </div>
+                          </div>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </ScrollArea>
+            </TableComponent>
+            <CustomPagination
+              currentPage={pagination.page}
+              handleNextPage={setNextPage}
+              handlePageSizeChange={setPerPage}
+              handlePrevPage={setPrevPage}
+              perPage={pagination.perPage}
+              meta={meta || { total: 0, currentPage: 0 }}
+            />
+          </>
         </div>
       </div>
     </>

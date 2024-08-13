@@ -3,7 +3,7 @@ import React from 'react';
 
 const ProjectCharts = () => {
   return (
-    <div className="grid grid-cols-3 gap-4 rounded-sm bg-card p-4 mb-2 shadow">
+    <div className="grid grid-cols-3 gap-2 mb-2">
       <PieChart
         title="Gender"
         subheader="Project Stats"

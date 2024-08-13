@@ -42,7 +42,7 @@ export default function ElMap({ dataForMap }: any) {
           bearing: 0,
           pitch: 0,
         }}
-        mapStyle="mapbox://styles/mapbox/streets-v11"
+        mapStyle="mapbox://styles/mapbox/light-v9"
         mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_TOKEN}
       >
         {selectedMarker ? (
@@ -64,7 +64,7 @@ export default function ElMap({ dataForMap }: any) {
                 className="cursor-pointer"
                 onClick={(e) => zoomToSelectedLoc(e, item)}
               >
-                <MapPin color="#0C609B" size={20} />
+                <MapPin color="darkBlue" size={24} />
               </button>
             </Marker>
           );

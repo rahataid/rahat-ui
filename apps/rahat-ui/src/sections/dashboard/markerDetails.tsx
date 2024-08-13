@@ -12,9 +12,12 @@ export default function MarkerDetails({
         latitude={selectedMarker.geometry.coordinates[1]}
         longitude={selectedMarker.geometry.coordinates[0]}
         onClose={closeSelectedMarker}
-        closeButton={false}
+        closeButton={true}
+        style={{color: 'blue'}}
       >
-        <h3>Redemption: {selectedMarker?.statsCount || 'n/a'}</h3>
+        <h3>
+          Redemption: {selectedMarker?.statsCount || 'N/A'}
+          </h3>
       </Popup>
     </div>
   );

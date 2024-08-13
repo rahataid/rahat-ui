@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Tabs, TabsContent } from '@rahat-ui/shadcn/components/tabs';
 
 import {
+  OnChangeFn,
   VisibilityState,
   getCoreRowModel,
   getFilteredRowModel,
@@ -22,6 +23,11 @@ import BeneficiaryGridView from '../../sections/beneficiary/gridView';
 import BeneficiaryListView from '../../sections/beneficiary/listView';
 import { useDebounce } from '../../utils/debounceHooks';
 import { useCommunityBeneficiaryTableColumns } from './useBeneficiaryColumns';
+import { COLUMN_VISIBILITY_STORAGE_KEY } from '../../constants/beneficiary.const';
+import {
+  getLocalStorage,
+  setLocalStorage,
+} from '../../utils/localstorage.utils';
 
 function BeneficiaryView() {
   const {
@@ -47,14 +53,31 @@ function BeneficiaryView() {
   });
 
   const columns = useCommunityBeneficiaryTableColumns();
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
-    location: false,
-    gender: false,
-    ward: false,
-    totalFamilyMembers: false,
-    female: false,
-    male: false,
-  });
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
+    () => {
+      const storedVisibility = getLocalStorage(COLUMN_VISIBILITY_STORAGE_KEY);
+      return storedVisibility
+        ? JSON.parse(storedVisibility)
+        : {
+            walletAddress: false,
+            email: false,
+          };
+    },
+  );
+  const handleColumnVisibilityChange: OnChangeFn<VisibilityState> = (
+    updaterOrValue,
+  ) => {
+    const newVisibility =
+      typeof updaterOrValue === 'function'
+        ? updaterOrValue(columnVisibility)
+        : updaterOrValue;
+
+    setColumnVisibility(newVisibility);
+    setLocalStorage(
+      COLUMN_VISIBILITY_STORAGE_KEY,
+      JSON.stringify(newVisibility),
+    );
+  };
   const table = useReactTable({
     manualPagination: true,
     data: data?.data?.rows || [],
@@ -62,7 +85,7 @@ function BeneficiaryView() {
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    onColumnVisibilityChange: setColumnVisibility,
+    onColumnVisibilityChange: handleColumnVisibilityChange,
     onRowSelectionChange: setSelectedListItems,
     getRowId: (row) => row.uuid as string,
     state: {
@@ -83,6 +106,7 @@ function BeneficiaryView() {
     }
   }, [resetSelectedListItems, selectedBeneficiaries.length]);
 
+  console.log(columnVisibility);
   return (
     <Tabs defaultValue="list" className="h-full">
       <>

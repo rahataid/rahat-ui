@@ -105,7 +105,7 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
   const steps = [
     {
       id: 'step1',
-      title: 'Disburse Method',
+      // title: 'Disburse Method',
       component: (
         <Step1DisburseMethod
           value={stepData.treasurySource}
@@ -197,9 +197,6 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
   return (
     <Card className="p-2 mx-2 flex flex-col justify-evenly h-[calc(100vh-500px)]">
       <Stepper currentStep={currentStep} steps={steps} />
-      <CardHeader>
-        <CardTitle>{steps[currentStep].title}</CardTitle>
-      </CardHeader>
       <CardContent>
         <div>{renderComponent()}</div>
       </CardContent>

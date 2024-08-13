@@ -260,6 +260,9 @@ importers:
       shadcn-ui:
         specifier: ^0.8.0
         version: 0.8.0(typescript@5.4.5)
+      socket.io-client:
+        specifier: ^4.7.5
+        version: 4.7.5(bufferutil@4.0.8)
       sonner:
         specifier: ^1.4.41
         version: 1.5.0(react-dom@18.2.0(react@18.2.0))(react@18.2.0)

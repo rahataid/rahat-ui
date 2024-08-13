@@ -17,6 +17,7 @@ import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   useBeneficiaryPii,
+  useBulkCreateRpAudience,
   useCreateCampaign,
   useCreateRpAudience,
   useListRpAudience,
@@ -55,7 +56,7 @@ import {
   CommandItem,
   CommandList,
 } from '@rahat-ui/shadcn/src/components/ui/command';
-import { useGetApprovedTemplate } from '@rumsan/communication-query';
+// import { useGetApprovedTemplate } from '@rumsan/communication-query';
 
 const FormSchema = z.object({
   campaignType: z.string({
@@ -86,10 +87,13 @@ const TextCampaignAddDrawer = () => {
     // @ts-ignore
     projectId: id,
   });
-  const { data: messageTemplate } = useGetApprovedTemplate();
+  const { data: messageTemplate } = '';
 
   const createCampaign = useCreateCampaign(id as UUID);
-  const createAudience = useCreateRpAudience(id as UUID);
+  // const createAudience = useCreateRpAudience(id as UUID);
+  const createAudience = useBulkCreateRpAudience(id as UUID);
+
+  // const createAudience = useCreateBulkAudience();
 
   const [isEmail, setisEmail] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
@@ -108,42 +112,50 @@ const TextCampaignAddDrawer = () => {
   const isWhatsappMessage =
     form.getValues().campaignType?.toLowerCase() === 'whatsapp';
 
-  const handleCreateAudience = async (item: TPIIData) => {
-    // Check if the audience already exists
-    const existingAudience = audienceData?.find(
-      (audience: Audience) => audience?.details?.phone === item.phone,
-    );
+  const handleCreateAudience = async () => {
+    const { existingAudiences, newAudiences } = beneficiaryData.data.reduce(
+      (acc, item) => {
+        const existingAudience = audienceData.find(
+          (audience) => audience.details.phone === item.piiData.phone,
+        );
 
-    if (existingAudience) {
-      // If the audience already exists, return its ID
-      return existingAudience.id;
-    } else {
-      // If the audience does not exist, create a new one
-      const newAudience = await createAudience?.mutateAsync({
-        details: {
-          name: item.name,
-          phone: item.phone,
-          email: item.email,
-        },
+        if (existingAudience) {
+          acc.existingAudiences.push(existingAudience.id);
+        } else {
+          acc.newAudiences.push({
+            details: {
+              name: item?.piiData?.name,
+              email: item?.piiData?.email,
+              phone: item?.piiData?.phone,
+            },
+          });
+        }
+
+        return acc;
+      },
+      { existingAudiences: [], newAudiences: [] },
+    );
+    // Create new audiences
+    let createdAudienceIds = [];
+    if (newAudiences.length > 0) {
+      createdAudienceIds = await createAudience.mutateAsync({
+        data: JSON.stringify(newAudiences),
       });
-      return newAudience.id;
     }
+
+    // Combine existing and created audience IDs
+    return [...existingAudiences, ...createdAudienceIds];
   };
   const handleCreateCampaign = async (data: z.infer<typeof FormSchema>) => {
     const transportId = transportData?.find(
       (t) => t?.name?.toLowerCase() === data?.campaignType?.toLowerCase(),
     )?.id;
-    const audienceIds = [];
 
     // Create audience
     if (beneficiaryData?.data) {
-      const audiencePromises = beneficiaryData.data.map((item) =>
-        handleCreateAudience(item.piiData),
-      );
+      const audienceIds = await handleCreateAudience();
 
       // Wait for all audience creations to complete
-      const results = await Promise.all(audiencePromises);
-      audienceIds.push(...results);
       type AdditionalData = {
         audio?: any;
         message?: string;

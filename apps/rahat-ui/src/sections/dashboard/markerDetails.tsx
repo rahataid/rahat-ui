@@ -4,7 +4,6 @@ export default function MarkerDetails({
   selectedMarker,
   closeSelectedMarker,
 }: any) {
-  console.log('selectedMarker', selectedMarker);
   return (
     <div>
       <Popup

@@ -436,7 +436,8 @@ export const useUpdateActivityStatus = () => {
 
     onSuccess: () => {
       q.reset();
-      qc.invalidateQueries({ queryKey: ['activity, activities'] });
+      qc.invalidateQueries({ queryKey: ['activities'] });
+      qc.invalidateQueries({ queryKey: ['activity'] });
       toast.fire({
         title: 'Status Updated',
         icon: 'success',

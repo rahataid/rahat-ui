@@ -146,6 +146,7 @@ export default function BeneficiaryDetail({
         removeBeneficiary={removeBeneficiary}
         beneficiaryDetails={beneficiaryDetails}
         handleTabChange={handleTabChange}
+        allocatedTokens={Number(allocatedTokens?.data?.amount) || 0}
       />
       <Tabs value={activeTab}>
         <TabsNavigation handleTabChange={handleTabChange} />
@@ -176,6 +177,7 @@ type IHeaderProps = {
   removeBeneficiary: (uuid: string) => void;
   beneficiaryDetails: any;
   handleTabChange: (tab: 'details' | 'transaction') => void;
+  allocatedTokens: number;
 };
 
 function Header({
@@ -183,6 +185,7 @@ function Header({
   removeBeneficiary,
   beneficiaryDetails,
   handleTabChange,
+  allocatedTokens,
 }: IHeaderProps) {
   return (
     <div className="flex justify-between p-4 pt-5 bg-card">
@@ -198,44 +201,46 @@ function Header({
       </TooltipProvider>
       <div className="flex gap-3">
         <TooltipProvider delayDuration={100}>
-          <Tooltip>
-            <TooltipTrigger>
-              <AlertDialog>
-                <AlertDialogTrigger className="flex items-center">
-                  <Trash2
-                    className="cursor-pointer"
-                    color="red"
-                    size={20}
-                    strokeWidth={1.5}
-                  />
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>
-                      Are you absolutely sure?
-                    </AlertDialogTitle>
-                    <AlertDialogDescription>
-                      This action cannot be undone. This will permanently delete
-                      this beneficiary.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction
-                      onClick={() =>
-                        removeBeneficiary(beneficiaryDetails?.uuid)
-                      }
-                    >
-                      Continue
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-            </TooltipTrigger>
-            <TooltipContent className="bg-secondary">
-              <p className="text-xs font-medium">Delete</p>
-            </TooltipContent>
-          </Tooltip>
+          {allocatedTokens <= 0 && (
+            <Tooltip>
+              <TooltipTrigger>
+                <AlertDialog>
+                  <AlertDialogTrigger className="flex items-center">
+                    <Trash2
+                      className="cursor-pointer"
+                      color="red"
+                      size={20}
+                      strokeWidth={1.5}
+                    />
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>
+                        Are you absolutely sure?
+                      </AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This action cannot be undone. This will permanently
+                        delete this beneficiary.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={() =>
+                          removeBeneficiary(beneficiaryDetails?.uuid)
+                        }
+                      >
+                        Continue
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </TooltipTrigger>
+              <TooltipContent className="bg-secondary">
+                <p className="text-xs font-medium">Delete</p>
+              </TooltipContent>
+            </Tooltip>
+          )}
         </TooltipProvider>
         <DropdownMenu>
           <DropdownMenuTrigger>
@@ -251,6 +256,9 @@ function Header({
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => handleTabChange('details')}>
               Details
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => closeSecondPanel()}>
+              Remove/Hide
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -287,7 +295,7 @@ function DetailsSection({
         <div>
           <div className="flex gap-2 mb-1">
             <h1 className="font-semibold text-xl">
-              {beneficiaryDetails?.piiData?.name}
+              {beneficiaryDetails?.name}
             </h1>
             {/* <Badge>Active</Badge> */}
           </div>
@@ -344,18 +352,18 @@ function BeneficiaryInfo({
   return (
     <>
       <div className="flex flex-col gap-2 p-2">
-        <Card className="shadow rounded-md bg-neutral-100">
+        <Card className="shadow rounded">
           <CardContent className="pt-6">
-            <div className="flex justify-between items-center">
-              <div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="text-left">
                 <p className="text-sm font-normal text-muted-foreground">
                   Gender
                 </p>
-                <p className="font-light text-base text-gray-700">
+                <p className="font-light text-base">
                   {beneficiaryDetails?.gender}
                 </p>
               </div>
-              <div className="flex flex-col items-center justify-center">
+              <div className="text-right">
                 <p className="text-sm font-normal text-muted-foreground">
                   Status
                 </p>
@@ -364,12 +372,12 @@ function BeneficiaryInfo({
                 </p>
               </div>
             </div>
-            <div className="flex justify-between items-center mt-4">
+            <div className="grid grid-cols-2 gap-3 mt-3">
               <div className="text-left">
                 <p className="text-sm font-normal text-muted-foreground">
                   Phone
                 </p>
-                <p className="font-light text-base text-gray-700">
+                <p className="font-light text-base">
                   {beneficiaryDetails?.phone || 'N/A'}
                 </p>
               </div>
@@ -377,7 +385,7 @@ function BeneficiaryInfo({
                 <p className="text-sm font-normal text-muted-foreground">
                   Email
                 </p>
-                <p className="font-light text-base text-gray-700">
+                <p className="font-light text-base">
                   {beneficiaryDetails?.email || 'N/A'}
                 </p>
               </div>

@@ -22,7 +22,7 @@ const BeneficiaryLayout: FC<BeneficiaryLayoutProps> = ({
 }) => {
   const renderResizablePanel = (children: React.ReactNode, index?: number) => {
     return (
-      <ResizablePanel minSize={80} key={index}>
+      <ResizablePanel minSize={60} key={index}>
         {children}
         {/* <ScrollArea className="h-[calc(100vh-66px)]">{children}</ScrollArea> */}
       </ResizablePanel>
@@ -51,7 +51,7 @@ const BeneficiaryLayout: FC<BeneficiaryLayoutProps> = ({
     <>
       <Tabs defaultValue="list">
         <ResizablePanelGroup direction="horizontal">
-          <ResizablePanel defaultSize={18} minSize={18} maxSize={18}>
+          <ResizablePanel defaultSize={20} minSize={20} maxSize={20}>
             {menuItems.map((item) => (
               <BeneficiaryNavView
                 key={item.title}

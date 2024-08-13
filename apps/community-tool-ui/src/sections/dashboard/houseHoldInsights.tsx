@@ -56,7 +56,7 @@ const HouseHoldInsights = ({ data }: Props) => {
       <div className="grid sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-2 mt-4">
         <BarCharts
           charts={bankNameStatus}
-          height={300}
+          height={bankNameStatus?.data?.length > 7 ? 900 : 300}
           width={'100%'}
           overFlowProps={true}
           title="Beneficiary Associated Bank"

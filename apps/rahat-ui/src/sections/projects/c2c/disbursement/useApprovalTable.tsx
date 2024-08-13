@@ -11,28 +11,6 @@ export type Disbursements = {
 export const useApprovalTable = () => {
   const columns: ColumnDef<Disbursements>[] = [
     {
-      id: 'select',
-      header: ({ table }) => (
-        <Checkbox
-          checked={
-            table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && 'indeterminate')
-          }
-          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-          aria-label="Select all"
-        />
-      ),
-      cell: ({ row }) => (
-        <Checkbox
-          checked={row.getIsSelected()}
-          onCheckedChange={(value) => row.toggleSelected(!!value)}
-          aria-label="Select row"
-        />
-      ),
-      enableSorting: false,
-      enableHiding: false,
-    },
-    {
       accessorKey: 'owner',
       header: 'Owner',
       cell: ({ row }) => (
@@ -50,7 +28,11 @@ export const useApprovalTable = () => {
       accessorKey: 'submissionDate',
       header: 'Submission Date',
       cell: ({ row }) => (
-        <div>{row.getValue('submissionDate') ? formatdbDate(row.getValue('submissionDate')) : 'N/A'}</div>
+        <div>
+          {row.getValue('submissionDate')
+            ? formatdbDate(row.getValue('submissionDate'))
+            : 'N/A'}
+        </div>
       ),
     },
   ];

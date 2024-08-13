@@ -216,12 +216,17 @@ export function TransactionTable({ beneficiaryDetails }: any) {
   const { beneficiary } = beneficiaryDetails;
 
   const [rowSelection, setRowSelection] = React.useState({});
-  const { data: beneficiaryTxn } = useRPBeneficiaryTransactions(
+  const { data: beneficiaryTxn, isSuccess } = useRPBeneficiaryTransactions(
     beneficiary.walletAddress || '',
   );
 
+  const tableData: any = React.useMemo(() => {
+    if (isSuccess) return beneficiaryTxn;
+    else return [];
+  }, [beneficiaryTxn, isSuccess]);
+
   const table = useReactTable({
-    data: beneficiaryTxn || [],
+    data: tableData || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -295,8 +300,8 @@ export function TransactionTable({ beneficiaryDetails }: any) {
       </div>
       <div className="flex items-center justify-end space-x-2 py-4">
         <div className="flex-1 text-sm text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length} of{' '}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
+          Page {table.getState().pagination.pageIndex + 1} of{' '}
+          {table.getPageCount()}
         </div>
         <div className="space-x-2">
           <Button

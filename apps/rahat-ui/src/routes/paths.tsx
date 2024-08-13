@@ -11,6 +11,7 @@ const ROOTS = {
   TREASURY: '/treasury',
   COMMUNITYBENEFICIARY: '/community-beneficiary',
   SETTINGS: '/settings',
+  APPAUTHENTICATION: '/auth-apps',
 };
 
 export const paths = {
@@ -46,6 +47,7 @@ export const paths = {
         `${ROOTS.COMMUNICATION}/text/${id}/edit`,
     },
     communitybeneficiary: ROOTS.COMMUNITYBENEFICIARY,
+    appAuthentication: ROOTS.APPAUTHENTICATION,
   },
   settings: {
     root: ROOTS.SETTINGS,

@@ -15,8 +15,8 @@ type Props = {
   xaxisLabels?: boolean;
   yaxisLabels?: boolean;
   barHeight?: number;
-  actualData?: any;
-  component?: any;
+  categories?: any;
+  series?: any;
   communityTool?: boolean;
 };
 
@@ -28,17 +28,12 @@ export default function ChartBar({
   xaxisLabels = true,
   yaxisLabels = true,
   barHeight = 20,
-  actualData,
-  component,
+  categories,
+  series,
   ctSeries,
   ctCategories,
   communityTool = false,
 }: Props) {
-  const barData = actualData?.find((d: any) => d.name === component?.dataMap);
-
-  const categories = barData?.data.map((b: any) => b.id);
-  const series = barData?.data.map((b: any) => b.count);
-
   const chartOptions = useChart({
     colors,
     stroke: { show: false },

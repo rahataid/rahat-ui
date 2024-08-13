@@ -10,15 +10,7 @@ const MapWrapper = ({ actualData, component }: MapData) => {
     (d: any) => d.name === component?.dataMap,
   );
 
-  if (mapStatsData)
-    return (
-      <>
-        <p className="font-bold text-lg text-primary mb-2">
-          {component?.title}
-        </p>
-        <DashboardMap coordinates={mapStatsData?.data} />
-      </>
-    );
+  if (mapStatsData) return <DashboardMap coordinates={mapStatsData?.data} />;
 };
 
 export default MapWrapper;

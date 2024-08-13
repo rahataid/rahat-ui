@@ -1,14 +1,5 @@
 import * as React from 'react';
-import {
-  ColumnFiltersState,
-  SortingState,
-  VisibilityState,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useReactTable,
-} from '@tanstack/react-table';
+import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { useParams, useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
@@ -43,6 +34,7 @@ export default function AddStakeholdersGroups() {
   const projectId = params.id as UUID;
   const router = useRouter();
   const [showMembers, setShowMembers] = React.useState(false);
+  const [selected, setSelected] = React.useState<number>();
 
   const groupsListPath = `/projects/aa/${projectId}/groups`;
 
@@ -53,7 +45,10 @@ export default function AddStakeholdersGroups() {
     setPerPage,
     setPagination,
     setFilters,
+    setSelectedListItems,
+    resetSelectedListItems,
     filters,
+    selectedListItems,
   } = usePagination();
 
   React.useEffect(() => {
@@ -69,33 +64,24 @@ export default function AddStakeholdersGroups() {
 
   const columns = useMembersTableColumn();
 
-  const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    [],
-  );
-  const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = React.useState({});
-
   const table = useReactTable({
     manualPagination: true,
     data: stakeholders ?? [],
     columns,
-    onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setRowSelection,
+    onRowSelectionChange: setSelectedListItems,
+    getRowId: (row) => row.uuid,
     state: {
-      sorting,
-      columnFilters,
-      columnVisibility,
-      rowSelection,
+      rowSelection: selectedListItems,
     },
   });
+
+  React.useEffect(() => {
+    if (selectedListItems) {
+      const length = Object.keys(selectedListItems)?.length;
+      setSelected(length);
+    }
+  }, [selectedListItems]);
 
   const createStakeholdersGroup = useCreateStakeholdersGroups();
 
@@ -113,36 +99,30 @@ export default function AddStakeholdersGroups() {
   const handleCreateStakeholdersGroups = async (
     data: z.infer<typeof FormSchema>,
   ) => {
-    const stakeHolders = table
-      .getSelectedRowModel()
-      .rows?.map((stakeholder: any) => ({ uuid: stakeholder?.original?.uuid }));
+    const stakeholders = Object.keys(selectedListItems).filter(
+      (key) => selectedListItems[key],
+    );
+    if (!stakeholders.length) {
+      return toast.error('Please select members to create group');
+    }
+    const stakeholdersList = stakeholders?.map((stakeholder) => ({
+      uuid: stakeholder,
+    }));
     try {
-      if (!stakeHolders.length) {
-        toast.error('Please select members to create group');
-        return;
-      }
       await createStakeholdersGroup.mutateAsync({
         projectUUID: projectId,
         stakeholdersGroupPayload: {
           ...data,
-          stakeholders: stakeHolders,
+          stakeholders: stakeholdersList,
         },
       });
+      form.reset();
+      resetSelectedListItems();
+      router.push(groupsListPath);
     } catch (e) {
       console.error('Creating Stakeholders Group Error::', e);
-    } finally {
-      if (stakeHolders.length) {
-        form.reset();
-        table.resetRowSelection();
-      }
     }
   };
-
-  React.useEffect(() => {
-    if (createStakeholdersGroup.isSuccess) {
-      router.push(groupsListPath);
-    }
-  }, [createStakeholdersGroup.isSuccess]);
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleCreateStakeholdersGroups)}>
@@ -173,10 +153,9 @@ export default function AddStakeholdersGroups() {
               />
               <div className="flex justify-end">
                 <div className="flex gap-4 items-end">
-                  {table.getSelectedRowModel().rows.length ? (
+                  {selected ? (
                     <Badge className="rounded h-10 px-4 py-2 w-max">
-                      {table.getSelectedRowModel().rows.length} - member
-                      selected
+                      {selected} - member selected
                     </Badge>
                   ) : null}
                   <Button

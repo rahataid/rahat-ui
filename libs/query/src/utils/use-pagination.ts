@@ -60,6 +60,7 @@ export const usePagination = (): usePaginationReturn => {
     if (JSON.stringify(storedFilters) !== JSON.stringify(filters)) {
       hashStorage.setItem('filters', filters);
     }
+    setPagination({ ...pagination, page: 1 });
   }, [filters]);
 
   useEffect(() => {

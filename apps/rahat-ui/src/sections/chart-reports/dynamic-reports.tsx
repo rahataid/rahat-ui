@@ -8,6 +8,7 @@ import PieChartWrapper from './pie-chart-wrapper';
 import DonutWrapper from './donut-wrapper';
 import DataCardWrapper from './datacard-wrapper';
 import MapWrapper from './map-wrapper';
+import BarChartWrapper from './barchart-wrapper';
 
 type DataSource = {
   type: 'stats' | 'url' | 'blockchain';
@@ -25,9 +26,14 @@ type UIComponent = {
   rowSpan: number;
 };
 
+type UISection = {
+  title: string;
+  fields: UIComponent[];
+};
+
 type DynamicReportsProps = {
   dataSources: { [key: string]: DataSource };
-  ui: UIComponent[][];
+  ui: UISection[];
   className?: string;
 };
 
@@ -130,7 +136,7 @@ const DynamicReports: FC<DynamicReportsProps> = ({
         return (
           <ErrorBoundary>
             {actualData && (
-              <BarChart actualData={actualData} component={component} />
+              <BarChartWrapper actualData={actualData} component={component} />
             )}
           </ErrorBoundary>
         );
@@ -158,17 +164,28 @@ const DynamicReports: FC<DynamicReportsProps> = ({
     }
   };
 
-  const renderUIRow = (row: UIComponent[], rowIndex: number) => {
+  const renderUIRow = (row: UISection, rowIndex: number) => {
     return (
-      <div key={rowIndex} className={`grid grid-cols-${row.length} gap-2 mt-2`}>
-        {row.map((component, colIndex) => (
-          <div
-            key={colIndex}
-            className={`grid-cols-${component.colSpan} grid-rows-${component.rowSpan}`}
+      <div key={rowIndex}>
+        {row?.title && (
+          <h1
+            className={`font-bold text-lg text-primary mb-2 ${
+              rowIndex !== 0 && 'mt-5'
+            }`}
           >
-            {renderUIComponent(component, colIndex)}
-          </div>
-        ))}
+            {row?.title}
+          </h1>
+        )}
+        <div className={`grid grid-cols-${row?.fields?.length} gap-2`}>
+          {row?.fields?.map((component, colIndex) => (
+            <div
+              key={colIndex}
+              className={`grid-cols-${component.colSpan} grid-rows-${component.rowSpan}`}
+            >
+              {renderUIComponent(component, colIndex)}
+            </div>
+          ))}
+        </div>
       </div>
     );
   };

@@ -95,7 +95,13 @@ export const useCommunityBeneficiaryTableColumns = () => {
       accessorKey: 'phone',
       header: 'Phone',
       enableHiding: true,
-      cell: ({ row }) => <div>{humanizeString(row.getValue('phone'))}</div>,
+      cell: ({ row }) => <div>{row.getValue('phone')}</div>,
+    },
+    {
+      accessorKey: 'email',
+      header: 'Email',
+      enableHiding: true,
+      cell: ({ row }) => <div>{row.original.email}</div>,
     },
     {
       accessorKey: 'extras',

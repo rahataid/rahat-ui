@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useEffect } from 'react';
 import { Table, flexRender } from '@tanstack/react-table';
+import { useEffect } from 'react';
 
 import {
   TableBody,
@@ -13,11 +13,12 @@ import {
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 
-import { ListGroup } from '@rahataid/community-tool-sdk/groups';
+import { Label } from '@radix-ui/react-label';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
+import { ListGroup } from '@rahataid/community-tool-sdk/groups';
 import { Pagination } from '@rumsan/sdk/types';
+import { LucideShipWheel } from 'lucide-react';
 import { usePathname } from 'next/navigation';
-import { CircleEllipsisIcon } from 'lucide-react';
 
 type IProps = {
   table: Table<ListGroup>;
@@ -117,9 +118,11 @@ export default function GroupList({
                     className="h-24 text-center"
                   >
                     {loading ? (
-                      <div style={{ marginLeft: '48%' }}>
-                        <CircleEllipsisIcon className="animate-spin h-8 w-8" />
-                        Loading ...
+                      <div className="flex items-center justify-center mt-4">
+                        <div className="text-center">
+                          <LucideShipWheel className="animate-spin h-8 w-8" />
+                          <Label className="text-base">Loading ...</Label>
+                        </div>
                       </div>
                     ) : (
                       'No result found'

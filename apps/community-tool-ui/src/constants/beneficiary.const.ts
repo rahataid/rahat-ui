@@ -9,3 +9,5 @@ export const GROUP_NAV_ROUTE = {
   VIEW_GROUP: 'view_group',
   ADD_GROUP: 'add_group',
 };
+
+export const COLUMN_VISIBILITY_STORAGE_KEY = 'columnVisibilityStore';

@@ -1,13 +1,12 @@
 'use client';
 
-import { Tabs } from '@rahat-ui/shadcn/components/tabs';
-import { ClusterMap, StyledMapContainer, THEMES } from '@rahat-ui/shadcn/maps';
-import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import { mapboxBasicConfig } from '../../constants/config';
-import { DynamicReports, tempReport } from '../chart-reports';
 import { useProjectAction, useProjectList } from '@rahat-ui/query';
+import { Tabs } from '@rahat-ui/shadcn/components/tabs';
+import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { useEffect, useState } from 'react';
 import { filterVendorsGeoJson } from '../../utils/getVendorInfo';
+import { DynamicReports, tempReport } from '../chart-reports';
+import ElMap from './map';
 
 export default function DashboardView() {
   const reportData = [
@@ -52,13 +51,7 @@ export default function DashboardView() {
             <DashboardSummary data={data} />
             <DashboardCharts charts={beneficiaryStats?.data?.data} />
           </TabsContent> */}
-          <StyledMapContainer>
-            <ClusterMap
-              {...mapboxBasicConfig}
-              mapStyle={THEMES.light}
-              dataForMap={dataForMap}
-            />
-          </StyledMapContainer>
+          <ElMap dataForMap={dataForMap} />
         </ScrollArea>
       </Tabs>
     </div>

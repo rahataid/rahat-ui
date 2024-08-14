@@ -1,4 +1,4 @@
-import { memo, useEffect, useRef, useState } from 'react';
+import { memo, useRef } from 'react';
 import Map, {
   GeoJSONSource,
   Layer,
@@ -9,7 +9,6 @@ import Map, {
 } from 'react-map-gl';
 // components
 //
-import { MapBoxProps } from '../types';
 import {
   clusterCountLayer,
   clusterLayer,

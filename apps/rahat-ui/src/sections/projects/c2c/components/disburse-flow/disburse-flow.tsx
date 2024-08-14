@@ -3,7 +3,7 @@ import { FC, useEffect, useState } from 'react';
 import Step1DisburseMethod from './1-disburse-method';
 import Step2DisburseAmount from './2-disburse-amount';
 import Step3DisburseSummary from './3-disburse-summary';
-
+import { WarningModal } from './warning';
 import {
   PROJECT_SETTINGS_KEYS,
   useC2CProjectSubgraphStore,
@@ -20,7 +20,7 @@ import {
   CardTitle,
 } from '@rahat-ui/shadcn/src/components/ui/card';
 import { UUID } from 'crypto';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { parseEther } from 'viem';
 import Stepper from 'apps/rahat-ui/src/components/stepper';
 
@@ -37,10 +37,12 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [stepData, setStepData] =
     useState<typeof initialStepData>(initialStepData);
+  const [isWarningModalOpen, setIsWarningModalOpen] = useState(false);
+
   const projectSubgraphDetails = useC2CProjectSubgraphStore(
     (state) => state.projectDetails,
   );
-
+  const route = useRouter();
   const { id } = useParams() as { id: UUID };
   const contractSettings = useProjectSettingsStore(
     (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT],
@@ -70,16 +72,14 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
 
     if (currentStep < steps.length - 1) {
       setCurrentStep(currentStep + 1);
-    }
-  };
-
-  const handlePrevious = () => {
-    if (currentStep > 0) {
-      setCurrentStep(currentStep - 1);
+    } else {
+      setIsWarningModalOpen(true);
     }
   };
 
   const handleDisburseToken = async () => {
+    setIsWarningModalOpen(false);
+
     if (stepData.treasurySource === 'MULTISIG') {
       await disburseMultiSig.mutateAsync({
         amount: String(
@@ -102,6 +102,13 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
       projectUUID: id,
     });
   };
+
+  const handlePrevious = () => {
+    if (currentStep > 0) {
+      setCurrentStep(currentStep - 1);
+    }
+  };
+
   const steps = [
     {
       id: 'step1',
@@ -194,7 +201,9 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
 
   return (
     <div className="p-2 mx-2 flex flex-col justify-evenly">
-      <Stepper currentStep={currentStep} steps={steps} />
+      <div className="bg-card rounded-lg mx-4 mt-4">
+        <Stepper currentStep={currentStep} steps={steps} />
+      </div>
       <div>{renderComponent()}</div>
       <div className="flex items-center justify-end gap-4">
         {!disburseMultiSig.isPending && (
@@ -209,7 +218,7 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
             <Button
               onClick={
                 steps[currentStep].id === 'confirm_send'
-                  ? handleDisburseToken
+                  ? handleNext
                   : handleNext
               }
               disabled={disburseMultiSig.isPending || disburseToken.isPending}
@@ -219,6 +228,13 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
           </div>
         )}
       </div>
+      {isWarningModalOpen && (
+        <WarningModal
+          open={isWarningModalOpen}
+          onClose={() => setIsWarningModalOpen(false)}
+          onConfirm={handleDisburseToken}
+        />
+      )}
     </div>
   );
 };

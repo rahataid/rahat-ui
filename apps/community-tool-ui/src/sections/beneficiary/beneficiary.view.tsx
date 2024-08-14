@@ -25,8 +25,8 @@ import { useDebounce } from '../../utils/debounceHooks';
 import { useCommunityBeneficiaryTableColumns } from './useBeneficiaryColumns';
 import { COLUMN_VISIBILITY_STORAGE_KEY } from '../../constants/beneficiary.const';
 import {
-  getLocalStorage,
-  setLocalStorage,
+  getTableDisplayField,
+  setTableDisplayField,
 } from '../../utils/localstorage.utils';
 
 function BeneficiaryView() {
@@ -55,13 +55,8 @@ function BeneficiaryView() {
   const columns = useCommunityBeneficiaryTableColumns();
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
     () => {
-      const storedVisibility = getLocalStorage(COLUMN_VISIBILITY_STORAGE_KEY);
-      return storedVisibility
-        ? JSON.parse(storedVisibility)
-        : {
-            walletAddress: false,
-            email: false,
-          };
+      const storedVisibility = getTableDisplayField();
+      return storedVisibility;
     },
   );
   const handleColumnVisibilityChange: OnChangeFn<VisibilityState> = (
@@ -73,10 +68,7 @@ function BeneficiaryView() {
         : updaterOrValue;
 
     setColumnVisibility(newVisibility);
-    setLocalStorage(
-      COLUMN_VISIBILITY_STORAGE_KEY,
-      JSON.stringify(newVisibility),
-    );
+    setTableDisplayField(JSON.stringify(newVisibility));
   };
   const table = useReactTable({
     manualPagination: true,

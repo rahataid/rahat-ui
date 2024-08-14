@@ -105,7 +105,6 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
   const steps = [
     {
       id: 'step1',
-      // title: 'Disburse Method',
       component: (
         <Step1DisburseMethod
           value={stepData.treasurySource}
@@ -123,7 +122,6 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
     },
     {
       id: 'step2',
-      title: 'Disburse Amount',
       component: (
         <Step2DisburseAmount
           selectedBeneficiaries={selectedBeneficiaries}
@@ -195,12 +193,10 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
   };
 
   return (
-    <Card className="p-2 mx-2 flex flex-col justify-evenly h-[calc(100vh-500px)]">
+    <div className="p-2 mx-2 flex flex-col justify-evenly">
       <Stepper currentStep={currentStep} steps={steps} />
-      <CardContent>
-        <div>{renderComponent()}</div>
-      </CardContent>
-      <CardFooter className="flex justify-end">
+      <div>{renderComponent()}</div>
+      <div className="flex items-center justify-end gap-4">
         {!disburseMultiSig.isPending && (
           <div>
             <Button
@@ -222,8 +218,8 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
             </Button>
           </div>
         )}
-      </CardFooter>
-    </Card>
+      </div>
+    </div>
   );
 };
 

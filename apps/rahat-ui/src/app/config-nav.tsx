@@ -1,7 +1,6 @@
 import { useMemo } from 'react';
-import { paths } from '../routes/paths';
+import { defaultNavigations, defaultSubNavigations } from '../routes/paths';
 import { useSettingsStore } from '@rahat-ui/query';
-import { title } from 'process';
 
 interface NavItem {
   title: string;
@@ -11,71 +10,18 @@ interface NavItem {
 export function useNavData() {
   const navSettings = useSettingsStore((state) => state.navSettings);
   console.log(navSettings?.data, navSettings?.subData);
-  const data: NavItem[] = useMemo(
-    () =>
-      navSettings?.data?.length > 0
-        ? [...navSettings?.data]
-        : [
-            {
-              title: 'Dashboard',
-              path: paths.dashboard.root,
-            },
-            {
-              title: 'Project',
-              path: paths.dashboard.project.root,
-            },
-            {
-              title: 'Beneficiaries',
-              path: paths.dashboard.beneficiary.root,
-            },
 
-            {
-              title: 'Communications',
-              path: paths.dashboard.communication.text,
+  const data: NavItem[] = useMemo(() => {
+    const navDataSet = new Set(navSettings?.data as NavItem[] || []);
+    const combinedNavSet = new Set([...navDataSet, ...defaultNavigations]);
+    return Array.from(combinedNavSet);
+  }, [navSettings?.data]);
 
-              // children: [
-              //   {
-              //     title: 'Voice',
-              //     icon: <Phone />,
-              //     path: paths.dashboard.communication.voice,
-              //   },
-              //   {
-              //     title: 'Text',
-              //     icon: <MessageSquareMore />,
-              //     path: paths.dashboard.communication.text,
-              //   },
-              // ],
-            },
-          ],
-    [navSettings?.data],
-  );
-  const subData: NavItem[] = useMemo(
-    () =>
-      // Temporarily disabled
-      // navSettings?.subData?.length > 0
-      //   ? [...navSettings?.subData]
-      //   :
-      [
-        {
-          title: 'Vendors',
-          path: paths.dashboard.vendor,
-        },
-        {
-          title: 'Users',
-          path: paths.user.root,
-        },
-        {
-          title: 'Import Beneficiary from CT',
-          path: paths.dashboard.communitybeneficiary,
-        },
+  const subData: NavItem[] = useMemo(() => {
+    const navSubDataSet = new Set(navSettings?.subData as NavItem[] || []);
+    const combinedSubNavSet = new Set([...navSubDataSet, ...defaultSubNavigations]);
+    return Array.from(combinedSubNavSet);
+  }, [navSettings?.subData]);
 
-        {
-          title: 'Apps',
-          path: paths.dashboard.appAuthentication,
-        },
-      ],
-
-    [navSettings?.subData],
-  );
   return { data, subData };
 }

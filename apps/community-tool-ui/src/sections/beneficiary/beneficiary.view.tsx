@@ -41,13 +41,20 @@ function BeneficiaryView() {
   const { setSelectedBeneficiaries, selectedBeneficiaries } =
     useCommunityBeneficiaryStore();
 
-  const { data } = useCommunityBeneficaryList({
+  const { isLoading, data } = useCommunityBeneficaryList({
     ...pagination,
     ...(debouncedFilters as any),
   });
 
   const columns = useCommunityBeneficiaryTableColumns();
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
+    location: false,
+    gender: false,
+    ward: false,
+    totalFamilyMembers: false,
+    female: false,
+    male: false,
+  });
   const table = useReactTable({
     manualPagination: true,
     data: data?.data?.rows || [],
@@ -86,6 +93,7 @@ function BeneficiaryView() {
             filters={filters}
             pagination={pagination}
             setPagination={setPagination}
+            loading={isLoading}
           />
         </TabsContent>
         {/* <TabsContent value="grid">

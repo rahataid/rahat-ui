@@ -17,6 +17,7 @@ import { ListGroup } from '@rahataid/community-tool-sdk/groups';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { Pagination } from '@rumsan/sdk/types';
 import { usePathname } from 'next/navigation';
+import { CircleEllipsisIcon } from 'lucide-react';
 
 type IProps = {
   table: Table<ListGroup>;
@@ -24,6 +25,7 @@ type IProps = {
   filters: Record<string, any>;
   setPagination: (pagination: Pagination) => void;
   pagination: Pagination;
+  loading: boolean;
 };
 
 export default function GroupList({
@@ -32,6 +34,7 @@ export default function GroupList({
   setFilters,
   setPagination,
   pagination,
+  loading,
 }: IProps) {
   const pathName = usePathname();
   const handleFilterChange = (event: any) => {
@@ -113,7 +116,14 @@ export default function GroupList({
                     colSpan={table.getAllColumns().length}
                     className="h-24 text-center"
                   >
-                    No results.
+                    {loading ? (
+                      <div style={{ marginLeft: '48%' }}>
+                        <CircleEllipsisIcon className="animate-spin h-8 w-8" />
+                        Loading ...
+                      </div>
+                    ) : (
+                      'No result found'
+                    )}
                   </TableCell>
                 </TableRow>
               )}

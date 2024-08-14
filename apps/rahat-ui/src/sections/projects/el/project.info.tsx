@@ -74,7 +74,7 @@ const ProjectInfo: FC<ProjectInfoProps> = ({
           <div className="grid md:grid-cols-3 gap-2">
             <DataCard
               className="h-full"
-              title="Total Beneficiary"
+              title="Total Beneficiaries"
               Icon={Users}
               number={(Number(projectVoucher?.eyeVoucherAssigned)+Number(projectVoucher?.
                 referredVoucherAssigned)

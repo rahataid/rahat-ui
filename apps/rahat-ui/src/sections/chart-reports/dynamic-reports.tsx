@@ -114,29 +114,29 @@ const DynamicReports: FC<DynamicReportProps> = ({ data, ui, className }) => {
           let component: JSX.Element | null = null;
 
           switch (col.type) {
-            case 'pie':
-              component = (
-                <ErrorBoundary>
-                  <PieChart
-                    key={colIndex}
-                    title={formatUnderScoredString(col.title)}
-                    // title={formatUnderScoredString(col.name)}
-                    chart={{ series: actualData as number[] }}
-                  />
-                </ErrorBoundary>
-              );
-              break;
-            case 'bar':
-              component = (
-                <ErrorBoundary>
-                  <BarChart
-                    key={colIndex}
-                    title={col.title}
-                    series={actualData as number[]}
-                  />
-                </ErrorBoundary>
-              );
-              break;
+            // case 'pie':
+            //   component = (
+            //     <ErrorBoundary>
+            //       <PieChart
+            //         key={colIndex}
+            //         title={formatUnderScoredString(col.title)}
+            //         // title={formatUnderScoredString(col.name)}
+            //         chart={{ series: actualData as number[] }}
+            //       />
+            //     </ErrorBoundary>
+            //   );
+            //   break;
+            // case 'bar':
+            //   component = (
+            //     <ErrorBoundary>
+            //       <BarChart
+            //         key={colIndex}
+            //         title={col.title}
+            //         series={actualData as number[]}
+            //       />
+            //     </ErrorBoundary>
+            //   );
+            //   break;
             case 'datacard':
               component =
                 actualData !== undefined && actualData !== null ? (
@@ -159,15 +159,15 @@ const DynamicReports: FC<DynamicReportProps> = ({ data, ui, className }) => {
                   </ErrorBoundary>
                 );
               break;
-            case 'stacked_bar':
-              component = (
-                <ChartColumnStacked
-                  key={colIndex}
-                  title={col.title}
-                  series={actualData as number[]}
-                />
-              );
-              break;
+            // case 'stacked_bar':
+            //   component = (
+            //     <ChartColumnStacked
+            //       key={colIndex}
+            //       title={col.title}
+            //       series={actualData as number[]}
+            //     />
+            //   );
+            //   break;
           }
 
           return <div key={colIndex}>{component}</div>;

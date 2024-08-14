@@ -49,7 +49,7 @@ function BeneficiaryView() {
 
   useBeneficiaryGroupsList({ ...pagination });
 
-  const { data } = useBeneficiaryList({
+  const { data,refetch } = useBeneficiaryList({
     ...pagination,
     ...filters,
   });
@@ -130,6 +130,8 @@ function BeneficiaryView() {
     });
 
     setSelectedListItems([]);
+    setFilters({...filters})
+    refetch();
   };
 
   const handleCreateGroup = async (data: any) => {

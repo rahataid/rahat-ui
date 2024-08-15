@@ -27,7 +27,9 @@ export default function DisburseDetails() {
     uuid: UUID;
   };
   const { data } = useGetDisbursement(projectUUID, uuid);
-  console.log('data', data);
+  const date = new Date(data?.createdAt);
+  const datePart = date.toDateString().split(' ').slice(1).join(' ');
+  const timePart = date.toTimeString().split(' ')[0].slice(0, 5);
   return (
     <div className="bg-secondary">
       {/* Data Cards */}
@@ -35,7 +37,9 @@ export default function DisburseDetails() {
         <Card className="mt-2 rounded shadow">
           <div className="mt-3">
             <CardContent>
-              <p className="text-primary">{formatdbDate(data?.createdAt)}</p>
+              <p className="text-primary">
+                {datePart} - {timePart}
+              </p>
               <CardDescription>Disbursed on</CardDescription>
             </CardContent>
             <CardContent>

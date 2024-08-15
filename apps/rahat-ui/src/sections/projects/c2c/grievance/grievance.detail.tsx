@@ -20,6 +20,7 @@ import { formatdbDate } from 'apps/rahat-ui/src/utils';
 import { Minus, MoreVertical } from 'lucide-react';
 import Image from 'next/image';
 import { useState } from 'react';
+import EditGrievance from './grievance.edit';
 
 type IProps = {
   details: Grievance;
@@ -69,29 +70,30 @@ export default function GrievanceDetail({ details, closeSecondPanel }: IProps) {
           </DropdownMenu>
         </div>
       </div>
-      {activeTab === 'details' && (
-        <>
-          <div className="p-4 bg-card flex gap-2 justify-between items-center flex-wrap">
-            <div className="flex items-center gap-2">
-              <Image
-                className="rounded-full"
-                src="/profile.png"
-                alt="cat"
-                height={80}
-                width={80}
-              />
-              <div>
-                <div className="flex flex-col items-start justify-start gap-2 mb-1 w-full">
-                  <Badge>{details?.status}</Badge>
-                  <h1 className="font-semibold text-xl">
-                    {/*  */}
-                    {details?.title}
-                  </h1>
-                </div>
-              </div>
+
+      <div className="p-4 bg-card flex gap-2 justify-between items-center flex-wrap">
+        <div className="flex items-center gap-2">
+          <Image
+            className="rounded-full"
+            src="/profile.png"
+            alt="cat"
+            height={80}
+            width={80}
+          />
+          <div>
+            <div className="flex flex-col items-start justify-start gap-2 mb-1 w-full">
+              <Badge>{details?.status}</Badge>
+              <h1 className="font-semibold text-xl">
+                {/*  */}
+                {details?.title}
+              </h1>
             </div>
           </div>
-          <Separator className="my-2" />
+        </div>
+      </div>
+      <Separator className="my-2" />
+      {activeTab === 'details' && (
+        <>
           <Card className="shadow rounded m-2">
             <CardContent className="pt-6">
               <div className="grid grid-cols-4 gap-3">
@@ -142,7 +144,7 @@ export default function GrievanceDetail({ details, closeSecondPanel }: IProps) {
           </Card>
         </>
       )}
-      {activeTab === 'edit' && <div>Edit</div>}
+      {activeTab === 'edit' && <EditGrievance />}
     </>
   );
 }

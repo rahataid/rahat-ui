@@ -26,149 +26,96 @@ import {
 import { Trash2 } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import * as React from 'react';
-
-const data: Payment[] = [
-  {
-    id: 'm5gr84i9',
-    name: 'Beneficiary1',
-    tokenAssigned: 180,
-  },
-  {
-    id: 'm5gr84i9',
-    name: 'Beneficiary1',
-    tokenAssigned: 180,
-  },
-  {
-    id: 'm5gr84i9',
-    name: 'Beneficiary1',
-    tokenAssigned: 180,
-  },
-  {
-    id: 'm5gr84i9',
-    name: 'Beneficiary1',
-    tokenAssigned: 180,
-  },
-  {
-    id: 'm5gr84i9',
-    name: 'Beneficiary1',
-    tokenAssigned: 180,
-  },
-  {
-    id: 'm5gr84i9',
-    name: 'Beneficiary1',
-    tokenAssigned: 180,
-  },
-  {
-    id: 'm5gr84i9',
-    name: 'Beneficiary1',
-    tokenAssigned: 180,
-  },
-  {
-    id: 'm5gr84i9',
-    name: 'Beneficiary1',
-    tokenAssigned: 180,
-  },
-  {
-    id: 'm5gr84i9',
-    name: 'Beneficiary1',
-    tokenAssigned: 180,
-  },
-  {
-    id: 'm5gr84i9',
-    name: 'Beneficiary1',
-    tokenAssigned: 180,
-  },
-  {
-    id: 'm5gr84i9',
-    name: 'Beneficiary1',
-    tokenAssigned: 180,
-  },
-  {
-    id: 'm5gr84i9',
-    name: 'Beneficiary1',
-    tokenAssigned: 180,
-  },
-  {
-    id: 'm5gr84i9',
-    name: 'Beneficiary1',
-    tokenAssigned: 180,
-  },
-  {
-    id: 'm5gr84i9',
-    name: 'Beneficiary1',
-    tokenAssigned: 180,
-  },
-  {
-    id: 'm5gr84i9',
-    name: 'Beneficiary1',
-    tokenAssigned: 180,
-  },
-  {
-    id: 'm5gr84i9',
-    name: 'Beneficiary1',
-    tokenAssigned: 180,
-  },
-  {
-    id: 'm5gr84i9',
-    name: 'Beneficiary1',
-    tokenAssigned: 180,
-  },
-  {
-    id: 'm5gr84i9',
-    name: 'Beneficiary1',
-    tokenAssigned: 180,
-  },
-  {
-    id: 'm5gr84i9',
-    name: 'Beneficiary1',
-    tokenAssigned: 180,
-  },
-];
+import { UseFormReturn } from 'react-hook-form';
+import { z } from 'zod';
 
 export type Payment = {
-  id: string;
+  id: number;
   name: string;
   tokenAssigned: number;
 };
 
-export const columns: ColumnDef<Payment>[] = [
-  {
-    id: 'select',
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && 'indeterminate')
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
-    accessorKey: 'name',
-    header: 'Name',
-    cell: ({ row }) => <div className="capitalize">{row.getValue('name')}</div>,
-  },
-  {
-    accessorKey: 'tokenAssigned',
-    header: 'Token Assigned',
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue('tokenAssigned')}</div>
-    ),
-  },
-];
+export function SelectBeneficiaryTable({
+  form,
+  disbursmentList,
+}: {
+  form: UseFormReturn<z.infer<any>>;
+  disbursmentList: any;
+}) {
+  const columns: ColumnDef<Payment>[] = [
+    {
+      id: 'select',
+      header: ({ table }) => (
+        <Checkbox
+          checked={
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && 'indeterminate')
+          }
+          onCheckedChange={(value) => {
+            table.getFilteredRowModel().rows.map((row) => {
+              if (value) {
+                const disbursements = form.getValues('disbursements') || [];
+                const isUnique = disbursements.includes(row.original.id);
+                if (!isUnique)
+                  form.setValue('disbursements', [
+                    ...disbursements,
+                    row.original.id,
+                  ]);
+              } else {
+                const disbursements = form.getValues('disbursements') || [];
+                const filteredValue = disbursements.filter(
+                  (id: number) => id !== row.original.id,
+                );
+                form.setValue('disbursements', filteredValue);
+              }
+            });
+            table.toggleAllPageRowsSelected(!!value);
+          }}
+          aria-label="Select all"
+        />
+      ),
+      cell: ({ row }) => (
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => {
+            if (value) {
+              const disbursements = form.getValues('disbursements') || [];
+              form.setValue('disbursements', [
+                ...disbursements,
+                row.original.id,
+              ]);
+            } else {
+              const disbursements = form.getValues('disbursements') || [];
+              const filteredValue = disbursements.filter(
+                (id: number) => id !== row.original.id,
+              );
+              form.setValue('disbursements', filteredValue);
+            }
 
-export function SelectBeneficiaryTable() {
+            return row.toggleSelected(!!value);
+          }}
+          aria-label="Select row"
+        />
+      ),
+      enableSorting: false,
+      enableHiding: false,
+    },
+    {
+      accessorKey: 'name',
+      header: 'Name',
+      cell: ({ row }) => (
+        <div className="capitalize">{row.getValue('name')}</div>
+      ),
+    },
+    {
+      accessorKey: 'tokenAssigned',
+      header: 'Token Assigned',
+      cell: ({ row }) => (
+        <div className="capitalize">{row.getValue('tokenAssigned')}</div>
+      ),
+    },
+  ];
+
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
@@ -176,11 +123,23 @@ export function SelectBeneficiaryTable() {
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
-  const { id, bid } = useParams();
-  const route = useRouter();
+
+  const tableData = React.useMemo(() => {
+    if (disbursmentList) {
+      console.log(disbursmentList);
+      const mappedData = disbursmentList?.map((disbursment: any) => ({
+        name: disbursment?.Beneficiary?.name || 'Rajesh hamal',
+        tokenAssigned: disbursment?.amount,
+        id: disbursment?.id,
+      }));
+      return mappedData;
+    } else {
+      return [];
+    }
+  }, [disbursmentList]);
 
   const table = useReactTable({
-    data,
+    data: tableData,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -203,9 +162,9 @@ export function SelectBeneficiaryTable() {
       <div className="flex justify-between items-center gap-2 py-4">
         <Input
           placeholder="Search Beneficiaries"
-          value={(table.getColumn('vendors')?.getFilterValue() as string) ?? ''}
+          value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
           onChange={(event) =>
-            table.getColumn('vendors')?.setFilterValue(event.target.value)
+            table.getColumn('name')?.setFilterValue(event.target.value)
           }
           className="rounded-md"
         />

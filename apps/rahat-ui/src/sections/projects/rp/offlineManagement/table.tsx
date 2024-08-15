@@ -22,107 +22,18 @@ import {
   VisibilityState,
 } from '@tanstack/react-table';
 import * as React from 'react';
+import { UUID } from 'crypto';
 
 import { useTableColumn } from './useTableColumn';
-import { Router } from 'next/router';
 import { useParams, useRouter } from 'next/navigation';
+import { useGetOfflineBeneficiaries } from '@rahat-ui/query';
 
 export function OfflineTable() {
   const route = useRouter();
   const { id } = useParams();
-
-  const data = [
-    {
-      id: 'm5gr84i9',
-      vendor: 'vendor1',
-      beneficiary: 45,
-      tokenAssigned: 180,
-    },
-    {
-      id: '3u1reuv4',
-      vendor: 'vendor2',
-      beneficiary: 45,
-      tokenAssigned: 400,
-    },
-    {
-      id: 'derv1ws0',
-      vendor: 'vendor3',
-      beneficiary: 55,
-      tokenAssigned: 300,
-    },
-    {
-      id: '5kma53ae',
-      vendor: 'vendor4',
-      beneficiary: 45,
-      tokenAssigned: 200,
-    },
-    {
-      id: 'bhqecj4p',
-      vendor: 'vendor5',
-      beneficiary: 22,
-      tokenAssigned: 100,
-    },
-    {
-      id: 'm5gr84i9',
-      vendor: 'vendor1',
-      beneficiary: 45,
-      tokenAssigned: 180,
-    },
-    {
-      id: '3u1reuv4',
-      vendor: 'vendor2',
-      beneficiary: 45,
-      tokenAssigned: 400,
-    },
-    {
-      id: 'derv1ws0',
-      vendor: 'vendor3',
-      beneficiary: 55,
-      tokenAssigned: 300,
-    },
-    {
-      id: '5kma53ae',
-      vendor: 'vendor4',
-      beneficiary: 45,
-      tokenAssigned: 200,
-    },
-    {
-      id: 'bhqecj4p',
-      vendor: 'vendor5',
-      beneficiary: 22,
-      tokenAssigned: 100,
-    },
-    {
-      id: 'm5gr84i9',
-      vendor: 'vendor1',
-      beneficiary: 45,
-      tokenAssigned: 180,
-    },
-    {
-      id: '3u1reuv4',
-      vendor: 'vendor2',
-      beneficiary: 45,
-      tokenAssigned: 400,
-    },
-    {
-      id: 'derv1ws0',
-      vendor: 'vendor3',
-      beneficiary: 55,
-      tokenAssigned: 300,
-    },
-    {
-      id: '5kma53ae',
-      vendor: 'vendor4',
-      beneficiary: 45,
-      tokenAssigned: 200,
-    },
-    {
-      id: 'bhqecj4p',
-      vendor: 'vendor5',
-      beneficiary: 22,
-      tokenAssigned: 100,
-    },
-  ];
+  const { data: offlineBeneficiries, isSuccess } = useGetOfflineBeneficiaries(
+    id as UUID,
+  );
 
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -133,8 +44,15 @@ export function OfflineTable() {
   const [rowSelection, setRowSelection] = React.useState({});
   const columns = useTableColumn();
 
+  const tData = React.useMemo(() => {
+    if (isSuccess) {
+      return offlineBeneficiries?.data || [];
+    } else {
+      return [];
+    }
+  }, [isSuccess]);
   const table = useReactTable({
-    data,
+    data: tData,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -157,9 +75,9 @@ export function OfflineTable() {
       <div className="flex justify-between items-center gap-2 py-4">
         <Input
           placeholder="Search Vendors"
-          value={(table.getColumn('vendors')?.getFilterValue() as string) ?? ''}
+          value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
           onChange={(event) =>
-            table.getColumn('vendors')?.setFilterValue(event.target.value)
+            table.getColumn('name')?.setFilterValue(event.target.value)
           }
           className="rounded-md"
         />

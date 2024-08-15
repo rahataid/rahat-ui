@@ -1,18 +1,15 @@
+import { z } from 'zod';
+import { ArrowLeft } from 'lucide-react';
 import { cn } from '@rahat-ui/shadcn/src';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '@rahat-ui/shadcn/src/components/ui/card';
+import { useRouter } from 'next/navigation';
+import { UseFormReturn } from 'react-hook-form';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
-import { ArrowLeft } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+type Step3AssignAmountProps = {
+  form: UseFormReturn<z.infer<any>>;
+};
 
-type Step3AssignAmountProps = {};
-
-export default function Step3AssignAmount({}: Step3AssignAmountProps) {
+export default function Step3AssignAmount({ form }: Step3AssignAmountProps) {
   const router = useRouter();
   return (
     <div className="bg-card rounded-lg m-4">
@@ -41,7 +38,7 @@ export default function Step3AssignAmount({}: Step3AssignAmountProps) {
           </div>
           <div>
             <a href="#" className={cn('text-blue-600 hover:underline text-sm')}>
-              6 beneficiaries selected
+              {form.getValues('disbursements')?.length} beneficiaries selected
             </a>
           </div>
         </div>

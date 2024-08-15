@@ -13,8 +13,7 @@ import { CheckCircleIcon } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { useState } from 'react';
 
-export function ConfirmModal() {
-  const [isOpen, setIsOpen] = useState(false);
+export function ConfirmModal({ isOpen }: { isOpen: boolean }) {
   const route = useRouter();
   const id = useParams();
   const handleRoute = () => {
@@ -28,12 +27,7 @@ export function ConfirmModal() {
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogTrigger asChild>
-        <Button
-          onClick={() => setIsOpen(true)}
-          className="bg-blue-500 text-white px-4 py-2 rounded-md w-36"
-        >
-          Finish
-        </Button>
+       
       </DialogTrigger>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>

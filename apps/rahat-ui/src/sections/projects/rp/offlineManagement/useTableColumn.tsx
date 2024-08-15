@@ -38,10 +38,10 @@ export const useTableColumn = () => {
       enableHiding: false,
     },
     {
-      accessorKey: 'vendor',
+      accessorKey: 'name',
       header: 'Vendor',
       cell: ({ row }) => (
-        <div className="capitalize">{row.getValue('vendor')}</div>
+        <div className="capitalize">{row.getValue('name')}</div>
       ),
     },
     {

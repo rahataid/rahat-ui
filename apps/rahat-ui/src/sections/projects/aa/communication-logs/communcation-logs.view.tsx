@@ -41,65 +41,70 @@ export default function CommunicationLogsView() {
       componentType: 'DATACARD',
       title: 'SMS Recipients',
       value: smsRecipients?.count || 0,
-      icon: 'Home',
+      icon: 'MessageSquare',
     },
     {
       componentType: 'DATACARD',
       title: 'IVR Recipients',
       value: ivrRecipients?.count || 0,
-      icon: 'Home',
+      icon: 'AudioLines',
     },
     {
       componentType: 'DATACARD',
       title: 'Total SMS sent to Beneficiaries',
       value: smsSent?.count || 0,
-      icon: 'Users',
+      icon: 'MessageSquare',
     },
     {
       componentType: 'DATACARD',
       title: 'Total IVR sent to Beneficiaries',
       value: ivrSent?.count || 0,
-      icon: 'Home',
+      icon: 'AudioLines',
     },
     {
       componentType: 'DATACARD',
       title: 'Total EMAIL sent to Beneficiaries',
       value: emailSent?.count || 0,
-      icon: 'Users',
+      icon: 'AudioLines',
     },
     {
       componentType: 'DATACARD',
       title: 'IVR Success Rate',
       value: ivrSuccessRate || 0,
-      icon: 'Home',
+      icon: 'AudioLines',
     },
     {
       componentType: 'DATACARD',
       title: 'Average IVR Attempts',
       value: averageIvrAttempts || 0,
-      icon: 'Users',
+      icon: 'AudioLines',
     },
     {
       componentType: 'DATACARD',
       title: 'Average Duration of IVR',
       value: averageIvrDuration || 0,
-      icon: 'Home',
+      icon: 'AudioLines',
     },
   ];
 
   return (
     <div className="p-4 bg-secondary h-[calc(100vh-65px)]">
-      <h1 className="text-xl font-semibold">Communication Summary</h1>
+      <h1 className="text-md font-semibold">Communication Summary</h1>
 
-      <div className="grid md:grid-cols-4 gap-4 mt-4">
+      <div className="grid md:grid-cols-4 gap-2 mt-2">
         {commStats.map((d) => {
           if (d.componentType === 'DATACARD') {
+            const Icon = getIcon(d.icon);
             return (
-              <DataCard
-                title={d.title}
-                number={d.value}
-                Icon={getIcon(d.icon)}
-              />
+              <div className="rounded-sm bg-card px-3 pt-2 pb-1 shadow-md">
+                <div className="flex justify-between items-center">
+                  <h1 className="text-sm">{d.title}</h1>
+                  <div className="p-1 rounded-full bg-secondary text-primary">
+                    <Icon size={16} strokeWidth={2.5} />
+                  </div>
+                </div>
+                <p className="text-primary font-semibold text-xl">{d.value}</p>
+              </div>
             );
           }
         })}

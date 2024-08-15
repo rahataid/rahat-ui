@@ -38,12 +38,15 @@ import { useListCampaign, useListTransport } from '@rumsan/communication-query';
 import { Eye, Upload } from 'lucide-react';
 import { useSecondPanel } from 'apps/rahat-ui/src/providers/second-panel-provider';
 import CampaignDetailSplitView from './campaign.detail.split.view';
+import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 
 export type TextDetail = {
   _id: string;
   to: string;
   date: string;
 };
+
+const data = [{ name: 'Activity1', createdAt: '14/08/2024', phase: 'READINESS', status: 'WORK_IN_PROGRESS' }]
 
 export default function CommunicationLogTable() {
   const { setSecondPanelComponent, closeSecondPanel } = useSecondPanel();
@@ -58,57 +61,90 @@ export default function CommunicationLogTable() {
       </>,
     );
   };
-  const columns: ColumnDef<TextDetail>[] = [
-    {
-      accessorKey: 'createdAt',
-      header: 'Date',
-      cell: ({ row }) => (
-        <div className="capitalize">
-          {new Date(row.getValue('createdAt')).toLocaleString()}
-        </div>
-      ),
-    },
+
+  function getStatusBg(status: string) {
+    if (status === 'NOT_STARTED') {
+      return 'bg-gray-200';
+    }
+
+    if (status === 'WORK_IN_PROGRESS') {
+      return 'bg-orange-200';
+    }
+
+    if (status === 'COMPLETED') {
+      return 'bg-green-200';
+    }
+
+    if (status === 'DELAYED') {
+      return 'bg-red-200';
+    }
+
+    return '';
+  }
+
+  const columns: ColumnDef<any>[] = [
     {
       accessorKey: 'name',
       header: 'Title',
       cell: ({ row }) => (
-        <div className="capitalize">{row.getValue('name')}</div>
+        <div className="capitalize min-w-72">{row.getValue('name')}</div>
       ),
     },
     {
-      accessorKey: 'upload',
-      header: 'Upload',
+      accessorKey: 'createdAt',
+      header: 'Date',
       cell: ({ row }) => (
-        <div className="capitalize">
-          {row.getValue('upload')?.length < 10
-            ? row.getValue('upload')
-            : row.getValue('upload').substring(0, 10) + '...'}
+        <div className="capitalize min-w-32">
+          {new Date(row.getValue('createdAt')).toLocaleString()}
         </div>
       ),
     },
+    // {
+    //   accessorKey: 'upload',
+    //   header: 'Upload',
+    //   cell: ({ row }) => (
+    //     <div className="capitalize">
+    //       {row.getValue('upload')?.length < 10
+    //         ? row.getValue('upload')
+    //         : row.getValue('upload').substring(0, 10) + '...'}
+    //     </div>
+    //   ),
+    // },
+    // {
+    //   accessorKey: 'type',
+    //   header: 'Type',
+    //   cell: ({ row }) => (
+    //     <div className="capitalize">{row.getValue('type')}</div>
+    //   ),
+    // },
+    // {
+    //   accessorKey: 'totalAudiences',
+    //   header: 'Audiences',
+    //   cell: ({ row }) => (
+    //     <div className="capitalize">{row.getValue('totalAudiences')}</div>
+    //   ),
+    // },
     {
-      accessorKey: 'type',
-      header: 'Type',
+      accessorKey: 'phase',
+      header: 'Phase',
       cell: ({ row }) => (
-        <div className="capitalize">{row.getValue('type')}</div>
-      ),
-    },
-    {
-      accessorKey: 'totalAudiences',
-      header: 'Audiences',
-      cell: ({ row }) => (
-        <div className="capitalize">{row.getValue('totalAudiences')}</div>
+        <div>{row.getValue('phase')}</div>
       ),
     },
     {
       accessorKey: 'status',
       header: 'Status',
-      cell: ({ row }) => (
-        <div className="capitalize">{row.getValue('status')}</div>
-      ),
+      cell: ({ row }) => {
+        const status = row.getValue('status') as string;
+        const bgColor = getStatusBg(status)
+        return (
+          <Badge className={bgColor}>{status}</Badge>
+        )
+      }
     },
     {
       id: 'actions',
+      header: 'Actions',
       enableHiding: false,
       cell: ({ row }) => {
         return (
@@ -145,18 +181,18 @@ export default function CommunicationLogTable() {
   const campaignTableData: any = React.useMemo(() => {
     const result = Array.isArray(campaignData?.data?.rows)
       ? campaignData?.data?.rows.map((campaign: any) => {
-          if (campaign.type === CAMPAIGN_TYPES.IVR) {
-            return {
-              ...campaign,
-              upload: campaign?.details?.ivrFileName,
-            };
-          } else {
-            return {
-              ...campaign,
-              upload: campaign?.details?.message || campaign?.details?.body,
-            };
-          }
-        })
+        if (campaign.type === CAMPAIGN_TYPES.IVR) {
+          return {
+            ...campaign,
+            upload: campaign?.details?.ivrFileName,
+          };
+        } else {
+          return {
+            ...campaign,
+            upload: campaign?.details?.message || campaign?.details?.body,
+          };
+        }
+      })
       : [];
 
     return result;
@@ -201,7 +237,7 @@ export default function CommunicationLogTable() {
   };
 
   const table = useReactTable({
-    data: tableData || [],
+    data: data || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -264,10 +300,10 @@ export default function CommunicationLogTable() {
             </Select>
           </div>
         </div>
-        <div className="rounded-md  border mt-1 bg-card">
+        <div className="mt-1 bg-card border rounded-t">
           <Table>
-            <ScrollArea className="h-[calc(100vh-570px)]">
-              <TableHeader className="sticky top-0 bg-slate-50">
+            <ScrollArea className="h-[calc(100vh-381px)]">
+              <TableHeader className="sticky top-0">
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow key={headerGroup.id}>
                     {headerGroup.headers.map((header) => {
@@ -276,9 +312,9 @@ export default function CommunicationLogTable() {
                           {header.isPlaceholder
                             ? null
                             : flexRender(
-                                header.column.columnDef.header,
-                                header.getContext(),
-                              )}
+                              header.column.columnDef.header,
+                              header.getContext(),
+                            )}
                         </TableHead>
                       );
                     })}
@@ -316,11 +352,11 @@ export default function CommunicationLogTable() {
             </ScrollArea>
           </Table>
         </div>
-        <div className="flex items-center justify-end space-x-8 py-4">
-          <div className="flex-1 text-sm text-muted-foreground">
+        <div className="flex items-center justify-end space-x-8 p-2 border-t-0 border rounded-b bg-card">
+          {/* <div className="flex-1 text-sm text-muted-foreground">
             {table.getFilteredSelectedRowModel().rows.length} of{' '}
             {table.getFilteredRowModel().rows.length} row(s) selected.
-          </div>
+          </div> */}
           <div className="flex items-center gap-2">
             <div className="text-sm font-medium">Rows per page</div>
             <Select

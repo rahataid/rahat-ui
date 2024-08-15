@@ -22,6 +22,7 @@ import { ApprovalTable } from './approvals.table';
 import { TransactionTable } from './transactions.table';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import Link from 'next/link';
+import { formatEther } from 'viem';
 
 export default function DisburseDetails() {
   const { id: projectUUID, uuid } = useParams() as {
@@ -29,9 +30,17 @@ export default function DisburseDetails() {
     uuid: UUID;
   };
   const { data } = useGetDisbursement(projectUUID, uuid);
+
   const date = new Date(data?.createdAt);
   const datePart = date.toDateString().split(' ').slice(1).join(' ');
   const timePart = date.toTimeString().split(' ')[0].slice(0, 5);
+
+  const amount = data?.amount;
+  const formatted = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+  }).format(amount);
+
   return (
     <div className="bg-secondary">
       {/* Data Cards */}
@@ -55,7 +64,7 @@ export default function DisburseDetails() {
         <DataCard
           className="mt-2"
           title="Total Disburse Amount"
-          number={data?.amount}
+          number={formatted}
         />
         <DataCard
           className="mt-2"

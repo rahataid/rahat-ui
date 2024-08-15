@@ -97,9 +97,17 @@ export const useTransactionTable = () => {
     },
     {
       accessorKey: 'amount',
-      header: 'Amount',
+      header: () => <div>Amount</div>,
       cell: ({ row }) => {
-        return <div>{row.getValue('amount')}</div>;
+        const amount = row.getValue('amount');
+
+        // Format the amount as a dollar amount
+        const formatted = new Intl.NumberFormat('en-US', {
+          style: 'currency',
+          currency: 'USD',
+        }).format(amount);
+
+        return <div className="font-medium">{formatted}</div>;
       },
     },
   ];

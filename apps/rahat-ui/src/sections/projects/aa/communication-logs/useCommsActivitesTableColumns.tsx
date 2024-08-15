@@ -71,10 +71,10 @@ export default function useCommsActivitiesTableColumns() {
                 strokeWidth={1.5}
               />
             </DialogTrigger>
-            <DialogContent className='w-[500px]'>
+            <DialogContent className='w-full'>
               <DialogHeader>
                 <DialogTitle className='mb-4'>Activity Details</DialogTitle>
-                <ActivityCommsCards comms={row?.original?.activityCommunication} />
+                <ActivityCommsCards activityId={row?.original?.id} />
               </DialogHeader>
             </DialogContent>
           </Dialog>

@@ -41,7 +41,7 @@ export const useDisburseTableColumns = () => {
     },
     {
       accessorKey: 'date',
-      header: 'Date',
+      header: 'Date Time',
       cell: ({ row }) => (
         <div className="capitalize">
           {formatdbDate(row.original?.createdAt)}

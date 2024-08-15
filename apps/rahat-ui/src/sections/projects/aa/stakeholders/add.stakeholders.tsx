@@ -50,7 +50,10 @@ export default function AddStakeholders() {
       .string()
       .regex(/^[A-Za-z\s]*$/, 'Only alphabetic characters are allowed.')
       .min(2, { message: 'Please enter organization.' }),
-    district: z.string().min(2, { message: 'Please enter district.' }),
+    district: z
+      .string()
+      .regex(/^[A-Za-z\s]*$/, 'Only alphabetic characters are allowed.')
+      .min(2, { message: 'Please enter district.' }),
     municipality: z
       .string()
       .regex(/^[A-Za-z\s]*$/, 'Only alphabetic characters are allowed.')

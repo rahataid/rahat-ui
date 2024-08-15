@@ -93,7 +93,6 @@ const FundManagementView = () => {
   const { id } = useParams() as { id: UUID };
   const { data: disbursementData } = useFindAllDisbursementPlans(id);
   const [rowData, setRowData] = useState<any[]>([]);
-  const [isSyncing, setIsSyncing] = useState(false);
 
   const totalBeneficiaries = disbursementData?._count?.Disbursements;
   const filteredConditions = dibsursementConditions.filter((condition) =>
@@ -119,14 +118,12 @@ const FundManagementView = () => {
   const syncDisbursementAllocation = useBulkAllocateTokens(
     contractSettings?.rahattoken?.address,
   );
-  console.log(contractSettings);
 
   const tokenBalance = useReadRahatTokenBalanceOf({
     address: contractSettings?.rahattoken?.address as `0x${string}`,
     args: [contractSettings?.rahatpayrollproject?.address as `0x${string}`],
     query: {
       select(data) {
-        console.log('data', data);
         return data ? Number(data) : 'N/A';
       },
     },
@@ -137,6 +134,8 @@ const FundManagementView = () => {
     contractSettings?.rahatpayrollproject?.address as `0x${string}`,
     contractSettings?.rahattoken?.address as `0x${string}`,
   );
+
+  console.log('chainTokenAllocations', chainTokenAllocations);
 
   useEffect(() => {
     if (
@@ -155,11 +154,6 @@ const FundManagementView = () => {
             disbursementAmount: beneficiaryDisbursement?.amount || '0',
           };
         });
-
-      console.log(
-        projectBeneficiaryDisbursements,
-        'is project beneficiary disbursement',
-      );
 
       if (
         JSON.stringify(projectBeneficiaryDisbursements) !==
@@ -181,13 +175,11 @@ const FundManagementView = () => {
   ]);
 
   const handleAllocationSync = async () => {
-    setIsSyncing(true);
     await syncDisbursementAllocation.mutateAsync({
       beneficiaryAddresses: disbursementData.Disbursements,
       projectAddress: contractSettings?.rahatpayrollproject?.address,
       tokenAddress: contractSettings?.rahattoken?.address,
     });
-    setIsSyncing(false);
   };
 
   const handleAddDisburse = () => {
@@ -274,12 +266,11 @@ const FundManagementView = () => {
                 <Button
                   variant={'secondary'}
                   onClick={handleAllocationSync}
-                  disabled={isSyncing}
-                  // disabled={
-                  //   syncDisbursementAllocation.isPending ||
-                  //   +chainTokenAllocations.data ===
-                  //     +disbursementData?.totalAmount
-                  // }
+                  disabled={
+                    syncDisbursementAllocation.isPending ||
+                    String(chainTokenAllocations.data) ===
+                      String(disbursementData?.totalAmount)
+                  }
                 >
                   Sync chain
                 </Button>

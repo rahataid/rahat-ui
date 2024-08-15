@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useEffect } from 'react';
 import { Table, flexRender } from '@tanstack/react-table';
+import { useEffect } from 'react';
 
 import {
   TableBody,
@@ -13,9 +13,11 @@ import {
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 
-import { ListGroup } from '@rahataid/community-tool-sdk/groups';
+import { Label } from '@radix-ui/react-label';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
+import { ListGroup } from '@rahataid/community-tool-sdk/groups';
 import { Pagination } from '@rumsan/sdk/types';
+import { LucideShipWheel } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 
 type IProps = {
@@ -24,6 +26,7 @@ type IProps = {
   filters: Record<string, any>;
   setPagination: (pagination: Pagination) => void;
   pagination: Pagination;
+  loading: boolean;
 };
 
 export default function GroupList({
@@ -32,6 +35,7 @@ export default function GroupList({
   setFilters,
   setPagination,
   pagination,
+  loading,
 }: IProps) {
   const pathName = usePathname();
   const handleFilterChange = (event: any) => {
@@ -113,7 +117,16 @@ export default function GroupList({
                     colSpan={table.getAllColumns().length}
                     className="h-24 text-center"
                   >
-                    No results.
+                    {loading ? (
+                      <div className="flex items-center justify-center mt-4">
+                        <div className="text-center">
+                          <LucideShipWheel className="animate-spin h-8 w-8" />
+                          <Label className="text-base">Loading ...</Label>
+                        </div>
+                      </div>
+                    ) : (
+                      'No result found'
+                    )}
                   </TableCell>
                 </TableRow>
               )}

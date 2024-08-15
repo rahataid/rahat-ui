@@ -30,6 +30,7 @@ import { UUID } from 'crypto';
 import { validateFile } from '../../file.validation';
 import { ACTIVITY_STATUS } from '../../aa.constants';
 import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
+import { toast } from 'react-toastify';
 
 type IProps = {
   activityDetail: any;
@@ -101,6 +102,10 @@ export default function UpdateActivityStatusDialog({
     const file = event.target.files?.[0];
 
     if (file) {
+      const isDuplicateFile = documents?.some((d) => d?.name === file?.name);
+      if (isDuplicateFile) {
+        return toast.error('Cannot upload duplicate files.');
+      }
       if (!validateFile(file)) {
         return;
       }
@@ -152,9 +157,9 @@ export default function UpdateActivityStatusDialog({
     }
   };
 
-  React.useEffect(() => {
-    updateStatus.isSuccess && router.push(activitiesListPath);
-  }, [updateStatus.isSuccess]);
+  // React.useEffect(() => {
+  //   updateStatus.isSuccess && router.push(activitiesListPath);
+  // }, [updateStatus.isSuccess]);
 
   return (
     <Dialog open={showModal} onOpenChange={() => setShowModal(!showModal)}>

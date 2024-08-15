@@ -65,13 +65,8 @@ export function useNavData() {
           path: paths.user.root,
         },
         {
-          title: 'Import Beneficiary from CT',
+          title: 'Beneficiary Import',
           path: paths.dashboard.communitybeneficiary,
-        },
-
-        {
-          title: 'Apps',
-          path: paths.dashboard.appAuthentication,
         },
       ],
 

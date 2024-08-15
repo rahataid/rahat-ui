@@ -3,9 +3,9 @@
 import * as React from 'react';
 
 import { useSecondPanel } from '../../providers/second-panel-provider';
-import { useAppAuthenticationNavItems } from '../../sections/auth-apps';
-import AppAuthenticationLayout from '../../sections/auth-apps/appAuthenticationLayout';
+import SettingsFieldDefLayout from '../../sections/settings/settingsFieldDefinitionLayout';
 import DashboardLayout from '../dashboard/layout';
+import { useSettingFieldDefinitionNavItems } from '../../sections/settings/useNavItems';
 
 export default function AuthenticationAppLayout({
   children,
@@ -14,13 +14,13 @@ export default function AuthenticationAppLayout({
 }) {
   const { secondPanel } = useSecondPanel();
 
-  const menuItems = useAppAuthenticationNavItems();
+  const menuItems = useSettingFieldDefinitionNavItems();
 
   return (
     <DashboardLayout>
-      <AppAuthenticationLayout menuItems={menuItems}>
+      <SettingsFieldDefLayout menuItems={menuItems}>
         {secondPanel ? [children, secondPanel] : children}
-      </AppAuthenticationLayout>
+      </SettingsFieldDefLayout>
     </DashboardLayout>
   );
 }

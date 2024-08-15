@@ -6,15 +6,23 @@ import { FormField } from '@rahat-ui/shadcn/src/components/ui/form';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { useForm } from 'react-hook-form';
+import { isAddress } from 'viem';
 import { z } from 'zod';
 
 export default function AddAppAuthentication() {
   const createAuthApp = useCreateAuthApp();
 
   const FormSchema = z.object({
-    name: z.string().min(1, { message: 'Name is required' }),
-    address: z.string(),
-    description: z.string(),
+    name: z.string().min(2, { message: 'Name must be at least 2 characters' }),
+    address: z.string().refine(
+      (value) => {
+        if (isAddress(value)) return true;
+      },
+      {
+        message: 'Invalid app address',
+      },
+    ),
+    description: z.string().optional(),
   });
 
   const {
@@ -41,7 +49,7 @@ export default function AddAppAuthentication() {
   return (
     <form onSubmit={handleSubmit(handleAddAppAuthentication)}>
       <div className="p-4 h-add rounded border bg-white">
-        <h1 className="text-lg font-semibold mb-6">Add Auth Apps</h1>
+        <h1 className="text-lg font-semibold mb-6">Add New</h1>
         <div className="shadow-md p-4 rounded-sm">
           <div className="grid grid-cols-2 gap-5 mb-4">
             <FormField
@@ -49,10 +57,10 @@ export default function AddAppAuthentication() {
               name="name"
               render={({ field }) => (
                 <div className="col-span-1">
-                  <Label>App Name</Label>
+                  <Label>Name</Label>
                   <Input
                     type="text"
-                    placeholder="App Name"
+                    placeholder="Enter app name"
                     className=" mt-4 "
                     {...field}
                   />
@@ -74,7 +82,7 @@ export default function AddAppAuthentication() {
                   <Label>Address</Label>
                   <Input
                     type="text"
-                    placeholder="Address"
+                    placeholder="Enter app address"
                     className=" mt-4 "
                     {...field}
                   />
@@ -96,7 +104,7 @@ export default function AddAppAuthentication() {
                   <Label>Description</Label>
                   <Input
                     type="text"
-                    placeholder="Description"
+                    placeholder="Short description about app"
                     className=" mt-4 "
                     {...field}
                   />

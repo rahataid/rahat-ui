@@ -24,7 +24,9 @@ export function formatDate(date: number) {
 
 export function formatdbDate(date: string) {
   const updated = new Date(date);
+
   const datePart = updated.toISOString().split('T')[0];
+
   const timePart = updated.toTimeString().split(' ')[0].slice(0, 5);
 
   return `${datePart} - ${timePart}`;

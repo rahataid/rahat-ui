@@ -12,6 +12,7 @@ import { Copy, CopyCheck } from 'lucide-react';
 import Link from 'next/link';
 import { shortenTxHash } from 'apps/rahat-ui/src/utils/getProjectAddress';
 import { formatEther } from 'viem';
+import { formatdbDate } from 'apps/rahat-ui/src/utils';
 
 const useTransactionColumn = () => {
   const [walletAddressCopied, setWalletAddressCopied] = useState<number>();
@@ -66,7 +67,7 @@ const useTransactionColumn = () => {
       accessorKey: 'date',
       header: 'Timestamp',
       cell: ({ row }) => (
-        <div className="capitalize">{row.getValue('date')}</div>
+        <div className="capitalize">{formatdbDate(row.getValue('date'))}</div>
       ),
     },
     {

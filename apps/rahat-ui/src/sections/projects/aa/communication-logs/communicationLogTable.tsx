@@ -34,12 +34,13 @@ export default function CommunicationLogTable() {
 
   const { activitiesData, activitiesMeta } = useActivitiesHavingComms(
     projectId as UUID,
-    {},
+    {...pagination},
   );
 
   const columns = useCommsActivitiesTableColumns();
 
   const table = useReactTable({
+    manualPagination: true,
     data: activitiesData || [],
     columns,
     getCoreRowModel: getCoreRowModel(),

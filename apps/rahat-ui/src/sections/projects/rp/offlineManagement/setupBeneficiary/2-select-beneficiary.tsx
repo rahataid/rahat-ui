@@ -7,28 +7,21 @@ import {
   TabsList,
   TabsTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tabs';
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@rahat-ui/shadcn/src/components/ui/card';
-import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
-import {
-  Avatar,
-  AvatarFallback,
-} from '@rahat-ui/shadcn/src/components/ui/avatar';
-import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+
+import { z } from 'zod';
+import { UseFormReturn } from 'react-hook-form';
 import BeneficiaryCard from './select.beneficiary.card';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 
 type Step2SelectBeneficiaryProps = {
-  value: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  disbursmentList: any;
+  form: UseFormReturn<z.infer<any>>;
 };
 
-export default function Step2SelectBeneficiary({}: Step2SelectBeneficiaryProps) {
+export default function Step2SelectBeneficiary({
+  form,
+  disbursmentList,
+}: Step2SelectBeneficiaryProps) {
   const router = useRouter();
 
   return (
@@ -59,7 +52,10 @@ export default function Step2SelectBeneficiary({}: Step2SelectBeneficiaryProps) 
           </div>
           <TabsContent value="list">
             <div>
-              <SelectBeneficiaryTable />
+              <SelectBeneficiaryTable
+                disbursmentList={disbursmentList}
+                form={form}
+              />
             </div>
           </TabsContent>
           <TabsContent value="card">

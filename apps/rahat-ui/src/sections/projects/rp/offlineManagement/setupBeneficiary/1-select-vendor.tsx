@@ -1,22 +1,32 @@
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
-import { ArrowLeft, ChevronDown } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+} from '@rahat-ui/shadcn/src/components/ui/form';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@rahat-ui/shadcn/src/components/ui/select';
 
+import { z } from 'zod';
+import { ArrowLeft } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { UseFormReturn } from 'react-hook-form';
 type Step1SelectVendorProps = {
-  value: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  vendor: any;
+  form: UseFormReturn<z.infer<any>>;
 };
 
-export default function Step1SelectVendor({}: Step1SelectVendorProps) {
+export default function Step1SelectVendor({
+  vendor,
+  form,
+}: Step1SelectVendorProps) {
   const router = useRouter();
+
   return (
     <div className="bg-card rounded-lg m-4">
       <div className="flex flex-col gap-1">
@@ -36,25 +46,39 @@ export default function Step1SelectVendor({}: Step1SelectVendorProps) {
         </p>
       </div>
       <div className="mt-8 mb-8">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <div className="w-2/3 border flex items-center justify-between rounded-md p-3">
-              Select Vendor
-              <ChevronDown strokeWidth={1.5} />
-            </div>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-[52rem]">
-            <DropdownMenuLabel>Select Vendor</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem>Vendor 1</DropdownMenuItem>
-              <DropdownMenuItem>Vendor 2</DropdownMenuItem>
-              <DropdownMenuItem>vendor 3</DropdownMenuItem>
-              <DropdownMenuItem>Vendor 4</DropdownMenuItem>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <Form {...form}>
+          <form className="w-2/3 space-y-6">
+            <FormField
+              control={form.control}
+              name="vendorId"
+              render={({ field }) => (
+                <FormItem>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select Vendor" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {vendor?.map((vendor: any) => (
+                        <SelectItem
+                          key={vendor?.uuid}
+                          // defaultValue={vendor?.name}
+                          value={vendor?.id.toString()}
+                        >
+                          {vendor?.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </FormItem>
+              )}
+            />
+          </form>
+        </Form>
       </div>
     </div>
   );

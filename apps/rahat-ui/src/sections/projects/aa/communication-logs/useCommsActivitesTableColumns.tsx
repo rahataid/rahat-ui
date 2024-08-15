@@ -1,8 +1,9 @@
 import { ColumnDef } from '@tanstack/react-table';
 import { useSecondPanel } from 'apps/rahat-ui/src/providers/second-panel-provider';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@rahat-ui/shadcn/src/components/ui/dialog';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Eye } from 'lucide-react';
-import CommsActivitySplitView from './comms.activity.split.view';
+import ActivityCommsCards from './activity.comms.cards.list';
 
 function getStatusBg(status: string) {
   if (status === 'NOT_STARTED') {
@@ -25,19 +26,6 @@ function getStatusBg(status: string) {
 }
 
 export default function useCommsActivitiesTableColumns() {
-  const { setSecondPanelComponent, closeSecondPanel } = useSecondPanel();
-
-  const openSplitDetailView = (rowDetail: any) => {
-    alert('entered');
-    setSecondPanelComponent(
-      <CommsActivitySplitView close={closeSecondPanel} />,
-    );
-  };
-
-  const fc = () => {
-    alert('im here')
-  }
-
   const columns: ColumnDef<any>[] = [
     {
       accessorKey: 'title',
@@ -75,13 +63,21 @@ export default function useCommsActivitiesTableColumns() {
       enableHiding: false,
       cell: ({ row }) => {
         return (
-          // <Eye
-          //   className="hover:text-primary cursor-pointer"
-          //   size={20}
-          //   strokeWidth={1.5}
-          //   onClick={() => openSplitDetailView(row?.original)}
-          // />
-          <button onClick={() => fc()}>Go</button>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Eye
+                className="hover:text-primary cursor-pointer"
+                size={20}
+                strokeWidth={1.5}
+              />
+            </DialogTrigger>
+            <DialogContent className='w-[500px]'>
+              <DialogHeader>
+                <DialogTitle className='mb-4'>Activity Details</DialogTitle>
+                <ActivityCommsCards comms={row?.original?.activityCommunication} />
+              </DialogHeader>
+            </DialogContent>
+          </Dialog>
         );
       },
     },

@@ -171,6 +171,7 @@ export const useActivitiesHavingComms = (uuid: UUID, payload: any) => {
     createdAt: d?.createdAt,
     phase: d?.phase?.name,
     status: d?.status,
+    activityCommunication: d?.activityCommunication
   }));
   return { activitiesData, activitiesMeta: query?.data?.data?.meta };
 };

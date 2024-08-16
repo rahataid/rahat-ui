@@ -32,13 +32,14 @@ export default function useStakeholdersTableColumn() {
 
   const deleteStakeholder = useDeleteStakeholders();
 
-  const removeStakeholder = (stakeholder: IStakeholdersItem) => {
-    deleteStakeholder.mutateAsync({
+  const removeStakeholder = async (stakeholder: IStakeholdersItem) => {
+    await deleteStakeholder.mutateAsync({
       projectUUID: id as UUID,
       stakeholderPayload: {
         uuid: stakeholder?.uuid,
       },
     });
+    closeSecondPanel();
   };
 
   const columns: ColumnDef<IStakeholdersItem>[] = [

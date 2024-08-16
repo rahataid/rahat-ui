@@ -23,7 +23,7 @@ const ProjectView = () => {
 
   return (
     <div className="p-2 bg-secondary">
-      <ScrollArea className="h-[calc(100vh-80px)]">
+      <ScrollArea className="">
         <ProjectInfo project={project} />
         <ProjectCharts />
       </ScrollArea>

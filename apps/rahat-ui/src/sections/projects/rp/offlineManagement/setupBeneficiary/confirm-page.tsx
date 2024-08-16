@@ -20,7 +20,7 @@ type ConfirmPageProps = {
   disbursmentList: any;
 };
 
-const ComfirmPage = ({ form, vendor }: ConfirmPageProps) => {
+const ComfirmPage = ({ form, vendor, disbursmentList }: ConfirmPageProps) => {
   const router = useRouter();
   const { id } = useParams();
   const [isOpen, setIsOpen] = useState(false);
@@ -29,6 +29,12 @@ const ComfirmPage = ({ form, vendor }: ConfirmPageProps) => {
     (v) => v?.id == form.getValues('vendorId'),
   );
   const selectedBeneficiries = form.getValues('disbursements');
+  let tokenAmount = 0;
+  disbursmentList?.map((disbursment: any) => {
+    if (selectedBeneficiries.includes(disbursment.id)) {
+      tokenAmount += Number(disbursment?.amount);
+    }
+  });
   const contractSettings = useProjectSettingsStore(
     (state) => state.settings?.[id as UUID]?.[PROJECT_SETTINGS_KEYS.CONTRACT],
   );
@@ -79,13 +85,17 @@ const ComfirmPage = ({ form, vendor }: ConfirmPageProps) => {
                 <h2 className="text-sm font-medium text-gray-500">
                   Total no. of tokens assigned
                 </h2>
-                <p className="text-2xl font-semibold text-gray-800">100</p>
+                <p className="text-2xl font-semibold text-gray-800">
+                  {tokenAmount}
+                </p>
               </div>
               <div>
                 <h2 className="text-sm font-medium text-gray-500">
                   Token Amount
                 </h2>
-                <p className="text-2xl font-semibold text-gray-800">400</p>
+                <p className="text-2xl font-semibold text-gray-800">
+                  {tokenAmount}
+                </p>
               </div>
             </div>
           </div>
@@ -131,7 +141,7 @@ const ComfirmPage = ({ form, vendor }: ConfirmPageProps) => {
             syncBen.mutateAsync({
               vendorId: selectedVendor?.id,
               disbursements: selectedBeneficiries,
-              tokenAddress: contractSettings?.tokenAddress || '',
+              tokenAddress: contractSettings?.rahattoken?.address || '',
             });
             setIsOpen(true);
           }}
@@ -139,7 +149,12 @@ const ComfirmPage = ({ form, vendor }: ConfirmPageProps) => {
         >
           Finish
         </Button>
-        <ConfirmModal isOpen={isOpen} />
+        <ConfirmModal
+          isOpen={isOpen}
+          beneficiaries={noOfSelectedBeneficiries}
+          tokens={tokenAmount}
+          vendorName={selectedVendor?.name}
+        />
       </div>
     </div>
   );

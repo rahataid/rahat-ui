@@ -27,104 +27,6 @@ import { Trash2 } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import * as React from 'react';
 
-const data: Payment[] = [
-  {
-    id: 'm5gr84i9',
-    name: 'vendor1',
-    tokenAssigned: 180,
-  },
-  {
-    id: 'm5gr84i9',
-    name: 'vendor1',
-    tokenAssigned: 180,
-  },
-  {
-    id: 'm5gr84i9',
-    name: 'vendor1',
-    tokenAssigned: 180,
-  },
-  {
-    id: 'm5gr84i9',
-    name: 'vendor1',
-    tokenAssigned: 180,
-  },
-  {
-    id: 'm5gr84i9',
-    name: 'vendor1',
-    tokenAssigned: 180,
-  },
-  {
-    id: 'm5gr84i9',
-    name: 'vendor1',
-    tokenAssigned: 180,
-  },
-  {
-    id: 'm5gr84i9',
-    name: 'vendor1',
-    tokenAssigned: 180,
-  },
-  {
-    id: 'm5gr84i9',
-    name: 'vendor1',
-    tokenAssigned: 180,
-  },
-  {
-    id: 'm5gr84i9',
-    name: 'vendor1',
-    tokenAssigned: 180,
-  },
-  {
-    id: 'm5gr84i9',
-    name: 'vendor1',
-    tokenAssigned: 180,
-  },
-  {
-    id: 'm5gr84i9',
-    name: 'vendor1',
-    tokenAssigned: 180,
-  },
-  {
-    id: 'm5gr84i9',
-    name: 'vendor1',
-    tokenAssigned: 180,
-  },
-  {
-    id: 'm5gr84i9',
-    name: 'vendor1',
-    tokenAssigned: 180,
-  },
-  {
-    id: 'm5gr84i9',
-    name: 'vendor1',
-    tokenAssigned: 180,
-  },
-  {
-    id: 'm5gr84i9',
-    name: 'vendor1',
-    tokenAssigned: 180,
-  },
-  {
-    id: 'm5gr84i9',
-    name: 'vendor1',
-    tokenAssigned: 180,
-  },
-  {
-    id: 'm5gr84i9',
-    name: 'vendor1',
-    tokenAssigned: 180,
-  },
-  {
-    id: 'm5gr84i9',
-    name: 'vendor1',
-    tokenAssigned: 180,
-  },
-  {
-    id: 'm5gr84i9',
-    name: 'vendor1',
-    tokenAssigned: 180,
-  },
-];
-
 export type Payment = {
   id: string;
   name: string;
@@ -157,36 +59,38 @@ export const columns: ColumnDef<Payment>[] = [
   {
     accessorKey: 'name',
     header: 'Name',
-    cell: ({ row }) => <div className="capitalize">{row.getValue('name')}</div>,
+    cell: ({ row }) => (
+      <div className="capitalize">{row.getValue('name') || 'Rajesh Hamal'}</div>
+    ),
   },
   {
-    accessorKey: 'tokenAssigned',
+    accessorKey: 'amount',
     header: 'Token Assigned',
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue('tokenAssigned')}</div>
+      <div className="capitalize">{row.getValue('amount')}</div>
     ),
   },
 
-  {
-    id: 'actions',
-    enableHiding: false,
-    cell: ({ row }) => {
-      const payment = row.original;
+  // {
+  //   id: 'actions',
+  //   enableHiding: false,
+  //   cell: ({ row }) => {
+  //     const payment = row.original;
 
-      return (
-        <div className="flex items-center gap-4">
-          <Trash2
-            className="cursor-pointer text-red-500"
-            size={20}
-            strokeWidth={1.5}
-          />
-        </div>
-      );
-    },
-  },
+  //     return (
+  //       <div className="flex items-center gap-4">
+  //         <Trash2
+  //           className="cursor-pointer text-red-500"
+  //           size={20}
+  //           strokeWidth={1.5}
+  //         />
+  //       </div>
+  //     );
+  //   },
+  // },
 ];
 
-export function DetailsTable() {
+export function DetailsTable({ offlineBeneficiaries }: any) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
@@ -198,7 +102,7 @@ export function DetailsTable() {
   const route = useRouter();
 
   const table = useReactTable({
-    data,
+    data: offlineBeneficiaries,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,

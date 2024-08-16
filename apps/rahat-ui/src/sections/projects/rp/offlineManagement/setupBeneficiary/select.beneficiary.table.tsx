@@ -23,11 +23,9 @@ import {
   useReactTable,
   VisibilityState,
 } from '@tanstack/react-table';
-import { Trash2 } from 'lucide-react';
-import { useParams, useRouter } from 'next/navigation';
+import { z } from 'zod';
 import * as React from 'react';
 import { UseFormReturn } from 'react-hook-form';
-import { z } from 'zod';
 
 export type Payment = {
   id: number;

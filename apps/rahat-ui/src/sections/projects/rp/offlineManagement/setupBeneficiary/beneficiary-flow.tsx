@@ -60,21 +60,16 @@ const SetupBeneficiaryPage = () => {
   useEffect(() => {
     fetchVendors();
   }, []);
-  const route = useRouter();
-
-  const handleStepDataChange = (e) => {
-    const { name, value } = e.target;
-    setStepData((prev) => ({ ...prev, [name]: value }));
-  };
 
   const handleNext = () => {
+    const isValid = steps[currentStep].validation();
+    if (!isValid) {
+      return;
+    }
     if (currentStep < steps.length - 1) {
       setCurrentStep(currentStep + 1);
     } else {
       setShowConfirmPage(true);
-      // route.push(
-      //   `/projects/rp/${id}/offlineManagement/setupBeneficiary/confirm`,
-      // );
     }
   };
 
@@ -93,7 +88,13 @@ const SetupBeneficiaryPage = () => {
       id: 'step1',
       title: 'Select Vendor',
       component: <Step1SelectVendor vendor={vendor} form={form} />,
-      validation: {},
+      validation: () => {
+        const vendorId = form.getValues('vendorId');
+        if (vendorId) {
+          return true;
+        }
+        return false;
+      },
     },
     {
       id: 'step2',
@@ -101,20 +102,27 @@ const SetupBeneficiaryPage = () => {
       component: (
         <Step2DisburseAmount disbursmentList={disbursmentList} form={form} />
       ),
-      validation: {},
+      validation: () => {
+        const disbursements = form.getValues('disbursements') || [];
+        if (disbursements.length > 0) {
+          return true;
+        }
+        return false;
+      },
     },
     {
       id: 'step3',
       title: 'Assign Amount',
       component: <Step3AssignAmount form={form} />,
-      validation: {},
+      validation: () => {
+        return true;
+      },
     },
   ];
 
   const renderComponent = () => {
     return steps[currentStep].component;
   };
-  console.log(form.getValues('vendorId'), form.getValues('disbursements'));
   return (
     <div>
       {!showConfirmPage ? (

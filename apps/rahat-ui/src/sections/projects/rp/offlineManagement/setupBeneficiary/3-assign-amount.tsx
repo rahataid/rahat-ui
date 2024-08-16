@@ -43,13 +43,13 @@ export default function Step3AssignAmount({ form }: Step3AssignAmountProps) {
           </div>
         </div>
       </div>
-      <div className="w-full mt-4">
+      {/* <div className="w-full mt-4">
         <Label className="text-gray-700">No. of Tokens</Label>
         <Input
           className="mt-1 w-full border rounded-md shadow-sm text-sm"
           placeholder="Enter no. of tokens"
         />
-      </div>
+      </div> */}
     </div>
   );
 }

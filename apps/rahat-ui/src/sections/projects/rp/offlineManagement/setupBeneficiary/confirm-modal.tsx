@@ -13,9 +13,21 @@ import { CheckCircleIcon } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { useState } from 'react';
 
-export function ConfirmModal({ isOpen }: { isOpen: boolean }) {
+type IConfirmModal = {
+  isOpen: boolean;
+  beneficiaries: number;
+  vendorName: string;
+  tokens: number;
+};
+
+export function ConfirmModal({
+  isOpen,
+  beneficiaries,
+  vendorName,
+  tokens,
+}: IConfirmModal) {
   const route = useRouter();
-  const id = useParams();
+  const { id } = useParams();
   const handleRoute = () => {
     route.push(`/projects/rp/${id}/offlineManagement`);
   };
@@ -26,9 +38,7 @@ export function ConfirmModal({ isOpen }: { isOpen: boolean }) {
   };
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogTrigger asChild>
-       
-      </DialogTrigger>
+      <DialogTrigger asChild></DialogTrigger>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle className="flex items-center justify-center">
@@ -52,9 +62,9 @@ export function ConfirmModal({ isOpen }: { isOpen: boolean }) {
                 </span>
               </div>
               <div className="flex flex-col gap-2 text-left">
-                <span className="text-gray-800">Aadarsha Lamichhane</span>
-                <span className="text-gray-800">43</span>
-                <span className="text-gray-800">2,300</span>
+                <span className="text-gray-800">{vendorName}</span>
+                <span className="text-gray-800">{beneficiaries}</span>
+                <span className="text-gray-800">{tokens}</span>
               </div>
             </div>
           </DialogDescription>

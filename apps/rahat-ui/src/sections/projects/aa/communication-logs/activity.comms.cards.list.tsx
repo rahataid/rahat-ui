@@ -27,8 +27,9 @@ function renderMessage(message: any) {
 }
 
 const CommunicationDetailCard = ({ comm }: any) => {
+  console.log(comm)
   return (
-    <div key={comm?.id} className="p-4 rounded-md bg-secondary mt-4">
+    <div key={comm?.communicationId} className="p-4 rounded-md bg-secondary mt-4">
       <div className="flex justify-between items-center">
         <h1 className="font-medium text-primary">{comm?.groupName}</h1>
       </div>

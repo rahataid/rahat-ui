@@ -6,16 +6,16 @@ type IProps = {
 };
 
 const renderProgressBgColor = (phase: string) => {
-  if (phase === 'PREPAREDNESS') return 'bg-yellow-100';
+  if (phase === 'PREPAREDNESS') return 'bg-green-100';
   if (phase === 'ACTIVATION') return 'bg-red-100';
-  if (phase === 'READINESS') return 'bg-green-100';
+  if (phase === 'READINESS') return 'bg-yellow-100';
   return '';
 };
 
 const renderProgressBarColor = (phase: string) => {
-  if (phase === 'PREPAREDNESS') return 'bg-yellow-500';
+  if (phase === 'PREPAREDNESS') return 'bg-green-500';
   if (phase === 'ACTIVATION') return 'bg-red-500';
-  if (phase === 'READINESS') return 'bg-green-500';
+  if (phase === 'READINESS') return 'bg-yellow-500';
   return '';
 };
 

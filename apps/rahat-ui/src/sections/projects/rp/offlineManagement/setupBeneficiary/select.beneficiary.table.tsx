@@ -124,18 +124,16 @@ export function SelectBeneficiaryTable({
 
   const tableData = React.useMemo(() => {
     if (disbursmentList) {
-      console.log(disbursmentList);
       const mappedData = disbursmentList?.map((disbursment: any) => ({
-        name: disbursment?.Beneficiary?.name || 'Rajesh hamal',
-        tokenAssigned: disbursment?.amount,
-        id: disbursment?.id,
+        name: disbursment?.name,
+        tokenAssigned: disbursment?.disbursementAmount,
+        id: disbursment?.disbursmentId,
       }));
       return mappedData;
     } else {
       return [];
     }
   }, [disbursmentList]);
-
   const table = useReactTable({
     data: tableData,
     columns,

@@ -15,14 +15,14 @@ import { useState } from 'react';
 
 type IConfirmModal = {
   isOpen: boolean;
-  beneficiaries: number;
+  disbursements: number;
   vendorName: string;
   tokens: number;
 };
 
 export function ConfirmModal({
   isOpen,
-  beneficiaries,
+  disbursements,
   vendorName,
   tokens,
 }: IConfirmModal) {
@@ -63,7 +63,7 @@ export function ConfirmModal({
               </div>
               <div className="flex flex-col gap-2 text-left">
                 <span className="text-gray-800">{vendorName}</span>
-                <span className="text-gray-800">{beneficiaries}</span>
+                <span className="text-gray-800">{disbursements}</span>
                 <span className="text-gray-800">{tokens}</span>
               </div>
             </div>

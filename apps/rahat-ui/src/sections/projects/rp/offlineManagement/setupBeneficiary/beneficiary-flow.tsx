@@ -13,7 +13,12 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import ConfirmPage from './confirm-page';
 import { MS_ACTIONS } from '@rahataid/sdk';
-import { useFindAllDisbursements, useProjectAction } from '@rahat-ui/query';
+import {
+  useFindAllDisbursements,
+  useProjectAction,
+  usePagination,
+  useProjectBeneficiaries,
+} from '@rahat-ui/query';
 
 const initialStepData = {
   treasurySource: '',
@@ -37,12 +42,58 @@ const SetupBeneficiaryPage = () => {
   const getVendors = useProjectAction();
 
   const [vendor, setVendor] = useState([]);
+  const [rowData, setRowData] = useState([]);
+
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(5);
 
   const { data: disbursmentList, isSuccess } = useFindAllDisbursements(
     id as UUID,
   );
+  const { pagination, filters } = usePagination();
+  const projectBeneficiaries = useProjectBeneficiaries({
+    page: pagination.page,
+    perPage: pagination.perPage,
+    order: 'desc',
+    sort: 'updatedAt',
+    projectUUID: id,
+    ...filters,
+  });
+
+  useEffect(() => {
+    if (
+      projectBeneficiaries.isSuccess &&
+      projectBeneficiaries.data?.data &&
+      isSuccess
+    ) {
+      const projectBeneficiaryDisbursements =
+        projectBeneficiaries.data?.data.map((beneficiary) => {
+          const beneficiaryDisbursement = disbursmentList?.find(
+            (disbursement: any) =>
+              disbursement.walletAddress === beneficiary.walletAddress,
+          );
+          return {
+            ...beneficiary,
+            disbursementAmount: beneficiaryDisbursement?.amount || '0',
+            disbursmentId: beneficiaryDisbursement?.id,
+          };
+        });
+
+      if (
+        JSON.stringify(projectBeneficiaryDisbursements) !==
+        JSON.stringify(rowData)
+      ) {
+        setRowData(projectBeneficiaryDisbursements);
+      }
+    }
+  }, [
+    disbursmentList,
+    isSuccess,
+    projectBeneficiaries.data?.data,
+    projectBeneficiaries.isSuccess,
+    rowData,
+  ]);
+
   async function fetchVendors() {
     const result = await getVendors.mutateAsync({
       uuid: id as UUID,
@@ -99,9 +150,7 @@ const SetupBeneficiaryPage = () => {
     {
       id: 'step2',
       title: 'Select Beneficiaries',
-      component: (
-        <Step2DisburseAmount disbursmentList={disbursmentList} form={form} />
-      ),
+      component: <Step2DisburseAmount disbursmentList={rowData} form={form} />,
       validation: () => {
         const disbursements = form.getValues('disbursements') || [];
         if (disbursements.length > 0) {
@@ -150,11 +199,7 @@ const SetupBeneficiaryPage = () => {
         </div>
       ) : (
         <>
-          <ConfirmPage
-            form={form}
-            vendor={vendor}
-            disbursmentList={disbursmentList}
-          />
+          <ConfirmPage form={form} vendor={vendor} disbursmentList={rowData} />
         </>
       )}
     </div>

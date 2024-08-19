@@ -45,12 +45,12 @@ const VendorDetails = () => {
           number={Number(offlineVendor?.totalAmountAssigned).toString()}
           Icon={Banknote}
         />
-        <DataCard
+        {/* <DataCard
           className=""
           title="Token Amount"
-          number={Number(offlineVendor?.totalAmountAssigned).toString()}
+          number={offlineVendor?.totalAmountAssigned}
           Icon={Coins}
-        />
+        /> */}
       </div>
       <div className="flex flex-col gap-1 mt-2">
         <h1 className="text-xl font-semibold text-gray-900">Beneficiaries</h1>

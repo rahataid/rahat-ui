@@ -28,17 +28,18 @@ const ComfirmPage = ({ form, vendor, disbursmentList }: ConfirmPageProps) => {
   const selectedVendor = vendor.find(
     (v) => v?.id == form.getValues('vendorId'),
   );
-  const selectedBeneficiries = form.getValues('disbursements');
+  const selectedDisbursementId = form.getValues('disbursements');
+  const selectedDisbursement = disbursmentList?.filter((disbursment: any) =>
+    selectedDisbursementId.includes(disbursment?.disbursmentId),
+  );
   let tokenAmount = 0;
-  disbursmentList?.map((disbursment: any) => {
-    if (selectedBeneficiries.includes(disbursment.id)) {
-      tokenAmount += Number(disbursment?.amount);
-    }
+  selectedDisbursement?.map((disbursment: any) => {
+    tokenAmount += Number(disbursment?.disbursementAmount);
   });
   const contractSettings = useProjectSettingsStore(
     (state) => state.settings?.[id as UUID]?.[PROJECT_SETTINGS_KEYS.CONTRACT],
   );
-  const noOfSelectedBeneficiries = form.getValues('disbursements')?.length || 0;
+  const noOfSelectedDisbursement = form.getValues('disbursements')?.length || 0;
   return (
     <div className="bg-card rounded-lg m-6 p-4">
       <div className="flex flex-col gap-1">
@@ -72,26 +73,13 @@ const ComfirmPage = ({ form, vendor, disbursmentList }: ConfirmPageProps) => {
                   Beneficiaries Selected:
                 </h2>
                 <p className="text-2xl font-semibold text-gray-800">
-                  {noOfSelectedBeneficiries}
+                  {noOfSelectedDisbursement}
                 </p>
               </div>
-              <div>
-                <h2 className="text-sm font-medium text-gray-500">
-                  Vendor Tokens
-                </h2>
-                <p className="text-2xl font-semibold text-gray-800">2000</p>
-              </div>
+
               <div>
                 <h2 className="text-sm font-medium text-gray-500">
                   Total no. of tokens assigned
-                </h2>
-                <p className="text-2xl font-semibold text-gray-800">
-                  {tokenAmount}
-                </p>
-              </div>
-              <div>
-                <h2 className="text-sm font-medium text-gray-500">
-                  Token Amount
                 </h2>
                 <p className="text-2xl font-semibold text-gray-800">
                   {tokenAmount}
@@ -106,27 +94,25 @@ const ComfirmPage = ({ form, vendor, disbursmentList }: ConfirmPageProps) => {
               Beneficiary List
             </h2>
             <p className="text-sm font-medium text-gray-800 mb-4">
-              {noOfSelectedBeneficiries} beneficiaries selected
+              {noOfSelectedDisbursement} beneficiaries selected
             </p>
             <ScrollArea className="h-[calc(100vh-620px)]">
               <ul className="space-y-2">
-                {Array(noOfSelectedBeneficiries)
-                  .fill(0)
-                  .map((_, index) => (
-                    <li
-                      key={index}
-                      className="flex items-center p-2 bg-gray-100 rounded-lg"
-                    >
-                      <div className="flex-shrink-0 h-10 w-10 bg-gray-300 rounded-full flex items-center justify-center">
-                        <span className="text-gray-500">👤</span>
-                      </div>
-                      <div className="ml-3">
-                        <p className="text-sm font-medium text-gray-800">
-                          Aadarsha Lamichhane
-                        </p>
-                      </div>
-                    </li>
-                  ))}
+                {selectedDisbursement.map((disbursement, index) => (
+                  <li
+                    key={index}
+                    className="flex items-center p-2 bg-gray-100 rounded-lg"
+                  >
+                    <div className="flex-shrink-0 h-10 w-10 bg-gray-300 rounded-full flex items-center justify-center">
+                      <span className="text-gray-500">👤</span>
+                    </div>
+                    <div className="ml-3">
+                      <p className="text-sm font-medium text-gray-800">
+                        {disbursement?.name}
+                      </p>
+                    </div>
+                  </li>
+                ))}
               </ul>
             </ScrollArea>
           </div>
@@ -140,7 +126,7 @@ const ComfirmPage = ({ form, vendor, disbursmentList }: ConfirmPageProps) => {
           onClick={() => {
             syncBen.mutateAsync({
               vendorId: selectedVendor?.id,
-              disbursements: selectedBeneficiries,
+              disbursements: selectedDisbursementId,
               tokenAddress: contractSettings?.rahattoken?.address || '',
             });
             setIsOpen(true);
@@ -151,7 +137,7 @@ const ComfirmPage = ({ form, vendor, disbursmentList }: ConfirmPageProps) => {
         </Button>
         <ConfirmModal
           isOpen={isOpen}
-          beneficiaries={noOfSelectedBeneficiries}
+          disbursements={noOfSelectedDisbursement}
           tokens={tokenAmount}
           vendorName={selectedVendor?.name}
         />

@@ -34,7 +34,7 @@ export default function AssignToken({
       <DialogTrigger asChild>
         <div className="w-full flex justify-between items-center">
           <div className="flex gap-3 items-center cursor-pointer">
-            <Button className="bg-sky-100 text-blue-600 felx w-96 items-center gap-2 hover:bg-sky-200">
+            <Button className="dark:bg-secondary dark:text-white bg-sky-100 text-blue-600 felx w-96 items-center gap-2 hover:bg-sky-200">
               <BadgePlus size={18} strokeWidth={1.5} />
               <p>Assign Token</p>
             </Button>

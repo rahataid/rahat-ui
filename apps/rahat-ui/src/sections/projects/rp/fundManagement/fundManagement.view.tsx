@@ -118,14 +118,12 @@ const FundManagementView = () => {
   const syncDisbursementAllocation = useBulkAllocateTokens(
     contractSettings?.rahattoken?.address,
   );
-  console.log(contractSettings);
 
   const tokenBalance = useReadRahatTokenBalanceOf({
     address: contractSettings?.rahattoken?.address as `0x${string}`,
     args: [contractSettings?.rahatpayrollproject?.address as `0x${string}`],
     query: {
       select(data) {
-        console.log('data', data);
         return data ? Number(data) : 'N/A';
       },
     },
@@ -136,6 +134,8 @@ const FundManagementView = () => {
     contractSettings?.rahatpayrollproject?.address as `0x${string}`,
     contractSettings?.rahattoken?.address as `0x${string}`,
   );
+
+  console.log('chainTokenAllocations', chainTokenAllocations);
 
   useEffect(() => {
     if (
@@ -159,7 +159,11 @@ const FundManagementView = () => {
         JSON.stringify(projectBeneficiaryDisbursements) !==
         JSON.stringify(rowData)
       ) {
-        setRowData(projectBeneficiaryDisbursements);
+        setRowData(
+          projectBeneficiaryDisbursements.filter(
+            (disbursement) => disbursement.disbursementAmount !== '0',
+          ),
+        );
       }
     }
   }, [
@@ -168,7 +172,6 @@ const FundManagementView = () => {
     disbursements?.isSuccess,
     projectBeneficiaries.data?.data,
     projectBeneficiaries.isSuccess,
-    rowData,
   ]);
 
   const handleAllocationSync = async () => {
@@ -263,18 +266,18 @@ const FundManagementView = () => {
                 <Button
                   variant={'secondary'}
                   onClick={handleAllocationSync}
-                  // disabled={
-                  //   syncDisbursementAllocation.isPending ||
-                  //   +chainTokenAllocations.data ===
-                  //     +disbursementData?.totalAmount
-                  // }
+                  disabled={
+                    syncDisbursementAllocation.isPending ||
+                    String(chainTokenAllocations.data) ===
+                      String(disbursementData?.totalAmount)
+                  }
                 >
                   Sync chain
                 </Button>
                 {/* ) : null} */}
                 {/* MODAL EXAMPLE START */}
 
-                <Dialog>
+                {/* <Dialog>
                   <DialogTrigger asChild>
                     <Button variant="outline">Edit Profile</Button>
                   </DialogTrigger>
@@ -286,7 +289,7 @@ const FundManagementView = () => {
                       <StepProgress />
                     </div>
                   </DialogContent>
-                </Dialog>
+                </Dialog> */}
 
                 {/* MODAL EXAMPLE END */}
                 <DropdownMenu>
@@ -347,7 +350,7 @@ const FundManagementView = () => {
                 onClick={handleAddDisburse}
                 className="mt-4 bg-blue-500 text-white px-4 py-2 rounded"
               >
-                Create Disbursement Plan
+                Edit Disbursement Plan
               </Button>
             </div>
           </div>

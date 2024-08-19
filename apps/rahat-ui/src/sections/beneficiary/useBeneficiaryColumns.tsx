@@ -17,11 +17,11 @@ import { ListBeneficiary } from '@rahat-ui/types';
 
 export const useBeneficiaryTableColumns = () => {
   const { setSecondPanelComponent, closeSecondPanel } = useSecondPanel();
-  const [walletAddressCopied, setWalletAddressCopied] = useState<number>();
+  const [walletAddressCopied, setWalletAddressCopied] = useState<string>();
 
-  const clickToCopy = (walletAddress: string, index: number) => {
+  const clickToCopy = (walletAddress: string, uuid: string) => {
     navigator.clipboard.writeText(walletAddress);
-    setWalletAddressCopied(index);
+    setWalletAddressCopied(uuid);
   };
 
   const openSplitDetailView = (rowDetail: ListBeneficiary) => {
@@ -83,11 +83,11 @@ export const useBeneficiaryTableColumns = () => {
             <TooltipTrigger
               className="flex items-center gap-3 cursor-pointer"
               onClick={() =>
-                clickToCopy(row.getValue('walletAddress'), row.index)
+                clickToCopy(row.getValue('walletAddress'), row?.original?.uuid)
               }
             >
               <p>{truncateEthAddress(row.getValue('walletAddress'))}</p>
-              {walletAddressCopied === row.index ? (
+              {walletAddressCopied === row?.original?.uuid ? (
                 <CopyCheck size={15} strokeWidth={1.5} />
               ) : (
                 <Copy className="text-slate-500" size={15} strokeWidth={1.5} />
@@ -95,7 +95,9 @@ export const useBeneficiaryTableColumns = () => {
             </TooltipTrigger>
             <TooltipContent className="bg-secondary" side="bottom">
               <p className="text-xs font-medium">
-                {walletAddressCopied === row.index ? 'copied' : 'click to copy'}
+                {walletAddressCopied === row?.original?.uuid
+                  ? 'copied'
+                  : 'click to copy'}
               </p>
             </TooltipContent>
           </Tooltip>

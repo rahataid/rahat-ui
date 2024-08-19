@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import {
   Tabs,
@@ -86,13 +87,15 @@ export default function AddTriggerStatementView({
       </Tabs>
       <div className="flex justify-end mt-8">
         <div className="flex gap-2">
-          <Button
-            variant="secondary"
-            className="bg-red-100 text-red-600 w-36"
-            disabled
-          >
-            Cancel
-          </Button>
+          <Link href={`/projects/aa/${projectID}/trigger-statements`}>
+            <Button
+              type="button"
+              variant="secondary"
+              className="bg-red-100 text-red-600 w-36 hover:bg-red-200"
+            >
+              Cancel
+            </Button>
+          </Link>
           <Button className="px-8" onClick={nextStep}>
             Next
           </Button>

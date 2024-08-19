@@ -62,7 +62,6 @@ export default function ListView({
 }: IProps) {
   const [label, setLabel] = useState<string>('');
   const [open, setOpen] = useState(false);
-
   return (
     <>
       <div className="w-full mt-1 p-2 bg-secondary">
@@ -191,7 +190,7 @@ export default function ListView({
                 </TableBody>
               ) : (
                 <TableBody>
-                  {table.getRowModel().rows?.length ? (
+                  {table.getRowModel().rows?.length > 0 ? (
                     table.getRowModel().rows.map((row) => (
                       <TableRow
                         key={row.id}

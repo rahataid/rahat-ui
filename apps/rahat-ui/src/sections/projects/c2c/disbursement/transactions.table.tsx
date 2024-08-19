@@ -25,14 +25,7 @@ import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
 import * as React from 'react';
 import { useTransactionTable } from './useTransactionTable';
-
-const data = [
-  {
-    from: '0x273d...B6Ed',
-    to: '0x273d...B6Ed',
-    amount: '30000',
-  },
-];
+import Image from 'next/image';
 
 export function TransactionTable() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -42,20 +35,18 @@ export function TransactionTable() {
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
-  // const [data, setData] = React.useState([]);
   const columns = useTransactionTable();
   const { id: projectUUID, uuid } = useParams() as {
     id: UUID;
     uuid: UUID;
   };
-  const { data } = useGetDisbursementTransactions({
-    disbursementUUID: uuid,
-    projectUUID: projectUUID,
-    page: 1,
-    perPage: 10,
-  });
-
-  console.log(data);
+  const { data, isLoading, isFetching, isError } =
+    useGetDisbursementTransactions({
+      disbursementUUID: uuid,
+      projectUUID: projectUUID,
+      page: 1,
+      perPage: 10,
+    });
 
   const table = useReactTable({
     data: data || [],
@@ -100,7 +91,20 @@ export function TransactionTable() {
               ))}
             </TableHeader>
             <TableBody>
-              {table?.getRowModel().rows?.length ? (
+              {isLoading || isFetching ? (
+                <TableRow>
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-24 text-center"
+                  >
+                    <div className="flex items-center justify-center space-x-2 h-full">
+                      <div className="h-2 w-2 animate-bounce rounded-full bg-primary [animation-delay:-0.3s]"></div>
+                      <div className="h-2 w-2 animate-bounce rounded-full bg-primary [animation-delay:-0.13s]"></div>
+                      <div className="h-2 w-2 animate-bounce rounded-full bg-primary"></div>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ) : table?.getRowModel().rows?.length ? (
                 table.getRowModel().rows.map((row) => (
                   <TableRow
                     key={row.id}
@@ -122,7 +126,22 @@ export function TransactionTable() {
                     colSpan={columns.length}
                     className="h-24 text-center"
                   >
-                    No results.
+                    <div className="w-full h-[calc(100vh-140px)]">
+                      <div className="flex flex-col items-center justify-center">
+                        <Image
+                          src="/noData.png"
+                          height={250}
+                          width={250}
+                          alt="no data"
+                        />
+                        <p className="text-medium text-base mb-1">
+                          No Data Available
+                        </p>
+                        <p className="text-sm mb-4 text-gray-500">
+                          There are no transactions to display at the moment.
+                        </p>
+                      </div>
+                    </div>
                   </TableCell>
                 </TableRow>
               )}

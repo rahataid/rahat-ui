@@ -92,7 +92,7 @@ const BeneficiaryDetailTableView = () => {
         <div className="flex justify-between items-center mb-2">
           <div className="flex">
             <Input
-              placeholder="Filter beneficiary..."
+              placeholder="Search beneficiary..."
               value={
                 (table.getColumn('name')?.getFilterValue() as string) ?? ''
               }

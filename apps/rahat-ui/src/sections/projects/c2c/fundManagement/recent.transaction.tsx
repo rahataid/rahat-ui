@@ -23,7 +23,7 @@ export default function RecentTransaction({
         <CardHeader>
           <CardTitle>Recent Deposits</CardTitle>
         </CardHeader>
-        <ScrollArea className="h-[600px]">
+        <ScrollArea className="h-[720px]">
           <CardContent className="grid gap-8">
             {transactions &&
               transactions.map((transaction) => (

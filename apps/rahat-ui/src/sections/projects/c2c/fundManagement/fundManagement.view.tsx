@@ -4,29 +4,22 @@ import {
   useRecentTransactionsList,
 } from '@rahat-ui/query';
 import ChartLine from '@rahat-ui/shadcn/src/components/charts/chart-components/chart-line';
-import DataCard from 'apps/rahat-ui/src/components/dataCard';
-import { formatDate } from 'apps/rahat-ui/src/utils';
-import { shortenAddress } from 'apps/rahat-ui/src/utils/getProjectAddress';
-import { Banknote, QrCode, ReceiptText, RefreshCcw } from 'lucide-react';
-import { useParams } from 'next/navigation';
-import { formatEther } from 'viem';
-import { useReadContract } from 'wagmi';
-import RecentTransaction from './recent.transaction';
-import { UUID } from 'crypto';
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
 } from '@rahat-ui/shadcn/src/components/ui/card';
-import { cn } from '@rahat-ui/shadcn/src';
-import TableLoader from 'apps/rahat-ui/src/components/table.loader';
-import {
-  Dialog,
-  DialogTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/dialog';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import DataCard from 'apps/rahat-ui/src/components/dataCard';
+import { formatDate } from 'apps/rahat-ui/src/utils';
+import { shortenAddress } from 'apps/rahat-ui/src/utils/getProjectAddress';
+import { UUID } from 'crypto';
+import { Banknote, ReceiptText } from 'lucide-react';
+import { useParams } from 'next/navigation';
+import { formatEther } from 'viem';
+import { useReadContract } from 'wagmi';
 import { QrModal } from './qr.moda';
+import RecentTransaction from './recent.transaction';
 
 const FundManagementView = () => {
   const { id }: { id: UUID } = useParams();

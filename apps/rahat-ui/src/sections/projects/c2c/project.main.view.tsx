@@ -20,20 +20,10 @@ const ProjectView = () => {
   const balance = useBalance({
     address: contractSettings?.c2cproject.address,
   });
-  console.log('balance', balance.data);
-
-  // const getProjectStats = useCallback(async () => {
-  //   const result = await projectClient.mutateAsync({
-  //     uuid: id,
-  //     data: {``
-
-  //     }
-  //   }_);
-  // }, [id]);
 
   return (
     <div className="p-2 bg-secondary">
-      <ScrollArea className="h-[calc(100vh-80px)]">
+      <ScrollArea className="">
         <ProjectInfo project={project} />
         <ProjectCharts />
       </ScrollArea>

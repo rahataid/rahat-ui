@@ -17,7 +17,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/alert-dialog';
-import { ArrowLeft, ArchiveRestore, Pencil } from 'lucide-react';
+import { ArchiveRestore, Pencil } from 'lucide-react';
 import AutomatedTriggerDetailCards from './automated.trigger.detail.cards';
 import AutomatedTriggerDetailCard from './automated.trigger.detail.card';
 
@@ -31,6 +31,7 @@ import Loader from 'apps/rahat-ui/src/components/table.loader';
 import ManualTriggerDialog from './manual.trigger.dialog';
 import ManualTriggerDetailCard from './manual.trigger.detail.card';
 import ManualTriggerDocumentsCard from './manual.trigger.documents.card';
+import Back from '../../../components/back';
 
 export default function TriggerStatementsDetailView() {
   const { id: projectID } = useParams();
@@ -64,12 +65,7 @@ export default function TriggerStatementsDetailView() {
     <div className="h-[calc(100vh-65px)] bg-secondary p-4">
       <div className="flex justify-between">
         <div className="flex gap-4 items-center">
-          <ArrowLeft
-            size={25}
-            strokeWidth={1.5}
-            className="cursor-pointer"
-            onClick={() => router.back()}
-          />
+          <Back path={`/projects/aa/${projectID}/trigger-statements`} />
           <h1 className="text-xl font-semibold">{triggerDetail?.title}</h1>
         </div>
         <div className="flex gap-4 items-center">

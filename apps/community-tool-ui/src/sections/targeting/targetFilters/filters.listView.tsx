@@ -87,11 +87,12 @@ export default function ListView({
                     <Tooltip>
                       <TooltipTrigger>
                         <Label className="text-lg font-medium">
-                          {communityGroup?.filter((item) =>
+                          Assign beneficiary to the group
+                          {/* {communityGroup?.filter((item) =>
                             item.name.includes(label),
                           ).length > 0
-                            ? 'Select Group to save the result'
-                            : 'Add new Group to save the result'}
+                            ? 'Assign beneficiary to the group'
+                            : 'Add new Group to save the result'} */}
                         </Label>
                       </TooltipTrigger>
                     </Tooltip>
@@ -147,7 +148,7 @@ export default function ListView({
                 onClick={() => handleSaveTargetResults(label as string)}
                 disabled={label === ''}
               >
-                Submit
+                Assign
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>

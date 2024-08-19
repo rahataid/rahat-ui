@@ -38,7 +38,7 @@ export default function PhaseDetailView() {
   };
 
   const handleDownloadReport = () => {
-    if (!revertedPhases) return toast.error('No data to download');
+    if (!revertedPhases) return toast.error('Phase is not reverted yet.');
     const mappedData = revertedPhases?.revertHistory?.map(
       (item: Record<string, any>) => {
         return {

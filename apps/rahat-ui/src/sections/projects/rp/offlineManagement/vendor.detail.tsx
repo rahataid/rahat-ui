@@ -42,7 +42,7 @@ const VendorDetails = () => {
         <DataCard
           className=""
           title="Token Assigned"
-          number={Number(offlineVendor?.totalAmountAssigned).toString()}
+          number={offlineVendor?.totalAmountAssigned.toString()}
           Icon={Banknote}
         />
         {/* <DataCard

@@ -341,51 +341,6 @@ export const useDeleteActivities = () => {
   });
 };
 
-export const useCreateActivityCommunication = () => {
-  const q = useProjectAction();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
-  return useMutation({
-    mutationFn: async ({
-      projectUUID,
-      activityCommunicationPayload,
-    }: {
-      projectUUID: UUID;
-      activityCommunicationPayload: any;
-    }) => {
-      return q.mutateAsync({
-        uuid: projectUUID,
-        data: {
-          action: 'aaProject.activities.communication.add',
-          payload: activityCommunicationPayload,
-        },
-      });
-    },
-
-    onSuccess: () => {
-      q.reset();
-      toast.fire({
-        title: 'Communication added successfully',
-        icon: 'success',
-      });
-    },
-    onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || 'Error';
-      q.reset();
-      toast.fire({
-        title: 'Error while adding communication.',
-        icon: 'error',
-        text: errorMessage,
-      });
-    },
-  });
-};
-
 export const useTriggerCommunication = () => {
   const q = useProjectAction();
   const qc = useQueryClient();

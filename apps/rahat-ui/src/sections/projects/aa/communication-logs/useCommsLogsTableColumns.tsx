@@ -1,5 +1,6 @@
 import { ColumnDef } from '@tanstack/react-table';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+import { BroadcastStatus } from "@rumsan/connect/src/types"
 
 export default function useCommsLogsTableColumns() {
   const columns: ColumnDef<any>[] = [
@@ -7,31 +8,63 @@ export default function useCommsLogsTableColumns() {
       accessorKey: 'audience',
       header: 'Audience',
       cell: ({ row }) => (
-        <div className="capitalize">{row.getValue('audience')}</div>
+        <div className="capitalize">{row?.original?.address}</div>
       ),
     },
     {
       accessorKey: 'status',
       header: 'Status',
-      cell: ({ row }) => <Badge>{row.getValue('status')}</Badge>,
+      cell: ({ row }) => {
+        return (
+          <Badge className={renderBadgeBg(row?.original?.status)}>{row?.original?.status}</Badge>
+        )
+      },
     },
     {
       accessorKey: 'attempts',
       header: 'Attempts',
-      cell: ({ row }) => <div>{row.getValue('attempts')}</div>,
+      cell: ({ row }) => {
+        return (
+          <div className='ml-8'>{row?.original?.attempts}</div>
+        )
+      },
     },
     {
       accessorKey: 'timeStamp',
-      header: 'Time Stamp',
+      header: 'Timestamp',
       cell: ({ row }) => (
-        <div>{new Date(row.getValue('timeStamp')).toLocaleTimeString()}</div>
+        <div>{renderDateTime(row?.original?.createdAt)}</div>
       ),
     },
     {
       accessorKey: 'duration',
       header: 'Duration',
-      cell: ({ row }) => <div>{row.getValue('duration')}</div>,
+      cell: ({ row }) => <div>{row?.original?.disposition?.cdr?.billableseconds || 'N/A'}</div>,
     },
   ];
   return columns;
+}
+
+
+function renderDateTime(dateTime: string) {
+  if (dateTime) {
+    const d = new Date(dateTime);
+    const localeDate = d.toLocaleDateString();
+    const localeTime = d.toLocaleTimeString();
+    return `${localeDate} ${localeTime}`;
+  }
+  return 'N/A'
+}
+
+function renderBadgeBg(status: string) {
+  if(status === BroadcastStatus.FAIL){
+    return "bg-red-200"
+  }
+  if(status === BroadcastStatus.SUCCESS){
+    return "bg-green-200"
+  }
+  if(status === BroadcastStatus.PENDING){
+    return "bg-yellow-200"
+  }
+  return "bg-gray-200"
 }

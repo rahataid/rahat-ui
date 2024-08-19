@@ -6,10 +6,14 @@ import {
   LucideIcon,
   MessageSquareMore,
   Timer,
-  UserRound,
   UsersRound,
 } from 'lucide-react';
 import CommsLogsTable from './comms.logs.table';
+import { useParams } from 'next/navigation';
+import { useGetCommunicationLogs } from '@rahat-ui/query';
+import { UUID } from 'crypto';
+import Loader from 'apps/rahat-ui/src/components/table.loader';
+import { TransportType, ValidationContent } from '@rumsan/connect/src/types';
 
 type IHeadCardProps = {
   title: string;
@@ -18,28 +22,37 @@ type IHeadCardProps = {
 };
 
 export default function CommsLogsDetailPage() {
+  const { id: projectID, commsIdXactivityId } = useParams();
+  const [communicationId, activityId] = (commsIdXactivityId as string).split('%40');
+
+  const { data: logs, isLoading } = useGetCommunicationLogs(projectID as UUID, communicationId, activityId);
+
   const headCardFields = [
     {
       title: 'Total Audience',
       icon: UsersRound,
-      content: 'N/A',
+      content: logs?.totalAudience || 'N/A',
     },
     {
-      title: 'Time Stamp',
+      title: 'Triggered At',
       icon: Timer,
-      content: 'N/A',
+      content: renderDateTime(logs?.sessionDetails?.createdAt)
     },
     {
-      title: 'User Stamp',
+      title: 'Group Name',
       icon: Timer,
-      content: 'N/A',
+      content: logs?.groupName || 'N/A',
     },
     {
       title: 'Group Type',
       icon: Component,
-      content: 'N/A',
+      content: logs?.communicationDetail?.groupType || 'N/A',
     },
   ];
+
+  if (isLoading) {
+    return (<Loader />)
+  }
 
   return (
     <div className="p-4 h-[calc(100vh-65px)] bg-secondary">
@@ -76,7 +89,7 @@ export default function CommsLogsDetailPage() {
         })}
       </div>
 
-      <div className="mt-2 p-4 border border-primary rounded-sm">
+      <div className="mt-2 p-4 border border-primary rounded-sm bg-card">
         <div className="flex justify-between space-x-8">
           <div className="flex space-x-4">
             <div className="h-10 w-10 rounded-full border border-muted-foreground grid place-items-center">
@@ -88,19 +101,44 @@ export default function CommsLogsDetailPage() {
             </div>
             <div>
               <p className="text-sm font-medium">Message</p>
-              <p className="text-muted-foreground text-sm">SMS</p>
+              <p className="text-muted-foreground text-sm">
+                  {logs?.sessionDetails?.Transport?.name}
+              </p>
             </div>
           </div>
           <p>
-            Lorem ipsum dolor sit, amet consectetur adipisicing elit. Ab placeat
-            ducimus nulla, inventore earum esse architecto. Molestias esse non
-            corrupti possimus rerum doloribus, quis adipisci natus vitae numquam
-            architecto maxime reiciendis. Animi sit dolor recusandae?
+           {renderMessage(logs?.communicationDetail?.message)}
           </p>
         </div>
       </div>
 
-      <CommsLogsTable />
+      <CommsLogsTable tableData={logs?.sessionLogs}/>
     </div>
   );
+}
+
+
+function renderDateTime(dateTime: string) {
+  if(dateTime){
+    const d = new Date(dateTime);
+    const localeDate = d.toLocaleDateString();
+    const localeTime = d.toLocaleTimeString();
+    return `${localeDate} ${localeTime}`;
+  }
+  return 'N/A'
+}
+
+
+function renderMessage(message: any) {
+  if (typeof (message) === "string") {
+    return `${message.substring(0, 35)}...`;
+  }
+  return (
+    <a className='cursor-pointer underline inline-flex' href={message?.mediaURL} target='_blank'>
+      <span>
+        {message?.fileName}
+      </span>
+      <Download size={20} strokeWidth={1.5} className='ml-2' />
+    </a>
+  )
 }

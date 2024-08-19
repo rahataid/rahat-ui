@@ -1,88 +1,80 @@
-import {
-  useCommunicationStats,
-  useGetCommunicationLogs,
-} from '@rahat-ui/query';
-import DataCard from 'apps/rahat-ui/src/components/dataCard';
-import TableLoader from 'apps/rahat-ui/src/components/table.loader';
 import getIcon from 'apps/rahat-ui/src/utils/getIcon';
-import { UUID } from 'crypto';
-import { useParams } from 'next/navigation';
 import CommunicationLogTable from './communicationLogTable';
 
 export default function CommunicationLogsView() {
-  const { id: projectID } = useParams();
-  const { data: commsStats } = useCommunicationStats(projectID as UUID);
+  // const { id: projectID } = useParams();
+  // const { data: commsStats } = useCommunicationStats(projectID as UUID);
 
-  const findData = (name: string, type: string) => {
-    return commsStats
-      ?.filter((item: any) => item.name === name)
-      ?.flatMap((item: any) => item.data)
-      ?.find((i: any) => i.type === type);
-  };
+  // const findData = (name: string, type: string) => {
+  //   return commsStats
+  //     ?.filter((item: any) => item.name === name)
+  //     ?.flatMap((item: any) => item.data)
+  //     ?.find((i: any) => i.type === type);
+  // };
 
-  const smsRecipients = findData('AUDIENCE', 'SMS');
-  const ivrRecipients = findData('AUDIENCE', 'IVR');
-  const ivrSent = findData('CAMPAIGN', 'IVR');
-  const emailSent = findData('CAMPAIGN', 'EMAIL');
-  const smsSent = findData('CAMPAIGN', 'SMS');
-  const ivrSuccessRate = commsStats?.find(
-    (stats: any) => stats.name === 'IVRSUCCESSRATE',
-  )?.data;
-  const averageIvrAttempts = commsStats?.find(
-    (stats: any) => stats.name === 'AVERAGEIVRATTEMPT',
-  )?.data;
+  // const smsRecipients = findData('AUDIENCE', 'SMS');
+  // const ivrRecipients = findData('AUDIENCE', 'IVR');
+  // const ivrSent = findData('CAMPAIGN', 'IVR');
+  // const emailSent = findData('CAMPAIGN', 'EMAIL');
+  // const smsSent = findData('CAMPAIGN', 'SMS');
+  // const ivrSuccessRate = commsStats?.find(
+  //   (stats: any) => stats.name === 'IVRSUCCESSRATE',
+  // )?.data;
+  // const averageIvrAttempts = commsStats?.find(
+  //   (stats: any) => stats.name === 'AVERAGEIVRATTEMPT',
+  // )?.data;
 
-  const averageIvrDuration = commsStats?.find(
-    (stats: any) => stats.name === 'IVRDURATION',
-  )?.data;
+  // const averageIvrDuration = commsStats?.find(
+  //   (stats: any) => stats.name === 'IVRDURATION',
+  // )?.data;
 
   const commStats = [
     {
       componentType: 'DATACARD',
       title: 'SMS Recipients',
-      value: smsRecipients?.count || 0,
+      value: 0,
       icon: 'MessageSquare',
     },
     {
       componentType: 'DATACARD',
       title: 'IVR Recipients',
-      value: ivrRecipients?.count || 0,
+      value: 0,
       icon: 'AudioLines',
     },
     {
       componentType: 'DATACARD',
       title: 'Total SMS sent to Beneficiaries',
-      value: smsSent?.count || 0,
+      value: 0,
       icon: 'MessageSquare',
     },
     {
       componentType: 'DATACARD',
       title: 'Total IVR sent to Beneficiaries',
-      value: ivrSent?.count || 0,
+      value: 0,
       icon: 'AudioLines',
     },
     {
       componentType: 'DATACARD',
       title: 'Total EMAIL sent to Beneficiaries',
-      value: emailSent?.count || 0,
+      value: 0,
       icon: 'AudioLines',
     },
     {
       componentType: 'DATACARD',
       title: 'IVR Success Rate',
-      value: ivrSuccessRate || 0,
+      value: 0,
       icon: 'AudioLines',
     },
     {
       componentType: 'DATACARD',
       title: 'Average IVR Attempts',
-      value: averageIvrAttempts || 0,
+      value: 0,
       icon: 'AudioLines',
     },
     {
       componentType: 'DATACARD',
       title: 'Average Duration of IVR',
-      value: averageIvrDuration || 0,
+      value: 0,
       icon: 'AudioLines',
     },
   ];

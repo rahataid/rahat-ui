@@ -19,21 +19,23 @@ import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { usePagination } from '@rahat-ui/query';
 import useCommsLogsTableColumns from './useCommsLogsTableColumns';
 
-export default function CommsLogsTable() {
-  const { id: projectId } = useParams();
+export default function CommsLogsTable({tableData}: any) {
+  // const { id: projectId } = useParams();
 
-  const { pagination, setNextPage, setPrevPage, setPerPage, setPagination } =
-    usePagination();
+  // console.log(tableData)
 
-  React.useEffect(() => {
-    setPagination({ page: 1, perPage: 10 });
-  }, []);
+  // const { pagination, setNextPage, setPrevPage, setPerPage, setPagination } =
+  //   usePagination();
+
+  // React.useEffect(() => {
+  //   setPagination({ page: 1, perPage: 10 });
+  // }, []);
 
   const columns = useCommsLogsTableColumns();
 
   const table = useReactTable({
-    manualPagination: true,
-    data: [],
+    // manualPagination: true,
+    data: tableData || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
   });

@@ -17,7 +17,7 @@ export const useGetOfflineBeneficiaries = (
   const action = useProjectAction();
 
   return useQuery({
-    queryKey: ['rpCampaign'],
+    queryKey: ['rpGetOfflineBeneficiaries'],
     queryFn: async () => {
       const res = await action.mutateAsync({
         uuid: projectUUID,
@@ -35,7 +35,7 @@ export const useGetOfflineVendors = (projectUUID: UUID, vendorId?: number) => {
   const action = useProjectAction();
 
   return useQuery({
-    queryKey: ['rpCampaign'],
+    queryKey: ['rpGetOfflineVendors'],
     queryFn: async () => {
       const res = await action.mutateAsync({
         uuid: projectUUID,
@@ -56,7 +56,7 @@ export const useGetOfflineSingleVendor = (
   const action = useProjectAction();
 
   return useQuery({
-    queryKey: ['rpCampaign'],
+    queryKey: ['rpSingleOfflineVendor'],
     queryFn: async () => {
       const res = await action.mutateAsync({
         uuid: projectUUID,

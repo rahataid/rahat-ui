@@ -10,6 +10,8 @@ type IProps = {
 export default function PhaseCard({ path, name, phaseId }: IProps) {
   const router = useRouter();
 
+  const cardBgColor = name === 'READINESS' ? 'bg-yellow-300' : 'bg-red-300';
+
   const handleClick = (ref: string) => {
     localStorage.setItem(
       'selectedPhase',
@@ -28,7 +30,9 @@ export default function PhaseCard({ path, name, phaseId }: IProps) {
         handleClick(path);
       }}
     >
-      <div className="relative w-48 bg-card rounded p-4 grid gap-3 place-items-center">
+      <div
+        className={`relative w-48 rounded p-4 grid gap-3 place-items-center ${cardBgColor}`}
+      >
         <Settings
           size={20}
           className="absolute top-4 right-4 text-muted-foreground"

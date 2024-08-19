@@ -462,7 +462,6 @@ export const useAAProjectSettingsHazardType = (uuid: UUID) => {
       PROJECT_SETTINGS_KEYS.HAZARD_TYPE,
     ],
     enabled: isEmpty(settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.HAZARD_TYPE]),
-    // enabled: !!settings[uuid],
     queryFn: async () => {
       const mutate = await q.mutateAsync({
         uuid,
@@ -475,12 +474,10 @@ export const useAAProjectSettingsHazardType = (uuid: UUID) => {
       });
       return mutate.data.value;
     },
-    // initialData: settings?.[uuid],
   });
 
   useEffect(() => {
     if (!isEmpty(query.data)) {
-      console.log('query data', query.data);
       const settingsToUpdate = {
         ...settings,
         [uuid]: {
@@ -490,11 +487,6 @@ export const useAAProjectSettingsHazardType = (uuid: UUID) => {
       };
       setSettings(settingsToUpdate);
       window.location.reload();
-      // setSettings({
-      //   [uuid]: {
-      //     [PROJECT_SETTINGS_KEYS.SUBGRAPH]: query?.data,
-      //   },
-      // });
     }
   }, [query.data]);
 

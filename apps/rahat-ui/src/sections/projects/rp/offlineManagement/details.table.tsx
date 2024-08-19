@@ -1,4 +1,5 @@
 'use client';
+import { usePagination, useProjectBeneficiaries } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
@@ -23,6 +24,7 @@ import {
   useReactTable,
   VisibilityState,
 } from '@tanstack/react-table';
+import { UUID } from 'crypto';
 import { Trash2 } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import * as React from 'react';
@@ -59,15 +61,20 @@ export const columns: ColumnDef<Payment>[] = [
   {
     accessorKey: 'name',
     header: 'Name',
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue('name') || 'Rajesh Hamal'}</div>
-    ),
+    cell: ({ row }) => <div className="capitalize">{row.getValue('name')}</div>,
   },
   {
     accessorKey: 'amount',
     header: 'Token Assigned',
     cell: ({ row }) => (
       <div className="capitalize">{row.getValue('amount')}</div>
+    ),
+  },
+  {
+    accessorKey: 'status',
+    header: 'Status',
+    cell: ({ row }) => (
+      <div className="capitalize">{row.getValue('status')}</div>
     ),
   },
 
@@ -95,14 +102,54 @@ export function DetailsTable({ offlineBeneficiaries }: any) {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
   );
+  const [rowData, setRowData] = React.useState([]);
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
   const { id, bid } = useParams();
   const route = useRouter();
 
+  const { pagination, filters } = usePagination();
+  const projectBeneficiaries = useProjectBeneficiaries({
+    page: pagination.page,
+    perPage: pagination.perPage,
+    order: 'desc',
+    sort: 'updatedAt',
+    projectUUID: id,
+    ...filters,
+  });
+  React.useEffect(() => {
+    if (projectBeneficiaries.isSuccess && offlineBeneficiaries.length > 0) {
+      const projectBeneficiaryDisbursements = offlineBeneficiaries.map(
+        (offlineBeneficiarie: any) => {
+          const beneficiaryDetails = projectBeneficiaries?.data?.data?.find(
+            (beneficiary: any) =>
+              offlineBeneficiarie?.Disbursement?.walletAddress ===
+              beneficiary.walletAddress,
+          );
+          return {
+            ...offlineBeneficiarie,
+            name: beneficiaryDetails?.name,
+          };
+        },
+      );
+
+      if (
+        JSON.stringify(projectBeneficiaryDisbursements) !==
+        JSON.stringify(rowData)
+      ) {
+        setRowData(projectBeneficiaryDisbursements);
+      }
+    }
+  }, [
+    offlineBeneficiaries,
+    projectBeneficiaries.data?.data,
+    projectBeneficiaries.isSuccess,
+    rowData,
+  ]);
+
   const table = useReactTable({
-    data: offlineBeneficiaries,
+    data: rowData || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,

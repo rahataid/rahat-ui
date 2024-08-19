@@ -13,7 +13,7 @@ import { useParams } from 'next/navigation';
 import { useGetCommunicationLogs } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import Loader from 'apps/rahat-ui/src/components/table.loader';
-import { TransportType, ValidationContent } from '@rumsan/connect/src/types';
+import { Player } from 'react-simple-player';
 
 type IHeadCardProps = {
   title: string;
@@ -90,9 +90,10 @@ export default function CommsLogsDetailPage() {
       </div>
 
       <div className="mt-2 p-4 border border-primary rounded-sm bg-card">
-        <div className="flex justify-between space-x-8">
+        <div className="flex justify-start space-x-8 items-center">
+
           <div className="flex space-x-4">
-            <div className="h-10 w-10 rounded-full border border-muted-foreground grid place-items-center">
+            <div className="h-12 w-12 rounded-full border border-muted-foreground grid place-items-center">
               <MessageSquareMore
                 className="text-muted-foreground"
                 size={20}
@@ -102,24 +103,26 @@ export default function CommsLogsDetailPage() {
             <div>
               <p className="text-sm font-medium">Message</p>
               <p className="text-muted-foreground text-sm">
-                  {logs?.sessionDetails?.Transport?.name}
+                {logs?.sessionDetails?.Transport?.name}
               </p>
             </div>
           </div>
-          <p>
-           {renderMessage(logs?.communicationDetail?.message)}
-          </p>
+
+          <div className='w-full'>
+            {renderMessage(logs?.communicationDetail?.message)}
+          </div>
+          
         </div>
       </div>
 
-      <CommsLogsTable tableData={logs?.sessionLogs}/>
+      <CommsLogsTable tableData={logs?.sessionLogs} />
     </div>
   );
 }
 
 
 function renderDateTime(dateTime: string) {
-  if(dateTime){
+  if (dateTime) {
     const d = new Date(dateTime);
     const localeDate = d.toLocaleDateString();
     const localeTime = d.toLocaleTimeString();
@@ -131,14 +134,22 @@ function renderDateTime(dateTime: string) {
 
 function renderMessage(message: any) {
   if (typeof (message) === "string") {
-    return `${message.substring(0, 35)}...`;
+    return message
   }
   return (
-    <a className='cursor-pointer underline inline-flex' href={message?.mediaURL} target='_blank'>
-      <span>
-        {message?.fileName}
-      </span>
-      <Download size={20} strokeWidth={1.5} className='ml-2' />
-    </a>
+    <div className='bg-card space-x-8 flex items-center'>
+      <a className='cursor-pointer inline-flex' href={message?.mediaURL} target='_blank'>
+        <Download size={20} strokeWidth={1.5} className='mr-2' />
+        <span>
+          {`${message?.fileName?.substring(0,20)}...`}
+        </span>
+      </a>
+      <div className='p-2 w-1/2'>
+        <Player src={message?.mediaURL} accent={[41, 121, 214]}  grey={[250, 250, 250]}/>
+      </div>
+    </div>
+
   )
 }
+
+{/* */ }

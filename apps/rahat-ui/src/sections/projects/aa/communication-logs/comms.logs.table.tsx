@@ -1,10 +1,10 @@
 'use client';
 
 import * as React from 'react';
-import { useParams } from 'next/navigation';
 import {
   flexRender,
   getCoreRowModel,
+  getPaginationRowModel,
   useReactTable,
 } from '@tanstack/react-table';
 import {
@@ -16,36 +16,26 @@ import {
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import { usePagination } from '@rahat-ui/query';
 import useCommsLogsTableColumns from './useCommsLogsTableColumns';
+import ClientSidePagination from '../../components/client.side.pagination';
 
-export default function CommsLogsTable({tableData}: any) {
-  // const { id: projectId } = useParams();
-
-  // console.log(tableData)
-
-  // const { pagination, setNextPage, setPrevPage, setPerPage, setPagination } =
-  //   usePagination();
-
-  // React.useEffect(() => {
-  //   setPagination({ page: 1, perPage: 10 });
-  // }, []);
-
+export default function CommsLogsTable({ tableData }: any) {
+  
   const columns = useCommsLogsTableColumns();
 
   const table = useReactTable({
-    // manualPagination: true,
     data: tableData || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel()
   });
 
   return (
     <>
       <div className="mt-4 bg-card border rounded">
         <Table>
-          <ScrollArea className="h-[calc(100vh-374px)]">
-            <TableHeader className="sticky top-0">
+          <ScrollArea className="h-[calc(100vh-450px)]">
+            <TableHeader className="top-0 sticky bg-gray-100">
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
                   {headerGroup.headers.map((header) => {
@@ -54,9 +44,9 @@ export default function CommsLogsTable({tableData}: any) {
                         {header.isPlaceholder
                           ? null
                           : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext(),
-                            )}
+                            header.column.columnDef.header,
+                            header.getContext(),
+                          )}
                       </TableHead>
                     );
                   })}
@@ -93,6 +83,7 @@ export default function CommsLogsTable({tableData}: any) {
             </TableBody>
           </ScrollArea>
         </Table>
+        <ClientSidePagination table={table} />
       </div>
     </>
   );

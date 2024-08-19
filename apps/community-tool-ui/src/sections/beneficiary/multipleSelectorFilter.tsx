@@ -136,7 +136,10 @@ export default function Filter() {
                   placeholder={'Search Group...'}
                   autoFocus={true}
                   value={label}
-                  onInput={(e) => setLabel(e.currentTarget.value)}
+                  onInput={(e) => {
+                    setLabel(e.currentTarget.value);
+                    setGrpUUID('');
+                  }}
                 />
                 <CommandList className="no-scrollbar">
                   <CommandGroup>
@@ -163,7 +166,7 @@ export default function Filter() {
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleAssignBeneficiariesGroup}
-              disabled={label === ''}
+              disabled={grpUUID === '' || label === ''}
             >
               Submit
             </AlertDialogAction>

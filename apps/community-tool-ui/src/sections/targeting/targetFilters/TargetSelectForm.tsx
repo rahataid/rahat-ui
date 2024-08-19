@@ -82,13 +82,12 @@ export default function TargetSelectForm() {
   };
 
   useEffect(() => {
-    socket.on('pong2', (targetUuid: string) => {
-      // setTimeout(() => {
-
-      // }, 3000);
+    socket.on('targeting-completed', (targetUuid: string) => {
       setLoading(false);
       router.push(`/targeting/filters?targetUUID=${targetUuid}`);
     });
+
+    return () => setLoading(false);
   }, [router, setLoading]);
 
   return (

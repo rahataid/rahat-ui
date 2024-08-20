@@ -1,4 +1,17 @@
+import { z } from 'zod';
+import { UUID } from 'crypto';
+import { useState } from 'react';
+import { useParams } from 'next/navigation';
+import { CheckIcon, Plus } from 'lucide-react';
+import { FormProvider, useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+
+import { CAMPAIGN_TYPES } from '@rahat-ui/types';
+import SpinnerLoader from '../../../components/spinner.loader';
+import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { useGetApprovedTemplate } from '@rumsan/communication-query';
+import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
 import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
 import {
   Drawer,
@@ -10,16 +23,10 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/drawer';
-import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
-import { CheckIcon, Plus } from 'lucide-react';
-import { useState } from 'react';
-
-import { zodResolver } from '@hookform/resolvers/zod';
 import {
   useBeneficiaryPii,
   useBulkCreateRpAudience,
   useCreateCampaign,
-  useCreateRpAudience,
   useListRpAudience,
   useListRpTransport,
 } from '@rahat-ui/query';
@@ -36,13 +43,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
-import { Audience, CAMPAIGN_TYPES } from '@rahat-ui/types';
-import { TPIIData } from '@rahataid/sdk';
-import { UUID } from 'crypto';
-import { useParams } from 'next/navigation';
-import { FormProvider, useForm } from 'react-hook-form';
-import { z } from 'zod';
-import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
+
 import {
   Popover,
   PopoverContent,
@@ -56,7 +57,6 @@ import {
   CommandItem,
   CommandList,
 } from '@rahat-ui/shadcn/src/components/ui/command';
-// import { useGetApprovedTemplate } from '@rumsan/communication-query';
 
 const FormSchema = z.object({
   campaignType: z.string({
@@ -87,16 +87,15 @@ const TextCampaignAddDrawer = () => {
     // @ts-ignore
     projectId: id,
   });
-  const { data: messageTemplate } = '';
+  const { data: messageTemplate } = useGetApprovedTemplate();
 
   const createCampaign = useCreateCampaign(id as UUID);
-  // const createAudience = useCreateRpAudience(id as UUID);
   const createAudience = useBulkCreateRpAudience(id as UUID);
-
-  // const createAudience = useCreateBulkAudience();
 
   const [isEmail, setisEmail] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const [checkTemplate, setCheckTemplate] = useState(false);
   const [templatemessage, setTemplatemessage] = useState('');
 
@@ -147,6 +146,7 @@ const TextCampaignAddDrawer = () => {
     return [...existingAudiences, ...createdAudienceIds];
   };
   const handleCreateCampaign = async (data: z.infer<typeof FormSchema>) => {
+    setIsSubmitting(true);
     const transportId = transportData?.find(
       (t) => t?.name?.toLowerCase() === data?.campaignType?.toLowerCase(),
     )?.id;
@@ -182,6 +182,7 @@ const TextCampaignAddDrawer = () => {
         status: 'ONGOING',
         projectId: id,
       });
+      setIsSubmitting(false);
       setIsOpen(false);
     }
   };
@@ -401,13 +402,19 @@ const TextCampaignAddDrawer = () => {
                   Cancel
                 </Button>
               </DrawerClose>
-              <Button
-                type="submit"
-                onClick={form.handleSubmit(handleCreateCampaign)}
-                className="w-full"
-              >
-                Submit
-              </Button>
+              {isSubmitting ? (
+                <>
+                  <SpinnerLoader />
+                </>
+              ) : (
+                <Button
+                  type="submit"
+                  onClick={form.handleSubmit(handleCreateCampaign)}
+                  className="w-full"
+                >
+                  Submit
+                </Button>
+              )}
             </DrawerFooter>
           </div>
         </DrawerContent>

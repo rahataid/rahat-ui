@@ -1,6 +1,6 @@
 'use client';
-import { useGetDisbursementTransactions } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import {
   Table,
@@ -12,22 +12,27 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/table';
 import {
   ColumnFiltersState,
-  SortingState,
-  VisibilityState,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
+  SortingState,
   useReactTable,
+  VisibilityState,
 } from '@tanstack/react-table';
-import { UUID } from 'crypto';
-import { useParams } from 'next/navigation';
 import * as React from 'react';
-import { useTransactionTable } from './useTransactionTable';
-import Image from 'next/image';
+import { UUID } from 'crypto';
 
-export function TransactionTable() {
+import { useTableColumn } from './useTableColumn';
+import { useParams, useRouter } from 'next/navigation';
+import { useGetOfflineVendors } from '@rahat-ui/query';
+
+export function OfflineTable() {
+  const route = useRouter();
+  const { id } = useParams();
+  const { data: offlineVendors, isSuccess } = useGetOfflineVendors(id as UUID);
+
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
@@ -35,21 +40,17 @@ export function TransactionTable() {
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
-  const columns = useTransactionTable();
-  const { id: projectUUID, uuid } = useParams() as {
-    id: UUID;
-    uuid: UUID;
-  };
-  const { data, isLoading, isFetching, isError } =
-    useGetDisbursementTransactions({
-      disbursementUUID: uuid,
-      projectUUID: projectUUID,
-      page: 1,
-      perPage: 10,
-    });
+  const columns = useTableColumn();
 
+  // const tData = React.useMemo(() => {
+  //   if (isSuccess) {
+  //     return offlineVendors || [];
+  //   } else {
+  //     return [];
+  //   }
+  // }, [isSuccess, offlineVendors]);
   const table = useReactTable({
-    data: data || [],
+    data: offlineVendors || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -69,9 +70,27 @@ export function TransactionTable() {
 
   return (
     <div className="w-full">
-      <div className="rounded h-[calc(100vh-320px)] bg-card">
+      <div className="flex justify-between items-center gap-2 py-4">
+        <Input
+          placeholder="Search Vendors"
+          value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
+          onChange={(event) =>
+            table.getColumn('name')?.setFilterValue(event.target.value)
+          }
+          className="rounded-md"
+        />
+        <Button
+          onClick={() =>
+            route.push(`/projects/rp/${id}/offlineManagement/setupBeneficiary`)
+          }
+          className="rounded-md"
+        >
+          Setup Offline Beneficiary
+        </Button>
+      </div>
+      <div className="rounded-md border">
         <Table>
-          <ScrollArea className="h-table1">
+          <ScrollArea className="h-[calc(100vh-365px)]">
             <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
@@ -91,20 +110,7 @@ export function TransactionTable() {
               ))}
             </TableHeader>
             <TableBody>
-              {isLoading || isFetching ? (
-                <TableRow>
-                  <TableCell
-                    colSpan={columns.length}
-                    className="h-24 text-center"
-                  >
-                    <div className="flex items-center justify-center space-x-2 h-full">
-                      <div className="h-2 w-2 animate-bounce rounded-full bg-primary [animation-delay:-0.3s]"></div>
-                      <div className="h-2 w-2 animate-bounce rounded-full bg-primary [animation-delay:-0.13s]"></div>
-                      <div className="h-2 w-2 animate-bounce rounded-full bg-primary"></div>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ) : table?.getRowModel().rows?.length ? (
+              {table.getRowModel().rows?.length ? (
                 table.getRowModel().rows.map((row) => (
                   <TableRow
                     key={row.id}
@@ -126,22 +132,7 @@ export function TransactionTable() {
                     colSpan={columns.length}
                     className="h-24 text-center"
                   >
-                    <div className="w-full h-[calc(100vh-140px)]">
-                      <div className="flex flex-col items-center justify-center">
-                        <Image
-                          src="/noData.png"
-                          height={250}
-                          width={250}
-                          alt="no data"
-                        />
-                        <p className="text-medium text-base mb-1">
-                          No Data Available
-                        </p>
-                        <p className="text-sm mb-4 text-gray-500">
-                          There are no transactions to display at the moment.
-                        </p>
-                      </div>
-                    </div>
+                    No results.
                   </TableCell>
                 </TableRow>
               )}
@@ -149,7 +140,7 @@ export function TransactionTable() {
           </ScrollArea>
         </Table>
       </div>
-      <div className="sticky bottom-0 flex items-center justify-end space-x-4 px-4 py-1 border-t-2 bg-card">
+      <div className="flex items-center justify-end space-x-2 py-4">
         <div className="flex-1 text-sm text-muted-foreground">
           {table.getFilteredSelectedRowModel().rows.length} of{' '}
           {table.getFilteredRowModel().rows.length} row(s) selected.

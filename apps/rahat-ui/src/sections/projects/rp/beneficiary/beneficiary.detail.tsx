@@ -242,7 +242,7 @@ function Header({
             </Tooltip>
           )}
         </TooltipProvider>
-        <DropdownMenu>
+        {/* <DropdownMenu>
           <DropdownMenuTrigger>
             <MoreVertical
               className="cursor-pointer"
@@ -261,7 +261,7 @@ function Header({
               Remove/Hide
             </DropdownMenuItem>
           </DropdownMenuContent>
-        </DropdownMenu>
+        </DropdownMenu> */}
       </div>
     </div>
   );

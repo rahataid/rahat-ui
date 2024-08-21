@@ -30,7 +30,10 @@ const FormSchema = z.object({
     .string()
     .min(2, { message: 'Name must be at least 4 characters' }),
   contactInfo: z.string().optional(),
-  grievanceTitle: z.string().optional(),
+  grievanceTitle: z
+    .string()
+    .max(30, { message: 'Grievance title must be 30 characters or less' })
+    .optional(),
   grievanceType: z.string({ required_error: 'Please select grievance type.' }),
   description: z.string().min(4, { message: 'Must be at least 4 characters' }),
 });

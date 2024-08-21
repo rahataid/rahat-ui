@@ -12,6 +12,7 @@ import { ColumnDef } from '@tanstack/react-table';
 import { formatdbDate } from 'apps/rahat-ui/src/utils';
 import { Eye } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
+import { formatEther } from 'viem';
 
 export const useDisburseTableColumns = () => {
   const { id } = useParams();
@@ -41,7 +42,7 @@ export const useDisburseTableColumns = () => {
     },
     {
       accessorKey: 'date',
-      header: 'Date',
+      header: 'Date Time',
       cell: ({ row }) => (
         <div className="capitalize">
           {formatdbDate(row.original?.createdAt)}
@@ -55,9 +56,15 @@ export const useDisburseTableColumns = () => {
     },
     {
       accessorKey: 'totalAmount',
-      header: 'Total Amount',
+      header: () => <div>TotalAmount</div>,
       cell: ({ row }) => {
-        return <div>{row.original.amount}</div>;
+        const totalAmount = row.original?.amount;
+        const formatted = new Intl.NumberFormat('en-US', {
+          style: 'currency',
+          currency: 'USD',
+        }).format(totalAmount);
+
+        return <div>{formatted}</div>;
       },
     },
     {

@@ -1,7 +1,23 @@
 import { PieChart } from '@rahat-ui/shadcn/src/components/charts';
 import React from 'react';
+import RecentTransaction from './fundManagement/recent.transaction';
+import {
+  PROJECT_SETTINGS_KEYS,
+  useProjectSettingsStore,
+  useRecentTransactionsList,
+} from '@rahat-ui/query';
+import { useSearchParams } from 'next/navigation';
+import { UUID } from 'crypto';
 
 const ProjectCharts = () => {
+  const { id } = useSearchParams();
+
+  const contractSettings = useProjectSettingsStore(
+    (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT],
+  );
+  const c2cProjectAddress = contractSettings?.c2cproject?.address;
+  const { data: transactionList, isLoading: isFetchingTransactionList } =
+    useRecentTransactionsList(c2cProjectAddress);
   return (
     <div className="grid grid-cols-3 gap-2 mb-2">
       <PieChart
@@ -25,17 +41,22 @@ const ProjectCharts = () => {
           ],
         }}
       />
-      <PieChart
-        title="Disburse Methods"
-        subheader="Project Stats"
-        chart={{
-          series: [
-            { label: 'Project', value: 40 },
-            { label: 'EOA', value: 60 },
-            { label: 'MULTISIG', value: 50 },
-          ],
-        }}
-      />
+      <div className="row-span-2">
+        <RecentTransaction transactions={transactionList} />
+      </div>
+      <div className="col-span-2">
+        <PieChart
+          title="Disburse Methods"
+          subheader="Project Stats"
+          chart={{
+            series: [
+              { label: 'Project', value: 40 },
+              { label: 'EOA', value: 60 },
+              { label: 'MULTISIG', value: 50 },
+            ],
+          }}
+        />
+      </div>
     </div>
   );
 };

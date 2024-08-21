@@ -1,5 +1,5 @@
 import { usePagination } from '@rahat-ui/query';
-import { List, ListCollapse, Plus, User } from 'lucide-react';
+import { List, ListCollapse, Plus, User, View } from 'lucide-react';
 import { NavItem } from './nav-items.types';
 
 export const useSettingFieldDefinitionNavItems = () => {
@@ -29,6 +29,11 @@ export const useSettingFieldDefinitionNavItems = () => {
           title: 'Add',
           path: '/settings/add',
           icon: <Plus size={18} strokeWidth={1.5} />,
+        },
+        {
+          title: 'Samples',
+          path: '/settings/samples',
+          icon: <View size={18} strokeWidth={1.5} />,
         },
       ],
     },

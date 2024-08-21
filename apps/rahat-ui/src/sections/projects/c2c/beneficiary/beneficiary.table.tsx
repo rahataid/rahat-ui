@@ -33,6 +33,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import TableLoader from 'apps/rahat-ui/src/components/table.loader';
+import Image from 'next/image';
 
 const BeneficiaryDetailTableView = () => {
   const uuid = useParams().id as UUID;
@@ -91,7 +92,7 @@ const BeneficiaryDetailTableView = () => {
         <div className="flex justify-between items-center mb-2">
           <div className="flex">
             <Input
-              placeholder="Filter beneficiary..."
+              placeholder="Search beneficiary..."
               value={
                 (table.getColumn('name')?.getFilterValue() as string) ?? ''
               }
@@ -104,7 +105,6 @@ const BeneficiaryDetailTableView = () => {
           {selectedRowAddresses.length ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                {/* <DisburseFlow selectedBeneficiaries={selectedRowAddresses} /> */}
                 <Button
                   onClick={() =>
                     route.push(
@@ -117,19 +117,8 @@ const BeneficiaryDetailTableView = () => {
                   Disburse Tokens
                 </Button>
               </DropdownMenuTrigger>
-              {/* <DropdownMenuContent align="end">
-                <DropdownMenuItem
-                  onClick={projectModal.onTrue}
-                  disabled={isBulkAssigning}
-                >
-                  Bulk Assign Project
-                </DropdownMenuItem>
-              </DropdownMenuContent> */}
             </DropdownMenu>
           ) : null}
-          {/* <div>
-            <DisburseFlow selectedBeneficiaries={selectedRowAddresses} />
-          </div> */}
         </div>
         <div className="rounded border bg-card">
           <Table>
@@ -153,7 +142,16 @@ const BeneficiaryDetailTableView = () => {
                 ))}
               </TableHeader>
               <TableBody>
-                {table.getRowModel().rows?.length ? (
+                {projectBeneficiaries.isFetching ? (
+                  <TableRow>
+                    <TableCell
+                      colSpan={columns.length}
+                      className="h-24 text-center"
+                    >
+                      <TableLoader />
+                    </TableCell>
+                  </TableRow>
+                ) : table.getRowModel().rows.length ? (
                   table.getRowModel().rows.map((row) => (
                     <TableRow
                       key={row.id}
@@ -175,11 +173,22 @@ const BeneficiaryDetailTableView = () => {
                       colSpan={columns.length}
                       className="h-24 text-center"
                     >
-                      {projectBeneficiaries.isFetching ? (
-                        <TableLoader />
-                      ) : (
-                        'No data available.'
-                      )}
+                      <div className="w-full h-[calc(100vh-140px)]">
+                        <div className="flex flex-col items-center justify-center">
+                          <Image
+                            src="/noData.png"
+                            height={250}
+                            width={250}
+                            alt="no data"
+                          />
+                          <p className="text-medium text-base mb-1">
+                            No Data Available
+                          </p>
+                          <p className="text-sm mb-4 text-gray-500">
+                            There are no beneficiaries to display at the moment.
+                          </p>
+                        </div>
+                      </div>
                     </TableCell>
                   </TableRow>
                 )}

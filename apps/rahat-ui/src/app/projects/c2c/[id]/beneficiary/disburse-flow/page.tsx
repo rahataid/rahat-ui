@@ -18,7 +18,7 @@ const DisburseFlowPage = () => {
   if (!selectedBeneficiaries) return <div>Loading...</div>;
 
   return (
-    <div className="bg-secondary h-[calc(100vh-80px)]">
+    <div className="bg-secondary h-[calc(100vh-60px)] overflow-auto">
       <DisburseFlow selectedBeneficiaries={beneficiaries} />
     </div>
   );

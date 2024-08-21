@@ -1,17 +1,17 @@
 'use client';
+import { UUID } from 'crypto';
+import { useParams, useRouter } from 'next/navigation';
+
+import { CAMPAIGN_TYPES } from '@rahat-ui/types';
+import { useListRpCampaign } from '@rahat-ui/query';
+import TextCampaignAddDrawer from './campaign.text.add';
+import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
 } from '@rahat-ui/shadcn/src/components/ui/card';
-import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import { useParams, useRouter } from 'next/navigation';
-import TextCampaignAddDrawer from './campaign.text.add';
-import { CAMPAIGN_TYPES } from '@rahat-ui/types';
-
-import { useListRpCampaign } from '@rahat-ui/query';
-import { UUID } from 'crypto';
 
 const TextCampaignDetails = () => {
   const { id } = useParams();

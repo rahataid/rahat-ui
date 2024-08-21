@@ -26,14 +26,12 @@ import { UUID } from 'crypto';
 
 import { useTableColumn } from './useTableColumn';
 import { useParams, useRouter } from 'next/navigation';
-import { useGetOfflineBeneficiaries } from '@rahat-ui/query';
+import { useGetOfflineVendors } from '@rahat-ui/query';
 
 export function OfflineTable() {
   const route = useRouter();
   const { id } = useParams();
-  const { data: offlineBeneficiries, isSuccess } = useGetOfflineBeneficiaries(
-    id as UUID,
-  );
+  const { data: offlineVendors, isSuccess } = useGetOfflineVendors(id as UUID);
 
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -44,15 +42,15 @@ export function OfflineTable() {
   const [rowSelection, setRowSelection] = React.useState({});
   const columns = useTableColumn();
 
-  const tData = React.useMemo(() => {
-    if (isSuccess) {
-      return offlineBeneficiries?.data || [];
-    } else {
-      return [];
-    }
-  }, [isSuccess]);
+  // const tData = React.useMemo(() => {
+  //   if (isSuccess) {
+  //     return offlineVendors || [];
+  //   } else {
+  //     return [];
+  //   }
+  // }, [isSuccess, offlineVendors]);
   const table = useReactTable({
-    data: tData,
+    data: offlineVendors || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,

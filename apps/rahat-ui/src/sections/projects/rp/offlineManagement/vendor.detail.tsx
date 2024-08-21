@@ -2,10 +2,18 @@
 import DataCard from 'apps/rahat-ui/src/components/dataCard';
 import { DetailsTable } from './details.table';
 import { ArrowLeft, Banknote, Coins, Home, Users } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
+import { useGetOfflineSingleVendor } from '@rahat-ui/query';
+import { UUID } from 'crypto';
 
 const VendorDetails = () => {
   const router = useRouter();
+  const { id, bid } = useParams();
+  const { data: offlineVendor, isSuccess } = useGetOfflineSingleVendor(
+    id as UUID,
+    Number(bid),
+  );
+
   return (
     <div className="bg-card rounded-lg m-4 p-6">
       <div className="flex flex-col gap-1">
@@ -16,7 +24,9 @@ const VendorDetails = () => {
             size={20}
             strokeWidth={1.5}
           />
-          <h1 className="text-2xl font-semibold text-gray-900">Vendor Name</h1>
+          <h1 className="text-2xl font-semibold text-gray-900">
+            {offlineVendor?.name}
+          </h1>
         </div>
         <p className="text-gray-500 font-normal text-base">
           Here is the detailed view of the vendor
@@ -26,16 +36,21 @@ const VendorDetails = () => {
         <DataCard
           className=""
           title="Offline Beneficiaries"
-          number={'0'}
+          number={offlineVendor?.offlineBeneficiaries?.length}
           Icon={Users}
         />
         <DataCard
           className=""
           title="Token Assigned"
-          number={'0'}
+          number={offlineVendor?.totalAmountAssigned.toString()}
           Icon={Banknote}
         />
-        <DataCard className="" title="Token Amount" number={'0'} Icon={Coins} />
+        {/* <DataCard
+          className=""
+          title="Token Amount"
+          number={offlineVendor?.totalAmountAssigned}
+          Icon={Coins}
+        /> */}
       </div>
       <div className="flex flex-col gap-1 mt-2">
         <h1 className="text-xl font-semibold text-gray-900">Beneficiaries</h1>
@@ -44,7 +59,9 @@ const VendorDetails = () => {
         </p>
       </div>
       <div>
-        <DetailsTable />
+        <DetailsTable
+          offlineBeneficiaries={offlineVendor?.offlineBeneficiaries || []}
+        />
       </div>
     </div>
   );

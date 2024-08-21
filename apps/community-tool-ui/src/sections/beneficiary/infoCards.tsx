@@ -9,13 +9,18 @@ import ExtraInfoCard from './ExtraInfo';
 import { ListBeneficiary } from '@rahataid/community-tool-sdk';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { format } from 'date-fns';
+import { CircleCheck, CircleCheckBig } from 'lucide-react';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+} from '@rahat-ui/shadcn/src/components/ui/tooltip';
 
 type IProps = {
   data: any;
 };
 
 export default function InfoCards({ data }: IProps) {
-  console.log('D==>', data);
   return (
     // <div
     //   style={{ maxHeight: '100vh' }}
@@ -34,10 +39,11 @@ export default function InfoCards({ data }: IProps) {
           </CardHeader>
           <CardContent>
             <div className="mb-2">
-              <p className="text-xs">
+              <p className="text-xs flex gap-1 items-center">
                 {truncateEthAddress(data?.walletAddress) || 'N/A'}
+                {data?.isVerified && <CircleCheck size={13} color="green" />}
               </p>
-              <p className="text-sm font-normal text-muted-foreground">
+              <p className="text-sm font-normal text-muted-foreground ">
                 Wallet Address
               </p>
             </div>

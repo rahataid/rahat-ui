@@ -4,8 +4,9 @@ import { useSwal } from 'libs/query/src/swal';
 import { useProjectAction } from '../../projects';
 
 // Constants for actions
-
 const GET_OFFLINE_BENEFICIARIES = 'rpProject.getOfflineBeneficiaries';
+const GET_OFFLINE_VENDORS = 'rpProject.getOfflineVendors';
+const GET_OFFLINE_SINGLE_VENDOR = 'rpProject.getOfflineSingleVendor';
 const SYNC_OFFLINE_BENEFICIARIES = 'rpProject.syncOfflineBeneficiaries';
 
 // hooks to get offline beneficiaries
@@ -16,12 +17,51 @@ export const useGetOfflineBeneficiaries = (
   const action = useProjectAction();
 
   return useQuery({
-    queryKey: ['rpCampaign'],
+    queryKey: ['rpGetOfflineBeneficiaries'],
     queryFn: async () => {
       const res = await action.mutateAsync({
         uuid: projectUUID,
         data: {
           action: GET_OFFLINE_BENEFICIARIES,
+          payload: { vendorId },
+        },
+      });
+      return res.data;
+    },
+  });
+};
+
+export const useGetOfflineVendors = (projectUUID: UUID, vendorId?: number) => {
+  const action = useProjectAction();
+
+  return useQuery({
+    queryKey: ['rpGetOfflineVendors'],
+    queryFn: async () => {
+      const res = await action.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: GET_OFFLINE_VENDORS,
+          payload: {},
+        },
+      });
+      return res.data;
+    },
+  });
+};
+
+export const useGetOfflineSingleVendor = (
+  projectUUID: UUID,
+  vendorId: number,
+) => {
+  const action = useProjectAction();
+
+  return useQuery({
+    queryKey: ['rpSingleOfflineVendor'],
+    queryFn: async () => {
+      const res = await action.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: GET_OFFLINE_SINGLE_VENDOR,
           payload: { vendorId },
         },
       });

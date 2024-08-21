@@ -45,17 +45,21 @@ export const useTableColumn = () => {
       ),
     },
     {
-      accessorKey: 'beneficiary',
+      accessorKey: '_count.offlineBeneficiaries', // Notice the plural form here
       header: 'Offline Beneficiary Assigned',
-      cell: ({ row }) => (
-        <div className="capitalize">{row.getValue('beneficiary')}</div>
+      cell: ({ getValue }) => (
+        <div className="capitalize">
+          {getValue('_count.offlineBeneficiaries')}
+        </div>
       ),
     },
     {
-      accessorKey: 'tokenAssigned',
+      accessorKey: 'totalAmountAssigned',
       header: 'Token Assigned',
       cell: ({ row }) => (
-        <div className="capitalize">{row.getValue('tokenAssigned')}</div>
+        <div className="capitalize">
+          {Number(row.getValue('totalAmountAssigned'))}
+        </div>
       ),
     },
 
@@ -69,7 +73,9 @@ export const useTableColumn = () => {
           <div className="flex items-center gap-4">
             <Eye
               onClick={() =>
-                route.push(`/projects/rp/${id}/offlineManagement/${bid}`)
+                route.push(
+                  `/projects/rp/${id}/offlineManagement/${row.original.id}`,
+                )
               }
               className="cursor-pointer"
               size={20}

@@ -54,7 +54,7 @@ export default function RedemptionsTable() {
   );
 
   const redeemToken = useContractRedeem(id);
-  const { data: redemptions, refetch } = useListRedemptions(id);
+  const { data: redemptions, isSuccess, refetch } = useListRedemptions(id);
 
   const handleApprove = (row: any) => {
     redeemToken
@@ -74,8 +74,14 @@ export default function RedemptionsTable() {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
   const columns = useRedemptionTableColumn({ handleApprove });
+
+  const tableData = React.useMemo(() => {
+    if (isSuccess) return redemptions;
+    else return [];
+  }, [isSuccess, redemptions]);
+
   const table = useReactTable({
-    data: redemptions || [],
+    data: tableData,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -92,7 +98,6 @@ export default function RedemptionsTable() {
       rowSelection,
     },
   });
-
   return (
     <div className="w-full p-2 bg-secondary">
       <div className="flex items-center gap-2 mb-2">

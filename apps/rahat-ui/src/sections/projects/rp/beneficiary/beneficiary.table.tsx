@@ -84,7 +84,6 @@ export default function BeneficiaryTable() {
     projectUUID: id,
     ...filters,
   });
-
   const table = useReactTable({
     manualPagination: true,
     data: beneficiaries.data?.data || [],

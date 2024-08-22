@@ -78,6 +78,9 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
   };
 
   const handleDisburseToken = async () => {
+    route.push(
+      `/projects/c2c/${id}/beneficiary/disburse-flow/disburse-confirm`,
+    );
     setIsWarningModalOpen(false);
 
     if (stepData.treasurySource === 'MULTISIG') {

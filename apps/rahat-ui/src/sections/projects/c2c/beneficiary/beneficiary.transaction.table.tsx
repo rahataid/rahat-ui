@@ -37,6 +37,7 @@ import TableLoader from 'apps/rahat-ui/src/components/table.loader';
 import { useQuery } from 'urql';
 import { BeneficiaryTransaction } from '@rahat-ui/query';
 import { formatEther } from 'viem';
+import Image from 'next/image';
 
 export type Transaction = {
   beneficiary: any;
@@ -136,16 +137,6 @@ export default function BeneficiaryDetailTableView({
     },
   });
 
-  console.log({ transaction });
-
-  // const [result] = useQuery({
-  //   query: BeneficiaryTransaction,
-  //   variables: { beneficiary: walletAddress },
-  // });
-  // console.log({ result });
-  // console.log(result.data);
-  console.log({ walletAddress });
-
   return (
     <>
       <div className="rounded border">
@@ -170,7 +161,16 @@ export default function BeneficiaryDetailTableView({
               ))}
             </TableHeader>
             <TableBody>
-              {table.getRowModel().rows?.length ? (
+              {isFetching ? (
+                <TableRow>
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-24 text-center"
+                  >
+                    <TableLoader />
+                  </TableCell>
+                </TableRow>
+              ) : table.getRowModel().rows?.length ? (
                 table.getRowModel().rows.map((row) => (
                   <TableRow
                     key={row.id}
@@ -192,7 +192,22 @@ export default function BeneficiaryDetailTableView({
                     colSpan={columns.length}
                     className="h-24 text-center"
                   >
-                    {isFetching ? <TableLoader /> : 'No data available.'}
+                    <div className="w-full h-[calc(100vh-140px)]">
+                      <div className="flex flex-col items-center justify-center">
+                        <Image
+                          src="/noData.png"
+                          height={250}
+                          width={250}
+                          alt="no data"
+                        />
+                        <p className="text-medium text-base mb-1">
+                          No Data Available
+                        </p>
+                        <p className="text-sm mb-4 text-gray-500">
+                          There are no transactions to display at the moment.
+                        </p>
+                      </div>
+                    </div>
                   </TableCell>
                 </TableRow>
               )}

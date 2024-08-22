@@ -344,3 +344,8 @@ export const transformExportKeys = (array: []) => {
     return transformedObj;
   });
 };
+
+export function getServerUrl(url: string) {
+  const urlParts = url.split('/v1');
+  return urlParts[0];
+}

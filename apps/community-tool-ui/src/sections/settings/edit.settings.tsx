@@ -322,7 +322,9 @@ export default function EditSettings({
             Add Field
           </Button>
           <div className="flex justify-end">
-            <Button type="submit">Save</Button>
+            <Button type="submit" disabled={data?.data?.isPrivate}>
+              Save
+            </Button>
           </div>
         </div>
         {/* </div> */}

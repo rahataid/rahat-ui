@@ -12,32 +12,11 @@ export const useCommunityBeneficiaryGroupCreate = () => {
   return useMutation({
     mutationKey: [TAGS.ADD_COMMUNITY_BENEFICIARY_GROUP],
     mutationFn: async (payload: any) => {
-      const { value } = await Swal.fire({
-        title: 'Assign Group',
-        text: 'Select group for the beneficiary',
-        showCancelButton: true,
-        confirmButtonText: 'Assign',
-        cancelButtonText: 'Cancel',
-        input: 'select',
-        inputOptions: payload.inputOptions,
-        inputPlaceholder: 'Select a Group',
-        allowOutsideClick: false,
-        preConfirm: (selectedValue) => {
-          if (!selectedValue) {
-            Swal.showValidationMessage('Please select a group to proceed!');
-          }
-          return selectedValue;
-        },
-      });
-
-      if (value !== undefined && value !== '') {
-        const inputData = {
-          beneficiaryUID: payload?.selectedBeneficiaries,
-          groupUID: value,
-        };
-        return await beneficiaryGroupClient.create(inputData as any);
-      }
-      return null;
+      const inputData = {
+        beneficiaryUID: payload?.selectedBeneficiaries,
+        groupUID: payload?.grpUUID,
+      };
+      return await beneficiaryGroupClient.create(inputData as any);
     },
     onSuccess: async (data: any) => {
       queryClient.invalidateQueries({

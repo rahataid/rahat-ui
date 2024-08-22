@@ -34,8 +34,7 @@ export default function RootLayout({
                   <SecondPanelProvider>
                     <ThemeProvider
                       attribute="class"
-                      // defaultTheme="system"
-                      // enableSystem
+                      defaultTheme="light"
                       disableTransitionOnChange
                     >
                       <main className={GeistSans.className}>{children}</main>

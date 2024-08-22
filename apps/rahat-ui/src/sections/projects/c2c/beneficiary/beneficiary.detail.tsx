@@ -94,7 +94,7 @@ export default function BeneficiaryDetail({
         <TableLoader />
       ) : (
         <>
-          <div className="flex justify-between p-4 pt-5 bg-secondary border-b">
+          <div className="flex justify-between p-4 pt-5 bg-card border-b">
             <TooltipProvider delayDuration={100}>
               <Tooltip>
                 <TooltipTrigger onClick={closeSecondPanel}>
@@ -155,9 +155,17 @@ export default function BeneficiaryDetail({
                   />
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
-                  <DropdownMenuItem onClick={() => handleTabChange('edit')}>
-                    Edit
-                  </DropdownMenuItem>
+                  {activeTab === 'details' ? (
+                    <DropdownMenuItem onClick={() => handleTabChange('edit')}>
+                      Edit
+                    </DropdownMenuItem>
+                  ) : (
+                    <DropdownMenuItem
+                      onClick={() => handleTabChange('details')}
+                    >
+                      Details
+                    </DropdownMenuItem>
+                  )}
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>

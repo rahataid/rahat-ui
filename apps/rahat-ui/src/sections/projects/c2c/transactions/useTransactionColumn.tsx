@@ -81,7 +81,13 @@ const useTransactionColumn = () => {
       accessorKey: 'transactionHash',
       header: 'TransactionHash',
       cell: ({ row }) => (
-        <Link href={'#'} className="capitalize text-blue-500">
+        <Link
+          target="_blank"
+          href={`https://sepolia.basescan.org/tx/${row.getValue(
+            'transactionHash',
+          )}`}
+          className="capitalize text-blue-500"
+        >
           {shortenTxHash(row.getValue('transactionHash'))}
         </Link>
       ),

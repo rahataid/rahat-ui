@@ -38,6 +38,7 @@ import { useQuery } from 'urql';
 import { BeneficiaryTransaction } from '@rahat-ui/query';
 import { formatEther } from 'viem';
 import Image from 'next/image';
+import Link from 'next/link';
 
 export type Transaction = {
   beneficiary: any;
@@ -72,14 +73,19 @@ export const columns: ColumnDef<Transaction>[] = [
     header: 'Transaction Hash',
     cell: ({ row }) => (
       <div>
-        {' '}
-        {`${row
-          .getValue('transactionHash')
-          ?.toString()
-          .substring(0, 4)}....${row
-          .getValue('transactionHash')
-          ?.toString()
-          ?.slice(-3)}`}
+        <Link
+          target="_blank"
+          href={`https://sepolia.basescan.org/tx/${row.original.transactionHash}`}
+        >
+          {' '}
+          {`${row
+            .getValue('transactionHash')
+            ?.toString()
+            .substring(0, 4)}....${row
+            .getValue('transactionHash')
+            ?.toString()
+            ?.slice(-3)}`}
+        </Link>
       </div>
     ),
   },

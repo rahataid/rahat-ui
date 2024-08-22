@@ -5,20 +5,22 @@ import {
   CardHeader,
   CardTitle,
 } from '@rahat-ui/shadcn/src/components/ui/card';
+import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { truncateEthAddress } from '@rumsan/sdk/utils';
 import { shortenTxHash } from 'apps/rahat-ui/src/utils/getProjectAddress';
 import { ArrowUp } from 'lucide-react';
 import { formatEther } from 'viem';
 import { Transaction } from './types';
-import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import { format } from 'path';
 
 export default function RecentTransaction({
   transactions,
 }: {
   transactions: Transaction[];
 }) {
-  const amount = parseFloat(formatEther(BigInt(transactions[0].value)));
+  const amount =
+    transactions.length > 0
+      ? parseFloat(formatEther(BigInt(transactions[0].value)))
+      : 0;
   const formatted = new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',

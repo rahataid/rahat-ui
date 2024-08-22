@@ -216,11 +216,7 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
               Back
             </Button>
             <Button
-              onClick={
-                steps[currentStep].id === 'confirm_send'
-                  ? handleNext
-                  : handleNext
-              }
+              onClick={handleNext}
               disabled={disburseMultiSig.isPending || disburseToken.isPending}
             >
               {currentStep === steps.length - 1 ? 'Confirm' : 'Proceed'}

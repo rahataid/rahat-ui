@@ -216,23 +216,7 @@ export default function BeneficiaryDetail({
                 </TooltipProvider>
               </div>
             </div>
-            {/* {!assignStatus && beneficiaryDetails?.type === 'ENROLLED' && (
-              <div>
-                <Button disabled={isTransacting} onClick={handleAssignVoucher}>
-                  {isTransacting
-                    ? 'Confirming transaction...'
-                    : 'Assign Tokens'}
-                </Button>
-              </div> */}
-            {/* )} */}
           </div>
-          {/* <AssignVoucherConfirm
-            open={voucherAssignModal.value}
-            handleClose={handleVoucherAssignModalClose}
-            handleSubmit={handleAssignVoucher}
-          /> */}
-
-          {/* Details View */}
 
           {activeTab === 'details' && (
             <>

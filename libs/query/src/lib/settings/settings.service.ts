@@ -1,12 +1,7 @@
 'use client';
 import { useRSQuery } from '@rumsan/react-query';
 import { SettingDataType } from '@rumsan/sdk/enums';
-import {
-  UseMutationResult,
-  UseQueryResult,
-  useMutation,
-  useQuery,
-} from '@tanstack/react-query';
+import { UseQueryResult, useMutation, useQuery } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { useSettingsStore } from './settings.store';
 import { Pagination } from '@rumsan/sdk/types';
@@ -18,9 +13,7 @@ import Swal from 'sweetalert2';
 // };
 
 //Never call this function directly, always use useAppSettings or useChainSettings
-export const useAppSettingsMutate = (
-  settingsName?: string,
-): UseMutationResult<any> => {
+export const useAppSettingsMutate = (settingsName?: string) => {
   const { queryClient, rumsanService } = useRSQuery();
 
   const fetchSettings = async () => {

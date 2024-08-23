@@ -28,6 +28,7 @@ import { useBoolean } from '../../hooks/use-boolean';
 import { useSecondPanel } from '../../providers/second-panel-provider';
 import BeneficiaryListView from '../../sections/beneficiary/listView';
 import { useBeneficiaryTableColumns } from './useBeneficiaryColumns';
+import Loader from 'apps/rahat-ui/src/components/table.loader';
 
 function BeneficiaryView() {
   const router = useRouter();
@@ -49,10 +50,11 @@ function BeneficiaryView() {
 
   useBeneficiaryGroupsList({ ...pagination });
 
-  const { data } = useBeneficiaryList({
+  const { data, isLoading } = useBeneficiaryList({
     ...pagination,
     ...filters,
   });
+
   const createBeneficiaryGroup = useCreateBeneficiaryGroup();
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const columns = useBeneficiaryTableColumns();
@@ -151,6 +153,10 @@ function BeneficiaryView() {
       );
     }
   };
+
+  if(isLoading){
+    return <Loader />
+  }
 
   return (
     <>

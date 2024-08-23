@@ -61,6 +61,8 @@ import { useBoolean } from '../../../../hooks/use-boolean';
 import TokenAssingnConfirm from './token.assign.confirm';
 import { useProjectBeneficiaryTableColumns } from './use-table-column';
 import { useSecondPanel } from '../../../../providers/second-panel-provider';
+import { useReadElProjectGetProjectVoucherDetail } from 'apps/rahat-ui/src/hooks/el/contracts/elProject';
+import { useAlert } from 'apps/rahat-ui/src/components/swal';
 
 export type Transaction = {
   name: string;
@@ -100,6 +102,7 @@ function BeneficiaryDetailTableView() {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
   );
+  const alert = useAlert();
 
   const handleTokenAssignModal = () => {
     tokenAssignModal.onTrue();
@@ -151,6 +154,11 @@ function BeneficiaryDetailTableView() {
     (state) => state.settings?.[uuid][PROJECT_SETTINGS_KEYS.CONTRACT] || null,
   );
 
+
+  const {data:voucherDetails} = useReadElProjectGetProjectVoucherDetail({
+    address: contractAddress.elproject.address,
+  });
+
   const columns = useProjectBeneficiaryTableColumns(
     voucherType,
     projectBeneficiaries,
@@ -193,6 +201,15 @@ function BeneficiaryDetailTableView() {
   const handleBulkAssign = async () => {
     setisTransacting(true);
     try {
+      if(Number(voucherDetails?.eyeVoucherAssigned) + selectedRowAddresses.length > Number(voucherDetails?.eyeVoucherBudget)){
+       return  alert.fire({
+          title: 'Error while assigning vouchers',
+          icon: 'error',
+          text: 'Vouchers limit exceeded'
+        });
+
+      }
+
       const txnHash = await assignVoucher.mutateAsync({
         addresses: selectedRowAddresses as `0x${string}`[],
         noOfTokens: 1,

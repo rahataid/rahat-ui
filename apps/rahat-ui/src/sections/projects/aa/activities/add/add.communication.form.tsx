@@ -23,12 +23,14 @@ import {
 } from '@rahat-ui/query';
 import { X } from 'lucide-react';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
+import { Transport, ValidationContent } from "@rumsan/connect/src/types"
 
 type IProps = {
   form: any;
   onClose: VoidFunction;
   index: number;
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  appTransports: Transport[] | undefined
 };
 
 export default function AddCommunicationForm({
@@ -36,8 +38,10 @@ export default function AddCommunicationForm({
   onClose,
   index,
   setLoading,
+  appTransports
 }: IProps) {
   const [audioFile, setAudioFile] = React.useState({});
+  const [contentType, setContentType] = React.useState<ValidationContent | "">("");
 
   const stakeholdersGroups = useStakeholdersGroupsStore(
     (state) => state.stakeholdersGroups,
@@ -49,7 +53,12 @@ export default function AddCommunicationForm({
 
   const fieldName = (name: string) => `activityCommunication.${index}.${name}`; // Dynamic field name generator
 
-  const selectedCommunicationType = form.watch(fieldName('communicationType'));
+  const selectedTransport = form.watch(fieldName('transportId'));
+
+  React.useEffect(() => {
+    const transportData = appTransports?.find((t) => t.cuid === selectedTransport)
+    setContentType(transportData?.validationContent as ValidationContent)
+  }, [selectedTransport])
 
   const fileUpload = useUploadFile();
 
@@ -149,7 +158,7 @@ export default function AddCommunicationForm({
         />
         <FormField
           control={form.control}
-          name={fieldName('communicationType')}
+          name={fieldName('transportId')}
           render={({ field }) => (
             <FormItem>
               <FormLabel>Communication Type</FormLabel>
@@ -160,16 +169,22 @@ export default function AddCommunicationForm({
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="EMAIL">Email</SelectItem>
-                  <SelectItem value="SMS">SMS</SelectItem>
-                  <SelectItem value="IVR">IVR</SelectItem>
+                  {
+                    appTransports?.map((transport) => {
+                      return (
+                        <>
+                          <SelectItem value={transport?.cuid as string}>{transport?.name}</SelectItem>
+                        </>
+                      )
+                    })
+                  }
                 </SelectContent>
               </Select>
               <FormMessage />
             </FormItem>
           )}
         />
-        {selectedCommunicationType === 'IVR' ? (
+        {contentType === ValidationContent.URL && (
           <FormField
             control={form.control}
             name={fieldName('audioURL')}
@@ -200,23 +215,26 @@ export default function AddCommunicationForm({
               );
             }}
           />
-        ) : (
-          <FormField
-            control={form.control}
-            name={fieldName('message')}
-            render={({ field }) => {
-              return (
-                <FormItem className="col-span-2">
-                  <FormLabel>Message</FormLabel>
-                  <FormControl>
-                    <Textarea placeholder="Write message" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              );
-            }}
-          />
         )}
+        {
+          contentType === ValidationContent.TEXT && (
+            <FormField
+              control={form.control}
+              name={fieldName('message')}
+              render={({ field }) => {
+                return (
+                  <FormItem className="col-span-2">
+                    <FormLabel>Message</FormLabel>
+                    <FormControl>
+                      <Textarea placeholder="Write message" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+          )
+        }
       </div>
     </div>
   );

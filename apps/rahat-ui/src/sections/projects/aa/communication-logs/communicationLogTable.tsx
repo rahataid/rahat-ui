@@ -1,28 +1,12 @@
 'use client';
 
+import * as React from 'react';
+import { useParams } from 'next/navigation';
 import {
-  ColumnDef,
-  ColumnFiltersState,
-  SortingState,
-  VisibilityState,
   flexRender,
   getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import * as React from 'react';
-
-import { Button } from '@rahat-ui/shadcn/components/button';
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@rahat-ui/shadcn/components/select';
 import {
   Table,
   TableBody,
@@ -32,192 +16,34 @@ import {
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import { CAMPAIGN_TYPES } from '@rahat-ui/types';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
-import { useListCampaign, useListTransport } from '@rumsan/communication-query';
-import { Eye, Upload } from 'lucide-react';
-import { useSecondPanel } from 'apps/rahat-ui/src/providers/second-panel-provider';
-import CampaignDetailSplitView from './campaign.detail.split.view';
-
-export type TextDetail = {
-  _id: string;
-  to: string;
-  date: string;
-};
+import { useActivitiesHavingComms, usePagination } from '@rahat-ui/query';
+import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
+import { UUID } from 'crypto';
+import useCommsActivitiesTableColumns from './useCommsActivitesTableColumns';
 
 export default function CommunicationLogTable() {
-  const { setSecondPanelComponent, closeSecondPanel } = useSecondPanel();
+  const { id: projectId } = useParams();
 
-  const openSplitDetailView = (rowDetail: any) => {
-    setSecondPanelComponent(
-      <>
-        <CampaignDetailSplitView
-          details={rowDetail}
-          closeSecondPanel={closeSecondPanel}
-        />
-      </>,
-    );
-  };
-  const columns: ColumnDef<TextDetail>[] = [
-    {
-      accessorKey: 'createdAt',
-      header: 'Date',
-      cell: ({ row }) => (
-        <div className="capitalize">
-          {new Date(row.getValue('createdAt')).toLocaleString()}
-        </div>
-      ),
-    },
-    {
-      accessorKey: 'name',
-      header: 'Title',
-      cell: ({ row }) => (
-        <div className="capitalize">{row.getValue('name')}</div>
-      ),
-    },
-    {
-      accessorKey: 'upload',
-      header: 'Upload',
-      cell: ({ row }) => (
-        <div className="capitalize">
-          {row.getValue('upload')?.length < 10
-            ? row.getValue('upload')
-            : row.getValue('upload').substring(0, 10) + '...'}
-        </div>
-      ),
-    },
-    {
-      accessorKey: 'type',
-      header: 'Type',
-      cell: ({ row }) => (
-        <div className="capitalize">{row.getValue('type')}</div>
-      ),
-    },
-    {
-      accessorKey: 'totalAudiences',
-      header: 'Audiences',
-      cell: ({ row }) => (
-        <div className="capitalize">{row.getValue('totalAudiences')}</div>
-      ),
-    },
-    {
-      accessorKey: 'status',
-      header: 'Status',
-      cell: ({ row }) => (
-        <div className="capitalize">{row.getValue('status')}</div>
-      ),
-    },
-    {
-      id: 'actions',
-      enableHiding: false,
-      cell: ({ row }) => {
-        return (
-          <Eye
-            className="hover:text-primary cursor-pointer"
-            size={20}
-            strokeWidth={1.5}
-            onClick={() => openSplitDetailView(row.original)}
-          />
-        );
-      },
-    },
-  ];
-
-  const {
-    data: campaignData,
-    isSuccess,
-    isLoading,
-    refetch,
-  } = useListCampaign();
-
-  const { data: transportData } = useListTransport();
-
-  const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    [],
-  );
-  const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({
-      duration: false,
-    });
-  const [rowSelection, setRowSelection] = React.useState({});
-  const [tableData, setTableData] = React.useState([]);
-  const campaignTableData: any = React.useMemo(() => {
-    const result = Array.isArray(campaignData?.data?.rows)
-      ? campaignData?.data?.rows.map((campaign: any) => {
-          if (campaign.type === CAMPAIGN_TYPES.IVR) {
-            return {
-              ...campaign,
-              upload: campaign?.details?.ivrFileName,
-            };
-          } else {
-            return {
-              ...campaign,
-              upload: campaign?.details?.message || campaign?.details?.body,
-            };
-          }
-        })
-      : [];
-
-    return result;
-  }, [isSuccess, campaignData?.data]);
+  const { pagination, setNextPage, setPrevPage, setPerPage, setPagination } =
+    usePagination();
 
   React.useEffect(() => {
-    setTableData(campaignTableData);
-  }, [campaignTableData]);
+    setPagination({ page: 1, perPage: 10 });
+  }, []);
 
-  const filterData: any = (id: string, key?: string) => {
-    const lowerCaseId = id.toLowerCase();
+  const { activitiesData, activitiesMeta } = useActivitiesHavingComms(
+    projectId as UUID,
+    {...pagination},
+  );
 
-    return campaignData?.data.rows
-      ?.filter((item: any) => {
-        if (key === 'type' && item?.transport.toLowerCase() === lowerCaseId) {
-          return true;
-        }
-        if (key === 'status' && item?.status.toLowerCase() === lowerCaseId) {
-          return true;
-        }
-        return false;
-      })
-      ?.map((item: any) => {
-        return {
-          ...item,
-          upload:
-            item?.transport.toLowerCase() === CAMPAIGN_TYPES.IVR.toLowerCase()
-              ? item?.details?.ivrFileName
-              : item?.details?.message || item?.details?.body,
-        };
-      });
-  };
-
-  const handleFilter = (id: string, key?: string) => {
-    let filteredData;
-    if (!key) {
-      filteredData = filterData(id);
-    } else {
-      filteredData = filterData(id, key);
-    }
-    setTableData(filteredData);
-  };
+  const columns = useCommsActivitiesTableColumns();
 
   const table = useReactTable({
-    data: tableData || [],
+    manualPagination: true,
+    data: activitiesData || [],
     columns,
-    onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setRowSelection,
-
-    state: {
-      sorting,
-      columnFilters,
-      columnVisibility,
-      rowSelection,
-    },
   });
 
   return (
@@ -225,49 +51,18 @@ export default function CommunicationLogTable() {
       <>
         <div className="flex justify-between gap-2">
           <Input
-            placeholder="Search Campaign Name"
-            value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
+            placeholder="Search title"
+            value={(table.getColumn('title')?.getFilterValue() as string) ?? ''}
             onChange={(event) =>
-              table.getColumn('name')?.setFilterValue(event.target.value)
+              table.getColumn('title')?.setFilterValue(event.target.value)
             }
             className="max-w-sm"
           />
-          <div className="flex  gap-2">
-            {/* filter by campaign  */}
-            <Select onValueChange={(e) => handleFilter(e, 'status')}>
-              <SelectTrigger className="max-w-32">
-                <SelectValue placeholder="Status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="COMPLETED">COMPLETED</SelectItem>
-                <SelectItem value="FAILED">FAILED</SelectItem>
-              </SelectContent>
-            </Select>
-
-            {/* filter by type  */}
-            <Select
-              defaultValue="Email"
-              onValueChange={(e) => handleFilter(e, 'type')}
-            >
-              <SelectTrigger className="max-w-32">
-                <SelectValue placeholder="Type" />
-              </SelectTrigger>
-              <SelectContent>
-                {transportData?.data?.map((data) => {
-                  return (
-                    <SelectItem key={data.id} value={data.name}>
-                      {data.name}
-                    </SelectItem>
-                  );
-                })}
-              </SelectContent>
-            </Select>
-          </div>
         </div>
-        <div className="rounded-md  border mt-1 bg-card">
+        <div className="mt-1 bg-card border rounded">
           <Table>
-            <ScrollArea className="h-[calc(100vh-570px)]">
-              <TableHeader className="sticky top-0 bg-slate-50">
+            <ScrollArea className="h-[calc(100vh-374px)]">
+              <TableHeader className="sticky top-0">
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow key={headerGroup.id}>
                     {headerGroup.headers.map((header) => {
@@ -315,55 +110,24 @@ export default function CommunicationLogTable() {
               </TableBody>
             </ScrollArea>
           </Table>
-        </div>
-        <div className="flex items-center justify-end space-x-8 py-4">
-          <div className="flex-1 text-sm text-muted-foreground">
-            {table.getFilteredSelectedRowModel().rows.length} of{' '}
-            {table.getFilteredRowModel().rows.length} row(s) selected.
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="text-sm font-medium">Rows per page</div>
-            <Select
-              defaultValue="10"
-              onValueChange={(value) => table.setPageSize(Number(value))}
-            >
-              <SelectTrigger className="w-16">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectItem value="5">5</SelectItem>
-                  <SelectItem value="10">10</SelectItem>
-                  <SelectItem value="20">20</SelectItem>
-                  <SelectItem value="30">30</SelectItem>
-                  <SelectItem value="40">40</SelectItem>
-                  <SelectItem value="50">50</SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-          </div>
-          <div>
-            Page {table.getState().pagination.pageIndex + 1} of{' '}
-            {table.getPageCount()}
-          </div>
-          <div className="space-x-4">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => table.previousPage()}
-              disabled={!table.getCanPreviousPage()}
-            >
-              Previous
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => table.nextPage()}
-              disabled={!table.getCanNextPage()}
-            >
-              Next
-            </Button>
-          </div>
+          <CustomPagination
+            meta={
+              activitiesMeta || {
+                total: 0,
+                currentPage: 0,
+                lastPage: 0,
+                perPage: 0,
+                next: null,
+                prev: null,
+              }
+            }
+            handleNextPage={setNextPage}
+            handlePrevPage={setPrevPage}
+            handlePageSizeChange={setPerPage}
+            currentPage={pagination.page}
+            perPage={pagination.perPage}
+            total={activitiesMeta?.lastPage || 0}
+          />
         </div>
       </>
     </div>

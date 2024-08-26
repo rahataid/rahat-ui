@@ -28,12 +28,14 @@ import {
   useActivitiesStore,
   useBeneficiariesGroups,
   useCreateActivities,
+  useListAllTransports,
   useStakeholdersGroups,
   useUploadFile,
 } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import AddCommunicationForm from './add.communication.form';
 import { validateFile } from '../../file.validation';
+import { ValidationContent } from '@rumsan/connect/src/types';
 
 export default function AddActivities() {
   const createActivity = useCreateActivities();
@@ -63,11 +65,12 @@ export default function AddActivities() {
 
   useStakeholdersGroups(projectID as UUID, {});
   useBeneficiariesGroups(projectID as UUID, {});
+  const appTransports = useListAllTransports()
 
   const newCommunicationSchema = {
     groupType: '',
     groupId: '',
-    communicationType: '',
+    transportId: '',
     message: '',
     audioURL: { mediaURL: '', fileName: '' },
   };
@@ -101,7 +104,7 @@ export default function AddActivities() {
       z.object({
         groupType: z.string().min(1, { message: 'Please select group type' }),
         groupId: z.string().min(1, { message: 'Please select group' }),
-        communicationType: z
+        transportId: z
           .string()
           .min(1, { message: 'Please select communication type' }),
         message: z.string().optional(),
@@ -180,27 +183,21 @@ export default function AddActivities() {
     const activityCommunicationPayload = [];
     if (data?.activityCommunication?.length) {
       for (const comms of data.activityCommunication) {
-        const selectedCommunicationType = comms.communicationType;
-        switch (selectedCommunicationType) {
-          case 'IVR':
-            activityCommunicationPayload.push({
-              groupType: comms.groupType,
-              groupId: comms.groupId,
-              communicationType: comms.communicationType,
-              audioURL: comms.audioURL,
-            });
-            break;
-          case 'EMAIL':
-          case 'SMS':
-            activityCommunicationPayload.push({
-              groupType: comms.groupType,
-              groupId: comms.groupId,
-              communicationType: comms.communicationType,
-              message: comms.message,
-            });
-            break;
-          default:
-            break;
+        const selectedTransport = appTransports?.find((t) => t.cuid === comms.transportId)
+        if (selectedTransport?.validationContent === ValidationContent.URL) {
+          activityCommunicationPayload.push({
+            groupType: comms.groupType,
+            groupId: comms.groupId,
+            transportId: comms.transportId,
+            message: comms.audioURL,
+          });
+        } else {
+          activityCommunicationPayload.push({
+            groupType: comms.groupType,
+            groupId: comms.groupId,
+            transportId: comms.transportId,
+            message: comms.message,
+          });
         }
       }
       payload = {
@@ -477,7 +474,7 @@ export default function AddActivities() {
                         >
                           <p className="text-sm flex gap-2 items-center">
                             {uploadFile.isPending &&
-                            documents?.[documents?.length - 1].name ===
+                              documents?.[documents?.length - 1].name ===
                               file.name ? (
                               <LoaderCircle
                                 size={16}
@@ -525,6 +522,7 @@ export default function AddActivities() {
                   form={form}
                   index={index}
                   setLoading={setAudioUploading}
+                  appTransports={appTransports}
                 />
               ))}
 

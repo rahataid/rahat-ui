@@ -10,6 +10,7 @@ export type AppSettingsState = {
   contracts: Record<string, any>;
   navSettings: Record<string, any>;
   roleOnChainSync: any;
+  commsSettings: Record<string, any>;
 };
 
 export type AppSettingsAction = {
@@ -20,6 +21,7 @@ export type AppSettingsAction = {
   setContractSettings: (contracts: Record<string, string>) => void;
   setNavSettings: (navSettings: Record<string, any>) => void;
   setRoleSync: (roleOnChainSync: any) => void;
+  setCommsSettings: (commsSettings: Record<string, any>) => void;
 };
 
 export type AppSettings = AppSettingsState & AppSettingsAction;
@@ -53,6 +55,7 @@ export const initialAppSettings: AppSettingsState = {
     subData: [],
   },
   roleOnChainSync: process.env['NEXT_PUBLIC_ADD_ROLE_ON_CHAIN'] || true,
+  commsSettings: {},
 };
 
 export const useSettingsStore = zustandStore<AppSettings>(
@@ -71,6 +74,8 @@ export const useSettingsStore = zustandStore<AppSettings>(
     setNavSettings: (navSettings) => set({ navSettings }),
     roleOnChainSync: initialAppSettings.roleOnChainSync,
     setRoleSync: (roleOnChainSync) => set({ roleOnChainSync }),
+    commsSettings: initialAppSettings.commsSettings,
+    setCommsSettings: (commsSettings) => set({ commsSettings }),
   }),
   {
     devtoolsEnabled: true,

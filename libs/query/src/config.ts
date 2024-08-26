@@ -34,6 +34,9 @@ export const TAGS = {
   GET_TEMP_GROUPS: 'get_temp_groups',
   GET_TEMP_BENEFICIARIES: 'get_temp_beneficiaries',
   IMPORT_TEMP_BENEFICIARIES: 'import_temp_beneficiaries',
+  NEW_COMMS: {
+    LIST_TRANSPORTS: 'new_comms.list_transports'
+  }
 };
 export const PROJECT_SETTINGS_KEYS = {
   CONTRACT: 'CONTRACT',

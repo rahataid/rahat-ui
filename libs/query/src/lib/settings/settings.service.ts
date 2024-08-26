@@ -1,6 +1,5 @@
 'use client';
 import { useRSQuery } from '@rumsan/react-query';
-import { SettingDataType } from '@rumsan/sdk/enums';
 import { UseQueryResult, useMutation, useQuery } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { useSettingsStore } from './settings.store';
@@ -71,7 +70,6 @@ export const useAcessManagerSettings = () => {
       queryKey: ['ACCESS_MANAGER'],
       queryFn: async () => {
         const d = await appSettings.mutateAsync();
-        console.log({ d });
         return d.data.data?.value;
       },
 
@@ -140,6 +138,34 @@ export const useAppContractSettings = () => {
       setContractSettings(query.data);
     }
   }, [query.isSuccess, query.data, setContractSettings]);
+
+  return query;
+};
+
+export const useAppCommunicationSettings = () => {
+  const { queryClient } = useRSQuery();
+
+  const appSettings = useAppSettingsMutate('COMMUNICATION');
+  const { setCommsSettings } = useSettingsStore();
+
+  const query = useQuery(
+    {
+      queryKey: ['COMMUNICATION'],
+      queryFn: async () => {
+        const d = await appSettings.mutateAsync();
+        return d.data.data?.value;
+      },
+
+      enabled: !!queryClient,
+    },
+    queryClient,
+  );
+
+  useEffect(() => {
+    if (query.isSuccess) {
+      setCommsSettings(query.data);
+    }
+  }, [query.isSuccess, query.data, setCommsSettings]);
 
   return query;
 };

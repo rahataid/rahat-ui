@@ -66,18 +66,20 @@ const SetupBeneficiaryPage = () => {
       projectBeneficiaries.data?.data &&
       isSuccess
     ) {
-      const projectBeneficiaryDisbursements =
-        projectBeneficiaries.data?.data.map((beneficiary) => {
-          const beneficiaryDisbursement = disbursmentList?.find(
+      const projectBeneficiaryDisbursements = disbursmentList.map(
+        (beneficiaryDisbursement:any) => {
+          const beneficiary = projectBeneficiaries.data?.data?.find(
             (disbursement: any) =>
-              disbursement.walletAddress === beneficiary.walletAddress,
+              disbursement.walletAddress ===
+              beneficiaryDisbursement.walletAddress,
           );
           return {
             ...beneficiary,
             disbursementAmount: beneficiaryDisbursement?.amount || '0',
             disbursmentId: beneficiaryDisbursement?.id,
           };
-        });
+        },
+      );
 
       if (
         JSON.stringify(projectBeneficiaryDisbursements) !==

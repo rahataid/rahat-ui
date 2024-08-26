@@ -27,6 +27,7 @@ const VendorDetails = () => {
           <h1 className="text-2xl font-semibold text-gray-900">
             {offlineVendor?.name}
           </h1>
+          {offlineVendor?.synced && <p>Synced</p>}
         </div>
         <p className="text-gray-500 font-normal text-base">
           Here is the detailed view of the vendor

@@ -174,7 +174,7 @@ export default function BeneficiaryDetail({
               <div>
                 <div className="flex gap-2 mb-1">
                   <h1 className="font-semibold text-xl">
-                    {beneficiaryDetails?.name}
+                    {beneficiaryDetails?.name || 'N/A'}
                   </h1>
                   <Badge>Active</Badge>
                 </div>
@@ -185,7 +185,9 @@ export default function BeneficiaryDetail({
                       onClick={clickToCopy}
                     >
                       <p className="text-muted-foreground text-base">
-                        {truncateEthAddress(walletAddress)}
+                        {walletAddress
+                          ? truncateEthAddress(walletAddress)
+                          : 'N/A'}
                       </p>
                       {walletAddressCopied ? (
                         <CopyCheck size={15} strokeWidth={1.5} />
@@ -237,37 +239,57 @@ export default function BeneficiaryDetail({
                   <div className="flex flex-col gap-2 p-2">
                     <Card className="shadow rounded">
                       <CardContent className="pt-6">
-                        <div className="grid grid-cols-2 gap-3">
+                        <div className="grid grid-cols-3 gap-3">
                           <div>
-                            <p className="font-light text-base">
-                              {beneficiaryDetails?.type}
-                            </p>
-                            <p className="text-sm font-normal text-muted-foreground">
-                              Beneficiary Type
-                            </p>
-                          </div>
-                          <div className="text-right">
                             <p className="font-light text-base">
                               {beneficiaryDetails?.gender}
                             </p>
-                            <p className="text-sm font-normal text-muted-foreground ">
+                            <p className="text-sm font-normal text-muted-foreground">
                               Gender
                             </p>
                           </div>
+
                           <div>
                             <p className="font-light text-base">
                               {beneficiaryDetails?.email || 'N/A'}
                             </p>
-                            <p className="text-sm font-normal text-muted-foreground ">
+                            <p className="text-sm font-normal text-muted-foreground">
                               Email
                             </p>
                           </div>
                           <div className="text-right">
                             <p className="font-light text-base">
-                              {beneficiaryDetails?.phone}
+                              {
+                                // beneficiaryDetails?.phone ||
+                                'N/A'
+                              }
                             </p>
-                            <p className="text-sm font-normal text-muted-foreground ">
-                              Phone
+                            <p className="text-sm font-normal text-muted-foreground">
+                              Location
+                            </p>
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-3 gap-3 mt-3">
+                          <div>
+                            <p className="font-light text-base">
+                              {
+                                // beneficiaryDetails?.gender ||
+                                'N/A'
+                              }
+                            </p>
+                            <p className="text-sm font-normal text-muted-foreground">
+                              Balance
+                            </p>
+                          </div>
+                          <div>
+                            <p className="font-light text-base">
+                              {
+                                // beneficiaryDetails?.phone ||
+                                'N/A'
+                              }
+                            </p>
+                            <p className="text-sm font-normal text-muted-foreground">
+                              Verificatoin Status
                             </p>
                           </div>
                         </div>

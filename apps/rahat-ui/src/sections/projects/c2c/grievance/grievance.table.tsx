@@ -22,8 +22,6 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { UUID } from 'crypto';
-import { useParams } from 'next/navigation';
 import { useGrievanceTableColumns } from './useGrievanceColumn';
 
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
@@ -81,7 +79,7 @@ const GrievanceTable = () => {
         <div className="flex justify-between items-center mb-2">
           <div className="flex">
             <Input
-              placeholder="Filter grievnace..."
+              placeholder="Search grievance..."
               value={
                 (table.getColumn('reporter')?.getFilterValue() as string) ?? ''
               }
@@ -94,7 +92,7 @@ const GrievanceTable = () => {
         </div>
         <div className="rounded border bg-card">
           <Table>
-            <ScrollArea className="h-[cal(100vh-182px)]">
+            <ScrollArea className="h-[calc(100vh-182px)]">
               <TableHeader className="bg-card sticky top-0">
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow key={headerGroup.id}>

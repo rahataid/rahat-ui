@@ -88,9 +88,7 @@ const FundManagementFlow = () => {
   };
 
   const handlePrevious = () => {
-    if (currentStep > 0) {
-      setCurrentStep(currentStep - 1);
-    }
+    router.push(`/projects/rp/${id}/fundManagement`);
   };
 
   const steps = [
@@ -200,7 +198,6 @@ const FundManagementFlow = () => {
           <Button
             className="w-48 text-red-600 bg-pink-200 hover:bg-pink-300"
             onClick={handlePrevious}
-            disabled={currentStep === 0}
           >
             Back
           </Button>

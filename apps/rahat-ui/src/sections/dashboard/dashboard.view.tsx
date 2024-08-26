@@ -49,8 +49,6 @@ export default function DashboardView() {
 
   const newDatasource = useGetDataSource();
 
-  console.log(newDatasource);
-
   return (
     <div className="bg-secondary">
       <ScrollArea className="h-[calc(100vh-68px)] p-4">

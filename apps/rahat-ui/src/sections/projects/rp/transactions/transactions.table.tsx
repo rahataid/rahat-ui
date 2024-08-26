@@ -167,8 +167,13 @@ export default function TransactionTable() {
 
   const { projectTransactions } = useRPProjectSubgraphStore();
 
+  const tableData: any = React.useMemo(() => {
+    if (projectTransactions) return projectTransactions;
+    else return [];
+  }, [projectTransactions]);
+
   const table = useReactTable({
-    data: projectTransactions || [],
+    data: tableData || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,

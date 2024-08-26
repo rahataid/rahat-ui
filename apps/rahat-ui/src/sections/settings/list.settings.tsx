@@ -210,7 +210,7 @@ export default function ListSetting() {
             handlePageSizeChange={setPerPage}
             currentPage={pagination.page}
             perPage={pagination.perPage}
-            total={data?.response?.meta.total || 0}
+            total={data?.response?.meta?.total || 0}
           />
         </TableComponent>
       </div>

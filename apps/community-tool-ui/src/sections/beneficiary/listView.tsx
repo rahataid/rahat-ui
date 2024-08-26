@@ -1,6 +1,6 @@
 'use client';
 import { Table, flexRender } from '@tanstack/react-table';
-import { Settings2 } from 'lucide-react';
+import { CircleEllipsisIcon, Settings2 } from 'lucide-react';
 
 import { Button } from '@rahat-ui/shadcn/components/button';
 import {
@@ -20,6 +20,7 @@ import {
   TableHeader,
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
+import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { ListBeneficiary } from '@rahataid/community-tool-sdk/beneficiary';
 import { Pagination } from '@rumsan/sdk/types';
@@ -31,6 +32,7 @@ type IProps = {
   filters: Record<string, any>;
   setPagination: (pagination: Pagination) => void;
   pagination: Pagination;
+  loading: boolean;
 };
 
 export default function ListView({
@@ -40,6 +42,7 @@ export default function ListView({
   filters,
   setPagination,
   pagination,
+  loading,
 }: IProps) {
   const handleFilterChange = (event: any) => {
     if (event && event.target) {
@@ -167,7 +170,16 @@ export default function ListView({
                       colSpan={table.getAllColumns().length}
                       className="h-24 text-center"
                     >
-                      No results.
+                      {loading ? (
+                        <div className="flex items-center justify-center mt-4">
+                          <div className="text-center">
+                            <CircleEllipsisIcon className="animate-spin h-8 w-8" />
+                            <Label className="text-base">Loading ...</Label>
+                          </div>
+                        </div>
+                      ) : (
+                        'No result found'
+                      )}
                     </TableCell>
                   </TableRow>
                 )}

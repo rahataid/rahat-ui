@@ -37,6 +37,8 @@ export default function CommunicationLogTable() {
     {...pagination},
   );
 
+  console.log("aa activities with comms", activitiesData)
+
   const columns = useCommsActivitiesTableColumns();
 
   const table = useReactTable({

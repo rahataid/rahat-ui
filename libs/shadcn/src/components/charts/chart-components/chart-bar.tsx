@@ -7,7 +7,7 @@ import useChart from '../use-chart';
 
 type Props = {
   ctSeries?: number[];
-  ctCategories?: string[];
+  ctCategories: string[];
   width?: number | string;
   height?: number | string;
   horizontal?: boolean;
@@ -27,7 +27,7 @@ export default function ChartBar({
   colors = ['#007BFF'],
   xaxisLabels = true,
   yaxisLabels = true,
-  barHeight = 20,
+  barHeight = 25,
   actualData,
   component,
   ctSeries,
@@ -59,7 +59,9 @@ export default function ChartBar({
     xaxis: {
       categories: communityTool ? ctCategories : categories,
       labels: {
-        show: xaxisLabels,
+        show:
+          (ctCategories?.length > 0 ? xaxisLabels : false) ||
+          (categories?.length > 0 && xaxisLabels),
         formatter: (value: string) => value,
       },
       axisBorder: {
@@ -82,7 +84,11 @@ export default function ChartBar({
       },
     },
     yaxis: {
-      labels: { show: yaxisLabels },
+      labels: {
+        show:
+          (ctCategories?.length > 0 ? yaxisLabels : false) ||
+          (categories?.length > 0 && yaxisLabels),
+      },
     },
     tooltip: {
       x: {

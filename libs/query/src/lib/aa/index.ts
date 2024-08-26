@@ -6,3 +6,4 @@ export * from './groups';
 export * from './phases';
 export * from './graph';
 export * from './daily-monitoring';
+export * from './communication';

@@ -8,10 +8,10 @@ import {
   SelectGroup,
 } from '@rahat-ui/shadcn/components/select';
 import { useActivitiesStore } from '@rahat-ui/query';
-import AddButton from '../../components/add.btn';
+import AddButton from '../../../components/add.btn';
 import { UUID } from 'crypto';
-import SearchInput from '../../components/search.input';
-import { ACTIVITY_STATUS } from '../aa.constants';
+import SearchInput from '../../../components/search.input';
+import { ACTIVITY_STATUS } from '../../aa.constants';
 import DownloadReportBtn from 'apps/rahat-ui/src/components/download.report.btn';
 
 const { NOT_STARTED, WORK_IN_PROGRESS, COMPLETED, DELAYED } = ACTIVITY_STATUS;

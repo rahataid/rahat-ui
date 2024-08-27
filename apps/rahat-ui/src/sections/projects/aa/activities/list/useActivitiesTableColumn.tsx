@@ -2,9 +2,9 @@ import { useRouter, useParams } from 'next/navigation';
 import { ColumnDef } from '@tanstack/react-table';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Eye } from 'lucide-react';
-import { IActivitiesItem } from '../../../../types/activities';
-import UpdateActivityStatusDialog from './details/update.activity.status.dialog';
-import { setPaginationToLocalStorage } from '../prev.pagination.storage';
+import { IActivitiesItem } from 'apps/rahat-ui/src/types/activities';
+import UpdateActivityStatusDialog from '../details/update.activity.status.dialog';
+import { setPaginationToLocalStorage } from '../../prev.pagination.storage';
 
 function getPhaseBg(phase: string) {
   if (phase === 'PREPAREDNESS') {

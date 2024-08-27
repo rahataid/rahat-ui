@@ -14,8 +14,8 @@ import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import TableLoader from 'apps/rahat-ui/src/components/table.loader';
 import { UUID } from 'crypto';
 import ActivitiesTableFilters from './activities.table.filters';
-import { getPaginationFromLocalStorage } from '../prev.pagination.storage';
-import { generateExcel } from '../generate.excel';
+import { getPaginationFromLocalStorage } from '../../prev.pagination.storage';
+import { generateExcel } from '../../generate.excel';
 import { toast } from 'react-toastify';
 
 export default function ActivitiesList() {

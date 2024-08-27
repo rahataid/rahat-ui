@@ -2,7 +2,7 @@
 
 import {
   useAcessManagerSettings,
-  useRahatTreasurySettings,
+  // useRahatTreasurySettings,
   useAppContractSettings,
   useAppNavSettings,
   useSettingsStore,
@@ -66,7 +66,7 @@ export function ServiceProvider({ children }: ServiceProviderProps) {
     [],
   );
   useAcessManagerSettings();
-  useRahatTreasurySettings();
+  // useRahatTreasurySettings();
   useAppContractSettings();
   useAppNavSettings();
   useAppCommunicationSettings();

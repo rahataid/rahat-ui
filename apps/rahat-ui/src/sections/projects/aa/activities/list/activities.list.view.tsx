@@ -4,7 +4,6 @@ import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import {
   useActivities,
   useActivitiesCategories,
-  useActivitiesHazardTypes,
   useActivitiesPhase,
   usePagination,
 } from '@rahat-ui/query';
@@ -56,7 +55,6 @@ export default function ActivitiesList() {
   });
 
   useActivitiesCategories(projectID as UUID);
-  useActivitiesHazardTypes(projectID as UUID);
   useActivitiesPhase(projectID as UUID);
 
   const columns = useActivitiesTableColumn();

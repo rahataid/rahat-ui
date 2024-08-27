@@ -46,7 +46,6 @@ export default function ActivitiesTableFilters({
   const { categories, phases } = useActivitiesStore((state) => ({
     categories: state.categories,
     phases: state.phases,
-    hazardTypes: state.hazardTypes,
   }));
 
   return (

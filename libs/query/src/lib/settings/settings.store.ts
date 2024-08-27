@@ -6,7 +6,7 @@ export type AppSettingsState = {
   chainSettings: Chain<ChainFormatters>;
   subGraphUrl: string;
   accessManager: string;
-  rahatTreasury: string;
+  // rahatTreasury: string;
   contracts: Record<string, any>;
   navSettings: Record<string, any>;
   roleOnChainSync: any;
@@ -17,7 +17,7 @@ export type AppSettingsAction = {
   setChainSettings: (chainSettings: Chain<ChainFormatters>) => void;
   setSubGraphUrlSettings: (subGraphUrlSettings: string) => void;
   setAccessManagerSettings: (accessManager: `0X${string}`) => void;
-  setRahatTreasurySettings: (rahatTreasury: `0X${string}`) => void;
+  // setRahatTreasurySettings: (rahatTreasury: `0X${string}`) => void;
   setContractSettings: (contracts: Record<string, string>) => void;
   setNavSettings: (navSettings: Record<string, any>) => void;
   setRoleSync: (roleOnChainSync: any) => void;
@@ -46,9 +46,9 @@ export const initialAppSettings: AppSettingsState = {
   accessManager:
     process.env['NEXT_PUBLIC_ACCESS_MANAGER'] ||
     '0x047435DE08F97c6446fcB0302140340559652F83',
-  rahatTreasury:
-    process.env['NEXT_PUBLIC_RAHAT_TREASURY'] ||
-    '0x047435DE08F97c6446fcB0302140340559652F83',
+  // rahatTreasury:
+  //   process.env['NEXT_PUBLIC_RAHAT_TREASURY'] ||
+  //   '0x047435DE08F97c6446fcB0302140340559652F83',
   contracts: {},
   navSettings: {
     data: [],
@@ -67,8 +67,8 @@ export const useSettingsStore = zustandStore<AppSettings>(
     setSubGraphUrlSettings: (subGraphUrl) => set({ subGraphUrl }),
     accessManager: initialAppSettings.accessManager,
     setAccessManagerSettings: (accessManager) => set({ accessManager }),
-    rahatTreasury: initialAppSettings.rahatTreasury,
-    setRahatTreasurySettings: (rahatTreasury) => set({ rahatTreasury }),
+    // rahatTreasury: initialAppSettings.rahatTreasury,
+    // setRahatTreasurySettings: (rahatTreasury) => set({ rahatTreasury }),
     setContractSettings: (contracts) => set({ contracts }),
     navSettings: initialAppSettings.navSettings,
     setNavSettings: (navSettings) => set({ navSettings }),

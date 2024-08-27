@@ -34,8 +34,7 @@ query ProjectTransactions{
     transactionHash
     eventType
   }
-}
-  OfflineClaimProcesseds{
+  offlineClaimProcesseds{
     id
     amount
     beneficiary
@@ -47,7 +46,7 @@ query ProjectTransactions{
     eventType
   }
 
-  OtpAddeds{
+  otpAddeds{
   id
   beneficiary
   tokenAddress
@@ -59,7 +58,7 @@ query ProjectTransactions{
   eventType
   }
 
-  OtpVerifieds{
+  otpVerifieds{
     id
     amount
     beneficiary
@@ -69,6 +68,7 @@ query ProjectTransactions{
     transactionHash
     eventType
   }
+}
 `;
 
 export const VendorTransactions = `
@@ -97,7 +97,7 @@ query VendorTransactions($vendor:String!) {
     transactionHash
     eventType
   }
-  OfflineClaimProcesseds(where:{vendor:$vendor}){
+  offlineClaimProcesseds(where:{vendor:$vendor}){
     id
     amount
     beneficiary
@@ -137,7 +137,7 @@ tokensAllocateds(where:{beneficiary: $beneficiaryAddress} ) {
     transactionHash
     eventType
    }
-  OtpAddeds(where:{beneficiary:$beneficiaryAddress}){
+  otpAddeds(where:{beneficiary:$beneficiaryAddress}){
     id
     beneficiary
     tokenAddress

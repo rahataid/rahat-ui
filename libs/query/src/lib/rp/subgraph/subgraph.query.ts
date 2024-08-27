@@ -28,9 +28,9 @@ export const useRPProjectTransactions = () => {
           'claimCreateds',
           'claimProcesseds',
           'tokensAllocateds',
-          'OfflineClaimProcesseds',
-          'OtpAddeds',
-          'OtpVerifieds'
+          'offlineClaimProcesseds',
+          'otpAddeds',
+          'otpVerifieds'
         ];
         const newData = transactionsType.reduce((acc, type) => {
           const transactions = data[type] || [];
@@ -66,7 +66,7 @@ export const useRPBeneficiaryTransactions = (beneficiaryAddress: string) => {
         const { data } = await subgraphClient.query(BeneficiaryTransactions, {
           beneficiaryAddress,
         });
-        const transactionsType = ['tokensAllocateds', 'claimCreateds',OtpAddeds];
+        const transactionsType = ['tokensAllocateds', 'claimCreateds',"otpAddeds"];
         const newData = transactionsType.reduce((acc, type) => {
           const transactions = data[type] || [];
           return acc.concat(transactions.map(formatTransaction));
@@ -92,7 +92,7 @@ export const useRPVendorTransactions = (vendorAddress: string) => {
         const { data } = await subgraphClient.query(VendorTransactions, {
           vendor: vendorAddress,
         });
-        const transactionType = ['claimCreateds', 'claimProcesseds','OfflineClaimProcesseds'];
+        const transactionType = ['claimCreateds', 'claimProcesseds','offlineClaimProcesseds'];
 
         const formattedData = transactionType.reduce((acc, type) => {
           const transactions = data[type] || [];

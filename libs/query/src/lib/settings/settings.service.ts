@@ -43,7 +43,7 @@ export const useChainSettings = () => {
       queryKey: ['CHAIN_SETTINGS'],
       queryFn: async () => {
         const d = await appSettings.mutateAsync();
-        return d.data.data?.value;
+        return d.data.data?.value || {};
       },
 
       enabled: !!queryClient,
@@ -70,7 +70,7 @@ export const useAcessManagerSettings = () => {
       queryKey: ['ACCESS_MANAGER'],
       queryFn: async () => {
         const d = await appSettings.mutateAsync();
-        return d.data.data?.value;
+        return d.data.data?.value || {};
       },
 
       enabled: !!queryClient,
@@ -97,7 +97,7 @@ export const useRahatTreasurySettings = () => {
       queryKey: ['RAHAT_TREASURY'],
       queryFn: async () => {
         const d = await appSettings.mutateAsync();
-        return d.data.data?.value;
+        return d.data.data?.value || {};
       },
 
       enabled: !!queryClient,
@@ -125,7 +125,7 @@ export const useAppContractSettings = () => {
       queryKey: ['CONTRACTS'],
       queryFn: async () => {
         const d = await appSettings.mutateAsync();
-        return d.data.data?.value;
+        return d.data.data?.value || {};
       },
 
       enabled: !!queryClient,
@@ -153,7 +153,7 @@ export const useAppCommunicationSettings = () => {
       queryKey: ['COMMUNICATION'],
       queryFn: async () => {
         const d = await appSettings.mutateAsync();
-        return d.data.data?.value;
+        return d.data.data?.value || {};
       },
 
       enabled: !!queryClient,
@@ -181,7 +181,7 @@ export const useAppNavSettings = () => {
       queryKey: ['NAV'],
       queryFn: async () => {
         const d = await appSettings.mutateAsync();
-        return d.data.data?.value;
+        return d.data.data?.value || {};
       },
 
       enabled: !!queryClient,

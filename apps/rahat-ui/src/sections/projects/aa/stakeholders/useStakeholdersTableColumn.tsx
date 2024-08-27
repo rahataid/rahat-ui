@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { ColumnDef } from '@tanstack/react-table';
-import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
 import {
   Tooltip,
   TooltipContent,
@@ -23,11 +22,13 @@ import { useSecondPanel } from '../../../../providers/second-panel-provider';
 import { IStakeholdersItem } from 'apps/rahat-ui/src/types/stakeholders';
 import StakeholdersEditPanel from './stakeholders.edit.view';
 import { useDeleteStakeholders } from '@rahat-ui/query';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { UUID } from 'crypto';
+import { setPaginationToLocalStorage } from '../prev.pagination.storage';
 
 export default function useStakeholdersTableColumn() {
   const { id } = useParams();
+  const router = useRouter();
   const { setSecondPanelComponent, closeSecondPanel } = useSecondPanel();
 
   const deleteStakeholder = useDeleteStakeholders();
@@ -92,6 +93,12 @@ export default function useStakeholdersTableColumn() {
                     size={20}
                     strokeWidth={1.5}
                     onClick={() => {
+                      setPaginationToLocalStorage();
+
+                      const params = new URLSearchParams();
+                      params.set('storePagination', 'true');
+                      router.replace(`${window.location.pathname}?${params}`);
+
                       setSecondPanelComponent(
                         <StakeholdersEditPanel
                           stakeholdersDetail={row.original}

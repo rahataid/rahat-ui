@@ -57,7 +57,6 @@ const MultiStepForm = () => {
 
   const ManualFormSchema = z.object({
     title: z.string().min(2, { message: 'Please enter valid title' }),
-    // hazardTypeId: z.string().min(1, { message: 'Please select hazard type' }),
     isMandatory: z.boolean().optional(),
   });
 
@@ -65,7 +64,6 @@ const MultiStepForm = () => {
     resolver: zodResolver(ManualFormSchema),
     defaultValues: {
       title: '',
-      // hazardTypeId: '',
       isMandatory: true,
     },
   });
@@ -73,8 +71,6 @@ const MultiStepForm = () => {
   const AutomatedFormSchema = z.object({
     title: z.string().min(2, { message: 'Please enter valid name' }),
     dataSource: z.string().min(1, { message: 'Please select data source' }),
-    // location: z.string().min(1, { message: 'Please select river basin' }),
-    // hazardTypeId: z.string().min(1, { message: 'Please select hazard type' }),
     isMandatory: z.boolean().optional(),
     minLeadTimeDays: z
       .string()
@@ -85,45 +81,16 @@ const MultiStepForm = () => {
     probability: z
       .string()
       .min(1, { message: 'Please enter forecast probability' }),
-    // waterLevel: z.string().min(1, { message: 'Please enter water level' }),
-    // .regex(/^(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)$/, 'Must be a positive number')
-    // activationLevel: z
-    // .string()
-    // .regex(/^(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)$/, 'Must be a positive number')
-    // .optional(),
   });
-  // .refine(
-  //   (data) => {
-  //     if (selectedPhase.name === 'READINESS') {
-  //       return (
-  //         data.readinessLevel !== undefined && data.readinessLevel !== ''
-  //       );
-  //     }
-  //     if (selectedPhase.name === 'ACTIVATION') {
-  //       return (
-  //         data.activationLevel !== undefined && data.activationLevel !== ''
-  //       );
-  //     }
-  //     return true;
-  //   },
-  //   {
-  //     message: 'Threshold levels must be provided.',
-  //     path: ['readinessLevel', 'activationLevel'],
-  //   },
-  // );
 
   const automatedForm = useForm<z.infer<typeof AutomatedFormSchema>>({
     resolver: zodResolver(AutomatedFormSchema),
     defaultValues: {
       title: '',
       dataSource: '',
-      // location: '',
-      // hazardTypeId: '',
       maxLeadTimeDays: '',
       minLeadTimeDays: '',
       probability: '',
-      // waterLevel: '',
-      // activationLevel: '',
       isMandatory: true,
     },
   });
@@ -201,9 +168,6 @@ const MultiStepForm = () => {
       const totalMandatoryTriggers = filteredTiggers.filter(
         (d) => d.isMandatory,
       ).length;
-      // const totalOptionalTriggers = filteredTiggers.filter(
-      //   (d) => !d.isMandatory,
-      // ).length;
       const requiredMandatoryTriggers = totalMandatoryTriggers;
       const requiredOptionalTriggers = data?.requiredOptionalTriggers;
 
@@ -224,12 +188,6 @@ const MultiStepForm = () => {
           triggerRequirements,
         },
       });
-      // console.log(triggerRequirements);
-
-      // const;
-      // console.log(filteredTiggers);
-      // const allTriggers = data.allMandatoryTriggers.map(d d>)
-      // console.log('add response', response);
     } catch (e) {
       console.error('Add Triggers To Phase::', e);
     }

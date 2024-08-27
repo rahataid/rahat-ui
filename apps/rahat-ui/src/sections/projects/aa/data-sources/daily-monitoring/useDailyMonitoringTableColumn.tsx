@@ -1,7 +1,6 @@
 import { useRouter, useParams } from 'next/navigation';
 import { ColumnDef } from '@tanstack/react-table';
-import { Eye, Pencil, Trash2 } from 'lucide-react';
-import { formatdbDate } from 'apps/rahat-ui/src/utils';
+import { Eye } from 'lucide-react';
 import { setPaginationToLocalStorage } from '../../prev.pagination.storage';
 
 export default function useDailyMonitoringTableColumn() {
@@ -21,13 +20,13 @@ export default function useDailyMonitoringTableColumn() {
       header: 'Created At',
       cell: ({ row }) => {
         const createdAt = row.getValue('createdAt') as string;
-        if(createdAt){
-          const d =  new Date(createdAt)
-          const localeDate = d.toLocaleDateString()
-          const localeTime = d.toLocaleTimeString()
-          return `${localeDate} ${localeTime}`
+        if (createdAt) {
+          const d = new Date(createdAt);
+          const localeDate = d.toLocaleDateString();
+          const localeTime = d.toLocaleTimeString();
+          return `${localeDate} ${localeTime}`;
         }
-        return 'N/A'
+        return 'N/A';
       },
     },
     {
@@ -44,18 +43,6 @@ export default function useDailyMonitoringTableColumn() {
         return row.getValue('location');
       },
     },
-    // {
-    //   accessorKey: 'source',
-    //   header: 'Source',
-    //   cell: ({ row }) => {
-    //     return row.getValue('source');
-    //   },
-    // },
-    // {
-    //   accessorKey: 'forecast',
-    //   header: 'Forecast',
-    //   cell: ({ row }) => <div>{row.original.data.forecast ?? 'N/A'}</div>,
-    // },
     {
       id: 'actions',
       header: 'Actions',
@@ -69,8 +56,6 @@ export default function useDailyMonitoringTableColumn() {
               strokeWidth={1.5}
               onClick={() => handleEyeClick(row.original.uuid)}
             />
-            {/* <Pencil className="text-primary" size={20} strokeWidth={1.5} />
-            <Trash2 className="text-red-500" size={20} strokeWidth={1.5} /> */}
           </div>
         );
       },

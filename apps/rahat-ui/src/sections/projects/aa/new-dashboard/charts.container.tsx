@@ -33,14 +33,6 @@ export default function ChartsContainer({ allStats = [] }: IProps) {
   )[0]?.data;
 
   const pieChartData = [
-    // {
-    //   title: 'Cash Transfer Method',
-    //   series: [
-    //     { label: 'Mobile Wallet', value: 1384 },
-    //     { label: 'Bank', value: 555 },
-    //   ],
-    //   colors: ['#4CAF50', '#E0CA52'],
-    // },
     {
       title: 'Household Phone Availability',
       series: phoneStatusStats,

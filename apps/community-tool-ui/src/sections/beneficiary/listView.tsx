@@ -173,7 +173,7 @@ export default function ListView({
                       {loading ? (
                         <div className="flex items-center justify-center mt-4">
                           <div className="text-center">
-                            <CircleEllipsisIcon className="animate-spin h-8 w-8" />
+                            <CircleEllipsisIcon className="animate-spin h-8 w-8 ml-4" />
                             <Label className="text-base">Loading ...</Label>
                           </div>
                         </div>

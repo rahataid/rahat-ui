@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import { Copy, CopyCheck, Eye } from 'lucide-react';
-import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
 import {
   Tooltip,
   TooltipProvider,
@@ -34,28 +33,6 @@ export const useProjectBeneficiaryTableColumns = () => {
   };
 
   const columns: ColumnDef<any>[] = [
-    // {
-    //   id: 'select',
-    //   header: ({ table }) => (
-    //     <Checkbox
-    //       checked={
-    //         table.getIsAllPageRowsSelected() ||
-    //         (table.getIsSomePageRowsSelected() && 'indeterminate')
-    //       }
-    //       onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-    //       aria-label="Select all"
-    //     />
-    //   ),
-    //   cell: ({ row }) => (
-    //     <Checkbox
-    //       checked={row.getIsSelected()}
-    //       onCheckedChange={(value) => row.toggleSelected(!!value)}
-    //       aria-label="Select row"
-    //     />
-    //   ),
-    //   enableSorting: false,
-    //   enableHiding: false,
-    // },
     {
       accessorKey: 'wallet',
       header: 'Wallet',
@@ -89,14 +66,7 @@ export const useProjectBeneficiaryTableColumns = () => {
     {
       accessorKey: 'name',
       header: 'Name',
-      cell: ({ row }) => (
-        <div
-          className=""
-          // onClick={() => openSplitDetailView(row.original)}
-        >
-          {row.getValue('name')}
-        </div>
-      ),
+      cell: ({ row }) => <div className="">{row.getValue('name')}</div>,
     },
     {
       accessorKey: 'email',

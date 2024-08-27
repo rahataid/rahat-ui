@@ -10,7 +10,6 @@ interface NavItem {
 
 export function useNavData() {
   const navSettings = useSettingsStore((state) => state.navSettings);
-  console.log(navSettings?.data, navSettings?.subData);
   const data: NavItem[] = useMemo(
     () =>
       navSettings?.data?.length > 0

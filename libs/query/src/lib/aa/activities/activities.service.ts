@@ -149,6 +149,33 @@ export const useActivities = (uuid: UUID, payload: any) => {
   return { ...query, activitiesData, activitiesMeta: query?.data?.meta };
 };
 
+export const useActivitiesHavingComms = (uuid: UUID, payload: any) => {
+  const q = useProjectAction();
+
+  const query = useQuery({
+    queryKey: ['activitiesHavingComms', uuid, payload],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'aaProject.activities.getHavingComms',
+          payload: payload,
+        },
+      });
+      return mutate.response;
+    },
+  });
+  const activitiesData = query?.data?.data?.map((d: any) => ({
+    id: d?.uuid,
+    title: d?.title,
+    createdAt: d?.createdAt,
+    phase: d?.phase?.name,
+    status: d?.status,
+    activityCommunication: d?.activityCommunication
+  }));
+  return { activitiesData, activitiesMeta: query?.data?.data?.meta };
+};
+
 export const useSingleActivity = (
   uuid: UUID,
   activityId: string | string[],
@@ -245,7 +272,9 @@ export const useUpdateActivities = () => {
     },
     onSuccess: () => {
       q.reset();
-      qc.invalidateQueries({ queryKey: ['activities', 'activity'] });
+      qc.invalidateQueries({ queryKey: ['activities'] });
+      qc.invalidateQueries({ queryKey: ['activity'] });
+      qc.invalidateQueries({ queryKey: ['activitiesHavingComms'] });
       toast.fire({
         title: 'Activity updated successfully',
         icon: 'success',
@@ -294,6 +323,7 @@ export const useDeleteActivities = () => {
     onSuccess: () => {
       q.reset();
       qc.invalidateQueries({ queryKey: ['activities'] });
+      qc.invalidateQueries({ queryKey: ['activitiesHavingComms'] });
       toast.fire({
         title: 'Activity removed successfully',
         icon: 'success',
@@ -304,51 +334,6 @@ export const useDeleteActivities = () => {
       q.reset();
       toast.fire({
         title: 'Error while removing activity.',
-        icon: 'error',
-        text: errorMessage,
-      });
-    },
-  });
-};
-
-export const useCreateActivityCommunication = () => {
-  const q = useProjectAction();
-  const alert = useSwal();
-  const toast = alert.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-  });
-  return useMutation({
-    mutationFn: async ({
-      projectUUID,
-      activityCommunicationPayload,
-    }: {
-      projectUUID: UUID;
-      activityCommunicationPayload: any;
-    }) => {
-      return q.mutateAsync({
-        uuid: projectUUID,
-        data: {
-          action: 'aaProject.activities.communication.add',
-          payload: activityCommunicationPayload,
-        },
-      });
-    },
-
-    onSuccess: () => {
-      q.reset();
-      toast.fire({
-        title: 'Communication added successfully',
-        icon: 'success',
-      });
-    },
-    onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || 'Error';
-      q.reset();
-      toast.fire({
-        title: 'Error while adding communication.',
         icon: 'error',
         text: errorMessage,
       });

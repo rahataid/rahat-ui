@@ -7,6 +7,7 @@ import { useProjectAction } from '../../projects';
 // Constants for actions
 const CREATE_CAMPAIGN = 'rpProject.campaign.create';
 const CREATE_AUDIENCE = 'rpProject.campaign.create_audience';
+const CREATE_BULK_AUDIENCE = 'rpProject.campaign.create_bulk_audience';
 const GET_ALL_CAMPAIGN = 'rpProject.campaign.get';
 const GET_CAMPAIGN = 'rpProject.campaign.getOne';
 const GET_ALL_TRANSPORT = 'rpProject.campaign.get_transport';
@@ -178,6 +179,23 @@ export const useCreateRpAudience = (projectUUID: UUID) => {
         uuid: projectUUID,
         data: {
           action: CREATE_AUDIENCE,
+          payload: data,
+        },
+      });
+      return res.data;
+    },
+  });
+};
+
+export const useBulkCreateRpAudience = (projectUUID: UUID) => {
+  const action = useProjectAction();
+
+  return useMutation({
+    mutationFn: async (data: any) => {
+      const res = await action.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: CREATE_BULK_AUDIENCE,
           payload: data,
         },
       });

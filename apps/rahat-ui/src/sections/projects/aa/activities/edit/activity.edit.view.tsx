@@ -27,6 +27,7 @@ import { Plus, CloudUpload, Check, X, LoaderCircle } from 'lucide-react';
 import {
   useActivitiesStore,
   useBeneficiariesGroups,
+  useListAllTransports,
   useSingleActivity,
   useStakeholdersGroups,
   useUpdateActivities,
@@ -35,6 +36,7 @@ import {
 import { UUID } from 'crypto';
 import EditCommunicationForm from './edit.communication.form';
 import { validateFile } from '../../file.validation';
+import { ValidationContent } from '@rumsan/connect/src/types';
 import { toast } from 'react-toastify';
 
 export default function EditActivity() {
@@ -63,15 +65,19 @@ export default function EditActivity() {
 
   const nextId = React.useRef(0);
 
+  const [audioUploading, setAudioUploading] = React.useState<boolean>(false);
+
   useStakeholdersGroups(projectID as UUID, {});
   useBeneficiariesGroups(projectID as UUID, {});
+  const appTransports = useListAllTransports()
+
 
   const activityDetailPath = `/projects/aa/${projectID}/activities/${activityID}`;
 
   const newCommunicationSchema = {
     groupType: '',
     groupId: '',
-    communicationType: '',
+    transportId: '',
     message: '',
     audioURL: { mediaURL: '', fileName: '' },
   };
@@ -104,7 +110,7 @@ export default function EditActivity() {
       z.object({
         groupType: z.string().min(1, { message: 'Please select group type' }),
         groupId: z.string().min(1, { message: 'Please select group' }),
-        communicationType: z
+        transportId: z
           .string()
           .min(1, { message: 'Please select communication type' }),
         message: z.string().optional(),
@@ -114,7 +120,8 @@ export default function EditActivity() {
             fileName: z.string().optional(),
           })
           .optional(),
-        campaignId: z.number().optional(),
+        sessionId: z.string().optional(),
+        communicationId: z.string().optional(),
       }),
     ),
   });
@@ -201,27 +208,25 @@ export default function EditActivity() {
     const activityCommunicationPayload = [];
     if (data?.activityCommunication?.length) {
       for (const comms of data.activityCommunication) {
-        const selectedCommunicationType = comms.communicationType;
-        switch (selectedCommunicationType) {
-          case 'IVR':
-            activityCommunicationPayload.push({
-              groupType: comms.groupType,
-              groupId: comms.groupId,
-              communicationType: comms.communicationType,
-              audioURL: comms.audioURL,
-            });
-            break;
-          case 'EMAIL':
-          case 'SMS':
-            activityCommunicationPayload.push({
-              groupType: comms.groupType,
-              groupId: comms.groupId,
-              communicationType: comms.communicationType,
-              message: comms.message,
-            });
-            break;
-          default:
-            break;
+        const selectedTransport = appTransports?.find((t) => t.cuid === comms.transportId)
+        if (selectedTransport?.validationContent === ValidationContent.URL) {
+          activityCommunicationPayload.push({
+            groupType: comms.groupType,
+            groupId: comms.groupId,
+            transportId: comms.transportId,
+            message: comms.audioURL,
+            ...(comms.sessionId && { sessionId: comms.sessionId }),
+            ...(comms.communicationId && { communicationId: comms.communicationId })
+          });
+        } else {
+          activityCommunicationPayload.push({
+            groupType: comms.groupType,
+            groupId: comms.groupId,
+            transportId: comms.transportId,
+            message: comms.message,
+            ...(comms.sessionId && { sessionId: comms.sessionId }),
+            ...(comms.communicationId && { communicationId: comms.communicationId })
+          });
         }
       }
       payload = {
@@ -464,7 +469,7 @@ export default function EditActivity() {
                         >
                           <p className="text-sm flex gap-2 items-center">
                             {uploadFile.isPending &&
-                            documents?.[documents?.length - 1].name ===
+                              documents?.[documents?.length - 1].name ===
                               file.name ? (
                               <LoaderCircle
                                 size={16}
@@ -510,6 +515,8 @@ export default function EditActivity() {
                   }}
                   form={form}
                   index={index}
+                  appTransports={appTransports}
+                  setLoading={setAudioUploading}
                 />
               ))}
 
@@ -539,7 +546,7 @@ export default function EditActivity() {
                   <Button
                     type="submit"
                     disabled={
-                      updateActivity?.isPending || uploadFile?.isPending
+                      updateActivity?.isPending || uploadFile?.isPending || audioUploading
                     }
                   >
                     Update Activity

@@ -113,6 +113,7 @@ export default function UserDetail({ userDetail, closeSecondPanel }: IProps) {
   useEffect(() => {
     isSubmitSuccessful && reset();
   }, [isSubmitSuccessful, reset]);
+
   return (
     <>
       <div className="flex justify-between items-center p-4 pt-5">

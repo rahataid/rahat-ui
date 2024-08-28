@@ -1,6 +1,6 @@
 'use client';
 import { Table, flexRender } from '@tanstack/react-table';
-import { Settings2 } from 'lucide-react';
+import { CircleEllipsisIcon, Settings2 } from 'lucide-react';
 
 import { Button } from '@rahat-ui/shadcn/components/button';
 import {
@@ -22,15 +22,22 @@ import {
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { FieldDefinition } from '@rahataid/community-tool-sdk/fieldDefinitions';
+import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 
 type IProps = {
   // handleClick: (item: FieldDefinition) => void;
   table: Table<FieldDefinition>;
   setFilters: (fiters: Record<string, any>) => void;
   filters: Record<string, any>;
+  loading: boolean;
 };
 
-export default function ListView({ table, setFilters, filters }: IProps) {
+export default function ListView({
+  table,
+  setFilters,
+  filters,
+  loading,
+}: IProps) {
   const handleFilterChange = (event: any) => {
     console.log(event.target.value.replace(/\s+/g, '_'));
     if (event && event.target) {
@@ -130,7 +137,16 @@ export default function ListView({ table, setFilters, filters }: IProps) {
                       colSpan={table.getAllColumns().length}
                       className="h-24 text-center"
                     >
-                      No results.
+                      {loading ? (
+                        <div className="flex items-center justify-center mt-4">
+                          <div className="text-center">
+                            <CircleEllipsisIcon className="animate-spin h-8 w-8 ml-4" />
+                            <Label className="text-base">Loading ...</Label>
+                          </div>
+                        </div>
+                      ) : (
+                        'No result found'
+                      )}
                     </TableCell>
                   </TableRow>
                 )}

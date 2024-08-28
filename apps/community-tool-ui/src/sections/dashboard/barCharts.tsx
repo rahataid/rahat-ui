@@ -31,6 +31,7 @@ const BarCharts = ({
 
   const sumSeries = ctSeries.reduce((a: number, b: number) => a + b, 0);
 
+  const dynamicHeight = horizontal ? ctCategories.length * 30 + 150 : height;
   return (
     <div className={`bg-card shadow-md p-4 rounded-lg  mt-2 ${className} `}>
       <h1 className=" text-lg font-medium mt-2 mb-1 ml-4 ">{title}</h1>
@@ -51,7 +52,7 @@ const BarCharts = ({
           key={charts.name}
           ctSeries={ctSeries}
           ctCategories={ctCategories}
-          height={height}
+          height={dynamicHeight}
           width={width}
           horizontal={horizontal}
           colors={colors}

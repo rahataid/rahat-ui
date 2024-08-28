@@ -40,11 +40,12 @@ export default function DashboardView() {
       value: item.wardnumber.toString(),
     })) || [];
 
-
   const handleDownloadClick = () => {
-      return sanitizeAndExportReport(data?.data || []);
-  }
+    return sanitizeAndExportReport(data?.data || []);
+  };
   transformedWardNumber.unshift({ label: 'All', value: '' });
+
+  console.log('data', data);
 
   return (
     <div>
@@ -64,7 +65,11 @@ export default function DashboardView() {
             handleSelect={handleSelect}
           />
 
-          <Button onClick={handleDownloadClick} className="mx-1 hover:bg-white bg-white text-black rounded" size={'sm'}>
+          <Button
+            onClick={handleDownloadClick}
+            className="mx-1 hover:bg-white bg-white text-black rounded"
+            size={'sm'}
+          >
             <DownloadCloud className="mr-2 h-3 w-3" />
             Download
           </Button>

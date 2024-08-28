@@ -39,7 +39,7 @@ export default function DataCard({
       <CardHeader className="pb-2 p-4">
         <div className="flex items-start justify-between ">
           <div className="flex items-center gap-3">
-            <CardTitle className="text-md font-normal text-neutral-800 dark:text-white text-lg">
+            <CardTitle className="text-lg font-medium text-neutral-800 dark:text-white">
               {title}
             </CardTitle>
             {refresh && (
@@ -54,11 +54,13 @@ export default function DataCard({
 
           {Icon && (
             <div className="bg-indigo-50 dark:bg-secondary rounded-full h-8 w-8 flex items-center justify-center">
-              <Icon size={20} strokeWidth={1.5} className="text-primary " />
+              <Icon size={20} strokeWidth={2.5} className="text-primary " />
             </div>
           )}
         </div>
-        <p className="text-sm text-muted-foreground">{subtitle}</p>
+        {subtitle && (
+          <p className="text-sm text-muted-foreground">{subtitle}</p>
+        )}
       </CardHeader>
       <CardContent className="flex items-center justify-between">
         <div>

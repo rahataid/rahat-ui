@@ -7,9 +7,11 @@ type DonutData = {
 };
 
 const DonutWrapper = ({ actualData, component, source }: DonutData) => {
-  const chartStatsData = actualData?.find((d) => d.name === component?.dataMap);
+  const chartStatsData = actualData?.find(
+    (d: any) => d.name === component?.dataMap,
+  );
 
-  const statsDonutData = chartStatsData?.data?.map((d) => ({
+  const statsDonutData = chartStatsData?.data?.map((d: any) => ({
     ...d,
     label: d.id,
     value: d.count,
@@ -18,10 +20,18 @@ const DonutWrapper = ({ actualData, component, source }: DonutData) => {
 
   if (statsDonutData)
     return (
-      <ChartDonut
-        series={statsDonutData.map((i) => i.count)}
-        labels={statsDonutData.map((l) => l.label)}
-      />
+      <div className="bg-card rounded-sm p-4 shadow-md">
+        <p className="text-md font-medium mb-4">{component?.title}</p>
+        <div className="flex justify-center">
+          <ChartDonut
+            series={statsDonutData.map((i: any) => i.count)}
+            labels={statsDonutData.map((l: any) => l.label)}
+            donutSize="70%"
+            width={400}
+            height={320}
+          />
+        </div>
+      </div>
     );
 };
 

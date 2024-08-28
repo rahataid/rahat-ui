@@ -15,7 +15,7 @@ export const SETTINGS_SAMPLE: Setting[] = [
     name: 'EXTERNAL_APPS',
     requiredFields: 'APP1, APP2',
     description:
-      'This settings is used to export data from community tools to external apps',
+      'This settings is used to export data from community tool to external apps. You can add multiple apps as follows:',
     key_value: [
       {
         key: 'APP1',
@@ -28,8 +28,21 @@ export const SETTINGS_SAMPLE: Setting[] = [
     ],
   },
   {
+    name: 'UNIQUE_FIELDS',
+    requiredFields: 'DATA',
+    description:
+      'This settings is used to setup unique required fields for beneficiaries. You can select multiple keys, but they must be one of the following: email, phone, govtIDNumber, walletAddress',
+    key_value: [
+      {
+        key: 'DATA',
+        value: 'email,phone,govtIDNumber,walletAddress',
+      },
+    ],
+  },
+  {
     name: 'VERIFICATION_APP',
-    description: 'This settings is used to verify the beneficiaries',
+    description:
+      'This settings is used to verify beneficiary wallet. Enter the URL of the verification app as follows:',
 
     requiredFields: 'URL',
     key_value: [{ key: 'URL', value: '{YOUR_APP_URL}/verify' }],

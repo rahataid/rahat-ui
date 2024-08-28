@@ -178,6 +178,7 @@ export const useExportPinnedListBeneficiary = () => {
             });
           })
           .catch((error) => {
+            console.log('ExportError=>', error);
             Swal.fire(
               'Error',
               error?.response?.data?.message || 'Failed to export beneficiary!',

@@ -2,10 +2,11 @@
 
 import {
   useAcessManagerSettings,
-  useRahatTreasurySettings,
+  // useRahatTreasurySettings,
   useAppContractSettings,
   useAppNavSettings,
   useSettingsStore,
+  useAppCommunicationSettings,
 } from '@rahat-ui/query';
 import { useCommunicationQuery } from '@rumsan/communication-query';
 import { CommunicationService } from '@rumsan/communication/services/communication.client';
@@ -19,6 +20,9 @@ import { useQueryClient } from '@tanstack/react-query';
 import Image from 'next/image';
 import { createContext, useContext, useEffect, useMemo } from 'react';
 import { useError } from '../utils/useErrors';
+import { useNewCommunicationQuery } from '@rahat-ui/query';
+import { getClient } from '@rumsan/connect/src/clients';
+import { isEmpty } from 'lodash';
 
 export const ServiceContext = createContext<RSQueryContextType | null>(null);
 
@@ -37,7 +41,15 @@ export function ServiceProvider({ children }: ServiceProviderProps) {
     setQueryClient: setCommsQueryClient,
   } = useCommunicationQuery();
 
+  const {
+    newCommunicationService,
+    newQueryClient: newCommsQueryClient,
+    setNewCommunicationService,
+    setNewQueryClient: setNewCommsQueryClient,
+  } = useNewCommunicationQuery();
+
   const chainSettings = useSettingsStore((s) => s.chainSettings);
+
   const rsService = useMemo(
     () =>
       new RumsanService({
@@ -54,9 +66,33 @@ export function ServiceProvider({ children }: ServiceProviderProps) {
     [],
   );
   useAcessManagerSettings();
-  useRahatTreasurySettings();
+  // useRahatTreasurySettings();
   useAppContractSettings();
   useAppNavSettings();
+  useAppCommunicationSettings();
+
+  const commsSettings = useSettingsStore((s) => s.commsSettings);
+
+  useEffect(() => {
+    if (!newCommunicationService && !isEmpty(commsSettings)) {
+      const c = getClient({
+        baseURL: commsSettings['URL'],
+      });
+      c.setAppId(commsSettings['APP_ID']);
+      setNewCommunicationService(c);
+    }
+  }, [
+    commsSettings,
+    setNewCommunicationService,
+    newCommunicationService,
+    getClient,
+  ]);
+
+  useEffect(() => {
+    if (!newCommsQueryClient) {
+      setNewCommsQueryClient(qc);
+    }
+  }, [qc, newCommsQueryClient, setNewCommsQueryClient]);
 
   useEffect(() => {
     if (!queryClient) {
@@ -120,13 +156,28 @@ export function ServiceProvider({ children }: ServiceProviderProps) {
     }
   }, [communicationService]);
 
-  if (
-    !rumsanService ||
-    !queryClient ||
-    !communicationService ||
-    !commsQueryClient ||
-    !chainSettings.id
-  )
+  const isAppReady = useMemo(() => {
+    return (
+      rumsanService &&
+      queryClient &&
+      communicationService &&
+      commsQueryClient &&
+      chainSettings.id &&
+      newCommsQueryClient &&
+      newCommunicationService
+    );
+  }, [
+    rumsanService,
+    queryClient,
+    communicationService,
+    commsQueryClient,
+    chainSettings.id,
+    newCommsQueryClient,
+    newCommunicationService,
+  ]);
+
+  if (!isAppReady) {
+    console.log('App Settings is being loaded. Please Wait.', isAppReady);
     return (
       <div className="h-screen flex items-center justify-center">
         <Image
@@ -138,6 +189,7 @@ export function ServiceProvider({ children }: ServiceProviderProps) {
         />
       </div>
     );
+  }
 
   return children;
 }

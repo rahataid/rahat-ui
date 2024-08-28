@@ -9,7 +9,7 @@ import UsersTable from './user.list';
 export default function UserView() {
   const { pagination, setNextPage, setPerPage, setPrevPage } = usePagination();
 
-  const { data, isSuccess } = useCommunityUsersList({
+  const { isLoading, data, isSuccess } = useCommunityUsersList({
     page: pagination.page,
     perPage: pagination.perPage,
   });
@@ -21,7 +21,7 @@ export default function UserView() {
 
   return (
     <div>
-      <UsersTable users={users} />
+      <UsersTable users={users} loading={isLoading} />
       <CustomPagination
         currentPage={pagination.page}
         handleNextPage={setNextPage}

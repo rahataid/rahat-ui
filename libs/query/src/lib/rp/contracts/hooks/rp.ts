@@ -6,6 +6,7 @@ import {
   rahatPayrollProjectAbi,
   useReadRahatPayrollProjectTotalAllocated,
   useReadRahatTokenDecimals,
+  useWriteRahatAccessManagerGrantRole,
   useWriteRahatPayrollProjectMulticall,
   useWriteRahatTreasuryCreateToken,
   useWriteRahatTreasuryTransferToken,
@@ -355,3 +356,48 @@ export const useContractRedeem = (projectUUID: UUID) => {
     },
   });
 };
+
+export const useAssignVendorRole = (walletAddress: `0x${string}`) => {
+  const accessContract = useWriteRahatAccessManagerGrantRole();
+
+  const alert = Swal.mixin({
+    customClass: {
+      confirmButton: 'btn btn-primary',
+      cancelButton: 'btn btn-secondary',
+    },
+    buttonsStyling: false,
+  });
+  return useMutation(
+    {
+      onError: (error) => {
+        alert.fire({
+          icon: 'error',
+          title: 'Error assigning role',
+          text: error.message,
+        });
+      },
+      onSuccess: (d, { walletAddress }) => {
+        alert.fire({
+          icon: 'success',
+          title: 'Vendor Role Assigned Successfully',
+        });
+      },
+      mutationFn: async ({
+        walletAddress,
+        contractAddress,
+      }: {
+        walletAddress: `0x${string}`;
+        role: number;
+        contractAddress: `0x${string}`;
+      }) => {
+        return accessContract.writeContractAsync({
+          args: [BigInt(1), walletAddress, 0],
+          address: contractAddress,
+        });
+      },
+    },
+  )
+
+
+}
+

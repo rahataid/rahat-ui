@@ -16,8 +16,7 @@ import {
 
 import { encodeFunctionData } from 'viem';
 import {
-  useWriteAccessManagerUpdateAdmin,
-  useWriteAccessManagerUpdateProjectManager,
+  useWriteAccessManagerGrantRole,
 } from './access';
 import { useUserAddRoles } from '@rumsan/react-query';
 import { useUserCreate } from '@rahat-ui/query';
@@ -216,7 +215,7 @@ export const useBulkAssignVoucher = () => {
 };
 
 export const useAddManager = () => {
-  const contract = useWriteAccessManagerUpdateProjectManager();
+  const contract = useWriteAccessManagerGrantRole();
   const addUser = useUserCreate();
   const alert = useAlert();
 
@@ -231,7 +230,7 @@ export const useAddManager = () => {
       contractAddress: `0x${string}`;
     }): Promise<unknown> => {
       return contract.writeContractAsync({
-        args: [walletAddress, true],
+        args: [BigInt(1),walletAddress, 0],
         address: contractAddress,
       });
     },
@@ -251,7 +250,7 @@ export const useAddManager = () => {
 };
 
 export const useAddAdmin = () => {
-  const contract = useWriteAccessManagerUpdateAdmin();
+  const contract = useWriteAccessManagerGrantRole();
   const addUser = useUserCreate();
   const alert = useAlert();
   const route = useRouter();
@@ -267,7 +266,7 @@ export const useAddAdmin = () => {
       contractAddress: `0x${string}`;
     }): Promise<unknown> => {
       return contract.writeContractAsync({
-        args: [walletAddress, true],
+        args: [BigInt(0),walletAddress, 0],
         address: contractAddress,
       });
     },
@@ -287,7 +286,7 @@ export const useAddAdmin = () => {
 };
 
 export const useAddManagerRole = () => {
-  const contract = useWriteAccessManagerUpdateProjectManager();
+  const contract = useWriteAccessManagerGrantRole();
   const addUserRole = useUserAddRoles();
   const alert = useAlert();
 
@@ -300,7 +299,7 @@ export const useAddManagerRole = () => {
       contractAddress: `0x${string}`;
     }): Promise<unknown> => {
       return contract.writeContractAsync({
-        args: [data.wallet, true],
+        args: [BigInt(1),data.wallet, 0],
         address: contractAddress,
       });
     },
@@ -322,7 +321,7 @@ export const useAddManagerRole = () => {
 };
 
 export const useAddAdminRole = () => {
-  const contract = useWriteAccessManagerUpdateAdmin();
+  const contract = useWriteAccessManagerGrantRole();
   const addUserRole = useUserAddRoles();
   const alert = useAlert();
 
@@ -335,7 +334,7 @@ export const useAddAdminRole = () => {
       contractAddress: `0x${string}`;
     }): Promise<unknown> => {
       return contract.writeContractAsync({
-        args: [data.wallet, true],
+        args: [BigInt(0),data.wallet, 0],
         address: contractAddress,
       });
     },

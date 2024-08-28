@@ -2,7 +2,7 @@
 
 import {
   useAcessManagerSettings,
-  useRahatTreasurySettings,
+  // useRahatTreasurySettings,
   useAppContractSettings,
   useAppNavSettings,
   useSettingsStore,
@@ -45,8 +45,8 @@ export function ServiceProvider({ children }: ServiceProviderProps) {
     newCommunicationService,
     newQueryClient: newCommsQueryClient,
     setNewCommunicationService,
-    setNewQueryClient: setNewCommsQueryClient
-  } = useNewCommunicationQuery()
+    setNewQueryClient: setNewCommsQueryClient,
+  } = useNewCommunicationQuery();
 
   const chainSettings = useSettingsStore((s) => s.chainSettings);
 
@@ -66,22 +66,27 @@ export function ServiceProvider({ children }: ServiceProviderProps) {
     [],
   );
   useAcessManagerSettings();
-  useRahatTreasurySettings();
+  // useRahatTreasurySettings();
   useAppContractSettings();
   useAppNavSettings();
-  useAppCommunicationSettings()
+  useAppCommunicationSettings();
 
   const commsSettings = useSettingsStore((s) => s.commsSettings);
 
   useEffect(() => {
     if (!newCommunicationService && !isEmpty(commsSettings)) {
       const c = getClient({
-        baseURL: commsSettings['URL']
-      })
-      c.setAppId(commsSettings['APP_ID'])
+        baseURL: commsSettings['URL'],
+      });
+      c.setAppId(commsSettings['APP_ID']);
       setNewCommunicationService(c);
     }
-  }, [commsSettings,setNewCommunicationService,newCommunicationService,getClient]);
+  }, [
+    commsSettings,
+    setNewCommunicationService,
+    newCommunicationService,
+    getClient,
+  ]);
 
   useEffect(() => {
     if (!newCommsQueryClient) {
@@ -151,15 +156,28 @@ export function ServiceProvider({ children }: ServiceProviderProps) {
     }
   }, [communicationService]);
 
-  if (
-    !rumsanService ||
-    !queryClient ||
-    !communicationService ||
-    !commsQueryClient ||
-    !chainSettings.id ||
-    !newCommsQueryClient ||
-    !newCommunicationService
-  )
+  const isAppReady = useMemo(() => {
+    return (
+      rumsanService &&
+      queryClient &&
+      communicationService &&
+      commsQueryClient &&
+      chainSettings.id &&
+      newCommsQueryClient &&
+      newCommunicationService
+    );
+  }, [
+    rumsanService,
+    queryClient,
+    communicationService,
+    commsQueryClient,
+    chainSettings.id,
+    newCommsQueryClient,
+    newCommunicationService,
+  ]);
+
+  if (!isAppReady) {
+    console.log('App Settings is being loaded. Please Wait.', isAppReady);
     return (
       <div className="h-screen flex items-center justify-center">
         <Image
@@ -171,6 +189,7 @@ export function ServiceProvider({ children }: ServiceProviderProps) {
         />
       </div>
     );
+  }
 
   return children;
 }

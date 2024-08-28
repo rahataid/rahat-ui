@@ -43,7 +43,7 @@ export const useChainSettings = () => {
       queryKey: ['CHAIN_SETTINGS'],
       queryFn: async () => {
         const d = await appSettings.mutateAsync();
-        return d.data.data?.value;
+        return d.data.data?.value || {};
       },
 
       enabled: !!queryClient,
@@ -70,7 +70,7 @@ export const useAcessManagerSettings = () => {
       queryKey: ['ACCESS_MANAGER'],
       queryFn: async () => {
         const d = await appSettings.mutateAsync();
-        return d.data.data?.value;
+        return d.data.data?.value || {};
       },
 
       enabled: !!queryClient,
@@ -87,32 +87,32 @@ export const useAcessManagerSettings = () => {
   return query;
 };
 
-export const useRahatTreasurySettings = () => {
-  const { queryClient } = useRSQuery();
-  const appSettings = useAppSettingsMutate('RAHAT_TREASURY');
-  const { setRahatTreasurySettings } = useSettingsStore();
+// export const useRahatTreasurySettings = () => {
+//   const { queryClient } = useRSQuery();
+//   const appSettings = useAppSettingsMutate('RAHAT_TREASURY');
+//   const { setRahatTreasurySettings } = useSettingsStore();
 
-  const query = useQuery(
-    {
-      queryKey: ['RAHAT_TREASURY'],
-      queryFn: async () => {
-        const d = await appSettings.mutateAsync();
-        return d.data.data?.value;
-      },
+//   const query = useQuery(
+//     {
+//       queryKey: ['RAHAT_TREASURY'],
+//       queryFn: async () => {
+//         const d = await appSettings.mutateAsync();
+//         return d.data.data?.value || {};
+//       },
 
-      enabled: !!queryClient,
-    },
-    queryClient,
-  );
+//       enabled: !!queryClient,
+//     },
+//     queryClient,
+//   );
 
-  useEffect(() => {
-    if (query.isSuccess) {
-      setRahatTreasurySettings(query.data);
-    }
-  }, [query.isSuccess, query.data, setRahatTreasurySettings]);
+//   useEffect(() => {
+//     if (query.isSuccess) {
+//       setRahatTreasurySettings(query.data);
+//     }
+//   }, [query.isSuccess, query.data, setRahatTreasurySettings]);
 
-  return query;
-};
+//   return query;
+// };
 
 export const useAppContractSettings = () => {
   const { queryClient } = useRSQuery();
@@ -125,7 +125,7 @@ export const useAppContractSettings = () => {
       queryKey: ['CONTRACTS'],
       queryFn: async () => {
         const d = await appSettings.mutateAsync();
-        return d.data.data?.value;
+        return d.data.data?.value || {};
       },
 
       enabled: !!queryClient,
@@ -153,7 +153,7 @@ export const useAppCommunicationSettings = () => {
       queryKey: ['COMMUNICATION'],
       queryFn: async () => {
         const d = await appSettings.mutateAsync();
-        return d.data.data?.value;
+        return d.data.data?.value || {};
       },
 
       enabled: !!queryClient,
@@ -181,7 +181,7 @@ export const useAppNavSettings = () => {
       queryKey: ['NAV'],
       queryFn: async () => {
         const d = await appSettings.mutateAsync();
-        return d.data.data?.value;
+        return d.data.data?.value || {};
       },
 
       enabled: !!queryClient,

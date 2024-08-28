@@ -29,6 +29,7 @@ import { socket } from 'apps/community-tool-ui/src/socket';
 import { useEffect, useState } from 'react';
 
 export default function TargetSelectForm() {
+  const [targetUID, setTargetUID] = useState<string>('');
   const { pagination } = usePagination();
   const router = useRouter();
   const { loading, setLoading } = useCommunityTargetingStore((state) => ({
@@ -61,7 +62,7 @@ export default function TargetSelectForm() {
       return true;
     }
 
-    for (let key in targetingQueries) {
+    for (const key in targetingQueries) {
       if (targetingQueries.hasOwnProperty(key)) {
         if (targetingQueries[key]) return false;
       }
@@ -76,19 +77,21 @@ export default function TargetSelectForm() {
       targetingQueries.createdAt = formatDate(targetingQueries.createdAt);
     }
     const payload = { ...formData, ...targetingQueries };
-    await addTargeting.mutateAsync({
+    const data: any = await addTargeting.mutateAsync({
       filterOptions: [{ data: payload }],
     });
+    const uuid: string = data.data?.uuid;
+    setTargetUID(uuid);
   };
 
   useEffect(() => {
     socket.on('targeting-completed', (targetUuid: string) => {
-      setLoading(false);
-      router.push(`/targeting/filters?targetUUID=${targetUuid}`);
+      if (targetUID === targetUuid) {
+        router.push(`/targeting/filters?targetUUID=${targetUuid}`);
+        setLoading(false);
+      }
     });
-
-    return () => setLoading(false);
-  }, [router, setLoading]);
+  }, [router, setLoading, targetUID]);
 
   return (
     <Form {...form}>

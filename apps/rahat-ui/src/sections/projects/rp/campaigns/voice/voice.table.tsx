@@ -26,11 +26,6 @@ import {
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { CAMPAIGN_TYPES } from '@rahat-ui/types';
 import {
-  useGetCommunicationLogs,
-  useGetCommunicationStats,
-  useListCampaign,
-} from '@rumsan/communication-query';
-import {
   ColumnFiltersState,
   SortingState,
   VisibilityState,

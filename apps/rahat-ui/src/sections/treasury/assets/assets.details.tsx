@@ -82,7 +82,7 @@ const AssetsDetails = () => {
       </div>
       <div className="mt-2">
         <div className="bg-card h-[calc(100vh-500px)] w-full flex flex-col justify-center items-center">
-          <AssetsModal />
+          <AssetsModal tokenAddress = {contractAddress}/>
         </div>
       </div>
     </div>

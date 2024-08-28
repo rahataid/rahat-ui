@@ -203,6 +203,7 @@ export default function EditSettings({
                         uppercaseValue.split(',').map((item) => item.trim()), // Remove leading and trailing whitespaces
                       );
                     }}
+                    disabled={data?.data?.isPrivate}
                   />
                   {errors.requiredFields &&
                     Array.isArray(errors.requiredFields) && (
@@ -228,6 +229,7 @@ export default function EditSettings({
                         value={field.value ? 'false' : 'true'}
                         checked={field.value}
                         onCheckedChange={field.onChange}
+                        disabled={data?.data?.isPrivate}
                       />
                     </div>
                   )}
@@ -244,6 +246,7 @@ export default function EditSettings({
                         value={field.value ? 'true' : 'false'}
                         checked={field.value}
                         onCheckedChange={field.onChange}
+                        disabled={data?.data?.isPrivate}
                       />
                     </div>
                   )}
@@ -251,81 +254,83 @@ export default function EditSettings({
               </div>
             </div>
           </div>
-          <div className="grid grid-cols-5 gap-4 mb-4">
-            {fields.length > 0 && (
-              <>
-                <Label className="col-span-2">KEY</Label>
-                <Label className="col-span-2">VALUE</Label>
-              </>
-            )}
-          </div>
-          <div className="grid grid-cols-5 gap-5 mb-4">
-            {fields.map((fieldName, index) => {
-              return (
-                <React.Fragment key={fieldName.id}>
-                  <FormField
-                    control={control}
-                    name={`field.${index}.value.key`}
-                    render={({ field }) => (
-                      <div className="col-span-2">
-                        <Input
-                          type="text"
-                          placeholder="eg:Client-ID"
-                          {...field}
-                        />
-                        {errors?.field?.[index]?.value?.key && (
-                          <Label className="text-red-500">
-                            {errors?.field[index]?.value?.key?.message}
-                          </Label>
+          {data?.data?.isPrivate === false && (
+            <>
+              <div className="grid grid-cols-5 gap-4 mb-4">
+                {fields.length > 0 && (
+                  <>
+                    <Label className="col-span-2">KEY</Label>
+                    <Label className="col-span-2">VALUE</Label>
+                  </>
+                )}
+              </div>
+              <div className="grid grid-cols-5 gap-5 mb-4">
+                {fields.map((fieldName, index) => {
+                  return (
+                    <React.Fragment key={fieldName.id}>
+                      <FormField
+                        control={control}
+                        name={`field.${index}.value.key`}
+                        render={({ field }) => (
+                          <div className="col-span-2">
+                            <Input
+                              type="text"
+                              placeholder="eg:Client-ID"
+                              {...field}
+                            />
+                            {errors?.field?.[index]?.value?.key && (
+                              <Label className="text-red-500">
+                                {errors?.field[index]?.value?.key?.message}
+                              </Label>
+                            )}
+                          </div>
                         )}
-                      </div>
-                    )}
-                  />
+                      />
 
-                  <FormField
-                    control={control}
-                    name={`field.${index}.value.value`}
-                    render={({ field }) => (
-                      <div className="col-span-2">
-                        <Input type="text" placeholder="Value" {...field} />
-                        {errors?.field?.[index]?.value?.value && (
-                          <Label className="text-red-500">
-                            {errors?.field[index]?.value?.value?.message}
-                          </Label>
+                      <FormField
+                        control={control}
+                        name={`field.${index}.value.value`}
+                        render={({ field }) => (
+                          <div className="col-span-2">
+                            <Input type="text" placeholder="Value" {...field} />
+                            {errors?.field?.[index]?.value?.value && (
+                              <Label className="text-red-500">
+                                {errors?.field[index]?.value?.value?.message}
+                              </Label>
+                            )}
+                          </div>
                         )}
+                      />
+
+                      <div className="flex justify-center">
+                        <Button
+                          type="button"
+                          onClick={() => {
+                            remove(index);
+                          }}
+                          className="p-1 text-xs  w-10"
+                        >
+                          <Minus size={18} strokeWidth={1.5} />
+                        </Button>
                       </div>
-                    )}
-                  />
+                    </React.Fragment>
+                  );
+                })}
+              </div>
 
-                  <div className="flex justify-center">
-                    <Button
-                      type="button"
-                      onClick={() => {
-                        remove(index);
-                      }}
-                      className="p-1 text-xs  w-10"
-                    >
-                      <Minus size={18} strokeWidth={1.5} />
-                    </Button>
-                  </div>
-                </React.Fragment>
-              );
-            })}
-          </div>
-
-          <Button
-            onClick={appendField}
-            type="button"
-            className="flex items-center p-2 gap-1 text-xs  w-15"
-          >
-            <Plus size={18} strokeWidth={1.5} />
-            Add Field
-          </Button>
-          <div className="flex justify-end">
-            <Button type="submit" disabled={data?.data?.isPrivate}>
-              Save
-            </Button>
-          </div>
+              <Button
+                onClick={appendField}
+                type="button"
+                className="flex items-center p-2 gap-1 text-xs  w-15"
+              >
+                <Plus size={18} strokeWidth={1.5} />
+                Add Field
+              </Button>
+              <div className="flex justify-end">
+                <Button type="submit">Save</Button>
+              </div>
+            </>
+          )}
         </div>
         {/* </div> */}
       </form>

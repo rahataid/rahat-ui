@@ -35,9 +35,9 @@ const Confirm = () => {
               </p>
               <Link
                 className="mt-6 bg-blue-50 text-blue-500 py-2 px-4 rounded-md inline-block"
-                href="/transactions"
+                href={`/projects/c2c/${id}/disbursements`}
               >
-                View Transactions
+                View Disbursement
               </Link>
             </div>
           </div>

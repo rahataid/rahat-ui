@@ -137,7 +137,7 @@ function GrievanceForm({
       <form onSubmit={form.handleSubmit(handleSubmit)}>
         <div className="p-4 h-add bg-card">
           <div className="shadow-md p-4 rounded-sm">
-            <h1 className="text-lg font-semibold mb-6">Create Grievance</h1>
+            <h1 className="text-lg font-semibold mb-6">Edit Grievance</h1>
             <div className="grid grid-cols-2 gap-4 mb-4">
               <GrievanceField
                 control={form.control}
@@ -180,7 +180,7 @@ function GrievanceForm({
               >
                 Go Back
               </Button>
-              <Button type="submit">Create Grievance</Button>
+              <Button type="submit">Edit Grievance</Button>
             </div>
           </div>
         </div>

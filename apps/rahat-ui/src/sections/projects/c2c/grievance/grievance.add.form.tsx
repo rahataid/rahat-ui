@@ -57,6 +57,7 @@ interface GrievanceFormProps {
   form: ReturnType<typeof useForm<FormData>>;
   handleSubmit: (data: FormData) => void;
   handleGoBack: () => void;
+  isSubmitting: boolean;
 }
 
 const grievanceTypeOptions = enumToObjectArray(GrievanceType).map((type) => ({
@@ -122,6 +123,7 @@ function GrievanceForm({
   form,
   handleSubmit,
   handleGoBack,
+  isSubmitting,
 }: GrievanceFormProps) {
   return (
     <Form {...form}>
@@ -165,7 +167,9 @@ function GrievanceForm({
               >
                 Go Back
               </Button>
-              <Button type="submit">Create Grievance</Button>
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? 'Creating...' : 'Create Grievance'}
+              </Button>
             </div>
           </div>
         </div>
@@ -207,6 +211,10 @@ export default function GrievanceAdd() {
 
     router.back();
     await addGrievance.mutateAsync(grievance);
+
+    if (addGrievance.isSuccess) {
+      router.push(`/projects/c2c/${id}/grievance`);
+    }
   };
 
   return (
@@ -214,6 +222,7 @@ export default function GrievanceAdd() {
       form={form}
       handleSubmit={handleCreateGrievance}
       handleGoBack={handleGoBack}
+      isSubmitting={form.formState.isSubmitting}
     />
   );
 }

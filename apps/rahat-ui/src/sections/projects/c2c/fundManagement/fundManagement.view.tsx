@@ -47,7 +47,6 @@ const FundManagementView = () => {
       },
     },
   });
-
   const mySeries = [
     {
       name: 'Recent Deposits',

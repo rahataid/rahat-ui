@@ -138,6 +138,7 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
           value={stepData.disburseAmount}
           onChange={handleStepDataChange}
           projectSubgraphDetails={projectSubgraphDetails}
+          treasurySource={stepData.treasurySource}
         />
       ),
       validation: {

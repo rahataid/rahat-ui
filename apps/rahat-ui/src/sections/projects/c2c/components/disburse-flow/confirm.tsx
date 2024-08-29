@@ -1,8 +1,10 @@
 import { CheckCircleIcon } from 'lucide-react';
 import Link from 'next/link';
+import { useParams } from 'next/navigation';
 import React from 'react';
 
 const Confirm = () => {
+  const { id } = useParams();
   return (
     <>
       <div className="flex items-center gap-2 m-4">

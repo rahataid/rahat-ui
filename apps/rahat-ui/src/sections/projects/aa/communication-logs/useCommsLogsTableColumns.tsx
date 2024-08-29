@@ -8,7 +8,7 @@ export default function useCommsLogsTableColumns() {
       accessorKey: 'audience',
       header: 'Audience',
       cell: ({ row }) => (
-        <div className="capitalize">{row?.original?.address}</div>
+        <div className="">{row?.original?.address}</div>
       ),
     },
     {

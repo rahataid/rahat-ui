@@ -3,17 +3,22 @@ import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   Component,
   Download,
+  Hash,
   LucideIcon,
   MessageSquareMore,
+  MessageSquareWarning,
+  RefreshCcw,
   Timer,
   UsersRound,
 } from 'lucide-react';
 import CommsLogsTable from './comms.logs.table';
 import { useParams } from 'next/navigation';
-import { useGetCommunicationLogs } from '@rahat-ui/query';
+import { useGetCommunicationLogs, useRetryFailedBroadcast } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import Loader from 'apps/rahat-ui/src/components/table.loader';
 import { Player } from 'react-simple-player';
+import { BroadcastStatus } from '@rumsan/connect/src/types';
+import { useMemo } from 'react';
 
 type IHeadCardProps = {
   title: string;
@@ -26,11 +31,29 @@ export default function CommsLogsDetailPage() {
   const [communicationId, activityId] = (commsIdXactivityId as string).split('%40');
 
   const { data: logs, isLoading } = useGetCommunicationLogs(projectID as UUID, communicationId, activityId);
+  const mutateRetry = useRetryFailedBroadcast(projectID as UUID, communicationId, activityId);
+
+  const retryFailed = async () => {
+    mutateRetry.mutateAsync()
+  }
+
+  const failedCount = useMemo(() => {
+    return (logs?.sessionLogs?.filter((log: any) => log?.status === BroadcastStatus.FAIL))?.length
+  }, [logs])
+
+
+  const logsGroupName = useMemo(() => {
+    if (logs?.groupName.length > 20) {
+      return `${logs?.groupName?.slice(0, 20)}...`
+    } else {
+      return logs?.groupName
+    }
+  }, [logs])
 
   const headCardFields = [
     {
       title: 'Total Audience',
-      icon: UsersRound,
+      icon: Hash,
       content: logs?.totalAudience || 'N/A',
     },
     {
@@ -40,14 +63,19 @@ export default function CommsLogsDetailPage() {
     },
     {
       title: 'Group Name',
-      icon: Timer,
-      content: logs?.groupName || 'N/A',
+      icon: UsersRound,
+      content: logsGroupName || 'N/A',
     },
     {
       title: 'Group Type',
       icon: Component,
       content: logs?.communicationDetail?.groupType || 'N/A',
     },
+    {
+      title: 'Status',
+      icon: MessageSquareWarning,
+      content: <Badge className="bg-orange-100 text-orange-600">{logs?.sessionDetails?.status}</Badge>
+    }
   ];
 
   if (isLoading) {
@@ -58,13 +86,23 @@ export default function CommsLogsDetailPage() {
     <div className="p-4 h-[calc(100vh-65px)] bg-secondary">
       <div className="flex justify-between items-center mb-4">
         <h1 className="font-semibold text-xl">Communication Details</h1>
-        <Button type="button">
-          <Download className="mr-2" size={16} strokeWidth={2} />
-          <span className="font-normal">Failed Exports</span>
-        </Button>
+        <div className='flex gap-2'>
+          <Button type="button">
+            <Download className="mr-2" size={16} strokeWidth={2} />
+            <span className="font-normal">Failed Exports</span>
+          </Button>
+          {
+            (failedCount > 0) && (
+              <Button type="button" onClick={retryFailed}>
+                <RefreshCcw className="mr-2" size={16} strokeWidth={2} />
+                <span className="font-normal">Retry Failed</span>
+              </Button>
+            )
+          }
+        </div>
       </div>
 
-      <div className="grid grid-cols-4 gap-2">
+      <div className="grid grid-cols-5 gap-2">
         {headCardFields?.map((d: IHeadCardProps) => {
           const Icon = d?.icon;
           return (
@@ -111,7 +149,7 @@ export default function CommsLogsDetailPage() {
           <div className='w-full'>
             {renderMessage(logs?.communicationDetail?.message)}
           </div>
-          
+
         </div>
       </div>
 
@@ -141,15 +179,26 @@ function renderMessage(message: any) {
       <a className='cursor-pointer inline-flex' href={message?.mediaURL} target='_blank'>
         <Download size={20} strokeWidth={1.5} className='mr-2' />
         <span>
-          {`${message?.fileName?.substring(0,20)}...`}
+          {`${message?.fileName?.substring(0, 20)}...`}
         </span>
       </a>
       <div className='p-2 w-1/2'>
-        <Player src={message?.mediaURL} accent={[41, 121, 214]}  grey={[250, 250, 250]}/>
+        <Player src={message?.mediaURL} accent={[41, 121, 214]} grey={[250, 250, 250]} />
       </div>
     </div>
 
   )
 }
 
-{/* */ }
+// function renderBadgeBg(status: string) {
+//   if(status === SessionStatus.FAILED){
+//     return "bg-red-200"
+//   }
+//   if(status === SessionStatus.COMPLETED){
+//     return "bg-green-200"
+//   }
+//   if(status === SessionStatus.PENDING){
+//     return 
+//   }
+//   return "bg-gray-200"
+// }

@@ -30,10 +30,11 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import { Settings2 } from 'lucide-react';
+import { CircleEllipsisIcon, Settings2 } from 'lucide-react';
 import CustomPagination from '../../components/customPagination';
 import { useDebounce } from '../../utils/debounceHooks';
 import { useSettingTableColumns } from './useSettingColumns';
+import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 
 export default function ListSetting() {
   const columns = useSettingTableColumns();
@@ -51,7 +52,7 @@ export default function ListSetting() {
     setPagination,
   } = usePagination();
   const debouncedFilters = useDebounce(filters, 500) as any;
-  const { data } = useCommunitySettingList({
+  const { isLoading, data } = useCommunitySettingList({
     ...pagination,
     ...(debouncedFilters as any),
   });
@@ -194,7 +195,16 @@ export default function ListSetting() {
                     colSpan={table.getAllColumns().length}
                     className="h-24 text-center"
                   >
-                    No results.
+                    {isLoading ? (
+                      <div className="flex items-center justify-center mt-4">
+                        <div className="text-center">
+                          <CircleEllipsisIcon className="animate-spin h-8 w-8 ml-4" />
+                          <Label className="text-base">Loading ...</Label>
+                        </div>
+                      </div>
+                    ) : (
+                      'No result found'
+                    )}
                   </TableCell>
                 </TableRow>
               )}

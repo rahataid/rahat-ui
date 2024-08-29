@@ -8,11 +8,12 @@ import {
 } from '@radix-ui/react-tooltip';
 import { TooltipContent } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { truncateEthAddress } from '@rumsan/core/utilities/string.utils';
-import { Copy, CopyCheck } from 'lucide-react';
+import { Copy, CopyCheck, ArrowUpDown } from 'lucide-react';
 import Link from 'next/link';
 import { shortenTxHash } from 'apps/rahat-ui/src/utils/getProjectAddress';
 import { formatEther } from 'viem';
 import { formatdbDate } from 'apps/rahat-ui/src/utils';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 
 const useTransactionColumn = () => {
   const [walletAddressCopied, setWalletAddressCopied] = useState<number>();
@@ -65,7 +66,17 @@ const useTransactionColumn = () => {
     },
     {
       accessorKey: 'date',
-      header: 'Timestamp',
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          >
+            Timestamp
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        );
+      },
       cell: ({ row }) => (
         <div className="capitalize">{formatdbDate(row.getValue('date'))}</div>
       ),

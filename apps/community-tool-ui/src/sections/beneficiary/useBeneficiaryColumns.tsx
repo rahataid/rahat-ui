@@ -120,16 +120,7 @@ export const useCommunityBeneficiaryTableColumns = () => {
         <div>{humanizeString(row.getValue('govtIDNumber')) || '-'}</div>
       ),
     },
-    {
-      header: 'Local Level',
-      accessorKey: 'localLevel',
-      enableHiding: true,
 
-      cell: ({ row }) => {
-        const localLevel = row.original?.extras?.local_level || '-';
-        return <div>{humanizeString(localLevel)}</div>;
-      },
-    },
     {
       header: 'Ward',
       accessorKey: 'ward',

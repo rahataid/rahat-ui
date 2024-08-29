@@ -15,21 +15,41 @@ import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 
 type Step2SelectBeneficiaryProps = {
   disbursmentList: any;
+  benificiaryGroups: any;
   form: UseFormReturn<z.infer<any>>;
+  setCurrentStep: (currentStep: number) => void;
+  currentStep: number;
 };
 
 export default function Step2SelectBeneficiary({
   form,
+  benificiaryGroups,
   disbursmentList,
+  setCurrentStep,
+  currentStep,
 }: Step2SelectBeneficiaryProps) {
   const router = useRouter();
+
+  const handleGroupChecked = (value: boolean, uuid: string) => {
+    if (value) {
+      const groupIds = form.getValues('groupIds') || [];
+      const idExist = groupIds.includes(uuid);
+      if (!idExist) {
+        form.setValue('groupIds', [...groupIds, uuid]);
+      }
+    } else {
+      const groupIds = form.getValues('groupIds') || [];
+      const filteredValue = groupIds.filter((id: string) => id !== uuid);
+      form.setValue('groupIds', filteredValue);
+    }
+  };
 
   return (
     <div className="bg-card rounded-lg m-4 p-6">
       <div className="flex flex-col gap-1">
         <div className="flex items-center gap-2">
           <ArrowLeft
-            onClick={() => router.back()}
+            onClick={() => setCurrentStep(currentStep - 1)}
             className="cursor-pointer"
             size={20}
             strokeWidth={1.5}
@@ -61,15 +81,16 @@ export default function Step2SelectBeneficiary({
           <TabsContent value="card">
             <ScrollArea className="h-[calc(100vh-498px)]">
               <div className="grid grid-cols-4 gap-4 m-4">
-                <BeneficiaryCard />
-                <BeneficiaryCard />
-                <BeneficiaryCard />
-                <BeneficiaryCard />
-                <BeneficiaryCard />
-                <BeneficiaryCard />
-                <BeneficiaryCard />
-                <BeneficiaryCard />
-                <BeneficiaryCard />
+                {benificiaryGroups.map((group: any) => {
+                  return (
+                    <BeneficiaryCard
+                      name={group.name}
+                      uuid={group.uuid}
+                      totalBeneficiary={group._count.groupedBeneficiaries}
+                      handleGroupChecked={handleGroupChecked}
+                    />
+                  );
+                })}
               </div>
             </ScrollArea>
           </TabsContent>

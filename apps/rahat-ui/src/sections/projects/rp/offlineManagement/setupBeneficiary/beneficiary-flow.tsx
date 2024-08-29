@@ -18,6 +18,7 @@ import {
   useProjectAction,
   usePagination,
   useProjectBeneficiaries,
+  useFindAllBeneficiaryGroups,
 } from '@rahat-ui/query';
 
 const initialStepData = {
@@ -29,6 +30,7 @@ export const OfflineBeneficiaryFormSchema = z.object({
     required_error: 'Vendor id is require',
   }),
   disbursements: z.number().array(),
+  groupIds: z.number().array(),
 });
 
 const SetupBeneficiaryPage = () => {
@@ -50,6 +52,8 @@ const SetupBeneficiaryPage = () => {
   const { data: disbursmentList, isSuccess } = useFindAllDisbursements(
     id as UUID,
   );
+  const { data: benGroups } = useFindAllBeneficiaryGroups(id as UUID);
+
   const { pagination, filters } = usePagination();
   const projectBeneficiaries = useProjectBeneficiaries({
     page: pagination.page,
@@ -67,7 +71,7 @@ const SetupBeneficiaryPage = () => {
       isSuccess
     ) {
       const projectBeneficiaryDisbursements = disbursmentList.map(
-        (beneficiaryDisbursement:any) => {
+        (beneficiaryDisbursement: any) => {
           const beneficiary = projectBeneficiaries.data?.data?.find(
             (disbursement: any) =>
               disbursement.walletAddress ===
@@ -152,10 +156,20 @@ const SetupBeneficiaryPage = () => {
     {
       id: 'step2',
       title: 'Select Beneficiaries',
-      component: <Step2DisburseAmount disbursmentList={rowData} form={form} />,
+      component: (
+        <Step2DisburseAmount
+          disbursmentList={rowData}
+          benificiaryGroups={benGroups}
+          form={form}
+          setCurrentStep={setCurrentStep}
+          currentStep={currentStep}
+        />
+      ),
       validation: () => {
         const disbursements = form.getValues('disbursements') || [];
-        if (disbursements.length > 0) {
+        const groupIds = form.getValues('groupIds') || [];
+
+        if (disbursements.length || groupIds.length > 0) {
           return true;
         }
         return false;
@@ -164,7 +178,13 @@ const SetupBeneficiaryPage = () => {
     {
       id: 'step3',
       title: 'Assign Amount',
-      component: <Step3AssignAmount form={form} />,
+      component: (
+        <Step3AssignAmount
+          form={form}
+          setCurrentStep={setCurrentStep}
+          currentStep={currentStep}
+        />
+      ),
       validation: () => {
         return true;
       },
@@ -201,7 +221,13 @@ const SetupBeneficiaryPage = () => {
         </div>
       ) : (
         <>
-          <ConfirmPage form={form} vendor={vendor} disbursmentList={rowData} />
+          <ConfirmPage
+            form={form}
+            vendor={vendor}
+            disbursmentList={rowData}
+            currentStep={currentStep}
+            setCurrentStep={setCurrentStep}
+          />
         </>
       )}
     </div>

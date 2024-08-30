@@ -1,3 +1,4 @@
+'use client';
 import { CheckCircleIcon } from 'lucide-react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
@@ -37,7 +38,7 @@ const Confirm = () => {
               </p>
               <Link
                 className="mt-6 bg-blue-50 text-blue-500 py-2 px-4 rounded-md inline-block"
-                href={`/projects/c2c/${id}/disbursements`}
+                href={`/projects/c2c/${id}/disbursement`}
               >
                 View Disbursement
               </Link>

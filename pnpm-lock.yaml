@@ -250,6 +250,9 @@ importers:
       react-phone-number-input:
         specifier: ^3.3.9
         version: 3.4.5(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+      react-qr-code:
+        specifier: ^2.0.15
+        version: 2.0.15(react@18.2.0)
       react-resizable-panels:
         specifier: ^2.0.12
         version: 2.1.1(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
@@ -16005,6 +16008,12 @@ packages:
         integrity: sha512-ModRIiW6oUnsP18QzrRYZSc/CFKFKIdj7pUs57AEVH20ajlglRpN3HukjHk0UbNMTlKGuaYl7Gt6/O5Gg2NU2Q==,
       }
 
+  qr.js@0.0.0:
+    resolution:
+      {
+        integrity: sha512-c4iYnWb+k2E+vYpRimHqSu575b1/wKl4XFeJGpFmrJQz5I88v9aY2czh7s0w36srfCM1sXgC/xpoJz5dJfq+OQ==,
+      }
+
   qrcode-generator@1.4.4:
     resolution:
       {
@@ -16360,6 +16369,14 @@ packages:
     peerDependencies:
       react: '>=16.8'
       react-dom: '>=16.8'
+
+  react-qr-code@2.0.15:
+    resolution:
+      {
+        integrity: sha512-MkZcjEXqVKqXEIMVE0mbcGgDpkfSdd8zhuzXEl9QzYeNcw8Hq2oVIzDLWuZN2PQBwM5PWjc2S31K8Q1UbcFMfw==,
+      }
+    peerDependencies:
+      react: '*'
 
   react-refresh@0.14.2:
     resolution:
@@ -32453,6 +32470,8 @@ snapshots:
     dependencies:
       qrcode-generator: 1.4.4
 
+  qr.js@0.0.0: {}
+
   qrcode-generator@1.4.4: {}
 
   qrcode-terminal-nooctal@0.12.1: {}
@@ -32720,6 +32739,12 @@ snapshots:
       prop-types: 15.8.1
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
+
+  react-qr-code@2.0.15(react@18.2.0):
+    dependencies:
+      prop-types: 15.8.1
+      qr.js: 0.0.0
+      react: 18.2.0
 
   react-refresh@0.14.2: {}
 

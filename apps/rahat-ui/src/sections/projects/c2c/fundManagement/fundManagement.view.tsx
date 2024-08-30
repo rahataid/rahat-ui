@@ -95,16 +95,10 @@ const FundManagementView = () => {
             </CardHeader>
             <CardContent className="flex items-center justify-between">
               <div>
-                {/* {loading ? (
-                <TableLoader />
-              ) : (
-                <> */}
                 <div className="text-xl font-normal text-primary flex items-center gap-4">
                   {shortenAddress(c2cProjectAddress)}
-                  <QrModal />
+                  <QrModal projectAddress={c2cProjectAddress} />
                 </div>
-                {/* </> */}
-                {/* )} */}
               </div>
             </CardContent>
           </Card>

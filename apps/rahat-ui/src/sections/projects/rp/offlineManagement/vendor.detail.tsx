@@ -19,7 +19,7 @@ const VendorDetails = () => {
       <div className="flex flex-col gap-1">
         <div className="flex items-center gap-2">
           <ArrowLeft
-            onClick={() => router.back()}
+            onClick={() => router.push(`/projects/rp/${id}/offlineManagement`)}
             className="cursor-pointer"
             size={20}
             strokeWidth={1.5}
@@ -27,6 +27,7 @@ const VendorDetails = () => {
           <h1 className="text-2xl font-semibold text-gray-900">
             {offlineVendor?.name}
           </h1>
+          {offlineVendor?.synced && <p>Synced</p>}
         </div>
         <p className="text-gray-500 font-normal text-base">
           Here is the detailed view of the vendor

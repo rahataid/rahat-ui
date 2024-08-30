@@ -4,7 +4,9 @@ import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { useTriggerCommunication } from '@rahat-ui/query';
 import { UUID } from 'crypto';
+import { SessionStatus } from "@rumsan/connect/src/types/index"
 import SpinnerLoader from '../../../components/spinner.loader';
+import { Download } from 'lucide-react';
 
 type IProps = {
   activityDetail: any;
@@ -15,21 +17,26 @@ export default function ActivityCommunicationListCard({
   activityDetail,
   projectId,
 }: IProps) {
-  const [loadingButtons, setLoadingButtons] = React.useState<number[]>([]);
+  const [loadingButtons, setLoadingButtons] = React.useState<string[]>([]);
+
+  const activityId = activityDetail.uuid;
 
   const trigger = useTriggerCommunication();
 
-  const triggerCommunication = async (campaignId: number) => {
-    setLoadingButtons((prev) => [...prev, campaignId]);
+  const triggerCommunication = async (activityId: string, communicationId: string) => {
+    setLoadingButtons((prev) => [...prev, communicationId]);
     try {
       await trigger.mutateAsync({
         projectUUID: projectId as UUID,
-        activityCommunicationPayload: { campaignId: campaignId },
+        activityCommunicationPayload: { communicationId, activityId },
       });
     } finally {
-      setLoadingButtons((prev) => prev.filter((id) => id !== campaignId));
+      setLoadingButtons((prev) => prev.filter((id) => id !== communicationId));
     }
   };
+
+  console.log(activityDetail?.activityCommunication)
+
   return (
     <div className="bg-card p-4 rounded">
       <h1 className="font-semibold text-lg">Communication List</h1>
@@ -41,16 +48,16 @@ export default function ActivityCommunicationListCard({
                 <h1 className="font-medium text-primary">{comm?.groupName}</h1>
                 <Button
                   type="button"
-                  disabled={comm?.campaignData?.status === 'COMPLETED'}
+                  disabled={comm?.sessionStatus !== SessionStatus.NEW}
                   className="h-7 w-24"
-                  onClick={() => triggerCommunication(comm?.campaignId)}
+                  onClick={() => triggerCommunication(activityId, comm?.communicationId)}
                 >
-                  {loadingButtons.includes(comm?.campaignId) ? (
+                  {loadingButtons.includes(comm?.communicationId) ? (
                     <SpinnerLoader />
-                  ) : comm?.campaignData?.status === 'COMPLETED' ? (
-                    'Sent'
-                  ) : (
+                  ) : comm?.sessionStatus === SessionStatus.NEW ? (
                     'Send'
+                  ) : (
+                    'Sent'
                   )}
                 </Button>
               </div>
@@ -63,16 +70,16 @@ export default function ActivityCommunicationListCard({
                   <h1 className="text-muted-foreground text-sm">
                     Communication
                   </h1>
-                  <p>{comm?.communicationType}</p>
+                  <p>{comm?.transportName}</p>
                 </div>
                 <div>
                   <h1 className="text-muted-foreground text-sm">Message</h1>
-                  <p>{comm?.message}</p>
+                  <p>{renderMessage(comm?.message)}</p>
                 </div>
                 <div className="text-right">
                   <h1 className="text-muted-foreground text-sm">Status</h1>
                   <Badge className="bg-orange-100 text-orange-600">
-                    {comm?.campaignData?.status}
+                    {comm?.sessionStatus}
                   </Badge>
                 </div>
               </div>
@@ -84,4 +91,21 @@ export default function ActivityCommunicationListCard({
       )}
     </div>
   );
+}
+
+
+function renderMessage(message: any) {
+  // console.log(typeof(message))
+  if (typeof (message) === "string") {
+    return message;
+  }
+  return (
+    <a className='cursor-pointer underline inline-flex' href={message?.mediaURL} target='_blank'>
+      <span>
+        {message?.fileName}
+      </span>
+      <Download size={20} strokeWidth={1.5} className='ml-2' />
+    </a>
+  )
+
 }

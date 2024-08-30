@@ -12,25 +12,46 @@ import {
   PROJECT_SETTINGS_KEYS,
   useProjectSettingsStore,
   useSyncOfflineBeneficiaries,
+  useGetBeneficiariesDisbursements,
 } from '@rahat-ui/query';
 
 type ConfirmPageProps = {
   form: UseFormReturn<z.infer<any>>;
   vendor: any;
   disbursmentList: any;
+  setCurrentStep: (currentStep: number) => void;
+
+  currentStep: number;
 };
 
-const ComfirmPage = ({ form, vendor, disbursmentList }: ConfirmPageProps) => {
+const ComfirmPage = ({
+  form,
+  vendor,
+  disbursmentList,
+  setCurrentStep,
+  currentStep,
+}: ConfirmPageProps) => {
   const router = useRouter();
   const { id } = useParams();
   const [isOpen, setIsOpen] = useState(false);
   const syncBen = useSyncOfflineBeneficiaries(id as UUID);
+
   const selectedVendor = vendor.find(
     (v) => v?.id == form.getValues('vendorId'),
   );
-  const selectedDisbursementId = form.getValues('disbursements');
+  const groupIds = form.getValues('groupIds') || [];
+
+  const { data: beneficiariesDisbursements } = useGetBeneficiariesDisbursements(
+    id as UUID,
+    groupIds,
+  );
+  const disBursementIds = beneficiariesDisbursements?.map(
+    (disBursement) => disBursement.id,
+  );
+  const selectedDisbursementId =
+    form.getValues('disbursements') || disBursementIds;
   const selectedDisbursement = disbursmentList?.filter((disbursment: any) =>
-    selectedDisbursementId.includes(disbursment?.disbursmentId),
+    selectedDisbursementId?.includes(disbursment?.disbursmentId),
   );
   let tokenAmount = 0;
   selectedDisbursement?.map((disbursment: any) => {
@@ -39,13 +60,16 @@ const ComfirmPage = ({ form, vendor, disbursmentList }: ConfirmPageProps) => {
   const contractSettings = useProjectSettingsStore(
     (state) => state.settings?.[id as UUID]?.[PROJECT_SETTINGS_KEYS.CONTRACT],
   );
-  const noOfSelectedDisbursement = form.getValues('disbursements')?.length || 0;
+  const noOfSelectedDisbursement =
+    form.getValues('disbursements')?.length ||
+    beneficiariesDisbursements?.length;
+
   return (
     <div className="bg-card rounded-lg m-6 p-4">
       <div className="flex flex-col gap-1">
         <div className="flex items-center gap-2">
           <ArrowLeft
-            onClick={() => router.back()}
+            onClick={() => setCurrentStep(currentStep - 1)}
             className="cursor-pointer"
             size={20}
             strokeWidth={1.5}
@@ -108,7 +132,7 @@ const ComfirmPage = ({ form, vendor, disbursmentList }: ConfirmPageProps) => {
                     </div>
                     <div className="ml-3">
                       <p className="text-sm font-medium text-gray-800">
-                        {disbursement?.name}
+                        {disbursement?.name || 'unknow'}
                       </p>
                     </div>
                   </li>
@@ -119,10 +143,14 @@ const ComfirmPage = ({ form, vendor, disbursmentList }: ConfirmPageProps) => {
         </div>
       </div>
       <div className="flex items-center justify-end">
-        <Button className="bg-gray-500 text-white px-4 py-2 rounded-md mr-4 w-36">
+        <Button
+          className="bg-gray-500 text-white px-4 py-2 rounded-md mr-4 w-36"
+          onClick={() => router.push(`/projects/rp/${id}/offlineManagement`)}
+        >
           Cancel
         </Button>
         <Button
+          disabled={noOfSelectedDisbursement === 0}
           onClick={() => {
             syncBen.mutateAsync({
               vendorId: selectedVendor?.id,

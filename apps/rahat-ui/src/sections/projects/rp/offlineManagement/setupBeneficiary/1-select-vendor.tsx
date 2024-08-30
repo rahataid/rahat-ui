@@ -14,7 +14,7 @@ import {
 
 import { z } from 'zod';
 import { ArrowLeft } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { UseFormReturn } from 'react-hook-form';
 type Step1SelectVendorProps = {
   vendor: any;
@@ -26,13 +26,13 @@ export default function Step1SelectVendor({
   form,
 }: Step1SelectVendorProps) {
   const router = useRouter();
-
+  const { id } = useParams();
   return (
     <div className="bg-card rounded-lg m-4">
       <div className="flex flex-col gap-1">
         <div className="flex items-center gap-2">
           <ArrowLeft
-            onClick={() => router.back()}
+            onClick={() => router.push(`/projects/rp/${id}/offlineManagement`)}
             className="cursor-pointer"
             size={20}
             strokeWidth={1.5}

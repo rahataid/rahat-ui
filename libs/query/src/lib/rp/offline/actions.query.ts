@@ -8,6 +8,8 @@ const GET_OFFLINE_BENEFICIARIES = 'rpProject.getOfflineBeneficiaries';
 const GET_OFFLINE_VENDORS = 'rpProject.getOfflineVendors';
 const GET_OFFLINE_SINGLE_VENDOR = 'rpProject.getOfflineSingleVendor';
 const SYNC_OFFLINE_BENEFICIARIES = 'rpProject.syncOfflineBeneficiaries';
+const GET_BENEFICIARIES_DISBURSEMENTS =
+  'rpProject.beneficiaries.getDisbursements';
 
 // hooks to get offline beneficiaries
 export const useGetOfflineBeneficiaries = (
@@ -24,6 +26,26 @@ export const useGetOfflineBeneficiaries = (
         data: {
           action: GET_OFFLINE_BENEFICIARIES,
           payload: { vendorId },
+        },
+      });
+      return res.data;
+    },
+  });
+};
+
+export const useGetBeneficiariesDisbursements = (
+  projectUUID: UUID,
+  groupIds: string[],
+) => {
+  const action = useProjectAction();
+  return useQuery({
+    queryKey: ['rpGetBeneficiariesDisbursements'],
+    queryFn: async () => {
+      const res = await action.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: GET_BENEFICIARIES_DISBURSEMENTS,
+          payload: { groupIds },
         },
       });
       return res.data;

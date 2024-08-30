@@ -20,9 +20,10 @@ import { Plus } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import { useState } from 'react';
 
-export function AssetsModal() {
+export function AssetsModal(tokenAddress: any) {
   const [amount, setAmount] = useState<string>('');
   const [selectedProject, setSelectedProject] = useState<`0x${string}`>('');
+  const[selectedToken,setSelectedToken] = useState<`0x${string}`>('');
   const sendFundToProject = useSendFundToProject();
   const appContracts = useSettingsStore((state) => state.contracts);
   const projects = useProjectList();
@@ -41,7 +42,7 @@ export function AssetsModal() {
       await sendFundToProject.mutateAsync({
         amount,
         projectAddress: selectedProject,
-        tokenAddress: appContracts?.RAHATTOKEN?.ADDRESS,
+        tokenAddress: selectedToken,
         treasuryAddress: appContracts?.RAHATTREASURY?.ADDRESS,
       });
     } else {
@@ -49,9 +50,10 @@ export function AssetsModal() {
     }
   };
 
-  const handleSelectProject = (contractAddress: `0x${string}`) => {
-    console.log('selected project is', contractAddress);
+  const handleSelectProject = (contractAddress: `0x${string}`,tokenAddress: `0x${string}`) => {
     setSelectedProject(contractAddress);
+    setSelectedToken(tokenAddress);
+
   };
 
   return (
@@ -122,7 +124,7 @@ export function AssetsModal() {
                 {selectedProject
                   ? projects?.data?.data?.find(
                       //@ts-ignore
-                      (p) => p?.extras?.tokenAddress === selectedProject,
+                      (p) => p?.extras?.tokenAddress === selectedToken,
                     )?.name
                   : 'Select a project'}
               </DropdownMenu.Trigger>
@@ -132,7 +134,7 @@ export function AssetsModal() {
                     key={project?.id}
                     onSelect={() =>
                       //@ts-ignore
-                      handleSelectProject(project?.extras?.tokenAddress)
+                      handleSelectProject(project?.contractAddress,project?.extras?.tokenAddress)
                     }
                     className="p-2 hover:bg-gray-100 cursor-pointer"
                   >
@@ -172,7 +174,7 @@ export function AssetsModal() {
         <DialogFooter>
           <Button
             onClick={handleSendFunds}
-            disabled={selectedProject != contractAddress}
+            disabled={selectedToken != contractAddress}
           >
             Fund Project
           </Button>

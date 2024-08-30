@@ -114,6 +114,9 @@ export default function PieChart({
         },
       },
     },
+    dataLabels: {
+      enabled: communityTool ? false : true,
+    },
     ...options,
   });
 

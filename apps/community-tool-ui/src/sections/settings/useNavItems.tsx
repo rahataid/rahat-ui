@@ -38,7 +38,7 @@ export const useSettingFieldDefinitionNavItems = () => {
       ],
     },
     {
-      title: 'FieldDefinition',
+      title: 'Field Definition',
       children: [
         {
           title: 'List',

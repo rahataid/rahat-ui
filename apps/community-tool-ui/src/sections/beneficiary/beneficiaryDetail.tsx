@@ -134,7 +134,7 @@ export default function BeneficiaryDetail({ data, closeSecondPanel }: IProps) {
               </DropdownMenuTrigger>
               <DropdownMenuContent>
                 <DropdownMenuItem onClick={() => setValue('detailBenef')}>
-                  Deatails
+                  Details
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => setValue('editBenef')}>
                   Edit

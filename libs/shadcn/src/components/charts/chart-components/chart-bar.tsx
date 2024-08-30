@@ -7,7 +7,7 @@ import useChart from '../use-chart';
 
 type Props = {
   ctSeries?: number[];
-  ctCategories?: string[];
+  ctCategories: string[];
   width?: number | string;
   height?: number | string;
   horizontal?: boolean;
@@ -15,8 +15,8 @@ type Props = {
   xaxisLabels?: boolean;
   yaxisLabels?: boolean;
   barHeight?: number;
-  actualData?: any;
-  component?: any;
+  categories?: any;
+  series?: any;
   communityTool?: boolean;
 };
 
@@ -27,18 +27,13 @@ export default function ChartBar({
   colors = ['#007BFF'],
   xaxisLabels = true,
   yaxisLabels = true,
-  barHeight = 20,
-  actualData,
-  component,
+  barHeight = 25,
+  categories,
+  series,
   ctSeries,
   ctCategories,
   communityTool = false,
 }: Props) {
-  const barData = actualData?.find((d: any) => d.name === component?.dataMap);
-
-  const categories = barData?.data.map((b: any) => b.id);
-  const series = barData?.data.map((b: any) => b.count);
-
   const chartOptions = useChart({
     colors,
     stroke: { show: false },
@@ -59,7 +54,9 @@ export default function ChartBar({
     xaxis: {
       categories: communityTool ? ctCategories : categories,
       labels: {
-        show: xaxisLabels,
+        show:
+          (ctCategories?.length > 0 ? xaxisLabels : false) ||
+          (categories?.length > 0 && xaxisLabels),
         formatter: (value: string) => value,
       },
       axisBorder: {
@@ -82,7 +79,11 @@ export default function ChartBar({
       },
     },
     yaxis: {
-      labels: { show: yaxisLabels },
+      labels: {
+        show:
+          (ctCategories?.length > 0 ? yaxisLabels : false) ||
+          (categories?.length > 0 && yaxisLabels),
+      },
     },
     tooltip: {
       x: {

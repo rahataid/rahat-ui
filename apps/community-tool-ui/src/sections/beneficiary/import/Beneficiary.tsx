@@ -38,7 +38,6 @@ import { useRSQuery } from '@rumsan/react-query';
 import ColumnMappingTable, { resetMyMappings } from './ColumnMappingTable';
 import { EMPTY_SELECTION } from './Combobox';
 import MyAlert from './MyAlert';
-import { set } from 'lodash';
 
 interface IProps {
   fieldDefinitions: [];

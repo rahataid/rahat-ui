@@ -87,7 +87,6 @@ export const useProjectBeneficiaryTableColumns = () => {
       id: 'actions',
       enableHiding: false,
       cell: ({ row }) => {
-        console.log(row);
         return (
           <Eye
             size={20}

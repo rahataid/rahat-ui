@@ -23,7 +23,6 @@ export default function useStakeholdersGroupsTableColumn() {
       accessorKey: 'stakeholders',
       header: 'Member Count',
       cell: ({ row }) => {
-        console.log(row);
         return <div>{row?.original?._count?.stakeholders}</div>;
       },
     },

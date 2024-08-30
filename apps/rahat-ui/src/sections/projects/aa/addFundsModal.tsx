@@ -37,21 +37,9 @@ export default function AddFundsModal({ fundsModal }: IProps) {
     (s) => s.settings?.[projectID]?.[PROJECT_SETTINGS_KEYS.CONTRACT] || null,
   );
 
-  console.log(contractSettings);
-
   const mintTokens = useMintTokens();
 
   const handleAdd = async (tokens: any) => {
-    console.log(tokens);
-    console.log({
-      address: contractSettings?.rahatdonor?.address,
-      args: [
-        contractSettings?.rahattoken?.address,
-        contractSettings?.aaproject?.address,
-        BigInt(tokens),
-      ],
-    });
-
     mintTokens.writeContractAsync({
       address: contractSettings?.rahatdonor?.address,
       args: [

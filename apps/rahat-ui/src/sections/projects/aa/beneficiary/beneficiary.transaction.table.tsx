@@ -70,7 +70,6 @@ export const columns: ColumnDef<any>[] = [
     accessorKey: 'amount',
     header: 'Amount',
     cell: ({ row }) => {
-      console.log(row);
       return <div> {row.getValue('amount')}</div>;
     },
   },

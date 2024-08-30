@@ -109,7 +109,6 @@ const MultiStepForm = () => {
 
   const handleAddTriggerStatement = async (data: any) => {
     let payload;
-    console.log('trigger data', data);
 
     if (data?.newTriggerData?.dataSource) {
       const {

@@ -391,6 +391,7 @@ export default function AddBeneficiary() {
                       <FormControl>
                         <Input
                           type="number"
+                          step="any"
                           placeholder="Longitude"
                           onChange={(e) => {
                             const numericValue = parseFloat(e.target.value);
@@ -414,6 +415,7 @@ export default function AddBeneficiary() {
                       <FormControl>
                         <Input
                           type="number"
+                          step="any"
                           placeholder="Latitude"
                           onChange={(e) => {
                             const numericValue = parseFloat(e.target.value);

@@ -20,7 +20,6 @@ type IProps = {
   manualForm: UseFormReturn<
     {
       title: string;
-      // hazardTypeId: string;
     },
     any,
     undefined
@@ -28,14 +27,10 @@ type IProps = {
   automatedForm: UseFormReturn<
     {
       title: string;
-      // hazardTypeId: string;
       dataSource: string;
-      // location: string;
-      // waterLevel: string;
       minLeadTimeDays: string;
       maxLeadTimeDays: string;
       probability: string;
-      // activationLevel?: string | undefined;
     },
     any,
     undefined
@@ -95,25 +90,6 @@ export default function ConfigurePhase({
     } else return;
   }, [newTriggerData]);
 
-  // const [switchStates, setSwitchStates] = React.useState(() => {
-  //   const initialStates: any = {};
-  //   phaseDetail?.triggers?.forEach(
-  //     (trigger: { repeatKey: any; isMandatory: boolean }) => {
-  //       initialStates[trigger?.repeatKey] = trigger.isMandatory;
-  //     },
-  //   );
-  //   return initialStates;
-  // });
-
-  // const handleSwitchChange = (repeatKey: string, event: any) => {
-  //   console.log(event.target.checked);
-  //   // const isChecked = event.target.checked;
-  //   setSwitchStates((prevState: any) => ({
-  //     ...prevState,
-  //     [repeatKey]: false,
-  //   }));
-  // };
-
   const handleSliderPlus = () => setSliderValue((prev: number) => prev + 1);
   const handleSliderMinus = () => setSliderValue((prev: number) => prev - 1);
 
@@ -144,15 +120,7 @@ export default function ConfigurePhase({
                             <p>
                               {index + 1}. {t.title}
                             </p>
-                            <div className="flex items-center space-x-2">
-                              {/* <Switch
-                        id={`switch-${t?.repeatKey}`}
-                        checked={switchStates[t?.repeatKey]}
-                        onChange={(e) => handleSwitchChange(t?.repeatKey, e)}
-                      /> */}
-                              {/* <Switch id="isOptional" checked={m.isMandatory} /> */}
-                              {/* <Label htmlFor="isOptional">Optional?</Label> */}
-                            </div>
+                            <div className="flex items-center space-x-2"></div>
                           </div>
                           {index < allMandatoryTriggers?.length - 1 && (
                             <Separator />
@@ -178,16 +146,7 @@ export default function ConfigurePhase({
                             <p>
                               {index + 1}. {t.title}
                             </p>
-                            <div className="flex items-center space-x-2">
-                              {/* <Switch
-                        id={`switch-${t?.repeatKey}`}
-                        checked={switchStates[t?.repeatKey]}
-                        // onClick={(e) => handleSwitchChange(t?.repeatKey, e)}
-                        onChange={(e) => handleSwitchChange(t?.repeatKey, e)}
-                      /> */}
-                              {/* <Switch id="isOptional" checked={o.isOptional} /> */}
-                              {/* <Label htmlFor="isOptional">Optional?</Label> */}
-                            </div>
+                            <div className="flex items-center space-x-2"></div>
                           </div>
                           {index < allOptionalTriggers?.length - 1 && (
                             <Separator />

@@ -3,7 +3,6 @@ import { useParams } from 'next/navigation';
 import { UseFormReturn } from 'react-hook-form';
 import {
   PROJECT_SETTINGS_KEYS,
-  useActivitiesStore,
   useProjectSettingsStore,
 } from '@rahat-ui/query';
 import {
@@ -29,11 +28,8 @@ type IProps = {
   form: UseFormReturn<
     {
       title: string;
-      // hazardTypeId: string;
       dataSource: string;
-      // location: string;
       isMandatory?: boolean | undefined;
-      // readinessLevel?: string | undefined;
       waterLevel: string;
     },
     any,
@@ -47,10 +43,6 @@ export default function AddAutomatedTriggerForm({ form }: IProps) {
   const selectedPhase = JSON.parse(
     localStorage.getItem('selectedPhase') as string,
   );
-
-  // const { hazardTypes } = useActivitiesStore((state) => ({
-  //   hazardTypes: state.hazardTypes,
-  // }));
 
   const dataSources = useProjectSettingsStore(
     (s) => s.settings?.[projectId]?.[PROJECT_SETTINGS_KEYS.DATASOURCE],
@@ -154,39 +146,7 @@ export default function AddAutomatedTriggerForm({ form }: IProps) {
                   );
                 }}
               />
-              {/* <FormField
-                control={form.control}
-                name="hazardTypeId"
-                render={({ field }) => {
-                  return (
-                    <FormItem className="w-full">
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
-                        <FormLabel>Hazard Type</FormLabel>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select Hazard Type" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {hazardTypes?.map((d: any) => {
-                            return (
-                              <SelectItem key={d.id} value={d.uuid}>
-                                {d.name}
-                              </SelectItem>
-                            );
-                          })}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  );
-                }}
-              /> */}
             </div>
-            {/* {selectedPhase.name === 'READINESS' && ( */}
             <FormField
               control={form.control}
               name="waterLevel"
@@ -209,31 +169,6 @@ export default function AddAutomatedTriggerForm({ form }: IProps) {
                 );
               }}
             />
-            {/* )} */}
-            {/* {selectedPhase.name === 'ACTIVATION' && (
-              <FormField
-                control={form.control}
-                name="activationLevel"
-                render={({ field }) => {
-                  return (
-                    <FormItem>
-                      <FormLabel>Activation Level</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="text"
-                          // inputMode="decimal"
-                          // pattern="[0-9]*[.,]?[0-9]*"
-                          // title="Please enter positive number"
-                          placeholder="Enter Activation Level"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  );
-                }}
-              />
-            )} */}
             <FormField
               control={form.control}
               name="isMandatory"

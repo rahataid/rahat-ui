@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { useParams,  } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import {
   ColumnFiltersState,
   SortingState,
@@ -21,9 +21,11 @@ import useStakeholdersTableColumn from './useStakeholdersTableColumn';
 import CustomPagination from '../../../../components/customPagination';
 import { UUID } from 'crypto';
 import StakeholdersTableFilters from './stakeholders.table.filters';
+import { getPaginationFromLocalStorage } from '../prev.pagination.storage';
 
 export default function StakeholdersList() {
   const params = useParams();
+  const searchParams = useSearchParams();
 
   const projectId = params.id as UUID;
 
@@ -37,9 +39,11 @@ export default function StakeholdersList() {
     filters,
   } = usePagination();
 
+  const showStoredPagination = searchParams.get('storePagination') === 'true';
   React.useEffect(() => {
-    setPagination({ page: 1, perPage: 10 });
-  }, []);
+    const prevPagination = getPaginationFromLocalStorage(showStoredPagination);
+    setPagination(prevPagination);
+  }, [showStoredPagination]);
 
   useStakeholders(projectId, { ...pagination, ...filters });
 

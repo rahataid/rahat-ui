@@ -22,7 +22,7 @@ import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import { UUID } from 'crypto';
 import useCommsActivitiesTableColumns from './useCommsActivitesTableColumns';
 
-export default function CommunicationLogTable() {
+export default function CommsActivitiesTable() {
   const { id: projectId } = useParams();
 
   const { pagination, setNextPage, setPrevPage, setPerPage, setPagination } =
@@ -36,8 +36,6 @@ export default function CommunicationLogTable() {
     projectId as UUID,
     {...pagination},
   );
-
-  console.log("aa activities with comms", activitiesData)
 
   const columns = useCommsActivitiesTableColumns();
 

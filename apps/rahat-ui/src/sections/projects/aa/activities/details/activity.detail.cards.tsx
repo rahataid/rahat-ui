@@ -86,17 +86,6 @@ export default function ActivityDetailCards({
           </p>
         </div>
       </div>
-      {/* <div className="p-4 rounded bg-card flex items-center gap-4">
-        <div className="p-3 bg-secondary text-primary rounded">
-          <Gauge size={25} />
-        </div>
-        <div>
-          <h1 className="font-medium">Lead Time</h1>
-          <p className="text-xl text-primary font-semibold">
-            {activityDetail?.leadTime}
-          </p>
-        </div>
-      </div> */}
     </div>
   );
 }

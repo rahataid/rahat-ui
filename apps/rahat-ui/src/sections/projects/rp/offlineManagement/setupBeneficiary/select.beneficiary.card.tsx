@@ -13,11 +13,27 @@ import {
 import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
 import { Users } from 'lucide-react';
 
-export default function BeneficiaryCard() {
+type BeneficiaryCardProps = {
+  name: string;
+  uuid: string;
+  totalBeneficiary: string;
+  handleGroupChecked: (v: boolean, uuid: string) => void;
+};
+export default function BeneficiaryCard({
+  name,
+  uuid,
+  totalBeneficiary,
+  handleGroupChecked,
+}: BeneficiaryCardProps) {
   return (
     <Card className="shadow-md border">
       <CardHeader className="relative">
-        <Checkbox className="absolute top-2 left-2" />
+        <Checkbox
+          onCheckedChange={(e: boolean) => {
+            handleGroupChecked(e, uuid);
+          }}
+          className="absolute top-2 left-2"
+        />
         <div className="flex justify-center mt-6">
           <Avatar className="w-24 h-24 bg-gray-100">
             <AvatarFallback>
@@ -28,14 +44,14 @@ export default function BeneficiaryCard() {
       </CardHeader>
       <CardContent className="text-left">
         <Badge variant="secondary" className="mb-2">
-          EL
+          RP
         </Badge>
         <CardTitle className="text-gray-800 font-medium text-base">
-          Group Name Demo
+          {name}
         </CardTitle>
         <div className="flex items-center text-sm text-gray-500 mt-2">
           <Users className="w-4 h-4 mr-1" />
-          <span>28</span>
+          <span>{totalBeneficiary}</span>
         </div>
       </CardContent>
     </Card>

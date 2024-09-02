@@ -78,7 +78,7 @@ const SetupBeneficiaryPage = () => {
           const beneficiaryDisbursement = projectBeneficiaries.data?.data?.find(
             (disbursement: any) =>
               disbursement.walletAddress ===
-              beneficiaryDisbursement.walletAddress,
+              beneficiary.walletAddress,
           );
           return {
             ...beneficiaryDisbursement,

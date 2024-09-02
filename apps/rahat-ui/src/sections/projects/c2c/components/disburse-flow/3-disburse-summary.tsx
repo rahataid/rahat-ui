@@ -53,33 +53,29 @@ export default function Step3DisburseSummary({
             <div className="space-y-10">
               <div>
                 <h2 className="text-sm font-medium text-gray-500">
-                  Vendor Name
+                  Beneficiaries Selected:
                 </h2>
-                <p className="text-xl font-semibold text-gray-800">
-                  Aadarsha Lamichhane
+                <p className="text-2xl font-semibold text-gray-800">
+                  {selectedBeneficiaries?.length}
                 </p>
               </div>
               <div>
                 <h2 className="text-sm font-medium text-gray-500">
-                  Beneficiaries Selected:
+                  Project Balance
                 </h2>
-                <p className="text-2xl font-semibold text-gray-800">4</p>
+                <p className="text-2xl font-semibold text-gray-800">
+                  {projectBalance}
+                </p>
               </div>
               <div>
                 <h2 className="text-sm font-medium text-gray-500">
-                  Vendor Tokens
-                </h2>
-                <p className="text-2xl font-semibold text-gray-800">2000</p>
-              </div>
-              <div>
-                <h2 className="text-sm font-medium text-gray-500">
-                  Total no. of tokens assigned
+                  Send amount among beneficiaries
                 </h2>
                 <p className="text-2xl font-semibold text-gray-800">100</p>
               </div>
               <div>
                 <h2 className="text-sm font-medium text-gray-500">
-                  Token Amount
+                  Token amount to send
                 </h2>
                 <p className="text-2xl font-semibold text-gray-800">400</p>
               </div>
@@ -92,7 +88,7 @@ export default function Step3DisburseSummary({
               Beneficiary List
             </h2>
             <p className="text-sm font-medium text-gray-800 mb-4">
-              40 beneficiaries selected
+              {selectedBeneficiaries?.length} beneficiaries selected
             </p>
             <ScrollArea className="h-[calc(100vh-620px)]">
               <ul className="space-y-2">

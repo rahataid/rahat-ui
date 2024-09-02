@@ -53,3 +53,27 @@ export const paths = {
     root: ROOTS.SETTINGS,
   },
 };
+
+export const defaultNavigations = [
+  {
+    title: 'Dashboard',
+    path: paths.dashboard.root,
+  },
+  {
+    title: 'Project',
+    path: paths.dashboard.project.root,
+  },
+  {
+    title: 'Beneficiaries',
+    path: paths.dashboard.beneficiary.root,
+  },
+
+]
+
+export const defaultSubNavigations = [
+  {
+    title: 'Users',
+    path: paths.user.root,
+  },
+
+]

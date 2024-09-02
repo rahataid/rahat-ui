@@ -301,7 +301,7 @@ export const useFindAllBeneficiaryGroups = (projectUUID: UUID) => {
     },
   });
 
-  const data = query?.data;
+  const data = query?.data || [];
 
   return {
     ...query,

@@ -14,6 +14,8 @@ const GET_ALL_DISBURSEMENT_PLANS = 'rpProject.disbursementPlan.get';
 const UPDATE_DISBURSEMENT_PLAN = 'rpProject.disbursementPlan.update';
 const CREATE_BULK_DISBURSEMENT = 'rpProject.disbursement.bulkCreate';
 
+const GET_ALL_BENEFICIARY_GROUPS = 'rpProject.beneficiary.getAllGroups';
+
 // Hooks for Disbursement Plan
 export const useCreateDisbursementPlan = (projectUUID: UUID) => {
   const action = useProjectAction(['createDisbursementPlan-rpProject']);
@@ -235,14 +237,11 @@ export const useBulkCreateDisbursement = (projectUUID: UUID) => {
   });
 };
 
-
 export const useRedeemToken = (projectUUID: UUID) => {
   const action = useProjectAction(['redeemToken-rpProject']);
 
   return useMutation({
-    mutationFn: async (data: {
-      uuid:string
-    }) => {
+    mutationFn: async (data: { uuid: string }) => {
       const res = await action.mutateAsync({
         uuid: projectUUID,
         data: {
@@ -253,34 +252,59 @@ export const useRedeemToken = (projectUUID: UUID) => {
       return res.data;
     },
   });
-
-}
+};
 
 export const useListRedemptions = (projectUUID: UUID) => {
-    const action = useProjectAction(['listRedemptions-rpProject']);
-   return useQuery({
-      queryKey: ['redemptions', projectUUID],
-      queryFn: async () => {
-        const res = await action.mutateAsync({
-          uuid: projectUUID,
-          data: {
-            action: 'rpProject.listRedemption',
-            payload: {},
-          },
-        });
-        const data = res.data;
-        const formattedData = data.map((item: any) => {
-          return {
-            uuid: item?.uuid,
-            name: item?.Vendor?.name,
-            amount: item?.tokenAmount,
-            status: item?.status,
-            tokenAddress: item?.tokenAddress,
-            walletAddress: item?.Vendor?.walletAddress,
-          };
-        } 
-        );
-        return formattedData;
-      },
-    });
-}
+  const action = useProjectAction(['listRedemptions-rpProject']);
+  return useQuery({
+    queryKey: ['redemptions', projectUUID],
+    queryFn: async () => {
+      const res = await action.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'rpProject.listRedemption',
+          payload: {},
+        },
+      });
+      const data = res.data;
+      const formattedData = data.map((item: any) => {
+        return {
+          uuid: item?.uuid,
+          name: item?.Vendor?.name,
+          amount: item?.tokenAmount,
+          status: item?.status,
+          tokenAddress: item?.tokenAddress,
+          walletAddress: item?.Vendor?.walletAddress,
+        };
+      });
+      return formattedData;
+    },
+  });
+};
+
+export const useFindAllBeneficiaryGroups = (projectUUID: UUID) => {
+  const action = useProjectAction();
+
+  const query = useQuery({
+    queryKey: ['beneficiary_groups', projectUUID],
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    queryFn: async () => {
+      const res = await action.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: GET_ALL_BENEFICIARY_GROUPS,
+          payload: {},
+        },
+      });
+      return res.data;
+    },
+  });
+
+  const data = query?.data;
+
+  return {
+    ...query,
+    data,
+  };
+};

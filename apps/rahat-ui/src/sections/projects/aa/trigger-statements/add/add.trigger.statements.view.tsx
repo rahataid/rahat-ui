@@ -6,7 +6,7 @@ import {
   TabsTrigger,
   TabsContent,
 } from '@rahat-ui/shadcn/src/components/ui/tabs';
-import { useActivities, useActivitiesHazardTypes } from '@rahat-ui/query';
+import { useActivities } from '@rahat-ui/query';
 import AddAutomatedTriggerForm from './automated.trigger.add.form';
 import AddManualTriggerForm from './manual.trigger.add.form';
 import { UUID } from 'crypto';
@@ -20,7 +20,6 @@ type IProps = {
   manualForm: UseFormReturn<
     {
       title: string;
-      // hazardTypeId: string;
       isMandatory?: boolean | undefined;
     },
     any,
@@ -29,16 +28,11 @@ type IProps = {
   automatedForm: UseFormReturn<
     {
       title: string;
-      // hazardTypeId: string;
       dataSource: string;
-      // location: string;
       isMandatory?: boolean | undefined;
       minLeadTimeDays: string;
       maxLeadTimeDays: string;
       probability: string;
-
-      // readinessLevel?: string | undefined;
-      // waterLevel: string;
     },
     any,
     undefined
@@ -58,7 +52,6 @@ export default function AddTriggerStatementView({
 }: IProps) {
   const { id: projectID } = useParams();
   useActivities(projectID as UUID, {});
-  // useActivitiesHazardTypes(projectID as UUID);
 
   const selectedPhase = JSON.parse(
     localStorage.getItem('selectedPhase') as string,

@@ -1,5 +1,6 @@
 import DataCard from '../../components/dataCard';
 import { getValueFromPath } from '../../utils/extractObjetInfo';
+import getIcon from '../../utils/getIcon';
 
 type DataCardData = {
   component: any;
@@ -15,7 +16,7 @@ const DataCardWrapper = ({ actualData, component, source }: DataCardData) => {
   if (!actualData) return null;
 
   // Find the relevant object in actualData by name
-  const relevantData = actualData?.find((d) => d.name === name);
+  const relevantData = actualData?.find((d: any) => d.name === name);
 
   // Use getValueFromPath to find the value inside the relevant object
   const cardDataValue =
@@ -27,10 +28,12 @@ const DataCardWrapper = ({ actualData, component, source }: DataCardData) => {
 
   // Render DataCard with the retrieved value
   if (cardDataValue !== null) {
+    const icon = getIcon(component?.icon);
     return (
       <DataCard
         title={component.title}
         number={cardDataValue?.count || cardDataValue}
+        Icon={icon}
       />
     );
   }

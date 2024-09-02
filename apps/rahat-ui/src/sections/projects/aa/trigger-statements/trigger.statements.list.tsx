@@ -3,11 +3,6 @@ import {
   flexRender,
   getCoreRowModel,
   useReactTable,
-  getPaginationRowModel,
-  SortingState,
-  ColumnFiltersState,
-  getSortedRowModel,
-  getFilteredRowModel,
 } from '@tanstack/react-table';
 import {
   Table as TableComponent,
@@ -25,24 +20,29 @@ import { useAATriggerStatements, usePagination } from '@rahat-ui/query';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
 
-
 export default function TriggerStatementsList() {
   const columns = useTriggerStatementTableColumns();
 
   const { id } = useParams();
   const projectId = id as UUID;
 
-  const { pagination, setNextPage, setPrevPage, setPerPage, setPagination, filters } = usePagination();
-  const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    [],
-  );
+  const {
+    pagination,
+    setNextPage,
+    setPrevPage,
+    setPerPage,
+    setPagination,
+    filters,
+  } = usePagination();
 
   React.useEffect(() => {
     setPagination({ page: 1, perPage: 10 });
   }, []);
 
-  const { data, isLoading } = useAATriggerStatements(projectId, { ...pagination, ...filters });
+  const { data, isLoading } = useAATriggerStatements(projectId, {
+    ...pagination,
+    ...filters,
+  });
 
   const tableData = data?.httpReponse.data?.data;
   const tableMeta = data?.httpReponse.data?.meta;
@@ -51,25 +51,15 @@ export default function TriggerStatementsList() {
     manualPagination: true,
     data: tableData ?? [],
     columns,
-    onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    state: {
-      sorting,
-      columnFilters,
-    },
   });
-
 
   if (isLoading) return <TableLoader />;
 
   return (
     <div className="border bg-card rounded">
       <TableComponent>
-        <ScrollArea className={"h-[calc(100vh-344px)]"}>
+        <ScrollArea className={'h-[calc(100vh-344px)]'}>
           <TableHeader className="sticky top-0 bg-slate-50">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>

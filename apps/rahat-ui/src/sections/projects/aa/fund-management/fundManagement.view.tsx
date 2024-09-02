@@ -7,12 +7,9 @@ import { UUID } from 'crypto';
 import TableLoader from 'apps/rahat-ui/src/components/table.loader';
 import {
   ColumnFiltersState,
-  SortingState,
   VisibilityState,
   getCoreRowModel,
   getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
 import { useFundManagementColumns } from './useFundManagementColumns';
@@ -29,7 +26,6 @@ const FundManagementView = () => {
     setPrevPage,
     setPerPage,
     setPagination,
-    setFilters,
     filters,
   } = usePagination();
 
@@ -41,7 +37,6 @@ const FundManagementView = () => {
 
   const fundManagementColumns = useFundManagementColumns();
 
-  const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
   );
@@ -57,17 +52,14 @@ const FundManagementView = () => {
   );
 
   const table = useReactTable({
+    manualPagination: true,
     data: groupsFundsData?.response?.data || [],
     columns: fundManagementColumns,
-    onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     state: {
-      sorting,
       columnFilters,
       columnVisibility,
     },

@@ -28,7 +28,9 @@ import React, { useEffect, useState } from 'react';
 
 import { useFieldDefinitionsCreate } from '@rahat-ui/community-query';
 import { FieldType } from 'apps/community-tool-ui/src/constants/fieldDefinition.const';
-import { Minus, Plus } from 'lucide-react';
+import { DownloadCloud, Minus, Plus } from 'lucide-react';
+import Samples from '../samples.json';
+import * as XLSX from 'xlsx';
 
 type Iprops = {
   handleTabChange: (tab: 'add' | 'import') => void;
@@ -149,6 +151,15 @@ export default function AddFieldDefinitions({ handleTabChange }: Iprops) {
     }
   }, [showLabelValue, append, form]);
 
+  const handleSampleDownload = (e) => {
+    e.preventDefault();
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.json_to_sheet(Samples);
+
+    XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+
+    XLSX.writeFile(wb, 'FieldDefinitionSamples.xlsx');
+  };
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleCreateFieldDefinitions)}>
@@ -348,6 +359,14 @@ export default function AddFieldDefinitions({ handleTabChange }: Iprops) {
             )}
 
             <div className="flex justify-end mb-10 space-x-4">
+              <Button
+                onClick={(e) => handleSampleDownload(e)}
+                className=" text-blue-700 bg-gray-300 hover:bg-gray-300 "
+              >
+                <DownloadCloud size={18} strokeWidth={1.5} className="mr-1" />
+                Download Sample
+              </Button>
+
               <Button type="submit">Submit</Button>
             </div>
           </div>

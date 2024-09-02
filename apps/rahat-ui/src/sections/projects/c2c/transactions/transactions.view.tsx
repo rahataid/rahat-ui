@@ -3,9 +3,9 @@
 import {
   PROJECT_SETTINGS_KEYS,
   TransactionDetails,
+  usePagination,
   useProjectSettingsStore,
 } from '@rahat-ui/query';
-import { usePagination, useProjectBeneficiaries } from '@rahat-ui/query';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import {
@@ -17,7 +17,6 @@ import {
   TableRow,
 } from '@rahat-ui/shadcn/src/components/ui/table';
 import {
-  ColumnDef,
   ColumnFiltersState,
   SortingState,
   VisibilityState,
@@ -28,14 +27,15 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { shortenTxHash } from 'apps/rahat-ui/src/utils/getProjectAddress';
+import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
+import TableLoader from 'apps/rahat-ui/src/components/table.loader';
+import Image from 'next/image';
 import { useParams } from 'next/navigation';
 import * as React from 'react';
 import { useQuery } from 'urql';
-import { formatEther } from 'viem';
 import { Transaction, TransactionsObject } from './types';
+import useTransactionColumn from './useTransactionColumn';
 import { mergeTransactions } from './utils';
-import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 
 // export type Transaction = {
 //   id: string;
@@ -49,67 +49,6 @@ import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 //   txnFee: string;
 // };
 
-export const columns: ColumnDef<Transaction>[] = [
-  {
-    accessorKey: 'topic',
-    header: 'Topic',
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue('topic')}</div>
-    ),
-  },
-
-  {
-    accessorKey: 'from',
-    header: 'From',
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue('from') || 'C2C'}</div>
-    ),
-  },
-  {
-    accessorKey: 'to',
-    header: 'To',
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue('to') || 'C2C'}</div>
-    ),
-  },
-  {
-    accessorKey: 'date',
-    header: 'Timestamp',
-    cell: ({ row }) => <div className="capitalize">{row.getValue('date')}</div>,
-  },
-  {
-    accessorKey: 'blockNumber',
-    header: 'Block Number',
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue('blockNumber')}</div>
-    ),
-  },
-  {
-    accessorKey: 'transactionHash',
-    header: 'TransactionHash',
-    cell: ({ row }) => (
-      <div className="capitalize">
-        {shortenTxHash(row.getValue('transactionHash'))}
-      </div>
-    ),
-  },
-  {
-    accessorKey: 'amount',
-    header: () => <div className="text-right">Amount</div>,
-    cell: ({ row }) => {
-      const amount = parseFloat(formatEther(BigInt(row.getValue('amount'))));
-
-      // Format the amount as a dollar amount
-      const formatted = new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-      }).format(amount);
-
-      return <div className="text-right font-medium">{formatted}</div>;
-    },
-  },
-];
-
 export default function TransactionView() {
   const { id } = useParams();
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -119,6 +58,7 @@ export default function TransactionView() {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
   );
+  const columns = useTransactionColumn();
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const {
@@ -135,7 +75,7 @@ export default function TransactionView() {
   const [rowSelection, setRowSelection] = React.useState({});
 
   const table = useReactTable({
-    data: transactionList,
+    data: transactionList || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -158,8 +98,6 @@ export default function TransactionView() {
   );
   const contractAddress = contractSettings?.c2cproject?.address;
 
-  console.log({ contractAddress });
-
   const [result] = useQuery({
     query: TransactionDetails,
     variables: {
@@ -175,8 +113,6 @@ export default function TransactionView() {
       setTransactionList(transactionLists);
     })();
   }, [result.data]);
-
-  console.log({ transactionList });
 
   return (
     <>
@@ -213,7 +149,16 @@ export default function TransactionView() {
                 ))}
               </TableHeader>
               <TableBody>
-                {table.getRowModel().rows?.length ? (
+                {result.fetching ? (
+                  <TableRow>
+                    <TableCell
+                      colSpan={columns.length}
+                      className="h-24 text-center"
+                    >
+                      <TableLoader />
+                    </TableCell>
+                  </TableRow>
+                ) : transactionList.length ? (
                   table.getRowModel().rows.map((row) => (
                     <TableRow
                       key={row.id}
@@ -235,7 +180,22 @@ export default function TransactionView() {
                       colSpan={columns.length}
                       className="h-24 text-center"
                     >
-                      No results.
+                      <div className="w-full h-[calc(100vh-140px)]">
+                        <div className="flex flex-col items-center justify-center">
+                          <Image
+                            src="/noData.png"
+                            height={250}
+                            width={250}
+                            alt="no data"
+                          />
+                          <p className="text-medium text-base mb-1">
+                            No Data Available
+                          </p>
+                          <p className="text-sm mb-4 text-gray-500">
+                            There are no transactions to display at the moment
+                          </p>
+                        </div>
+                      </div>
                     </TableCell>
                   </TableRow>
                 )}

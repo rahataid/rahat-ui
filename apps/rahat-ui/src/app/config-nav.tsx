@@ -23,6 +23,7 @@ export function useNavData() {
   const navData = sanitizeNavData(navSettings?.DATA);
   const navSubData = sanitizeNavData(navSettings?.SUBDATA);
 
+
   const data: NavItem[] = useMemo(() => {
     const navDataSet = new Set(navData as NavItem[] || []);
     const combinedNavSet = new Set([...defaultNavigations, ...navDataSet,]);

@@ -61,7 +61,9 @@ export default function AddFundManagementView() {
 
   const FormSchema = z.object({
     title: z.string().min(2, { message: 'Title must be at least 4 character' }),
-    numberOfTokens: z.coerce.number(),
+    numberOfTokens: z.coerce
+      .number()
+      .gte(1, { message: 'Token must be greater than 0' }),
     beneficiaryGroup: z.string(),
     totalTokensReserved: z.number(),
   });

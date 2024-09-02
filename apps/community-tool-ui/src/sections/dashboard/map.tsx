@@ -80,7 +80,7 @@ export default function CommunityMap({ coordinates }: any) {
         {coordinates.map((item: any, index: number) => {
           return (
             <Marker
-              key={item.type}
+              key={index}
               longitude={Number(item.longitude)}
               latitude={Number(item.latitude)}
             >

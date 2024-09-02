@@ -38,6 +38,7 @@ import { useRSQuery } from '@rumsan/react-query';
 import ColumnMappingTable, { resetMyMappings } from './ColumnMappingTable';
 import { EMPTY_SELECTION } from './Combobox';
 import MyAlert from './MyAlert';
+import { set } from 'lodash';
 
 interface IProps {
   fieldDefinitions: [];
@@ -301,35 +302,30 @@ export default function BenImp({ fieldDefinitions }: IProps) {
   };
 
   const createImportSource = async (sourcePayload: any) => {
-    setLoading(true);
-    const res = (await importSourceQuery.mutateAsync(sourcePayload)) as any;
-    if (!res) {
-      setLoading(false);
-      return Swal.fire({
-        icon: 'error',
-        title: 'Failed to create import source!',
-      });
-    }
+    try {
+      setLoading(true);
+      const res = (await importSourceQuery.mutateAsync(sourcePayload)) as any;
+      // If action is IMPORT, source will be created on backend!
+      // Otherwise, just validate in the backend
+      if (sourcePayload.action === IMPORT_ACTION.IMPORT) {
+        setLoading(false);
+        resetStates();
+        return Swal.fire({
+          icon: 'success',
+          title: `${sourcePayload.fieldMapping.data.length} Beneficiaries imported successfully!`,
+        });
+      }
 
-    // If action is IMPORT, source will be created on backend!
-    // Otherwise, just validate in the backend
-    if (sourcePayload.action === IMPORT_ACTION.IMPORT) {
+      const { result, invalidFields, hasUUID } = res?.data;
+      setHasUUID(hasUUID);
+      setProcessedData(result);
+      if (invalidFields.length) setInvalidFields(invalidFields);
+      setCurrentScreen(BENEF_IMPORT_SCREENS.IMPORT_DATA);
+    } catch (err) {
+      console.log(err);
+    } finally {
       setLoading(false);
-      resetStates();
-      return Swal.fire({
-        icon: 'success',
-        title: `${sourcePayload.fieldMapping.data.length} Beneficiaries imported successfully!`,
-      });
     }
-
-    const { result, invalidFields, hasUUID } = res?.data;
-    setHasUUID(hasUUID);
-    setProcessedData(result);
-    if (invalidFields.length) {
-      setInvalidFields(invalidFields);
-    }
-    setCurrentScreen(BENEF_IMPORT_SCREENS.IMPORT_DATA);
-    setLoading(false);
   };
 
   const handleRetargetClick = () => {

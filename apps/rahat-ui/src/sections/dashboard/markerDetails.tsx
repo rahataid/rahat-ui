@@ -15,8 +15,11 @@ export default function MarkerDetails({
         style={{color: 'blue'}}
       >
         <h3>
-          Redemption: {selectedMarker?.statsCount || 'N/A'}
+          Redemptions: {selectedMarker?.statsCount || 'N/A'}
           </h3>
+        <h3>
+        Referrals: {selectedMarker?.referralCount || 'N/A'}
+        </h3>
       </Popup>
     </div>
   );

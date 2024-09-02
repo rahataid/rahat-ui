@@ -56,7 +56,7 @@ export default function BeneficiaryDetail({
   // TODO: remove reference to el vouchers
   const deleteBeneficiary = useRemoveBeneficiary();
 
-  const walletAddress = beneficiaryDetails.wallet;
+  const walletAddress = beneficiaryDetails?.walletAddress;
 
   const { data: transactionList, isLoading } =
     useBeneficiaryTransaction(walletAddress);
@@ -209,7 +209,7 @@ export default function BeneficiaryDetail({
                     </TooltipTrigger>
                     <TooltipContent className="bg-secondary" side="bottom">
                       <p className="text-xs font-medium">
-                        {walletAddressCopied ? 'copied' : 'click to copy'}
+                        {walletAddressCopied ? 'Copied' : walletAddress}
                       </p>
                     </TooltipContent>
                   </Tooltip>

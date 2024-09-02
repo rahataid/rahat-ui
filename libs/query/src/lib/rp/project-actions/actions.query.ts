@@ -130,7 +130,7 @@ export const useCreateDisbursement = (projectUUID: UUID) => {
   });
 };
 
-export const useFindAllDisbursements = (projectUUID: UUID) => {
+export const useFindAllDisbursements = (projectUUID: UUID, payload: any) => {
   const action = useProjectAction(['findAllDisbursements-rpProject']);
 
   const query = useQuery({
@@ -142,7 +142,7 @@ export const useFindAllDisbursements = (projectUUID: UUID) => {
         uuid: projectUUID,
         data: {
           action: GET_ALL_DISBURSEMENTS,
-          payload: {},
+          payload,
         },
       });
       return res.data;
@@ -235,14 +235,11 @@ export const useBulkCreateDisbursement = (projectUUID: UUID) => {
   });
 };
 
-
 export const useRedeemToken = (projectUUID: UUID) => {
   const action = useProjectAction(['redeemToken-rpProject']);
 
   return useMutation({
-    mutationFn: async (data: {
-      uuid:string
-    }) => {
+    mutationFn: async (data: { uuid: string }) => {
       const res = await action.mutateAsync({
         uuid: projectUUID,
         data: {
@@ -253,34 +250,32 @@ export const useRedeemToken = (projectUUID: UUID) => {
       return res.data;
     },
   });
-
-}
+};
 
 export const useListRedemptions = (projectUUID: UUID) => {
-    const action = useProjectAction(['listRedemptions-rpProject']);
-   return useQuery({
-      queryKey: ['redemptions', projectUUID],
-      queryFn: async () => {
-        const res = await action.mutateAsync({
-          uuid: projectUUID,
-          data: {
-            action: 'rpProject.listRedemption',
-            payload: {},
-          },
-        });
-        const data = res.data;
-        const formattedData = data.map((item: any) => {
-          return {
-            uuid: item?.uuid,
-            name: item?.Vendor?.name,
-            amount: item?.tokenAmount,
-            status: item?.status,
-            tokenAddress: item?.tokenAddress,
-            walletAddress: item?.Vendor?.walletAddress,
-          };
-        } 
-        );
-        return formattedData;
-      },
-    });
-}
+  const action = useProjectAction(['listRedemptions-rpProject']);
+  return useQuery({
+    queryKey: ['redemptions', projectUUID],
+    queryFn: async () => {
+      const res = await action.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'rpProject.listRedemption',
+          payload: {},
+        },
+      });
+      const data = res.data;
+      const formattedData = data.map((item: any) => {
+        return {
+          uuid: item?.uuid,
+          name: item?.Vendor?.name,
+          amount: item?.tokenAmount,
+          status: item?.status,
+          tokenAddress: item?.tokenAddress,
+          walletAddress: item?.Vendor?.walletAddress,
+        };
+      });
+      return formattedData;
+    },
+  });
+};

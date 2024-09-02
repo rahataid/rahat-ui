@@ -82,13 +82,6 @@ export default function DailyMonitoringTableFilters({
         options={riverBasins}
         handleFilter={handleFilter}
       />
-      {/* Filter Source  */}
-      {/* <SelectComponent
-        name="source"
-        value=""
-        options={[]}
-        handleFilter={handleFilter}
-      /> */}
       {/* Filter Date  */}
       <Popover>
         <PopoverTrigger asChild>

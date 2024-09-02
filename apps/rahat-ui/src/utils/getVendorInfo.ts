@@ -5,6 +5,7 @@ export const filterVendorsGeoJson = (response: any) => {
       features.push({
         type: 'Feature',
         statsCount: ven?.redemptionStats,
+        referralCount:ven?.referralStats,
         geometry: {
           type: 'Point',
           coordinates: [

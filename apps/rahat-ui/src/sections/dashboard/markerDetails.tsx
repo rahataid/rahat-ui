@@ -17,6 +17,9 @@ export default function MarkerDetails({
         <h3>
           Redemption: {selectedMarker?.statsCount || 'N/A'}
           </h3>
+        <h3>
+        Referral Count: {selectedMarker?.referralCount || 'N/A'}
+        </h3>
       </Popup>
     </div>
   );

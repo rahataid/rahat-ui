@@ -7,16 +7,22 @@ import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 type Step3AssignAmountProps = {
   form: UseFormReturn<z.infer<any>>;
+  setCurrentStep: (currentStep: number) => void;
+  currentStep: number;
 };
 
-export default function Step3AssignAmount({ form }: Step3AssignAmountProps) {
+export default function Step3AssignAmount({
+  form,
+  setCurrentStep,
+  currentStep,
+}: Step3AssignAmountProps) {
   const router = useRouter();
   return (
     <div className="bg-card rounded-lg m-4">
       <div className="flex flex-col gap-1">
         <div className="flex items-center gap-2">
           <ArrowLeft
-            onClick={() => router.back()}
+            onClick={() => setCurrentStep(currentStep - 1)}
             className="cursor-pointer"
             size={20}
             strokeWidth={1.5}

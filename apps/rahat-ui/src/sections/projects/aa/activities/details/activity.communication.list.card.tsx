@@ -4,7 +4,7 @@ import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { useTriggerCommunication } from '@rahat-ui/query';
 import { UUID } from 'crypto';
-import { SessionStatus } from "@rumsan/connect/src/types/index"
+import { SessionStatus } from '@rumsan/connect/src/types/index';
 import SpinnerLoader from '../../../components/spinner.loader';
 import { Download } from 'lucide-react';
 
@@ -23,7 +23,10 @@ export default function ActivityCommunicationListCard({
 
   const trigger = useTriggerCommunication();
 
-  const triggerCommunication = async (activityId: string, communicationId: string) => {
+  const triggerCommunication = async (
+    activityId: string,
+    communicationId: string,
+  ) => {
     setLoadingButtons((prev) => [...prev, communicationId]);
     try {
       await trigger.mutateAsync({
@@ -34,6 +37,8 @@ export default function ActivityCommunicationListCard({
       setLoadingButtons((prev) => prev.filter((id) => id !== communicationId));
     }
   };
+
+  console.log(activityDetail?.activityCommunication)
 
   return (
     <div className="bg-card p-4 rounded">
@@ -48,7 +53,9 @@ export default function ActivityCommunicationListCard({
                   type="button"
                   disabled={comm?.sessionStatus !== SessionStatus.NEW}
                   className="h-7 w-24"
-                  onClick={() => triggerCommunication(activityId, comm?.communicationId)}
+                  onClick={() =>
+                    triggerCommunication(activityId, comm?.communicationId)
+                  }
                 >
                   {loadingButtons.includes(comm?.communicationId) ? (
                     <SpinnerLoader />
@@ -91,19 +98,18 @@ export default function ActivityCommunicationListCard({
   );
 }
 
-
 function renderMessage(message: any) {
-  // console.log(typeof(message))
-  if (typeof (message) === "string") {
+  if (typeof message === 'string') {
     return message;
   }
   return (
-    <a className='cursor-pointer underline inline-flex' href={message?.mediaURL} target='_blank'>
-      <span>
-        {message?.fileName}
-      </span>
-      <Download size={20} strokeWidth={1.5} className='ml-2' />
+    <a
+      className="cursor-pointer underline inline-flex"
+      href={message?.mediaURL}
+      target="_blank"
+    >
+      <span>{message?.fileName}</span>
+      <Download size={20} strokeWidth={1.5} className="ml-2" />
     </a>
-  )
-
+  );
 }

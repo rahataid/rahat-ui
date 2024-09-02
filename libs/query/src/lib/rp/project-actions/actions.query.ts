@@ -14,6 +14,8 @@ const GET_ALL_DISBURSEMENT_PLANS = 'rpProject.disbursementPlan.get';
 const UPDATE_DISBURSEMENT_PLAN = 'rpProject.disbursementPlan.update';
 const CREATE_BULK_DISBURSEMENT = 'rpProject.disbursement.bulkCreate';
 
+const GET_ALL_BENEFICIARY_GROUPS = 'rpProject.beneficiary.getAllGroups';
+
 // Hooks for Disbursement Plan
 export const useCreateDisbursementPlan = (projectUUID: UUID) => {
   const action = useProjectAction(['createDisbursementPlan-rpProject']);
@@ -278,4 +280,31 @@ export const useListRedemptions = (projectUUID: UUID) => {
       return formattedData;
     },
   });
+};
+
+export const useFindAllBeneficiaryGroups = (projectUUID: UUID) => {
+  const action = useProjectAction();
+
+  const query = useQuery({
+    queryKey: ['beneficiary_groups', projectUUID],
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    queryFn: async () => {
+      const res = await action.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: GET_ALL_BENEFICIARY_GROUPS,
+          payload: {},
+        },
+      });
+      return res.data;
+    },
+  });
+
+  const data = query?.data;
+
+  return {
+    ...query,
+    data,
+  };
 };

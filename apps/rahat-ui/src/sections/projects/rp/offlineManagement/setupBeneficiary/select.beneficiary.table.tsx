@@ -53,8 +53,8 @@ export function SelectBeneficiaryTable({
             table.getFilteredRowModel().rows.map((row) => {
               if (value) {
                 const disbursements = form.getValues('disbursements') || [];
-                const isUnique = disbursements.includes(row.original.id);
-                if (!isUnique)
+                const idExist = disbursements.includes(row.original.id);
+                if (!idExist)
                   form.setValue('disbursements', [
                     ...disbursements,
                     row.original.id,
@@ -78,10 +78,13 @@ export function SelectBeneficiaryTable({
           onCheckedChange={(value) => {
             if (value) {
               const disbursements = form.getValues('disbursements') || [];
-              form.setValue('disbursements', [
-                ...disbursements,
-                row.original.id,
-              ]);
+              const idExist = disbursements.includes(row.original.id);
+              if (!idExist) {
+                form.setValue('disbursements', [
+                  ...disbursements,
+                  row.original.id,
+                ]);
+              }
             } else {
               const disbursements = form.getValues('disbursements') || [];
               const filteredValue = disbursements.filter(

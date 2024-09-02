@@ -42,8 +42,6 @@ export default function TriggerStatementsDetailView() {
     triggerRepeatKey,
   );
 
-  // console.log(triggerDetail)
-
   const deleteTrigger = useDeleteTriggerStatement();
 
   const removeTrigger = () => {
@@ -69,9 +67,6 @@ export default function TriggerStatementsDetailView() {
           <h1 className="text-xl font-semibold">{triggerDetail?.title}</h1>
         </div>
         <div className="flex gap-4 items-center">
-          {/* <div className="rounded-full border border-primary text-primary bg-card p-2">
-            <Pencil size={20} strokeWidth={1.5} />
-          </div> */}
           <TooltipProvider delayDuration={100}>
             <Tooltip>
               <TooltipTrigger>
@@ -119,7 +114,6 @@ export default function TriggerStatementsDetailView() {
             notes={triggerDetail?.notes}
             phase={triggerDetail?.phase?.name}
           />
-          {/* <TriggerActivityListCard triggerDetail={triggerDetail} /> */}
           <ManualTriggerDocumentsCard
             documents={triggerDetail?.triggerDocuments}
           />
@@ -129,7 +123,6 @@ export default function TriggerStatementsDetailView() {
           <AutomatedTriggerDetailCards triggerDetail={triggerDetail} />
           <div className="mt-4 h-[calc(100vh-252px)]">
             <AutomatedTriggerDetailCard triggerDetail={triggerDetail} />
-            {/* <TriggerActivityListCard triggerDetail={triggerDetail} /> */}
           </div>
         </>
       )}

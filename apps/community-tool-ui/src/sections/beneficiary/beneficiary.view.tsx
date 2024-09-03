@@ -17,13 +17,10 @@ import {
   useCommunityBeneficiaryStore,
 } from '@rahat-ui/community-query';
 import { usePagination } from '@rahat-ui/query';
-import { ListBeneficiary } from '@rahataid/community-tool-sdk/beneficiary';
 import CustomPagination from '../../components/customPagination';
-import BeneficiaryGridView from '../../sections/beneficiary/gridView';
 import BeneficiaryListView from '../../sections/beneficiary/listView';
 import { useDebounce } from '../../utils/debounceHooks';
 import { useCommunityBeneficiaryTableColumns } from './useBeneficiaryColumns';
-import { COLUMN_VISIBILITY_STORAGE_KEY } from '../../constants/beneficiary.const';
 import {
   getTableDisplayField,
   setTableDisplayField,

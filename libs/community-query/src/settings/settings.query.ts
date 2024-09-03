@@ -1,10 +1,9 @@
 import { getSettingsClient } from '@rahataid/community-tool-sdk/clients';
 import { useRSQuery } from '@rumsan/react-query';
-import { UseQueryResult, useMutation, useQuery } from '@tanstack/react-query';
-import { TAGS } from '../config';
-import { SettingInput } from '@rahataid/community-tool-sdk/settings/settings.types';
-import Swal from 'sweetalert2';
 import { Pagination } from '@rumsan/sdk/types';
+import { UseQueryResult, useMutation, useQuery } from '@tanstack/react-query';
+import Swal from 'sweetalert2';
+import { TAGS } from '../config';
 
 export const useCommunitySettingList = (
   payload: Pagination & { any?: string },

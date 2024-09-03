@@ -3,11 +3,6 @@ import {
   flexRender,
   getCoreRowModel,
   useReactTable,
-  getPaginationRowModel,
-  SortingState,
-  ColumnFiltersState,
-  getSortedRowModel,
-  getFilteredRowModel,
 } from '@tanstack/react-table';
 import {
   Table as TableComponent,
@@ -25,57 +20,42 @@ import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import { useTriggerStatementTableColumns } from './useTriggerStatementsColumns';
 
-
 export default function PhaseTriggerStatementsList({
-  phaseId
+  phaseId,
 }: {
-  phaseId: string
+  phaseId: string;
 }) {
   const columns = useTriggerStatementTableColumns();
 
   const { id } = useParams();
   const projectId = id as UUID;
 
-  const { pagination, setNextPage, setPrevPage, setPerPage, setPagination, filters } = usePagination();
-  const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    [],
-  );
+  const {
+    pagination,
+    setNextPage,
+    setPrevPage,
+    setPerPage,
+    setPagination,
+    filters,
+  } = usePagination();
 
   React.useEffect(() => {
     setPagination({ page: 1, perPage: 10 });
   }, []);
 
-  console.log(phaseId)
-
-  const { data, isLoading } = useAATriggerStatements(projectId, { ...pagination, ...filters, phaseId });
+  const { data, isLoading } = useAATriggerStatements(projectId, {
+    ...pagination,
+    ...filters,
+    phaseId,
+  });
 
   const tableData = data?.httpReponse.data?.data;
   const tableMeta = data?.httpReponse.data?.meta;
-
-  console.log(tableData)
-  console.log(tableMeta)
 
   const table = useReactTable({
     manualPagination: true,
     data: tableData ?? [],
     columns,
-    onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    state: {
-      sorting,
-      columnFilters,
-    },
-  });
-
-  const tatble = useReactTable({
-    data: tableData || [],
-    columns,
-    getPaginationRowModel: getPaginationRowModel(),
     getCoreRowModel: getCoreRowModel(),
   });
 
@@ -84,7 +64,7 @@ export default function PhaseTriggerStatementsList({
   return (
     <div className="border bg-card rounded">
       <TableComponent>
-        <ScrollArea className={"h-[calc(100vh-456px)]"}>
+        <ScrollArea className={'h-[calc(100vh-456px)]'}>
           <TableHeader className="sticky top-0 bg-slate-50">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>

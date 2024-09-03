@@ -1,7 +1,6 @@
 import { useRouter } from 'next/navigation';
 
 import {
-  useCommunityBeneficiaryListByID,
   useCommunityBeneficiaryRemove,
   useGenerateVerificationLink,
 } from '@rahat-ui/community-query';

@@ -1,4 +1,3 @@
-import { Separator } from '@radix-ui/react-separator';
 import { ChartColumnStacked } from '@rahat-ui/shadcn/charts';
 
 type IProps = {

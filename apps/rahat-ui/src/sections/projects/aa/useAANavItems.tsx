@@ -4,8 +4,6 @@ import {
   Speech,
   UsersRound,
   AlignVerticalJustifyCenter,
-  Phone,
-  MessageSquare,
   Activity,
   HardDrive,
   LayoutDashboard,

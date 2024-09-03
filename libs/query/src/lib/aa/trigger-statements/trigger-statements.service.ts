@@ -33,10 +33,6 @@ export const useCreateTriggerStatement = () => {
     },
     onSuccess: () => {
       q.reset();
-      // toast.fire({
-      //   title: 'Trigger statement added successfully.',
-      //   icon: 'success',
-      // });
     },
     onError: (error: any) => {
       const errorMessage = error?.response?.data?.message || 'Error';

@@ -1,7 +1,6 @@
 'use client';
 import { RumsanService } from '@rumsan/sdk';
 
-import { CommunicationService } from '@rumsan/communication';
 import {
   RSQueryContextType,
   useAuthStore,

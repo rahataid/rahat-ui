@@ -12,21 +12,12 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/components/tooltip';
-import { ListBeneficiary } from '@rahataid/community-tool-sdk/beneficiary';
-import { Minus, Trash2 } from 'lucide-react';
-// import EditBeneficiary from './editBeneficiary';
-// import InfoCards from '../../infoCards';
-import Swal from 'sweetalert2';
-import {
-  useCommunityBeneficiaryListByID,
-  useCommunityBeneficiaryRemove,
-} from '@rahat-ui/community-query';
-import { toast } from 'react-toastify';
-import { UUID } from 'crypto';
-import useFormStore from '../../../formBuilder/form.store';
+import { Minus } from 'lucide-react';
+import { useCommunityBeneficiaryListByID } from '@rahat-ui/community-query';
 import { useEffect } from 'react';
-import InfoCards from '../../beneficiary/infoCards';
+import useFormStore from '../../../formBuilder/form.store';
 import EditBeneficiary from '../../beneficiary/editBeneficiary';
+import InfoCards from '../../beneficiary/infoCards';
 
 type IProps = {
   uuid: string;

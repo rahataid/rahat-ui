@@ -1,11 +1,10 @@
 import { useRouter, useParams } from 'next/navigation';
 import { ColumnDef } from '@tanstack/react-table';
-import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { Eye } from 'lucide-react';
-import { IActivitiesItem } from '../../../../types/activities';
-import UpdateActivityStatusDialog from './details/update.activity.status.dialog';
-import { setPaginationToLocalStorage } from '../prev.pagination.storage';
+import { IActivitiesItem } from 'apps/rahat-ui/src/types/activities';
+import UpdateActivityStatusDialog from '../details/update.activity.status.dialog';
+import { setPaginationToLocalStorage } from '../../prev.pagination.storage';
 
 function getPhaseBg(phase: string) {
   if (phase === 'PREPAREDNESS') {
@@ -53,28 +52,6 @@ export default function useActivitiesTableColumn() {
   };
 
   const columns: ColumnDef<IActivitiesItem>[] = [
-    // {
-    //   id: 'select',
-    //   header: ({ table }) => (
-    //     <Checkbox
-    //       checked={
-    //         table.getIsAllPageRowsSelected() ||
-    //         (table.getIsSomePageRowsSelected() && 'indeterminate')
-    //       }
-    //       onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-    //       aria-label="Select all"
-    //     />
-    //   ),
-    //   cell: ({ row }) => (
-    //     <Checkbox
-    //       checked={row.getIsSelected()}
-    //       onCheckedChange={(value) => row.toggleSelected(!!value)}
-    //       aria-label="Select row"
-    //     />
-    //   ),
-    //   enableSorting: false,
-    //   enableHiding: false,
-    // },
     {
       accessorKey: 'title',
       header: 'Title',
@@ -119,11 +96,6 @@ export default function useActivitiesTableColumn() {
       header: 'Responsible Station',
       cell: ({ row }) => <div>{row.getValue('source')}</div>,
     },
-    // {
-    //   accessorKey: 'hazardType',
-    //   header: () => <div className="w-max">Hazard Type</div>,
-    //   cell: ({ row }) => <div>{row.getValue('hazardType')}</div>,
-    // },
     {
       accessorKey: 'status',
       header: 'Status',

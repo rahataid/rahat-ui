@@ -2,25 +2,16 @@
 
 import {
   PROJECT_SETTINGS_KEYS,
-  useProjectList,
   useProjectSettingsStore,
 } from '@rahat-ui/query';
 import {
   Dialog,
   DialogClose,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
 } from '@rahat-ui/shadcn/components/dialog';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@rahat-ui/shadcn/components/select';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { useMintTokens } from 'apps/rahat-ui/src/hooks/aa/contracts/aa-contract';
@@ -34,34 +25,21 @@ type FundsModalType = {
 };
 
 type IProps = {
-  // selectedBeneficiaries: any;
   fundsModal: FundsModalType;
-  // handleSubmit: (data: any) => void;
 };
 
 export default function AddFundsModal({ fundsModal }: IProps) {
   const [tokens, setTokens] = React.useState('');
-  const { id: projectID } = useParams();
+  const params = useParams();
+  const projectID = params.id as UUID;
 
   const contractSettings = useProjectSettingsStore(
     (s) => s.settings?.[projectID]?.[PROJECT_SETTINGS_KEYS.CONTRACT] || null,
   );
 
-  console.log(contractSettings);
-
   const mintTokens = useMintTokens();
 
   const handleAdd = async (tokens: any) => {
-    console.log(tokens);
-    console.log({
-      address: contractSettings?.rahatdonor?.address,
-      args: [
-        contractSettings?.rahattoken?.address,
-        contractSettings?.aaproject?.address,
-        BigInt(tokens),
-      ],
-    });
-
     mintTokens.writeContractAsync({
       address: contractSettings?.rahatdonor?.address,
       args: [

@@ -232,7 +232,7 @@ export const useSingleBeneficiaryGroup = (
         data: {
           action: 'aaProject.beneficiary.getOneGroup',
           payload: {
-            uuid: beneficiariesGroupID
+            uuid: beneficiariesGroupID,
           },
         },
       });
@@ -273,8 +273,8 @@ export const useBeneficiariesGroups = (uuid: UUID, payload: any) => {
           // members: d?.groupedBeneficiaries?.map((m: any) => {
           //   return m?.Beneficiary
           // })
-        }
-      })
+        };
+      });
 
       // setBeneficiariesGroups(query?.data?.data);
       setBeneficiariesGroups(benfGroupsFormatted);
@@ -389,7 +389,6 @@ export const useDeleteStakeholdersGroups = () => {
   });
 };
 
-
 export const useGroupsReservedFunds = (uuid: UUID, payload: any) => {
   const q = useProjectAction();
 
@@ -400,7 +399,7 @@ export const useGroupsReservedFunds = (uuid: UUID, payload: any) => {
         uuid,
         data: {
           action: 'aaProject.beneficiary.get_all_token_reservation',
-          payload: payload
+          payload: payload,
         },
       });
       return mutate;
@@ -429,16 +428,13 @@ export const useSingleGroupReservedFunds = (
         },
       });
 
-      console.log(mutate)
       return mutate.data;
     },
   });
   return query;
 };
 
-export const useReservationStats = (
-  uuid: UUID
-) => {
+export const useReservationStats = (uuid: UUID) => {
   const q = useProjectAction();
 
   const query = useQuery({

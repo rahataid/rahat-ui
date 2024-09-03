@@ -38,7 +38,9 @@ const DisbursementConfirmation: FC<DisbursementConfirmationProps> = ({
     projectUUID: id,
     ...filters,
   });
-  const disbursements = useFindAllDisbursements(id);
+  const disbursements = useFindAllDisbursements(id,{
+    hideAssignedBeneficiaries: false,
+  },);
 
   useEffect(() => {
     if (

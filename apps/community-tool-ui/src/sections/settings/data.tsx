@@ -19,11 +19,11 @@ export const SETTINGS_SAMPLE: Setting[] = [
     key_value: [
       {
         key: 'APP1',
-        value: '{YOUR_APP_URL}/v1/beneficiaries/import-tools',
+        value: '{YOUR_API_URL}/v1/beneficiaries/import-tools',
       },
       {
         key: 'APP2',
-        value: '{YOUR_APP_URL}/v1/beneficiaries/import-tools',
+        value: '{YOUR_API_URL}/v1/beneficiaries/import-tools',
       },
     ],
   },
@@ -45,6 +45,6 @@ export const SETTINGS_SAMPLE: Setting[] = [
       'This settings is used to verify beneficiary wallet. Enter the URL of the verification app as follows:',
 
     requiredFields: 'URL',
-    key_value: [{ key: 'URL', value: '{YOUR_APP_URL}/verify' }],
+    key_value: [{ key: 'URL', value: '{YOUR_API_URL}/verify' }],
   },
 ];

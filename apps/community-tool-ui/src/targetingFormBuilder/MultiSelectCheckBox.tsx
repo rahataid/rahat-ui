@@ -1,20 +1,19 @@
-import React, { useState } from 'react';
 import {
+  FormControl,
   FormField,
   FormItem,
   FormLabel,
-  FormControl,
 } from '@rahat-ui/shadcn/src/components/ui/form';
 import {
   Select,
   SelectContent,
-  SelectItem,
   SelectTrigger,
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
+import { useState } from 'react';
 
-import { humanizeString } from '../utils';
 import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
+import { humanizeString } from '../utils';
 import useTargetingFormStore from './form.store';
 
 type IProps = {

@@ -48,7 +48,9 @@ const DisbursementPlan: FC<DisbursementPlanProps> = ({
     projectUUID: id,
     ...filters,
   });
-  const disbursements = useFindAllDisbursements(id);
+  const disbursements = useFindAllDisbursements(id,{
+    hideAssignedBeneficiaries: false,
+  },);
   const bulkAssignDisbursement = useBulkCreateDisbursement(id);
 
   const [rowData, setRowData] = React.useState<Payment[]>([]);

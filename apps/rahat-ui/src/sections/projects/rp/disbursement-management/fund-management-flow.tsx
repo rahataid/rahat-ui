@@ -30,7 +30,10 @@ const FundManagementFlow = () => {
   const router = useRouter();
 
   const createDisbursementPlan = useCreateDisbursementPlan(id);
-  const disbursements = useFindAllDisbursements(id);
+  const disbursements = useFindAllDisbursements(id,{
+    hideAssignedBeneficiaries: false,
+
+  });
   const { data: disbursementData } = useFindAllDisbursementPlans(id);
 
   useEffect(() => {

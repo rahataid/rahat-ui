@@ -54,11 +54,13 @@ export function SelectBeneficiaryTable({
               if (value) {
                 const disbursements = form.getValues('disbursements') || [];
                 const idExist = disbursements.includes(row.original.id);
-                if (!idExist)
+                if (!idExist) {
                   form.setValue('disbursements', [
                     ...disbursements,
                     row.original.id,
                   ]);
+                  form.setValue('groupIds', []);
+                }
               } else {
                 const disbursements = form.getValues('disbursements') || [];
                 const filteredValue = disbursements.filter(
@@ -84,6 +86,7 @@ export function SelectBeneficiaryTable({
                   ...disbursements,
                   row.original.id,
                 ]);
+                form.setValue('groupIds', []);
               }
             } else {
               const disbursements = form.getValues('disbursements') || [];

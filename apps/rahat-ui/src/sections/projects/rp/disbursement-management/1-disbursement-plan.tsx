@@ -5,6 +5,12 @@ import {
   useProjectBeneficiaries,
 } from '@rahat-ui/query';
 import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/tabs';
+import {
   ColumnFiltersState,
   SortingState,
   VisibilityState,
@@ -19,6 +25,7 @@ import { UUID } from 'crypto';
 import { Users } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import React, { FC, useEffect } from 'react';
+import BeneficiaryGroup from './beneficiary.group';
 import { DisburseTable } from './disburse-table';
 import { initialStepData } from './fund-management-flow';
 import { useDibsursementList1Columns } from './useDisbursementList1Columns';
@@ -42,7 +49,7 @@ const DisbursementPlan: FC<DisbursementPlanProps> = ({
   const { pagination, filters } = usePagination();
   const projectBeneficiaries = useProjectBeneficiaries({
     page: pagination.page,
-    perPage: pagination.perPage,
+    perPage: 100,
     order: 'desc',
     sort: 'updatedAt',
     projectUUID: id,
@@ -52,6 +59,7 @@ const DisbursementPlan: FC<DisbursementPlanProps> = ({
   const bulkAssignDisbursement = useBulkCreateDisbursement(id);
 
   const [rowData, setRowData] = React.useState<Payment[]>([]);
+  const [activeTab, setActiveTab] = React.useState<string>('beneficiary');
 
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -130,7 +138,7 @@ const DisbursementPlan: FC<DisbursementPlanProps> = ({
   ]);
 
   return (
-    <div className="grid grid-cols-12">
+    <div className="grid grid-cols-12 gap-2">
       <div className="col-span-4">
         <h1 className="mb-4 text-gray-700 text-xl font-medium">
           Create Disbursement Plan
@@ -142,13 +150,42 @@ const DisbursementPlan: FC<DisbursementPlanProps> = ({
           Icon={Users}
         />
       </div>
-      <div className="col-span-12">
-        <DisburseTable
-          table={table}
-          handleStepDataChange={handleStepDataChange}
-          stepData={stepData}
-          bulkAssignDisbursement={bulkAssignDisbursement}
-        />
+      <div className="col-span-12 bg-white p-2">
+        <h3 className="mb-4 text-gray-700 text-xl font-medium">
+          Beneficiaries
+        </h3>
+        <p className="text-gray-500 font-normal text-base">
+          Here is the list of all the beneficiaries group
+        </p>
+        <Tabs defaultValue="beneficiary" onValueChange={setActiveTab}>
+          <div className="flex justify-between items-center">
+            <TabsList className="bg-secondary gap-4">
+              <TabsTrigger
+                value="beneficiary"
+                className="w-52 bg-card border data-[state=active]:border-primary"
+              >
+                Beneficiary
+              </TabsTrigger>
+              <TabsTrigger
+                value="beneficiaryGroups"
+                className="w-52 bg-card border data-[state=active]:border-primary"
+              >
+                Beneficiary Groups
+              </TabsTrigger>
+            </TabsList>
+          </div>
+          <TabsContent value="beneficiary">
+            <DisburseTable
+              table={table}
+              handleStepDataChange={handleStepDataChange}
+              stepData={stepData}
+              bulkAssignDisbursement={bulkAssignDisbursement}
+            />
+          </TabsContent>
+          <TabsContent value="beneficiaryGroups">
+            <BeneficiaryGroup />
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );

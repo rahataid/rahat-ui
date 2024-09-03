@@ -9,14 +9,26 @@ type Step3AssignAmountProps = {
   form: UseFormReturn<z.infer<any>>;
   setCurrentStep: (currentStep: number) => void;
   currentStep: number;
+  benGroups: any;
 };
 
 export default function Step3AssignAmount({
   form,
   setCurrentStep,
   currentStep,
+  benGroups,
 }: Step3AssignAmountProps) {
-  const router = useRouter();
+  const selectedDisbursement = form.getValues('disbursements');
+  const groupIds = form.getValues('groupIds') || [];
+
+  let selectedBenificiries = selectedDisbursement?.length || 0;
+  if (!selectedDisbursement || selectedDisbursement.length === 0) {
+    benGroups.map((group: any) => {
+      if (groupIds.includes(group.uuid)) {
+        selectedBenificiries += group._count.groupedBeneficiaries;
+      }
+    });
+  }
   return (
     <div className="bg-card rounded-lg m-4">
       <div className="flex flex-col gap-1">
@@ -44,7 +56,7 @@ export default function Step3AssignAmount({
           </div>
           <div>
             <a href="#" className={cn('text-blue-600 hover:underline text-sm')}>
-              {form.getValues('disbursements')?.length} beneficiaries selected
+              {selectedBenificiries} beneficiaries selected
             </a>
           </div>
         </div>

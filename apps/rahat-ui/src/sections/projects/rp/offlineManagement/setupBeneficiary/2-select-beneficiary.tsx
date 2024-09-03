@@ -36,6 +36,7 @@ export default function Step2SelectBeneficiary({
       const idExist = groupIds.includes(uuid);
       if (!idExist) {
         form.setValue('groupIds', [...groupIds, uuid]);
+        form.setValue('disbursements', []);
       }
     } else {
       const groupIds = form.getValues('groupIds') || [];

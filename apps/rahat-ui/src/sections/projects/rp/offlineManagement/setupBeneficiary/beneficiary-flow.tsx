@@ -57,7 +57,7 @@ const SetupBeneficiaryPage = () => {
   const { pagination, filters } = usePagination();
   const projectBeneficiaries = useProjectBeneficiaries({
     page: pagination.page,
-    perPage: pagination.perPage,
+    perPage: 100,
     order: 'desc',
     sort: 'updatedAt',
     projectUUID: id,
@@ -79,7 +79,7 @@ const SetupBeneficiaryPage = () => {
           );
           return {
             ...beneficiary,
-            disbursementAmount: beneficiaryDisbursement?.amount || '0',
+            amount: beneficiaryDisbursement?.amount || '0',
             disbursmentId: beneficiaryDisbursement?.id,
           };
         },
@@ -138,6 +138,10 @@ const SetupBeneficiaryPage = () => {
 
   const form = useForm<z.infer<typeof OfflineBeneficiaryFormSchema>>({
     resolver: zodResolver(OfflineBeneficiaryFormSchema),
+    defaultValues: {
+      disbursements: [],
+      groupIds: [],
+    },
   });
 
   const steps = [
@@ -183,6 +187,7 @@ const SetupBeneficiaryPage = () => {
           form={form}
           setCurrentStep={setCurrentStep}
           currentStep={currentStep}
+          benGroups={benGroups}
         />
       ),
       validation: () => {

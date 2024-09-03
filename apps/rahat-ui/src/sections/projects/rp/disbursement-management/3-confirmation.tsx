@@ -32,7 +32,8 @@ const DisbursementConfirmation: FC<DisbursementConfirmationProps> = ({
 
   const projectBeneficiaries = useProjectBeneficiaries({
     page: pagination.page,
-    perPage: pagination.perPage,
+    perPage:100,
+    //  pagination.perPage,
     order: 'desc',
     sort: 'updatedAt',
     projectUUID: id,

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import {
   useCreateDisbursement,
@@ -22,26 +22,35 @@ const BeneficiaryGroup = () => {
   );
   console.log(benificiaryGroups, groupId);
 
-  const { data: benificiaryDisbursement } = useGetBeneficiariesDisbursements(
-    id as UUID,
-    groupId || [],
-  );
+  const { data: benificiaryDisbursement, refetch } =
+    useGetBeneficiariesDisbursements(id as UUID, groupId || []);
   const createDisbursement = useCreateDisbursement(id as UUID);
   const beneficiaryGroup = useRpSingleBeneficiaryGroupMutation(id as UUID);
 
   const [selectedGroupId, setSelectedGroupId] = React.useState([]);
+  const [disbursementData, setDisbursementData] = React.useState([]);
+
+  useEffect(() => {
+    if (benificiaryDisbursement) {
+      setDisbursementData(benificiaryDisbursement);
+    }
+  }, [benificiaryDisbursement]);
 
   const handleCreateDisbursement = async (
     amount: number,
     groupUUid: string,
   ) => {
     const bg = await beneficiaryGroup.mutateAsync(groupUUid as UUID);
-    bg?.groupedBeneficiaries?.map((groupedBeneficiary: any) =>
-      createDisbursement.mutateAsync({
-        amount: +amount,
-        walletAddress: groupedBeneficiary?.Beneficiary?.walletAddress,
-      }),
+    await Promise.all(
+      bg?.groupedBeneficiaries?.map(
+        async (groupedBeneficiary: any) =>
+          await createDisbursement.mutateAsync({
+            amount: +amount,
+            walletAddress: groupedBeneficiary?.Beneficiary?.walletAddress,
+          }),
+      ),
     );
+    refetch();
   };
   return (
     <div>
@@ -60,7 +69,7 @@ const BeneficiaryGroup = () => {
         <ScrollArea className="h-[calc(100vh-538px)]">
           <div className="grid grid-cols-4 gap-4 m-4">
             {benificiaryGroups?.map((group: any) => {
-              const disbursements = benificiaryDisbursement?.filter(
+              const disbursements = disbursementData?.filter(
                 (disbursement) =>
                   disbursement.beneficiaryGroupId === group.uuid,
               );

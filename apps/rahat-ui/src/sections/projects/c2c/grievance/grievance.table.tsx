@@ -26,6 +26,10 @@ import { useGrievanceTableColumns } from './useGrievanceColumn';
 
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import TableLoader from 'apps/rahat-ui/src/components/table.loader';
+import Image from 'next/image';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { useRouter, useParams } from 'next/navigation';
+import { Plus } from 'lucide-react';
 
 const GrievanceTable = () => {
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -42,16 +46,14 @@ const GrievanceTable = () => {
     React.useState<VisibilityState>({});
   const {
     pagination,
-    filters,
-    setFilters,
     setNextPage,
     setPrevPage,
     setPerPage,
     selectedListItems,
     setSelectedListItems,
-    resetSelectedListItems,
   } = usePagination();
-  const selectedRowAddresses = Object.keys(selectedListItems);
+  const { id } = useParams();
+  const route = useRouter();
   const columns = useGrievanceTableColumns();
   const table = useReactTable({
     manualPagination: true,
@@ -77,18 +79,16 @@ const GrievanceTable = () => {
     <>
       <div className="p-2 bg-secondary">
         <div className="flex justify-between items-center mb-2">
-          <div className="flex">
-            <Input
-              placeholder="Search grievance..."
-              value={
-                (table.getColumn('reporter')?.getFilterValue() as string) ?? ''
-              }
-              onChange={(event) => {
-                table.getColumn('reporter')?.setFilterValue(event.target.value);
-              }}
-              className="max-w-sm rounded mr-2"
-            />
-          </div>
+          <Input
+            placeholder="Search grievance..."
+            value={
+              (table.getColumn('reporter')?.getFilterValue() as string) ?? ''
+            }
+            onChange={(event) => {
+              table.getColumn('reporter')?.setFilterValue(event.target.value);
+            }}
+            className="max-w-sm rounded mr-2"
+          />
         </div>
         <div className="rounded border bg-card">
           <Table>
@@ -112,7 +112,16 @@ const GrievanceTable = () => {
                 ))}
               </TableHeader>
               <TableBody>
-                {table.getRowModel().rows?.length ? (
+                {grievanceList.isLoading ? (
+                  <TableRow>
+                    <TableCell
+                      colSpan={columns.length}
+                      className="h-24 text-center"
+                    >
+                      <TableLoader />
+                    </TableCell>
+                  </TableRow>
+                ) : table.getRowModel().rows?.length ? (
                   table.getRowModel().rows.map((row) => (
                     <TableRow
                       key={row.id}
@@ -134,14 +143,31 @@ const GrievanceTable = () => {
                       colSpan={columns.length}
                       className="h-24 text-center"
                     >
-                      {
-                        //   projectBeneficiaries.isFetching
-                        grievanceList.isLoading ? (
-                          <TableLoader />
-                        ) : (
-                          'No data available.'
-                        )
-                      }
+                      <div className="w-full h-[calc(100vh-140px)]">
+                        <div className="flex flex-col items-center justify-center">
+                          <Image
+                            src="/noData.png"
+                            height={250}
+                            width={250}
+                            alt="no data"
+                          />
+                          <p className="text-medium text-base mb-1">
+                            No Data Available
+                          </p>
+                          <p className="text-sm mb-4 text-gray-500">
+                            There are no grievances to display at the moment.
+                          </p>
+                          <Button
+                            className="flex items-center gap-2"
+                            onClick={() =>
+                              route.push(`/projects/c2c/${id}/grievance/add`)
+                            }
+                          >
+                            <Plus size={20} strokeWidth={1.75} />
+                            Add Grievance
+                          </Button>
+                        </div>
+                      </div>
                     </TableCell>
                   </TableRow>
                 )}
@@ -155,7 +181,6 @@ const GrievanceTable = () => {
         handleNextPage={setNextPage}
         handlePageSizeChange={setPerPage}
         handlePrevPage={setPrevPage}
-        // meta={projectBeneficiaries?.data?.response?.meta || {}}
         perPage={pagination.perPage}
       />
     </>

@@ -37,6 +37,8 @@ import TableLoader from 'apps/rahat-ui/src/components/table.loader';
 import { useQuery } from 'urql';
 import { BeneficiaryTransaction } from '@rahat-ui/query';
 import { formatEther } from 'viem';
+import Image from 'next/image';
+import Link from 'next/link';
 
 export type Transaction = {
   beneficiary: any;
@@ -71,14 +73,19 @@ export const columns: ColumnDef<Transaction>[] = [
     header: 'Transaction Hash',
     cell: ({ row }) => (
       <div>
-        {' '}
-        {`${row
-          .getValue('transactionHash')
-          ?.toString()
-          .substring(0, 4)}....${row
-          .getValue('transactionHash')
-          ?.toString()
-          ?.slice(-3)}`}
+        <Link
+          target="_blank"
+          href={`https://sepolia.basescan.org/tx/${row.original.transactionHash}`}
+        >
+          {' '}
+          {`${row
+            .getValue('transactionHash')
+            ?.toString()
+            .substring(0, 4)}....${row
+            .getValue('transactionHash')
+            ?.toString()
+            ?.slice(-3)}`}
+        </Link>
       </div>
     ),
   },
@@ -136,16 +143,6 @@ export default function BeneficiaryDetailTableView({
     },
   });
 
-  console.log({ transaction });
-
-  // const [result] = useQuery({
-  //   query: BeneficiaryTransaction,
-  //   variables: { beneficiary: walletAddress },
-  // });
-  // console.log({ result });
-  // console.log(result.data);
-  console.log({ walletAddress });
-
   return (
     <>
       <div className="rounded border">
@@ -170,7 +167,16 @@ export default function BeneficiaryDetailTableView({
               ))}
             </TableHeader>
             <TableBody>
-              {table.getRowModel().rows?.length ? (
+              {isFetching ? (
+                <TableRow>
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-24 text-center"
+                  >
+                    <TableLoader />
+                  </TableCell>
+                </TableRow>
+              ) : table.getRowModel().rows?.length ? (
                 table.getRowModel().rows.map((row) => (
                   <TableRow
                     key={row.id}
@@ -192,7 +198,22 @@ export default function BeneficiaryDetailTableView({
                     colSpan={columns.length}
                     className="h-24 text-center"
                   >
-                    {isFetching ? <TableLoader /> : 'No data available.'}
+                    <div className="w-full h-[calc(100vh-140px)]">
+                      <div className="flex flex-col items-center justify-center">
+                        <Image
+                          src="/noData.png"
+                          height={250}
+                          width={250}
+                          alt="no data"
+                        />
+                        <p className="text-medium text-base mb-1">
+                          No Data Available
+                        </p>
+                        <p className="text-sm mb-4 text-gray-500">
+                          There are no transactions to display at the moment.
+                        </p>
+                      </div>
+                    </div>
                   </TableCell>
                 </TableRow>
               )}
@@ -201,15 +222,7 @@ export default function BeneficiaryDetailTableView({
         </Table>
       </div>
       <div className="sticky bottom-0 flex items-center justify-end space-x-4 px-4 py-1 mt-2 bg-card">
-        <div className="flex-1 text-sm text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length} of{' '}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
-        </div>
-        <div className="sticky bottom-0 flex items-center justify-end space-x-4 px-4 py-1 border-t-2 bg-card">
-          <div className="flex-1 text-sm text-muted-foreground">
-            {table.getFilteredSelectedRowModel().rows.length} of{' '}
-            {table.getFilteredRowModel().rows.length} row(s) selected.
-          </div>
+        <div className="sticky bottom-0 flex items-center justify-end space-x-4 px-4 py-1 bg-card">
           <div className="flex items-center gap-2">
             <div className="text-sm font-medium">Rows per page</div>
             <Select

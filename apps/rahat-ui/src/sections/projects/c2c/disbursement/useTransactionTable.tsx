@@ -91,7 +91,12 @@ export const useTransactionTable = () => {
       header: 'Transaction Hash',
       cell: ({ row }) => (
         <div className="capitalize text-blue-500">
-          <Link href={'#'}>{row.original.beneficiaryWalletAddress}</Link>
+          <Link
+            target="_blank"
+            href={`https://sepolia.basescan.org/tx/${row.original.transactionHash}`}
+          >
+            {row.original.transactionHash}
+          </Link>
         </div>
       ),
     },

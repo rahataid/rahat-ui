@@ -28,12 +28,12 @@ type IProps = {
 };
 
 export default function GrievanceDetail({ details, closeSecondPanel }: IProps) {
-  const [activeTab, setActiveTab] = useState<'details' | 'edit' | null>(
-    'details',
-  );
+  const [activeTab, setActiveTab] = useState<'details' | 'edit'>('details');
+
   const handleTabChange = (tab: 'details' | 'edit') => {
     setActiveTab(tab);
   };
+
   return (
     <>
       <div className="flex justify-between p-4 pt-5 bg-secondary border-b">
@@ -83,10 +83,7 @@ export default function GrievanceDetail({ details, closeSecondPanel }: IProps) {
           <div>
             <div className="flex flex-col items-start justify-start gap-2 mb-1 w-full">
               <Badge>{details?.status}</Badge>
-              <h1 className="font-semibold text-xl">
-                {/*  */}
-                {details?.title}
-              </h1>
+              <h1 className="font-semibold text-xl">{details?.title}</h1>
             </div>
           </div>
         </div>

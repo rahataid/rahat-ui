@@ -13,6 +13,7 @@ import {
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { truncateEthAddress } from '@rumsan/sdk/utils';
+import { formatEther } from 'viem';
 
 export const useProjectBeneficiaryTableColumns = () => {
   const { setSecondPanelComponent, closeSecondPanel } = useSecondPanel();
@@ -107,8 +108,23 @@ export const useProjectBeneficiaryTableColumns = () => {
     },
     {
       accessorKey: 'balance',
-      header: 'Balance',
-      cell: ({ row }) => <div> {row.getValue('balance')}</div>,
+      header: () => <div>Balance</div>,
+      cell: ({ row }) => {
+        const balanceValue = row.getValue('balance');
+
+        if (balanceValue && !isNaN(balanceValue)) {
+          const balance = parseFloat(formatEther(BigInt(balanceValue)));
+
+          const formatted = new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: 'USD',
+          }).format(balance);
+
+          return <div className="font-medium">{formatted}</div>;
+        } else {
+          return <div className="font-medium">N/A</div>;
+        }
+      },
     },
     {
       id: 'actions',

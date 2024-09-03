@@ -7,8 +7,6 @@ const iconMap: { [key: string]: React.ComponentType<any> } = {
   MULTISIG: KeyRound,
 };
 
-console.log('TREASURY_SOURCES', TREASURY_SOURCES);
-
 type Step1DisburseMethodProps = {
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;

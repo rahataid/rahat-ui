@@ -42,7 +42,8 @@ const DisbursementPlan: FC<DisbursementPlanProps> = ({
   const { pagination, filters } = usePagination();
   const projectBeneficiaries = useProjectBeneficiaries({
     page: pagination.page,
-    perPage: pagination.perPage,
+    perPage: 100,
+    // pagination.perPage,
     order: 'desc',
     sort: 'updatedAt',
     projectUUID: id,

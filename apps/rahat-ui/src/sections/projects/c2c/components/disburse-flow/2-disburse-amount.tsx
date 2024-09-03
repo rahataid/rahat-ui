@@ -82,7 +82,7 @@ export default function Step2DisburseAmount({
               placeholder="Enter amount to send"
               value={value}
               onChange={onChange}
-              className="w-full p-2 border border-gray-300 rounded-md w-1/2"
+              className="p-2 border border-gray-300 rounded-md w-1/2"
             />
             <span className="text-gray-600">{tokenName}</span>
           </div>

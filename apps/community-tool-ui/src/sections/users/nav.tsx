@@ -1,6 +1,5 @@
 import { ScrollArea } from '@rahat-ui/shadcn/components/scroll-area';
 import { Separator } from '@rahat-ui/shadcn/components/separator';
-import { useUserStore } from '@rumsan/react-query';
 import { Eye, PlusSquare } from 'lucide-react';
 import { USER_NAV_ROUTE } from '../../constants/user.const';
 
@@ -10,8 +9,6 @@ type IProps = {
 };
 
 export default function Nav({ onTabChange }: IProps) {
-  const totalUser = useUserStore.getState().totalUser;
-
   const handleTabClick = (tab: string) => {
     // Notify the parent component about the tab change
     onTabChange(tab);
@@ -34,7 +31,6 @@ export default function Nav({ onTabChange }: IProps) {
                 <Eye size={18} strokeWidth={1.5} />
                 <p>Users </p>
               </div>
-              {/* <p>{totalUser || 0}</p> */}
             </div>
           </nav>
         </div>

@@ -54,7 +54,6 @@ import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { ROLE_TYPE } from '../../constants/user.const';
 import EditUser from './editUser';
 import { UsersRoleTable } from './usersRoleTable';
 

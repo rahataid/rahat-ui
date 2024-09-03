@@ -1,3 +1,4 @@
+'use client';
 import {
   Accordion,
   AccordionContent,
@@ -12,7 +13,14 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
+import { useState } from 'react';
+import { Copy, CopyCheck } from 'lucide-react';
 export function ViewSamples() {
+  const [copyAction, setCopyAction] = useState<number>();
+  const clickToCopy = (name: string, index: number) => {
+    navigator.clipboard.writeText(name);
+    setCopyAction(index);
+  };
   return (
     <div className="m-1 p-6 h-[calc(100vh-78px)] border bg-white shadow-lg">
       <h1 className="text-xl md:text-xl font-bold mb-6 text-gray-800">
@@ -27,13 +35,35 @@ export function ViewSamples() {
                   <TooltipTrigger>
                     <Label className="text-base">{setting.name}</Label>
                   </TooltipTrigger>
-                  <TooltipContent className="bg-secondary ">
-                    <p className="text-xs font-medium">Settings name</p>
-                  </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
             </AccordionTrigger>
-            <AccordionContent className="mt-2 text-gray-600">
+            <AccordionContent className="mt-2 text-gray-600 ml-4">
+              <TooltipProvider delayDuration={100}>
+                <Tooltip>
+                  <TooltipTrigger
+                    className=" flex gap-3 cursor-pointer"
+                    onClick={() => clickToCopy(setting.name, index)}
+                  >
+                    <Label className="text-base text-black">
+                      {setting.name}
+                    </Label>
+                    {copyAction === index ? (
+                      <CopyCheck size={20} strokeWidth={1.5} />
+                    ) : (
+                      <Copy size={20} strokeWidth={1.5} />
+                    )}
+                  </TooltipTrigger>
+                  <TooltipContent
+                    className="bg-secondary ml-2 p-1"
+                    side="right"
+                  >
+                    <p className="text-xs font-medium ">
+                      {copyAction === index ? 'copied' : `click to copy`}
+                    </p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
               <div className="flex flex-col mb-2">
                 <Label className="text-base">{setting.description}</Label>
                 <Label className="mr-5 mt-3">

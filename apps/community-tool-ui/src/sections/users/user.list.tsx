@@ -23,14 +23,6 @@ import {
 } from '@rahat-ui/shadcn/components/dropdown-menu';
 import { Input } from '@rahat-ui/shadcn/components/input';
 import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@rahat-ui/shadcn/components/select';
-import {
   Table,
   TableBody,
   TableCell,
@@ -38,10 +30,10 @@ import {
   TableHeader,
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
-import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import { useUserTableColumns } from './useUsersColumns';
-import { User } from '@rumsan/sdk/types';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
+import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import { User } from '@rumsan/sdk/types';
+import { useUserTableColumns } from './useUsersColumns';
 
 type IProps = {
   users: User[];
@@ -49,7 +41,6 @@ type IProps = {
 };
 export default function ListView({ users, loading }: IProps) {
   const columns = useUserTableColumns();
-  // const users = useUserStore((state) => state.users);
 
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =

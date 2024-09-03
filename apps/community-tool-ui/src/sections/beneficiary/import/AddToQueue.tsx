@@ -109,7 +109,7 @@ export default function AddToQueue({
 
           <tbody className="h-screen overflow-y-auto">
             {data.map((item: any, index: number) => (
-              <TooltipProvider>
+              <TooltipProvider key={index}>
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <tr

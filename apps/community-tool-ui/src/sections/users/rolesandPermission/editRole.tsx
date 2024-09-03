@@ -16,16 +16,11 @@ import {
   FormMessage,
 } from '@rahat-ui/shadcn/components/form';
 import { Switch } from '@rahat-ui/shadcn/src/components/ui/switch';
-import { useSecondPanel } from 'apps/community-tool-ui/src/providers/second-panel-provider';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-} from '@rahat-ui/shadcn/src/components/ui/card';
 import { SUBJECT_ACTIONS } from 'apps/community-tool-ui/src/constants/app.const';
-import PermissionsCard from './PermissionsCard';
+import { useSecondPanel } from 'apps/community-tool-ui/src/providers/second-panel-provider';
 import { useEffect, useState } from 'react';
 import swal from 'sweetalert2';
+import PermissionsCard from './PermissionsCard';
 
 type Iprops = {
   roleDetail: any;

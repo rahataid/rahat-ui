@@ -110,7 +110,9 @@ const FundManagementView = () => {
     ...filters,
   });
 
-  const disbursements = useFindAllDisbursements(id);
+  const disbursements = useFindAllDisbursements(id,{
+    hideAssignedBeneficiaries: false,
+  },);
 
   const contractSettings = useProjectSettingsStore(
     (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT],

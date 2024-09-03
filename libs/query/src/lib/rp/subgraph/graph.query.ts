@@ -137,6 +137,17 @@ tokensAllocateds(where:{beneficiary: $beneficiaryAddress} ) {
     transactionHash
     eventType
    }
+  claimProcesseds(where:{beneficiary:$beneficiaryAddress}) {
+    amount
+    beneficiary
+    blockNumber
+    blockTimestamp
+    claimer
+    id
+    token
+    transactionHash
+    eventType
+  }
   otpAddeds(where:{beneficiary:$beneficiaryAddress}){
     id
     beneficiary

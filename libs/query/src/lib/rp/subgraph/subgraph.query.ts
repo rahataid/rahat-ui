@@ -66,7 +66,7 @@ export const useRPBeneficiaryTransactions = (beneficiaryAddress: string) => {
         const { data } = await subgraphClient.query(BeneficiaryTransactions, {
           beneficiaryAddress,
         });
-        const transactionsType = ['tokensAllocateds', 'claimCreateds',"otpAddeds"];
+        const transactionsType = ['tokensAllocateds', 'claimCreateds',"otpAddeds","claimProcesseds"];
         const newData = transactionsType.reduce((acc, type) => {
           const transactions = data[type] || [];
           return acc.concat(transactions.map(formatTransaction));

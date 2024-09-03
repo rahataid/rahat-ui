@@ -98,7 +98,7 @@ export default function EditProject() {
       longitude: '',
       name: '',
       projectManager: '',
-      projectType: '',
+      projectType: project?.data?.type,
     },
   });
 

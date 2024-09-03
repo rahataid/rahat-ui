@@ -1,18 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import { useBeneficiaryStore, useSingleBeneficiary } from '@rahat-ui/query';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/alert-dialog';
 import {
   Tooltip,
   TooltipContent,
@@ -26,27 +14,18 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
+import { ListBeneficiary } from '@rahat-ui/types';
 import { truncateEthAddress } from '@rumsan/sdk/utils';
 import { UUID } from 'crypto';
-import {
-  Archive,
-  Expand,
-  Minus,
-  MoreVertical,
-  Trash2,
-  Copy,
-  CopyCheck,
-} from 'lucide-react';
+import { Copy, CopyCheck, Minus, MoreVertical, Trash2 } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 import { useBoolean } from '../../hooks/use-boolean';
-import { paths } from '../../routes/paths';
 import AssignToProjectModal from './components/assignToProjectModal';
+import DeleteBeneficiaryModal from './components/deleteBenfModal';
 import SplitViewDetailCards from './components/split.view.detail.cards';
 import EditBeneficiary from './editBeneficiary';
-import { ListBeneficiary } from '@rahat-ui/types';
-import { useRemoveBeneficiary } from '@rahat-ui/query';
-import DeleteBeneficiaryModal from './components/deleteBenfModal';
 
 type IProps = {
   beneficiaryDetail: ListBeneficiary;
@@ -88,8 +67,7 @@ export default function BeneficiaryDetail({
     deleteModal.onTrue();
   };
 
-  
-  const benfAssignedToProject = beneficiaryDetail?.BeneficiaryProject?.length
+  const benfAssignedToProject = beneficiaryDetail?.BeneficiaryProject?.length;
 
   return (
     <>
@@ -119,7 +97,10 @@ export default function BeneficiaryDetail({
         <div className="flex gap-3">
           <TooltipProvider delayDuration={100}>
             <Tooltip>
-              <TooltipTrigger disabled={benfAssignedToProject} onClick={handleDeleteClick}>
+              <TooltipTrigger
+                disabled={benfAssignedToProject}
+                onClick={handleDeleteClick}
+              >
                 <Trash2
                   className="cursor-pointer"
                   color="red"
@@ -128,7 +109,11 @@ export default function BeneficiaryDetail({
                 />
               </TooltipTrigger>
               <TooltipContent className="bg-secondary ">
-                <p className="text-xs font-medium">{benfAssignedToProject ? 'Cannot delete a beneficiary assigned to project.' : 'Delete'}</p>
+                <p className="text-xs font-medium">
+                  {benfAssignedToProject
+                    ? 'Cannot delete a beneficiary assigned to project.'
+                    : 'Delete'}
+                </p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
@@ -157,7 +142,7 @@ export default function BeneficiaryDetail({
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-      </div >
+      </div>
       <div className="p-2 flex items-center gap-2">
         <Image
           className="rounded-full"
@@ -202,16 +187,12 @@ export default function BeneficiaryDetail({
         </div>
       </div>
 
-      {
-        activeTab === 'details' && (
-          <SplitViewDetailCards beneficiaryDetail={beneficiaryDetail} />
-        )
-      }
-      {
-        activeTab === 'edit' && (beneficiaryDetail || beneficiary) && (
-          <EditBeneficiary beneficiary={beneficiaryDetail || beneficiary} />
-        )
-      }
+      {activeTab === 'details' && (
+        <SplitViewDetailCards beneficiaryDetail={beneficiaryDetail} />
+      )}
+      {activeTab === 'edit' && (beneficiaryDetail || beneficiary) && (
+        <EditBeneficiary beneficiary={beneficiaryDetail || beneficiary} />
+      )}
     </>
   );
 }

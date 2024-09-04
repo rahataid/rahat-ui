@@ -56,10 +56,6 @@ export default function CommsLogsDetailPage() {
 
   const logsMeta = sessionLogs?.httpReponse?.data?.meta
 
-  console.log(logsMeta)
-  console.log("session logs", sessionLogs?.httpReponse?.data?.data)
-  console.log("pagination data", pagination)
-
   const mutateRetry = useRetryFailedBroadcast(projectID as UUID, communicationId, activityId);
 
   const retryFailed = async () => {
@@ -96,7 +92,7 @@ export default function CommsLogsDetailPage() {
     {
       title: 'Total Audience',
       icon: Hash,
-      content: logs?.totalAudience || 'N/A',
+      content: logsMeta?.total || 'N/A',
     },
     {
       title: 'Triggered At',

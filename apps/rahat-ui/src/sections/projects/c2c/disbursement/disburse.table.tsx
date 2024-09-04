@@ -1,11 +1,5 @@
 'use client';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
+import { useGetDisbursements, usePagination } from '@rahat-ui/query';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import {
@@ -27,14 +21,13 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { ChevronDown } from 'lucide-react';
+import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
+import TableLoader from 'apps/rahat-ui/src/components/table.loader';
+import { UUID } from 'crypto';
+import Image from 'next/image';
+import { useParams } from 'next/navigation';
 import * as React from 'react';
 import { useDisburseTableColumns } from './useDisburseTable';
-import { useGetDisbursements } from '@rahat-ui/query';
-import { useParams } from 'next/navigation';
-import { UUID } from 'crypto';
-import Image from 'next/image'; // Import Image component
-import TableLoader from 'apps/rahat-ui/src/components/table.loader';
 
 export function DisburseTable() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -43,6 +36,7 @@ export function DisburseTable() {
   );
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
+  const { pagination, setNextPage, setPrevPage, setPerPage } = usePagination();
   const [rowSelection, setRowSelection] = React.useState({});
   const { id } = useParams() as { id: UUID };
   const { data, isLoading } = useGetDisbursements({
@@ -51,7 +45,7 @@ export function DisburseTable() {
     perPage: 10,
   });
   const columns = useDisburseTableColumns();
-
+  console.log('data', data);
   const table = useReactTable({
     data: data || [],
     columns,
@@ -75,44 +69,18 @@ export function DisburseTable() {
     <div className="w-full">
       <div className="flex items-center pb-2">
         <Input
-          placeholder="Filter date..."
-          value={(table.getColumn('date')?.getFilterValue() as string) ?? ''}
+          placeholder="Filter type..."
+          value={(table.getColumn('type')?.getFilterValue() as string) ?? ''}
           onChange={(event) =>
-            table.getColumn('date')?.setFilterValue(event.target.value)
+            table.getColumn('type')?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
         />
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto">
-              Columns <ChevronDown className="ml-2 h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {table
-              .getAllColumns()
-              .filter((column) => column.getCanHide())
-              .map((column) => {
-                return (
-                  <DropdownMenuCheckboxItem
-                    key={column.id}
-                    className="capitalize"
-                    checked={column.getIsVisible()}
-                    onCheckedChange={(value) =>
-                      column.toggleVisibility(!!value)
-                    }
-                  >
-                    {column.id}
-                  </DropdownMenuCheckboxItem>
-                );
-              })}
-          </DropdownMenuContent>
-        </DropdownMenu>
       </div>
       <div className="rounded h-[calc(100vh-180px)] bg-card">
         <Table>
           <ScrollArea className="h-table1">
-            <TableHeader>
+            <TableHeader className="bg-card sticky top-0">
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
                   {headerGroup.headers.map((header) => {
@@ -186,30 +154,14 @@ export function DisburseTable() {
           </ScrollArea>
         </Table>
       </div>
-      <div className="sticky bottom-0 flex items-center justify-end space-x-4 px-4 py-1 border-t-2 bg-card">
-        <div className="flex-1 text-sm text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length} of{' '}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
-        </div>
-        <div className="space-x-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            Previous
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            Next
-          </Button>
-        </div>
-      </div>
+      <CustomPagination
+        currentPage={pagination.page}
+        handleNextPage={setNextPage}
+        handlePageSizeChange={setPerPage}
+        handlePrevPage={setPrevPage}
+        meta={data || {}}
+        perPage={pagination.perPage}
+      />
     </div>
   );
 }

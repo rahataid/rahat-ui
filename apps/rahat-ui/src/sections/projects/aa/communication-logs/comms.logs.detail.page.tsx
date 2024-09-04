@@ -13,12 +13,15 @@ import {
 } from 'lucide-react';
 import CommsLogsTable from './comms.logs.table';
 import { useParams } from 'next/navigation';
-import { useGetCommunicationLogs, useRetryFailedBroadcast } from '@rahat-ui/query';
+import { useGetCommunicationLogs, useListSessionLogs, usePagination, useRetryFailedBroadcast } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import Loader from 'apps/rahat-ui/src/components/table.loader';
 import { Player } from 'react-simple-player';
 import { BroadcastStatus } from '@rumsan/connect/src/types';
-import { useMemo } from 'react';
+import React, { useMemo } from 'react';
+import { getCoreRowModel, getPaginationRowModel, useReactTable } from '@tanstack/react-table';
+import useCommsLogsTableColumns from './useCommsLogsTableColumns';
+import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 
 type IHeadCardProps = {
   title: string;
@@ -27,10 +30,36 @@ type IHeadCardProps = {
 };
 
 export default function CommsLogsDetailPage() {
-  const { id: projectID, commsIdXactivityId } = useParams();
-  const [communicationId, activityId] = (commsIdXactivityId as string).split('%40');
+  const { id: projectID, commsIdXactivityIdXsessionId } = useParams();
+  const [communicationId, activityId, sessionId] = (commsIdXactivityIdXsessionId as string).split('%40');
+
+  console.log("comms", communicationId)
+  console.log("act", activityId)
+  console.log("Session", sessionId)
+
+  const {
+    pagination,
+    setNextPage,
+    setPrevPage,
+    setPerPage,
+    setPagination,
+  } = usePagination();
+
+  const columns = useCommsLogsTableColumns();
+
+  // logs?.sessionLogs
+
+ 
 
   const { data: logs, isLoading } = useGetCommunicationLogs(projectID as UUID, communicationId, activityId);
+  const {data: sessionLogs, isLoading: isLoadingSessionLogs} = useListSessionLogs(sessionId, { ...pagination })
+
+  const logsMeta = sessionLogs?.httpReponse?.data?.meta
+
+  console.log(logsMeta)
+  console.log("session logs", sessionLogs?.httpReponse?.data?.data)
+  console.log("pagination data", pagination)
+
   const mutateRetry = useRetryFailedBroadcast(projectID as UUID, communicationId, activityId);
 
   const retryFailed = async () => {
@@ -49,6 +78,19 @@ export default function CommsLogsDetailPage() {
       return logs?.groupName
     }
   }, [logs])
+
+
+  const table = useReactTable({
+    manualPagination: true,
+    data: sessionLogs?.httpReponse?.data?.data ?? [],
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+  });
+
+  React.useEffect(() => {
+    setPagination({ page: 1, perPage: 10 });
+  }, []);
+
 
   const headCardFields = [
     {
@@ -78,7 +120,7 @@ export default function CommsLogsDetailPage() {
     }
   ];
 
-  if (isLoading) {
+  if (isLoading || isLoadingSessionLogs) {
     return (<Loader />)
   }
 
@@ -153,7 +195,25 @@ export default function CommsLogsDetailPage() {
         </div>
       </div>
 
-      <CommsLogsTable tableData={logs?.sessionLogs} />
+      <CommsLogsTable table={table} />
+      <CustomPagination
+        meta={
+          logsMeta || {
+            total: 0,
+            currentPage: 0,
+            lastPage: 0,
+            perPage: 0,
+            next: null,
+            prev: null,
+          }
+        }
+        handleNextPage={setNextPage}
+        handlePrevPage={setPrevPage}
+        handlePageSizeChange={setPerPage}
+        currentPage={pagination.page}
+        perPage={pagination.perPage}
+        total={logsMeta?.lastPage || 0}
+      />
     </div>
   );
 }

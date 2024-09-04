@@ -47,23 +47,31 @@ const SetupBeneficiaryPage = () => {
   const [rowData, setRowData] = useState([]);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [perPage, setPerPage] = useState(5);
-  const { pagination, filters } = usePagination();
-
-
+  const {
+    pagination,
+    filters,
+    setFilters,
+    setNextPage,
+    setPrevPage,
+    setPerPage,
+  } = usePagination();
+  const beneficiaryPagination = {
+    pagination,
+    setNextPage,
+    setPrevPage,
+    setPerPage,
+  };
   const { data: disbursmentList, isSuccess } = useFindAllDisbursements(
     id as UUID,
     {
       hideAssignedBeneficiaries: true,
-     
     },
-
   );
   const { data: benGroups } = useFindAllBeneficiaryGroups(id as UUID);
 
   const projectBeneficiaries = useProjectBeneficiaries({
     page: pagination.page,
-    perPage: 100,
+    perPage: pagination.perPage,
     // pagination.perPage,
     order: 'desc',
     sort: 'updatedAt',
@@ -77,20 +85,24 @@ const SetupBeneficiaryPage = () => {
       projectBeneficiaries.data?.data &&
       isSuccess
     ) {
-      const projectBeneficiaryDisbursements = disbursmentList.map(
-        (beneficiary) => {
+      const projectBeneficiaryDisbursements = disbursmentList
+        .filter((beneficiary) => {
+          return projectBeneficiaries.data?.data?.some(
+            (disbursement) =>
+              disbursement.walletAddress === beneficiary.walletAddress,
+          );
+        })
+        .map((beneficiary) => {
           const beneficiaryDisbursement = projectBeneficiaries.data?.data?.find(
-            (disbursement: any) =>
-              disbursement.walletAddress ===
-              beneficiary.walletAddress,
+            (disbursement) =>
+              disbursement.walletAddress === beneficiary.walletAddress,
           );
           return {
             ...beneficiaryDisbursement,
             disbursementAmount: beneficiary?.amount || '0',
             disbursmentId: beneficiary?.id,
           };
-        },
-      );
+        });
 
       if (
         JSON.stringify(projectBeneficiaryDisbursements) !==
@@ -114,7 +126,7 @@ const SetupBeneficiaryPage = () => {
         action: MS_ACTIONS.VENDOR.LIST_BY_PROJECT,
         payload: {
           page: currentPage,
-          perPage,
+          perPage: 100,
         },
       },
     });
@@ -170,6 +182,7 @@ const SetupBeneficiaryPage = () => {
           form={form}
           setCurrentStep={setCurrentStep}
           currentStep={currentStep}
+          pagination={beneficiaryPagination}
         />
       ),
       validation: () => {

@@ -48,16 +48,23 @@ const SetupBeneficiaryPage = () => {
 
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(5);
+  const { pagination, filters } = usePagination();
+
 
   const { data: disbursmentList, isSuccess } = useFindAllDisbursements(
     id as UUID,
+    {
+      hideAssignedBeneficiaries: true,
+     
+    },
+
   );
   const { data: benGroups } = useFindAllBeneficiaryGroups(id as UUID);
 
-  const { pagination, filters } = usePagination();
   const projectBeneficiaries = useProjectBeneficiaries({
     page: pagination.page,
-    perPage: pagination.perPage,
+    perPage: 100,
+    // pagination.perPage,
     order: 'desc',
     sort: 'updatedAt',
     projectUUID: id,
@@ -71,16 +78,16 @@ const SetupBeneficiaryPage = () => {
       isSuccess
     ) {
       const projectBeneficiaryDisbursements = disbursmentList.map(
-        (beneficiaryDisbursement: any) => {
-          const beneficiary = projectBeneficiaries.data?.data?.find(
+        (beneficiary) => {
+          const beneficiaryDisbursement = projectBeneficiaries.data?.data?.find(
             (disbursement: any) =>
               disbursement.walletAddress ===
-              beneficiaryDisbursement.walletAddress,
+              beneficiary.walletAddress,
           );
           return {
-            ...beneficiary,
-            disbursementAmount: beneficiaryDisbursement?.amount || '0',
-            disbursmentId: beneficiaryDisbursement?.id,
+            ...beneficiaryDisbursement,
+            disbursementAmount: beneficiary?.amount || '0',
+            disbursmentId: beneficiary?.id,
           };
         },
       );

@@ -39,7 +39,7 @@ import {
   CommandList,
 } from '@rahat-ui/shadcn/src/components/ui/command';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 export default function Filter() {
   const { pagination, filters } = usePagination();
   const [open, setOpen] = useState<boolean>(false);
@@ -49,7 +49,9 @@ export default function Filter() {
     useCommunityBeneficiaryStore();
 
   const commuinityBeneficiaryGroupCreate = useCommunityBeneficiaryGroupCreate();
-
+  filters.name = '';
+  filters.location = '';
+  filters.govtIdNumber = '';
   filters.autoCreated = 'false';
   pagination.perPage = 50;
   pagination.page = 1;

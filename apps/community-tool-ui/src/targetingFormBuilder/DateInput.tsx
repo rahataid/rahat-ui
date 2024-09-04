@@ -1,10 +1,6 @@
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormMessage,
-} from '@rahat-ui/shadcn/src/components/ui/form';
+import { Calendar } from '@rahat-ui/shadcn/src/components/ui/calendar';
+import { FormControl, FormItem } from '@rahat-ui/shadcn/src/components/ui/form';
 import {
   Popover,
   PopoverContent,
@@ -12,9 +8,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/popover';
 import { format } from 'date-fns';
 import { CalendarIcon } from 'lucide-react';
-import React from 'react';
 import useTargetingFormStore from './form.store';
-import { Calendar } from '@rahat-ui/shadcn/src/components/ui/calendar';
 
 export default function DateInput() {
   const { targetingQueries, setTargetingQueries } = useTargetingFormStore();

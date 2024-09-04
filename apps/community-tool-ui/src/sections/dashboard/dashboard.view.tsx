@@ -6,7 +6,6 @@ import { DownloadCloud, LucideShipWheel } from 'lucide-react';
 import HouseHoldHeadInsights from './houseHoldHeadInsights';
 import HouseHoldInsights from './houseHoldInsights';
 import PopulationInsights from './populatioInsights';
-// import SearchLocationComponent from '../../components/searchDropdownComponent';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { FilterStatsDto } from '@rahataid/community-tool-sdk/app';
 import React from 'react';

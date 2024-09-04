@@ -32,13 +32,16 @@ const DisbursementConfirmation: FC<DisbursementConfirmationProps> = ({
 
   const projectBeneficiaries = useProjectBeneficiaries({
     page: pagination.page,
-    perPage: pagination.perPage,
+    perPage:100,
+    //  pagination.perPage,
     order: 'desc',
     sort: 'updatedAt',
     projectUUID: id,
     ...filters,
   });
-  const disbursements = useFindAllDisbursements(id);
+  const disbursements = useFindAllDisbursements(id,{
+    hideAssignedBeneficiaries: false,
+  },);
 
   useEffect(() => {
     if (

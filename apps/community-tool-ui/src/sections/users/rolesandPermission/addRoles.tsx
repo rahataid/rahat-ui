@@ -1,10 +1,8 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
+import { useCreateRole } from '@rahat-ui/community-query';
 import { Button } from '@rahat-ui/shadcn/components/button';
-import { Input } from '@rahat-ui/shadcn/components/input';
 import {
   Form,
   FormControl,
@@ -13,37 +11,13 @@ import {
   FormLabel,
   FormMessage,
 } from '@rahat-ui/shadcn/components/form';
-import React, { useState } from 'react';
-import { useCreateRole } from '@rahat-ui/community-query';
+import { Input } from '@rahat-ui/shadcn/components/input';
 import { Switch } from '@rahat-ui/shadcn/src/components/ui/switch';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 
 export default function AddRoles() {
-  const [roleName, setRoleName] = useState('');
-
   const createRole = useCreateRole();
-
-  //   const permissions = [
-  //     {
-  //       id: 'manage',
-  //       label: 'Manage',
-  //     },
-  //     {
-  //       id: 'create',
-  //       label: 'Create',
-  //     },
-  //     {
-  //       id: 'read',
-  //       label: 'Read',
-  //     },
-  //     {
-  //       id: 'update',
-  //       label: 'Update',
-  //     },
-  //     {
-  //       id: 'delete',
-  //       label: 'Delete',
-  //     },
-  //   ] as const;
 
   const FormSchema = z.object({
     roleName: z.string().min(2, {

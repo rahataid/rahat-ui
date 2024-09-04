@@ -1,14 +1,7 @@
-import { usePagination } from '@rahat-ui/query';
-import { KanbanSquare, Archive, Plus, ListCollapse, List } from 'lucide-react';
+import { KanbanSquare, List, ListCollapse, Plus } from 'lucide-react';
 import { NavItem } from './nav-items.types';
 
 export const useUsersNavItems = () => {
-  const { setFilters } = usePagination();
-
-  const handleFilter = (type: string) => {
-    setFilters({ type });
-  };
-
   const accordianItems = [
     {
       title: 'List Roles',

@@ -42,13 +42,16 @@ const DisbursementPlan: FC<DisbursementPlanProps> = ({
   const { pagination, filters } = usePagination();
   const projectBeneficiaries = useProjectBeneficiaries({
     page: pagination.page,
-    perPage: pagination.perPage,
+    perPage: 100,
+    // pagination.perPage,
     order: 'desc',
     sort: 'updatedAt',
     projectUUID: id,
     ...filters,
   });
-  const disbursements = useFindAllDisbursements(id);
+  const disbursements = useFindAllDisbursements(id,{
+    hideAssignedBeneficiaries: false,
+  },);
   const bulkAssignDisbursement = useBulkCreateDisbursement(id);
 
   const [rowData, setRowData] = React.useState<Payment[]>([]);

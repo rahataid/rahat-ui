@@ -12,7 +12,6 @@ export const useCommunitySettingList = (
   payload: Pagination & { any?: string },
 ): UseQueryResult<any, Error> => {
   const { queryClient, rumsanService } = useRSQuery();
-  const { setCommsSetting } = useSettingsStore();
   const settingClient = getSettingsClient(rumsanService.client);
   const query = useQuery(
     {
@@ -21,15 +20,6 @@ export const useCommunitySettingList = (
     },
     queryClient,
   );
-
-  useEffect(() => {
-    if (query.isSuccess) {
-      const data: any = query?.data?.data;
-      const comm = data?.find((d: any) => d.name === 'COMMUNICATION');
-
-      setCommsSetting(comm.value);
-    }
-  }, [query.isSuccess, query.data, setCommsSetting]);
 
   return query;
 };

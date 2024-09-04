@@ -51,6 +51,7 @@ export const NewCommunicationQueryProvider: FC<
 
 export const useNewCommunicationQuery = () => {
   const context = React.useContext(CommunicationQueryContext);
+  console.log(context, 'context');
   if (context === undefined) {
     throw new Error(
       'useNewCommunicationQuery must be used within a CommunicationQueryProvider',

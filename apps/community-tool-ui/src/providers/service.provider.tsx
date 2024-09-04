@@ -7,15 +7,9 @@ import {
   useRSQuery,
 } from '@rumsan/react-query';
 import { useQueryClient } from '@tanstack/react-query';
-import { createContext, useEffect, useMemo, useState } from 'react';
-import { useError } from '../utils/useErrors';
 import Image from 'next/image';
-import {
-  useNewCommunicationQuery,
-  useSettingsStore,
-} from '@rahat-ui/community-query';
-import { getClient } from '@rumsan/connect/src/clients';
-import { isEmpty } from 'lodash';
+import { createContext, useEffect, useMemo } from 'react';
+import { useError } from '../utils/useErrors';
 
 export const ServiceContext = createContext<RSQueryContextType | null>(null);
 
@@ -27,12 +21,6 @@ export function ServiceProvider({ children }: ServiceProviderProps) {
   const qc = useQueryClient();
   const { queryClient, rumsanService, setQueryClient, setRumsanService } =
     useRSQuery();
-  const {
-    newCommunicationService,
-    newQueryClient: newCommsQueryClient,
-    setNewCommunicationService,
-    setNewQueryClient: setNewCommsQueryClient,
-  } = useNewCommunicationQuery();
 
   const rsService = useMemo(
     () =>
@@ -41,24 +29,6 @@ export function ServiceProvider({ children }: ServiceProviderProps) {
       }),
     [],
   );
-
-  const commsSettings = useSettingsStore((s) => s.commsSetting);
-  console.log(newCommunicationService, 'commsSettings');
-  useEffect(() => {
-    if (!newCommunicationService && !isEmpty(commsSettings)) {
-      const c = getClient({
-        baseURL: commsSettings['URL'],
-      });
-      c.setAppId(commsSettings['APP_ID']);
-      setNewCommunicationService(c);
-    }
-  }, [commsSettings, setNewCommunicationService, newCommunicationService]);
-
-  useEffect(() => {
-    if (!newCommsQueryClient) {
-      setNewCommsQueryClient(qc);
-    }
-  }, [qc, newCommsQueryClient, setNewCommsQueryClient]);
 
   useEffect(() => {
     if (!queryClient) {
@@ -92,20 +62,9 @@ export function ServiceProvider({ children }: ServiceProviderProps) {
   }, [rumsanService]);
 
   const isAppReady = useMemo(() => {
-    return (
-      rumsanService &&
-      queryClient &&
-      newCommsQueryClient &&
-      newCommunicationService
-    );
-  }, [
-    rumsanService,
-    queryClient,
-    newCommsQueryClient,
-    newCommunicationService,
-  ]);
+    return rumsanService && queryClient;
+  }, [rumsanService, queryClient]);
 
-  console.log(isAppReady, 'isAppReady');
   if (!isAppReady)
     return (
       <div className="h-screen flex items-center justify-center">

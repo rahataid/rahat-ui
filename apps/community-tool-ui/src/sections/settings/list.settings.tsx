@@ -41,8 +41,7 @@ import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 
 export default function ListSetting() {
   const columns = useSettingTableColumns();
-  const tran = useListAllTransports();
-  console.log(tran);
+
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
   const [flag, setFlag] = useState('all');

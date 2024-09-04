@@ -1,12 +1,14 @@
 import { useQuery } from '@tanstack/react-query';
-import { useNewCommunicationQuery } from './new-comms.provider';
 import { TAGS } from '../config';
+import { useSettingsStore } from '../settings/settings.store';
+import { useCommunicationService } from './comms.helpers';
 
 export const useListAllTransports = () => {
-  const { newCommunicationService } = useNewCommunicationQuery();
-  console.log('comms', newCommunicationService);
+  const commsSettings = useSettingsStore((s) => s.commsSetting);
+
+  const newCommunicationService = useCommunicationService(commsSettings);
   const query = useQuery({
-    queryFn: () => newCommunicationService.transport.list(),
+    queryFn: async () => await newCommunicationService.transport.list(),
     queryKey: [TAGS.COMMS_LIST_TRANSPORTS],
   });
 

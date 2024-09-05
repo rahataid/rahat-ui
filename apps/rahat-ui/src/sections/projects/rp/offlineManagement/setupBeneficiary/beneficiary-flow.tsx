@@ -55,12 +55,7 @@ const SetupBeneficiaryPage = () => {
     setPrevPage,
     setPerPage,
   } = usePagination();
-  const beneficiaryPagination = {
-    pagination,
-    setNextPage,
-    setPrevPage,
-    setPerPage,
-  };
+
   const { data: disbursmentList, isSuccess } = useFindAllDisbursements(
     id as UUID,
     {
@@ -78,7 +73,13 @@ const SetupBeneficiaryPage = () => {
     projectUUID: id,
     ...filters,
   });
-
+  const beneficiaryPagination = {
+    pagination,
+    setNextPage,
+    setPrevPage,
+    setPerPage,
+    meta: projectBeneficiaries?.data?.response?.meta,
+  };
   useEffect(() => {
     if (
       projectBeneficiaries.isSuccess &&

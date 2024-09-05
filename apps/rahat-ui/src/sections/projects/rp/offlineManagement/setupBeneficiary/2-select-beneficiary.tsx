@@ -48,7 +48,6 @@ export default function Step2SelectBeneficiary({
       form.setValue('groupIds', filteredValue);
     }
   };
-
   return (
     <div className="bg-card rounded-lg m-4 p-6">
       <div className="flex flex-col gap-1">
@@ -87,7 +86,7 @@ export default function Step2SelectBeneficiary({
                 handlePageSizeChange={pagination?.setPerPage}
                 handlePrevPage={pagination?.setPrevPage}
                 perPage={pagination?.pagination.perPage}
-                meta={meta || { total: 0, currentPage: 0 }}
+                meta={pagination?.meta || { total: 0, currentPage: 0 }}
               />
             </div>
           </TabsContent>

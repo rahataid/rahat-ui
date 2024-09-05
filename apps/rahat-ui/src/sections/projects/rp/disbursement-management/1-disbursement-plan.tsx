@@ -41,14 +41,8 @@ const DisbursementPlan: FC<DisbursementPlanProps> = ({
   stepData,
 }) => {
   const { id } = useParams() as { id: UUID };
-  const {
-    pagination,
-    filters,
-    setNextPage,
-    setPrevPage,
-    setPerPage,
-    
-  } = usePagination();
+  const { pagination, filters, setNextPage, setPrevPage, setPerPage } =
+    usePagination();
 
   const projectBeneficiaries = useProjectBeneficiaries({
     page: pagination.page,
@@ -59,7 +53,7 @@ const DisbursementPlan: FC<DisbursementPlanProps> = ({
     projectUUID: id,
     ...filters,
   });
-  const meta = useBeneficiaryStore((state) => state.meta);
+  const meta = projectBeneficiaries?.data.response?.meta;
 
   const disbursements = useFindAllDisbursements(id, {
     hideAssignedBeneficiaries: false,

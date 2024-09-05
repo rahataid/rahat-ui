@@ -31,21 +31,21 @@ export default function RootLayout({
           <Wagmi>
             <QueryProvider>
               <RSQueryProvider>
-                <NewCommunicationQueryProvider>
-                  <ServiceProvider>
-                    <SecondPanelProvider>
-                      <ThemeProvider
-                        attribute="class"
-                        defaultTheme="light"
-                        disableTransitionOnChange
-                      >
-                        <main className={GeistSans.className}>{children}</main>
-                        <ToastContainer />
-                        <Toaster />
-                      </ThemeProvider>
-                    </SecondPanelProvider>
-                  </ServiceProvider>
-                </NewCommunicationQueryProvider>
+                {/* <NewCommunicationQueryProvider> */}
+                <ServiceProvider>
+                  <SecondPanelProvider>
+                    <ThemeProvider
+                      attribute="class"
+                      defaultTheme="light"
+                      disableTransitionOnChange
+                    >
+                      <main className={GeistSans.className}>{children}</main>
+                      <ToastContainer />
+                      <Toaster />
+                    </ThemeProvider>
+                  </SecondPanelProvider>
+                </ServiceProvider>
+                {/* </NewCommunicationQueryProvider> */}
               </RSQueryProvider>
             </QueryProvider>
           </Wagmi>

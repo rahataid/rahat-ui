@@ -171,7 +171,7 @@ export function DetailsTable({ offlineBeneficiaries }: any) {
     <div className="w-full">
       <div className="flex justify-between items-center gap-2 py-4">
         <Input
-          placeholder="Search Vendors"
+          placeholder="Search Beneficiaries"
           value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
           onChange={(event) =>
             table.getColumn('name')?.setFilterValue(event.target.value)

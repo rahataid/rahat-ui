@@ -9,7 +9,10 @@ import {
 } from '@tanstack/react-table';
 import { useState } from 'react';
 
-import { useCommunitySettingList } from '@rahat-ui/community-query';
+import {
+  useCommunitySettingList,
+  useListAllTransports,
+} from '@rahat-ui/community-query';
 import { usePagination } from '@rahat-ui/query';
 import {
   TableBody,

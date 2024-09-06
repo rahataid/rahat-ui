@@ -26,6 +26,14 @@ import { ArrowUpDown } from 'lucide-react';
 import * as React from 'react';
 import { useRPBeneficiaryTransactions } from '@rahat-ui/query';
 import { truncateEthAddress } from '@rumsan/sdk/utils';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@rahat-ui/shadcn/src/components/ui/select';
 
 const data = [
   {
@@ -243,7 +251,6 @@ export function TransactionTable({ beneficiaryDetails }: any) {
       rowSelection,
     },
   });
-
   return (
     <div className="w-full">
       <div className="rounded-md border">
@@ -299,6 +306,27 @@ export function TransactionTable({ beneficiaryDetails }: any) {
         </Table>
       </div>
       <div className="flex items-center justify-end space-x-2 py-4">
+        <div className="flex items-center gap-2">
+          <div className="text-sm font-medium">Rows per page</div>
+          <Select
+            defaultValue="10"
+            onValueChange={(value) => table.setPageSize(Number(value))}
+          >
+            <SelectTrigger className="w-16">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectItem value="5">5</SelectItem>
+                <SelectItem value="10">10</SelectItem>
+                <SelectItem value="20">20</SelectItem>
+                <SelectItem value="30">30</SelectItem>
+                <SelectItem value="40">40</SelectItem>
+                <SelectItem value="50">50</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
         <div className="flex-1 text-sm text-muted-foreground">
           Page {table.getState().pagination.pageIndex + 1} of{' '}
           {table.getPageCount()}

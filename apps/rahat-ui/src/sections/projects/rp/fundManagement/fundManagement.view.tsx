@@ -111,9 +111,9 @@ const FundManagementView = () => {
     ...filters,
   });
 
-  const disbursements = useFindAllDisbursements(id,{
+  const disbursements = useFindAllDisbursements(id, {
     hideAssignedBeneficiaries: false,
-  },);
+  });
 
   const contractSettings = useProjectSettingsStore(
     (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT],
@@ -353,7 +353,7 @@ const FundManagementView = () => {
                 onClick={handleAddDisburse}
                 className="mt-4 bg-blue-500 text-white px-4 py-2 rounded"
               >
-                Edit Disbursement Plan
+                Create Disbursement Plan
               </Button>
             </div>
           </div>

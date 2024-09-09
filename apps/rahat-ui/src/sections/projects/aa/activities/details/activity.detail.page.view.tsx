@@ -3,7 +3,6 @@ import { useRouter, useParams } from 'next/navigation';
 import ActivityDetailCard from './activity.detail.card';
 import ActivityDetailCards from './activity.detail.cards';
 import ActivityCommunicationListCard from './activity.communication.list.card';
-// import ActivityPayoutCard from './activity.payout.card';
 import { useDeleteActivities, useSingleActivity } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import Loader from 'apps/rahat-ui/src/components/table.loader';
@@ -67,7 +66,6 @@ export default function ActivitiesDetailView() {
           activityDetail={activityDetail}
           projectId={projectId}
         />
-        {/* <ActivityPayoutCard /> */}
       </div>
     </div>
   );

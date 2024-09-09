@@ -66,33 +66,6 @@ export const useActivitiesPhase = (uuid: UUID) => {
   return query;
 };
 
-export const useActivitiesHazardTypes = (uuid: UUID) => {
-  const q = useProjectAction();
-  const { setHazardTypes } = useActivitiesStore((state) => ({
-    setHazardTypes: state.setHazardTypes,
-  }));
-
-  const query = useQuery({
-    queryKey: ['hazardTypes', uuid],
-    queryFn: async () => {
-      const mutate = await q.mutateAsync({
-        uuid,
-        data: {
-          action: 'aaProject.hazardTypes.getAll',
-          payload: {},
-        },
-      });
-      return mutate.data;
-    },
-  });
-  useEffect(() => {
-    if (query.data) {
-      setHazardTypes(query?.data);
-    }
-  }, [query.data]);
-  return query;
-};
-
 export const useActivities = (uuid: UUID, payload: any) => {
   const q = useProjectAction();
 
@@ -171,7 +144,7 @@ export const useActivitiesHavingComms = (uuid: UUID, payload: any) => {
     createdAt: d?.createdAt,
     phase: d?.phase?.name,
     status: d?.status,
-    activityCommunication: d?.activityCommunication
+    activityCommunication: d?.activityCommunication,
   }));
   return { activitiesData, activitiesMeta: query?.data?.data?.meta };
 };

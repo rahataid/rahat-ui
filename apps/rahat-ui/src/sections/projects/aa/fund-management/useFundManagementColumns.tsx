@@ -39,8 +39,6 @@ export const useFundManagementColumns = () => {
       id: 'actions',
       enableHiding: false,
       cell: ({ row }) => {
-        console.log(row);
-
         return (
           <div className="flex items-center justify-evenly">
             <Eye

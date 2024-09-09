@@ -34,42 +34,15 @@ import {
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import TableLoader from 'apps/rahat-ui/src/components/table.loader';
 
-// export type Transaction = {
-//   beneficiary: any;
-//   vendor: any;
-//   processedBy: any;
-//   topic: any;
-//   timeStamp: string;
-//   transactionHash: any;
-//   amount: string;
-//   voucherId: any;
-//   id: any;
-// };
-
 export const columns: ColumnDef<any>[] = [
   {
     accessorKey: 'topic',
     header: 'Topic',
     cell: ({ row }) => <div>{row?.original?.__typename}</div>,
   },
-  // {
-  //   accessorKey: 'processedBy',
-  //   header: 'Processed By',
-  //   cell: ({ row }) => (
-  //     <div className="capitalize">
-  //       {row.getValue('processedBy')
-  //         ? `${row.getValue('processedBy')?.toString().substring(0, 4)}....${row
-  //             .getValue('processedBy')
-  //             ?.toString()
-  //             ?.slice(-3)}`
-  //         : 'N/A'}
-  //     </div>
-  //   ),
-  // },
   {
     accessorKey: 'timeStamp',
     header: 'Time Stamp',
-    // cell: ({ row }) => <div> {row.getValue('timeStamp')}</div>,
     cell: ({ row }) => (
       <div>
         {' '}
@@ -97,7 +70,6 @@ export const columns: ColumnDef<any>[] = [
     accessorKey: 'amount',
     header: 'Amount',
     cell: ({ row }) => {
-      console.log(row);
       return <div> {row.getValue('amount')}</div>;
     },
   },
@@ -114,8 +86,6 @@ export default function BeneficiaryDetailTableView({
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
   );
-  // const { data: beneficiaryTransaction, isFetching } =
-  //   useBeneficiaryTransaction(walletAddress);
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
@@ -199,54 +169,48 @@ export default function BeneficiaryDetailTableView({
           {table.getFilteredSelectedRowModel().rows.length} of{' '}
           {table.getFilteredRowModel().rows.length} row(s) selected.
         </div>
-        <div className="sticky bottom-0 flex items-center justify-end space-x-4 px-4 py-1 border-t-2 bg-card">
-          <div className="flex-1 text-sm text-muted-foreground">
-            {table.getFilteredSelectedRowModel().rows.length} of{' '}
-            {table.getFilteredRowModel().rows.length} row(s) selected.
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="text-sm font-medium">Rows per page</div>
-            <Select
-              defaultValue="10"
-              onValueChange={(value) => table.setPageSize(Number(value))}
-            >
-              <SelectTrigger className="w-16 h-8">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectItem value="5">5</SelectItem>
-                  <SelectItem value="10">10</SelectItem>
-                  <SelectItem value="20">20</SelectItem>
-                  <SelectItem value="30">30</SelectItem>
-                  <SelectItem value="40">40</SelectItem>
-                  <SelectItem value="50">50</SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-          </div>
-          <div>
-            Page {table.getState().pagination.pageIndex + 1} of{' '}
-            {table.getPageCount()}
-          </div>
-          <div className="space-x-4">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => table.previousPage()}
-              disabled={!table.getCanPreviousPage()}
-            >
-              Previous
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => table.nextPage()}
-              disabled={!table.getCanNextPage()}
-            >
-              Next
-            </Button>
-          </div>
+        <div className="flex items-center gap-2">
+          <div className="text-sm font-medium">Rows per page</div>
+          <Select
+            defaultValue="10"
+            onValueChange={(value) => table.setPageSize(Number(value))}
+          >
+            <SelectTrigger className="w-16 h-8">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectItem value="5">5</SelectItem>
+                <SelectItem value="10">10</SelectItem>
+                <SelectItem value="20">20</SelectItem>
+                <SelectItem value="30">30</SelectItem>
+                <SelectItem value="40">40</SelectItem>
+                <SelectItem value="50">50</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
+        <div>
+          Page {table.getState().pagination.pageIndex + 1} of{' '}
+          {table.getPageCount()}
+        </div>
+        <div className="space-x-4">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage()}
+          >
+            Previous
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => table.nextPage()}
+            disabled={!table.getCanNextPage()}
+          >
+            Next
+          </Button>
         </div>
       </div>
     </>

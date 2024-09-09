@@ -1,7 +1,6 @@
 import { useRouter } from 'next/navigation';
 
 import {
-  useCommunityBeneficiaryListByID,
   useCommunityBeneficiaryRemove,
   useGenerateVerificationLink,
 } from '@rahat-ui/community-query';
@@ -134,7 +133,7 @@ export default function BeneficiaryDetail({ data, closeSecondPanel }: IProps) {
               </DropdownMenuTrigger>
               <DropdownMenuContent>
                 <DropdownMenuItem onClick={() => setValue('detailBenef')}>
-                  Deatails
+                  Details
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => setValue('editBenef')}>
                   Edit

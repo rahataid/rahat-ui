@@ -39,10 +39,12 @@ export default function EditCommunicationForm({
   onClose,
   index,
   appTransports,
-  setLoading
+  setLoading,
 }: IProps) {
   const [audioFile, setAudioFile] = React.useState({});
-  const [contentType, setContentType] = React.useState<ValidationContent | "">("");
+  const [contentType, setContentType] = React.useState<ValidationContent | ''>(
+    '',
+  );
 
   const stakeholdersGroups = useStakeholdersGroupsStore(
     (state) => state.stakeholdersGroups,
@@ -58,11 +60,11 @@ export default function EditCommunicationForm({
   const sessionId = form.watch(fieldName('sessionId'));
 
   React.useEffect(() => {
-    console.log("selected transport", selectedTransport)
-    const transportData = appTransports?.find((t) => t.cuid === selectedTransport)
-    console.log("transport data", transportData)
-    setContentType(transportData?.validationContent as ValidationContent)
-  }, [selectedTransport, contentType, setContentType])
+    const transportData = appTransports?.find(
+      (t) => t.cuid === selectedTransport,
+    );
+    setContentType(transportData?.validationContent as ValidationContent);
+  }, [selectedTransport, contentType, setContentType]);
 
   const fileUpload = useUploadFile();
 
@@ -114,14 +116,15 @@ export default function EditCommunicationForm({
     <div className="border border-dashed rounded p-4 my-8">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-lg font-semibold">Add : Communication</h1>
-        {
-          sessionId ? (<span><Badge className="bg-yellow-100">communication completed</Badge></span>) : (
-            <div className="p-1 rounded-full bg-red-100 hover:bg-red-200 text-red-500 hover:text-red-600 cursor-pointer">
-              <X size={20} strokeWidth={3} onClick={onClose} />
-            </div>
-          )
-        }
-
+        {sessionId ? (
+          <span>
+            <Badge className="bg-yellow-100">communication completed</Badge>
+          </span>
+        ) : (
+          <div className="p-1 rounded-full bg-red-100 hover:bg-red-200 text-red-500 hover:text-red-600 cursor-pointer">
+            <X size={20} strokeWidth={3} onClick={onClose} />
+          </div>
+        )}
       </div>
       <div className="grid grid-cols-2 gap-4">
         <FormField
@@ -179,22 +182,26 @@ export default function EditCommunicationForm({
           render={({ field }) => (
             <FormItem>
               <FormLabel>Communication Type</FormLabel>
-              <Select disabled={sessionId} onValueChange={field.onChange} defaultValue={field.value}>
+              <Select
+                disabled={sessionId}
+                onValueChange={field.onChange}
+                defaultValue={field.value}
+              >
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder="Select communication type" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {
-                    appTransports?.map((transport) => {
-                      return (
-                        <>
-                          <SelectItem value={transport?.cuid as string}>{transport?.name}</SelectItem>
-                        </>
-                      )
-                    })
-                  }
+                  {appTransports?.map((transport) => {
+                    return (
+                      <>
+                        <SelectItem value={transport?.cuid as string}>
+                          {transport?.name}
+                        </SelectItem>
+                      </>
+                    );
+                  })}
                 </SelectContent>
               </Select>
               <FormMessage />
@@ -233,26 +240,27 @@ export default function EditCommunicationForm({
             }}
           />
         )}
-        {
-          contentType === ValidationContent.TEXT && (
-            <FormField
-              control={form.control}
-              name={fieldName('message')}
-              render={({ field }) => {
-                return (
-                  <FormItem className="col-span-2">
-                    <FormLabel>Message</FormLabel>
-                    <FormControl>
-                      <Textarea disabled={sessionId} placeholder="Write message" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            />
-          )
-        }
-
+        {contentType === ValidationContent.TEXT && (
+          <FormField
+            control={form.control}
+            name={fieldName('message')}
+            render={({ field }) => {
+              return (
+                <FormItem className="col-span-2">
+                  <FormLabel>Message</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      disabled={sessionId}
+                      placeholder="Write message"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              );
+            }}
+          />
+        )}
       </div>
       <div>
         <div className="hidden">
@@ -282,7 +290,11 @@ export default function EditCommunicationForm({
                 <FormItem>
                   <FormLabel>CommunicationId</FormLabel>
                   <FormControl>
-                    <Input type="text" placeholder="CommunicationId" {...field} />
+                    <Input
+                      type="text"
+                      placeholder="CommunicationId"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -291,7 +303,6 @@ export default function EditCommunicationForm({
           />
         </div>
       </div>
-
     </div>
   );
 }

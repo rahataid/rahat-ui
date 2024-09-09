@@ -1,33 +1,7 @@
 import getIcon from 'apps/rahat-ui/src/utils/getIcon';
-import CommunicationLogTable from './communicationLogTable';
+import CommsActivitiesTable from './comms.activities.table';
 
 export default function CommunicationLogsView() {
-  // const { id: projectID } = useParams();
-  // const { data: commsStats } = useCommunicationStats(projectID as UUID);
-
-  // const findData = (name: string, type: string) => {
-  //   return commsStats
-  //     ?.filter((item: any) => item.name === name)
-  //     ?.flatMap((item: any) => item.data)
-  //     ?.find((i: any) => i.type === type);
-  // };
-
-  // const smsRecipients = findData('AUDIENCE', 'SMS');
-  // const ivrRecipients = findData('AUDIENCE', 'IVR');
-  // const ivrSent = findData('CAMPAIGN', 'IVR');
-  // const emailSent = findData('CAMPAIGN', 'EMAIL');
-  // const smsSent = findData('CAMPAIGN', 'SMS');
-  // const ivrSuccessRate = commsStats?.find(
-  //   (stats: any) => stats.name === 'IVRSUCCESSRATE',
-  // )?.data;
-  // const averageIvrAttempts = commsStats?.find(
-  //   (stats: any) => stats.name === 'AVERAGEIVRATTEMPT',
-  // )?.data;
-
-  // const averageIvrDuration = commsStats?.find(
-  //   (stats: any) => stats.name === 'IVRDURATION',
-  // )?.data;
-
   const commStats = [
     {
       componentType: 'DATACARD',
@@ -102,7 +76,7 @@ export default function CommunicationLogsView() {
         })}
       </div>
       <div className=" mt-4">
-        <CommunicationLogTable />
+        <CommsActivitiesTable />
       </div>
     </div>
   );

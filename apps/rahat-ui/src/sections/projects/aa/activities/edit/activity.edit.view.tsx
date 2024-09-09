@@ -90,7 +90,6 @@ export default function EditActivity() {
     source: z.string().min(2, { message: 'Please enter source' }),
     phaseId: z.string().min(1, { message: 'Please select phase' }),
     categoryId: z.string().min(1, { message: 'Please select category' }),
-    // hazardTypeId: z.string().min(1, { message: 'Please select hazard type' }),
     leadTime: z.string().min(2, { message: 'Please enter lead time' }),
     description: z
       .string()
@@ -135,7 +134,6 @@ export default function EditActivity() {
       source: activityDetail?.source,
       phaseId: activityDetail?.phaseId,
       categoryId: activityDetail?.categoryId,
-      // hazardTypeId: activityDetail?.hazardTypeId,
       leadTime: activityDetail?.leadTime,
       description: activityDetail?.description,
       activityDocuments: activityDetail?.activityDocuments,
@@ -394,33 +392,6 @@ export default function EditActivity() {
                     }}
                   />
                 )}
-                {/* <FormField
-                  control={form.control}
-                  name="hazardTypeId"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Hazard Type</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select hazard type" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {hazardTypes.map((item) => (
-                            <SelectItem key={item.id} value={item.uuid}>
-                              {item.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                /> */}
                 <FormField
                   control={form.control}
                   name="leadTime"

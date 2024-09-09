@@ -6,7 +6,6 @@ import { Search } from 'lucide-react';
 
 import { ListBeneficiary } from '@rahat-ui/types';
 import BeneficiaryCard from '../../sections/beneficiary/card';
-import { IBeneficiaryItem } from '../../types/beneficiary';
 
 type IProps = {
   handleClick: (item: any) => void;

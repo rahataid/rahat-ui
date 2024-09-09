@@ -9,7 +9,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { Settings2 } from 'lucide-react';
+import { CircleEllipsisIcon, Settings2 } from 'lucide-react';
 import * as React from 'react';
 
 import { Button } from '@rahat-ui/shadcn/components/button';
@@ -33,11 +33,13 @@ import {
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { Role } from '@rumsan/sdk/types';
 import { useRoleTableColumns } from './useRoleTableColumns';
+import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 
 type IProps = {
   roleData: Role[];
+  loading: boolean;
 };
-export default function ListView({ roleData }: IProps) {
+export default function ListView({ roleData, loading }: IProps) {
   const columns = useRoleTableColumns();
 
   const [rowSelection, setRowSelection] = React.useState({});
@@ -145,10 +147,19 @@ export default function ListView({ roleData }: IProps) {
                 ) : (
                   <TableRow>
                     <TableCell
-                      colSpan={columns.length}
+                      colSpan={table.getAllColumns().length}
                       className="h-24 text-center"
                     >
-                      No results.
+                      {loading ? (
+                        <div className="flex items-center justify-center mt-4">
+                          <div className="text-center">
+                            <CircleEllipsisIcon className="animate-spin h-8 w-8 ml-4" />
+                            <Label className="text-base">Loading ...</Label>
+                          </div>
+                        </div>
+                      ) : (
+                        'No result found'
+                      )}
                     </TableCell>
                   </TableRow>
                 )}

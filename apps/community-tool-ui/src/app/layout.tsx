@@ -10,6 +10,7 @@ import { ServiceProvider } from '../providers/service.provider';
 import { GeistSans } from 'geist/font/sans';
 import { RSQueryProvider } from '@rumsan/react-query/providers/rs-query-provider';
 import { SecondPanelProvider } from '../providers/second-panel-provider';
+import { NewCommunicationQueryProvider } from '@rahat-ui/community-query';
 
 export const metadata = {
   title: 'Welcome to Rahat',
@@ -30,6 +31,7 @@ export default function RootLayout({
           <Wagmi>
             <QueryProvider>
               <RSQueryProvider>
+                {/* <NewCommunicationQueryProvider> */}
                 <ServiceProvider>
                   <SecondPanelProvider>
                     <ThemeProvider
@@ -43,6 +45,7 @@ export default function RootLayout({
                     </ThemeProvider>
                   </SecondPanelProvider>
                 </ServiceProvider>
+                {/* </NewCommunicationQueryProvider> */}
               </RSQueryProvider>
             </QueryProvider>
           </Wagmi>

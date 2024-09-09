@@ -14,3 +14,5 @@ export * from './app/appStats.query';
 export * from './beneficiaryImport/beneficiary.import.query';
 export * from './beneficiaryImport/beneficiary.import.store';
 export * from './constants';
+export * from './comms';
+export * from './settings/settings.store';

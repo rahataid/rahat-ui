@@ -1,6 +1,31 @@
 'use client';
 
-import * as React from 'react';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@rahat-ui/shadcn/components/table';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/dialog';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/tooltip';
+import { useUserRoleList, useUserRolesRemove } from '@rumsan/react-query';
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -13,35 +38,9 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { Trash2 } from 'lucide-react';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@rahat-ui/shadcn/components/table';
-import { useUserRoleList, useUserRolesRemove } from '@rumsan/react-query';
 import { UUID } from 'crypto';
-import { useSecondPanel } from '../../providers/second-panel-provider';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/tooltip';
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/dialog';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { Trash2 } from 'lucide-react';
+import * as React from 'react';
 
 export type Role = {
   id: string;
@@ -57,7 +56,6 @@ export function UsersRoleTable({
 }) {
   const { data: userRoleList } = useUserRoleList(userRole);
   const removeUserRole = useUserRolesRemove();
-  const { closeSecondPanel } = useSecondPanel();
 
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(

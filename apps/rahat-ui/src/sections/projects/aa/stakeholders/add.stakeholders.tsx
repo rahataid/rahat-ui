@@ -96,9 +96,9 @@ export default function AddStakeholders() {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleCreateStakeholders)}>
-        <div className="p-4 h-add bg-card">
-          <h1 className="text-lg font-semibold mb-6">Add : Stakeholders</h1>
-          <div className="shadow-md p-4 rounded-sm">
+        <div className="p-4 h-add bg-secondary">
+          <div className="shadow-md p-4 rounded-sm bg-card">
+            <h1 className="text-lg font-semibold mb-6">Add : Stakeholders</h1>
             <div className="grid grid-cols-2 gap-4 mb-4">
               <FormField
                 control={form.control}

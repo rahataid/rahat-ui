@@ -27,7 +27,7 @@ export default function FieldDefinitionsView() {
     setFilters,
   } = usePagination();
 
-  const { data } = useFieldDefinitionsList({
+  const { isLoading, data } = useFieldDefinitionsList({
     ...pagination,
     ...(filters as any),
   });
@@ -56,6 +56,7 @@ export default function FieldDefinitionsView() {
         table={table}
         setFilters={setFilters}
         filters={filters}
+        loading={isLoading}
       />
 
       <CustomPagination

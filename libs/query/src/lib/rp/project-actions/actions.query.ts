@@ -132,7 +132,7 @@ export const useCreateDisbursement = (projectUUID: UUID) => {
   });
 };
 
-export const useFindAllDisbursements = (projectUUID: UUID) => {
+export const useFindAllDisbursements = (projectUUID: UUID, payload: any) => {
   const action = useProjectAction(['findAllDisbursements-rpProject']);
 
   const query = useQuery({
@@ -144,7 +144,7 @@ export const useFindAllDisbursements = (projectUUID: UUID) => {
         uuid: projectUUID,
         data: {
           action: GET_ALL_DISBURSEMENTS,
-          payload: {},
+          payload,
         },
       });
       return res.data;
@@ -301,7 +301,7 @@ export const useFindAllBeneficiaryGroups = (projectUUID: UUID) => {
     },
   });
 
-  const data = query?.data;
+  const data = query?.data || [];
 
   return {
     ...query,

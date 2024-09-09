@@ -52,11 +52,7 @@ export default function AddFieldDefinitions({ handleTabChange }: Iprops) {
   const [variationTags, setVariationTags] = useState<Tag[]>([]);
   const [activeTagIndex, setActiveTagIndex] = useState<number | null>(null);
 
-  const {
-    control,
-    formState: { errors },
-    reset,
-  } = useForm();
+  const { control } = useForm();
 
   const FormSchema = z.object({
     name: z.string().min(1, { message: 'Name is required' }),

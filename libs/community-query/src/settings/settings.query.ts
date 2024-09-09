@@ -1,23 +1,27 @@
+'use client';
 import { getSettingsClient } from '@rahataid/community-tool-sdk/clients';
 import { useRSQuery } from '@rumsan/react-query';
-import { UseQueryResult, useMutation, useQuery } from '@tanstack/react-query';
-import { TAGS } from '../config';
-import { SettingInput } from '@rahataid/community-tool-sdk/settings/settings.types';
-import Swal from 'sweetalert2';
 import { Pagination } from '@rumsan/sdk/types';
+import { UseQueryResult, useMutation, useQuery } from '@tanstack/react-query';
+import Swal from 'sweetalert2';
+import { TAGS } from '../config';
+import { useEffect } from 'react';
+import { useSettingsStore } from './settings.store';
 
 export const useCommunitySettingList = (
   payload: Pagination & { any?: string },
 ): UseQueryResult<any, Error> => {
   const { queryClient, rumsanService } = useRSQuery();
   const settingClient = getSettingsClient(rumsanService.client);
-  return useQuery(
+  const query = useQuery(
     {
       queryKey: [TAGS.LIST_COMMUNITY_SETTINGS, payload],
       queryFn: () => settingClient.listSettings(payload),
     },
     queryClient,
   );
+
+  return query;
 };
 
 export const useCommunitySettingCreate = () => {

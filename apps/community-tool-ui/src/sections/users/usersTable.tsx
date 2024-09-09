@@ -1,5 +1,6 @@
 'use client';
 
+import { ScrollArea } from '@radix-ui/react-scroll-area';
 import { Button } from '@rahat-ui/shadcn/components/button';
 import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
 import {
@@ -18,6 +19,15 @@ import {
   TableHeader,
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
+import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@rahat-ui/shadcn/src/components/ui/select';
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -30,28 +40,13 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import {
-  ArrowUpDown,
-  ArrowUpRightFromSquare,
-  ChevronDown,
-  Settings2,
-} from 'lucide-react';
+import { Settings2 } from 'lucide-react';
 import React from 'react';
-import { IUserItem } from '../../types/user';
 import {
   ServiceContext,
   ServiceContextType,
 } from '../../providers/service.provider';
-import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
-import { ScrollArea } from '@radix-ui/react-scroll-area';
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@rahat-ui/shadcn/src/components/ui/select';
+import { IUserItem } from '../../types/user';
 
 type IProps = {
   handleClick: (item: IUserItem) => void;

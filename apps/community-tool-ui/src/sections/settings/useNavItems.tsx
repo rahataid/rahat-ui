@@ -1,5 +1,5 @@
 import { usePagination } from '@rahat-ui/query';
-import { List, ListCollapse, Plus, User, View } from 'lucide-react';
+import { List, Plus, User, View } from 'lucide-react';
 import { NavItem } from './nav-items.types';
 
 export const useSettingFieldDefinitionNavItems = () => {
@@ -38,7 +38,7 @@ export const useSettingFieldDefinitionNavItems = () => {
       ],
     },
     {
-      title: 'FieldDefinition',
+      title: 'Field Definition',
       children: [
         {
           title: 'List',

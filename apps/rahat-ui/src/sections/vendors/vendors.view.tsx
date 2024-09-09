@@ -93,6 +93,7 @@ function VendorsView() {
         setSelectedProject={setSelectedProject}
         handleAssignProject={handleAssignProject}
         projectModal={projectModal}
+        selectedRow={selectedRow}
       />
       <CustomPagination
         currentPage={pagination.page}

@@ -23,6 +23,7 @@ import {
   useActiveFieldDefList,
   useCommunityBeneficiaryCreate,
 } from '@rahat-ui/community-query';
+import { usePagination } from '@rahat-ui/query';
 import { Calendar } from '@rahat-ui/shadcn/src/components/ui/calendar';
 import {
   Popover,
@@ -36,19 +37,18 @@ import {
   InternetStatus,
   PhoneStatus,
 } from '@rahataid/community-tool-sdk/enums/';
+import { FIELD_DEF_FETCH_LIMIT } from 'apps/community-tool-ui/src/constants/app.const';
 import { format } from 'date-fns';
 import { CalendarIcon, Wallet } from 'lucide-react';
 import { useEffect } from 'react';
 import { z } from 'zod';
-import { usePagination } from '@rahat-ui/query';
-import useFormStore from '../../../formBuilder/form.store';
 import FormBuilder from '../../../formBuilder';
+import useFormStore from '../../../formBuilder/form.store';
 import {
   filterFieldDefs,
   formatDate,
   selectNonEmptyFields,
 } from '../../../utils';
-import { FIELD_DEF_FETCH_LIMIT } from 'apps/community-tool-ui/src/constants/app.const';
 
 export default function AddBeneficiary() {
   const { extras }: any = useFormStore();
@@ -391,6 +391,7 @@ export default function AddBeneficiary() {
                       <FormControl>
                         <Input
                           type="number"
+                          step="any"
                           placeholder="Longitude"
                           onChange={(e) => {
                             const numericValue = parseFloat(e.target.value);
@@ -414,6 +415,7 @@ export default function AddBeneficiary() {
                       <FormControl>
                         <Input
                           type="number"
+                          step="any"
                           placeholder="Latitude"
                           onChange={(e) => {
                             const numericValue = parseFloat(e.target.value);

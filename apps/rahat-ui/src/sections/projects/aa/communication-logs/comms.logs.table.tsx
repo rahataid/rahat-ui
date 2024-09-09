@@ -5,10 +5,11 @@ import {
   flexRender,
   getCoreRowModel,
   getPaginationRowModel,
+  Table,
   useReactTable,
 } from '@tanstack/react-table';
 import {
-  Table,
+  Table as TableComponent,
   TableBody,
   TableCell,
   TableHead,
@@ -16,24 +17,16 @@ import {
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import useCommsLogsTableColumns from './useCommsLogsTableColumns';
 import ClientSidePagination from '../../components/client.side.pagination';
 
-export default function CommsLogsTable({ tableData }: any) {
-  
-  const columns = useCommsLogsTableColumns();
-
-  const table = useReactTable({
-    data: tableData || [],
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel()
-  });
+export default function CommsLogsTable({ table }: {
+  table: Table<any>
+}) {
 
   return (
     <>
       <div className="mt-4 bg-card border rounded">
-        <Table>
+        <TableComponent>
           <ScrollArea className="h-[calc(100vh-450px)]">
             <TableHeader className="top-0 sticky bg-gray-100">
               {table.getHeaderGroups().map((headerGroup) => (
@@ -73,7 +66,7 @@ export default function CommsLogsTable({ tableData }: any) {
               ) : (
                 <TableRow>
                   <TableCell
-                    colSpan={columns.length}
+                    colSpan={table.getAllColumns().length}
                     className="h-24 text-center"
                   >
                     No results.
@@ -82,8 +75,8 @@ export default function CommsLogsTable({ tableData }: any) {
               )}
             </TableBody>
           </ScrollArea>
-        </Table>
-        <ClientSidePagination table={table} />
+        </TableComponent>
+        {/* <ClientSidePagination table={table} /> */}
       </div>
     </>
   );

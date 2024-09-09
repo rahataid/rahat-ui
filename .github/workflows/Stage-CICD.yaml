@@ -1,16 +1,16 @@
-name: Main EL CI/CD
+name: Stage CI/CD
 on:
   push:
     branches:
-      - 'main-el'
+      - 'stage'
   pull_request:
     branches:
-      - 'main-el'
+      - 'stage'
   workflow_dispatch:
 
 env:
   CI: false
-  env_main: ${{ secrets.ENV_MAIN_EL }}
+  env_stage: ${{ secrets.ENV_STAGE}}
   env_npmrc: ${{ secrets.ENV_NPMRC }}
 
 jobs:
@@ -24,7 +24,7 @@ jobs:
 
       - name: import env file
         run: |
-          touch ./.env && echo "$env_main" >> ./.env && \
+          touch ./.env && echo "$env_stage" >> ./.env && \
           touch ./.npmrc && echo "$env_npmrc" >> ./.npmrc
 
       - uses: actions/setup-node@v3
@@ -58,6 +58,6 @@ jobs:
         with:
           context: .
           file: Dockerfile.rahat-ui
-          # push: ${{ github.event_name == 'push' && 'true' || 'false' }}
           push: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
-          tags: esatya/rahat-ui:main-el
+          tags: esatya/rahat-ui:stage
+

@@ -60,10 +60,10 @@ const VendorsInfo = ({ vendorData }: IVendorsInfo) => {
         </div>
       </CardContent>
       <CardContent className="flex items-center gap-5">
-        <div >
+        {/* <div >
           <p className="text-primary flex items-center ">{phone|| '-'}</p>
           <CardDescription>Phone</CardDescription>
-        </div>
+        </div> */}
         <div>
           <p className="text-primary">{vendorStatus?'Approved':'Not Appproved'}</p>
           <CardDescription>Status</CardDescription>

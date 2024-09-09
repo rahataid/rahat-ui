@@ -51,7 +51,7 @@ const VendorList = () => {
 
   const handleViewClick = (rowData: any) => {
     router.push(
-      `/projects/rp/${uuid}/vendors/${rowData.walletaddress}?phone=${rowData.phone}&&name=${rowData.name}&&walletAddress=${rowData.walletaddress} &&vendorId=${rowData.vendorId}`,
+      `/projects/rp/${uuid}/vendors/${rowData.walletAddress}?name=${rowData.name}&&walletAddress=${rowData.walletAddress} &&vendorId=${rowData.uuid}`,
     );
   };
 

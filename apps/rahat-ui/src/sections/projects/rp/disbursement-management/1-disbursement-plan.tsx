@@ -56,7 +56,7 @@ const DisbursementPlan: FC<DisbursementPlanProps> = ({
   const meta = projectBeneficiaries?.data.response?.meta;
 
   const disbursements = useFindAllDisbursements(id, {
-    hideAssignedBeneficiaries: false,
+    hideAssignedBeneficiaries: true,
   });
   const bulkAssignDisbursement = useBulkCreateDisbursement(id);
 
@@ -146,7 +146,7 @@ const DisbursementPlan: FC<DisbursementPlanProps> = ({
         <DataCard
           className=""
           title="Total beneficiaries"
-          number={projectBeneficiaries?.data?.data.length || 'N/A'}
+          number={projectBeneficiaries?.data?.data.length?.toString() || 'N/A'}
           Icon={Users}
         />
       </div>

@@ -50,7 +50,7 @@ const DisbursementPlan: FC<DisbursementPlanProps> = ({
     ...filters,
   });
   const disbursements = useFindAllDisbursements(id,{
-    hideAssignedBeneficiaries: false,
+    hideAssignedBeneficiaries: true,
   },);
   const bulkAssignDisbursement = useBulkCreateDisbursement(id);
 

@@ -10,8 +10,10 @@ import { Skeleton } from '@rahat-ui/shadcn/src/components/ui/skeleton';
 import { QrCode } from 'lucide-react';
 import Image from 'next/image';
 import { useState } from 'react';
+import QRCode from 'react-qr-code';
 
-export function QrModal() {
+export function QrModal({ projectAddress }: { projectAddress: string }) {
+  console.log('projectAddress', projectAddress);
   const [isLoading, setIsLoading] = useState(false);
   return (
     <Dialog>
@@ -30,7 +32,8 @@ export function QrModal() {
             {isLoading ? (
               <Skeleton className="w-[320px] h-[320px]" />
             ) : (
-              <Image src="/qr.png" height={320} width={320} alt="qr" />
+              <QRCode value={projectAddress} size={256} />
+              // <Image src="/qr.png" height={320} width={320} alt="qr" />
             )}
           </div>
         </div>

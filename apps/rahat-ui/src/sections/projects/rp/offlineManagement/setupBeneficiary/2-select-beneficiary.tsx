@@ -12,6 +12,8 @@ import { z } from 'zod';
 import { UseFormReturn } from 'react-hook-form';
 import BeneficiaryCard from './select.beneficiary.card';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
+import { useBeneficiaryStore } from '@rahat-ui/query';
 
 type Step2SelectBeneficiaryProps = {
   disbursmentList: any;
@@ -19,6 +21,7 @@ type Step2SelectBeneficiaryProps = {
   form: UseFormReturn<z.infer<any>>;
   setCurrentStep: (currentStep: number) => void;
   currentStep: number;
+  pagination: any;
 };
 
 export default function Step2SelectBeneficiary({
@@ -27,8 +30,10 @@ export default function Step2SelectBeneficiary({
   disbursmentList,
   setCurrentStep,
   currentStep,
+  pagination,
 }: Step2SelectBeneficiaryProps) {
   const router = useRouter();
+  const meta = useBeneficiaryStore((state) => state.meta);
 
   const handleGroupChecked = (value: boolean, uuid: string) => {
     if (value) {
@@ -43,7 +48,6 @@ export default function Step2SelectBeneficiary({
       form.setValue('groupIds', filteredValue);
     }
   };
-
   return (
     <div className="bg-card rounded-lg m-4 p-6">
       <div className="flex flex-col gap-1">
@@ -75,6 +79,14 @@ export default function Step2SelectBeneficiary({
               <SelectBeneficiaryTable
                 disbursmentList={disbursmentList}
                 form={form}
+              />
+              <CustomPagination
+                currentPage={pagination?.pagination.page}
+                handleNextPage={pagination?.setNextPage}
+                handlePageSizeChange={pagination?.setPerPage}
+                handlePrevPage={pagination?.setPrevPage}
+                perPage={pagination?.pagination.perPage}
+                meta={pagination?.meta || { total: 0, currentPage: 0 }}
               />
             </div>
           </TabsContent>

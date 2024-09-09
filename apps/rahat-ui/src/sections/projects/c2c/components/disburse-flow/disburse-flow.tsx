@@ -1,28 +1,23 @@
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { FC, useEffect, useState } from 'react';
-import Step1DisburseMethod from './1-disburse-method';
-import Step2DisburseAmount from './2-disburse-amount';
-import Step3DisburseSummary from './3-disburse-summary';
-import { WarningModal } from './warning';
 import {
   PROJECT_SETTINGS_KEYS,
   useC2CProjectSubgraphStore,
   useDisburseTokenToBeneficiaries,
   useDisburseTokenUsingMultisig,
+  usePagination,
   useProject,
+  useProjectBeneficiaries,
   useProjectSettingsStore,
 } from '@rahat-ui/query';
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@rahat-ui/shadcn/src/components/ui/card';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import Stepper from 'apps/rahat-ui/src/components/stepper';
 import { UUID } from 'crypto';
 import { useParams, useRouter } from 'next/navigation';
+import { FC, useEffect, useState } from 'react';
 import { parseEther } from 'viem';
-import Stepper from 'apps/rahat-ui/src/components/stepper';
+import Step1DisburseMethod from './1-disburse-method';
+import Step2DisburseAmount from './2-disburse-amount';
+import Step3DisburseSummary from './3-disburse-summary';
+import { WarningModal } from './warning';
 
 type DisburseFlowProps = {
   selectedBeneficiaries?: string[];
@@ -38,7 +33,6 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
   const [stepData, setStepData] =
     useState<typeof initialStepData>(initialStepData);
   const [isWarningModalOpen, setIsWarningModalOpen] = useState(false);
-
   const projectSubgraphDetails = useC2CProjectSubgraphStore(
     (state) => state.projectDetails,
   );
@@ -78,6 +72,9 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
   };
 
   const handleDisburseToken = async () => {
+    route.push(
+      `/projects/c2c/${id}/beneficiary/disburse-flow/disburse-confirm`,
+    );
     setIsWarningModalOpen(false);
 
     if (stepData.treasurySource === 'MULTISIG') {
@@ -104,7 +101,9 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
   };
 
   const handlePrevious = () => {
-    if (currentStep > 0) {
+    if (currentStep === 0) {
+      route.push(`/projects/c2c/${id}/beneficiary`);
+    } else if (currentStep > 0) {
       setCurrentStep(currentStep - 1);
     }
   };
@@ -135,6 +134,7 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
           value={stepData.disburseAmount}
           onChange={handleStepDataChange}
           projectSubgraphDetails={projectSubgraphDetails}
+          treasurySource={stepData.treasurySource}
         />
       ),
       validation: {
@@ -208,19 +208,11 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
       <div className="flex items-center justify-end gap-4">
         {!disburseMultiSig.isPending && (
           <div>
-            <Button
-              className="mr-3"
-              onClick={handlePrevious}
-              disabled={currentStep === 0}
-            >
+            <Button className="mr-3" onClick={handlePrevious}>
               Back
             </Button>
             <Button
-              onClick={
-                steps[currentStep].id === 'confirm_send'
-                  ? handleNext
-                  : handleNext
-              }
+              onClick={handleNext}
               disabled={disburseMultiSig.isPending || disburseToken.isPending}
             >
               {currentStep === steps.length - 1 ? 'Confirm' : 'Proceed'}

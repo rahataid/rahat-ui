@@ -2,7 +2,7 @@ import { useRSQuery } from '@rumsan/react-query';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 
-export const useTreasuryTokenCreate = () => {
+export const useTreasuryTokenCreate: () => any = () => {
   const router = useRouter();
   const { queryClient, rumsanService } = useRSQuery();
 
@@ -22,7 +22,7 @@ export const useTreasuryTokenCreate = () => {
   );
 };
 
-export const useTreasuryTokenList = () => {
+export const useTreasuryTokenList: () => any = () => {
   const { rumsanService } = useRSQuery();
 
   const getTokens = async () => {

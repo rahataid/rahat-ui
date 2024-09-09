@@ -140,35 +140,6 @@ export default function EditBeneficiary({ beneficiary }: any) {
                 );
               }}
             />
-            <FormField
-              control={form.control}
-              name="bankedStatus"
-              render={({ field }) => {
-                return (
-                  <FormItem>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Banked Status" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="BANKED">Banked</SelectItem>
-                        <SelectItem value="UNDER_BANKED">
-                          Under Banked
-                        </SelectItem>
-                        <SelectItem value="UNBANKED">UnBanked</SelectItem>
-                        <SelectItem value="UNKNOWN">Unknown</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            />
 
             <FormField
               control={form.control}
@@ -189,66 +160,6 @@ export default function EditBeneficiary({ beneficiary }: any) {
                         <SelectItem value="MALE">Male</SelectItem>
                         <SelectItem value="FEMALE">Female</SelectItem>
                         <SelectItem value="OTHER">Other</SelectItem>
-                        <SelectItem value="UNKNOWN">Unknown</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            />
-            <FormField
-              control={form.control}
-              name="internetStatus"
-              render={({ field }) => {
-                return (
-                  <FormItem>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Internet Status" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="MOBILE_INTERNET">
-                          Mobile Internet
-                        </SelectItem>
-                        <SelectItem value="NO_INTERNET">No Internet</SelectItem>
-                        <SelectItem value="HOME_INTERNET">
-                          Home Internet
-                        </SelectItem>
-                        <SelectItem value="UNKNOWN">Unknown</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            />
-            <FormField
-              control={form.control}
-              name="phoneStatus"
-              render={({ field }) => {
-                return (
-                  <FormItem>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Phone Status" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="SMART_PHONE">Smart Phone</SelectItem>
-                        <SelectItem value="NO_PHONE">No Phone</SelectItem>
-                        <SelectItem value="FEATURE_PHONE">
-                          Feature Phone
-                        </SelectItem>
                         <SelectItem value="UNKNOWN">Unknown</SelectItem>
                       </SelectContent>
                     </Select>

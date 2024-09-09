@@ -73,10 +73,10 @@ export default function AdvancedEditForm({ form }: AdvancedEditFormProps) {
                   <FormMessage />
                   <div className="grid grid-cols-3 gap-4">
                     {TREASURY_SOURCES.map((source) => (
-                      <div key={source.value}>
-                        <FormLabel className="text-muted-foreground">
-                          {source.label}
-                        </FormLabel>
+                      <div
+                        className="flex items-center gap-1"
+                        key={source.value}
+                      >
                         <Checkbox
                           checked={field?.value?.includes(source.value)}
                           onCheckedChange={(checked) => {
@@ -90,6 +90,9 @@ export default function AdvancedEditForm({ form }: AdvancedEditFormProps) {
                             }
                           }}
                         />
+                        <FormLabel className="text-muted-foreground">
+                          {source.label}
+                        </FormLabel>
                       </div>
                     ))}
                   </div>

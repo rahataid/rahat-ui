@@ -48,16 +48,15 @@ const SetupBeneficiaryPage = () => {
 
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(5);
-  const { pagination, filters } = usePagination();
+  const [error, setError] = useState('');
 
+  const { pagination, filters } = usePagination();
 
   const { data: disbursmentList, isSuccess } = useFindAllDisbursements(
     id as UUID,
     {
       hideAssignedBeneficiaries: true,
-     
     },
-
   );
   const { data: benGroups } = useFindAllBeneficiaryGroups(id as UUID);
 
@@ -81,8 +80,7 @@ const SetupBeneficiaryPage = () => {
         (beneficiary) => {
           const beneficiaryDisbursement = projectBeneficiaries.data?.data?.find(
             (disbursement: any) =>
-              disbursement.walletAddress ===
-              beneficiary.walletAddress,
+              disbursement.walletAddress === beneficiary.walletAddress,
           );
           return {
             ...beneficiaryDisbursement,
@@ -155,8 +153,10 @@ const SetupBeneficiaryPage = () => {
       validation: () => {
         const vendorId = form.getValues('vendorId');
         if (vendorId) {
+          setError('');
           return true;
         }
+        setError('Please select vendor');
         return false;
       },
     },
@@ -177,8 +177,10 @@ const SetupBeneficiaryPage = () => {
         const groupIds = form.getValues('groupIds') || [];
 
         if (disbursements.length || groupIds.length > 0) {
+          setError('');
           return true;
         }
+        setError('Please select Beneficiaries');
         return false;
       },
     },
@@ -212,6 +214,7 @@ const SetupBeneficiaryPage = () => {
             />
           </div>
           <div>{renderComponent()}</div>
+          <div>{error && <p className="text-red-700 mr-8">{error}</p>}</div>
           {
             // !disburseToken.isSuccess &&
             // !disburseMultiSig.isSuccess &&

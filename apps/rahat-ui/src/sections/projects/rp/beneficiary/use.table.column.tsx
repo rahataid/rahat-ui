@@ -37,6 +37,11 @@ export const useCvaBeneficiaryTableColumns = () => {
 
   const columns: ColumnDef<any>[] = [
     {
+      accessorKey: 'name',
+      header: 'Name',
+      cell: ({ row }) => <div>{row.getValue('name')}</div>,
+    },
+    {
       accessorKey: 'walletAddress',
       header: 'WalletAddress',
       cell: ({ row }) => (
@@ -83,26 +88,18 @@ export const useCvaBeneficiaryTableColumns = () => {
         </div>
       ),
     },
+
     {
       accessorKey: 'gender',
       header: 'Gender',
       cell: ({ row }) => <div>{row.getValue('gender')}</div>,
     },
-    {
-      accessorKey: 'internetStatus',
-      header: 'Internet Access',
-      cell: ({ row }) => <div>{row.getValue('internetStatus')}</div>,
-    },
-    {
-      accessorKey: 'phoneStatus',
-      header: 'Phone Type',
-      cell: ({ row }) => <div>{row.getValue('phoneStatus')}</div>,
-    },
-    {
-      accessorKey: 'bankedStatus',
-      header: 'Banking Status',
-      cell: ({ row }) => <div>{row.getValue('bankedStatus')}</div>,
-    },
+    // {
+    //   accessorKey: 'benTokens',
+    //   header: 'Token Assigned',
+    //   cell: ({ row }) => <div>{row.getValue('benTokens')}</div>,
+    // },
+    
     {
       id: 'actions',
       enableHiding: false,

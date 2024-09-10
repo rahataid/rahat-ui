@@ -80,7 +80,7 @@ export default function BeneficiaryTable() {
     page: pagination.page,
     perPage: pagination.perPage,
     order: 'desc',
-    sort: 'updatedAt',
+    sort: 'createdAt',
     projectUUID: id,
     ...filters,
   });

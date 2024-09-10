@@ -26,6 +26,7 @@ import { ArrowUpDown } from 'lucide-react';
 import * as React from 'react';
 import { useRPBeneficiaryTransactions } from '@rahat-ui/query';
 import { truncateEthAddress } from '@rumsan/sdk/utils';
+import Pagination from 'apps/rahat-ui/src/components/pagination';
 
 const data = [
   {
@@ -243,7 +244,6 @@ export function TransactionTable({ beneficiaryDetails }: any) {
       rowSelection,
     },
   });
-
   return (
     <div className="w-full">
       <div className="rounded-md border">
@@ -298,30 +298,15 @@ export function TransactionTable({ beneficiaryDetails }: any) {
           </ScrollArea>
         </Table>
       </div>
-      <div className="flex items-center justify-end space-x-2 py-4">
-        <div className="flex-1 text-sm text-muted-foreground">
-          Page {table.getState().pagination.pageIndex + 1} of{' '}
-          {table.getPageCount()}
-        </div>
-        <div className="space-x-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            Previous
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            Next
-          </Button>
-        </div>
-      </div>
+      <Pagination
+        pageIndex={table.getState().pagination.pageIndex}
+        pageCount={table.getPageCount()}
+        setPageSize={table.setPageSize}
+        canPreviousPage={table.getCanPreviousPage()}
+        previousPage={table.previousPage}
+        canNextPage={table.getCanNextPage()}
+        nextPage={table.nextPage}
+      />
     </div>
   );
 }

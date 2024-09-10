@@ -62,6 +62,7 @@ type IProps = {
   setSelectedProject: (id: UUID) => void;
   handleAssignProject: VoidFunction;
   projectModal: ProjectModalType;
+  selectedRow: any;
 };
 
 export default function VendorsTable({
@@ -70,6 +71,7 @@ export default function VendorsTable({
   setSelectedProject,
   handleAssignProject,
   projectModal,
+  selectedRow,
 }: IProps) {
   const projectList = useProjectList({});
   const handleProjectChange = (d: UUID) => setSelectedProject(d);
@@ -197,7 +199,11 @@ export default function VendorsTable({
                 {projectList.data?.data.length &&
                   projectList.data?.data.map((project: any) => {
                     return (
-                      <SelectItem key={project.id} value={project.uuid}>
+                      <SelectItem
+                        disabled={selectedRow?.projectName === project.name}
+                        key={project.id}
+                        value={project.uuid}
+                      >
                         {project.name}
                       </SelectItem>
                     );

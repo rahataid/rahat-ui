@@ -14,6 +14,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
 import { truncateEthAddress } from '@rumsan/sdk/utils';
 import { formatEther } from 'viem';
+import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 
 export const useProjectBeneficiaryTableColumns = () => {
   const { setSecondPanelComponent, closeSecondPanel } = useSecondPanel();
@@ -104,7 +105,7 @@ export const useProjectBeneficiaryTableColumns = () => {
     {
       accessorKey: 'verificationStatus',
       header: 'Verification Status',
-      cell: ({ row }) => <div> {row.getValue('verificationStatus')}</div>,
+      cell: () => <Badge>Verified</Badge>,
     },
     {
       accessorKey: 'balance',

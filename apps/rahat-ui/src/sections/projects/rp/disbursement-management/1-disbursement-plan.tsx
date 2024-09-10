@@ -1,4 +1,5 @@
 import {
+  useBeneficiaryStore,
   useBulkCreateDisbursement,
   useFindAllDisbursements,
   usePagination,
@@ -14,6 +15,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
+import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import DataCard from 'apps/rahat-ui/src/components/dataCard';
 import { UUID } from 'crypto';
 import { Users } from 'lucide-react';
@@ -39,19 +41,23 @@ const DisbursementPlan: FC<DisbursementPlanProps> = ({
   stepData,
 }) => {
   const { id } = useParams() as { id: UUID };
-  const { pagination, filters } = usePagination();
+  const { pagination, filters, setNextPage, setPrevPage, setPerPage } =
+    usePagination();
+
   const projectBeneficiaries = useProjectBeneficiaries({
     page: pagination.page,
-    perPage: 100,
-    // pagination.perPage,
+    perPage: pagination.perPage,
+
     order: 'desc',
     sort: 'updatedAt',
     projectUUID: id,
     ...filters,
   });
-  const disbursements = useFindAllDisbursements(id,{
-    hideAssignedBeneficiaries: false,
-  },);
+  const meta = projectBeneficiaries?.data.response?.meta;
+
+  const disbursements = useFindAllDisbursements(id, {
+    hideAssignedBeneficiaries: true,
+  });
   const bulkAssignDisbursement = useBulkCreateDisbursement(id);
 
   const [rowData, setRowData] = React.useState<Payment[]>([]);
@@ -131,7 +137,6 @@ const DisbursementPlan: FC<DisbursementPlanProps> = ({
     projectBeneficiaries.isSuccess,
     rowData,
   ]);
-
   return (
     <div className="grid grid-cols-12">
       <div className="col-span-4">
@@ -141,7 +146,7 @@ const DisbursementPlan: FC<DisbursementPlanProps> = ({
         <DataCard
           className=""
           title="Total beneficiaries"
-          number={projectBeneficiaries?.data?.data.length || 'N/A'}
+          number={projectBeneficiaries?.data?.data.length?.toString() || 'N/A'}
           Icon={Users}
         />
       </div>
@@ -151,6 +156,14 @@ const DisbursementPlan: FC<DisbursementPlanProps> = ({
           handleStepDataChange={handleStepDataChange}
           stepData={stepData}
           bulkAssignDisbursement={bulkAssignDisbursement}
+        />
+        <CustomPagination
+          currentPage={pagination.page}
+          handleNextPage={setNextPage}
+          handlePageSizeChange={setPerPage}
+          handlePrevPage={setPrevPage}
+          perPage={pagination.perPage}
+          meta={meta || { total: 0, currentPage: 0 }}
         />
       </div>
     </div>

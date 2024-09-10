@@ -254,7 +254,7 @@ export const useRedeemToken = (projectUUID: UUID) => {
   });
 };
 
-export const useListRedemptions = (projectUUID: UUID) => {
+export const useListRedemptions = (projectUUID: UUID,filters:any) => {
   const action = useProjectAction(['listRedemptions-rpProject']);
   return useQuery({
     queryKey: ['redemptions', projectUUID],
@@ -263,7 +263,7 @@ export const useListRedemptions = (projectUUID: UUID) => {
         uuid: projectUUID,
         data: {
           action: 'rpProject.listRedemption',
-          payload: {},
+          payload: {...filters},
         },
       });
       const data = res.data;

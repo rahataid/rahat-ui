@@ -59,6 +59,8 @@ export const useProjectAction = <T = any>(key?: string[]) => {
 
 export const useAssignBenToProject = () => {
   const q = useProjectAction();
+  const { queryClient, rumsanService } = useRSQuery();
+
   const alert = useSwal();
   const toast = alert.mixin({
     toast: true,
@@ -95,6 +97,7 @@ export const useAssignBenToProject = () => {
         title: 'Beneficiary Assigned Successfully',
         icon: 'success',
       });
+      queryClient.invalidateQueries({ queryKey: [TAGS.GET_BENEFICIARY] });
     },
     onError: (error: any) => {
       const errorMessage = error?.response?.data?.message || 'Error';

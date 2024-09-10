@@ -32,8 +32,8 @@ const CommunicationDetailCard = ({ comm, activityId }: any) => {
   const { id: projectID } = useParams();
   const router = useRouter();
 
-  const handleDetail = (communicationId: any) => {
-    router.push(`/projects/aa/${projectID}/communication-logs/${communicationId}@${activityId}`);
+  const handleDetail = ({commId,sessionId}: any) => {
+    router.push(`/projects/aa/${projectID}/communication-logs/${commId}@${activityId}@${sessionId}`);
   };
 
   return (
@@ -64,7 +64,7 @@ const CommunicationDetailCard = ({ comm, activityId }: any) => {
         </div>
       </div>
       <div className="flex justify-between items-center space-x-2 mt-2">
-        <Button onClick={() => handleDetail(comm?.communicationId)} disabled={comm?.sessionStatus === SessionStatus.NEW} type="button" variant='secondary' className="w-full bg-[#E1ECF9] hover:bg-[#bbd5f4] text-primary"><Eye className="mr-2" size={16} strokeWidth={2} /><span className="font-normal">View</span></Button>
+        <Button onClick={() => handleDetail({ commId: comm?.communicationId, sessionId: comm?.sessionId })} disabled={comm?.sessionStatus === SessionStatus.NEW} type="button" variant='secondary' className="w-full bg-[#E1ECF9] hover:bg-[#bbd5f4] text-primary"><Eye className="mr-2" size={16} strokeWidth={2} /><span className="font-normal">View</span></Button>
         <Button disabled={true} type="button" className="w-full"><Download className="mr-2" size={16} strokeWidth={2} /><span className="font-normal">Failed Exports</span></Button>
       </div>
     </div>

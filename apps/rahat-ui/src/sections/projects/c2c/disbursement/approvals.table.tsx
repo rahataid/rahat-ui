@@ -80,7 +80,10 @@ export function ApprovalTable({ disbursement }: { disbursement: any }) {
     },
   });
 
-  const disburseMultiSig = useMultiSigDisburseToken();
+  const disburseMultiSig = useMultiSigDisburseToken({
+    disbursementId: disbursement?.id,
+    projectUUID,
+  });
 
   const handleMigSigTransaction = async () => {
     const amountString = disbursement?.DisbursementBeneficiary[0]?.amount

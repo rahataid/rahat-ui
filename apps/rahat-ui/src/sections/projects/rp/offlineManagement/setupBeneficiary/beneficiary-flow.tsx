@@ -47,6 +47,8 @@ const SetupBeneficiaryPage = () => {
   const [rowData, setRowData] = useState([]);
 
   const [currentPage, setCurrentPage] = useState(1);
+  const [error, setError] = useState('');
+
   const {
     pagination,
     filters,
@@ -168,8 +170,10 @@ const SetupBeneficiaryPage = () => {
       validation: () => {
         const vendorId = form.getValues('vendorId');
         if (vendorId) {
+          setError('');
           return true;
         }
+        setError('Please select vendor');
         return false;
       },
     },
@@ -191,8 +195,10 @@ const SetupBeneficiaryPage = () => {
         const groupIds = form.getValues('groupIds') || [];
 
         if (disbursements.length || groupIds.length > 0) {
+          setError('');
           return true;
         }
+        setError('Please select Beneficiaries');
         return false;
       },
     },
@@ -226,6 +232,7 @@ const SetupBeneficiaryPage = () => {
             />
           </div>
           <div>{renderComponent()}</div>
+          <div>{error && <p className="text-red-700 mr-8">{error}</p>}</div>
           {
             // !disburseToken.isSuccess &&
             // !disburseMultiSig.isSuccess &&

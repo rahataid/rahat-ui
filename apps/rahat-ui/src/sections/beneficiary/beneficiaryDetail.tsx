@@ -188,7 +188,7 @@ export default function BeneficiaryDetail({
       </div>
 
       {activeTab === 'details' && (
-        <SplitViewDetailCards beneficiaryDetail={beneficiaryDetail} />
+        <SplitViewDetailCards beneficiaryDetail={beneficiary} />
       )}
       {activeTab === 'edit' && (beneficiaryDetail || beneficiary) && (
         <EditBeneficiary beneficiary={beneficiaryDetail || beneficiary} />

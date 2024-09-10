@@ -156,6 +156,7 @@ const ComfirmPage = ({
               vendorId: selectedVendor?.id,
               disbursements: selectedDisbursementId,
               tokenAddress: contractSettings?.rahattoken?.address || '',
+              groupIds,
             });
             setIsOpen(true);
           }}

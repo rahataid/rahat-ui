@@ -1,21 +1,21 @@
-name: Main EL CI/CD
+name: Stage CT CI/CD
 on:
   push:
     branches:
-      - 'main-el'
+      - 'stage'
   pull_request:
     branches:
-      - 'main-el'
+      - 'stage'
   workflow_dispatch:
 
 env:
   CI: false
-  env_main: ${{ secrets.ENV_MAIN_EL }}
+  env_stage: ${{ secrets.ENV_STAGE_EL }}
   env_npmrc: ${{ secrets.ENV_NPMRC }}
 
 jobs:
-  rahat-ui:
-    name: rahat-ui
+  community-tool-ui:
+    name: community-tool-ui
     runs-on: ubuntu-latest
     if: contains(github.event.head_commit.message, 'action') || contains(github.event.pull_request.title, 'action') || github.event_name == 'workflow_dispatch'
 
@@ -24,16 +24,18 @@ jobs:
 
       - name: import env file
         run: |
-          touch ./.env && echo "$env_main" >> ./.env && \
+          touch ./.env && echo "$env_stage" >> ./.env && \
           touch ./.npmrc && echo "$env_npmrc" >> ./.npmrc
 
       - uses: actions/setup-node@v3
         with:
           node-version: 20.10.0
     
-      - name: Install pnpm
-        run: |
-          npm install -g pnpm@8.14.1 
+      - uses: pnpm/action-setup@v4
+        name: Install pnpm
+        with:
+          version: 8.14.1
+          run_install: false
 
       - name: Install dependencies
         run: pnpm install     
@@ -51,13 +53,12 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      # Rahat-UI Image
-      - name: build && push rahat-ui
-        id: build-push-rahat-ui
+      # Community-Tool-UI Image
+      - name: build && push community-tool-ui
+        id: build-push-community-tool-ui
         uses: docker/build-push-action@v5
         with:
           context: .
-          file: Dockerfile.rahat-ui
-          # push: ${{ github.event_name == 'push' && 'true' || 'false' }}
+          file: Dockerfile.community-tool-ui
           push: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
-          tags: esatya/rahat-ui:main-el
+          tags: esatya/community-tool-ui:stage

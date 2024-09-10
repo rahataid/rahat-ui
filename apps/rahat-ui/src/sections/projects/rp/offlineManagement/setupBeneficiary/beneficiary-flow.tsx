@@ -47,50 +47,65 @@ const SetupBeneficiaryPage = () => {
   const [rowData, setRowData] = useState([]);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [perPage, setPerPage] = useState(5);
-  const { pagination, filters } = usePagination();
+  const [error, setError] = useState('');
 
+  const {
+    pagination,
+    filters,
+    setFilters,
+    setNextPage,
+    setPrevPage,
+    setPerPage,
+  } = usePagination();
 
   const { data: disbursmentList, isSuccess } = useFindAllDisbursements(
     id as UUID,
     {
       hideAssignedBeneficiaries: true,
-     
     },
-
   );
-  const { data: benGroups } = useFindAllBeneficiaryGroups(id as UUID);
+  const { data: benGroups } = useFindAllBeneficiaryGroups(id as UUID,{disableSync:true});
 
   const projectBeneficiaries = useProjectBeneficiaries({
     page: pagination.page,
-    perPage: 100,
+    perPage: pagination.perPage,
     // pagination.perPage,
     order: 'desc',
     sort: 'updatedAt',
     projectUUID: id,
     ...filters,
   });
-
+  const beneficiaryPagination = {
+    pagination,
+    setNextPage,
+    setPrevPage,
+    setPerPage,
+    meta: projectBeneficiaries?.data?.response?.meta,
+  };
   useEffect(() => {
     if (
       projectBeneficiaries.isSuccess &&
       projectBeneficiaries.data?.data &&
       isSuccess
     ) {
-      const projectBeneficiaryDisbursements = disbursmentList.map(
-        (beneficiary) => {
+      const projectBeneficiaryDisbursements = disbursmentList
+        .filter((beneficiary) => {
+          return projectBeneficiaries.data?.data?.some(
+            (disbursement) =>
+              disbursement.walletAddress === beneficiary.walletAddress,
+          );
+        })
+        .map((beneficiary) => {
           const beneficiaryDisbursement = projectBeneficiaries.data?.data?.find(
-            (disbursement: any) =>
-              disbursement.walletAddress ===
-              beneficiary.walletAddress,
+            (disbursement) =>
+              disbursement.walletAddress === beneficiary.walletAddress,
           );
           return {
             ...beneficiaryDisbursement,
             disbursementAmount: beneficiary?.amount || '0',
             disbursmentId: beneficiary?.id,
           };
-        },
-      );
+        });
 
       if (
         JSON.stringify(projectBeneficiaryDisbursements) !==
@@ -114,7 +129,7 @@ const SetupBeneficiaryPage = () => {
         action: MS_ACTIONS.VENDOR.LIST_BY_PROJECT,
         payload: {
           page: currentPage,
-          perPage,
+          perPage: 100,
         },
       },
     });
@@ -155,8 +170,10 @@ const SetupBeneficiaryPage = () => {
       validation: () => {
         const vendorId = form.getValues('vendorId');
         if (vendorId) {
+          setError('');
           return true;
         }
+        setError('Please select vendor');
         return false;
       },
     },
@@ -170,6 +187,7 @@ const SetupBeneficiaryPage = () => {
           form={form}
           setCurrentStep={setCurrentStep}
           currentStep={currentStep}
+          pagination={beneficiaryPagination}
         />
       ),
       validation: () => {
@@ -177,8 +195,10 @@ const SetupBeneficiaryPage = () => {
         const groupIds = form.getValues('groupIds') || [];
 
         if (disbursements.length || groupIds.length > 0) {
+          setError('');
           return true;
         }
+        setError('Please select Beneficiaries');
         return false;
       },
     },
@@ -212,6 +232,7 @@ const SetupBeneficiaryPage = () => {
             />
           </div>
           <div>{renderComponent()}</div>
+          <div>{error && <p className="text-red-700 mr-8">{error}</p>}</div>
           {
             // !disburseToken.isSuccess &&
             // !disburseMultiSig.isSuccess &&

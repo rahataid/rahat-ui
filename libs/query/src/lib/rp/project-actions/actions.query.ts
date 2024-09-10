@@ -254,7 +254,7 @@ export const useRedeemToken = (projectUUID: UUID) => {
   });
 };
 
-export const useListRedemptions = (projectUUID: UUID) => {
+export const useListRedemptions = (projectUUID: UUID,filters:any) => {
   const action = useProjectAction(['listRedemptions-rpProject']);
   return useQuery({
     queryKey: ['redemptions', projectUUID],
@@ -263,7 +263,7 @@ export const useListRedemptions = (projectUUID: UUID) => {
         uuid: projectUUID,
         data: {
           action: 'rpProject.listRedemption',
-          payload: {},
+          payload: {...filters},
         },
       });
       const data = res.data;
@@ -282,7 +282,10 @@ export const useListRedemptions = (projectUUID: UUID) => {
   });
 };
 
-export const useFindAllBeneficiaryGroups = (projectUUID: UUID) => {
+export const useFindAllBeneficiaryGroups = (
+  projectUUID: UUID,
+  payload?: any,
+) => {
   const action = useProjectAction();
 
   const query = useQuery({
@@ -294,7 +297,7 @@ export const useFindAllBeneficiaryGroups = (projectUUID: UUID) => {
         uuid: projectUUID,
         data: {
           action: GET_ALL_BENEFICIARY_GROUPS,
-          payload: {},
+          payload: payload || {},
         },
       });
       return res.data;

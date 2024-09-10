@@ -1,10 +1,13 @@
 import React, { FC, useEffect } from 'react';
 import { initialStepData } from './fund-management-flow';
 import {
+  PROJECT_SETTINGS_KEYS,
   useFindAllDisbursementPlans,
   useFindAllDisbursements,
   usePagination,
   useProjectBeneficiaries,
+  useProjectSettingsStore,
+  useReadRahatTokenBalanceOf,
 } from '@rahat-ui/query';
 import { useParams } from 'next/navigation';
 import { UUID } from 'crypto';
@@ -30,6 +33,9 @@ const DisbursementConfirmation: FC<DisbursementConfirmationProps> = ({
 
   const { data: disbursementData } = useFindAllDisbursementPlans(id);
 
+  const contractSettings = useProjectSettingsStore(
+    (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT],
+  );
   const projectBeneficiaries = useProjectBeneficiaries({
     page: pagination.page,
     perPage:100,
@@ -42,6 +48,16 @@ const DisbursementConfirmation: FC<DisbursementConfirmationProps> = ({
   const disbursements = useFindAllDisbursements(id,{
     hideAssignedBeneficiaries: false,
   },);
+
+  const {data:tokenBalance} = useReadRahatTokenBalanceOf({
+    address: contractSettings?.rahattoken?.address as `0x${string}`,
+    args: [contractSettings?.rahatpayrollproject?.address as `0x${string}`],
+    query: {
+      select(data) {
+        return data ? Number(data) : 'N/A';
+      },
+    },
+  });
 
   useEffect(() => {
     if (
@@ -89,8 +105,8 @@ const DisbursementConfirmation: FC<DisbursementConfirmationProps> = ({
               <p>{disbursements.data?.length}</p>
             </div>
             <div className="flex flex-col gap-2">
-              <p>Project Balance:</p>
-              <p>400 USDC</p>
+              <p>Project Token:</p>
+              <p>{tokenBalance?.toString()}</p>
             </div>
             {stepData.bulkInputAmount ? (
               <div className="flex flex-col gap-2">
@@ -99,13 +115,12 @@ const DisbursementConfirmation: FC<DisbursementConfirmationProps> = ({
               </div>
             ) : null}
             <div className="flex flex-col gap-2">
-              <p>Total Amount to Send:</p>
+              <p>Total Token to Send:</p>
               <p>
                 {disbursements.data?.reduce(
                   (acc: number, disbursement: any) => acc + disbursement.amount,
                   0,
                 )}{' '}
-                USDC
               </p>
             </div>
           </div>

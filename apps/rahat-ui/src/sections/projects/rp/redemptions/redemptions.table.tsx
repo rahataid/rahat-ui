@@ -41,8 +41,12 @@ import {
   SelectValue,
 } from '@rahat-ui/shadcn/components/select';
 import { usePagination } from '@rahat-ui/query';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@radix-ui/react-dropdown-menu';
-
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@radix-ui/react-dropdown-menu';
 
 export type Redeptions = {
   id: string;
@@ -69,7 +73,13 @@ export const redemptionType = [
 export default function RedemptionsTable() {
   const { id } = useParams() as { id: UUID };
 
-  const {resetSelectedListItems,filters,setFilters,selectedListItems} = usePagination();
+  const {
+    filters,
+    setFilters,
+    selectedListItems,
+    resetSelectedListItems,
+    setSelectedListItems,
+  } = usePagination();
 
   const contractSettings = useProjectSettingsStore(
     (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT] || null,
@@ -81,7 +91,11 @@ export default function RedemptionsTable() {
   );
 
   const redeemToken = useContractRedeem(id);
-  const { data: redemptions, isSuccess, refetch } = useListRedemptions(id,filters);
+  const {
+    data: redemptions,
+    isSuccess,
+    refetch,
+  } = useListRedemptions(id, filters);
 
   const handleApprove = (row: any) => {
     redeemToken
@@ -97,10 +111,21 @@ export default function RedemptionsTable() {
       });
   };
 
+  const handleBulkApprove = () => {
+    selectedRows.map((row) => {
+      return {
+        amount: row?.amount,
+        tokenAddress: row?.tokenAddress,
+        redemptionAddress: contractSettings?.redemptions?.address,
+        senderAddress: row?.walletAddress,
+        uuid: row?.uuid,
+      };
+    });
+  };
+
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
-  const columns = useRedemptionTableColumn({ handleApprove });
 
   const handleRedmpType = React.useCallback(
     (type: string) => {
@@ -109,20 +134,21 @@ export default function RedemptionsTable() {
         setFilters({ ...filters, status: undefined });
         return;
       }
-      console.log(type)
+      console.log(type);
       setFilters({ ...filters, status: type });
     },
     [filters, setFilters],
   );
+  const columns = useRedemptionTableColumn({ handleApprove });
 
   const tableData = React.useMemo(() => {
     if (isSuccess) return redemptions;
     else return [];
   }, [isSuccess, redemptions]);
 
-  React.useEffect(()=>{
+  React.useEffect(() => {
     refetch();
-  },[filters])
+  }, [filters]);
 
   const table = useReactTable({
     data: tableData,
@@ -134,64 +160,68 @@ export default function RedemptionsTable() {
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setRowSelection,
+    onRowSelectionChange: setSelectedListItems,
+    getRowId: (row) => row.uuid,
     state: {
       sorting,
       columnFilters,
       columnVisibility,
-      rowSelection:selectedListItems,
+      rowSelection: selectedListItems,
     },
   });
 
   const selectedRowAddresses = Object.keys(selectedListItems);
+  const selectedRows = selectedRowAddresses.map((id) =>
+    tableData.find((row) => row.uuid === id),
+  );
 
   return (
     <div className="w-full p-2 bg-secondary">
       <div className="flex items-center mb-2">
-          <Input
-            placeholder="Filter Claims..."
-            value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
-            onChange={(event) =>
-              table.getColumn('name')?.setFilterValue(event.target.value)
-            }
-            className="max-w-sm rounded mr-2"
-          />
-          <div className="max-w-sm rounded mr-2">
-            <Select
-              onValueChange={handleRedmpType}
-              // defaultValue={filters?.status || 'ALL'}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="CLAIMS TYPE" />
-              </SelectTrigger>
-              <SelectContent>
-                {redemptionType.map((item) => {
-                  return (
-                    <SelectItem key={item.key} value={item.value}>
-                      {item.key}
-                    </SelectItem>
-                  );
-                })}
-              </SelectContent>
-            </Select>
-          </div>
-
-           {/* <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              {selectedRowAddresses.length ? (
-                <Button disabled={false} className="h-10 ml-2">
-                  {selectedRowAddresses.length} - Items Selected
-                  <ChevronDown strokeWidth={1.5} />
-                </Button>
-              ) : null}
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={handleApprove}>
-                Approve Redemption
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>  */}
+        <Input
+          placeholder="Filter Claims..."
+          value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
+          onChange={(event) =>
+            table.getColumn('name')?.setFilterValue(event.target.value)
+          }
+          className="max-w-sm rounded mr-2"
+        />
+        <div className="max-w-sm rounded mr-2">
+          <Select
+            onValueChange={handleRedmpType}
+            // defaultValue={filters?.status || 'ALL'}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="CLAIMS TYPE" />
+            </SelectTrigger>
+            <SelectContent>
+              {redemptionType.map((item) => {
+                return (
+                  <SelectItem key={item.key} value={item.value}>
+                    {item.key}
+                  </SelectItem>
+                );
+              })}
+            </SelectContent>
+          </Select>
         </div>
+
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            {selectedRowAddresses.length ? (
+              <Button disabled={false} className="h-10 ml-2">
+                {selectedRowAddresses.length} - Items Selected
+                <ChevronDown strokeWidth={1.5} />
+              </Button>
+            ) : null}
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={handleBulkApprove}>
+              Approve Redemption
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
       <div className="rounded border bg-card">
         {table.getRowModel().rows?.length ? (
           <>
@@ -274,5 +304,3 @@ export default function RedemptionsTable() {
     </div>
   );
 }
-
-

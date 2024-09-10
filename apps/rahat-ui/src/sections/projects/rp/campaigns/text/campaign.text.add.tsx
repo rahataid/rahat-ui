@@ -65,8 +65,10 @@ const FormSchema = z.object({
   campaignName: z.string({
     required_error: 'Camapign Name is required.',
   }),
+  message: z.string({
+    required_error: 'Message is required.',
+  }),
 
-  message: z.string().optional(),
   messageSid: z.string().optional(),
   subject: z.string().optional(),
   audiences: z.array(
@@ -102,7 +104,6 @@ const TextCampaignAddDrawer = () => {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      message: '',
       campaignType: '',
       audiences: [],
     },

@@ -62,7 +62,7 @@ const SetupBeneficiaryPage = () => {
       hideAssignedBeneficiaries: true,
     },
   );
-  const { data: benGroups } = useFindAllBeneficiaryGroups(id as UUID);
+  const { data: benGroups } = useFindAllBeneficiaryGroups(id as UUID,{disableSync:true});
 
   const projectBeneficiaries = useProjectBeneficiaries({
     page: pagination.page,

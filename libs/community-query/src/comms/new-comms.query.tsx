@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, UseQueryResult } from '@tanstack/react-query';
 import { TAGS } from '../config';
 import { useCommunicationService } from './comms.helpers';
 import { useRSQuery } from '@rumsan/react-query';
@@ -58,13 +58,14 @@ export const useListBeneficiariesComms = (
   );
 };
 
-export const useLisBeneficiaryComm = () => {
+export const useLisBeneficiaryComm = (uuid: string) => {
+  console.log(uuid);
   const { queryClient, rumsanService } = useRSQuery();
   const commsClient = getBeneficiaryCommsClient(rumsanService.client);
   return useQuery(
     {
-      queryKey: [TAGS.LIST_BENEFICIARY_COMM],
-      queryFn: () => commsClient.listBenefCommsByID,
+      queryKey: [TAGS.LIST_BENEFICIARY_COMM, uuid],
+      queryFn: () => commsClient.listBenefCommsByID(uuid),
     },
     queryClient,
   );
@@ -77,9 +78,36 @@ export const useTriggerCommunication = () => {
     mutationFn: commsClient.triggerCommunication,
     mutationKey: [TAGS.TRIGGER_COMMUNICATION],
     onSuccess: () => {
+      Swal.fire(' Triggred', '', 'success');
+
       queryClient.invalidateQueries({
-        queryKey: [TAGS.LIST_BENEFICIARIES_COMMS],
+        queryKey: [TAGS.COMMS_LOGS_ID],
       });
     },
+
+    onError: (error: any) => {
+      Swal.fire(error.response.data.message, '', 'error');
+    },
   });
+};
+
+export const useListCommsLogsId = (
+  uuid: string,
+  payload: Pagination & { [key: string]: string },
+): UseQueryResult<any, Error> => {
+  const { queryClient, rumsanService } = useRSQuery();
+  const commsClient = getBeneficiaryCommsClient(rumsanService.client);
+  const pageData = {
+    ...payload,
+    page: payload.page,
+    limit: payload.perPage,
+  };
+  return useQuery(
+    {
+      queryKey: [TAGS.COMMS_LOGS_ID, pageData],
+      queryFn: () =>
+        commsClient.listCommunicationLogsByCampignId(uuid, pageData),
+    },
+    queryClient,
+  );
 };

@@ -66,4 +66,5 @@ export const TAGS = {
   LIST_BENEFICIARIES_COMMS: 'list_beneficiaries_comms',
   LIST_BENEFICIARY_COMM: 'list_beneficiary_comm',
   TRIGGER_COMMUNICATION: 'trigger_communication',
+  COMMS_LOGS_ID: 'comms_logs_id',
 };

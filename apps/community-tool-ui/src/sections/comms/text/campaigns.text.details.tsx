@@ -31,6 +31,7 @@ const TextCampaignDetails = () => {
   const filteredComs = campaignData?.data?.rows.filter(
     (com: any) => !ivrTransportCuids?.includes(com.transportId),
   );
+
   return (
     <div className="h-[calc(100vh-80px)] p-2">
       <ScrollArea className="h-full">
@@ -39,7 +40,7 @@ const TextCampaignDetails = () => {
           {filteredComs?.map((campaign: any) => {
             return (
               <Card
-                key={campaign.id}
+                key={campaign.uuid}
                 onClick={() =>
                   router.push(`/communications/text/manage/${campaign.uuid}`)
                 }

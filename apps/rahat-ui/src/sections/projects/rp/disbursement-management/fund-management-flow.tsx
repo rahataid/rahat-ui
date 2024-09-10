@@ -31,7 +31,7 @@ const FundManagementFlow = () => {
 
   const createDisbursementPlan = useCreateDisbursementPlan(id);
   const disbursements = useFindAllDisbursements(id,{
-    hideAssignedBeneficiaries: false,
+    hideAssignedBeneficiaries: true,
 
   });
   const { data: disbursementData } = useFindAllDisbursementPlans(id);

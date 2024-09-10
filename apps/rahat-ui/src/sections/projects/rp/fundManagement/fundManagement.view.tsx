@@ -331,7 +331,7 @@ const FundManagementView = () => {
               />
               <div className="p-4 bg-gray-50 border rounded-lg w-full">
                 <div className="text-gray-700 font-semibold mb-2">
-                  Disbursement Status
+                  Disbursement Conditions
                 </div>
                 <ul className="list-disc list-inside text-gray-600">
                   {filteredConditions.map((condition) => (

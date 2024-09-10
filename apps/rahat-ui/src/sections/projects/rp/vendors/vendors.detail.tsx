@@ -31,7 +31,7 @@ const VendorDetail = () => {
     <div className="bg-secondary">
       <VendorHeader />
       <div className="grid md:grid-cols-2 gap-2 mx-2">
-        <VendorsInfo vendorData={{ name, phone, vendorWallet }} />
+        <VendorsInfo vendorData={{ name, phone, vendorWallet, vendorStatus:true}} />
         <DataCard
           className="mt-2"
           title="Total Token Disburse"

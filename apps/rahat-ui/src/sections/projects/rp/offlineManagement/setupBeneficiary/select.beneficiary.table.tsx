@@ -138,6 +138,7 @@ export function SelectBeneficiaryTable({
     }
   }, [disbursmentList]);
   const table = useReactTable({
+    manualPagination: true,
     data: tableData,
     columns,
     onSortingChange: setSorting,
@@ -225,7 +226,7 @@ export function SelectBeneficiaryTable({
           {table.getFilteredSelectedRowModel().rows.length} of{' '}
           {table.getFilteredRowModel().rows.length} row(s) selected.
         </div>
-        <div className="space-x-2">
+        {/* <div className="space-x-2">
           <Button
             variant="outline"
             size="sm"
@@ -242,7 +243,7 @@ export function SelectBeneficiaryTable({
           >
             Next
           </Button>
-        </div>
+        </div> */}
       </div>
     </div>
   );

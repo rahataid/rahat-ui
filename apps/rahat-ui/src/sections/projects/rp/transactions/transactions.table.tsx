@@ -208,7 +208,7 @@ export default function TransactionTable() {
           <>
             <Table>
               <ScrollArea className="h-[calc(100vh-184px)]">
-                <TableHeader className='bg-card sticky top-0'>
+                <TableHeader>
                   {table.getHeaderGroups().map((headerGroup) => (
                     <TableRow key={headerGroup.id}>
                       {headerGroup.headers.map((header) => {

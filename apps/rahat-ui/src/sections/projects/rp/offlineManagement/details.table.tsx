@@ -97,32 +97,23 @@ export function DetailsTable({ offlineBeneficiaries }: any) {
     ...filters,
   });
   React.useEffect(() => {
-    if (projectBeneficiaries.isSuccess && offlineBeneficiaries.length > 0) {
-      const projectBeneficiaryDisbursements = offlineBeneficiaries.map(
-        (offlineBeneficiarie: any) => {
-          const beneficiaryDetails = projectBeneficiaries?.data?.data?.find(
-            (beneficiary: any) =>
-              offlineBeneficiarie?.Disbursement?.walletAddress ===
-              beneficiary.walletAddress,
-          );
-          return {
-            ...offlineBeneficiarie,
-            name: beneficiaryDetails?.name,
-          };
-        },
-      );
-
+    if(offlineBeneficiaries.length>0){
+      const benDetails = offlineBeneficiaries.map((ben:any)=>{
+        return {
+          amount:ben?.amount,
+          name:ben?.piiData?.name,
+          status:ben?.status
+        }
+      })
       if (
-        JSON.stringify(projectBeneficiaryDisbursements) !==
+        JSON.stringify(benDetails) !==
         JSON.stringify(rowData)
       ) {
-        setRowData(projectBeneficiaryDisbursements);
+        setRowData(benDetails);
       }
     }
   }, [
     offlineBeneficiaries,
-    projectBeneficiaries.data?.data,
-    projectBeneficiaries.isSuccess,
     rowData,
   ]);
 

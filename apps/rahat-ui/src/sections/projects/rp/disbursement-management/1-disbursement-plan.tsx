@@ -21,7 +21,6 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import DataCard from 'apps/rahat-ui/src/components/dataCard';
 import { UUID } from 'crypto';
 import { Users } from 'lucide-react';
@@ -81,7 +80,7 @@ const DisbursementPlan: FC<DisbursementPlanProps> = ({
 
   const columns = useDibsursementList1Columns(rowData, setRowData);
   const table = useReactTable({
-    manualPagination: true,
+    // manualPagination: true,
     data: rowData,
     columns,
     onSortingChange: setSorting,

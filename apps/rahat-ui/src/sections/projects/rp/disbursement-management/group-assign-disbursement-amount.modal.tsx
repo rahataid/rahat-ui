@@ -38,12 +38,12 @@ export default function GroupDisbursementAssignModel({
         <div className="w-full flex justify-between items-center">
           <div className="flex w-full gap-3 items-center cursor-pointer">
             {!bulk ? (
-              <Button className="dark:bg-secondary dark:text-white bg-sky-100 text-blue-600 felx w-full mt-2 items-center gap-2 hover:bg-sky-200">
+              <Button className="dark:bg-secondary dark:text-white bg-sky-100 text-blue-600 flex w-full mt-2 items-center gap-2 hover:bg-sky-200">
                 <BadgePlus size={18} strokeWidth={1.5} />
                 Assign
               </Button>
             ) : (
-              <Button className="felx items-center gap-2">
+              <Button className="flex items-center gap-2">
                 <BadgePlus size={18} strokeWidth={1.5} />
                 Bulk Assign
               </Button>
@@ -51,64 +51,67 @@ export default function GroupDisbursementAssignModel({
           </div>
         </div>
       </DialogTrigger>
-      <DialogContent className="">
-        <DialogHeader>
+
+      <DialogContent className="bg-white p-6 shadow-md rounded-md max-w-md w-full">
+        <DialogHeader className="text-center">
           {bulk ? (
-            <div className="flex flex-col items-center">
-              <DialogTitle>Bulk Disbursement Amount</DialogTitle>
-              <div className="flex items-center justify-between text-muted-foreground text-base">
+            <>
+              <DialogTitle className="text-lg font-semibold text-gray-800">
+                Bulk Disbursement Amount
+              </DialogTitle>
+              <p className="text-gray-500 text-sm">
                 Enter the amount you want to assign to all the selected groups
-              </div>
-            </div>
+              </p>
+            </>
           ) : (
-            <div className="flex flex-col items-center">
-              <DialogTitle>Disbursement Amount</DialogTitle>
-              <div className="flex items-center justify-between text-muted-foreground text-base">
+            <>
+              <DialogTitle className="text-lg font-semibold text-gray-800">
+                Disbursement Amount
+              </DialogTitle>
+              <p className="text-gray-500 text-sm">
                 Enter the amount you want to assign to the selected group
-              </div>
-            </div>
+              </p>
+            </>
           )}
         </DialogHeader>
-        <div className="flex flex-col items-start gap-2">
-          <div>
-            <Label htmlFor="token" className="mb-2">
-              Disbursement Amount
-            </Label>
-          </div>
-          <div>
-            <Input
-              className="w-full"
-              value={token}
-              placeholder="Enter amount to assign"
-              onChange={handleInputChange}
-              id="token"
-            />
-          </div>
+
+        <div className="my-4">
+          <Label
+            htmlFor="token"
+            className="block mb-2 text-sm font-medium text-gray-700"
+          >
+            Disbursement Amount
+          </Label>
+          <Input
+            className="w-full border border-gray-300 rounded-md py-2 px-3 text-gray-700 focus:ring-blue-500 focus:border-blue-500"
+            value={token}
+            placeholder="Enter amount to assign"
+            onChange={handleInputChange}
+            id="token"
+          />
         </div>
 
-        <DialogFooter>
-          <div className="flex gap-2 w-full justify-between">
-            <DialogClose asChild>
-              <Button className="dark:bg-secondary w-1/2 dark:text-white bg-sky-100 text-blue-600 felx items-center gap-2 hover:bg-sky-200">
-                Cancel
-              </Button>
-            </DialogClose>
-            <Button
-              className="w-1/2"
-              disabled={false}
-              onClick={() => {
-                if (bulk) {
-                  selectedGroupId?.map(async (uuid) => {
-                    await handleSubmit(Number(token), uuid);
-                  });
-                } else {
-                  handleSubmit(Number(token), uuid);
-                }
-              }}
-            >
-              Assign
+        <DialogFooter className="flex justify-between space-x-4 mt-6">
+          <DialogClose asChild>
+            <Button className="w-1/2 bg-gray-100 text-gray-700 border border-gray-300 hover:bg-gray-200">
+              Cancel
             </Button>
-          </div>
+          </DialogClose>
+          <Button
+            className="w-1/2 bg-blue-600 text-white hover:bg-blue-700"
+            disabled={false}
+            onClick={() => {
+              if (bulk) {
+                selectedGroupId?.map(async (uuid) => {
+                  await handleSubmit(Number(token), uuid);
+                });
+              } else {
+                handleSubmit(Number(token), uuid);
+              }
+            }}
+          >
+            Assign
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

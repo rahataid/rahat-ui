@@ -12,6 +12,7 @@ import {
   TableRow,
 } from '@rahat-ui/shadcn/src/components/ui/table';
 import { Table, flexRender } from '@tanstack/react-table';
+import Pagination from 'apps/rahat-ui/src/components/pagination';
 import { Payment } from './1-disbursement-plan';
 import { initialStepData } from './fund-management-flow';
 
@@ -119,6 +120,15 @@ export function DisburseTable({
               )}
             </TableBody>
           </ScrollArea>
+          <Pagination
+            pageIndex={table.getState().pagination.pageIndex}
+            pageCount={table.getPageCount()}
+            setPageSize={table.setPageSize}
+            canPreviousPage={table.getCanPreviousPage()}
+            previousPage={table.previousPage}
+            canNextPage={table.getCanNextPage()}
+            nextPage={table.nextPage}
+          />
         </TableComponent>
       </div>
     </div>

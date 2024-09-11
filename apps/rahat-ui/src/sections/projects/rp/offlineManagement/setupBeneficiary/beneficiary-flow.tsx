@@ -64,7 +64,7 @@ const SetupBeneficiaryPage = () => {
       hideAssignedBeneficiaries: true,
     },
   );
-  const { data: benGroups } = useFindAllBeneficiaryGroups(id as UUID);
+  const { data: benGroups } = useFindAllBeneficiaryGroups(id as UUID,{disableSync:true});
 
   const projectBeneficiaries = useProjectBeneficiaries({
     page: pagination.page,
@@ -160,6 +160,10 @@ const SetupBeneficiaryPage = () => {
 
   const form = useForm<z.infer<typeof OfflineBeneficiaryFormSchema>>({
     resolver: zodResolver(OfflineBeneficiaryFormSchema),
+    defaultValues: {
+      disbursements: [],
+      groupIds: [],
+    },
   });
 
   const steps = [
@@ -210,6 +214,7 @@ const SetupBeneficiaryPage = () => {
           form={form}
           setCurrentStep={setCurrentStep}
           currentStep={currentStep}
+          benGroups={benGroups}
         />
       ),
       validation: () => {

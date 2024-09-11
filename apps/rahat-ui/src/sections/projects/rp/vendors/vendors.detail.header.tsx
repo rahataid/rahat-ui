@@ -26,8 +26,10 @@ import {
 import { Minus, MoreVertical, Trash2 } from 'lucide-react';
 import { TabsList, TabsTrigger } from '@rahat-ui/shadcn/src/components/ui/tabs';
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 const VendorHeader = () => {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState<'details' | 'edit'>('details');
 
   const handleTabChange = (tab: 'details' | 'edit') => {
@@ -37,16 +39,21 @@ const VendorHeader = () => {
   return (
     <>
       <div className="flex justify-between p-4 pt-5 bg-card border-b">
-        <TooltipProvider delayDuration={100}>
+        {/* <TooltipProvider delayDuration={100}>
           <Tooltip>
-            <TooltipTrigger>
-              <Minus size={20} strokeWidth={1.5} />
-            </TooltipTrigger>
+            <TooltipTrigger> */}
+        <Minus
+          className="cursor-pointer"
+          onClick={() => router.back()}
+          size={20}
+          strokeWidth={1.5}
+        />
+        {/* </TooltipTrigger>
             <TooltipContent className="bg-secondary">
               <p className="text-xs font-medium">Close</p>
             </TooltipContent>
           </Tooltip>
-        </TooltipProvider>
+        </TooltipProvider> */}
         <div className="flex gap-3">
           <TooltipProvider delayDuration={100}>
             <Tooltip>

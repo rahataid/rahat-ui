@@ -59,7 +59,6 @@ export default function BeneficiaryTable() {
 
   // const beneficiaries = useBeneficiaryStore((state) => state.beneficiaries);
   // console.log({ beneficiaries });
-  const meta = useBeneficiaryStore((state) => state.meta);
 
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const {
@@ -84,6 +83,8 @@ export default function BeneficiaryTable() {
     projectUUID: id,
     ...filters,
   });
+  const meta = beneficiaries.data.response?.meta;
+
   const table = useReactTable({
     manualPagination: true,
     data: beneficiaries.data?.data || [],

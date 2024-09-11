@@ -282,7 +282,10 @@ export const useListRedemptions = (projectUUID: UUID,filters:any) => {
   });
 };
 
-export const useFindAllBeneficiaryGroups = (projectUUID: UUID) => {
+export const useFindAllBeneficiaryGroups = (
+  projectUUID: UUID,
+  payload?: any,
+) => {
   const action = useProjectAction();
 
   const query = useQuery({
@@ -294,7 +297,7 @@ export const useFindAllBeneficiaryGroups = (projectUUID: UUID) => {
         uuid: projectUUID,
         data: {
           action: GET_ALL_BENEFICIARY_GROUPS,
-          payload: {},
+          payload: payload || {},
         },
       });
       return res.data;
@@ -307,4 +310,47 @@ export const useFindAllBeneficiaryGroups = (projectUUID: UUID) => {
     ...query,
     data,
   };
+};
+
+export const useRpSingleBeneficiaryGroup = (
+  uuid: UUID,
+  beneficiariesGroupID: UUID,
+) => {
+  const q = useProjectAction();
+
+  const query = useQuery({
+    queryKey: ['beneficiaryGroup', uuid, beneficiariesGroupID],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'rpProject.beneficiary.getOneGroup',
+          payload: {
+            uuid: beneficiariesGroupID,
+          },
+        },
+      });
+      return mutate.data;
+    },
+  });
+  return query;
+};
+
+export const useRpSingleBeneficiaryGroupMutation = (projectUUID: UUID) => {
+  const q = useProjectAction();
+
+  return useMutation({
+    mutationFn: async (beneficiariesGroupID: UUID) => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'rpProject.beneficiary.getOneGroup',
+          payload: {
+            uuid: beneficiariesGroupID,
+          },
+        },
+      });
+      return mutate.data;
+    },
+  });
 };

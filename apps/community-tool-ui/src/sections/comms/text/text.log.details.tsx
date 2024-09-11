@@ -114,7 +114,7 @@ export default function TextLogDetails() {
         <p className="font-medium	text-neutral-800 text-lg">
           {campginData?.data?.name}
         </p>
-        {data?.status !== 'COMPLETED' ? (
+        {!campginData?.data?.sessionId ? (
           <TriggerConfirmModal campaignId={campaignId as string} />
         ) : null}
       </div>

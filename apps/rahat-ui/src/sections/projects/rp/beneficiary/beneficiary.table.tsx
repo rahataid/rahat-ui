@@ -30,6 +30,7 @@ import {
   getCoreRowModel,
   getSortedRowModel,
   useReactTable,
+  getFilteredRowModel,
 } from '@tanstack/react-table';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import { UUID } from 'crypto';
@@ -48,6 +49,14 @@ import {
 } from 'apps/rahat-ui/src/constants/selectOptionsRpBeneficiary';
 import FiltersTags from '../../components/filtersTags';
 import TableLoader from 'apps/rahat-ui/src/components/table.loader';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@rahat-ui/shadcn/src/components/ui/select';
 
 export default function BeneficiaryTable() {
   const bulkAssignTokens = useBulkAssignClaimsToBeneficiaries();
@@ -84,7 +93,6 @@ export default function BeneficiaryTable() {
     ...filters,
   });
   const meta = beneficiaries.data.response?.meta;
-
   const table = useReactTable({
     manualPagination: true,
     data: beneficiaries.data?.data || [],
@@ -93,9 +101,11 @@ export default function BeneficiaryTable() {
     getSortedRowModel: getSortedRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setSelectedListItems,
+    getFilteredRowModel: getFilteredRowModel(),
     getRowId(originalRow, index, parent) {
       return originalRow.walletAddress;
     },
+
     state: {
       columnVisibility,
       rowSelection: selectedListItems,
@@ -140,14 +150,33 @@ export default function BeneficiaryTable() {
           )}
         </div>
         <div className="grid grid-cols-6 gap-x-2 mb-3">
-          <SelectSection
+          {/* <SelectSection
             filters={filters}
             setFilters={setFilters}
             options={genderOptions}
             placeholder={'Gender'}
             keys="gender"
-          />
-          <SelectSection
+          /> */}
+          <Select
+            onValueChange={(value) => {
+              table.getColumn('gender')?.setFilterValue(value);
+            }}
+            value={
+              (table.getColumn('gender')?.getFilterValue() as string) ?? ''
+            }
+          >
+            <SelectTrigger>
+              <SelectValue placeholder={`Select Gender`} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                {genderOptions.map(({ value, label }: any) => (
+                  <SelectItem value={value}>{label}</SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+          {/* <SelectSection
             filters={filters}
             setFilters={setFilters}
             options={internetOptions}
@@ -167,19 +196,15 @@ export default function BeneficiaryTable() {
             options={bankedOptions}
             placeholder={'Banked Status'}
             keys="bankedStatus"
-          />
+          /> */}
           <div className="col-span-2">
             <Input
               placeholder="Search Beneficiaries..."
               value={
-                (table
-                  .getColumn('walletAddress')
-                  ?.getFilterValue() as string) ?? ''
+                (table.getColumn('name')?.getFilterValue() as string) ?? ''
               }
               onChange={(event) =>
-                table
-                  .getColumn('walletAddress')
-                  ?.setFilterValue(event.target.value)
+                table.getColumn('name')?.setFilterValue(event.target.value)
               }
               className="rounded mr-2"
             />

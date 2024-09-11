@@ -1,4 +1,5 @@
 // import { useTriggerRpCampaign } from '@rahat-ui/query';
+import { useTriggerCommunication } from '@rahat-ui/community-query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   Dialog,
@@ -9,26 +10,23 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dialog';
-import { useTriggerCampaign } from '@rumsan/communication-query';
-import { UUID } from 'crypto';
-import { useParams } from 'next/navigation';
 import { useState } from 'react';
-import { toast } from 'react-toastify';
 
 type IProps = {
-  campaignId: number;
+  campaignId: string;
 };
 export function TriggerConfirmModal({ campaignId }: IProps) {
   const [open, setOpen] = useState(false);
-  const { id } = useParams();
-  // const triggerCampaign = useTriggerRpCampaign(id as UUID);
+  const triggerCampaign = useTriggerCommunication();
   const handleTriggerCampaign = () => {
+    triggerCampaign.mutateAsync(campaignId);
     setOpen(false);
   };
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="flex items-center gap-2 w-40">Trigger</Button>
+        <Button className="flex items-center gap-2 w-36 h-9">Trigger</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>

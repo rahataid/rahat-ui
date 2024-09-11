@@ -57,7 +57,11 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/command';
 import { cn } from '@rahat-ui/shadcn/src';
 import { usePagination } from '@rahat-ui/query';
-import { useCommunityGroupList } from '@rahat-ui/community-query';
+import {
+  useCommunityGroupList,
+  useCreateBeneficiaryComms,
+  useListTransports,
+} from '@rahat-ui/community-query';
 
 const FormSchema = z.object({
   campaignType: z.string({
@@ -94,14 +98,13 @@ const TextCampaignAddDrawer = () => {
     ...pagination,
     ...filters,
   });
-  // const {data} = useCommunityGroupList
   const [isEmail, setisEmail] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
+  const { data: listTransports } = useListTransports();
   const [checkTemplate, setCheckTemplate] = useState(false);
   const [templatemessage, setTemplatemessage] = useState('');
-
+  const createCampaign = useCreateBeneficiaryComms();
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -118,8 +121,16 @@ const TextCampaignAddDrawer = () => {
     console.log('object');
   };
   const handleCreateCampaign = async (data: z.infer<typeof FormSchema>) => {
-    console.log(data);
+    const createCampagin = {
+      name: data.campaignName,
+      groupUID: data.groupUID,
+      message: data.message,
+      transportId: data?.campaignType,
+    };
+    createCampaign.mutate(createCampagin);
+    setIsOpen(false);
   };
+
   return (
     <FormProvider {...form}>
       <Drawer open={isOpen} onOpenChange={setIsOpen}>
@@ -158,6 +169,7 @@ const TextCampaignAddDrawer = () => {
                   </FormItem>
                 )}
               />
+
               <FormField
                 control={form.control}
                 name="campaignType"
@@ -165,7 +177,10 @@ const TextCampaignAddDrawer = () => {
                   <FormItem>
                     <Select
                       onValueChange={(value) => {
-                        if (value.toLowerCase() === 'email') {
+                        const selectedCampaign = listTransports?.data.find(
+                          (item) => item.cuid === value,
+                        );
+                        if (selectedCampaign?.type.toLowerCase() === 'email') {
                           setisEmail(true);
                         } else {
                           setisEmail(false);
@@ -180,14 +195,14 @@ const TextCampaignAddDrawer = () => {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {Object.keys(CAMPAIGN_TYPES).map((key) => {
+                        {listTransports?.data?.map(({ cuid, name, type }) => {
                           if (
-                            key.toLowerCase() !== 'ivr' &&
-                            key.toLowerCase() !== 'phone'
+                            type.toLowerCase() !== 'ivr' &&
+                            type.toLowerCase() !== 'phone'
                           )
                             return (
-                              <SelectItem key={key} value={key}>
-                                {key}
+                              <SelectItem key={cuid} value={cuid}>
+                                {name}
                               </SelectItem>
                             );
                         })}
@@ -198,6 +213,7 @@ const TextCampaignAddDrawer = () => {
                   </FormItem>
                 )}
               />
+
               {isEmail && (
                 <FormField
                   control={form.control}
@@ -321,11 +337,10 @@ const TextCampaignAddDrawer = () => {
                       <PopoverTrigger asChild>
                         <FormControl>
                           <Button
-                            variant="outline"
+                            variant="secondary"
                             role="combobox"
                             className={cn(
-                              'w-full mt-2 justify-between',
-                              !field.value && 'text-muted-foreground',
+                              'w-full mt-2 justify-between font-normal text-muted-foreground hover:text-muted-foreground bg-white hover:bg-white border',
                             )}
                           >
                             {field.value

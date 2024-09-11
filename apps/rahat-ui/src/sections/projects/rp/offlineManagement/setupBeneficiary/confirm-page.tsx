@@ -50,14 +50,20 @@ const ComfirmPage = ({
   const disBursementIds = beneficiariesDisbursements?.map(
     (disBursement) => disBursement.id,
   );
-  const selectedDisbursementId =
-    form.getValues('disbursements') || disBursementIds;
-  const selectedDisbursement = disbursmentList?.filter((disbursment: any) =>
-    selectedDisbursementId?.includes(disbursment?.disbursmentId),
-  );
+  let selectedDisbursementId = form.getValues('disbursements');
+  let selectedDisbursement;
+  if (selectedDisbursementId.length === 0) {
+    selectedDisbursementId = disBursementIds;
+    selectedDisbursement = beneficiariesDisbursements;
+  } else {
+    selectedDisbursement = disbursmentList?.filter((disbursment: any) =>
+      selectedDisbursementId?.includes(disbursment?.disbursmentId),
+    );
+  }
+
   let tokenAmount = 0;
   selectedDisbursement?.map((disbursment: any) => {
-    tokenAmount += Number(disbursment?.disbursementAmount);
+    tokenAmount += Number(disbursment?.amount);
   });
   const contractSettings = useProjectSettingsStore(
     (state) => state.settings?.[id as UUID]?.[PROJECT_SETTINGS_KEYS.CONTRACT],
@@ -65,13 +71,14 @@ const ComfirmPage = ({
   const noOfSelectedDisbursement =
     form.getValues('disbursements')?.length ||
     beneficiariesDisbursements?.length;
-
   return (
     <div className="bg-card rounded-lg m-6 p-4">
       <div className="flex flex-col gap-1">
         <div className="flex items-center gap-2">
           <ArrowLeft
-            onClick={() => setCurrentStep(currentStep - 1)}
+            onClick={() => {
+              setCurrentStep(currentStep - 1);
+            }}
             className="cursor-pointer"
             size={20}
             strokeWidth={1.5}
@@ -124,7 +131,7 @@ const ComfirmPage = ({
             </p>
             <ScrollArea className="h-[calc(100vh-620px)]">
               <ul className="space-y-2">
-                {selectedDisbursement.map((disbursement, index) => (
+                {selectedDisbursement?.map((disbursement, index) => (
                   <li
                     key={index}
                     className="flex items-center p-2 bg-gray-100 rounded-lg"

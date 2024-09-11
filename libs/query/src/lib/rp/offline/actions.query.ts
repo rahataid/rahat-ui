@@ -39,7 +39,7 @@ export const useGetBeneficiariesDisbursements = (
 ) => {
   const action = useProjectAction();
   return useQuery({
-    queryKey: ['rpGetBeneficiariesDisbursements'],
+    queryKey: ['rpGetBeneficiariesDisbursements', groupIds],
     queryFn: async () => {
       const res = await action.mutateAsync({
         uuid: projectUUID,

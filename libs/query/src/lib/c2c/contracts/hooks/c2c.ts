@@ -5,8 +5,13 @@ import {
   useWriteC2CProjectMulticall,
 } from '../generated-hooks/c2c';
 import { useRSQuery } from '@rumsan/react-query';
-import { DisbursementType, useAddDisbursement } from '../../project-actions';
+import {
+  DisbursementStatus,
+  DisbursementType,
+  useAddDisbursement,
+} from '../../project-actions';
 import { UUID } from 'crypto';
+import { useProjectAction } from '../../../projects';
 
 //Temporary solution, should be changed when crypto is implemented
 export const useDepositTokenToProject = () => {
@@ -16,16 +21,32 @@ export const useDepositTokenToProject = () => {
   // })
 };
 
-export const useMultiSigDisburseToken = () => {
+export const useMultiSigDisburseToken = ({
+  disbursementId,
+  projectUUID,
+}: {
+  disbursementId: number;
+  projectUUID: UUID;
+}) => {
   const multi = useWriteC2CProjectMulticall();
-  const { queryClient } = useRSQuery();
+  const projectAction = useProjectAction(['c2c', 'disburseToken']);
 
   return useMutation({
     onError: (error) => {
       console.error(error);
     },
-    onSuccess(data, variables, context) {
-      console.log({ data });
+    async onSuccess(data, variables, context) {
+      await projectAction.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'c2cProject.disbursement.update',
+          payload: {
+            id: disbursementId,
+            status: DisbursementStatus.COMPLETED,
+          },
+        },
+      });
+      console.log({ data, variables, context });
     },
     mutationFn: async ({
       amount,

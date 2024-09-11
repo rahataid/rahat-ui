@@ -47,6 +47,8 @@ const SetupBeneficiaryPage = () => {
   const [rowData, setRowData] = useState([]);
 
   const [currentPage, setCurrentPage] = useState(1);
+  const [error, setError] = useState('');
+
   const {
     pagination,
     filters,
@@ -62,7 +64,7 @@ const SetupBeneficiaryPage = () => {
       hideAssignedBeneficiaries: true,
     },
   );
-  const { data: benGroups } = useFindAllBeneficiaryGroups(id as UUID);
+  const { data: benGroups } = useFindAllBeneficiaryGroups(id as UUID,{disableSync:true});
 
   const projectBeneficiaries = useProjectBeneficiaries({
     page: pagination.page,
@@ -158,6 +160,10 @@ const SetupBeneficiaryPage = () => {
 
   const form = useForm<z.infer<typeof OfflineBeneficiaryFormSchema>>({
     resolver: zodResolver(OfflineBeneficiaryFormSchema),
+    defaultValues: {
+      disbursements: [],
+      groupIds: [],
+    },
   });
 
   const steps = [
@@ -168,8 +174,10 @@ const SetupBeneficiaryPage = () => {
       validation: () => {
         const vendorId = form.getValues('vendorId');
         if (vendorId) {
+          setError('');
           return true;
         }
+        setError('Please select vendor');
         return false;
       },
     },
@@ -191,8 +199,10 @@ const SetupBeneficiaryPage = () => {
         const groupIds = form.getValues('groupIds') || [];
 
         if (disbursements.length || groupIds.length > 0) {
+          setError('');
           return true;
         }
+        setError('Please select Beneficiaries');
         return false;
       },
     },
@@ -204,6 +214,7 @@ const SetupBeneficiaryPage = () => {
           form={form}
           setCurrentStep={setCurrentStep}
           currentStep={currentStep}
+          benGroups={benGroups}
         />
       ),
       validation: () => {
@@ -226,6 +237,7 @@ const SetupBeneficiaryPage = () => {
             />
           </div>
           <div>{renderComponent()}</div>
+          <div>{error && <p className="text-red-700 mr-8">{error}</p>}</div>
           {
             // !disburseToken.isSuccess &&
             // !disburseMultiSig.isSuccess &&

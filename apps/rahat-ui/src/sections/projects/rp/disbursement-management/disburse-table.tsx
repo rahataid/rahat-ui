@@ -73,7 +73,7 @@ export function DisburseTable({
       ) : null}
       <div className="rounded border bg-card">
         <TableComponent>
-          <ScrollArea className="h-[calc(100vh-482px)]">
+          <ScrollArea className="h-[calc(100vh-508px)]">
             <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>

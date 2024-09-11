@@ -13,18 +13,28 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/tabs';
 import { TabsContent } from '@radix-ui/react-tabs';
 import VendorTransactionList from 'apps/rahat-ui/src/sections/vendors/vendors.txn.list';
+import { PROJECT_SETTINGS_KEYS, useProjectSettingsStore, useReadRahatTokenBalanceOf } from '@rahat-ui/query';
 
 const VendorDetail = () => {
   const searchParams = useSearchParams();
   interface IParams {
     uuid: string;
-  }
-
-  const { uuid: walletAddress } = useParams<IParams>();
+    id: string;
+  } 
+  const { uuid: walletAddress,id } = useParams<IParams>();
+  const contractSettings = useProjectSettingsStore(
+    (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT] || null,
+  );
   const phone = searchParams.get('phone');
   const name = searchParams.get('name');
   const vendorWallet = searchParams.get('walletAddress');
   const vendorId = searchParams.get('vendorId');
+
+  const {data:vendorBalance} = useReadRahatTokenBalanceOf({
+    address:contractSettings?.rahattoken?.address,
+    args:[walletAddress]
+  })
+
 
   //get the vendor txn
   return (
@@ -35,8 +45,8 @@ const VendorDetail = () => {
         <DataCard
           className="mt-2"
           title="Total Token Disburse"
-          number="0"
-          subTitle="USDT"
+          number={vendorBalance?.toString() || 'N/A'}
+          // subTitle="USDT"
         />
       </div>
       <div className="mt-2 mx-2 w-full">

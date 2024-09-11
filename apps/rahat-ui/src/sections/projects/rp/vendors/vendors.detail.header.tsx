@@ -60,12 +60,12 @@ const VendorHeader = () => {
               <TooltipTrigger>
                 <AlertDialog>
                   <AlertDialogTrigger className="flex items-center">
-                    <Trash2
+                    {/* <Trash2
                       className="cursor-pointer"
                       color="red"
                       size={20}
                       strokeWidth={1.5}
-                    />
+                    /> */}
                   </AlertDialogTrigger>
                   <AlertDialogContent>
                     <AlertDialogHeader>
@@ -89,7 +89,7 @@ const VendorHeader = () => {
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
-          <DropdownMenu>
+          {/* <DropdownMenu>
             <DropdownMenuTrigger>
               <MoreVertical
                 className="cursor-pointer"
@@ -100,12 +100,12 @@ const VendorHeader = () => {
             <DropdownMenuContent>
               <DropdownMenuItem onClick={() => handleTabChange('edit')}>
                 Edit
-              </DropdownMenuItem>
+              </DropdownMenuItem> */}
               {/* <DropdownMenuItem onClick={() => handleTabChange('details')}>
                 Details
               </DropdownMenuItem> */}
-            </DropdownMenuContent>
-          </DropdownMenu>
+            {/* </DropdownMenuContent>
+          </DropdownMenu> */}
         </div>
       </div>
     </>

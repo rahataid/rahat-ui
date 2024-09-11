@@ -14,6 +14,7 @@ import {
   useSyncOfflineBeneficiaries,
   useGetBeneficiariesDisbursements,
 } from '@rahat-ui/query';
+import { useRSQuery } from '@rumsan/react-query';
 
 type ConfirmPageProps = {
   form: UseFormReturn<z.infer<any>>;
@@ -35,6 +36,7 @@ const ComfirmPage = ({
   const { id } = useParams();
   const [isOpen, setIsOpen] = useState(false);
   const syncBen = useSyncOfflineBeneficiaries(id as UUID);
+  const { queryClient, rumsanService } = useRSQuery();
 
   const selectedVendor = vendor.find(
     (v) => v?.id == form.getValues('vendorId'),
@@ -165,6 +167,12 @@ const ComfirmPage = ({
               tokenAddress: contractSettings?.rahattoken?.address || '',
               groupIds,
             });
+            setTimeout(() => {
+              queryClient.invalidateQueries({
+                queryKey: ['rpGetOfflineVendors'],
+              });
+            }, 10000);
+
             setIsOpen(true);
           }}
           className="bg-blue-500 text-white px-4 py-2 rounded-md w-36"

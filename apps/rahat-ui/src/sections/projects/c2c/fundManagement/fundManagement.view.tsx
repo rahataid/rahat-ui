@@ -105,7 +105,7 @@ const FundManagementView = () => {
                     <HoverCardTrigger>
                       {shortenAddress(c2cProjectAddress)}
                     </HoverCardTrigger>
-                    <HoverCardContent className="w-full">
+                    <HoverCardContent className="w-full text-sm bg-secondary px-2 py-1">
                       {c2cProjectAddress}
                     </HoverCardContent>
                   </HoverCard>

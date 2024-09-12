@@ -14,10 +14,11 @@ import { useState } from 'react';
 
 type IProps = {
   campaignId: string;
+  uuid: string;
 };
-export function TriggerConfirmModal({ campaignId }: IProps) {
+export function TriggerConfirmModal({ campaignId, uuid }: IProps) {
   const [open, setOpen] = useState(false);
-  const triggerCampaign = useTriggerCommunication();
+  const triggerCampaign = useTriggerCommunication(uuid);
   const handleTriggerCampaign = () => {
     triggerCampaign.mutateAsync(campaignId);
     setOpen(false);

@@ -22,10 +22,10 @@ const ProjectNavView: FC<ProjectNavViewProps> = ({ title, items }) => {
 
   return (
     <>
-      <div className="pb-2 w-64 bg-white h-full">
-        <div className="flex items-center justify-between p-4">
+      <aside className="pb-2 w-64 bg-white h-full">
+        {/* <div className="flex items-center justify-between p-4">
           <h1 className="font-semibold text-xl text-primary">{title}</h1>
-        </div>
+        </div> */}
         <div className="px-2">
           <nav>
             {items?.map((item) => (
@@ -107,7 +107,7 @@ const ProjectNavView: FC<ProjectNavViewProps> = ({ title, items }) => {
             ))}
           </nav>
         </div>
-        <div className="p-2 mt-auto">
+        <nav className="mt-auto flex flex-col  gap-4 px-2 sm:py-5">
           <div
             className="flex items-center gap-3 p-2 hover:bg-secondary cursor-pointer rounded-md"
             onClick={() => router.push('/exit')}
@@ -128,8 +128,8 @@ const ProjectNavView: FC<ProjectNavViewProps> = ({ title, items }) => {
             </svg>
             <p>Exit Project</p>
           </div>
-        </div>
-      </div>
+        </nav>
+      </aside>
     </>
   );
 };

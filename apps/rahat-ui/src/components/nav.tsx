@@ -39,7 +39,9 @@ export function Nav({ hasDefaultHeader = true }) {
   };
 
   return (
-    <div className="flex gap-4 items-center px-4 py-2 bg-white shadow">
+    <div
+      className={`flex gap-4 ${hasDefaultHeader && 'items-center px-4 py-2'}`}
+    >
       {/* Badge */}
       <SideNav />
 

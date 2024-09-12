@@ -71,13 +71,16 @@ export default function Step3DisburseSummary({
                 <h2 className="text-sm font-medium text-gray-500">
                   Send amount among beneficiaries
                 </h2>
-                <p className="text-2xl font-semibold text-gray-800">100</p>
+                <p className="text-2xl font-semibold text-gray-800">
+                  {selectedBeneficiaries &&
+                    Number(value) / selectedBeneficiaries?.length}
+                </p>
               </div>
               <div>
                 <h2 className="text-sm font-medium text-gray-500">
                   Token amount to send
                 </h2>
-                <p className="text-2xl font-semibold text-gray-800">400</p>
+                <p className="text-2xl font-semibold text-gray-800">{value}</p>
               </div>
             </div>
           </div>
@@ -92,9 +95,9 @@ export default function Step3DisburseSummary({
             </p>
             <ScrollArea className="h-[calc(100vh-620px)]">
               <ul className="space-y-2">
-                {Array(10)
-                  .fill(0)
-                  .map((_, index) => (
+                {selectedBeneficiaries &&
+                  selectedBeneficiaries.length > 0 &&
+                  selectedBeneficiaries.map((i, index) => (
                     <li
                       key={index}
                       className="flex items-center p-2 bg-gray-100 rounded-lg"
@@ -103,9 +106,7 @@ export default function Step3DisburseSummary({
                         <span className="text-gray-500">👤</span>
                       </div>
                       <div className="ml-3">
-                        <p className="text-sm font-medium text-gray-800">
-                          Aadarsha Lamichhane
-                        </p>
+                        <p className="text-sm font-medium text-gray-800">{i}</p>
                       </div>
                     </li>
                   ))}

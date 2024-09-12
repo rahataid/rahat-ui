@@ -10,15 +10,15 @@ import {
   useProjectSettingsStore,
 } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import Stepper from 'apps/rahat-ui/src/components/stepper';
 import { UUID } from 'crypto';
 import { useParams, useRouter } from 'next/navigation';
-import { FC, useEffect, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { parseEther } from 'viem';
 import Step1DisburseMethod from './1-disburse-method';
 import Step2DisburseAmount from './2-disburse-amount';
 import Step3DisburseSummary from './3-disburse-summary';
 import { WarningModal } from './warning';
+import { Step, Stepper } from 'react-form-stepper';
 
 type DisburseFlowProps = {
   selectedBeneficiaries?: string[];
@@ -43,7 +43,9 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
     (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT],
   );
 
-  const pendingTransactions = useGetSafePendingTransactions(id);
+  const { data: safePendingTransactions, isLoading } =
+    useGetSafePendingTransactions(id);
+  const pendingTransactions = safePendingTransactions?.results || [];
 
   const disburseToken = useDisburseTokenToBeneficiaries();
   const disburseMultiSig = useDisburseTokenUsingMultisig();
@@ -55,6 +57,9 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
     const { name, value } = e.target;
     setStepData((prev) => ({ ...prev, [name]: value }));
   };
+
+  const pending =
+    stepData?.treasurySource === 'MULTISIG' && pendingTransactions?.length > 0;
 
   const handleNext = () => {
     const currentStepValidations = steps[currentStep].validation;
@@ -209,47 +214,62 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
     return steps[currentStep].component;
   };
 
-  const holdMultiSig =
-    stepData?.treasurySource === 'MULTISIG' &&
-    pendingTransactions?.data?.results?.length;
-
   return (
     <div className="p-2 mx-2 flex flex-col justify-evenly">
-      <div className="bg-card rounded-lg mx-4 mt-4">
-        <Stepper currentStep={currentStep} steps={steps} />
-      </div>
-      <div>{renderComponent()}</div>
-      <div className="flex items-center justify-end gap-4">
-        {holdMultiSig && (
-          <p className="text-red-500 text-sm">
-            Pending transactions. Can't proceed right now.
-          </p>
+      <div className="bg-card rounded-lg">
+        <Stepper
+          activeStep={currentStep}
+          currentStep={currentStep}
+          styleConfig={{
+            completedBgColor: '#10b981',
+            activeBgColor: '#3b82f6',
+            inactiveBgColor: '#9ca3af',
+          }}
+          connectorStateColors={true}
+          connectorStyleConfig={{
+            completedColor: '#10b981',
+            activeColor: '#3b82f6',
+            disabledColor: '#9ca3af',
+          }}
+        >
+          {steps.map((step, index) => (
+            <Step key={index} label={step.id} />
+          ))}
+        </Stepper>
+        <div>{renderComponent()}</div>
+        <div className="flex items-center justify-end gap-4">
+          {pending && (
+            <p className="text-red-500 text-sm">
+              Pending transactions. Can't proceed right now.
+            </p>
+          )}
+          {!disburseMultiSig.isPending && (
+            <div className="mr-14 mb-5">
+              <Button className="mr-3" onClick={handlePrevious}>
+                Back
+              </Button>
+              <Button
+                onClick={handleNext}
+                disabled={
+                  (stepData?.treasurySource === 'MULTISIG' && isLoading) ||
+                  pending ||
+                  disburseMultiSig.isPending ||
+                  disburseToken.isPending
+                }
+              >
+                {currentStep === steps.length - 1 ? 'Confirm' : 'Proceed'}
+              </Button>
+            </div>
+          )}
+        </div>
+        {isWarningModalOpen && (
+          <WarningModal
+            open={isWarningModalOpen}
+            onClose={() => setIsWarningModalOpen(false)}
+            onConfirm={handleDisburseToken}
+          />
         )}
-        {!disburseMultiSig.isPending && (
-          <div>
-            <Button className="mr-3" onClick={handlePrevious}>
-              Back
-            </Button>
-            <Button
-              onClick={handleNext}
-              disabled={
-                holdMultiSig ||
-                disburseMultiSig.isPending ||
-                disburseToken.isPending
-              }
-            >
-              {currentStep === steps.length - 1 ? 'Confirm' : 'Proceed'}
-            </Button>
-          </div>
-        )}
       </div>
-      {isWarningModalOpen && (
-        <WarningModal
-          open={isWarningModalOpen}
-          onClose={() => setIsWarningModalOpen(false)}
-          onConfirm={handleDisburseToken}
-        />
-      )}
     </div>
   );
 };

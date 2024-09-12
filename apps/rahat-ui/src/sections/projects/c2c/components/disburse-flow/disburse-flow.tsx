@@ -3,6 +3,7 @@ import {
   useC2CProjectSubgraphStore,
   useDisburseTokenToBeneficiaries,
   useDisburseTokenUsingMultisig,
+  useGetSafePendingTransactions,
   usePagination,
   useProject,
   useProjectBeneficiaries,
@@ -41,6 +42,9 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
   const contractSettings = useProjectSettingsStore(
     (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT],
   );
+
+  const pendingTransactions = useGetSafePendingTransactions(id);
+
   const disburseToken = useDisburseTokenToBeneficiaries();
   const disburseMultiSig = useDisburseTokenUsingMultisig();
   const { data: projectData } = useProject(id);
@@ -72,24 +76,24 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
   };
 
   const handleDisburseToken = async () => {
-    route.push(
-      `/projects/c2c/${id}/beneficiary/disburse-flow/disburse-confirm`,
-    );
     setIsWarningModalOpen(false);
 
-    if (stepData.treasurySource === 'MULTISIG') {
-      await disburseMultiSig.mutateAsync({
-        amount: String(
-          +stepData.disburseAmount * selectedBeneficiaries?.length ?? 0,
-        ),
-        projectUUID: id,
-        beneficiaryAddresses: selectedBeneficiaries as `0x${string}`[],
-        disburseMethod: stepData.treasurySource,
-        rahatTokenAddress: contractSettings?.rahattoken?.address,
-        c2cProjectAddress: contractSettings?.c2cproject?.address,
-      });
-      return;
+    if (selectedBeneficiaries && selectedBeneficiaries?.length > 0) {
+      if (stepData.treasurySource === 'MULTISIG') {
+        await disburseMultiSig.mutateAsync({
+          amount: String(
+            +stepData.disburseAmount * selectedBeneficiaries?.length ?? 0,
+          ),
+          projectUUID: id,
+          beneficiaryAddresses: selectedBeneficiaries as `0x${string}`[],
+          disburseMethod: stepData.treasurySource,
+          rahatTokenAddress: contractSettings?.rahattoken?.address,
+          c2cProjectAddress: contractSettings?.c2cproject?.address,
+        });
+        return;
+      }
     }
+
     await disburseToken.mutateAsync({
       amount: parseEther(stepData.disburseAmount),
       beneficiaryAddresses: selectedBeneficiaries as `0x${string}`[],
@@ -98,6 +102,10 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
       disburseMethod: stepData.treasurySource,
       projectUUID: id,
     });
+
+    route.push(
+      `/projects/c2c/${id}/beneficiary/disburse-flow/disburse-confirm`,
+    );
   };
 
   const handlePrevious = () => {
@@ -130,7 +138,9 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
       id: 'step2',
       component: (
         <Step2DisburseAmount
-          selectedBeneficiaries={selectedBeneficiaries}
+          selectedBeneficiaries={
+            selectedBeneficiaries ? selectedBeneficiaries : []
+          }
           value={stepData.disburseAmount}
           onChange={handleStepDataChange}
           projectSubgraphDetails={projectSubgraphDetails}
@@ -199,6 +209,10 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
     return steps[currentStep].component;
   };
 
+  const holdMultiSig =
+    stepData?.treasurySource === 'MULTISIG' &&
+    pendingTransactions?.data?.results?.length;
+
   return (
     <div className="p-2 mx-2 flex flex-col justify-evenly">
       <div className="bg-card rounded-lg mx-4 mt-4">
@@ -206,6 +220,11 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
       </div>
       <div>{renderComponent()}</div>
       <div className="flex items-center justify-end gap-4">
+        {holdMultiSig && (
+          <p className="text-red-500 text-sm">
+            Pending transactions. Can't proceed right now.
+          </p>
+        )}
         {!disburseMultiSig.isPending && (
           <div>
             <Button className="mr-3" onClick={handlePrevious}>
@@ -213,7 +232,11 @@ const DisburseFlow: FC<DisburseFlowProps> = ({ selectedBeneficiaries }) => {
             </Button>
             <Button
               onClick={handleNext}
-              disabled={disburseMultiSig.isPending || disburseToken.isPending}
+              disabled={
+                holdMultiSig ||
+                disburseMultiSig.isPending ||
+                disburseToken.isPending
+              }
             >
               {currentStep === steps.length - 1 ? 'Confirm' : 'Proceed'}
             </Button>

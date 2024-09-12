@@ -18,11 +18,22 @@ export default function DashboardLayout({
   return (
     <AuthGuard>
       <title>Dashboard</title>
-      {hasDefaultHeader && <Nav />}
-      <div className="mx-2">
-        <ResizablePanelGroup direction="horizontal" className="border">
-          <ResizablePanel minSize={20} defaultSize={20} maxSize={20}>
-            {children}
+      <Nav hasDefaultHeader={hasDefaultHeader} />
+      <div className="container mx-auto px-2 ">
+        <ResizablePanelGroup
+          direction="horizontal"
+          className=" rounded-lg shadow-lg"
+        >
+          {/* Sidebar panel with proper width */}
+          {/* <ResizablePanel minSize={20} defaultSize={20} maxSize={20}>
+            <div className="bg-gray-100 p-4 h-full">
+              Sidebar content
+            </div>
+          </ResizablePanel> */}
+
+          {/* Main content area */}
+          <ResizablePanel minSize={60} defaultSize={80} maxSize={80}>
+            <div className="px-4 bg-white h-full rounded-lg">{children}</div>
           </ResizablePanel>
         </ResizablePanelGroup>
       </div>

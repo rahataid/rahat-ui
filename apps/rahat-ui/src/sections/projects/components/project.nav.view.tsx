@@ -22,7 +22,7 @@ const ProjectNavView: FC<ProjectNavViewProps> = ({ title, items }) => {
 
   return (
     <>
-      <div className="pb-2">
+      <div className="pb-2 w-64 bg-white h-full">
         <div className="flex items-center justify-between p-4">
           <h1 className="font-semibold text-xl text-primary">{title}</h1>
         </div>
@@ -43,7 +43,6 @@ const ProjectNavView: FC<ProjectNavViewProps> = ({ title, items }) => {
                     item.component
                   ) : (
                     <>
-                      {' '}
                       <div className="flex gap-3 items-center">
                         {item.icon}
                         <p>{item.title}</p>
@@ -93,7 +92,6 @@ const ProjectNavView: FC<ProjectNavViewProps> = ({ title, items }) => {
                           item.component
                         ) : (
                           <>
-                            {' '}
                             <div className="flex gap-3 items-center">
                               {subItem.icon}
                               <p>{subItem.title}</p>
@@ -108,6 +106,28 @@ const ProjectNavView: FC<ProjectNavViewProps> = ({ title, items }) => {
               </div>
             ))}
           </nav>
+        </div>
+        <div className="p-2 mt-auto">
+          <div
+            className="flex items-center gap-3 p-2 hover:bg-secondary cursor-pointer rounded-md"
+            onClick={() => router.push('/exit')}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              className="h-6 w-6"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1m0-2v-5m0-1V4"
+              />
+            </svg>
+            <p>Exit Project</p>
+          </div>
         </div>
       </div>
     </>

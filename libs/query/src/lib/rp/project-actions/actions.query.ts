@@ -13,6 +13,7 @@ const GET_DISBURSEMENT_PLAN = 'rpProject.disbursementPlan.getOne';
 const GET_ALL_DISBURSEMENT_PLANS = 'rpProject.disbursementPlan.get';
 const UPDATE_DISBURSEMENT_PLAN = 'rpProject.disbursementPlan.update';
 const CREATE_BULK_DISBURSEMENT = 'rpProject.disbursement.bulkCreate';
+const GET_UNSYNCED_BENEFICIARIES = 'rpProject.beneficiaries.getUnsynced';
 
 const GET_ALL_BENEFICIARY_GROUPS = 'rpProject.beneficiary.getAllGroups';
 
@@ -123,10 +124,10 @@ export const useCreateDisbursement = (projectUUID: UUID) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: [MS_ACTIONS.BENEFICIARY.LIST_BY_PROJECT, {}],
+        queryKey: [GET_UNSYNCED_BENEFICIARIES, {}],
       });
       queryClient.invalidateQueries({
-        queryKey: ['disbursements', projectUUID],
+        queryKey: ['unsyncedBeneficiaries', projectUUID],
       });
     },
   });
@@ -158,6 +159,25 @@ export const useFindAllDisbursements = (projectUUID: UUID, payload: any) => {
     data,
   };
 };
+
+
+export const useFindUnSyncedBenefiicaries = (projectUUID: UUID) => {
+  const action = useProjectAction(['findUnSyncedBeneficiaries-rpProject']);
+
+  return useQuery({
+    queryKey: ['unsyncedBeneficiaries', projectUUID],
+    queryFn: async () => {
+      const res = await action.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: GET_UNSYNCED_BENEFICIARIES,
+          payload: { },
+        },
+      });
+      return res.data;
+    },
+  });
+}
 // type GetProjectBeneficiaries = Pagination & {
 //   order?: 'asc' | 'desc';
 //   sort?: string;

@@ -13,12 +13,15 @@ import {
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 
 import { GroupResponseById } from '@rahataid/community-tool-sdk/groups';
+import { CircleEllipsisIcon } from 'lucide-react';
+import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 
 type IProps = {
   table: Table<GroupResponseById>;
+  loading: boolean;
 };
 
-export default function GroupDetailTable({ table }: IProps) {
+export default function GroupDetailTable({ table, loading }: IProps) {
   return (
     <>
       <div className="w-full mb-3 bg-secondary">
@@ -66,7 +69,16 @@ export default function GroupDetailTable({ table }: IProps) {
                       colSpan={table.getAllColumns().length}
                       className="h-24 text-center"
                     >
-                      No results.
+                      {loading ? (
+                        <div className="flex items-center justify-center mt-4">
+                          <div className="text-center">
+                            <CircleEllipsisIcon className="animate-spin h-8 w-8 ml-4" />
+                            <Label className="text-base">Loading ...</Label>
+                          </div>
+                        </div>
+                      ) : (
+                        'No result found'
+                      )}
                     </TableCell>
                   </TableRow>
                 )}

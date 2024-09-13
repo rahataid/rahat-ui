@@ -16,7 +16,7 @@ type Props = {
   className?: string;
   timerClassName?: string;
   form?: any;
-  uploadFile: any
+  uploadFile: any;
 };
 
 type Record = {
@@ -33,7 +33,12 @@ const padWithLeadingZeros = (num: number, length: number): string => {
   return String(num).padStart(length, '0');
 };
 
-export const AudioRecorder = ({ className, timerClassName, form, uploadFile }: Props) => {
+export const AudioRecorder = ({
+  className,
+  timerClassName,
+  form,
+  uploadFile,
+}: Props) => {
   // const uploadFile = useUploadFile();
 
   const { theme } = useTheme();
@@ -194,8 +199,8 @@ export const AudioRecorder = ({ className, timerClassName, form, uploadFile }: P
 
     const formData = new FormData();
     formData.append('file', file);
-    const { data: afterUpload } = await uploadFile?.mutateAsync(formData);
-
+    const { data: afterUpload } = await uploadFile.mutateAsync(formData);
+    console.log(afterUpload);
     form.setValue('file', afterUpload);
 
     setIsRecording(false);

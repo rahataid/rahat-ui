@@ -12,8 +12,7 @@ import {
   CardTitle,
 } from '@rahat-ui/shadcn/src/components/ui/card';
 import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
-import { previousDay } from 'date-fns';
-import { BadgePlus, Users, Phone } from 'lucide-react';
+import { Users, RectangleEllipsis } from 'lucide-react';
 import GroupDisbursementAssignModel from './group-assign-disbursement-amount.modal';
 
 type BeneficiaryCardProps = {
@@ -73,7 +72,7 @@ export default function BeneficiaryCard({
             </div>
           </div>
           <div className="flex text-sm text-gray-500 mt-16">
-            <Users className="w-4 h-4 mr-1" />
+            <RectangleEllipsis className="w-4 h-4 mr-1 mt-1" />
             <span>{totalAmount}</span>
           </div>
         </div>

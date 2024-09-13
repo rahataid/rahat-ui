@@ -21,7 +21,6 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import DataCard from 'apps/rahat-ui/src/components/dataCard';
 import { UUID } from 'crypto';
 import { Users } from 'lucide-react';
@@ -50,11 +49,9 @@ const DisbursementPlan: FC<DisbursementPlanProps> = ({
   const { id } = useParams() as { id: UUID };
   const { pagination, filters, setNextPage, setPrevPage, setPerPage } =
     usePagination();
-
   const projectBeneficiaries = useProjectBeneficiaries({
     page: pagination.page,
     perPage: pagination.perPage,
-
     order: 'desc',
     sort: 'updatedAt',
     projectUUID: id,
@@ -63,7 +60,7 @@ const DisbursementPlan: FC<DisbursementPlanProps> = ({
   const meta = projectBeneficiaries?.data.response?.meta;
 
   const disbursements = useFindAllDisbursements(id, {
-    hideAssignedBeneficiaries: true,
+    hideAssignedBeneficiaries: false,
   });
   const bulkAssignDisbursement = useBulkCreateDisbursement(id);
 
@@ -81,7 +78,7 @@ const DisbursementPlan: FC<DisbursementPlanProps> = ({
 
   const columns = useDibsursementList1Columns(rowData, setRowData);
   const table = useReactTable({
-    manualPagination: true,
+    // manualPagination: true,
     data: rowData,
     columns,
     onSortingChange: setSorting,
@@ -113,6 +110,7 @@ const DisbursementPlan: FC<DisbursementPlanProps> = ({
   });
 
   useEffect(() => {
+    //TO DO :Need to fix data flow process
     if (
       projectBeneficiaries.isSuccess &&
       projectBeneficiaries.data?.data &&
@@ -122,19 +120,22 @@ const DisbursementPlan: FC<DisbursementPlanProps> = ({
         projectBeneficiaries.data?.data.map((beneficiary) => {
           const beneficiaryDisbursement = disbursements?.data?.find(
             (disbursement: any) =>
-              disbursement.walletAddress === beneficiary.walletAddress,
+              disbursement.walletAddress === beneficiary.walletAddress ,
           );
           return {
             ...beneficiary,
             disbursementAmount: beneficiaryDisbursement?.amount || '0',
+            status: beneficiaryDisbursement?.status || 'NOT_SYNCED',
           };
         });
-
+        const unSyncedBeneficiaries = projectBeneficiaryDisbursements?.filter(
+          (ben:any)=> ben?.status !=='SYNCED_OFFLINE'
+        )
       if (
-        JSON.stringify(projectBeneficiaryDisbursements) !==
+        JSON.stringify(unSyncedBeneficiaries) !==
         JSON.stringify(rowData)
       ) {
-        setRowData(projectBeneficiaryDisbursements);
+        setRowData(unSyncedBeneficiaries);
       }
     }
   }, [
@@ -154,7 +155,7 @@ const DisbursementPlan: FC<DisbursementPlanProps> = ({
         <DataCard
           className=""
           title="Total beneficiaries"
-          number={projectBeneficiaries?.data?.data.length?.toString() || 'N/A'}
+          number={meta?.total?.toString() || 'N/A'}
           Icon={Users}
         />
       </div>
@@ -188,6 +189,11 @@ const DisbursementPlan: FC<DisbursementPlanProps> = ({
               handleStepDataChange={handleStepDataChange}
               stepData={stepData}
               bulkAssignDisbursement={bulkAssignDisbursement}
+              pagination={pagination}
+              setNextPage={setNextPage}
+              setPrevPage={setPrevPage}
+              setPerPage={setPerPage}
+              meta={meta}
             />
           </TabsContent>
           <TabsContent value="beneficiaryGroups">

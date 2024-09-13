@@ -51,5 +51,10 @@ communicationApi.interceptors.request.use(
     return Promise.reject(error);
   },
 );
-
-export { api, communicationApi };
+const stellarUrl= 'http://localhost:/3312';
+ const stellarApiInstance = axios.create({
+   baseURL: stellarUrl,
+ }
+  
+ )
+export { api, communicationApi , stellarApiInstance};

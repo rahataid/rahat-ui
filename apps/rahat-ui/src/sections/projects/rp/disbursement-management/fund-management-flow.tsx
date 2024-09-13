@@ -10,11 +10,19 @@ import {
   useCreateDisbursementPlan,
   useFindAllDisbursementPlans,
   useFindAllDisbursements,
+  usePagination,
+  useProjectBeneficiaries,
+  useStellarDisbursement,
 } from '@rahat-ui/query';
 import { useParams, useRouter } from 'next/navigation';
 import { UUID } from 'crypto';
 import { WarningDialog } from './warning.modal';
 import { useBoolean } from 'apps/rahat-ui/src/hooks/use-boolean';
+import { InputModal } from './stellar.modal';
+import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
+import { set } from 'lodash';
+import TableLoader from 'apps/rahat-ui/src/components/table.loader';
+import { generateCSVData } from 'apps/rahat-ui/src/utils/generateCSVData';
 
 export const initialStepData = {
   bulkInputAmount: '',
@@ -24,15 +32,31 @@ export const initialStepData = {
 
 const FundManagementFlow = () => {
   const [currentStep, setCurrentStep] = useState(0);
+ 
+  const [tenantName, setTenantName] = useState('');
+  const [disbursementName, setDisbursementName] = useState('');
+  const [showModal, setShowModal] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const { pagination, filters } = usePagination();
   const [stepData, setStepData] =
     useState<typeof initialStepData>(initialStepData);
   const { id } = useParams() as { id: UUID };
   const router = useRouter();
 
-  const createDisbursementPlan = useCreateDisbursementPlan(id);
-  const disbursements = useFindAllDisbursements(id,{
-    hideAssignedBeneficiaries: true,
+  const projectBeneficiaries = useProjectBeneficiaries({
+    page: pagination.page,
+    perPage: 100,
+    // pagination.perPage,
+    order: 'desc',
+    sort: 'updatedAt',
+    projectUUID: id,
+    ...filters,
+  });
 
+  const createDisbursementPlan = useCreateDisbursementPlan(id);
+  const disbursements = useFindAllDisbursements(id, {
+    hideAssignedBeneficiaries: true,
   });
   const { data: disbursementData } = useFindAllDisbursementPlans(id);
 
@@ -192,11 +216,55 @@ const FundManagementFlow = () => {
         return;
     }
   };
+ 
+  const { mutateAsync: requestToStellar } = useStellarDisbursement();
+
+  const handleModalSubmit = async () => {
+    setLoading(true);
+    const beneficiaries = projectBeneficiaries.data.data || [];
+    const disbursementList = disbursements.data || [];
+
+    const csvContent = generateCSVData(beneficiaries, disbursementList);
+
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const fileToUpload = new File([blob], 'disbursement.csv', {
+      type: 'text/csv',
+    });
+
+    const formData = new FormData();
+    if (fileToUpload) {
+      formData.append('file', fileToUpload);
+    }
+    console.log('formDatayouInd', formData);
+    formData.append('email', 'owner@sandab.stellar.rahat.io');
+    formData.append('password', 'Password123!');
+    formData.append('tenant_name', tenantName);
+    formData.append('disbursement_name', disbursementName);
+    formData.append('action', 'rpProject.stellar.createDisbursement');
+
+    const randomUUID = 'stellar';
+
+    try {
+      //@ts-ignore
+      await requestToStellar({ formData, projectUUID: randomUUID });
+      console.log('CSV file uploaded successfully');
+    } catch (error) {
+      console.error('Error uploading CSV file:', error);
+    } finally {
+      setLoading(false);
+
+      setShowModal(false);
+      setTenantName('');
+      setDisbursementName('');
+    }
+  };
 
   return (
     <div className="p-2">
       <div>{renderComponent()}</div>
-      {
+      {loading ? (
+        <TableLoader />
+      ) : (
         <div className="flex items-center justify-end gap-4 mx-4 mt-4">
           <Button
             className="w-48 text-red-600 bg-pink-200 hover:bg-pink-300"
@@ -205,14 +273,39 @@ const FundManagementFlow = () => {
             Back
           </Button>
           <Button
-            className="w-48 "
+            className="w-48"
             disabled={createDisbursementPlan.isPending}
             onClick={() => handleNextStep(steps[currentStep].id)}
           >
             {currentStep === steps.length - 1 ? 'Submit' : 'Proceed'}
           </Button>
+          <Button
+            className="w-48"
+            disabled={loading}
+            onClick={() => setShowModal(true)}
+          >
+            {loading ? 'Processing...' : 'Proceed with Stellar'}
+          </Button>
+          <InputModal
+            open={showModal}
+            title="Enter Details"
+            description="Please provide the tenant and disbursement names."
+            onConfirm={handleModalSubmit}
+            onCancel={() => setShowModal(false)}
+          >
+            <Input
+              placeholder="Tenant Name"
+              value={tenantName}
+              onChange={(e) => setTenantName(e.target.value)}
+            />
+            <Input
+              placeholder="Disbursement Name"
+              value={disbursementName}
+              onChange={(e) => setDisbursementName(e.target.value)}
+            />
+          </InputModal>
         </div>
-      }
+      )}
     </div>
   );
 };

@@ -15,16 +15,17 @@ import {
 } from '@tanstack/react-query';
 import { UUID } from 'crypto';
 import { isEmpty } from 'lodash';
-import { useEffect, useMemo } from 'react';
+import { use, useEffect, useMemo } from 'react';
 import { PROJECT_SETTINGS_KEYS, TAGS } from '../../config';
 import { useSwal } from '../../swal';
-import { api } from '../../utils/api';
+import { api, stellarApiInstance } from '../../utils/api';
 import { useProjectSettingsStore, useProjectStore } from './project.store';
 
 const createProject = async (payload: CreateProjectPayload) => {
   const res = await api.post('/projects', payload);
   return res.data;
 };
+const actionToCheck = MS_ACTIONS.BENEFICIARY.LIST_BY_PROJECT;
 
 export const useProjectCreateMutation = () => {
   const qc = useQueryClient();
@@ -36,6 +37,34 @@ export const useProjectCreateMutation = () => {
     },
   });
 };
+// const makeDisbursementByStellar = async (params: {
+//   formData: FormData;
+//   payload: any;
+// }) => {
+//   const { formData, payload } = params;
+//   formData.append('email', payload.email);
+//   formData.append('password', payload.password);
+//   formData.append('tenant_name', payload.tenant_name);
+//   formData.append('disbursement_name', payload.disbursement_name);
+
+//   const res = await stellarApiInstance.post('/disbursement', formData, {
+//     headers: {
+//       'Content-Type': 'multipart/form-data',
+//     },
+//   });
+//   return res.data;
+// };
+
+// export const useStellarDisbursement = () => {
+//   const qc = useQueryClient();
+//   return useMutation({
+//     mutationFn: ({ formData, payload }: { formData: FormData; payload: any }) =>
+//       makeDisbursementByStellar({ formData, payload }),
+//     onSuccess: () => {
+//       qc.invalidateQueries({ queryKey: ['sendDisbursement'] });
+//     },
+//   });
+// };
 
 export const useProjectAction = <T = any>(key?: string[]) => {
   const { queryClient, rumsanService } = useRSQuery();
@@ -55,6 +84,49 @@ export const useProjectAction = <T = any>(key?: string[]) => {
     },
     queryClient,
   );
+};
+
+export const useStellarDisbursement = () => {
+  const q = useProjectAction();
+  const alert = useSwal();
+  const toast = alert.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+  });
+  return useMutation({
+    mutationFn: async ({
+      formData,
+      projectUUID,
+    }: {
+      formData: any;
+      projectUUID: UUID;
+    }) => {
+      
+      return q.mutateAsync({
+        uuid: projectUUID,
+        data: formData,
+      });
+    },
+    onSuccess: () => {
+      q.reset();
+      toast.fire({
+        title: 'Disbursement Created Successfully',
+        icon: 'success',
+      });
+    },
+    onError: (error: any) => {
+      console.log('what is this', error);
+      const errorMessage = error?.response?.data?.message
+      q.reset()
+      toast.fire({
+        title:"Error while updating Disbursement",
+        icon:'error',
+        text:errorMessage
+      })
+    },
+  });
 };
 
 export const useAssignBenToProject = () => {

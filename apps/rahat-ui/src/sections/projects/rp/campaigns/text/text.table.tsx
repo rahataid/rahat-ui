@@ -1,10 +1,10 @@
 'use client';
 
-import {
-  useCampaignStore,
-  useListRpCommunicationStats,
-  useListRpCommunicationLogs,
-} from '@rahat-ui/query';
+// import {
+//   useCampaignStore,
+//   useListRpCommunicationStats,
+//   useListRpCommunicationLogs,
+// } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/components/button';
 import {
   DropdownMenu,
@@ -59,7 +59,7 @@ export type Text = {
 };
 
 export default function TextTable() {
-  const campaignStore = useCampaignStore();
+  // const campaignStore = useCampaignStore();
   const columns = useTextTableColumn();
   const { id } = useParams();
   const router = useRouter();
@@ -71,37 +71,49 @@ export default function TextTable() {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
-  const { data: communicationLogs, isSuccess } = useListRpCommunicationLogs(
-    id as UUID,
-  );
-  const { data: commsStats } = useListRpCommunicationStats(id as UUID);
-  const tableData = React.useMemo(() => {
-    if (isSuccess && communicationLogs) {
-      return communicationLogs
-        ?.filter(
-          (logs) =>
-            logs?.transport?.name.toLowerCase() !==
-            CAMPAIGN_TYPES.IVR.toLowerCase(),
-        )
-        .map((item: any) => ({
-          date: new Date(item.createdAt).toLocaleString(),
-          status: item?.status,
-          to:
-            item?.transport?.name.toLowerCase() ===
-            CAMPAIGN_TYPES.EMAIL.toLowerCase()
-              ? item?.details?.envelope?.to
-              : item?.transport?.name.toLowerCase() ===
-                CAMPAIGN_TYPES.IVR.toLowerCase()
-              ? item?.audience?.details?.phone
-              : item?.details?.to,
-        }));
-    } else {
-      return [];
-    }
-  }, [communicationLogs, isSuccess]);
+  // const { data: communicationLogs, isSuccess } = useListRpCommunicationLogs(
+  //   id as UUID,
+  // );
+  // const { data: commsStats } = useListRpCommunicationStats(id as UUID);
+  // const tableData = React.useMemo(() => {
+  //   if (isSuccess && communicationLogs) {
+  //     return communicationLogs
+  //       ?.filter(
+  //         (logs) =>
+  //           logs?.transport?.name.toLowerCase() !==
+  //           CAMPAIGN_TYPES.IVR.toLowerCase(),
+  //       )
+  //       .map((item: any) => ({
+  //         date: new Date(item.createdAt).toLocaleString(),
+  //         status: item?.status,
+  //         to:
+  //           item?.transport?.name.toLowerCase() ===
+  //           CAMPAIGN_TYPES.EMAIL.toLowerCase()
+  //             ? item?.details?.envelope?.to
+  //             : item?.transport?.name.toLowerCase() ===
+  //               CAMPAIGN_TYPES.IVR.toLowerCase()
+  //             ? item?.audience?.details?.phone
+  //             : item?.details?.to,
+  //       }));
+  //   } else {
+  //     return [];
+  //   }
+  // }, [communicationLogs, isSuccess]);
 
+  const dataArray = [
+    { to: '9842349411', date: '2023-06-01', status: 'Rejected' },
+    { to: '9852227472', date: '2023-06-02', status: 'Approved' },
+    { to: '9866180303', date: '2023-06-03', status: 'Pending' },
+    { to: '9865079182', date: '2023-06-04', status: 'Pending' },
+    { to: '9852711445', date: '2023-06-05', status: 'Approved' },
+    { to: '9866587402', date: '2023-06-06', status: 'Rejected' },
+    { to: '9853257921', date: '2023-06-07', status: 'Approved' },
+    { to: '9860855697', date: '2023-06-08', status: 'Approved' },
+    { to: '9854869214', date: '2023-06-09', status: 'Pending' },
+    { to: '9857289679', date: '2023-06-10', status: 'Rejected' },
+  ];
   const table = useReactTable({
-    data: tableData,
+    data: dataArray as any,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -118,28 +130,28 @@ export default function TextTable() {
       rowSelection,
     },
   });
-  let deliveredTextMessage = 0;
-  let totalBeneficiary = 0;
-  let totalTextMessage = 0;
-  commsStats
-    ?.find((stats) => stats.name === 'COMPLETED_CAMPAIGN')
-    ?.data.forEach((item) => {
-      if (item.type !== 'IVR') {
-        deliveredTextMessage += item.count;
-      }
-    });
-  commsStats
-    ?.find((stats) => stats.name === 'AUDIENCE')
-    ?.data.forEach((item) => {
-      if (item?.type !== 'IVR') totalBeneficiary += item.count;
-    });
-  commsStats
-    ?.find((stats) => stats.name === 'TOTAL_CAMPAIGN')
-    ?.data.forEach((item) => {
-      if (item.type !== 'IVR') {
-        totalTextMessage += item.count;
-      }
-    });
+  // let deliveredTextMessage = 0;
+  // let totalBeneficiary = 0;
+  // let totalTextMessage = 0;
+  // commsStats
+  //   ?.find((stats) => stats.name === 'COMPLETED_CAMPAIGN')
+  //   ?.data.forEach((item) => {
+  //     if (item.type !== 'IVR') {
+  //       deliveredTextMessage += item.count;
+  //     }
+  //   });
+  // commsStats
+  //   ?.find((stats) => stats.name === 'AUDIENCE')
+  //   ?.data.forEach((item) => {
+  //     if (item?.type !== 'IVR') totalBeneficiary += item.count;
+  //   });
+  // commsStats
+  //   ?.find((stats) => stats.name === 'TOTAL_CAMPAIGN')
+  //   ?.data.forEach((item) => {
+  //     if (item.type !== 'IVR') {
+  //       totalTextMessage += item.count;
+  //     }
+  //   });
 
   return (
     <div className="w-full h-full p-2 bg-secondary">
@@ -147,19 +159,22 @@ export default function TextTable() {
         <DataCard
           className=""
           title="Text"
-          number={totalTextMessage.toString()}
+          // number={totalTextMessage.toString() }
+          number={'44'}
           Icon={PhoneCall}
         />
         <DataCard
           className=""
           title="Beneficiaries"
-          number={totalBeneficiary.toString()}
+          // number={totalBeneficiary.toString()}
+          number={'54'}
           Icon={Mail}
         />
         <DataCard
           className=""
           title="Successful Message Delivered"
-          number={deliveredTextMessage.toString()}
+          // number={deliveredTextMessage.toString()}
+          number={'64'}
           Icon={MessageCircle}
         />
       </div>
@@ -205,7 +220,6 @@ export default function TextTable() {
           <Button
             onClick={() => {
               router.push(`/projects/rp/${id}/campaigns/text/manage`);
-              console.log('first');
             }}
             className="flex items-center gap-2"
           >

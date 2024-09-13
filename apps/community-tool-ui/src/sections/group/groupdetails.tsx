@@ -87,7 +87,10 @@ export default function GroupDetail({ uuid }: IProps) {
     setPerPage,
     resetSelectedListItems,
   } = usePagination();
-  const { data: responseByUUID } = useCommunityGroupListByID(uuid, pagination);
+  const { data: responseByUUID, isLoading } = useCommunityGroupListByID(
+    uuid,
+    pagination,
+  );
   const columns = useCommunityGroupDeailsColumns();
   const { data: listFieldDef } = useActiveFieldDefList({});
 
@@ -469,7 +472,7 @@ export default function GroupDetail({ uuid }: IProps) {
         </div>
 
         <TabsContent value="detail">
-          <GroupDetailTable table={table} />
+          <GroupDetailTable table={table} loading={isLoading} />
         </TabsContent>
 
         <CustomPagination

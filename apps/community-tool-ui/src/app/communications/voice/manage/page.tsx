@@ -1,4 +1,4 @@
-import VoiceCampaignDetails from 'apps/rahat-ui/src/sections/projects/rp/campaigns/voice/campaign.voice.details';
+import VoiceCampaignDetails from 'apps/community-tool-ui/src/sections/comms/voice/campaign.voice.details';
 import React from 'react';
 
 const Page = () => {

@@ -1,4 +1,5 @@
-import TextLogDetails from 'apps/rahat-ui/src/sections/projects/rp/campaigns/text/text.log.details';
+// import TextLogDetails from 'apps/community-tool-ui/src/sections/comms/text/text.log.details';
+import TextLogDetails from 'apps/community-tool-ui/src/sections/comms/text/text.log.details';
 import React from 'react';
 
 const Page = () => {

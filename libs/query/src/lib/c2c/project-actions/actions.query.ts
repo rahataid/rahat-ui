@@ -337,3 +337,23 @@ export const useDisburseTokenUsingMultisig = () => {
     },
   });
 };
+
+export const useGetSafePendingTransactions = (projectUUID: UUID) => {
+  const projectActions = useProjectAction(['c2c', 'safe-pending-transactions']);
+
+  const query = useQuery({
+    queryKey: ['safe-pending-transactions'],
+    queryFn: async () => {
+      const response = await projectActions.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'c2cProject.getSafePending',
+          payload: {},
+        },
+      });
+      return response.data;
+    },
+  });
+
+  return query;
+};

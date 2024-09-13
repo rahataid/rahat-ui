@@ -1,40 +1,48 @@
 'use client';
-import { UUID } from 'crypto';
-import { useParams, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 
-import { CAMPAIGN_TYPES } from '@rahat-ui/types';
-import TextCampaignAddDrawer from './campaign.text.add';
-import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import {
+  useListBeneficiariesComms,
+  useListTransports,
+} from '@rahat-ui/community-query';
+import { usePagination } from '@rahat-ui/query';
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
 } from '@rahat-ui/shadcn/src/components/ui/card';
+import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import TextCampaignAddDrawer from './campaign.text.add';
 
 const TextCampaignDetails = () => {
-  const { id } = useParams();
+  const { pagination, filters } = usePagination();
   const router = useRouter();
+  pagination.perPage = 0;
+  const { data: campaignData } = useListBeneficiariesComms({
+    ...pagination,
+    ...(filters as any),
+  });
+  const { data: listTransports } = useListTransports();
 
-  // const { data: campaignData } = useListRpCampaign(id as UUID);
-  // const textCampaign = campaignData?.rows?.filter(
-  //   (campaign) =>
-  //     campaign.type.toLowerCase() !== CAMPAIGN_TYPES.IVR.toLowerCase(),
-  // );
+  const ivrTransportCuids = listTransports?.data
+    ?.filter((transport: any) => transport.name.toLowerCase() === 'ivr')
+    .map((transport: any) => transport.cuid);
+  const filteredComs = campaignData?.data?.rows.filter(
+    (com: any) => !ivrTransportCuids?.includes(com.transportId),
+  );
+
   return (
     <div className="h-[calc(100vh-80px)] p-2">
       <ScrollArea className="h-full">
         <div className="grid grid-cols-4 gap-2">
-          {/* /Add Campaign Card */}
           <TextCampaignAddDrawer />
-          {/* Campaign Card */}
-          {/* {textCampaign?.map((campaign) => {
+          {filteredComs?.map((campaign: any) => {
             return (
               <Card
+                key={campaign.uuid}
                 onClick={() =>
-                  router.push(
-                    `/projects/rp/${id}/campaigns/text/manage/${campaign.id}`,
-                  )
+                  router.push(`/communications/text/manage/${campaign.uuid}`)
                 }
                 className="flex flex-col rounded justify-center shadow bg-card cursor-pointer hover:shadow-md hover:border-1 hover:border-blue-500 ease-in duration-200"
               >
@@ -63,7 +71,7 @@ const TextCampaignDetails = () => {
                 </CardContent>
               </Card>
             );
-          })} */}
+          })}
         </div>
       </ScrollArea>
     </div>

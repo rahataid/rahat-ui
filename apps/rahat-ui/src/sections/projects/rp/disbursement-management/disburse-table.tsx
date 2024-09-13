@@ -15,12 +15,18 @@ import { Table, flexRender } from '@tanstack/react-table';
 import Pagination from 'apps/rahat-ui/src/components/pagination';
 import { Payment } from './1-disbursement-plan';
 import { initialStepData } from './fund-management-flow';
+import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 
 interface DisburseTableProps {
   table: Table<Payment>;
   handleStepDataChange: (e: any) => void;
   stepData: typeof initialStepData;
   bulkAssignDisbursement: any;
+  pagination: any;
+  setNextPage: () => void;
+  setPrevPage: () => void;
+  setPerPage: (value: string | number) => void;
+  meta:any
 }
 
 export function DisburseTable({
@@ -28,6 +34,11 @@ export function DisburseTable({
   handleStepDataChange,
   stepData,
   bulkAssignDisbursement,
+  pagination,
+  setNextPage,
+  setPrevPage,
+  setPerPage,
+  meta
 }: DisburseTableProps) {
   return (
     <div className="mt-3 bg-secondary">
@@ -74,7 +85,7 @@ export function DisburseTable({
       ) : null}
       <div className="rounded border bg-card">
         <TableComponent>
-          <ScrollArea className="h-[calc(100vh-508px)]">
+          <ScrollArea className="h-[calc(100vh-582px)]">
             <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
@@ -120,14 +131,13 @@ export function DisburseTable({
               )}
             </TableBody>
           </ScrollArea>
-          <Pagination
-            pageIndex={table.getState().pagination.pageIndex}
-            pageCount={table.getPageCount()}
-            setPageSize={table.setPageSize}
-            canPreviousPage={table.getCanPreviousPage()}
-            previousPage={table.previousPage}
-            canNextPage={table.getCanNextPage()}
-            nextPage={table.nextPage}
+          <CustomPagination
+           currentPage={pagination.page}
+           handleNextPage={setNextPage}
+           handlePageSizeChange={setPerPage}
+           handlePrevPage={setPrevPage}
+           perPage={pagination.perPage}
+           meta={meta || { total: 0, currentPage: 0 }}
           />
         </TableComponent>
       </div>

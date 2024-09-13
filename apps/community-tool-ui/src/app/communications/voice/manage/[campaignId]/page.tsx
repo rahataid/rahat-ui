@@ -1,4 +1,4 @@
-import VoiceLogDetails from 'apps/rahat-ui/src/sections/projects/rp/campaigns/voice/voice.log.details';
+import VoiceLogDetails from 'apps/community-tool-ui/src/sections/comms/voice/voice.log.details';
 import React from 'react';
 
 const Page = () => {

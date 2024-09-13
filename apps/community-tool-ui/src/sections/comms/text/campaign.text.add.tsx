@@ -1,7 +1,4 @@
-import { z } from 'zod';
-import { UUID } from 'crypto';
-import { useState } from 'react';
-import { useParams } from 'next/navigation';
+import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Check,
   CheckIcon,
@@ -9,13 +6,12 @@ import {
   CircleEllipsisIcon,
   Plus,
 } from 'lucide-react';
+import { useParams } from 'next/navigation';
+import { useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 
-import { CAMPAIGN_TYPES } from '@rahat-ui/types';
-import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
 import { Card, CardContent } from '@rahat-ui/shadcn/src/components/ui/card';
 import {
   Drawer,
@@ -27,6 +23,8 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/drawer';
+import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
+import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
 
 import {
   FormControl,
@@ -43,10 +41,12 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/select';
 
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@rahat-ui/shadcn/src/components/ui/popover';
+  useCommunityGroupList,
+  useCreateBeneficiaryComms,
+  useListTransports,
+} from '@rahat-ui/community-query';
+import { usePagination } from '@rahat-ui/query';
+import { cn } from '@rahat-ui/shadcn/src';
 import {
   Command,
   CommandEmpty,
@@ -55,20 +55,18 @@ import {
   CommandItem,
   CommandList,
 } from '@rahat-ui/shadcn/src/components/ui/command';
-import { cn } from '@rahat-ui/shadcn/src';
-import { usePagination } from '@rahat-ui/query';
 import {
-  useCommunityGroupList,
-  useCreateBeneficiaryComms,
-  useListTransports,
-} from '@rahat-ui/community-query';
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/popover';
 
 const FormSchema = z.object({
   campaignType: z.string({
-    required_error: 'Camapign Type is required.',
+    required_error: 'Campaign Type is required.',
   }),
   campaignName: z.string({
-    required_error: 'Camapign Name is required.',
+    required_error: 'Campaign Name is required.',
   }),
   groupUID: z.string({
     required_error: 'Group UID is required.',
@@ -76,13 +74,6 @@ const FormSchema = z.object({
   message: z.string().optional(),
   messageSid: z.string().optional(),
   subject: z.string().optional(),
-  audiences: z.array(
-    z.object({
-      name: z.string(),
-      phone: z.string(),
-      beneficiaryId: z.number(),
-    }),
-  ),
 });
 
 const TextCampaignAddDrawer = () => {
@@ -98,7 +89,8 @@ const TextCampaignAddDrawer = () => {
     ...pagination,
     ...filters,
   });
-  const [isEmail, setisEmail] = useState(false);
+
+  const [isEmail, setIsEmail] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { data: listTransports } = useListTransports();
@@ -109,8 +101,6 @@ const TextCampaignAddDrawer = () => {
     resolver: zodResolver(FormSchema),
     defaultValues: {
       message: '',
-      campaignType: '',
-      audiences: [],
     },
     mode: 'onChange',
   });
@@ -121,15 +111,19 @@ const TextCampaignAddDrawer = () => {
     console.log('object');
   };
   const handleCreateCampaign = async (data: z.infer<typeof FormSchema>) => {
+    // console.log(data);
     const createCampagin = {
       name: data.campaignName,
       groupUID: data.groupUID,
       message: data.message,
       transportId: data?.campaignType,
+      subject: data?.subject,
     };
     createCampaign.mutate(createCampagin);
     setIsOpen(false);
+    form.reset();
   };
+  // console.log(listTransports?.data);
 
   return (
     <FormProvider {...form}>
@@ -180,10 +174,13 @@ const TextCampaignAddDrawer = () => {
                         const selectedCampaign = listTransports?.data.find(
                           (item) => item.cuid === value,
                         );
-                        if (selectedCampaign?.type.toLowerCase() === 'email') {
-                          setisEmail(true);
+                        if (
+                          selectedCampaign?.type.toLowerCase() === 'email' ||
+                          selectedCampaign?.type.toLowerCase() === 'smtp'
+                        ) {
+                          setIsEmail(true);
                         } else {
-                          setisEmail(false);
+                          setIsEmail(false);
                         }
                         field.onChange(value);
                       }}
@@ -395,10 +392,10 @@ const TextCampaignAddDrawer = () => {
                   <FormItem>
                     <FormControl>
                       <Textarea
-                        {...field}
-                        value={field.value}
+                        // value={field.value}
                         placeholder="Type your message here."
                         className="rounded mt-2"
+                        {...field}
                       />
                     </FormControl>
 

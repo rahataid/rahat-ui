@@ -22,7 +22,7 @@ export default function Step1DisburseMethod({
 }: Step1DisburseMethodProps) {
   return (
     <>
-      <div className="bg-card rounded-lg m-4 p-6">
+      <div className="m-4 p-6">
         <div className="flex flex-col mb-10">
           <h1 className="text-2xl font-semibold text-gray-900">
             Select Disbursement Method

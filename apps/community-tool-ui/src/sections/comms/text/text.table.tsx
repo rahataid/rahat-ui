@@ -100,8 +100,20 @@ export default function TextTable() {
   //   }
   // }, [communicationLogs, isSuccess]);
 
+  const dataArray = [
+    { to: '9842349411', date: '2023-06-01', status: 'Rejected' },
+    { to: '9852227472', date: '2023-06-02', status: 'Approved' },
+    { to: '9866180303', date: '2023-06-03', status: 'Pending' },
+    { to: '9865079182', date: '2023-06-04', status: 'Pending' },
+    { to: '9852711445', date: '2023-06-05', status: 'Approved' },
+    { to: '9866587402', date: '2023-06-06', status: 'Rejected' },
+    { to: '9853257921', date: '2023-06-07', status: 'Approved' },
+    { to: '9860855697', date: '2023-06-08', status: 'Approved' },
+    { to: '9854869214', date: '2023-06-09', status: 'Pending' },
+    { to: '9857289679', date: '2023-06-10', status: 'Rejected' },
+  ];
   const table = useReactTable({
-    data: [],
+    data: dataArray as any,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,

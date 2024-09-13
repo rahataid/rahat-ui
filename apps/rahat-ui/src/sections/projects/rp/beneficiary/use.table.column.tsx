@@ -92,6 +92,7 @@ export const useCvaBeneficiaryTableColumns = () => {
     {
       accessorKey: 'gender',
       header: 'Gender',
+      filterFn: 'equals',
       cell: ({ row }) => <div>{row.getValue('gender')}</div>,
     },
     // {
@@ -99,7 +100,7 @@ export const useCvaBeneficiaryTableColumns = () => {
     //   header: 'Token Assigned',
     //   cell: ({ row }) => <div>{row.getValue('benTokens')}</div>,
     // },
-    
+
     {
       id: 'actions',
       enableHiding: false,

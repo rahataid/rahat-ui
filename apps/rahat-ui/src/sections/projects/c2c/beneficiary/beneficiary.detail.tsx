@@ -250,12 +250,7 @@ export default function BeneficiaryDetail({
                             </p>
                           </div>
                           <div className="text-right">
-                            <p className="font-light text-base">
-                              {
-                                // beneficiaryDetails?.phone ||
-                                'N/A'
-                              }
-                            </p>
+                            <p className="font-light text-base">{'N/A'}</p>
                             <p className="text-sm font-normal text-muted-foreground">
                               Location
                             </p>
@@ -263,23 +258,13 @@ export default function BeneficiaryDetail({
                         </div>
                         <div className="grid grid-cols-3 gap-3 mt-3">
                           <div>
-                            <p className="font-light text-base">
-                              {
-                                // beneficiaryDetails?.gender ||
-                                'N/A'
-                              }
-                            </p>
+                            <p className="font-light text-base">{'N/A'}</p>
                             <p className="text-sm font-normal text-muted-foreground">
                               Balance
                             </p>
                           </div>
                           <div>
-                            <p className="font-light text-base">
-                              {
-                                // beneficiaryDetails?.phone ||
-                                'N/A'
-                              }
-                            </p>
+                            <p className="font-light text-base">Verified </p>
                             <p className="text-sm font-normal text-muted-foreground">
                               Verificatoin Status
                             </p>

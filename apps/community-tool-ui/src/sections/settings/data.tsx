@@ -47,4 +47,20 @@ export const SETTINGS_SAMPLE: Setting[] = [
     requiredFields: 'URL',
     key_value: [{ key: 'URL', value: '{YOUR_API_URL}/verify' }],
   },
+  {
+    name: 'COMMUNICATIONS',
+    requiredFields: 'URL, APP_ID',
+    description:
+      'This settings is used to send communication messages to beneficiaries',
+    key_value: [
+      {
+        key: 'URL',
+        value: '{COMM_SERVER_URL}/api/v1',
+      },
+      {
+        key: 'APP_ID',
+        value: '{COMM_APP_ID}',
+      },
+    ],
+  },
 ];

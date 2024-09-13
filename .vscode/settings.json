@@ -12,7 +12,7 @@
   "editor.insertSpaces": true,
   "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": true
+    "source.fixAll.eslint": "explicit"
   },
   "editor.minimap.enabled": false,
 
@@ -39,8 +39,6 @@
   "files.autoSave": "onFocusChange",
 
   // Terminal settings
-  "terminal.integrated.fontSize": 14,
-  "terminal.integrated.fontFamily": "monospace",
 
   // Extensions settings
   "extensions.ignoreRecommendations": false,

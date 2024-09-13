@@ -110,7 +110,7 @@ const ProjectNavView: FC<ProjectNavViewProps> = ({ title, items }) => {
         <nav className="mt-auto flex flex-col  gap-4 px-2 sm:py-5">
           <div
             className="flex items-center gap-3 p-2 hover:bg-secondary cursor-pointer rounded-md"
-            onClick={() => router.push('/exit')}
+            onClick={() => router.push('/projects')}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"

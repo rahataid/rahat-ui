@@ -1,27 +1,39 @@
+import { useTriggerCommunication } from '@rahat-ui/community-query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   Dialog,
   DialogClose,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dialog';
+import { useState } from 'react';
 
-export function TriggerConfirmModal() {
+type IProps = {
+  campaignId: string;
+  uuid: string;
+};
+export function TriggerConfirmModal({ campaignId, uuid }: IProps) {
+  const [open, setOpen] = useState(false);
+  const triggerCampaign = useTriggerCommunication(uuid);
+  const handleTriggerCampaign = () => {
+    triggerCampaign.mutateAsync(campaignId);
+    setOpen(false);
+  };
+
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="flex items-center gap-2 w-40">Trigger</Button>
+        <Button className="flex items-center gap-2 w-36 h-9">Trigger</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>Confirm !!!</DialogTitle>
         </DialogHeader>
         <div className="grid gap-4 py-4">
-          Are you sure you want to send the voice message ?
+          Are you sure you want to send the message ?
         </div>
         <DialogFooter>
           <DialogClose asChild>
@@ -29,7 +41,9 @@ export function TriggerConfirmModal() {
               Close
             </Button>
           </DialogClose>
-          <Button type="submit">Confirm</Button>
+          <Button type="submit" onClick={() => handleTriggerCampaign()}>
+            Confirm
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

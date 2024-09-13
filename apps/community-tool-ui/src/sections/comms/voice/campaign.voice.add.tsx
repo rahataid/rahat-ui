@@ -281,8 +281,8 @@ const VoiceCampaignAddDrawer = () => {
                       <div className="grid w-full max-w-sm items-center gap-1.5">
                         <Label>Audio</Label>
                         <Input
-                          // id="audio"
-                          // accept=".wav"
+                          id="audio"
+                          accept=".wav"
                           onChange={handleFileChange}
                           type="file"
                         />

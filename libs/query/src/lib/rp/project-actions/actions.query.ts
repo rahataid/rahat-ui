@@ -161,20 +161,20 @@ export const useFindAllDisbursements = (projectUUID: UUID, payload: any) => {
 };
 
 
-export const useFindUnSyncedBenefiicaries = (projectUUID: UUID) => {
+export const useFindUnSyncedBenefiicaries = (projectUUID: UUID,payload:any) => {
   const action = useProjectAction(['findUnSyncedBeneficiaries-rpProject']);
 
   return useQuery({
-    queryKey: ['unsyncedBeneficiaries', projectUUID],
+    queryKey: ['unsyncedBeneficiaries', projectUUID,payload],
     queryFn: async () => {
       const res = await action.mutateAsync({
         uuid: projectUUID,
         data: {
           action: GET_UNSYNCED_BENEFICIARIES,
-          payload: { },
+          payload,
         },
       });
-      return res.data;
+      return res;
     },
   });
 }

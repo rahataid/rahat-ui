@@ -4,6 +4,7 @@ import {
   PROJECT_SETTINGS_KEYS,
   useFindAllDisbursementPlans,
   useFindAllDisbursements,
+  useFindUnSyncedBenefiicaries,
   usePagination,
   useProjectBeneficiaries,
   useProjectSettingsStore,
@@ -36,6 +37,11 @@ const DisbursementConfirmation: FC<DisbursementConfirmationProps> = ({
   const contractSettings = useProjectSettingsStore(
     (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT],
   );
+
+
+  const benData = useFindUnSyncedBenefiicaries(id);
+  const meta = benData?.data?.response?.meta
+
   const projectBeneficiaries = useProjectBeneficiaries({
     page: pagination.page,
     perPage:100,
@@ -60,36 +66,27 @@ const DisbursementConfirmation: FC<DisbursementConfirmationProps> = ({
   });
 
   useEffect(() => {
-    if (
-      projectBeneficiaries.isSuccess &&
-      projectBeneficiaries.data?.data &&
-      disbursements?.isSuccess
-    ) {
-      const projectBeneficiaryDisbursements =
-        projectBeneficiaries.data?.data.map((beneficiary) => {
-          const beneficiaryDisbursement = disbursements?.data?.find(
-            (disbursement: any) =>
-              disbursement.walletAddress === beneficiary.walletAddress,
-          );
-          return {
-            ...beneficiary,
-            disbursementAmount: beneficiaryDisbursement?.amount || '0',
-          };
-        });
-
+    if(benData?.isSuccess){
+      const unSyncedBeneficiaries = benData?.data?.data?.map((beneficiary) => {
+        return {
+          name:beneficiary?.piiData?.name,
+          disbursementAmount: beneficiary?.Disbursements[0]?.amount || '0',
+          walletAddress: beneficiary?.walletAddress,
+        };
+      });
       if (
-        JSON.stringify(projectBeneficiaryDisbursements) !==
+        JSON.stringify(unSyncedBeneficiaries) !==
         JSON.stringify(rowData)
       ) {
-        setRowData(projectBeneficiaryDisbursements);
+        setRowData(unSyncedBeneficiaries);
       }
     }
   }, [
     disbursements?.data,
     disbursements?.data?.data,
     disbursements?.isSuccess,
-    projectBeneficiaries.data?.data,
-    projectBeneficiaries.isSuccess,
+    benData?.data,
+    benData?.isSuccess,
     rowData,
   ]);
   return (
@@ -102,7 +99,7 @@ const DisbursementConfirmation: FC<DisbursementConfirmationProps> = ({
           <div className="flex flex-col gap-8 p-3">
             <div className="flex flex-col gap-2">
               <p>Beneficiaries Selected:</p>
-              <p>{disbursements.data?.length}</p>
+              <p>{benData?.data?.data?.length}</p>
             </div>
             <div className="flex flex-col gap-2">
               <p>Project Token:</p>
@@ -117,8 +114,8 @@ const DisbursementConfirmation: FC<DisbursementConfirmationProps> = ({
             <div className="flex flex-col gap-2">
               <p>Total Token to Send:</p>
               <p>
-                {disbursements.data?.reduce(
-                  (acc: number, disbursement: any) => acc + disbursement.amount,
+                {rowData?.reduce(
+                  (acc: number, disbursement: any) => acc + Number(disbursement.disbursementAmount),
                   0,
                 )}{' '}
               </p>

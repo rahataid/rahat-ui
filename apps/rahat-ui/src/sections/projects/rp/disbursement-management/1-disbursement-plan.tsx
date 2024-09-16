@@ -49,22 +49,23 @@ const DisbursementPlan: FC<DisbursementPlanProps> = ({
 }) => {
   const { id } = useParams() as { id: UUID };
   const { pagination, filters, setNextPage, setPrevPage, setPerPage } =
-    usePagination();
-  const projectBeneficiaries = useProjectBeneficiaries({
-    page: pagination.page,
-    perPage: pagination.perPage,
-    order: 'desc',
-    sort: 'updatedAt',
-    projectUUID: id,
-    ...filters,
-  });
-  const meta = projectBeneficiaries?.data.response?.meta;
+    usePagination();  
 
   const disbursements = useFindAllDisbursements(id, {
     hideAssignedBeneficiaries: false,
   });
 
-  const benData = useFindUnSyncedBenefiicaries(id);
+  const benData = useFindUnSyncedBenefiicaries(id,
+    {
+    payload:{ 
+    page: pagination.page,
+    perPage: pagination.perPage,
+    order: 'desc',
+    sort: 'updatedAt',
+    projectUUID: id,
+    ...filters
+  }});
+  const meta = benData?.data?.response?.meta
   const bulkAssignDisbursement = useBulkCreateDisbursement(id);
 
   const [rowData, setRowData] = React.useState<Payment[]>([]);
@@ -114,8 +115,7 @@ const DisbursementPlan: FC<DisbursementPlanProps> = ({
 
   useEffect(() => {
     if(benData?.isSuccess){
-      const unSyncedBeneficiaries = benData?.data.map((beneficiary) => {
-        console.log(beneficiary)
+      const unSyncedBeneficiaries = benData?.data?.data?.map((beneficiary) => {
         return {
           name:beneficiary?.piiData?.name,
           disbursementAmount: beneficiary?.Disbursements[0]?.amount || '0',

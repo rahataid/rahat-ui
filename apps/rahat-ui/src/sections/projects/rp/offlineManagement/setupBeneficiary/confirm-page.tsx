@@ -170,6 +170,8 @@ const ComfirmPage = ({
             setTimeout(() => {
               queryClient.invalidateQueries({
                 queryKey: ['rpGetOfflineVendors'],
+                refetchType: 'all',
+                type: 'all',
               });
             }, 10000);
 

@@ -26,10 +26,11 @@ import {
 import { Minus, MoreVertical, Trash2 } from 'lucide-react';
 import { TabsList, TabsTrigger } from '@rahat-ui/shadcn/src/components/ui/tabs';
 import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 
 const VendorHeader = () => {
   const router = useRouter();
+  const { id } = useParams();
   const [activeTab, setActiveTab] = useState<'details' | 'edit'>('details');
 
   const handleTabChange = (tab: 'details' | 'edit') => {
@@ -44,7 +45,7 @@ const VendorHeader = () => {
             <TooltipTrigger> */}
         <Minus
           className="cursor-pointer"
-          onClick={() => router.back()}
+          onClick={() => router.push(`/projects/rp/${id}/vendors`)}
           size={20}
           strokeWidth={1.5}
         />
@@ -101,10 +102,10 @@ const VendorHeader = () => {
               <DropdownMenuItem onClick={() => handleTabChange('edit')}>
                 Edit
               </DropdownMenuItem> */}
-              {/* <DropdownMenuItem onClick={() => handleTabChange('details')}>
+          {/* <DropdownMenuItem onClick={() => handleTabChange('details')}>
                 Details
               </DropdownMenuItem> */}
-            {/* </DropdownMenuContent>
+          {/* </DropdownMenuContent>
           </DropdownMenu> */}
         </div>
       </div>

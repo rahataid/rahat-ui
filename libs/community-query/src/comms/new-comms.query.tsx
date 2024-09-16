@@ -59,7 +59,6 @@ export const useListBeneficiariesComms = (
 };
 
 export const useLisBeneficiaryComm = (uuid: string) => {
-  console.log(uuid);
   const { queryClient, rumsanService } = useRSQuery();
   const commsClient = getBeneficiaryCommsClient(rumsanService.client);
   return useQuery(
@@ -71,9 +70,10 @@ export const useLisBeneficiaryComm = (uuid: string) => {
   );
 };
 
-export const useTriggerCommunication = () => {
+export const useTriggerCommunication = (uuid: string) => {
   const { queryClient, rumsanService } = useRSQuery();
   const commsClient = getBeneficiaryCommsClient(rumsanService.client);
+
   return useMutation({
     mutationFn: commsClient.triggerCommunication,
     mutationKey: [TAGS.TRIGGER_COMMUNICATION],
@@ -82,6 +82,9 @@ export const useTriggerCommunication = () => {
 
       queryClient.invalidateQueries({
         queryKey: [TAGS.COMMS_LOGS_ID],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [TAGS.LIST_BENEFICIARY_COMM, uuid],
       });
     },
 
@@ -102,12 +105,15 @@ export const useListCommsLogsId = (
     page: payload.page,
     limit: payload.perPage,
   };
-  return useQuery(
+  const query = useQuery(
     {
       queryKey: [TAGS.COMMS_LOGS_ID, pageData],
       queryFn: () =>
         commsClient.listCommunicationLogsByCampignId(uuid, pageData),
+      refetchOnMount: true,
     },
     queryClient,
   );
+
+  return query;
 };

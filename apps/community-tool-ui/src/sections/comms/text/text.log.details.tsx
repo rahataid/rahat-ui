@@ -54,8 +54,8 @@ export default function TextLogDetails() {
   const columns = useTextTableColumn();
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const { data: campginData } = useLisBeneficiaryComm(campaignId as string);
-  console.log(campginData);
-  const { data, isSuccess, isLoading } = useListCommsLogsId(
+
+  const { data, isSuccess, isLoading, isFetching } = useListCommsLogsId(
     campaignId as string,
     {
       ...pagination,
@@ -115,7 +115,10 @@ export default function TextLogDetails() {
           {campginData?.data?.name}
         </p>
         {!campginData?.data?.sessionId ? (
-          <TriggerConfirmModal campaignId={campaignId as string} />
+          <TriggerConfirmModal
+            campaignId={campaignId as string}
+            uuid={campginData?.data?.uuid}
+          />
         ) : null}
       </div>
       <div className=" grid sm:grid-cols-1 md:grid-cols-3 gap-2 mb-2 mx-2">

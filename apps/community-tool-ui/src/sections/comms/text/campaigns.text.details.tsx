@@ -18,7 +18,7 @@ import TextCampaignAddDrawer from './campaign.text.add';
 const TextCampaignDetails = () => {
   const { pagination, filters } = usePagination();
   const router = useRouter();
-
+  pagination.perPage = 0;
   const { data: campaignData } = useListBeneficiariesComms({
     ...pagination,
     ...(filters as any),

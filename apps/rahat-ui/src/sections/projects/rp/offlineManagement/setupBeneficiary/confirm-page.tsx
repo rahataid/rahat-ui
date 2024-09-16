@@ -63,7 +63,7 @@ const ComfirmPage = ({
 
   let tokenAmount = 0;
   selectedDisbursement?.map((disbursment: any) => {
-    tokenAmount += Number(disbursment?.amount);
+    tokenAmount += Number(disbursment?.disbursementAmount);
   });
   const contractSettings = useProjectSettingsStore(
     (state) => state.settings?.[id as UUID]?.[PROJECT_SETTINGS_KEYS.CONTRACT],

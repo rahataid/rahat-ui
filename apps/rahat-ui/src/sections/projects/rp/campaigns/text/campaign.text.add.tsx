@@ -6,7 +6,6 @@ import { ArrowLeft, CheckIcon, Plus } from 'lucide-react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
-import { CAMPAIGN_TYPES } from '@rahat-ui/types';
 import SpinnerLoader from '../../../components/spinner.loader';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
@@ -23,13 +22,7 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/drawer';
-import {
-  useBeneficiaryPii,
-  useBulkCreateRpAudience,
-  useCreateCampaign,
-  useListRpAudience,
-  useListRpTransport,
-} from '@rahat-ui/query';
+import { useCreateCampaign, useListRpTransport } from '@rahat-ui/query';
 import {
   FormControl,
   FormField,
@@ -69,30 +62,18 @@ const FormSchema = z.object({
     required_error: 'Message is required.',
   }),
 
-  messageSid: z.string().optional(),
+  // messageSid: z.string().optional(),
   subject: z.string().optional(),
-  audiences: z.array(
-    z.object({
-      name: z.string(),
-      phone: z.string(),
-      beneficiaryId: z.number(),
-    }),
-  ),
 });
 
 const TextCampaignAddDrawer = () => {
   const { id } = useParams();
 
   const { data: transportData } = useListRpTransport(id as UUID);
-  const { data: audienceData } = useListRpAudience(id as UUID);
-  const { data: beneficiaryData } = useBeneficiaryPii({
-    // @ts-ignore
-    projectId: id,
-  });
-  const { data: messageTemplate } = useGetApprovedTemplate();
+
+  // const { data: messageTemplate } = useGetApprovedTemplate();
 
   const createCampaign = useCreateCampaign(id as UUID);
-  const createAudience = useBulkCreateRpAudience(id as UUID);
 
   const [isEmail, setisEmail] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
@@ -104,87 +85,22 @@ const TextCampaignAddDrawer = () => {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      audiences: [],
+      // message: '',
+      // campaignType: '',
     },
     mode: 'onChange',
   });
   const isWhatsappMessage =
     form.getValues().campaignType?.toLowerCase() === 'whatsapp';
 
-  const handleCreateAudience = async () => {
-    const { existingAudiences, newAudiences } = beneficiaryData.data.reduce(
-      (acc, item) => {
-        const existingAudience = audienceData.find(
-          (audience) => audience.details.phone === item.piiData.phone,
-        );
-
-        if (existingAudience) {
-          acc.existingAudiences.push(existingAudience.id);
-        } else {
-          acc.newAudiences.push({
-            details: {
-              name: item?.piiData?.name,
-              email: item?.piiData?.email,
-              phone: item?.piiData?.phone,
-            },
-          });
-        }
-
-        return acc;
-      },
-      { existingAudiences: [], newAudiences: [] },
-    );
-    // Create new audiences
-    let createdAudienceIds = [];
-    if (newAudiences.length > 0) {
-      createdAudienceIds = await createAudience.mutateAsync({
-        data: JSON.stringify(newAudiences),
-      });
-    }
-
-    // Combine existing and created audience IDs
-    return [...existingAudiences, ...createdAudienceIds];
-  };
   const handleCreateCampaign = async (data: z.infer<typeof FormSchema>) => {
-    setIsSubmitting(true);
-    const transportId = transportData?.find(
-      (t) => t?.name?.toLowerCase() === data?.campaignType?.toLowerCase(),
-    )?.id;
-
-    // Create audience
-    if (beneficiaryData?.data) {
-      const audienceIds = await handleCreateAudience();
-
-      // Wait for all audience creations to complete
-      type AdditionalData = {
-        audio?: any;
-        message?: string;
-        subject?: string;
-        body?: string;
-        messageSid?: string;
-      };
-      const additionalData: AdditionalData = {};
-      if (data?.campaignType === CAMPAIGN_TYPES.WHATSAPP) {
-        additionalData.body = data?.message;
-        additionalData.messageSid = data?.messageSid;
-      } else {
-        additionalData.subject = data?.subject;
-
-        additionalData.message = data?.message;
-      }
-      await createCampaign.mutateAsync({
-        audienceIds: audienceIds || [],
-        name: data.campaignName,
-        startTime: null,
-        transportId: Number(transportId),
-        type: data.campaignType,
-        details: additionalData,
-        status: 'ONGOING',
-        projectId: id,
-      });
-      setIsSubmitting(false);
-      setIsOpen(false);
-    }
+    const createCampagin = {
+      name: data.campaignName,
+      message: data.message,
+      transportId: data?.campaignType,
+    };
+    createCampaign.mutate(createCampagin);
+    setIsOpen(false);
   };
   const router = useRouter();
   return (
@@ -241,7 +157,10 @@ const TextCampaignAddDrawer = () => {
                     <FormItem>
                       <Select
                         onValueChange={(value) => {
-                          if (value.toLowerCase() === 'email') {
+                          const selectedCampaign = transportData.find(
+                            (item) => item.cuid === value,
+                          );
+                          if (selectedCampaign?.type.toLowerCase() === 'smtp') {
                             setisEmail(true);
                           } else {
                             setisEmail(false);
@@ -256,16 +175,15 @@ const TextCampaignAddDrawer = () => {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {Object.keys(CAMPAIGN_TYPES).map((key) => {
-                            if (
-                              key.toLowerCase() !== 'ivr' &&
-                              key.toLowerCase() !== 'phone'
-                            )
-                              return (
-                                <SelectItem key={key} value={key}>
-                                  {key}
-                                </SelectItem>
-                              );
+                          {transportData?.map((transport) => {
+                            return (
+                              <SelectItem
+                                key={transport.cuid}
+                                value={transport.cuid}
+                              >
+                                {transport.name}
+                              </SelectItem>
+                            );
                           })}
                         </SelectContent>
                       </Select>
@@ -294,7 +212,7 @@ const TextCampaignAddDrawer = () => {
                   />
                 )}
                 {/* whatsapp template */}
-                {isWhatsappMessage && (
+                {/* {isWhatsappMessage && (
                   <FormField
                     control={form.control}
                     name="messageSid"
@@ -392,7 +310,7 @@ const TextCampaignAddDrawer = () => {
                       </FormItem>
                     )}
                   />
-                )}
+                )} */}
                 <FormField
                   control={form.control}
                   name="message"

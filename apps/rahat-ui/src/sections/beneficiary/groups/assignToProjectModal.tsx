@@ -62,7 +62,6 @@ export default function AssignBeneficiaryToProjectModal({
       closeSecondPanel();
     }
   }, [assignBeneficiaryGroup.isSuccess]);
-
   return (
     <Dialog open={projectModal.value} onOpenChange={projectModal.onToggle}>
       <DialogContent>
@@ -82,7 +81,7 @@ export default function AssignBeneficiaryToProjectModal({
                 projectsList.data?.data.map((project) => {
                   return (
                     <SelectItem
-                      disabled={assignedGroupId.includes(project?.uuid)}
+                      disabled={assignedGroupId.includes(project?.id)}
                       key={project.uuid}
                       value={project.uuid as UUID}
                     >

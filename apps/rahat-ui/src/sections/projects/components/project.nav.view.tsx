@@ -22,7 +22,7 @@ const ProjectNavView: FC<ProjectNavViewProps> = ({ title, items }) => {
 
   return (
     <>
-      <aside className="pb-2 w-64 bg-white h-full">
+      <aside className="pb-2 bg-secondary h-full">
         {/* <div className="flex items-center justify-between p-4">
           <h1 className="font-semibold text-xl text-primary">{title}</h1>
         </div> */}

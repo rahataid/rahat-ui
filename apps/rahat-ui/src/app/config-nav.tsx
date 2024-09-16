@@ -51,9 +51,9 @@ export function useNavData() {
   const subData: NavItem[] = useMemo(
     () =>
       // Temporarily disabled
-      // navSettings?.subData?.length > 0
-      //   ? [...navSettings?.subData]
-      //   :
+      navSettings?.subData?.length > 0
+        ? [...navSettings?.subData]
+        :
       [
         {
           title: 'Vendors',

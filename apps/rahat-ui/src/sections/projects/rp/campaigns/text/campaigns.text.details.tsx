@@ -2,8 +2,11 @@
 import { UUID } from 'crypto';
 import { useParams, useRouter } from 'next/navigation';
 
-import { CAMPAIGN_TYPES } from '@rahat-ui/types';
-import { useListRpCampaign } from '@rahat-ui/query';
+import {
+  useListRpCampaign,
+  useListRpTransport,
+  usePagination,
+} from '@rahat-ui/query';
 import TextCampaignAddDrawer from './campaign.text.add';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import {
@@ -16,11 +19,20 @@ import {
 const TextCampaignDetails = () => {
   const { id } = useParams();
   const router = useRouter();
+  const { pagination, filters } = usePagination();
 
-  const { data: campaignData } = useListRpCampaign(id as UUID);
-  const textCampaign = campaignData?.rows?.filter(
-    (campaign) =>
-      campaign.type.toLowerCase() !== CAMPAIGN_TYPES.IVR.toLowerCase(),
+  const { data: campaignData } = useListRpCampaign(id as UUID, {
+    ...pagination,
+    ...(filters as any),
+    order: 'desc',
+  });
+  const { data: transportData } = useListRpTransport(id as UUID);
+
+  const ivrTransportCuids = transportData
+    ?.filter((transport: any) => transport.name.toLowerCase() === 'ivr')
+    .map((transport: any) => transport.cuid);
+  const filteredComs = campaignData?.filter(
+    (com: any) => !ivrTransportCuids?.includes(com.transportId),
   );
   return (
     <div className="h-[calc(100vh-80px)] p-2">
@@ -29,12 +41,13 @@ const TextCampaignDetails = () => {
           {/* /Add Campaign Card */}
           <TextCampaignAddDrawer />
           {/* Campaign Card */}
-          {textCampaign?.map((campaign) => {
+          {filteredComs?.map((campaign: any) => {
             return (
               <Card
+                key={campaign.uuid}
                 onClick={() =>
                   router.push(
-                    `/projects/rp/${id}/campaigns/text/manage/${campaign.id}`,
+                    `/projects/rp/${id}/campaigns/text/manage/${campaign.uuid}`,
                   )
                 }
                 className="flex flex-col rounded justify-center shadow bg-card cursor-pointer hover:shadow-md hover:border-1 hover:border-blue-500 ease-in duration-200"

@@ -52,6 +52,11 @@ export default function SimpleDataCardsContainer({
   });
 
   const parsedProjectBudget = Number(projectBudget);
+  const formattedBudget = new Intl.NumberFormat('en-US', {
+    style: 'decimal',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(parsedProjectBudget);
 
   const totalBeneficiaries = allStats?.filter(
     (data: any) => data.name === 'BENEFICIARY_TOTAL',
@@ -75,7 +80,7 @@ export default function SimpleDataCardsContainer({
     {
       title: 'Budget',
       Icon: Coins,
-      number: parsedProjectBudget,
+      number: `NRs. ${formattedBudget ?? 0}`,
     },
     {
       title: 'Balance',

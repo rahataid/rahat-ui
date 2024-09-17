@@ -19,11 +19,8 @@ export default function DashboardLayout({
     <AuthGuard>
       <title>Dashboard</title>
       <Nav hasDefaultHeader={hasDefaultHeader} />
-      <div className="pl-16 pr-2">
-        <ResizablePanelGroup
-          direction="horizontal"
-          className=" rounded-lg shadow-lg"
-        >
+      <div className="pl-14 pr-2">
+        <ResizablePanelGroup direction="horizontal" className="shadow-lg">
           {/* Sidebar panel with proper width */}
           {/* <ResizablePanel minSize={20} defaultSize={20} maxSize={20}>
             <div className="bg-gray-100 p-4 h-full">
@@ -33,7 +30,7 @@ export default function DashboardLayout({
 
           {/* Main content area */}
           <ResizablePanel minSize={60} defaultSize={80} maxSize={80}>
-            <div className="bg-white rounded-lg">{children}</div>
+            <div className="bg-white">{children}</div>
           </ResizablePanel>
         </ResizablePanelGroup>
       </div>

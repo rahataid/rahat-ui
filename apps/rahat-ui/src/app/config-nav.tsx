@@ -1,7 +1,8 @@
 import { useSettingsStore } from '@rahat-ui/query';
 import * as li from 'lucide-react';
 import { useMemo } from 'react';
-import { paths } from '../routes/paths';
+import { defaultNavigations, defaultSubNavigations } from '../routes/paths';
+import { useSettingsStore } from '@rahat-ui/query';
 
 interface NavItem {
   title: string;
@@ -9,75 +10,33 @@ interface NavItem {
   icon: keyof typeof li;
 }
 
+function sanitizeNavData(data: any) {
+  return data?.map((item: any) => {
+    return {
+      title: item.TITLE,
+      path: item.PATH,
+    }
+  }
+  );
+}
+
 export function useNavData() {
   const navSettings = useSettingsStore((state) => state.navSettings);
-  const data: NavItem[] = useMemo(
-    () =>
-      navSettings?.data?.length > 0
-        ? [...navSettings?.data]
-        : ([
-            {
-              title: 'Dashboard',
-              path: paths.dashboard.root,
-              icon: 'HomeIcon',
-            },
-            {
-              title: 'Project',
-              path: paths.dashboard.project.root,
-              icon: 'Package2',
-            },
-            {
-              title: 'Beneficiaries',
-              path: paths.dashboard.beneficiary.root,
-              icon: 'Users2',
-            },
+  console.log('navSettings', navSettings);
+  const navData = sanitizeNavData(navSettings?.DATA);
+  const navSubData = sanitizeNavData(navSettings?.SUBDATA);
 
-            {
-              title: 'Communications',
-              path: paths.dashboard.communication.text,
-              icon: 'MessageSquareMoreIcon',
+  const data: NavItem[] = useMemo(() => {
+    const navDataSet = new Set(navData as NavItem[] || []);
+    const combinedNavSet = new Set([...defaultNavigations, ...navDataSet,]);
+    return Array.from(combinedNavSet);
+  }, [navData]);
 
-              // children: [
-              //   {
-              //     title: 'Voice',
-              //     icon: <Phone />,
-              //     path: paths.dashboard.communication.voice,
-              //   },
-              //   {
-              //     title: 'Text',
-              //     icon: <MessageSquareMore />,
-              //     path: paths.dashboard.communication.text,
-              //   },
-              // ],
-            },
-          ] as NavItem[]),
-    [navSettings?.data],
-  );
-  const subData: NavItem[] = useMemo(
-    () =>
-      // Temporarily disabled
-      navSettings?.subData?.length > 0
-        ? [...navSettings?.subData]
-        :
-      [
-        {
-          title: 'Vendors',
-          path: paths.dashboard.vendor,
-          icon: 'Truck',
-        },
-        {
-          title: 'Users',
-          path: paths.user.root,
-          icon: 'UsersIcon',
-        },
-        {
-          title: 'Beneficiary Import',
-          path: paths.dashboard.communitybeneficiary,
-          icon: 'Upload',
-        },
-      ] as NavItem[],
+  const subData: NavItem[] = useMemo(() => {
+    const navSubDataSet = new Set(navSubData as NavItem[] || []);
+    const combinedSubNavSet = new Set([...defaultSubNavigations, ...navSubDataSet,]);
+    return Array.from(combinedSubNavSet);
+  }, [navSubData]);
 
-    [navSettings?.subData],
-  );
   return { data, subData };
 }

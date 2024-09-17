@@ -32,7 +32,7 @@ export const initialStepData = {
 
 const FundManagementFlow = () => {
   const [currentStep, setCurrentStep] = useState(0);
- 
+
   const [tenantName, setTenantName] = useState('');
   const [disbursementName, setDisbursementName] = useState('');
   const [showModal, setShowModal] = useState(false);
@@ -216,7 +216,7 @@ const FundManagementFlow = () => {
         return;
     }
   };
- 
+
   const { mutateAsync: requestToStellar } = useStellarDisbursement();
 
   const handleModalSubmit = async () => {
@@ -225,6 +225,7 @@ const FundManagementFlow = () => {
     const disbursementList = disbursements.data || [];
 
     const csvContent = generateCSVData(beneficiaries, disbursementList);
+    console.log('csvContent', csvContent);
 
     const blob = new Blob([csvContent], { type: 'text/csv' });
     const fileToUpload = new File([blob], 'disbursement.csv', {
@@ -297,11 +298,13 @@ const FundManagementFlow = () => {
               placeholder="Tenant Name"
               value={tenantName}
               onChange={(e) => setTenantName(e.target.value)}
+              className="mt-4"
             />
             <Input
               placeholder="Disbursement Name"
               value={disbursementName}
               onChange={(e) => setDisbursementName(e.target.value)}
+              className="mt-4"
             />
           </InputModal>
         </div>

@@ -2,14 +2,6 @@ import { ColumnDef } from '@tanstack/react-table';
 import { Eye } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 
-export type Beneficiary = {
-  walletAddress: string;
-  gender: string;
-  internetStatus: string;
-  phoneStatus: string;
-  bankedStatus: string;
-};
-
 export const useElkenyaBeneficiaryTableColumns = () => {
   const { id } = useParams();
   const router = useRouter();

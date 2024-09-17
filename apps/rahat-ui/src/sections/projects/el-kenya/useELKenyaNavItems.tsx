@@ -5,10 +5,8 @@ import {
   Gift,
   HandCoins,
   LayoutDashboard,
-  MessageSquareText,
   Speech,
   UsersRound,
-  Voicemail,
 } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import { NavItem } from '../components';
@@ -63,19 +61,7 @@ export const useNavItems = () => {
           title: 'Communications',
           subtitle: 20,
           icon: <Speech size={18} strokeWidth={1.5} />,
-          path: `/projects/el-kenya/${id}/campaigns/text`,
-          children: [
-            {
-              title: 'Text',
-              path: `/projects/el-kenya/${id}/campaigns/text`,
-              icon: <MessageSquareText size={18} strokeWidth={1.5} />,
-            },
-            {
-              title: 'Voice',
-              path: `/projects/el-kenya/${id}/campaigns/voice`,
-              icon: <Voicemail size={18} strokeWidth={1.5} />,
-            },
-          ],
+          path: `/projects/el-kenya/${id}/communication`,
         },
       ],
     },

@@ -11,12 +11,13 @@ import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 
 type IProps = {
   table: Table<any>;
+  tableHeight?: string;
 };
 
-export default function ElkenyaTable({ table }: IProps) {
+export default function ElkenyaTable({ table, tableHeight }: IProps) {
   return (
     <TableComponent>
-      <ScrollArea className="h-[calc(100vh-340px)]">
+      <ScrollArea className={tableHeight ?? 'h-[calc(100vh-340px)]'}>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>

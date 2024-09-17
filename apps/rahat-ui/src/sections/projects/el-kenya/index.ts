@@ -4,3 +4,4 @@ export * from './beneficiary';
 export * from './transactions';
 export * from './vendors';
 export * from './communication';
+export * from './vouchers';

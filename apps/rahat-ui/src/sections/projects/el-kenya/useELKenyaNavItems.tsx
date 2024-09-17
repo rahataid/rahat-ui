@@ -44,7 +44,7 @@ export const useNavItems = () => {
         },
         {
           title: 'Vouchers',
-          path: `/projects/el-kenya/${id}/fundManagement`,
+          path: `/projects/el-kenya/${id}/vouchers`,
           icon: <Coins size={18} strokeWidth={1.5} />,
         },
         {

@@ -72,7 +72,7 @@ export default function Step2SelectBeneficiary({
           <div className="p-2 border rounded-md">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="list">Beneficiaries</TabsTrigger>
-              <TabsTrigger value="card">Beneficiary Group</TabsTrigger>
+              {/* <TabsTrigger value="card">Beneficiary Group</TabsTrigger> */}
             </TabsList>
           </div>
           <TabsContent value="list">

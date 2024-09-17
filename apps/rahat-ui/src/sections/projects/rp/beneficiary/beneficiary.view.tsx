@@ -23,12 +23,12 @@ export default function BeneficiaryView() {
             >
               Beneficiary
             </TabsTrigger>
-            <TabsTrigger
+            {/* <TabsTrigger
               value="beneficiaryGroups"
               className="w-52 bg-card border data-[state=active]:border-primary"
             >
               Beneficiary Groups
-            </TabsTrigger>
+            </TabsTrigger> */}
           </TabsList>
         </div>
         <TabsContent value="beneficiary">

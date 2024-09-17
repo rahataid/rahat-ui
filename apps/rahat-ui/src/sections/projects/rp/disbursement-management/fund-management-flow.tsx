@@ -248,7 +248,6 @@ const FundManagementFlow = () => {
     try {
       //@ts-ignore
       await requestToStellar({ formData, projectUUID: randomUUID });
-      console.log('CSV file uploaded successfully');
     } catch (error) {
       console.error('Error uploading CSV file:', error);
     } finally {

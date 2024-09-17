@@ -22,7 +22,7 @@ const ProjectNavView: FC<ProjectNavViewProps> = ({ title, items }) => {
 
   return (
     <>
-      <aside className="pb-2 pt-4 bg-secondary h-full border-r">
+      <aside className="pb-2 pt-4 bg-card border-r h-[calc(100vh-58px)] flex flex-col justify-between">
         {/* <div className="flex items-center justify-between p-4">
           <h1 className="font-semibold text-xl text-primary">{title}</h1>
         </div> */}
@@ -33,7 +33,7 @@ const ProjectNavView: FC<ProjectNavViewProps> = ({ title, items }) => {
                 <div
                   className={`flex justify-between p-2 mb-1 items-center rounded-md cursor-pointer ${
                     pathName === item.path
-                      ? 'bg-primary text-white'
+                      ? 'bg-sky-100 text-primary'
                       : 'hover:bg-secondary'
                   }`}
                   onClick={() => handleNav(item)}

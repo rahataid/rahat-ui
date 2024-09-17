@@ -13,6 +13,7 @@ import { Settings } from 'lucide-react';
 import { act, createElement } from 'react';
 import { useNavData } from '../app/config-nav';
 import getIcon from '../utils/getIcon';
+import Image from 'next/image';
 
 export default function SideNav() {
   const { data, subData } = useNavData();
@@ -22,7 +23,10 @@ export default function SideNav() {
 
   return (
     <TooltipProvider>
-      <aside className="fixed inset-y-0 left-0 z-10 hidden w-14 flex-col border-r bg-background sm:flex">
+      <aside className="fixed inset-y-0 left-0 z-10 hidden w-14 flex-col border-r bg-secondary sm:flex">
+        <header className="mt-4 mb-6 flex justify-center">
+          <Image src="/rahat-logo.png" alt="logo" height={20} width={30} />
+        </header>
         <nav className="flex flex-col items-center gap-4 px-2 sm:py-5">
           {data.map((item) => {
             const isActive = item.path.split('/')[1] === activePath;
@@ -34,7 +38,7 @@ export default function SideNav() {
                     href={item.path}
                     className={`flex h-9 w-9 items-center justify-center rounded-full transition-colors md:h-8 md:w-8 ${
                       isActive
-                        ? 'bg-primary text-white'
+                        ? 'bg-gray-700 text-white'
                         : 'text-muted-foreground hover:text-foreground'
                     }`}
                   >

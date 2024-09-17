@@ -42,6 +42,7 @@ import {
 } from '@rahat-ui/shadcn/components/select';
 import { usePagination } from '@rahat-ui/query';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@radix-ui/react-dropdown-menu';
+import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 
 
 export type Redeptions = {
@@ -69,7 +70,7 @@ export const redemptionType = [
 export default function RedemptionsTable() {
   const { id } = useParams() as { id: UUID };
 
-  const {resetSelectedListItems,filters,setFilters,selectedListItems} = usePagination();
+  const {resetSelectedListItems,filters,setFilters,selectedListItems,pagination ,setPrevPage,setNextPage,setPerPage ,resetFilters} = usePagination();
 
   const contractSettings = useProjectSettingsStore(
     (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT] || null,
@@ -81,7 +82,13 @@ export default function RedemptionsTable() {
   );
 
   const redeemToken = useContractRedeem(id);
-  const { data: redemptions, isSuccess, refetch } = useListRedemptions(id,filters);
+  const { data, isSuccess, refetch } = useListRedemptions(id,{
+    page: pagination.page,
+    perPage: pagination.perPage,
+    ...filters,
+  });
+  const redemptions = data?.redemptions;
+  const meta = data?.meta
 
   const handleApprove = (row: any) => {
     redeemToken
@@ -109,7 +116,6 @@ export default function RedemptionsTable() {
         setFilters({ ...filters, status: undefined });
         return;
       }
-      console.log(type)
       setFilters({ ...filters, status: type });
     },
     [filters, setFilters],
@@ -130,7 +136,6 @@ export default function RedemptionsTable() {
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
@@ -144,6 +149,7 @@ export default function RedemptionsTable() {
   });
 
   const selectedRowAddresses = Object.keys(selectedListItems);
+
 
   return (
     <div className="w-full p-2 bg-secondary">
@@ -240,7 +246,15 @@ export default function RedemptionsTable() {
                 {table.getFilteredRowModel().rows.length} row(s) selected.
               </div>
               <div className="space-x-2">
-                <Button
+                <CustomPagination
+                 currentPage={pagination.page}
+                 handleNextPage={setNextPage}
+                 handlePageSizeChange={setPerPage}
+                 handlePrevPage={setPrevPage}
+                 perPage={pagination.perPage}
+                 meta={meta || { total: 0, currentPage: 0 }}
+                   />
+                {/* <Button
                   variant="outline"
                   size="sm"
                   onClick={() => table.previousPage()}
@@ -255,7 +269,7 @@ export default function RedemptionsTable() {
                   disabled={!table.getCanNextPage()}
                 >
                   Next
-                </Button>
+                </Button> */}
               </div>
             </div>
           </>

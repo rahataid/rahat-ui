@@ -54,11 +54,13 @@ export function SelectBeneficiaryTable({
               if (value) {
                 const disbursements = form.getValues('disbursements') || [];
                 const idExist = disbursements.includes(row.original.id);
-                if (!idExist)
+                if (!idExist) {
                   form.setValue('disbursements', [
                     ...disbursements,
                     row.original.id,
                   ]);
+                  form.setValue('groupIds', []);
+                }
               } else {
                 const disbursements = form.getValues('disbursements') || [];
                 const filteredValue = disbursements.filter(
@@ -84,6 +86,7 @@ export function SelectBeneficiaryTable({
                   ...disbursements,
                   row.original.id,
                 ]);
+                form.setValue('groupIds', []);
               }
             } else {
               const disbursements = form.getValues('disbursements') || [];
@@ -138,6 +141,7 @@ export function SelectBeneficiaryTable({
     }
   }, [disbursmentList]);
   const table = useReactTable({
+    manualPagination: true,
     data: tableData,
     columns,
     onSortingChange: setSorting,
@@ -225,7 +229,7 @@ export function SelectBeneficiaryTable({
           {table.getFilteredSelectedRowModel().rows.length} of{' '}
           {table.getFilteredRowModel().rows.length} row(s) selected.
         </div>
-        <div className="space-x-2">
+        {/* <div className="space-x-2">
           <Button
             variant="outline"
             size="sm"
@@ -242,7 +246,7 @@ export function SelectBeneficiaryTable({
           >
             Next
           </Button>
-        </div>
+        </div> */}
       </div>
     </div>
   );

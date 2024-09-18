@@ -85,12 +85,11 @@ const BeneficiaryDetailTableView = () => {
       rowSelection: selectedListItems,
     },
   });
-
   return (
     <>
       <div className="p-2 bg-secondary">
         <div className="flex justify-between items-center mb-2">
-          <div className="flex">
+          <div className="flex w-full">
             <Input
               placeholder="Search beneficiary..."
               value={
@@ -99,7 +98,7 @@ const BeneficiaryDetailTableView = () => {
               onChange={(event) => {
                 table.getColumn('name')?.setFilterValue(event.target.value);
               }}
-              className="max-w-sm rounded mr-2"
+              className="rounded mr-2"
             />
           </div>
           {selectedRowAddresses.length ? (
@@ -114,7 +113,7 @@ const BeneficiaryDetailTableView = () => {
                     )
                   }
                 >
-                  Disburse Tokens
+                  Disburse USDC
                 </Button>
               </DropdownMenuTrigger>
             </DropdownMenu>

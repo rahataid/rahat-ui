@@ -53,6 +53,26 @@ export const useAllStats = (uuid: UUID) => {
   return query;
 };
 
+export const useCommsStats = (uuid: UUID) => {
+  const q = useProjectAction();
+
+  const query = useQuery({
+    queryKey: ['commsStatsAll', uuid],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'aa.activities.communication.getStats',
+          payload: {},
+        },
+      });
+      return mutate.data;
+    },
+  });
+
+  return query;
+};
+
 export const useSingleStat = (uuid: UUID, name: string) => {
   const q = useProjectAction();
 

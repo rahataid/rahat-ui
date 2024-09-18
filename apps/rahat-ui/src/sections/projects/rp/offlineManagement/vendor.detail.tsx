@@ -25,7 +25,7 @@ const VendorDetails = () => {
             strokeWidth={1.5}
           />
           <h1 className="text-2xl font-semibold text-gray-900">
-            {offlineVendor?.name}
+            {offlineVendor?.extras?.name}
           </h1>
           {offlineVendor?.synced && <p>Synced</p>}
         </div>
@@ -37,13 +37,13 @@ const VendorDetails = () => {
         <DataCard
           className=""
           title="Offline Beneficiaries"
-          number={offlineVendor?.offlineBeneficiaries?.length}
+          number={offlineVendor?.data?.length}
           Icon={Users}
         />
         <DataCard
           className=""
           title="Token Assigned"
-          number={offlineVendor?.totalAmountAssigned.toString()}
+          number={offlineVendor?.extras?.totalAmountAssigned?.toString()}
           Icon={Banknote}
         />
         {/* <DataCard
@@ -61,7 +61,7 @@ const VendorDetails = () => {
       </div>
       <div>
         <DetailsTable
-          offlineBeneficiaries={offlineVendor?.offlineBeneficiaries || []}
+          offlineBeneficiaries={offlineVendor?.data || []}
         />
       </div>
     </div>

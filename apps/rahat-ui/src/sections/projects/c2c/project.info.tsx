@@ -6,6 +6,7 @@ type ProjectInfoProps = {
 };
 
 const ProjectInfo: FC<ProjectInfoProps> = ({ project }) => {
+  console.log('project', project);
   const renderExtras = (extras: JSON | string | Record<string, any>) => {
     if (typeof extras === 'string') {
       return <p className="font-light">{extras}</p>;

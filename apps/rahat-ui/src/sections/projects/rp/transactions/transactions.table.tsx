@@ -35,6 +35,7 @@ import {
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { truncateEthAddress } from '@rumsan/sdk/utils';
 import Image from 'next/image';
+import Pagination from 'apps/rahat-ui/src/components/pagination';
 
 export type Transaction = {
   id: string;
@@ -208,7 +209,7 @@ export default function TransactionTable() {
           <>
             <Table>
               <ScrollArea className="h-[calc(100vh-184px)]">
-                <TableHeader>
+                <TableHeader className="bg-card sticky top-0">
                   {table.getHeaderGroups().map((headerGroup) => (
                     <TableRow key={headerGroup.id}>
                       {headerGroup.headers.map((header) => {
@@ -245,30 +246,15 @@ export default function TransactionTable() {
                 </TableBody>
               </ScrollArea>
             </Table>
-            <div className="flex items-center justify-end space-x-2 py-2">
-              <div className="flex-1 text-sm text-muted-foreground">
-                {table.getFilteredSelectedRowModel().rows.length} of{' '}
-                {table.getFilteredRowModel().rows.length} row(s) selected.
-              </div>
-              <div className="space-x-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => table.previousPage()}
-                  disabled={!table.getCanPreviousPage()}
-                >
-                  Previous
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => table.nextPage()}
-                  disabled={!table.getCanNextPage()}
-                >
-                  Next
-                </Button>
-              </div>
-            </div>
+            <Pagination
+              pageIndex={table.getState().pagination.pageIndex}
+              pageCount={table.getPageCount()}
+              setPageSize={table.setPageSize}
+              canPreviousPage={table.getCanPreviousPage()}
+              previousPage={table.previousPage}
+              canNextPage={table.getCanNextPage()}
+              nextPage={table.nextPage}
+            />
           </>
         ) : (
           <div className="w-full h-[calc(100vh-140px)]">

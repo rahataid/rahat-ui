@@ -42,7 +42,7 @@ const FormSchema = z.object({
   name: z.string().min(2, { message: 'Name must be at least 4 character' }),
   email: z.string().email(),
   gender: z.string(),
-  roles: z.array(z.string()),
+  roles: z.array(z.string()).length(1, { message: 'Please select role' }),
   phone: z.string(),
   wallet: z
     .string()
@@ -58,14 +58,14 @@ export default function AddUser() {
       gender: '',
       email: '',
       phone: '',
-      roles: [''],
+      roles: [],
       wallet: '',
     },
   });
 
   const { data: roleData } = useRoleList();
   const contractSettings = useSettingsStore((state) => state.accessManager);
-  const roleSync = useSettingsStore((state)=>state.roleOnChainSync)
+  const roleSync = useSettingsStore((state) => state.roleOnChainSync);
   const route = useRouter();
 
   const userCreate = useUserCreate();
@@ -73,27 +73,25 @@ export default function AddUser() {
   const addAdmin = useAddAdmin();
 
   const handleAddUser = async (data: any) => {
-    if(roleSync === true)
-    {   
+    if (roleSync === true) {
       if (data.roles.includes('Manager')) {
         await addManager.mutateAsync({
           data: data,
           walletAddress: data?.wallet,
           contractAddress: contractSettings as `0x${string}`,
         });
-      } 
-      else if (data.roles.includes('Admin')) {
+      } else if (data.roles.includes('Admin')) {
         await addAdmin.mutateAsync({
           data: data,
           walletAddress: data?.wallet,
           contractAddress: contractSettings as `0x${string}`,
         });
-      }
-      else {
+      } else {
         await userCreate.mutateAsync(data);
       }
+    } else {
+      await userCreate.mutateAsync(data);
     }
-    else { await userCreate.mutateAsync(data);}
   };
 
   useEffect(() => {
@@ -103,7 +101,7 @@ export default function AddUser() {
         gender: '',
         email: '',
         phone: '',
-        roles: [''],
+        roles: [],
         wallet: '',
       });
       route.push('/users');

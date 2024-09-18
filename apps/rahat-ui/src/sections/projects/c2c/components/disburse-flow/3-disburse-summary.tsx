@@ -3,6 +3,7 @@ import {
   useProjectSettingsStore,
 } from '@rahat-ui/query';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import { User } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import { formatEther } from 'viem';
 import { useReadContract } from 'wagmi';
@@ -50,38 +51,40 @@ export default function Step3DisburseSummary({
       <div className="mt-8 mb-8">
         <div className="flex p-4 bg-card rounded-lg space-x-6">
           <div className="flex-1 p-6 bg-blue-50 rounded-lg border border-blue-200">
-            <div className="space-y-10">
-              <div>
-                <h2 className="text-sm font-medium text-gray-500">
-                  Vendor Name
-                </h2>
-                <p className="text-xl font-semibold text-gray-800">
-                  Aadarsha Lamichhane
-                </p>
-              </div>
+            <div className="space-y-5">
               <div>
                 <h2 className="text-sm font-medium text-gray-500">
                   Beneficiaries Selected:
                 </h2>
-                <p className="text-2xl font-semibold text-gray-800">4</p>
+                <p className="text-lg font-semibold text-gray-800">
+                  {selectedBeneficiaries?.length}
+                </p>
               </div>
               <div>
                 <h2 className="text-sm font-medium text-gray-500">
-                  Vendor Tokens
+                  Project Balance
                 </h2>
-                <p className="text-2xl font-semibold text-gray-800">2000</p>
+                <p className="text-lg font-semibold text-gray-800">
+                  {projectBalance} USDC
+                </p>
               </div>
               <div>
                 <h2 className="text-sm font-medium text-gray-500">
-                  Total no. of tokens assigned
+                  Send amount among beneficiaries
                 </h2>
-                <p className="text-2xl font-semibold text-gray-800">100</p>
+                <p className="text-lg font-semibold text-gray-800">
+                  {selectedBeneficiaries &&
+                    Number(value) / selectedBeneficiaries?.length}{' '}
+                  USDC
+                </p>
               </div>
               <div>
                 <h2 className="text-sm font-medium text-gray-500">
-                  Token Amount
+                  Token amount to send
                 </h2>
-                <p className="text-2xl font-semibold text-gray-800">400</p>
+                <p className="text-lg font-semibold text-gray-800">
+                  {value} USDC
+                </p>
               </div>
             </div>
           </div>
@@ -92,24 +95,22 @@ export default function Step3DisburseSummary({
               Beneficiary List
             </h2>
             <p className="text-sm font-medium text-gray-800 mb-4">
-              40 beneficiaries selected
+              {selectedBeneficiaries?.length} beneficiaries selected
             </p>
-            <ScrollArea className="h-[calc(100vh-620px)]">
+            <ScrollArea className="h-[calc(100vh-700px)]">
               <ul className="space-y-2">
-                {Array(10)
-                  .fill(0)
-                  .map((_, index) => (
+                {selectedBeneficiaries &&
+                  selectedBeneficiaries.length > 0 &&
+                  selectedBeneficiaries.map((i, index) => (
                     <li
                       key={index}
-                      className="flex items-center p-2 bg-gray-100 rounded-lg"
+                      className="flex items-center p-1.5 bg-secondary rounded-lg"
                     >
-                      <div className="flex-shrink-0 h-10 w-10 bg-gray-300 rounded-full flex items-center justify-center">
-                        <span className="text-gray-500">👤</span>
+                      <div className="flex-shrink-0 h-8 w-8 bg-gray-300 rounded-full flex items-center justify-center">
+                        <User size={18} />
                       </div>
                       <div className="ml-3">
-                        <p className="text-sm font-medium text-gray-800">
-                          Aadarsha Lamichhane
-                        </p>
+                        <p className="text-sm font-medium text-gray-800">{i}</p>
                       </div>
                     </li>
                   ))}

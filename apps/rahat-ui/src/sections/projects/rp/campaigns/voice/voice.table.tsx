@@ -1,10 +1,10 @@
 'use client';
 
-import {
-  useCampaignStore,
-  useListRpCommunicationLogs,
-  useListRpCommunicationStats,
-} from '@rahat-ui/query';
+// import {
+//   useCampaignStore,
+//   useListRpCommunicationLogs,
+//   useListRpCommunicationStats,
+// } from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/components/button';
 import {
   DropdownMenu,
@@ -59,7 +59,11 @@ export type Voice = {
 };
 
 export default function VoiceTable() {
-  const campaignStore = useCampaignStore();
+  // const campaignStore = useCampaignStore(import {
+  //   useCampaignStore,
+  //   useListRpCommunicationLogs,
+  //   useListRpCommunicationStats,
+  // } from '@rahat-ui/query';);
   const columns = useVoiceTableColumn();
   const { id } = useParams();
   const router = useRouter();
@@ -71,41 +75,53 @@ export default function VoiceTable() {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
-  const {
-    data: communicationLogs,
-    isSuccess,
-    isFetching,
-  } = useListRpCommunicationLogs(id as UUID);
-  const { data: commsStats } = useListRpCommunicationStats(id as UUID);
+  // const {
+  //   data: communicationLogs,
+  //   isSuccess,
+  //   isFetching,
+  // } = useListRpCommunicationLogs(id as UUID);
+  // const { data: commsStats } = useListRpCommunicationStats(id as UUID);
 
-  const tableData = React.useMemo(() => {
-    if (isSuccess && communicationLogs) {
-      return communicationLogs
-        ?.filter(
-          (logs) =>
-            logs?.transport?.name.toLowerCase() ===
-            CAMPAIGN_TYPES.IVR.toLowerCase(),
-        )
-        .map((item: any) => ({
-          date: new Date(item.createdAt).toLocaleString(),
-          status: item?.status,
-          duration: item?.duration,
-          to:
-            item?.transport?.name.toLowerCase() ===
-            CAMPAIGN_TYPES.EMAIL.toLowerCase()
-              ? item?.details?.envelope?.to
-              : item?.transport?.name.toLowerCase() ===
-                CAMPAIGN_TYPES.IVR.toLowerCase()
-              ? item?.audience?.details?.phone
-              : item?.details?.to,
-        }));
-    } else {
-      return [];
-    }
-  }, [communicationLogs, isSuccess]);
+  // const tableData = React.useMemo(() => {
+  //   if (isSuccess && communicationLogs) {
+  //     return communicationLogs
+  //       ?.filter(
+  //         (logs) =>
+  //           logs?.transport?.name.toLowerCase() ===
+  //           CAMPAIGN_TYPES.IVR.toLowerCase(),
+  //       )
+  //       .map((item: any) => ({
+  //         date: new Date(item.createdAt).toLocaleString(),
+  //         status: item?.status,
+  //         duration: item?.duration,
+  //         to:
+  //           item?.transport?.name.toLowerCase() ===
+  //           CAMPAIGN_TYPES.EMAIL.toLowerCase()
+  //             ? item?.details?.envelope?.to
+  //             : item?.transport?.name.toLowerCase() ===
+  //               CAMPAIGN_TYPES.IVR.toLowerCase()
+  //             ? item?.audience?.details?.phone
+  //             : item?.details?.to,
+  //       }));
+  //   } else {
+  //     return [];
+  //   }
+  // }, [communicationLogs, isSuccess]);
 
+  const dataArray = [
+    { to: '9842349411', date: '2023-06-01', status: 'Rejected' },
+    { to: '9852227472', date: '2023-06-02', status: 'Approved' },
+    { to: '9866180303', date: '2023-06-03', status: 'Pending' },
+    { to: '9865079182', date: '2023-06-04', status: 'Pending' },
+    { to: '9852711445', date: '2023-06-05', status: 'Approved' },
+    { to: '9866587402', date: '2023-06-06', status: 'Rejected' },
+    { to: '9853257921', date: '2023-06-07', status: 'Approved' },
+    { to: '9860855697', date: '2023-06-08', status: 'Approved' },
+    { to: '9854869214', date: '2023-06-09', status: 'Pending' },
+    { to: '9857289679', date: '2023-06-10', status: 'Rejected' },
+  ] as any;
   const table = useReactTable({
-    data: tableData,
+    data: dataArray,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -122,28 +138,28 @@ export default function VoiceTable() {
       rowSelection,
     },
   });
-  let deliveredVoiceMessage = 0;
-  let totalBeneficiary = 0;
-  let totalVoiceMessage = 0;
-  commsStats
-    ?.find((stats) => stats.name === 'COMPLETED_CAMPAIGN')
-    ?.data.forEach((item) => {
-      if (item.type === 'IVR') {
-        deliveredVoiceMessage += item.count;
-      }
-    });
-  commsStats
-    ?.find((stats) => stats.name === 'AUDIENCE')
-    ?.data.forEach((item) => {
-      if (item?.type === 'IVR') totalBeneficiary += item.count;
-    });
-  commsStats
-    ?.find((stats) => stats.name === 'TOTAL_CAMPAIGN')
-    ?.data.forEach((item) => {
-      if (item.type === 'IVR') {
-        totalVoiceMessage += item.count;
-      }
-    });
+  // let deliveredVoiceMessage = 0;
+  // let totalBeneficiary = 0;
+  // let totalVoiceMessage = 0;
+  // commsStats
+  //   ?.find((stats) => stats.name === 'COMPLETED_CAMPAIGN')
+  //   ?.data.forEach((item) => {
+  //     if (item.type === 'IVR') {
+  //       deliveredVoiceMessage += item.count;
+  //     }
+  //   });
+  // commsStats
+  //   ?.find((stats) => stats.name === 'AUDIENCE')
+  //   ?.data.forEach((item) => {
+  //     if (item?.type === 'IVR') totalBeneficiary += item.count;
+  //   });
+  // commsStats
+  //   ?.find((stats) => stats.name === 'TOTAL_CAMPAIGN')
+  //   ?.data.forEach((item) => {
+  //     if (item.type === 'IVR') {
+  //       totalVoiceMessage += item.count;
+  //     }
+  //   });
 
   return (
     <div className="w-full h-full p-2 bg-secondary">
@@ -151,19 +167,22 @@ export default function VoiceTable() {
         <DataCard
           className=""
           title="Voice"
-          number={totalVoiceMessage.toString()}
+          // number={totalVoiceMessage.toString()}
+          number={'16'}
           Icon={PhoneCall}
         />
         <DataCard
           className=""
           title="Beneficiaries"
-          number={totalBeneficiary.toString()}
+          number={'240'}
+          // number={totalBeneficiary.toString()}
           Icon={Mail}
         />
         <DataCard
           className=""
           title="Successful Calls"
-          number={deliveredVoiceMessage.toString()}
+          number={'25'}
+          // number={deliveredVoiceMessage.toString()}
           Icon={MessageCircle}
         />
       </div>
@@ -210,7 +229,6 @@ export default function VoiceTable() {
             className="flex items-center gap-2"
             onClick={() => {
               router.push(`/projects/rp/${id}/campaigns/voice/manage`);
-              console.log('first');
             }}
           >
             <Settings size={18} strokeWidth={1.5} />

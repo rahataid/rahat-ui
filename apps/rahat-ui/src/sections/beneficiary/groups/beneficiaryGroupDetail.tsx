@@ -93,17 +93,20 @@ export default function BeneficiaryGroupDetail({
   });
   const isAssignedToProject =
     beneficiaryGroupDetail?.beneficiaryGroupProject?.length;
+  const assignedGroupId = beneficiaryGroupDetail?.beneficiaryGroupProject?.map(
+    (benProject: any) => benProject.Project.id,
+  );
 
   React.useEffect(() => {
     setShowEditInterface(false);
   }, [beneficiaryGroupDetail]);
-
   return (
     <>
       <AssignToProjectModal
         closeSecondPanel={closeSecondPanel}
         beneficiaryGroupDetail={beneficiaryGroupDetail}
         projectModal={projectModal}
+        assignedGroupId={assignedGroupId}
       />
 
       <RemoveBenfGroupModal

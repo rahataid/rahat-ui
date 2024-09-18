@@ -24,6 +24,7 @@ import {
   useReactTable,
   VisibilityState,
 } from '@tanstack/react-table';
+import Pagination from 'apps/rahat-ui/src/components/pagination';
 import { UUID } from 'crypto';
 import { Trash2 } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
@@ -36,28 +37,6 @@ export type Payment = {
 };
 
 export const columns: ColumnDef<Payment>[] = [
-  {
-    id: 'select',
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && 'indeterminate')
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
   {
     accessorKey: 'name',
     header: 'Name',
@@ -109,44 +88,29 @@ export function DetailsTable({ offlineBeneficiaries }: any) {
   const { id, bid } = useParams();
   const route = useRouter();
 
-  const { pagination, filters } = usePagination();
-  const projectBeneficiaries = useProjectBeneficiaries({
-    page: pagination.page,
-    perPage: pagination.perPage,
-    order: 'desc',
-    sort: 'updatedAt',
-    projectUUID: id,
-    ...filters,
-  });
+  // const { pagination, filters } = usePagination();
+  // const projectBeneficiaries = useProjectBeneficiaries({
+  //   page: pagination.page,
+  //   perPage: pagination.perPage,
+  //   order: 'desc',
+  //   sort: 'updatedAt',
+  //   projectUUID: id,
+  //   ...filters,
+  // });
   React.useEffect(() => {
-    if (projectBeneficiaries.isSuccess && offlineBeneficiaries.length > 0) {
-      const projectBeneficiaryDisbursements = offlineBeneficiaries.map(
-        (offlineBeneficiarie: any) => {
-          const beneficiaryDetails = projectBeneficiaries?.data?.data?.find(
-            (beneficiary: any) =>
-              offlineBeneficiarie?.Disbursement?.walletAddress ===
-              beneficiary.walletAddress,
-          );
-          return {
-            ...offlineBeneficiarie,
-            name: beneficiaryDetails?.name,
-          };
-        },
-      );
-
-      if (
-        JSON.stringify(projectBeneficiaryDisbursements) !==
-        JSON.stringify(rowData)
-      ) {
-        setRowData(projectBeneficiaryDisbursements);
+    if (offlineBeneficiaries.length > 0) {
+      const benDetails = offlineBeneficiaries.map((ben: any) => {
+        return {
+          amount: ben?.amount,
+          name: ben?.piiData?.name,
+          status: ben?.status,
+        };
+      });
+      if (JSON.stringify(benDetails) !== JSON.stringify(rowData)) {
+        setRowData(benDetails);
       }
     }
-  }, [
-    offlineBeneficiaries,
-    projectBeneficiaries.data?.data,
-    projectBeneficiaries.isSuccess,
-    rowData,
-  ]);
+  }, [offlineBeneficiaries, rowData]);
 
   const table = useReactTable({
     data: rowData || [],
@@ -171,7 +135,7 @@ export function DetailsTable({ offlineBeneficiaries }: any) {
     <div className="w-full">
       <div className="flex justify-between items-center gap-2 py-4">
         <Input
-          placeholder="Search Vendors"
+          placeholder="Search Beneficiaries"
           value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
           onChange={(event) =>
             table.getColumn('name')?.setFilterValue(event.target.value)
@@ -231,30 +195,15 @@ export function DetailsTable({ offlineBeneficiaries }: any) {
           </ScrollArea>
         </Table>
       </div>
-      <div className="flex items-center justify-end space-x-2 py-4">
-        <div className="flex-1 text-sm text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length} of{' '}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
-        </div>
-        <div className="space-x-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            Previous
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            Next
-          </Button>
-        </div>
-      </div>
+      <Pagination
+        pageIndex={table.getState().pagination.pageIndex}
+        pageCount={table.getPageCount()}
+        setPageSize={table.setPageSize}
+        canPreviousPage={table.getCanPreviousPage()}
+        previousPage={table.previousPage}
+        canNextPage={table.getCanNextPage()}
+        nextPage={table.nextPage}
+      />
     </div>
   );
 }

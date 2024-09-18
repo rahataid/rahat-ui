@@ -5,23 +5,32 @@ import {
   CardHeader,
   CardTitle,
 } from '@rahat-ui/shadcn/src/components/ui/card';
+import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { truncateEthAddress } from '@rumsan/sdk/utils';
 import { shortenTxHash } from 'apps/rahat-ui/src/utils/getProjectAddress';
 import { ArrowUp } from 'lucide-react';
 import { formatEther } from 'viem';
 import { Transaction } from './types';
-import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 
 export default function RecentTransaction({
   transactions,
 }: {
   transactions: Transaction[];
 }) {
+  const amount =
+    transactions.length > 0
+      ? parseFloat(formatEther(BigInt(transactions[0].value)))
+      : 0;
+  const formatted = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+  }).format(amount);
+  console.log('amount', amount);
   return (
     <div className="mb-2 mr-2">
       <Card className="rounded h-full">
         <CardHeader>
-          <CardTitle>Recent Deposits</CardTitle>
+          <CardTitle>Recent Transactions</CardTitle>
         </CardHeader>
         <ScrollArea className="h-[720px]">
           <CardContent className="grid gap-8">
@@ -48,9 +57,7 @@ export default function RecentTransaction({
                       </a>
                     </p>
                   </div>
-                  <div className="ml-auto font-medium">
-                    {`${formatEther(BigInt(transaction.value))}`}
-                  </div>
+                  <div className="ml-auto font-medium">{formatted}</div>
                 </div>
               ))}
           </CardContent>

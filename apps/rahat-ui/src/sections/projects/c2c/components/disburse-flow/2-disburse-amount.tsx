@@ -13,6 +13,7 @@ type Step2DisburseAmountProps = {
   projectSubgraphDetails: any;
   selectedBeneficiaries: string[];
   tokenName?: string;
+  treasurySource: string;
 };
 
 export default function Step2DisburseAmount({
@@ -20,10 +21,11 @@ export default function Step2DisburseAmount({
   value,
   selectedBeneficiaries,
   projectSubgraphDetails,
+  treasurySource,
   tokenName = 'USDC',
 }: Step2DisburseAmountProps) {
   const { id } = useParams();
-
+  console.log('treasurySource', treasurySource);
   const contractSettings = useProjectSettingsStore(
     (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT],
   );
@@ -42,7 +44,7 @@ export default function Step2DisburseAmount({
     <div className="m-4 p-6 bg-card">
       <div className="flex flex-col mb-10">
         <h1 className="text-2xl font-semibold text-gray-900">
-          ENTER DISBURSE AMOUNT
+          ENTER DISBURSEMENT AMOUNT
         </h1>
       </div>
 
@@ -58,14 +60,16 @@ export default function Step2DisburseAmount({
         </div>
 
         {/* Project Balance */}
-        <div className="flex flex-col">
-          <label className="text-sm font-medium text-gray-600">
-            Project Balance
-          </label>
-          <div className="bg-gray-100 text-gray-800 p-2 rounded-md w-1/2">
-            2000 USDC {/* Replace with dynamic value if needed */}
+        {treasurySource !== 'EOA' && treasurySource !== 'MULTISIG' && (
+          <div className="flex flex-col">
+            <label className="text-sm font-medium text-gray-600">
+              Project Balance
+            </label>
+            <div className="bg-gray-100 text-gray-800 p-2 rounded-md w-1/2">
+              2000 USDC {/* Replace with dynamic value if needed */}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Send Amount */}
         <div className="flex flex-col">
@@ -78,7 +82,7 @@ export default function Step2DisburseAmount({
               placeholder="Enter amount to send"
               value={value}
               onChange={onChange}
-              className="w-full p-2 border border-gray-300 rounded-md w-1/2"
+              className="p-2 border border-gray-300 rounded-md w-1/2"
             />
             <span className="text-gray-600">{tokenName}</span>
           </div>

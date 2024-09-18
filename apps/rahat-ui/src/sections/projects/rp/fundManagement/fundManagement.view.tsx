@@ -111,9 +111,9 @@ const FundManagementView = () => {
     ...filters,
   });
 
-  const disbursements = useFindAllDisbursements(id,{
+  const disbursements = useFindAllDisbursements(id, {
     hideAssignedBeneficiaries: false,
-  },);
+  });
 
   const contractSettings = useProjectSettingsStore(
     (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT],
@@ -331,7 +331,7 @@ const FundManagementView = () => {
               />
               <div className="p-4 bg-gray-50 border rounded-lg w-full">
                 <div className="text-gray-700 font-semibold mb-2">
-                  Disbursement Status
+                  Disbursement Conditions
                 </div>
                 <ul className="list-disc list-inside text-gray-600">
                   {filteredConditions.map((condition) => (
@@ -353,7 +353,7 @@ const FundManagementView = () => {
                 onClick={handleAddDisburse}
                 className="mt-4 bg-blue-500 text-white px-4 py-2 rounded"
               >
-                Edit Disbursement Plan
+                Create Disbursement Plan
               </Button>
             </div>
           </div>

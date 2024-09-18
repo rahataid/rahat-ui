@@ -1,5 +1,8 @@
 import {
+  BeneficiaryAssignedToken,
+  GetTotalFundDistributed,
   PROJECT_SETTINGS_KEYS,
+  useCommsStats,
   useProjectSettingsStore,
 } from '@rahat-ui/query';
 import { useReadAaProjectTokenBudget } from 'apps/rahat-ui/src/hooks/aa/contracts/aaProject';
@@ -12,10 +15,12 @@ import {
   SmartphoneNfc,
   UsersRound,
 } from 'lucide-react';
+import { useQuery } from 'urql';
 
 type IProps = {
   allStats: any;
   projectId: UUID;
+  commsStats: any;
 };
 
 type ICardProps = {
@@ -41,7 +46,11 @@ const DataCard = ({ title, Icon, number }: ICardProps) => {
 export default function SimpleDataCardsContainer({
   allStats,
   projectId,
+  commsStats
 }: IProps) {
+
+  console.log(commsStats)
+
   const contractSettings = useProjectSettingsStore(
     (s) => s.settings?.[projectId]?.[PROJECT_SETTINGS_KEYS.CONTRACT] || null,
   );
@@ -51,7 +60,36 @@ export default function SimpleDataCardsContainer({
     args: [contractSettings?.rahattoken?.address],
   });
 
+  const [totalFundDistributed] = useQuery({
+    query: GetTotalFundDistributed,
+  });
+
+  const totalDistributed = totalFundDistributed?.data?.benTokensAssigneds?.reduce((accumulator: number,d: any, ) => {
+    return Number(d.amount) + accumulator
+  }, 0) ?? 0;
+
+
   const parsedProjectBudget = Number(projectBudget);
+
+  const projectBalance = parsedProjectBudget - Number(totalDistributed);
+
+  const formattedBudget = new Intl.NumberFormat('en-US', {
+    style: 'decimal',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(parsedProjectBudget);
+
+  const formattedTotalDistributed = new Intl.NumberFormat('en-US', {
+    style: 'decimal',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(totalDistributed);
+
+  const formattedProjectBalance = new Intl.NumberFormat('en-US', {
+    style: 'decimal',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(projectBalance);
 
   const totalBeneficiaries = allStats?.filter(
     (data: any) => data.name === 'BENEFICIARY_TOTAL',
@@ -75,22 +113,22 @@ export default function SimpleDataCardsContainer({
     {
       title: 'Budget',
       Icon: Coins,
-      number: parsedProjectBudget,
+      number: `NRs. ${formattedBudget ?? 0}`,
     },
     {
       title: 'Balance',
       Icon: Coins,
-      number: 'N/A',
+      number: `NRs. ${formattedProjectBalance ?? 0}`,
     },
     {
       title: 'Fund Distributed',
       Icon: HandCoins,
-      number: 'N/A',
+      number: `NRs. ${formattedTotalDistributed ?? 0}`,
     },
     {
       title: 'Number of Communication Project',
       Icon: SmartphoneNfc,
-      number: 'N/A',
+      number: commsStats?.totalCommsProject ?? 'N/A',
     },
   ];
   return (

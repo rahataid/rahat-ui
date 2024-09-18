@@ -56,7 +56,7 @@ export default function BeneficiaryDetail({
   // TODO: remove reference to el vouchers
   const deleteBeneficiary = useRemoveBeneficiary();
 
-  const walletAddress = beneficiaryDetails.wallet;
+  const walletAddress = beneficiaryDetails?.walletAddress;
 
   const { data: transactionList, isLoading } =
     useBeneficiaryTransaction(walletAddress);
@@ -94,7 +94,7 @@ export default function BeneficiaryDetail({
         <TableLoader />
       ) : (
         <>
-          <div className="flex justify-between p-4 pt-5 bg-secondary border-b">
+          <div className="flex justify-between p-4 pt-5 bg-card border-b">
             <TooltipProvider delayDuration={100}>
               <Tooltip>
                 <TooltipTrigger onClick={closeSecondPanel}>
@@ -155,9 +155,17 @@ export default function BeneficiaryDetail({
                   />
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
-                  <DropdownMenuItem onClick={() => handleTabChange('edit')}>
-                    Edit
-                  </DropdownMenuItem>
+                  {activeTab === 'details' ? (
+                    <DropdownMenuItem onClick={() => handleTabChange('edit')}>
+                      Edit
+                    </DropdownMenuItem>
+                  ) : (
+                    <DropdownMenuItem
+                      onClick={() => handleTabChange('details')}
+                    >
+                      Details
+                    </DropdownMenuItem>
+                  )}
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
@@ -201,30 +209,14 @@ export default function BeneficiaryDetail({
                     </TooltipTrigger>
                     <TooltipContent className="bg-secondary" side="bottom">
                       <p className="text-xs font-medium">
-                        {walletAddressCopied ? 'copied' : 'click to copy'}
+                        {walletAddressCopied ? 'Copied' : walletAddress}
                       </p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
               </div>
             </div>
-            {/* {!assignStatus && beneficiaryDetails?.type === 'ENROLLED' && (
-              <div>
-                <Button disabled={isTransacting} onClick={handleAssignVoucher}>
-                  {isTransacting
-                    ? 'Confirming transaction...'
-                    : 'Assign Tokens'}
-                </Button>
-              </div> */}
-            {/* )} */}
           </div>
-          {/* <AssignVoucherConfirm
-            open={voucherAssignModal.value}
-            handleClose={handleVoucherAssignModalClose}
-            handleSubmit={handleAssignVoucher}
-          /> */}
-
-          {/* Details View */}
 
           {activeTab === 'details' && (
             <>
@@ -258,12 +250,7 @@ export default function BeneficiaryDetail({
                             </p>
                           </div>
                           <div className="text-right">
-                            <p className="font-light text-base">
-                              {
-                                // beneficiaryDetails?.phone ||
-                                'N/A'
-                              }
-                            </p>
+                            <p className="font-light text-base">{'N/A'}</p>
                             <p className="text-sm font-normal text-muted-foreground">
                               Location
                             </p>
@@ -271,23 +258,13 @@ export default function BeneficiaryDetail({
                         </div>
                         <div className="grid grid-cols-3 gap-3 mt-3">
                           <div>
-                            <p className="font-light text-base">
-                              {
-                                // beneficiaryDetails?.gender ||
-                                'N/A'
-                              }
-                            </p>
+                            <p className="font-light text-base">{'N/A'}</p>
                             <p className="text-sm font-normal text-muted-foreground">
                               Balance
                             </p>
                           </div>
                           <div>
-                            <p className="font-light text-base">
-                              {
-                                // beneficiaryDetails?.phone ||
-                                'N/A'
-                              }
-                            </p>
+                            <p className="font-light text-base">Verified </p>
                             <p className="text-sm font-normal text-muted-foreground">
                               Verificatoin Status
                             </p>

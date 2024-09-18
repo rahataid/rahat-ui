@@ -254,16 +254,16 @@ export const useRedeemToken = (projectUUID: UUID) => {
   });
 };
 
-export const useListRedemptions = (projectUUID: UUID) => {
+export const useListRedemptions = (projectUUID: UUID,payload:any) => {
   const action = useProjectAction(['listRedemptions-rpProject']);
   return useQuery({
-    queryKey: ['redemptions', projectUUID],
+    queryKey: ['redemptions', projectUUID,payload],
     queryFn: async () => {
       const res = await action.mutateAsync({
         uuid: projectUUID,
         data: {
           action: 'rpProject.listRedemption',
-          payload: {},
+          payload: {...payload},
         },
       });
       const data = res.data;
@@ -277,12 +277,15 @@ export const useListRedemptions = (projectUUID: UUID) => {
           walletAddress: item?.Vendor?.walletAddress,
         };
       });
-      return formattedData;
+      return {redemptions:formattedData,meta:res.response.meta};
     },
   });
 };
 
-export const useFindAllBeneficiaryGroups = (projectUUID: UUID) => {
+export const useFindAllBeneficiaryGroups = (
+  projectUUID: UUID,
+  payload?: any,
+) => {
   const action = useProjectAction();
 
   const query = useQuery({
@@ -294,7 +297,7 @@ export const useFindAllBeneficiaryGroups = (projectUUID: UUID) => {
         uuid: projectUUID,
         data: {
           action: GET_ALL_BENEFICIARY_GROUPS,
-          payload: {},
+          payload: payload || {},
         },
       });
       return res.data;
@@ -307,4 +310,47 @@ export const useFindAllBeneficiaryGroups = (projectUUID: UUID) => {
     ...query,
     data,
   };
+};
+
+export const useRpSingleBeneficiaryGroup = (
+  uuid: UUID,
+  beneficiariesGroupID: UUID,
+) => {
+  const q = useProjectAction();
+
+  const query = useQuery({
+    queryKey: ['beneficiaryGroup', uuid, beneficiariesGroupID],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'rpProject.beneficiary.getOneGroup',
+          payload: {
+            uuid: beneficiariesGroupID,
+          },
+        },
+      });
+      return mutate.data;
+    },
+  });
+  return query;
+};
+
+export const useRpSingleBeneficiaryGroupMutation = (projectUUID: UUID) => {
+  const q = useProjectAction();
+
+  return useMutation({
+    mutationFn: async (beneficiariesGroupID: UUID) => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'rpProject.beneficiary.getOneGroup',
+          payload: {
+            uuid: beneficiariesGroupID,
+          },
+        },
+      });
+      return mutate.data;
+    },
+  });
 };

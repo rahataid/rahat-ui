@@ -55,6 +55,7 @@ import { useState } from 'react';
 import { formatEther } from 'viem';
 import AssignToken from './assign-token.modal';
 import { TransactionTable } from './transaction.table';
+import { useReadRahatPayrollProjectTokenAllocations } from 'libs/query/src/lib/rp/contracts/generated-hooks';
 
 type IProps = {
   beneficiaryDetails: any;
@@ -75,15 +76,10 @@ export default function BeneficiaryDetail({
     walletAddress: beneficiaryDetails?.walletAddress,
   });
 
-  // const assignedTokens = useReadCvaProjectBeneficiaryClaims({
-  //   args: [beneficiaryDetails?.walletAddress],
-  //   address: contractSettings?.rpproject?.address,
-  //   query: {
-  //     select(data) {
-  //       return formatEther(data) || 'N/a';
-  //     },
-  //   },
-  // });
+  const assignedTokens = useReadRahatPayrollProjectTokenAllocations({
+    args: [contractSettings?.rahattoken?.address,beneficiaryDetails?.walletAddress],
+    address: contractSettings?.rahatpayrollproject?.address
+  });
 
   const [activeTab, setActiveTab] = useState<'details' | 'transaction'>(
     'details',
@@ -160,7 +156,7 @@ export default function BeneficiaryDetail({
           />
           <BeneficiaryInfo
             beneficiaryDetails={beneficiaryDetails}
-            assignedTokensCount={allocatedTokens?.data?.amount as string}
+            assignedTokensCount={Number(assignedTokens?.data).toString()}
             tokensClaimedCount={'N/a'}
           />
         </TabsContent>

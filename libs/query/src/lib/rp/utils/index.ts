@@ -7,10 +7,11 @@ export const formatTransaction = (trans: any) => ({
     trans.claimer ||
     trans.beneficiaryAddress,
   topic: trans.eventType,
-  timeStamp: new Date(parseInt(trans.blockTimestamp) * 1000).toLocaleDateString(
+  timeStamp: new Date(parseInt(trans.blockTimestamp) * 1000).toLocaleString(
     'en-US',
     {
       timeZone: 'UTC',
+      hour12: false,
     },
   ),
   txHash: trans.transactionHash,

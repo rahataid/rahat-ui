@@ -7,8 +7,6 @@ const iconMap: { [key: string]: React.ComponentType<any> } = {
   MULTISIG: KeyRound,
 };
 
-console.log('TREASURY_SOURCES', TREASURY_SOURCES);
-
 type Step1DisburseMethodProps = {
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -24,7 +22,7 @@ export default function Step1DisburseMethod({
 }: Step1DisburseMethodProps) {
   return (
     <>
-      <div className="bg-card rounded-lg m-4 p-6">
+      <div className="m-4 p-6">
         <div className="flex flex-col mb-10">
           <h1 className="text-2xl font-semibold text-gray-900">
             Select Disbursement Method

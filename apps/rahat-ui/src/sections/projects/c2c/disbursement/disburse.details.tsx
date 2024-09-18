@@ -2,6 +2,7 @@
 
 import { useGetDisbursement } from '@rahat-ui/query';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   Card,
   CardContent,
@@ -13,16 +14,13 @@ import {
   TabsList,
   TabsTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tabs';
-import { formatdbDate } from 'apps/rahat-ui/src/utils';
 import { UUID } from 'crypto';
 import { WalletCards } from 'lucide-react';
+import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import DataCard from '../../../../components/dataCard';
 import { ApprovalTable } from './approvals.table';
 import { TransactionTable } from './transactions.table';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import Link from 'next/link';
-import { formatEther } from 'viem';
 
 export default function DisburseDetails() {
   const { id: projectUUID, uuid } = useParams() as {
@@ -30,7 +28,7 @@ export default function DisburseDetails() {
     uuid: UUID;
   };
   const { data } = useGetDisbursement(projectUUID, uuid);
-
+  console.log('data', data);
   const date = new Date(data?.createdAt);
   const datePart = date.toDateString().split(' ').slice(1).join(' ');
   const timePart = date.toTimeString().split(' ')[0].slice(0, 5);

@@ -14,6 +14,7 @@ import {
   useSyncOfflineBeneficiaries,
   useGetBeneficiariesDisbursements,
 } from '@rahat-ui/query';
+import { useRSQuery } from '@rumsan/react-query';
 
 type ConfirmPageProps = {
   form: UseFormReturn<z.infer<any>>;
@@ -35,6 +36,7 @@ const ComfirmPage = ({
   const { id } = useParams();
   const [isOpen, setIsOpen] = useState(false);
   const syncBen = useSyncOfflineBeneficiaries(id as UUID);
+  const { queryClient, rumsanService } = useRSQuery();
 
   const selectedVendor = vendor.find(
     (v) => v?.id == form.getValues('vendorId'),
@@ -45,14 +47,28 @@ const ComfirmPage = ({
     id as UUID,
     groupIds,
   );
-  const disBursementIds = beneficiariesDisbursements?.map(
-    (disBursement) => disBursement.id,
-  );
-  const selectedDisbursementId =
-    form.getValues('disbursements') || disBursementIds;
-  const selectedDisbursement = disbursmentList?.filter((disbursment: any) =>
-    selectedDisbursementId?.includes(disbursment?.disbursmentId),
-  );
+  const disBursementIds = beneficiariesDisbursements?.map((disBursement) => {
+    return { id: disBursement.id, phone: disBursement.phone };
+  });
+  let selectedDisbursementId = form.getValues('disbursements');
+  let selectedDisbursement;
+  if (selectedDisbursementId.length === 0) {
+    //if beneficiary groups selected
+
+    selectedDisbursementId = disBursementIds;
+    selectedDisbursement = beneficiariesDisbursements;
+  } else {
+    //if beneficiary selected
+
+    selectedDisbursement = disbursmentList?.filter((disbursment: any) =>
+      selectedDisbursementId?.includes(disbursment?.disbursmentId),
+    );
+
+    selectedDisbursementId = selectedDisbursement?.map((disBursement) => {
+      return { id: disBursement.disbursmentId, phone: disBursement.phone };
+    });
+  }
+
   let tokenAmount = 0;
   selectedDisbursement?.map((disbursment: any) => {
     tokenAmount += Number(disbursment?.disbursementAmount);
@@ -63,13 +79,14 @@ const ComfirmPage = ({
   const noOfSelectedDisbursement =
     form.getValues('disbursements')?.length ||
     beneficiariesDisbursements?.length;
-
   return (
     <div className="bg-card rounded-lg m-6 p-4">
       <div className="flex flex-col gap-1">
         <div className="flex items-center gap-2">
           <ArrowLeft
-            onClick={() => setCurrentStep(currentStep - 1)}
+            onClick={() => {
+              setCurrentStep(currentStep - 1);
+            }}
             className="cursor-pointer"
             size={20}
             strokeWidth={1.5}
@@ -122,7 +139,7 @@ const ComfirmPage = ({
             </p>
             <ScrollArea className="h-[calc(100vh-620px)]">
               <ul className="space-y-2">
-                {selectedDisbursement.map((disbursement, index) => (
+                {selectedDisbursement?.map((disbursement, index) => (
                   <li
                     key={index}
                     className="flex items-center p-2 bg-gray-100 rounded-lg"
@@ -156,7 +173,16 @@ const ComfirmPage = ({
               vendorId: selectedVendor?.id,
               disbursements: selectedDisbursementId,
               tokenAddress: contractSettings?.rahattoken?.address || '',
+              groupIds,
             });
+            setTimeout(() => {
+              queryClient.invalidateQueries({
+                queryKey: ['rpGetOfflineVendors'],
+                refetchType: 'all',
+                type: 'all',
+              });
+            }, 10000);
+
             setIsOpen(true);
           }}
           className="bg-blue-500 text-white px-4 py-2 rounded-md w-36"

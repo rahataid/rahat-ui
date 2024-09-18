@@ -32,12 +32,14 @@ type IProps = {
   beneficiaryGroupDetail: ListBeneficiaryGroup;
   projectModal: ProjectModalType;
   closeSecondPanel: VoidFunction;
+  assignedGroupId: string[];
 };
 
 export default function AssignBeneficiaryToProjectModal({
   projectModal,
   beneficiaryGroupDetail,
   closeSecondPanel,
+  assignedGroupId,
 }: IProps) {
   const assignBeneficiaryGroup = useAssignBenGroupToProject();
   const projectsList = useProjectList({ page: 1, perPage: 10 });
@@ -60,7 +62,6 @@ export default function AssignBeneficiaryToProjectModal({
       closeSecondPanel();
     }
   }, [assignBeneficiaryGroup.isSuccess]);
-
   return (
     <Dialog open={projectModal.value} onOpenChange={projectModal.onToggle}>
       <DialogContent>
@@ -79,7 +80,11 @@ export default function AssignBeneficiaryToProjectModal({
               {projectsList.data?.data.length &&
                 projectsList.data?.data.map((project) => {
                   return (
-                    <SelectItem key={project.uuid} value={project.uuid as UUID}>
+                    <SelectItem
+                      disabled={assignedGroupId.includes(project?.id)}
+                      key={project.uuid}
+                      value={project.uuid as UUID}
+                    >
                       {project.name}
                     </SelectItem>
                   );

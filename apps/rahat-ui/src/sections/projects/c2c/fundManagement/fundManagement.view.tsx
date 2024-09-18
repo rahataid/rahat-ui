@@ -20,6 +20,11 @@ import { formatEther } from 'viem';
 import { useReadContract } from 'wagmi';
 import { QrModal } from './qr.moda';
 import RecentTransaction from './recent.transaction';
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/hover-card';
 
 const FundManagementView = () => {
   const { id }: { id: UUID } = useParams();
@@ -47,7 +52,6 @@ const FundManagementView = () => {
       },
     },
   });
-
   const mySeries = [
     {
       name: 'Recent Deposits',
@@ -96,16 +100,17 @@ const FundManagementView = () => {
             </CardHeader>
             <CardContent className="flex items-center justify-between">
               <div>
-                {/* {loading ? (
-                <TableLoader />
-              ) : (
-                <> */}
                 <div className="text-xl font-normal text-primary flex items-center gap-4">
-                  {shortenAddress(c2cProjectAddress)}
-                  <QrModal />
+                  <HoverCard>
+                    <HoverCardTrigger>
+                      {shortenAddress(c2cProjectAddress)}
+                    </HoverCardTrigger>
+                    <HoverCardContent className="w-full text-sm bg-secondary px-2 py-1">
+                      {c2cProjectAddress}
+                    </HoverCardContent>
+                  </HoverCard>
+                  <QrModal projectAddress={c2cProjectAddress} />
                 </div>
-                {/* </> */}
-                {/* )} */}
               </div>
             </CardContent>
           </Card>

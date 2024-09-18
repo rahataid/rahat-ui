@@ -24,6 +24,7 @@ import {
   useReactTable,
   VisibilityState,
 } from '@tanstack/react-table';
+import Pagination from 'apps/rahat-ui/src/components/pagination';
 import { UUID } from 'crypto';
 import { Trash2 } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
@@ -87,35 +88,29 @@ export function DetailsTable({ offlineBeneficiaries }: any) {
   const { id, bid } = useParams();
   const route = useRouter();
 
-  const { pagination, filters } = usePagination();
-  const projectBeneficiaries = useProjectBeneficiaries({
-    page: pagination.page,
-    perPage: pagination.perPage,
-    order: 'desc',
-    sort: 'updatedAt',
-    projectUUID: id,
-    ...filters,
-  });
+  // const { pagination, filters } = usePagination();
+  // const projectBeneficiaries = useProjectBeneficiaries({
+  //   page: pagination.page,
+  //   perPage: pagination.perPage,
+  //   order: 'desc',
+  //   sort: 'updatedAt',
+  //   projectUUID: id,
+  //   ...filters,
+  // });
   React.useEffect(() => {
-    if(offlineBeneficiaries.length>0){
-      const benDetails = offlineBeneficiaries.map((ben:any)=>{
+    if (offlineBeneficiaries.length > 0) {
+      const benDetails = offlineBeneficiaries.map((ben: any) => {
         return {
-          amount:ben?.amount,
-          name:ben?.piiData?.name,
-          status:ben?.status
-        }
-      })
-      if (
-        JSON.stringify(benDetails) !==
-        JSON.stringify(rowData)
-      ) {
+          amount: ben?.amount,
+          name: ben?.piiData?.name,
+          status: ben?.status,
+        };
+      });
+      if (JSON.stringify(benDetails) !== JSON.stringify(rowData)) {
         setRowData(benDetails);
       }
     }
-  }, [
-    offlineBeneficiaries,
-    rowData,
-  ]);
+  }, [offlineBeneficiaries, rowData]);
 
   const table = useReactTable({
     data: rowData || [],
@@ -200,30 +195,15 @@ export function DetailsTable({ offlineBeneficiaries }: any) {
           </ScrollArea>
         </Table>
       </div>
-      <div className="flex items-center justify-end space-x-2 py-4">
-        <div className="flex-1 text-sm text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length} of{' '}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
-        </div>
-        <div className="space-x-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            Previous
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            Next
-          </Button>
-        </div>
-      </div>
+      <Pagination
+        pageIndex={table.getState().pagination.pageIndex}
+        pageCount={table.getPageCount()}
+        setPageSize={table.setPageSize}
+        canPreviousPage={table.getCanPreviousPage()}
+        previousPage={table.previousPage}
+        canNextPage={table.getCanNextPage()}
+        nextPage={table.nextPage}
+      />
     </div>
   );
 }

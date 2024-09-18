@@ -27,6 +27,7 @@ import { UUID } from 'crypto';
 import { useTableColumn } from './useTableColumn';
 import { useParams, useRouter } from 'next/navigation';
 import { useGetOfflineVendors } from '@rahat-ui/query';
+import Pagination from 'apps/rahat-ui/src/components/pagination';
 
 export function OfflineTable() {
   const route = useRouter();
@@ -140,30 +141,15 @@ export function OfflineTable() {
           </ScrollArea>
         </Table>
       </div>
-      <div className="flex items-center justify-end space-x-2 py-4">
-        <div className="flex-1 text-sm text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length} of{' '}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
-        </div>
-        <div className="space-x-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            Previous
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            Next
-          </Button>
-        </div>
-      </div>
+      <Pagination
+        pageIndex={table.getState().pagination.pageIndex}
+        pageCount={table.getPageCount()}
+        setPageSize={table.setPageSize}
+        canPreviousPage={table.getCanPreviousPage()}
+        previousPage={table.previousPage}
+        canNextPage={table.getCanNextPage()}
+        nextPage={table.nextPage}
+      />
     </div>
   );
 }

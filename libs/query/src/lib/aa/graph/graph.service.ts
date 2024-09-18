@@ -13,3 +13,11 @@ benTokensAssigneds($beneficiary:String!)
     }
   }
 `
+
+
+export const GetTotalFundDistributed = gql`query MyQuery {
+  benTokensAssigneds(first: 1000) {
+    amount
+  }
+}
+`

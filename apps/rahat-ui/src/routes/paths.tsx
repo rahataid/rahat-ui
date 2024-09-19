@@ -70,11 +70,17 @@ export const defaultNavigations = [
     path: paths.dashboard.beneficiary.root,
     icon: 'UsersRound',
   },
+  {
+    title: 'Vendors',
+    path: paths.dashboard.vendor,
+    icon: 'Landmark',
+  },
 ];
 
 export const defaultSubNavigations = [
   {
     title: 'Users',
     path: paths.user.root,
+    icon: 'Users',
   },
 ];

@@ -18,6 +18,7 @@ import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { isValidPhoneNumber } from 'react-phone-number-input';
 import { Wallet } from 'lucide-react';
 import { toast } from 'react-toastify';
+import Back from '../projects/components/back';
 
 export default function EditUserProfile() {
   const { user, setUser } = useUserStore((state) => ({
@@ -75,81 +76,89 @@ export default function EditUserProfile() {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleEditUserProfile)}>
-        <div className="shadow-md p-6 rounded-sm bg-card">
-          <h1 className="text-lg font-semibold mb-6">Edit : User Profile</h1>
-          <div className="grid grid-cols-3 gap-4">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => {
-                return (
-                  <FormItem>
-                    <FormLabel>Name</FormLabel>
-                    <FormControl>
-                      <Input type="text" placeholder="Name" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            />
-
-            <FormField
-              control={form.control}
-              name="phone"
-              render={({ field }) => {
-                return (
-                  <FormItem>
-                    <FormLabel>Phone</FormLabel>
-                    <FormControl>
-                      <PhoneInput placeholder="Phone" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            />
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => {
-                return (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
-                      <Input disabled placeholder="Email" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            />
-            <FormField
-              control={form.control}
-              name="wallet"
-              render={({ field }) => {
-                return (
-                  <FormItem className="col-span-3">
-                    <FormLabel>Wallet Address</FormLabel>
-                    <FormControl>
-                      <div className="relative w-full">
-                        <Wallet className="absolute right-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                        <Input
-                          disabled={userInfo?.wallet ? true : false}
-                          type="text"
-                          placeholder="Wallet Address"
-                          {...field}
-                        />
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            />
+        <div className="p-4">
+          <div className="flex space-x-3 mb-10">
+            <Back path="/profile" />
+            <div>
+              <h1 className="text-2xl font-semibold ">Edit User Profile</h1>
+              <p className=" text-muted-foreground">Edit user details</p>
+            </div>
           </div>
-          <div className="flex justify-end mt-8">
-            <Button>Update User Profile</Button>
+          <div className="border shadow-md p-6 rounded-sm bg-card">
+            <div className="grid grid-cols-3 gap-4">
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <FormLabel>Name</FormLabel>
+                      <FormControl>
+                        <Input type="text" placeholder="Name" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
+
+              <FormField
+                control={form.control}
+                name="phone"
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <FormLabel>Phone</FormLabel>
+                      <FormControl>
+                        <PhoneInput placeholder="Phone" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <FormLabel>Email</FormLabel>
+                      <FormControl>
+                        <Input disabled placeholder="Email" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
+              <FormField
+                control={form.control}
+                name="wallet"
+                render={({ field }) => {
+                  return (
+                    <FormItem className="col-span-3">
+                      <FormLabel>Wallet Address</FormLabel>
+                      <FormControl>
+                        <div className="relative w-full">
+                          <Wallet className="absolute right-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                          <Input
+                            disabled={userInfo?.wallet ? true : false}
+                            type="text"
+                            placeholder="Wallet Address"
+                            {...field}
+                          />
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
+            </div>
+            <div className="flex justify-end mt-8">
+              <Button>Update User Profile</Button>
+            </div>
           </div>
         </div>
       </form>

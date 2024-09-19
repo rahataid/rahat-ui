@@ -35,7 +35,7 @@ export default function UsersTable({ table }: IProps) {
 
   return (
     <>
-      <div className="p-2 bg-secondary">
+      <div className="p-3 border roundedd shadow">
         <div className="flex items-center mb-2">
           <Input
             placeholder="Search User..."
@@ -75,9 +75,9 @@ export default function UsersTable({ table }: IProps) {
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-        <div className="rounded border h-[calc(100vh-180px)] bg-card">
+        <div>
           <TableComponent>
-            <ScrollArea className="h-table1">
+            <ScrollArea className="h-[calc(100vh-294px)]">
               <TableHeader className="bg-card sticky top-0">
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow key={headerGroup.id}>

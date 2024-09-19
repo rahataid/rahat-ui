@@ -1,6 +1,11 @@
 'use client';
 
-import { Tabs } from '@rahat-ui/shadcn/components/tabs';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@rahat-ui/shadcn/components/tabs';
 import { ClusterMap, StyledMapContainer, THEMES } from '@rahat-ui/shadcn/maps';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { mapboxBasicConfig } from '../../constants/config';
@@ -50,8 +55,32 @@ export default function DashboardView() {
   const newDatasource = useGetDataSource();
 
   return (
-    <div className="bg-secondary">
-      <ScrollArea className="h-[calc(100vh-68px)] p-4">
+    <div className="bg-card p-4">
+      <div className="mb-4">
+        <h1 className="font-semibold text-2xl mb-">Dashboard</h1>
+        <p className="text-muted-foreground">
+          Your Hub for Real-Time Analytics and Data Visualization of the system
+        </p>
+      </div>
+      <Tabs defaultValue="overview">
+        <TabsList className="border bg-secondary rounded w-60">
+          <TabsTrigger
+            className="w-full data-[state=active]:bg-white"
+            value="overview"
+          >
+            Overview
+          </TabsTrigger>
+          <TabsTrigger
+            className="w-full data-[state=active]:bg-white"
+            value="graphs"
+          >
+            Graphs
+          </TabsTrigger>
+        </TabsList>
+        <TabsContent value="overview">Overview</TabsContent>
+        <TabsContent value="graphs">Graphs</TabsContent>
+      </Tabs>
+      <ScrollArea className=" p-4">
         {newDatasource?.data && newDatasource?.data[0]?.data?.ui.length && (
           <DynamicReports
             className="grid gap-2"

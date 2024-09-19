@@ -71,9 +71,14 @@ const VendorList = () => {
 
   const columns = useVendorTable({ handleViewClick });
 
+  const tableData = React.useMemo(() => {
+    if (data) return data;
+    else return [];
+  }, [data]);
+
   const getVendors = useProjectAction();
   const table = useReactTable({
-    data,
+    data: tableData,
     columns,
     manualPagination: true,
     onColumnFiltersChange: setColumnFilters,

@@ -274,16 +274,16 @@ export const useRedeemToken = (projectUUID: UUID) => {
   });
 };
 
-export const useListRedemptions = (projectUUID: UUID,filters:any) => {
+export const useListRedemptions = (projectUUID: UUID,payload:any) => {
   const action = useProjectAction(['listRedemptions-rpProject']);
   return useQuery({
-    queryKey: ['redemptions', projectUUID],
+    queryKey: ['redemptions', projectUUID,payload],
     queryFn: async () => {
       const res = await action.mutateAsync({
         uuid: projectUUID,
         data: {
           action: 'rpProject.listRedemption',
-          payload: {...filters},
+          payload: {...payload},
         },
       });
       const data = res.data;
@@ -297,7 +297,7 @@ export const useListRedemptions = (projectUUID: UUID,filters:any) => {
           walletAddress: item?.Vendor?.walletAddress,
         };
       });
-      return formattedData;
+      return {redemptions:formattedData,meta:res.response.meta};
     },
   });
 };

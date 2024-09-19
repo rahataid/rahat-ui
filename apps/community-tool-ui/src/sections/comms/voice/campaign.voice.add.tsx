@@ -25,7 +25,7 @@ import {
   TabsList,
   TabsTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tabs';
-import { Check, ChevronsUpDown, Plus } from 'lucide-react';
+import { Check, ChevronsUpDown, LoaderIcon, Plus } from 'lucide-react';
 import { useState } from 'react';
 // import {
 //   useBeneficiaryPii,
@@ -154,6 +154,7 @@ const VoiceCampaignAddDrawer = () => {
     };
     createCampaign.mutate(createCampagin);
     setIsOpen(false);
+    form.reset();
   };
   const handleFileChange = async (event) => {
     const file = event.target.files[0];
@@ -161,7 +162,6 @@ const VoiceCampaignAddDrawer = () => {
     const formData = new FormData();
     formData.append('file', file);
     const { data: afterUpload } = await uploadFile.mutateAsync(formData);
-    console.log(afterUpload);
     form.setValue('file', afterUpload);
   };
 
@@ -281,8 +281,8 @@ const VoiceCampaignAddDrawer = () => {
                       <div className="grid w-full max-w-sm items-center gap-1.5">
                         <Label>Audio</Label>
                         <Input
-                          // id="audio"
-                          // accept=".wav"
+                          id="audio"
+                          accept=".wav"
                           onChange={handleFileChange}
                           type="file"
                         />
@@ -316,6 +316,7 @@ const VoiceCampaignAddDrawer = () => {
               <Button
                 onClick={form.handleSubmit(handleCreateCampaign)}
                 className="w-full"
+                disabled={!uploadFile.isSuccess}
               >
                 Submit
               </Button>

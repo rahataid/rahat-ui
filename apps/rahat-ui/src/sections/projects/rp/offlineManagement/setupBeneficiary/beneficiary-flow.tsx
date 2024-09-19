@@ -64,7 +64,9 @@ const SetupBeneficiaryPage = () => {
       hideAssignedBeneficiaries: true,
     },
   );
-  const { data: benGroups } = useFindAllBeneficiaryGroups(id as UUID,{disableSync:true});
+  const { data: benGroups } = useFindAllBeneficiaryGroups(id as UUID, {
+    disableSync: true,
+  });
 
   const projectBeneficiaries = useProjectBeneficiaries({
     page: pagination.page,
@@ -154,6 +156,8 @@ const SetupBeneficiaryPage = () => {
 
   const handlePrevious = () => {
     if (currentStep > 0) {
+      setError('');
+
       setCurrentStep(currentStep - 1);
     }
   };

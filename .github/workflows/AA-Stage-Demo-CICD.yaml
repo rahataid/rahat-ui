@@ -24,8 +24,8 @@ jobs:
 
       - name: import env file
         run: |
-          touch ./.env && echo "$env_main" >> ./.env 
-        #   touch ./.npmrc && echo "$env_npmrc" >> ./.npmrc
+          touch ./.env && echo "$env_main" >> ./.env && \
+          touch ./.npmrc && echo "$env_npmrc" >> ./.npmrc
 
       - uses: actions/setup-node@v3
         with:
@@ -72,8 +72,8 @@ jobs:
 
       - name: import env file
         run: |
-          touch ./.env && echo "$env_main" >> ./.env 
-          # touch ./.npmrc && echo "$env_npmrc" >> ./.npmrc
+          touch ./.env && echo "$env_main" >> ./.env && \
+          touch ./.npmrc && echo "$env_npmrc" >> ./.npmrc
 
       - uses: actions/setup-node@v3
         with:

@@ -48,14 +48,13 @@ const VendorList = () => {
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
+  const [meta, setMeta] = React.useState();
 
   const handleViewClick = (rowData: any) => {
     router.push(
       `/projects/rp/${uuid}/vendors/${rowData.walletAddress}?name=${rowData.name}&&walletAddress=${rowData.walletAddress} &&vendorId=${rowData.uuid}`,
     );
   };
-
-  const meta = useBeneficiaryStore((state) => state.meta);
 
   const {
     pagination,
@@ -110,7 +109,7 @@ const VendorList = () => {
     const filteredData = result?.data;
 
     console.log({ filteredData });
-
+    setMeta(result.response.meta);
     setData(filteredData);
   };
 

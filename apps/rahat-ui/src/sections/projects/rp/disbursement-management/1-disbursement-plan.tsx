@@ -120,7 +120,7 @@ const DisbursementPlan: FC<DisbursementPlanProps> = ({
         projectBeneficiaries.data?.data.map((beneficiary) => {
           const beneficiaryDisbursement = disbursements?.data?.find(
             (disbursement: any) =>
-              disbursement.walletAddress === beneficiary.walletAddress ,
+              disbursement.walletAddress === beneficiary.walletAddress,
           );
           return {
             ...beneficiary,
@@ -128,13 +128,10 @@ const DisbursementPlan: FC<DisbursementPlanProps> = ({
             status: beneficiaryDisbursement?.status || 'NOT_SYNCED',
           };
         });
-        const unSyncedBeneficiaries = projectBeneficiaryDisbursements?.filter(
-          (ben:any)=> ben?.status !=='SYNCED_OFFLINE'
-        )
-      if (
-        JSON.stringify(unSyncedBeneficiaries) !==
-        JSON.stringify(rowData)
-      ) {
+      const unSyncedBeneficiaries = projectBeneficiaryDisbursements?.filter(
+        (ben: any) => ben?.status !== 'SYNCED_OFFLINE',
+      );
+      if (JSON.stringify(unSyncedBeneficiaries) !== JSON.stringify(rowData)) {
         setRowData(unSyncedBeneficiaries);
       }
     }

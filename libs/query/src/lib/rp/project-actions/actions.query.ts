@@ -219,7 +219,7 @@ export const useUpdateRPDisbursement = () => {
 
 export const useBulkCreateDisbursement = (projectUUID: UUID) => {
   const action = useProjectAction(['createBulkDisbursement-rpProject']);
-
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (data: {
       amount: number;
@@ -233,6 +233,14 @@ export const useBulkCreateDisbursement = (projectUUID: UUID) => {
         },
       });
       return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [MS_ACTIONS.BENEFICIARY.LIST_BY_PROJECT, {}],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['disbursements', projectUUID],
+      });
     },
   });
 };
@@ -254,16 +262,16 @@ export const useRedeemToken = (projectUUID: UUID) => {
   });
 };
 
-export const useListRedemptions = (projectUUID: UUID,payload:any) => {
+export const useListRedemptions = (projectUUID: UUID, payload: any) => {
   const action = useProjectAction(['listRedemptions-rpProject']);
   return useQuery({
-    queryKey: ['redemptions', projectUUID,payload],
+    queryKey: ['redemptions', projectUUID, payload],
     queryFn: async () => {
       const res = await action.mutateAsync({
         uuid: projectUUID,
         data: {
           action: 'rpProject.listRedemption',
-          payload: {...payload},
+          payload: { ...payload },
         },
       });
       const data = res.data;
@@ -277,7 +285,7 @@ export const useListRedemptions = (projectUUID: UUID,payload:any) => {
           walletAddress: item?.Vendor?.walletAddress,
         };
       });
-      return {redemptions:formattedData,meta:res.response.meta};
+      return { redemptions: formattedData, meta: res.response.meta };
     },
   });
 };

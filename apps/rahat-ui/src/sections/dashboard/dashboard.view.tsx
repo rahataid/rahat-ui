@@ -57,8 +57,8 @@ export default function DashboardView() {
   return (
     <div className="bg-card p-4">
       <div className="mb-4">
-        <h1 className="font-semibold text-2xl mb-">Dashboard</h1>
-        <p className="text-muted-foreground">
+        <h1 className="font-semibold text-[28px]">Dashboard</h1>
+        <p className="text-muted-foreground text-base">
           Your Hub for Real-Time Analytics and Data Visualization of the system
         </p>
       </div>

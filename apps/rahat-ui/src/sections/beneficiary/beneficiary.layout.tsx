@@ -13,7 +13,7 @@ import { NavItem } from './nav-items.types';
 
 type BeneficiaryLayoutProps = {
   children: React.ReactNode | React.ReactNode[];
-  menuItems: NavItem[];
+  menuItems?: NavItem[];
 };
 
 const BeneficiaryLayout: FC<BeneficiaryLayoutProps> = ({
@@ -48,23 +48,9 @@ const BeneficiaryLayout: FC<BeneficiaryLayoutProps> = ({
   };
 
   return (
-    <>
-      <Tabs defaultValue="list">
-        <ResizablePanelGroup direction="horizontal">
-          <ResizablePanel defaultSize={20} minSize={20} maxSize={20}>
-            {menuItems.map((item) => (
-              <BeneficiaryNavView
-                key={item.title}
-                title={item.title}
-                items={item.children}
-                item={item}
-              />
-            ))}
-          </ResizablePanel>
-          {renderChildren()}
-        </ResizablePanelGroup>
-      </Tabs>
-    </>
+    <ResizablePanelGroup direction="horizontal">
+      {renderChildren()}
+    </ResizablePanelGroup>
   );
 };
 

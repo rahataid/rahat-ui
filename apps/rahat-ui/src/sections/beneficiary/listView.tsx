@@ -30,6 +30,7 @@ import CreateGroupModal from './components/createGroupModal';
 import { DatePicker } from '../../components/datePicker';
 import FiltersTags from '../projects/components/filtersTags';
 import Image from 'next/image';
+import AddButton from '../projects/components/add.btn';
 
 type IProps = {
   table: Table<ListBeneficiary>;
@@ -179,7 +180,7 @@ export default function ListView({
                 })}
             </DropdownMenuContent>
           </DropdownMenu>
-
+          <AddButton name="Beneficiary" path={`/beneficiary/add`} />
           {table.getSelectedRowModel().rows.length ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

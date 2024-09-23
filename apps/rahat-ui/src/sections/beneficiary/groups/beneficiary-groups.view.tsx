@@ -108,11 +108,6 @@ function BeneficiaryGroupsView() {
   return (
     <>
       <div className="p-4">
-        <div className="mb-4">
-          <h1 className="font-semibold text-2xl text-label">
-            Beneficiary Groups
-          </h1>
-        </div>
         <BeneficiaryGroupsListView
           table={table}
           handleBulkAssign={handleBulkAssign}

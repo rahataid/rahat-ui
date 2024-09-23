@@ -163,6 +163,20 @@ function BeneficiaryView() {
 
   return (
     <Tabs defaultValue="beneficiary">
+      <TabsContent value="beneficiary">
+        <div>
+          <h1 className="font-semibold text-2xl text-label pl-4">
+            Beneficiary
+          </h1>
+        </div>
+      </TabsContent>
+      <TabsContent value="beneficiaryGroups">
+        <div>
+          <h1 className="font-semibold text-2xl text-label pl-4">
+            Beneficiary Groups
+          </h1>
+        </div>
+      </TabsContent>
       <div className="flex justify-between items-center p-4">
         <TabsList className="border bg-secondary rounded">
           <TabsTrigger
@@ -178,18 +192,12 @@ function BeneficiaryView() {
             Beneficiary Groups
           </TabsTrigger>
         </TabsList>
-        <div className="flex items-center space-x-2">
-          <Button variant="outline">
-            <CloudDownload className="mr-1" /> Import beneficiaries
-          </Button>
-          <AddButton name="Beneficiary" path={`/beneficiary/add`} />
-        </div>
+        <Button variant="outline">
+          <CloudDownload className="mr-1" /> Import beneficiaries
+        </Button>
       </div>
       <TabsContent value="beneficiary">
         <div className="p-4">
-          <div className="mb-4">
-            <h1 className="font-semibold text-2xl text-label">Beneficiary</h1>
-          </div>
           <BeneficiaryListView
             table={table}
             handleCreateGroup={handleCreateGroup}

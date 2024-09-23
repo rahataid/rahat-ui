@@ -33,6 +33,7 @@ import {
   RadioGroup,
   RadioGroupItem,
 } from '@rahat-ui/shadcn/src/components/ui/radio-group';
+import { UUID } from 'crypto';
 
 export default function AddBeneficiaryForm() {
   const addBeneficiary = useCreateBeneficiary();
@@ -62,37 +63,31 @@ export default function AddBeneficiaryForm() {
   });
 
   const handleCreateBeneficiary = async (data: z.infer<typeof FormSchema>) => {
-    // try {
-    //   const result = await addBeneficiary.mutateAsync({
-    //     gender: data.gender,
-    //     location: data.address,
-    //     age: data.age,
-    //     bankedStatus: data.bankedStatus || 'UNKNOWN',
-    //     internetStatus: data.internetStatus || 'UNKNOWN',
-    //     phoneStatus: data.phoneStatus || 'UNKNOWN',
-    //     piiData: {
-    //       email: data.email,
-    //       name: data.name,
-    //       phone: data.phone,
-    //     },
-    //     walletAddress: data.walletAddress,
-    //     projectUUIDs: [id],
-    //   });
-    //   if (result) {
-    //     toast.success('Beneficiary added successfully!');
-    //     router.push('/beneficiary');
-    //     form.reset();
-    //   }
-    // } catch (e) {
-    //   toast.error(e?.response?.data?.message || 'Failed to add beneficiary');
-    // }
+    try {
+      const result = await addBeneficiary.mutateAsync({
+        gender: data.gender,
+        piiData: {
+          email: data.address,
+          name: data.name,
+          phone: data.phone,
+        },
+        projectUUIDs: [id],
+      });
+      if (result) {
+        toast.success('Beneficiary added successfully!');
+        router.push('/beneficiary');
+        form.reset();
+      }
+    } catch (e) {
+      toast.error(e?.response?.data?.message || 'Failed to add beneficiary');
+    }
   };
 
-  // useEffect(() => {
-  //   if (addBeneficiary.isSuccess) {
-  //     router.push(`/projects/rp/${id}/beneficiary`);
-  //   }
-  // }, [addBeneficiary.isSuccess, id, router]);
+  useEffect(() => {
+    if (addBeneficiary.isSuccess) {
+      router.push(`/projects/el-kenya/${id}/beneficiary`);
+    }
+  }, [addBeneficiary.isSuccess, id, router]);
 
   return (
     <>

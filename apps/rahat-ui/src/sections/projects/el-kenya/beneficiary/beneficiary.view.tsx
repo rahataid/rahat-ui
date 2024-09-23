@@ -45,7 +45,7 @@ export default function BeneficiaryView() {
   const columns = useElkenyaBeneficiaryTableColumns();
   const table = useReactTable({
     manualPagination: true,
-    data: [
+    data: beneficiaries?.data?.data || [
       { uuid: '123', name: 'A1' },
       { uuid: '456', name: 'B1' },
     ],

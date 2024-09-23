@@ -14,7 +14,7 @@ const hooks = {
   [ProjectTypes.CVA]: useCVANavItems,
   [ProjectTypes.C2C]: useC2CNavItems,
   [ProjectTypes.RP]: useRPNavItems,
-  [ProjectTypes.EL_KENYA]: useELKenyaNavItems,
+  'el-kenya': useELKenyaNavItems,
   ALL: useProjectListNavItems,
 };
 

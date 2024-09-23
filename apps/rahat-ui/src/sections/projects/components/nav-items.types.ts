@@ -17,7 +17,7 @@ export type ProjectNavItemsReturnType = {
   [key: string]: any;
 };
 
-export type ProjectType = ProjectTypes | 'ALL' | 'C2C';
+export type ProjectType = ProjectTypes | 'ALL' | 'C2C' | 'el-kenya';
 
 export type useProjectNavItemsType = (
   projectType: ProjectType,

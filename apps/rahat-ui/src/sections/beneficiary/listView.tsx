@@ -109,7 +109,7 @@ export default function ListView({
           .rows.map((row) => row.original.uuid)}
       />
       <div className="border rounded shadow p-3">
-        <div className="flex items-center mb-2">
+        <div className="flex space-x-2 items-center mb-2">
           <Input
             placeholder="Filter beneficiary..."
             value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}

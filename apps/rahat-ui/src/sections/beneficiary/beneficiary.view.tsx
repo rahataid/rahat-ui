@@ -36,6 +36,7 @@ import { useBeneficiaryTableColumns } from './useBeneficiaryColumns';
 import BeneficiaryGroupsView from './groups/beneficiary-groups.view';
 import { CloudDownload, Download } from 'lucide-react';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import AddButton from '../projects/components/add.btn';
 
 function BeneficiaryView() {
   const router = useRouter();
@@ -177,9 +178,12 @@ function BeneficiaryView() {
             Beneficiary Groups
           </TabsTrigger>
         </TabsList>
-        <Button variant="outline">
-          <CloudDownload className="mr-1" /> Import beneficiaries
-        </Button>
+        <div className="flex items-center space-x-2">
+          <Button variant="outline">
+            <CloudDownload className="mr-1" /> Import beneficiaries
+          </Button>
+          <AddButton name="Beneficiary" path={`/beneficiary/add`} />
+        </div>
       </div>
       <TabsContent value="beneficiary">
         <div className="p-4">

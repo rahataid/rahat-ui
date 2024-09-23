@@ -22,10 +22,10 @@ const ProjectNavView: FC<ProjectNavViewProps> = ({ title, items }) => {
 
   return (
     <>
-      <div className="pb-2">
-        <div className="flex items-center justify-between p-4">
+      <aside className="pb-2 pt-4 bg-card border-r h-[calc(100vh-58px)] flex flex-col justify-between">
+        {/* <div className="flex items-center justify-between p-4">
           <h1 className="font-semibold text-xl text-primary">{title}</h1>
-        </div>
+        </div> */}
         <div className="px-2">
           <nav>
             {items?.map((item) => (
@@ -33,7 +33,7 @@ const ProjectNavView: FC<ProjectNavViewProps> = ({ title, items }) => {
                 <div
                   className={`flex justify-between p-2 mb-1 items-center rounded-md cursor-pointer ${
                     pathName === item.path
-                      ? 'bg-primary text-white'
+                      ? 'bg-sky-100 text-primary'
                       : 'hover:bg-secondary'
                   }`}
                   onClick={() => handleNav(item)}
@@ -43,7 +43,6 @@ const ProjectNavView: FC<ProjectNavViewProps> = ({ title, items }) => {
                     item.component
                   ) : (
                     <>
-                      {' '}
                       <div className="flex gap-3 items-center">
                         {item.icon}
                         <p>{item.title}</p>
@@ -93,7 +92,6 @@ const ProjectNavView: FC<ProjectNavViewProps> = ({ title, items }) => {
                           item.component
                         ) : (
                           <>
-                            {' '}
                             <div className="flex gap-3 items-center">
                               {subItem.icon}
                               <p>{subItem.title}</p>
@@ -109,7 +107,29 @@ const ProjectNavView: FC<ProjectNavViewProps> = ({ title, items }) => {
             ))}
           </nav>
         </div>
-      </div>
+        <nav className="mt-auto flex flex-col  gap-4 px-2 sm:py-5">
+          <div
+            className="flex items-center gap-3 p-2 hover:bg-secondary cursor-pointer rounded-md"
+            onClick={() => router.push('/projects')}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              className="h-6 w-6"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1m0-2v-5m0-1V4"
+              />
+            </svg>
+            <p>Exit Project</p>
+          </div>
+        </nav>
+      </aside>
     </>
   );
 };

@@ -49,7 +49,13 @@ export default function UserView() {
 
   return (
     <>
-      <UsersTable table={table} />
+      <div className="p-4">
+        <div className="mb-4">
+          <h1 className="font-semibold text-2xl text-label">Users</h1>
+          <p className="text-sub-label">Here is the list of all the users</p>
+        </div>
+        <UsersTable table={table} />
+      </div>
       <CustomPagination
         currentPage={pagination.page}
         handleNextPage={setNextPage}

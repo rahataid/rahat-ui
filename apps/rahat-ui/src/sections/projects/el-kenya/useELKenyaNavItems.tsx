@@ -1,11 +1,11 @@
 import {
   ArrowRightLeft,
   CloudOff,
-  Coins,
   Gift,
   HandCoins,
   LayoutDashboard,
   Speech,
+  Ticket,
   UsersRound,
 } from 'lucide-react';
 import { useParams } from 'next/navigation';
@@ -45,7 +45,7 @@ export const useNavItems = () => {
         {
           title: 'Vouchers',
           path: `/projects/el-kenya/${id}/vouchers`,
-          icon: <Coins size={18} strokeWidth={1.5} />,
+          icon: <Ticket size={18} strokeWidth={1.5} />,
         },
         {
           title: 'Offline Management',
@@ -53,8 +53,8 @@ export const useNavItems = () => {
           icon: <CloudOff size={18} strokeWidth={1.5} />,
         },
         {
-          title: 'Reimburse',
-          path: `/projects/el-kenya/${id}/redemptions`,
+          title: 'Claim',
+          path: `/projects/el-kenya/${id}/claim`,
           icon: <Gift size={18} strokeWidth={1.5} />,
         },
         {

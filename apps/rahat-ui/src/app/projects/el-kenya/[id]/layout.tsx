@@ -37,9 +37,7 @@ export default function ProjectLayoutRoot({
   };
   return (
     <GarphQlProvider>
-      <ProjectLayout projectType={ProjectTypes.EL_KENYA}>
-        {renderChildren()}
-      </ProjectLayout>
+      <ProjectLayout projectType={'el-kenya'}>{renderChildren()}</ProjectLayout>
     </GarphQlProvider>
   );
 }

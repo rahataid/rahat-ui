@@ -7,6 +7,7 @@ import { useProjectNavItemsType } from './nav-items.types';
 import { useNavItems as useC2CNavItems } from '../c2c/useNavItems';
 import { useNavItems as useRPNavItems } from '../rp/useRPNavItems';
 import { useNavItems as useELKenyaNavItems } from '../el-kenya/useELKenyaNavItems';
+import { useNavItems as useCambodiaNavItems } from '../cambodia/useCambodiaNavItems';
 
 const hooks = {
   [ProjectTypes.ANTICIPATORY_ACTION]: useAANavItems,
@@ -15,6 +16,7 @@ const hooks = {
   [ProjectTypes.C2C]: useC2CNavItems,
   [ProjectTypes.RP]: useRPNavItems,
   'el-kenya': useELKenyaNavItems,
+  'el-cambodia': useCambodiaNavItems,
   ALL: useProjectListNavItems,
 };
 

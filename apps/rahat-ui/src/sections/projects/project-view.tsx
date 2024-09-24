@@ -14,7 +14,6 @@ export default function ProjectListView() {
   // const { pagination, setNextPage, setPrevPage, setPerPage } = usePagination();
   const { data } = useProjectList();
   const AddProjectModal = useBoolean();
-
   const [filterValue, setFilterValue] = useState([]);
 
   const openAddProjectModal = () => {
@@ -105,7 +104,7 @@ export default function ProjectListView() {
     </div>
   );
 }
-function getImageForProjectType(type: String) {
+function getImageForProjectType(type: string) {
   switch (type) {
     case 'el':
       return '/el/el_logo_dark.png';

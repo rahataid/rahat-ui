@@ -11,7 +11,19 @@ import HeaderWithBack from '../../components/header.with.back';
 import BeneficiaryView from './beneficiary.view';
 import BeneficiaryGroupsView from './beneficiary.groups.view';
 
-export default function VouchersManage() {
+interface VouchersManageProps {
+  handleStepDataChange: (e) => void;
+  handleNext: any;
+  setBeneficiaryGroupSelected: any;
+  stepData: any;
+}
+
+export default function VouchersManage({
+  handleStepDataChange,
+  handleNext,
+  setBeneficiaryGroupSelected,
+  stepData,
+}: VouchersManageProps) {
   const { id } = useParams();
   return (
     <div className="p-4 h-[calc(100vh-65px)]">
@@ -63,7 +75,10 @@ export default function VouchersManage() {
           </TabsList>
         </div>
         <TabsContent value="beneficiary">
-          <BeneficiaryView />
+          <BeneficiaryView
+            handleStepDataChange={handleStepDataChange}
+            handleNext={handleNext}
+          />
           {/* <CustomPagination
             meta={data?.response?.meta || { total: 0, currentPage: 0 }}
             handleNextPage={setNextPage}
@@ -75,7 +90,12 @@ export default function VouchersManage() {
           /> */}
         </TabsContent>
         <TabsContent value="beneficiaryGroups">
-          <BeneficiaryGroupsView />
+          <BeneficiaryGroupsView
+            handleStepDataChange={handleStepDataChange}
+            handleNext={handleNext}
+            setBeneficiaryGroupSelected={setBeneficiaryGroupSelected}
+            stepData={stepData}
+          />
         </TabsContent>
       </Tabs>
     </div>

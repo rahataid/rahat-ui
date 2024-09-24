@@ -323,13 +323,13 @@ function DetailsSection({
           </TooltipProvider>
         </div>
       </div>
-      <div>
+      {/* <div>
         <AssignToken
           loading={assignLoading}
           beneficiary={beneficiaryDetails}
           handleSubmit={handleAssignSubmit}
         />
-      </div>
+      </div> */}
     </div>
   );
 }

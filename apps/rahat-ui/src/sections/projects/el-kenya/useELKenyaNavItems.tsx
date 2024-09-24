@@ -49,7 +49,7 @@ export const useNavItems = () => {
         },
         {
           title: 'Offline Management',
-          path: `/projects/el-kenya/${id}/offlineManagement`,
+          path: `/projects/el-kenya/${id}/offline-management`,
           icon: <CloudOff size={18} strokeWidth={1.5} />,
         },
         {

@@ -7,15 +7,16 @@ import {
   VisibilityState,
 } from '@tanstack/react-table';
 import { UUID } from 'crypto';
-import { useParams } from 'next/navigation';
-import { useElkenyaBeneficiaryTableColumns } from './use.beneficiary.table.columns';
+import { useParams, useRouter } from 'next/navigation';
+import useTableColumn from './use.table.columns';
 import React from 'react';
 import ElkenyaTable from '../table.component';
 import SearchInput from '../../components/search.input';
-import AddButton from '../../components/add.btn';
-import SelectComponent from '../select.component';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { Plus } from 'lucide-react';
 
-export default function BeneficiaryView() {
+export default function OfflineManagementView() {
+  const router = useRouter();
   const { id } = useParams() as { id: UUID };
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
@@ -42,7 +43,7 @@ export default function BeneficiaryView() {
   });
   const meta = beneficiaries.data.response?.meta;
 
-  const columns = useElkenyaBeneficiaryTableColumns();
+  const columns = useTableColumn();
   const table = useReactTable({
     manualPagination: true,
     data: beneficiaries?.data?.data || [
@@ -66,27 +67,31 @@ export default function BeneficiaryView() {
   });
   return (
     <>
-      <div className="p-4 bg-secondary h-[calc(100vh-65px)]">
+      <div className="p-4">
         <div className="mb-4">
-          <h1 className="font-semibold text-2xl mb-">Beneficiaries</h1>
+          <h1 className="font-semibold text-2xl mb-">Offline Management</h1>
           <p className="text-muted-foreground">
-            Track all the beneficiaries reports here.
+            Here is the list of all the vendors
           </p>
         </div>
         <div className="rounded border bg-card p-4">
           <div className="flex justify-between space-x-2 mb-2">
             <SearchInput
               className="w-full"
-              name="beneficiary"
-              onSearch={() => {}}
+              name="vendors"
+              onSearch={() => { }}
             />
-          </div>
-          <div className="flex justify-between gap-2 mb-4">
-            <SelectComponent name="Voucher Type" />
-            <SelectComponent name="Beneficiary Type" />
-            <SelectComponent name="Eye Checkup Status" />
-            <SelectComponent name="Glasses Status" />
-            <SelectComponent name="Voucher Status" />
+            <Button
+              type="button"
+            // onClick={() =>
+            //   router.push(
+            //     `/projects/el-kenya/${id}/offline-management`,
+            //   )
+            // }
+            >
+              <Plus size={18} className="mr-1" />
+              Setup offline beneficiary
+            </Button>
           </div>
           <ElkenyaTable table={table} />
         </div>

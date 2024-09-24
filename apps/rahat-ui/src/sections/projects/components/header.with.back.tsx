@@ -13,7 +13,7 @@ export default function HeaderWithBack({ title, path, subtitle }: IProps) {
         <Back path={path} />
         <h1 className="font-semibold text-[28px]">{title}</h1>
       </div>
-      <p className="ml-9 text-sub-label text-base">{subtitle}</p>
+      <p className="ml-9 text-muted-foreground text-base">{subtitle}</p>
     </div>
   );
 }

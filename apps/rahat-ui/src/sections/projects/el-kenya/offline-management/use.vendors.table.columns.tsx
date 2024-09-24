@@ -1,7 +1,7 @@
 import { ColumnDef } from '@tanstack/react-table';
-import { Eye, Pencil } from 'lucide-react';
+import { Eye, Pencil, Trash } from 'lucide-react';
 
-export const useBeneficiaryTableColumns = () => {
+export const useVendorsTableColumns = () => {
   const columns: ColumnDef<any>[] = [
     {
       accessorKey: 'name',
@@ -9,9 +9,9 @@ export const useBeneficiaryTableColumns = () => {
       cell: ({ row }) => <div>{row.getValue('name')}</div>,
     },
     {
-      accessorKey: 'voucherStatus',
-      header: 'Voucher Status',
-      cell: ({ row }) => <div>{row.getValue('voucherStatus')}</div>,
+      accessorKey: 'voucherType',
+      header: 'Voucher Type',
+      cell: ({ row }) => <div>{row.getValue('voucherType')}</div>,
     },
     {
       id: 'actions',
@@ -19,10 +19,10 @@ export const useBeneficiaryTableColumns = () => {
       enableHiding: false,
       cell: ({ row }) => {
         return (
-          <Pencil
+          <Trash
             size={20}
             strokeWidth={1.5}
-            className="cursor-pointer text-primary"
+            className="cursor-pointer text-red-500"
             // onClick={() => openSplitDetailView(row.original)}
           />
         );

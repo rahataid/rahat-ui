@@ -8,16 +8,14 @@ import {
 } from '@tanstack/react-table';
 import { UUID } from 'crypto';
 import { useParams, useRouter } from 'next/navigation';
-import useTableColumn from './use.table.columns';
+import { useBeneficiaryTableColumns } from './use.beneficiary.table.columns';
 import React from 'react';
 import ElkenyaTable from '../table.component';
 import SearchInput from '../../components/search.input';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { Plus } from 'lucide-react';
 
-export default function OfflineManagementView() {
+export default function BeneficiaryView() {
   const router = useRouter();
-  const { id, Id } = useParams() as { id: UUID; Id: UUID };
+  const { id } = useParams() as { id: UUID };
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
 
@@ -43,7 +41,7 @@ export default function OfflineManagementView() {
   });
   const meta = beneficiaries.data.response?.meta;
 
-  const columns = useTableColumn();
+  const columns = useBeneficiaryTableColumns();
   const table = useReactTable({
     manualPagination: true,
     data: beneficiaries?.data?.data || [
@@ -66,34 +64,17 @@ export default function OfflineManagementView() {
     },
   });
   return (
-    <>
-      <div className="p-4">
-        <div className="mb-4">
-          <h1 className="font-semibold text-[28px]">Offline Management</h1>
-          <p className="text-muted-foreground text-base">
-            Here is the list of all the vendors
-          </p>
+    <div className="p-4">
+      <div className="rounded border bg-card p-4">
+        <div className="flex justify-between space-x-2 mb-2">
+          <SearchInput
+            className="w-full"
+            name="beneficiary"
+            onSearch={() => {}}
+          />
         </div>
-        <div className="rounded border bg-card p-4">
-          <div className="flex justify-between space-x-2 mb-2">
-            <SearchInput
-              className="w-full"
-              name="vendors"
-              onSearch={() => {}}
-            />
-            <Button
-              type="button"
-              onClick={() =>
-                router.push(`/projects/el-kenya/${id}/offline-management/setup`)
-              }
-            >
-              <Plus size={18} className="mr-1" />
-              Setup offline beneficiary
-            </Button>
-          </div>
-          <ElkenyaTable table={table} />
-        </div>
+        <ElkenyaTable table={table} tableHeight="h-[calc(100vh-700px)]" />
       </div>
-    </>
+    </div>
   );
 }

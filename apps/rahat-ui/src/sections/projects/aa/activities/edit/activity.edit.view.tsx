@@ -113,12 +113,15 @@ export default function EditActivity() {
         transportId: z
           .string()
           .min(1, { message: 'Please select communication type' }),
-        message: z.string().optional(),
+        message: z.string().or(z.object({})).optional(),
         audioURL: z
-          .object({
-            mediaURL: z.string().optional(),
-            fileName: z.string().optional(),
-          })
+          .string()
+          .or(
+            z.object({
+              mediaURL: z.string().optional(),
+              fileName: z.string().optional(),
+            })
+          )
           .optional(),
         sessionId: z.string().optional(),
         communicationId: z.string().optional(),
@@ -218,6 +221,7 @@ export default function EditActivity() {
             ...(comms.sessionId && { sessionId: comms.sessionId }),
             ...(comms.communicationId && { communicationId: comms.communicationId })
           });
+          delete comms.audioURL;
         } else {
           activityCommunicationPayload.push({
             groupType: comms.groupType,

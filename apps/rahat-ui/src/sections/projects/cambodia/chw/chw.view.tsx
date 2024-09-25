@@ -21,8 +21,18 @@ import CambodiaTable from '../table.component';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import { filter } from 'lodash';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
-import { Search } from 'lucide-react';
+import { Coins, Home, Search, Settings2, Users } from 'lucide-react';
 import { useDebounce } from 'apps/rahat-ui/src/utils/useDebouncehooks';
+import DataCard from 'apps/rahat-ui/src/components/dataCard';
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 
 export default function CHWView() {
   const { id } = useParams() as { id: UUID };
@@ -87,16 +97,34 @@ export default function CHWView() {
   });
   return (
     <>
-      <div className="p-4 bg-secondary h-[calc(100vh-65px)]">
+      <div className="p-4 bg-white ">
         <div className="mb-4">
-          <h1 className="font-semibold text-2xl mb-">
-            Community Health Worker
-          </h1>
+          <h1 className="font-semibold text-2xl mb-">Health Workers</h1>
           <p className="text-muted-foreground">
-            Track all the community health worker here.
+            Track all the health workers here.
           </p>
         </div>
-        <div className="rounded border bg-card p-4">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-7">
+          <DataCard
+            title="Home Visits"
+            number="1,235"
+            Icon={Home}
+            className="rounded-lg border-solid "
+          />
+          <DataCard
+            title="Sales Count"
+            number="36,598"
+            Icon={Coins}
+            className="rounded-lg border-solid "
+          />
+          <DataCard
+            title="Leads Provided"
+            number="325"
+            Icon={Users}
+            className="rounded-lg border-solid"
+          />
+        </div>
+        <div className="rounded-lg border bg-card p-4 ">
           <div className="flex justify-between space-x-2 mb-2">
             <SearchInput
               name="koboUsername"
@@ -108,24 +136,49 @@ export default function CHWView() {
               onSearch={(event) => handleFilterChange(event)}
             />
 
-            {/* <AddButton
-              path={`/projects/el-kenya/${id}/beneficiary/add`}
-              name="Beneficiary"
-            /> */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="ml-auto">
+                  <Settings2 className="mr-2 h-4 w-5" />
+                  View
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>Toggle Columns</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                {table
+                  .getAllColumns()
+                  .filter((column) => column.getCanHide())
+                  .map((column) => {
+                    return (
+                      <DropdownMenuCheckboxItem
+                        key={column.id}
+                        className="capitalize"
+                        checked={column.getIsVisible()}
+                        onCheckedChange={(value) =>
+                          column.toggleVisibility(!!value)
+                        }
+                      >
+                        {column.id}
+                      </DropdownMenuCheckboxItem>
+                    );
+                  })}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
 
-          <CambodiaTable table={table} />
-          <CustomPagination
-            currentPage={pagination.page}
-            handleNextPage={setNextPage}
-            handlePrevPage={setPrevPage}
-            handlePageSizeChange={setPerPage}
-            meta={(data?.response?.meta as any) || { total: 0, currentPage: 0 }}
-            perPage={pagination?.perPage}
-            total={data?.response?.meta?.total || 0}
-          />
+          <CambodiaTable table={table} tableHeight="h-[calc(100vh-460px)] " />
         </div>
       </div>
+      <CustomPagination
+        currentPage={pagination.page}
+        handleNextPage={setNextPage}
+        handlePrevPage={setPrevPage}
+        handlePageSizeChange={setPerPage}
+        meta={(data?.response?.meta as any) || { total: 0, currentPage: 0 }}
+        perPage={pagination?.perPage}
+        total={data?.response?.meta?.total || 0}
+      />
     </>
   );
 }

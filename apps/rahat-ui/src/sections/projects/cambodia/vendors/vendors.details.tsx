@@ -4,23 +4,28 @@ import {
   TabsList,
   TabsTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/tabs';
-import Back from '../../components/back';
-// import VendorsTransactionsHistory from './vendors.transactions.history';
-// import VendorsBeneficiaryList from './vendors.beneficiary.list';
 import { useParams } from 'next/navigation';
+import HeaderWithBack from '../../components/header.with.back';
+import TransactionHistoryView from './transaction.history.view';
+import ConversionListView from './conversion.list.view';
+import HealthWorkersView from './health.workers.view';
+import { Check } from 'lucide-react';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 
 export default function VendorsDetail() {
   const { id } = useParams();
   return (
     <div className="h-[calc(100vh-95px)] m-4">
-      <div className="flex space-x-3 mb-10">
-        <Back path={`/projects/el-kenya/${id}/vendors`} />
-        <div>
-          <h1 className="text-2xl font-semibold">Vendor details</h1>
-          <p className=" text-muted-foreground">
-            Here is the detailed view of selected vendor
-          </p>
-        </div>
+      <div className="flex justify-between items-center">
+        <HeaderWithBack
+          title="Vendor details"
+          subtitle="Here is the detailed view of selected vendor"
+          path={`/projects/el-kenya/${id}/vendors`}
+        />
+        <Button variant="outline" className="border-primary text-primary px-8">
+          Approve
+          <Check className="ml-2" size={16} />
+        </Button>
       </div>
       <div className="p-5 rounded border grid grid-cols-4 gap-5 mb-5">
         <div>
@@ -41,17 +46,34 @@ export default function VendorsDetail() {
         </div>
       </div>
       <Tabs defaultValue="transactionHistory">
-        <TabsList>
-          <TabsTrigger value="transactionHistory">
+        <TabsList className="border bg-secondary rounded mb-4">
+          <TabsTrigger
+            className="w-full data-[state=active]:bg-white"
+            value="transactionHistory"
+          >
             Transaction History
           </TabsTrigger>
-          <TabsTrigger value="beneficiaryList">Beneficiary List</TabsTrigger>
+          <TabsTrigger
+            className="w-full data-[state=active]:bg-white"
+            value="conversionList"
+          >
+            Conversion List
+          </TabsTrigger>
+          <TabsTrigger
+            className="w-full data-[state=active]:bg-white"
+            value="healthWorkers"
+          >
+            Health Workers
+          </TabsTrigger>
         </TabsList>
         <TabsContent value="transactionHistory">
-          {/* <VendorsTransactionsHistory /> */}
+          <TransactionHistoryView />
         </TabsContent>
-        <TabsContent value="beneficiaryList">
-          {/* <VendorsBeneficiaryList /> */}
+        <TabsContent value="conversionList">
+          <ConversionListView />
+        </TabsContent>
+        <TabsContent value="healthWorkers">
+          <HealthWorkersView />
         </TabsContent>
       </Tabs>
     </div>

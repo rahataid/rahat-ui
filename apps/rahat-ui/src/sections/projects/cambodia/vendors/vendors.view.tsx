@@ -118,10 +118,12 @@ export default function VendorsView() {
   });
   return (
     <>
-      <div className="p-4 bg-secondary h-[calc(100vh-65px)]">
+      <div className="p-4">
         <div className="mb-4">
-          <h1 className="font-semibold text-2xl mb-">Vision Centers</h1>
-          <p className="text-muted-foreground">Track all the visions here.</p>
+          <h1 className="font-semibold text-2xl">Vision Centers</h1>
+          <p className="text-muted-foreground text-base">
+            Track all the visions here.
+          </p>
         </div>
         <div className="rounded border bg-card p-4">
           <div className="flex justify-between space-x-2 mb-2">
@@ -134,27 +136,19 @@ export default function VendorsView() {
               }
               onSearch={(event) => handleFilterChange(event)}
             />
-
-            {/* <AddButton
-              path={`/projects/el-kenya/${id}/beneficiary/add`}
-              name="Beneficiary"
-            /> */}
           </div>
-
           <CambodiaTable table={table} />
-          <CustomPagination
-            currentPage={pagination.page}
-            handleNextPage={setNextPage}
-            handlePrevPage={setPrevPage}
-            handlePageSizeChange={setPerPage}
-            meta={
-              (vendors?.response?.meta as any) || { total: 0, currentPage: 0 }
-            }
-            perPage={pagination?.perPage}
-            total={vendors?.response?.meta?.total || 0}
-          />
         </div>
       </div>
+      <CustomPagination
+        currentPage={pagination.page}
+        handleNextPage={setNextPage}
+        handlePrevPage={setPrevPage}
+        handlePageSizeChange={setPerPage}
+        meta={(vendors?.response?.meta as any) || { total: 0, currentPage: 0 }}
+        perPage={pagination?.perPage}
+        total={vendors?.response?.meta?.total || 0}
+      />
     </>
   );
 }

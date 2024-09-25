@@ -54,7 +54,6 @@ export const useBeneficiaryGroupsList = (payload: any): any => {
     {
       queryKey: [TAGS.GET_BENEFICIARIES_GROUPS, payload],
       queryFn: () => listBeneficiaryGroups(payload),
-      placeholderData: keepPreviousData,
     },
     queryClient,
   );

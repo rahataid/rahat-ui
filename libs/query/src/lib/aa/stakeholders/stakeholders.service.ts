@@ -43,7 +43,6 @@ export const useStakeholders = (uuid: UUID, payload: any) => {
       });
       return mutate.response;
     },
-    placeholderData: keepPreviousData,
   });
 
   useEffect(() => {

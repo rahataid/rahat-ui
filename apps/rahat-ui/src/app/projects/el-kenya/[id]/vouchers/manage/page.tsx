@@ -1,9 +1,9 @@
 'use client';
 
-import { ELKenyaVouchersManageView } from 'apps/rahat-ui/src/sections/projects/el-kenya';
+import { VouchersManagementFlow } from 'apps/rahat-ui/src/sections/projects/el-kenya';
 
 const Page = () => {
-  return <ELKenyaVouchersManageView />;
+  return <VouchersManagementFlow />;
 };
 
 export default Page;

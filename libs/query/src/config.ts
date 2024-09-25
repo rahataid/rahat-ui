@@ -36,8 +36,8 @@ export const TAGS = {
   IMPORT_TEMP_BENEFICIARIES: 'import_temp_beneficiaries',
   NEW_COMMS: {
     LIST_TRANSPORTS: 'new_comms.list_transports',
-    RETRY_FAILED: 'new_comms.retry_failed'
-  }
+    RETRY_FAILED: 'new_comms.retry_failed',
+  },
 };
 export const PROJECT_SETTINGS_KEYS = {
   CONTRACT: 'CONTRACT',
@@ -62,3 +62,54 @@ export const TREASURY_SOURCES = [
     label: 'MultiSig Wallet',
   },
 ];
+
+export const APP_JOBS = {
+  EMAIL: 'email',
+  SLACK: 'slack',
+  OTP: 'otp',
+};
+
+export const MS_TIMEOUT = 500000;
+
+export const BQUEUE = {
+  RAHAT: 'RAHAT',
+  RAHAT_PROJECT: 'RAHAT.PROJECT',
+  RAHAT_BENEFICIARY: 'RAHAT.BENEFICIARY',
+  HOST: 'RAHAT.HOST',
+};
+
+export const UserRoles = {
+  ADMIN: 'Admin',
+  USER: 'User',
+  VENDOR: 'Vendor',
+};
+
+export const ACTIONS = {
+  MANAGE: 'manage',
+  CREATE: 'create',
+  UPDATE: 'update',
+  DELETE: 'delete',
+  READ: 'read',
+};
+
+export const SUBJECTS = {
+  ALL: 'all',
+  BENEFICIARY: 'beneficiary',
+  PROJECT: 'project',
+  VENDOR: 'vendor',
+  PUBLIC: 'public',
+};
+
+export const APP = {
+  JWT_BEARER: 'JWT',
+};
+
+export const MS_CHW_ACTIONS = {
+  CHW: {
+    CREATE: 'cambodia.chw.create',
+    LIST: 'cambodia.chw.list',
+    GET: 'cambodia.chw.get',
+    UPDATE: 'cambodia.chw.update',
+    DELETE: 'cambodia.chw.delete',
+  },
+};

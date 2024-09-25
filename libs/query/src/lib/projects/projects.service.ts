@@ -557,7 +557,6 @@ export const useProjectBeneficiaries = (payload: GetProjectBeneficiaries) => {
 
   const query = useQuery({
     queryKey: [MS_ACTIONS.BENEFICIARY.LIST_BY_PROJECT, restPayloadString],
-    placeholderData: keepPreviousData,
     refetchOnMount: true,
     refetchOnWindowFocus: true,
     queryFn: async () => {

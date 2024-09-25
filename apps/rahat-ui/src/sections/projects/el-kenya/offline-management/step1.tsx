@@ -6,8 +6,21 @@ import {
 } from '@rahat-ui/shadcn/components/tabs';
 import BeneficiaryView from './beneficiary.view';
 import BeneficiaryGroupsView from './beneficiary.groups.view';
+import { initialStepData } from './select.vendor.multi.step.form';
 
-export default function SelectBeneficiary() {
+interface SelectBeneficiaryProps {
+  disbursmentList: [];
+  benificiaryGroups: [];
+  handleStepDataChange: (e) => void;
+  stepData: typeof initialStepData;
+}
+
+export default function SelectBeneficiary({
+  disbursmentList,
+  handleStepDataChange,
+  benificiaryGroups,
+  stepData,
+}: SelectBeneficiaryProps) {
   return (
     <div className="p-4">
       <Tabs defaultValue="beneficiary">
@@ -28,10 +41,17 @@ export default function SelectBeneficiary() {
           </TabsList>
         </div>
         <TabsContent value="beneficiary">
-          <BeneficiaryView />
+          <BeneficiaryView
+            disbursmentList={disbursmentList}
+            handleStepDataChange={handleStepDataChange}
+          />
         </TabsContent>
         <TabsContent value="beneficiaryGroups">
-          <BeneficiaryGroupsView />
+          <BeneficiaryGroupsView
+            benificiaryGroups={benificiaryGroups}
+            handleStepDataChange={handleStepDataChange}
+            stepData={stepData}
+          />
         </TabsContent>
       </Tabs>
     </div>

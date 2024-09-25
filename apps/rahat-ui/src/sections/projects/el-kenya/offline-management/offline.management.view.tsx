@@ -1,4 +1,8 @@
-import { usePagination, useProjectBeneficiaries } from '@rahat-ui/query';
+import {
+  useGetOfflineVendors,
+  usePagination,
+  useProjectBeneficiaries,
+} from '@rahat-ui/query';
 import {
   getCoreRowModel,
   getFilteredRowModel,
@@ -21,40 +25,17 @@ export default function OfflineManagementView() {
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
 
-  const {
-    pagination,
-    filters,
-    setFilters,
-    setNextPage,
-    setPrevPage,
-    setPerPage,
-    selectedListItems,
-    setSelectedListItems,
-    resetSelectedListItems,
-  } = usePagination();
-
-  const beneficiaries = useProjectBeneficiaries({
-    page: pagination.page,
-    perPage: pagination.perPage,
-    order: 'desc',
-    sort: 'createdAt',
-    projectUUID: id,
-    ...filters,
-  });
-  const meta = beneficiaries.data.response?.meta;
+  const { data: offlineVendors, isSuccess } = useGetOfflineVendors(id as UUID);
 
   const columns = useTableColumn();
   const table = useReactTable({
     manualPagination: true,
-    data: beneficiaries?.data?.data || [
-      { uuid: '123', name: 'A1' },
-      { uuid: '456', name: 'B1' },
-    ],
+    data: offlineVendors || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setSelectedListItems,
+    // onRowSelectionChange: setSelectedListItems,
     getFilteredRowModel: getFilteredRowModel(),
     getRowId(originalRow) {
       return originalRow.walletAddress;
@@ -62,7 +43,7 @@ export default function OfflineManagementView() {
 
     state: {
       columnVisibility,
-      rowSelection: selectedListItems,
+      // rowSelection: selectedListItems,
     },
   });
   return (

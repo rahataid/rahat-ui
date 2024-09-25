@@ -193,7 +193,7 @@ export default function VendorsTable({
                   projectList.data?.data.map((project: any) => {
                     return (
                       <SelectItem
-                        disabled={selectedRow?.projectName === project.name}
+                        disabled={selectedRow?.projectName === project.name} //TODO FROM ID
                         key={project.id}
                         value={project.uuid}
                       >

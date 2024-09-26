@@ -7,14 +7,14 @@ import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 interface ConfirmSelectionProps {
   stepData: any;
   handleBack: any;
-  handleBulkAssign: any;
+  handleNext: any;
   beneficiaryGroupSelected: boolean;
 }
 
 export default function ConfirmSelection({
   handleBack,
   stepData,
-  handleBulkAssign,
+  handleNext,
   beneficiaryGroupSelected,
 }: ConfirmSelectionProps) {
   const { id } = useParams() as { id: UUID };
@@ -127,7 +127,7 @@ export default function ConfirmSelection({
         <Button onClick={() => handleBack()} variant="secondary">
           Close
         </Button>
-        <Button onClick={() => handleBulkAssign()}>Finish</Button>
+        <Button onClick={() => handleNext()}>Finish</Button>
       </div>
     </div>
   );

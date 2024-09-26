@@ -64,6 +64,7 @@ const VouchersManagementFlow = () => {
       stepData.selectedGroups.map((selectedGroup) => {
         handleCreateGroupDisbursement(selectedGroup.uuid);
       });
+      router.push(`/projects/el-kenya/${id}/vouchers`);
     } else {
       await bulkAssignDisbursement.mutateAsync({
         amount: 1,
@@ -71,6 +72,7 @@ const VouchersManagementFlow = () => {
           (row) => row.walletAddress,
         ),
       });
+      router.push(`/projects/el-kenya/${id}/vouchers`);
     }
   };
 
@@ -106,7 +108,7 @@ const VouchersManagementFlow = () => {
         <ConfirmSelection
           stepData={stepData}
           handleBack={handleBack}
-          handleBulkAssign={handleBulkAssign}
+          handleNext={handleNext}
           beneficiaryGroupSelected={beneficiaryGroupSelected}
         />
       ),
@@ -117,8 +119,8 @@ const VouchersManagementFlow = () => {
       component: (
         <WarningDialog
           onCancel={handlePrevious}
-          onConfirm={handleConfirm}
-          open={confirmModal.value}
+          onConfirm={handleBulkAssign}
+          open={true}
         />
       ),
     },

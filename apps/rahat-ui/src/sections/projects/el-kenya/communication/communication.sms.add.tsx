@@ -1,7 +1,11 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useCreateBeneficiary } from '@rahat-ui/query';
+import {
+  useCreateBeneficiary,
+  useCreateCampaign,
+  useListRpTransport,
+} from '@rahat-ui/query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 
 import {
@@ -27,15 +31,27 @@ import { Loader2 } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import Back from '../../components/back';
 import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
+import { UUID } from 'crypto';
 
-export default function AddSMSForm() {
+interface AddSMSFormProps {
+  setIsOpen: any;
+}
+
+export default function AddSMSForm({ setIsOpen }: AddSMSFormProps) {
   const addBeneficiary = useCreateBeneficiary();
+
   const router = useRouter();
   const { id } = useParams();
 
+  const createCampaign = useCreateCampaign(id as UUID);
+  const { data: transportData } = useListRpTransport(id as UUID);
+  console.log(transportData);
+  const transportId = transportData?.find(
+    (transport) => transport.type === 'SMS' || transport.name === 'Prabhu SMS',
+  ).cuid;
   const FormSchema = z.object({
     name: z.string().min(2, { message: 'Name must be at least 4 character' }),
-    group: z.string().min(1, { message: 'Please select a group' }),
+    group: z.string().optional(),
     message: z
       .string()
       .min(5, { message: 'message must be at least 5 character' }),
@@ -49,6 +65,16 @@ export default function AddSMSForm() {
       message: '',
     },
   });
+
+  const handleCreateCampaign = async (data: z.infer<typeof FormSchema>) => {
+    const createCampagin = {
+      name: data.name,
+      message: data.message,
+      transportId: transportId,
+    };
+    createCampaign.mutate(createCampagin);
+    setIsOpen(false);
+  };
 
   const handleCreateBeneficiary = async (data: z.infer<typeof FormSchema>) => {
     // try {
@@ -86,8 +112,8 @@ export default function AddSMSForm() {
   return (
     <>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleCreateBeneficiary)}>
-          <div className="h-[calc(100vh-145px)] m-4">
+        <form onSubmit={form.handleSubmit(handleCreateCampaign)}>
+          <div className="m-4">
             <div className="flex space-x-3 mb-10">
               <Back path="/projects/el-kenya/${id}/beneficiary" />
               <div>
@@ -176,7 +202,7 @@ export default function AddSMSForm() {
                 Please wait
               </Button>
             ) : (
-              <Button>Create SMS</Button>
+              <Button type="submit">Create SMS</Button>
             )}
           </div>
         </form>

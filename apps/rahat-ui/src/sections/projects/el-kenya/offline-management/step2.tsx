@@ -1,28 +1,33 @@
-import { useParams, useSearchParams } from 'next/navigation';
 import { UUID } from 'crypto';
 import { User } from 'lucide-react';
 import { initialStepData } from './select.vendor.multi.step.form';
 
 interface ConfirmationProps {
   stepData: typeof initialStepData;
+  beneficiariesDisbursements: [];
 }
 
-export default function Confirmation({ stepData }: ConfirmationProps) {
-  const { id } = useParams() as { id: UUID };
-  const searchParam = useSearchParams();
+export default function Confirmation({
+  stepData,
+  beneficiariesDisbursements,
+}: ConfirmationProps) {
   let noOfBeneficiarySelected = stepData.disbursements.length;
+  let data = stepData.disbursements;
+
   if (stepData.groups.length > 0) {
+    data = beneficiariesDisbursements;
     stepData.groups.map((group) => {
       noOfBeneficiarySelected += group._count.groupedBeneficiaries;
     });
   }
 
   let totalVouchersAssigned = 0;
-  stepData.disbursements?.map((disbursment: any) => {
-    totalVouchersAssigned += Number(disbursment?.disbursementAmount);
+  data?.map((disbursment: any) => {
+    totalVouchersAssigned +=
+      Number(disbursment?.disbursementAmount) ||
+      Number(disbursment?.amount) ||
+      0;
   });
-  let data = stepData.disbursements;
-  console.log(noOfBeneficiarySelected);
 
   return (
     <div className="flex flex-col justify-between">
@@ -59,17 +64,15 @@ export default function Confirmation({ stepData }: ConfirmationProps) {
             <p className="text-sm text-muted-foreground">
               {noOfBeneficiarySelected} Beneficiaries Selected
             </p>
-            <div className="flex flex-col gap-4">
-              <div className="flex justify-between">
-                {data.map((beneficiary) => (
-                  <div className="flex space-x-2">
-                    <div className="p-2 rounded-full bg-secondary">
-                      <User size={18} strokeWidth={1.5} />
-                    </div>
-                    <p>{beneficiary.name}</p>
+            <div className="flex flex-col">
+              {data.map((beneficiary) => (
+                <div className="flex space-x-2">
+                  <div className="p-2 rounded-full bg-secondary">
+                    <User size={18} strokeWidth={1.5} />
                   </div>
-                ))}
-              </div>
+                  <p>{beneficiary.name}</p>
+                </div>
+              ))}
             </div>
           </div>
         </div>

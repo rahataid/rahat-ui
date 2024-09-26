@@ -103,7 +103,7 @@ export default function CommunicationView() {
           <div className="flex justify-between space-x-2 mb-2">
             <SearchInput className="w-full" name="" onSearch={() => {}} />
             <AddButton
-              path={`/projects/el-kenya/${id}/communication/add`}
+              path={`/projects/el-kenya/${id}/communication/text/manage`}
               name="SMS"
             />
           </div>

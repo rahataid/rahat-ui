@@ -39,7 +39,8 @@ const DisbursementConfirmation: FC<DisbursementConfirmationProps> = ({
   );
 
 
-  const benData = useFindUnSyncedBenefiicaries(id);
+  const benData = useFindUnSyncedBenefiicaries(id,{
+  });
   const meta = benData?.data?.response?.meta
 
   const projectBeneficiaries = useProjectBeneficiaries({

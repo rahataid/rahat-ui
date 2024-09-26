@@ -56,15 +56,14 @@ const DisbursementPlan: FC<DisbursementPlanProps> = ({
   });
 
   const benData = useFindUnSyncedBenefiicaries(id,
-    {
-    payload:{ 
+    {  
     page: pagination.page,
     perPage: pagination.perPage,
     order: 'desc',
     sort: 'updatedAt',
     projectUUID: id,
     ...filters
-  }});
+  });
   const meta = benData?.data?.response?.meta
   const bulkAssignDisbursement = useBulkCreateDisbursement(id);
 

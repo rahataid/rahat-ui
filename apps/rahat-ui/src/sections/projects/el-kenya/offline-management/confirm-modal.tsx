@@ -29,7 +29,7 @@ export function ConfirmModal({
   const route = useRouter();
   const { id } = useParams();
   const handleRoute = () => {
-    route.push(`/projects/el-kenya/${id}/offlineManagement`);
+    route.push(`/projects/el-kenya/${id}/offline-management`);
   };
   const handleClose = (open: boolean) => {
     if (!open) {

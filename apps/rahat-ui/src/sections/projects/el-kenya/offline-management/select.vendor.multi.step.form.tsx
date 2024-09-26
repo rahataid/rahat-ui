@@ -324,20 +324,11 @@ export default function SelectVendorMultiStepForm() {
             />
           )}
           {activeStep === 2 && (
-            <>
-              <Confirmation
-                stepData={stepData}
-                beneficiariesDisbursements={beneficiariesDisbursements}
-              />
-              {isOpen && (
-                <ConfirmModal
-                  isOpen
-                  vendorName={stepData.vendor.name}
-                  beneficiaries={stepData.disbursements.length}
-                  tokens={stepData.disbursements.length}
-                />
-              )}
-            </>
+            <Confirmation
+              isOpen={isOpen}
+              stepData={stepData}
+              beneficiariesDisbursements={beneficiariesDisbursements}
+            />
           )}
         </div>
         <div className="flex justify-end space-x-2 border-t p-4">

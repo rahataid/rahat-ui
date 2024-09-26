@@ -38,7 +38,6 @@ import {
   useSyncOfflineBeneficiaries,
 } from '@rahat-ui/query';
 import { useRSQuery } from '@rumsan/react-query';
-import { ConfirmModal } from './confirm-modal';
 
 const steps = [{ label: 'Step 1' }, { label: 'Step 2' }, { label: 'Step 3' }];
 
@@ -54,6 +53,7 @@ export default function SelectVendorMultiStepForm() {
   const [vendors, setVendors] = React.useState([]);
   const [rowData, setRowData] = React.useState([]);
   const [isOpen, setIsOpen] = React.useState(false);
+  const [error, setError] = React.useState('');
   const [stepData, setStepData] =
     React.useState<typeof initialStepData>(initialStepData);
   const [groupIds, setGroupIds] = React.useState([]);
@@ -115,9 +115,30 @@ export default function SelectVendorMultiStepForm() {
   };
 
   const handlePrev = () => {
+    setError('');
+
     setActiveStep((prev) => prev - 1);
   };
   const handleNext = () => {
+    switch (activeStep) {
+      case 0:
+        if (Object.entries(stepData.vendor).length === 0) {
+          setError('Please select vendor');
+          return;
+        }
+        break;
+      case 1:
+        if (
+          stepData.groups.length === 0 &&
+          stepData.disbursements.length === 0
+        ) {
+          setError('Please select beneficiries');
+          return;
+        }
+        break;
+    }
+    setError('');
+
     setActiveStep((prev) => prev + 1);
   };
 
@@ -220,7 +241,6 @@ export default function SelectVendorMultiStepForm() {
     setIsOpen(true);
   };
 
-  console.log(stepData);
   return (
     <div className="p-4 h-[calc(100vh-65px)]">
       {activeStep === 0 && (
@@ -331,6 +351,8 @@ export default function SelectVendorMultiStepForm() {
             />
           )}
         </div>
+        <div>{error && <p className="text-red-700 mr-8">{error}</p>}</div>
+
         <div className="flex justify-end space-x-2 border-t p-4">
           {activeStep > 0 && (
             <Button variant="secondary" onClick={handlePrev}>

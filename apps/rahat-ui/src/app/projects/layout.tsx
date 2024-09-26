@@ -16,7 +16,10 @@ export default function ProjectLayoutRoot({
   // const allowedPaths = ['/projects', '/projects/add'];
   //
   return (
-    <DashboardLayout hasDefaultHeader={allowNavPaths.includes(pathName)}>
+    <DashboardLayout
+      hasDefaultHeader={allowNavPaths.includes(pathName)}
+      margin="mt-0"
+    >
       <title>Projects</title>
       {!allowedPaths.includes(pathName) ? (
         <>{children}</>

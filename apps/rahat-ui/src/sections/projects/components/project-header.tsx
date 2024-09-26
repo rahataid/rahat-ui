@@ -53,7 +53,7 @@ export function ProjectNav({
   };
 
   return (
-    <div className="flex justify-between pl-2 pr-6 py-2 sticky top-0 z-50 bg-blur backdrop-blur border-b">
+    <div className="h-14 flex justify-between pl-2 pr-6 py-2 z-50 bg-card border-b">
       {component}
       <div className="flex gap-4 items-center">
         <ConnectWallet />

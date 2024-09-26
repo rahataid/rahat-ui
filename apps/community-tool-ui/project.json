@@ -28,7 +28,7 @@
       "executor": "@nrwl/next:server",
       "defaultConfiguration": "development",
       "options": {
-        "port": 3000,
+        "port": 3001,
         "buildTarget": "community-tool-ui:mainBuild",
         "dev": true
       },

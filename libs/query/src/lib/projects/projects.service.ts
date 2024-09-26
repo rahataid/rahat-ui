@@ -16,7 +16,7 @@ import {
 import { UUID } from 'crypto';
 import { isEmpty } from 'lodash';
 import { useEffect, useMemo } from 'react';
-import { PROJECT_SETTINGS_KEYS, TAGS } from '../../config';
+import { MS_CHW_ACTIONS, PROJECT_SETTINGS_KEYS, TAGS } from '../../config';
 import { useSwal } from '../../swal';
 import { api } from '../../utils/api';
 import { useProjectSettingsStore, useProjectStore } from './project.store';
@@ -680,4 +680,71 @@ export const useProjectEdit = () => {
     },
     queryClient,
   );
+};
+
+export const useCHWList = (payload: any) => {
+  const action = useProjectAction();
+  const { projectUUID, ...restPayload } = payload;
+
+  const restPayloadString = JSON.stringify(restPayload);
+
+  const query = useQuery({
+    queryKey: [MS_CHW_ACTIONS.CHW.LIST, restPayloadString],
+    placeholderData: keepPreviousData,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    queryFn: async () => {
+      const mutate = await action.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: MS_CHW_ACTIONS.CHW.LIST,
+          payload: restPayload,
+        },
+      });
+      return mutate;
+    },
+  });
+  return {
+    ...query,
+    data: useMemo(() => {
+      return {
+        ...query.data,
+      };
+    }, [query.data]),
+  };
+};
+// cambodia.chw.get
+
+export const useCHWGet = (payload: any) => {
+  console.log(payload);
+  const action = useProjectAction();
+  const { projectUUID, ...restPayload } = payload;
+
+  const restPayloadString = JSON.stringify(restPayload);
+
+  const query = useQuery({
+    queryKey: [MS_CHW_ACTIONS.CHW.GET, restPayloadString],
+    placeholderData: keepPreviousData,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    queryFn: async () => {
+      const mutate = await action.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: MS_CHW_ACTIONS.CHW.GET,
+          payload: restPayload,
+        },
+      });
+      return mutate;
+    },
+  });
+
+  return {
+    ...query,
+    data: useMemo(() => {
+      return {
+        ...query.data,
+      };
+    }, [query.data]),
+  };
 };

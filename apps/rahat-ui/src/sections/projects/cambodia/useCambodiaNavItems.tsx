@@ -1,4 +1,4 @@
-import { Hospital, LayoutDashboard, Users } from 'lucide-react';
+import { ArrowLeftRight, Hospital, LayoutDashboard, Users } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import { NavItem } from '../components';
 
@@ -20,6 +20,12 @@ export const useNavItems = () => {
           path: `/projects/el-cambodia/${id}/vendors`,
           subtitle: 20,
           icon: <Hospital size={18} strokeWidth={1.5} />,
+        },
+        {
+          title: 'Transactions',
+          path: `/projects/el-cambodia/${id}/transactions`,
+          subtitle: 20,
+          icon: <ArrowLeftRight size={18} strokeWidth={1.5} />,
         },
         {
           title: 'Health Worker',

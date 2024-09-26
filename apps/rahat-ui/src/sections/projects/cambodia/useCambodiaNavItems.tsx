@@ -1,4 +1,10 @@
-import { ArrowLeftRight, Hospital, LayoutDashboard, Users } from 'lucide-react';
+import {
+  ArrowLeftRight,
+  Hospital,
+  LayoutDashboard,
+  SmartphoneNfc,
+  Users,
+} from 'lucide-react';
 import { useParams } from 'next/navigation';
 import { NavItem } from '../components';
 
@@ -32,6 +38,12 @@ export const useNavItems = () => {
           path: `/projects/el-cambodia/${id}/chw`,
           subtitle: 20,
           icon: <Users size={18} strokeWidth={1.5} />,
+        },
+        {
+          title: 'Communication',
+          path: `/projects/el-cambodia/${id}/communication`,
+          subtitle: 20,
+          icon: <SmartphoneNfc size={18} strokeWidth={1.5} />,
         },
       ],
     },

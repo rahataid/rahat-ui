@@ -22,14 +22,14 @@ export const useElkenyaBeneficiaryTableColumns = () => {
       cell: ({ row }) => <div>{row.getValue('voucherType')}</div>,
     },
     {
-      accessorKey: 'beneficiaryType',
+      accessorKey: 'type',
       header: 'Beneficiary Type',
-      cell: ({ row }) => <div>{row.getValue('beneficiaryType')}</div>,
+      cell: ({ row }) => <div>{row.getValue('type')}</div>,
     },
     {
       accessorKey: 'eyeCheckupStatus',
       header: 'Eye Checkup Status',
-      cell: ({ row }) => <div>{row.getValue('beneficiaryType')}</div>,
+      cell: ({ row }) => <div>{row.getValue('eyeCheckupStatus')}</div>,
     },
     {
       accessorKey: 'glassesStatus',
@@ -39,7 +39,10 @@ export const useElkenyaBeneficiaryTableColumns = () => {
     {
       accessorKey: 'voucherStatus',
       header: 'Voucher Status',
-      cell: ({ row }) => <div>{row.getValue('voucherStatus')}</div>,
+      cell: ({ row }) => {
+        console.log('row', row);
+        return <div>{row.getValue('voucherStatus')}</div>;
+      },
     },
     {
       id: 'actions',

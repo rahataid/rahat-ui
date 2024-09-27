@@ -40,7 +40,7 @@ export function Nav({ hasDefaultHeader = true }) {
 
   return (
     hasDefaultHeader && (
-      <div className="flex justify-end gap-4 items-center p-2 border-b">
+      <div className="h-14 fixed w-[calc(100vw-56px)] flex justify-end gap-4 items-center p-2 border-b">
         <ConnectWallet />
         <DropdownMenu>
           <DropdownMenuTrigger>

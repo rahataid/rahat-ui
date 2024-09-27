@@ -14,7 +14,6 @@ export default function ProjectListView() {
   // const { pagination, setNextPage, setPrevPage, setPerPage } = usePagination();
   const { data } = useProjectList();
   const AddProjectModal = useBoolean();
-
   const [filterValue, setFilterValue] = useState([]);
 
   const openAddProjectModal = () => {
@@ -43,7 +42,7 @@ export default function ProjectListView() {
   }, [data?.data]);
 
   return (
-    <div className=" p-4 bg-card">
+    <div className=" p-4 bg-card mt-14">
       <div className="mb-4">
         <h1 className="font-semibold text-2xl mb-">Projects</h1>
         <p className="text-muted-foreground">
@@ -105,7 +104,7 @@ export default function ProjectListView() {
     </div>
   );
 }
-function getImageForProjectType(type: String) {
+function getImageForProjectType(type: string) {
   switch (type) {
     case 'el':
       return '/el/el_logo_dark.png';

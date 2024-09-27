@@ -38,6 +38,7 @@ import {
   useSyncOfflineBeneficiaries,
 } from '@rahat-ui/query';
 import { useRSQuery } from '@rumsan/react-query';
+import { ConfirmModal } from './confirm-modal';
 
 const steps = [{ label: 'Step 1' }, { label: 'Step 2' }, { label: 'Step 3' }];
 
@@ -84,7 +85,6 @@ export default function SelectVendorMultiStepForm() {
   const disBursementIds = beneficiariesDisbursements?.map((disBursement) => {
     return { id: disBursement.id.toString, phone: disBursement.phone };
   });
-
   const syncBen = useSyncOfflineBeneficiaries(id as UUID);
   const { queryClient, rumsanService } = useRSQuery();
 
@@ -278,7 +278,6 @@ export default function SelectVendorMultiStepForm() {
                       <FormItem className="w-full">
                         <Select
                           onValueChange={(e) => {
-                            console.log(e);
                             const vendor = vendors.find(
                               (vendorData) => vendorData.id == e,
                             );
@@ -324,7 +323,13 @@ export default function SelectVendorMultiStepForm() {
               stepData={stepData}
             />
           )}
-          {activeStep === 2 && <Confirmation stepData={stepData} />}
+          {activeStep === 2 && (
+            <Confirmation
+              isOpen={isOpen}
+              stepData={stepData}
+              beneficiariesDisbursements={beneficiariesDisbursements}
+            />
+          )}
         </div>
         <div className="flex justify-end space-x-2 border-t p-4">
           {activeStep > 0 && (

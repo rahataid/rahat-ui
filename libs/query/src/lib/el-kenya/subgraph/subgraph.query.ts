@@ -29,7 +29,8 @@ export const useKenyaProjectTransactions = () => {
           'tokensAllocateds',
           'offlineClaimProcesseds',
           'otpAddeds',
-          'otpVerifieds'
+          'otpVerifieds',
+          'WalkInBeneficiaryAdded'
         ];
         const newData = transactionsType.reduce((acc, type) => {
           const transactions = data[type] || [];
@@ -91,7 +92,7 @@ export const useKenyaVendorTransactions = (vendorAddress: string) => {
         const { data } = await subgraphClient.query(KenyaVendorTransactions, {
           vendor: vendorAddress,
         });
-        const transactionType = ['claimCreateds', 'claimProcesseds','offlineClaimProcesseds'];
+        const transactionType = ['claimCreateds', 'claimProcesseds','offlineClaimProcesseds','WalkInBeneficiaryAdded'];
 
         const formattedData = transactionType.reduce((acc, type) => {
           const transactions = data[type] || [];

@@ -1,5 +1,16 @@
 export const KenyaProjectTransactions = `
 query ProjectTransactions{
+  WalkInBeneficiaryAdded{
+    id,
+    beneficiary,
+    tokenAddress,
+    vendor,
+    amount,
+    blockNumber,
+    blockTimestamp,
+    transactionHash,
+    eventType
+  }
    claimCreateds {
     amount
     blockNumber
@@ -107,7 +118,19 @@ query VendorTransactions($vendor:String!) {
     blockTimestamp
     transactionHash
     eventType
-    }
+  }
+  WalkInBeneficiaryAdded(where:{vendor:$vendor}){
+    id,
+    beneficiary,
+    tokenAddress,
+    vendor,
+    amount,
+    blockNumber,
+    blockTimestamp,
+    transactionHash,
+    eventType
+  
+}
 }
 `;
 
@@ -159,6 +182,22 @@ tokensAllocateds(where:{beneficiary: $beneficiaryAddress} ) {
     transactionHash
     eventType
   }
+  
 }
 `;
 
+export const KenyaWalkInBeneficiaryTransactions = `
+query walkInBeneficiary{
+  WalkInBeneficiaryAdded{
+    id,
+    beneficiary,
+    tokenAddress,
+    vendor,
+    amount,
+    blockNumber,
+    blockTimestamp,
+    transactionHash,
+    eventType
+  
+}
+}`

@@ -1,13 +1,12 @@
 'use client';
 
 import {
-  RPSubgraphProvider,
+  KenyaSubgraphProvider,
   PROJECT_SETTINGS_KEYS,
   useProjectContractSettings,
   useProjectSettingsStore,
   useProjectSubgraphSettings,
 } from '@rahat-ui/query';
-import { ProjectTypes } from '@rahataid/sdk/enums';
 import { Client, cacheExchange, fetchExchange } from '@urql/core';
 import { useSecondPanel } from 'apps/rahat-ui/src/providers/second-panel-provider';
 import { UUID } from 'crypto';
@@ -33,12 +32,12 @@ export default function ProjectLayoutRoot({
   // );
 
   return (
-    <RPSubgraphProvider
+    <KenyaSubgraphProvider
       subgraphClient={
         new Client({
           url:
             subgraphSettings ||
-            'http://localhost:8000/subgraphs/name/rahat/rp/',
+            'http://localhost:8000/subgraphs/name/rahat/Kenya/',
           exchanges: [cacheExchange, fetchExchange],
         })
       }
@@ -46,6 +45,6 @@ export default function ProjectLayoutRoot({
       <ProjectLayout projectType={'el-kenya'}>
         {secondPanel ? [children, secondPanel] : children}
       </ProjectLayout>
-    </RPSubgraphProvider>
+    </KenyaSubgraphProvider>
   );
 }

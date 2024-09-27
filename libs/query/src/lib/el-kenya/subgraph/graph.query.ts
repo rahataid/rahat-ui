@@ -1,4 +1,4 @@
-export const ProjectTransactions = `
+export const KenyaProjectTransactions = `
 query ProjectTransactions{
    claimCreateds {
     amount
@@ -71,7 +71,7 @@ query ProjectTransactions{
 }
 `;
 
-export const VendorTransactions = `
+export const KenyaVendorTransactions = `
 query VendorTransactions($vendor:String!) {
   claimCreateds (where:{claimer:$vendor}){
     amount
@@ -111,7 +111,7 @@ query VendorTransactions($vendor:String!) {
 }
 `;
 
-export const BeneficiaryTransactions = `
+export const KenyaBeneficiaryTransactions = `
 query beneficiaryTransactions($beneficiaryAddress:String!){
 
 tokensAllocateds(where:{beneficiary: $beneficiaryAddress} ) {

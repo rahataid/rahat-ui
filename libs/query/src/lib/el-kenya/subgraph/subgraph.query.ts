@@ -3,9 +3,9 @@ import { useKenyaSubgraph } from './subgraph.provider';
 import { useQuery } from '@tanstack/react-query';
 import { useRSQuery } from '@rumsan/react-query';
 import {
-  ProjectTransactions,
-  VendorTransactions,
-  BeneficiaryTransactions,
+  KenyaBeneficiaryTransactions,
+  KenyaVendorTransactions,
+  KenyaProjectTransactions
 } from './graph.query';
 import { useEffect } from 'react';
 import { useKenyaProjectSubgraphStore } from './stores/kenya-project.store';
@@ -22,7 +22,7 @@ export const useKenyaProjectTransactions = () => {
     {
       queryKey: ['ProjectTransactions'],
       queryFn: async () => {
-        const { data } = await subgraphClient.query(ProjectTransactions, {});
+        const { data } = await subgraphClient.query(KenyaProjectTransactions, {});
         const transactionsType = [
           'claimCreateds',
           'claimProcesseds',
@@ -62,7 +62,7 @@ export const useKenyaBeneficiaryTransactions = (beneficiaryAddress: string) => {
     {
       queryKey: ['beneficiaryTxn', beneficiaryAddress],
       queryFn: async () => {
-        const { data } = await subgraphClient.query(BeneficiaryTransactions, {
+        const { data } = await subgraphClient.query(KenyaBeneficiaryTransactions, {
           beneficiaryAddress,
         });
         const transactionsType = ['tokensAllocateds', 'claimCreateds',"otpAddeds","claimProcesseds"];
@@ -88,7 +88,7 @@ export const useKenyaVendorTransactions = (vendorAddress: string) => {
     {
       queryKey: ['VendorTxn', vendorAddress],
       queryFn: async () => {
-        const { data } = await subgraphClient.query(VendorTransactions, {
+        const { data } = await subgraphClient.query(KenyaVendorTransactions, {
           vendor: vendorAddress,
         });
         const transactionType = ['claimCreateds', 'claimProcesseds','offlineClaimProcesseds'];

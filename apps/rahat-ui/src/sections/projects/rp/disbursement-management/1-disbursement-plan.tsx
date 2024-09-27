@@ -129,9 +129,6 @@ const DisbursementPlan: FC<DisbursementPlanProps> = ({
       }
     }
   }, [
-    disbursements?.data,
-    disbursements?.data?.data,
-    disbursements?.isSuccess,
     benData?.data,
     benData?.isSuccess,
     rowData,

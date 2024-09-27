@@ -14,7 +14,6 @@ export default function ProjectListView() {
   // const { pagination, setNextPage, setPrevPage, setPerPage } = usePagination();
   const { data } = useProjectList();
   const AddProjectModal = useBoolean();
-
   const [filterValue, setFilterValue] = useState([]);
 
   const openAddProjectModal = () => {
@@ -43,47 +42,55 @@ export default function ProjectListView() {
   }, [data?.data]);
 
   return (
-    <div className="-mt-2 p-2 bg-secondary">
+    <div className=" p-4 bg-card mt-14">
+      <div className="mb-4">
+        <h1 className="font-semibold text-2xl mb-">Projects</h1>
+        <p className="text-muted-foreground">
+          Here is a list of all the projects
+        </p>
+      </div>
       <AddProjectConfirmModal
         open={AddProjectModal.value}
         handleClose={closeAddProjectModal}
       />
-      <div className="flex items-center space-x-2 mb-2">
-        <Input
-          placeholder="Filter projects..."
-          className="rounded mt-2"
-          // value={filterValue}
-          onChange={handleFilterChange}
-        />
-        <Button
-          onClick={() => openAddProjectModal()}
-          className="mt-2 flex items-center justify-center gap-1"
-        >
-          <CirclePlus size={16} strokeWidth={1.5} />
-          Add Project
-        </Button>
+      <div className="p-4 border rounded shadow">
+        <div className="flex items-center space-x-2 mb-4">
+          <Input
+            placeholder="Filter projects..."
+            className="rounded"
+            // value={filterValue}
+            onChange={handleFilterChange}
+          />
+          <Button
+            onClick={() => openAddProjectModal()}
+            className="flex items-center justify-center gap-1"
+          >
+            <CirclePlus size={16} strokeWidth={1.5} />
+            Add Project
+          </Button>
+        </div>
+        <ScrollArea className="pb-2 h-[calc(100vh-253px)]">
+          {filterValue && filterValue?.length > 0 ? (
+            <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-4">
+              {filterValue?.map((project) => (
+                <ProjectCard
+                  address={project?.uuid}
+                  key={project.uuid}
+                  title={project.name}
+                  image={getImageForProjectType(project.type)}
+                  subTitle={project.description as string}
+                  badge={project.type}
+                  status={project.status}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="h-[calc(100vh-190px)] grid place-items-center">
+              <p className="text-muted-foreground text-xl">No projects.</p>
+            </div>
+          )}
+        </ScrollArea>
       </div>
-      <ScrollArea className="pb-2 h-[calc(100vh-122px)]">
-        {filterValue && filterValue?.length > 0 ? (
-          <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-2">
-            {filterValue?.map((project) => (
-              <ProjectCard
-                address={project?.uuid}
-                key={project.uuid}
-                title={project.name}
-                image={getImageForProjectType(project.type)}
-                subTitle={project.description as string}
-                badge={project.type}
-                status={project.status}
-              />
-            ))}
-          </div>
-        ) : (
-          <div className="h-[calc(100vh-190px)] grid place-items-center">
-            <p className="text-muted-foreground text-xl">No projects.</p>
-          </div>
-        )}
-      </ScrollArea>
       {/* TODO:fix project list meta */}
       {/* <CustomPagination
         currentPage={pagination.page}
@@ -97,7 +104,7 @@ export default function ProjectListView() {
     </div>
   );
 }
-function getImageForProjectType(type: String) {
+function getImageForProjectType(type: string) {
   switch (type) {
     case 'el':
       return '/el/el_logo_dark.png';

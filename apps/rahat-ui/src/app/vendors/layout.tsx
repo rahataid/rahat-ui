@@ -11,9 +11,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const { secondPanel } = useSecondPanel();
   return (
     <DashboardLayout>
-      <VendorsLayout menuItems={menuItems}>
+      {/* <VendorsLayout menuItems={menuItems}>
         {secondPanel ? [children, secondPanel] : children}
-      </VendorsLayout>
+      </VendorsLayout> */}
+      {children}
     </DashboardLayout>
   );
 }

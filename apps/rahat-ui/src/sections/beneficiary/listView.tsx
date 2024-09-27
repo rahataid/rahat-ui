@@ -29,6 +29,8 @@ import BulkAssignToProjectModal from './components/bulkAssignToProjectModal';
 import CreateGroupModal from './components/createGroupModal';
 import { DatePicker } from '../../components/datePicker';
 import FiltersTags from '../projects/components/filtersTags';
+import Image from 'next/image';
+import AddButton from '../projects/components/add.btn';
 
 type IProps = {
   table: Table<ListBeneficiary>;
@@ -107,8 +109,8 @@ export default function ListView({
           .getSelectedRowModel()
           .rows.map((row) => row.original.uuid)}
       />
-      <div className="-mt-2 p-2 bg-secondary">
-        <div className="flex items-center mb-2">
+      <div className="border rounded shadow p-3">
+        <div className="flex space-x-2 items-center mb-2">
           <Input
             placeholder="Filter beneficiary..."
             value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
@@ -178,7 +180,7 @@ export default function ListView({
                 })}
             </DropdownMenuContent>
           </DropdownMenu>
-
+          <AddButton name="Beneficiary" path={`/beneficiary/add`} />
           {table.getSelectedRowModel().rows.length ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -213,58 +215,69 @@ export default function ListView({
             total={table.getRowModel().rows?.length}
           />
         )}
-        <div className="rounded border bg-card h-[calc(100vh-180px)]">
-          <TableComponent>
-            <ScrollArea className="h-table1">
-              <TableHeader className="sticky top-0 bg-card">
-                {table.getHeaderGroups().map((headerGroup) => (
-                  <TableRow key={headerGroup.id}>
-                    {headerGroup.headers.map((header) => {
-                      return (
-                        <TableHead key={header.id}>
-                          {header.isPlaceholder
-                            ? null
-                            : flexRender(
-                                header.column.columnDef.header,
-                                header.getContext(),
-                              )}
-                        </TableHead>
-                      );
-                    })}
+        <TableComponent>
+          <ScrollArea className="h-[calc(100vh-340px)]">
+            <TableHeader className="sticky top-0 bg-card">
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => {
+                    return (
+                      <TableHead key={header.id}>
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext(),
+                            )}
+                      </TableHead>
+                    );
+                  })}
+                </TableRow>
+              ))}
+            </TableHeader>
+            <TableBody>
+              {table.getRowModel().rows?.length ? (
+                table.getRowModel().rows.map((row) => (
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && 'selected'}
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )}
+                      </TableCell>
+                    ))}
                   </TableRow>
-                ))}
-              </TableHeader>
-              <TableBody>
-                {table.getRowModel().rows?.length ? (
-                  table.getRowModel().rows.map((row) => (
-                    <TableRow
-                      key={row.id}
-                      data-state={row.getIsSelected() && 'selected'}
-                    >
-                      {row.getVisibleCells().map((cell) => (
-                        <TableCell key={cell.id}>
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext(),
-                          )}
-                        </TableCell>
-                      ))}
-                    </TableRow>
-                  ))
-                ) : (
-                  <TableRow>
-                    <TableCell
-                      colSpan={table.getAllColumns().length}
-                      className="h-24 text-center"
-                    >
-                      No results.
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </ScrollArea>
-          </TableComponent>
-        </div>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={table.getAllColumns().length}
+                    className="h-24 text-center"
+                  >
+                    <div className="flex flex-col items-center justify-center">
+                      <Image
+                        src="/noData.png"
+                        height={250}
+                        width={250}
+                        alt="no data"
+                      />
+                      <p className="text-medium text-base mb-1">
+                        No Data Available
+                      </p>
+                      <p className="text-sm mb-4 text-gray-500">
+                        There are no beneficiaries to display at the moment
+                      </p>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </ScrollArea>
+        </TableComponent>
       </div>
     </>
   );

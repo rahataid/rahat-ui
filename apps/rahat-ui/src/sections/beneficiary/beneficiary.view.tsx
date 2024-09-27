@@ -1,7 +1,12 @@
 'use client';
 import { memo, useEffect, useState } from 'react';
 
-import { TabsContent } from '@rahat-ui/shadcn/components/tabs';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@rahat-ui/shadcn/components/tabs';
 
 import {
   VisibilityState,
@@ -28,6 +33,10 @@ import { useBoolean } from '../../hooks/use-boolean';
 import { useSecondPanel } from '../../providers/second-panel-provider';
 import BeneficiaryListView from '../../sections/beneficiary/listView';
 import { useBeneficiaryTableColumns } from './useBeneficiaryColumns';
+import BeneficiaryGroupsView from './groups/beneficiary-groups.view';
+import { CloudDownload, Download } from 'lucide-react';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import AddButton from '../projects/components/add.btn';
 
 function BeneficiaryView() {
   const router = useRouter();
@@ -153,32 +162,70 @@ function BeneficiaryView() {
   };
 
   return (
-    <>
-      <TabsContent value="list">
-        <BeneficiaryListView
-          table={table}
-          handleCreateGroup={handleCreateGroup}
-          handleBulkAssign={handleBulkAssign}
-          isBulkAssigning={false}
-          projectModal={projectModal}
-          groupModal={groupModal}
-          projects={projectsList?.data?.data || []}
-          handleFilterProjectSelect={handleFilterProjectSelect}
-          filters={filters}
-          setFilters={setFilters}
-          handleDateChange={handleDateChange}
+    <Tabs defaultValue="beneficiary">
+      <TabsContent value="beneficiary">
+        <div>
+          <h1 className="font-semibold text-2xl text-label pl-4">
+            Beneficiary
+          </h1>
+        </div>
+      </TabsContent>
+      <TabsContent value="beneficiaryGroups">
+        <div>
+          <h1 className="font-semibold text-2xl text-label pl-4">
+            Beneficiary Groups
+          </h1>
+        </div>
+      </TabsContent>
+      <div className="flex justify-between items-center p-4">
+        <TabsList className="border bg-secondary rounded">
+          <TabsTrigger
+            className="w-full data-[state=active]:bg-white"
+            value="beneficiary"
+          >
+            Beneficiary
+          </TabsTrigger>
+          <TabsTrigger
+            className="w-full data-[state=active]:bg-white"
+            value="beneficiaryGroups"
+          >
+            Beneficiary Groups
+          </TabsTrigger>
+        </TabsList>
+        <Button variant="outline">
+          <CloudDownload className="mr-1" /> Import beneficiaries
+        </Button>
+      </div>
+      <TabsContent value="beneficiary">
+        <div className="p-4">
+          <BeneficiaryListView
+            table={table}
+            handleCreateGroup={handleCreateGroup}
+            handleBulkAssign={handleBulkAssign}
+            isBulkAssigning={false}
+            projectModal={projectModal}
+            groupModal={groupModal}
+            projects={projectsList?.data?.data || []}
+            handleFilterProjectSelect={handleFilterProjectSelect}
+            filters={filters}
+            setFilters={setFilters}
+            handleDateChange={handleDateChange}
+          />
+        </div>
+        <CustomPagination
+          meta={data?.response?.meta || { total: 0, currentPage: 0 }}
+          handleNextPage={setNextPage}
+          handlePrevPage={setPrevPage}
+          handlePageSizeChange={setPerPage}
+          currentPage={pagination.page}
+          perPage={pagination.perPage}
+          total={data?.response?.meta.lastPage || 0}
         />
       </TabsContent>
-      <CustomPagination
-        meta={data?.response?.meta || { total: 0, currentPage: 0 }}
-        handleNextPage={setNextPage}
-        handlePrevPage={setPrevPage}
-        handlePageSizeChange={setPerPage}
-        currentPage={pagination.page}
-        perPage={pagination.perPage}
-        total={data?.response?.meta.lastPage || 0}
-      />
-    </>
+      <TabsContent value="beneficiaryGroups">
+        <BeneficiaryGroupsView />
+      </TabsContent>
+    </Tabs>
   );
 }
 

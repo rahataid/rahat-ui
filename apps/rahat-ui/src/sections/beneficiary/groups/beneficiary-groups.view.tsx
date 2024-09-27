@@ -107,7 +107,7 @@ function BeneficiaryGroupsView() {
 
   return (
     <>
-      <TabsContent value="list">
+      <div className="p-4">
         <BeneficiaryGroupsListView
           table={table}
           handleBulkAssign={handleBulkAssign}
@@ -117,7 +117,7 @@ function BeneficiaryGroupsView() {
           handleFilterProjectSelect={handleFilterProjectSelect}
           filters={filters}
         />
-      </TabsContent>
+      </div>
       <CustomPagination
         meta={data?.response?.meta || { total: 0, currentPage: 0 }}
         handleNextPage={setNextPage}

@@ -3,17 +3,17 @@ import { useMutation } from '@tanstack/react-query';
 import Swal from 'sweetalert2';
 import { encodeFunctionData, formatUnits } from 'viem';
 import {
-  rahatPayrollProjectAbi,
-  useReadRahatPayrollProjectTotalAllocated,
+  rahatCvaCambodiaAbi,
   useReadRahatTokenDecimals,
-  useWriteRahatPayrollProjectMulticall,
+  useWriteRahatCvaCambodiaMulticall,
   useWriteRahatTreasuryCreateToken,
   useWriteRahatTreasuryTransferToken,
 } from '../generated-hooks';
 import { useRouter } from 'next/navigation';
 import { useWriteRedemptionsRedeemToken } from '../generated-hooks/redemptions';
 import { UUID } from 'crypto';
-import { useRedeemToken } from '../../project-actions';
+// import { useRedeemToken } from '../../project-actions'; 
+import { useReadRahatCvaCambodiaTokenAllocations } from '../generated-hooks/rahatCVACambodia';
 
 export const useTokenCreate = () => {
   const { queryClient } = useRSQuery();
@@ -236,7 +236,8 @@ export const useGetTokenAllocations = (
     address: tokenAddress,
   });
   console.log('decimals.', decimals.data);
-  return useReadRahatPayrollProjectTotalAllocated({
+  return useReadRahatCvaCambodiaTokenAllocations
+  ({
     address: projectAddress,
     query: {
       enabled: !!projectAddress,
@@ -308,50 +309,50 @@ export const useSendFundToProject = () => {
   );
 };
 
-export const useContractRedeem = (projectUUID: UUID) => {
-  const redemptionContract = useWriteRedemptionsRedeemToken();
+// export const useContractRedeem = (projectUUID: UUID) => {
+//   const redemptionContract = useWriteRedemptionsRedeemToken();
 
-  const updateRedemption = useRedeemToken(projectUUID);
-  const alert = Swal.mixin({
-    customClass: {
-      confirmButton: 'btn btn-primary',
-      cancelButton: 'btn btn-secondary',
-    },
-    buttonsStyling: false,
-  });
+//   const updateRedemption = useRedeemToken(projectUUID);
+//   const alert = Swal.mixin({
+//     customClass: {
+//       confirmButton: 'btn btn-primary',
+//       cancelButton: 'btn btn-secondary',
+//     },
+//     buttonsStyling: false,
+//   });
 
-  return useMutation({
-    onError: (error) => {
-      alert.fire({
-        icon: 'error',
-        title: 'Error redeeming token',
-        text: error.message,
-      });
-    },
-    onSuccess: async (d, variables) => {
-      await updateRedemption.mutateAsync({ uuid: variables?.uuid });
-      alert.fire({
-        icon: 'success',
-        title: 'Token redeemed successfully',
-      });
-    },
-    mutationFn: async ({
-      amount,
-      tokenAddress,
-      redemptionAddress,
-      senderAddress,
-      uuid,
-    }: {
-      amount: number;
-      tokenAddress: `0x${string}`;
-      redemptionAddress: `0x${string}`;
-      senderAddress: `0x${string}`;
-      uuid: string;
-    }) => {
-      return redemptionContract.writeContractAsync({
-        args: [tokenAddress, senderAddress, BigInt(amount)],
-        address: redemptionAddress,
-      });
-    },
-  });
-};
+//   return useMutation({
+//     onError: (error) => {
+//       alert.fire({
+//         icon: 'error',
+//         title: 'Error redeeming token',
+//         text: error.message,
+//       });
+//     },
+//     onSuccess: async (d, variables) => {
+//       await updateRedemption.mutateAsync({ uuid: variables?.uuid });
+//       alert.fire({
+//         icon: 'success',
+//         title: 'Token redeemed successfully',
+//       });
+//     },
+//     mutationFn: async ({
+//       amount,
+//       tokenAddress,
+//       redemptionAddress,
+//       senderAddress,
+//       uuid,
+//     }: {
+//       amount: number;
+//       tokenAddress: `0x${string}`;
+//       redemptionAddress: `0x${string}`;
+//       senderAddress: `0x${string}`;
+//       uuid: string;
+//     }) => {
+//       return redemptionContract.writeContractAsync({
+//         args: [tokenAddress, senderAddress, BigInt(amount)],
+//         address: redemptionAddress,
+//       });
+//     },
+//   });
+// };

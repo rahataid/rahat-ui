@@ -290,8 +290,8 @@ const CambodiaConfig = [
     out: 'libs/query/src/lib/cambodia/contracts/generated-hooks/rahatCVACambodia.ts',
     contracts: [
       {
-        name: 'RahatPayrollProject',
-        abi: rahatPayrollProjectAbi,
+        name: 'RahatCVACambodia',
+        abi: rahatCVACambodiaAbi,
       },
     ],
     plugins: [react()],

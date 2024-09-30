@@ -6,10 +6,10 @@ import {
 } from 'wagmi/codegen'
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// RahatPayrollProject
+// RahatCVACambodia
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-export const rahatPayrollProjectAbi = [
+export const rahatCvaCambodiaAbi = [
   {
     type: 'constructor',
     inputs: [
@@ -40,6 +40,14 @@ export const rahatPayrollProjectAbi = [
       { name: '', internalType: 'address', type: 'address', indexed: true },
     ],
     name: 'BeneficiaryRemoved',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      { name: 'chw', internalType: 'address', type: 'address', indexed: true },
+    ],
+    name: 'CHWAdded',
   },
   {
     type: 'event',
@@ -145,12 +153,32 @@ export const rahatPayrollProjectAbi = [
   },
   {
     type: 'function',
+    inputs: [],
+    name: 'RahatClaim',
+    outputs: [
+      { name: '', internalType: 'contract IRahatClaim', type: 'address' },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
     inputs: [
       { name: '_token', internalType: 'address', type: 'address' },
       { name: '_beneficiary', internalType: 'address', type: 'address' },
       { name: '_amount', internalType: 'uint256', type: 'uint256' },
     ],
     name: 'allocateToken',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: '_tokenAddress', internalType: 'address', type: 'address' },
+      { name: '_chwAddress', internalType: 'address', type: 'address' },
+      { name: '_amount', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'allocateTokenToChw',
     outputs: [],
     stateMutability: 'nonpayable',
   },
@@ -179,6 +207,13 @@ export const rahatPayrollProjectAbi = [
     name: 'disburseTokenBatch',
     outputs: [],
     stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: '_vendor', internalType: 'address', type: 'address' }],
+    name: 'getServedBen',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
   },
   {
     type: 'function',
@@ -227,6 +262,16 @@ export const rahatPayrollProjectAbi = [
   },
   {
     type: 'function',
+    inputs: [
+      { name: '', internalType: 'address', type: 'address' },
+      { name: '', internalType: 'address', type: 'address' },
+    ],
+    name: 'tokenClaimed',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
     inputs: [],
     name: 'totalAllocated',
     outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
@@ -268,270 +313,323 @@ export const rahatPayrollProjectAbi = [
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link rahatPayrollProjectAbi}__
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link rahatCvaCambodiaAbi}__
  */
-export const useReadRahatPayrollProject = /*#__PURE__*/ createUseReadContract({
-  abi: rahatPayrollProjectAbi,
+export const useReadRahatCvaCambodia = /*#__PURE__*/ createUseReadContract({
+  abi: rahatCvaCambodiaAbi,
 })
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link rahatPayrollProjectAbi}__ and `functionName` set to `"IID_RAHAT_PROJECT"`
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link rahatCvaCambodiaAbi}__ and `functionName` set to `"IID_RAHAT_PROJECT"`
  */
-export const useReadRahatPayrollProjectIidRahatProject =
+export const useReadRahatCvaCambodiaIidRahatProject =
   /*#__PURE__*/ createUseReadContract({
-    abi: rahatPayrollProjectAbi,
+    abi: rahatCvaCambodiaAbi,
     functionName: 'IID_RAHAT_PROJECT',
   })
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link rahatPayrollProjectAbi}__ and `functionName` set to `"beneficiaryCount"`
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link rahatCvaCambodiaAbi}__ and `functionName` set to `"RahatClaim"`
  */
-export const useReadRahatPayrollProjectBeneficiaryCount =
+export const useReadRahatCvaCambodiaRahatClaim =
   /*#__PURE__*/ createUseReadContract({
-    abi: rahatPayrollProjectAbi,
+    abi: rahatCvaCambodiaAbi,
+    functionName: 'RahatClaim',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link rahatCvaCambodiaAbi}__ and `functionName` set to `"beneficiaryCount"`
+ */
+export const useReadRahatCvaCambodiaBeneficiaryCount =
+  /*#__PURE__*/ createUseReadContract({
+    abi: rahatCvaCambodiaAbi,
     functionName: 'beneficiaryCount',
   })
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link rahatPayrollProjectAbi}__ and `functionName` set to `"isBeneficiary"`
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link rahatCvaCambodiaAbi}__ and `functionName` set to `"getServedBen"`
  */
-export const useReadRahatPayrollProjectIsBeneficiary =
+export const useReadRahatCvaCambodiaGetServedBen =
   /*#__PURE__*/ createUseReadContract({
-    abi: rahatPayrollProjectAbi,
+    abi: rahatCvaCambodiaAbi,
+    functionName: 'getServedBen',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link rahatCvaCambodiaAbi}__ and `functionName` set to `"isBeneficiary"`
+ */
+export const useReadRahatCvaCambodiaIsBeneficiary =
+  /*#__PURE__*/ createUseReadContract({
+    abi: rahatCvaCambodiaAbi,
     functionName: 'isBeneficiary',
   })
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link rahatPayrollProjectAbi}__ and `functionName` set to `"isTrustedForwarder"`
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link rahatCvaCambodiaAbi}__ and `functionName` set to `"isTrustedForwarder"`
  */
-export const useReadRahatPayrollProjectIsTrustedForwarder =
+export const useReadRahatCvaCambodiaIsTrustedForwarder =
   /*#__PURE__*/ createUseReadContract({
-    abi: rahatPayrollProjectAbi,
+    abi: rahatCvaCambodiaAbi,
     functionName: 'isTrustedForwarder',
   })
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link rahatPayrollProjectAbi}__ and `functionName` set to `"name"`
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link rahatCvaCambodiaAbi}__ and `functionName` set to `"name"`
  */
-export const useReadRahatPayrollProjectName =
-  /*#__PURE__*/ createUseReadContract({
-    abi: rahatPayrollProjectAbi,
-    functionName: 'name',
-  })
+export const useReadRahatCvaCambodiaName = /*#__PURE__*/ createUseReadContract({
+  abi: rahatCvaCambodiaAbi,
+  functionName: 'name',
+})
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link rahatPayrollProjectAbi}__ and `functionName` set to `"supportsInterface"`
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link rahatCvaCambodiaAbi}__ and `functionName` set to `"supportsInterface"`
  */
-export const useReadRahatPayrollProjectSupportsInterface =
+export const useReadRahatCvaCambodiaSupportsInterface =
   /*#__PURE__*/ createUseReadContract({
-    abi: rahatPayrollProjectAbi,
+    abi: rahatCvaCambodiaAbi,
     functionName: 'supportsInterface',
   })
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link rahatPayrollProjectAbi}__ and `functionName` set to `"tokenAllocations"`
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link rahatCvaCambodiaAbi}__ and `functionName` set to `"tokenAllocations"`
  */
-export const useReadRahatPayrollProjectTokenAllocations =
+export const useReadRahatCvaCambodiaTokenAllocations =
   /*#__PURE__*/ createUseReadContract({
-    abi: rahatPayrollProjectAbi,
+    abi: rahatCvaCambodiaAbi,
     functionName: 'tokenAllocations',
   })
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link rahatPayrollProjectAbi}__ and `functionName` set to `"totalAllocated"`
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link rahatCvaCambodiaAbi}__ and `functionName` set to `"tokenClaimed"`
  */
-export const useReadRahatPayrollProjectTotalAllocated =
+export const useReadRahatCvaCambodiaTokenClaimed =
   /*#__PURE__*/ createUseReadContract({
-    abi: rahatPayrollProjectAbi,
+    abi: rahatCvaCambodiaAbi,
+    functionName: 'tokenClaimed',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link rahatCvaCambodiaAbi}__ and `functionName` set to `"totalAllocated"`
+ */
+export const useReadRahatCvaCambodiaTotalAllocated =
+  /*#__PURE__*/ createUseReadContract({
+    abi: rahatCvaCambodiaAbi,
     functionName: 'totalAllocated',
   })
 
 /**
- * Wraps __{@link useReadContract}__ with `abi` set to __{@link rahatPayrollProjectAbi}__ and `functionName` set to `"trustedForwarder"`
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link rahatCvaCambodiaAbi}__ and `functionName` set to `"trustedForwarder"`
  */
-export const useReadRahatPayrollProjectTrustedForwarder =
+export const useReadRahatCvaCambodiaTrustedForwarder =
   /*#__PURE__*/ createUseReadContract({
-    abi: rahatPayrollProjectAbi,
+    abi: rahatCvaCambodiaAbi,
     functionName: 'trustedForwarder',
   })
 
 /**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link rahatPayrollProjectAbi}__
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link rahatCvaCambodiaAbi}__
  */
-export const useWriteRahatPayrollProject = /*#__PURE__*/ createUseWriteContract(
-  { abi: rahatPayrollProjectAbi },
-)
+export const useWriteRahatCvaCambodia = /*#__PURE__*/ createUseWriteContract({
+  abi: rahatCvaCambodiaAbi,
+})
 
 /**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link rahatPayrollProjectAbi}__ and `functionName` set to `"allocateToken"`
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link rahatCvaCambodiaAbi}__ and `functionName` set to `"allocateToken"`
  */
-export const useWriteRahatPayrollProjectAllocateToken =
+export const useWriteRahatCvaCambodiaAllocateToken =
   /*#__PURE__*/ createUseWriteContract({
-    abi: rahatPayrollProjectAbi,
+    abi: rahatCvaCambodiaAbi,
     functionName: 'allocateToken',
   })
 
 /**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link rahatPayrollProjectAbi}__ and `functionName` set to `"disburseToken"`
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link rahatCvaCambodiaAbi}__ and `functionName` set to `"allocateTokenToChw"`
  */
-export const useWriteRahatPayrollProjectDisburseToken =
+export const useWriteRahatCvaCambodiaAllocateTokenToChw =
   /*#__PURE__*/ createUseWriteContract({
-    abi: rahatPayrollProjectAbi,
+    abi: rahatCvaCambodiaAbi,
+    functionName: 'allocateTokenToChw',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link rahatCvaCambodiaAbi}__ and `functionName` set to `"disburseToken"`
+ */
+export const useWriteRahatCvaCambodiaDisburseToken =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: rahatCvaCambodiaAbi,
     functionName: 'disburseToken',
   })
 
 /**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link rahatPayrollProjectAbi}__ and `functionName` set to `"disburseTokenBatch"`
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link rahatCvaCambodiaAbi}__ and `functionName` set to `"disburseTokenBatch"`
  */
-export const useWriteRahatPayrollProjectDisburseTokenBatch =
+export const useWriteRahatCvaCambodiaDisburseTokenBatch =
   /*#__PURE__*/ createUseWriteContract({
-    abi: rahatPayrollProjectAbi,
+    abi: rahatCvaCambodiaAbi,
     functionName: 'disburseTokenBatch',
   })
 
 /**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link rahatPayrollProjectAbi}__ and `functionName` set to `"multicall"`
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link rahatCvaCambodiaAbi}__ and `functionName` set to `"multicall"`
  */
-export const useWriteRahatPayrollProjectMulticall =
+export const useWriteRahatCvaCambodiaMulticall =
   /*#__PURE__*/ createUseWriteContract({
-    abi: rahatPayrollProjectAbi,
+    abi: rahatCvaCambodiaAbi,
     functionName: 'multicall',
   })
 
 /**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link rahatPayrollProjectAbi}__ and `functionName` set to `"transferTokenToClaimer"`
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link rahatCvaCambodiaAbi}__ and `functionName` set to `"transferTokenToClaimer"`
  */
-export const useWriteRahatPayrollProjectTransferTokenToClaimer =
+export const useWriteRahatCvaCambodiaTransferTokenToClaimer =
   /*#__PURE__*/ createUseWriteContract({
-    abi: rahatPayrollProjectAbi,
+    abi: rahatCvaCambodiaAbi,
     functionName: 'transferTokenToClaimer',
   })
 
 /**
- * Wraps __{@link useWriteContract}__ with `abi` set to __{@link rahatPayrollProjectAbi}__ and `functionName` set to `"updateClaimer"`
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link rahatCvaCambodiaAbi}__ and `functionName` set to `"updateClaimer"`
  */
-export const useWriteRahatPayrollProjectUpdateClaimer =
+export const useWriteRahatCvaCambodiaUpdateClaimer =
   /*#__PURE__*/ createUseWriteContract({
-    abi: rahatPayrollProjectAbi,
+    abi: rahatCvaCambodiaAbi,
     functionName: 'updateClaimer',
   })
 
 /**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link rahatPayrollProjectAbi}__
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link rahatCvaCambodiaAbi}__
  */
-export const useSimulateRahatPayrollProject =
-  /*#__PURE__*/ createUseSimulateContract({ abi: rahatPayrollProjectAbi })
+export const useSimulateRahatCvaCambodia =
+  /*#__PURE__*/ createUseSimulateContract({ abi: rahatCvaCambodiaAbi })
 
 /**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link rahatPayrollProjectAbi}__ and `functionName` set to `"allocateToken"`
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link rahatCvaCambodiaAbi}__ and `functionName` set to `"allocateToken"`
  */
-export const useSimulateRahatPayrollProjectAllocateToken =
+export const useSimulateRahatCvaCambodiaAllocateToken =
   /*#__PURE__*/ createUseSimulateContract({
-    abi: rahatPayrollProjectAbi,
+    abi: rahatCvaCambodiaAbi,
     functionName: 'allocateToken',
   })
 
 /**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link rahatPayrollProjectAbi}__ and `functionName` set to `"disburseToken"`
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link rahatCvaCambodiaAbi}__ and `functionName` set to `"allocateTokenToChw"`
  */
-export const useSimulateRahatPayrollProjectDisburseToken =
+export const useSimulateRahatCvaCambodiaAllocateTokenToChw =
   /*#__PURE__*/ createUseSimulateContract({
-    abi: rahatPayrollProjectAbi,
+    abi: rahatCvaCambodiaAbi,
+    functionName: 'allocateTokenToChw',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link rahatCvaCambodiaAbi}__ and `functionName` set to `"disburseToken"`
+ */
+export const useSimulateRahatCvaCambodiaDisburseToken =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: rahatCvaCambodiaAbi,
     functionName: 'disburseToken',
   })
 
 /**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link rahatPayrollProjectAbi}__ and `functionName` set to `"disburseTokenBatch"`
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link rahatCvaCambodiaAbi}__ and `functionName` set to `"disburseTokenBatch"`
  */
-export const useSimulateRahatPayrollProjectDisburseTokenBatch =
+export const useSimulateRahatCvaCambodiaDisburseTokenBatch =
   /*#__PURE__*/ createUseSimulateContract({
-    abi: rahatPayrollProjectAbi,
+    abi: rahatCvaCambodiaAbi,
     functionName: 'disburseTokenBatch',
   })
 
 /**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link rahatPayrollProjectAbi}__ and `functionName` set to `"multicall"`
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link rahatCvaCambodiaAbi}__ and `functionName` set to `"multicall"`
  */
-export const useSimulateRahatPayrollProjectMulticall =
+export const useSimulateRahatCvaCambodiaMulticall =
   /*#__PURE__*/ createUseSimulateContract({
-    abi: rahatPayrollProjectAbi,
+    abi: rahatCvaCambodiaAbi,
     functionName: 'multicall',
   })
 
 /**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link rahatPayrollProjectAbi}__ and `functionName` set to `"transferTokenToClaimer"`
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link rahatCvaCambodiaAbi}__ and `functionName` set to `"transferTokenToClaimer"`
  */
-export const useSimulateRahatPayrollProjectTransferTokenToClaimer =
+export const useSimulateRahatCvaCambodiaTransferTokenToClaimer =
   /*#__PURE__*/ createUseSimulateContract({
-    abi: rahatPayrollProjectAbi,
+    abi: rahatCvaCambodiaAbi,
     functionName: 'transferTokenToClaimer',
   })
 
 /**
- * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link rahatPayrollProjectAbi}__ and `functionName` set to `"updateClaimer"`
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link rahatCvaCambodiaAbi}__ and `functionName` set to `"updateClaimer"`
  */
-export const useSimulateRahatPayrollProjectUpdateClaimer =
+export const useSimulateRahatCvaCambodiaUpdateClaimer =
   /*#__PURE__*/ createUseSimulateContract({
-    abi: rahatPayrollProjectAbi,
+    abi: rahatCvaCambodiaAbi,
     functionName: 'updateClaimer',
   })
 
 /**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link rahatPayrollProjectAbi}__
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link rahatCvaCambodiaAbi}__
  */
-export const useWatchRahatPayrollProjectEvent =
-  /*#__PURE__*/ createUseWatchContractEvent({ abi: rahatPayrollProjectAbi })
+export const useWatchRahatCvaCambodiaEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({ abi: rahatCvaCambodiaAbi })
 
 /**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link rahatPayrollProjectAbi}__ and `eventName` set to `"BeneficiaryAdded"`
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link rahatCvaCambodiaAbi}__ and `eventName` set to `"BeneficiaryAdded"`
  */
-export const useWatchRahatPayrollProjectBeneficiaryAddedEvent =
+export const useWatchRahatCvaCambodiaBeneficiaryAddedEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
-    abi: rahatPayrollProjectAbi,
+    abi: rahatCvaCambodiaAbi,
     eventName: 'BeneficiaryAdded',
   })
 
 /**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link rahatPayrollProjectAbi}__ and `eventName` set to `"BeneficiaryRemoved"`
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link rahatCvaCambodiaAbi}__ and `eventName` set to `"BeneficiaryRemoved"`
  */
-export const useWatchRahatPayrollProjectBeneficiaryRemovedEvent =
+export const useWatchRahatCvaCambodiaBeneficiaryRemovedEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
-    abi: rahatPayrollProjectAbi,
+    abi: rahatCvaCambodiaAbi,
     eventName: 'BeneficiaryRemoved',
   })
 
 /**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link rahatPayrollProjectAbi}__ and `eventName` set to `"ClaimProcessed"`
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link rahatCvaCambodiaAbi}__ and `eventName` set to `"CHWAdded"`
  */
-export const useWatchRahatPayrollProjectClaimProcessedEvent =
+export const useWatchRahatCvaCambodiaChwAddedEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
-    abi: rahatPayrollProjectAbi,
+    abi: rahatCvaCambodiaAbi,
+    eventName: 'CHWAdded',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link rahatCvaCambodiaAbi}__ and `eventName` set to `"ClaimProcessed"`
+ */
+export const useWatchRahatCvaCambodiaClaimProcessedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: rahatCvaCambodiaAbi,
     eventName: 'ClaimProcessed',
   })
 
 /**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link rahatPayrollProjectAbi}__ and `eventName` set to `"ClaimerUpdated"`
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link rahatCvaCambodiaAbi}__ and `eventName` set to `"ClaimerUpdated"`
  */
-export const useWatchRahatPayrollProjectClaimerUpdatedEvent =
+export const useWatchRahatCvaCambodiaClaimerUpdatedEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
-    abi: rahatPayrollProjectAbi,
+    abi: rahatCvaCambodiaAbi,
     eventName: 'ClaimerUpdated',
   })
 
 /**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link rahatPayrollProjectAbi}__ and `eventName` set to `"TokensAllocated"`
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link rahatCvaCambodiaAbi}__ and `eventName` set to `"TokensAllocated"`
  */
-export const useWatchRahatPayrollProjectTokensAllocatedEvent =
+export const useWatchRahatCvaCambodiaTokensAllocatedEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
-    abi: rahatPayrollProjectAbi,
+    abi: rahatCvaCambodiaAbi,
     eventName: 'TokensAllocated',
   })
 
 /**
- * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link rahatPayrollProjectAbi}__ and `eventName` set to `"TokensDisbursed"`
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link rahatCvaCambodiaAbi}__ and `eventName` set to `"TokensDisbursed"`
  */
-export const useWatchRahatPayrollProjectTokensDisbursedEvent =
+export const useWatchRahatCvaCambodiaTokensDisbursedEvent =
   /*#__PURE__*/ createUseWatchContractEvent({
-    abi: rahatPayrollProjectAbi,
+    abi: rahatCvaCambodiaAbi,
     eventName: 'TokensDisbursed',
   })

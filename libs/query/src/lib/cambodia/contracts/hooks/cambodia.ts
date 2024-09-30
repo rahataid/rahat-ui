@@ -142,7 +142,7 @@ export const useTokenCreate = () => {
 // };
 
 export const useBulkAllocateTokens = (tokenAddress: any) => {
-  const multi = useWriteRahatPayrollProjectMulticall();
+  const multi = useWriteRahatCvaCambodiaMulticall();
   const { queryClient } = useRSQuery();
   const decimals = useReadRahatTokenDecimals({
     address: tokenAddress,
@@ -200,7 +200,7 @@ export const useBulkAllocateTokens = (tokenAddress: any) => {
         });
         const encodeAllocateTokens = beneficiaryAddresses.map((beneficiary) => {
           return encodeFunctionData({
-            abi: rahatPayrollProjectAbi,
+            abi: rahatCvaCambodiaAbi,
             functionName: 'allocateToken',
             args: [
               tokenAddress,

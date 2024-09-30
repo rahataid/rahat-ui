@@ -27,6 +27,7 @@ import { Loader2 } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import Back from '../../components/back';
 import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
+import HeaderWithBack from '../../components/header.with.back';
 
 export default function AddSMSForm() {
   const addBeneficiary = useCreateBeneficiary();
@@ -88,13 +89,11 @@ export default function AddSMSForm() {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleCreateBeneficiary)}>
           <div className="h-[calc(100vh-145px)] m-4">
-            <div className="flex space-x-3 mb-10">
-              <Back path="/projects/el-kenya/${id}/beneficiary" />
-              <div>
-                <h1 className="text-2xl font-semibold ">Add SMS</h1>
-                <p className=" text-muted-foreground">Create a new SMS text</p>
-              </div>
-            </div>
+            <HeaderWithBack
+              title="Add SMS"
+              subtitle="Create a new SMS text"
+              path={`/projects/el-kenya/${id}/communication`}
+            />
             <div className="grid grid-cols-2 gap-4 mb-4 border rounded shadow-md p-4">
               <FormField
                 control={form.control}
@@ -121,7 +120,7 @@ export default function AddSMSForm() {
                 name="group"
                 render={({ field }) => (
                   <FormItem className="space-y-3">
-                    <FormLabel>Group</FormLabel>
+                    <FormLabel>Group(optional)</FormLabel>
                     <FormControl>
                       <Select>
                         <SelectTrigger className="text-muted-foreground">
@@ -161,11 +160,12 @@ export default function AddSMSForm() {
               </div>
             </div>
           </div>
-          <div className="flex justify-end space-x-2 m-4">
+          <div className="flex justify-end space-x-2 px-4 py-2 border-t">
             <Button
               type="button"
+              variant="secondary"
               onClick={() =>
-                router.push(`/projects/el-kenya/${id}/communication`)
+                router.push(`/projects/el-kenya/${id}/communication/manage`)
               }
             >
               Cancel
@@ -176,7 +176,7 @@ export default function AddSMSForm() {
                 Please wait
               </Button>
             ) : (
-              <Button>Create SMS</Button>
+              <Button className="px-8">Add</Button>
             )}
           </div>
         </form>

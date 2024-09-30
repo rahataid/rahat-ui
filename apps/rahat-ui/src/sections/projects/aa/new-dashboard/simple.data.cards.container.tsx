@@ -51,7 +51,30 @@ export default function SimpleDataCardsContainer({
     args: [contractSettings?.rahattoken?.address],
   });
 
+  const [totalFundDistributed] = useQuery({
+    query: GetTotalFundDistributed,
+  });
+
+  const totalDistributed = totalFundDistributed?.data?.benTokensAssigneds?.reduce((accumulator: number, d: any,) => {
+    return Number(d.amount) + accumulator
+  }, 0) ?? 0;
+
+
   const parsedProjectBudget = Number(projectBudget);
+
+  const projectBalance = parsedProjectBudget - Number(totalDistributed);
+
+  const formatToEnglishNumberSystem = (number: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'decimal',
+      minimumFractionDigits: number % 1 === 0 ? 0 : 2, // No decimals if whole number,
+      maximumFractionDigits: 2,
+    }).format(number);
+  }
+
+  const tempDashboardStats = allStats?.filter(
+    (data: any) => data.name === 'TEMP_DASHBOARD_STATS',
+  )[0]?.data;
 
   const totalBeneficiaries = allStats?.filter(
     (data: any) => data.name === 'BENEFICIARY_TOTAL',
@@ -70,22 +93,22 @@ export default function SimpleDataCardsContainer({
     {
       title: 'Household Receiving Cash Support',
       Icon: Home,
-      number: totalHouseholdReceivingCashSupport ?? 0,
+      number: tempDashboardStats ? tempDashboardStats.HOUSEHOLD_RECEIVING_CASH : totalHouseholdReceivingCashSupport ?? 0,
     },
     {
       title: 'Budget',
       Icon: Coins,
-      number: parsedProjectBudget,
+      number: `NRs. ${formatToEnglishNumberSystem(parsedProjectBudget) ?? 0}`,
     },
     {
       title: 'Balance',
       Icon: Coins,
-      number: 'N/A',
+      number: tempDashboardStats ? formatToEnglishNumberSystem(tempDashboardStats.BALANCE) : `NRs. ${formatToEnglishNumberSystem(projectBalance) ?? 0}`,
     },
     {
       title: 'Fund Distributed',
       Icon: HandCoins,
-      number: 'N/A',
+      number: tempDashboardStats ? formatToEnglishNumberSystem(tempDashboardStats.FUND_DISTRIBUTED) : `NRs. ${formatToEnglishNumberSystem(totalDistributed) ?? 0}`,
     },
     {
       title: 'Number of Communication Project',

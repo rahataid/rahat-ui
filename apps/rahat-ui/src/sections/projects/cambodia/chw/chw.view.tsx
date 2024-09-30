@@ -33,6 +33,7 @@ import {
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import ViewColumns from '../../components/view.columns';
 
 export default function CHWView() {
   const { id } = useParams() as { id: UUID };
@@ -136,35 +137,7 @@ export default function CHWView() {
               onSearch={(event) => handleFilterChange(event)}
             />
 
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="ml-auto">
-                  <Settings2 className="mr-2 h-4 w-5" />
-                  View
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuLabel>Toggle Columns</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                {table
-                  .getAllColumns()
-                  .filter((column) => column.getCanHide())
-                  .map((column) => {
-                    return (
-                      <DropdownMenuCheckboxItem
-                        key={column.id}
-                        className="capitalize"
-                        checked={column.getIsVisible()}
-                        onCheckedChange={(value) =>
-                          column.toggleVisibility(!!value)
-                        }
-                      >
-                        {column.id}
-                      </DropdownMenuCheckboxItem>
-                    );
-                  })}
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <ViewColumns table={table} />
           </div>
 
           <CambodiaTable table={table} tableHeight="h-[calc(100vh-460px)] " />

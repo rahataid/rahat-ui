@@ -19,9 +19,9 @@ import { useUserStore } from '@rumsan/react-query';
 import { useAuthStore } from '@rumsan/react-query/auth';
 import { toast } from 'react-toastify';
 import { paths } from '../routes/paths';
-import SideNav from './side-nav';
 import ThemeSwitch from './themeToggleSwitch';
 import ConnectWallet from './wallet/connect-wallet';
+import SearchInput from '../sections/projects/components/search.input';
 
 export function Nav({ hasDefaultHeader = true }) {
   const { user, clearUser } = useUserStore((state) => ({
@@ -40,59 +40,62 @@ export function Nav({ hasDefaultHeader = true }) {
 
   return (
     hasDefaultHeader && (
-      <div className="h-14 fixed w-[calc(100vw-56px)] flex justify-end gap-4 items-center p-2 border-b">
-        <ConnectWallet />
-        <DropdownMenu>
-          <DropdownMenuTrigger>
-            <Avatar className="h-10 w-10">
-              <AvatarImage
-                src="https://github.com/shadcn.png"
-                alt="profile-icon"
-                className="rounded-3xl"
-              />
-              <AvatarFallback>CN</AvatarFallback>
-            </Avatar>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent
-            className="mr-5 text-muted-foreground text-sm"
-            side="bottom"
-          >
-            <DropdownMenuGroup className="p-2 flex flex-col">
-              <div className="flex flex-col mb-1">
-                <span className="font-medium">
-                  {user?.data?.name ?? 'John Doe'}
-                </span>
-                <span>{user?.data?.email ?? 'doe@john.com'}</span>
-              </div>
-              <Separator />
-              <Link
-                className="p-1 hover:bg-secondary rounded"
-                href={paths.profile.root}
-              >
-                Profile
-              </Link>
-              <Link
-                className="p-1 hover:bg-secondary rounded"
-                href={paths.dashboard.root}
-              >
-                Home
-              </Link>
-              <Link
-                className="p-1 hover:bg-secondary rounded"
-                href={paths.settings.root}
-              >
-                Settings
-              </Link>
-              <ThemeSwitch />
-              <Badge
-                className="mt-2 rounded bg-primary text-white hover:border hover:cursor-pointer w-full p-1 flex justify-center"
-                onClick={handleLogout}
-              >
-                Logout
-              </Badge>
-            </DropdownMenuGroup>
-          </DropdownMenuContent>
-        </DropdownMenu>
+      <div className="h-14 fixed w-[calc(100vw-56px)] flex justify-between gap-4 items-center p-2 border-b">
+        <SearchInput className="w-1/4" name="" onSearch={() => { }} />
+        <div className="flex space-x-2 items-center">
+          <ConnectWallet />
+          <DropdownMenu>
+            <DropdownMenuTrigger>
+              <Avatar className="h-10 w-10">
+                <AvatarImage
+                  src="https://github.com/shadcn.png"
+                  alt="profile-icon"
+                  className="rounded-3xl"
+                />
+                <AvatarFallback>CN</AvatarFallback>
+              </Avatar>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              className="mr-5 text-muted-foreground text-sm"
+              side="bottom"
+            >
+              <DropdownMenuGroup className="p-2 flex flex-col">
+                <div className="flex flex-col mb-1">
+                  <span className="font-medium">
+                    {user?.data?.name ?? 'John Doe'}
+                  </span>
+                  <span>{user?.data?.email ?? 'doe@john.com'}</span>
+                </div>
+                <Separator />
+                <Link
+                  className="p-1 hover:bg-secondary rounded"
+                  href={paths.profile.root}
+                >
+                  Profile
+                </Link>
+                <Link
+                  className="p-1 hover:bg-secondary rounded"
+                  href={paths.dashboard.root}
+                >
+                  Home
+                </Link>
+                <Link
+                  className="p-1 hover:bg-secondary rounded"
+                  href={paths.settings.root}
+                >
+                  Settings
+                </Link>
+                <ThemeSwitch />
+                <Badge
+                  className="mt-2 rounded bg-primary text-white hover:border hover:cursor-pointer w-full p-1 flex justify-center"
+                  onClick={handleLogout}
+                >
+                  Logout
+                </Badge>
+              </DropdownMenuGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
     )
   );

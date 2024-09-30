@@ -22,6 +22,12 @@ export const useNavItems = () => {
           icon: <LayoutDashboard size={18} strokeWidth={1.5} />,
         },
         {
+          title: 'Benificiaries',
+          path: `/projects/el-cambodia/${id}/beneficiary`,
+          subtitle: 20,
+          icon: <Users size={18} strokeWidth={1.5} />,
+        },
+        {
           title: 'Vision Center',
           path: `/projects/el-cambodia/${id}/vendors`,
           subtitle: 20,

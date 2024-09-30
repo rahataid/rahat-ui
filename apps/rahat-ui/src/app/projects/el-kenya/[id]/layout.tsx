@@ -1,19 +1,19 @@
 'use client';
 
-import * as React from 'react';
-import { ProjectLayout } from 'apps/rahat-ui/src/sections/projects/components';
-
-import { ProjectTypes } from '@rahataid/sdk/enums';
-import { useSecondPanel } from 'apps/rahat-ui/src/providers/second-panel-provider';
-import { useParams } from 'next/navigation';
-import { UUID } from 'crypto';
 import {
-  useAAProjectSettingsDatasource,
-  useAAProjectSettingsHazardType,
+  RPSubgraphProvider,
+  PROJECT_SETTINGS_KEYS,
   useProjectContractSettings,
+  useProjectSettingsStore,
   useProjectSubgraphSettings,
 } from '@rahat-ui/query';
-import GarphQlProvider from 'libs/query/src/lib/aa/graph/graphql-query-client';
+import { ProjectTypes } from '@rahataid/sdk/enums';
+import { Client, cacheExchange, fetchExchange } from '@urql/core';
+import { useSecondPanel } from 'apps/rahat-ui/src/providers/second-panel-provider';
+import { UUID } from 'crypto';
+import { useParams } from 'next/navigation';
+import * as React from 'react';
+import { ProjectLayout } from '../../../../sections/projects/components';
 
 export default function ProjectLayoutRoot({
   children,
@@ -21,23 +21,31 @@ export default function ProjectLayoutRoot({
   children: React.ReactNode;
 }) {
   const { secondPanel } = useSecondPanel();
-
   const uuid = useParams().id as UUID;
-  useAAProjectSettingsDatasource(uuid);
-  useProjectContractSettings(uuid);
-  useAAProjectSettingsHazardType(uuid);
   useProjectSubgraphSettings(uuid);
+  useProjectContractSettings(uuid);
 
-  const renderChildren = () => {
-    if (secondPanel) {
-      return [children, secondPanel];
-    }
+  const subgraphSettings = useProjectSettingsStore(
+    (s) => s.settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.SUBGRAPH]?.url,
+  );
+  // const contractSettings = useProjectSettingsStore(
+  //   (state) => state.settings?.[uuid]?.[PROJECT_SETTINGS_KEYS.CONTRACT],
+  // );
 
-    return children;
-  };
   return (
-    <GarphQlProvider>
-      <ProjectLayout projectType={'el-kenya'}>{renderChildren()}</ProjectLayout>
-    </GarphQlProvider>
+    <RPSubgraphProvider
+      subgraphClient={
+        new Client({
+          url:
+            subgraphSettings ||
+            'http://localhost:8000/subgraphs/name/rahat/rp/',
+          exchanges: [cacheExchange, fetchExchange],
+        })
+      }
+    >
+      <ProjectLayout projectType={'el-kenya'}>
+        {secondPanel ? [children, secondPanel] : children}
+      </ProjectLayout>
+    </RPSubgraphProvider>
   );
 }

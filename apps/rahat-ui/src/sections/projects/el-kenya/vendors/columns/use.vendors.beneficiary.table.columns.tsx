@@ -1,3 +1,4 @@
+import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 import { ColumnDef } from '@tanstack/react-table';
 
 export const useElkenyaVendorsBeneficiaryTableColumns = () => {
@@ -10,17 +11,17 @@ export const useElkenyaVendorsBeneficiaryTableColumns = () => {
     {
       accessorKey: 'beneficiaryType',
       header: 'Beneficiary Type',
-      cell: ({ row }) => <div>{row.getValue('beneficiaryType')}</div>,
+      cell: ({ row }) => <Badge>{row.getValue('beneficiaryType')}</Badge>,
     },
     {
       accessorKey: 'voucherStatus',
       header: 'Voucher Status',
-      cell: ({ row }) => <div>{row.getValue('voucherStatus')}</div>,
+      cell: ({ row }) => <Badge>{row.getValue('voucherStatus')}</Badge>,
     },
     {
       accessorKey: 'glassesStatus',
       header: 'Glasses Status',
-      cell: ({ row }) => <div>{row.getValue('glassesStatus')}</div>,
+      cell: ({ row }) => <Badge>{row.getValue('glassesStatus')}</Badge>,
     },
   ];
   return columns;

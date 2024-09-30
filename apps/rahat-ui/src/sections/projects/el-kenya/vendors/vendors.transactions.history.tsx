@@ -27,16 +27,6 @@ export default function VendorsTransactionsHistory() {
     resetSelectedListItems,
   } = usePagination();
 
-  const beneficiaries = useProjectBeneficiaries({
-    page: pagination.page,
-    perPage: pagination.perPage,
-    order: 'desc',
-    sort: 'createdAt',
-    projectUUID: id,
-    ...filters,
-  });
-  const meta = beneficiaries.data.response?.meta;
-
   const columns = useElkenyaVendorsTransactionsTableColumns();
   const table = useReactTable({
     manualPagination: true,
@@ -52,7 +42,7 @@ export default function VendorsTransactionsHistory() {
     },
   });
   return (
-    <div className="p-4 bg-secondary rounded shadow">
+    <div className="p-4 border rounded-sm">
       <ElkenyaTable table={table} tableHeight="h-[calc(100vh-380px)]" />
     </div>
   );

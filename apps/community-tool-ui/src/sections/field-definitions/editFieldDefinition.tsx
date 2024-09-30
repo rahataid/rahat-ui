@@ -59,7 +59,7 @@ export default function EditFieldDefinition({
     ),
   });
 
-  const formattedVariations = data.variations?.length
+  const formattedVariations = data?.variations?.length
     ? data.variations.map((d) => {
         return {
           id: d,
@@ -81,7 +81,7 @@ export default function EditFieldDefinition({
   });
 
   useEffect(() => {
-    if (formattedVariations.length) setVariationTags(formattedVariations);
+    setVariationTags(formattedVariations);
 
     form.reset({
       name: data?.name || '',
@@ -153,11 +153,9 @@ export default function EditFieldDefinition({
 
   useEffect(() => {
     if (showLabelValue) {
-      if (fields.length === 0) {
-        append({ label: '', value: '' });
-      }
+      append({ label: '', value: '' });
     }
-  }, [showLabelValue, fields, append, form]);
+  }, [showLabelValue, append, form]);
 
   const { setValue } = form;
 
@@ -204,6 +202,7 @@ export default function EditFieldDefinition({
                       <FormControl>
                         <TagInput
                           {...field}
+                          truncate={25}
                           activeTagIndex={activeTagIndex}
                           setActiveTagIndex={setActiveTagIndex}
                           placeholder="Enter value and press ENTER"
@@ -230,11 +229,11 @@ export default function EditFieldDefinition({
                       <Label className="text-xs font-medium">Field Type</Label>
                       <Select
                         onValueChange={field.onChange}
-                        defaultValue={field.value}
+                        value={field.value}
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select Field Type" />
+                            <SelectValue placeholder={field.value} />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>

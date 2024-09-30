@@ -1,31 +1,28 @@
-import {
-  ArrowRightLeft,
-  Coins,
-  LayoutDashboard,
-  PlusSquare,
-} from 'lucide-react';
+import { ArrowRightLeft, Coins, PlusSquare } from 'lucide-react';
+import { useParams } from 'next/navigation';
 import { NavItem } from './nav-items.types';
 
 export const useTreasuryNavItems = () => {
+  const { id } = useParams();
   const menuItems: NavItem[] = [
     {
       title: 'General',
       children: [
-        {
-          title: 'Portfolio',
-          path: '/treasury/portfolio',
-          icon: <LayoutDashboard size={18} strokeWidth={1.5} />,
-        },
+        // {
+        //   title: 'Portfolio',
+        //   path: '/treasury/portfolio',
+        //   icon: <LayoutDashboard size={18} strokeWidth={1.5} />,
+        // },
         {
           title: 'Transactions',
           path: '/treasury/transactions',
           icon: <ArrowRightLeft size={18} strokeWidth={1.5} />,
         },
-        {
-          title: 'Portfolio',
-          path: '/treasury/portfolio',
-          icon: <LayoutDashboard size={18} strokeWidth={1.5} />,
-        },
+        // {
+        //   title: 'Portfolio',
+        //   path: '/treasury/portfolio',
+        //   icon: <LayoutDashboard size={18} strokeWidth={1.5} />,
+        // },
         {
           title: 'Assets',
           path: '/treasury/assets',

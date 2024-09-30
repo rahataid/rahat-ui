@@ -2,16 +2,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
+import { useCommunityUserUpdate } from '@rahat-ui/community-query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@rahat-ui/shadcn/components/select';
 import {
   Form,
   FormControl,
@@ -19,10 +11,10 @@ import {
   FormItem,
   FormMessage,
 } from '@rahat-ui/shadcn/src/components/ui/form';
+import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { User } from '@rumsan/sdk/types';
-import { useEffect } from 'react';
-import { useCommunityUserUpdate } from '@rahat-ui/community-query';
 import { UUID } from 'crypto';
+import { useEffect } from 'react';
 import { useSecondPanel } from '../../providers/second-panel-provider';
 
 type Iprops = {

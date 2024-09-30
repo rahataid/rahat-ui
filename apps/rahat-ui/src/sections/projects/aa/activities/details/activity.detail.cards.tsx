@@ -44,6 +44,8 @@ export default function ActivityDetailCards({
             <UpdateActivityStatusDialog
               activityDetail={activityDetail}
               loading={loading}
+              triggerTitle="update"
+              iconStyle="mr-1 h-3 w-3"
             />
           </div>
           <Badge className={`${getStatusBg(activityDetail?.status)}`}>
@@ -56,7 +58,7 @@ export default function ActivityDetailCards({
           <Text size={25} />
         </div>
         <div>
-          <h1 className="font-medium">Source</h1>
+          <h1 className="font-medium">Responsible Station</h1>
           <p className="text-xl text-primary font-semibold">
             {activityDetail?.source}
           </p>
@@ -84,17 +86,6 @@ export default function ActivityDetailCards({
           </p>
         </div>
       </div>
-      {/* <div className="p-4 rounded bg-card flex items-center gap-4">
-        <div className="p-3 bg-secondary text-primary rounded">
-          <Gauge size={25} />
-        </div>
-        <div>
-          <h1 className="font-medium">Lead Time</h1>
-          <p className="text-xl text-primary font-semibold">
-            {activityDetail?.leadTime}
-          </p>
-        </div>
-      </div> */}
     </div>
   );
 }

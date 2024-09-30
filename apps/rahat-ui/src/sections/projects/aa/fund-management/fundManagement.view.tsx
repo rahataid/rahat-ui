@@ -1,25 +1,24 @@
 import React from 'react';
 import { FundManagementTable } from './fundManagement.table';
 import { useGroupsReservedFunds, usePagination } from '@rahat-ui/query';
-import { useParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import { UUID } from 'crypto';
 import TableLoader from 'apps/rahat-ui/src/components/table.loader';
 import {
   ColumnFiltersState,
-  SortingState,
   VisibilityState,
   getCoreRowModel,
   getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
 import { useFundManagementColumns } from './useFundManagementColumns';
 import TableFilter from './fm.table.filter';
+import { getPaginationFromLocalStorage } from '../prev.pagination.storage';
 
 const FundManagementView = () => {
   const params = useParams();
+  const searchParams = useSearchParams();
   const projectId = params.id as UUID;
   const {
     pagination,
@@ -27,17 +26,17 @@ const FundManagementView = () => {
     setPrevPage,
     setPerPage,
     setPagination,
-    setFilters,
     filters,
   } = usePagination();
 
   React.useEffect(() => {
-    setPagination({ page: 1, perPage: 10 });
+    const isBackFromDetail = searchParams.get('backFromDetail') === 'true';
+    const prevPagination = getPaginationFromLocalStorage(isBackFromDetail);
+    setPagination(prevPagination);
   }, []);
 
   const fundManagementColumns = useFundManagementColumns();
 
-  const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
   );
@@ -53,17 +52,14 @@ const FundManagementView = () => {
   );
 
   const table = useReactTable({
+    manualPagination: true,
     data: groupsFundsData?.response?.data || [],
     columns: fundManagementColumns,
-    onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     state: {
-      sorting,
       columnFilters,
       columnVisibility,
     },

@@ -1,15 +1,6 @@
 import * as React from 'react';
-import {
-  ColumnFiltersState,
-  SortingState,
-  VisibilityState,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useReactTable,
-} from '@tanstack/react-table';
-import { useParams } from 'next/navigation';
+import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
+import { useParams, useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
@@ -36,20 +27,22 @@ import {
 import StakeholdersTable from '../../../stakeholders/stakeholders.table';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
-import { useSecondPanel } from 'apps/rahat-ui/src/providers/second-panel-provider';
 import StakeholdersTableFilters from '../../../stakeholders/stakeholders.table.filters';
 import Back from '../../../../components/back';
+import { toast } from 'react-toastify';
 
 export default function StakeholdersGroupEdit() {
-  const { closeSecondPanel } = useSecondPanel();
   const params = useParams();
   const projectId = params.id as UUID;
   const groupId = params.groupId as UUID;
+  const router = useRouter();
   const groupDetailPath = `/projects/aa/${projectId}/groups/stakeholders/${groupId}`;
+  const groupListPath = `/projects/aa/${projectId}/groups`;
   const { data: stakeholdersGroupDetail } = useSingleStakeholdersGroup(
     projectId,
     groupId,
   );
+  const [selected, setSelected] = React.useState<number>();
   const [showMembers, setShowMembers] = React.useState(false);
 
   const {
@@ -59,12 +52,26 @@ export default function StakeholdersGroupEdit() {
     setPerPage,
     setPagination,
     setFilters,
+    setSelectedListItems,
+    resetSelectedListItems,
     filters,
+    selectedListItems,
   } = usePagination();
 
   React.useEffect(() => {
     setPagination({ page: 1, perPage: 10 });
   }, []);
+
+  React.useEffect(() => {
+    const members = stakeholdersGroupDetail?.stakeholders?.reduce(
+      (acc: any, stakeholder: any) => {
+        acc[stakeholder.uuid] = true;
+        return acc;
+      },
+      {},
+    );
+    setSelectedListItems(members);
+  }, [stakeholdersGroupDetail]);
 
   useStakeholders(projectId, { ...pagination, ...filters });
 
@@ -73,35 +80,26 @@ export default function StakeholdersGroupEdit() {
     stakeholdersMeta: state.stakeholdersMeta,
   }));
 
-  const columns = useMembersTableColumn(stakeholdersGroupDetail);
-
-  const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    [],
-  );
-  const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = React.useState({});
+  const columns = useMembersTableColumn();
 
   const table = useReactTable({
     manualPagination: true,
     data: stakeholders ?? [],
     columns,
-    onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setRowSelection,
+    onRowSelectionChange: setSelectedListItems,
+    getRowId: (row) => row.uuid,
     state: {
-      sorting,
-      columnFilters,
-      columnVisibility,
-      rowSelection,
+      rowSelection: selectedListItems,
     },
   });
+
+  React.useEffect(() => {
+    if (selectedListItems) {
+      const length = Object.keys(selectedListItems)?.length;
+      setSelected(length);
+    }
+  }, [selectedListItems]);
 
   const updateStakeholdersGroup = useUpdateStakeholdersGroups();
 
@@ -119,36 +117,31 @@ export default function StakeholdersGroupEdit() {
   const handleUpdateStakeholdersGroups = async (
     data: z.infer<typeof FormSchema>,
   ) => {
-    const prevMembers = stakeholdersGroupDetail?.stakeholders?.map(
-      (member: any) => ({ uuid: member?.uuid }),
+    const stakeholders = Object.keys(selectedListItems).filter(
+      (key) => selectedListItems[key],
     );
-    const stakeHolders = table
-      .getSelectedRowModel()
-      .rows?.map((stakeholder: any) => ({ uuid: stakeholder?.original?.uuid }));
-    const finalMembers = table.getSelectedRowModel().rows?.length
-      ? stakeHolders
-      : prevMembers;
+    if (!stakeholders.length) {
+      return toast.error('Please select members to update group');
+    }
+    const stakeholdersList = stakeholders?.map((stakeholder) => ({
+      uuid: stakeholder,
+    }));
     try {
       await updateStakeholdersGroup.mutateAsync({
         projectUUID: projectId,
         stakeholdersGroupPayload: {
           uuid: stakeholdersGroupDetail?.uuid,
           ...data,
-          // stakeholders: [...stakeholdersGroupDetail?.stakeholders?.map((member: any) => ({ uuid: member?.uuid })), ...stakeHolders]
-          stakeholders: finalMembers,
+          stakeholders: stakeholdersList,
         },
       });
+      form.reset();
+      resetSelectedListItems();
+      router.push(groupListPath);
     } catch (e) {
       console.error('Updating Stakeholders Group Error::', e);
-    } finally {
-      form.reset();
-      // table.resetRowSelection();
     }
   };
-
-  React.useEffect(() => {
-    updateStakeholdersGroup.isSuccess && closeSecondPanel();
-  }, [updateStakeholdersGroup]);
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleUpdateStakeholdersGroups)}>
@@ -180,10 +173,9 @@ export default function StakeholdersGroupEdit() {
               />
               <div className="flex justify-end">
                 <div className="flex gap-4 items-end">
-                  {table.getSelectedRowModel().rows.length ? (
+                  {selected ? (
                     <Badge className="rounded h-10 px-4 py-2 w-max">
-                      {table.getSelectedRowModel().rows.length} - member
-                      selected
+                      {selected} - member selected
                     </Badge>
                   ) : null}
                   <Button

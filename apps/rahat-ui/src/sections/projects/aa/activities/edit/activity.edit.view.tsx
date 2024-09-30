@@ -27,6 +27,7 @@ import { Plus, CloudUpload, Check, X, LoaderCircle } from 'lucide-react';
 import {
   useActivitiesStore,
   useBeneficiariesGroups,
+  useListAllTransports,
   useSingleActivity,
   useStakeholdersGroups,
   useUpdateActivities,
@@ -34,6 +35,9 @@ import {
 } from '@rahat-ui/query';
 import { UUID } from 'crypto';
 import EditCommunicationForm from './edit.communication.form';
+import { validateFile } from '../../file.validation';
+import { ValidationContent } from '@rumsan/connect/src/types';
+import { toast } from 'react-toastify';
 
 export default function EditActivity() {
   const router = useRouter();
@@ -61,13 +65,19 @@ export default function EditActivity() {
 
   const nextId = React.useRef(0);
 
+  const [audioUploading, setAudioUploading] = React.useState<boolean>(false);
+
   useStakeholdersGroups(projectID as UUID, {});
   useBeneficiariesGroups(projectID as UUID, {});
+  const appTransports = useListAllTransports()
+
+
+  const activityDetailPath = `/projects/aa/${projectID}/activities/${activityID}`;
 
   const newCommunicationSchema = {
     groupType: '',
     groupId: '',
-    communicationType: '',
+    transportId: '',
     message: '',
     audioURL: { mediaURL: '', fileName: '' },
   };
@@ -80,11 +90,13 @@ export default function EditActivity() {
     source: z.string().min(2, { message: 'Please enter source' }),
     phaseId: z.string().min(1, { message: 'Please select phase' }),
     categoryId: z.string().min(1, { message: 'Please select category' }),
-    // hazardTypeId: z.string().min(1, { message: 'Please select hazard type' }),
     leadTime: z.string().min(2, { message: 'Please enter lead time' }),
     description: z
       .string()
-      .min(5, { message: 'Must be at least 5 characters' }),
+      .optional()
+      .refine((val) => !val || val.length > 4, {
+        message: 'Must be at least 5 characters',
+      }),
     isAutomated: z.boolean().optional(),
     activityDocuments: z
       .array(
@@ -98,17 +110,21 @@ export default function EditActivity() {
       z.object({
         groupType: z.string().min(1, { message: 'Please select group type' }),
         groupId: z.string().min(1, { message: 'Please select group' }),
-        communicationType: z
+        transportId: z
           .string()
           .min(1, { message: 'Please select communication type' }),
-        message: z.string().optional(),
+        message: z.string().or(z.object({})).optional(),
         audioURL: z
-          .object({
-            mediaURL: z.string().optional(),
-            fileName: z.string().optional(),
-          })
+          .string()
+          .or(
+            z.object({
+              mediaURL: z.string().optional(),
+              fileName: z.string().optional(),
+            })
+          )
           .optional(),
-        campaignId: z.number().optional(),
+        sessionId: z.string().optional(),
+        communicationId: z.string().optional(),
       }),
     ),
   });
@@ -121,7 +137,6 @@ export default function EditActivity() {
       source: activityDetail?.source,
       phaseId: activityDetail?.phaseId,
       categoryId: activityDetail?.categoryId,
-      // hazardTypeId: activityDetail?.hazardTypeId,
       leadTime: activityDetail?.leadTime,
       description: activityDetail?.description,
       activityDocuments: activityDetail?.activityDocuments,
@@ -144,6 +159,14 @@ export default function EditActivity() {
   ) => {
     const file = event.target.files?.[0];
     if (file) {
+      const isDuplicateFile = documents?.some((d) => d?.name === file?.name);
+      if (isDuplicateFile) {
+        return toast.error('Cannot upload duplicate files.');
+      }
+      if (!validateFile(file)) {
+        return;
+      }
+
       const newFileName = `${Date.now()}-${file.name}`;
       const modifiedFile = new File([file], newFileName, { type: file.type });
 
@@ -156,16 +179,16 @@ export default function EditActivity() {
     }
   };
 
-  const selectedPhaseId = form.watch("phaseId")
-  const selectedPhase = phases.find((d) => d.uuid === selectedPhaseId)
+  const selectedPhaseId = form.watch('phaseId');
+  const selectedPhase = phases.find((d) => d.uuid === selectedPhaseId);
 
   React.useEffect(() => {
     form.setValue('activityDocuments', allFiles);
   }, [allFiles, setAllFiles]);
 
   React.useEffect(() => {
-    if (selectedPhase?.name === "PREPAREDNESS") {
-      form.setValue("isAutomated", false)
+    if (selectedPhase?.name === 'PREPAREDNESS') {
+      form.setValue('isAutomated', false);
     }
   }, [selectedPhase]);
 
@@ -188,27 +211,26 @@ export default function EditActivity() {
     const activityCommunicationPayload = [];
     if (data?.activityCommunication?.length) {
       for (const comms of data.activityCommunication) {
-        const selectedCommunicationType = comms.communicationType;
-        switch (selectedCommunicationType) {
-          case 'IVR':
-            activityCommunicationPayload.push({
-              groupType: comms.groupType,
-              groupId: comms.groupId,
-              communicationType: comms.communicationType,
-              audioURL: comms.audioURL,
-            });
-            break;
-          case 'EMAIL':
-          case 'SMS':
-            activityCommunicationPayload.push({
-              groupType: comms.groupType,
-              groupId: comms.groupId,
-              communicationType: comms.communicationType,
-              message: comms.message,
-            });
-            break;
-          default:
-            break;
+        const selectedTransport = appTransports?.find((t) => t.cuid === comms.transportId)
+        if (selectedTransport?.validationContent === ValidationContent.URL) {
+          activityCommunicationPayload.push({
+            groupType: comms.groupType,
+            groupId: comms.groupId,
+            transportId: comms.transportId,
+            message: comms.audioURL,
+            ...(comms.sessionId && { sessionId: comms.sessionId }),
+            ...(comms.communicationId && { communicationId: comms.communicationId })
+          });
+          delete comms.audioURL;
+        } else {
+          activityCommunicationPayload.push({
+            groupType: comms.groupType,
+            groupId: comms.groupId,
+            transportId: comms.transportId,
+            message: comms.message,
+            ...(comms.sessionId && { sessionId: comms.sessionId }),
+            ...(comms.communicationId && { communicationId: comms.communicationId })
+          });
         }
       }
       payload = {
@@ -224,16 +246,11 @@ export default function EditActivity() {
         projectUUID: projectID as UUID,
         activityUpdatePayload: payload,
       });
+      router.push(activityDetailPath);
     } catch (e) {
       console.error('Error::', e);
     }
   };
-
-  React.useEffect(() => {
-    if (updateActivity.isSuccess) {
-      router.back();
-    }
-  }, [updateActivity.isSuccess]);
 
   return (
     <Form {...form}>
@@ -355,60 +372,30 @@ export default function EditActivity() {
                   )}
                 />
 
-
-                {
-                  selectedPhase && selectedPhase?.name !== "PREPAREDNESS" && (
-                    <FormField
-                      control={form.control}
-                      name="isAutomated"
-                      render={({ field }) => {
-                        return (
-                          <FormItem className="col-span-2">
-                            <FormControl>
-                              <Checkbox
-                                checked={field.value}
-                                onCheckedChange={(checked) =>
-                                  field.onChange(checked)
-                                }
-                              />
-                            </FormControl>
-                            <FormLabel className="text-sm font-normal ml-2">
-                              Is Automated Activity?
-                            </FormLabel>
-                            <FormMessage />
-                          </FormItem>
-                        );
-                      }}
-                    />
-                  )
-                }
-                {/* <FormField
-                  control={form.control}
-                  name="hazardTypeId"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Hazard Type</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select hazard type" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {hazardTypes.map((item) => (
-                            <SelectItem key={item.id} value={item.uuid}>
-                              {item.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                /> */}
+                {selectedPhase && selectedPhase?.name !== 'PREPAREDNESS' && (
+                  <FormField
+                    control={form.control}
+                    name="isAutomated"
+                    render={({ field }) => {
+                      return (
+                        <FormItem className="col-span-2">
+                          <FormControl>
+                            <Checkbox
+                              checked={field.value}
+                              onCheckedChange={(checked) =>
+                                field.onChange(checked)
+                              }
+                            />
+                          </FormControl>
+                          <FormLabel className="text-sm font-normal ml-2">
+                            Is Automated Activity?
+                          </FormLabel>
+                          <FormMessage />
+                        </FormItem>
+                      );
+                    }}
+                  />
+                )}
                 <FormField
                   control={form.control}
                   name="leadTime"
@@ -428,7 +415,7 @@ export default function EditActivity() {
                     );
                   }}
                 />
-                
+
                 <FormField
                   control={form.control}
                   name="description"
@@ -464,19 +451,21 @@ export default function EditActivity() {
                             />
                             <p className="text-sm font-medium">
                               Drop files to upload, or{' '}
-                              <span className="text-primary cursor-pointer">
-                                browse
-                              </span>
+                              <span className="text-primary">browse</span>
                             </p>
                           </div>
                           <Input
-                            className="opacity-0"
+                            className="opacity-0 cursor-pointer"
                             type="file"
                             onChange={handleFileChange}
                           />
                         </div>
                       </FormControl>
                       <FormMessage />
+                      <p className="text-xs text-orange-500">
+                        *Files must be under 5 MB and of type JPEG, PNG, BMP,
+                        PDF, XLSX, or CSV.
+                      </p>
                       {documents?.map((file) => (
                         <div
                           key={file.name}
@@ -530,6 +519,8 @@ export default function EditActivity() {
                   }}
                   form={form}
                   index={index}
+                  appTransports={appTransports}
+                  setLoading={setAudioUploading}
                 />
               ))}
 
@@ -544,14 +535,6 @@ export default function EditActivity() {
                 Add Communication
                 <Plus className="ml-2" size={16} strokeWidth={3} />
               </Button>
-              {/* <Button
-                type="button"
-                variant="outline"
-                className="border-dashed border-primary text-primary text-md w-full mt-4"
-              >
-                Add Payout
-                <Plus className="ml-2" size={16} strokeWidth={3} />
-              </Button> */}
               <div className="flex justify-end mt-8">
                 <div className="flex gap-2">
                   <Button
@@ -559,7 +542,7 @@ export default function EditActivity() {
                     variant="secondary"
                     className="bg-red-100 text-red-600 w-36"
                     onClick={() => {
-                      form.reset();
+                      router.push(activityDetailPath);
                     }}
                   >
                     Cancel
@@ -567,7 +550,7 @@ export default function EditActivity() {
                   <Button
                     type="submit"
                     disabled={
-                      updateActivity?.isPending || uploadFile?.isPending
+                      updateActivity?.isPending || uploadFile?.isPending || audioUploading
                     }
                   >
                     Update Activity

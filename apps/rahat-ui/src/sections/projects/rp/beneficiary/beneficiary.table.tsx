@@ -30,6 +30,7 @@ import {
   getCoreRowModel,
   getSortedRowModel,
   useReactTable,
+  getFilteredRowModel,
 } from '@tanstack/react-table';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import { UUID } from 'crypto';
@@ -47,6 +48,15 @@ import {
   phoneOptions,
 } from 'apps/rahat-ui/src/constants/selectOptionsRpBeneficiary';
 import FiltersTags from '../../components/filtersTags';
+import TableLoader from 'apps/rahat-ui/src/components/table.loader';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@rahat-ui/shadcn/src/components/ui/select';
 
 export default function BeneficiaryTable() {
   const bulkAssignTokens = useBulkAssignClaimsToBeneficiaries();
@@ -58,7 +68,6 @@ export default function BeneficiaryTable() {
 
   // const beneficiaries = useBeneficiaryStore((state) => state.beneficiaries);
   // console.log({ beneficiaries });
-  const meta = useBeneficiaryStore((state) => state.meta);
 
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const {
@@ -79,11 +88,11 @@ export default function BeneficiaryTable() {
     page: pagination.page,
     perPage: pagination.perPage,
     order: 'desc',
-    sort: 'updatedAt',
+    sort: 'createdAt',
     projectUUID: id,
     ...filters,
   });
-
+  const meta = beneficiaries.data.response?.meta;
   const table = useReactTable({
     manualPagination: true,
     data: beneficiaries.data?.data || [],
@@ -92,9 +101,11 @@ export default function BeneficiaryTable() {
     getSortedRowModel: getSortedRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setSelectedListItems,
+    getFilteredRowModel: getFilteredRowModel(),
     getRowId(originalRow, index, parent) {
       return originalRow.walletAddress;
     },
+
     state: {
       columnVisibility,
       rowSelection: selectedListItems,
@@ -139,14 +150,33 @@ export default function BeneficiaryTable() {
           )}
         </div>
         <div className="grid grid-cols-6 gap-x-2 mb-3">
-          <SelectSection
+          {/* <SelectSection
             filters={filters}
             setFilters={setFilters}
             options={genderOptions}
             placeholder={'Gender'}
             keys="gender"
-          />
-          <SelectSection
+          /> */}
+          <Select
+            onValueChange={(value) => {
+              table.getColumn('gender')?.setFilterValue(value);
+            }}
+            value={
+              (table.getColumn('gender')?.getFilterValue() as string) ?? ''
+            }
+          >
+            <SelectTrigger>
+              <SelectValue placeholder={`Select Gender`} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                {genderOptions.map(({ value, label }: any) => (
+                  <SelectItem value={value}>{label}</SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+          {/* <SelectSection
             filters={filters}
             setFilters={setFilters}
             options={internetOptions}
@@ -166,19 +196,15 @@ export default function BeneficiaryTable() {
             options={bankedOptions}
             placeholder={'Banked Status'}
             keys="bankedStatus"
-          />
+          /> */}
           <div className="col-span-2">
             <Input
               placeholder="Search Beneficiaries..."
               value={
-                (table
-                  .getColumn('walletAddress')
-                  ?.getFilterValue() as string) ?? ''
+                (table.getColumn('name')?.getFilterValue() as string) ?? ''
               }
               onChange={(event) =>
-                table
-                  .getColumn('walletAddress')
-                  ?.setFilterValue(event.target.value)
+                table.getColumn('name')?.setFilterValue(event.target.value)
               }
               className="rounded mr-2"
             />
@@ -192,30 +218,30 @@ export default function BeneficiaryTable() {
           />
         )}
         <div className="rounded-md border bg-card">
-          <TableComponent>
-            <ScrollArea className="h-[calc(100vh-190px)]">
-              <TableHeader className="bg-card sticky top-0">
-                {table.getHeaderGroups().map((headerGroup) => (
-                  <TableRow key={headerGroup.id}>
-                    {headerGroup.headers.map((header) => {
-                      return (
-                        <TableHead key={header.id}>
-                          {header.isPlaceholder
-                            ? null
-                            : flexRender(
-                                header.column.columnDef.header,
-                                header.getContext(),
-                              )}
-                        </TableHead>
-                      );
-                    })}
-                  </TableRow>
-                ))}
-              </TableHeader>
-              <TableBody>
-                {table.getRowModel().rows?.length ? (
-                  table.getRowModel().rows.map((row) => {
-                    return (
+          <>
+            <TableComponent>
+              <ScrollArea className="h-[calc(100vh-190px)]">
+                <TableHeader className="bg-card sticky top-0">
+                  {table.getHeaderGroups().map((headerGroup) => (
+                    <TableRow key={headerGroup.id}>
+                      {headerGroup.headers.map((header) => {
+                        return (
+                          <TableHead key={header.id}>
+                            {header.isPlaceholder
+                              ? null
+                              : flexRender(
+                                  header.column.columnDef.header,
+                                  header.getContext(),
+                                )}
+                          </TableHead>
+                        );
+                      })}
+                    </TableRow>
+                  ))}
+                </TableHeader>
+                <TableBody>
+                  {table.getRowModel().rows?.length ? (
+                    table.getRowModel().rows.map((row) => (
                       <TableRow
                         key={row.id}
                         data-state={row.getIsSelected() && 'selected'}
@@ -229,51 +255,64 @@ export default function BeneficiaryTable() {
                           </TableCell>
                         ))}
                       </TableRow>
-                    );
-                  })
-                ) : (
-                  <TableRow>
-                    <TableCell
-                      colSpan={table.getAllColumns().length}
-                      className="h-full"
-                    >
-                      <div className="flex flex-col items-center justify-center">
-                        <Image
-                          src="/noData.png"
-                          height={250}
-                          width={250}
-                          alt="no data"
-                        />
-                        <p className="text-medium text-base mb-1">
-                          No Data Available
-                        </p>
-                        <p className="text-sm mb-4 text-gray-500">
-                          There are no beneficiaries to display at the moment
-                        </p>
-                        <Button
-                          onClick={() =>
-                            router.push(`/projects/rp/${id}/beneficiary/add`)
-                          }
-                        >
-                          {' '}
-                          <Plus className="mr-2" size={20} strokeWidth={1.5} />
-                          Add Beneficiary Data
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </ScrollArea>
-          </TableComponent>
-          <CustomPagination
-            currentPage={pagination.page}
-            handleNextPage={setNextPage}
-            handlePageSizeChange={setPerPage}
-            handlePrevPage={setPrevPage}
-            perPage={pagination.perPage}
-            meta={meta || { total: 0, currentPage: 0 }}
-          />
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell
+                        colSpan={columns.length}
+                        className="h-24 text-center"
+                      >
+                        {beneficiaries.isFetching ? (
+                          <TableLoader />
+                        ) : (
+                          <div className="w-full h-[calc(100vh-140px)]">
+                            <div className="flex flex-col items-center justify-center">
+                              <Image
+                                src="/noData.png"
+                                height={250}
+                                width={250}
+                                alt="no data"
+                              />
+                              <p className="text-medium text-base mb-1">
+                                No Data Available
+                              </p>
+                              <p className="text-sm mb-4 text-gray-500">
+                                There are no beneficiaries to display at the
+                                moment
+                              </p>
+                              <Button
+                                onClick={() =>
+                                  router.push(
+                                    `/projects/rp/${id}/beneficiary/add`,
+                                  )
+                                }
+                              >
+                                {' '}
+                                <Plus
+                                  className="mr-2"
+                                  size={20}
+                                  strokeWidth={1.5}
+                                />
+                                Add Beneficiary Data
+                              </Button>
+                            </div>
+                          </div>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </ScrollArea>
+            </TableComponent>
+            <CustomPagination
+              currentPage={pagination.page}
+              handleNextPage={setNextPage}
+              handlePageSizeChange={setPerPage}
+              handlePrevPage={setPrevPage}
+              perPage={pagination.perPage}
+              meta={meta || { total: 0, currentPage: 0 }}
+            />
+          </>
         </div>
       </div>
     </>

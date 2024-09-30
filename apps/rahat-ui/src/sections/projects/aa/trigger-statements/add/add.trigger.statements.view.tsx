@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import {
   Tabs,
@@ -5,7 +6,7 @@ import {
   TabsTrigger,
   TabsContent,
 } from '@rahat-ui/shadcn/src/components/ui/tabs';
-import { useActivities, useActivitiesHazardTypes } from '@rahat-ui/query';
+import { useActivities } from '@rahat-ui/query';
 import AddAutomatedTriggerForm from './automated.trigger.add.form';
 import AddManualTriggerForm from './manual.trigger.add.form';
 import { UUID } from 'crypto';
@@ -19,7 +20,6 @@ type IProps = {
   manualForm: UseFormReturn<
     {
       title: string;
-      // hazardTypeId: string;
       isMandatory?: boolean | undefined;
     },
     any,
@@ -28,16 +28,11 @@ type IProps = {
   automatedForm: UseFormReturn<
     {
       title: string;
-      // hazardTypeId: string;
       dataSource: string;
-      // location: string;
       isMandatory?: boolean | undefined;
       minLeadTimeDays: string;
       maxLeadTimeDays: string;
       probability: string;
-
-      // readinessLevel?: string | undefined;
-      // waterLevel: string;
     },
     any,
     undefined
@@ -57,7 +52,6 @@ export default function AddTriggerStatementView({
 }: IProps) {
   const { id: projectID } = useParams();
   useActivities(projectID as UUID, {});
-  // useActivitiesHazardTypes(projectID as UUID);
 
   const selectedPhase = JSON.parse(
     localStorage.getItem('selectedPhase') as string,
@@ -86,13 +80,15 @@ export default function AddTriggerStatementView({
       </Tabs>
       <div className="flex justify-end mt-8">
         <div className="flex gap-2">
-          <Button
-            variant="secondary"
-            className="bg-red-100 text-red-600 w-36"
-            disabled
-          >
-            Cancel
-          </Button>
+          <Link href={`/projects/aa/${projectID}/trigger-statements`}>
+            <Button
+              type="button"
+              variant="secondary"
+              className="bg-red-100 text-red-600 w-36 hover:bg-red-200"
+            >
+              Cancel
+            </Button>
+          </Link>
           <Button className="px-8" onClick={nextStep}>
             Next
           </Button>

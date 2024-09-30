@@ -8,6 +8,7 @@ import DisbursementCondition, {
 import DisbursementConfirmation from './3-confirmation';
 import {
   useCreateDisbursementPlan,
+  useFindAllDisbursementPlans,
   useFindAllDisbursements,
 } from '@rahat-ui/query';
 import { useParams, useRouter } from 'next/navigation';
@@ -29,7 +30,24 @@ const FundManagementFlow = () => {
   const router = useRouter();
 
   const createDisbursementPlan = useCreateDisbursementPlan(id);
-  const disbursements = useFindAllDisbursements(id);
+  const disbursements = useFindAllDisbursements(id,{
+    hideAssignedBeneficiaries: true,
+
+  });
+  const { data: disbursementData } = useFindAllDisbursementPlans(id);
+
+  useEffect(() => {
+    const newSelectedConditions = [];
+    disbursementData?.conditions.includes(
+      DisbursementConditionType.BALANCE_CHECK,
+    ) && newSelectedConditions.push(DisbursementConditionType.BALANCE_CHECK);
+    disbursementData?.conditions.includes(
+      DisbursementConditionType.APPROVER_SIGNATURE,
+    ) &&
+      newSelectedConditions.push(DisbursementConditionType.APPROVER_SIGNATURE);
+
+    setStepData({ ...stepData, selectedConditions: newSelectedConditions });
+  }, [disbursementData]);
 
   const confirmModal = useBoolean(false);
 
@@ -73,9 +91,7 @@ const FundManagementFlow = () => {
   };
 
   const handlePrevious = () => {
-    if (currentStep > 0) {
-      setCurrentStep(currentStep - 1);
-    }
+    router.push(`/projects/rp/${id}/fundManagement`);
   };
 
   const steps = [
@@ -185,7 +201,6 @@ const FundManagementFlow = () => {
           <Button
             className="w-48 text-red-600 bg-pink-200 hover:bg-pink-300"
             onClick={handlePrevious}
-            disabled={currentStep === 0}
           >
             Back
           </Button>

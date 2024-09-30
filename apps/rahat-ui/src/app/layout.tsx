@@ -11,6 +11,7 @@ import { Wagmi } from '../providers/wagmi.provider';
 import './globals.css';
 import { RSQueryProvider } from '@rumsan/react-query/providers/rs-query-provider';
 import { CommunicationQueryProvider } from '@rumsan/communication-query/providers/communication-query-provider';
+import { NewCommunicationQueryProvider } from '@rahat-ui/query';
 
 export const metadata = {
   icons: {
@@ -30,22 +31,24 @@ export default function RootLayout({
         <Wagmi>
           <QueryProvider>
             <RSQueryProvider>
-              <CommunicationQueryProvider>
-                <ServiceProvider>
-                  <SecondPanelProvider>
-                    <ThemeProvider
-                      attribute="class"
-                      defaultTheme="light"
+              <NewCommunicationQueryProvider>
+                <CommunicationQueryProvider>
+                  <ServiceProvider>
+                    <SecondPanelProvider>
+                      <ThemeProvider
+                        attribute="class"
+                        defaultTheme="light"
                       // enableSystem
                       // disableTransitionOnChange
-                    >
-                      <main className={GeistSans.className}>{children}</main>
-                      <ToastContainer />
-                      <Toaster />
-                    </ThemeProvider>
-                  </SecondPanelProvider>
-                </ServiceProvider>
-              </CommunicationQueryProvider>
+                      >
+                        <main className={GeistSans.className}>{children}</main>
+                        <ToastContainer />
+                        <Toaster />
+                      </ThemeProvider>
+                    </SecondPanelProvider>
+                  </ServiceProvider>
+                </CommunicationQueryProvider>
+              </ NewCommunicationQueryProvider>
             </RSQueryProvider>
           </QueryProvider>
         </Wagmi>

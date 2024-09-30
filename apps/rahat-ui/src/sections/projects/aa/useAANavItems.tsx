@@ -4,8 +4,6 @@ import {
   Speech,
   UsersRound,
   AlignVerticalJustifyCenter,
-  Phone,
-  MessageSquare,
   Activity,
   HardDrive,
   LayoutDashboard,
@@ -38,7 +36,7 @@ export const useNavItems = () => {
           icon: <LayoutDashboard size={18} strokeWidth={1.5} />,
         },
         {
-          title: 'Beneficiaries',
+          title: 'Project Beneficiaries',
           path: `/projects/aa/${params.id}/beneficiary`,
           icon: <UsersRound size={18} strokeWidth={1.5} />,
         },

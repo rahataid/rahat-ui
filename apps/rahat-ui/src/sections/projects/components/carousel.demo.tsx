@@ -8,9 +8,9 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/carousel';
 
 const imageList = [
-  { src: '/svg/aa-project.svg' },
-  { src: '/projects/aa1.jpg' },
-  { src: '/projects/aa2.jpg' },
+  { src: '/projects/aa_1.jpg' },
+  { src: '/projects/aa_2.jpg' },
+  { src: '/projects/aa_3.jpg' },
 ];
 
 export function CarouselDemo() {

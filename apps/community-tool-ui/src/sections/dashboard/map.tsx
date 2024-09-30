@@ -80,7 +80,7 @@ export default function CommunityMap({ coordinates }: any) {
         {coordinates.map((item: any, index: number) => {
           return (
             <Marker
-              key={item.type}
+              key={index}
               longitude={Number(item.longitude)}
               latitude={Number(item.latitude)}
             >
@@ -93,7 +93,7 @@ export default function CommunityMap({ coordinates }: any) {
                   <Landmark color="#0C609B" size={16} />
                 )}
                 {item.type === MARKER_TYPE.EVACUATION && (
-                  <Home color="green" size={16} />
+                  <Home color="#FFC300" size={16} />
                 )}
                 {item.type === MARKER_TYPE.BENEFICIARY && (
                   <MapPin

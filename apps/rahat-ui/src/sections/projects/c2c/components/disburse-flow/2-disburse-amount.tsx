@@ -8,22 +8,24 @@ import { formatEther } from 'viem';
 import { useReadContract } from 'wagmi';
 
 type Step2DisburseAmountProps = {
-  selectedBeneficiaries: string[];
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   projectSubgraphDetails: any;
+  selectedBeneficiaries: string[];
   tokenName?: string;
+  treasurySource: string;
 };
 
 export default function Step2DisburseAmount({
-  selectedBeneficiaries,
   onChange,
   value,
+  selectedBeneficiaries,
   projectSubgraphDetails,
+  treasurySource,
   tokenName = 'USDC',
 }: Step2DisburseAmountProps) {
   const { id } = useParams();
-
+  console.log('treasurySource', treasurySource);
   const contractSettings = useProjectSettingsStore(
     (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT],
   );
@@ -39,29 +41,51 @@ export default function Step2DisburseAmount({
 
   // const [amount, setAmount] = useState<string>('0');
   return (
-    <div className="px-2 pb-4 mb-2">
-      <div className="flex items-center justify-between mb-4">
-        <h1>Project Balance</h1>
-        <h1>
-          {projectBalance} {tokenName}
+    <div className="m-4 p-6 bg-card">
+      <div className="flex flex-col mb-10">
+        <h1 className="text-2xl font-semibold text-gray-900">
+          ENTER DISBURSEMENT AMOUNT
         </h1>
       </div>
-      <div className="flex items-center justify-between">
-        <div>
-          Send Amount{' '}
-          <span className="text-primary">
-            ({selectedBeneficiaries.length} Beneficiar
-            {selectedBeneficiaries.length > 1 ? 'ies' : 'y'})
-          </span>
+
+      <div className="flex flex-col gap-6">
+        {/* Beneficiaries Selected */}
+        <div className="flex flex-col">
+          <label className="text-sm font-medium text-gray-600">
+            Beneficiaries Selected
+          </label>
+          <div className="bg-gray-100 text-gray-800 p-2 rounded-md w-1/2">
+            {selectedBeneficiaries.length}
+          </div>
         </div>
-        <div className="flex w-1/3 max-w-sm items-center space-x-2 gap-2">
-          <Input
-            name="disburseAmount"
-            placeholder="Amount"
-            value={value}
-            onChange={onChange}
-          />
-          {tokenName}
+
+        {/* Project Balance */}
+        {treasurySource !== 'EOA' && treasurySource !== 'MULTISIG' && (
+          <div className="flex flex-col">
+            <label className="text-sm font-medium text-gray-600">
+              Project Balance
+            </label>
+            <div className="bg-gray-100 text-gray-800 p-2 rounded-md w-1/2">
+              2000 USDC {/* Replace with dynamic value if needed */}
+            </div>
+          </div>
+        )}
+
+        {/* Send Amount */}
+        <div className="flex flex-col">
+          <label className="text-sm font-medium text-gray-600">
+            Send Amount
+          </label>
+          <div className="flex items-center space-x-2">
+            <Input
+              name="disburseAmount"
+              placeholder="Enter amount to send"
+              value={value}
+              onChange={onChange}
+              className="p-2 border border-gray-300 rounded-md w-1/2"
+            />
+            <span className="text-gray-600">{tokenName}</span>
+          </div>
         </div>
       </div>
     </div>

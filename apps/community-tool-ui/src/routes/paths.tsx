@@ -9,6 +9,7 @@ const ROOTS = {
   FIELD_DEFINITIONS: '/field-definitions',
   TARGETING: '/targeting',
   TREASURY: '/treasury',
+  COMMS: '/communications/text',
 };
 
 export const paths = {
@@ -51,6 +52,9 @@ export const paths = {
       root: `${ROOTS.TARGETING}/filters`,
       list: `${ROOTS.TARGETING}/list`,
       detail: (uuid: string) => `${ROOTS.TARGETING}/${uuid}`,
+    },
+    comms: {
+      root: ROOTS.COMMS,
     },
   },
   settings: {

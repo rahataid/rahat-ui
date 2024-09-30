@@ -6,8 +6,8 @@ import useChart from '../use-chart';
 // ----------------------------------------------------------------------
 
 type Props = {
-  series: number[];
-  categories: string[];
+  ctSeries?: number[];
+  ctCategories: string[];
   width?: number | string;
   height?: number | string;
   horizontal?: boolean;
@@ -15,18 +15,24 @@ type Props = {
   xaxisLabels?: boolean;
   yaxisLabels?: boolean;
   barHeight?: number;
+  categories?: any;
+  series?: any;
+  communityTool?: boolean;
 };
 
 export default function ChartBar({
-  series,
-  categories,
   width = 400,
   height = 400,
   horizontal = false,
   colors = ['#007BFF'],
   xaxisLabels = true,
   yaxisLabels = true,
-  barHeight = 20,
+  barHeight = 25,
+  categories,
+  series,
+  ctSeries,
+  ctCategories,
+  communityTool = false,
 }: Props) {
   const chartOptions = useChart({
     colors,
@@ -40,15 +46,17 @@ export default function ChartBar({
       bar: {
         horizontal: horizontal,
         barHeight: barHeight,
-        columnWidth: '12%',
+        columnWidth: '50px',
         borderRadius: 4,
         borderRadiusApplication: 'end',
       },
     },
     xaxis: {
-      categories,
+      categories: communityTool ? ctCategories : categories,
       labels: {
-        show: xaxisLabels,
+        show:
+          (ctCategories?.length > 0 ? xaxisLabels : false) ||
+          (categories?.length > 0 && xaxisLabels),
         formatter: (value: string) => value,
       },
       axisBorder: {
@@ -71,19 +79,15 @@ export default function ChartBar({
       },
     },
     yaxis: {
-      labels: { show: yaxisLabels },
+      labels: {
+        show:
+          (ctCategories?.length > 0 ? yaxisLabels : false) ||
+          (categories?.length > 0 && yaxisLabels),
+      },
     },
     tooltip: {
       x: {
         show: true,
-      },
-      y: {
-        title: {
-          formatter(seriesName) {
-            return ``;
-          },
-        },
-        formatter: (value: number) => ` ${value}`,
       },
     },
   });
@@ -94,7 +98,7 @@ export default function ChartBar({
       type="bar"
       series={[
         {
-          data: series,
+          data: communityTool ? ctSeries : series,
         },
       ]}
       options={chartOptions}

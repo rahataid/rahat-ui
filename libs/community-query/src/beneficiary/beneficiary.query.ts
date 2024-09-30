@@ -1,3 +1,4 @@
+'use client';
 import {
   UseQueryResult,
   useMutation,
@@ -193,6 +194,40 @@ export const useListPalikas = () => {
     {
       queryKey: [TAGS.LIST_PALIKA],
       queryFn: benClient.listDistinctLocations,
+    },
+    queryClient,
+  );
+};
+
+export const useGenerateVerificationLink = () => {
+  const { queryClient, rumsanService } = useRSQuery();
+  const benClient = getBeneficiaryClient(rumsanService.client);
+  return useMutation(
+    {
+      mutationKey: [TAGS.VERIFY_BENEFICIARY],
+      mutationFn: benClient.verifyBeneficiary,
+      onSuccess: () => {
+        Swal.fire({
+          title: 'Link Generated Successfully',
+          text: 'Check your email to Verify',
+          icon: 'success',
+        });
+        queryClient.invalidateQueries({
+          queryKey: [
+            TAGS.LIST_COMMUNITY_BENFICIARIES,
+            {
+              exact: true,
+            },
+          ],
+        });
+      },
+      onError: (error: any) => {
+        Swal.fire(
+          'Error',
+          error.response.data.message || 'Encounter error on Creating Data',
+          'error',
+        );
+      },
     },
     queryClient,
   );

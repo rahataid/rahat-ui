@@ -14,6 +14,8 @@ const GET_ALL_DISBURSEMENT_PLANS = 'rpProject.disbursementPlan.get';
 const UPDATE_DISBURSEMENT_PLAN = 'rpProject.disbursementPlan.update';
 const CREATE_BULK_DISBURSEMENT = 'rpProject.disbursement.bulkCreate';
 
+const GET_ALL_BENEFICIARY_GROUPS = 'rpProject.beneficiary.getAllGroups';
+
 // Hooks for Disbursement Plan
 export const useCreateDisbursementPlan = (projectUUID: UUID) => {
   const action = useProjectAction(['createDisbursementPlan-rpProject']);
@@ -130,7 +132,7 @@ export const useCreateDisbursement = (projectUUID: UUID) => {
   });
 };
 
-export const useFindAllDisbursements = (projectUUID: UUID) => {
+export const useFindAllDisbursements = (projectUUID: UUID, payload: any) => {
   const action = useProjectAction(['findAllDisbursements-rpProject']);
 
   const query = useQuery({
@@ -142,7 +144,7 @@ export const useFindAllDisbursements = (projectUUID: UUID) => {
         uuid: projectUUID,
         data: {
           action: GET_ALL_DISBURSEMENTS,
-          payload: {},
+          payload,
         },
       });
       return res.data;
@@ -231,6 +233,124 @@ export const useBulkCreateDisbursement = (projectUUID: UUID) => {
         },
       });
       return res.data;
+    },
+  });
+};
+
+export const useRedeemToken = (projectUUID: UUID) => {
+  const action = useProjectAction(['redeemToken-rpProject']);
+
+  return useMutation({
+    mutationFn: async (data: { uuid: string }) => {
+      const res = await action.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'rpProject.updateRedemption',
+          payload: data,
+        },
+      });
+      return res.data;
+    },
+  });
+};
+
+export const useListRedemptions = (projectUUID: UUID,payload:any) => {
+  const action = useProjectAction(['listRedemptions-rpProject']);
+  return useQuery({
+    queryKey: ['redemptions', projectUUID,payload],
+    queryFn: async () => {
+      const res = await action.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'rpProject.listRedemption',
+          payload: {...payload},
+        },
+      });
+      const data = res.data;
+      const formattedData = data.map((item: any) => {
+        return {
+          uuid: item?.uuid,
+          name: item?.Vendor?.name,
+          amount: item?.tokenAmount,
+          status: item?.status,
+          tokenAddress: item?.tokenAddress,
+          walletAddress: item?.Vendor?.walletAddress,
+        };
+      });
+      return {redemptions:formattedData,meta:res.response.meta};
+    },
+  });
+};
+
+export const useFindAllBeneficiaryGroups = (
+  projectUUID: UUID,
+  payload?: any,
+) => {
+  const action = useProjectAction();
+
+  const query = useQuery({
+    queryKey: ['beneficiary_groups', projectUUID],
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    queryFn: async () => {
+      const res = await action.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: GET_ALL_BENEFICIARY_GROUPS,
+          payload: payload || {},
+        },
+      });
+      return res.data;
+    },
+  });
+
+  const data = query?.data || [];
+
+  return {
+    ...query,
+    data,
+  };
+};
+
+export const useRpSingleBeneficiaryGroup = (
+  uuid: UUID,
+  beneficiariesGroupID: UUID,
+) => {
+  const q = useProjectAction();
+
+  const query = useQuery({
+    queryKey: ['beneficiaryGroup', uuid, beneficiariesGroupID],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'rpProject.beneficiary.getOneGroup',
+          payload: {
+            uuid: beneficiariesGroupID,
+          },
+        },
+      });
+      return mutate.data;
+    },
+  });
+  return query;
+};
+
+export const useRpSingleBeneficiaryGroupMutation = (projectUUID: UUID) => {
+  const q = useProjectAction();
+
+  return useMutation({
+    mutationFn: async (beneficiariesGroupID: UUID) => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: 'rpProject.beneficiary.getOneGroup',
+          payload: {
+            uuid: beneficiariesGroupID,
+          },
+        },
+      });
+      return mutate.data;
     },
   });
 };

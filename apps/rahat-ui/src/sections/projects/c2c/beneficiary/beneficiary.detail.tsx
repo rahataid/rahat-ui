@@ -56,7 +56,7 @@ export default function BeneficiaryDetail({
   // TODO: remove reference to el vouchers
   const deleteBeneficiary = useRemoveBeneficiary();
 
-  const walletAddress = beneficiaryDetails.wallet;
+  const walletAddress = beneficiaryDetails?.walletAddress;
 
   const { data: transactionList, isLoading } =
     useBeneficiaryTransaction(walletAddress);
@@ -94,7 +94,7 @@ export default function BeneficiaryDetail({
         <TableLoader />
       ) : (
         <>
-          <div className="flex justify-between p-4 pt-5 bg-secondary border-b">
+          <div className="flex justify-between p-4 pt-5 bg-card border-b">
             <TooltipProvider delayDuration={100}>
               <Tooltip>
                 <TooltipTrigger onClick={closeSecondPanel}>
@@ -155,9 +155,17 @@ export default function BeneficiaryDetail({
                   />
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
-                  <DropdownMenuItem onClick={() => handleTabChange('edit')}>
-                    Edit
-                  </DropdownMenuItem>
+                  {activeTab === 'details' ? (
+                    <DropdownMenuItem onClick={() => handleTabChange('edit')}>
+                      Edit
+                    </DropdownMenuItem>
+                  ) : (
+                    <DropdownMenuItem
+                      onClick={() => handleTabChange('details')}
+                    >
+                      Details
+                    </DropdownMenuItem>
+                  )}
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
@@ -174,7 +182,7 @@ export default function BeneficiaryDetail({
               <div>
                 <div className="flex gap-2 mb-1">
                   <h1 className="font-semibold text-xl">
-                    {beneficiaryDetails?.name}
+                    {beneficiaryDetails?.name || 'N/A'}
                   </h1>
                   <Badge>Active</Badge>
                 </div>
@@ -185,7 +193,9 @@ export default function BeneficiaryDetail({
                       onClick={clickToCopy}
                     >
                       <p className="text-muted-foreground text-base">
-                        {truncateEthAddress(walletAddress)}
+                        {walletAddress
+                          ? truncateEthAddress(walletAddress)
+                          : 'N/A'}
                       </p>
                       {walletAddressCopied ? (
                         <CopyCheck size={15} strokeWidth={1.5} />
@@ -199,30 +209,14 @@ export default function BeneficiaryDetail({
                     </TooltipTrigger>
                     <TooltipContent className="bg-secondary" side="bottom">
                       <p className="text-xs font-medium">
-                        {walletAddressCopied ? 'copied' : 'click to copy'}
+                        {walletAddressCopied ? 'Copied' : walletAddress}
                       </p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
               </div>
             </div>
-            {/* {!assignStatus && beneficiaryDetails?.type === 'ENROLLED' && (
-              <div>
-                <Button disabled={isTransacting} onClick={handleAssignVoucher}>
-                  {isTransacting
-                    ? 'Confirming transaction...'
-                    : 'Assign Tokens'}
-                </Button>
-              </div> */}
-            {/* )} */}
           </div>
-          {/* <AssignVoucherConfirm
-            open={voucherAssignModal.value}
-            handleClose={handleVoucherAssignModalClose}
-            handleSubmit={handleAssignVoucher}
-          /> */}
-
-          {/* Details View */}
 
           {activeTab === 'details' && (
             <>
@@ -237,37 +231,42 @@ export default function BeneficiaryDetail({
                   <div className="flex flex-col gap-2 p-2">
                     <Card className="shadow rounded">
                       <CardContent className="pt-6">
-                        <div className="grid grid-cols-2 gap-3">
+                        <div className="grid grid-cols-3 gap-3">
                           <div>
-                            <p className="font-light text-base">
-                              {beneficiaryDetails?.type}
-                            </p>
-                            <p className="text-sm font-normal text-muted-foreground">
-                              Beneficiary Type
-                            </p>
-                          </div>
-                          <div className="text-right">
                             <p className="font-light text-base">
                               {beneficiaryDetails?.gender}
                             </p>
-                            <p className="text-sm font-normal text-muted-foreground ">
+                            <p className="text-sm font-normal text-muted-foreground">
                               Gender
                             </p>
                           </div>
+
                           <div>
                             <p className="font-light text-base">
                               {beneficiaryDetails?.email || 'N/A'}
                             </p>
-                            <p className="text-sm font-normal text-muted-foreground ">
+                            <p className="text-sm font-normal text-muted-foreground">
                               Email
                             </p>
                           </div>
                           <div className="text-right">
-                            <p className="font-light text-base">
-                              {beneficiaryDetails?.phone}
+                            <p className="font-light text-base">{'N/A'}</p>
+                            <p className="text-sm font-normal text-muted-foreground">
+                              Location
                             </p>
-                            <p className="text-sm font-normal text-muted-foreground ">
-                              Phone
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-3 gap-3 mt-3">
+                          <div>
+                            <p className="font-light text-base">{'N/A'}</p>
+                            <p className="text-sm font-normal text-muted-foreground">
+                              Balance
+                            </p>
+                          </div>
+                          <div>
+                            <p className="font-light text-base">Verified </p>
+                            <p className="text-sm font-normal text-muted-foreground">
+                              Verificatoin Status
                             </p>
                           </div>
                         </div>

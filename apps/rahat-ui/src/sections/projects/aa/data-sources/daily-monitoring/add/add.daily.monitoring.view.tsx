@@ -2,12 +2,7 @@ import * as React from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import {
-  Form,
-  FormItem,
-  FormLabel,
-} from '@rahat-ui/shadcn/src/components/ui/form';
-import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
+import { Form } from '@rahat-ui/shadcn/src/components/ui/form';
 
 import { useFieldArray, useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -19,18 +14,11 @@ import {
   CardTitle,
 } from '@rahat-ui/shadcn/src/components/ui/card';
 import { UUID } from 'crypto';
-import {
-  PROJECT_SETTINGS_KEYS,
-  // PROJECT_SETTINGS_KEYS,
-  // useProjectSettingsStore,
-  useCreateDailyMonitoring,
-  useProjectSettingsStore,
-} from '@rahat-ui/query';
+import { useCreateDailyMonitoring } from '@rahat-ui/query';
 import { Plus } from 'lucide-react';
 import AddAnotherDataSource from './add.another.data.source';
 import SelectFormField from '../../../../../../components/select.form.field';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import InputFormField from '../../../../../../components/input.form.field';
 import { useSelectItems } from '../useSelectItems';
 
 export default function AddDailyMonitoring() {
@@ -38,10 +26,7 @@ export default function AddDailyMonitoring() {
   const projectId = params.id as UUID;
   const router = useRouter();
 
-  const dataSourceSettings = useProjectSettingsStore(
-    (s) => s.settings?.[projectId]?.[PROJECT_SETTINGS_KEYS.DATASOURCE],
-  );
-  const selectedRiverBasin = dataSourceSettings?.dhm?.location;
+  const dailyMonitoringListPath = `/projects/aa/${projectId}/data-sources/#monitoring`;
 
   const { riverBasins } = useSelectItems();
 
@@ -52,7 +37,6 @@ export default function AddDailyMonitoring() {
   };
 
   const FormSchema = z.object({
-    dataEntryBy: z.string().min(2, { message: 'Please enter name.' }),
     riverBasin: z.string().min(1, { message: 'Please select river basin.' }),
     dataSource: z.array(
       z.object({
@@ -106,7 +90,6 @@ export default function AddDailyMonitoring() {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      dataEntryBy: '',
       riverBasin: '',
       dataSource: [],
     },
@@ -215,8 +198,6 @@ export default function AddDailyMonitoring() {
       }
     }
     const payload = {
-      dataEntryBy: data.dataEntryBy,
-      // location: selectedRiverBasin,
       location: data.riverBasin,
       data: dataPayload,
     };
@@ -233,7 +214,7 @@ export default function AddDailyMonitoring() {
   React.useEffect(() => {
     if (createDailyMonitoring.isSuccess) {
       form.reset();
-      router.push(`/projects/aa/${projectId}/data-sources/#monitoring`);
+      router.push(dailyMonitoringListPath);
     }
   }, [createDailyMonitoring.isSuccess]);
 
@@ -248,20 +229,6 @@ export default function AddDailyMonitoring() {
             <ScrollArea className="h-[calc(100vh-238px)]">
               <CardContent>
                 <div className="grid grid-cols-2 gap-4">
-                  <InputFormField
-                    form={form}
-                    name="dataEntryBy"
-                    label="Data Entry By"
-                    placeholder="Enter Data Entry Personnel"
-                  />
-                  {/* <FormItem>
-                    <FormLabel>River Basin</FormLabel>
-                    <Input
-                      value={selectedRiverBasin}
-                      placeholder="Select data source to display river basin"
-                      disabled
-                    />
-                  </FormItem> */}
                   <SelectFormField
                     form={form}
                     name="riverBasin"
@@ -303,6 +270,7 @@ export default function AddDailyMonitoring() {
                   className="bg-red-100 text-red-600 w-36"
                   onClick={() => {
                     form.reset();
+                    router.push(dailyMonitoringListPath);
                   }}
                 >
                   Cancel

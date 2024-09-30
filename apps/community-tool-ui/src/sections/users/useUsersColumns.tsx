@@ -1,19 +1,18 @@
 'use client';
 
-import { useState } from 'react';
-import { ColumnDef } from '@tanstack/react-table';
-import { ListBeneficiary } from '@rahat-ui/types';
-import { truncateEthAddress } from '@rumsan/core/utilities/string.utils';
-import UserDetail from './viewUser';
-import { Eye, Copy, CopyCheck } from 'lucide-react';
-import { useSecondPanel } from '../../providers/second-panel-provider';
 import {
   Tooltip,
+  TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-  TooltipContent,
 } from '@rahat-ui/shadcn/src/components/ui/tooltip';
+import { truncateEthAddress } from '@rumsan/core/utilities/string.utils';
 import { User } from '@rumsan/sdk/types';
+import { ColumnDef } from '@tanstack/react-table';
+import { Copy, CopyCheck, Eye } from 'lucide-react';
+import { useState } from 'react';
+import { useSecondPanel } from '../../providers/second-panel-provider';
+import UserDetail from './viewUser';
 
 export const useUserTableColumns = () => {
   const { closeSecondPanel, setSecondPanelComponent } = useSecondPanel();

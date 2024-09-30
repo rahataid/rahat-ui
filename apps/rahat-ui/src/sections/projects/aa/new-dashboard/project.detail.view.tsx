@@ -2,6 +2,7 @@ import { useParams } from 'next/navigation';
 import {
   useAAStations,
   useAllStats,
+  useCommsStats,
   usePhasesStats,
   useProjectStore,
   useStatsStore,
@@ -31,6 +32,9 @@ export default function ProjectDetails() {
   const { phasesStats } = useStatsStore();
   const { data: allStats, isLoading } = useAllStats(projectId);
 
+
+  const {data: commsStats, isLoading: isLoadingCommsStats} = useCommsStats(projectId)
+
   const fundsModal = useBoolean();
   const onDelete = () => {};
 
@@ -40,7 +44,7 @@ export default function ProjectDetails() {
       <div className="flex gap-4 items-center justify-end p-2 pb-0 pr-4">
         <EditButton path="/" />
         <DeleteButton name="project" handleContinueClick={onDelete} />
-        <Button type="button" variant="outline" className="shadow-md">
+        <Button type="button" variant="outline" className="shadow-md" disabled>
           <CloudDownload size={18} className="mr-1" />
           Download Report
         </Button>
@@ -49,7 +53,7 @@ export default function ProjectDetails() {
         </Button>
       </div>
       <ScrollArea className="mt-2 h-[calc(100vh-142px)] pr-2">
-        {isLoading ? (
+        {isLoading || isLoadingCommsStats ? (
           <Loader />
         ) : (
           <>
@@ -63,6 +67,7 @@ export default function ProjectDetails() {
             <SimpleDataCardsContainer
               allStats={allStats}
               projectId={projectId}
+              commsStats={commsStats}
             />
             <ChartsContainer
               allStats={allStats?.filter(

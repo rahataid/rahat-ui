@@ -50,7 +50,7 @@ import { format } from 'date-fns';
 import { useEffect } from 'react';
 import { FIELD_DEF_FETCH_LIMIT } from '../../constants/app.const';
 import useFormStore from '../../formBuilder/form.store';
-import { formatDate, selectNonEmptyFields } from '../../utils';
+import { filterFieldDefs, formatDate, selectNonEmptyFields } from '../../utils';
 import { useSecondPanel } from '../../providers/second-panel-provider';
 
 export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
@@ -103,7 +103,7 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
     latitude: z
       .number()
       .refine((val) => val >= -90 && val <= 90, {
-        message: 'Longitude must be between -90 and 90',
+        message: 'Latitude must be between -90 and 90',
       })
       .optional(),
     longitude: z
@@ -186,10 +186,7 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
     });
   }, [data, form]);
 
-  const filteredDefinitions =
-    definitions && definitions.data.length
-      ? definitions.data.filter((d: any) => d.isSystem === false)
-      : '';
+  const filteredDefinitions = filterFieldDefs(definitions);
 
   return (
     <Form {...form}>
@@ -606,7 +603,7 @@ export default function EditBeneficiary({ data }: { data: ListBeneficiary }) {
               <b>Extra Fields:</b>
             </h3>
             <br />
-            {filteredDefinitions.length > 0
+            {filteredDefinitions && filteredDefinitions.length > 0
               ? filteredDefinitions.map((definition: any) => {
                   return <FormBuilder formField={definition} />;
                 })

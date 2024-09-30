@@ -15,39 +15,26 @@ import {
   FormLabel,
   FormMessage,
 } from '@rahat-ui/shadcn/components/form';
-import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@rahat-ui/shadcn/src/components/ui/select';
 import { Switch } from '@rahat-ui/shadcn/src/components/ui/switch';
-import {
-  SUBJECTS,
-  PERMISSIONS,
-} from 'apps/community-tool-ui/src/constants/app.const';
+import { SUBJECT_ACTIONS } from 'apps/community-tool-ui/src/constants/app.const';
 import { useSecondPanel } from 'apps/community-tool-ui/src/providers/second-panel-provider';
+import { useEffect, useState } from 'react';
+import swal from 'sweetalert2';
+import PermissionsCard from './PermissionsCard';
 
 type Iprops = {
   roleDetail: any;
+  currentPerms: any;
 };
 
-export default function EditRole({ roleDetail }: Iprops) {
+export default function EditRole({ roleDetail, currentPerms }: Iprops) {
   const { closeSecondPanel } = useSecondPanel();
   const edit = useEditRole();
 
+  const [selectedSubjectActions, setSeletedSubjectActions] =
+    useState<any>(null);
+
   const FormSchema = z.object({
-    permission: z
-      .array(z.string())
-      .refine((value) => value.some((item) => item), {
-        message: 'You have to select at least one permission.',
-      })
-      .optional(),
-    subject: z.string().min(2, {
-      message: 'Subject must be selected',
-    }),
     roleName: z.string().min(2, {
       message: 'Role Name must be at least 2 characters.',
     }),
@@ -59,29 +46,61 @@ export default function EditRole({ roleDetail }: Iprops) {
     defaultValues: {
       roleName: roleDetail?.data?.role?.name || '',
       isSystem: roleDetail?.data?.role?.isSystem || false,
-      permission: [],
-      subject: '',
     },
   });
+
   const handleEditRole = (data: any) => {
     const validateData = FormSchema.parse(data);
-
+    const sanitizedPerms = filterNonEmptyArrays(selectedSubjectActions);
+    const hasPerms = Object.keys(sanitizedPerms).length > 0;
+    console.log({ hasPerms });
+    if (!hasPerms)
+      return swal.fire(
+        'Error',
+        'Please select at least one permission',
+        'error',
+      );
     const k = {
       name: validateData.roleName,
       isSystem: validateData.isSystem,
-      permissions: {
-        [validateData.subject]: validateData.permission,
-      },
+      permissions: sanitizedPerms,
     };
-
     edit.mutateAsync({ name: roleDetail?.data?.role?.name, data: k });
     closeSecondPanel();
   };
 
+  const filterNonEmptyArrays = (obj: any) => {
+    return Object.keys(obj)
+      .filter((key) => obj[key].length > 0)
+      .reduce((acc: any, key) => {
+        acc[key] = obj[key];
+        return acc;
+      }, {});
+  };
+
+  const handlePermissionUpdate = (subject: string, action: string) => {
+    setSeletedSubjectActions((prevPermissions: any) => {
+      const currentPerms = prevPermissions[subject]
+        ? prevPermissions[subject]
+        : [];
+      const updatedActions = currentPerms.includes(action)
+        ? currentPerms.filter((a: string) => {
+            return a !== action;
+          })
+        : [...currentPerms, action];
+
+      return { ...prevPermissions, [subject]: updatedActions };
+    });
+  };
+
+  useEffect(() => {
+    setSeletedSubjectActions(currentPerms);
+  }, [roleDetail.data.name]);
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleEditRole)}>
-        <h1 className="text-lg font-semibold mb-6">Edit Role</h1>
+        <h1 className="text-lg font-semibold mb-6">Edit Role & Permissions</h1>
         <div className="p-4 rounded-sm">
           <div className="grid grid-cols-2 gap-4 mb-4">
             <FormField
@@ -116,98 +135,21 @@ export default function EditRole({ roleDetail }: Iprops) {
             )}
           />
 
-          <FormField
-            control={form.control}
-            name="subject"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Subject</FormLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                >
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a respective subject" />
-                    </SelectTrigger>
-                  </FormControl>
-
-                  <SelectContent>
-                    {SUBJECTS.map((item) => {
-                      return (
-                        <SelectItem key={item.value} value={item.value}>
-                          {item.label}
-                        </SelectItem>
-                      );
-                    })}
-                  </SelectContent>
-                </Select>
-
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="permission"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Permission</FormLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value[0]}
-                >
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a permisssion" />
-                    </SelectTrigger>
-                  </FormControl>
-
-                  <SelectContent>
-                    {PERMISSIONS.map((item) => (
-                      <FormField
-                        key={item.id}
-                        control={form.control}
-                        name="permission"
-                        render={({ field }) => {
-                          return (
-                            <FormItem
-                              key={item.id}
-                              className="flex flex-row items-start space-x-3 space-y-0 mt-2"
-                            >
-                              <FormControl>
-                                <Checkbox
-                                  checked={field.value?.includes(item.id)}
-                                  onCheckedChange={(checked) => {
-                                    return checked
-                                      ? field.onChange([
-                                          ...field.value,
-                                          item.id,
-                                        ])
-                                      : field.onChange(
-                                          field.value?.filter(
-                                            (value) => value !== item.id,
-                                          ),
-                                        );
-                                  }}
-                                />
-                              </FormControl>
-                              <FormLabel className="font-normal">
-                                {item.label}
-                              </FormLabel>
-                            </FormItem>
-                          );
-                        }}
-                      />
-                    ))}
-                  </SelectContent>
-                </Select>
-
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          <div className="mt-3 mb-5">
+            <h2>Permissions</h2>
+            {Object.keys(SUBJECT_ACTIONS).map((subject) => (
+              <PermissionsCard
+                key={subject}
+                subject={subject}
+                existingActions={
+                  selectedSubjectActions && selectedSubjectActions[subject]
+                    ? selectedSubjectActions[subject]
+                    : []
+                }
+                onUpdate={handlePermissionUpdate}
+              />
+            ))}
+          </div>
 
           <div className="flex justify-end mt-3">
             <Button type="submit">Update Role</Button>

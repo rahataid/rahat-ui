@@ -28,6 +28,7 @@ export default function ChartColumnStacked({
   const chartOptions = useChart({
     chart: {
       stacked: stacked,
+      height: '50px',
 
       zoom: {
         enabled: true,
@@ -40,9 +41,12 @@ export default function ChartColumnStacked({
       position: 'right',
       offsetY: 20,
     },
+
     plotOptions: {
       bar: {
-        columnWidth: 30,
+        columnWidth: '50px',
+        borderRadius: 4,
+        borderRadiusApplication: 'end',
       },
     },
     stroke: {

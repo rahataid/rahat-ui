@@ -19,6 +19,7 @@ import {
 } from '@rahat-ui/shadcn/src/components/ui/popover';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import { CommandList } from 'cmdk';
+import { humanizeString } from 'apps/community-tool-ui/src/utils';
 
 export const EMPTY_SELECTION = 'No Selection';
 
@@ -37,8 +38,10 @@ export function ComboBox({
   };
 
   React.useEffect(() => {
-    if (selectedField) setValue(selectedField);
-  }, []);
+    if (selectedField) {
+      setValue(selectedField);
+    }
+  }, [selectedField]);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -49,7 +52,9 @@ export function ComboBox({
           aria-expanded={open}
           className="w-[400px] justify-between"
         >
-          {value ? data.find((d: string) => d === value) : '--Select Field--'}
+          {value
+            ? data.find((d: string) => d.toLowerCase() === value.toLowerCase())
+            : '--Select Field--'}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
@@ -69,9 +74,12 @@ export function ComboBox({
                 {data.map((d: string) => (
                   <CommandItem
                     key={d}
-                    value={d}
+                    value={humanizeString(d)}
                     onSelect={(currentValue) => {
-                      setValue(currentValue === value ? '' : currentValue);
+                      const formatted = currentValue
+                        .toLowerCase()
+                        .replace(/ /g, '_');
+                      setValue(formatted === value ? '' : formatted);
                       setOpen(false);
                       handleTargetFieldChange(column, d);
                     }}
@@ -82,7 +90,7 @@ export function ComboBox({
                         value === d ? 'opacity-100' : 'opacity-0',
                       )}
                     />
-                    {d}
+                    {humanizeString(d)}
                   </CommandItem>
                 ))}
               </CommandGroup>

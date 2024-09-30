@@ -2,10 +2,19 @@
 
 import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
 import { ColumnDef } from '@tanstack/react-table';
-import { Eye } from 'lucide-react';
+import { Copy, CopyCheck, Eye } from 'lucide-react';
 import { useState } from 'react';
 import { useSecondPanel } from '../../../../providers/second-panel-provider';
 import BeneficiaryDetail from './beneficiary.detail';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/tooltip';
+import { truncateEthAddress } from '@rumsan/sdk/utils';
+import { formatEther } from 'viem';
+import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
 
 export const useProjectBeneficiaryTableColumns = () => {
   const { setSecondPanelComponent, closeSecondPanel } = useSecondPanel();
@@ -65,18 +74,59 @@ export const useProjectBeneficiaryTableColumns = () => {
         </div>
       ),
     },
-
     {
-      accessorKey: 'phone',
-      header: 'Phone',
-      cell: ({ row }) => <div> {row.getValue('phone')}</div>,
+      accessorKey: 'walletAddress',
+      header: 'Wallet Address',
+      cell: ({ row }) => (
+        <TooltipProvider delayDuration={100}>
+          <Tooltip>
+            <TooltipTrigger
+              className="flex items-center gap-3 cursor-pointer"
+              onClick={() =>
+                clickToCopy(row.getValue('walletAddress'), row.index)
+              }
+            >
+              <p>{truncateEthAddress(row.getValue('walletAddress'))}</p>
+              {walletAddressCopied === row.index ? (
+                <CopyCheck size={15} strokeWidth={1.5} />
+              ) : (
+                <Copy className="text-slate-500" size={15} strokeWidth={1.5} />
+              )}
+            </TooltipTrigger>
+            <TooltipContent className="bg-secondary" side="bottom">
+              <p className="text-xs font-medium">
+                {walletAddressCopied === row.index ? 'copied' : 'click to copy'}
+              </p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      ),
     },
     {
-      accessorKey: 'gender',
-      header: 'Gender',
-      cell: ({ row }) => <div> {row.getValue('gender')}</div>,
+      accessorKey: 'verificationStatus',
+      header: 'Verification Status',
+      cell: () => <Badge>Verified</Badge>,
     },
+    {
+      accessorKey: 'balance',
+      header: () => <div>Balance</div>,
+      cell: ({ row }) => {
+        const balanceValue = row.getValue('balance');
 
+        if (balanceValue && !isNaN(balanceValue)) {
+          const balance = parseFloat(formatEther(BigInt(balanceValue)));
+
+          const formatted = new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: 'USD',
+          }).format(balance);
+
+          return <div className="font-medium">{formatted}</div>;
+        } else {
+          return <div className="font-medium">N/A</div>;
+        }
+      },
+    },
     {
       id: 'actions',
       enableHiding: false,

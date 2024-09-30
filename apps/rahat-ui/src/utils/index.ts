@@ -1,3 +1,5 @@
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
 export function truncateEthereumAddress(address: string) {
   if (address.length <= 42) {
     return address;
@@ -21,8 +23,13 @@ export function formatDate(date: number) {
 }
 
 export function formatdbDate(date: string) {
-  const updated = new Date(date).toLocaleDateString();
-  return updated;
+  const updated = new Date(date);
+
+  const datePart = updated.toISOString().split('T')[0];
+
+  const timePart = updated.toTimeString().split(' ')[0].slice(0, 5);
+
+  return `${datePart} - ${timePart}`;
 }
 
 export function getDayOfWeek(dbDate: string) {
@@ -76,3 +83,19 @@ export function humanReadableDate(date: Date) {
 
   return formattedDate;
 }
+
+export const exportDataToExcel = (data: any[]) => {
+  const currentDate = new Date().getTime();
+  const fileName = `Failed_Beneficiary_${currentDate}.xlsx`;
+  const worksheet = XLSX.utils.json_to_sheet(data);
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
+
+  // Buffer to store the generated Excel file
+  const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+  const blob = new Blob([excelBuffer], {
+    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8',
+  });
+
+  saveAs(blob, fileName);
+};

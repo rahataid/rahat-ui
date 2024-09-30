@@ -1,5 +1,6 @@
 import {
   ArrowRightLeft,
+  CloudOff,
   Coins,
   Gift,
   HandCoins,
@@ -43,6 +44,11 @@ export const useNavItems = () => {
           title: 'Fund Management',
           path: `/projects/rp/${id}/fundManagement`,
           icon: <Coins size={18} strokeWidth={1.5} />,
+        },
+        {
+          title: 'Offline Management',
+          path: `/projects/rp/${id}/offlineManagement`,
+          icon: <CloudOff size={18} strokeWidth={1.5} />,
         },
         {
           title: 'Redemptions',

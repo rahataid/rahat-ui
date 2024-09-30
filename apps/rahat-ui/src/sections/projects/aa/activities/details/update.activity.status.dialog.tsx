@@ -27,17 +27,26 @@ import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { X, CloudUpload, Check, LoaderCircle, Pencil } from 'lucide-react';
 import { useUploadFile, useUpdateActivityStatus } from '@rahat-ui/query';
 import { UUID } from 'crypto';
+import { validateFile } from '../../file.validation';
+import { ACTIVITY_STATUS } from '../../aa.constants';
+import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
+import { toast } from 'react-toastify';
 
 type IProps = {
   activityDetail: any;
   loading: boolean;
+  triggerTitle?: string;
+  iconStyle: string;
 };
 
-const statusList = ['NOT_STARTED', 'WORK_IN_PROGRESS', 'COMPLETED', 'DELAYED'];
+const { NOT_STARTED, WORK_IN_PROGRESS, COMPLETED, DELAYED } = ACTIVITY_STATUS;
+const statusList = [NOT_STARTED, WORK_IN_PROGRESS, COMPLETED, DELAYED];
 
 export default function UpdateActivityStatusDialog({
   activityDetail,
   loading,
+  triggerTitle = '',
+  iconStyle,
 }: IProps) {
   const router = useRouter();
   const params = useParams();
@@ -62,6 +71,12 @@ export default function UpdateActivityStatusDialog({
 
   const FormSchema = z.object({
     status: z.string().min(1, { message: 'Please select status' }),
+    notes: z
+      .string()
+      .optional()
+      .refine((val) => !val || val?.length > 4, {
+        message: 'Must be at least 5 characters',
+      }),
     activityDocuments: z
       .array(
         z.object({
@@ -75,7 +90,8 @@ export default function UpdateActivityStatusDialog({
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      status: '',
+      status: activityDetail?.status || '',
+      notes: activityDetail?.notes || '',
       activityDocuments: activityDetail?.activityDocuments || [],
     },
   });
@@ -84,7 +100,16 @@ export default function UpdateActivityStatusDialog({
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     const file = event.target.files?.[0];
+
     if (file) {
+      const isDuplicateFile = documents?.some((d) => d?.name === file?.name);
+      if (isDuplicateFile) {
+        return toast.error('Cannot upload duplicate files.');
+      }
+      if (!validateFile(file)) {
+        return;
+      }
+
       const newId = nextId.current++;
       setDocuments((prev) => [...prev, { id: newId, name: file.name }]);
       const formData = new FormData();
@@ -114,7 +139,7 @@ export default function UpdateActivityStatusDialog({
 
   const handleDialogSubmit = async (data: z.infer<typeof FormSchema>) => {
     const payload = {
-      uuid: activityId,
+      uuid: activityId || activityDetail?.id,
       ...data,
     };
     try {
@@ -132,19 +157,15 @@ export default function UpdateActivityStatusDialog({
     }
   };
 
-  React.useEffect(() => {
-    updateStatus.isSuccess && router.push(activitiesListPath);
-  }, [updateStatus.isSuccess]);
-
   return (
     <Dialog open={showModal} onOpenChange={() => setShowModal(!showModal)}>
       <DialogTrigger asChild>
         <Button
           variant={'link'}
-          className="h-6"
+          className="h-4 px-1"
           onClick={() => setShowModal(true)}
         >
-          <Pencil className="w-3 h-3 mr-1" /> update
+          <Pencil className={iconStyle} /> {triggerTitle}
         </Button>
       </DialogTrigger>
       <DialogContent>
@@ -167,7 +188,10 @@ export default function UpdateActivityStatusDialog({
                         className="flex flex-col space-y-1"
                       >
                         {statusList.map((status) => (
-                          <FormItem className="flex items-center space-x-3 space-y-0">
+                          <FormItem
+                            className="flex items-center space-x-3 space-y-0"
+                            key={status}
+                          >
                             <FormControl>
                               <RadioGroupItem value={status} />
                             </FormControl>
@@ -181,6 +205,21 @@ export default function UpdateActivityStatusDialog({
                     <FormMessage />
                   </FormItem>
                 )}
+              />
+              <FormField
+                control={form.control}
+                name="notes"
+                render={({ field }) => {
+                  return (
+                    <FormItem>
+                      <FormLabel>Add note</FormLabel>
+                      <FormControl>
+                        <Textarea placeholder="Write note" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
               />
               <FormField
                 control={form.control}
@@ -204,13 +243,17 @@ export default function UpdateActivityStatusDialog({
                             </p>
                           </div>
                           <Input
-                            className="opacity-0"
+                            className="opacity-0 cursor-pointer"
                             type="file"
                             onChange={handleFileChange}
                           />
                         </div>
                       </FormControl>
                       <FormMessage />
+                      <p className="text-xs text-orange-500">
+                        *Files must be under 5 MB and of type JPEG, PNG, BMP,
+                        PDF, XLSX, or CSV.
+                      </p>
                       {documents?.map((file) => (
                         <div
                           key={file.name}

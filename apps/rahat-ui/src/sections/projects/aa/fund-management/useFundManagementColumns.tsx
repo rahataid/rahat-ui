@@ -1,10 +1,16 @@
 import { ColumnDef } from '@tanstack/react-table';
 import { Eye, Pencil, Trash2 } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
+import { setPaginationToLocalStorage } from '../prev.pagination.storage';
 
 export const useFundManagementColumns = () => {
   const router = useRouter();
   const { id: projectID } = useParams();
+
+  const handleEyeClick = (id: any) => {
+    setPaginationToLocalStorage();
+    router.push(`/projects/aa/${projectID}/fund-management/${id}`);
+  };
 
   const columns: ColumnDef<any>[] = [
     {
@@ -25,20 +31,19 @@ export const useFundManagementColumns = () => {
       cell: ({ row }) => <div>{row.getValue('numberOfTokens')}</div>,
     },
     {
+      accessorKey: 'createdBy',
+      header: 'Created By',
+      cell: ({ row }) => <div>{row.getValue('createdBy')}</div>,
+    },
+    {
       id: 'actions',
       enableHiding: false,
       cell: ({ row }) => {
-        console.log(row);
-
         return (
           <div className="flex items-center justify-evenly">
             <Eye
               className="cursor-pointer"
-              onClick={() =>
-                router.push(
-                  `/projects/aa/${projectID}/fund-management/${row?.original?.uuid}`,
-                )
-              }
+              onClick={() => handleEyeClick(row.original.uuid)}
               size={20}
               strokeWidth={1.25}
             />

@@ -89,6 +89,10 @@ export default function RedemptionTable({}) {
 
   const [selectedRow, setSelectedRow] = React.useState(null);
 
+
+  const getRedemption = useProjectAction();
+
+
   const handleAssignModalClick = (row: any) => {
     setSelectedRow(row);
     projectModal.onTrue();
@@ -109,7 +113,38 @@ export default function RedemptionTable({}) {
     projectModal.onTrue();
   };
 
-  const columns = useTableColumns(handleAssignModalClick,handleTokenAssignModal);
+
+  const getRedemptionList = async () => {
+    const result = await getRedemption.mutateAsync({
+      uuid,
+      data: {
+        action: 'elProject.listRedemption',
+        payload: {
+          page: pagination.page,
+          perPage: pagination.perPage,
+          ...filters,
+        },
+      },
+    });
+
+    setMeta(result?.httpReponse?.data?.meta);
+
+    const filterData = result?.data.map((row: any) => {
+      return {
+        name: row.Vendor.name,
+        walletAddress: row.Vendor.walletAddress,
+        tokenAmount: row.voucherNumber,
+        status: row.status,
+        uuid: row.uuid,
+        name: row.Vendor.name,
+        voucherType: row.voucherType,
+      };
+    });
+    setData(filterData);
+  };
+
+
+  const columns = useTableColumns(handleAssignModalClick,getRedemptionList);
 
   // const [perPage, setPerPage] = React.useState<number>(10);
   const [currentPage, setCurrentPage] = React.useState<number>(1);
@@ -157,41 +192,12 @@ export default function RedemptionTable({}) {
     },
   });
 
-  const getRedemption = useProjectAction();
   const updateRedemption = useUpdateElRedemption();
 
   const selectedRowAddresses = Object.keys(selectedListItems);
   
 
-  const getRedemptionList = async () => {
-    const result = await getRedemption.mutateAsync({
-      uuid,
-      data: {
-        action: 'elProject.listRedemption',
-        payload: {
-          page: pagination.page,
-          perPage: pagination.perPage,
-          ...filters,
-        },
-      },
-    });
-
-    setMeta(result?.httpReponse?.data?.meta);
-
-    const filterData = result?.data.map((row: any) => {
-      return {
-        name: row.Vendor.name,
-        walletAddress: row.Vendor.walletAddress,
-        tokenAmount: row.voucherNumber,
-        status: row.status,
-        uuid: row.uuid,
-        name: row.Vendor.name,
-        voucherType: row.voucherType,
-      };
-    });
-    setData(filterData);
-  };
-
+  
   React.useEffect(() => {
     getRedemptionList();
   }, [pagination.page, pagination.perPage, filters]);

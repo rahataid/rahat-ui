@@ -3,13 +3,6 @@ import * as React from 'react';
 
 import { usePagination, useProjectBeneficiaries } from '@rahat-ui/query';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@rahat-ui/shadcn/components/select';
-import {
   Table,
   TableBody,
   TableCell,
@@ -30,20 +23,21 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import { UUID } from 'crypto';
-import { useParams } from 'next/navigation';
-import { benType } from '../../el/beneficiary/beneficiary.table';
+import { useParams, useRouter } from 'next/navigation';
 import { useProjectBeneficiaryTableColumns } from './useBeneficiaryColumns';
 
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import TableLoader from 'apps/rahat-ui/src/components/table.loader';
-import DisburseFlow from '../components/disburse-flow/disburse-flow';
+import Image from 'next/image';
 
 const BeneficiaryDetailTableView = () => {
   const uuid = useParams().id as UUID;
+  const route = useRouter();
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
@@ -62,6 +56,7 @@ const BeneficiaryDetailTableView = () => {
     resetSelectedListItems,
   } = usePagination();
   const selectedRowAddresses = Object.keys(selectedListItems);
+  const queryString = selectedRowAddresses.join(',');
   const columns = useProjectBeneficiaryTableColumns();
   const projectBeneficiaries = useProjectBeneficiaries({
     page: pagination.page,
@@ -90,41 +85,39 @@ const BeneficiaryDetailTableView = () => {
       rowSelection: selectedListItems,
     },
   });
-
   return (
     <>
       <div className="p-2 bg-secondary">
         <div className="flex justify-between items-center mb-2">
-          <div className="flex">
+          <div className="flex w-full">
             <Input
-              placeholder="Filter name..."
+              placeholder="Search beneficiary..."
               value={
                 (table.getColumn('name')?.getFilterValue() as string) ?? ''
               }
               onChange={(event) => {
                 table.getColumn('name')?.setFilterValue(event.target.value);
               }}
-              className="max-w-sm rounded mr-2"
+              className="rounded mr-2"
             />
           </div>
           {selectedRowAddresses.length ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <DisburseFlow selectedBeneficiaries={selectedRowAddresses} />
-              </DropdownMenuTrigger>
-              {/* <DropdownMenuContent align="end">
-                <DropdownMenuItem
-                  onClick={projectModal.onTrue}
-                  disabled={isBulkAssigning}
+                <Button
+                  onClick={() =>
+                    route.push(
+                      `/projects/c2c/${uuid}/beneficiary/disburse-flow?selectedBeneficiaries=${encodeURIComponent(
+                        queryString,
+                      )}`,
+                    )
+                  }
                 >
-                  Bulk Assign Project
-                </DropdownMenuItem>
-              </DropdownMenuContent> */}
+                  Disburse USDC
+                </Button>
+              </DropdownMenuTrigger>
             </DropdownMenu>
           ) : null}
-          {/* <div>
-            <DisburseFlow selectedBeneficiaries={selectedRowAddresses} />
-          </div> */}
         </div>
         <div className="rounded border bg-card">
           <Table>
@@ -148,7 +141,16 @@ const BeneficiaryDetailTableView = () => {
                 ))}
               </TableHeader>
               <TableBody>
-                {table.getRowModel().rows?.length ? (
+                {projectBeneficiaries.isFetching ? (
+                  <TableRow>
+                    <TableCell
+                      colSpan={columns.length}
+                      className="h-24 text-center"
+                    >
+                      <TableLoader />
+                    </TableCell>
+                  </TableRow>
+                ) : table.getRowModel().rows.length ? (
                   table.getRowModel().rows.map((row) => (
                     <TableRow
                       key={row.id}
@@ -170,11 +172,22 @@ const BeneficiaryDetailTableView = () => {
                       colSpan={columns.length}
                       className="h-24 text-center"
                     >
-                      {projectBeneficiaries.isFetching ? (
-                        <TableLoader />
-                      ) : (
-                        'No data available.'
-                      )}
+                      <div className="w-full h-[calc(100vh-140px)]">
+                        <div className="flex flex-col items-center justify-center">
+                          <Image
+                            src="/noData.png"
+                            height={250}
+                            width={250}
+                            alt="no data"
+                          />
+                          <p className="text-medium text-base mb-1">
+                            No Data Available
+                          </p>
+                          <p className="text-sm mb-4 text-gray-500">
+                            There are no beneficiaries to display at the moment.
+                          </p>
+                        </div>
+                      </div>
                     </TableCell>
                   </TableRow>
                 )}

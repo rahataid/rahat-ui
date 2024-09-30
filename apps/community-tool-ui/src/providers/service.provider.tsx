@@ -1,16 +1,15 @@
 'use client';
 import { RumsanService } from '@rumsan/sdk';
 
-import { CommunicationService } from '@rumsan/communication';
 import {
   RSQueryContextType,
   useAuthStore,
   useRSQuery,
 } from '@rumsan/react-query';
 import { useQueryClient } from '@tanstack/react-query';
-import { createContext, useEffect, useMemo, useState } from 'react';
-import { useError } from '../utils/useErrors';
 import Image from 'next/image';
+import { createContext, useEffect, useMemo } from 'react';
+import { useError } from '../utils/useErrors';
 
 export const ServiceContext = createContext<RSQueryContextType | null>(null);
 
@@ -22,6 +21,7 @@ export function ServiceProvider({ children }: ServiceProviderProps) {
   const qc = useQueryClient();
   const { queryClient, rumsanService, setQueryClient, setRumsanService } =
     useRSQuery();
+
   const rsService = useMemo(
     () =>
       new RumsanService({
@@ -61,7 +61,11 @@ export function ServiceProvider({ children }: ServiceProviderProps) {
     }
   }, [rumsanService]);
 
-  if (!rumsanService || !queryClient)
+  const isAppReady = useMemo(() => {
+    return rumsanService && queryClient;
+  }, [rumsanService, queryClient]);
+
+  if (!isAppReady)
     return (
       <div className="h-screen flex items-center justify-center">
         <Image

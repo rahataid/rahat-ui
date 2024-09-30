@@ -1,3 +1,4 @@
+import React from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
@@ -22,6 +23,8 @@ export default function AddStakeholders() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
+  const stakeholdersListPath = `/projects/aa/${id}/stakeholders`;
+
   const addedFromGroup = searchParams.get('fromGroup');
   const createStakeholder = useCreateStakeholders();
 
@@ -33,7 +36,7 @@ export default function AddStakeholders() {
   const FormSchema = z.object({
     name: z
       .string()
-      .regex(/^[A-Za-z\s]*$/, 'Only only alphabetic characters are allowed.')
+      .regex(/^[A-Za-z\s]*$/, 'Only alphabetic characters are allowed.')
       .min(2, { message: 'Please enter name.' }),
     phone: z.string().optional().refine(isValidPhoneNumberRefinement, {
       message: 'Invalid phone number',
@@ -41,16 +44,19 @@ export default function AddStakeholders() {
     email: z.string().optional(),
     designation: z
       .string()
-      .regex(/^[A-Za-z\s]*$/, 'Only only alphabetic characters are allowed.')
+      .regex(/^[A-Za-z\s]*$/, 'Only alphabetic characters are allowed.')
       .min(2, { message: 'Please enter designation.' }),
     organization: z
       .string()
-      .regex(/^[A-Za-z\s]*$/, 'Only only alphabetic characters are allowed.')
+      .regex(/^[A-Za-z\s]*$/, 'Only alphabetic characters are allowed.')
       .min(2, { message: 'Please enter organization.' }),
-    district: z.string().min(2, { message: 'Please enter district.' }),
+    district: z
+      .string()
+      .regex(/^[A-Za-z\s]*$/, 'Only alphabetic characters are allowed.')
+      .min(2, { message: 'Please enter district.' }),
     municipality: z
       .string()
-      .regex(/^[A-Za-z\s]*$/, 'Only only alphabetic characters are allowed.')
+      .regex(/^[A-Za-z\s]*$/, 'Only alphabetic characters are allowed.')
 
       .min(2, { message: 'Please enter municipality' }),
   });
@@ -76,19 +82,23 @@ export default function AddStakeholders() {
       });
       if (addedFromGroup == 'true') {
         router.push(`/projects/aa/${id}/groups/add`);
-      } else router.push(`/projects/aa/${id}/stakeholders`);
+      } else router.push(stakeholdersListPath);
     } catch (e) {
       console.error('Create Stakeholder Error::', e);
-    } finally {
-      form.reset();
     }
   };
+
+  React.useEffect(() => {
+    if (createStakeholder.isSuccess) {
+      form.reset();
+    }
+  }, [createStakeholder.isSuccess]);
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleCreateStakeholders)}>
-        <div className="p-4 h-add bg-card">
-          <h1 className="text-lg font-semibold mb-6">Add : Stakeholders</h1>
-          <div className="shadow-md p-4 rounded-sm">
+        <div className="p-4 h-add bg-secondary">
+          <div className="shadow-md p-4 rounded-sm bg-card">
+            <h1 className="text-lg font-semibold mb-6">Add : Stakeholders</h1>
             <div className="grid grid-cols-2 gap-4 mb-4">
               <FormField
                 control={form.control}
@@ -205,7 +215,15 @@ export default function AddStakeholders() {
                 }}
               />
             </div>
-            <div className="flex justify-end">
+            <div className="flex justify-end space-x-2">
+              <Button
+                type="button"
+                variant="secondary"
+                className="bg-red-100 text-red-600 px-8 hover:bg-red-200"
+                onClick={() => router.push(stakeholdersListPath)}
+              >
+                Cancel
+              </Button>
               <Button>Create Stakeholders</Button>
             </div>
           </div>

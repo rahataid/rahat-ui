@@ -1,6 +1,6 @@
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
-import { MAX_EXPORT_COUNT } from '../constants/app.const';
+import { MAX_IMPORT_COUNT } from '../constants/app.const';
 
 export const includeOnlySelectedTarget = (array: [], selectedTargets: []) => {
   return array.map((item: any) => {
@@ -59,8 +59,8 @@ function removeKeyFromArrayObjects(arr: any, keyToRemove: string) {
 export function removeFieldsWithUnderscore(dataArray: []) {
   let splittedData = [] as any;
   splittedData =
-    dataArray.length > MAX_EXPORT_COUNT
-      ? dataArray.splice(0, MAX_EXPORT_COUNT)
+    dataArray.length > MAX_IMPORT_COUNT
+      ? dataArray.splice(0, MAX_IMPORT_COUNT)
       : dataArray;
   splittedData.map((item: any) => {
     const newObj = {} as any;
@@ -169,13 +169,11 @@ export const splitValidAndInvalid = (payload: any[], errors: []) => {
     }
   });
 
-
-
   const swapped = moveErrorMsgToFirstKey(invalidData);
   return { invalidData: swapped, validData };
 };
 
-export const exportDataToExcel = (data: []) => {
+export const exportDataToExcel = (data: any[]) => {
   const currentDate = new Date().getTime();
   const fileName = `Invalid_Beneficiary_${currentDate}.xlsx`;
   const worksheet = XLSX.utils.json_to_sheet(data);
@@ -231,6 +229,16 @@ function truncateString(inputStr: string, length: number) {
   return inputStr;
 }
 
+export const simpleString = (inputString: string) => {
+  inputString = inputString?.replace(/_/g, ' ');
+  return truncateString(inputString, 50);
+};
+export const deHumanizeString = (inputString: string) => {
+  inputString = inputString.replace(/ /g, '_');
+
+  return inputString;
+};
+
 export function formatDate(date: Date) {
   const changedDate = new Date(date);
   const year = changedDate.getFullYear();
@@ -252,28 +260,92 @@ export const selectNonEmptyFields = (data: any) => {
 };
 
 export const sanitizeAndExportReport = (data: any) => {
-  if(!data.length) return;
-  const dataWithName = data.filter((d:any) => d.name);
-  const filtered = dataWithName.filter((f:any) => f.name !== "BENEFICIARY_MAP_STATS");
-  const sanitized  = filtered.map((d:any) => {
-    if(d.name === 'BENEFICIARY_TOTAL' || d.name === 'TOTAL_VULNERABLE_HOUSEHOLD'){
-      d.data = [d.data]
+  if (!data.length) return;
+  const dataWithName = data.filter((d: any) => d.name);
+  const filtered = dataWithName.filter(
+    (f: any) => f.name !== 'BENEFICIARY_MAP_STATS',
+  );
+  const sanitized = filtered.map((d: any) => {
+    if (
+      d.name === 'BENEFICIARY_TOTAL' ||
+      d.name === 'TOTAL_VULNERABLE_HOUSEHOLD'
+    ) {
+      d.data = [d.data];
     }
     return d;
-  })
+  });
   return exportReportToExcel(sanitized);
-}
+};
 
-const exportReportToExcel = (exportData:[]) => {
+const exportReportToExcel = (exportData: []) => {
   const workbook = XLSX.utils.book_new();
-  exportData.forEach((section:any) => {
-      const worksheetData = section.data.map((item:any) => ({
-          'Label': item.id ? humanizeString(item.id) : 'Total',
-          'Count': item.count
-      }));
-      const worksheet = XLSX.utils.json_to_sheet(worksheetData);
-      XLSX.utils.book_append_sheet(workbook, worksheet, section.name);
+  exportData.forEach((section: any) => {
+    const worksheetData = section.data.map((item: any) => ({
+      Label: item.id ? humanizeString(item.id) : 'Total',
+      Count: item.count,
+    }));
+    const worksheet = XLSX.utils.json_to_sheet(worksheetData);
+    XLSX.utils.book_append_sheet(workbook, worksheet, section.name);
   });
 
   XLSX.writeFile(workbook, 'community-dashboard-report.xlsx');
 };
+
+export const filterFieldDefs = (fieldDefs: any) => {
+  const filtered =
+    fieldDefs && fieldDefs.data.length
+      ? fieldDefs.data.filter((d: any) => d.isSystem === false)
+      : [];
+  return filtered;
+};
+
+export const capitalizeFirstLetter = (str: string) => {
+  if (!str) return '-';
+  return str.charAt(0).toUpperCase() + str.slice(1);
+};
+
+export const PRIMARY_FILED_MAP: any = {
+  firstname: 'firstName',
+  lastname: 'lastName',
+  birthdate: 'birthDate',
+  govtidnumber: 'govtIDNumber',
+  walletaddress: 'walletAddres',
+  bankedstatus: 'bankedStatus',
+  internetstatus: 'internetStatus',
+  phonestatus: 'phonestatus',
+};
+
+export const CAMEL_CASE_PRIMARY_FIELDS = [
+  'firstname',
+  'lastname',
+  'birthdate',
+  'govtidnumber',
+  'walletaddress',
+  'bankedstatus',
+  'internetstatus',
+  'phonestatus',
+];
+
+export const transformExportKeys = (array: []) => {
+  if (!array.length) return [];
+  return array.map((obj: any) => {
+    const transformedObj = {} as any;
+    for (let key in obj) {
+      if (key === 'govtIDNumber') {
+        transformedObj[key] = obj[key];
+      } else {
+        let newKey = key
+          .toLowerCase()
+          .replace(/_/g, ' ')
+          .replace(/\b\w/g, (char) => char.toUpperCase());
+        transformedObj[newKey] = obj[key];
+      }
+    }
+    return transformedObj;
+  });
+};
+
+export function getServerUrl(url: string) {
+  const urlParts = url.split('/v1');
+  return urlParts[0];
+}

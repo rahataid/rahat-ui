@@ -21,13 +21,35 @@ import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
 import DataCard from 'apps/rahat-ui/src/components/dataCard';
 import { UUID } from 'crypto';
 import { isEmpty } from 'lodash';
-import { Banknote, SendHorizontal, User, Users } from 'lucide-react';
+import {
+  Banknote,
+  MoreVertical,
+  SendHorizontal,
+  User,
+  Users,
+} from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { DisbursementConditionType } from '../disbursement-management/2-disbursement-condition';
 import { useEffect, useState } from 'react';
 import { truncateEthAddress } from '@rumsan/sdk/utils';
 import { formatEther } from 'viem';
 import { useReadRahatTokenBalanceOf } from 'libs/query/src/lib/rp/contracts/generated-hooks';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
+import StepProgress from '../../components/step.progress';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/dialog';
 
 const sampleSeries = [
   {
@@ -81,14 +103,17 @@ const FundManagementView = () => {
 
   const projectBeneficiaries = useProjectBeneficiaries({
     page: pagination.page,
-    perPage: pagination.perPage,
+    perPage: 100,
+    //pagination.perPage,
     order: 'desc',
     sort: 'updatedAt',
     projectUUID: id,
     ...filters,
   });
 
-  const disbursements = useFindAllDisbursements(id);
+  const disbursements = useFindAllDisbursements(id, {
+    hideAssignedBeneficiaries: false,
+  });
 
   const contractSettings = useProjectSettingsStore(
     (state) => state.settings?.[id]?.[PROJECT_SETTINGS_KEYS.CONTRACT],
@@ -96,25 +121,24 @@ const FundManagementView = () => {
   const syncDisbursementAllocation = useBulkAllocateTokens(
     contractSettings?.rahattoken?.address,
   );
-  console.log(contractSettings);
 
   const tokenBalance = useReadRahatTokenBalanceOf({
     address: contractSettings?.rahattoken?.address as `0x${string}`,
     args: [contractSettings?.rahatpayrollproject?.address as `0x${string}`],
     query: {
       select(data) {
-        console.log('data', data);
-        return data ? formatEther(data) : 'N/A';
+        return data ? Number(data) : 'N/A';
       },
     },
   });
-  console.log('tokenBalance', tokenBalance.data);
 
   // console.log('rpTokenDecimals', rpTokenDecimals.data);
   const chainTokenAllocations = useGetTokenAllocations(
     contractSettings?.rahatpayrollproject?.address as `0x${string}`,
     contractSettings?.rahattoken?.address as `0x${string}`,
   );
+
+  console.log('chainTokenAllocations', chainTokenAllocations);
 
   useEffect(() => {
     if (
@@ -138,7 +162,11 @@ const FundManagementView = () => {
         JSON.stringify(projectBeneficiaryDisbursements) !==
         JSON.stringify(rowData)
       ) {
-        setRowData(projectBeneficiaryDisbursements);
+        setRowData(
+          projectBeneficiaryDisbursements.filter(
+            (disbursement) => disbursement.disbursementAmount !== '0',
+          ),
+        );
       }
     }
   }, [
@@ -147,7 +175,6 @@ const FundManagementView = () => {
     disbursements?.isSuccess,
     projectBeneficiaries.data?.data,
     projectBeneficiaries.isSuccess,
-    rowData,
   ]);
 
   const handleAllocationSync = async () => {
@@ -156,6 +183,10 @@ const FundManagementView = () => {
       projectAddress: contractSettings?.rahatpayrollproject?.address,
       tokenAddress: contractSettings?.rahattoken?.address,
     });
+  };
+
+  const handleAddDisburse = () => {
+    route.push(`/projects/rp/${id}/fundManagement/disburse`);
   };
 
   return (
@@ -188,7 +219,7 @@ const FundManagementView = () => {
             <CardHeader>
               <CardTitle>Recent Deposits</CardTitle>
             </CardHeader>
-            <ScrollArea className="min-h-96">
+            <ScrollArea className="h-[400px]">
               {rowData?.map((row) => (
                 <CardContent
                   key={row?.walletAddress}
@@ -234,17 +265,51 @@ const FundManagementView = () => {
               <h2 className="text-lg font-semibold">Disbursement Plan</h2>
               {/* {+chainTokenAllocations.data !==
               +disbursementData?.totalAmount ? ( */}
-              <Button
-                variant={'secondary'}
-                onClick={handleAllocationSync}
-                // disabled={
-                //   syncDisbursementAllocation.isPending ||
-                //   +chainTokenAllocations.data === +disbursementData?.totalAmount
-                // }
-              >
-                Sync to chain
-              </Button>
-              {/* ) : null} */}
+              <div className="flex gap-6">
+                <Button
+                  variant={'secondary'}
+                  onClick={handleAllocationSync}
+                  disabled={
+                    syncDisbursementAllocation.isPending ||
+                    String(chainTokenAllocations.data) ===
+                      String(disbursementData?.totalAmount)
+                  }
+                >
+                  Sync chain
+                </Button>
+                {/* ) : null} */}
+                {/* MODAL EXAMPLE START */}
+
+                {/* <Dialog>
+                  <DialogTrigger asChild>
+                    <Button variant="outline">Edit Profile</Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-[800px]">
+                    <DialogHeader>
+                      <DialogTitle>Transactions</DialogTitle>
+                    </DialogHeader>
+                    <div className="grid gap-4 p-4">
+                      <StepProgress />
+                    </div>
+                  </DialogContent>
+                </Dialog> */}
+
+                {/* MODAL EXAMPLE END */}
+                <DropdownMenu>
+                  <DropdownMenuTrigger>
+                    <MoreVertical
+                      className="cursor-pointer"
+                      size={20}
+                      strokeWidth={1.5}
+                    />
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    <DropdownMenuItem onClick={handleAddDisburse}>
+                      Edit
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <DataCard
@@ -266,7 +331,7 @@ const FundManagementView = () => {
               />
               <div className="p-4 bg-gray-50 border rounded-lg w-full">
                 <div className="text-gray-700 font-semibold mb-2">
-                  Disbursement Status
+                  Disbursement Conditions
                 </div>
                 <ul className="list-disc list-inside text-gray-600">
                   {filteredConditions.map((condition) => (
@@ -285,9 +350,7 @@ const FundManagementView = () => {
                 add data.
               </p>
               <Button
-                onClick={() =>
-                  route.push(`/projects/rp/${id}/fundManagement/disburse`)
-                }
+                onClick={handleAddDisburse}
                 className="mt-4 bg-blue-500 text-white px-4 py-2 rounded"
               >
                 Create Disbursement Plan

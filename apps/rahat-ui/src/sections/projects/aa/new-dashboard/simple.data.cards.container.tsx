@@ -1,5 +1,8 @@
 import {
+  BeneficiaryAssignedToken,
+  GetTotalFundDistributed,
   PROJECT_SETTINGS_KEYS,
+  useCommsStats,
   useProjectSettingsStore,
 } from '@rahat-ui/query';
 import { useReadAaProjectTokenBudget } from 'apps/rahat-ui/src/hooks/aa/contracts/aaProject';
@@ -12,10 +15,12 @@ import {
   SmartphoneNfc,
   UsersRound,
 } from 'lucide-react';
+import { useQuery } from 'urql';
 
 type IProps = {
   allStats: any;
   projectId: UUID;
+  commsStats: any;
 };
 
 type ICardProps = {
@@ -41,7 +46,11 @@ const DataCard = ({ title, Icon, number }: ICardProps) => {
 export default function SimpleDataCardsContainer({
   allStats,
   projectId,
+  commsStats
 }: IProps) {
+
+  console.log(commsStats)
+
   const contractSettings = useProjectSettingsStore(
     (s) => s.settings?.[projectId]?.[PROJECT_SETTINGS_KEYS.CONTRACT] || null,
   );
@@ -113,7 +122,7 @@ export default function SimpleDataCardsContainer({
     {
       title: 'Number of Communication Project',
       Icon: SmartphoneNfc,
-      number: 'N/A',
+      number: commsStats?.totalCommsProject ?? 'N/A',
     },
   ];
   return (

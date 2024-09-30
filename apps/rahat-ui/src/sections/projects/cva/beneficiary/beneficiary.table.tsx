@@ -36,12 +36,14 @@ import {
 } from '@tanstack/react-table';
 import { useSecondPanel } from 'apps/rahat-ui/src/providers/second-panel-provider';
 import { UUID } from 'crypto';
-import { ChevronDown, Settings2 } from 'lucide-react';
+import { ChevronDown, Plus, Settings2 } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import { useState } from 'react';
 import BulkAssignToken from './bulk-assign-token.modal';
 import { useCvaBeneficiaryTableColumns } from './use.table.column';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
+import Image from 'next/image';
+import TableLoader from 'apps/rahat-ui/src/components/table.loader';
 
 export default function BeneficiaryTable() {
   const { setSecondPanelComponent, closeSecondPanel } = useSecondPanel();
@@ -218,10 +220,45 @@ export default function BeneficiaryTable() {
                 ) : (
                   <TableRow>
                     <TableCell
-                      colSpan={table.getAllColumns().length}
+                      colSpan={columns.length}
                       className="h-24 text-center"
                     >
-                      No results.
+                      {beneficiaries.isFetching ? (
+                        <TableLoader />
+                      ) : (
+                        <div className="w-full h-[calc(100vh-140px)]">
+                          <div className="flex flex-col items-center justify-center">
+                            <Image
+                              src="/noData.png"
+                              height={250}
+                              width={250}
+                              alt="no data"
+                            />
+                            <p className="text-medium text-base mb-1">
+                              No Data Available
+                            </p>
+                            <p className="text-sm mb-4 text-gray-500">
+                              There are no beneficiaries to display at the
+                              moment
+                            </p>
+                            <Button
+                            // onClick={() =>
+                            //   router.push(
+                            //     `/projects/rp/${id}/beneficiary/add`,
+                            //   )
+                            // }
+                            >
+                              {' '}
+                              <Plus
+                                className="mr-2"
+                                size={20}
+                                strokeWidth={1.5}
+                              />
+                              Add Beneficiary Data
+                            </Button>
+                          </div>
+                        </div>
+                      )}
                     </TableCell>
                   </TableRow>
                 )}

@@ -56,7 +56,6 @@ function BeneficiaryView() {
   const createBeneficiaryGroup = useCreateBeneficiaryGroup();
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const columns = useBeneficiaryTableColumns();
-  const { closeSecondPanel, setSecondPanelComponent } = useSecondPanel();
   const projectModal = useBoolean();
   const groupModal = useBoolean();
   const bulkAssign = useBulkAssignBenToProject();

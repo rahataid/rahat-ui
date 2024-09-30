@@ -9,7 +9,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { Settings2 } from 'lucide-react';
+import { CircleEllipsisIcon, Settings2 } from 'lucide-react';
 import * as React from 'react';
 
 import { Button } from '@rahat-ui/shadcn/components/button';
@@ -23,14 +23,6 @@ import {
 } from '@rahat-ui/shadcn/components/dropdown-menu';
 import { Input } from '@rahat-ui/shadcn/components/input';
 import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@rahat-ui/shadcn/components/select';
-import {
   Table,
   TableBody,
   TableCell,
@@ -38,16 +30,17 @@ import {
   TableHeader,
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
+import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import { useUserTableColumns } from './useUsersColumns';
 import { User } from '@rumsan/sdk/types';
+import { useUserTableColumns } from './useUsersColumns';
 
 type IProps = {
   users: User[];
+  loading: boolean;
 };
-export default function ListView({ users }: IProps) {
+export default function ListView({ users, loading }: IProps) {
   const columns = useUserTableColumns();
-  // const users = useUserStore((state) => state.users);
 
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =
@@ -154,10 +147,19 @@ export default function ListView({ users }: IProps) {
                 ) : (
                   <TableRow>
                     <TableCell
-                      colSpan={columns.length}
+                      colSpan={table.getAllColumns().length}
                       className="h-24 text-center"
                     >
-                      No results.
+                      {loading ? (
+                        <div className="flex items-center justify-center mt-4">
+                          <div className="text-center">
+                            <CircleEllipsisIcon className="animate-spin h-8 w-8 ml-4" />
+                            <Label className="text-base">Loading ...</Label>
+                          </div>
+                        </div>
+                      ) : (
+                        'No result found'
+                      )}
                     </TableCell>
                   </TableRow>
                 )}

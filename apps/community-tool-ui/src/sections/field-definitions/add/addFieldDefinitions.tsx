@@ -28,10 +28,21 @@ import React, { useEffect, useState } from 'react';
 
 import { useFieldDefinitionsCreate } from '@rahat-ui/community-query';
 import { FieldType } from 'apps/community-tool-ui/src/constants/fieldDefinition.const';
-import { Minus, Plus } from 'lucide-react';
+import { DownloadCloud, Minus, Plus } from 'lucide-react';
+import Samples from '../samples.json';
+import * as XLSX from 'xlsx';
 
 type Iprops = {
   handleTabChange: (tab: 'add' | 'import') => void;
+};
+
+const DEFAULT_VALUES = {
+  name: '',
+  fieldType: FieldType.TEXT,
+  isActive: true,
+  isTargeting: false,
+  variations: [],
+  field: [],
 };
 
 export default function AddFieldDefinitions({ handleTabChange }: Iprops) {
@@ -41,13 +52,10 @@ export default function AddFieldDefinitions({ handleTabChange }: Iprops) {
   const [variationTags, setVariationTags] = useState<Tag[]>([]);
   const [activeTagIndex, setActiveTagIndex] = useState<number | null>(null);
 
-  const {
-    control,
-    formState: { errors },
-  } = useForm();
+  const { control } = useForm();
 
   const FormSchema = z.object({
-    name: z.string().min(1),
+    name: z.string().min(1, { message: 'Name is required' }),
     fieldType: z.string().toUpperCase(),
     isActive: z.boolean(),
     isTargeting: z.boolean(),
@@ -60,8 +68,8 @@ export default function AddFieldDefinitions({ handleTabChange }: Iprops) {
     field: z.array(
       z.object({
         value: z.object({
-          label: z.string().min(1, { message: 'Label is required' }),
-          value: z.string().min(1, { message: 'Value is required' }),
+          label: z.string().min(1, { message: 'Label is required' }).optional(),
+          value: z.string().min(1, { message: 'Value is required' }).optional(),
         }),
       }),
     ),
@@ -69,14 +77,7 @@ export default function AddFieldDefinitions({ handleTabChange }: Iprops) {
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
-    defaultValues: {
-      name: '',
-      fieldType: FieldType.TEXT,
-      isActive: true,
-      isTargeting: false,
-      variations: [],
-      field: [],
-    },
+    defaultValues: DEFAULT_VALUES,
   });
 
   const { fields, append, remove } = useFieldArray({
@@ -110,8 +111,8 @@ export default function AddFieldDefinitions({ handleTabChange }: Iprops) {
       fieldPopulate: { data: fieldPopulatePayload } || [],
     };
 
-    console.log('Payload=>', payload);
-    return await addFieldDefinitions.mutateAsync(payload);
+    await addFieldDefinitions.mutateAsync(payload);
+    form.reset();
   };
 
   const addLabelAndValue = () => {
@@ -138,16 +139,23 @@ export default function AddFieldDefinitions({ handleTabChange }: Iprops) {
 
   useEffect(() => {
     if (showLabelValue) {
-      if (fields.length === 0) {
-        append({
-          value: { label: '', value: '' },
-        });
-      }
+      append({
+        value: { label: '', value: '' },
+      });
     } else {
       form.setValue('field', []);
     }
-  }, [showLabelValue, fields, append, form]);
+  }, [showLabelValue, append, form]);
 
+  const handleSampleDownload = (e) => {
+    e.preventDefault();
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.json_to_sheet(Samples);
+
+    XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+
+    XLSX.writeFile(wb, 'FieldDefinitionSamples.xlsx');
+  };
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleCreateFieldDefinitions)}>
@@ -195,6 +203,7 @@ export default function AddFieldDefinitions({ handleTabChange }: Iprops) {
                       <FormControl>
                         <TagInput
                           {...field}
+                          truncate={25}
                           activeTagIndex={activeTagIndex}
                           setActiveTagIndex={setActiveTagIndex}
                           placeholder="Enter value and press ENTER"
@@ -220,11 +229,11 @@ export default function AddFieldDefinitions({ handleTabChange }: Iprops) {
                     <FormItem>
                       <Select
                         onValueChange={field.onChange}
-                        defaultValue={FieldType.TEXT}
+                        value={field.value}
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Field Type" />
+                            <SelectValue placeholder={FieldType.TEXT} />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -275,16 +284,20 @@ export default function AddFieldDefinitions({ handleTabChange }: Iprops) {
             {showLabelValue && (
               <>
                 <div className="grid grid-cols-5 gap-4 mb-4">
-                  <Label className="col-span-2">LABEL</Label>
-                  <Label className="col-span-2">VALUE</Label>
+                  {fields.length > 0 && (
+                    <>
+                      <Label className="col-span-2">LABEL</Label>
+                      <Label className="col-span-2">VALUE</Label>
+                    </>
+                  )}
                 </div>
                 <div className="grid grid-cols-5 gap-5 mb-4">
                   {fields.map((fieldName, index) => {
                     return (
-                      <React.Fragment key={index}>
+                      <React.Fragment key={fieldName.id}>
                         <FormField
                           control={form.control}
-                          name={`field.${index}.value.label` as const}
+                          name={`field.${index}.value.label`}
                           render={({ field }) => (
                             <div className="col-span-2">
                               <Input
@@ -298,7 +311,7 @@ export default function AddFieldDefinitions({ handleTabChange }: Iprops) {
 
                         <FormField
                           control={form.control}
-                          name={`field.${index}.value.value` as const}
+                          name={`field.${index}.value.value`}
                           render={({ field }) => (
                             <div className="col-span-2">
                               <Input
@@ -320,7 +333,7 @@ export default function AddFieldDefinitions({ handleTabChange }: Iprops) {
                             type="button"
                             onClick={() => remove(index)}
                             className="p-1 text-xs  w-10"
-                            disabled={fields.length === 1}
+                            // disabled={fields.length === 0}
                           >
                             <Minus size={18} strokeWidth={1.5} />
                           </Button>
@@ -342,6 +355,14 @@ export default function AddFieldDefinitions({ handleTabChange }: Iprops) {
             )}
 
             <div className="flex justify-end mb-10 space-x-4">
+              <Button
+                onClick={(e) => handleSampleDownload(e)}
+                className=" text-blue-700 bg-gray-300 hover:bg-gray-300 "
+              >
+                <DownloadCloud size={18} strokeWidth={1.5} className="mr-1" />
+                Download Sample
+              </Button>
+
               <Button type="submit">Submit</Button>
             </div>
           </div>

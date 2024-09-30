@@ -29,8 +29,9 @@ import {
 import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
 import * as React from 'react';
+import { parseEther } from 'viem';
 import { useApprovalTable } from './useApprovalTable';
-import { formatEther, parseEther } from 'viem';
+import Image from 'next/image';
 
 export function ApprovalTable({ disbursement }: { disbursement: any }) {
   const { id } = useParams();
@@ -47,13 +48,12 @@ export function ApprovalTable({ disbursement }: { disbursement: any }) {
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
-  // const [data, setData] = React.useState([]);
   const columns = useApprovalTable();
   const { id: projectUUID, uuid } = useParams() as {
     id: UUID;
     uuid: UUID;
   };
-  const { data, isLoading } = useGetDisbursementApprovals({
+  const { data, isLoading, isFetching, isError } = useGetDisbursementApprovals({
     disbursementUUID: uuid,
     projectUUID: projectUUID,
     page: 1,
@@ -80,7 +80,10 @@ export function ApprovalTable({ disbursement }: { disbursement: any }) {
     },
   });
 
-  const disburseMultiSig = useMultiSigDisburseToken();
+  const disburseMultiSig = useMultiSigDisburseToken({
+    disbursementId: disbursement?.id,
+    projectUUID,
+  });
 
   const handleMigSigTransaction = async () => {
     const amountString = disbursement?.DisbursementBeneficiary[0]?.amount
@@ -98,15 +101,6 @@ export function ApprovalTable({ disbursement }: { disbursement: any }) {
     });
   };
 
-  if (isLoading) {
-    return (
-      <div className="w-full">
-        <div className="flex items-center justify-between px-4 py-2 border-b-2 bg-card">
-          Loading...
-        </div>
-      </div>
-    );
-  }
   return (
     <div className="w-full">
       {data?.isExecuted && (
@@ -143,7 +137,20 @@ export function ApprovalTable({ disbursement }: { disbursement: any }) {
               ))}
             </TableHeader>
             <TableBody>
-              {table.getRowModel().rows?.length ? (
+              {isLoading || isFetching ? (
+                <TableRow>
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-24 text-center"
+                  >
+                    <div className="flex items-center justify-center space-x-2 h-full">
+                      <div className="h-2 w-2 animate-bounce rounded-full bg-primary [animation-delay:-0.3s]"></div>
+                      <div className="h-2 w-2 animate-bounce rounded-full bg-primary [animation-delay:-0.13s]"></div>
+                      <div className="h-2 w-2 animate-bounce rounded-full bg-primary"></div>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ) : table.getRowModel().rows?.length ? (
                 table.getRowModel().rows.map((row) => (
                   <TableRow
                     key={row.id}
@@ -165,7 +172,22 @@ export function ApprovalTable({ disbursement }: { disbursement: any }) {
                     colSpan={columns.length}
                     className="h-24 text-center"
                   >
-                    No results.
+                    <div className="w-full h-[calc(100vh-140px)]">
+                      <div className="flex flex-col items-center justify-center">
+                        <Image
+                          src="/noData.png"
+                          height={250}
+                          width={250}
+                          alt="no data"
+                        />
+                        <p className="text-medium text-base mb-1">
+                          No Data Available
+                        </p>
+                        <p className="text-sm mb-4 text-gray-500">
+                          There are no approvals to display at the moment.
+                        </p>
+                      </div>
+                    </div>
                   </TableCell>
                 </TableRow>
               )}
@@ -174,10 +196,6 @@ export function ApprovalTable({ disbursement }: { disbursement: any }) {
         </Table>
       </div>
       <div className="sticky bottom-0 flex items-center justify-end space-x-4 px-4 py-1 border-t-2 bg-card">
-        <div className="flex-1 text-sm text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length} of{' '}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
-        </div>
         <div className="space-x-2">
           <Button
             variant="outline"

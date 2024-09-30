@@ -1,17 +1,19 @@
 'use client';
 
-import React, { useMemo, useState } from 'react';
-import { useRumsanService } from '../../providers/service.provider';
 import {
-  ColumnDef,
   VisibilityState,
   flexRender,
   getCoreRowModel,
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { SettingList } from '@rahataid/community-tool-sdk/settings/settings.types';
+import { useState } from 'react';
 
+import {
+  useCommunitySettingList,
+  useListAllTransports,
+} from '@rahat-ui/community-query';
+import { usePagination } from '@rahat-ui/query';
 import {
   TableBody,
   TableCell,
@@ -20,83 +22,47 @@ import {
   TableHeader,
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@rahat-ui/shadcn/src/components/ui/dropdown-menu';
+import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
+import { CircleEllipsisIcon, Settings2 } from 'lucide-react';
 import CustomPagination from '../../components/customPagination';
-import { useCommunitySettingList } from '@rahat-ui/community-query';
-import { usesettingTableColumns } from './useSettingColumns';
-
-// interface BeneficiaryData {
-//   name: string;
-//   dataType: string;
-//   isPrivate: boolean;
-//   isReadOnly: boolean;
-//   requiredFields: [];
-// }
-
-// const columns: ColumnDef<BeneficiaryData>[] = [
-//   {
-//     header: 'Name',
-//     accessorKey: 'name',
-//     cell: ({ row }) => <div>{row.getValue('name')}</div>,
-//   },
-//   {
-//     header: 'DataType',
-//     accessorKey: 'dataType',
-//     cell: ({ row }) => <div>{row.getValue('dataType')}</div>,
-//   },
-//   {
-//     header: 'IsPrivate',
-//     accessorKey: 'isPrivate',
-//     cell: ({ row }) => <div>{row.original.isPrivate ? 'Yes' : 'No'}</div>,
-//   },
-//   {
-//     header: 'IsReadOnly',
-//     accessorKey: 'isReadOnly',
-//     cell: ({ row }) => <div>{row.original.isReadOnly ? 'Yes' : 'No'}</div>,
-//   },
-//   {
-//     header: 'RequiredFields',
-//     accessorKey: 'requiredFields',
-//     cell: ({ row }) => {
-//       return (
-//         <div>
-//           {row.original.requiredFields.map((field, index) => (
-//             <li key={index}>{field}</li>
-//           ))}
-//         </div>
-//       );
-//     },
-//   },
-// ];
+import { useDebounce } from '../../utils/debounceHooks';
+import { useSettingTableColumns } from './useSettingColumns';
+import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 
 export default function ListSetting() {
-  const [perPage, setPerPage] = useState<number>(5);
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const columns = usesettingTableColumns();
+  const columns = useSettingTableColumns();
 
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
-
-  const startIndex = (currentPage - 1) * perPage;
-  const endIndex = currentPage * perPage;
-  const handleNextPage = () => setCurrentPage(currentPage + 1);
-  const handlePrevPage = () => setCurrentPage(currentPage - 1);
-
-  const { data } = useCommunitySettingList();
-
-  const pagedData = useMemo(() => {
-    return data?.data?.slice(startIndex, endIndex) || [];
-  }, [data?.data, startIndex, endIndex]);
-
-  const meta = {
-    total: data?.data?.length,
-    currentPage,
-    lastPage: Math.ceil(data?.data?.length / perPage),
-  };
+  const [flag, setFlag] = useState('all');
+  const {
+    pagination,
+    setNextPage,
+    setPrevPage,
+    setPerPage,
+    filters,
+    setFilters,
+    setPagination,
+  } = usePagination();
+  const debouncedFilters = useDebounce(filters, 500) as any;
+  const { isLoading, data } = useCommunitySettingList({
+    ...pagination,
+    ...(debouncedFilters as any),
+  });
 
   const table = useReactTable({
     manualPagination: true,
-    data: pagedData || [],
+    data: data?.data || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -108,11 +74,89 @@ export default function ListSetting() {
     },
   });
 
+  const handleFilterChange = (event: any) => {
+    if (event && event.target) {
+      const { name, value } = event.target;
+      table.getColumn(name)?.setFilterValue(value);
+      setFilters({
+        ...filters,
+        [name]: value,
+      });
+    }
+    setPagination({
+      ...pagination,
+      page: 1,
+    });
+  };
+
+  const handleSwitchChange = (value: string) => {
+    const newFilters = { ...filters };
+
+    if (value === 'private') {
+      newFilters.private = 'true';
+      newFilters.readOnly = '';
+    } else if (value === 'public') {
+      newFilters.private = 'false';
+      newFilters.readOnly = '';
+    } else if (value === 'all') {
+      newFilters.private = '';
+      newFilters.readOnly = '';
+    } else if (value === 'read') {
+      newFilters.readOnly = 'true';
+      newFilters.private = '';
+    }
+
+    setFilters(newFilters);
+    setPagination({
+      ...pagination,
+      page: 1,
+    });
+    setFlag(value);
+  };
+
   return (
     <div className="w-full mt-1 p-1 bg-secondary">
+      <div className="flex items-center mb-2">
+        <Input
+          placeholder="Search by name..."
+          name="name"
+          value={
+            (table.getColumn('name')?.getFilterValue() as string) ??
+            filters?.name
+          }
+          onChange={(event) => handleFilterChange(event)}
+          className="rounded mr-2"
+        />
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" className="ml-auto">
+              <Settings2 className="mr-2 h-4 w-5" />
+              Filters
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuSeparator />
+            <DropdownMenuRadioGroup
+              value={flag}
+              onValueChange={handleSwitchChange}
+            >
+              <DropdownMenuRadioItem value="all">All</DropdownMenuRadioItem>
+              <DropdownMenuRadioItem value="private">
+                Private
+              </DropdownMenuRadioItem>
+              <DropdownMenuRadioItem value="public">
+                Public
+              </DropdownMenuRadioItem>
+              <DropdownMenuRadioItem value="read">
+                ReadOnly
+              </DropdownMenuRadioItem>
+            </DropdownMenuRadioGroup>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
       <div className="rounded border bg-white">
         <TableComponent>
-          <ScrollArea className="h-[calc(100vh-135px)]">
+          <ScrollArea className="h-[calc(100vh-190px)]">
             <TableHeader className="bg-card sticky top-0">
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
@@ -154,20 +198,29 @@ export default function ListSetting() {
                     colSpan={table.getAllColumns().length}
                     className="h-24 text-center"
                   >
-                    No results.
+                    {isLoading ? (
+                      <div className="flex items-center justify-center mt-4">
+                        <div className="text-center">
+                          <CircleEllipsisIcon className="animate-spin h-8 w-8 ml-4" />
+                          <Label className="text-base">Loading ...</Label>
+                        </div>
+                      </div>
+                    ) : (
+                      'No result found'
+                    )}
                   </TableCell>
                 </TableRow>
               )}
             </TableBody>
           </ScrollArea>
           <CustomPagination
-            meta={data?.response?.meta || meta}
-            handleNextPage={handleNextPage}
-            handlePrevPage={handlePrevPage}
-            handlePageSizeChange={(value) => setPerPage(Number(value))}
-            currentPage={currentPage}
-            perPage={perPage}
-            total={data?.response?.meta?.total || 0}
+            meta={data?.response?.meta || { total: 0, currentPage: 0 }}
+            handleNextPage={setNextPage}
+            handlePrevPage={setPrevPage}
+            handlePageSizeChange={setPerPage}
+            currentPage={pagination.page}
+            perPage={pagination.perPage}
+            total={data?.response?.meta.total || 0}
           />
         </TableComponent>
       </div>

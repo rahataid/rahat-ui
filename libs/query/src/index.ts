@@ -11,6 +11,8 @@ export * from './lib/users/users.query';
 export * from './lib/settings';
 export * from './lib/aa';
 export * from './lib/upload';
+export * from './lib/reports';
+export * from './lib/auth-apps';
 // export * from './lib/aa/trigger-statements';
 // export * from './lib/aa/activities';
 
@@ -20,3 +22,4 @@ export * from './config';
 export * from './lib/cva';
 export * from './lib/grievance';
 export * from './lib/rp';
+export * from './lib/new-comms';

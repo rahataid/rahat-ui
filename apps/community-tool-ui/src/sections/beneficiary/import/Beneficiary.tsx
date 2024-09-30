@@ -16,6 +16,7 @@ import {
   removeFieldsWithUnderscore,
   splitFullName,
   splitValidAndInvalid,
+  transformExportKeys,
 } from 'apps/community-tool-ui/src/utils';
 import { ArrowBigLeft, ArrowBigRight } from 'lucide-react';
 import React from 'react';
@@ -34,7 +35,7 @@ import {
   useFetchKoboSettings,
 } from '@rahat-ui/community-query';
 import { useRSQuery } from '@rumsan/react-query';
-import ColumnMappingTable from './ColumnMappingTable';
+import ColumnMappingTable, { resetMyMappings } from './ColumnMappingTable';
 import { EMPTY_SELECTION } from './Combobox';
 import MyAlert from './MyAlert';
 
@@ -80,8 +81,7 @@ export default function BenImp({ fieldDefinitions }: IProps) {
   const fetchExistingMapping = async (importId: string) => {
     setMappings([]);
     const res = await existingMapQuery.mutateAsync(importId);
-    if (!res) return;
-    if (res?.data) {
+    if (res && res?.data) {
       setHasExistingMapping(true);
       const { fieldMapping } = res.data;
       return setMappings(fieldMapping?.sourceTargetMappings);
@@ -148,6 +148,8 @@ export default function BenImp({ fieldDefinitions }: IProps) {
     sourceField: string,
     targetField: string,
   ) => {
+    // Source field as it is
+    // Target field sanitized
     if (sourceField === EMPTY_SELECTION) {
       const filtered = mappings.filter((f) => f.targetField !== targetField);
       return setMappings(filtered);
@@ -299,35 +301,30 @@ export default function BenImp({ fieldDefinitions }: IProps) {
   };
 
   const createImportSource = async (sourcePayload: any) => {
-    setLoading(true);
-    const res = (await importSourceQuery.mutateAsync(sourcePayload)) as any;
-    if (!res) {
-      setLoading(false);
-      return Swal.fire({
-        icon: 'error',
-        title: 'Failed to create import source!',
-      });
-    }
+    try {
+      setLoading(true);
+      const res = (await importSourceQuery.mutateAsync(sourcePayload)) as any;
+      // If action is IMPORT, source will be created on backend!
+      // Otherwise, just validate in the backend
+      if (sourcePayload.action === IMPORT_ACTION.IMPORT) {
+        setLoading(false);
+        resetStates();
+        return Swal.fire({
+          icon: 'success',
+          title: `${sourcePayload.fieldMapping.data.length} Beneficiaries imported successfully!`,
+        });
+      }
 
-    // If action is IMPORT, source will be created on backend!
-    // Otherwise, just validate in the backend
-    if (sourcePayload.action === IMPORT_ACTION.IMPORT) {
+      const { result, invalidFields, hasUUID } = res?.data;
+      setHasUUID(hasUUID);
+      setProcessedData(result);
+      if (invalidFields.length) setInvalidFields(invalidFields);
+      setCurrentScreen(BENEF_IMPORT_SCREENS.IMPORT_DATA);
+    } catch (err) {
+      console.log(err);
+    } finally {
       setLoading(false);
-      resetStates();
-      return Swal.fire({
-        icon: 'success',
-        title: `${sourcePayload.fieldMapping.data.length} Beneficiaries imported successfully!`,
-      });
     }
-
-    const { result, invalidFields, hasUUID } = res?.data;
-    setHasUUID(hasUUID);
-    setProcessedData(result);
-    if (invalidFields.length) {
-      setInvalidFields(invalidFields);
-    }
-    setCurrentScreen(BENEF_IMPORT_SCREENS.IMPORT_DATA);
-    setLoading(false);
   };
 
   const handleRetargetClick = () => {
@@ -349,11 +346,12 @@ export default function BenImp({ fieldDefinitions }: IProps) {
   };
 
   const handleBackClick = () => {
+    resetMyMappings();
     setHasExistingMapping(false);
     setMappings([]);
     setValidBenef([]);
-    setCurrentScreen(BENEF_IMPORT_SCREENS.SELECTION);
     setRawData([]);
+    setCurrentScreen(BENEF_IMPORT_SCREENS.SELECTION);
   };
 
   const handleExportInvalidClick = async () => {
@@ -365,14 +363,13 @@ export default function BenImp({ fieldDefinitions }: IProps) {
     setValidBenef(validData);
     setProcessedData(validData);
     setInvalidFields([]);
-    exportDataToExcel(invalidData);
+    const transformed = transformExportKeys(invalidData);
+    if (transformed.length) exportDataToExcel(transformed);
     if (!validData.length) {
       setHasExistingMapping(false);
       setCurrentScreen(BENEF_IMPORT_SCREENS.SELECTION);
     }
   };
-
-  console.log('Mappings=>', mappings);
 
   return (
     <div className="h-custom">

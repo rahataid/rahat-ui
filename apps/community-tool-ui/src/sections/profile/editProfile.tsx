@@ -61,11 +61,13 @@ export default function EditProfile({ userDetail }: Iprops) {
     });
   }, [form, userDetail]);
   const handleEditUser = async (data: any) => {
+    console.log(data);
     await updateUser.mutateAsync({
       payload: {
         ...data,
         wallet: data?.walletAddress,
         phone: data?.phone,
+        email: data?.email,
       },
     });
   };
@@ -99,7 +101,12 @@ export default function EditProfile({ userDetail }: Iprops) {
                   <FormItem>
                     <Label>Email</Label>
                     <FormControl>
-                      <Input type="text" placeholder="Email" {...field} />
+                      <Input
+                        type="text"
+                        placeholder="Email"
+                        {...field}
+                        disabled
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -115,7 +122,12 @@ export default function EditProfile({ userDetail }: Iprops) {
                   <FormItem>
                     <Label>Phone</Label>
                     <FormControl>
-                      <Input type="text" placeholder="Phone" {...field} />
+                      <Input
+                        type="text"
+                        placeholder="Phone"
+                        {...field}
+                        disabled
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -135,6 +147,7 @@ export default function EditProfile({ userDetail }: Iprops) {
                         type="text"
                         placeholder="Wallet Address"
                         {...field}
+                        disabled
                       />
                     </FormControl>
                     <FormMessage />

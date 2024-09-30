@@ -17,16 +17,18 @@ import {
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 import { Plus } from 'lucide-react';
+import { useParams } from 'next/navigation';
 import { useState } from 'react';
 
-export function AssetsModal() {
+export function AssetsModal(tokenAddress: any) {
   const [amount, setAmount] = useState<string>('');
   const [selectedProject, setSelectedProject] = useState<`0x${string}`>('');
+  const[selectedToken,setSelectedToken] = useState<`0x${string}`>('');
   const sendFundToProject = useSendFundToProject();
   const appContracts = useSettingsStore((state) => state.contracts);
   const projects = useProjectList();
 
-  console.log('selectedProject', selectedProject);
+  const { contractAddress } = useParams();
 
   const handleSendFunds = async () => {
     if (selectedProject) {
@@ -40,17 +42,20 @@ export function AssetsModal() {
       await sendFundToProject.mutateAsync({
         amount,
         projectAddress: selectedProject,
-        tokenAddress: appContracts?.RAHATTOKEN?.ADDRESS,
+        tokenAddress: selectedToken,
         treasuryAddress: appContracts?.RAHATTREASURY?.ADDRESS,
       });
     } else {
       console.log('No project selected');
     }
   };
-  console.log('projects', projects?.data?.data);
-  const handleSelectProject = (contractAddress: `0x${string}`) => {
+
+  const handleSelectProject = (contractAddress: `0x${string}`,tokenAddress: `0x${string}`) => {
     setSelectedProject(contractAddress);
+    setSelectedToken(tokenAddress);
+
   };
+
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -118,19 +123,18 @@ export function AssetsModal() {
               <DropdownMenu.Trigger className="border border-gray-300 p-2 rounded mb-4">
                 {selectedProject
                   ? projects?.data?.data?.find(
-                      (p) => p.contractAddress === selectedProject,
+                      //@ts-ignore
+                      (p) => p?.extras?.tokenAddress === selectedToken,
                     )?.name
                   : 'Select a project'}
               </DropdownMenu.Trigger>
               <DropdownMenu.Content className="bg-white border border-gray-300 rounded shadow-lg">
                 {projects?.data?.data?.map((project) => (
                   <DropdownMenu.Item
-                    key={project.id}
+                    key={project?.id}
                     onSelect={() =>
-                      // handleSelectProject(project.contractAddress)
-                      handleSelectProject(
-                        '0xA802D5b2988EF81465F157609c8BC5BEE779f623',
-                      )
+                      //@ts-ignore
+                      handleSelectProject(project?.contractAddress,project?.extras?.tokenAddress)
                     }
                     className="p-2 hover:bg-gray-100 cursor-pointer"
                   >
@@ -155,6 +159,7 @@ export function AssetsModal() {
               onChange={(e) => setAmount(e.target.value)}
             />
           </div>
+
           {selectedProject && (
             <div className="mb-4">
               Selected Project:{' '}
@@ -167,7 +172,12 @@ export function AssetsModal() {
           )}
         </div>
         <DialogFooter>
-          <Button onClick={handleSendFunds}>Fund Porject</Button>
+          <Button
+            onClick={handleSendFunds}
+            disabled={selectedToken != contractAddress}
+          >
+            Fund Project
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

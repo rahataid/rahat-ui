@@ -1,0 +1,46 @@
+[
+  {
+    "name": "Interviewer Name",
+    "fieldType": "TEXT"
+  },
+
+  {
+    "name": "Tole Name",
+    "fieldType": "TEXT"
+  },
+  {
+    "name": "Ward No.",
+    "fieldType": "DROPDOWN",
+    "dropdownPopulates": "1,2,3,4,5"
+  },
+  {
+    "name": "Landmark",
+    "fieldType": "TEXT"
+  },
+  {
+    "name": "Interviewee Name",
+    "fieldType": "TEXT"
+  },
+  {
+    "name": "Interviewee Phone Number",
+    "fieldType": "NUMBER"
+  },
+  {
+    "name": "Household Head Nickname",
+    "fieldType": "TEXT"
+  },
+  {
+    "name": "Type of Phone set",
+    "fieldType": "DROPDOWN",
+    "dropdownPopulates": "Simple Mobile Set,Smart Phone Set"
+  },
+  {
+    "name": "Household Head Age",
+    "fieldType": "TEXT"
+  },
+  {
+    "name": "Caste",
+    "fieldType": "DROPDOWN",
+    "dropdownPopulates": "Tharu,Tribal(Janjati),Dalit,Brahmin/Chettri"
+  }
+]

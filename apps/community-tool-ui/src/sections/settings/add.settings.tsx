@@ -1,15 +1,15 @@
 'use client';
-import React from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useCommunitySettingCreate } from '@rahat-ui/community-query';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { FormField } from '@rahat-ui/shadcn/src/components/ui/form';
 import { Input } from '@rahat-ui/shadcn/src/components/ui/input';
-import { Form, useFieldArray, useForm } from 'react-hook-form';
-import { z } from 'zod';
-import { Minus, Plus } from 'lucide-react';
-import { Switch } from '@rahat-ui/shadcn/src/components/ui/switch';
 import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useCommunitySettingCreate } from '@rahat-ui/community-query';
+import { Switch } from '@rahat-ui/shadcn/src/components/ui/switch';
+import { Minus, Plus } from 'lucide-react';
+import React from 'react';
+import { useFieldArray, useForm } from 'react-hook-form';
+import { z } from 'zod';
 
 export default function AddSetting() {
   const communitySetting = useCommunitySettingCreate();
@@ -168,8 +168,12 @@ export default function AddSetting() {
             </div>
           </div>
           <div className="grid grid-cols-5 gap-4 mb-4">
-            <Label className="col-span-2">KEY</Label>
-            <Label className="col-span-2">VALUE</Label>
+            {fields.length > 0 && (
+              <>
+                <Label className="col-span-2">KEY</Label>
+                <Label className="col-span-2">VALUE</Label>
+              </>
+            )}
           </div>
           <div className="grid grid-cols-5 gap-5 mb-4">
             {fields.map((fieldName, index) => {

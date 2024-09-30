@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   PROJECT_SETTINGS_KEYS,
@@ -31,16 +32,18 @@ import Loader from 'apps/community-tool-ui/src/components/Loader';
 import { useReadAaProjectTokenBudget } from 'apps/rahat-ui/src/hooks/aa/contracts/aaProject';
 import { UUID } from 'crypto';
 import { useParams, useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 export default function AddFundManagementView() {
   const router = useRouter();
-  const { id: projectId } = useParams();
+  const params = useParams();
+  const projectId = params.id as UUID;
+
+  const fundManagementListPath = `/projects/aa/${projectId}/fund-management`;
 
   const { data: reservationStats, isLoading: isLoadingReservationStats } =
-    useReservationStats(projectId as UUID);
+    useReservationStats(projectId);
 
   const contractSettings = useProjectSettingsStore(
     (s) => s.settings?.[projectId]?.[PROJECT_SETTINGS_KEYS.CONTRACT] || null,
@@ -58,7 +61,9 @@ export default function AddFundManagementView() {
 
   const FormSchema = z.object({
     title: z.string().min(2, { message: 'Title must be at least 4 character' }),
-    numberOfTokens: z.coerce.number(),
+    numberOfTokens: z.coerce
+      .number()
+      .gte(1, { message: 'Token must be greater than 0' }),
     beneficiaryGroup: z.string(),
     totalTokensReserved: z.number(),
   });
@@ -79,7 +84,7 @@ export default function AddFundManagementView() {
   const watchBeneficiaryGroup = form.watch('beneficiaryGroup');
   const watchTotalTokensReserved = form.watch('totalTokensReserved');
 
-  useEffect(() => {
+  React.useEffect(() => {
     const numberOfTokens = Number(watchTokens);
     const selectedGroup = beneficiariesGroups?.find(
       (g: any) => g?.uuid === watchBeneficiaryGroup,
@@ -94,7 +99,7 @@ export default function AddFundManagementView() {
     }
   }, [watchTokens, watchBeneficiaryGroup]);
 
-  useBeneficiariesGroups(projectId as UUID, {
+  useBeneficiariesGroups(projectId, {
     page: 1,
     perPage: 100,
   });
@@ -116,13 +121,12 @@ export default function AddFundManagementView() {
     };
     try {
       await reserveTokenForGroups.mutateAsync({
-        projectUUID: projectId as UUID,
+        projectUUID: projectId,
         reserveTokenPayload,
       });
+      router.push(fundManagementListPath);
     } catch (e) {
       console.error('Creating reserve token::', e);
-    } finally {
-      form.reset();
     }
   };
 
@@ -164,73 +168,65 @@ export default function AddFundManagementView() {
                 );
               }}
             />
-
-            <div>
-              <FormField
-                control={form.control}
-                name="beneficiaryGroup"
-                render={({ field }) => {
-                  return (
-                    <FormItem>
-                      <FormLabel>Beneficiary Group</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                        value={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select beneficiary group" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {beneficiariesGroups?.map((g: any) => {
-                            return (
-                              <>
-                                <SelectItem value={g?.uuid}>
-                                  {g?.name}
-                                </SelectItem>
-                              </>
-                            );
-                          })}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  );
-                }}
-              />
-
-
-              <FormField
-                control={form.control}
-                name="numberOfTokens"
-                render={({ field }) => {
-                  return (
-                    <FormItem>
-                      <FormLabel>No. of Tokens</FormLabel>
+            <FormField
+              control={form.control}
+              name="beneficiaryGroup"
+              render={({ field }) => {
+                return (
+                  <FormItem>
+                    <FormLabel>Beneficiary Group</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                      value={field.value}
+                    >
                       <FormControl>
-                        <Input
-                          type="number"
-                          inputMode="decimal"
-                          placeholder="Enter number of tokens for each members"
-                          {...field}
-                        />
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select beneficiary group" />
+                        </SelectTrigger>
                       </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  );
-                }}
-              />
+                      <SelectContent>
+                        {beneficiariesGroups?.map((g: any) => {
+                          return (
+                            <>
+                              <SelectItem value={g?.uuid}>{g?.name}</SelectItem>
+                            </>
+                          );
+                        })}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+            <FormField
+              control={form.control}
+              name="numberOfTokens"
+              render={({ field }) => {
+                return (
+                  <FormItem>
+                    <FormLabel>No. of Tokens</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        inputMode="decimal"
+                        placeholder="Enter number of tokens for each members"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+            <small className="mt-0.5">
+              {form.getValues('numberOfTokens')} tokens each will be reserved
+              for members of the group. Total reserved tokens will be{' '}
+              {form.getValues('totalTokensReserved')}
+            </small>
 
-              <small>
-                {form.getValues('numberOfTokens')} tokens each will be reserved
-                for members of the group. Total reserved tokens will be{' '}
-                {form.getValues('totalTokensReserved')}
-              </small>
-            </div>
-
-            <div className='hidden'>
+            <div className="hidden">
               <FormField
                 control={form.control}
                 name="totalTokensReserved"
@@ -255,8 +251,9 @@ export default function AddFundManagementView() {
             </div>
             <div className="flex justify-end gap-2 my-4">
               <Button
-                onClick={() => router.back()}
-                className="text-red-600 bg-red-100 hover:bg-card hover:border border-red-600"
+                type="button"
+                onClick={() => router.push(fundManagementListPath)}
+                className="text-red-600 bg-red-100 hover:bg-card hover:bg-red-200"
               >
                 Cancel
               </Button>

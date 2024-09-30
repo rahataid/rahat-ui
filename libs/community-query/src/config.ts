@@ -1,4 +1,5 @@
 export const TAGS = {
+  UPDATE_GROUP: 'update_group',
   GET_BENEFICIARY: 'get_one_beneficiary',
   GET_ALL_USER: 'get_all_user',
   GET_USER: 'get_user',
@@ -27,6 +28,8 @@ export const TAGS = {
   CREATE_BULK_COMMUNITY_BENEFICARY: 'create_bulk_community_beneficary',
   CREATE_COMMUNITY_SETTINGS: 'create_community_settings',
   LIST_COMMUNITY_SETTINGS: 'list_community_settings',
+  LIST_COMMUNITY_SETTINGS_NAME: 'list_community_settings_name',
+  UPDATE_COMMUNITY_SETTINGS: 'update_community_settings',
   GET_VENDORS: 'list_vendors',
   GET_VENDOR_DETAILS: 'get_vendors_details',
   GET_PROJECT_DETAILS: 'get_project_details',
@@ -56,4 +59,12 @@ export const TAGS = {
   DOWNLOAD_TARGETING_LABEL: 'download_targeting_label',
   LIST_PALIKA: 'list_palika',
   EXPORT_TARGETED_BENEFICIARIES: 'export_targeted_beneficiaries',
+  VERIFY_BENEFICIARY: 'verify_beneficiary',
+  BULK_GENERATE_LINK: 'bulk_generate_link',
+  COMMS_LIST_TRANSPORTS: 'comms_list_transports',
+  CREATE_BENEFICIARY_COMMS: 'create_beneficiary_comms',
+  LIST_BENEFICIARIES_COMMS: 'list_beneficiaries_comms',
+  LIST_BENEFICIARY_COMM: 'list_beneficiary_comm',
+  TRIGGER_COMMUNICATION: 'trigger_communication',
+  COMMS_LOGS_ID: 'comms_logs_id',
 };

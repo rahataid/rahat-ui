@@ -54,7 +54,7 @@ import {
 import { User } from '@rumsan/sdk/types';
 import { enumToObjectArray } from '@rumsan/sdk/utils';
 import { UUID } from 'crypto';
-import { Minus, MoreVertical, PlusCircle, Trash2 } from 'lucide-react';
+import { Archive, Minus, MoreVertical, PlusCircle, Trash2 } from 'lucide-react';
 import Image from 'next/image';
 import { useState } from 'react';
 import {
@@ -210,7 +210,7 @@ export default function UserDetail({ userDetail, closeSecondPanel }: IProps) {
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Trash2
+                      <Archive
                         className="cursor-pointer"
                         size={18}
                         strokeWidth={1.6}
@@ -218,17 +218,16 @@ export default function UserDetail({ userDetail, closeSecondPanel }: IProps) {
                       />
                     </TooltipTrigger>
                     <TooltipContent>
-                      <p>Delete User</p>
+                      <p>Archive User</p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
               </DialogTrigger>
               <DialogContent>
                 <DialogHeader>
-                  <DialogTitle>Are you absolutely sure?</DialogTitle>
+                  <DialogTitle>Are you sure?</DialogTitle>
                   <DialogDescription>
-                    This action cannot be undone. This will permanently delete
-                    your user.
+                    Confirm if you want to archive user.
                   </DialogDescription>
                 </DialogHeader>
                 <DialogFooter>

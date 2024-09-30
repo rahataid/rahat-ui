@@ -1,15 +1,6 @@
 import * as React from 'react';
-import { useParams } from 'next/navigation';
-import {
-  ColumnFiltersState,
-  SortingState,
-  VisibilityState,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useReactTable,
-} from '@tanstack/react-table';
+import { useParams, useSearchParams } from 'next/navigation';
+import { getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import {
   usePagination,
   useStakeholdersGroups,
@@ -19,18 +10,23 @@ import StakeholdersGroupsTable from '../groups.table';
 import useStakeholdersGroupsTableColumn from './useStakeholdersGroupsTableColumn';
 import CustomPagination from '../../../../../components/customPagination';
 import { UUID } from 'crypto';
+import { getPaginationFromLocalStorage } from '../../prev.pagination.storage';
+import TableLoader from 'apps/rahat-ui/src/components/table.loader';
 
 export default function StakeholdersGroupsListView() {
   const { id } = useParams();
+  const searchParams = useSearchParams();
 
   const { pagination, setNextPage, setPrevPage, setPerPage, setPagination } =
     usePagination();
 
   React.useEffect(() => {
-    setPagination({ page: 1, perPage: 10 });
+    const isBackFromDetail = searchParams.get('backFromDetail') === 'true';
+    const prevPagination = getPaginationFromLocalStorage(isBackFromDetail);
+    setPagination(prevPagination);
   }, []);
 
-  useStakeholdersGroups(id as UUID, { ...pagination });
+  const {isLoading} = useStakeholdersGroups(id as UUID, { ...pagination });
 
   const { stakeholdersGroups, stakeholdersGroupsMeta } =
     useStakeholdersGroupsStore((state) => ({
@@ -40,33 +36,20 @@ export default function StakeholdersGroupsListView() {
 
   const columns = useStakeholdersGroupsTableColumn();
 
-  const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    [],
-  );
-  const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = React.useState({});
-
   const table = useReactTable({
     manualPagination: true,
     data: stakeholdersGroups ?? [],
     columns,
-    onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setRowSelection,
-    state: {
-      sorting,
-      columnFilters,
-      columnVisibility,
-      rowSelection,
-    },
   });
+
+  if (isLoading) {
+    return (
+      <div className='flex items-center justify-center mt-60'>
+        <TableLoader />
+      </div>
+    )
+  }
 
   return (
     <div className="rounded border bg-card">

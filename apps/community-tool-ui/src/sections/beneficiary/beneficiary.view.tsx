@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Tabs, TabsContent } from '@rahat-ui/shadcn/components/tabs';
 
 import {
+  OnChangeFn,
   VisibilityState,
   getCoreRowModel,
   getFilteredRowModel,
@@ -16,12 +17,14 @@ import {
   useCommunityBeneficiaryStore,
 } from '@rahat-ui/community-query';
 import { usePagination } from '@rahat-ui/query';
-import { ListBeneficiary } from '@rahataid/community-tool-sdk/beneficiary';
 import CustomPagination from '../../components/customPagination';
-import BeneficiaryGridView from '../../sections/beneficiary/gridView';
 import BeneficiaryListView from '../../sections/beneficiary/listView';
 import { useDebounce } from '../../utils/debounceHooks';
 import { useCommunityBeneficiaryTableColumns } from './useBeneficiaryColumns';
+import {
+  getTableDisplayField,
+  setTableDisplayField,
+} from '../../utils/localstorage.utils';
 
 function BeneficiaryView() {
   const {
@@ -41,13 +44,29 @@ function BeneficiaryView() {
   const { setSelectedBeneficiaries, selectedBeneficiaries } =
     useCommunityBeneficiaryStore();
 
-  const { data } = useCommunityBeneficaryList({
+  const { isLoading, data } = useCommunityBeneficaryList({
     ...pagination,
     ...(debouncedFilters as any),
   });
 
   const columns = useCommunityBeneficiaryTableColumns();
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
+    () => {
+      const storedVisibility = getTableDisplayField();
+      return storedVisibility;
+    },
+  );
+  const handleColumnVisibilityChange: OnChangeFn<VisibilityState> = (
+    updaterOrValue,
+  ) => {
+    const newVisibility =
+      typeof updaterOrValue === 'function'
+        ? updaterOrValue(columnVisibility)
+        : updaterOrValue;
+
+    setColumnVisibility(newVisibility);
+    setTableDisplayField(JSON.stringify(newVisibility));
+  };
   const table = useReactTable({
     manualPagination: true,
     data: data?.data?.rows || [],
@@ -55,7 +74,7 @@ function BeneficiaryView() {
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    onColumnVisibilityChange: setColumnVisibility,
+    onColumnVisibilityChange: handleColumnVisibilityChange,
     onRowSelectionChange: setSelectedListItems,
     getRowId: (row) => row.uuid as string,
     state: {
@@ -76,6 +95,7 @@ function BeneficiaryView() {
     }
   }, [resetSelectedListItems, selectedBeneficiaries.length]);
 
+  console.log(columnVisibility);
   return (
     <Tabs defaultValue="list" className="h-full">
       <>
@@ -86,6 +106,7 @@ function BeneficiaryView() {
             filters={filters}
             pagination={pagination}
             setPagination={setPagination}
+            loading={isLoading}
           />
         </TabsContent>
         {/* <TabsContent value="grid">

@@ -90,17 +90,38 @@
   }
 }
 
-/* ====1441px to 1920px */
-@media (min-width: 1441px) and (max-width: 1920px) {
+/* ====1441px to 1500px */
+@media (min-width: 1441px) and (max-width: 1500px) {
   .import-container {
-    max-width: 1350px;
+    max-width: 1120px;
   }
 }
 
-/* ====1921px Onwards */
-@media (min-width: 1921px) {
+/* ====1501px to 1800px */
+@media (min-width: 1501px) and (max-width: 1800px) {
   .import-container {
-    max-width: 1720px;
+    max-width: 1175px;
+  }
+}
+
+/* ====1800px to 2400px */
+@media (min-width: 1501px) and (max-width: 1800px) {
+  .import-container {
+    max-width: 1175px;
+  }
+}
+
+/* ====1801px to 2100px */
+@media (min-width: 1801px) and (max-width: 2100px) {
+  .import-container {
+    max-width: 1475px;
+  }
+}
+
+/* ====2101px Onwards */
+@media (min-width: 2101px) {
+  .import-container {
+    max-width: 2180px;
   }
 }
 .mapboxgl-ctrl-attrib-inner {

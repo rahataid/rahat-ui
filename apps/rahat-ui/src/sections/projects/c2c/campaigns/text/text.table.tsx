@@ -1,9 +1,6 @@
 'use client';
 
-import * as React from 'react';
-import { useParams, useRouter } from 'next/navigation';
 import {
-  ColumnDef,
   ColumnFiltersState,
   SortingState,
   VisibilityState,
@@ -14,28 +11,21 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { Eye, MoreHorizontal, Settings2 } from 'lucide-react';
+import { Plus, Settings2 } from 'lucide-react';
+import { useParams, useRouter } from 'next/navigation';
+import * as React from 'react';
 
 import { Button } from '@rahat-ui/shadcn/components/button';
-import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
-import { Badge } from '@rahat-ui/shadcn/components/badge';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@rahat-ui/shadcn/components/dropdown-menu';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  SelectGroup,
-} from '@rahat-ui/shadcn/components/select';
+
+import { useCampaignStore, useListC2cCampaign } from '@rahat-ui/query';
 import { Input } from '@rahat-ui/shadcn/components/input';
 import {
   Table,
@@ -45,14 +35,11 @@ import {
   TableHeader,
   TableRow,
 } from '@rahat-ui/shadcn/components/table';
-import { paths } from 'apps/rahat-ui/src/routes/paths';
-import { useCampaignStore, useListCampaignQuery } from '@rahat-ui/query';
 import { ScrollArea } from '@rahat-ui/shadcn/src/components/ui/scroll-area';
-import { CAMPAIGN_TYPES, ICampaignItemApiResponse } from '@rahat-ui/types';
-import { useListCampaign } from '@rumsan/communication-query';
-import { useSecondPanel } from 'apps/rahat-ui/src/providers/second-panel-provider';
-import TextDetailSplitView from 'apps/rahat-ui/src/sections/communications/text/text.detail.split.view';
+import { CAMPAIGN_TYPES } from '@rahat-ui/types';
+import { UUID } from 'crypto';
 import useTextTableColumn from './useTextTableColumn';
+import Image from 'next/image';
 
 export type Text = {
   id: number;
@@ -66,8 +53,8 @@ export type Text = {
 export default function TextTable() {
   const campaignStore = useCampaignStore();
   const columns = useTextTableColumn();
-  const { id } = useParams();
-
+  const { id } = useParams() as { id: UUID };
+  const route = useRouter();
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
@@ -76,13 +63,12 @@ export default function TextTable() {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
-  const { data, isLoading, isError, isSuccess, isFetching } = useListCampaign({
-    projectId: id,
-  });
+  const { data, isLoading, isError, isSuccess, isFetching } =
+    useListC2cCampaign(id);
 
   const tableData = React.useMemo(() => {
-    const result = Array.isArray(data?.response.data.rows)
-      ? data?.response?.data?.rows?.filter(
+    const result = Array.isArray(data?.rows)
+      ? data?.rows?.filter(
           (campaign: any) => campaign.type !== CAMPAIGN_TYPES.PHONE,
         )
       : [];
@@ -153,7 +139,7 @@ export default function TextTable() {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <div className="rounded border h-[calc(100vh-180px)]  bg-card">
+      <div className="rounded border h-[calc(100vh-180px)] bg-card">
         <Table>
           <ScrollArea className="w-full h-[calc(100vh-184px)]">
             <TableHeader>
@@ -204,7 +190,32 @@ export default function TextTable() {
                         <div className="h-2 w-2 animate-bounce rounded-full bg-primary"></div>
                       </div>
                     ) : (
-                      'No data available.'
+                      <div className="w-full h-[calc(100vh-140px)]">
+                        <div className="flex flex-col items-center justify-center">
+                          <Image
+                            src="/noData.png"
+                            height={250}
+                            width={250}
+                            alt="no data"
+                          />
+                          <p className="text-medium text-base mb-1">
+                            No Data Available
+                          </p>
+                          <p className="text-sm mb-4 text-gray-500">
+                            There are no communications to display at the
+                            moment.
+                          </p>
+                          <Button
+                            onClick={() =>
+                              route.push(`/projects/c2c/${id}/campaigns/add`)
+                            }
+                            className="flex items-center gap-2"
+                          >
+                            <Plus size={20} strokeWidth={1.75} />
+                            Add Communication
+                          </Button>
+                        </div>
+                      </div>
                     )}
                   </TableCell>
                 </TableRow>

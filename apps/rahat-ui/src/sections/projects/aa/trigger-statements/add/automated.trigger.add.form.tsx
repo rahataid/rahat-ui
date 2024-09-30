@@ -3,7 +3,6 @@ import { useParams } from 'next/navigation';
 import { UseFormReturn } from 'react-hook-form';
 import {
   PROJECT_SETTINGS_KEYS,
-  useActivitiesStore,
   useProjectSettingsStore,
 } from '@rahat-ui/query';
 import {
@@ -29,12 +28,8 @@ type IProps = {
   form: UseFormReturn<
     {
       title: string;
-      // hazardTypeId: string;
       dataSource: string;
-      // location: string;
       isMandatory?: boolean | undefined;
-      // readinessLevel?: string | undefined;
-      // waterLevel: string;
       minLeadTimeDays: string;
       maxLeadTimeDays: string;
       probability: string;
@@ -51,19 +46,10 @@ export default function AddAutomatedTriggerForm({ form }: IProps) {
     localStorage.getItem('selectedPhase') as string,
   );
 
-  // const { hazardTypes } = useActivitiesStore((state) => ({
-  //   hazardTypes: state.hazardTypes,
-  // }));
-
   const dataSources = useProjectSettingsStore(
     (s) => s.settings?.[projectId]?.[PROJECT_SETTINGS_KEYS.DATASOURCE],
   );
 
-  const glofasStations = [
-    {
-      title: dataSources.glofas.location,
-    },
-  ];
   const riverBasin = dataSources?.glofas?.location;
 
   return (
@@ -132,37 +118,6 @@ export default function AddAutomatedTriggerForm({ form }: IProps) {
                 </FormControl>
                 <FormMessage />
               </FormItem>
-              {/* <FormField
-                control={form.control}
-                name="hazardTypeId"
-                render={({ field }) => {
-                  return (
-                    <FormItem className="w-full">
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
-                        <FormLabel>Hazard Type</FormLabel>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select Hazard Type" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {hazardTypes?.map((d: any) => {
-                            return (
-                              <SelectItem key={d.id} value={d.uuid}>
-                                {d.name}
-                              </SelectItem>
-                            );
-                          })}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  );
-                }}
-              /> */}
             </div>
 
             <div className="w-full flex gap-4">
@@ -175,7 +130,7 @@ export default function AddAutomatedTriggerForm({ form }: IProps) {
                       <FormLabel>Minimum Lead Time Days</FormLabel>
                       <FormControl>
                         <Input
-                          type="text"
+                          type="number"
                           inputMode="decimal"
                           // pattern="[0-9]*[.,]?[0-9]*"
                           // title="Please enter positive number"
@@ -198,7 +153,7 @@ export default function AddAutomatedTriggerForm({ form }: IProps) {
                       <FormLabel>Maximum Lead Time Days</FormLabel>
                       <FormControl>
                         <Input
-                          type="text"
+                          type="number"
                           inputMode="decimal"
                           // pattern="[0-9]*[.,]?[0-9]*"
                           // title="Please enter positive number"
@@ -222,7 +177,7 @@ export default function AddAutomatedTriggerForm({ form }: IProps) {
                     <FormLabel>Forecast Probability</FormLabel>
                     <FormControl>
                       <Input
-                        type="text"
+                        type="number"
                         inputMode="decimal"
                         // pattern="[0-9]*[.,]?[0-9]*"
                         // title="Please enter positive number"

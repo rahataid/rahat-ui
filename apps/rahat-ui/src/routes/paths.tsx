@@ -10,6 +10,8 @@ const ROOTS = {
   PROFILE: '/profile',
   TREASURY: '/treasury',
   COMMUNITYBENEFICIARY: '/community-beneficiary',
+  SETTINGS: '/settings',
+  APPAUTHENTICATION: '/auth-apps',
 };
 
 export const paths = {
@@ -45,5 +47,33 @@ export const paths = {
         `${ROOTS.COMMUNICATION}/text/${id}/edit`,
     },
     communitybeneficiary: ROOTS.COMMUNITYBENEFICIARY,
+    appAuthentication: ROOTS.APPAUTHENTICATION,
+  },
+  settings: {
+    root: ROOTS.SETTINGS,
   },
 };
+
+export const defaultNavigations = [
+  {
+    title: 'Dashboard',
+    path: paths.dashboard.root,
+  },
+  {
+    title: 'Project',
+    path: paths.dashboard.project.root,
+  },
+  {
+    title: 'Beneficiaries',
+    path: paths.dashboard.beneficiary.root,
+  },
+
+]
+
+export const defaultSubNavigations = [
+  {
+    title: 'Users',
+    path: paths.user.root,
+  },
+
+]

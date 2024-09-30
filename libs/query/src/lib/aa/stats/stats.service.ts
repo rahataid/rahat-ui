@@ -33,44 +33,6 @@ export const usePhasesStats = (uuid: UUID) => {
   return query;
 };
 
-export const useCommunicationStats = (uuid: UUID) => {
-  const q = useProjectAction();
-
-  const query = useQuery({
-    queryKey: ['communicationStats', uuid],
-    queryFn: async () => {
-      const mutate = await q.mutateAsync({
-        uuid,
-        data: {
-          action: 'aaProject.stats.getComms',
-          payload: {},
-        },
-      });
-      return mutate.data;
-    },
-  });
-  return query;
-};
-export const useGetCommunicationLogs = (uuid: UUID) => {
-  const q = useProjectAction();
-
-  const query = useQuery({
-    queryKey: ['communicationlogs', uuid],
-    queryFn: async () => {
-      const mutate = await q.mutateAsync({
-        uuid,
-        data: {
-          action: 'aa.jobs.communication.getCommunicationLogs',
-          payload: {},
-        },
-      });
-      return mutate.data;
-    },
-  });
-
-  return query;
-};
-
 export const useAllStats = (uuid: UUID) => {
   const q = useProjectAction();
 
@@ -82,6 +44,46 @@ export const useAllStats = (uuid: UUID) => {
         data: {
           action: 'aaProject.stats.getAll',
           payload: {},
+        },
+      });
+      return mutate.data;
+    },
+  });
+
+  return query;
+};
+
+export const useCommsStats = (uuid: UUID) => {
+  const q = useProjectAction();
+
+  const query = useQuery({
+    queryKey: ['commsStatsAll', uuid],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'aa.activities.communication.getStats',
+          payload: {},
+        },
+      });
+      return mutate.data;
+    },
+  });
+
+  return query;
+};
+
+export const useSingleStat = (uuid: UUID, name: string) => {
+  const q = useProjectAction();
+
+  const query = useQuery({
+    queryKey: ['singleStat', uuid, name],
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid,
+        data: {
+          action: 'aaProject.stats.getOne',
+          payload: { name },
         },
       });
       return mutate.data;

@@ -23,6 +23,7 @@ import {
   useActiveFieldDefList,
   useCommunityBeneficiaryCreate,
 } from '@rahat-ui/community-query';
+import { usePagination } from '@rahat-ui/query';
 import { Calendar } from '@rahat-ui/shadcn/src/components/ui/calendar';
 import {
   Popover,
@@ -36,18 +37,18 @@ import {
   InternetStatus,
   PhoneStatus,
 } from '@rahataid/community-tool-sdk/enums/';
+import { FIELD_DEF_FETCH_LIMIT } from 'apps/community-tool-ui/src/constants/app.const';
 import { format } from 'date-fns';
 import { CalendarIcon, Wallet } from 'lucide-react';
 import { useEffect } from 'react';
 import { z } from 'zod';
-import { usePagination } from '@rahat-ui/query';
-import useFormStore from '../../../formBuilder/form.store';
 import FormBuilder from '../../../formBuilder';
+import useFormStore from '../../../formBuilder/form.store';
 import {
+  filterFieldDefs,
   formatDate,
   selectNonEmptyFields,
-} from 'apps/community-tool-ui/src/utils';
-import { FIELD_DEF_FETCH_LIMIT } from 'apps/community-tool-ui/src/constants/app.const';
+} from '../../../utils';
 
 export default function AddBeneficiary() {
   const { extras }: any = useFormStore();
@@ -93,7 +94,7 @@ export default function AddBeneficiary() {
     latitude: z
       .number()
       .refine((val) => val >= -90 && val <= 90, {
-        message: 'Longitude must be between -90 and 90',
+        message: 'Latitude must be between -90 and 90',
       })
       .optional(),
     longitude: z
@@ -151,6 +152,8 @@ export default function AddBeneficiary() {
       form.reset();
     }
   }, [addCommunityBeneficiary.isSuccess, form]);
+
+  const filteredDefinitions = filterFieldDefs(definitions);
 
   return (
     <Form {...form}>
@@ -388,6 +391,7 @@ export default function AddBeneficiary() {
                       <FormControl>
                         <Input
                           type="number"
+                          step="any"
                           placeholder="Longitude"
                           onChange={(e) => {
                             const numericValue = parseFloat(e.target.value);
@@ -411,6 +415,7 @@ export default function AddBeneficiary() {
                       <FormControl>
                         <Input
                           type="number"
+                          step="any"
                           placeholder="Latitude"
                           onChange={(e) => {
                             const numericValue = parseFloat(e.target.value);
@@ -515,19 +520,25 @@ export default function AddBeneficiary() {
                   </FormItem>
                 )}
               />
-              {definitions?.data.length > 0 && (
+              {filteredDefinitions && filteredDefinitions.length > 0 && (
                 <h3>
                   <b>Extra Fields:</b>
                 </h3>
               )}
               <br />
-              {definitions?.data?.map((definition: any) => {
-                return (
-                  <>
-                    <FormBuilder key={definition.id} formField={definition} />
-                  </>
-                );
-              }) || 'No field definitions found!'}
+              {filteredDefinitions && filteredDefinitions.length > 0
+                ? filteredDefinitions.map((definition: any) => {
+                    console.log(definition);
+                    return (
+                      <>
+                        <FormBuilder
+                          key={definition.id}
+                          formField={definition}
+                        />
+                      </>
+                    );
+                  })
+                : 'No field definitions found!'}
             </div>
             <div className="flex justify-end">
               <Button>Create Beneficiary</Button>

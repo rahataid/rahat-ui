@@ -135,52 +135,56 @@ export const useExportPinnedListBeneficiary = () => {
           return null;
         }
 
-        const { value } = await Swal.fire({
+        return Swal.fire({
           title: 'Export Beneficiary',
-          text: 'Select app to proceed',
           showCancelButton: true,
           confirmButtonText: 'Export',
           cancelButtonText: 'Cancel',
           input: 'select',
           inputOptions: payload.config,
-          inputPlaceholder: 'Select app',
+          inputPlaceholder: '--Select Your App--',
           preConfirm: (value) => {
             if (!value) {
-              Swal.showValidationMessage('Please select app to proceed!');
+              return Swal.showValidationMessage(
+                'Please select app to proceed!',
+              );
             }
-            return value;
+            return new Promise((resolve, reject) => {
+              let confirmButton = Swal.getConfirmButton();
+              if (!confirmButton) return;
+              confirmButton.innerHTML = 'Exporting...';
+              confirmButton.disabled = true;
+              const inputData = {
+                groupUUID: payload?.groupUUID,
+                appURL: value,
+              };
+              targetingClient
+                .exportTargetBeneficiary(inputData as any)
+                .then((data) => resolve(data))
+                .catch((error) => reject(error));
+            });
           },
-        });
-
-        if (value !== undefined && value !== '') {
-          const inputData = {
-            groupUUID: payload?.groupUUID,
-            appURL: value,
-          };
-          console.log(inputData);
-          return targetingClient.exportTargetBeneficiary(inputData as any);
-        }
-        return null;
-      },
-      onSuccess: (data: any) => {
-        console.log(data);
-        if (!data) return;
-        Swal.fire(data?.data?.message, '', 'success');
-        queryClient.invalidateQueries({
-          queryKey: [
-            TAGS.LIST_COMMUNITY_BENFICIARIES,
-            {
-              exact: true,
-            },
-          ],
-        });
-      },
-      onError: (error: any) => {
-        Swal.fire(
-          'Error',
-          error?.response?.data?.message || 'Encounter error on Creating Data',
-          'error',
-        );
+        })
+          .then((result) => {
+            if (!result || !result.value) return;
+            Swal.fire(result?.value?.data?.message, '', 'success');
+            queryClient.invalidateQueries({
+              queryKey: [
+                TAGS.LIST_COMMUNITY_BENFICIARIES,
+                {
+                  exact: true,
+                },
+              ],
+            });
+          })
+          .catch((error) => {
+            console.log('ExportError=>', error);
+            Swal.fire(
+              'Error',
+              error?.response?.data?.message || 'Failed to export beneficiary!',
+              'error',
+            );
+          });
       },
     },
 

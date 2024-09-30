@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { paths } from '../routes/paths';
+import { defaultNavigations, defaultSubNavigations } from '../routes/paths';
 import { useSettingsStore } from '@rahat-ui/query';
 
 interface NavItem {
@@ -7,62 +7,33 @@ interface NavItem {
   path: string;
 }
 
+function sanitizeNavData(data: any) {
+  return data?.map((item: any) => {
+    return {
+      title: item.TITLE,
+      path: item.PATH,
+    }
+  }
+  );
+}
+
 export function useNavData() {
   const navSettings = useSettingsStore((state) => state.navSettings);
-  const data: NavItem[] = useMemo(
-    () => [
-      {
-        title: 'Dashboard',
-        path: paths.dashboard.root,
-      },
-      {
-        title: 'Project',
-        path: paths.dashboard.project.root,
-      },
-      {
-        title: 'Beneficiaries',
-        path: paths.dashboard.beneficiary.root,
-      },
+  console.log('navSettings', navSettings);
+  const navData = sanitizeNavData(navSettings?.DATA);
+  const navSubData = sanitizeNavData(navSettings?.SUBDATA);
 
-      {
-        title: 'Communications',
-        path: paths.dashboard.communication.text,
+  const data: NavItem[] = useMemo(() => {
+    const navDataSet = new Set(navData as NavItem[] || []);
+    const combinedNavSet = new Set([...defaultNavigations, ...navDataSet,]);
+    return Array.from(combinedNavSet);
+  }, [navData]);
 
-        // children: [
-        //   {
-        //     title: 'Voice',
-        //     icon: <Phone />,
-        //     path: paths.dashboard.communication.voice,
-        //   },
-        //   {
-        //     title: 'Text',
-        //     icon: <MessageSquareMore />,
-        //     path: paths.dashboard.communication.text,
-        //   },
-        // ],
-      },
-      ...(navSettings?.data || []),
-    ],
-    [navSettings?.data],
-  );
-  const subData: NavItem[] = useMemo(
-    () => [
-      {
-        title: 'Vendors',
-        path: paths.dashboard.vendor,
-      },
-      {
-        title: 'Users',
-        path: paths.user.root,
-      },
+  const subData: NavItem[] = useMemo(() => {
+    const navSubDataSet = new Set(navSubData as NavItem[] || []);
+    const combinedSubNavSet = new Set([...defaultSubNavigations, ...navSubDataSet,]);
+    return Array.from(combinedSubNavSet);
+  }, [navSubData]);
 
-      {
-        title: 'Community Beneficiaries',
-        path: paths.dashboard.communitybeneficiary,
-      },
-      ...(navSettings?.subData || []),
-    ],
-    [navSettings?.subData],
-  );
   return { data, subData };
 }

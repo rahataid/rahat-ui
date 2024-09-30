@@ -74,7 +74,7 @@ export default function StakeholdersGroupDetailView() {
         <>
           <div className="flex justify-between mb-2">
             <div className=" flex gap-4 items-center">
-              <Back path={groupPath} />
+              <Back path={groupPath.concat('?backFromDetail=true')} />
               <h1 className="text-2xl font-semibold">{groupDetails?.name}</h1>
             </div>
             <div className="flex gap-4 items-center">

@@ -1,3 +1,5 @@
 {
-  "typescript.tsdk": "node_modules/typescript/lib"
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "workbench.colorCustomizations": {},
+  "peacock.color": "#1857a4"
 }

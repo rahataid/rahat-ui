@@ -27,26 +27,14 @@ export default function SplitViewDetailCards({ beneficiaryDetail }: any) {
                 </CardHeader> */}
         <CardContent className="pt-6">
           <div className="grid grid-cols-3 gap-3">
-            <div>
+            {/* <div>
               <p>
                 {truncateEthAddress(beneficiaryDetail?.walletAddress) ?? 'N/A'}
               </p>
               <p className="text-sm font-normal text-muted-foreground">
                 Wallet Address
               </p>
-            </div>
-            <div>
-              <p>{beneficiaryDetail?.bankedStatus ?? '-'}</p>
-              <p className="text-sm font-normal text-muted-foreground">
-                Bank Status
-              </p>
-            </div>
-            <div>
-              <p>{beneficiaryDetail?.internetStatus ?? '-'}</p>
-              <p className="text-sm font-normal text-muted-foreground">
-                Internet Status
-              </p>
-            </div>
+            </div> */}
             <div>
               <p>{beneficiaryDetail?.gender ?? '-'}</p>
               <p className="text-sm font-normal text-muted-foreground">
@@ -60,9 +48,27 @@ export default function SplitViewDetailCards({ beneficiaryDetail }: any) {
               </p>
             </div>
             <div>
+              <p>{beneficiaryDetail?.piiData?.phone ?? '-'}</p>
+              <p className="text-sm font-normal text-muted-foreground">
+                Phone Number
+              </p>
+            </div>
+            <div>
               <p>{beneficiaryDetail?.phoneStatus ?? '-'}</p>
               <p className="text-sm font-normal text-muted-foreground">
                 Phone Status
+              </p>
+            </div>
+            <div>
+              <p>{beneficiaryDetail?.bankedStatus ?? '-'}</p>
+              <p className="text-sm font-normal text-muted-foreground">
+                Bank Status
+              </p>
+            </div>
+            <div>
+              <p>{beneficiaryDetail?.internetStatus ?? '-'}</p>
+              <p className="text-sm font-normal text-muted-foreground">
+                Internet Status
               </p>
             </div>
           </div>
@@ -98,16 +104,14 @@ export default function SplitViewDetailCards({ beneficiaryDetail }: any) {
           )}
         </CardContent>
       </Card>
-      {
-        extrasDisplay(beneficiaryDetail?.extras)
-      }
+      {extrasDisplay(beneficiaryDetail?.extras)}
     </div>
   );
 }
 
 function extrasDisplay(data: any) {
   if (!data || typeof data !== 'object') {
-    return <></>
+    return <></>;
     // return <div>No data available</div>;
   }
 
@@ -115,24 +119,22 @@ function extrasDisplay(data: any) {
     <Card className="shadow rounded">
       <CardContent className="pt-6">
         <div className="grid grid-cols-3 gap-3">
-          {
-            Object?.entries(data)?.map(([key]) => {
-              return (
-                <div>
-                  <p>{data[key] ?? '-'}</p>
-                  <p className="text-sm font-normal text-muted-foreground">
-                    {formatKey(key)}
-                  </p>
-                </div>
-              )
-            })
-          }
+          {Object?.entries(data)?.map(([key]) => {
+            return (
+              <div>
+                <p>{data[key] ?? '-'}</p>
+                <p className="text-sm font-normal text-muted-foreground">
+                  {formatKey(key)}
+                </p>
+              </div>
+            );
+          })}
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }
 
 function formatKey(key: string) {
-  return key.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase());
-};
+  return key.replace(/_/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase());
+}

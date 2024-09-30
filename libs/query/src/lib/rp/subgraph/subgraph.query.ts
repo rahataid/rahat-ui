@@ -28,6 +28,9 @@ export const useRPProjectTransactions = () => {
           'claimCreateds',
           'claimProcesseds',
           'tokensAllocateds',
+          'offlineClaimProcesseds',
+          'otpAddeds',
+          'otpVerifieds'
         ];
         const newData = transactionsType.reduce((acc, type) => {
           const transactions = data[type] || [];
@@ -63,7 +66,7 @@ export const useRPBeneficiaryTransactions = (beneficiaryAddress: string) => {
         const { data } = await subgraphClient.query(BeneficiaryTransactions, {
           beneficiaryAddress,
         });
-        const transactionsType = ['tokensAllocateds', 'claimCreateds'];
+        const transactionsType = ['tokensAllocateds', 'claimCreateds',"otpAddeds","claimProcesseds"];
         const newData = transactionsType.reduce((acc, type) => {
           const transactions = data[type] || [];
           return acc.concat(transactions.map(formatTransaction));
@@ -78,12 +81,9 @@ export const useRPBeneficiaryTransactions = (beneficiaryAddress: string) => {
 };
 
 export const useRPVendorTransactions = (vendorAddress: string) => {
-  console.log(vendorAddress);
   const { subgraphClient } = useRPSubgraph();
   const { queryClient } = useRSQuery();
-  const setProjectDetails = useRPProjectSubgraphStore(
-    (state) => state.setProjectDetails,
-  );
+  
 
   const query = useQuery(
     {
@@ -92,7 +92,7 @@ export const useRPVendorTransactions = (vendorAddress: string) => {
         const { data } = await subgraphClient.query(VendorTransactions, {
           vendor: vendorAddress,
         });
-        const transactionType = ['claimCreateds', 'claimProcesseds'];
+        const transactionType = ['claimCreateds', 'claimProcesseds','offlineClaimProcesseds'];
 
         const formattedData = transactionType.reduce((acc, type) => {
           const transactions = data[type] || [];
@@ -104,12 +104,6 @@ export const useRPVendorTransactions = (vendorAddress: string) => {
     },
     queryClient,
   );
-
-  useEffect(() => {
-    if (query.isSuccess) {
-      // setProjectDetails(query.data);
-    }
-  }, [query, vendorAddress, queryClient]);
 
   return query;
 };
@@ -126,6 +120,7 @@ export const useTreasuryTokenTransaction = () => {
           TreasuryTokenTransactions,
           {},
         );
+        console.log({ data });
         return data;
       },
     },

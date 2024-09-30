@@ -1,37 +1,54 @@
 import { useParams } from 'next/navigation';
-import { useRevertPhase, useSinglePhase } from '@rahat-ui/query';
+import { useRevertPhase, useSinglePhase, useSingleStat } from '@rahat-ui/query';
 import {
   Tabs,
   TabsList,
   TabsTrigger,
   TabsContent,
 } from '@rahat-ui/shadcn/src/components/ui/tabs';
-import TriggerStatementsList from '../trigger-statements/trigger.statements.list';
 import AddButton from '../../components/add.btn';
-import SearchInput from '../../components/search.input';
 import ActivitiesListCard from '../../components/activities.list.card';
 import { UUID } from 'crypto';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import PhaseTriggerStatementsList from './phase-triggers-table/trigger.statements.list';
+import DownloadReportBtn from 'apps/rahat-ui/src/components/download.report.btn';
+import { generateExcel } from '../generate.excel';
+import { toast } from 'react-toastify';
 
 export default function PhaseDetailView() {
   const params = useParams();
   const projectId = params.id as UUID;
   const phaseId = params.phaseId as UUID;
   const { data: phaseDetail, isLoading } = useSinglePhase(projectId, phaseId);
-  const revertPhase = useRevertPhase()
+  const revertPhase = useRevertPhase();
+  const { data: revertedPhases } = useSingleStat(
+    projectId,
+    'READINESS_PHASE_REVERTED',
+  );
 
   const handleRevert = () => {
     revertPhase.mutateAsync({
       projectUUID: projectId,
       payload: {
-        phaseId
-      }
-    })
-  }
+        phaseId,
+      },
+    });
+  };
 
+  const handleDownloadReport = () => {
+    if (!revertedPhases) return toast.error('Phase is not reverted yet.');
+    const mappedData = revertedPhases?.revertHistory?.map(
+      (item: Record<string, any>) => {
+        return {
+          Phase: item.phase,
+          'Reverted At': item.revertedAt,
+        };
+      },
+    );
 
-  const handleSearch = () => { };
+    generateExcel(mappedData, 'Reverted_Phase_Report', 2);
+  };
+
   return (
     <div className="p-2 h-[calc(100vh-65px)] bg-secondary">
       <div className="mb-4">
@@ -107,36 +124,27 @@ export default function PhaseDetailView() {
             <div className="flex justify-between items-center mb-2">
               <h1 className="font-semibold text-lg">Triggers List</h1>
               <div className="flex gap-2 items-center">
-                {/* Search */}
-                <SearchInput
-                  onSearch={handleSearch}
-                  isDisabled={true}
-                  name="Trigger Statement"
-                />
                 {/* Add Trigger Statements Btn */}
                 <AddButton
                   path={`/projects/aa/${projectId}/trigger-statements/add`}
                   name="Trigger Statement"
                 />
+                {phaseDetail?.canRevert && (
+                  <Button
+                    onClick={handleRevert}
+                    disabled={!phaseDetail?.isActive}
+                  >
+                    Revert Phase
+                  </Button>
+                )}
                 {
-                  phaseDetail?.canRevert && (
-                    <Button
-                      onClick={handleRevert}
-                      disabled={!phaseDetail?.isActive}
-
-                    >
-                      Revert Phase
-                    </Button>
-                  )
+                  phaseDetail?.name === 'READINESS' && (
+                    <DownloadReportBtn handleDownload={handleDownloadReport} />
+                  ) //Download report btn
                 }
               </div>
             </div>
             <PhaseTriggerStatementsList phaseId={phaseId} />
-            {/* <TriggerStatementsList
-              tableScrollAreaHeight="h-[calc(100vh-456px)]"
-              isLoading={isLoading}
-              tableData={phaseDetail?.triggers}
-            /> */}
           </div>
         </TabsContent>
         <TabsContent value="activities">

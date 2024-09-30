@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import { Copy, CopyCheck, Eye } from 'lucide-react';
-import { Checkbox } from '@rahat-ui/shadcn/components/checkbox';
 import {
   Tooltip,
   TooltipProvider,
@@ -19,9 +18,9 @@ export const useProjectBeneficiaryTableColumns = () => {
   const { setSecondPanelComponent, closeSecondPanel } = useSecondPanel();
   const [walletAddressCopied, setWalletAddressCopied] = useState<number>();
 
-  const clickToCopy = (walletAddress: string, index: number) => {
+  const clickToCopy = (walletAddress: string, id: number) => {
     navigator.clipboard.writeText(walletAddress);
-    setWalletAddressCopied(index);
+    setWalletAddressCopied(id);
   };
 
   const openSplitDetailView = (rowDetail: any) => {
@@ -35,28 +34,6 @@ export const useProjectBeneficiaryTableColumns = () => {
 
   const columns: ColumnDef<any>[] = [
     {
-      id: 'select',
-      header: ({ table }) => (
-        <Checkbox
-          checked={
-            table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && 'indeterminate')
-          }
-          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-          aria-label="Select all"
-        />
-      ),
-      cell: ({ row }) => (
-        <Checkbox
-          checked={row.getIsSelected()}
-          onCheckedChange={(value) => row.toggleSelected(!!value)}
-          aria-label="Select row"
-        />
-      ),
-      enableSorting: false,
-      enableHiding: false,
-    },
-    {
       accessorKey: 'wallet',
       header: 'Wallet',
       cell: ({ row }) => (
@@ -64,10 +41,12 @@ export const useProjectBeneficiaryTableColumns = () => {
           <Tooltip>
             <TooltipTrigger
               className="flex items-center gap-3 cursor-pointer"
-              onClick={() => clickToCopy(row?.original?.walletAddress, row.index)}
+              onClick={() =>
+                clickToCopy(row?.original?.walletAddress, row?.original?.uuid)
+              }
             >
               <p>{truncateEthAddress(row?.original?.walletAddress)}</p>
-              {walletAddressCopied === row.index ? (
+              {walletAddressCopied === row?.original?.uuid ? (
                 <CopyCheck size={15} strokeWidth={1.5} />
               ) : (
                 <Copy className="text-slate-500" size={15} strokeWidth={1.5} />
@@ -75,7 +54,9 @@ export const useProjectBeneficiaryTableColumns = () => {
             </TooltipTrigger>
             <TooltipContent className="bg-secondary" side="bottom">
               <p className="text-xs font-medium">
-                {walletAddressCopied === row.index ? 'copied' : 'click to copy'}
+                {walletAddressCopied === row?.original?.uuid
+                  ? 'copied'
+                  : 'click to copy'}
               </p>
             </TooltipContent>
           </Tooltip>
@@ -85,14 +66,7 @@ export const useProjectBeneficiaryTableColumns = () => {
     {
       accessorKey: 'name',
       header: 'Name',
-      cell: ({ row }) => (
-        <div
-          className=""
-          // onClick={() => openSplitDetailView(row.original)}
-        >
-          {row.getValue('name')}
-        </div>
-      ),
+      cell: ({ row }) => <div className="">{row.getValue('name')}</div>,
     },
     {
       accessorKey: 'email',
@@ -113,7 +87,6 @@ export const useProjectBeneficiaryTableColumns = () => {
       id: 'actions',
       enableHiding: false,
       cell: ({ row }) => {
-        console.log(row)
         return (
           <Eye
             size={20}

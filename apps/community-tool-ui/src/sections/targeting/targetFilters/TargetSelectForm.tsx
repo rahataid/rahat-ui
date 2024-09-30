@@ -23,18 +23,20 @@ import {
   internetStatusOptions,
   phoneStatusOptions,
 } from '../../../constants/targeting.const';
+import DateInput from 'apps/community-tool-ui/src/targetingFormBuilder/DateInput';
+import { formatDate } from 'apps/community-tool-ui/src/utils';
+import { socket } from 'apps/community-tool-ui/src/socket';
+import { useEffect, useState } from 'react';
 
 export default function TargetSelectForm() {
+  const [targetUID, setTargetUID] = useState<string>('');
   const { pagination } = usePagination();
   const router = useRouter();
-
-  const { loading, setLoading, setTargetUUID } = useCommunityTargetingStore(
-    (state) => ({
-      setLoading: state.setLoading,
-      setTargetUUID: state.setTargetUUID,
-      loading: state.loading,
-    }),
-  );
+  const { loading, setLoading } = useCommunityTargetingStore((state) => ({
+    setLoading: state.setLoading,
+    setTargetUUID: state.setTargetUUID,
+    loading: state.loading,
+  }));
   const addTargeting = useTargetingCreate();
 
   const { data: definitions } = useFieldDefinitionsList({
@@ -60,7 +62,7 @@ export default function TargetSelectForm() {
       return true;
     }
 
-    for (let key in targetingQueries) {
+    for (const key in targetingQueries) {
       if (targetingQueries.hasOwnProperty(key)) {
         if (targetingQueries[key]) return false;
       }
@@ -71,22 +73,33 @@ export default function TargetSelectForm() {
 
   const handleTargetFormSubmit = async (formData: ITargetingQueries) => {
     setLoading(true);
+    if (targetingQueries.createdAt) {
+      targetingQueries.createdAt = formatDate(targetingQueries.createdAt);
+    }
     const payload = { ...formData, ...targetingQueries };
-    const target = await addTargeting.mutateAsync({
+    const data: any = await addTargeting.mutateAsync({
       filterOptions: [{ data: payload }],
     });
-    const { uuid } = target?.data as any;
-    setTimeout(() => {
-      router.push(`/targeting/filters?targetUUID=${uuid}`);
-      setLoading(false);
-    }, 2000);
+    const uuid: string = data.data?.uuid;
+    setTargetUID(uuid);
   };
+
+  useEffect(() => {
+    socket.on('targeting-completed', (targetUuid: string) => {
+      if (targetUID === targetUuid) {
+        router.push(`/targeting/filters?targetUUID=${targetUuid}`);
+        setLoading(false);
+      }
+    });
+  }, [router, setLoading, targetUID]);
 
   return (
     <Form {...form}>
       <form onSubmit={handleSubmit(handleTargetFormSubmit)}>
-        <ScrollArea className="mx-2 h-[calc(100vh-250px)]">
+        <ScrollArea className="mx-2 h-[calc(100vh-220px)]">
           <div className="grid place-items-center w-auto">
+            <DateInput />
+
             <MultiSelect
               fieldName="gender"
               placeholder="Gender"
@@ -118,13 +131,15 @@ export default function TargetSelectForm() {
               </div>
             );
           })}
-
-          <div className="mt-6 text-start mr-2">
-            <Button type="submit" disabled={loading || isQueryEmpty()}>
-              Submit
-            </Button>
-          </div>
         </ScrollArea>
+        <div
+          style={{ position: 'fixed', left: '14%', bottom: 30 }}
+          className="mt-6 text-start"
+        >
+          <Button type="submit" disabled={loading || isQueryEmpty()}>
+            Submit
+          </Button>
+        </div>
       </form>
     </Form>
   );

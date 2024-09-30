@@ -33,10 +33,6 @@ export const useCreateTriggerStatement = () => {
     },
     onSuccess: () => {
       q.reset();
-      // toast.fire({
-      //   title: 'Trigger statement added successfully.',
-      //   icon: 'success',
-      // });
     },
     onError: (error: any) => {
       const errorMessage = error?.response?.data?.message || 'Error';
@@ -279,8 +275,8 @@ export const useActivateTrigger = () => {
       projectUUID: UUID;
       activatePayload: {
         repeatKey: string | string[];
-        notes: string;
-        triggerDocuments: Array<{ mediaURL: string; fileName: string }>;
+        notes?: string;
+        triggerDocuments?: Array<{ mediaURL: string; fileName: string }>;
       };
     }) => {
       return q.mutateAsync({

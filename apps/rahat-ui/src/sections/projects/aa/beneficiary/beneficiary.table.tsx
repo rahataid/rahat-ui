@@ -11,7 +11,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { ChevronDown, Settings2 } from 'lucide-react';
+import { Settings2 } from 'lucide-react';
 
 import * as React from 'react';
 
@@ -20,7 +20,6 @@ import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
@@ -39,13 +38,9 @@ import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 import { useBulkAssignVoucher } from 'apps/rahat-ui/src/hooks/el/contracts/el-contracts';
 import { UUID } from 'crypto';
 import { useParams } from 'next/navigation';
-import { useBoolean } from '../../../../hooks/use-boolean';
 import { useProjectBeneficiaryTableColumns } from './use-table-column';
-// import TokenAssingnConfirm from './token.assign.confirm';
 import { useRouter } from 'next/navigation';
 import TableLoader from '../../../../components/table.loader';
-
-// import { useBeneficiaryTransaction } from '../../hooks/el/subgraph/querycall';
 
 export type Transaction = {
   name: string;
@@ -56,7 +51,6 @@ export type Transaction = {
 };
 
 function BeneficiaryDetailTableView() {
-  const tokenAssignModal = useBoolean();
   const route = useRouter();
   const id = useParams();
   // TODO: Refactor it
@@ -65,27 +59,17 @@ function BeneficiaryDetailTableView() {
     [],
   );
 
-  const handleTokenAssignModal = () => {
-    tokenAssignModal.onTrue();
-  };
-
-  const handleTokenAssignModalClose = () => {
-    tokenAssignModal.onFalse();
-  };
-
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const uuid = useParams().id as UUID;
   const {
     pagination,
     filters,
-    setFilters,
     setNextPage,
     setPrevPage,
     setPerPage,
     selectedListItems,
     setSelectedListItems,
-    resetSelectedListItems,
   } = usePagination();
   const assignVoucher = useBulkAssignVoucher();
 
@@ -119,17 +103,6 @@ function BeneficiaryDetailTableView() {
       rowSelection: selectedListItems,
     },
   });
-  // const assignToken =
-
-  const selectedRowAddresses = Object.keys(selectedListItems);
-
-  const handleBulkAssign = async () => {
-    // await assignVoucher.mutateAsync({
-    //   addresses: selectedRowAddresses as `0x${string}`[],
-    //   noOfTokens: 1,
-    //   contractAddress: contractAddress.elproject.address,
-    // });
-  };
 
   React.useEffect(() => {
     if (assignVoucher.isSuccess) {
@@ -177,24 +150,6 @@ function BeneficiaryDetailTableView() {
                 })}
             </DropdownMenuContent>
           </DropdownMenu>
-          {/* <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              {selectedRowAddresses.length ? (
-                <Button
-                  disabled={assignVoucher.isPending}
-                  className="h-10 ml-2"
-                >
-                  {selectedRowAddresses.length} - Beneficiary Selected
-                  <ChevronDown strokeWidth={1.5} />
-                </Button>
-              ) : null}
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={handleTokenAssignModal}>
-                Assign Tokens To All
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu> */}
         </div>
         <div className="rounded border bg-card">
           <Table>
@@ -240,7 +195,7 @@ function BeneficiaryDetailTableView() {
                       colSpan={columns.length}
                       className="h-24 text-center"
                     >
-                      {projectBeneficiaries.isFetching ? (
+                      {projectBeneficiaries.isLoading ? (
                         <TableLoader />
                       ) : (
                         'No data available.'
@@ -261,12 +216,6 @@ function BeneficiaryDetailTableView() {
         meta={projectBeneficiaries.data?.response?.meta || {}}
         perPage={pagination.perPage}
       />
-      {/* <TokenAssingnConfirm
-        tokens={selectedRowAddresses.length}
-        open={tokenAssignModal.value}
-        handleClose={handleTokenAssignModalClose}
-        handleSubmit={handleBulkAssign}
-      /> */}
     </>
   );
 }

@@ -27,6 +27,16 @@ import { useVendorTransaction } from '../../hooks/el/subgraph/querycall';
 import { truncateEthAddress } from '@rumsan/sdk/utils';
 import TableLoader from '../../components/table.loader';
 import { useRPVendorTransactions } from '@rahat-ui/query';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@rahat-ui/shadcn/src/components/ui/select';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import Pagination from '../../components/pagination';
 
 // export type Payment = {
 //   id: string;
@@ -73,9 +83,7 @@ interface VendorTxnListProps {
 }
 
 export default function VendorTxnList({ walletAddress }: VendorTxnListProps) {
-  const { data: txns, isFetching } = useRPVendorTransactions(
-    '0x37dA9a168799B4F153c00f1f47dD7E248D7D3f5E',
-  );
+  const { data: txns, isFetching } = useRPVendorTransactions(walletAddress);
 
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -159,6 +167,15 @@ export default function VendorTxnList({ walletAddress }: VendorTxnListProps) {
           </ScrollArea>
         </Table>
       </div>
+      <Pagination
+        pageIndex={table.getState().pagination.pageIndex}
+        pageCount={table.getPageCount()}
+        setPageSize={table.setPageSize}
+        canPreviousPage={table.getCanPreviousPage()}
+        previousPage={table.previousPage}
+        canNextPage={table.getCanNextPage()}
+        nextPage={table.nextPage}
+      />
     </>
   );
 }

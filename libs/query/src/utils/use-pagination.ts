@@ -41,7 +41,8 @@ type usePaginationReturn = {
 
 export const usePagination = (): usePaginationReturn => {
   const [pagination, setPagination] = useState<Pagination>(
-    hashStorage.getItem('pagination') || { page: 1, perPage: 10 },
+    //TO DO: Need to update the perPage value
+    hashStorage.getItem('pagination') || { page: 1, perPage: 100 },
   );
   const [filters, setFilters] = useState<{ [key: string]: string }>(
     hashStorage.getItem('filters') || {},
@@ -60,6 +61,7 @@ export const usePagination = (): usePaginationReturn => {
     if (JSON.stringify(storedFilters) !== JSON.stringify(filters)) {
       hashStorage.setItem('filters', filters);
     }
+    setPagination({ ...pagination, page: 1 });
   }, [filters]);
 
   useEffect(() => {

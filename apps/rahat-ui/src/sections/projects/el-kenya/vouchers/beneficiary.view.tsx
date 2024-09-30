@@ -1,8 +1,7 @@
 import {
   useBulkCreateDisbursement,
-  useFindAllDisbursements,
   usePagination,
-  useProjectBeneficiaries,
+  useFindUnSyncedBenefiicaries,
 } from '@rahat-ui/query';
 import {
   getCoreRowModel,
@@ -20,6 +19,7 @@ import SearchInput from '../../components/search.input';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Plus } from 'lucide-react';
 import BenBulkVouchersAssignModel from './beneficiary.bulk.assign.voucher.model';
+import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 
 export type Payment = {
   name: string;
@@ -51,23 +51,21 @@ export default function BeneficiaryView({
     resetSelectedListItems,
   } = usePagination();
 
-  const projectBeneficiaries = useProjectBeneficiaries({
+  const benData = useFindUnSyncedBenefiicaries(id, {
     page: pagination.page,
     perPage: pagination.perPage,
     order: 'desc',
-    sort: 'createdAt',
+    sort: 'updatedAt',
     projectUUID: id,
     ...filters,
   });
-  const disbursements = useFindAllDisbursements(id, {
-    hideAssignedBeneficiaries: false,
-  });
+
   const bulkAssignDisbursement = useBulkCreateDisbursement(id);
 
   const [rowData, setRowData] = React.useState<Payment[]>([]);
   const [rowSelection, setRowSelection] = React.useState({});
 
-  const meta = projectBeneficiaries.data.response?.meta;
+  const meta = benData?.data?.response?.meta;
 
   const columns = useBeneficiaryTableColumns();
   const table = useReactTable({
@@ -83,20 +81,10 @@ export default function BeneficiaryView({
       return originalRow.walletAddress;
     },
     onRowSelectionChange: (e) => {
-      console.log(table.getSelectedRowModel());
       setRowSelection(e);
-      // handleStepDataChange({
-      //   target: {
-      //     name: 'selectedBeneficiaries',
-      //     value: table
-      //       .getSelectedRowModel()
-      //       .rows.map((value) => value.original),
-      //   },
-      // });
     },
     state: {
       columnVisibility,
-      // rowSelection: selectedListItems,
       rowSelection,
     },
   });
@@ -108,82 +96,59 @@ export default function BeneficiaryView({
       },
     });
   }, [rowSelection]);
-  // handleStepDataChange({
-  //   target: {
-  //     name: 'selectedBeneficiaries',
-  //     value: table.getSelectedRowModel().rows.map((value) => value.original),
-  //   },
-  // });
-
-  console.log(table.getSelectedRowModel());
 
   useEffect(() => {
-    //TO DO :Need to fix data flow process
-    if (
-      projectBeneficiaries.isSuccess &&
-      projectBeneficiaries.data?.data &&
-      disbursements?.isSuccess
-    ) {
-      const projectBeneficiaryDisbursements =
-        projectBeneficiaries.data?.data.map((beneficiary) => {
-          const beneficiaryDisbursement = disbursements?.data?.find(
-            (disbursement: any) =>
-              disbursement.walletAddress === beneficiary.walletAddress,
-          );
-          return {
-            ...beneficiary,
-            disbursementAmount: beneficiaryDisbursement?.amount || '0',
-            status: beneficiaryDisbursement?.status || 'NOT_SYNCED',
-          };
-        });
-      const unSyncedBeneficiaries = projectBeneficiaryDisbursements?.filter(
-        (ben: any) => ben?.status !== 'SYNCED_OFFLINE',
-      );
+    if (benData?.isSuccess) {
+      const unSyncedBeneficiaries = benData?.data?.data?.map((beneficiary) => {
+        return {
+          name: beneficiary?.piiData?.name,
+          disbursementAmount: beneficiary?.Disbursements[0]?.amount || '0',
+          walletAddress: beneficiary?.walletAddress,
+          voucherStatus: beneficiary?.voucherStatus,
+        };
+      });
       if (JSON.stringify(unSyncedBeneficiaries) !== JSON.stringify(rowData)) {
         setRowData(unSyncedBeneficiaries);
       }
     }
-  }, [
-    disbursements?.data,
-    disbursements?.data?.data,
-    disbursements?.isSuccess,
-    projectBeneficiaries.data?.data,
-    projectBeneficiaries.isSuccess,
-    rowData,
-  ]);
+  }, [benData?.data, benData?.isSuccess, rowData]);
 
-  const handleBulkAssign = async () => {
-    await bulkAssignDisbursement.mutateAsync({
-      amount: 1,
-      beneficiaries: table
-        .getSelectedRowModel()
-        .rows.map((row) => row.original.walletAddress),
-    });
-  };
+  // const handleBulkAssign = async () => {
+  //   await bulkAssignDisbursement.mutateAsync({
+  //     amount: 1,
+  //     beneficiaries: table
+  //       .getSelectedRowModel()
+  //       .rows.map((row) => row.original.walletAddress),
+  //   });
+  // };
 
   return (
-    <div className="p-4">
-      <div className="rounded border bg-card p-4">
-        <div className="flex justify-between space-x-2 mb-2">
-          <SearchInput
-            className="w-full"
-            name="beneficiary"
-            onSearch={() => {}}
-          />
-          <Button
-            type="button"
-            onClick={
-              () => handleNext()
-              // router.push(`/projects/el-kenya/${id}/vouchers/bulk?benef=true`)
-            }
-          >
-            <Plus size={18} className="mr-1" />
-            Bulk Assign
-          </Button>
-          {/* <BenBulkVouchersAssignModel handleSubmit={handleBulkAssign} /> */}
+    <>
+      <div className="p-4">
+        <div className="rounded border bg-card p-4">
+          <div className="flex justify-between space-x-2 mb-2">
+            <SearchInput
+              className="w-full"
+              name="beneficiary"
+              onSearch={() => {}}
+            />
+            <Button type="button" onClick={() => handleNext()}>
+              <Plus size={18} className="mr-1" />
+              Bulk Assign
+            </Button>
+          </div>
+          <ElkenyaTable table={table} tableHeight="h-[calc(100vh-640px)]" />
         </div>
-        <ElkenyaTable table={table} tableHeight="h-[calc(100vh-700px)]" />
       </div>
-    </div>
+      <CustomPagination
+        meta={meta || { total: 0, currentPage: 0 }}
+        handleNextPage={setNextPage}
+        handlePrevPage={setPrevPage}
+        handlePageSizeChange={setPerPage}
+        currentPage={pagination.page}
+        perPage={pagination.perPage}
+        total={0}
+      />
+    </>
   );
 }

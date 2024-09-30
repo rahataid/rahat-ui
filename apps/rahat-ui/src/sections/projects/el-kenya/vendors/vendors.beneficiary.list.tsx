@@ -41,8 +41,8 @@ export default function VendorsBeneficiaryList() {
   const table = useReactTable({
     manualPagination: true,
     data: [
-      { walletAddress: '123', topic: 'A1' },
-      { walletAddress: '456', topic: 'B1' },
+      { walletAddress: '123', name: 'A1' },
+      { walletAddress: '456', name: 'B1' },
     ],
     columns,
     getCoreRowModel: getCoreRowModel(),
@@ -52,7 +52,7 @@ export default function VendorsBeneficiaryList() {
     },
   });
   return (
-    <div className="p-4 bg-secondary rounded shadow">
+    <div className="p-4 border rounded-sm">
       <ElkenyaTable table={table} tableHeight="h-[calc(100vh-380px)]" />
     </div>
   );

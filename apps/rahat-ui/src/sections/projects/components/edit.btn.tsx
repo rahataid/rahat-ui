@@ -4,6 +4,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@rahat-ui/shadcn/components/tooltip';
+import { cn } from '@rahat-ui/shadcn/src';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -20,16 +21,22 @@ import Link from 'next/link';
 
 type IProps = {
   path: string;
+  className?: string;
 };
 
-export default function EditButton({ path }: IProps) {
+export default function EditButton({ path, className }: IProps) {
   return (
     <TooltipProvider delayDuration={100}>
       <Tooltip>
         <TooltipTrigger>
           <AlertDialog>
             <AlertDialogTrigger className="flex items-center">
-              <div className="rounded-full border border-primary text-primary bg-card p-2 shadow-md">
+              <div
+                className={cn(
+                  'rounded-full border border-primary text-primary bg-card p-2 shadow-md',
+                  className,
+                )}
+              >
                 <Pencil size={20} strokeWidth={1.5} />
               </div>
             </AlertDialogTrigger>

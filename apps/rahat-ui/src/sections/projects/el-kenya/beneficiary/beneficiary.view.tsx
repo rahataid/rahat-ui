@@ -14,6 +14,10 @@ import ElkenyaTable from '../table.component';
 import SearchInput from '../../components/search.input';
 import AddButton from '../../components/add.btn';
 import SelectComponent from '../select.component';
+import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import { CloudDownload } from 'lucide-react';
+import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
+import ViewColumns from '../../components/view.columns';
 
 export default function BeneficiaryView() {
   const { id } = useParams() as { id: UUID };
@@ -45,10 +49,7 @@ export default function BeneficiaryView() {
   const columns = useElkenyaBeneficiaryTableColumns();
   const table = useReactTable({
     manualPagination: true,
-    data: beneficiaries?.data?.data || [
-      { uuid: '123', name: 'A1' },
-      { uuid: '456', name: 'B1' },
-    ],
+    data: beneficiaries.data?.data || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -66,12 +67,17 @@ export default function BeneficiaryView() {
   });
   return (
     <>
-      <div className="p-4 bg-secondary h-[calc(100vh-65px)]">
-        <div className="mb-4">
-          <h1 className="font-semibold text-2xl mb-">Beneficiaries</h1>
-          <p className="text-muted-foreground">
-            Track all the beneficiaries reports here.
-          </p>
+      <div className="p-4">
+        <div className="mb-4 flex justify-between items-center">
+          <div>
+            <h1 className="font-semibold text-[28px]">Beneficiaries</h1>
+            <p className="text-muted-foreground text-base">
+              Track all the beneficiaries reports here.
+            </p>
+          </div>
+          <Button variant="outline">
+            <CloudDownload className="mr-1" /> Import beneficiaries
+          </Button>
         </div>
         <div className="rounded border bg-card p-4">
           <div className="flex justify-between space-x-2 mb-2">
@@ -80,6 +86,10 @@ export default function BeneficiaryView() {
               name="beneficiary"
               onSearch={() => {}}
             />
+            <AddButton
+              name="Beneficiary"
+              path={`/projects/el-kenya/${id}/beneficiary/add`}
+            />
           </div>
           <div className="flex justify-between gap-2 mb-4">
             <SelectComponent name="Voucher Type" />
@@ -87,10 +97,20 @@ export default function BeneficiaryView() {
             <SelectComponent name="Eye Checkup Status" />
             <SelectComponent name="Glasses Status" />
             <SelectComponent name="Voucher Status" />
+            <ViewColumns table={table} />
           </div>
-          <ElkenyaTable table={table} />
+          <ElkenyaTable table={table} tableHeight="h-[calc(100vh-360px)]" />
         </div>
       </div>
+      <CustomPagination
+        meta={meta || { total: 0, currentPage: 0 }}
+        handleNextPage={setNextPage}
+        handlePrevPage={setPrevPage}
+        handlePageSizeChange={setPerPage}
+        currentPage={pagination.page}
+        perPage={pagination.perPage}
+        total={0}
+      />
     </>
   );
 }

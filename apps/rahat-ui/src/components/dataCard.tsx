@@ -17,6 +17,7 @@ type CardProps = {
   Icon?: LucideIcon;
   loading?: boolean;
   refresh?: VoidFunction;
+  iconStyle?: string;
 };
 
 export default function DataCard({
@@ -28,6 +29,7 @@ export default function DataCard({
   loading,
   subtitle,
   refresh,
+  iconStyle,
 }: CardProps) {
   return (
     <Card
@@ -53,8 +55,13 @@ export default function DataCard({
           </div>
 
           {Icon && (
-            <div className="bg-indigo-50 dark:bg-secondary rounded-full h-8 w-8 flex items-center justify-center">
-              <Icon size={20} strokeWidth={2.5} className="text-primary " />
+            <div
+              className={cn(
+                'bg-secondary rounded-full h-8 w-8 flex items-center justify-center text-primary',
+                iconStyle,
+              )}
+            >
+              <Icon size={20} strokeWidth={2} />
             </div>
           )}
         </div>

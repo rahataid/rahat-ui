@@ -1,4 +1,4 @@
-import { usePagination, useProjectBeneficiaries } from '@rahat-ui/query';
+import { usePagination } from '@rahat-ui/query';
 import {
   getCoreRowModel,
   useReactTable,
@@ -11,6 +11,8 @@ import { useKenyaProjectTransactions } from '@rahat-ui/query';
 import React from 'react';
 import ElkenyaTable from '../table.component';
 import SearchInput from '../../components/search.input';
+import ViewColumns from '../../components/view.columns';
+import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 
 export default function TransactionsView() {
   const { id } = useParams() as { id: UUID };
@@ -30,16 +32,6 @@ export default function TransactionsView() {
     resetSelectedListItems,
   } = usePagination();
 
-  const beneficiaries = useProjectBeneficiaries({
-    page: pagination.page,
-    perPage: pagination.perPage,
-    order: 'desc',
-    sort: 'createdAt',
-    projectUUID: id,
-    ...filters,
-  });
-  const meta = beneficiaries.data.response?.meta;
-
   const columns = useElkenyaTransactionsTableColumns();
   const table = useReactTable({
     manualPagination: true,
@@ -56,7 +48,7 @@ export default function TransactionsView() {
   });
   return (
     <>
-      <div className="p-4 bg-secondary h-[calc(100vh-65px)]">
+      <div className="p-4">
         <div className="mb-4">
           <h1 className="font-semibold text-2xl mb-">Transactions</h1>
           <p className="text-muted-foreground">
@@ -68,12 +60,22 @@ export default function TransactionsView() {
             <SearchInput
               className="w-full"
               name="transaction"
-              onSearch={() => { }}
+              onSearch={() => {}}
             />
+            <ViewColumns table={table} />
           </div>
-          <ElkenyaTable table={table} />
+          <ElkenyaTable table={table} tableHeight="h-[calc(100vh-294px)]" />
         </div>
       </div>
+      <CustomPagination
+        meta={{ total: 0, currentPage: 0 }}
+        handleNextPage={setNextPage}
+        handlePrevPage={setPrevPage}
+        handlePageSizeChange={setPerPage}
+        currentPage={pagination.page}
+        perPage={pagination.perPage}
+        total={0}
+      />
     </>
   );
 }

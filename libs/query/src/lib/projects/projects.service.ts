@@ -16,7 +16,7 @@ import {
 import { UUID } from 'crypto';
 import { isEmpty } from 'lodash';
 import { useEffect, useMemo } from 'react';
-import { MS_CHW_ACTIONS, PROJECT_SETTINGS_KEYS, TAGS } from '../../config';
+import { MS_CAM_ACTIONS, PROJECT_SETTINGS_KEYS, TAGS } from '../../config';
 import { useSwal } from '../../swal';
 import { api } from '../../utils/api';
 import { useProjectSettingsStore, useProjectStore } from './project.store';
@@ -689,7 +689,7 @@ export const useCHWList = (payload: any) => {
   const restPayloadString = JSON.stringify(restPayload);
 
   const query = useQuery({
-    queryKey: [MS_CHW_ACTIONS.CHW.LIST, restPayloadString],
+    queryKey: [MS_CAM_ACTIONS.CAMBODIA.CHW.LIST, restPayloadString],
     placeholderData: keepPreviousData,
     refetchOnMount: true,
     refetchOnWindowFocus: true,
@@ -697,7 +697,7 @@ export const useCHWList = (payload: any) => {
       const mutate = await action.mutateAsync({
         uuid: projectUUID,
         data: {
-          action: MS_CHW_ACTIONS.CHW.LIST,
+          action: MS_CAM_ACTIONS.CAMBODIA.CHW.LIST,
           payload: restPayload,
         },
       });
@@ -723,7 +723,7 @@ export const useCHWGet = (payload: any) => {
   const restPayloadString = JSON.stringify(restPayload);
 
   const query = useQuery({
-    queryKey: [MS_CHW_ACTIONS.CHW.GET, restPayloadString],
+    queryKey: [MS_CAM_ACTIONS.CAMBODIA.CHW.GET, restPayloadString],
     placeholderData: keepPreviousData,
     refetchOnMount: true,
     refetchOnWindowFocus: true,
@@ -731,7 +731,7 @@ export const useCHWGet = (payload: any) => {
       const mutate = await action.mutateAsync({
         uuid: projectUUID,
         data: {
-          action: MS_CHW_ACTIONS.CHW.GET,
+          action: MS_CAM_ACTIONS.CAMBODIA.CHW.GET,
           payload: restPayload,
         },
       });
@@ -746,5 +746,74 @@ export const useCHWGet = (payload: any) => {
         ...query.data,
       };
     }, [query.data]),
+  };
+};
+
+export const useCambodiaBeneficiaries = (payload: any) => {
+  const q = useProjectAction<Beneficiary[]>();
+  const { projectUUID, ...restPayload } = payload;
+
+  const restPayloadString = JSON.stringify(restPayload);
+
+  const query = useQuery({
+    queryKey: [MS_CAM_ACTIONS.CAMBODIA.BENEFICIARY.LIST, restPayloadString],
+    placeholderData: keepPreviousData,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: MS_CAM_ACTIONS.CAMBODIA.BENEFICIARY.LIST,
+          payload: restPayload,
+        },
+      });
+      return mutate;
+    },
+  });
+  return {
+    ...query,
+    data: useMemo(() => {
+      return {
+        ...query.data,
+        data: query.data?.data?.length
+          ? query.data.data.map((row: any) => ({
+              uuid: row?.uuid?.toString(),
+              name: row?.piiData?.name || '',
+              gender: row?.projectData?.gender?.toString() || '',
+              phone: row?.piiData?.phone || 'N/A',
+              type: row?.type?.toString() || 'N/A',
+              healthWorker: row?.extras?.meta?.Health_Worker_Name,
+            }))
+          : [],
+      };
+    }, [query.data]),
+  };
+};
+
+export const useCambodiaBeneficiary = (payload: any) => {
+  const q = useProjectAction<Beneficiary[]>();
+  const { projectUUID, ...restPayload } = payload;
+
+  const restPayloadString = JSON.stringify(restPayload);
+
+  const query = useQuery({
+    queryKey: [MS_CAM_ACTIONS.CAMBODIA.BENEFICIARY.GET, restPayloadString],
+    placeholderData: keepPreviousData,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    queryFn: async () => {
+      const mutate = await q.mutateAsync({
+        uuid: projectUUID,
+        data: {
+          action: MS_CAM_ACTIONS.CAMBODIA.BENEFICIARY.GET,
+          payload: restPayload,
+        },
+      });
+      return mutate;
+    },
+  });
+  return {
+    ...query,
   };
 };

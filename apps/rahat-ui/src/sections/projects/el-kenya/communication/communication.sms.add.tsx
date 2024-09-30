@@ -33,11 +33,7 @@ import { Textarea } from '@rahat-ui/shadcn/src/components/ui/textarea';
 import HeaderWithBack from '../../components/header.with.back';
 import { UUID } from 'crypto';
 
-interface AddSMSFormProps {
-  setIsOpen: any;
-}
-
-export default function AddSMSForm({ setIsOpen }: AddSMSFormProps) {
+export default function AddSMSForm() {
   const addBeneficiary = useCreateBeneficiary();
 
   const router = useRouter();
@@ -45,7 +41,6 @@ export default function AddSMSForm({ setIsOpen }: AddSMSFormProps) {
 
   const createCampaign = useCreateCampaign(id as UUID);
   const { data: transportData } = useListRpTransport(id as UUID);
-  console.log(transportData);
   const transportId = transportData?.find(
     (transport) => transport.type === 'SMS' || transport.name === 'Prabhu SMS',
   ).cuid;
@@ -73,46 +68,14 @@ export default function AddSMSForm({ setIsOpen }: AddSMSFormProps) {
       transportId: transportId,
     };
     createCampaign.mutate(createCampagin);
-    setIsOpen(false);
+    form.reset();
+    router.push(`/projects/el-kenya/${id}/communication/manage`);
   };
-
-  const handleCreateBeneficiary = async (data: z.infer<typeof FormSchema>) => {
-    // try {
-    //   const result = await addBeneficiary.mutateAsync({
-    //     gender: data.gender,
-    //     location: data.address,
-    //     age: data.age,
-    //     bankedStatus: data.bankedStatus || 'UNKNOWN',
-    //     internetStatus: data.internetStatus || 'UNKNOWN',
-    //     phoneStatus: data.phoneStatus || 'UNKNOWN',
-    //     piiData: {
-    //       email: data.email,
-    //       name: data.name,
-    //       phone: data.phone,
-    //     },
-    //     walletAddress: data.walletAddress,
-    //     projectUUIDs: [id],
-    //   });
-    //   if (result) {
-    //     toast.success('Beneficiary added successfully!');
-    //     router.push('/beneficiary');
-    //     form.reset();
-    //   }
-    // } catch (e) {
-    //   toast.error(e?.response?.data?.message || 'Failed to add beneficiary');
-    // }
-  };
-
-  // useEffect(() => {
-  //   if (addBeneficiary.isSuccess) {
-  //     router.push(`/projects/rp/${id}/beneficiary`);
-  //   }
-  // }, [addBeneficiary.isSuccess, id, router]);
 
   return (
     <>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleCreateBeneficiary)}>
+        <form onSubmit={form.handleSubmit(handleCreateCampaign)}>
           <div className="h-[calc(100vh-145px)] m-4">
             <HeaderWithBack
               title="Add SMS"
@@ -201,7 +164,9 @@ export default function AddSMSForm({ setIsOpen }: AddSMSFormProps) {
                 Please wait
               </Button>
             ) : (
-              <Button className="px-8">Add</Button>
+              <Button type="submit" className="px-8">
+                Add
+              </Button>
             )}
           </div>
         </form>

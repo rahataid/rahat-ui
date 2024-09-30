@@ -17,19 +17,18 @@ const renderStatus = ({ readinessLevel, activationLevel, waterLevel }: any) => {
 
   return (
     <p
-      className={`${
-        status === 'activation'
+      className={`${status === 'activation'
           ? 'text-red-500'
           : status === 'readiness'
-          ? 'text-yellow-500'
-          : 'text-green-500'
-      }`}
+            ? 'text-yellow-500'
+            : 'text-green-500'
+        }`}
     >
       {status === 'activation'
         ? 'Water is in activation level'
         : status === 'readiness'
-        ? 'Water is in readiness level'
-        : 'Water is in a safe level'}
+          ? 'Water is in readiness level'
+          : 'Water is in a safe level'}
     </p>
   );
 };
@@ -46,7 +45,10 @@ const LINE_CHART_CATEGORIES = [
   'Sep',
 ];
 
-export default function DHMContent({ data }: any) {
+export default function DHMContent({ data, dhmDangerLevel }: any) {
+
+  console.log(dhmDangerLevel)
+
   if (!data?.length) {
     return <p>Data not available for DHM.</p>;
   }
@@ -64,6 +66,7 @@ export default function DHMContent({ data }: any) {
   // const readinessLevel = dhmStatements?.find(
   //   (d: any) => d?.triggerStatement?.readinessLevel,
   // )?.triggerStatement?.readinessLevel;
+
   // const activationLevel = dhmStatements?.find(
   //   (d: any) => d?.triggerStatement?.activationLevel,
   // )?.triggerStatement?.activationLevel;
@@ -126,6 +129,21 @@ export default function DHMContent({ data }: any) {
   //     },
   //   });
   // }
+
+  if (dhmDangerLevel) {
+    chartOptions?.annotations?.yaxis?.push({
+      y: dhmDangerLevel,
+      borderColor: '#D2042D',
+      borderWidth: 2,
+      label: {
+        style: {
+          color: '#D2042D',
+        },
+        text: 'Danger Level',
+      },
+    });
+  }
+
 
   const waterLevelData = dhmData?.map((d: any) => {
     return parseFloat(d.data.waterLevel).toFixed(2);

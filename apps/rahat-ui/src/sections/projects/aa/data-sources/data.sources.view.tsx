@@ -34,6 +34,8 @@ export default function DataSourcesView() {
   const dataSourceSettings = useProjectSettingsStore(
     (s) => s.settings?.[projectID]?.[PROJECT_SETTINGS_KEYS.DATASOURCE],
   );
+
+  const dhmDangerLevel = dataSourceSettings?.dhm?.danger_level;
   const stationLocation = dataSourceSettings?.glofas?.location;
 
   return (
@@ -42,14 +44,8 @@ export default function DataSourcesView() {
       <p className="text-muted-foreground text-sm">
         Select a data source to view the detail view
       </p>
-      <Tabs defaultValue="glofas">
+      <Tabs defaultValue="dhm">
         <TabsList className="bg-secondary gap-4 mt-4 mb-2">
-          <TabsTrigger
-            value="glofas"
-            className="w-36 border bg-card data-[state=active]:border-primary"
-          >
-            GLoFAS
-          </TabsTrigger>
           <TabsTrigger
             value="dhm"
             className="w-36 border bg-card data-[state=active]:border-primary"
@@ -65,6 +61,24 @@ export default function DataSourcesView() {
               </Tooltip>
             </TooltipProvider>
           </TabsTrigger>
+
+          <TabsTrigger
+            value="glofas"
+            className="w-36 border bg-card data-[state=active]:border-primary"
+          >
+
+            <TooltipProvider delayDuration={100}>
+              <Tooltip>
+                <TooltipTrigger>GLoFAS</TooltipTrigger>
+                <TooltipContent className="bg-secondary ">
+                  <p className="text-xs font-medium">
+                    Global Flood Awareness System
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </TabsTrigger>
+
           <TabsTrigger
             id="monitoring"
             value="dailyMonitoring"
@@ -81,7 +95,7 @@ export default function DataSourcesView() {
           )}
         </TabsContent>
         <TabsContent value="dhm">
-          {isLoadingDhm ? 'Loading DHM data...' : <DHMView data={dhmData} />}
+          {isLoadingDhm ? 'Loading DHM data...' : <DHMView data={dhmData} dhmDangerLevel={dhmDangerLevel} />}
         </TabsContent>
         <TabsContent value="dailyMonitoring">
           <DailyMonitoringListView />

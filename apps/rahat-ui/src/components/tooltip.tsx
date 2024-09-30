@@ -1,0 +1,34 @@
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@rahat-ui/shadcn/components/tooltip';
+import { LucideIcon } from 'lucide-react';
+
+type IProps = {
+  handleOnClick: VoidFunction;
+  Icon: LucideIcon;
+  tip: string;
+  iconStyle?: string;
+};
+
+export default function TooltipComponent({
+  handleOnClick,
+  Icon,
+  tip,
+  iconStyle = '',
+}: IProps) {
+  return (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger onClick={handleOnClick}>
+          <Icon className={iconStyle} size={20} strokeWidth={1.5} />
+        </TooltipTrigger>
+        <TooltipContent className="bg-secondary ">
+          <p className="text-xs font-medium">{tip}</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
+}

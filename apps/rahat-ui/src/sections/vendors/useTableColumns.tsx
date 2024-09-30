@@ -1,18 +1,12 @@
 'use client';
 
 import { ColumnDef } from '@tanstack/react-table';
-import { ArrowUpDown, MoreHorizontal } from 'lucide-react';
-import { Checkbox } from '@rahat-ui/shadcn/src/components/ui/checkbox';
-import { Button } from '@rahat-ui/shadcn/components/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@rahat-ui/shadcn/components/dropdown-menu';
+import { Eye, FolderPlus } from 'lucide-react';
 import { useSecondPanel } from '../../providers/second-panel-provider';
 import VendorsDetailSplitView from './vendors.detail.split.view';
 import { IVendor } from './vendors.list.table';
+import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+import TooltipComponent from '../../components/tooltip';
 
 export const useTableColumns = (handleAssignClick: any) => {
   const { closeSecondPanel, setSecondPanelComponent } = useSecondPanel();
@@ -32,25 +26,13 @@ export const useTableColumns = (handleAssignClick: any) => {
   const columns: ColumnDef<IVendor>[] = [
     {
       accessorKey: 'name',
-      header: ({ column }) => {
-        return (
-          <>
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-          >
-            Name
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
-          </>
-        );
-      },
+      header: 'Name',
       cell: ({ row }) => (
         <div
           className="cursor-pointer capitalize"
           onClick={() => openSplitDetailView(row.original)}
         >
-       {row.getValue('name')} 
+          {row.getValue('name')}
         </div>
       ),
     },
@@ -58,12 +40,12 @@ export const useTableColumns = (handleAssignClick: any) => {
       accessorKey: 'status',
       header: 'Status',
       cell: ({ row }) => (
-        <div className="capitalize">{row.getValue('status')}</div>
+        <Badge className="capitalize">{row.getValue('status')}</Badge>
       ),
     },
     {
       accessorKey: 'projectName',
-      header: () => <div className="text-right">Project Name</div>,
+      header: 'Project Name',
       cell: ({ row }) => {
         return (
           <div className="text-right font-medium">
@@ -72,33 +54,25 @@ export const useTableColumns = (handleAssignClick: any) => {
         );
       },
     },
-    
+
     {
-      header: () => <div className="text-center">Actions</div>,
+      header: 'Actions',
       id: 'actions',
       enableHiding: false,
       cell: ({ row }) => {
         return (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <div className="flex justify-center">
-                <Button variant="ghost" className="h-4 w-4 p-0">
-                  <span className="sr-only">Open menu</span>
-                  <MoreHorizontal />
-                </Button>
-              </div>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="bg-card">
-              <DropdownMenuItem
-                onClick={() => openSplitDetailView(row.original)}
-              >
-                View Details
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleAssign(row.original)}>
-                Assign Project
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <div className="flex space-x-3 items-center">
+            <TooltipComponent
+              handleOnClick={() => openSplitDetailView(row.original)}
+              Icon={Eye}
+              tip="View"
+            />
+            <TooltipComponent
+              handleOnClick={() => handleAssign(row.original)}
+              Icon={FolderPlus}
+              tip="Assign Project"
+            />
+          </div>
         );
       },
     },

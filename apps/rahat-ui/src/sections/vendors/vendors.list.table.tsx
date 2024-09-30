@@ -36,12 +36,14 @@ import {
   Select,
   SelectContent,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from '@rahat-ui/shadcn/src/components/ui/select';
 import { UUID } from 'crypto';
 import TableLoader from '../../components/table.loader';
 import Image from 'next/image';
+import { Label } from '@rahat-ui/shadcn/src/components/ui/label';
 
 export type IVendor = {
   id: string;
@@ -78,15 +80,27 @@ export default function VendorsTable({
 
   return (
     <div className="border rounded shadow p-3">
-      <div className="flex items-center mb-2">
+      <div className="flex items-center mb-2 space-x-2">
         <Input
-          placeholder="Search User..."
+          placeholder="Search Vendors"
           value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
           onChange={(event) =>
             table.getColumn('name')?.setFilterValue(event.target.value)
           }
-          className="rounded mr-2"
+          className="rounded w-full"
         />
+        <Select>
+          <SelectTrigger className="w-80">Select Status</SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All</SelectItem>
+          </SelectContent>
+        </Select>
+        <Select>
+          <SelectTrigger className="w-96">Select Project Name</SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All</SelectItem>
+          </SelectContent>
+        </Select>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">
@@ -121,7 +135,7 @@ export default function VendorsTable({
         {table.getRowModel().rows?.length ? (
           <>
             <TableComponent>
-              <ScrollArea className="h-[calc(100vh-290px)]">
+              <ScrollArea className="h-[calc(100vh-285px)]">
                 <TableHeader>
                   {table.getHeaderGroups().map((headerGroup) => (
                     <TableRow key={headerGroup.id}>
@@ -179,14 +193,15 @@ export default function VendorsTable({
             <DialogTitle>Assign Project</DialogTitle>
             <DialogDescription>
               {!selectedProject && (
-                <p className="text-orange-500">Select a project to assign</p>
+                <p>Select a project to assign the selected vendor</p>
               )}
             </DialogDescription>
           </DialogHeader>
           <div>
+            <Label>Project</Label>
             <Select onValueChange={handleProjectChange}>
-              <SelectTrigger>
-                <SelectValue placeholder="--Select--" />
+              <SelectTrigger className="mt-2">
+                <SelectValue placeholder="Select Project Name" />
               </SelectTrigger>
               <SelectContent>
                 {projectList.data?.data.length &&
@@ -204,20 +219,19 @@ export default function VendorsTable({
               </SelectContent>
             </Select>
           </div>
-          <DialogFooter className="sm:justify-end">
+          <DialogFooter>
             <DialogClose asChild>
-              <Button type="button" variant="ghost">
+              <Button className="w-full" type="button" variant="secondary">
                 Close
               </Button>
             </DialogClose>
             <DialogClose asChild>
               <Button
+                className="w-full"
                 onClick={handleAssignProject}
                 type="button"
-                variant="ghost"
-                className="text-primary"
               >
-                Assign
+                Confirm
               </Button>
             </DialogClose>
           </DialogFooter>

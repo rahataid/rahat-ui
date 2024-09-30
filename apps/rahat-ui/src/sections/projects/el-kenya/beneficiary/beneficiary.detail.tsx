@@ -1,19 +1,40 @@
 import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
-import Back from '../../components/back';
+import { truncateEthAddress } from '@rumsan/sdk/utils';
+import React from 'react';
+import { Copy, CopyCheck } from 'lucide-react';
+import HeaderWithBack from '../../components/header.with.back';
+import { useParams } from 'next/navigation';
+import { UUID } from 'crypto';
+import EditButton from '../../components/edit.btn';
+import DeleteButton from '../../components/delete.btn';
 
 export default function BeneficiaryDetail() {
+  const { id } = useParams() as { id: UUID };
+  const [walletAddressCopied, setWalletAddressCopied] =
+    React.useState<number>();
+
+  const clickToCopy = (walletAddress: string, id: number) => {
+    navigator.clipboard.writeText(walletAddress);
+    setWalletAddressCopied(id);
+  };
   return (
     <div className="h-[calc(100vh-95px)] m-4">
-      <div className="flex space-x-3 mb-10">
-        <Back path="/projects/el-kenya/${id}/beneficiary" />
-        <div>
-          <h1 className="text-2xl font-semibold">Beneficiary details</h1>
-          <p className=" text-muted-foreground">
-            Here is the detailed view of selected beneficiary
-          </p>
+      <div className="flex justify-between items-center">
+        <HeaderWithBack
+          title="Beneficiary details"
+          subtitle="Here is the detailed view of selected beneficiary"
+          path={`/projects/el-kenya/${id}/beneficiary`}
+        />
+        <div className="flex space-x-2">
+          <EditButton className="border-none bg-sky-50 shadow-none" path="" />
+          <DeleteButton
+            className="border-none bg-red-100 shadow-none"
+            name="beneficiary"
+            handleContinueClick={() => { }}
+          />
         </div>
       </div>
-      <div className="p-5 rounded border grid grid-cols-4 gap-5">
+      <div className="p-5 rounded-md shadow border grid grid-cols-4 gap-5">
         <div>
           <h1 className="text-md text-muted-foreground">Beneficiary Name</h1>
           <p className="font-medium">John Doe</p>
@@ -27,8 +48,18 @@ export default function BeneficiaryDetail() {
           <p className="font-medium">+9779876543210</p>
         </div>
         <div>
-          <h1 className="text-md text-muted-foreground">Address</h1>
-          <p className="font-medium">Ktm</p>
+          <h1 className="text-md text-muted-foreground">Wallet Address</h1>
+          <div
+            className="flex items-center space-x-2 cursor-pointer"
+            onClick={() => clickToCopy('4567876545', 4567876545)}
+          >
+            <p>{truncateEthAddress('4567876545')}</p>
+            {walletAddressCopied === 4567876545 ? (
+              <CopyCheck size={15} strokeWidth={1.5} />
+            ) : (
+              <Copy className="text-slate-500" size={15} strokeWidth={1.5} />
+            )}
+          </div>
         </div>
         <div>
           <h1 className="text-md text-muted-foreground">Beneficiary Type</h1>

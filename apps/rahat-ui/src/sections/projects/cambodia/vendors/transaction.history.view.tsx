@@ -87,7 +87,7 @@ export default function TransactionHistoryView() {
   });
   return (
     <div className="rounded border bg-card p-4">
-      <CambodiaTable table={table} tableHeight="h-[calc(100vh-500px)]" />
+      <CambodiaTable table={table} tableHeight="h-[calc(100vh-528px)]" />
     </div>
   );
 }

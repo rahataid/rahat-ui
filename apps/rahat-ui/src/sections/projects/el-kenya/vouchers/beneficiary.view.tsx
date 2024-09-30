@@ -20,6 +20,7 @@ import SearchInput from '../../components/search.input';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
 import { Plus } from 'lucide-react';
 import BenBulkVouchersAssignModel from './beneficiary.bulk.assign.voucher.model';
+import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
 
 export type Payment = {
   name: string;
@@ -162,28 +163,38 @@ export default function BeneficiaryView({
   };
 
   return (
-    <div className="p-4">
-      <div className="rounded border bg-card p-4">
-        <div className="flex justify-between space-x-2 mb-2">
-          <SearchInput
-            className="w-full"
-            name="beneficiary"
-            onSearch={() => {}}
-          />
-          <Button
-            type="button"
-            onClick={
-              () => handleNext()
-              // router.push(`/projects/el-kenya/${id}/vouchers/bulk?benef=true`)
-            }
-          >
-            <Plus size={18} className="mr-1" />
-            Bulk Assign
-          </Button>
-          {/* <BenBulkVouchersAssignModel handleSubmit={handleBulkAssign} /> */}
+    <>
+      <div className="p-4">
+        <div className="rounded border bg-card p-4">
+          <div className="flex justify-between space-x-2 mb-2">
+            <SearchInput
+              className="w-full"
+              name="beneficiary"
+              onSearch={() => { }}
+            />
+            <Button
+              type="button"
+              onClick={
+                () => handleNext()
+                // router.push(`/projects/el-kenya/${id}/vouchers/bulk?benef=true`)
+              }
+            >
+              <Plus size={18} className="mr-1" />
+              Bulk Assign
+            </Button>
+          </div>
+          <ElkenyaTable table={table} tableHeight="h-[calc(100vh-640px)]" />
         </div>
-        <ElkenyaTable table={table} tableHeight="h-[calc(100vh-700px)]" />
       </div>
-    </div>
+      <CustomPagination
+        meta={{ total: 0, currentPage: 0 }}
+        handleNextPage={setNextPage}
+        handlePrevPage={setPrevPage}
+        handlePageSizeChange={setPerPage}
+        currentPage={pagination.page}
+        perPage={pagination.perPage}
+        total={0}
+      />
+    </>
   );
 }

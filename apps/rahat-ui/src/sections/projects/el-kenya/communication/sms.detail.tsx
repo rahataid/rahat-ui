@@ -15,17 +15,17 @@ import SearchInput from '../../components/search.input';
 import getIcon from 'apps/rahat-ui/src/utils/getIcon';
 import DataCard from 'apps/rahat-ui/src/components/dataCard';
 import ViewColumns from '../../components/view.columns';
-import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
-import { Settings } from 'lucide-react';
 import CustomPagination from 'apps/rahat-ui/src/components/customPagination';
+import HeaderWithBack from '../../components/header.with.back';
 
 const cardData = [
   { title: 'Total Message Sent', icon: 'MessageSquare', total: '1439' },
-  { title: 'Failed Message Delivery', icon: 'MessageSquare', total: '1439' },
+  { title: 'Beneficiaries', icon: 'Users', total: '111' },
+  { title: 'Failed Message Delivery', icon: 'MessageSquare', total: '439' },
   {
     title: 'Successfull Messages Delivered',
     icon: 'CircleCheck',
-    total: '1439',
+    total: '539',
   },
 ];
 
@@ -72,24 +72,15 @@ export default function CommunicationView() {
   return (
     <>
       <div className="p-4">
-        <div className="mb-4">
-          <h1 className="font-semibold text-2xl mb-">Communication</h1>
-        </div>
-        <div className="grid grid-cols-3 gap-2 mb-4">
+        <HeaderWithBack
+          title="SMS Details"
+          subtitle="Here is the detailed view of the selected SMS"
+          path={`/projects/el-kenya/${id}/communication/manage`}
+        />
+        <div className="grid grid-cols-4 gap-2 mb-4">
           {cardData?.map((item, index) => {
             const Icon = getIcon(item.icon as any);
             return (
-              // <div key={index} className="rounded-sm bg-card p-4 shadow-md">
-              //   <div className="flex justify-between items-center">
-              //     <h1 className="text-sm">{item.title}</h1>
-              //     <div className="p-1 rounded-full bg-secondary text-primary">
-              //       <Icon size={16} strokeWidth={2.5} />
-              //     </div>
-              //   </div>
-              //   <p className="text-primary font-semibold text-xl">
-              //     {item.total}
-              //   </p>
-              // </div>
               <DataCard
                 className="border-solid rounded-sm"
                 iconStyle="text-muted-foreground bg-white "
@@ -104,17 +95,10 @@ export default function CommunicationView() {
 
         <div className="rounded border bg-card p-4">
           <div className="flex justify-between space-x-2 mb-2">
-            <SearchInput className="w-full" name="" onSearch={() => { }} />
+            <SearchInput className="w-full" name="" onSearch={() => {}} />
             <ViewColumns table={table} />
-            <Button
-              onClick={() =>
-                router.push(`/projects/el-kenya/${id}/communication/manage`)
-              }
-            >
-              <Settings className="mr-1" size={18} /> Manage
-            </Button>
           </div>
-          <ElkenyaTable table={table} tableHeight="h-[calc(100vh-415px)]" />
+          <ElkenyaTable table={table} tableHeight="h-[calc(100vh-454px)]" />
         </div>
       </div>
       <CustomPagination

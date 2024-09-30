@@ -122,7 +122,7 @@ export default function VendorsView() {
         <div className="mb-4">
           <h1 className="font-semibold text-2xl">Vision Centers</h1>
           <p className="text-muted-foreground text-base">
-            Track all the visions here.
+            Track all the vision center reports here.
           </p>
         </div>
         <div className="rounded border bg-card p-4">
@@ -137,7 +137,7 @@ export default function VendorsView() {
               onSearch={(event) => handleFilterChange(event)}
             />
           </div>
-          <CambodiaTable table={table} />
+          <CambodiaTable table={table} tableHeight="h-[calc(100vh-294px)]" />
         </div>
       </div>
       <CustomPagination

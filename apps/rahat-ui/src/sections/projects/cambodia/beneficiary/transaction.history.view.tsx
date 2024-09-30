@@ -1,3 +1,4 @@
+'use client';
 import { usePagination } from '@rahat-ui/query';
 import {
   getCoreRowModel,
@@ -11,9 +12,8 @@ import { useParams } from 'next/navigation';
 import React from 'react';
 import CambodiaTable from '../table.component';
 import { useTransactionHistoryTableColumns } from './use.transaction.history.table.columns';
-import { useConversionListTableColumns } from './use.conversion.list.table.columns';
 
-export default function ConversionListView() {
+export default function TransactionHistoryView() {
   const { id } = useParams() as { id: UUID };
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
@@ -31,7 +31,7 @@ export default function ConversionListView() {
     resetSelectedListItems,
   } = usePagination();
 
-  const columns = useConversionListTableColumns();
+  const columns = useTransactionHistoryTableColumns();
   const table = useReactTable({
     manualPagination: true,
     data: [
@@ -88,7 +88,7 @@ export default function ConversionListView() {
   });
   return (
     <div className="rounded border bg-card p-4">
-      <CambodiaTable table={table} tableHeight="h-[calc(100vh-528px)]" />
+      <CambodiaTable table={table} tableHeight="h-[calc(100vh-500px)]" />
     </div>
   );
 }

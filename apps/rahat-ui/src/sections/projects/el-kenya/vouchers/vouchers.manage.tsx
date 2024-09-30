@@ -5,11 +5,11 @@ import {
   TabsList,
   TabsTrigger,
 } from '@rahat-ui/shadcn/components/tabs';
-import Back from '../../components/back';
 import { useParams } from 'next/navigation';
 import HeaderWithBack from '../../components/header.with.back';
 import BeneficiaryView from './beneficiary.view';
 import BeneficiaryGroupsView from './beneficiary.groups.view';
+import DataCard from 'apps/rahat-ui/src/components/dataCard';
 
 interface VouchersManageProps {
   handleStepDataChange: (e) => void;
@@ -26,21 +26,18 @@ export default function VouchersManage({
 }: VouchersManageProps) {
   const { id } = useParams();
   return (
-    <div className="p-4 h-[calc(100vh-65px)]">
+    <div className="p-4">
       <HeaderWithBack
         title="Create Voucher Disbursement"
         path={`/projects/el-kenya/${id}/vouchers`}
         subtitle="Create a disbursement plan"
       />
-      <div className="rounded-sm bg-card p-6 shadow-md w-96 mb-10">
-        <div className="flex justify-between items-center">
-          <h1 className="text-sm">Voucher Balance</h1>
-          <div className="p-1 rounded-full bg-secondary text-primary">
-            <Ticket size={16} strokeWidth={2.5} />
-          </div>
-        </div>
-        <p className="text-primary font-semibold text-xl">1439</p>
-      </div>
+      <DataCard
+        className="border-solid rounded-sm w-96 mb-10"
+        title="Voucher Balance"
+        Icon={Ticket}
+        number="1439"
+      />
       <Tabs defaultValue="beneficiary">
         <TabsContent value="beneficiary">
           <div className="pl-4">
@@ -79,16 +76,7 @@ export default function VouchersManage({
             handleStepDataChange={handleStepDataChange}
             handleNext={handleNext}
           />
-          {/* <CustomPagination
-            meta={data?.response?.meta || { total: 0, currentPage: 0 }}
-            handleNextPage={setNextPage}
-            handlePrevPage={setPrevPage}
-            handlePageSizeChange={setPerPage}
-            currentPage={pagination.page}
-            perPage={pagination.perPage}
-            total={data?.response?.meta.lastPage || 0}
-          /> */}
-        </TabsContent>
+        </TabsContent >
         <TabsContent value="beneficiaryGroups">
           <BeneficiaryGroupsView
             handleStepDataChange={handleStepDataChange}
@@ -97,7 +85,7 @@ export default function VouchersManage({
             stepData={stepData}
           />
         </TabsContent>
-      </Tabs>
-    </div>
+      </Tabs >
+    </div >
   );
 }

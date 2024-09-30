@@ -9,40 +9,89 @@ import HeaderWithBack from '../../components/header.with.back';
 import TransactionHistoryView from './transaction.history.view';
 import ConversionListView from './conversion.list.view';
 import HealthWorkersView from './health.workers.view';
-import { Check } from 'lucide-react';
+import { Check, Copy, CopyCheck, User } from 'lucide-react';
 import { Button } from '@rahat-ui/shadcn/src/components/ui/button';
+import React from 'react';
+import { truncateEthAddress } from '@rumsan/sdk/utils';
+import { Badge } from '@rahat-ui/shadcn/src/components/ui/badge';
+import DataCard from 'apps/rahat-ui/src/components/dataCard';
+import { DialogComponent } from '../../components/dialog';
 
 export default function VendorsDetail() {
   const { id } = useParams();
+  const [walletAddressCopied, setWalletAddressCopied] =
+    React.useState<number>();
+
+  const clickToCopy = (walletAddress: string, id: number) => {
+    navigator.clipboard.writeText(walletAddress);
+    setWalletAddressCopied(id);
+  };
   return (
     <div className="h-[calc(100vh-95px)] m-4">
       <div className="flex justify-between items-center">
         <HeaderWithBack
-          title="Vendor details"
+          title="Vision Center Name"
           subtitle="Here is the detailed view of selected vendor"
           path={`/projects/el-kenya/${id}/vendors`}
         />
-        <Button variant="outline" className="border-primary text-primary px-8">
-          Approve
-          <Check className="ml-2" size={16} />
-        </Button>
+        <DialogComponent
+          trigger={
+            <Button
+              variant="outline"
+              className="border-primary text-primary px-8"
+            >
+              Approve
+              <Check className="ml-2" size={16} />
+            </Button>
+          }
+          title="Are you sure you want to approve the Vision Center?"
+          subtitle="This action cannot be undone once you confirm"
+          onCancel={() => console.log('cancel')}
+          onSubmit={() => console.log('submit')}
+        />
       </div>
-      <div className="p-5 rounded border grid grid-cols-4 gap-5 mb-5">
+      <div className="flex space-x-4 mb-4">
+        <DataCard
+          className="w-full border-solid rounded-md"
+          title="Leads Received"
+          Icon={User}
+          number={'1235'}
+        />
+        <DataCard
+          className="w-full border-solid rounded-md"
+          title="Leads Converted"
+          Icon={User}
+          number={'1235'}
+        />
+        <DataCard
+          className="w-full border-solid rounded-md"
+          title="Footfall"
+          Icon={User}
+          number={'1235'}
+        />
+      </div>
+      <div className="p-5 rounded border grid grid-cols-3 gap-5 mb-5">
         <div>
-          <h1 className="text-md text-muted-foreground">Vendor Name</h1>
-          <p className="font-medium">John Doe</p>
-        </div>
-        <div>
-          <h1 className="text-md text-muted-foreground">Location</h1>
-          <p className="font-medium">Karnali</p>
+          <h1 className="text-md text-muted-foreground">Wallet Address</h1>
+          <div
+            className="flex items-center space-x-2 cursor-pointer"
+            onClick={() => clickToCopy('4567876545', 4567876545)}
+          >
+            <p>{truncateEthAddress('4567876545')}</p>
+            {walletAddressCopied === 4567876545 ? (
+              <CopyCheck size={15} strokeWidth={1.5} />
+            ) : (
+              <Copy className="text-slate-500" size={15} strokeWidth={1.5} />
+            )}
+          </div>
         </div>
         <div>
           <h1 className="text-md text-muted-foreground">Phone Number</h1>
           <p className="font-medium">+9779876543210</p>
         </div>
         <div>
-          <h1 className="text-md text-muted-foreground">Wallet Address</h1>
-          <p className="font-medium">4567876545</p>
+          <h1 className="text-md text-muted-foreground">Status</h1>
+          <Badge>Not Approved</Badge>
         </div>
       </div>
       <Tabs defaultValue="transactionHistory">

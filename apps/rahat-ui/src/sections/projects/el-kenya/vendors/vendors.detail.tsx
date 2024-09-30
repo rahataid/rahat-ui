@@ -8,18 +8,37 @@ import Back from '../../components/back';
 import VendorsTransactionsHistory from './vendors.transactions.history';
 import VendorsBeneficiaryList from './vendors.beneficiary.list';
 import { useParams } from 'next/navigation';
+import React from 'react';
+import { truncateEthAddress } from '@rumsan/sdk/utils';
+import { Copy, CopyCheck } from 'lucide-react';
+import HeaderWithBack from '../../components/header.with.back';
+import EditButton from '../../components/edit.btn';
+import DeleteButton from '../../components/delete.btn';
 
 export default function VendorsDetail() {
   const { id } = useParams();
+  const [walletAddressCopied, setWalletAddressCopied] =
+    React.useState<number>();
+
+  const clickToCopy = (walletAddress: string, id: number) => {
+    navigator.clipboard.writeText(walletAddress);
+    setWalletAddressCopied(id);
+  };
   return (
     <div className="h-[calc(100vh-95px)] m-4">
-      <div className="flex space-x-3 mb-10">
-        <Back path={`/projects/el-kenya/${id}/vendors`} />
-        <div>
-          <h1 className="text-2xl font-semibold">Vendor details</h1>
-          <p className=" text-muted-foreground">
-            Here is the detailed view of selected vendor
-          </p>
+      <div className="flex justify-between items-center">
+        <HeaderWithBack
+          title="Vendor details"
+          subtitle="Here is the detailed view of selected vendor"
+          path={`/projects/el-kenya/${id}/vendors`}
+        />
+        <div className="flex space-x-2">
+          <EditButton className="border-none bg-sky-50 shadow-none" path="" />
+          <DeleteButton
+            className="border-none bg-red-100 shadow-none"
+            name="vendor"
+            handleContinueClick={() => {}}
+          />
         </div>
       </div>
       <div className="p-5 rounded border grid grid-cols-4 gap-5 mb-5">
@@ -37,15 +56,33 @@ export default function VendorsDetail() {
         </div>
         <div>
           <h1 className="text-md text-muted-foreground">Wallet Address</h1>
-          <p className="font-medium">4567876545</p>
+          <div
+            className="flex items-center space-x-2 cursor-pointer"
+            onClick={() => clickToCopy('4567876545', 4567876545)}
+          >
+            <p>{truncateEthAddress('4567876545')}</p>
+            {walletAddressCopied === 4567876545 ? (
+              <CopyCheck size={15} strokeWidth={1.5} />
+            ) : (
+              <Copy className="text-slate-500" size={15} strokeWidth={1.5} />
+            )}
+          </div>
         </div>
       </div>
       <Tabs defaultValue="transactionHistory">
-        <TabsList>
-          <TabsTrigger value="transactionHistory">
+        <TabsList className="border bg-secondary rounded mb-2">
+          <TabsTrigger
+            className="w-full data-[state=active]:bg-white"
+            value="transactionHistory"
+          >
             Transaction History
           </TabsTrigger>
-          <TabsTrigger value="beneficiaryList">Beneficiary List</TabsTrigger>
+          <TabsTrigger
+            className="w-full data-[state=active]:bg-white"
+            value="beneficiaryList"
+          >
+            Beneficiary List
+          </TabsTrigger>
         </TabsList>
         <TabsContent value="transactionHistory">
           <VendorsTransactionsHistory />

@@ -93,7 +93,7 @@ export default function AddBeneficiaryForm() {
     <>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleCreateBeneficiary)}>
-          <div className="h-[calc(100vh-116px)] p-4">
+          <div className="h-[calc(100vh-165px)] m-4">
             <div className="flex space-x-3 mb-10">
               <Back path="/projects/el-kenya/${id}/beneficiary" />
               <div>
@@ -168,10 +168,7 @@ export default function AddBeneficiaryForm() {
                     <FormItem>
                       <FormLabel>Phone</FormLabel>
                       <FormControl>
-                        <PhoneInput
-                          placeholder="Enter phone number"
-                          {...field}
-                        />
+                        <PhoneInput placeholder="Phone" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -187,11 +184,7 @@ export default function AddBeneficiaryForm() {
                     <FormItem>
                       <FormLabel>Address</FormLabel>
                       <FormControl>
-                        <Input
-                          type="text"
-                          placeholder="Enter beneficiary address"
-                          {...field}
-                        />
+                        <Input type="text" placeholder="Address" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -200,7 +193,7 @@ export default function AddBeneficiaryForm() {
               />
             </div>
           </div>
-          <div className="flex justify-end space-x-2 py-2 px-4 border-t">
+          <div className="flex justify-end space-x-2 m-4">
             <Button
               type="button"
               onClick={() =>
@@ -215,7 +208,7 @@ export default function AddBeneficiaryForm() {
                 Please wait
               </Button>
             ) : (
-              <Button className="px-10">Add</Button>
+              <Button>Create Beneficiary</Button>
             )}
           </div>
         </form>
